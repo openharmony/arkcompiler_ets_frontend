@@ -305,11 +305,10 @@ export class TypeChecker {
                 }
                 break;
             case ts.SyntaxKind.ClassDeclaration:
-                // Create the type if it is exported or declared. Otherwise, waite until it gets instantiated
+                // Create the type if it is exported or declared. If not, also create type in case there's
+                // static property access of this class.
                 let classDeclNode = <ts.ClassDeclaration>ts.getOriginalNode(node);
-                if (this.hasExportKeyword(node) || this.hasDeclareKeyword(node)) {
-                    this.formatClassDeclaration(classDeclNode);
-                }
+                this.formatClassDeclaration(classDeclNode);
                 break;
             case ts.SyntaxKind.InterfaceDeclaration:
                 if (isGlobalDeclare()) {

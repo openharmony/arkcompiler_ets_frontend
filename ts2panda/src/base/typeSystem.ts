@@ -362,9 +362,14 @@ export class ClassInstType extends BaseType {
 }
 
 export class FunctionType extends BaseType {
+    extraModifierMap: Map<String, number> = new Map([
+        ["async", 2],
+        ["asterisk", 4],
+    ]);
     name: string = '';
     accessFlag: number = AccessFlag.PUBLIC; // 0 -> public -> 0, private -> 1, protected -> 2
-    modifierStatic: number = ModifierStatic.NONSTATIC; // 0 -> unstatic, 1 -> static
+    modifierStatic: number = ModifierStatic.NONSTATIC; // 0 -> unstatic, 1 -> static, 2 -> async, 4-> asterisk
+    containThisParam: boolean = false;
     parameters: Array<number> = new Array<number>();
     returnType: number = PrimitiveType.ANY;
     typeIndex: number;
@@ -409,9 +414,16 @@ export class FunctionType extends BaseType {
                         this.modifierStatic = ModifierStatic.STATIC;
                         break;
                     }
+                    case ts.SyntaxKind.AsyncKeyword: {
+                        this.modifierStatic += this.extraModifierMap.get("async");
+                        break;
+                    }
                     default:
                         break;
                 }
+            }
+            if (!ts.isMethodSignature(node) && node.asteriskToken) {
+                this.modifierStatic += this.extraModifierMap.get("asterisk");
             }
         }
     }
@@ -423,6 +435,9 @@ export class FunctionType extends BaseType {
                 let variableNode = parameter.name;
                 let typeIndex = this.getOrCreateRecordForTypeNode(typeNode, variableNode);
                 this.parameters.push(typeIndex);
+                if (variableNode.getFullText() == 'this') {
+                    this.containThisParam = true;
+                }
             }
         }
     }
@@ -444,7 +459,13 @@ export class FunctionType extends BaseType {
         funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.accessFlag));
         funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.modifierStatic));
         funcTypeLiterals.push(new Literal(LiteralTag.STRING, this.name));
-        funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.parameters.length));
+        if (this.containThisParam) {
+            funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, 1));
+            funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.parameters.length - 1));
+        } else {
+            funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, 0));
+            funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.parameters.length));
+        }
         this.parameters.forEach((type) => {
             funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, type));
         });
