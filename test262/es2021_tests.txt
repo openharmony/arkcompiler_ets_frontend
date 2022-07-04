@@ -354,3 +354,9 @@ built-ins/Promise/prototype/finally/this-value-then-poisoned.js
 built-ins/Promise/prototype/finally/this-value-then-throws.js
 built-ins/Promise/prototype/finally/this-value-thenable.js
 built-ins/Promise/prototype/finally/this-value-then-not-callable.js
+built-ins/JSON/stringify/value-bigint.js
+built-ins/JSON/stringify/value-bigint-cross-realm.js
+built-ins/JSON/stringify/value-bigint-order.js
+built-ins/JSON/stringify/value-bigint-replacer.js
+built-ins/JSON/stringify/value-bigint-tojson.js
+built-ins/JSON/stringify/value-bigint-tojson-receiver.js
