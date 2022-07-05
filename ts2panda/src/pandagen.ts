@@ -203,8 +203,8 @@ export class PandaGen {
     // for debug info
     private variableDebugInfoArray: VariableDebugInfo[] = [];
     private firstStmt: ts.Statement | undefined;
-    private sourceFileDebugInfo: string = "";
-    private sourceCodeDebugInfo: string | undefined;
+    private sourceFile: string = "";
+    private sourceCode: string | undefined = undefined;
     private callType: number = 0;
 
     private static literalArrayBuffer: Array<LiteralBuffer> = new Array<LiteralBuffer>();
@@ -259,20 +259,20 @@ export class PandaGen {
         }
     }
 
-    public getSourceCodeDebugInfo() {
-        return this.sourceCodeDebugInfo;
+    public getSourceCode(): string | undefined {
+        return this.sourceCode;
     }
 
-    public setSourceCodeDebugInfo(code: string) {
-        this.sourceCodeDebugInfo = code;
+    public setSourceCode(code: string) {
+        this.sourceCode = code;
     }
 
     public getSourceFileDebugInfo() {
-        return this.sourceFileDebugInfo;
+        return this.sourceFile;
     }
 
     public setSourceFileDebugInfo(sourceFile: string) {
-        this.sourceFileDebugInfo = sourceFile;
+        this.sourceFile = sourceFile;
     }
 
     static getLiteralArrayBuffer() {

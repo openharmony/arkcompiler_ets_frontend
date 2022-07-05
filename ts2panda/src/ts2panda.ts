@@ -254,13 +254,14 @@ export class Ts2Panda {
             );
         }
 
-        let variables, sourceCode;
+        let variables = undefined, sourceCode = undefined;
+        if (CmdOptions.needRecordSourceCode() || CmdOptions.isDebugMode()) {
+            // function's sourceCode will be undefined in debugMode
+            // if we don't need to record function-sourceCode
+            sourceCode = pg.getSourceCode();
+        }
         if (CmdOptions.isDebugMode()) {
             variables = pg.getVariableDebugInfoArray();
-            sourceCode = pg.getSourceCodeDebugInfo();
-        } else {
-            variables = undefined;
-            sourceCode = undefined;
         }
 
         let catchTableArr;

@@ -42,6 +42,8 @@ def parse_args():
                         help='whether is module')
     parser.add_argument("--commonjs", action='store_true',
                         help='whether is commonjs')
+    parser.add_argument("--functionSourceCode", action='store_true',
+                        help='compile abc with function sourcecode info')
     arguments = parser.parse_args()
     return arguments
 
@@ -88,6 +90,8 @@ def gen_abc_info(input_arguments):
         cmd.insert(4, '-m')
     if input_arguments.commonjs:
         cmd.insert(5, '-c')
+    if input_arguments.functionSourceCode:
+        cmd.insert(6, '--function-sourcecode')
     run_command(cmd, path)
 
 

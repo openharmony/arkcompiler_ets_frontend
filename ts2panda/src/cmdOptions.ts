@@ -45,7 +45,8 @@ const ts2pandaOptions = [
     { name: 'dts-type-record', alias: 'q', type: Boolean, defaultValue: false, description: "Record type info for .d.ts files. Default: false" },
     { name: 'debug-type', alias: 'g', type: Boolean, defaultValue: false, description: "Print type-related log. Default: false" },
     { name: 'output-type', type: Boolean, defaultValue: false, description: "set output type."},
-    { name: 'display-typeinfo', type: Boolean, defaultValue: false, description: "Display typeinfo of pairs of instruction orders and types when enable-typeinfo is true" }
+    { name: 'display-typeinfo', type: Boolean, defaultValue: false, description: "Display typeinfo of pairs of instruction orders and types when enable-typeinfo is true" },
+    { name: 'function-sourcecode', type: Boolean, defaultValue: false, description: "Record functions' sourceCode to support the feature of [function].toString()" }
 ]
 
 
@@ -273,6 +274,13 @@ export class CmdOptions {
             return false;
         }
         return this.options["debug-type"];
+    }
+
+    static needRecordSourceCode(): boolean {
+        if (!this.options) {
+            return false;
+        }
+        return this.options["function-sourcecode"];
     }
 
     // @ts-ignore

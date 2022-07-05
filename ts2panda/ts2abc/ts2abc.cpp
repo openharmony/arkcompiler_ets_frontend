@@ -477,16 +477,14 @@ static int ParseVariablesDebugInfo(const Json::Value &function, panda::pandasm::
     return RETURN_SUCCESS;
 }
 
-static int ParseSourceFileDebugInfo(const Json::Value &function, panda::pandasm::Function &pandaFunc)
+static int ParseSourceFileInfo(const Json::Value &function, panda::pandasm::Function &pandaFunc)
 {
     if (function.isMember("sf") && function["sf"].isString()) {
         pandaFunc.source_file = function["sf"].asString();
     }
 
-    if (GetDebugModeEnabled()) {
-        if (function.isMember("sc") && function["sc"].isString()) {
-            pandaFunc.source_code = function["sc"].asString();
-        }
+    if (function.isMember("sc") && function["sc"].isString()) {
+        pandaFunc.source_code = function["sc"].asString();
     }
 
     return RETURN_SUCCESS;
@@ -770,7 +768,7 @@ static panda::pandasm::Function ParseFunction(const Json::Value &function)
     auto pandaFunc = GetFunctionDefintion(function);
     ParseFunctionInstructions(function, pandaFunc);
     ParseVariablesDebugInfo(function, pandaFunc);
-    ParseSourceFileDebugInfo(function, pandaFunc);
+    ParseSourceFileInfo(function, pandaFunc);
     ParseFunctionLabels(function, pandaFunc);
     ParseFunctionCatchTables(function, pandaFunc);
     // parsing call opt type
