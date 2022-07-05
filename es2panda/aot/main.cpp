@@ -14,12 +14,18 @@
  */
 
 #include <assembly-literals.h>
+#ifdef ENABLE_BYTECODE_OPT
 #include <bytecode_optimizer/bytecodeopt_options.h>
 #include <bytecode_optimizer/optimize_bytecode.h>
+#else
+#include <assembly-type.h>
+#include <assembly-program.h>
+#include <assembly-emitter.h>
+#endif
 #include <mem/arena_allocator.h>
 #include <mem/pool_manager.h>
 #include <options.h>
-#include <plugins/ecmascript/es2panda/es2panda.h>
+#include <es2panda.h>
 
 #include <iostream>
 #include <memory>

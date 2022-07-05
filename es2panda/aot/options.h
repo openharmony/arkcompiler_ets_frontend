@@ -17,7 +17,7 @@
 #define ES2PANDA_AOT_OPTIONS_H
 
 #include <macros.h>
-#include <plugins/ecmascript/es2panda/es2panda.h>
+#include <es2panda.h>
 
 #include <exception>
 #include <fstream>

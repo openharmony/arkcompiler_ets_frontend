@@ -56,7 +56,6 @@ void BinaryExpression::CompileLogical(compiler::PandaGen *pg) const
     // left -> acc -> lhs -> toboolean -> acc -> bool_lhs
     left_->Compile(pg);
     pg->StoreAccumulator(this, lhs);
-    pg->ToBoolean(this);
 
     if (operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
         pg->BranchIfFalse(this, skipRight);

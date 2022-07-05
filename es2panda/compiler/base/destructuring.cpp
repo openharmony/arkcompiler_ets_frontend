@@ -223,9 +223,15 @@ static void GenObject(PandaGen *pg, const ir::ObjectExpression *object, VReg rhs
 
     if (properties.empty() || properties.back()->IsRestElement()) {
         auto *notNullish = pg->AllocLabel();
+        auto *nullish = pg->AllocLabel();
 
-        pg->LoadAccumulator(object, rhs);
-        pg->BranchIfCoercible(object, notNullish);
+        pg->LoadConst(object, Constant::JS_NULL);
+        pg->Condition(object, lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL, rhs, nullish);
+        pg->LoadConst(object, Constant::JS_UNDEFINED);
+        pg->Condition(object, lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL, rhs, nullish);
+        pg->Branch(object, notNullish);
+
+        pg->SetLabel(object, nullish);
         pg->ThrowObjectNonCoercible(object);
 
         pg->SetLabel(object, notNullish);

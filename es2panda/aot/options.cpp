@@ -18,6 +18,7 @@
 #include <utils/pandargs.h>
 
 #include <utility>
+#include <sstream>
 
 namespace panda::es2panda::aot {
 
