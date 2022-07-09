@@ -22,9 +22,9 @@ import {
     createVRegTypePair,
     compareVReg2Type
 } from "./typeUtils";
-import { PrimitiveType } from '../../src/base/typeSystem';
+import { userDefinedTypeStartIndex } from '../../src/base/typeSystem';
 
-let shift = PrimitiveType._LENGTH;
+let shift = userDefinedTypeStartIndex;
 
 describe("class tests in class.test.ts", function () {
     it("test class with no parameter in block", function () {

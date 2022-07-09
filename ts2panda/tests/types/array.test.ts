@@ -22,9 +22,9 @@ import {
     createVRegTypePair,
     compareVReg2Type
 } from "./typeUtils";
-import { PrimitiveType } from '../../src/base/typeSystem';
+import { userDefinedTypeStartIndex } from '../../src/base/typeSystem';
 
-let shift = PrimitiveType._LENGTH;
+let shift = userDefinedTypeStartIndex;
 
 describe("array tests in array.test.ts", function() {
     it("test array with primitives", function() {

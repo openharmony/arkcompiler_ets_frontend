@@ -15,7 +15,7 @@
 
 import * as ts from "typescript";
 import {
-    ExternalType, PrimitiveType, TypeSummary
+    ExternalType, PrimitiveType, TypeSummary, userDefinedTypeStartIndex
 } from "./base/typeSystem";
 import * as jshelpers from "./jshelpers";
 import { ModuleStmt } from "./modules";
@@ -28,6 +28,7 @@ export class TypeRecorder {
     private userDefinedTypeSet: Set<number> = new Set<number>();;
     private typeSummary: TypeSummary = new TypeSummary();
     private class2InstanceMap: Map<number, number> = new Map<number, number>();
+    private builtinContainer2InstanceMap: Map<object, number> = new Map<object, number>();
     private arrayTypeMap: Map<number, number> = new Map<number, number>();
     private unionTypeMap: Map<string, number> = new Map<string, number>();
     private exportedType: Map<string, number> = new Map<string, number>();
@@ -67,12 +68,14 @@ export class TypeRecorder {
 
     public addType2Index(typeNode: ts.Node, index: number) {
         this.type2Index.set(typeNode, index);
-        this.addUserDefinedTypeSet(index);
+        if (index > userDefinedTypeStartIndex) {
+            this.addUserDefinedTypeSet(index);
+        }
     }
 
     public setVariable2Type(variableNode: ts.Node, index: number) {
         this.variable2Type.set(variableNode, index);
-        if (index > PrimitiveType._LENGTH) {
+        if (index > userDefinedTypeStartIndex) {
             this.addUserDefinedTypeSet(index);
         }
     }
@@ -131,6 +134,18 @@ export class TypeRecorder {
 
     public getClass2InstanceMap(classIndex: number) {
         return this.class2InstanceMap.get(classIndex);
+    }
+
+    public setBuiltinContainer2InstanceMap(builtinContainer: object, instanceIndex: number) {
+        this.builtinContainer2InstanceMap.set(builtinContainer, instanceIndex)
+    }
+
+    public hasBuiltinContainer2InstanceMap(builtinContainer: object) {
+        return this.builtinContainer2InstanceMap.has(builtinContainer);
+    }
+
+    public getBuiltinContainer2InstanceMap(builtinContainer: object) {
+        return this.builtinContainer2InstanceMap.get(builtinContainer);
     }
 
     // exported/imported
