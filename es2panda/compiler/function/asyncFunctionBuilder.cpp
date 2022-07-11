@@ -28,10 +28,8 @@ void AsyncFunctionBuilder::DirectReturn(const ir::AstNode *node) const
     VReg canSuspend = pg_->AllocReg();
 
     pg_->StoreAccumulator(node, retVal);
-    pg_->LoadConst(node, Constant::JS_TRUE);
-    pg_->StoreAccumulator(node, canSuspend);
+    pg_->StoreConst(node, canSuspend, Constant::JS_TRUE);
     pg_->AsyncFunctionResolve(node, funcObj_, retVal, canSuspend);
-    pg_->LoadAccumulator(node, retVal);
     pg_->EmitReturn(node);
 }
 

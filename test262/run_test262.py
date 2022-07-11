@@ -142,23 +142,22 @@ def init(args):
     remove_dir(TEST_INTL_DIR)
     remove_dir(TEST_ES2021_DIR)
     remove_dir(TEST_CI_DIR)
-    get_all_skip_tests(SKIP_LIST_FILE)
-    get_intl_skip_tests(INTL_SKIP_LIST_FILE)
+    get_all_skip_tests(args)
     excuting_npm_install(args)
 
 
-def get_all_skip_tests(file):
-    with open(file) as jsonfile:
-        json_data = json.load(jsonfile)
-        for key in json_data:
-            ALL_SKIP_TESTS.extend(key["files"])
+def get_all_skip_tests(args):
+    # !!! plz correct the condition when changing the default frontend
+    if args.ark_frontend and args.ark_frontend == ARK_FRONTEND_LIST[1]:
+        SKIP_LIST_FILES.append(ES2ABC_SKIP_LIST_FILE)
+    else:
+        SKIP_LIST_FILES.append(TS2ABC_SKIP_LIST_FILE)
 
-
-def get_intl_skip_tests(file):
-    with open(file) as jsonfile:
-        json_data = json.load(jsonfile)
-        for key in json_data:
-            INTL_SKIP_TESTS.extend(key["files"])
+    for file in SKIP_LIST_FILES:
+        with open(file) as jsonfile:
+            json_data = json.load(jsonfile)
+            for key in json_data:
+                ALL_SKIP_TESTS.extend(key["files"])
 
 
 def collect_files(path):
@@ -277,14 +276,12 @@ class TestPrepare():
         else:
             self.args.dir = os.path.join(DATA_DIR, "test")
 
-    def copyfile(self, file, all_skips, intl_skips):
+    def copyfile(self, file, all_skips):
         dstdir = os.path.join(DATA_DIR, "test")
         file = file.strip()
         file = file.strip('\n')
         file = file.replace("\\", "/")
         if file in all_skips:
-            return
-        if file in intl_skips:
             return
 
         srcdir = os.path.join(DATA_DIR, "test", file)
@@ -377,7 +374,7 @@ class TestPrepare():
 
         pool = Pool(DEFAULT_THREADS)
         for it in files:
-            pool.apply(self.copyfile, (it, ALL_SKIP_TESTS, INTL_SKIP_TESTS))
+            pool.apply(self.copyfile, (it, ALL_SKIP_TESTS))
         pool.close()
         pool.join()
 
