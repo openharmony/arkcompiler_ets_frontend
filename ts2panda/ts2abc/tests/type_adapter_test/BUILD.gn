@@ -11,16 +11,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//ark/runtime_core/ark_config.gni")
-import("//ark/ts2abc/ts2panda/ts2abc_config.gni")
+import("//arkcompiler/ets_frontend/ts2panda/ts2abc_config.gni")
+import("//arkcompiler/runtime_core/ark_config.gni")
 
 ohos_executable("ts2abc_type_adapter_unit_tests") {
   sources = [
-    "//ark/ts2abc/ts2panda/ts2abc/type_adapter.cpp",
+    "//arkcompiler/ets_frontend/ts2panda/ts2abc/type_adapter.cpp",
     "type_adapter_test.cpp",
   ]
 
-  configs = [ "//ark/ts2abc/ts2panda/ts2abc:ts2abc_config" ]
+  configs = [ "//arkcompiler/ets_frontend/ts2panda/ts2abc:ts2abc_config" ]
 
   cflags = [
     "-Wno-c++20-designator",

@@ -34,7 +34,7 @@ IMPORT_FILE_PATH = os.path.join("testTs", "import_tests.json")
 CUR_FILE_DIR = os.path.dirname(__file__)
 CODE_ROOT = os.path.abspath(os.path.join(CUR_FILE_DIR, "../../.."))
 ARK_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/ark/ark"
-WORK_PATH = f'{CODE_ROOT}/ark/ts2abc'
+WORK_PATH = f'{CODE_ROOT}/arkcompiler/ets_frontend'
 
 DEFAULT_ARK_FRONTEND_TOOL = os.path.join(ARK_DIR, "build", "src", "index.js")
 

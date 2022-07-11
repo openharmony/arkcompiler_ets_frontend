@@ -15,10 +15,10 @@ if (!defined(ark_independent_build)) {
   import("//build/ohos.gni")
   import("//build/test.gni")
   build_root = "//build"
-  ts2abc_root = "//ark/ts2abc/ts2panda"
+  ts2abc_root = "//arkcompiler/ets_frontend/ts2panda"
 } else {
   import("$build_root/ark.gni")
-  ts2abc_root = "//ts2abc/ts2panda"
+  ts2abc_root = "//arkcompiler/ets_frontend/ts2panda"
 }
 
 declare_args() {
@@ -49,18 +49,21 @@ if (host_toolchain == buildtool_mac) {
   ts2abc_build_deps = [ "$ts2abc_root:ts2abc_build_mac($buildtool_mac)" ]
   ts2abc_build_path =
       get_label_info("$ts2abc_root:ts2abc_build_mac($buildtool_mac)",
-                     "root_out_dir") + "/obj/ark/ts2abc/ts2panda/build-mac"
+                     "root_out_dir") +
+      "/obj/arkcompiler/ets_frontend/ts2panda/build-mac"
   node_path = "${nodejs_dir}/node-v12.18.4-darwin-x64/bin/"
 } else if (host_toolchain == buildtool_win) {
   ts2abc_build_deps = [ "$ts2abc_root:ts2abc_build_win($buildtool_win)" ]
   ts2abc_build_path =
       get_label_info("$ts2abc_root:ts2abc_build_win($buildtool_win)",
-                     "root_out_dir") + "/obj/ark/ts2abc/ts2panda/build_win"
+                     "root_out_dir") +
+      "/obj/arkcompiler/ets_frontend/ts2panda/build_win"
 } else {
   ts2abc_build_deps = [ "$ts2abc_root:ts2abc_build($buildtool_linux)" ]
   ts2abc_build_path =
       get_label_info("$ts2abc_root:ts2abc_build($buildtool_linux)",
-                     "root_out_dir") + "/obj/ark/ts2abc/ts2panda/build"
+                     "root_out_dir") +
+      "/obj/arkcompiler/ets_frontend/ts2panda/build"
   node_path = "${nodejs_dir}/node-v12.18.4-linux-x64/bin/"
 }
 
