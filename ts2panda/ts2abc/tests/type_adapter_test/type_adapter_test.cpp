@@ -100,7 +100,7 @@ void TypeAdapterTest::TestVariablesArgsType() const
     panda::pandasm::Parser p;
     auto res = p.Parse(source);
     auto &program = res.Value();
-    auto it = program.function_table.find("foo");
+    auto it = program.function_table.find("foo:(any,any)");
     TestAssertNotEqual(it, program.function_table.end());
     auto &foo = it->second;
 
