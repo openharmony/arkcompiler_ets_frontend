@@ -11,39 +11,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("//arkcompiler/ets_frontend/ets_frontend_config.gni")
 if (defined(ark_independent_build)) {
   import("$build_root/ark.gni")
-  es2abc_root = "//ts2abc/es2panda"
+  es2abc_root = "//ets_frontend/es2panda"
 } else {
   import("//build/ohos.gni")
   build_root = "//build"
-  es2abc_root = "//ark/ts2abc/es2panda"
+  es2abc_root = "//arkcompiler/ets_frontend/es2panda"
 }
-
-
-toolchain_linux = "$build_root/toolchain/linux:clang_x64"
-if (host_cpu == "arm64") {
-  toolchain_mac = "$build_root/toolchain/mac:clang_arm64"
-} else {
-  toolchain_mac = "$build_root/toolchain/mac:clang_x64"
-}
-toolchain_win = "$build_root/toolchain/mingw:mingw_x86_64"
 
 es2abc_build_path = ""
 es2abc_build_deps = ""
 es2abc_out_root = ""
 
 if (host_toolchain == toolchain_mac) {
-  es2abc_out_root = get_label_info("$es2abc_root:es2panda($toolchain_mac)",
-                              "root_out_dir")
+  es2abc_out_root =
+      get_label_info("$es2abc_root:es2panda($toolchain_mac)", "root_out_dir")
   es2abc_build_deps = [ "$es2abc_root:es2panda($toolchain_mac)" ]
 } else if (host_toolchain == toolchain_win) {
-  es2abc_out_root = get_label_info("$es2abc_root:es2panda($toolchain_win)",
-                              "root_out_dir")
+  es2abc_out_root =
+      get_label_info("$es2abc_root:es2panda($toolchain_win)", "root_out_dir")
   es2abc_build_deps = [ "$es2abc_root:es2panda($toolchain_win)" ]
 } else {
-  es2abc_out_root = get_label_info("$es2abc_root:es2panda($toolchain_linux)",
-                              "root_out_dir")
+  es2abc_out_root =
+      get_label_info("$es2abc_root:es2panda($toolchain_linux)", "root_out_dir")
   es2abc_build_deps = [ "$es2abc_root:es2panda($toolchain_linux)" ]
 }
 es2abc_build_path = es2abc_out_root + "/ark/ark"
@@ -62,10 +54,9 @@ template("es2abc_gen_abc") {
   assert(defined(invoker.dst_file), "dst_file is required!")
   assert(defined(invoker.out_puts), "out_puts is required!")
 
-  print("${es2abc_build_path}")
   extra_dependencies = []
   if (defined(invoker.extra_dependencies)) {
-      extra_dependencies += invoker.extra_dependencies
+    extra_dependencies += invoker.extra_dependencies
   }
 
   action("$target_name") {
@@ -73,9 +64,7 @@ template("es2abc_gen_abc") {
       visibility = invoker.extra_visibility
     }
 
-    print()
-
-    script = "${es2abc_root}/scripts/generate_js_bytecode.py" # need to write a new python script
+    script = "${es2abc_root}/scripts/generate_js_bytecode.py"
 
     deps = extra_dependencies
     deps += es2abc_build_deps

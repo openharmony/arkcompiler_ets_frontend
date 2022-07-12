@@ -19,7 +19,7 @@
         },
         "build": {
             "sub_component": [
-                "//ark/ts2abc:ets_frontend"
+                "//arkcompiler/ets_frontend:ets_frontend"
             ],
             "inner_kits": [],
             "test": []

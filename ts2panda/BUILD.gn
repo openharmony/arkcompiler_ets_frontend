@@ -223,21 +223,21 @@ group("ark_ts2abc_build") {
   deps = []
   if (host_os != "mac") {
     deps += [
-      "${ts2abc_root}:ts2abc_build(${buildtool_linux})",
-      "${ts2abc_root}:ts2abc_build_ets(${buildtool_linux})",
+      "${ts2abc_root}:ts2abc_build(${toolchain_linux})",
+      "${ts2abc_root}:ts2abc_build_ets(${toolchain_linux})",
     ]
   } else {
     deps += [
-      "${ts2abc_root}:ts2abc_build_mac(${buildtool_mac})",
-      "${ts2abc_root}:ts2abc_build_mac_ets(${buildtool_mac})",
+      "${ts2abc_root}:ts2abc_build_mac(${toolchain_mac})",
+      "${ts2abc_root}:ts2abc_build_mac_ets(${toolchain_mac})",
     ]
   }
 }
 
 group("ark_ts2abc_build_win") {
   deps = [
-    "${ts2abc_root}:ts2abc_build_win(${buildtool_win})",
-    "${ts2abc_root}:ts2abc_build_win_ets(${buildtool_win})",
+    "${ts2abc_root}:ts2abc_build_win(${toolchain_win})",
+    "${ts2abc_root}:ts2abc_build_win_ets(${toolchain_win})",
   ]
 }
 
@@ -252,13 +252,13 @@ ohos_copy("copy_ts2abc_tests") {
 group("ts2abc_unittests") {
   if (host_os == "linux") {
     testonly = true
-    deps = [ "tests:ts2abc_tests(${buildtool_linux})" ]
+    deps = [ "tests:ts2abc_tests(${toolchain_linux})" ]
   }
 }
 
 group("ts2abc_type_adapter_unit_tests") {
   if (host_os == "linux") {
     testonly = true
-    deps = [ "${ts2abc_root}/ts2abc/tests/type_adapter_test:ts2abc_type_adapter_unit_tests(${buildtool_linux})" ]
+    deps = [ "${ts2abc_root}/ts2abc/tests/type_adapter_test:ts2abc_type_adapter_unit_tests(${toolchain_linux})" ]
   }
 }

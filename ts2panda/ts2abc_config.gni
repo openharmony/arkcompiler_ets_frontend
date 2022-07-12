@@ -10,7 +10,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import("//arkcompiler/ets_frontend/ets_frontend_config.gni")
 if (!defined(ark_independent_build)) {
   import("//build/ohos.gni")
   import("//build/test.gni")
@@ -22,14 +22,6 @@ if (!defined(ark_independent_build)) {
 }
 
 declare_args() {
-  buildtool_linux = "$build_root/toolchain/linux:clang_x64"
-  if (host_cpu == "arm64") {
-    buildtool_mac = "$build_root/toolchain/mac:clang_arm64"
-  } else {
-    buildtool_mac = "$build_root/toolchain/mac:clang_x64"
-  }
-  buildtool_win = "$build_root/toolchain/mingw:mingw_x86_64"
-
   nodejs_dir = ""
   node_path = ""
   node_modules = ""
@@ -45,23 +37,23 @@ if (build_public_version) {
   nodejs_dir = "//prebuilts/ace-toolkit/nodejs"
 }
 
-if (host_toolchain == buildtool_mac) {
-  ts2abc_build_deps = [ "$ts2abc_root:ts2abc_build_mac($buildtool_mac)" ]
+if (host_toolchain == toolchain_mac) {
+  ts2abc_build_deps = [ "$ts2abc_root:ts2abc_build_mac($toolchain_mac)" ]
   ts2abc_build_path =
-      get_label_info("$ts2abc_root:ts2abc_build_mac($buildtool_mac)",
+      get_label_info("$ts2abc_root:ts2abc_build_mac($toolchain_mac)",
                      "root_out_dir") +
       "/obj/arkcompiler/ets_frontend/ts2panda/build-mac"
   node_path = "${nodejs_dir}/node-v12.18.4-darwin-x64/bin/"
-} else if (host_toolchain == buildtool_win) {
-  ts2abc_build_deps = [ "$ts2abc_root:ts2abc_build_win($buildtool_win)" ]
+} else if (host_toolchain == toolchain_win) {
+  ts2abc_build_deps = [ "$ts2abc_root:ts2abc_build_win($toolchain_win)" ]
   ts2abc_build_path =
-      get_label_info("$ts2abc_root:ts2abc_build_win($buildtool_win)",
+      get_label_info("$ts2abc_root:ts2abc_build_win($toolchain_win)",
                      "root_out_dir") +
       "/obj/arkcompiler/ets_frontend/ts2panda/build_win"
 } else {
-  ts2abc_build_deps = [ "$ts2abc_root:ts2abc_build($buildtool_linux)" ]
+  ts2abc_build_deps = [ "$ts2abc_root:ts2abc_build($toolchain_linux)" ]
   ts2abc_build_path =
-      get_label_info("$ts2abc_root:ts2abc_build($buildtool_linux)",
+      get_label_info("$ts2abc_root:ts2abc_build($toolchain_linux)",
                      "root_out_dir") +
       "/obj/arkcompiler/ets_frontend/ts2panda/build"
   node_path = "${nodejs_dir}/node-v12.18.4-linux-x64/bin/"
@@ -221,12 +213,12 @@ template("ts2abc_unittest") {
       "--gn-build",
     ]
 
-    if (host_toolchain == buildtool_linux) {
+    if (host_toolchain == toolchain_linux) {
       args += [
         "--platform",
         "linux",
       ]
-    } else if (host_toolchain == buildtool_mac) {
+    } else if (host_toolchain == toolchain_mac) {
       args += [
         "--platform",
         "mac",

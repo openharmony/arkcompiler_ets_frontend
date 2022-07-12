@@ -11,7 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//ark/runtime_core/ark_config.gni")
+import("//arkcompiler/ets_frontend/ets_frontend_config.gni")
+import("//arkcompiler/runtime_core/ark_config.gni")
 import("//build/ohos.gni")
 
 es2panda_src = [
@@ -234,7 +235,7 @@ es2panda_src = [
   "typescript/types/voidType.cpp",
   "util/bitset.cpp",
   "util/helpers.cpp",
-  "util/ustring.cpp"
+  "util/ustring.cpp",
 ]
 
 config("es2abc_config_src") {
@@ -258,14 +259,13 @@ config("es2abc_config_src") {
     "./lexer/token",
     "./lexer/regexp",
     "./typescript",
-    "./typescript/types"
+    "./typescript/types",
   ]
 
   cflags = [ "-fexceptions" ]
 }
 
 config("es2abc_config_common") {
-
   configs = [
     "$ark_root:ark_config",
     "$sdk_libc_secshared_config",
@@ -300,14 +300,18 @@ action_foreach("gen_keywords_headers") {
     sources += [ rebase_path("${keywords_templates_dir}/${file}") ]
   }
   outputs = [ "${generated_header_dir}/{{source_name_part}}" ]
- 
+
   script = "scripts/gen_keywords.sh"
   inputs = [ "${keywords_generator}" ]
   args = [
-    "-g", rebase_path("${keywords_generator}"),
-    "-t", "{{source}}",
-    "-o", "{{source_name_part}}",
-    "-d", rebase_path("${generated_header_dir}"),
+    "-g",
+    rebase_path("${keywords_generator}"),
+    "-t",
+    "{{source}}",
+    "-o",
+    "{{source_name_part}}",
+    "-d",
+    rebase_path("${generated_header_dir}"),
   ]
 }
 
@@ -316,34 +320,39 @@ isa_gen = "${ark_root}/isa/gen.rb"
 isa_gen_data = "$root_gen_dir/isa/isa.yaml"
 isa_gen_require = "${ark_root}/isa/isapi.rb"
 action_foreach("gen_isa_headers") {
-
-  deps = [ "//ark/runtime_core/isa:isa_combine" ]
+  deps = [ "//arkcompiler/runtime_core/isa:isa_combine" ]
 
   template_files = [
     "isa.h.erb",
     "formats.h.erb",
   ]
   keywords_templates_dir = "./compiler/templates"
-  
+
   sources = []
   foreach(file, template_files) {
     sources += [ rebase_path("${keywords_templates_dir}/${file}") ]
   }
   outputs = [ "${generated_header_dir}/{{source_name_part}}" ]
- 
+
   script = "scripts/gen_isa.sh"
   inputs = [
     "${isa_gen}",
     "${isa_gen_data}",
-    "${isa_gen_require}"
+    "${isa_gen_require}",
   ]
   args = [
-    "-g", rebase_path("${isa_gen}"),
-    "-t", "{{source}}",
-    "-a", rebase_path("${isa_gen_data}"),
-    "-o", "{{source_name_part}}",
-    "-d", rebase_path("${generated_header_dir}"),
-    "-r", rebase_path("${isa_gen_require}"),
+    "-g",
+    rebase_path("${isa_gen}"),
+    "-t",
+    "{{source}}",
+    "-a",
+    rebase_path("${isa_gen_data}"),
+    "-o",
+    "{{source_name_part}}",
+    "-d",
+    rebase_path("${generated_header_dir}"),
+    "-r",
+    rebase_path("${isa_gen_require}"),
   ]
 }
 
@@ -361,8 +370,8 @@ ohos_static_library("es2panda_lib") {
   ]
 
   deps = [
-    ":gen_keywords_headers",
     ":gen_isa_headers",
+    ":gen_keywords_headers",
     "$ark_root/assembler:libarkassembler_frontend_static",
     "$ark_root/libpandabase:libarkbase_frontend_static",
     "$ark_root/libpandafile:libarkfile_frontend_static",
@@ -370,25 +379,21 @@ ohos_static_library("es2panda_lib") {
     "//third_party/icu/icu4c:static_icuuc",
   ]
 
-  cflags = [
-    "-Wno-implicit-fallthrough",
-  ]
+  cflags = [ "-Wno-implicit-fallthrough" ]
 }
 
 ohos_executable("es2panda") {
   use_exceptions = true
   sources = [
-    "aot/options.cpp",
     "aot/main.cpp",
+    "aot/options.cpp",
   ]
 
   include_dirs = [ "./aot" ]
 
   configs = [ ":es2abc_config_common" ]
 
-  deps = [
-    ":es2panda_lib",
-  ]
+  deps = [ ":es2panda_lib" ]
 
   if (is_linux) {
     if (build_public_version) {
@@ -465,16 +470,15 @@ if (is_mac) {
 }
 
 group("es2panda_build") {
-  build_tool_linux = "//build/toolchain/linux:clang_x64"
   if (host_os == "linux") {
-    deps = [ ":es2panda(${build_tool_linux})" ]
+    deps = [ ":es2panda(${toolchain_linux})" ]
   }
 
   if (host_os == "mac") {
-    deps = [ ":es2panda(//build/toolchain/mac:clang_x64)" ]
+    deps = [ ":es2panda(${toolchain_mac})" ]
   }
 }
 
 group("es2panda_build_win") {
-  deps = [ ":es2panda(//build/toolchain/mingw:mingw_x86_64)" ]
+  deps = [ ":es2panda(${toolchain_win})" ]
 }
