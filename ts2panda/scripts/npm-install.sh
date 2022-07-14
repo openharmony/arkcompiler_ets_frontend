@@ -37,4 +37,4 @@ if [ -d "${code_dir}/prebuilts/build-tools/common/ts2abc" ]; then
 fi
 
 mkdir -p ${code_dir}/prebuilts/build-tools/common/ts2abc
-/bin/cp -rf ${code_dir}/ark/ts2abc/ts2panda/node_modules ${code_dir}/prebuilts/build-tools/common/ts2abc/ || echo "skip copying due to other thread"
+/bin/cp -rf ${code_dir}/arkcompiler/ets_frontend/ts2panda/node_modules ${code_dir}/prebuilts/build-tools/common/ts2abc/ || echo "skip copying due to other thread"

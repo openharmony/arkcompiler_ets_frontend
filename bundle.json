@@ -1,10 +1,10 @@
 {
-    "name": "@ohos/ark_ts2abc",
+    "name": "@ohos/arkcompiler_ets_frontend",
     "description": "支持应用TS/JS语言代码的编译，行为符合ArkUI框架需要的Strict模式的ES2015标准",
     "version": "3.1",
     "license": "Apache V2",
     "component": {
-        "name": "ark_frontend_tool",
+        "name": "ark_ts2abc",
         "subsystem": "ark",
         "syscap": [],
         "features": [],

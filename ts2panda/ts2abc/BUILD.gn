@@ -12,7 +12,7 @@
 # limitations under the License.
 
 if (!defined(ark_independent_build)) {
-  import("//ark/runtime_core/ark_config.gni")
+  import("//arkcompiler/runtime_core/ark_config.gni")
   import("//build/ohos.gni")
 } else {
   import("//runtime_core/ark_config.gni")
