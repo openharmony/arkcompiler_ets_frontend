@@ -53,7 +53,7 @@ Note:If the text contains special characters, please escape them according to th
 <configuration>
     <oatconfig>
         <policy name="defaultPolicy" desc="" >
-		<policyitem type="compatibility" name="Apache" path="ark/ts2abc" rule="may" group="defaultGroup" filefilter="defaultPolicyFilter" desc=""/>
+		<policyitem type="compatibility" name="Apache" path="arkcompiler/ets_frontend" rule="may" group="defaultGroup" filefilter="defaultPolicyFilter" desc=""/>
         </policy>
         <filefilterlist>
             <filefilter name="binaryFileTypePolicyFilter" desc="" >

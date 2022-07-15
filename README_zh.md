@@ -1,6 +1,6 @@
-# ts2abc组件<a name="ZH-CN_TOPIC_0000001137330686"></a>
+# ets_frontend组件<a name="ZH-CN_TOPIC_0000001137330686"></a>
 
-- [ts2abc组件<a name="ZH-CN_TOPIC_0000001137330686"></a>](#ts2abc组件)
+- [ets_frontend组件<a name="ZH-CN_TOPIC_0000001137330686"></a>](#ets_frontend组件)
   - [简介<a name="section11660541593"></a>](#简介)
   - [目录<a name="section161941989596"></a>](#目录)
   - [编译构建<a name="section0446154755015"></a>](#编译构建)
@@ -9,14 +9,14 @@
 
 ## 简介<a name="section11660541593"></a>
 
-ts2abc组件是方舟运行时子系统的前端工具，支持将JavaScript文件转换为方舟字节码文件。
+ets_frontend组件是方舟运行时子系统的前端工具，支持将JavaScript文件转换为方舟字节码文件。
 
 更多信息请参考：[方舟运行时子系统](https://gitee.com/openharmony/docs/blob/master/zh-cn/readme/ARK-Runtime-Subsystem-zh.md)
 
 ## 目录<a name="section161941989596"></a>
 
 ```
-/ark/ts2abc/
+/arkcompiler/ets_frontend/
 ├── test262            # test262测试配置和运行脚本
 ├── testTs             # 系统测试目录
 ├── ts2panda
@@ -31,7 +31,7 @@ ts2abc组件是方舟运行时子系统的前端工具，支持将JavaScript文�
 
 ## 编译构建<a name="section0446154755015"></a>
 
-ts2abc组件采用命令行交互方式，支持将JavaScript代码转换为方舟字节码文件，使其能够在方舟运行时上运行。支持Windows/Linux/MacOS平台。方舟前端工具在linux平台上可通过全量编译或指定编译前端工具链获取。
+ets_frontend组件采用命令行交互方式，支持将JavaScript代码转换为方舟字节码文件，使其能够在方舟运行时上运行。支持Windows/Linux/MacOS平台。方舟前端工具在linux平台上可通过全量编译或指定编译前端工具链获取。
 
 ```
 $ ./build.sh --product-name hispark_taurus_standard --build-target ark_ts2abc_build
@@ -41,7 +41,7 @@ $ ./build.sh --product-name hispark_taurus_standard --build-target ark_ts2abc_bu
 
 安装`node`和`npm`
 
-使用ts2abc组件将JavaScript文件转换为方舟字节码文件
+使用ets_frontend组件将JavaScript文件转换为方舟字节码文件
 
 ```
 $ cd out/hispark_taurus/clang_x64/ark/ark/build
@@ -271,8 +271,8 @@ $ node --expose-gc src/index.js [options] file.js
 
 ## 相关仓<a name="section1371113476307"></a>
 
-[ark\_runtime\_core](https://gitee.com/openharmony/ark_runtime_core)
+[arkcompiler\_runtime\_core](https://gitee.com/openharmony/arkcompiler_runtime_core)
 
-[ark\_js\_runtime](https://gitee.com/openharmony/ark_js_runtime)
+[arkcompiler\_ets\_runtime](https://gitee.com/openharmony/arkcompiler_ets_runtime)
 
-**[ark\_ts2abc](https://gitee.com/openharmony/ark_ts2abc)**
+**[arkcompiler\_ets\_frontend](https://gitee.com/openharmony/arkcompiler_ets_frontend)**

@@ -1,6 +1,6 @@
-# ts2abc <a name="EN-US_TOPIC_0000001137330686"></a>
+# ets_frontend <a name="EN-US_TOPIC_0000001137330686"></a>
 
-- [ts2abc <a name="EN-US_TOPIC_0000001137330686"></a>](#ts2abc-)
+- [ets_frontend <a name="EN-US_TOPIC_0000001137330686"></a>](#ets_frontend-)
   - [Introduction<a name="section11660541593"></a>](#introduction)
   - [Directory Structure<a name="section161941989596"></a>](#directory-structure)
   - [Build<a name="section0446154755015"></a>](#Build)
@@ -9,14 +9,14 @@
 
 ## Introduction<a name="section11660541593"></a>
 
-ts2abc is a front-end tool in the ARK Runtime Subsystem. It converts JavaScript(JS) files into ARK bytecode files.
+ets_frontend is a front-end tool in the ARK Runtime Subsystem. It converts JavaScript(JS) files into ARK bytecode files.
 
 For more information, see: [ARK Runtime Subsystem](https://gitee.com/openharmony/docs/blob/master/en/readme/ARK-Runtime-Subsystem.md).
 
 ## Directory Structure<a name="section161941989596"></a>
 
 ```
-/ark/ts2abc/
+/arkcompiler/ets_frontend/
 ├── test262            # scripts for configuration and running Test262
 ├── testTs             # system test cases
 ├── ts2panda
@@ -31,7 +31,7 @@ For more information, see: [ARK Runtime Subsystem](https://gitee.com/openharmony
 
 ## Build<a name="section0446154755015"></a>
 
-ts2abc uses the command line interaction mode and converts JS code into ARK bytecode files that can be run on an ARK runtime system. ts2abc supports Windows, Linux, and macOS. Front-end tools, converting JS source code into ARK bytecode, can be built by specifying the `--build-target` with `ark_ts2abc` on Linux.
+ets_frontend uses the command line interaction mode and converts JS code into ARK bytecode files that can be run on an ARK runtime system. ets_frontend supports Windows, Linux, and macOS. Front-end tools, converting JS source code into ARK bytecode, can be built by specifying the `--build-target` with `ark_ts2abc` on Linux.
 
 ```
 $ ./build.sh --product-name hispark_taurus_standard --build-target ark_ts2abc_build
@@ -270,8 +270,8 @@ For more information, please see: [ARK-Runtime-Usage-Guide](https://gitee.com/op
 
 ## Repositories Involved<a name="section1371113476307"></a>
 
-[ark\_runtime\_core](https://gitee.com/openharmony/ark_runtime_core)
+[arkcompiler\_runtime\_core](https://gitee.com/openharmony/arkcompiler_runtime_core)
 
-[ark\_js\_runtime](https://gitee.com/openharmony/ark_js_runtime)
+[arkcompiler\_ets\_runtime](https://gitee.com/openharmony/arkcompiler_ets_runtime)
 
-**[ark\_ts2abc](https://gitee.com/openharmony/ark_ts2abc)**
+**[arkcompiler\_ets\_frontend](https://gitee.com/openharmony/arkcompiler_ets_frontend)**
