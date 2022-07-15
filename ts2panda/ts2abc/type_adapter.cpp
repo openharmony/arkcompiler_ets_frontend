@@ -92,7 +92,7 @@ void TypeAdapter::HandleTypeForFunction(panda::pandasm::Function *func, size_t a
             auto it = vreg_type_map.find(vreg);
             if (it != vreg_type_map.end()) {
                 ASSERT(std::find(finished_vregs.begin(), finished_vregs.end(), vreg) == finished_vregs.end());
-                int32_t arg_order = func->regs_num - arg - 1;
+                int32_t arg_order = static_cast<int32_t>(func->regs_num) - static_cast<int32_t>(arg) - 1;
                 order_type_map.emplace(arg_order, it->second);
                 finished_vregs.emplace_back(vreg);
             }
