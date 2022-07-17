@@ -34,7 +34,11 @@ void ExportDefaultDeclaration::Dump(ir::AstDumper *dumper) const
 void ExportDefaultDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
     decl_->Compile(pg);
-    pg->StoreModuleVar(this, "default");
+    if (!decl_->IsFunctionDeclaration() && !decl_->IsClassDeclaration()) {
+        // export default without [Function Declaration] & [Class Declaration]
+        // is [ExportAssignment]. e.g. export default 42 (42 be exported as [default])
+        pg->StoreModuleVariable(this, "*default*");
+    }
 }
 
 checker::Type *ExportDefaultDeclaration::Check([[maybe_unused]] checker::Checker *checker) const

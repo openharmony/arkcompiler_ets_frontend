@@ -30,6 +30,7 @@ class ClassDefinition;
 class Expression;
 class ForUpdateStatement;
 class Identifier;
+class ImportNamespaceSpecifier;
 class ScriptFunction;
 class Statement;
 class VariableDeclarator;
@@ -67,7 +68,7 @@ public:
         return scope_;
     }
 
-    GlobalScope *TopScope() const
+    FunctionScope *TopScope() const
     {
         return topScope_;
     }
@@ -143,7 +144,7 @@ private:
     void ResolveReferences(const ir::AstNode *parent);
 
     parser::Program *program_ {};
-    GlobalScope *topScope_ {};
+    FunctionScope *topScope_ {};
     Scope *scope_ {};
     ArenaVector<FunctionScope *> functionScopes_;
     ArenaSet<util::StringView> functionNames_;

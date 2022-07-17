@@ -39,7 +39,12 @@ static void HoistVar(PandaGen *pg, binder::Variable *var, const binder::VarDecl 
     binder::ScopeFindResult result(decl->Name(), scope, 0, var);
 
     pg->LoadConst(decl->Node(), Constant::JS_UNDEFINED);
-    pg->StoreAccToLexEnv(decl->Node(), result, true);
+    if (decl->IsNoneModuleDecl()) {
+        pg->StoreAccToLexEnv(decl->Node(), result, true);
+    } else {
+        ASSERT(scope->IsModuleScope());
+        pg->StoreModuleVariable(decl->Node(), decl->Name());
+    }
 }
 
 static void HoistFunction(PandaGen *pg, binder::Variable *var, const binder::FunctionDecl *decl)
@@ -59,7 +64,12 @@ static void HoistFunction(PandaGen *pg, binder::Variable *var, const binder::Fun
     binder::ScopeFindResult result(decl->Name(), scope, 0, var);
 
     pg->DefineFunction(decl->Node(), scriptFunction, internalName);
-    pg->StoreAccToLexEnv(decl->Node(), result, true);
+    if (decl->IsNoneModuleDecl()) {
+        pg->StoreAccToLexEnv(decl->Node(), result, true);
+    } else {
+        ASSERT(scope->IsModuleScope());
+        pg->StoreModuleVariable(decl->Node(), decl->Name());
+    }
 }
 
 void Hoisting::Hoist(PandaGen *pg)

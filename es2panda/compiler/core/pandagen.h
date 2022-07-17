@@ -174,6 +174,11 @@ public:
         return buffStorage_;
     }
 
+    int32_t ModuleBuffIndex() const
+    {
+        return moduleBuffIndex_;
+    }
+
     uint32_t IcSize() const
     {
         return ic_.Size();
@@ -205,6 +210,8 @@ public:
 
     LiteralBuffer *NewLiteralBuffer();
     int32_t AddLiteralBuffer(LiteralBuffer *buf);
+    void SetModuleRecordBufferIndex();
+
     int32_t AddLexicalVarNamesForDebugInfo(ArenaMap<uint32_t, util::StringView> &lexicalMap);
 
     void InitializeLexEnv(const ir::AstNode *node, VReg lexEnv);
@@ -345,10 +352,9 @@ public:
     void DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctorId, int32_t litIdx, VReg lexenv,
                                VReg base);
 
-    void ImportModule(const ir::AstNode *node, const util::StringView &name);
-    void LoadModuleVariable(const ir::AstNode *node, VReg module, const util::StringView &name);
-    void StoreModuleVar(const ir::AstNode *node, const util::StringView &name);
-    void CopyModule(const ir::AstNode *node, VReg module);
+    void LoadModuleVariable(const ir::AstNode *node, const util::StringView &name, bool isLocalExport);
+    void StoreModuleVariable(const ir::AstNode *node, const util::StringView &name);
+    void GetModuleNamespace(const ir::AstNode *node, const util::StringView &name);
 
     void StSuperByName(const ir::AstNode *node, VReg obj, const util::StringView &key);
     void LdSuperByName(const ir::AstNode *node, VReg obj, const util::StringView &key);
@@ -429,6 +435,7 @@ private:
     RegAllocator ra_;
     RangeRegAllocator rra_;
 
+    int32_t moduleBuffIndex_ {-1};
     uint32_t usedRegs_ {0};
     uint32_t totalRegs_ {0};
     friend class ScopeContext;

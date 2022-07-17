@@ -30,6 +30,7 @@
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/objectExpression.h>
+#include <ir/module/importNamespaceSpecifier.h>
 #include <ir/statements/blockStatement.h>
 #include <ir/statements/doWhileStatement.h>
 #include <ir/statements/forInStatement.h>
@@ -252,7 +253,14 @@ void Binder::BuildVarDeclarator(ir::VariableDeclarator *varDecl)
 void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
 {
     if (classDef->Parent()->IsClassDeclaration()) {
-        ScopeFindResult res = scope_->Find(classDef->Ident()->Name());
+        util::StringView className;
+        if (classDef->Ident()) {
+            className = classDef->Ident()->Name();
+        } else {
+            ASSERT(scope_->IsModuleScope());
+            className = util::StringView("*default*");
+        }
+        ScopeFindResult res = scope_->Find(className);
 
         ASSERT(res.variable && res.variable->Declaration()->IsClassDecl());
         res.variable->AddFlag(VariableFlags::INITIALIZED);

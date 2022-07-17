@@ -37,7 +37,11 @@ void CompileJob::Run()
     FunctionEmitter funcEmitter(&allocator, &pg);
     funcEmitter.Generate();
 
-    context_->GetEmitter()->AddFunction(&funcEmitter);
+    auto *emitter = context_->GetEmitter();
+    emitter->AddFunction(&funcEmitter);
+    if (scope_->IsModuleScope()) {
+        emitter->AddSourceTextModuleRecord(&pg);
+    }
 
     if (dependant_) {
         dependant_->Signal();

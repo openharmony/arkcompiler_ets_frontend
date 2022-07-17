@@ -300,7 +300,7 @@ util::StringView Helpers::FunctionName(const ir::ScriptFunction *func)
     }
 
     if (func->Parent()->IsFunctionDeclaration()) {
-        return "*default*";
+        return "default";
     }
 
     const ir::AstNode *parent = func->Parent()->Parent();
@@ -360,6 +360,9 @@ util::StringView Helpers::FunctionName(const ir::ScriptFunction *func)
             }
 
             break;
+        }
+        case ir::AstNodeType::EXPORT_DEFAULT_DECLARATION: {
+            return util::StringView("default");
         }
         default:
             break;

@@ -32,6 +32,12 @@ namespace panda::es2panda::binder {
 class Scope;
 class LocalScope;
 
+enum class DeclModuleStatus {
+    NONE = 0,
+    IMPORT,
+    EXPORT,
+};
+
 #define DECLARE_CLASSES(decl_kind, className) class className;
 DECLARATION_KINDS(DECLARE_CLASSES)
 #undef DECLARE_CLASSES
@@ -82,18 +88,44 @@ public:
         return IsLetDecl() || IsConstDecl() || IsClassDecl();
     }
 
+    void SetModuleStatus(DeclModuleStatus status)
+    {
+        moduleStatus_ = status;
+    }
+
+    bool IsExportedDecl() const
+    {
+        return moduleStatus_ == DeclModuleStatus::EXPORT;
+    }
+
+    bool IsImportedDecl() const
+    {
+        return moduleStatus_ == DeclModuleStatus::IMPORT;
+    }
+
+    bool IsNoneModuleDecl() const
+    {
+        return moduleStatus_ == DeclModuleStatus::NONE;
+    }
+
 protected:
-    explicit Decl(util::StringView name) : name_(name) {}
+    explicit Decl(util::StringView name, DeclModuleStatus moduleStatus = DeclModuleStatus::NONE)
+        : name_(name), moduleStatus_(moduleStatus)
+        {
+        }
 
     util::StringView name_;
+    DeclModuleStatus moduleStatus_;
     const ir::AstNode *node_ {};
 };
 
 template <typename T>
 class MultiDecl : public Decl {
 public:
-    explicit MultiDecl(ArenaAllocator *allocator, util::StringView name)
-        : Decl(name), declarations_(allocator->Adapter())
+    explicit MultiDecl(ArenaAllocator *allocator,
+                       util::StringView name,
+                       DeclModuleStatus moduleStatus = DeclModuleStatus::NONE)
+        : Decl(name, moduleStatus), declarations_(allocator->Adapter())
     {
     }
 
@@ -152,8 +184,11 @@ public:
 
 class FunctionDecl : public MultiDecl<ir::FunctionDeclaration> {
 public:
-    explicit FunctionDecl(ArenaAllocator *allocator, util::StringView name, const ir::AstNode *node)
-        : MultiDecl(allocator, name)
+    explicit FunctionDecl(ArenaAllocator *allocator,
+                          util::StringView name,
+                          const ir::AstNode *node,
+                          DeclModuleStatus moduleStatus = DeclModuleStatus::NONE)
+        : MultiDecl(allocator, name, moduleStatus)
     {
         node_ = node;
     }
@@ -206,7 +241,8 @@ public:
 
 class VarDecl : public Decl {
 public:
-    explicit VarDecl(util::StringView name) : Decl(name) {}
+    explicit VarDecl(util::StringView name, DeclModuleStatus moduleStatus = DeclModuleStatus::NONE)
+        : Decl(name, moduleStatus) {}
 
     DeclType Type() const override
     {
@@ -216,7 +252,8 @@ public:
 
 class LetDecl : public Decl {
 public:
-    explicit LetDecl(util::StringView name) : Decl(name) {}
+    explicit LetDecl(util::StringView name, DeclModuleStatus moduleStatus = DeclModuleStatus::NONE)
+        : Decl(name, moduleStatus) {}
 
     DeclType Type() const override
     {
@@ -226,7 +263,8 @@ public:
 
 class ConstDecl : public Decl {
 public:
-    explicit ConstDecl(util::StringView name) : Decl(name) {}
+    explicit ConstDecl(util::StringView name, DeclModuleStatus moduleStatus = DeclModuleStatus::NONE)
+        : Decl(name, moduleStatus) {}
 
     DeclType Type() const override
     {
@@ -236,7 +274,8 @@ public:
 
 class ClassDecl : public Decl {
 public:
-    explicit ClassDecl(util::StringView name) : Decl(name) {}
+    explicit ClassDecl(util::StringView name, DeclModuleStatus moduleStatus = DeclModuleStatus::NONE)
+        : Decl(name, moduleStatus) {}
 
     DeclType Type() const override
     {
@@ -252,70 +291,6 @@ public:
     {
         return DeclType::PARAM;
     }
-};
-
-class ImportDecl : public Decl {
-public:
-    explicit ImportDecl(util::StringView importName, util::StringView localName)
-        : Decl(localName), importName_(importName)
-    {
-    }
-
-    explicit ImportDecl(util::StringView importName, util::StringView localName, const ir::AstNode *node)
-        : Decl(localName), importName_(importName)
-    {
-        BindNode(node);
-    }
-
-    const util::StringView &ImportName() const
-    {
-        return importName_;
-    }
-
-    const util::StringView &LocalName() const
-    {
-        return name_;
-    }
-
-    DeclType Type() const override
-    {
-        return DeclType::IMPORT;
-    }
-
-private:
-    util::StringView importName_;
-};
-
-class ExportDecl : public Decl {
-public:
-    explicit ExportDecl(util::StringView exportName, util::StringView localName)
-        : Decl(localName), exportName_(exportName)
-    {
-    }
-
-    explicit ExportDecl(util::StringView exportName, util::StringView localName, const ir::AstNode *node)
-        : Decl(localName), exportName_(exportName)
-    {
-        BindNode(node);
-    }
-
-    const util::StringView &ExportName() const
-    {
-        return exportName_;
-    }
-
-    const util::StringView &LocalName() const
-    {
-        return name_;
-    }
-
-    DeclType Type() const override
-    {
-        return DeclType::EXPORT;
-    }
-
-private:
-    util::StringView exportName_;
 };
 
 }  // namespace panda::es2panda::binder

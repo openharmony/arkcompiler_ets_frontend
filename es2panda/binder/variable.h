@@ -182,31 +182,7 @@ public:
         return VariableType::MODULE;
     }
 
-    compiler::VReg &ModuleReg()
-    {
-        return moduleReg_;
-    }
-
-    compiler::VReg ModuleReg() const
-    {
-        return moduleReg_;
-    }
-
-    const util::StringView &ExoticName() const
-    {
-        return exoticName_;
-    }
-
-    util::StringView &ExoticName()
-    {
-        return exoticName_;
-    }
-
     void SetLexical([[maybe_unused]] Scope *scope) override;
-
-private:
-    compiler::VReg moduleReg_ {};
-    util::StringView exoticName_ {};
 };
 
 class EnumVariable : public Variable {

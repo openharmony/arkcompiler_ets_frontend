@@ -117,6 +117,10 @@ enum class MethodDefinitionKind;
 enum class ModifierFlags;
 }  // namespace panda::es2panda::ir
 
+namespace panda::es2panda::binder {
+class SourceTextModuleRecord;
+} // namespace panda::es2panda::binder
+
 namespace panda::es2panda::parser {
 
 class Program;
@@ -394,6 +398,15 @@ private:
 
     bool IsLabelFollowedByIterationStatement();
 
+    void AddImportEntryItem(const ir::StringLiteral *source, const ArenaVector<ir::AstNode *> *specifiers);
+    void AddExportNamedEntryItem(const ArenaVector<ir::ExportSpecifier *> &specifiers, const ir::StringLiteral *source);
+    void AddExportStarEntryItem(const lexer::SourcePosition &startLoc,
+                                const ir::StringLiteral *source,
+                                const ir::Identifier *exported);
+    void AddExportDefaultEntryItem(const ir::AstNode *declNode);
+    void AddExportLocalEntryItem(const ir::Statement *declNode);
+    binder::SourceTextModuleRecord *GetSourceTextModuleRecord();
+
     bool ParseDirective(ArenaVector<ir::Statement *> *statements);
     void ParseDirectivePrologue(ArenaVector<ir::Statement *> *statements);
     ArenaVector<ir::Statement *> ParseStatementList(StatementParsingFlags flags = StatementParsingFlags::ALLOW_LEXICAL);
@@ -422,7 +435,7 @@ private:
     ir::Statement *ParseFunctionStatement(StatementParsingFlags flags, bool isDeclare);
     ir::FunctionDeclaration *ParseFunctionDeclaration(bool canBeAnonymous = false,
                                                       ParserStatus newStatus = ParserStatus::NO_OPTS,
-                                                      bool isDeclare = false);
+                                                      bool isDeclare = false, bool isExported = false);
     ir::Statement *ParseExportDeclaration(StatementParsingFlags flags, ArenaVector<ir::Decorator *> &&decorators);
     std::tuple<ForStatementKind, ir::AstNode *, ir::Expression *, ir::Expression *> ParseForInOf(
         ir::Expression *leftNode, ExpressionParseFlags exprFlags, bool isAwait);
@@ -438,8 +451,11 @@ private:
     ir::ReturnStatement *ParseReturnStatement();
     ir::ClassDeclaration *ParseClassStatement(StatementParsingFlags flags, bool isDeclare,
                                               ArenaVector<ir::Decorator *> &&decorators, bool isAbstract = false);
-    ir::ClassDeclaration *ParseClassDeclaration(bool idRequired, ArenaVector<ir::Decorator *> &&decorators,
-                                                bool isDeclare = false, bool isAbstract = false);
+    ir::ClassDeclaration *ParseClassDeclaration(bool idRequired,
+                                                ArenaVector<ir::Decorator *> &&decorators,
+                                                bool isDeclare = false,
+                                                bool isAbstract = false,
+                                                bool isExported = false);
     ir::TSTypeAliasDeclaration *ParseTsTypeAliasDeclaration(bool isDeclare);
     ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart, bool isConst);
     ir::TSEnumDeclaration *ParseEnumDeclaration(bool isConst = false);
@@ -453,13 +469,21 @@ private:
     void ValidateDeclaratorId();
     ir::VariableDeclarator *ParseVariableDeclaratorInitializer(ir::Expression *init, VariableParsingFlags flags,
                                                                const lexer::SourcePosition &startLoc, bool isDeclare);
-    ir::VariableDeclarator *ParseVariableDeclarator(VariableParsingFlags flags, bool isDeclare);
+    ir::VariableDeclarator *ParseVariableDeclarator(VariableParsingFlags flags,
+                                                    bool isDeclare, bool isExported = false);
     ir::Statement *ParseVariableDeclaration(VariableParsingFlags flags = VariableParsingFlags::NO_OPTS,
-                                            bool isDeclare = false);
+                                            bool isDeclare = false, bool isExported = false);
     ir::WhileStatement *ParseWhileStatement();
     ir::VariableDeclaration *ParseContextualLet(VariableParsingFlags flags,
                                                 StatementParsingFlags stmFlags = StatementParsingFlags::ALLOW_LEXICAL,
                                                 bool isDeclare = false);
+    util::StringView GetNamespaceExportInternalName()
+    {
+        std::string name = "=ens" + std::to_string(namespaceExportCount_++);
+        util::UString internalName(name, Allocator());
+        return internalName.View();
+    }
+
     ArenaAllocator *Allocator() const
     {
         return program_.Allocator();
@@ -477,6 +501,7 @@ private:
     Program program_;
     ParserContext context_;
     lexer::Lexer *lexer_ {nullptr};
+    size_t namespaceExportCount_ {0};
 };
 
 template <ParserStatus status>
@@ -637,53 +662,6 @@ private:
         return ParserStatus::FUNCTION | ParserStatus::ARROW_FUNCTION |
                static_cast<ParserStatus>(currentStatus & (ParserStatus::ALLOW_SUPER | ParserStatus::ALLOW_SUPER_CALL));
     }
-};
-
-class SavedBindingsContext {
-public:
-    explicit SavedBindingsContext(binder::Binder *binder)
-        : binder_(binder), savedBindings_(binder_->GetScope()->Bindings())
-    {
-    }
-    NO_COPY_SEMANTIC(SavedBindingsContext);
-    NO_MOVE_SEMANTIC(SavedBindingsContext);
-    ~SavedBindingsContext() = default;
-
-protected:
-    ArenaAllocator *Allocator() const
-    {
-        return binder_->Allocator();
-    }
-
-    binder::Binder *binder_;
-    binder::VariableMap savedBindings_;
-};
-
-class ExportDeclarationContext : public SavedBindingsContext {
-public:
-    explicit ExportDeclarationContext(binder::Binder *binder) : SavedBindingsContext(binder) {}
-    NO_COPY_SEMANTIC(ExportDeclarationContext);
-    NO_MOVE_SEMANTIC(ExportDeclarationContext);
-    ~ExportDeclarationContext() = default;
-
-    void BindExportDecl(const ir::AstNode *exportDecl);
-
-protected:
-    static constexpr std::string_view DEFAULT_EXPORT = "*default*";
-};
-
-class ImportDeclarationContext : public SavedBindingsContext {
-public:
-    explicit ImportDeclarationContext(binder::Binder *binder) : SavedBindingsContext(binder) {}
-
-    NO_COPY_SEMANTIC(ImportDeclarationContext);
-    NO_MOVE_SEMANTIC(ImportDeclarationContext);
-
-    ~ImportDeclarationContext() = default;
-
-    void BindImportDecl(const ir::ImportDeclaration *importDecl);
-
-private:
 };
 
 }  // namespace panda::es2panda::parser

@@ -342,15 +342,44 @@ bool GlobalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariabl
 
 // ModuleScope
 
+void ModuleScope::SetVariableAsExported(ArenaAllocator *allocator, util::StringView localName)
+{
+    auto res = bindings_.find(localName);
+    // Since the module's exported [localName] has been validated before,
+    // [localName] must have a binding now.
+    ASSERT(res != bindings_.end());
+    auto *decl = res->second->Declaration();
+    decl->SetModuleStatus(DeclModuleStatus::EXPORT);
+    VariableFlags flags = res->second->Flags();
+    if ((flags & VariableFlags::IMPORT) == 0) {
+        // re-exported importedName should not be LOCAL_EXPORT
+        flags |= VariableFlags::LOCAL_EXPORT;
+    }
+    res->second = allocator->New<ModuleVariable>(decl, flags);
+}
+
 bool ModuleScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                              [[maybe_unused]] ScriptExtension extension)
 {
     switch (newDecl->Type()) {
         case DeclType::VAR: {
-            return AddVar<LocalVariable>(allocator, currentVariable, newDecl);
+            auto [scope, shadowed] = IterateShadowedVariables(
+                newDecl->Name(), [](const Variable *v) { return !v->HasFlag(VariableFlags::VAR); });
+
+            if (shadowed) {
+                return false;
+            }
+            return newDecl->IsNoneModuleDecl() ?
+                   AddVar<LocalVariable>(allocator, currentVariable, newDecl) :
+                   AddVar<ModuleVariable>(allocator, currentVariable, newDecl);
         }
         case DeclType::FUNC: {
-            return AddFunction<LocalVariable>(allocator, currentVariable, newDecl, extension);
+            if (currentVariable) {
+                return false;
+            }
+            return newDecl->IsNoneModuleDecl() ?
+                   AddFunction<LocalVariable>(allocator, currentVariable, newDecl, extension) :
+                   AddFunction<ModuleVariable>(allocator, currentVariable, newDecl, extension);
         }
         case DeclType::ENUM: {
             bindings_.insert({newDecl->Name(), allocator->New<EnumVariable>(newDecl, false)});
@@ -362,109 +391,15 @@ bool ModuleScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariabl
         case DeclType::INTERFACE: {
             return AddTSBinding<LocalVariable>(allocator, currentVariable, newDecl, VariableFlags::INTERFACE);
         }
-        case DeclType::IMPORT: {
-            return AddImport(allocator, currentVariable, newDecl);
-        }
-        case DeclType::EXPORT: {
-            return true;
-        }
         default: {
-            return AddLexical<LocalVariable>(allocator, currentVariable, newDecl);
-        }
-    }
-}
-
-void ModuleScope::AddImportDecl(const ir::ImportDeclaration *importDecl, ImportDeclList &&decls)
-{
-    auto res = imports_.emplace_back(importDecl, decls);
-
-    for (auto &decl : res.second) {
-        decl->BindNode(importDecl);
-    }
-}
-
-void ModuleScope::AddExportDecl(const ir::AstNode *exportDecl, ExportDecl *decl)
-{
-    decl->BindNode(exportDecl);
-
-    ArenaVector<ExportDecl *> decls(allocator_->Adapter());
-    decls.push_back(decl);
-
-    AddExportDecl(exportDecl, std::move(decls));
-}
-
-void ModuleScope::AddExportDecl(const ir::AstNode *exportDecl, ExportDeclList &&decls)
-{
-    auto res = exports_.emplace_back(exportDecl, decls);
-
-    for (auto &decl : res.second) {
-        decl->BindNode(exportDecl);
-    }
-}
-
-bool ModuleScope::AddImport(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl)
-{
-    if (currentVariable && currentVariable->Declaration()->Type() != DeclType::VAR) {
-        return false;
-    }
-
-    if (newDecl->Node()->IsImportNamespaceSpecifier()) {
-        bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::READONLY)});
-    } else {
-        auto *variable = allocator->New<ModuleVariable>(newDecl, VariableFlags::NONE);
-        variable->ExoticName() = newDecl->AsImportDecl()->ImportName();
-        bindings_.insert({newDecl->Name(), variable});
-    }
-
-    return true;
-}
-
-bool ModuleScope::ExportAnalysis()
-{
-    std::set<util::StringView> exportedNames;
-
-    for (const auto &[exportDecl, decls] : exports_) {
-        if (exportDecl->IsExportAllDeclaration()) {
-            const auto *exportAllDecl = exportDecl->AsExportAllDeclaration();
-
-            if (exportAllDecl->Exported() != nullptr) {
-                auto result = exportedNames.insert(exportAllDecl->Exported()->Name());
-                if (!result.second) {
-                    return false;
-                }
-            }
-
-            continue;
-        }
-
-        if (exportDecl->IsExportNamedDeclaration()) {
-            const auto *exportNamedDecl = exportDecl->AsExportNamedDeclaration();
-
-            if (exportNamedDecl->Source()) {
-                continue;
-            }
-        }
-
-        for (const auto *decl : decls) {
-            binder::Variable *variable = FindLocal(decl->LocalName());
-
-            if (!variable) {
-                continue;
-            }
-
-            auto result = exportedNames.insert(decl->ExportName());
-            if (!result.second) {
+            if (currentVariable) {
                 return false;
             }
-
-            if (!variable->IsModuleVariable()) {
-                variable->AddFlag(VariableFlags::LOCAL_EXPORT);
-                localExports_.insert({variable, decl->ExportName()});
-            }
+            return newDecl->IsNoneModuleDecl() ?
+                   AddLexical<LocalVariable>(allocator, currentVariable, newDecl) :
+                   AddLexical<ModuleVariable>(allocator, currentVariable, newDecl);
         }
     }
-
-    return true;
 }
 
 // LocalScope

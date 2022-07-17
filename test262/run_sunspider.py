@@ -213,6 +213,15 @@ class ArkProgram():
 
         self.arch_root = self.args.ark_arch_root
 
+    def gen_dependency_abc(self, dependency):
+        cmd_args = []
+        output_file = os.path.splitext(os.path.join(BASE_OUT_DIR, os.path.split(dependency)[1]))[0]
+        output_abc = f"{output_file}.abc"
+        frontend_tool = ARK_FRONTEND_BINARY_LIST[1]
+        cmd_args = [frontend_tool, dependency, '--output', output_abc, '--module']
+        proc = subprocess.Popen(cmd_args)
+        proc.wait()
+
     def gen_abc(self):
         js_file = self.js_file
         file_name_pre = os.path.splitext(js_file)[0]
@@ -222,6 +231,13 @@ class ArkProgram():
         mod_opt_index = 0
         cmd_args = []
         frontend_tool = self.ark_frontend_binary
+
+        # pre-generate the dependencies' abc when ark_frontend is [es2panda]
+        if file_name in self.module_list and self.ark_frontend == ARK_FRONTEND_LIST[1]:
+            dependencies = collect_module_dependencies(js_file, os.path.join(TEST_ES2021_DIR, "language/module-code"), [])
+            for dependency in list(set(dependencies)):
+                self.gen_dependency_abc(dependency)
+
         if self.ark_frontend == ARK_FRONTEND_LIST[0]:
             mod_opt_index = 3
             cmd_args = ['node', '--expose-gc', frontend_tool,

@@ -41,6 +41,7 @@ class Statement;
 
 namespace panda::es2panda::binder {
 class Scope;
+class SourceTextModuleRecord;
 }  // namespace panda::es2panda::binder
 
 namespace panda::es2panda::compiler {
@@ -86,6 +87,20 @@ private:
     void GenLiteralBuffers();
     void GenBufferLiterals(const LiteralBuffer *buff);
 
+    void GenModuleRequests(binder::SourceTextModuleRecord *moduleRecord,
+                           std::vector<panda::pandasm::LiteralArray::Literal> &moduleLiteralArray);
+    void GenRegularImportEntries(binder::SourceTextModuleRecord *moduleRecord,
+                                 std::vector<panda::pandasm::LiteralArray::Literal> &moduleLiteralArray);
+    void GenNamespaceImportEntries(binder::SourceTextModuleRecord *moduleRecord,
+                                   std::vector<panda::pandasm::LiteralArray::Literal> &moduleLiteralArray);
+    void GenLocalExportEntries(binder::SourceTextModuleRecord *moduleRecord,
+                                  std::vector<panda::pandasm::LiteralArray::Literal> &moduleLiteralArray);
+    void GenIndirectExportEntries(binder::SourceTextModuleRecord *moduleRecord,
+                                  std::vector<panda::pandasm::LiteralArray::Literal> &moduleLiteralArray);
+    void GenStarExportEntries(binder::SourceTextModuleRecord *moduleRecord,
+                              std::vector<panda::pandasm::LiteralArray::Literal> &moduleLiteralArray);
+    void GenSourceTextModuleRecord();
+
     const PandaGen *pg_;
     panda::pandasm::Function *func_ {};
     ArenaVector<std::pair<int32_t, std::vector<panda::pandasm::LiteralArray::Literal>>> literalBuffers_;
@@ -100,12 +115,13 @@ public:
     NO_MOVE_SEMANTIC(Emitter);
 
     void AddFunction(FunctionEmitter *func);
+    void AddSourceTextModuleRecord(PandaGen *pg);
     static void DumpAsm(const panda::pandasm::Program *prog);
     panda::pandasm::Program *Finalize(bool dumpDebugInfo);
 
 private:
     void GenESAnnoatationRecord();
-    void GenESModuleModeRecord(bool isModule);
+    void GenerateESModuleRecord(bool isModule);
 
     std::mutex m_;
     panda::pandasm::Program *prog_;

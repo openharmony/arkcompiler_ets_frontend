@@ -25,6 +25,7 @@ import datetime
 import time
 import shutil
 import platform
+import re
 
 TERM_NORMAL = '\033[0m'
 TERM_YELLOW = '\033[1;33m'
@@ -157,3 +158,25 @@ def npm_install(cwd):
     cmd = ['npm', 'install']
     ret = run_cmd_cwd(cmd, cwd)
     assert not ret, f"\n error: Failed to 'npm install'"
+
+def search_dependency(file, directory):
+    for root, dirs, files in os.walk(directory, topdown=True):
+        for f in files:
+            if f == file:
+                return os.path.join(root, f)
+
+def collect_module_dependencies(file, directory, traversedDependencies):
+    dependencies = []
+    traversedDependencies.append(file)
+    with open(file, 'r') as f:
+        content = f.read()
+        result_arr = re.findall(r'(import|from)(?:\s*)(\'(\.\/.*)\'|"(\.\/.*)")', content)
+        for result in result_arr:
+            specifier = result[2] if len(result[2]) != 0 else result[3]
+            if re.search(r'\S+_FIXTURE.js$', specifier):
+                dependency = search_dependency(specifier.lstrip('./'), directory)
+                if dependency not in traversedDependencies:
+                    dependencies.extend(collect_module_dependencies(dependency, directory, list(set(traversedDependencies))))
+                dependencies.append(dependency)
+
+    return dependencies

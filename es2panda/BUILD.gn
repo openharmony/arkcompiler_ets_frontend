@@ -19,6 +19,7 @@ es2panda_src = [
   "es2panda.cpp",
   "binder/binder.cpp",
   "binder/declaration.cpp",
+  "binder/module.cpp",
   "binder/scope.cpp",
   "binder/variable.cpp",
   "compiler/base/catchTable.cpp",
@@ -38,7 +39,6 @@ es2panda_src = [
   "compiler/core/function.cpp",
   "compiler/core/inlineCache.cpp",
   "compiler/core/labelTarget.cpp",
-  "compiler/core/moduleContext.cpp",
   "compiler/core/pandagen.cpp",
   "compiler/core/regAllocator.cpp",
   "compiler/core/regScope.cpp",
@@ -380,7 +380,10 @@ ohos_static_library("es2panda_lib") {
     "//third_party/icu/icu4c:static_icuuc",
   ]
 
-  cflags = [ "-Wno-implicit-fallthrough" ]
+  cflags = [
+    "-Wno-c++20-designator",
+    "-Wno-implicit-fallthrough",
+  ]
 }
 
 ohos_executable("es2panda") {
