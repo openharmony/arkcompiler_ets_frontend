@@ -170,9 +170,29 @@ function getDtsFiles(libDir: string): string[] {
 const stopWatchingStr = "####";
 const watchAbcFileDefaultTimeOut = 10;
 const watchFileName = "watch_expressions";
+// this path is only available in sdk
+const es2abcBinaryPath = path["join"](__dirname, "..", "bin", path.sep);
+const es2abcBinaryName = /^win/.test(require('os').platform()) ? "es2abc.exe" : "es2abc";
+const es2abcCommandLineArgs = "--debugger-evaluate-expression";
+
+function callEs2pandaToolChain(ideIputStr: string) {
+    let commandLine = es2abcBinaryPath + es2abcBinaryName + " " + es2abcCommandLineArgs + " \"" + ideIputStr + "\"";
+    var exec = require('child_process').exec;
+    exec(`${commandLine}`, function(error, stdout) {
+        if (error) {
+            console.log("generate abc file failed, please check the input string and syntax of the expression");
+            return;
+        }
+        process.stdout.write(stdout);
+    });
+}
 
 function updateWatchJsFile() {
     let ideIputStr = CmdOptions.getEvaluateExpression();
+    if (CmdOptions.watchViaEs2pandaToolchain()) {
+        callEs2pandaToolChain(ideIputStr);
+        return;
+    }
     if (!isBase64Str(ideIputStr)) {
         throw new Error("Passed expression string for evaluating is not base64 style.");
     }
@@ -287,6 +307,10 @@ function compileWatchExpression(jsFileName: string, errorMsgFileName: string, op
 }
 
 function launchWatchEvaluateDeamon(parsed: ts.ParsedCommandLine | undefined) {
+    if (CmdOptions.watchViaEs2pandaToolchain()) {
+        console.log("startWatchingSuccess supportTimeout");
+        return;
+    }
     let deamonFilePrefix = CmdOptions.getEvaluateDeamonPath() + path.sep + watchFileName;
     let jsFileName = deamonFilePrefix + ".js";
     let abcFileName = deamonFilePrefix + ".abc";
@@ -374,7 +398,11 @@ function run(args: string[], options?: ts.CompilerOptions): void {
             return;
         }
         if (CmdOptions.isStopEvaluateDeamonMode()) {
-            fs.writeFileSync(CmdOptions.getEvaluateDeamonPath() + path.sep + watchFileName + ".js", stopWatchingStr);
+            if (CmdOptions.watchViaEs2pandaToolchain()) {
+                console.log("stopWatchingSuccess");
+            } else {
+                fs.writeFileSync(CmdOptions.getEvaluateDeamonPath() + path.sep + watchFileName + ".js", stopWatchingStr);
+            }
             return;
         }
         if (CmdOptions.isWatchEvaluateExpressionMode()) {

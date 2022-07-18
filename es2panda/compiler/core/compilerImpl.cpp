@@ -36,7 +36,7 @@ CompilerImpl::~CompilerImpl()
 
 panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const es2panda::CompilerOptions &options)
 {
-    CompilerContext context(program->Binder(), options.isDebug);
+    CompilerContext context(program->Binder(), options.isDebug, options.isDebuggerEvaluateExpressionMode);
 
     if (program->Extension() == ScriptExtension::TS) {
         ArenaAllocator localAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);

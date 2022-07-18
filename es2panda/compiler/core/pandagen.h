@@ -187,6 +187,7 @@ public:
     }
 
     bool IsDebug() const;
+    bool isDebuggerEvaluateExpressionMode() const;
     uint32_t ParamCount() const;
     uint32_t FormalParametersCount() const;
     uint32_t InternalParamCount() const;
@@ -236,7 +237,9 @@ public:
 
     void TryLoadGlobalByValue(const ir::AstNode *node, VReg key);
     void TryStoreGlobalByValue(const ir::AstNode *node, VReg key);
+    void LoadObjByNameViaDebugger(const ir::AstNode *node, const util::StringView &name, bool throwUndefinedIfHole);
     void TryLoadGlobalByName(const ir::AstNode *node, const util::StringView &name);
+    void StoreObjByNameViaDebugger(const ir::AstNode *node, const util::StringView &name);
     void TryStoreGlobalByName(const ir::AstNode *node, const util::StringView &name);
 
     void LoadAccFromLexEnv(const ir::AstNode *node, const binder::ScopeFindResult &result);

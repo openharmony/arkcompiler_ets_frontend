@@ -55,6 +55,7 @@ struct CompilerOptions {
     bool dumpDebugInfo {false};
     bool parseOnly {false};
     bool dumpLiteralBuffer {false};
+    bool isDebuggerEvaluateExpressionMode {false};
 };
 
 enum class ErrorType {

@@ -57,6 +57,11 @@ bool PandaGen::IsDebug() const
     return context_->IsDebug();
 }
 
+bool PandaGen::isDebuggerEvaluateExpressionMode() const
+{
+    return context_->isDebuggerEvaluateExpressionMode();
+}
+
 uint32_t PandaGen::ParamCount() const
 {
     if (rootNode_->IsProgram()) {
@@ -368,15 +373,66 @@ void PandaGen::StoreOwnProperty(const ir::AstNode *node, VReg obj, const Operand
     StOwnByName(node, obj, std::get<util::StringView>(prop), nameSetting);
 }
 
+constexpr size_t DEBUGGER_GET_SET_ARGS_NUM = 2;
+
+void PandaGen::LoadObjByNameViaDebugger(const ir::AstNode *node, const util::StringView &name,
+                                        bool throwUndefinedIfHole)
+{
+    RegScope rs(this);
+    VReg global = AllocReg();
+    LoadConst(node, compiler::Constant::JS_GLOBAL);
+    StoreAccumulator(node, global);
+    LoadObjByName(node, global, "debuggerGetValue");
+    VReg debuggerGetValueReg = AllocReg();
+    StoreAccumulator(node, debuggerGetValueReg);
+    VReg variableReg = AllocReg();
+    LoadAccumulatorString(node, name);
+    StoreAccumulator(node, variableReg);
+    VReg boolFlag = AllocReg();
+    if (throwUndefinedIfHole) {
+        LoadConst(node, compiler::Constant::JS_TRUE);
+    } else {
+        LoadConst(node, compiler::Constant::JS_FALSE);
+    }
+    StoreAccumulator(node, boolFlag);
+    Call(node, debuggerGetValueReg, DEBUGGER_GET_SET_ARGS_NUM);
+}
+
 void PandaGen::TryLoadGlobalByName(const ir::AstNode *node, const util::StringView &name)
 {
-    sa_.Emit<EcmaTryldglobalbyname>(node, name);
+    if (isDebuggerEvaluateExpressionMode()) {
+        LoadObjByNameViaDebugger(node, name, true);
+    } else {
+        sa_.Emit<EcmaTryldglobalbyname>(node, name);
+    }
     strings_.insert(name);
+}
+
+void PandaGen::StoreObjByNameViaDebugger(const ir::AstNode *node, const util::StringView &name)
+{
+    RegScope rs(this);
+    VReg valueReg = AllocReg();
+    StoreAccumulator(node, valueReg);
+    VReg global = AllocReg();
+    LoadConst(node, compiler::Constant::JS_GLOBAL);
+    StoreAccumulator(node, global);
+    LoadObjByName(node, global, "debuggerSetValue");
+    VReg debuggerSetValueReg = AllocReg();
+    StoreAccumulator(node, debuggerSetValueReg);
+    VReg variableReg = AllocReg();
+    LoadAccumulatorString(node, name);
+    StoreAccumulator(node, variableReg);
+    MoveVreg(node, AllocReg(), valueReg);
+    Call(node, debuggerSetValueReg, DEBUGGER_GET_SET_ARGS_NUM);
 }
 
 void PandaGen::TryStoreGlobalByName(const ir::AstNode *node, const util::StringView &name)
 {
-    sa_.Emit<EcmaTrystglobalbyname>(node, name);
+    if (isDebuggerEvaluateExpressionMode()) {
+        StoreObjByNameViaDebugger(node, name);
+    } else {
+        sa_.Emit<EcmaTrystglobalbyname>(node, name);
+    }
     strings_.insert(name);
 }
 

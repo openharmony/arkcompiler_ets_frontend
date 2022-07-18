@@ -64,6 +64,8 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
     panda::PandArg<bool> opDumpLiteralBuffer("dump-literal-buffer", false, "Dump literal buffer");
     panda::PandArg<std::string> outputFile("output", "", "Compiler binary output (.abc)");
+    panda::PandArg<std::string> debuggerEvaluateExpression("debugger-evaluate-expression", "",
+        "input base64 data of an expression to be evaluated in debugger mode");
 
     // tail arguments
     panda::PandArg<std::string> inputFile("input", "", "input file");
@@ -75,6 +77,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opDumpAssembly);
     argparser_->Add(&opDebugInfo);
     argparser_->Add(&opDumpDebugInfo);
+    argparser_->Add(&debuggerEvaluateExpression);
 
     argparser_->Add(&opOptLevel);
     argparser_->Add(&opThreadCount);
@@ -88,7 +91,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->EnableTail();
     argparser_->EnableRemainder();
 
-    if (!argparser_->Parse(argc, argv) || inputFile.GetValue().empty() || opHelp.GetValue()) {
+    if (!argparser_->Parse(argc, argv) || opHelp.GetValue()) {
         std::stringstream ss;
 
         ss << argparser_->GetErrorString() << std::endl;
@@ -103,25 +106,43 @@ bool Options::Parse(int argc, const char **argv)
         return false;
     }
 
-    sourceFile_ = inputFile.GetValue();
-    std::ifstream inputStream(sourceFile_.c_str());
-
-    if (inputStream.fail()) {
-        errorMsg_ = "Failed to open file: ";
-        errorMsg_.append(sourceFile_);
+    bool inputIsEmpty = inputFile.GetValue().empty();
+    bool base64InputIsEmpty = debuggerEvaluateExpression.GetValue().empty();
+    if (inputIsEmpty == base64InputIsEmpty) {
+        errorMsg_ = "--input and --debugger-evaluate-expression can not be used or unused simultaneously";
         return false;
     }
 
-    std::stringstream ss;
-    ss << inputStream.rdbuf();
-    parserInput_ = ss.str();
+    if (!inputIsEmpty) {
+        // in common mode: passed argument is js file path
+        sourceFile_ = inputFile.GetValue();
+        std::ifstream inputStream(sourceFile_.c_str());
 
-    sourceFile_ = BaseName(sourceFile_);
+        if (inputStream.fail()) {
+            errorMsg_ = "Failed to open file: ";
+            errorMsg_.append(sourceFile_);
+            return false;
+        }
 
-    if (!outputFile.GetValue().empty()) {
-        compilerOutput_ = outputFile.GetValue();
+        std::stringstream ss;
+        ss << inputStream.rdbuf();
+        parserInput_ = ss.str();
+        sourceFile_ = BaseName(sourceFile_);
+
+        if (!outputFile.GetValue().empty()) {
+            compilerOutput_ = outputFile.GetValue();
+        } else {
+            compilerOutput_ = RemoveExtension(sourceFile_).append(".abc");
+        }
     } else {
-        compilerOutput_ = RemoveExtension(sourceFile_).append(".abc");
+        // in watch expression mode: base64 input to be evaluated
+        parserInput_ = ExtractExpressionFromBase64(debuggerEvaluateExpression.GetValue());
+        if (parserInput_.empty()) {
+            errorMsg_ = "The input is not a valid base64 data";
+            return false;
+        }
+        options_ |= OptionFlags::DEBUGGER_EVALUATE_EXPRESSION;
+        compilerOptions_.isDebuggerEvaluateExpressionMode = true;
     }
 
     std::string extension = inputExtension.GetValue();
@@ -162,6 +183,19 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.dumpLiteralBuffer = opDumpLiteralBuffer.GetValue();
 
     return true;
+}
+
+std::string Options::ExtractExpressionFromBase64(const std::string &watchedExpressionBase64String)
+{
+    std::string watchedExpression = util::Base64Decode(watchedExpressionBase64String);
+    if (watchedExpression == "") {
+        return "";
+    }
+    bool validBase64Input = util::Base64Encode(watchedExpression) == watchedExpressionBase64String;
+    if (!validBase64Input) {
+        return "";
+    }
+    return watchedExpression;
 }
 
 }  // namespace panda::es2panda::aot

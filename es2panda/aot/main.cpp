@@ -55,6 +55,38 @@ public:
     }
 };
 
+static void DebuggerEvaluateExpression(panda::pandasm::Program *prog,
+                                       panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp)
+{
+    auto pandaFile = panda::pandasm::AsmEmitter::Emit(*prog, mapsp);
+    const uint8_t *buffer = pandaFile->GetBase();
+    size_t size = pandaFile->GetPtr().GetSize();
+    std::string content(reinterpret_cast<const char*>(buffer), size);
+    std::string base64Output = util::Base64Encode(content);
+    std::cout << base64Output << std::endl;
+}
+
+static void DumpPandaFileSizeStatistic(std::map<std::string, size_t> &stat)
+{
+    size_t totalSize = 0;
+    std::cout << "Panda file size statistic:" << std::endl;
+    constexpr std::array<std::string_view, 2> INFO_STATS = {"instructions_number", "codesize"};
+
+    for (const auto &[name, size] : stat) {
+        if (find(INFO_STATS.begin(), INFO_STATS.end(), name) != INFO_STATS.end()) {
+            continue;
+        }
+        std::cout << name << " section: " << size << std::endl;
+        totalSize += size;
+    }
+
+    for (const auto &name : INFO_STATS) {
+        std::cout << name << ": " << stat.at(std::string(name)) << std::endl;
+    }
+
+    std::cout << "total: " << totalSize << std::endl;
+}
+
 static int GenerateProgram(panda::pandasm::Program *prog, std::unique_ptr<panda::es2panda::aot::Options> &options)
 {
     const std::string output = options->CompilerOutput();
@@ -86,6 +118,11 @@ static int GenerateProgram(panda::pandasm::Program *prog, std::unique_ptr<panda:
         es2panda::Compiler::DumpAsm(prog);
     }
 
+    if (options->isDebuggerEvaluateExpressionMode()) {
+        DebuggerEvaluateExpression(prog, mapsp);
+        return 0;
+    }
+
     if (!panda::pandasm::AsmEmitter::Emit(output, *prog, statp, mapsp, true)) {
         return 1;
     }
@@ -95,23 +132,7 @@ static int GenerateProgram(panda::pandasm::Program *prog, std::unique_ptr<panda:
     }
 
     if (dumpSize && optLevel != 0) {
-        size_t totalSize = 0;
-        std::cout << "Panda file size statistic:" << std::endl;
-        constexpr std::array<std::string_view, 2> INFO_STATS = {"instructions_number", "codesize"};
-
-        for (const auto &[name, size] : stat) {
-            if (find(INFO_STATS.begin(), INFO_STATS.end(), name) != INFO_STATS.end()) {
-                continue;
-            }
-            std::cout << name << " section: " << size << std::endl;
-            totalSize += size;
-        }
-
-        for (const auto &name : INFO_STATS) {
-            std::cout << name << ": " << stat.at(std::string(name)) << std::endl;
-        }
-
-        std::cout << "total: " << totalSize << std::endl;
+        DumpPandaFileSizeStatistic(stat);
     }
 
     return 0;

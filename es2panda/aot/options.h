@@ -22,6 +22,7 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
+#include <util/base64.h>
 
 namespace panda {
 class PandArgParser;
@@ -35,6 +36,7 @@ enum class OptionFlags {
     PARSE_ONLY = 1 << 1,
     PARSE_MODULE = 1 << 2,
     SIZE_STAT = 1 << 3,
+    DEBUGGER_EVALUATE_EXPRESSION = 1 << 4,
 };
 
 inline std::underlying_type_t<OptionFlags> operator&(OptionFlags a, OptionFlags b)
@@ -114,6 +116,13 @@ public:
     {
         return (options_ & OptionFlags::SIZE_STAT) != 0;
     }
+
+    bool isDebuggerEvaluateExpressionMode() const
+    {
+        return (options_ & OptionFlags::DEBUGGER_EVALUATE_EXPRESSION) != 0;
+    }
+
+    std::string ExtractExpressionFromBase64(const std::string &watchedExpression);
 
 private:
     es2panda::ScriptExtension extension_ {es2panda::ScriptExtension::JS};

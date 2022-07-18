@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+/**
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,16 +13,20 @@
  * limitations under the License.
  */
 
-#include "compilerContext.h"
+#ifndef ES2PANDA_UTIL_BASE64_H
+#define ES2PANDA_UTIL_BASE64_H
 
-#include <compiler/core/emitter/emitter.h>
+#include <iostream>
+#include <string>
 
-namespace panda::es2panda::compiler {
+namespace panda::es2panda::util {
 
-CompilerContext::CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode)
-    : binder_(binder), emitter_(std::make_unique<class Emitter>(this)), isDebug_(isDebug),
-      isDebuggerEvaluateExpressionMode_(isDebuggerEvaluateExpressionMode)
-{
-}
+constexpr size_t TO_TRANSFORM_CHAR_NUM = 3;
+constexpr size_t TRANSFORMED_CHAR_NUM = 4;
 
-}  // namespace panda::es2panda::compiler
+std::string Base64Encode(const std::string &inputString);
+std::string Base64Decode(const std::string &base64String);
+
+}  // namespace panda::es2panda::util
+
+#endif
