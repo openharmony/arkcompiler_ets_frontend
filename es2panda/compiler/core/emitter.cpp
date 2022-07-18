@@ -75,7 +75,8 @@ void FunctionEmitter::GenBufferLiterals(const LiteralBuffer *buff)
 {
     auto &[idx, array] = literalBuffers_.emplace_back();
     idx = buff->Index();
-    array.reserve(buff->Literals().size() * 2);
+    constexpr size_t ARRAY_EXPANSION = 2;
+    array.reserve(buff->Literals().size() * ARRAY_EXPANSION);
 
     for (const auto *literal : buff->Literals()) {
         panda::pandasm::LiteralArray::Literal valueLit;
@@ -119,11 +120,7 @@ void FunctionEmitter::GenBufferLiterals(const LiteralBuffer *buff)
                 valueLit.value_ = literal->GetMethod().Mutf8();
                 break;
             }
-            case ir::LiteralTag::ASYNC_GENERATOR_METHOD: {
-                valueLit.tag_ = panda::panda_file::LiteralTag::ASYNCGENERATORMETHOD;
-                valueLit.value_ = literal->GetMethod().Mutf8();
-                break;
-            }
+            // TODO: support ir::LiteralTag::ASYNC_GENERATOR_METHOD
             case ir::LiteralTag::NULL_VALUE: {
                 valueLit.tag_ = panda::panda_file::LiteralTag::NULLVALUE;
                 valueLit.value_ = static_cast<uint8_t>(0);
@@ -181,10 +178,11 @@ static size_t GetIRNodeWholeLength(const IRNode *node)
     }
 
     size_t len = 1;
+    constexpr size_t BIT_WIDTH = 8;
     const auto format = MatchFormat(node, formats);
 
     for (auto fi : format.GetFormatItem()) {
-        len += fi.Bitwidth() / 8;
+        len += fi.Bitwidth() / BIT_WIDTH;
     }
 
     return len;

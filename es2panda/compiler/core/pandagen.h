@@ -255,7 +255,6 @@ public:
     void BranchIfTrue(const ir::AstNode *node, class Label *target);
     void BranchIfNotTrue(const ir::AstNode *node, class Label *target);
     void BranchIfFalse(const ir::AstNode *node, class Label *target);
-    void BranchIfCoercible(const ir::AstNode *node, class Label *target);
 
     void EmitThrow(const ir::AstNode *node);
     void EmitRethrow(const ir::AstNode *node);
@@ -281,7 +280,6 @@ public:
     void GetUnmappedArgs(const ir::AstNode *node);
 
     void Negate(const ir::AstNode *node);
-    void ToBoolean(const ir::AstNode *node);
     void ToNumber(const ir::AstNode *node, VReg arg);
 
     void CreateGeneratorObj(const ir::AstNode *node, VReg funcObj);

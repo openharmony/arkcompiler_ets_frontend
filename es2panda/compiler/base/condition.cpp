@@ -51,11 +51,9 @@ void Condition::Compile(PandaGen *pg, const ir::Expression *expr, Label *falseLa
             }
             case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
                 binExpr->Left()->Compile(pg);
-                pg->ToBoolean(binExpr);
                 pg->BranchIfFalse(binExpr, falseLabel);
 
                 binExpr->Right()->Compile(pg);
-                pg->ToBoolean(binExpr);
                 pg->BranchIfFalse(binExpr, falseLabel);
                 return;
             }
@@ -63,11 +61,9 @@ void Condition::Compile(PandaGen *pg, const ir::Expression *expr, Label *falseLa
                 auto *endLabel = pg->AllocLabel();
 
                 binExpr->Left()->Compile(pg);
-                pg->ToBoolean(binExpr);
                 pg->BranchIfTrue(binExpr, endLabel);
 
                 binExpr->Right()->Compile(pg);
-                pg->ToBoolean(binExpr);
                 pg->BranchIfFalse(binExpr, falseLabel);
                 pg->SetLabel(binExpr, endLabel);
                 return;
@@ -87,7 +83,6 @@ void Condition::Compile(PandaGen *pg, const ir::Expression *expr, Label *falseLa
 
     // General case including some binExpr i.E.(a+b)
     expr->Compile(pg);
-    pg->ToBoolean(expr);
     pg->BranchIfFalse(expr, falseLabel);
 }
 

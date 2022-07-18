@@ -70,7 +70,6 @@ void Iterator::Next() const
 void Iterator::Complete() const
 {
     pg_->LoadObjByName(node_, nextResult_, "done");
-    pg_->ToBoolean(node_);
 }
 
 void Iterator::Value() const

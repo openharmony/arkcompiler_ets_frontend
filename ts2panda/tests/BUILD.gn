@@ -28,12 +28,12 @@ action("ts2abc_tests") {
     rebase_path("${node_modules}"),
   ]
 
-  if (host_toolchain == buildtool_linux) {
+  if (host_toolchain == toolchain_linux) {
     args += [
       "--platform",
       "linux",
     ]
-  } else if (host_toolchain == buildtool_mac) {
+  } else if (host_toolchain == toolchain_mac) {
     args += [
       "--platform",
       "mac",
