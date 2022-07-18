@@ -900,14 +900,6 @@ static void ParseOptLevel(const Json::Value &rootValue)
     }
 }
 
-static void ParseEnableTypeinfo(const Json::Value &rootValue)
-{
-    Logd("-----------------parse enable_typeinfo-----------------");
-    if (rootValue.isMember("enable_typeinfo") && rootValue["enable_typeinfo"].isBool()) {
-        g_enableTypeinfo = rootValue["enable_typeinfo"].asBool();
-    }
-}
-
 static void ParseDisplayTypeinfo(const Json::Value &rootValue)
 {
     Logd("-----------------parse enable_typeinfo-----------------");
@@ -944,7 +936,6 @@ static void ParseOptions(const Json::Value &rootValue, panda::pandasm::Program &
     ParseLogEnable(rootValue);
     ParseDebugMode(rootValue);
     ParseOptLevel(rootValue);
-    ParseEnableTypeinfo(rootValue);
     ParseDisplayTypeinfo(rootValue);
     ParseOptLogLevel(rootValue);
 }
@@ -1318,10 +1309,8 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
 
     Logd("parsing done, calling pandasm\n");
 
-    if (g_enableTypeinfo) {
-        TypeAdapter ada(g_displayTypeinfo);
-        ada.AdaptTypeForProgram(&prog);
-    }
+    TypeAdapter ada(g_displayTypeinfo);
+    ada.AdaptTypeForProgram(&prog);
 
 #ifdef ENABLE_BYTECODE_OPT
     if (g_optLevel != static_cast<int>(OptLevel::O_LEVEL0) || optLevel != static_cast<int>(OptLevel::O_LEVEL0)) {

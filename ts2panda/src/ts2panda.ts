@@ -195,7 +195,6 @@ export class Ts2Panda {
             "log_enabled": CmdOptions.isEnableDebugLog(),
             "opt_level": CmdOptions.getOptLevel(),
             "opt_log_level": CmdOptions.getOptLogLevel(),
-            "enable_typeinfo": CmdOptions.getEnableTypeinfo(),
             "display_typeinfo": CmdOptions.getDisplayTypeinfo()
         };
         let jsonOpt = JSON.stringify(options, null, 2);
