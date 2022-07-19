@@ -77,9 +77,9 @@ public:
         node_ = node;
     }
 
-    bool IsLetOrConstDecl() const
+    bool IsLetOrConstOrClassDecl() const
     {
-        return IsLetDecl() || IsConstDecl();
+        return IsLetDecl() || IsConstDecl() || IsClassDecl();
     }
 
 protected:
@@ -231,6 +231,16 @@ public:
     DeclType Type() const override
     {
         return DeclType::CONST;
+    }
+};
+
+class ClassDecl : public Decl {
+public:
+    explicit ClassDecl(util::StringView name) : Decl(name) {}
+
+    DeclType Type() const override
+    {
+        return DeclType::CLASS;
     }
 };
 

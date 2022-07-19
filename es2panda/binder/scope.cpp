@@ -444,7 +444,7 @@ void LoopDeclarationScope::ConvertToVariableScope(ArenaAllocator *allocator)
     }
 
     for (auto &[name, var] : bindings_) {
-        if (!var->LexicalBound() || !var->Declaration()->IsLetOrConstDecl()) {
+        if (!var->LexicalBound() || !var->Declaration()->IsLetOrConstOrClassDecl()) {
             continue;
         }
 

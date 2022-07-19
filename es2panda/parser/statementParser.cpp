@@ -501,7 +501,7 @@ ir::ClassDeclaration *ParserImpl::ParseClassDeclaration(bool idRequired, ArenaVe
     ir::ClassDefinition *classDefinition = ParseClassDefinition(true, idRequired, isDeclare, isAbstract);
 
     auto *decl =
-        Binder()->AddDecl<binder::LetDecl>(classDefinition->Ident()->Start(), classDefinition->Ident()->Name());
+        Binder()->AddDecl<binder::ClassDecl>(classDefinition->Ident()->Start(), classDefinition->Ident()->Name());
     decl->BindNode(classDefinition);
 
     lexer::SourcePosition endLoc = classDefinition->End();

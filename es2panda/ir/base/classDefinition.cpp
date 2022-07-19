@@ -269,9 +269,6 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
 
     int32_t bufIdx = CreateClassStaticProperties(pg, compiled);
     pg->DefineClassWithBuffer(this, ctorId, bufIdx, lexenv, baseReg);
-    if (scope_->Parent()->IsGlobalScope() && ident_) {
-        pg->StoreGlobalLet(this, ident_->Name());
-    }
     pg->StoreAccumulator(this, classReg);
     InitializeClassName(pg);
 

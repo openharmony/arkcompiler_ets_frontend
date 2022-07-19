@@ -91,7 +91,7 @@ static void ExpandStoreLexVar(PandaGen *pg, const ir::AstNode *node, const binde
 
     const auto *decl = result.variable->Declaration();
 
-    if (decl->IsLetOrConstDecl() && !isDecl) {
+    if (decl->IsLetOrConstOrClassDecl() && !isDecl) {
         RegScope rs(pg);
 
         VReg valueReg = pg->AllocReg();
