@@ -24,6 +24,7 @@ enum class GlobalTypeId {
     NUMBER,
     ANY,
     STRING,
+    SYMBOL,
     BOOLEAN,
     VOID,
     NULL_ID,
@@ -57,6 +58,7 @@ public:
     Type *GlobalNumberType();
     Type *GlobalAnyType();
     Type *GlobalStringType();
+    Type *GlobalSymbolType();
     Type *GlobalBooleanType();
     Type *GlobalVoidType();
     Type *GlobalNullType();

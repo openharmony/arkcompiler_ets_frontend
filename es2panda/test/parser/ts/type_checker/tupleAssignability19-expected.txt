@@ -24,7 +24,7 @@
                         },
                         "end": {
                           "line": 17,
-                          "column": 16
+                          "column": 15
                         }
                       }
                     }
@@ -52,7 +52,7 @@
                         },
                         "end": {
                           "line": 17,
-                          "column": 27
+                          "column": 26
                         }
                       }
                     }

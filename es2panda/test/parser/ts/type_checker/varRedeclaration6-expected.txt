@@ -21,7 +21,7 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 16
+                      "column": 15
                     }
                   }
                 },
@@ -34,7 +34,7 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 24
+                      "column": 23
                     }
                   }
                 },
@@ -47,7 +47,7 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 32
+                      "column": 31
                     }
                   }
                 }
@@ -148,7 +148,7 @@
                     },
                     "end": {
                       "line": 18,
-                      "column": 19
+                      "column": 18
                     }
                   }
                 },
@@ -189,7 +189,7 @@
                     },
                     "end": {
                       "line": 18,
-                      "column": 30
+                      "column": 29
                     }
                   }
                 },
@@ -231,7 +231,7 @@
                     },
                     "end": {
                       "line": 18,
-                      "column": 42
+                      "column": 41
                     }
                   }
                 }

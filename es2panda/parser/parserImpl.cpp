@@ -70,13 +70,16 @@
 #include <ir/ts/tsNullKeyword.h>
 #include <ir/ts/tsNumberKeyword.h>
 #include <ir/ts/tsObjectKeyword.h>
+#include <ir/ts/tsOptionalType.h>
 #include <ir/ts/tsParameterProperty.h>
 #include <ir/ts/tsParenthesizedType.h>
 #include <ir/ts/tsPrivateIdentifier.h>
 #include <ir/ts/tsPropertySignature.h>
 #include <ir/ts/tsQualifiedName.h>
+#include <ir/ts/tsRestType.h>
 #include <ir/ts/tsSignatureDeclaration.h>
 #include <ir/ts/tsStringKeyword.h>
+#include <ir/ts/tsSymbolKeyword.h>
 #include <ir/ts/tsTemplateLiteralType.h>
 #include <ir/ts/tsThisType.h>
 #include <ir/ts/tsTupleType.h>
@@ -189,6 +192,7 @@ bool ParserImpl::CurrentLiteralIsBasicType()
         case lexer::TokenType::KEYW_BOOLEAN:
         case lexer::TokenType::KEYW_NUMBER:
         case lexer::TokenType::KEYW_STRING:
+        case lexer::TokenType::KEYW_SYMBOL:
         case lexer::TokenType::KEYW_UNKNOWN:
         case lexer::TokenType::KEYW_UNDEFINED:
         case lexer::TokenType::KEYW_NEVER:
@@ -716,6 +720,7 @@ ir::Expression *ParserImpl::ParseTsTypeOperatorOrTypeReference()
 
         options |= TypeAnnotationParsingOptions::IN_MODIFIER;
         ir::Expression *type = ParseTsTypeAnnotation(&options);
+        ASSERT(type != nullptr);
 
         if (!type->IsTSArrayType() && !type->IsTSTupleType()) {
             ThrowSyntaxError(
@@ -736,8 +741,23 @@ ir::Expression *ParserImpl::ParseTsTypeOperatorOrTypeReference()
 
         options |= TypeAnnotationParsingOptions::IN_MODIFIER;
         ir::Expression *type = ParseTsTypeAnnotation(&options);
+        ASSERT(type != nullptr);
 
         auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::KEYOF);
+
+        typeOperator->SetRange({typeOperatorStart, type->End()});
+
+        return typeOperator;
+    }
+
+    if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_UNIQUE) {
+        lexer::SourcePosition typeOperatorStart = lexer_->GetToken().Start();
+        lexer_->NextToken();
+
+        ir::Expression *type = ParseTsTypeAnnotation(&options);
+        ASSERT(type != nullptr);
+
+        auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::UNIQUE);
 
         typeOperator->SetRange({typeOperatorStart, type->End()});
 
@@ -766,59 +786,84 @@ ir::Expression *ParserImpl::ParseTsTypeOperatorOrTypeReference()
     return ParseTsIdentifierReference();
 }
 
+bool ParserImpl::IsTSNamedTupleMember()
+{
+    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        return false;
+    }
+    const auto savePos = lexer_->Save();
+    bool isNamedMember = false;
+    lexer_->NextToken();
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON ||
+        (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK &&
+         lexer_->Lookahead() == LEX_CHAR_COLON)) {
+            isNamedMember = true;
+    }
+    lexer_->Rewind(savePos);
+    return isNamedMember;
+}
+
 ir::Expression *ParserImpl::ParseTsTupleElement(ir::TSTupleKind *kind, bool *seenOptional)
 {
-    lexer::SourcePosition elementStart = lexer_->GetToken().Start();
+    lexer::SourcePosition startPos = lexer_->GetToken().Start();
     ir::Expression *element = nullptr;
     bool isOptional = false;
+    bool isRestType = false;
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
 
-    if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT && !CurrentLiteralIsBasicType()) {
-        auto *elementIdent = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
-        elementIdent->SetRange(lexer_->GetToken().Loc());
-
-        if (lexer_->Lookahead() == LEX_CHAR_COLON || lexer_->Lookahead() == LEX_CHAR_QUESTION) {
-            if (*kind == ir::TSTupleKind::DEFAULT) {
-                ThrowSyntaxError("Tuple members must all have names or all not have names");
-            }
-
-            lexer_->NextToken();  // eat ident
-
-            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
-                lexer_->NextToken();  // eat '?'
-                isOptional = true;
-                *seenOptional = true;
-            } else if (*seenOptional) {
-                ThrowSyntaxError("A required element cannot follow an optional element");
-            }
-
-            if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
-                ThrowSyntaxError("':' expected");
-            }
-
-            lexer_->NextToken();  // eat ':'
-            auto *elementType = ParseTsTypeAnnotation(&options);
-            *kind = ir::TSTupleKind::NAMED;
-
-            element = AllocNode<ir::TSNamedTupleMember>(elementIdent, elementType, isOptional);
-        } else {
-            element = ParseTsTypeReferenceOrQuery();
-        }
-        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA &&
-            lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-            element = ParseTsTypeAnnotationElement(element, &options);
-        }
-    } else {
-        if (*kind == ir::TSTupleKind::NAMED) {
-            ThrowSyntaxError("Tuple members must all have names or all not have names");
-        }
-
-        *kind = ir::TSTupleKind::DEFAULT;
-        element = ParseTsTypeAnnotation(&options);
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
+        isRestType = true;
+        lexer_->NextToken();  // eat '...'
     }
 
-    if (element) {
-        element->SetRange({elementStart, lexer_->GetToken().End()});
+    if (IsTSNamedTupleMember()) {
+        if (*kind == ir::TSTupleKind::DEFAULT) {
+            ThrowSyntaxError("Tuple members must all have or haven't names");
+        }
+        *kind = ir::TSTupleKind::NAMED;
+
+        auto *elementIdent = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+        elementIdent->SetRange(lexer_->GetToken().Loc());
+        lexer_->NextToken();  // eat identifier
+
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
+            lexer_->NextToken();  // eat '?'
+            isOptional = true;
+            *seenOptional = true;
+        } else if (*seenOptional) {
+            ThrowSyntaxError("A required element cannot follow an optional element");
+        }
+
+        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
+            ThrowSyntaxError("':' expected");
+        }
+
+        lexer_->NextToken();  // eat ':'
+        auto *elementType = ParseTsTypeAnnotation(&options);
+        ASSERT(elementType != nullptr);
+
+        element = AllocNode<ir::TSNamedTupleMember>(elementIdent, elementType, isOptional, isRestType);
+        element->SetRange({startPos, elementType->End()});
+    } else {
+        if (*kind == ir::TSTupleKind::NAMED) {
+            ThrowSyntaxError("Tuple members must all have or haven't names");
+        }
+        *kind = ir::TSTupleKind::DEFAULT;
+
+        element = ParseTsTypeAnnotation(&options);
+        ASSERT(element != nullptr);
+        if (element && isRestType) {
+            lexer::SourcePosition endPos = element->End();
+            element = AllocNode<ir::TSRestType>(std::move(element));
+            element->SetRange({startPos, endPos});
+        }
+
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
+            lexer::SourcePosition elementStartPos = element->Start();
+            element = AllocNode<ir::TSOptionalType>(std::move(element));
+            element->SetRange({elementStartPos, lexer_->GetToken().End()});
+            lexer_->NextToken();  // eat '?'
+        }
     }
     return element;
 }
@@ -835,6 +880,7 @@ ir::TSTupleType *ParserImpl::ParseTsTupleType()
 
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
         ir::Expression *element = ParseTsTupleElement(&kind, &seenOptional);
+
         elements.push_back(element);
 
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
@@ -1037,6 +1083,14 @@ ir::TSMappedType *ParserImpl::ParseTsMappedType()
 
     ir::TSTypeParameter *typeParameter = ParseTsMappedTypeParameter();
 
+    ir::Expression *nameKeyType = nullptr;
+    if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_AS) {
+        lexer_->NextToken();  // eat 'as'
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+        nameKeyType = ParseTsTypeAnnotation(&options);
+        ASSERT(nameKeyType != nullptr);
+    }
+
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
         ThrowSyntaxError("']' expected");
     }
@@ -1065,7 +1119,7 @@ ir::TSMappedType *ParserImpl::ParseTsMappedType()
         ThrowSyntaxError("'}' expected");
     }
 
-    auto *mappedType = AllocNode<ir::TSMappedType>(typeParameter, typeAnnotation, readonly, optional);
+    auto *mappedType = AllocNode<ir::TSMappedType>(typeParameter, nameKeyType, typeAnnotation, readonly, optional);
 
     mappedType->SetRange({startLoc, lexer_->GetToken().End()});
 
@@ -1706,6 +1760,8 @@ ir::Expression *ParserImpl::ParseTsBasicType()
         typeAnnotation = AllocNode<ir::TSObjectKeyword>();
     } else if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_BIGINT) {
         typeAnnotation = AllocNode<ir::TSBigintKeyword>();
+    } else if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_SYMBOL) {
+        typeAnnotation = AllocNode<ir::TSSymbolKeyword>();
     } else {
         ThrowSyntaxError("Unexpected type");
     }
@@ -2082,7 +2138,8 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDe
                 desc->invalidComputedProperty =
                     !propName->IsNumberLiteral() && !propName->IsStringLiteral() &&
                     !(propName->IsMemberExpression() && propName->AsMemberExpression()->Object()->IsIdentifier() &&
-                      propName->AsMemberExpression()->Object()->AsIdentifier()->Name().Is("Symbol"));
+                      propName->AsMemberExpression()->Object()->AsIdentifier()->Name().Is("Symbol")) &&
+                    !propName->IsIdentifier();
             }
 
             if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {

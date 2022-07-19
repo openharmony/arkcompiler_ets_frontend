@@ -1457,11 +1457,21 @@ bool ParserImpl::ParsePotentialTsGenericFunctionCall(ir::Expression **returnExpr
 
     const auto savedPos = lexer_->Save();
 
+    bool isLeftShift = false;
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SHIFT) {
         lexer_->BackwardToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, 1);
+        isLeftShift = true;
     }
 
-    ir::TSTypeParameterInstantiation *typeParams = ParseTsTypeParameterInstantiation(false);
+    ir::TSTypeParameterInstantiation *typeParams;
+    try {
+        typeParams = ParseTsTypeParameterInstantiation(false);
+    } catch (const Error &e) {
+        if (!isLeftShift) {
+            throw e;
+        }
+        typeParams = nullptr;
+    }
 
     if (!typeParams) {
         lexer_->Rewind(savedPos);

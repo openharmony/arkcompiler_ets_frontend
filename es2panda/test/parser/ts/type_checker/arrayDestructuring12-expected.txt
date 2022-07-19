@@ -95,7 +95,7 @@
                         },
                         "end": {
                           "line": 17,
-                          "column": 28
+                          "column": 27
                         }
                       }
                     },
@@ -108,7 +108,7 @@
                         },
                         "end": {
                           "line": 17,
-                          "column": 36
+                          "column": 35
                         }
                       }
                     },
@@ -121,7 +121,7 @@
                         },
                         "end": {
                           "line": 17,
-                          "column": 45
+                          "column": 44
                         }
                       }
                     }

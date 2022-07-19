@@ -33,6 +33,7 @@ void TSMappedType::Dump(ir::AstDumper *dumper) const
     dumper->Add(
         {{"type", "TSMappedType"},
          {"typeParameter", typeParameter_},
+         {"nameKeyType", AstDumper::Optional(nameKeyType_)},
          {"typeAnnotation", AstDumper::Optional(typeAnnotation_)},
          {"readonly", readonly_ == MappedOption::NO_OPTS
                           ? AstDumper::Optional(false)
