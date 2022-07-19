@@ -121,6 +121,8 @@ public:
 
     VariableScope *EnclosingVariableScope();
 
+    FunctionScope *EnclosingFunctionVariableScope();
+
     const ArenaVector<Decl *> &Decls() const
     {
         return decls_;
@@ -312,6 +314,17 @@ public:
     const ArenaVector<LocalVariable *> &Params() const
     {
         return params_;
+    }
+
+    bool HasParam(util::StringView name) const
+    {
+        for (auto *param : params_) {
+            if (param->Name() == name) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     std::tuple<ParameterDecl *, const ir::AstNode *> AddParamDecl(ArenaAllocator *allocator, const ir::AstNode *param);

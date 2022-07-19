@@ -77,8 +77,23 @@ void LoopEnvScope::CopyPetIterationCtx()
         return;
     }
 
-    pg_->CopyLexEnv(scope_->Node());
+    auto num = scope_->LexicalSlots();
+    RegScope rs(pg_);
+    std::vector<VReg> lexicals;
+    lexicals.reserve(num);
+    for (uint32_t i = 0; i < num; i++) {
+        VReg lexical = pg_->AllocReg();
+        pg_->LoadLexicalVar(scope_->Node(), 0, i);
+        pg_->StoreAccumulator(scope_->Node(), lexical);
+        lexicals.push_back(lexical);
+    }
+    pg_->PopLexEnv(scope_->Node());
+    pg_->NewLexEnv(scope_->Node(), num);
     pg_->StoreAccumulator(scope_->Node(), lexEnv_);
+
+    for (uint32_t i = 0; i < num; i++) {
+        pg_->StoreLexicalVar(scope_->Node(), 0, i, lexicals[i]);
+    }
 }
 
 }  // namespace panda::es2panda::compiler

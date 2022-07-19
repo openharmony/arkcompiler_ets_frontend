@@ -355,6 +355,7 @@ public:
     void NewLexEnv(const ir::AstNode *node, uint32_t num);
     void LoadLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot);
     void StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot);
+    void StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot, VReg value);
 
     void ThrowIfSuperNotCorrectCall(const ir::AstNode *node, int64_t num);
     void ThrowUndefinedIfHole(const ir::AstNode *node, const util::StringView &name);
