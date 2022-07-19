@@ -130,8 +130,8 @@ int Run(int argc, const char **argv)
             return 0;
         }
 
-        std::cout << err.TypeString() << ": " << err.Message();
-        std::cout << " [" << options->SourceFile() << ":" << err.Line() << ":" << err.Col() << "]" << std::endl;
+        std::cerr << err.TypeString() << ": " << err.Message();
+        std::cerr << " [" << options->SourceFile() << ":" << err.Line() << ":" << err.Col() << "]" << std::endl;
 
         return err.ErrorCode();
     }
