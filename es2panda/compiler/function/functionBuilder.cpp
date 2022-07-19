@@ -68,7 +68,10 @@ void FunctionBuilder::SuspendResumeExecution(const ir::AstNode *node, VReg compl
     ASSERT(BuilderKind() == BuilderType::ASYNC || BuilderKind() == BuilderType::ASYNC_GENERATOR ||
            BuilderKind() == BuilderType::GENERATOR);
 
-    pg_->SuspendGenerator(node, funcObj_);
+    RegScope rs(pg_);
+    VReg iterResult = pg_->AllocReg();
+    pg_->StoreAccumulator(node, iterResult);
+    pg_->SuspendGenerator(node, funcObj_, iterResult);
     resumeGenerator(node, completionType, completionValue);
 }
 
@@ -103,8 +106,10 @@ void FunctionBuilder::Await(const ir::AstNode *node)
     RegScope rs(pg_);
     VReg completionType = pg_->AllocReg();
     VReg completionValue = pg_->AllocReg();
+    VReg retVal = pg_->AllocReg();
 
-    pg_->AsyncFunctionAwait(node, funcObj_);
+    pg_->StoreAccumulator(node, retVal);
+    pg_->AsyncFunctionAwait(node, funcObj_, retVal);
     SuspendResumeExecution(node, completionType, completionValue);
 
     HandleCompletion(node, completionType, completionValue);
@@ -239,7 +244,7 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
     // ii. If Type(innerResult) is not Object, throw a TypeError exception.
     // 4. If Type(innerResult) is not Object, throw a TypeError exception.
     // vi. If Type(innerReturnResult) is not Object, throw a TypeError exception.
-    pg_->ThrowIfNotObject(node);
+    pg_->ThrowIfNotObject(node, receivedValue);
 
     // iv. Let done be ? IteratorComplete(innerResult).
     // v. Let done be ? IteratorComplete(innerResult).
@@ -264,8 +269,7 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
         pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, receivedType, loopStart);
 
         // b. Let awaited be Await(resumptionValue.[[Value]]).
-        pg_->LoadAccumulator(node, receivedValue);
-        pg_->AsyncFunctionAwait(node, funcObj_);
+        pg_->AsyncFunctionAwait(node, funcObj_, receivedValue);
         SuspendResumeExecution(node, receivedType, receivedValue);
 
         // c. If awaited.[[Type]] is throw, return Completion(awaited).

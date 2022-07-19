@@ -23,7 +23,15 @@ namespace panda::es2panda::compiler {
 
 void AsyncFunctionBuilder::DirectReturn(const ir::AstNode *node) const
 {
-    pg_->AsyncFunctionResolve(node, funcObj_);
+    RegScope rs(pg_);
+    VReg retVal = pg_->AllocReg();
+    VReg canSuspend = pg_->AllocReg();
+
+    pg_->StoreAccumulator(node, retVal);
+    pg_->LoadConst(node, Constant::JS_TRUE);
+    pg_->StoreAccumulator(node, canSuspend);
+    pg_->AsyncFunctionResolve(node, funcObj_, retVal, canSuspend);
+    pg_->LoadAccumulator(node, retVal);
     pg_->EmitReturn(node);
 }
 
@@ -33,7 +41,7 @@ void AsyncFunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
     DirectReturn(node);
 }
 
-void AsyncFunctionBuilder::Prepare(const ir::ScriptFunction *node) const
+void AsyncFunctionBuilder::Prepare(const ir::ScriptFunction *node)
 {
     pg_->AsyncFunctionEnter(node);
     pg_->StoreAccumulator(node, funcObj_);
@@ -42,11 +50,16 @@ void AsyncFunctionBuilder::Prepare(const ir::ScriptFunction *node) const
 
 void AsyncFunctionBuilder::CleanUp(const ir::ScriptFunction *node) const
 {
+    RegScope rs(pg_);
     const auto &labelSet = catchTable_->LabelSet();
 
     pg_->SetLabel(node, labelSet.TryEnd());
     pg_->SetLabel(node, labelSet.CatchBegin());
-    pg_->AsyncFunctionReject(node, funcObj_);
+    VReg exception = pg_->AllocReg();
+    VReg canSuspend = pg_->AllocReg();
+    pg_->StoreAccumulator(node, exception);
+    pg_->StoreConst(node, canSuspend, Constant::JS_TRUE);
+    pg_->AsyncFunctionReject(node, funcObj_, exception, canSuspend);
     pg_->EmitReturn(node);
     pg_->SetLabel(node, labelSet.CatchEnd());
 }

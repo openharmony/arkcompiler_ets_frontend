@@ -30,7 +30,7 @@ public:
     NO_COPY_SEMANTIC(AsyncGeneratorFunctionBuilder);
     NO_MOVE_SEMANTIC(AsyncGeneratorFunctionBuilder);
 
-    void Prepare(const ir::ScriptFunction *node) const override;
+    void Prepare(const ir::ScriptFunction *node) override;
     void CleanUp(const ir::ScriptFunction *node) const override;
 
     void DirectReturn(const ir::AstNode *node) const override;

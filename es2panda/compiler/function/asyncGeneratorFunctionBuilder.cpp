@@ -20,13 +20,13 @@
 #include <ir/base/scriptFunction.h>
 
 namespace panda::es2panda::compiler {
-void AsyncGeneratorFunctionBuilder::Prepare(const ir::ScriptFunction *node) const
+void AsyncGeneratorFunctionBuilder::Prepare(const ir::ScriptFunction *node)
 {
     VReg callee = FunctionReg(node);
 
     pg_->CreateAsyncGeneratorObj(node, callee);
     pg_->StoreAccumulator(node, funcObj_);
-    pg_->SuspendGenerator(node, funcObj_);
+    // pg_->SuspendGenerator(node, funcObj_); TODO implement this part correctly while implementing async generator
     pg_->SetLabel(node, catchTable_->LabelSet().TryBegin());
 }
 
@@ -72,7 +72,7 @@ void AsyncGeneratorFunctionBuilder::Yield(const ir::AstNode *node)
     pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, completionType, notReturnCompletion);
     // 27.6.3.8.8.b. Let awaited be Await(resumptionValue.[[Value]]).
     pg_->LoadAccumulator(node, completionValue);
-    pg_->AsyncFunctionAwait(node, funcObj_);
+    pg_->AsyncFunctionAwait(node, funcObj_, completionValue);
     SuspendResumeExecution(node, completionType, completionValue);
 
     // 27.6.3.8.8.c. If awaited.[[Type]] is throw, return Completion(awaited).
