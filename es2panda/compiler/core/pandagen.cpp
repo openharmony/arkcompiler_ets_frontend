@@ -31,8 +31,10 @@
 #include <compiler/function/generatorFunctionBuilder.h>
 #include <es2panda.h>
 #include <gen/isa.h>
+#include <ir/base/classDefinition.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/base/spreadElement.h>
+#include <ir/expressions/functionExpression.h>
 #include <ir/statement.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/literals/numberLiteral.h>
@@ -320,10 +322,10 @@ void PandaGen::StoreObjProperty(const ir::AstNode *node, VReg obj, const Operand
     StoreObjByName(node, obj, std::get<util::StringView>(prop));
 }
 
-void PandaGen::StoreOwnProperty(const ir::AstNode *node, VReg obj, const Operand &prop)
+void PandaGen::StoreOwnProperty(const ir::AstNode *node, VReg obj, const Operand &prop, bool nameSetting)
 {
     if (std::holds_alternative<VReg>(prop)) {
-        StOwnByValue(node, obj, std::get<VReg>(prop));
+        StOwnByValue(node, obj, std::get<VReg>(prop), nameSetting);
         return;
     }
 
@@ -333,7 +335,7 @@ void PandaGen::StoreOwnProperty(const ir::AstNode *node, VReg obj, const Operand
     }
 
     ASSERT(std::holds_alternative<util::StringView>(prop));
-    StOwnByName(node, obj, std::get<util::StringView>(prop));
+    StOwnByName(node, obj, std::get<util::StringView>(prop), nameSetting);
 }
 
 void PandaGen::TryLoadGlobalByName(const ir::AstNode *node, const util::StringView &name)
@@ -380,20 +382,22 @@ void PandaGen::StoreObjByIndex(const ir::AstNode *node, VReg obj, int64_t index)
     ra_.Emit<EcmaStobjbyindex>(node, index, obj);
 }
 
-void PandaGen::StOwnByName(const ir::AstNode *node, VReg obj, const util::StringView &prop)
+void PandaGen::StOwnByName(const ir::AstNode *node, VReg obj, const util::StringView &prop, bool nameSetting)
 {
-    ra_.Emit<EcmaStownbyname>(node, prop, obj);
+    nameSetting ? ra_.Emit<EcmaStownbynamewithnameset>(node, prop, obj) :
+                  ra_.Emit<EcmaStownbyname>(node, prop, obj);
     strings_.insert(prop);
 }
 
-void PandaGen::StOwnByValue(const ir::AstNode *node, VReg obj, VReg prop)
+void PandaGen::StOwnByValue(const ir::AstNode *node, VReg obj, VReg prop, bool nameSetting)
 {
-    ra_.Emit<EcmaStownbyvalue>(node, obj, prop);
+    nameSetting ? ra_.Emit<EcmaStownbyvaluewithnameset>(node, obj, prop) :
+                  ra_.Emit<EcmaStownbyvalue>(node, obj, prop);
 }
 
 void PandaGen::StOwnByIndex(const ir::AstNode *node, VReg obj, int64_t index)
 {
-    ra_.Emit<EcmaStownbyindex>(node, index, obj);
+    ra_.Emit<EcmaStownbyindex>(node, obj, index);
 }
 
 void PandaGen::DeleteObjProperty(const ir::AstNode *node, VReg obj, const Operand &prop)
@@ -828,6 +832,16 @@ void PandaGen::BranchIfNotUndefined(const ir::AstNode *node, Label *target)
     sa_.Emit<Jeqz>(node, target);
 }
 
+void PandaGen::BranchIfStrictNotUndefined(const ir::AstNode *node, class Label *target)
+{
+    RegScope rs(this);
+    VReg tmp = AllocReg();
+    StoreAccumulator(node, tmp);
+    LoadConst(node, Constant::JS_UNDEFINED);
+    ra_.Emit<EcmaStricteqdyn>(node, tmp);
+    sa_.Emit<Jeqz>(node, target);
+}
+
 void PandaGen::BranchIfTrue(const ir::AstNode *node, Label *target)
 {
     sa_.Emit<EcmaIstrue>(node);
@@ -891,7 +905,7 @@ void PandaGen::ValidateClassDirectReturn(const ir::AstNode *node)
     auto *notUndefined = AllocLabel();
     auto *condEnd = AllocLabel();
 
-    BranchIfNotUndefined(node, notUndefined);
+    BranchIfStrictNotUndefined(node, notUndefined);
     GetThis(func);
     ThrowIfSuperNotCorrectCall(func, 0);
     Branch(node, condEnd);
@@ -968,7 +982,7 @@ void PandaGen::LoadHomeObject(const ir::AstNode *node)
 
 void PandaGen::DefineFunction(const ir::AstNode *node, const ir::ScriptFunction *realNode, const util::StringView &name)
 {
-    auto formalParamCnt = FormalParametersCount();
+    auto formalParamCnt = realNode->FormalParamsLength();
     if (realNode->IsAsync()) {
         if (realNode->IsGenerator()) {
             // TODO(): async generator
@@ -1369,7 +1383,7 @@ void PandaGen::ImportModule(const ir::AstNode *node, const util::StringView &nam
 void PandaGen::DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctorId, int32_t litIdx,
                                      VReg lexenv, VReg base)
 {
-    auto formalParamCnt = FormalParametersCount();
+    auto formalParamCnt = node->AsClassDefinition()->Ctor()->Function()->FormalParamsLength();
     ra_.Emit<EcmaDefineclasswithbuffer>(node, ctorId, litIdx, static_cast<int64_t>(formalParamCnt), lexenv, base);
     strings_.insert(ctorId);
 }
@@ -1558,11 +1572,15 @@ Operand PandaGen::ToNamedPropertyKey(const ir::Expression *prop, bool isComputed
 {
     VReg res {0};
 
-    if (!isComputed) {
-        if (prop->IsIdentifier()) {
-            return prop->AsIdentifier()->Name();
-        }
-    } else if (prop->IsStringLiteral()) {
+    if (isComputed) {
+        return res;
+    }
+
+    if (prop->IsIdentifier()) {
+        return prop->AsIdentifier()->Name();
+    }
+
+    if (prop->IsStringLiteral()) {
         const util::StringView &str = prop->AsStringLiteral()->Str();
 
         /* TODO(dbatyai): remove this when runtime handles __proto__ as property name correctly */
@@ -1576,7 +1594,9 @@ Operand PandaGen::ToNamedPropertyKey(const ir::Expression *prop, bool isComputed
         }
 
         return str;
-    } else if (prop->IsNumberLiteral()) {
+    }
+
+    if (prop->IsNumberLiteral()) {
         auto num = prop->AsNumberLiteral()->Number<double>();
         if (util::Helpers::IsIndex(num)) {
             return static_cast<int64_t>(num);
