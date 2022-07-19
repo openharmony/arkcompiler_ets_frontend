@@ -80,7 +80,7 @@ void Binder::IdentifierAnalysis()
     ASSERT(program_->Ast());
     ASSERT(scope_ == topScope_);
 
-    BuildFunction(topScope_, "main");
+    BuildFunction(topScope_, MAIN_FUNC_NAME);
     ResolveReferences(program_->Ast());
     AddMandatoryParams();
 }
@@ -160,13 +160,22 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
 
 void Binder::BuildFunction(FunctionScope *funcScope, util::StringView name)
 {
-    uint32_t idx = functionScopes_.size();
     functionScopes_.push_back(funcScope);
 
+    bool funcNameWithoutDot = (name.Find(".") == std::string::npos);
+    bool funcNameWithoutBackslash = (name.Find("\\") == std::string::npos);
+    if (name != ANONYMOUS_FUNC_NAME && funcNameWithoutDot && funcNameWithoutBackslash && !functionNames_.count(name)) {
+        functionNames_.insert(name);
+        funcScope->BindName(name, name);
+        return;
+    }
     std::stringstream ss;
-    ss << "func_" << name << "_" << std::to_string(idx);
+    uint32_t idx = functionNameIndex_++;
+    ss << "#" << std::to_string(idx) << "#";
+    if (funcNameWithoutDot && funcNameWithoutBackslash) {
+        ss << name;
+    }
     util::UString internalName(ss.str(), Allocator());
-
     funcScope->BindName(name, internalName.View());
 }
 

@@ -41,7 +41,12 @@ class VariableScope;
 
 class Binder {
 public:
-    explicit Binder(parser::Program *program) : program_(program), functionScopes_(Allocator()->Adapter()) {}
+    explicit Binder(parser::Program *program)
+        : program_(program),
+          functionScopes_(Allocator()->Adapter()),
+          functionNames_(Allocator()->Adapter())
+    {
+    }
     NO_COPY_SEMANTIC(Binder);
     DEFAULT_MOVE_SEMANTIC(Binder);
     ~Binder() = default;
@@ -104,6 +109,9 @@ public:
     static constexpr std::string_view LEXICAL_MANDATORY_PARAM_NEW_TARGET = "!nt";
     static constexpr std::string_view LEXICAL_MANDATORY_PARAM_THIS = "!t";
 
+    static constexpr std::string_view MAIN_FUNC_NAME = "func_main_0";
+    static constexpr std::string_view ANONYMOUS_FUNC_NAME = "";
+
 private:
     using MandatoryParams = std::array<std::string_view, MANDATORY_PARAMS_NUMBER>;
 
@@ -138,6 +146,8 @@ private:
     GlobalScope *topScope_ {};
     Scope *scope_ {};
     ArenaVector<FunctionScope *> functionScopes_;
+    ArenaSet<util::StringView> functionNames_;
+    size_t functionNameIndex_ {1};
 };
 
 template <typename T>

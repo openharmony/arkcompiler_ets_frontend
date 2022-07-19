@@ -109,6 +109,11 @@ public:
         return StringView(std::string_view(sv_.data() + begin, end - begin));
     }
 
+    constexpr size_t Find(const char *str)
+    {
+        return sv_.find(str);
+    }
+
     static bool IsHighSurrogate(char32_t cp)
     {
         return (cp >= Constants::SURROGATE_HIGH_MIN && cp < Constants::SURROGATE_HIGH_MAX);
