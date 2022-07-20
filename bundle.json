@@ -4,7 +4,7 @@
     "version": "3.1",
     "license": "Apache V2",
     "component": {
-        "name": "ark_ts2abc",
+        "name": "ets_frontend",
         "subsystem": "ark",
         "syscap": [],
         "features": [],
@@ -19,7 +19,7 @@
         },
         "build": {
             "sub_component": [
-                "//arkcompiler/ets_frontend:ets_frontend"
+                "//arkcompiler/ets_frontend:ets_frontend_build"
             ],
             "inner_kits": [],
             "test": []

@@ -14,7 +14,7 @@
 import("//arkcompiler/runtime_core/ark_config.gni")
 import("//build/ohos.gni")
 
-group("ets_frontend") {
+group("ets_frontend_build") {
   deps = [
     "./es2panda:es2panda_build",
     "./ts2panda:ark_ts2abc_build",
