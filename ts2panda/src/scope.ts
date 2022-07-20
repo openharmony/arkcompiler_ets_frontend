@@ -420,7 +420,7 @@ export class ModuleScope extends VariableScope {
 
     setExportDecl(exportedLocalName: string) {
         let decl = this.getDecl(exportedLocalName);
-        if (decl) {
+        if (decl && decl.isModule != ModuleVarKind.IMPORTED) {
             decl.isModule = ModuleVarKind.EXPORTED;
         }
     }

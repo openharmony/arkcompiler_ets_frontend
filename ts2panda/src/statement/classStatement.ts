@@ -137,8 +137,12 @@ export function compileClassDeclaration(compiler: Compiler, stmt: ts.ClassLikeDe
                 pandaGen.stClassToGlobalRecord(stmt, className);
             } else {
                 let classInfo = classScope.find(className);
-                (<LocalVariable>classInfo.v).initialize();
-                pandaGen.storeAccToLexEnv(stmt, classInfo.scope!, classInfo.level, classInfo.v!, true);
+                (<LocalVariable | ModuleVariable>classInfo.v).initialize();
+                if (classInfo.v instanceof ModuleVariable) {
+                    pandaGen.storeModuleVariable(stmt, className);
+                } else {
+                    pandaGen.storeAccToLexEnv(stmt, classInfo.scope!, classInfo.level, classInfo.v!, true);
+                }
             }
         } else {
             // throw SyntaxError in SyntaxChecker
