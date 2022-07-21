@@ -416,10 +416,11 @@ function loadCtorObj(node: ts.CallExpression, compiler: Compiler) {
         return;
     }
 
-    let nearestFuncScope = <FunctionScope>recorder.getScopeOfNode(nearestFunc);
-    if (!nearestFuncScope) {
-        return;
-    }
+    // TODO the design needs to be reconsidered
+    // let nearestFuncScope = <FunctionScope>recorder.getScopeOfNode(nearestFunc);
+    // if (!nearestFuncScope) {
+    //     return;
+    // }
 
     if (ts.isConstructorDeclaration(nearestFunc)) {
         pandaGen.loadAccumulator(node, getVregisterCache(pandaGen, CacheList.FUNC));
