@@ -27,7 +27,7 @@ import sys
 import subprocess
 from multiprocessing import Pool
 import platform
-from utils import * 
+from utils import *
 from config import *
 
 
@@ -78,13 +78,13 @@ def parse_args():
                         help="Run test262 with aot")
     parser.add_argument('--ark-aot-tool',
                         help="ark's aot tool")
-    parser.add_argument('--ark-frontend-tool',
-                        help="ark frontend conversion tool")
     parser.add_argument("--libs-dir",
                         help="The path collection of dependent so has been divided by':'")
     parser.add_argument('--ark-frontend',
                         nargs='?', choices=ARK_FRONTEND_LIST, type=str,
                         help="Choose one of them")
+    parser.add_argument('--ark-frontend-binary',
+                        help="ark frontend conversion binary tool")
     parser.add_argument('--ark-arch',
                         default=DEFAULT_ARK_ARCH,
                         nargs='?', choices=ARK_ARCH_LIST, type=str,
@@ -92,6 +92,12 @@ def parse_args():
     parser.add_argument('--ark-arch-root',
                         default=DEFAULT_ARK_ARCH,
                         help="the root path for qemu-aarch64 or qemu-arm")
+    parser.add_argument('--opt-level',
+                        default=DEFAULT_OPT_LEVEL,
+                        help="the opt level for es2abc")
+    parser.add_argument('--es2abc-thread-count',
+                        default=DEFAULT_ES2ABC_THREAD_COUNT,
+                        help="the thread count for es2abc")
     return parser.parse_args()
 
 
@@ -113,15 +119,15 @@ def excuting_npm_install(args):
     if args.ark_frontend:
         ark_frontend = args.ark_frontend
 
-    if ark_frontend != DEFAULT_ARK_FRONTEND:
+    if ark_frontend != ARK_FRONTEND_LIST[0]:
         return
 
-    ark_frontend_tool = os.path.join(DEFAULT_ARK_FRONTEND_TOOL)
-    if args.ark_frontend_tool:
-        ark_frontend_tool = os.path.join(args.ark_frontend_tool)
+    ark_frontend_binary = os.path.join(ARK_FRONTEND_BINARY_LIST[0])
+    if args.ark_frontend_binary:
+        ark_frontend_binary = os.path.join(args.ark_frontend_binary)
 
     ts2abc_build_dir = os.path.join(os.path.dirname(
-        os.path.realpath(ark_frontend_tool)), "..")
+        os.path.realpath(ark_frontend_binary)), "..")
 
     if os.path.exists(os.path.join(ts2abc_build_dir, "package.json")):
         npm_install(ts2abc_build_dir)
@@ -337,7 +343,7 @@ class TestPrepare():
         if self.args.intl:
             files = self.get_tests_from_file(INTL_LIST_FILE)
         return files
-        
+
     def prepare_es2015_tests(self):
         files = []
         files = self.collect_tests()
@@ -473,11 +479,13 @@ def get_host_args(args, host_type):
     host_args = ""
     ark_tool = DEFAULT_ARK_TOOL
     ark_aot_tool = DEFAULT_ARK_AOT_TOOL
-    ark_frontend_tool = DEFAULT_ARK_FRONTEND_TOOL
     libs_dir = DEFAULT_LIBS_DIR
     ark_frontend = DEFAULT_ARK_FRONTEND
+    ark_frontend_binary = DEFAULT_ARK_FRONTEND_BINARY
     ark_arch = DEFAULT_ARK_ARCH
     module_list = ''
+    opt_level = DEFAULT_OPT_LEVEL
+    es2abc_thread_count = DEFAULT_ES2ABC_THREAD_COUNT
     with open(MODULE_FILES_LIST) as fopen:
         module_list = fopen.read()
 
@@ -490,14 +498,20 @@ def get_host_args(args, host_type):
     if args.ark_aot_tool:
         ark_aot_tool = args.ark_aot_tool
 
-    if args.ark_frontend_tool:
-        ark_frontend_tool = args.ark_frontend_tool
-
     if args.libs_dir:
         libs_dir = args.libs_dir
 
     if args.ark_frontend:
         ark_frontend = args.ark_frontend
+
+    if args.ark_frontend_binary:
+        ark_frontend_binary = args.ark_frontend_binary
+
+    if args.opt_level:
+        opt_level = args.opt_level
+
+    if args.es2abc_thread_count:
+        es2abc_thread_count = args.es2abc_thread_count
 
     if host_type == DEFAULT_HOST_TYPE:
         host_args = f"-B test262/run_sunspider.py "
@@ -505,10 +519,12 @@ def get_host_args(args, host_type):
         if args.ark_aot:
             host_args += f"--ark-aot "
         host_args += f"--ark-aot-tool={ark_aot_tool} "
-        host_args += f"--ark-frontend-tool={ark_frontend_tool} "
         host_args += f"--libs-dir={libs_dir} "
         host_args += f"--ark-frontend={ark_frontend} "
+        host_args += f"--ark-frontend-binary={ark_frontend_binary} "
         host_args += f"--module-list={module_list} "
+        host_args += f"--opt-level={opt_level} "
+        host_args += f"--es2abc-thread-count={es2abc_thread_count} "
 
     if args.ark_arch != ark_arch:
         host_args += f"--ark-arch={args.ark_arch} "

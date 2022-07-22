@@ -43,7 +43,6 @@ TEST_ES2021_DIR = os.path.join(DATA_DIR, "test_es2021")
 TEST_INTL_DIR = os.path.join(DATA_DIR, "test_intl")
 TEST_CI_DIR = os.path.join(DATA_DIR, "test_CI")
 
-DEFAULT_ARK_FRONTEND_TOOL = os.path.join(ARK_DIR, "build", "src", "index.js")
 DEFAULT_ARK_TOOL = os.path.join(ARK_JS_RUNTIME_DIR, "ark_js_vm")
 DEFAULT_ARK_AOT_TOOL = os.path.join(ARK_JS_RUNTIME_DIR, "ark_aot_compiler")
 DEFAULT_LIBS_DIR = f"{ARK_DIR}:{ICUI_DIR}:{LLVM_DIR}:{ARK_JS_RUNTIME_DIR}"
@@ -81,7 +80,14 @@ ARK_FRONTEND_LIST = [
     "ts2panda",
     "es2panda"
 ]
+
+ARK_FRONTEND_BINARY_LIST = [
+    os.path.join(ARK_DIR, "build", "src", "index.js"),
+    os.path.join(ARK_DIR, "es2abc")
+]
+
 DEFAULT_ARK_FRONTEND = ARK_FRONTEND_LIST[0]
+DEFAULT_ARK_FRONTEND_BINARY = ARK_FRONTEND_BINARY_LIST[0]
 
 ARK_ARCH_LIST = [
     "x64",
@@ -90,3 +96,5 @@ ARK_ARCH_LIST = [
 ]
 
 DEFAULT_ARK_ARCH = ARK_ARCH_LIST[0]
+DEFAULT_OPT_LEVEL = 0
+DEFAULT_ES2ABC_THREAD_COUNT = 0
