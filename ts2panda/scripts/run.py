@@ -110,6 +110,8 @@ def npm_run_build(options):
 
     cmd = [webpack,  '--config', 'webpack.config.js', '--progress',
            '--env', 'buildMode={}'.format(options.buildMode)]
+    if os.getenv("NO_DEVTOOL"):
+        cmd += ['--no-devtool']
     run_command(cmd, options.dist_dir)
     if plat_form == "linux":
         per_platform_config(options, "build")
