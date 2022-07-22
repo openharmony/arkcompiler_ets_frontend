@@ -24,6 +24,7 @@ import { LOGE } from "./log";
 import { setGlobalDeclare, setGlobalStrict } from "./strictMode";
 import { TypeChecker } from "./typeChecker";
 import { setPos, isBase64Str, transformCommonjsModule } from "./base/util";
+import { IGNORE_ERROR_CODE } from './ignoreSyntaxError'
 
 function checkIsGlobalDeclaration(sourceFile: ts.SourceFile) {
     for (let statement of sourceFile.statements) {
@@ -63,6 +64,10 @@ function main(fileNames: string[], options: ts.CompilerOptions) {
                 generateDTs(sourceFile, options);
             }
         }
+    }
+
+    if (checkDiagnosticsError(program)) {
+        return;
     }
 
     let emitResult = program.emit(
@@ -120,6 +125,10 @@ function main(fileNames: string[], options: ts.CompilerOptions) {
         .concat(emitResult.diagnostics);
 
     allDiagnostics.forEach(diagnostic => {
+        let ignoerErrorSet = new Set(IGNORE_ERROR_CODE);
+        if (ignoerErrorSet.has(diagnostic.code)) {
+          return;
+        }
         diag.printDiagnostic(diagnostic);
     });
 }
@@ -245,12 +254,29 @@ function keepWatchingFiles(filePath: string, parsed: ts.ParsedCommandLine | unde
     });
 }
 
+function checkDiagnosticsError(program: ts.Program) {
+    let diagnosticsFlag = false;
+    let allDiagnostics = ts
+        .getPreEmitDiagnostics(program);
+    allDiagnostics.forEach(diagnostic => {
+        let ignoerErrorSet = new Set(IGNORE_ERROR_CODE);
+        if (ignoerErrorSet.has(diagnostic.code)) {
+            diagnosticsFlag = false;
+            return;
+        }
+        diagnosticsFlag = true;
+        diag.printDiagnostic(diagnostic);
+    });
+
+    return diagnosticsFlag;
+}
+
 namespace Compiler {
     export namespace Options {
         export let Default: ts.CompilerOptions = {
             outDir: "../tmp/build",
             allowJs: true,
-            noEmitOnError: true,
+            noEmitOnError: false,
             noImplicitAny: true,
             target: ts.ScriptTarget.ES2017,
             module: ts.ModuleKind.ES2015,
