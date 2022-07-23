@@ -47,9 +47,10 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     /* TODO(dbatyai): pass string view */
     std::string fname(input.fileName);
     std::string src(input.source);
+    parser::ScriptKind kind(input.scriptKind);
 
     try {
-        auto ast = input.isModule ? parser_->ParseModule(fname, src) : parser_->ParseScript(fname, src);
+        auto ast = parser_->Parse(fname, src, kind);
 
         if (options.dumpAst) {
             std::cout << ast.Dump() << std::endl;
@@ -72,5 +73,4 @@ void Compiler::DumpAsm(const panda::pandasm::Program *prog)
 {
     compiler::CompilerImpl::DumpAsm(prog);
 }
-
 }  // namespace panda::es2panda

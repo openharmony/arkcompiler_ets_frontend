@@ -107,8 +107,15 @@ public:
     static constexpr std::string_view MANDATORY_PARAM_NEW_TARGET = "=nt";
     static constexpr std::string_view MANDATORY_PARAM_THIS = "=t";
 
+    static constexpr std::string_view CJS_MANDATORY_PARAM_EXPORTS = "exports";
+    static constexpr std::string_view CJS_MANDATORY_PARAM_REQUIRE = "require";
+    static constexpr std::string_view CJS_MANDATORY_PARAM_MODULE = "module";
+    static constexpr std::string_view CJS_MANDATORY_PARAM_FILENAME = "__filename";
+    static constexpr std::string_view CJS_MANDATORY_PARAM_DIRNAME = "__dirname";
+
     static constexpr uint32_t MANDATORY_PARAM_FUNC_REG = 0;
     static constexpr uint32_t MANDATORY_PARAMS_NUMBER = 3;
+    static constexpr uint32_t CJS_MANDATORY_PARAMS_NUMBER = 8;
 
     static constexpr std::string_view LEXICAL_MANDATORY_PARAM_FUNC = "!f";
     static constexpr std::string_view LEXICAL_MANDATORY_PARAM_NEW_TARGET = "!nt";
@@ -119,6 +126,7 @@ public:
 
 private:
     using MandatoryParams = std::array<std::string_view, MANDATORY_PARAMS_NUMBER>;
+    using CommonjsMandatoryParams = std::array<std::string_view, CJS_MANDATORY_PARAMS_NUMBER>;
 
     static constexpr MandatoryParams FUNCTION_MANDATORY_PARAMS = {MANDATORY_PARAM_FUNC, MANDATORY_PARAM_NEW_TARGET,
                                                                   MANDATORY_PARAM_THIS};
@@ -129,8 +137,21 @@ private:
     static constexpr MandatoryParams CTOR_ARROW_MANDATORY_PARAMS = {
         LEXICAL_MANDATORY_PARAM_FUNC, LEXICAL_MANDATORY_PARAM_NEW_TARGET, LEXICAL_MANDATORY_PARAM_THIS};
 
+    static constexpr CommonjsMandatoryParams CJS_MAINFUNC_MANDATORY_PARAMS = {
+        MANDATORY_PARAM_FUNC, MANDATORY_PARAM_NEW_TARGET, MANDATORY_PARAM_THIS,
+        CJS_MANDATORY_PARAM_EXPORTS, CJS_MANDATORY_PARAM_REQUIRE, CJS_MANDATORY_PARAM_MODULE,
+        CJS_MANDATORY_PARAM_FILENAME, CJS_MANDATORY_PARAM_DIRNAME};
+
     void AddMandatoryParam(const std::string_view &name);
-    void AddMandatoryParams(const MandatoryParams &params);
+
+    template<typename T>
+    void AddMandatoryParams(const T &params)
+    {
+        for (auto iter = params.rbegin(); iter != params.rend(); iter++) {
+            AddMandatoryParam(*iter);
+        }
+    }
+
     void AddMandatoryParams();
     void BuildFunction(FunctionScope *funcScope, util::StringView name);
     void BuildScriptFunction(Scope *outerScope, const ir::ScriptFunction *scriptFunc);

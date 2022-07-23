@@ -106,6 +106,7 @@ public:
 
 private:
     void GenESAnnoatationRecord();
+    void GenCommonjsRecord(bool isCommonjs);
 
     std::mutex m_;
     panda::pandasm::Program *prog_;

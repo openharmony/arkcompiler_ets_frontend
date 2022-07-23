@@ -52,6 +52,7 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<std::string> inputExtension("extension", "js",
                                                "Parse the input as the given extension (options: js | ts | as)");
     panda::PandArg<bool> opModule("module", false, "Parse the input as module");
+    panda::PandArg<bool> opCommonjs("commonjs", false, "Parse the input as commonjs");
     panda::PandArg<bool> opParseOnly("parse-only", false, "Parse the input only");
     panda::PandArg<bool> opDumpAst("dump-ast", false, "Dump the parsed AST");
 
@@ -72,6 +73,7 @@ bool Options::Parse(int argc, const char **argv)
 
     argparser_->Add(&opHelp);
     argparser_->Add(&opModule);
+    argparser_->Add(&opCommonjs);
     argparser_->Add(&opDumpAst);
     argparser_->Add(&opParseOnly);
     argparser_->Add(&opDumpAssembly);
@@ -167,8 +169,17 @@ bool Options::Parse(int argc, const char **argv)
         options_ |= OptionFlags::PARSE_ONLY;
     }
 
+    if (opModule.GetValue() && opCommonjs.GetValue()) {
+        errorMsg_ = "[--module] and [--commonjs] can not be used simultaneously";
+        return false;
+    }
+
     if (opModule.GetValue()) {
-        options_ |= OptionFlags::PARSE_MODULE;
+        scriptKind_ = es2panda::parser::ScriptKind::MODULE;
+    }
+
+    if (opCommonjs.GetValue()) {
+        scriptKind_ = es2panda::parser::ScriptKind::COMMONJS;
     }
 
     if (opSizeStat.GetValue()) {

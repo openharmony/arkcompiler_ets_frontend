@@ -356,6 +356,7 @@ Emitter::Emitter(const CompilerContext *context)
 
     prog_->function_table.reserve(context->Binder()->Functions().size());
     GenESAnnoatationRecord();
+    GenCommonjsRecord(context->Binder()->Program()->Kind() == parser::ScriptKind::COMMONJS);
 }
 
 Emitter::~Emitter()

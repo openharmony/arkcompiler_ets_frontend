@@ -176,8 +176,7 @@ public:
     NO_MOVE_SEMANTIC(ParserImpl);
     ~ParserImpl() = default;
 
-    Program ParseScript(const std::string &fileName, const std::string &source);
-    Program ParseModule(const std::string &fileName, const std::string &source);
+    Program Parse(const std::string &fileName, const std::string &source, ScriptKind kind);
 
     ScriptExtension Extension() const;
 
@@ -206,6 +205,17 @@ private:
     }
 
     [[nodiscard]] std::unique_ptr<lexer::Lexer> InitLexer(const std::string &fileName, const std::string &source);
+    void ParseScript(const std::string &fileName, const std::string &source);
+    void ParseModule(const std::string &fileName, const std::string &source);
+    /*
+     * Transform the commonjs's AST by wrapping the sourceCode
+     * e.g. (function (exports, require, module, __filename, __dirname) {
+     *          [Origin_SourceCode]
+     *      })(exports, require, module, __filename, __dirname);
+     */
+    void ParseCommonjs(const std::string &fileName, const std::string &source);
+    void AddCommonjsParams(ArenaVector<ir::Expression *> &params);
+    void AddCommonjsArgs(ArenaVector<ir::Expression *> &args);
     void ParseProgram(ScriptKind kind);
     static ExpressionParseFlags CarryExpressionParserFlag(ExpressionParseFlags origin, ExpressionParseFlags carry);
     static ExpressionParseFlags CarryPatternFlags(ExpressionParseFlags flags);
