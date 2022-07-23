@@ -193,7 +193,7 @@ static size_t GetIRNodeWholeLength(const IRNode *node)
     return len;
 }
 
-static std::string WholeLine(const util::StringView &source, lexer::SourceRange range)
+[[maybe_unused]] static std::string WholeLine(const util::StringView &source, lexer::SourceRange range)
 {
     return source.Substr(range.start.index, range.end.index).EscapeSymbol<util::StringView::Mutf8Encode>();
 }
@@ -211,7 +211,7 @@ void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, panda::pandasm:
         }
     }
 
-    pandaIns->ins_debug.line_number = astNode->Range().start.line + 1;
+    pandaIns->ins_debug.line_number = astNode->Range().start.line;
 
     if (pg_->IsDebug()) {
         size_t insLen = GetIRNodeWholeLength(ins);
@@ -221,7 +221,8 @@ void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, panda::pandasm:
         }
 
         offset_ += insLen;
-        pandaIns->ins_debug.whole_line = WholeLine(SourceCode(), astNode->Range());
+
+        pandaIns->ins_debug.column_number = astNode->Range().start.index;
     }
 }
 
