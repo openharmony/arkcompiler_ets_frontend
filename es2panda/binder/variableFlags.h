@@ -24,6 +24,7 @@ namespace panda::es2panda::binder {
     _(VAR, VarDecl)                      \
     _(LET, LetDecl)                      \
     _(CONST, ConstDecl)                  \
+    _(CLASS, ClassDecl)                  \
     _(FUNC, FunctionDecl)                \
     _(PARAM, ParameterDecl)              \
     _(IMPORT, ImportDecl)                \

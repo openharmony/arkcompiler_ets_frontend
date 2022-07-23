@@ -151,7 +151,7 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
         return;
     }
 
-    if (res.variable->Declaration()->IsLetOrConstDecl() && !res.variable->HasFlag(VariableFlags::INITIALIZED)) {
+    if (res.variable->Declaration()->IsLetOrConstOrClassDecl() && !res.variable->HasFlag(VariableFlags::INITIALIZED)) {
         ident->SetTdz();
     }
 
@@ -254,7 +254,7 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
     if (classDef->Parent()->IsClassDeclaration()) {
         ScopeFindResult res = scope_->Find(classDef->Ident()->Name());
 
-        ASSERT(res.variable && res.variable->Declaration()->IsLetDecl());
+        ASSERT(res.variable && res.variable->Declaration()->IsClassDecl());
         res.variable->AddFlag(VariableFlags::INITIALIZED);
     }
 

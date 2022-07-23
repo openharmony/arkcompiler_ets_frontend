@@ -222,6 +222,12 @@ void PandaGen::LoadVar(const ir::Identifier *node, const binder::ScopeFindResult
     }
 
     ASSERT(var->IsLocalVariable());
+
+    if (var->Declaration()->IsLetOrConstOrClassDecl() && result.scope->IsGlobalScope()) {
+        TryLoadGlobalByName(node, result.name);
+        return;
+    }
+
     LoadAccFromLexEnv(node, result);
 }
 
@@ -245,6 +251,20 @@ void PandaGen::StoreVar(const ir::AstNode *node, const binder::ScopeFindResult &
     }
 
     ASSERT(var->IsLocalVariable());
+
+    if (var->Declaration()->IsLetOrConstOrClassDecl() && result.scope->IsGlobalScope()) {
+        if (!isDeclaration) {
+            TryStoreGlobalByName(node, var->Name());
+        } else if (var->Declaration()->IsLetDecl()) {
+            StLetToGlobalRecord(node, var->Name());
+        } else if (var->Declaration()->IsConstDecl()) {
+            StConstToGlobalRecord(node, var->Name());
+        } else if (var->Declaration()->IsClassDecl()) {
+            StClassToGlobalRecord(node, var->Name());
+        }
+        return;
+    }
+
     StoreAccToLexEnv(node, result, isDeclaration);
 }
 
@@ -453,6 +473,12 @@ void PandaGen::LoadAccumulatorInt(const ir::AstNode *node, int32_t num)
 void PandaGen::LoadAccumulatorInt(const ir::AstNode *node, size_t num)
 {
     sa_.Emit<LdaiDyn>(node, static_cast<int64_t>(num));
+}
+
+void PandaGen::LoadAccumulatorBigInt(const ir::AstNode *node, const util::StringView &num)
+{
+    sa_.Emit<EcmaLdbigint>(node, num);
+    strings_.insert(num);
 }
 
 void PandaGen::StoreConst(const ir::AstNode *node, VReg reg, Constant id)
@@ -804,6 +830,7 @@ void PandaGen::BranchIfNotUndefined(const ir::AstNode *node, Label *target)
 
 void PandaGen::BranchIfTrue(const ir::AstNode *node, Label *target)
 {
+    sa_.Emit<EcmaIstrue>(node);
     sa_.Emit<Jnez>(node, target);
 }
 
@@ -815,7 +842,8 @@ void PandaGen::BranchIfNotTrue(const ir::AstNode *node, Label *target)
 
 void PandaGen::BranchIfFalse(const ir::AstNode *node, Label *target)
 {
-    sa_.Emit<Jeqz>(node, target);
+    sa_.Emit<EcmaIsfalse>(node);
+    sa_.Emit<Jnez>(node, target);
 }
 
 void PandaGen::EmitThrow(const ir::AstNode *node)
@@ -1592,6 +1620,24 @@ VReg PandaGen::LoadPropertyKey(const ir::Expression *prop, bool isComputed)
     StoreAccumulator(prop, propReg);
 
     return propReg;
+}
+
+void PandaGen::StLetToGlobalRecord(const ir::AstNode *node, const util::StringView &name)
+{
+    sa_.Emit<EcmaStlettoglobalrecord>(node, name);
+    strings_.insert(name);
+}
+
+void PandaGen::StConstToGlobalRecord(const ir::AstNode *node, const util::StringView &name)
+{
+    sa_.Emit<EcmaStconsttoglobalrecord>(node, name);
+    strings_.insert(name);
+}
+
+void PandaGen::StClassToGlobalRecord(const ir::AstNode *node, const util::StringView &name)
+{
+    sa_.Emit<EcmaStclasstoglobalrecord>(node, name);
+    strings_.insert(name);
 }
 
 }  // namespace panda::es2panda::compiler
