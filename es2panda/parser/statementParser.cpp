@@ -388,7 +388,7 @@ ir::Statement *ParserImpl::ParseVarStatement(bool isDeclare)
 ir::Statement *ParserImpl::ParseLetStatement(StatementParsingFlags flags, bool isDeclare)
 {
     if (!(flags & StatementParsingFlags::ALLOW_LEXICAL)) {
-        ThrowSyntaxError("Lexical declaration is not allowed in single statement context");
+        ThrowSyntaxError("The 'let' declarations can only be declared at the top level or inside a block.");
     }
 
     auto *variableDecl = ParseVariableDeclaration(VariableParsingFlags::LET, isDeclare);
@@ -399,7 +399,7 @@ ir::Statement *ParserImpl::ParseLetStatement(StatementParsingFlags flags, bool i
 ir::Statement *ParserImpl::ParseConstStatement(StatementParsingFlags flags, bool isDeclare)
 {
     if (!(flags & StatementParsingFlags::ALLOW_LEXICAL)) {
-        ThrowSyntaxError("Lexical declaration is not allowed in single statement context");
+        ThrowSyntaxError("The 'const' declarations can only be declared at the top level or inside a block.");
     }
 
     lexer::SourcePosition constVarStar = lexer_->GetToken().Start();
@@ -488,7 +488,7 @@ ir::ClassDeclaration *ParserImpl::ParseClassStatement(StatementParsingFlags flag
                                                       ArenaVector<ir::Decorator *> &&decorators, bool isAbstract)
 {
     if (!(flags & StatementParsingFlags::ALLOW_LEXICAL)) {
-        ThrowSyntaxError("Lexical declaration is not allowed in single statement context");
+        ThrowSyntaxError("Lexical 'class' declaration is not allowed in single statement context");
     }
 
     return ParseClassDeclaration(true, std::move(decorators), isDeclare, isAbstract);
@@ -671,23 +671,19 @@ ir::TSInterfaceDeclaration *ParserImpl::ParseTsInterfaceDeclaration()
 
 void ParserImpl::CheckFunctionDeclaration(StatementParsingFlags flags)
 {
-    if (flags & StatementParsingFlags::LABELLED) {
-        ThrowSyntaxError(
-            "In strict mode code, functions can only be "
-            "declared at top level, inside a block, "
-            "or "
-            "as the body of an if statement");
+    if (flags & StatementParsingFlags::ALLOW_LEXICAL) {
+        return;
     }
 
-    if (!(flags & StatementParsingFlags::ALLOW_LEXICAL)) {
-        if (!(flags & (StatementParsingFlags::IF_ELSE | StatementParsingFlags::LABELLED))) {
-            ThrowSyntaxError("Lexical declaration is not allowed in single statement context");
-        }
-
-        if (lexer_->Lookahead() == LEX_CHAR_ASTERISK) {
-            ThrowSyntaxError("Generators can only be declared at the top level or inside a block");
-        }
+    if (lexer_->Lookahead() == LEX_CHAR_ASTERISK) {
+        ThrowSyntaxError("Generators can only be declared at the top level or inside a block.");
     }
+
+    ThrowSyntaxError(
+        "In strict mode code, functions can only be "
+        "declared at top level, inside a block, "
+        "or "
+        "as the body of an if statement");
 }
 
 void ParserImpl::ConsumeSemicolon(ir::Statement *statement)
@@ -790,11 +786,11 @@ ir::BreakStatement *ParserImpl::ParseBreakStatement()
     }
 
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
-    lexer::SourcePosition endLoc = lexer_->GetToken().End();
     lexer_->NextToken();
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON ||
-        lexer_->GetToken().Type() == lexer::TokenType::EOS || lexer_->GetToken().NewLine()) {
+        lexer_->GetToken().Type() == lexer::TokenType::EOS || lexer_->GetToken().NewLine() ||
+        lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         if (!allowBreak) {
             if (Extension() == ScriptExtension::JS) {
                 ThrowSyntaxError("Illegal break statement");
@@ -808,24 +804,10 @@ ir::BreakStatement *ParserImpl::ParseBreakStatement()
 
         auto *breakStatement = AllocNode<ir::BreakStatement>();
         breakStatement->SetRange({startLoc, lexer_->GetToken().End()});
-        lexer_->NextToken();
-        return breakStatement;
-    }
-
-    if (lexer_->GetToken().NewLine() || lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        if (!allowBreak) {
-            if (Extension() == ScriptExtension::JS) {
-                ThrowSyntaxError("Illegal break statement");
-            }
-            if (Extension() == ScriptExtension::TS) {
-                ThrowSyntaxError(
-                    "A 'break' statement can only be used within an "
-                    "enclosing iteration or switch statement");
-            }
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
+            lexer_->NextToken();
         }
 
-        auto *breakStatement = AllocNode<ir::BreakStatement>();
-        breakStatement->SetRange({startLoc, endLoc});
         return breakStatement;
     }
 
@@ -1019,7 +1001,7 @@ ir::Statement *ParserImpl::ParseExpressionStatement(StatementParsingFlags flags)
 
         if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_FUNCTION && !lexer_->GetToken().NewLine()) {
             if (!(flags & StatementParsingFlags::ALLOW_LEXICAL)) {
-                ThrowSyntaxError("Lexical declaration is not allowed in single statement context");
+                ThrowSyntaxError("Async functions can only be declared at the top level or inside a block.");
             }
 
             ir::FunctionDeclaration *functionDecl = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION);
@@ -1341,7 +1323,7 @@ ir::IfStatement *ParserImpl::ParseIfStatement()
     }
 
     lexer_->NextToken();
-    ir::Statement *consequent = ParseStatement(StatementParsingFlags::IF_ELSE | StatementParsingFlags::ALLOW_LEXICAL);
+    ir::Statement *consequent = ParseStatement(StatementParsingFlags::IF_ELSE);
 
     if (Extension() == ScriptExtension::TS && consequent->IsEmptyStatement()) {
         ThrowSyntaxError("The body of an if statement cannot be the empty statement");
@@ -1352,7 +1334,7 @@ ir::IfStatement *ParserImpl::ParseIfStatement()
 
     if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_ELSE) {
         lexer_->NextToken();  // eat ELSE keyword
-        alternate = ParseStatement(StatementParsingFlags::IF_ELSE | StatementParsingFlags::ALLOW_LEXICAL);
+        alternate = ParseStatement(StatementParsingFlags::IF_ELSE);
         endLoc = alternate->End();
     }
 
@@ -1814,6 +1796,11 @@ ir::Statement *ParserImpl::ParseVariableDeclaration(VariableParsingFlags flags, 
 
     if (!(flags & VariableParsingFlags::NO_SKIP_VAR_KIND)) {
         lexer_->NextToken();
+    }
+
+    if ((flags & VariableParsingFlags::LET) && util::Helpers::IsGlobalIdentifier(lexer_->GetToken().Ident())) {
+        ThrowSyntaxError("Declaration name conflicts with built-in global identifier '"
+                        + lexer_->GetToken().Ident().Mutf8() + "'.");
     }
 
     if (Extension() == ScriptExtension::TS && lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_ENUM) {
