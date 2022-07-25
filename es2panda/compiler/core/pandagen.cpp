@@ -164,8 +164,7 @@ void PandaGen::CopyFunctionArguments(const ir::AstNode *node)
 
     for (const auto *param : topScope_->ParamScope()->Params()) {
         if (param->LexicalBound()) {
-            LoadAccumulator(node, targetReg++);
-            StoreLexicalVar(node, 0, param->LexIdx());
+            StoreLexicalVar(node, 0, param->LexIdx(), targetReg++);
         } else {
             ra_.Emit<MovDyn>(node, param->Vreg(), targetReg++);
         }
@@ -1353,11 +1352,13 @@ void PandaGen::GetAsyncIterator(const ir::AstNode *node)
 void PandaGen::CreateObjectWithExcludedKeys(const ir::AstNode *node, VReg obj, VReg argStart, size_t argCount)
 {
     ASSERT(argStart == obj + 1);
-    if (argCount == 0) {  // Do not emit undefined register
-        argStart = obj;
+    if (argCount == 0) {
+        LoadConst(node, Constant::JS_UNDEFINED);
+        StoreAccumulator(node, argStart);
     }
 
-    rra_.Emit<EcmaCreateobjectwithexcludedkeys>(node, argStart, argCount, static_cast<int64_t>(argCount), obj,
+    size_t argRegCnt = (argCount == 0 ? argCount : argCount - 1);
+    rra_.Emit<EcmaCreateobjectwithexcludedkeys>(node, argStart, argCount, static_cast<int64_t>(argRegCnt), obj,
                                                 argStart);
 }
 
@@ -1482,10 +1483,14 @@ void PandaGen::LoadLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t 
 
 void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot)
 {
-    // TODO: need to reconsider this part
     RegScope rs(this);
     VReg value = AllocReg();
     StoreAccumulator(node, value);
+    ra_.Emit<EcmaStlexvardyn>(node, level, slot, value);
+}
+
+void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot, VReg value)
+{
     ra_.Emit<EcmaStlexvardyn>(node, level, slot, value);
 }
 
@@ -1503,6 +1508,7 @@ void PandaGen::ThrowUndefinedIfHole(const ir::AstNode *node, const util::StringV
     VReg nameReg = AllocReg();
     StoreAccumulator(node, nameReg);
     ra_.Emit<EcmaThrowundefinedifhole>(node, holeReg, nameReg);
+    LoadAccumulator(node, holeReg);
     strings_.insert(name);
 }
 
@@ -1524,7 +1530,7 @@ void PandaGen::PopLexEnv(const ir::AstNode *node)
 void PandaGen::CopyLexEnv(const ir::AstNode *node)
 {
     /*
-     *  TODO: copy lexenv
+     *  TODO: add copy lexenv to optimize the loop env creation
      *  sa_.Emit<EcmaCopylexenvdyn>(node);
      */
 }

@@ -31,6 +31,11 @@ static void HoistVar(PandaGen *pg, binder::Variable *var, const binder::VarDecl 
         return;
     }
 
+    auto *funcScope = scope->EnclosingFunctionVariableScope();
+    if (funcScope->ParamScope()->HasParam(decl->Name())) {
+        return;
+    }
+
     binder::ScopeFindResult result(decl->Name(), scope, 0, var);
 
     pg->LoadConst(decl->Node(), Constant::JS_UNDEFINED);
