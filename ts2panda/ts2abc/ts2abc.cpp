@@ -1316,11 +1316,13 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
     if (g_optLevel != static_cast<int>(OptLevel::O_LEVEL0) || optLevel != static_cast<int>(OptLevel::O_LEVEL0)) {
         optLogLevel = (optLogLevel != "error") ? optLogLevel : g_optLogLevel;
 
-        panda::Logger::ComponentMask mask;
-        mask.set(panda::Logger::Component::ASSEMBLER);
-        mask.set(panda::Logger::Component::BYTECODE_OPTIMIZER);
-        mask.set(panda::Logger::Component::COMPILER);
-        panda::Logger::InitializeStdLogging(panda::Logger::LevelFromString(optLogLevel), mask);
+        if (g_optLogLevel != "error") {
+            panda::Logger::ComponentMask mask;
+            mask.set(panda::Logger::Component::ASSEMBLER);
+            mask.set(panda::Logger::Component::BYTECODE_OPTIMIZER);
+            mask.set(panda::Logger::Component::COMPILER);
+            panda::Logger::InitializeStdLogging(panda::Logger::LevelFromString(optLogLevel), mask);
+        }
 
         bool emitDebugInfo = true;
         std::map<std::string, size_t> stat;

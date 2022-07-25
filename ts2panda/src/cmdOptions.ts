@@ -34,7 +34,7 @@ const ts2pandaOptions = [
     { name: 'timeout', alias: 't', type: Number, defaultValue: 0, description: "js to abc timeout threshold(unit: seconds)." },
     { name: 'opt-log-level', type: String, defaultValue: "error", description: "specifie optimizer log level. Possible values: ['debug', 'info', 'error', 'fatal']" },
     {
-        name: 'opt-level', type: Number, defaultValue: 0, description: "Optimization level. Possible values: [0, 1, 2]. Default: 0\n    0: no optimizations\n    \
+        name: 'opt-level', type: Number, defaultValue: 2, description: "Optimization level. Possible values: [0, 1, 2]. Default: 0\n    0: no optimizations\n    \
                                                                     1: basic bytecode optimizations, including valueNumber, lowering, constantResolver, regAccAllocator\n    \
                                                                     2: other bytecode optimizations, unimplemented yet"},
     { name: 'help', alias: 'h', type: Boolean, description: "Show usage guide." },
