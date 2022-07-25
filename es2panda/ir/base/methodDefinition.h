@@ -80,6 +80,11 @@ public:
         return (modifiers_ & ModifierFlags::STATIC) != 0;
     }
 
+    bool IsAccessor() const
+    {
+        return (kind_ == MethodDefinitionKind::GET) || (kind_ == MethodDefinitionKind::SET);
+    }
+
     bool IsOptional() const
     {
         return (modifiers_ & ModifierFlags::OPTIONAL) != 0;

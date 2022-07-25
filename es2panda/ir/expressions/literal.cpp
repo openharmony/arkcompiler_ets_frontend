@@ -52,4 +52,10 @@ const util::StringView &Literal::GetMethod() const
     return AsTaggedLiteral()->Method();
 }
 
+uint16_t Literal::GetMethodAffiliate() const
+{
+    ASSERT(IsTaggedLiteral());
+    return AsTaggedLiteral()->MethodAffiliate();
+}
+
 }  // namespace panda::es2panda::ir

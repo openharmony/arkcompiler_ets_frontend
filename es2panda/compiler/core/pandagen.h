@@ -219,7 +219,7 @@ public:
     void LoadObjByName(const ir::AstNode *node, VReg obj, const util::StringView &prop);
 
     void StoreObjProperty(const ir::AstNode *node, VReg obj, const Operand &prop);
-    void StoreOwnProperty(const ir::AstNode *node, VReg obj, const Operand &prop);
+    void StoreOwnProperty(const ir::AstNode *node, VReg obj, const Operand &prop, bool nameSetting = false);
     void DeleteObjProperty(const ir::AstNode *node, VReg obj, const Operand &prop);
     void LoadAccumulator(const ir::AstNode *node, VReg reg);
     void LoadGlobalVar(const ir::AstNode *node, const util::StringView &name);
@@ -255,6 +255,7 @@ public:
     void Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs);
 
     void BranchIfUndefined(const ir::AstNode *node, class Label *target);
+    void BranchIfStrictNotUndefined(const ir::AstNode *node, class Label *target);
     void BranchIfNotUndefined(const ir::AstNode *node, class Label *target);
     void BranchIfHole(const ir::AstNode *node, class Label *target);
     void BranchIfTrue(const ir::AstNode *node, class Label *target);
@@ -370,8 +371,8 @@ public:
     void StoreObjByIndex(const ir::AstNode *node, VReg obj, int64_t index);
     void StoreObjByValue(const ir::AstNode *node, VReg obj, VReg prop);
 
-    void StOwnByName(const ir::AstNode *node, VReg obj, const util::StringView &prop);
-    void StOwnByValue(const ir::AstNode *node, VReg obj, VReg prop);
+    void StOwnByName(const ir::AstNode *node, VReg obj, const util::StringView &prop, bool nameSetting = false);
+    void StOwnByValue(const ir::AstNode *node, VReg obj, VReg prop, bool nameSetting = false);
     void StOwnByIndex(const ir::AstNode *node, VReg obj, int64_t index);
 
     static Operand ToNamedPropertyKey(const ir::Expression *prop, bool isComputed);

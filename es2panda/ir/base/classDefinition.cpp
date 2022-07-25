@@ -120,6 +120,7 @@ int32_t ClassDefinition::CreateClassStaticProperties(compiler::PandaGen *pg, uti
     auto *buf = pg->NewLiteralBuffer();
     compiler::LiteralBuffer staticBuf(pg->Allocator());
     bool seenComputed = false;
+    uint32_t instancePropertyCount = 0;
     std::unordered_map<util::StringView, size_t> propNameMap;
     std::unordered_map<util::StringView, size_t> staticPropNameMap;
 
@@ -131,10 +132,13 @@ int32_t ClassDefinition::CreateClassStaticProperties(compiler::PandaGen *pg, uti
         }
         const ir::MethodDefinition *prop = properties[i]->AsMethodDefinition();
 
-        if (!util::Helpers::IsConstantPropertyKey(prop->Key(), prop->Computed()) ||
-            (prop->Computed() && util::Helpers::IsSpecialPropertyKey(prop->Key()))) {
+        if (prop->Computed()) {
             seenComputed = true;
             continue;
+        }
+
+        if (prop->IsAccessor()) {
+            break;
         }
 
         util::StringView name = util::Helpers::LiteralToPropName(prop->Key());
@@ -149,7 +153,8 @@ int32_t ClassDefinition::CreateClassStaticProperties(compiler::PandaGen *pg, uti
             }
 
             literalBuf->Add(pg->Allocator()->New<StringLiteral>(name));
-            literalBuf->Add(nullptr);
+            literalBuf->Add(nullptr); // save for method internalname
+            literalBuf->Add(nullptr); // save for method affiliate
         } else {
             bufferPos = res.first->second;
         }
@@ -162,12 +167,18 @@ int32_t ClassDefinition::CreateClassStaticProperties(compiler::PandaGen *pg, uti
                 const util::StringView &internalName = func->Function()->Scope()->InternalName();
 
                 value = pg->Allocator()->New<TaggedLiteral>(LiteralTag::METHOD, internalName);
+                literalBuf->ResetLiteral(bufferPos + 1, value);
+                Literal *methodAffiliate = pg->Allocator()->New<TaggedLiteral>(LiteralTag::METHODAFFILIATE,
+                                                                               func->Function()->FormalParamsLength());
+                literalBuf->ResetLiteral(bufferPos + 2, methodAffiliate); // bufferPos + 2 is saved for method affiliate
                 compiled.Set(i);
                 break;
             }
+            // TODO refactor this part later
             case ir::MethodDefinitionKind::GET:
             case ir::MethodDefinitionKind::SET: {
                 value = pg->Allocator()->New<NullLiteral>();
+                literalBuf->ResetLiteral(bufferPos + 1, value);
                 break;
             }
             default: {
@@ -175,17 +186,17 @@ int32_t ClassDefinition::CreateClassStaticProperties(compiler::PandaGen *pg, uti
             }
         }
 
-        literalBuf->ResetLiteral(bufferPos + 1, value);
+        if (!prop->IsStatic()) {
+            instancePropertyCount++;
+        }
     }
-
-    uint32_t litPairs = buf->Size() / 2;
 
     /* Static items are stored at the end of the buffer */
     buf->Insert(&staticBuf);
 
     /* The last literal item represents the offset of the first static property. The regular property literal count
      * is divided by 2 as key/value pairs count as one. */
-    buf->Add(pg->Allocator()->New<NumberLiteral>(litPairs));
+    buf->Add(pg->Allocator()->New<NumberLiteral>(instancePropertyCount));
 
     return pg->AddLiteralBuffer(buf);
 }
@@ -217,7 +228,7 @@ void ClassDefinition::CompileMissingProperties(compiler::PandaGen *pg, const uti
                 const ir::FunctionExpression *func = prop->Value()->AsFunctionExpression();
                 func->Compile(pg);
 
-                pg->StoreOwnProperty(prop->Value()->Parent(), dest, key);
+                pg->StoreOwnProperty(prop->Value()->Parent(), dest, key, prop->Computed());
                 break;
             }
             case ir::MethodDefinitionKind::GET:
@@ -269,6 +280,7 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
 
     int32_t bufIdx = CreateClassStaticProperties(pg, compiled);
     pg->DefineClassWithBuffer(this, ctorId, bufIdx, lexenv, baseReg);
+
     pg->StoreAccumulator(this, classReg);
     InitializeClassName(pg);
 

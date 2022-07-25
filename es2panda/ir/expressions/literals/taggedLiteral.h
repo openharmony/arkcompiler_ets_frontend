@@ -37,6 +37,11 @@ public:
     {
     }
 
+    explicit TaggedLiteral(LiteralTag tag, uint16_t num)
+        : Literal(AstNodeType::TAGGED_LITERAL), num_(num), tag_(tag)
+    {
+    }
+
     const util::StringView &Str() const
     {
         return str_;
@@ -59,12 +64,19 @@ public:
         return str_;
     }
 
+    uint16_t MethodAffiliate() const
+    {
+        ASSERT(tag_ == LiteralTag::METHODAFFILIATE);
+        return num_;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
 
 private:
+    uint16_t num_ {};
     util::StringView str_ {};
     LiteralTag tag_ {LiteralTag::NULL_VALUE};
 };
