@@ -327,8 +327,8 @@ export class Compiler {
                 this.funcBuilder.resolve(NodeKind.Invalid, getVregisterCache(pandaGen, CacheList.undefined));
                 pandaGen.return(NodeKind.Invalid);
             } else {
-                CmdOptions.isWatchMode() ? pandaGen.return(NodeKind.Invalid)
-                                        : pandaGen.returnUndefined(NodeKind.Invalid);
+                CmdOptions.isWatchEvaluateExpressionMode() ?
+                    pandaGen.return(NodeKind.Invalid) : pandaGen.returnUndefined(NodeKind.Invalid);
             }
         }
     }
@@ -996,8 +996,9 @@ export class Compiler {
                 // typeof an undeclared variable will return undefined instead of throwing reference error
                 let parent = findOuterNodeOfParenthesis(id);
                 if ((parent.kind == ts.SyntaxKind.TypeOfExpression)) {
-                    CmdOptions.isWatchMode() ? pandaGen.loadByNameViaDebugger(id, name, CacheList.False)
-                                    : pandaGen.loadObjProperty(id, getVregisterCache(pandaGen, CacheList.Global), name);
+                    CmdOptions.isWatchEvaluateExpressionMode() ?
+                        pandaGen.loadByNameViaDebugger(id, name, CacheList.False) :
+                        pandaGen.loadObjProperty(id, getVregisterCache(pandaGen, CacheList.Global), name);
                 } else {
                     pandaGen.tryLoadGlobalByName(id, name);
                 }
@@ -1065,8 +1066,8 @@ export class Compiler {
                     scope.setLexVar(v, this.scope);
                 }
             }
-            CmdOptions.isWatchMode() ? pandaGen.loadByNameViaDebugger(node, "this", CacheList.True)
-                                     : pandaGen.loadAccFromLexEnv(node, scope!, level, v);
+            CmdOptions.isWatchEvaluateExpressionMode() ? pandaGen.loadByNameViaDebugger(node, "this", CacheList.True)
+                                                       : pandaGen.loadAccFromLexEnv(node, scope!, level, v);
         } else {
             throw new Error("\"this\" must be a local variable");
         }
@@ -1602,9 +1603,10 @@ export class Compiler {
             if (variable.v.isNone()) {
                 let parent = findOuterNodeOfParenthesis(node);
                 if ((parent.kind == ts.SyntaxKind.TypeOfExpression)) {
-                    CmdOptions.isWatchMode() ? this.pandaGen.loadByNameViaDebugger(node, variable.v.getName(),
-                            CacheList.False) : this.pandaGen.loadObjProperty(node, getVregisterCache(this.pandaGen,
-                            CacheList.Global), variable.v.getName());
+                    CmdOptions.isWatchEvaluateExpressionMode() ?
+                        this.pandaGen.loadByNameViaDebugger(node, variable.v.getName(), CacheList.False) :
+                        this.pandaGen.loadObjProperty(node, getVregisterCache(this.pandaGen, CacheList.Global),
+                        variable.v.getName());
                 } else {
                     this.pandaGen.tryLoadGlobalByName(node, variable.v.getName());
                 }

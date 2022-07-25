@@ -143,7 +143,7 @@ export function checkInstructions(actual: IRNode[], expected: IRNode[], checkFn?
 export function compileAllSnippet(snippet: string, passes?: Pass[], literalBufferArray?: Array<LiteralBuffer>): PandaGen[] {
     let sourceFile = creatAstFromSnippet(snippet);
     jshelpers.bindSourceFile(sourceFile, {});
-    CmdOptions.isWatchMode() ? setGlobalStrict(true)
+    CmdOptions.isWatchEvaluateExpressionMode() ? setGlobalStrict(true)
                             : setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(sourceFile, compileOptions));
     let compilerDriver = new CompilerDriver('UnitTest');
 
