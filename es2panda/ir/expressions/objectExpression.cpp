@@ -20,20 +20,64 @@
 #include <compiler/core/pandagen.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
+#include <ir/base/classDefinition.h>
 #include <ir/base/property.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/base/spreadElement.h>
 #include <ir/expressions/arrayExpression.h>
+#include <ir/expressions/arrowFunctionExpression.h>
 #include <ir/expressions/assignmentExpression.h>
+#include <ir/expressions/classExpression.h>
+#include <ir/statements/classDeclaration.h>
 #include <ir/expressions/functionExpression.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/literals/nullLiteral.h>
+#include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/literals/taggedLiteral.h>
 #include <ir/validationInfo.h>
 #include <util/bitset.h>
 
 namespace panda::es2panda::ir {
+
+static bool NeedSettingName(const ir::Expression *expr)
+{
+    const ir::Identifier *identifier;
+    switch (expr->Type()) {
+        case ir::AstNodeType::FUNCTION_EXPRESSION: {
+            identifier = expr->AsFunctionExpression()->Function()->Id();
+            break;
+        }
+        case ir::AstNodeType::ARROW_FUNCTION_EXPRESSION: {
+            identifier = expr->AsArrowFunctionExpression()->Function()->Id();
+            break;
+        }
+        case ir::AstNodeType::CLASS_EXPRESSION: {
+            identifier = expr->AsClassExpression()->Definition()->Ident();
+            break;
+        }
+        default: {
+            return false;
+        }
+    }
+    return identifier == nullptr || identifier->Name().Empty();
+}
+
+static bool IsTargetNameFormat(const ir::Expression *expr)
+{
+    util::StringView name;
+    if (expr->IsIdentifier()) {
+        name = expr->AsIdentifier()->Name();
+    } else if (expr->IsStringLiteral()) {
+        name = expr->AsStringLiteral()->Str();
+    } else if (expr->IsNumberLiteral()) {
+        name = expr->AsNumberLiteral()->Str();
+    } else {
+        UNREACHABLE();
+    }
+    return name.Find(".") != std::string::npos && name.Find("\\") != std::string::npos;
+}
+
 
 ValidationInfo ObjectExpression::ValidateExpression()
 {
@@ -245,16 +289,22 @@ void ObjectExpression::CompileStaticProperties(compiler::PandaGen *pg, util::Bit
             }
 
             buf->Add(pg->Allocator()->New<StringLiteral>(name));
-            buf->Add(nullptr);
+            buf->Add(nullptr);  // buf for name
+            buf->Add(nullptr);  // buf for function affiliate
         } else {
             bufferPos = res.first->second;
         }
 
+        buf->ResetLiteral(bufferPos + 1, CreateLiteral(pg, prop, compiled, i));
+
         if (prop->IsMethod()) {
             hasMethod = true;
+            const ir::FunctionExpression *func = prop->Value()->AsFunctionExpression();
+            Literal *methodAffiliate = pg->Allocator()->New<TaggedLiteral>(LiteralTag::METHODAFFILIATE, func->Function()->FormalParamsLength());
+            buf->ResetLiteral(bufferPos + 2, methodAffiliate);
+        } else {
+            buf->ResetLiteral(bufferPos + 2, nullptr);
         }
-
-        buf->ResetLiteral(bufferPos + 1, CreateLiteral(pg, prop, compiled, i));
     }
 
     EmitCreateObjectWithBuffer(pg, buf, hasMethod);
@@ -312,12 +362,22 @@ void ObjectExpression::CompileRemainingProperties(compiler::PandaGen *pg, const 
             case ir::PropertyKind::INIT: {
                 compiler::Operand key = pg->ToPropertyKey(prop->Key(), prop->IsComputed());
 
+                bool nameSetting = false;
                 if (prop->IsMethod()) {
                     pg->LoadAccumulator(prop->Value(), objReg);
+                    if (prop -> IsComputed()) {
+                        nameSetting = true;
+                    }
+                } else {
+                    if (prop->IsComputed()) {
+                        nameSetting = NeedSettingName(prop->Value());
+                    } else {
+                        nameSetting = NeedSettingName(prop->Value()) && IsTargetNameFormat(prop->Key());
+                    }
                 }
 
                 prop->Value()->Compile(pg);
-                pg->StoreOwnProperty(this, objReg, key);
+                pg->StoreOwnProperty(this, objReg, key, nameSetting);
                 break;
             }
             case ir::PropertyKind::PROTO: {

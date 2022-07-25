@@ -79,6 +79,10 @@ void FunctionEmitter::GenBufferLiterals(const LiteralBuffer *buff)
     array.reserve(buff->Literals().size() * ARRAY_EXPANSION);
 
     for (const auto *literal : buff->Literals()) {
+        if (literal == nullptr) {
+            // skip potential empty literals created by property overwrite
+            continue;
+        }
         panda::pandasm::LiteralArray::Literal valueLit;
         panda::pandasm::LiteralArray::Literal tagLit;
 
