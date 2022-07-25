@@ -35,13 +35,11 @@ Iterator::Iterator(PandaGen *pg, const ir::AstNode *node, IteratorType type)
     pg_->StoreAccumulator(node, iterator_);
     pg_->LoadObjByName(node_, iterator_, "next");
     pg_->StoreAccumulator(node_, method_);
-
-    pg_->ThrowIfNotObject(node_);
 }
 
 void Iterator::GetMethod(util::StringView name) const
 {
-    pg_->GetMethod(node_, iterator_, name);
+    pg_->LoadObjByName(node_, iterator_, name);
     pg_->StoreAccumulator(node_, method_);
 }
 
@@ -63,8 +61,8 @@ void Iterator::Next() const
         pg_->FuncBuilder()->Await(node_);
     }
 
-    pg_->ThrowIfNotObject(node_);
     pg_->StoreAccumulator(node_, nextResult_);
+    pg_->ThrowIfNotObject(node_, nextResult_);
 }
 
 void Iterator::Complete() const
@@ -80,10 +78,34 @@ void Iterator::Value() const
 void Iterator::Close(bool abruptCompletion) const
 {
     if (type_ == IteratorType::SYNC) {
-        if (!abruptCompletion) {
-            pg_->LoadConst(node_, Constant::JS_HOLE);
+        RegScope rs(pg_);
+        VReg exception = pg_->AllocReg();
+        VReg doneResult = pg_->AllocReg();
+        VReg innerResult = pg_->AllocReg();
+        Label *noReturn = pg_->AllocLabel();
+
+        if (abruptCompletion) {
+            pg_->StoreAccumulator(node_, exception);
         }
-        pg_->CloseIterator(node_, iterator_);
+
+        pg_->StoreConst(node_, doneResult, Constant::JS_TRUE);
+        Complete();
+        pg_->Condition(node_, lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL, doneResult, noReturn);
+
+        // close iterator
+        pg_->LoadObjByName(node_, iterator_, "return");
+        pg_->StoreAccumulator(node_, method_);
+        pg_->LoadConst(node_, Constant::JS_UNDEFINED);
+        pg_->Condition(node_, lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL, method_, noReturn);
+        CallMethod();
+        pg_->StoreAccumulator(node_, innerResult);
+        pg_->ThrowIfNotObject(node_, innerResult);
+
+        pg_->SetLabel(node_, noReturn);
+        if (abruptCompletion) {
+            pg_->LoadAccumulator(node_, exception);
+            pg_->EmitThrow(node_);
+        }
         return;
     }
 
@@ -159,7 +181,7 @@ void Iterator::Close(bool abruptCompletion) const
 
     // 8. If Type(innerResult.[[Value]]) is not Object, throw a TypeError exception.
     pg_->LoadAccumulator(node_, innerResult);
-    pg_->ThrowIfNotObject(node_);
+    pg_->ThrowIfNotObject(node_, innerResult);
 }
 
 DestructuringIterator::DestructuringIterator(PandaGen *pg, const ir::AstNode *node)

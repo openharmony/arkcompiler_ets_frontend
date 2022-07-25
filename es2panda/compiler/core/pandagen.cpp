@@ -982,7 +982,9 @@ void PandaGen::LoadHomeObject(const ir::AstNode *node)
 void PandaGen::DefineFunction(const ir::AstNode *node, const ir::ScriptFunction *realNode, const util::StringView &name)
 {
     auto formalParamCnt = realNode->FormalParamsLength();
-    if (realNode->IsAsync()) {
+    if (realNode->IsMethod()) {
+        ra_.Emit<EcmaDefinemethod>(node, name, static_cast<int64_t>(formalParamCnt), LexEnv());
+    } else if (realNode->IsAsync()) {
         if (realNode->IsGenerator()) {
             // TODO(): async generator
         } else {
@@ -993,8 +995,6 @@ void PandaGen::DefineFunction(const ir::AstNode *node, const ir::ScriptFunction 
     } else if (realNode->IsArrow()) {
         LoadHomeObject(node);
         ra_.Emit<EcmaDefinencfuncdyn>(node, name, static_cast<int64_t>(formalParamCnt), LexEnv());
-    } else if (realNode->IsMethod()) {
-        ra_.Emit<EcmaDefinemethod>(node, name, static_cast<int64_t>(formalParamCnt), LexEnv());
     } else {
         ra_.Emit<EcmaDefinefuncdyn>(node, name, static_cast<int64_t>(formalParamCnt), LexEnv());
     }
@@ -1039,15 +1039,6 @@ void PandaGen::ToNumber(const ir::AstNode *node, VReg arg)
     ra_.Emit<EcmaTonumber>(node, arg);
 }
 
-void PandaGen::GetMethod(const ir::AstNode *node, VReg obj, const util::StringView &name)
-{
-    /**
-     * TODO
-     * ra_.Emit<EcmaGetmethod>(node, name, obj);
-     * strings_.insert(name);
-     */
-}
-
 void PandaGen::CreateGeneratorObj(const ir::AstNode *node, VReg funcObj)
 {
     ra_.Emit<EcmaCreategeneratorobj>(node, funcObj);
@@ -1061,20 +1052,14 @@ void PandaGen::CreateAsyncGeneratorObj(const ir::AstNode *node, VReg funcObj)
      */
 }
 
-void PandaGen::CreateIterResultObject(const ir::AstNode *node, bool done)
+void PandaGen::CreateIterResultObject(const ir::AstNode *node, VReg value, VReg done)
 {
-    /*
-     *  TODO: create iter result
-     *  ra_.Emit<EcmaCreateiterresultobj>(node, static_cast<int32_t>(done));
-     */
+    ra_.Emit<EcmaCreateiterresultobj>(node, value, done);
 }
 
-void PandaGen::SuspendGenerator(const ir::AstNode *node, VReg genObj)
+void PandaGen::SuspendGenerator(const ir::AstNode *node, VReg genObj, VReg iterResult)
 {
-    /*
-     *  TODO: suspend generator
-     *  ra_.Emit<EcmaSuspendgenerator>(node, genObj);
-     */
+    ra_.Emit<EcmaSuspendgenerator>(node, genObj, iterResult);
 }
 
 void PandaGen::SuspendAsyncGenerator(const ir::AstNode *node, VReg asyncGenObj)
@@ -1116,28 +1101,19 @@ void PandaGen::AsyncFunctionEnter(const ir::AstNode *node)
     sa_.Emit<EcmaAsyncfunctionenter>(node);
 }
 
-void PandaGen::AsyncFunctionAwait(const ir::AstNode *node, VReg asyncFuncObj)
+void PandaGen::AsyncFunctionAwait(const ir::AstNode *node, VReg asyncFuncObj, VReg retVal)
 {
-    /*
-     *  TODO: async function await
-     *  ra_.Emit<EcmaAsyncfunctionawait>(node, asyncFuncObj);
-     */
+    ra_.Emit<EcmaAsyncfunctionawaituncaught>(node, asyncFuncObj, retVal);
 }
 
-void PandaGen::AsyncFunctionResolve(const ir::AstNode *node, VReg asyncFuncObj)
+void PandaGen::AsyncFunctionResolve(const ir::AstNode *node, VReg asyncFuncObj, VReg value, VReg canSuspend)
 {
-    /*
-     *  TODO: async function resolve
-     *  ra_.Emit<EcmaAsyncfunctionresolve>(node, asyncFuncObj);
-     */
+    ra_.Emit<EcmaAsyncfunctionresolve>(node, asyncFuncObj, value, canSuspend);
 }
 
-void PandaGen::AsyncFunctionReject(const ir::AstNode *node, VReg asyncFuncObj)
+void PandaGen::AsyncFunctionReject(const ir::AstNode *node, VReg asyncFuncObj, VReg value, VReg canSuspend)
 {
-    /*
-     *  TODO: async function reject
-     *  ra_.Emit<EcmaAsyncfunctionreject>(node, asyncFuncObj);
-     */
+    ra_.Emit<EcmaAsyncfunctionreject>(node, asyncFuncObj, value, canSuspend);
 }
 
 void PandaGen::AsyncGeneratorResolve(const ir::AstNode *node, VReg asyncGenObj)
@@ -1323,12 +1299,9 @@ void PandaGen::StoreArraySpread(const ir::AstNode *node, VReg array, VReg index)
     ra_.Emit<EcmaStarrayspread>(node, array, index);
 }
 
-void PandaGen::ThrowIfNotObject(const ir::AstNode *node)
+void PandaGen::ThrowIfNotObject(const ir::AstNode *node, VReg obj)
 {
-    // TODO: implement this method correctly
-    RegScope rs(this);
-    VReg value = AllocReg();
-    ra_.Emit<EcmaThrowifnotobject>(node, value);
+    ra_.Emit<EcmaThrowifnotobject>(node, obj);
 }
 
 void PandaGen::ThrowThrowNotExist(const ir::AstNode *node)

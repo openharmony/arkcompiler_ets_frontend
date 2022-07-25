@@ -49,7 +49,7 @@ public:
     NO_COPY_SEMANTIC(FunctionBuilder);
     NO_MOVE_SEMANTIC(FunctionBuilder);
 
-    virtual void Prepare([[maybe_unused]] const ir::ScriptFunction *node) const {};
+    virtual void Prepare([[maybe_unused]] const ir::ScriptFunction *node) {};
     virtual void CleanUp([[maybe_unused]] const ir::ScriptFunction *node) const {};
 
     virtual void DirectReturn(const ir::AstNode *node) const;

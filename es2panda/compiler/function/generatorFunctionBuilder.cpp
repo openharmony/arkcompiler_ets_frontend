@@ -21,14 +21,17 @@
 
 namespace panda::es2panda::compiler {
 
-void GeneratorFunctionBuilder::Prepare(const ir::ScriptFunction *node) const
+void GeneratorFunctionBuilder::Prepare(const ir::ScriptFunction *node)
 {
     VReg callee = FunctionReg(node);
+    VReg completionType = pg_->AllocReg();
+    VReg completionValue = pg_->AllocReg();
 
     pg_->CreateGeneratorObj(node, callee);
     pg_->StoreAccumulator(node, funcObj_);
-    pg_->SuspendGenerator(node, funcObj_);
-    pg_->SetLabel(node, catchTable_->LabelSet().TryBegin());
+    pg_->LoadConst(node, Constant::JS_UNDEFINED);
+    SuspendResumeExecution(node, completionType, completionValue);
+    HandleCompletion(node, completionType, completionValue);
 }
 
 void GeneratorFunctionBuilder::CleanUp(const ir::ScriptFunction *node) const
@@ -44,8 +47,6 @@ void GeneratorFunctionBuilder::CleanUp(const ir::ScriptFunction *node) const
 
 void GeneratorFunctionBuilder::DirectReturn(const ir::AstNode *node) const
 {
-    pg_->GeneratorComplete(node, funcObj_);
-    pg_->CreateIterResultObject(node, true);
     pg_->EmitReturn(node);
 }
 
@@ -58,11 +59,15 @@ void GeneratorFunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
 void GeneratorFunctionBuilder::Yield(const ir::AstNode *node)
 {
     RegScope rs(pg_);
+    VReg value = pg_->AllocReg();
+    VReg done = pg_->AllocReg();
     VReg completionType = pg_->AllocReg();
     VReg completionValue = pg_->AllocReg();
 
-    pg_->CreateIterResultObject(node, false);
-    pg_->GeneratorYield(node, funcObj_);
+    pg_->StoreAccumulator(node, value);
+    pg_->LoadConst(node, Constant::JS_FALSE);
+    pg_->StoreAccumulator(node, done);
+    pg_->CreateIterResultObject(node, value, done);
     SuspendResumeExecution(node, completionType, completionValue);
 
     HandleCompletion(node, completionType, completionValue);

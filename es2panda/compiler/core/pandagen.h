@@ -294,16 +294,15 @@ public:
     void GetResumeMode(const ir::AstNode *node, VReg genObj);
 
     void AsyncFunctionEnter(const ir::AstNode *node);
-    void AsyncFunctionAwait(const ir::AstNode *node, VReg asyncFuncObj);
-    void AsyncFunctionResolve(const ir::AstNode *node, VReg asyncFuncObj);
-    void AsyncFunctionReject(const ir::AstNode *node, VReg asyncFuncObj);
+    void AsyncFunctionAwait(const ir::AstNode *node, VReg asyncFuncObj, VReg retVal);
+    void AsyncFunctionResolve(const ir::AstNode *node, VReg asyncFuncObj, VReg value, VReg canSuspend);
+    void AsyncFunctionReject(const ir::AstNode *node, VReg asyncFuncObj, VReg value, VReg canSuspend);
 
-    void GetMethod(const ir::AstNode *node, VReg obj, const util::StringView &name);
     void GeneratorYield(const ir::AstNode *node, VReg genObj);
     void GeneratorComplete(const ir::AstNode *node, VReg genObj);
     void CreateAsyncGeneratorObj(const ir::AstNode *node, VReg funcObj);
-    void CreateIterResultObject(const ir::AstNode *node, bool done);
-    void SuspendGenerator(const ir::AstNode *node, VReg genObj);
+    void CreateIterResultObject(const ir::AstNode *node, VReg value, VReg done);
+    void SuspendGenerator(const ir::AstNode *node, VReg genObj, VReg iterResult);
     void SuspendAsyncGenerator(const ir::AstNode *node, VReg asyncGenObj);
 
     void AsyncGeneratorResolve(const ir::AstNode *node, VReg asyncGenObj);
@@ -326,7 +325,7 @@ public:
     void CreateArrayWithBuffer(const ir::AstNode *node, uint32_t idx);
     void StoreArraySpread(const ir::AstNode *node, VReg array, VReg index);
 
-    void ThrowIfNotObject(const ir::AstNode *node);
+    void ThrowIfNotObject(const ir::AstNode *node, VReg obj);
     void ThrowThrowNotExist(const ir::AstNode *node);
     void GetIterator(const ir::AstNode *node);
     void GetAsyncIterator(const ir::AstNode *node);
