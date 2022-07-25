@@ -149,7 +149,7 @@ void PandaGen::InitializeLexEnv(const ir::AstNode *node, VReg lexEnv)
     FrontAllocator fa(this);
 
     if (topScope_->NeedLexEnv()) {
-        NewLexEnv(node, topScope_->LexicalSlots());
+        NewLexicalEnv(node, topScope_->LexicalSlots(), topScope_);
     } else {
         LdLexEnv(node);
     }
@@ -181,6 +181,17 @@ int32_t PandaGen::AddLiteralBuffer(LiteralBuffer *buf)
     buffStorage_.push_back(buf);
     buf->SetIndex(context_->NewLiteralIndex());
     return buf->Index();
+}
+
+int32_t PandaGen::AddLexicalVarNamesForDebugInfo(ArenaMap<uint32_t, util::StringView> &lexicalVars)
+{
+    auto *buf = NewLiteralBuffer();
+    buf->Add(Allocator()->New<ir::NumberLiteral>(lexicalVars.size()));
+    for (auto iter : lexicalVars) {
+        buf->Add(Allocator()->New<ir::StringLiteral>(iter.second));
+        buf->Add(Allocator()->New<ir::NumberLiteral>(iter.first));
+    }
+    return AddLiteralBuffer(buf);
 }
 
 void PandaGen::GetFunctionObject(const ir::AstNode *node)
@@ -1508,9 +1519,25 @@ void PandaGen::CopyLexEnv(const ir::AstNode *node)
      */
 }
 
+void PandaGen::NewLexicalEnv(const ir::AstNode *node, uint32_t num, binder::VariableScope *scope)
+{
+    if (IsDebug()) {
+        int32_t scopeInfoIdx = AddLexicalVarNamesForDebugInfo(scope->GetLexicalVarNames());
+        NewLexEnvWithScopeInfo(node, num, scopeInfoIdx);
+        return;
+    }
+
+    NewLexEnv(node, num);
+}
+
 void PandaGen::NewLexEnv(const ir::AstNode *node, uint32_t num)
 {
     sa_.Emit<EcmaNewlexenvdyn>(node, num);
+}
+
+void PandaGen::NewLexEnvWithScopeInfo(const ir::AstNode *node, uint32_t num, int32_t scopeInfoIdx)
+{
+    sa_.Emit<EcmaNewlexenvwithnamedyn>(node, num, scopeInfoIdx);
 }
 
 void PandaGen::LdLexEnv(const ir::AstNode *node)

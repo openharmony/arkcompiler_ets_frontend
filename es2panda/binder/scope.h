@@ -279,8 +279,19 @@ public:
         return slotIndex_ != 0;
     }
 
+    void AddLexicalVarName(uint32_t slot, util::StringView name)
+    {
+        lexicalVarNames_.emplace(slot, name);
+    }
+
+    ArenaMap<uint32_t, util::StringView> &GetLexicalVarNames()
+    {
+        return lexicalVarNames_;
+    }
+
 protected:
-    explicit VariableScope(ArenaAllocator *allocator, Scope *parent) : Scope(allocator, parent) {}
+    explicit VariableScope(ArenaAllocator *allocator, Scope *parent) : Scope(allocator, parent),
+                                                                       lexicalVarNames_(allocator->Adapter()) {}
 
     template <typename T>
     bool AddVar(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl);
@@ -297,6 +308,7 @@ protected:
 
     VariableScopeFlags flags_ {};
     uint32_t slotIndex_ {};
+    ArenaMap<uint32_t, util::StringView> lexicalVarNames_; // for debuginfo
 };
 
 class ParamScope : public Scope {

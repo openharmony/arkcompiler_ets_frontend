@@ -47,8 +47,10 @@ void LocalVariable::SetLexical(Scope *scope)
     }
 
     VariableScope *varScope = scope->EnclosingVariableScope();
-
-    BindLexEnvSlot(varScope->NextSlot());
+    uint32_t slot = varScope->NextSlot();
+    auto name = Declaration()->Name();
+    varScope->AddLexicalVarName(slot, name); // gather lexical variables for debuginfo
+    BindLexEnvSlot(slot);
 }
 
 void GlobalVariable::SetLexical([[maybe_unused]] Scope *scope) {}
