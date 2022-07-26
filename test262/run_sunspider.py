@@ -152,7 +152,7 @@ def exec_command(cmd_args, timeout=DEFAULT_TIMEOUT):
 def print_command(cmd_args):
     sys.stderr.write("\n")
     for arg in cmd_args:
-        sys.stderr.write(arg + " ")
+        sys.stderr.write("%s%s"%(arg, " "))
     sys.stderr.write("\n")
 
 def run_command(cmd_args):
@@ -160,7 +160,7 @@ def run_command(cmd_args):
     cmd = f"timeout {timeout} "
     for arg in cmd_args:
         cmd += f"{arg} "
-    return os.system(cmd)
+    return subprocess.run(cmd)
 
 class ArkProgram():
     def __init__(self, args):
@@ -237,7 +237,7 @@ class ArkProgram():
                 cmd_args.insert(mod_opt_index, "--module")
                 self.module = True
         if self.ark_aot:
-            os.system(f'''sed -i 's/;$262.destroy();/\/\/;$262.destroy();/g' {js_file}''')
+            subprocess.run(f'''sed -i 's/;$262.destroy();/\/\/;$262.destroy();/g' {js_file}''')
             if self.module:
                 js_dir = os.path.dirname(js_file)
                 for line in fileinput.input(js_file):
@@ -313,7 +313,7 @@ class ArkProgram():
 
         retcode = run_command(cmd_args)
         if retcode:
-            os.system(f'cp {self.js_file} {BASE_OUT_DIR}/../')
+            subprocess.run(f'cp {self.js_file} {BASE_OUT_DIR}/../')
             print_command(cmd_args)
         return retcode
 
