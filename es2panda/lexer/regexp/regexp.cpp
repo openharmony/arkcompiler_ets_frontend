@@ -644,7 +644,7 @@ uint32_t RegExpParser::ParseUnicodeEscape()
         Next();
     } else {
         value = ParseUnicodeDigits();
-        if (util::StringView::IsHighSurrogate(value)) {
+        if (Unicode() && util::StringView::IsHighSurrogate(value)) {
             auto pos = iter_;
 
             if (Next() == LEX_CHAR_BACKSLASH && Next() == LEX_CHAR_LOWERCASE_U) {
