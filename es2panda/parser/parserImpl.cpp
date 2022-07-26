@@ -3383,4 +3383,9 @@ parser::SourceTextModuleRecord *ParserImpl::GetSourceTextModuleRecord()
     return Binder()->Program()->ModuleRecord();
 }
 
+void ParserImpl::AddHotfixHelper(util::Hotfix *hotfixHelper)
+{
+    program_.AddHotfixHelper(hotfixHelper);
+}
+
 }  // namespace panda::es2panda::parser

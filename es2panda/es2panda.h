@@ -19,6 +19,7 @@
 #include <macros.h>
 #include <mem/arena_allocator.h>
 #include <util/programCache.h>
+#include <util/symbolTable.h>
 
 #include <string>
 #include <unordered_map>
@@ -56,6 +57,12 @@ struct SourceFile {
     uint32_t hash {0};
 };
 
+struct HotfixOptions {
+    std::string dumpSymbolTable {};
+    std::string symbolTable {};
+    bool generatePatch {false};
+};
+
 struct CompilerOptions {
     bool isDebug {false};
     bool dumpAst {false};
@@ -73,6 +80,7 @@ struct CompilerOptions {
     std::string output {};
     std::string debugInfoSourceFile {};
     std::vector<es2panda::SourceFile> sourceFiles;
+    HotfixOptions hotfixOptions;
 };
 
 enum class ErrorType {
@@ -153,8 +161,9 @@ public:
     NO_COPY_SEMANTIC(Compiler);
     NO_MOVE_SEMANTIC(Compiler);
 
-    panda::pandasm::Program *Compile(const SourceFile &input, const CompilerOptions &options);
-    panda::pandasm::Program *CompileFile(CompilerOptions &options, SourceFile *src);
+    panda::pandasm::Program *Compile(const SourceFile &input, const CompilerOptions &options,
+        util::SymbolTable *symbolTable = nullptr);
+    panda::pandasm::Program *CompileFile(CompilerOptions &options, SourceFile *src, util::SymbolTable *symbolTable_);
 
     static void CompileFiles(CompilerOptions &options,
         std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
