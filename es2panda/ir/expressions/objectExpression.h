@@ -79,6 +79,8 @@ public:
     checker::Type *CheckPattern(checker::Checker *checker, bool inAssignment) const;
 
 private:
+    void FillInLiteralBuffer(compiler::LiteralBuffer *buf,
+                             std::vector<std::vector<const Literal *>> &tempLiteralBuffer) const;
     void EmitCreateObjectWithBuffer(compiler::PandaGen *pg, compiler::LiteralBuffer *buf, bool hasMethod) const;
     void CompileStaticProperties(compiler::PandaGen *pg, util::BitSet *compiled) const;
     void CompileRemainingProperties(compiler::PandaGen *pg, const util::BitSet *compiled, compiler::VReg objReg) const;

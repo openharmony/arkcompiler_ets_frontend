@@ -41,7 +41,7 @@ public:
     NO_COPY_SEMANTIC(LiteralBuffer);
     NO_MOVE_SEMANTIC(LiteralBuffer);
 
-    void Add(ir::Literal *lit)
+    void Add(const ir::Literal *lit)
     {
         literals_.push_back(lit);
     }
