@@ -49,7 +49,7 @@ void UpdateExpression::Compile(compiler::PandaGen *pg) const
     lref.SetValue();
 
     if (!IsPrefix()) {
-        pg->ToNumber(this, operandReg);
+        pg->ToNumeric(this, operandReg);
     }
 }
 

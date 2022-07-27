@@ -1057,6 +1057,11 @@ void PandaGen::ToNumber(const ir::AstNode *node, VReg arg)
     ra_.Emit<EcmaTonumber>(node, arg);
 }
 
+void PandaGen::ToNumeric(const ir::AstNode *node, VReg arg)
+{
+    ra_.Emit<EcmaTonumeric>(node, arg);
+}
+
 void PandaGen::CreateGeneratorObj(const ir::AstNode *node, VReg funcObj)
 {
     ra_.Emit<EcmaCreategeneratorobj>(node, funcObj);
