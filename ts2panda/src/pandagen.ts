@@ -47,6 +47,7 @@ import {
     defineMethod,
     defineNCFunc,
     deleteObjProperty,
+    dynamicImport,
     getIterator,
     getIteratorNext,
     getNextPropName,
@@ -1144,6 +1145,10 @@ export class PandaGen {
 
     getModuleNamespace(node: ts.Node, localName: string) {
         this.add(node, getModuleNamespace(localName));
+    }
+
+    dynamicImportCall(node: ts.Node, moduleSpecifier: VReg) {
+        this.add(node, dynamicImport(moduleSpecifier));
     }
 
     defineClassWithBuffer(node: ts.Node, name: string, idx: number, parameterLength: number, base: VReg) {

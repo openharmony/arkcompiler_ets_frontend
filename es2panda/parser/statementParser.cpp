@@ -2630,6 +2630,12 @@ ir::AstNode *ParserImpl::ParseImportSpecifiers(ArenaVector<ir::AstNode *> *speci
 
 ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
 {
+    char32_t nextChar = lexer_->Lookahead();
+    // dynamic import || import.meta
+    if (nextChar == LEX_CHAR_LEFT_PAREN || nextChar == LEX_CHAR_DOT) {
+        return ParseExpressionStatement();
+    }
+
     if (Extension() == ScriptExtension::JS) {
         if (!(flags & StatementParsingFlags::GLOBAL)) {
             ThrowSyntaxError("'import' and 'export' may only appear at the top level");
@@ -2638,12 +2644,6 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
         if (!context_.IsModule()) {
             ThrowSyntaxError("'import' and 'export' may appear only with 'sourceType: module'");
         }
-    }
-
-    char32_t nextChar = lexer_->Lookahead();
-    // dynamic import || import.meta
-    if (nextChar == LEX_CHAR_LEFT_PAREN || nextChar == LEX_CHAR_DOT) {
-        return ParseExpressionStatement();
     }
 
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();

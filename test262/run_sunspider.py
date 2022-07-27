@@ -59,9 +59,6 @@ def parse_args():
                         default=DEFAULT_ARK_FRONTEND_BINARY,
                         required=False,
                         help="ark frontend conversion binary tool")
-    parser.add_argument('--module-list',
-                        required=True,
-                        help="module file list")
     parser.add_argument('--ark-arch',
                         default=DEFAULT_ARK_ARCH,
                         required=False,
@@ -168,6 +165,7 @@ class ArkProgram():
         self.ark_frontend = ARK_FRONTEND
         self.ark_frontend_binary = ARK_FRONTEND_BINARY
         self.module_list = []
+        self.dynamicImport_list = []
         self.js_file = ""
         self.module = False
         self.abc_file = ""
@@ -201,7 +199,9 @@ class ArkProgram():
         if self.args.es2abc_thread_count:
             self.es2abc_thread_count = self.args.es2abc_thread_count
 
-        self.module_list = self.args.module_list.splitlines()
+        self.module_list = MODULE_LIST
+
+        self.dynamicImport_list = DYNAMIC_IMPORT_LIST
 
         self.js_file = self.args.js_file
 
@@ -229,8 +229,10 @@ class ArkProgram():
         frontend_tool = self.ark_frontend_binary
 
         # pre-generate the dependencies' abc when ark_frontend is [es2panda]
-        if file_name in self.module_list and self.ark_frontend == ARK_FRONTEND_LIST[1]:
-            dependencies = collect_module_dependencies(js_file, os.path.join(TEST_ES2021_DIR, "language/module-code"), [])
+        if (file_name in self.module_list or file_name in self.dynamicImport_list) and \
+            self.ark_frontend == ARK_FRONTEND_LIST[1]:
+            search_dir = "language/module-code" if file_name in self.module_list else "language/expressions/dynamic-import"
+            dependencies = collect_module_dependencies(js_file, os.path.join(TEST_FULL_DIR, search_dir), [])
             for dependency in list(set(dependencies)):
                 self.gen_dependency_abc(dependency)
 
