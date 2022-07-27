@@ -62,6 +62,7 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<int> opOptLevel("opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)");
     panda::PandArg<int> opThreadCount("thread", 0, "Number of worker theads");
     panda::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
+    panda::PandArg<bool> opDumpLiteralBuffer("dump-literal-buffer", false, "Dump literal buffer");
     panda::PandArg<std::string> outputFile("output", "", "Compiler binary output (.abc)");
 
     // tail arguments
@@ -78,6 +79,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opOptLevel);
     argparser_->Add(&opThreadCount);
     argparser_->Add(&opSizeStat);
+    argparser_->Add(&opDumpLiteralBuffer);
 
     argparser_->Add(&inputExtension);
     argparser_->Add(&outputFile);
@@ -157,6 +159,7 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.dumpDebugInfo = opDumpDebugInfo.GetValue();
     compilerOptions_.isDebug = opDebugInfo.GetValue();
     compilerOptions_.parseOnly = opParseOnly.GetValue();
+    compilerOptions_.dumpLiteralBuffer = opDumpLiteralBuffer.GetValue();
 
     return true;
 }

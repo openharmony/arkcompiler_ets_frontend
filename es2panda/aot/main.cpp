@@ -22,10 +22,11 @@
 #include <assembly-program.h>
 #include <assembly-emitter.h>
 #endif
+#include <es2panda.h>
 #include <mem/arena_allocator.h>
 #include <mem/pool_manager.h>
 #include <options.h>
-#include <es2panda.h>
+#include <util/dumper.h>
 
 #include <iostream>
 #include <memory>
@@ -54,9 +55,12 @@ public:
     }
 };
 
-static int GenerateProgram(panda::pandasm::Program *prog, const std::string &output, int optLevel, bool dumpAsm,
-                           bool dumpSize)
+static int GenerateProgram(panda::pandasm::Program *prog, std::unique_ptr<panda::es2panda::aot::Options> &options)
 {
+    const std::string output = options->CompilerOutput();
+    int optLevel = options->OptLevel();
+    const es2panda::CompilerOptions compilerOptions = options->CompilerOptions();
+    bool dumpSize = options->SizeStat();
     std::map<std::string, size_t> stat;
     std::map<std::string, size_t> *statp = optLevel != 0 ? &stat : nullptr;
     panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps {};
@@ -78,12 +82,16 @@ static int GenerateProgram(panda::pandasm::Program *prog, const std::string &out
     }
 #endif
 
-    if (dumpAsm) {
+    if (compilerOptions.dumpAsm) {
         es2panda::Compiler::DumpAsm(prog);
     }
 
     if (!panda::pandasm::AsmEmitter::Emit(output, *prog, statp, mapsp, true)) {
         return 1;
+    }
+
+    if (compilerOptions.dumpLiteralBuffer) {
+        panda::es2panda::util::Dumper::DumpLiterals(prog->literalarray_table);
     }
 
     if (dumpSize && optLevel != 0) {
@@ -136,8 +144,7 @@ int Run(int argc, const char **argv)
         return err.ErrorCode();
     }
 
-    GenerateProgram(program, options->CompilerOutput(), options->OptLevel(), options->CompilerOptions().dumpAsm,
-                    options->SizeStat());
+    GenerateProgram(program, options);
     delete program;
 
     return 0;
