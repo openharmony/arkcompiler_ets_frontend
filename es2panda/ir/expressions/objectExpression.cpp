@@ -20,20 +20,64 @@
 #include <compiler/core/pandagen.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
+#include <ir/base/classDefinition.h>
 #include <ir/base/property.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/base/spreadElement.h>
 #include <ir/expressions/arrayExpression.h>
+#include <ir/expressions/arrowFunctionExpression.h>
 #include <ir/expressions/assignmentExpression.h>
+#include <ir/expressions/classExpression.h>
 #include <ir/expressions/functionExpression.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/literals/nullLiteral.h>
+#include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/literals/taggedLiteral.h>
+#include <ir/statements/classDeclaration.h>
 #include <ir/validationInfo.h>
 #include <util/bitset.h>
 
 namespace panda::es2panda::ir {
+
+static bool IsAnonClassOrFuncExpr(const ir::Expression *expr)
+{
+    const ir::Identifier *identifier;
+    switch (expr->Type()) {
+        case ir::AstNodeType::FUNCTION_EXPRESSION: {
+            identifier = expr->AsFunctionExpression()->Function()->Id();
+            break;
+        }
+        case ir::AstNodeType::ARROW_FUNCTION_EXPRESSION: {
+            identifier = expr->AsArrowFunctionExpression()->Function()->Id();
+            break;
+        }
+        case ir::AstNodeType::CLASS_EXPRESSION: {
+            identifier = expr->AsClassExpression()->Definition()->Ident();
+            break;
+        }
+        default: {
+            return false;
+        }
+    }
+    return identifier == nullptr || identifier->Name().Empty();
+}
+
+static bool IsLegalNameFormat(const ir::Expression *expr)
+{
+    util::StringView name;
+    if (expr->IsIdentifier()) {
+        name = expr->AsIdentifier()->Name();
+    } else if (expr->IsStringLiteral()) {
+        name = expr->AsStringLiteral()->Str();
+    } else if (expr->IsNumberLiteral()) {
+        name = expr->AsNumberLiteral()->Str();
+    } else {
+        UNREACHABLE();
+    }
+    return name.Find(".") != std::string::npos && name.Find("\\") != std::string::npos;
+}
+
 
 ValidationInfo ObjectExpression::ValidateExpression()
 {
@@ -165,6 +209,21 @@ void ObjectExpression::Dump(ir::AstDumper *dumper) const
                  {"optional", AstDumper::Optional(optional_)}});
 }
 
+void ObjectExpression::FillInLiteralBuffer(compiler::LiteralBuffer *buf,
+                                           std::vector<std::vector<const Literal *>> &tempLiteralBuffer) const
+{
+    for (size_t i = 0 ; i < tempLiteralBuffer.size(); i++) {
+        if (tempLiteralBuffer[i].size() == 0) {
+            continue;
+        }
+
+        auto propBuf = tempLiteralBuffer[i];
+        for (size_t j = 0; j < propBuf.size(); j++) {
+            buf->Add(propBuf[j]);
+        }
+    }
+}
+
 void ObjectExpression::EmitCreateObjectWithBuffer(compiler::PandaGen *pg, compiler::LiteralBuffer *buf,
                                                   bool hasMethod) const
 {
@@ -220,7 +279,10 @@ void ObjectExpression::CompileStaticProperties(compiler::PandaGen *pg, util::Bit
     bool hasMethod = false;
     bool seenComputed = false;
     auto *buf = pg->NewLiteralBuffer();
+    std::vector<std::vector<const Literal *>> tempLiteralBuffer(properties_.size());
     std::unordered_map<util::StringView, size_t> propNameMap;
+    std::unordered_map<util::StringView, size_t> getterIndxNameMap;
+    std::unordered_map<util::StringView, size_t> setterIndxNameMap;
 
     for (size_t i = 0; i < properties_.size(); i++) {
         if (properties_[i]->IsSpreadElement()) {
@@ -236,27 +298,47 @@ void ObjectExpression::CompileStaticProperties(compiler::PandaGen *pg, util::Bit
             continue;
         }
 
+        std::vector<const Literal *> propBuf;
         util::StringView name = util::Helpers::LiteralToPropName(prop->Key());
-        size_t bufferPos = buf->Literals().size();
-        auto res = propNameMap.insert({name, bufferPos});
-        if (res.second) {
+        size_t propIndex = i;
+        auto res = propNameMap.insert({name, propIndex});
+        if (res.second) {    // name not found in map
             if (seenComputed) {
                 break;
             }
-
-            buf->Add(pg->Allocator()->New<StringLiteral>(name));
-            buf->Add(nullptr);
         } else {
-            bufferPos = res.first->second;
+            propIndex = res.first->second;
+
+            if (prop->Kind() != ir::PropertyKind::SET && getterIndxNameMap.find(name) != getterIndxNameMap.end()) {
+                compiled->Set(getterIndxNameMap[name]);
+            }
+
+            if (prop->Kind() != ir::PropertyKind::GET && setterIndxNameMap.find(name) != setterIndxNameMap.end()) {
+                compiled->Set(setterIndxNameMap[name]);
+            }
         }
+
+        if (prop->Kind() == ir::PropertyKind::GET) {
+            getterIndxNameMap[name] = i;
+        } else if (prop->Kind() == ir::PropertyKind::SET) {
+            setterIndxNameMap[name] = i;
+        }
+
+        propBuf.push_back(pg->Allocator()->New<StringLiteral>(name));
+        propBuf.push_back(CreateLiteral(pg, prop, compiled, i));
 
         if (prop->IsMethod()) {
             hasMethod = true;
+            const ir::FunctionExpression *func = prop->Value()->AsFunctionExpression();
+            size_t paramNum = func->Function()->FormalParamsLength();
+            Literal *methodAffiliate = pg->Allocator()->New<TaggedLiteral>(LiteralTag::METHODAFFILIATE, paramNum);
+            propBuf.push_back(methodAffiliate);
         }
 
-        buf->ResetLiteral(bufferPos + 1, CreateLiteral(pg, prop, compiled, i));
+        tempLiteralBuffer[propIndex] = propBuf;
     }
 
+    FillInLiteralBuffer(buf, tempLiteralBuffer);
     EmitCreateObjectWithBuffer(pg, buf, hasMethod);
 }
 
@@ -264,6 +346,7 @@ void ObjectExpression::CompileRemainingProperties(compiler::PandaGen *pg, const 
                                                   compiler::VReg objReg) const
 {
     for (size_t i = 0; i < properties_.size(); i++) {
+        // TODO: Compile and store only the last one of re-declared prop
         if (compiled->Test(i)) {
             continue;
         }
@@ -312,12 +395,22 @@ void ObjectExpression::CompileRemainingProperties(compiler::PandaGen *pg, const 
             case ir::PropertyKind::INIT: {
                 compiler::Operand key = pg->ToPropertyKey(prop->Key(), prop->IsComputed());
 
+                bool nameSetting = false;
                 if (prop->IsMethod()) {
                     pg->LoadAccumulator(prop->Value(), objReg);
+                    if (prop->IsComputed()) {
+                        nameSetting = true;
+                    }
+                } else {
+                    if (prop->IsComputed()) {
+                        nameSetting = IsAnonClassOrFuncExpr(prop->Value());
+                    } else {
+                        nameSetting = IsAnonClassOrFuncExpr(prop->Value()) && IsLegalNameFormat(prop->Key());
+                    }
                 }
 
                 prop->Value()->Compile(pg);
-                pg->StoreOwnProperty(this, objReg, key);
+                pg->StoreOwnProperty(this, objReg, key, nameSetting);
                 break;
             }
             case ir::PropertyKind::PROTO: {
