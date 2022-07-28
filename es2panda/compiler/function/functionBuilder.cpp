@@ -117,22 +117,25 @@ void FunctionBuilder::Await(const ir::AstNode *node)
 
 void FunctionBuilder::HandleCompletion(const ir::AstNode *node, VReg completionType, VReg completionValue)
 {
-    // .return(value)
-    pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::RETURN));
+    if (BuilderKind() == BuilderType::GENERATOR) {
+        // .return(value)
+        pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::RETURN));
 
-    auto *notRetLabel = pg_->AllocLabel();
-    pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, completionType, notRetLabel);
-    if (!handleReturn_) {
-        handleReturn_ = true;
-        pg_->ControlFlowChangeBreak();
-        handleReturn_ = false;
+        auto *notRetLabel = pg_->AllocLabel();
+        pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, completionType, notRetLabel);
+        if (!handleReturn_) {
+            handleReturn_ = true;
+            pg_->ControlFlowChangeBreak();
+            handleReturn_ = false;
+        }
+
+        pg_->LoadAccumulator(node, completionValue);
+        pg_->DirectReturn(node);
+
+        // .throw(value)
+        pg_->SetLabel(node, notRetLabel);
     }
 
-    pg_->LoadAccumulator(node, completionValue);
-    pg_->DirectReturn(node);
-
-    // .throw(value)
-    pg_->SetLabel(node, notRetLabel);
     pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::THROW));
 
     auto *not_throw_label = pg_->AllocLabel();
