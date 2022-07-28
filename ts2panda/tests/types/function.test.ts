@@ -176,7 +176,7 @@ describe("function tests in function.test.ts", function () {
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
-            ["#0#foo", shift + 2],
+            ["#0#foo", shift + 1],
         ]
         let vreg2TypeMap = createVRegTypePair(extectedVRegTypePair);
         expect(compareVReg2Type(vreg2TypeMap, locals), "check vreg typeInfo").to.be.true;
@@ -187,12 +187,8 @@ describe("function tests in function.test.ts", function () {
                 [2, 0], [2, 4], [2, 0]
             ],
             [
-                [2, 3], [2, 0], [2, 0], [5, 'localClass'],
-                [2, 0], [2, 0]
-            ],
-            [
-                [2, 3], [2, 0], [2, 0], [5, 'foo'],
-                [2, 0], [2, shift + 4]
+                [2, 3], [2, 0], [5, 'localClassRet'],
+                [2, 0], [2, 0], [2, 0]
             ],
             [
 
@@ -200,7 +196,11 @@ describe("function tests in function.test.ts", function () {
                 [2, 0], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 2], [2, shift + 3]
+                [2, 3], [2, 0], [5, 'foo'],
+                [2, 0], [2, 0], [2, shift + 4]
+            ],
+            [
+                [2, 2], [2, shift + 2]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);

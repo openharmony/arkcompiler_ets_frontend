@@ -72,8 +72,8 @@ describe("union tests in union.test.ts", function () {
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
-            ["#3#A", shift + 2],
-            ["#4#c", shift + 1],
+            ["#3#A", shift + 1],
+            ["#4#c", shift + 2],
         ]
         let vreg2TypeMap = createVRegTypePair(extectedVRegTypePair);
         expect(compareVReg2Type(vreg2TypeMap, locals), "check vreg typeInfo").to.be.true;
@@ -84,14 +84,14 @@ describe("union tests in union.test.ts", function () {
                 [2, 0], [2, 4], [2, 0]
             ],
             [
-                [2, 4], [2, 2], [2, 53], [2, 54]
-            ],
-            [
                 [2, 1], [2, 0], [2, 0], [2, 0],
                 [2, 0], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 2], [2, 52]
+                [2, 4], [2, 2], [2, shift + 3], [2, shift + 4]
+            ],
+            [
+                [2, 2], [2, shift + 1]
             ],
             [
                 [2, 5], [2, 1]
@@ -134,9 +134,9 @@ describe("union tests in union.test.ts", function () {
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
-            ["#3#A", shift + 2],
-            ["#4#c", shift + 1],
-            ["#5#d", shift + 1],
+            ["#3#A", shift + 1],
+            ["#4#c", shift + 2],
+            ["#5#d", shift + 2],
         ]
         let vreg2TypeMap = createVRegTypePair(extectedVRegTypePair);
         expect(compareVReg2Type(vreg2TypeMap, locals), "check vreg typeInfo").to.be.true;
@@ -147,14 +147,14 @@ describe("union tests in union.test.ts", function () {
                 [2, 0], [2, 4], [2, 0]
             ],
             [
-                [2, 4], [2, 2], [2, 53], [2, 54]
-            ],
-            [
                 [2, 1], [2, 0], [2, 0], [2, 0],
                 [2, 0], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 2], [2, 52]
+                [2, 4], [2, 2], [2, shift + 3], [2, shift + 4]
+            ],
+            [
+                [2, 2], [2, shift + 1]
             ],
             [
                 [2, 5], [2, 1]
