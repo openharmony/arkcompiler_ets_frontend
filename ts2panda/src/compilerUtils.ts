@@ -66,6 +66,12 @@ function compileArrayDestructuring(arr: ts.ArrayBindingOrAssignmentPattern, pand
     let iterator = new Iterator({iterator: iter, nextMethod: nextMethod}, iterDone, iterValue, pandaGen, arr);
     iterator.getIterator();
 
+    if (arr.elements.length === 0) {
+        iterator.close();
+        pandaGen.freeTemps(iter, nextMethod, iterDone, iterValue, nextResult, exception);
+        return;
+    }
+
     // prepare try-catch for iterate over all the elements
     let tryBeginLabel = new Label();
     let tryEndLabel = new Label();
