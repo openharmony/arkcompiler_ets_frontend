@@ -168,72 +168,140 @@ function getDtsFiles(libDir: string): string[] {
 }
 
 const stopWatchingStr = "####";
-const watchAbcFileTimeOut = 5000;
+const watchAbcFileDefaultTimeOut = 10;
 const watchFileName = "watch_expressions";
 
-function updateWatchedFile() {
-    let watchArgs = CmdOptions.getAddWatchArgs();
-    let ideIputStr = watchArgs[0];
-    if (watchArgs.length != 2 || !isBase64Str(ideIputStr)) {
-        throw new Error("Incorrect args' format or not enter base64 string in watch mode");
+function updateWatchJsFile() {
+    let ideIputStr = CmdOptions.getEvaluateExpression();
+    if (!isBase64Str(ideIputStr)) {
+        throw new Error("Passed expression string for evaluating is not base64 style.");
     }
-    let fragmentSep = "\\n";
+    let watchAbcFileTimeOut = watchAbcFileDefaultTimeOut;
+    if (CmdOptions.getWatchTimeOutValue() != 0) { watchAbcFileTimeOut = CmdOptions.getWatchTimeOutValue(); }
+    let watchFilePrefix = CmdOptions.getWatchJsPath() + path.sep + watchFileName;
     let originExpre = Buffer.from(ideIputStr, 'base64').toString();
-    let expressiones = originExpre.split(fragmentSep);
-    let jsFileName = watchArgs[1] + path.sep + watchFileName + ".js";
-    let abcFileName = watchArgs[1] + path.sep + watchFileName + ".abc";
-    let writeFlag: Boolean = false;
-    for (let index = 0; index < expressiones.length; index++) {
-        let expreLine = expressiones[index].trim();
-        if (expreLine != "") {
-            if (!writeFlag) {
-                fs.writeFileSync(jsFileName, expreLine + "\n");
-                writeFlag = true;
-            } else {
-                fs.appendFileSync(jsFileName, expreLine + "\n");
-            }
-        }
-    }
-    if (CmdOptions.isAssemblyMode()) {
-        return;
-    }
+    let jsFileName = watchFilePrefix + ".js";
+    let abcFileName = watchFilePrefix + ".abc";
+    let errorMsgFileName = watchFilePrefix + ".err";
 
+    fs.watchFile(errorMsgFileName, { persistent: true, interval: 50 }, (curr, prev) => {
+        if (+curr.mtime <= +prev.mtime) {
+            fs.unwatchFile(jsFileName);
+            fs.unwatchFile(abcFileName);
+            throw new Error("watched errMsg file has not been initialized");
+        }
+        console.log("error in genarate abc file for this expression.");
+        fs.unwatchFile(abcFileName);
+        fs.unwatchFile(errorMsgFileName);
+        process.exit();
+    });
     fs.watchFile(abcFileName, { persistent: true, interval: 50 }, (curr, prev) => {
         if (+curr.mtime <= +prev.mtime) {
             fs.unwatchFile(jsFileName);
+            fs.unwatchFile(errorMsgFileName);
             throw new Error("watched abc file has not been initialized");
         }
         let base64data = fs.readFileSync(abcFileName);
         let watchResStr = Buffer.from(base64data).toString('base64');
         console.log(watchResStr);
         fs.unwatchFile(abcFileName);
+        fs.unwatchFile(errorMsgFileName);
         process.exit();
     });
+    fs.writeFileSync(jsFileName, originExpre);
     setTimeout(() => {
         fs.unwatchFile(jsFileName);
         fs.unwatchFile(abcFileName);
+        fs.unwatchFile(errorMsgFileName);
         fs.unlinkSync(jsFileName);
         fs.unlinkSync(abcFileName);
+        fs.unlinkSync(errorMsgFileName);
         throw new Error("watchFileServer has not been initialized");
-    }, watchAbcFileTimeOut);
+    }, watchAbcFileTimeOut*1000);
 }
 
-function convertWatchExpression(jsfileName: string, parsed: ts.ParsedCommandLine | undefined) {
-    let files: string[] = parsed.fileNames;
-    files.unshift(jsfileName);
-    CmdOptions.setWatchArgs(['','']);
-    main(files.concat(CmdOptions.getIncludedFiles()), parsed.options);
-}
-
-function keepWatchingFiles(filePath: string, parsed: ts.ParsedCommandLine | undefined) {
-    let jsFileName = filePath + path.sep + watchFileName + ".js";
-    let abcFileName = filePath + path.sep + watchFileName + ".abc";
-    if (fs.existsSync(jsFileName)) {
-        console.log("watchFileServer has been initialized");
+function compileWatchExpression(jsFileName: string, errorMsgFileName: string, options: ts.CompilerOptions,
+                                watchedProgram: ts.Program) {
+    CmdOptions.setWatchEvaluateExpressionArgs(['','']);
+    let fileName = watchFileName + ".js";
+    let errorMsgRecordFlag = false;
+    let sourceFile = ts.createSourceFile(fileName, fs.readFileSync(jsFileName).toString(), ts.ScriptTarget.ES2017);
+    let jsFileDiagnostics = watchedProgram.getSyntacticDiagnostics(sourceFile);
+    jsFileDiagnostics.forEach(diagnostic => {
+        if (!errorMsgRecordFlag) {
+            fs.writeFileSync(errorMsgFileName, "There are syntax errors in input expression.\n");
+            errorMsgRecordFlag = true;
+        }
+        diag.printDiagnostic(diagnostic);
+        return;
+    });
+    if (errorMsgRecordFlag) {
         return;
     }
+    watchedProgram.emit(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        {
+            before: [
+                // @ts-ignore
+                (ctx: ts.TransformationContext) => {
+                    return (node: ts.SourceFile) => {
+                        if (path.basename(node.fileName) == fileName) { node = sourceFile; }
+                        let outputBinName = getOutputBinName(node);
+                        let compilerDriver = new CompilerDriver(outputBinName);
+                        compilerDriver.compileForSyntaxCheck(node);
+                        return node;
+                    }
+                }
+            ],
+            after: [
+                // @ts-ignore
+                (ctx: ts.TransformationContext) => {
+                    return (node: ts.SourceFile) => {
+                        if (ts.getEmitHelpers(node)) {
+                            let newStatements = [];
+                            ts.getEmitHelpers(node)?.forEach(
+                                item => {
+                                    let emitHelperSourceFile = ts.createSourceFile(node.fileName, <string>item.text, options.target!, true, ts.ScriptKind.JS);
+                                    emitHelperSourceFile.statements.forEach(emitStatement => {
+                                        let emitNode = setPos(emitStatement);
+                                        newStatements.push(emitNode);
+                                    });
+                                }
+                            )
+                            newStatements.push(...node.statements);
+                            node = ts.factory.updateSourceFile(node, newStatements);
+                        }
+                        let outputBinName = getOutputBinName(node);
+                        let compilerDriver = new CompilerDriver(outputBinName);
+                        setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(node, options));
+                        compilerDriver.compile(node);
+                        return node;
+                    }
+                }
+            ]
+        }
+    );
+}
+
+function launchWatchEvaluateDeamon(parsed: ts.ParsedCommandLine | undefined) {
+    let deamonFilePrefix = CmdOptions.getEvaluateDeamonPath() + path.sep + watchFileName;
+    let jsFileName = deamonFilePrefix + ".js";
+    let abcFileName = deamonFilePrefix + ".abc";
+    let errorMsgFileName = deamonFilePrefix + ".err";
+
+    if (fs.existsSync(jsFileName)) {
+        console.log("watchFileServer has been initialized supportTimeout");
+        return;
+    }
+    let files: string[] = parsed.fileNames;
     fs.writeFileSync(jsFileName, "initJsFile\n");
-    convertWatchExpression(jsFileName, parsed);
+    fs.writeFileSync(errorMsgFileName, "initErrMsgFile\n");
+    files.unshift(jsFileName);
+    let watchedProgram = ts.createProgram(files, parsed.options);
+    compileWatchExpression(jsFileName, errorMsgFileName, parsed.options, watchedProgram);
 
     fs.watchFile(jsFileName, { persistent: true, interval: 50 }, (curr, prev) => {
         if (+curr.mtime <= +prev.mtime) {
@@ -244,13 +312,14 @@ function keepWatchingFiles(filePath: string, parsed: ts.ParsedCommandLine | unde
             console.log("stopWatchingSuccess");
             return;
         }
-        convertWatchExpression(jsFileName, parsed);
+        compileWatchExpression(jsFileName, errorMsgFileName, parsed.options, watchedProgram);
     });
-    console.log("startWatchingSuccess");
+    console.log("startWatchingSuccess supportTimeout");
 
     process.on("exit", () => {
         fs.unlinkSync(jsFileName);
         fs.unlinkSync(abcFileName);
+        fs.unlinkSync(errorMsgFileName);
     });
 }
 
@@ -300,19 +369,16 @@ function run(args: string[], options?: ts.CompilerOptions): void {
         }
     }
     try {
-        let keepWatchArgs = CmdOptions.getKeepWatchFile();
-        if (keepWatchArgs.length != 0) {
-            if (CmdOptions.isKeepWatchMode(keepWatchArgs)) {
-                keepWatchingFiles(CmdOptions.getKeepWatchFile()[1], parsed);
-            } else if (CmdOptions.isStopWatchMode(keepWatchArgs)) {
-                fs.writeFileSync(CmdOptions.getKeepWatchFile()[1] + path.sep + watchFileName + ".js", stopWatchingStr);
-            } else {
-                throw new Error("Incorrect args' format for keep watching expression mode");
-            }
+        if (CmdOptions.isWatchEvaluateDeamonMode()) {
+            launchWatchEvaluateDeamon(parsed);
             return;
         }
-        if (CmdOptions.isWatchMode()) {
-            updateWatchedFile();
+        if (CmdOptions.isStopEvaluateDeamonMode()) {
+            fs.writeFileSync(CmdOptions.getEvaluateDeamonPath() + path.sep + watchFileName + ".js", stopWatchingStr);
+            return;
+        }
+        if (CmdOptions.isWatchEvaluateExpressionMode()) {
+            updateWatchJsFile();
             return;
         }
 

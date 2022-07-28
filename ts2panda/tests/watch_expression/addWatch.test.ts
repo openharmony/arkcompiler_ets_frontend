@@ -69,7 +69,7 @@ import { checkInstructions, compileMainSnippet, compileAllSnippet, SnippetCompil
 describe("WatchExpressions", function () {
     it("watch NumericLiteral", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a=-123.212
         `);
@@ -92,7 +92,7 @@ describe("WatchExpressions", function () {
 
     it("watch StringLiteral", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         y = 'He is called \'Johnny\''
         `);
@@ -120,7 +120,7 @@ describe("WatchExpressions", function () {
 
     it("watch RegularExpressionLiteral", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a = /abc/
         `);
@@ -141,7 +141,7 @@ describe("WatchExpressions", function () {
 
     it("watch Identifier", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         _awef
         `);
@@ -161,7 +161,7 @@ describe("WatchExpressions", function () {
 
     it("watch TrueKeyword", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         b === true
         `);
@@ -192,7 +192,7 @@ describe("WatchExpressions", function () {
 
     it("watch FalseKeyword", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         b === false
         `);
@@ -224,7 +224,7 @@ describe("WatchExpressions", function () {
 
     it("watch CallExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         BigInt(10.2)
         `);
@@ -248,7 +248,7 @@ describe("WatchExpressions", function () {
 
     it("watch NullKeyword", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         b === null
         `);
@@ -279,7 +279,7 @@ describe("WatchExpressions", function () {
 
     it("watch ThisKeyword", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         this
         `);
@@ -298,7 +298,7 @@ describe("WatchExpressions", function () {
 
     it("watch MetaProperty", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let pandaGens = compileAllSnippet(`
         function (){
             b = new.target;
@@ -325,7 +325,7 @@ describe("WatchExpressions", function () {
 
     it("watch ArrayLiteralExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         [1,2]
         `);
@@ -342,7 +342,7 @@ describe("WatchExpressions", function () {
 
     it("watch ObjectLiteralExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a = {key:1,value:1}
         `);
@@ -365,7 +365,7 @@ describe("WatchExpressions", function () {
 
     it("watch PropertyAccessExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a.b
         `);
@@ -387,7 +387,7 @@ describe("WatchExpressions", function () {
 
     it("watch ElementAccessExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a[0]
         `);
@@ -409,7 +409,7 @@ describe("WatchExpressions", function () {
 
     it("watch NewExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         new Function()
         `);
@@ -432,7 +432,7 @@ describe("WatchExpressions", function () {
 
     it("watch ParenthesizedExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         (a,b,c)
         `);
@@ -466,7 +466,7 @@ describe("WatchExpressions", function () {
 
     it("watch FunctionExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let pandaGens = compileAllSnippet(`
         a = function () {}
         `);
@@ -491,7 +491,7 @@ describe("WatchExpressions", function () {
 
     it("watch DeleteExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         delete[abc]
         `);
@@ -516,7 +516,7 @@ describe("WatchExpressions", function () {
 
     it("watch TypeOfExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         typeof(a)
         `);
@@ -537,7 +537,7 @@ describe("WatchExpressions", function () {
 
     it("watch VoidExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         void doSomething()
         `);
@@ -560,7 +560,7 @@ describe("WatchExpressions", function () {
 
     it("watch AwaitExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let pandaGens = compileAllSnippet(
             `async function a(){
                 await abc;
@@ -613,7 +613,7 @@ describe("WatchExpressions", function () {
 
     it("watch PrefixUnaryExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         --a
         `);
@@ -641,7 +641,7 @@ describe("WatchExpressions", function () {
 
     it("watch PostfixUnaryExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a--
         `);
@@ -670,7 +670,7 @@ describe("WatchExpressions", function () {
 
     it("watch BinaryExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a+b
         `);
@@ -698,7 +698,7 @@ describe("WatchExpressions", function () {
 
     it("watch ConditionalExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a?4:2
         `);
@@ -728,7 +728,7 @@ describe("WatchExpressions", function () {
 
     it("watch YieldExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let pandaGens = compileAllSnippet(`
         function* func(){
             yield a;
@@ -800,7 +800,7 @@ describe("WatchExpressions", function () {
 
     it("watch ArrowFunction", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let pandaGens = compileAllSnippet(`
         a => b.length
         `);
@@ -829,7 +829,7 @@ describe("WatchExpressions", function () {
 
     it("watch ClassExpression", function () {
         CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchArgs(['','']);
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let pandaGens = compileAllSnippet(`
         a = new class{};
         `);
