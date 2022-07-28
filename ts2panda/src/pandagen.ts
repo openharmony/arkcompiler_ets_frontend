@@ -629,7 +629,7 @@ export class PandaGen {
 
     // eg. print
     tryLoadGlobalByName(node: ts.Node, string_id: string) {
-        CmdOptions.isWatchMode() ? this.loadByNameViaDebugger(node, string_id, CacheList.True)
+        CmdOptions.isWatchEvaluateExpressionMode() ? this.loadByNameViaDebugger(node, string_id, CacheList.True)
                                 : this.add(node, tryLoadGlobalByName(string_id));
     }
 
@@ -648,7 +648,7 @@ export class PandaGen {
 
     // eg. a = 1
     tryStoreGlobalByName(node: ts.Node, string_id: string) {
-        CmdOptions.isWatchMode() ? this.storeByNameViaDebugger(node, string_id)
+        CmdOptions.isWatchEvaluateExpressionMode() ? this.storeByNameViaDebugger(node, string_id)
                                 : this.add(node, tryStoreGlobalByName(string_id));
     }
 

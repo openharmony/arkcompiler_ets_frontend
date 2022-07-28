@@ -26,7 +26,7 @@ const ts2pandaOptions = [
     { name: 'debug-log', alias: 'l', type: Boolean, defaultValue: false, description: "show info debug log and generate the json file."},
     { name: 'dump-assembly', alias: 'a', type: Boolean, defaultValue: false, description: "dump assembly to file." },
     { name: 'debug', alias: 'd', type: Boolean, defaultValue: false, description: "compile with debug info." },
-    { name: 'debug-add-watch', alias: 'w', type: String, lazyMultiple: true, defaultValue: [], description: "watch expression and abc file path in debug mode." },
+    { name: 'debug-add-watch', alias: 'w', type: String, lazyMultiple: true, defaultValue: [], description: "watch expression, abc file path and maybe watchTimeOut(in seconds) in debug mode." },
     { name: 'keep-persistent-watch', alias: 'k', type: String, lazyMultiple: true, defaultValue: [], description: "keep persistent watch on js file with watched expression." },
     { name: 'show-statistics', alias: 's', type: String, lazyMultiple: true, defaultValue: "", description: "show compile statistics(ast, histogram, hoisting, all)." },
     { name: 'output', alias: 'o', type: String, defaultValue: "", description: "set output file." },
@@ -73,37 +73,49 @@ export class CmdOptions {
         return this.options["debug"];
     }
 
-    static getAddWatchArgs(): string[] {
-        if (!this.options) {
-            return [];
-        }
-        return this.options["debug-add-watch"];
-    }
-
-    static isWatchMode(): boolean {
-        if (!this.options) {
-            return false;
-        }
-        return this.options["debug-add-watch"].length != 0;
-    }
-
-    static setWatchArgs(watchArgs: string[]) {
+    static setWatchEvaluateExpressionArgs(watchArgs: string[]) {
         this.options["debug-add-watch"] = watchArgs;
     }
 
-    static getKeepWatchFile(): string[] {
+    static getDeamonModeArgs(): string[] {
         if (!this.options) {
             return [];
         }
         return this.options["keep-persistent-watch"];
     }
 
-    static isKeepWatchMode(args: string[]): boolean {
-        return args.length == 2 && args[0] == "start";
+    static isWatchEvaluateDeamonMode(): boolean {
+        return CmdOptions.getDeamonModeArgs()[0] == "start";
     }
 
-    static isStopWatchMode(args: string[]): boolean {
-        return args.length == 2 && args[0] == "stop";
+    static isStopEvaluateDeamonMode(): boolean {
+        return CmdOptions.getDeamonModeArgs()[0] == "stop";
+    }
+
+    static getEvaluateDeamonPath(): string {
+        return CmdOptions.getDeamonModeArgs()[1];
+    }
+
+    static isWatchEvaluateExpressionMode(): boolean {
+        if (!this.options) {
+            return false;
+        }
+        return this.options["debug-add-watch"].length != 0;
+    }
+
+    static getEvaluateExpression(): string {
+        return this.options["debug-add-watch"][0];
+    }
+
+    static getWatchJsPath(): string {
+        return this.options["debug-add-watch"][1];
+    }
+
+    static getWatchTimeOutValue(): number {
+        if (this.options["debug-add-watch"].length == 2) {
+            return 0;
+        }
+        return this.options["debug-add-watch"][2];
     }
 
     static isModules(): boolean {
