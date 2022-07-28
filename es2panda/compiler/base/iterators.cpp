@@ -80,17 +80,12 @@ void Iterator::Close(bool abruptCompletion) const
     if (type_ == IteratorType::SYNC) {
         RegScope rs(pg_);
         VReg exception = pg_->AllocReg();
-        VReg doneResult = pg_->AllocReg();
         VReg innerResult = pg_->AllocReg();
         Label *noReturn = pg_->AllocLabel();
 
         if (abruptCompletion) {
             pg_->StoreAccumulator(node_, exception);
         }
-
-        pg_->StoreConst(node_, doneResult, Constant::JS_TRUE);
-        Complete();
-        pg_->Condition(node_, lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL, doneResult, noReturn);
 
         // close iterator
         pg_->LoadObjByName(node_, iterator_, "return");
