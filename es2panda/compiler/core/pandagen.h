@@ -289,6 +289,7 @@ public:
 
     void Negate(const ir::AstNode *node);
     void ToNumber(const ir::AstNode *node, VReg arg);
+    void ToNumeric(const ir::AstNode *node, VReg arg);
 
     void CreateGeneratorObj(const ir::AstNode *node, VReg funcObj);
     void ResumeGenerator(const ir::AstNode *node, VReg genObj);
