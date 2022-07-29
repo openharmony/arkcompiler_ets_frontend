@@ -81,7 +81,7 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
             if (ref.Kind() == ReferenceKind::DESTRUCTURING) {
                 auto *loadParamLabel = pg->AllocLabel();
 
-                pg->BranchIfNotUndefined(func, loadParamLabel);
+                pg->BranchIfStrictNotUndefined(func, loadParamLabel);
                 param->AsAssignmentPattern()->Right()->Compile(pg);
                 pg->Branch(func, nonDefaultLabel);
 
@@ -91,7 +91,7 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
                 pg->SetLabel(func, nonDefaultLabel);
                 ref.SetValue();
             } else {
-                pg->BranchIfNotUndefined(func, nonDefaultLabel);
+                pg->BranchIfStrictNotUndefined(func, nonDefaultLabel);
 
                 param->AsAssignmentPattern()->Right()->Compile(pg);
                 ref.SetValue();
@@ -156,9 +156,8 @@ static void CompileFunction(PandaGen *pg)
         pg->StoreAccToLexEnv(pg->RootNode(), funcParamScope->Find(funcParamScope->NameVar()->Name()), true);
     }
 
-    CompileFunctionParameterDeclaration(pg, decl);
-
     pg->FunctionEnter();
+    CompileFunctionParameterDeclaration(pg, decl);
     const ir::AstNode *body = decl->Body();
 
     if (body->IsExpression()) {

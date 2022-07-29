@@ -1,0 +1,33 @@
+[
+    {
+        "reason": "Async Function failed testcases",
+        "files": [
+            "language/expressions/async-arrow-function/array-destructuring-param-strict-body.js",
+            "language/expressions/async-arrow-function/await-as-param-rest-nested-arrow-parameter-position.js",
+            "language/expressions/async-arrow-function/dflt-params-abrupt.js",
+            "language/expressions/async-arrow-function/await-as-param-nested-arrow-body-position.js",
+            "language/expressions/async-arrow-function/dflt-params-ref-later.js",
+            "language/expressions/async-arrow-function/dflt-params-ref-self.js",
+            "language/expressions/async-arrow-function/object-destructuring-param-strict-body.js",
+            "language/expressions/async-function/named-array-destructuring-param-strict-body.js",
+            "language/expressions/async-function/named-dflt-params-abrupt.js",
+            "language/expressions/async-function/named-dflt-params-ref-later.js",
+            "language/expressions/async-function/named-dflt-params-ref-self.js",
+            "language/expressions/async-function/named-object-destructuring-param-strict-body.js",
+            "language/expressions/async-function/named-strict-error-reassign-fn-name-in-body-in-arrow.js",
+            "language/expressions/async-function/nameless-dflt-params-abrupt.js",
+            "language/expressions/async-function/nameless-array-destructuring-param-strict-body.js",
+            "language/expressions/async-function/nameless-object-destructuring-param-strict-body.js",
+            "language/expressions/async-function/nameless-dflt-params-ref-later.js",
+            "language/expressions/async-function/nameless-dflt-params-ref-self.js",
+            "language/statements/async-function/array-destructuring-param-strict-body.js",
+            "language/statements/async-function/dflt-params-abrupt.js",
+            "language/statements/async-function/dflt-params-ref-self.js",
+            "language/statements/async-function/dflt-params-ref-later.js",
+            "language/statements/async-function/evaluation-default-that-throws.js",
+            "language/statements/async-function/evaluation-this-value-passed.js",
+            "language/statements/async-function/object-destructuring-param-strict-body.js",
+            "language/statements/async-function/syntax-declaration-line-terminators-allowed.js"
+        ]
+    }
+]

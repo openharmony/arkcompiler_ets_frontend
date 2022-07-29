@@ -1142,12 +1142,12 @@ void PandaGen::AsyncFunctionAwait(const ir::AstNode *node, VReg asyncFuncObj, VR
 
 void PandaGen::AsyncFunctionResolve(const ir::AstNode *node, VReg asyncFuncObj, VReg value, VReg canSuspend)
 {
-    ra_.Emit<EcmaAsyncfunctionresolve>(node, asyncFuncObj, value, canSuspend);
+    ra_.Emit<EcmaAsyncfunctionresolve>(node, asyncFuncObj, canSuspend, value);
 }
 
 void PandaGen::AsyncFunctionReject(const ir::AstNode *node, VReg asyncFuncObj, VReg value, VReg canSuspend)
 {
-    ra_.Emit<EcmaAsyncfunctionreject>(node, asyncFuncObj, value, canSuspend);
+    ra_.Emit<EcmaAsyncfunctionreject>(node, asyncFuncObj, canSuspend, value);
 }
 
 void PandaGen::AsyncGeneratorResolve(const ir::AstNode *node, VReg asyncGenObj)
