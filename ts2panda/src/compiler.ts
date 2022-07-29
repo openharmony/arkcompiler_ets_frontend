@@ -60,6 +60,7 @@ import { compileYieldExpression } from "./expression/yieldExpression";
 import { AsyncFunctionBuilder } from "./function/asyncFunctionBuilder";
 import { FunctionBuilder, FunctionBuilderType } from "./function/functionBuilder";
 import { GeneratorFunctionBuilder } from "./function/generatorFunctionBuilder";
+import { AsyncGeneratorFunctionBuilder } from "./function/asyncGeneratorFunctionBuilder";
 import {
     hoistFunctionInBlock
 } from "./hoisting";
@@ -324,7 +325,7 @@ export class Compiler {
             return ;
         }
         // exit GlobalScopefunction or Function Block return
-        if (this.funcBuilder instanceof AsyncFunctionBuilder) {
+        if (this.funcBuilder instanceof AsyncFunctionBuilder || this.funcBuilder instanceof AsyncGeneratorFunctionBuilder) {
             this.funcBuilder.resolve(NodeKind.Invalid, getVregisterCache(pandaGen, CacheList.undefined));
             pandaGen.return(NodeKind.Invalid);
         } else {
@@ -345,7 +346,7 @@ export class Compiler {
             let retValue = pandaGen.getTemp();
             pandaGen.storeAccumulator(body, retValue);
 
-            if (this.funcBuilder instanceof AsyncFunctionBuilder) {
+            if (this.funcBuilder instanceof AsyncFunctionBuilder || this.funcBuilder instanceof AsyncGeneratorFunctionBuilder) {
                 this.funcBuilder.resolve(body, retValue);
                 pandaGen.return(NodeKind.Invalid);
             } else {
@@ -414,7 +415,7 @@ export class Compiler {
                 if (decl.modifiers[i].kind == ts.SyntaxKind.AsyncKeyword) {
                     // async generator
                     if (decl.asteriskToken) {
-                        throw new Error("Async generator is not supported");
+                        return new AsyncGeneratorFunctionBuilder(pandaGen, this);
                     } else { // async
                         return new AsyncFunctionBuilder(pandaGen);
                     }
@@ -1142,7 +1143,7 @@ export class Compiler {
     private compileAwaitExpression(expr: ts.AwaitExpression) {
         let pandaGen = this.pandaGen;
 
-        if (!(this.funcBuilder instanceof AsyncFunctionBuilder)) {
+        if (!(this.funcBuilder instanceof AsyncFunctionBuilder || this.funcBuilder instanceof AsyncGeneratorFunctionBuilder)) {
             throw new DiagnosticError(expr.parent, DiagnosticCode.await_expressions_are_only_allowed_within_async_functions_and_at_the_top_levels_of_modules);
         }
 
