@@ -60,6 +60,12 @@ compiler::VReg CallExpression::CreateSpreadArguments(compiler::PandaGen *pg) con
 
 void CallExpression::Compile(compiler::PandaGen *pg) const
 {
+    if (callee_->IsCallExpression() || callee_->IsNewExpression()) {
+        if (pg->TryCompileFunctionCallOrNewExpression(callee_)) {
+            return;
+        }
+    }
+
     compiler::RegScope rs(pg);
     bool containsSpread = util::Helpers::ContainSpreadElement(arguments_);
 
