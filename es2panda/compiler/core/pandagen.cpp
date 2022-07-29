@@ -34,11 +34,13 @@
 #include <ir/base/classDefinition.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/base/spreadElement.h>
+#include <ir/expressions/callExpression.h>
 #include <ir/expressions/functionExpression.h>
-#include <ir/statement.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
+#include <ir/expressions/newExpression.h>
+#include <ir/statement.h>
 
 namespace panda::es2panda::compiler {
 
@@ -1687,6 +1689,37 @@ void PandaGen::StClassToGlobalRecord(const ir::AstNode *node, const util::String
 {
     sa_.Emit<EcmaStclasstoglobalrecord>(node, name);
     strings_.insert(name);
+}
+
+bool PandaGen::TryCompileFunctionCallOrNewExpression(const ir::Expression *expr)
+{
+    ASSERT(expr->IsCallExpression() || expr->IsNewExpression());
+    const auto *callee = expr->IsCallExpression() ? expr->AsCallExpression()->Callee() :
+                         expr->AsNewExpression()->Callee();
+
+    if (!callee->IsIdentifier()) {
+        return false;
+    }
+
+    if (callee->AsIdentifier()->Name().Is("Function")) {
+        auto arguments = expr->IsCallExpression() ? expr->AsCallExpression()->Arguments() :
+                         expr->AsNewExpression()->Arguments();
+        if (arguments.empty()) {
+            return false;
+        }
+
+        auto *arg = arguments[arguments.size() - 1];
+        if (!arg->IsStringLiteral()) {
+            return false;
+        }
+
+        if (std::regex_match(arg->AsStringLiteral()->Str().Mutf8(), std::regex(" *return +this[;]? *$"))) {
+            LoadConst(arg, Constant::JS_GLOBAL);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 }  // namespace panda::es2panda::compiler

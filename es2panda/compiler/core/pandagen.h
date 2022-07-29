@@ -24,7 +24,7 @@
 #include <lexer/token/tokenType.h>
 #include <macros.h>
 
-#include <unordered_map>
+#include <regex>
 
 namespace panda::es2panda::binder {
 class FunctionScope;
@@ -382,6 +382,16 @@ public:
     static Operand ToNamedPropertyKey(const ir::Expression *prop, bool isComputed);
     Operand ToPropertyKey(const ir::Expression *prop, bool isComputed);
     VReg LoadPropertyKey(const ir::Expression *prop, bool isComputed);
+
+    /*
+     * Since the [Function] is not implemented yet, We compile the test262's framework code
+     * which obtains the [global] Object as following into [LoadConst.Global] directly.
+     * ```
+     *    var __globalObject = Function("return this;")();
+     *    var __globalObject = new Function("return this;")();
+     * ```
+     */
+    bool TryCompileFunctionCallOrNewExpression(const ir::Expression *expr);
 
     void SetFirstStmt(const ir::Statement *stmt)
     {
