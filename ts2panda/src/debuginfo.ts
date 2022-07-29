@@ -354,11 +354,8 @@ export class DebugInfo {
         let sourceFile = jshelpers.getSourceFileOfNode(node);
         pandaGen.setSourceFileDebugInfo(sourceFile.fileName);
 
-        if (CmdOptions.isDebugMode()) {
-            if (ts.isSourceFile(node)) {
-                pandaGen.setSourceCodeDebugInfo(node.text);
-            }
-            return;
+        if (CmdOptions.isDebugMode() && ts.isSourceFile(node)) {
+            pandaGen.setSourceCode(node.text);
         }
     }
 

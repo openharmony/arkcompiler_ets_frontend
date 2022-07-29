@@ -22,7 +22,8 @@ import {
     LdaDyn,
     VReg
 } from "../src/irnodes";
-import { checkInstructions, compileMainSnippet } from "./utils/base";
+import { checkInstructions, compileMainSnippet, SnippetCompiler } from "./utils/base";
+import { CmdOptions } from '../src/cmdOptions';
 
 describe("BuiltInsTest", function () {
     it("Global Value Properties", function () {
@@ -37,3 +38,15 @@ describe("BuiltInsTest", function () {
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 });
+
+describe("FunctionToStringTest", function () {
+    it("func.toString()", function () {
+        CmdOptions.needRecordSourceCode = () => {return true};
+        let snippetCompiler = new SnippetCompiler();
+        snippetCompiler.compileAfter(`function foo() {return 123;}\nfunction bar() {return 321;}\n`, 'toStringTest.js');
+        CmdOptions.needRecordSourceCode = () => {return false};
+        let pandaGen = snippetCompiler.getPandaGenByName('foo');
+        let expected = "function foo() {return 123;}";
+        expect(pandaGen.getSourceCode() == expected).to.be.true;
+    })
+})
