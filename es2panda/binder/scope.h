@@ -759,7 +759,9 @@ void Scope::PropagateBinding(ArenaAllocator *allocator, util::StringView name, A
         return;
     }
 
-    res->second->Reset(std::forward<Args>(args)...);
+    if (!res->second->Declaration()->IsParameterDecl()) {
+        res->second->Reset(std::forward<Args>(args)...);
+    }
 }
 
 }  // namespace panda::es2panda::binder
