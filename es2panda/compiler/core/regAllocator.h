@@ -17,6 +17,7 @@
 #define ES2PANDA_COMPILER_CORE_REG_ALLOCATOR_H
 
 #include <gen/isa.h>
+#include <ir/inValidNode.h>
 #include <macros.h>
 
 namespace panda::es2panda::ir {
@@ -34,6 +35,21 @@ public:
     NO_MOVE_SEMANTIC(AllocatorBase);
     ~AllocatorBase() = default;
 
+    void SetIgnoreLocation()
+    {
+        ignoreLocation_ = true;
+    }
+
+    void ResetIgnoreLocation()
+    {
+        ignoreLocation_ = false;
+    }
+
+    bool IgnoreLocation() const
+    {
+        return ignoreLocation_;
+    }
+
 protected:
     void PushBack(IRNode *ins);
     ArenaAllocator *Allocator() const;
@@ -41,7 +57,11 @@ protected:
     template <typename T, typename... Args>
     T *Alloc(const ir::AstNode *node, Args &&... args)
     {
-        return Allocator()->New<T>(node, std::forward<Args>(args)...);
+        ir::AstNode *invalidNode = nullptr;
+        if (IgnoreLocation()) {
+            invalidNode = Allocator()->New<ir::InValidNode>(ir::AstNodeType::INVALID);
+        }
+        return Allocator()->New<T>(IgnoreLocation() ? invalidNode : node, std::forward<Args>(args)...);
     }
 
     template <typename T, typename... Args>
@@ -51,6 +71,7 @@ protected:
     }
 
     PandaGen *pg_;
+    bool ignoreLocation_ {false}; // for instructions that need to be set with invalid debuginfo
 };
 
 class SimpleAllocator : public AllocatorBase {

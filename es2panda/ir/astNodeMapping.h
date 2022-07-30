@@ -138,7 +138,8 @@
     _(VARIABLE_DECLARATOR, VariableDeclarator)                       \
     _(WHILE_STATEMENT, WhileStatement)                               \
     _(WITH_STATEMENT, WithStatement)                                 \
-    _(YIELD_EXPRESSION, YieldExpression)
+    _(YIELD_EXPRESSION, YieldExpression)                             \
+    _(INVALID, InValidNode)
 
 #define AST_NODE_REINTERPRET_MAPPING(_)                                                   \
     _(ARRAY_EXPRESSION, ARRAY_PATTERN, ArrayExpression, ArrayPattern)                     \

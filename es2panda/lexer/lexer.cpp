@@ -145,8 +145,14 @@ void Lexer::SkipMultiLineComment()
                 ThrowError("Unterminated multi-line comment");
                 break;
             }
+            case LEX_CHAR_CR: {
+                if (Iterator().Peek() == LEX_CHAR_LF) {
+                    Iterator().Forward(1);
+                }
+
+                [[fallthrough]];
+            }
             case LEX_CHAR_LF:
-            case LEX_CHAR_CR:
             case LEX_CHAR_LS:
             case LEX_CHAR_PS: {
                 pos_.nextTokenLine++;

@@ -179,6 +179,20 @@ public:
         return ic_.Size();
     }
 
+    void SetIgnoreLocation()
+    {
+        sa_.SetIgnoreLocation();
+        ra_.SetIgnoreLocation();
+        rra_.SetIgnoreLocation();
+    }
+
+    void ResetIgnoreLocation()
+    {
+        sa_.ResetIgnoreLocation();
+        ra_.ResetIgnoreLocation();
+        rra_.ResetIgnoreLocation();
+    }
+
     bool IsDebug() const;
     uint32_t ParamCount() const;
     uint32_t FormalParametersCount() const;
