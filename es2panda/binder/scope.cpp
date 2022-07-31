@@ -141,6 +141,17 @@ Decl *Scope::FindDecl(const util::StringView &name) const
     return nullptr;
 }
 
+bool Scope::HasVarDecl(const util::StringView &name) const
+{
+    for (auto *it : decls_) {
+        if (it->Name() == name && it->IsVarDecl()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 std::tuple<Scope *, bool> Scope::IterateShadowedVariables(const util::StringView &name, const VariableVisitior &visitor)
 {
     auto *iter = this;
@@ -175,7 +186,7 @@ bool Scope::AddLocal(ArenaAllocator *allocator, Variable *currentVariable, Decl 
                 return false;
             }
 
-            VariableFlags varFlags = VariableFlags::HOIST_VAR | VariableFlags::LEXICAL_VAR;
+            VariableFlags varFlags = VariableFlags::HOIST_VAR;
             if (scope->IsGlobalScope()) {
                 scope->Bindings().insert({newDecl->Name(), allocator->New<GlobalVariable>(newDecl, varFlags)});
             } else {
@@ -205,11 +216,7 @@ bool Scope::AddLocal(ArenaAllocator *allocator, Variable *currentVariable, Decl 
                 return false;
             }
 
-            auto [_, shadowed] = IterateShadowedVariables(
-                newDecl->Name(), [](const Variable *v) { return v->HasFlag(VariableFlags::LEXICAL_VAR); });
-            (void)_;
-
-            if (shadowed) {
+            if (HasVarDecl(newDecl->Name())) {
                 return false;
             }
 
