@@ -348,14 +348,12 @@ void ModuleScope::SetVariableAsExported(ArenaAllocator *allocator, util::StringV
     // Since the module's exported [localName] has been validated before,
     // [localName] must have a binding now.
     ASSERT(res != bindings_.end());
-    auto *decl = res->second->Declaration();
-    decl->SetModuleStatus(DeclModuleStatus::EXPORT);
-    VariableFlags flags = res->second->Flags();
-    if ((flags & VariableFlags::IMPORT) == 0) {
-        // re-exported importedName should not be LOCAL_EXPORT
-        flags |= VariableFlags::LOCAL_EXPORT;
+    if (!res->second->IsModuleVariable()) {
+        auto *decl = res->second->Declaration();
+        decl->AddFlag(DeclarationFlags::EXPORT);
+        VariableFlags flags = res->second->Flags();
+        res->second = allocator->New<ModuleVariable>(decl, flags | VariableFlags::LOCAL_EXPORT);
     }
-    res->second = allocator->New<ModuleVariable>(decl, flags);
 }
 
 bool ModuleScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
@@ -369,17 +367,17 @@ bool ModuleScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariabl
             if (shadowed) {
                 return false;
             }
-            return newDecl->IsNoneModuleDecl() ?
-                   AddVar<LocalVariable>(allocator, currentVariable, newDecl) :
-                   AddVar<ModuleVariable>(allocator, currentVariable, newDecl);
+            return newDecl->IsImportOrExportDecl() ?
+                   AddVar<ModuleVariable>(allocator, currentVariable, newDecl) :
+                   AddVar<LocalVariable>(allocator, currentVariable, newDecl);
         }
         case DeclType::FUNC: {
             if (currentVariable) {
                 return false;
             }
-            return newDecl->IsNoneModuleDecl() ?
-                   AddFunction<LocalVariable>(allocator, currentVariable, newDecl, extension) :
-                   AddFunction<ModuleVariable>(allocator, currentVariable, newDecl, extension);
+            return newDecl->IsImportOrExportDecl() ?
+                   AddFunction<ModuleVariable>(allocator, currentVariable, newDecl, extension) :
+                   AddFunction<LocalVariable>(allocator, currentVariable, newDecl, extension);
         }
         case DeclType::ENUM: {
             bindings_.insert({newDecl->Name(), allocator->New<EnumVariable>(newDecl, false)});
@@ -395,9 +393,9 @@ bool ModuleScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariabl
             if (currentVariable) {
                 return false;
             }
-            return newDecl->IsNoneModuleDecl() ?
-                   AddLexical<LocalVariable>(allocator, currentVariable, newDecl) :
-                   AddLexical<ModuleVariable>(allocator, currentVariable, newDecl);
+            return newDecl->IsImportOrExportDecl() ?
+                   AddLexical<ModuleVariable>(allocator, currentVariable, newDecl) :
+                   AddLexical<LocalVariable>(allocator, currentVariable, newDecl);
         }
     }
 }

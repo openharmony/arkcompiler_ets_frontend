@@ -30,6 +30,7 @@
 #include <ir/expressions/objectExpression.h>
 #include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
+#include <parser/module/module.h>
 
 namespace panda::es2panda::util {
 
@@ -300,7 +301,7 @@ util::StringView Helpers::FunctionName(const ir::ScriptFunction *func)
     }
 
     if (func->Parent()->IsFunctionDeclaration()) {
-        return "default";
+        return parser::SourceTextModuleRecord::DEFAULT_EXTERNAL_NAME;
     }
 
     const ir::AstNode *parent = func->Parent()->Parent();
@@ -362,7 +363,7 @@ util::StringView Helpers::FunctionName(const ir::ScriptFunction *func)
             break;
         }
         case ir::AstNodeType::EXPORT_DEFAULT_DECLARATION: {
-            return util::StringView("default");
+            return parser::SourceTextModuleRecord::DEFAULT_EXTERNAL_NAME;
         }
         default:
             break;

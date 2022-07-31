@@ -17,7 +17,6 @@
 #define ES2PANDA_COMPILER_SCOPES_SCOPE_H
 
 #include <binder/declaration.h>
-#include <binder/module.h>
 #include <binder/variable.h>
 #include <parser/program/program.h>
 #include <util/enumbitops.h>
@@ -574,8 +573,7 @@ class GlobalScope : public FunctionScope {
 public:
     explicit GlobalScope(ArenaAllocator *allocator) : FunctionScope(allocator, nullptr)
     {
-        auto *paramScope = allocator->New<FunctionParamScope>(allocator, this);
-        paramScope_ = paramScope;
+        paramScope_ = allocator->New<FunctionParamScope>(allocator, this);
     }
 
     ScopeType Type() const override
@@ -589,17 +587,9 @@ public:
 
 class ModuleScope : public FunctionScope {
 public:
-    explicit ModuleScope(ArenaAllocator *allocator)
-        : FunctionScope(allocator, nullptr),
-          moduleRecord_(new SourceTextModuleRecord(allocator))
+    explicit ModuleScope(ArenaAllocator *allocator) : FunctionScope(allocator, nullptr)
     {
-        auto *paramScope = allocator->New<FunctionParamScope>(allocator, this);
-        paramScope_ = paramScope;
-    }
-
-    ~ModuleScope()
-    {
-        delete moduleRecord_;
+        paramScope_ = allocator->New<FunctionParamScope>(allocator, this);
     }
 
     ScopeType Type() const override
@@ -607,26 +597,22 @@ public:
         return ScopeType::MODULE;
     }
 
-    SourceTextModuleRecord *GetModuleRecord() const
-    {
-        return moduleRecord_;
-    }
-
     void SetVariableAsExported(ArenaAllocator *allocator, util::StringView localName);
 
     bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                     [[maybe_unused]] ScriptExtension extension) override;
-
-private:
-    SourceTextModuleRecord *moduleRecord_;
 };
 
 template <typename T>
 bool VariableScope::AddVar(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl)
 {
-    VariableFlags flags = newDecl->IsNoneModuleDecl() ? VariableFlags::HOIST_VAR :
-                          newDecl->IsImportedDecl() ? VariableFlags::HOIST_VAR | VariableFlags::IMPORT :
-                                                      VariableFlags::HOIST_VAR | VariableFlags::LOCAL_EXPORT;
+    VariableFlags flags = VariableFlags::HOIST_VAR;
+    if (newDecl->HasFlag(DeclarationFlags::EXPORT)) {
+        flags |= VariableFlags::LOCAL_EXPORT;
+    } else if (newDecl->HasFlag(DeclarationFlags::IMPORT)) {
+        flags |= VariableFlags::IMPORT;
+    }
+
     if (!currentVariable) {
         bindings_.insert({newDecl->Name(), allocator->New<T>(newDecl, flags)});
         return true;
@@ -654,10 +640,11 @@ bool VariableScope::AddFunction(ArenaAllocator *allocator, Variable *currentVari
                                 [[maybe_unused]] ScriptExtension extension)
 {
     VariableFlags flags = (extension == ScriptExtension::JS) ? VariableFlags::HOIST_VAR : VariableFlags::HOIST;
-
-    flags = newDecl->IsNoneModuleDecl() ? flags :
-            newDecl->IsImportedDecl() ? flags | VariableFlags::IMPORT :
-                                        flags | VariableFlags::LOCAL_EXPORT;
+    if (newDecl->HasFlag(DeclarationFlags::EXPORT)) {
+        flags |= VariableFlags::LOCAL_EXPORT;
+    } else if (newDecl->HasFlag(DeclarationFlags::IMPORT)) {
+        flags |= VariableFlags::IMPORT;
+    }
 
     if (!currentVariable) {
         bindings_.insert({newDecl->Name(), allocator->New<T>(newDecl, flags)});
@@ -694,9 +681,13 @@ bool VariableScope::AddTSBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
 template <typename T>
 bool VariableScope::AddLexical(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl)
 {
-    VariableFlags flags = newDecl->IsNoneModuleDecl() ? VariableFlags::NONE :
-                          newDecl->IsImportedDecl() ? VariableFlags::NONE | VariableFlags::IMPORT :
-                                                      VariableFlags::NONE | VariableFlags::LOCAL_EXPORT;
+    VariableFlags flags = VariableFlags::NONE;
+    if (newDecl->HasFlag(DeclarationFlags::EXPORT)) {
+        flags |= VariableFlags::LOCAL_EXPORT;
+    } else if (newDecl->HasFlag(DeclarationFlags::IMPORT)) {
+        flags |= VariableFlags::IMPORT;
+    }
+
     if (currentVariable) {
         return false;
     }

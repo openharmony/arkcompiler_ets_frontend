@@ -33,33 +33,53 @@ class CompilerContext;
 
 class CompileJob {
 public:
-    CompileJob() = default;
+    explicit CompileJob(CompilerContext *context) : context_(context) {};
     NO_COPY_SEMANTIC(CompileJob);
     NO_MOVE_SEMANTIC(CompileJob);
-    ~CompileJob() = default;
+    virtual ~CompileJob() = default;
+
+    virtual void Run() = 0;
+    void DependsOn(CompileJob *job);
+    void Signal();
+
+protected:
+    [[maybe_unused]] CompilerContext *context_ {};
+    std::mutex m_;
+    std::condition_variable cond_;
+    CompileJob *dependant_ {};
+    size_t dependencies_ {0};
+};
+
+class CompileFunctionJob : public CompileJob {
+public:
+    explicit CompileFunctionJob(CompilerContext *context) : CompileJob(context) {};
+    NO_COPY_SEMANTIC(CompileFunctionJob);
+    NO_MOVE_SEMANTIC(CompileFunctionJob);
+    ~CompileFunctionJob() = default;
 
     binder::FunctionScope *Scope() const
     {
         return scope_;
     }
 
-    void SetConext(CompilerContext *context, binder::FunctionScope *scope)
+    void SetFunctionScope(binder::FunctionScope *scope)
     {
-        context_ = context;
         scope_ = scope;
     }
 
-    void Run();
-    void DependsOn(CompileJob *job);
-    void Signal();
-
+    void Run() override;
 private:
-    std::mutex m_;
-    std::condition_variable cond_;
-    CompilerContext *context_ {};
     binder::FunctionScope *scope_ {};
-    CompileJob *dependant_ {};
-    size_t dependencies_ {0};
+};
+
+class CompileModuleRecordJob : public CompileJob {
+public:
+    explicit CompileModuleRecordJob(CompilerContext *context) : CompileJob(context) {};
+    NO_COPY_SEMANTIC(CompileModuleRecordJob);
+    NO_MOVE_SEMANTIC(CompileModuleRecordJob);
+    ~CompileModuleRecordJob() = default;
+
+    void Run() override;
 };
 
 class CompileQueue {
@@ -81,7 +101,7 @@ private:
     std::mutex m_;
     std::condition_variable jobsAvailable_;
     std::condition_variable jobsFinished_;
-    CompileJob *jobs_ {};
+    std::vector<CompileJob *> jobs_ {};
     size_t jobsCount_ {0};
     size_t activeWorkers_ {0};
     bool terminate_ {false};

@@ -32,12 +32,6 @@ namespace panda::es2panda::binder {
 class Scope;
 class LocalScope;
 
-enum class DeclModuleStatus {
-    NONE = 0,
-    IMPORT,
-    EXPORT,
-};
-
 #define DECLARE_CLASSES(decl_kind, className) class className;
 DECLARATION_KINDS(DECLARE_CLASSES)
 #undef DECLARE_CLASSES
@@ -88,44 +82,34 @@ public:
         return IsLetDecl() || IsConstDecl() || IsClassDecl();
     }
 
-    void SetModuleStatus(DeclModuleStatus status)
+    void AddFlag(DeclarationFlags flag)
     {
-        moduleStatus_ = status;
+        flags_ |= flag;
     }
 
-    bool IsExportedDecl() const
+    bool HasFlag(DeclarationFlags flag) const
     {
-        return moduleStatus_ == DeclModuleStatus::EXPORT;
+        return (flags_ & flag) != 0;
     }
 
-    bool IsImportedDecl() const
+    bool IsImportOrExportDecl() const
     {
-        return moduleStatus_ == DeclModuleStatus::IMPORT;
-    }
-
-    bool IsNoneModuleDecl() const
-    {
-        return moduleStatus_ == DeclModuleStatus::NONE;
+        return HasFlag(DeclarationFlags::IMPORT | DeclarationFlags::EXPORT);
     }
 
 protected:
-    explicit Decl(util::StringView name, DeclModuleStatus moduleStatus = DeclModuleStatus::NONE)
-        : name_(name), moduleStatus_(moduleStatus)
-        {
-        }
+    explicit Decl(util::StringView name) : name_(name) {}
 
     util::StringView name_;
-    DeclModuleStatus moduleStatus_;
+    DeclarationFlags flags_ {};
     const ir::AstNode *node_ {};
 };
 
 template <typename T>
 class MultiDecl : public Decl {
 public:
-    explicit MultiDecl(ArenaAllocator *allocator,
-                       util::StringView name,
-                       DeclModuleStatus moduleStatus = DeclModuleStatus::NONE)
-        : Decl(name, moduleStatus), declarations_(allocator->Adapter())
+    explicit MultiDecl(ArenaAllocator *allocator, util::StringView name)
+        : Decl(name), declarations_(allocator->Adapter())
     {
     }
 
@@ -184,11 +168,8 @@ public:
 
 class FunctionDecl : public MultiDecl<ir::FunctionDeclaration> {
 public:
-    explicit FunctionDecl(ArenaAllocator *allocator,
-                          util::StringView name,
-                          const ir::AstNode *node,
-                          DeclModuleStatus moduleStatus = DeclModuleStatus::NONE)
-        : MultiDecl(allocator, name, moduleStatus)
+    explicit FunctionDecl(ArenaAllocator *allocator, util::StringView name, const ir::AstNode *node)
+        : MultiDecl(allocator, name)
     {
         node_ = node;
     }
@@ -241,8 +222,7 @@ public:
 
 class VarDecl : public Decl {
 public:
-    explicit VarDecl(util::StringView name, DeclModuleStatus moduleStatus = DeclModuleStatus::NONE)
-        : Decl(name, moduleStatus) {}
+    explicit VarDecl(util::StringView name) : Decl(name) {}
 
     DeclType Type() const override
     {
@@ -252,8 +232,7 @@ public:
 
 class LetDecl : public Decl {
 public:
-    explicit LetDecl(util::StringView name, DeclModuleStatus moduleStatus = DeclModuleStatus::NONE)
-        : Decl(name, moduleStatus) {}
+    explicit LetDecl(util::StringView name) : Decl(name) {}
 
     DeclType Type() const override
     {
@@ -263,8 +242,7 @@ public:
 
 class ConstDecl : public Decl {
 public:
-    explicit ConstDecl(util::StringView name, DeclModuleStatus moduleStatus = DeclModuleStatus::NONE)
-        : Decl(name, moduleStatus) {}
+    explicit ConstDecl(util::StringView name) : Decl(name) {}
 
     DeclType Type() const override
     {
@@ -274,8 +252,7 @@ public:
 
 class ClassDecl : public Decl {
 public:
-    explicit ClassDecl(util::StringView name, DeclModuleStatus moduleStatus = DeclModuleStatus::NONE)
-        : Decl(name, moduleStatus) {}
+    explicit ClassDecl(util::StringView name) : Decl(name) {}
 
     DeclType Type() const override
     {

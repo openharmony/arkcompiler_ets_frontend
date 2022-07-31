@@ -521,13 +521,13 @@ ir::ClassDeclaration *ParserImpl::ParseClassDeclaration(bool idRequired, ArenaVe
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     ir::ClassDefinition *classDefinition = ParseClassDefinition(true, idRequired, isDeclare, isAbstract);
 
-    auto *decl =
-        Binder()->AddDecl<binder::ClassDecl>(classDefinition->Ident() == nullptr ?
-                                             startLoc : classDefinition->Ident()->Start(),
-                                             classDefinition->Ident() == nullptr ?
-                                             util::StringView("*default*") : classDefinition->Ident()->Name(),
-                                             isExported ?
-                                             binder::DeclModuleStatus::EXPORT : binder::DeclModuleStatus::NONE);
+    auto location = classDefinition->Ident() == nullptr ? startLoc : classDefinition->Ident()->Start();
+    auto className = classDefinition->Ident() == nullptr ? parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME :
+                                                           classDefinition->Ident()->Name();
+
+    binder::DeclarationFlags flag = isExported ? binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
+    auto *decl = Binder()->AddDecl<binder::ClassDecl>(location, flag, className);
+
     decl->BindNode(classDefinition);
 
     lexer::SourcePosition endLoc = classDefinition->End();
@@ -960,7 +960,7 @@ ir::DoWhileStatement *ParserImpl::ParseDoWhileStatement()
 }
 
 ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymous, ParserStatus newStatus,
-                                                              bool isDeclare, bool isExported)
+                                                              bool isDeclare)
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
 
@@ -985,12 +985,12 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
 
             auto *funcDecl = AllocNode<ir::FunctionDeclaration>(func);
             funcDecl->SetRange(func->Range());
-            Binder()->AddDecl<binder::FunctionDecl>(startLoc,
-                                                    Allocator(),
-                                                    util::StringView("*default*"),
-                                                    func,
-                                                    isExported ?
-                                                    binder::DeclModuleStatus::EXPORT : binder::DeclModuleStatus::NONE);
+
+            binder::DeclarationFlags declflag = newStatus & ParserStatus::EXPORT_REACHED ?
+                                                binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
+            Binder()->AddDecl<binder::FunctionDecl>(startLoc, declflag, Allocator(),
+                                                    parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME, func);
+
             return funcDecl;
         }
 
@@ -1016,12 +1016,9 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
     funcDecl->SetRange(func->Range());
 
     if (!func->IsOverload()) {
-        Binder()->AddDecl<binder::FunctionDecl>(identNode->Start(),
-                                                Allocator(),
-                                                ident,
-                                                func,
-                                                isExported ?
-                                                binder::DeclModuleStatus::EXPORT : binder::DeclModuleStatus::NONE);
+        binder::DeclarationFlags declflag = newStatus & ParserStatus::EXPORT_REACHED ?
+                                            binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
+        Binder()->AddDecl<binder::FunctionDecl>(identNode->Start(), declflag, Allocator(), ident, func);
     } else if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
         lexer_->NextToken();
     }
@@ -1762,8 +1759,7 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclaratorInitializer(ir::Expre
     return declarator;
 }
 
-ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags flags,
-                                                            bool isDeclare, bool isExported)
+ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags flags, bool isDeclare)
 {
     ir::Expression *init = nullptr;
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
@@ -1824,16 +1820,15 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
 
     for (const auto *binding : bindings) {
         binder::Decl *decl = nullptr;
-
-        binder::DeclModuleStatus moduleDeclkind
-            = isExported ? binder::DeclModuleStatus::EXPORT : binder::DeclModuleStatus::NONE;
+        binder::DeclarationFlags declflag = flags & VariableParsingFlags::EXPORTED ?
+                                            binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
 
         if (flags & VariableParsingFlags::VAR) {
-            decl = Binder()->AddDecl<binder::VarDecl>(startLoc, binding->Name(), moduleDeclkind);
+            decl = Binder()->AddDecl<binder::VarDecl>(startLoc, declflag, binding->Name());
         } else if (flags & VariableParsingFlags::LET) {
-            decl = Binder()->AddDecl<binder::LetDecl>(startLoc, binding->Name(), moduleDeclkind);
+            decl = Binder()->AddDecl<binder::LetDecl>(startLoc, declflag, binding->Name());
         } else {
-            decl = Binder()->AddDecl<binder::ConstDecl>(startLoc, binding->Name(), moduleDeclkind);
+            decl = Binder()->AddDecl<binder::ConstDecl>(startLoc, declflag, binding->Name());
         }
 
         decl->BindNode(init);
@@ -1842,7 +1837,7 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
     return declarator;
 }
 
-ir::Statement *ParserImpl::ParseVariableDeclaration(VariableParsingFlags flags, bool isDeclare, bool isExported)
+ir::Statement *ParserImpl::ParseVariableDeclaration(VariableParsingFlags flags, bool isDeclare)
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
 
@@ -1865,7 +1860,7 @@ ir::Statement *ParserImpl::ParseVariableDeclaration(VariableParsingFlags flags, 
     ArenaVector<ir::VariableDeclarator *> declarators(Allocator()->Adapter());
 
     while (true) {
-        ir::VariableDeclarator *declarator = ParseVariableDeclarator(flags, isDeclare, isExported);
+        ir::VariableDeclarator *declarator = ParseVariableDeclarator(flags, isDeclare);
 
         declarators.push_back(declarator);
 
@@ -1917,49 +1912,40 @@ ir::WhileStatement *ParserImpl::ParseWhileStatement()
     return whileStatement;
 }
 
-binder::SourceTextModuleRecord *ParserImpl::GetSourceTextModuleRecord()
-{
-    return Binder()->TopScope()->AsModuleScope()->GetModuleRecord();
-}
-
 void ParserImpl::AddImportEntryItem(const ir::StringLiteral *source, const ArenaVector<ir::AstNode *> *specifiers)
 {
     ASSERT(source != nullptr);
-    auto moduleRecord = GetSourceTextModuleRecord();
+    auto *moduleRecord = GetSourceTextModuleRecord();
+    ASSERT(moduleRecord != nullptr);
+    auto moduleRequestIdx = moduleRecord->AddModuleRequest(source->Str());
 
-    if (specifiers == nullptr || specifiers->empty()) {
-        moduleRecord->AddEmptyImportEntry(source->Str(), source->Start());
+    if (specifiers == nullptr) {
         return;
     }
 
     for (auto *it : *specifiers) {
         switch(it->Type()) {
             case ir::AstNodeType::IMPORT_DEFAULT_SPECIFIER: {
-                auto importDefault = it->AsImportDefaultSpecifier();
-                auto defaultString = util::StringView("default");
-                moduleRecord->AddImportEntry(defaultString,
-                                             importDefault->Local()->Name(),
-                                             source->Str(),
-                                             importDefault->Start(),
-                                             source->Start());
+                auto localName = it->AsImportDefaultSpecifier()->Local()->Name();
+                auto importName = parser::SourceTextModuleRecord::DEFAULT_EXTERNAL_NAME;
+                auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
+                                                localName, importName, moduleRequestIdx);
+                moduleRecord->AddImportEntry(entry);
                 break;
             }
             case ir::AstNodeType::IMPORT_NAMESPACE_SPECIFIER: {
-                auto namespaceSpecifier = it->AsImportNamespaceSpecifier();
-                moduleRecord->AddStarImportEntry(it,
-                                                 namespaceSpecifier->Local()->Name(),
-                                                 source->Str(),
-                                                 namespaceSpecifier->Start(),
-                                                 source->Start());
+                auto localName = it->AsImportNamespaceSpecifier()->Local()->Name();
+                auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
+                                                localName, moduleRequestIdx);
+                moduleRecord->AddStarImportEntry(entry);
                 break;
             }
             case ir::AstNodeType::IMPORT_SPECIFIER: {
-                auto importSpecifier = it->AsImportSpecifier();
-                moduleRecord->AddImportEntry(importSpecifier->Imported()->Name(),
-                                             importSpecifier->Local()->Name(),
-                                             source->Str(),
-                                             importSpecifier->Start(),
-                                             source->Start());
+                auto localName = it->AsImportSpecifier()->Local()->Name();
+                auto importName = it->AsImportSpecifier()->Imported()->Name();
+                auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
+                                                localName, importName, moduleRequestIdx);
+                moduleRecord->AddImportEntry(entry);
                 break;
             }
             default: {
@@ -1975,50 +1961,66 @@ void ParserImpl::AddExportNamedEntryItem(const ArenaVector<ir::ExportSpecifier *
     auto moduleRecord = GetSourceTextModuleRecord();
     ASSERT(moduleRecord != nullptr);
     if (source) {
-        if (specifiers.empty()) {
-            moduleRecord->AddEmptyImportEntry(source->Str(), source->Start());
-        }
+        auto moduleRequestIdx = moduleRecord->AddModuleRequest(source->Str());
 
         for (auto *it : specifiers) {
             auto exportSpecifier = it->AsExportSpecifier();
-            moduleRecord->AddIndirectExportEntry(exportSpecifier->Local()->Name(),
-                                                 exportSpecifier->Exported()->Name(),
-                                                 source->Str(),
-                                                 exportSpecifier->Start(),
-                                                 source->Start());
+            auto importName = exportSpecifier->Local()->Name();
+            auto exportName = exportSpecifier->Exported()->Name();
+            auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(
+                                            exportName, importName, moduleRequestIdx);
+            if (!moduleRecord->AddIndirectExportEntry(entry)) {
+                ThrowSyntaxError("Duplicate export name of '" + exportName.Mutf8() + "'",
+                                 exportSpecifier->Start());
+            }
         }
     } else {
         for (auto *it : specifiers) {
             auto exportSpecifier = it->AsExportSpecifier();
-            moduleRecord->AddLocalExportEntry(exportSpecifier->Exported()->Name(),
-                                              exportSpecifier->Local()->Name(),
-                                              exportSpecifier->Start());
+            auto exportName = exportSpecifier->Exported()->Name();
+            auto localName = exportSpecifier->Local()->Name();
+            auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(exportName, localName);
+            if(!moduleRecord->AddLocalExportEntry(entry)) {
+                ThrowSyntaxError("Duplicate export name of '" + exportName.Mutf8() + "'",
+                                 exportSpecifier->Start());
+            }
         }
     }
 }
 
-void ParserImpl::AddExportStarEntryItem(const lexer::SourcePosition &startLoc,
-                                        const ir::StringLiteral *source,
+void ParserImpl::AddExportStarEntryItem(const lexer::SourcePosition &startLoc, const ir::StringLiteral *source,
                                         const ir::Identifier *exported)
 {
-    ASSERT(source != nullptr);
     auto moduleRecord = GetSourceTextModuleRecord();
+    ASSERT(moduleRecord != nullptr);
+    ASSERT(source != nullptr);
+    auto moduleRequestIdx = moduleRecord->AddModuleRequest(source->Str());
 
     if (exported != nullptr) {
         /* Transform [NamespaceExport] into [NamespaceImport] & [LocalExport]
          * e.g. export * as ns from 'test.js'
          *      --->
          *      import * as [internalName] from 'test.js'
-         *      export { [inter] as ns }
+         *      export { [internalName] as ns }
          */
         auto namespaceExportInternalName = GetNamespaceExportInternalName();
-        Binder()->AddDecl<binder::ConstDecl>(startLoc, namespaceExportInternalName, binder::DeclModuleStatus::NONE);
-        moduleRecord->AddStarImportEntry(exported, namespaceExportInternalName, source->Str(),
-                                         lexer::SourcePosition(), source->Start());
-        moduleRecord->AddLocalExportEntry(exported->Name(), namespaceExportInternalName, exported->Start());
+        auto *decl = Binder()->AddDecl<binder::ConstDecl>(startLoc, binder::DeclarationFlags::EXPORT,
+                                                          namespaceExportInternalName);
+        decl->BindNode(exported);
+
+        auto *importEntry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
+                                              namespaceExportInternalName, moduleRequestIdx);
+        auto *exportEntry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(
+                                              exported->Name(), namespaceExportInternalName);
+        moduleRecord->AddStarImportEntry(importEntry);
+        if(!moduleRecord->AddLocalExportEntry(exportEntry)) {
+            ThrowSyntaxError("Duplicate export name of '" + exported->Name().Mutf8() + "'", exported->Start());
+        }
+        return;
     }
 
-    moduleRecord->AddStarExportEntry(source->Str(), startLoc, source->Start());
+    auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(moduleRequestIdx);
+    moduleRecord->AddStarExportEntry(entry);
 }
 
 void ParserImpl::AddExportDefaultEntryItem(const ir::AstNode *declNode)
@@ -2027,36 +2029,43 @@ void ParserImpl::AddExportDefaultEntryItem(const ir::AstNode *declNode)
     if (declNode->IsTSInterfaceDeclaration()) {
         return;
     }
+
     auto moduleRecord = GetSourceTextModuleRecord();
-    auto exportName = util::StringView("default");
+    ASSERT(moduleRecord != nullptr);
+    util::StringView exportName = parser::SourceTextModuleRecord::DEFAULT_EXTERNAL_NAME;
     util::StringView localName;
     if (declNode->IsFunctionDeclaration() || declNode->IsClassDeclaration()) {
         const ir::Identifier *name = declNode->IsFunctionDeclaration() ?
                                      declNode->AsFunctionDeclaration()->Function()->Id() :
                                      declNode->AsClassDeclaration()->Definition()->Ident();
-        localName = name == nullptr ? util::StringView("*default*") : name->Name();
+        localName = name == nullptr ? parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME : name->Name();
     }
     if (declNode->IsExpression()) {
-        localName = util::StringView("*default*");
+        localName = parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME;
     }
+
     ASSERT(!localName.Empty());
-    moduleRecord->AddLocalExportEntry(exportName,
-                                      localName,
-                                      declNode->Start());
+    auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(exportName, localName);
+    if(!moduleRecord->AddLocalExportEntry(entry)) {
+        ThrowSyntaxError("Duplicate export name of '" + exportName.Mutf8() + "'", declNode->Start());
+    }
 }
 
 void ParserImpl::AddExportLocalEntryItem(const ir::Statement *declNode)
 {
     ASSERT(declNode != nullptr);
     auto moduleRecord = GetSourceTextModuleRecord();
+    ASSERT(moduleRecord != nullptr);
     if (declNode->IsVariableDeclaration()) {
         auto declarators = declNode->AsVariableDeclaration()->Declarators();
         for (auto *decl : declarators) {
             std::vector<const ir::Identifier *> bindings = util::Helpers::CollectBindingNames(decl->Id());
             for (const auto *binding : bindings) {
-                moduleRecord->AddLocalExportEntry(binding->Name(),
-                                                  binding->Name(),
-                                                  binding->Start());
+                auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(
+                                                binding->Name(), binding->Name());
+                if(!moduleRecord->AddLocalExportEntry(entry)) {
+                    ThrowSyntaxError("Duplicate export name of '" + binding->Name().Mutf8() + "'", binding->Start());
+                }
             }
         }
     }
@@ -2068,9 +2077,10 @@ void ParserImpl::AddExportLocalEntryItem(const ir::Statement *declNode)
            ThrowSyntaxError("A class or function declaration without the default modifier mush have a name.",
                             declNode->Start());
         }
-        moduleRecord->AddLocalExportEntry(name->Name(),
-                                          name->Name(),
-                                          name->Start());
+        auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(name->Name(), name->Name());
+        if(!moduleRecord->AddLocalExportEntry(entry)) {
+            ThrowSyntaxError("Duplicate export name of '" + name->Name().Mutf8() + "'", name->Start());
+        }
     }
 }
 
@@ -2089,20 +2099,19 @@ ir::ExportDefaultDeclaration *ParserImpl::ParseExportDefaultDeclaration(const le
     }
 
     if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_FUNCTION) {
-        declNode = ParseFunctionDeclaration(true, ParserStatus::NO_OPTS, false, true);
+        declNode = ParseFunctionDeclaration(true, ParserStatus::EXPORT_REACHED);
     } else if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_CLASS) {
         declNode = ParseClassDeclaration(false, std::move(decorators), false, false, true);
     } else if (lexer_->GetToken().IsAsyncModifier()) {
         lexer_->NextToken();  // eat `async` keyword
-        declNode = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION, false, true);
+        declNode = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION | ParserStatus::EXPORT_REACHED);
     } else if (Extension() == ScriptExtension::TS &&
                lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_INTERFACE) {
         declNode = ParseTsInterfaceDeclaration();
     } else {
         declNode = ParseExpression();
-        Binder()->AddDecl<binder::LetDecl>(declNode->Start(),
-                                           util::StringView("*default*"),
-                                           binder::DeclModuleStatus::EXPORT);
+        Binder()->AddDecl<binder::LetDecl>(declNode->Start(), binder::DeclarationFlags::EXPORT,
+                                           parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME);
         eatSemicolon = true;
     }
 
@@ -2235,21 +2244,22 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
         ThrowSyntaxError("Decorators are not valid here.", decorators.front()->Start());
     }
 
+    VariableParsingFlags flag = VariableParsingFlags::EXPORTED;
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::KEYW_VAR: {
-            decl = ParseVariableDeclaration(VariableParsingFlags::VAR, isDeclare, true);
+            decl = ParseVariableDeclaration(flag | VariableParsingFlags::VAR, isDeclare);
             break;
         }
         case lexer::TokenType::KEYW_CONST: {
-            decl = ParseVariableDeclaration(VariableParsingFlags::CONST, isDeclare, true);
+            decl = ParseVariableDeclaration(flag | VariableParsingFlags::CONST, isDeclare);
             break;
         }
         case lexer::TokenType::KEYW_LET: {
-            decl = ParseVariableDeclaration(VariableParsingFlags::LET, isDeclare, true);
+            decl = ParseVariableDeclaration(flag | VariableParsingFlags::LET, isDeclare);
             break;
         }
         case lexer::TokenType::KEYW_FUNCTION: {
-            decl = ParseFunctionDeclaration(false, ParserStatus::NO_OPTS, isDeclare, true);
+            decl = ParseFunctionDeclaration(false, ParserStatus::EXPORT_REACHED, isDeclare);
             break;
         }
         case lexer::TokenType::KEYW_CLASS: {
@@ -2304,7 +2314,7 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
             }
 
             lexer_->NextToken();  // eat `async` keyword
-            decl = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION, false, true);
+            decl = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION | ParserStatus::EXPORT_REACHED);
         }
     }
 
@@ -2389,7 +2399,9 @@ void ParserImpl::ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers)
     specifier->SetRange({namespaceStart, lexer_->GetToken().End()});
     specifiers->push_back(specifier);
 
-    Binder()->AddDecl<binder::ConstDecl>(namespaceStart, local->Name(), binder::DeclModuleStatus::NONE);
+    auto *decl = Binder()->AddDecl<binder::ConstDecl>(namespaceStart, binder::DeclarationFlags::NAMESPACE_IMPORT,
+                                                      local->Name());
+    decl->BindNode(specifier);
 
     lexer_->NextToken();  // eat local name
 }
@@ -2446,7 +2458,7 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
         specifier->SetRange({imported->Start(), local->End()});
         specifiers->push_back(specifier);
 
-        Binder()->AddDecl<binder::ConstDecl>(local->Start(), local->Name(), binder::DeclModuleStatus::IMPORT);
+        Binder()->AddDecl<binder::ConstDecl>(local->Start(), binder::DeclarationFlags::IMPORT, local->Name());
 
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
             lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);  // eat comma
@@ -2515,9 +2527,7 @@ ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> 
     specifier->SetRange(specifier->Local()->Range());
     specifiers->push_back(specifier);
 
-    Binder()->AddDecl<binder::ConstDecl>(local->Start(), local->Name(), binder::DeclModuleStatus::IMPORT);
-
-    // lexer_->NextToken();  // eat specifier name
+    Binder()->AddDecl<binder::ConstDecl>(local->Start(), binder::DeclarationFlags::IMPORT, local->Name());
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
         lexer_->NextToken();  // eat comma

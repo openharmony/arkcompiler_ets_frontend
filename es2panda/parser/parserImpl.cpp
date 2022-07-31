@@ -137,18 +137,6 @@ void ParserImpl::ParseProgram(ScriptKind kind)
     Binder()->GetScope()->BindNode(blockStmt);
     blockStmt->SetRange({startLoc, lexer_->GetToken().End()});
 
-    if (kind == ScriptKind::MODULE) {
-        auto *moduleRecord = GetSourceTextModuleRecord();
-        ASSERT(moduleRecord != nullptr);
-        std::string errorMessage = "";
-        lexer::SourcePosition errorPos;
-        if (!moduleRecord->ValidateModuleRecordEntries(Binder()->TopScope()->AsModuleScope(),
-                                                       errorMessage, errorPos)) {
-            ThrowSyntaxError(errorMessage.c_str(), errorPos);
-        }
-        moduleRecord->SetModuleEnvironment(Binder()->TopScope()->AsModuleScope());
-    }
-
     program_.SetAst(blockStmt);
     Binder()->IdentifierAnalysis();
 }
@@ -3255,6 +3243,11 @@ void ParserImpl::ThrowSyntaxError(std::string_view errorMessage, const lexer::So
 ScriptExtension ParserImpl::Extension() const
 {
     return program_.Extension();
+}
+
+parser::SourceTextModuleRecord *ParserImpl::GetSourceTextModuleRecord()
+{
+    return Binder()->Program()->ModuleRecord();
 }
 
 }  // namespace panda::es2panda::parser

@@ -185,13 +185,6 @@ int32_t PandaGen::AddLiteralBuffer(LiteralBuffer *buf)
     return buf->Index();
 }
 
-void PandaGen::SetModuleRecordBufferIndex()
-{
-    if (topScope_->IsModuleScope()) {
-        moduleBuffIndex_ = context_->NewLiteralIndex();
-    }
-}
-
 int32_t PandaGen::AddLexicalVarNamesForDebugInfo(ArenaMap<uint32_t, util::StringView> &lexicalVars)
 {
     auto *buf = NewLiteralBuffer();
@@ -1414,7 +1407,7 @@ void PandaGen::DefineClassWithBuffer(const ir::AstNode *node, const util::String
 
 void PandaGen::LoadModuleVariable(const ir::AstNode *node, const util::StringView &name, bool isLocalExport)
 {
-    ra_.Emit<EcmaLdmodulevar>(node, name, isLocalExport ? static_cast<uint32_t>(1) : static_cast<uint32_t>(0));
+    ra_.Emit<EcmaLdmodulevar>(node, name, isLocalExport ? static_cast<uint8_t>(1) : static_cast<uint8_t>(0));
     strings_.insert(name);
 }
 

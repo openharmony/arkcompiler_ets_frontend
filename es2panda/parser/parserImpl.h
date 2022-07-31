@@ -23,6 +23,7 @@
 #include <macros.h>
 #include <mem/arena_allocator.h>
 #include <parser/context/parserContext.h>
+#include <parser/module/module.h>
 #include <parser/parserFlags.h>
 #include <parser/program/program.h>
 #include <util/enumbitops.h>
@@ -116,10 +117,6 @@ enum class TSTupleKind;
 enum class MethodDefinitionKind;
 enum class ModifierFlags;
 }  // namespace panda::es2panda::ir
-
-namespace panda::es2panda::binder {
-class SourceTextModuleRecord;
-} // namespace panda::es2panda::binder
 
 namespace panda::es2panda::parser {
 
@@ -400,12 +397,11 @@ private:
 
     void AddImportEntryItem(const ir::StringLiteral *source, const ArenaVector<ir::AstNode *> *specifiers);
     void AddExportNamedEntryItem(const ArenaVector<ir::ExportSpecifier *> &specifiers, const ir::StringLiteral *source);
-    void AddExportStarEntryItem(const lexer::SourcePosition &startLoc,
-                                const ir::StringLiteral *source,
+    void AddExportStarEntryItem(const lexer::SourcePosition &startLoc, const ir::StringLiteral *source,
                                 const ir::Identifier *exported);
     void AddExportDefaultEntryItem(const ir::AstNode *declNode);
     void AddExportLocalEntryItem(const ir::Statement *declNode);
-    binder::SourceTextModuleRecord *GetSourceTextModuleRecord();
+    parser::SourceTextModuleRecord *GetSourceTextModuleRecord();
 
     bool ParseDirective(ArenaVector<ir::Statement *> *statements);
     void ParseDirectivePrologue(ArenaVector<ir::Statement *> *statements);
@@ -435,7 +431,7 @@ private:
     ir::Statement *ParseFunctionStatement(StatementParsingFlags flags, bool isDeclare);
     ir::FunctionDeclaration *ParseFunctionDeclaration(bool canBeAnonymous = false,
                                                       ParserStatus newStatus = ParserStatus::NO_OPTS,
-                                                      bool isDeclare = false, bool isExported = false);
+                                                      bool isDeclare = false);
     ir::Statement *ParseExportDeclaration(StatementParsingFlags flags, ArenaVector<ir::Decorator *> &&decorators);
     std::tuple<ForStatementKind, ir::AstNode *, ir::Expression *, ir::Expression *> ParseForInOf(
         ir::Expression *leftNode, ExpressionParseFlags exprFlags, bool isAwait);
@@ -451,10 +447,8 @@ private:
     ir::ReturnStatement *ParseReturnStatement();
     ir::ClassDeclaration *ParseClassStatement(StatementParsingFlags flags, bool isDeclare,
                                               ArenaVector<ir::Decorator *> &&decorators, bool isAbstract = false);
-    ir::ClassDeclaration *ParseClassDeclaration(bool idRequired,
-                                                ArenaVector<ir::Decorator *> &&decorators,
-                                                bool isDeclare = false,
-                                                bool isAbstract = false,
+    ir::ClassDeclaration *ParseClassDeclaration(bool idRequired, ArenaVector<ir::Decorator *> &&decorators,
+                                                bool isDeclare = false, bool isAbstract = false,
                                                 bool isExported = false);
     ir::TSTypeAliasDeclaration *ParseTsTypeAliasDeclaration(bool isDeclare);
     ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart, bool isConst);
@@ -469,17 +463,18 @@ private:
     void ValidateDeclaratorId();
     ir::VariableDeclarator *ParseVariableDeclaratorInitializer(ir::Expression *init, VariableParsingFlags flags,
                                                                const lexer::SourcePosition &startLoc, bool isDeclare);
-    ir::VariableDeclarator *ParseVariableDeclarator(VariableParsingFlags flags,
-                                                    bool isDeclare, bool isExported = false);
+    ir::VariableDeclarator *ParseVariableDeclarator(VariableParsingFlags flags, bool isDeclare);
     ir::Statement *ParseVariableDeclaration(VariableParsingFlags flags = VariableParsingFlags::NO_OPTS,
-                                            bool isDeclare = false, bool isExported = false);
+                                            bool isDeclare = false);
     ir::WhileStatement *ParseWhileStatement();
     ir::VariableDeclaration *ParseContextualLet(VariableParsingFlags flags,
                                                 StatementParsingFlags stmFlags = StatementParsingFlags::ALLOW_LEXICAL,
                                                 bool isDeclare = false);
+
     util::StringView GetNamespaceExportInternalName()
     {
-        std::string name = "=ens" + std::to_string(namespaceExportCount_++);
+        std::string name = std::string(parser::SourceTextModuleRecord::ANONY_NAMESPACE_NAME) +
+                           std::to_string(namespaceExportCount_++);
         util::UString internalName(name, Allocator());
         return internalName.View();
     }

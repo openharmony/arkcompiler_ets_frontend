@@ -63,6 +63,10 @@ void Program::SetKind(ScriptKind kind)
 {
     kind_ = kind;
     binder_->InitTopScope();
+
+    if (kind == ScriptKind::MODULE) {
+        moduleRecord_ = allocator_->New<SourceTextModuleRecord>(Allocator());
+    }
 }
 
 std::string Program::Dump() const

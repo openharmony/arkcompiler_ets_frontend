@@ -16,7 +16,6 @@
 #include "regScope.h"
 
 #include <binder/binder.h>
-#include <binder/module.h>
 #include <binder/scope.h>
 #include <binder/variable.h>
 #include <compiler/base/hoisting.h>

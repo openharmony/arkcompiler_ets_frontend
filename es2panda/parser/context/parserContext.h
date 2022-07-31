@@ -46,7 +46,7 @@ enum class ParserStatus {
     IN_ITERATION = (1 << 14),
     IN_LABELED = (1 << 15),
 
-    EXPORT_DEFAULT_REACHED = (1 << 16),
+    EXPORT_REACHED = (1 << 16),
     HAS_COMPLEX_PARAM = (1 << 17),
     IN_SWITCH = (1 << 18),
 

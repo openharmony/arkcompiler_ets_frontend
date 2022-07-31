@@ -137,6 +137,15 @@ enum class VariableScopeFlags {
 
 DEFINE_BITOPS(VariableScopeFlags)
 
+enum class DeclarationFlags {
+    NONE = 0,
+    IMPORT = 1 << 0,
+    EXPORT = 1 << 1,
+    NAMESPACE_IMPORT = 1 << 2,
+};
+
+DEFINE_BITOPS(DeclarationFlags)
+
 }  // namespace panda::es2panda::binder
 
 #endif

@@ -30,7 +30,8 @@
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/identifier.h>
 #include <ir/expressions/objectExpression.h>
-#include <ir/module/importNamespaceSpecifier.h>
+#include <ir/module/exportNamedDeclaration.h>
+#include <ir/module/exportSpecifier.h>
 #include <ir/statements/blockStatement.h>
 #include <ir/statements/doWhileStatement.h>
 #include <ir/statements/forInStatement.h>
@@ -76,6 +77,16 @@ void Binder::ThrowRedeclaration(const lexer::SourcePosition &pos, const util::St
     throw Error(ErrorType::SYNTAX, ss.str(), loc.line, loc.col);
 }
 
+void Binder::ThrowUndeclaredExport(const lexer::SourcePosition &pos, const util::StringView &name)
+{
+    lexer::LineIndex index(program_->SourceCode());
+    lexer::SourceLocation loc = index.GetLocation(pos);
+
+    std::stringstream ss;
+    ss << "Export name '" << name << "' is not defined.";
+    throw Error(ErrorType::SYNTAX, ss.str(), loc.line, loc.col);
+}
+
 void Binder::IdentifierAnalysis()
 {
     ASSERT(program_->Ast());
@@ -84,6 +95,22 @@ void Binder::IdentifierAnalysis()
     BuildFunction(topScope_, MAIN_FUNC_NAME);
     ResolveReferences(program_->Ast());
     AddMandatoryParams();
+}
+
+void Binder::ValidateLocalExportDeclared(const ir::ExportNamedDeclaration *exportDecl)
+{
+    if (exportDecl->Source() != nullptr || exportDecl->Decl() != nullptr) {
+        return;
+    }
+
+    ASSERT(topScope_->IsModuleScope());
+    for (auto *it : exportDecl->Specifiers()) {
+        auto localName = it->AsExportSpecifier()->Local()->Name();
+        if (topScope_->FindLocal(localName) == nullptr) {
+            ThrowUndeclaredExport(it->AsExportSpecifier()->Local()->Start(), localName);
+        }
+        topScope_->AsModuleScope()->SetVariableAsExported(Allocator(), localName);
+    }
 }
 
 void Binder::LookupReference(const util::StringView &name)
@@ -152,7 +179,9 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
         return;
     }
 
-    if (res.variable->Declaration()->IsLetOrConstOrClassDecl() && !res.variable->HasFlag(VariableFlags::INITIALIZED)) {
+    auto decl = res.variable->Declaration();
+    if (decl->IsLetOrConstOrClassDecl() && !decl->HasFlag(DeclarationFlags::NAMESPACE_IMPORT) &&
+        !res.variable->HasFlag(VariableFlags::INITIALIZED)) {
         ident->SetTdz();
     }
 
@@ -258,7 +287,7 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
             className = classDef->Ident()->Name();
         } else {
             ASSERT(scope_->IsModuleScope());
-            className = util::StringView("*default*");
+            className = parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME;
         }
         ScopeFindResult res = scope_->Find(className);
 
@@ -445,6 +474,12 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
         }
         case ir::AstNodeType::CATCH_CLAUSE: {
             BuildCatchClause(childNode->AsCatchClause());
+            break;
+        }
+        case ir::AstNodeType::EXPORT_NAMED_DECLARATION: {
+            ValidateLocalExportDeclared(childNode->AsExportNamedDeclaration());
+
+            ResolveReferences(childNode);
             break;
         }
         default: {

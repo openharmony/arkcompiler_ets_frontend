@@ -17,7 +17,6 @@
 
 #include <binder/binder.h>
 #include <util/helpers.h>
-#include <binder/module.h>
 #include <binder/scope.h>
 #include <binder/variable.h>
 #include <compiler/base/literals.h>
@@ -65,7 +64,6 @@ void FunctionEmitter::Generate()
     GenFunctionCatchTables();
     GenFunctionICSize();
     GenLiteralBuffers();
-    GenSourceTextModuleRecord();
 }
 
 const ArenaSet<util::StringView> &FunctionEmitter::Strings() const
@@ -293,134 +291,6 @@ void FunctionEmitter::GenLiteralBuffers()
     }
 }
 
-void FunctionEmitter::GenModuleRequests(binder::SourceTextModuleRecord *moduleRecord,
-                                        std::vector<panda::pandasm::LiteralArray::Literal> &moduleLiteralArray)
-{
-    auto &moduleRequests = moduleRecord->GetModuleRequests();
-    panda::pandasm::LiteralArray::Literal moduleSize = {
-        .tag_ = panda::panda_file::LiteralTag::INTEGER, .value_ = static_cast<uint32_t>(moduleRequests.size())};
-    moduleLiteralArray.emplace_back(moduleSize);
-    for (auto request : moduleRequests) {
-        panda::pandasm::LiteralArray::Literal moduleRequest = {
-            .tag_ = panda::panda_file::LiteralTag::STRING, .value_ = request.Mutf8()};
-        moduleLiteralArray.emplace_back(moduleRequest);
-    }
-}
-
-void FunctionEmitter::GenRegularImportEntries(binder::SourceTextModuleRecord *moduleRecord,
-                                              std::vector<panda::pandasm::LiteralArray::Literal> &moduleLiteralArray)
-{
-    auto &regularImportEntries = moduleRecord->GetRegularImportEntries();
-    panda::pandasm::LiteralArray::Literal entrySize = {
-        .tag_ = panda::panda_file::LiteralTag::INTEGER,
-        .value_ = static_cast<uint32_t>(regularImportEntries.size())};
-    moduleLiteralArray.emplace_back(entrySize);
-    for (auto it = regularImportEntries.begin(); it != regularImportEntries.end(); ++it) {
-        auto *entry = it->second;
-        panda::pandasm::LiteralArray::Literal localName = {
-            .tag_ = panda::panda_file::LiteralTag::STRING, .value_ = entry->localName.Mutf8()};
-        moduleLiteralArray.emplace_back(localName);
-        panda::pandasm::LiteralArray::Literal importName = {
-            .tag_ = panda::panda_file::LiteralTag::STRING, .value_ = entry->importName.Mutf8()};
-        moduleLiteralArray.emplace_back(importName);
-        panda::pandasm::LiteralArray::Literal moduleRequest = {
-            .tag_ = panda::panda_file::LiteralTag::METHODAFFILIATE,
-            .value_ = static_cast<uint16_t>(entry->moduleRequest)};
-        moduleLiteralArray.emplace_back(moduleRequest);
-    }
-}
-
-void FunctionEmitter::GenNamespaceImportEntries(binder::SourceTextModuleRecord *moduleRecord,
-                                                std::vector<panda::pandasm::LiteralArray::Literal> &moduleLiteralArray)
-{
-    auto &namespaceImportEntries = moduleRecord->GetNamespaceImportEntries();
-    panda::pandasm::LiteralArray::Literal entrySize = {
-        .tag_ = panda::panda_file::LiteralTag::INTEGER,
-        .value_ = static_cast<uint32_t>(namespaceImportEntries.size())};
-    moduleLiteralArray.emplace_back(entrySize);
-    for (const auto *entry : namespaceImportEntries) {
-        panda::pandasm::LiteralArray::Literal localName = {
-            .tag_ = panda::panda_file::LiteralTag::STRING, .value_ = entry->localName.Mutf8()};
-        moduleLiteralArray.emplace_back(localName);
-        panda::pandasm::LiteralArray::Literal moduleRequest = {
-            .tag_ = panda::panda_file::LiteralTag::METHODAFFILIATE,
-            .value_ = static_cast<uint16_t>(entry->moduleRequest)};
-        moduleLiteralArray.emplace_back(moduleRequest);
-    }
-}
-
-void FunctionEmitter::GenLocalExportEntries(binder::SourceTextModuleRecord *moduleRecord,
-                                            std::vector<panda::pandasm::LiteralArray::Literal> &moduleLiteralArray)
-{
-    auto &localExportEntries = moduleRecord->GetLocalExportEntries();
-    panda::pandasm::LiteralArray::Literal entrySize = {
-        .tag_ = panda::panda_file::LiteralTag::INTEGER, .value_ = static_cast<uint32_t>(localExportEntries.size())};
-    moduleLiteralArray.emplace_back(entrySize);
-    for (auto it = localExportEntries.begin(); it != localExportEntries.end(); ++it) {
-        auto *entry = it->second;
-        panda::pandasm::LiteralArray::Literal localName = {
-            .tag_ = panda::panda_file::LiteralTag::STRING, .value_ = entry->localName.Mutf8()};
-        moduleLiteralArray.emplace_back(localName);
-        panda::pandasm::LiteralArray::Literal exportName = {
-            .tag_ = panda::panda_file::LiteralTag::STRING, .value_ = entry->exportName.Mutf8()};
-        moduleLiteralArray.emplace_back(exportName);
-    }
-}
-
-void FunctionEmitter::GenIndirectExportEntries(binder::SourceTextModuleRecord *moduleRecord,
-                                               std::vector<panda::pandasm::LiteralArray::Literal> &moduleLiteralArray)
-{
-    auto &indirectExportEntries = moduleRecord->GetIndirectExportEntries();
-    panda::pandasm::LiteralArray::Literal entrySize = {
-        .tag_ = panda::panda_file::LiteralTag::INTEGER, .value_ = static_cast<uint32_t>(indirectExportEntries.size())};
-    moduleLiteralArray.emplace_back(entrySize);
-    for (const auto *entry : indirectExportEntries) {
-        panda::pandasm::LiteralArray::Literal exportName = {
-            .tag_ = panda::panda_file::LiteralTag::STRING, .value_ = entry->exportName.Mutf8()};
-        moduleLiteralArray.emplace_back(exportName);
-        panda::pandasm::LiteralArray::Literal importName = {
-            .tag_ = panda::panda_file::LiteralTag::STRING, .value_ = entry->importName.Mutf8()};
-        moduleLiteralArray.emplace_back(importName);
-        panda::pandasm::LiteralArray::Literal moduleRequest = {
-            .tag_ = panda::panda_file::LiteralTag::METHODAFFILIATE,
-            .value_ = static_cast<uint16_t>(entry->moduleRequest)};
-        moduleLiteralArray.emplace_back(moduleRequest);
-    }
-}
-
-void FunctionEmitter::GenStarExportEntries(binder::SourceTextModuleRecord *moduleRecord,
-                                           std::vector<panda::pandasm::LiteralArray::Literal> &moduleLiteralArray)
-{
-    auto &starExportEntries = moduleRecord->GetStarExportEntries();
-    panda::pandasm::LiteralArray::Literal entrySize = {
-        .tag_ = panda::panda_file::LiteralTag::INTEGER, .value_ = static_cast<uint32_t>(starExportEntries.size())};
-    moduleLiteralArray.emplace_back(entrySize);
-    for (const auto *entry : starExportEntries) {
-        panda::pandasm::LiteralArray::Literal moduleRequest = {
-            .tag_ = panda::panda_file::LiteralTag::METHODAFFILIATE,
-            .value_ = static_cast<uint16_t>(entry->moduleRequest)};
-        moduleLiteralArray.emplace_back(moduleRequest);
-    }
-}
-
-void FunctionEmitter::GenSourceTextModuleRecord()
-{
-    if (!pg_->TopScope()->IsModuleScope()) {
-        return;
-    }
-
-    auto *moduleRecord = pg_->TopScope()->AsModuleScope()->GetModuleRecord();
-    auto &[idx, array] = literalBuffers_.emplace_back();
-    idx = pg_->ModuleBuffIndex();
-
-    GenModuleRequests(moduleRecord, array);
-    GenRegularImportEntries(moduleRecord, array);
-    GenNamespaceImportEntries(moduleRecord, array);
-    GenLocalExportEntries(moduleRecord, array);
-    GenIndirectExportEntries(moduleRecord, array);
-    GenStarExportEntries(moduleRecord, array);
-}
-
 void FunctionEmitter::GenSourceFileDebugInfo()
 {
     func_->source_file = std::string {pg_->Binder()->Program()->SourceFile()};
@@ -489,7 +359,6 @@ Emitter::Emitter(const CompilerContext *context)
 
     prog_->function_table.reserve(context->Binder()->Functions().size());
     GenESAnnoatationRecord();
-    GenerateESModuleRecord(context->Binder()->Program()->Kind() == parser::ScriptKind::MODULE);
 }
 
 Emitter::~Emitter()
@@ -503,30 +372,6 @@ void Emitter::GenESAnnoatationRecord()
     annotationRecord.metadata->SetAttribute("external");
     annotationRecord.metadata->SetAccessFlags(panda::ACC_ANNOTATION);
     prog_->record_table.emplace(annotationRecord.name, std::move(annotationRecord));
-}
-
-void Emitter::GenerateESModuleRecord(bool isModule)
-{
-    if (isModule) {
-        auto ecmaModuleRecord = panda::pandasm::Record("_ESModuleRecord", LANG_EXT);
-        ecmaModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
-        prog_->record_table.emplace(ecmaModuleRecord.name, std::move(ecmaModuleRecord));
-    }
-}
-
-void Emitter::AddSourceTextModuleRecord(PandaGen *pg)
-{
-    ASSERT(pg->TopScope()->IsModuleScope());
-    auto iter = prog_->record_table.find("_ESModuleRecord");
-    if (iter != prog_->record_table.end()) {
-        auto &rec = iter->second;
-        auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
-        moduleIdxField.name = std::string {pg->Binder()->Program()->SourceFile()};
-        moduleIdxField.type = panda::pandasm::Type("u32", 0);
-        moduleIdxField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(
-            static_cast<uint32_t>(pg->ModuleBuffIndex())));
-        rec.field_list.emplace_back(std::move(moduleIdxField));
-    }
 }
 
 void Emitter::AddFunction(FunctionEmitter *func)
@@ -544,6 +389,26 @@ void Emitter::AddFunction(FunctionEmitter *func)
 
     auto *function = func->Function();
     prog_->function_table.emplace(function->name, std::move(*function));
+}
+
+void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, const CompilerContext *context)
+{
+    std::lock_guard<std::mutex> lock(m_);
+
+    auto ecmaModuleRecord = panda::pandasm::Record("_ESModuleRecord", LANG_EXT);
+    ecmaModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
+
+    auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
+    moduleIdxField.name = std::string {context->Binder()->Program()->SourceFile()};
+    moduleIdxField.type = panda::pandasm::Type("u32", 0);
+    moduleIdxField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(
+        static_cast<uint32_t>(module->Index())));
+    ecmaModuleRecord.field_list.emplace_back(std::move(moduleIdxField));
+    prog_->record_table.emplace(ecmaModuleRecord.name, std::move(ecmaModuleRecord));
+
+    auto &moduleLiteralsBuffer = module->Buffer();
+    auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(moduleLiteralsBuffer));
+    prog_->literalarray_table.emplace(std::to_string(module->Index()), std::move(literalArrayInstance));
 }
 
 void Emitter::DumpAsm(const panda::pandasm::Program *prog)

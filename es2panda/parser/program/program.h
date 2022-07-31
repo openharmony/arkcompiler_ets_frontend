@@ -19,6 +19,7 @@
 #include <lexer/token/sourceLocation.h>
 #include <macros.h>
 #include <mem/arena_allocator.h>
+#include <parser/module/module.h>
 #include <util/ustring.h>
 
 #include "es2panda.h"
@@ -66,6 +67,11 @@ public:
     ScriptKind Kind() const
     {
         return kind_;
+    }
+
+    SourceTextModuleRecord *ModuleRecord() const
+    {
+        return moduleRecord_;
     }
 
     util::StringView SourceCode() const
@@ -117,6 +123,7 @@ private:
     ScriptKind kind_ {};
     ScriptExtension extension_ {};
     lexer::LineIndex lineIndex_ {};
+    SourceTextModuleRecord *moduleRecord_ {nullptr};
 };
 
 }  // namespace panda::es2panda::parser

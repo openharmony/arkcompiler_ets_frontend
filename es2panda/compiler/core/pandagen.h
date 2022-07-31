@@ -174,11 +174,6 @@ public:
         return buffStorage_;
     }
 
-    int32_t ModuleBuffIndex() const
-    {
-        return moduleBuffIndex_;
-    }
-
     uint32_t IcSize() const
     {
         return ic_.Size();
@@ -210,8 +205,6 @@ public:
 
     LiteralBuffer *NewLiteralBuffer();
     int32_t AddLiteralBuffer(LiteralBuffer *buf);
-    void SetModuleRecordBufferIndex();
-
     int32_t AddLexicalVarNamesForDebugInfo(ArenaMap<uint32_t, util::StringView> &lexicalMap);
 
     void InitializeLexEnv(const ir::AstNode *node, VReg lexEnv);
@@ -435,7 +428,6 @@ private:
     RegAllocator ra_;
     RangeRegAllocator rra_;
 
-    int32_t moduleBuffIndex_ {-1};
     uint32_t usedRegs_ {0};
     uint32_t totalRegs_ {0};
     friend class ScopeContext;

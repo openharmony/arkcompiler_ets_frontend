@@ -48,7 +48,7 @@ void ClassDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     } else {
         ASSERT(this->Parent()->IsExportDefaultDeclaration() && pg->Scope()->IsModuleScope());
         def_->Compile(pg);
-        pg->StoreModuleVariable(def_, util::StringView("*default*"));
+        pg->StoreModuleVariable(def_, parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME);
     }
 }
 
