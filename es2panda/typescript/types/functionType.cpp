@@ -19,8 +19,6 @@
 
 namespace panda::es2panda::checker {
 
-FunctionType::FunctionType(ObjectDescriptor *desc) : ObjectType(ObjectType::ObjectTypeKind::FUNCTION, desc) {}
-
 void FunctionType::ToString(std::stringstream &ss) const
 {
     static std::unordered_set<const FunctionType *> stack;
@@ -56,7 +54,7 @@ TypeFacts FunctionType::GetTypeFacts() const
 
 Type *FunctionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>();
+    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>(allocator);
     desc_->Copy(allocator, copiedDesc, relation, globalTypes);
     return allocator->New<FunctionType>(copiedDesc);
 }

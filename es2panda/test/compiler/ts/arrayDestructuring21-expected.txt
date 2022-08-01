@@ -18,11 +18,11 @@
                     "decorators": [],
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 7
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 8
                       }
                     }
@@ -33,11 +33,11 @@
                     "decorators": [],
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 10
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 11
                       }
                     }
@@ -45,11 +45,11 @@
                 ],
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 6
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 12
                   }
                 }
@@ -57,11 +57,11 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 13
               }
             }
@@ -77,11 +77,11 @@
                     "value": 1,
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 18
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 19
                       }
                     }
@@ -89,11 +89,11 @@
                 ],
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 17
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 20
                   }
                 }
@@ -101,22 +101,22 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 16
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 21
               }
             }
           },
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 21
             }
           }
@@ -125,11 +125,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 22
         }
       }
@@ -141,9 +141,9 @@
       "column": 1
     },
     "end": {
-      "line": 1,
+      "line": 17,
       "column": 22
     }
   }
 }
-TypeError: Initializer provides no value for this binding element and the binding element has no default value [arrayDestructuring21.ts:1:10]
+TypeError: Tuple type [number] of length 1 has no element at index 1. [arrayDestructuring21.ts:17:6]

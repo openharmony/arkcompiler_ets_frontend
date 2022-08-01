@@ -2331,7 +2331,9 @@ ir::FunctionExpression *ParserImpl::ParseFunctionExpression(ParserStatus newStat
     }
 
     ir::ScriptFunction *functionNode = ParseFunction(newStatus);
-    lexer_->NextToken();
+    if (functionNode->Body() != nullptr) {
+        lexer_->NextToken();
+    }
     functionNode->SetStart(startLoc);
 
     if (ident) {

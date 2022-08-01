@@ -27,16 +27,31 @@ namespace panda::es2panda::checker {
 class EnumLiteralType : public Type {
 public:
     enum class EnumLiteralTypeKind { NUMERIC, LITERAL };
-    EnumLiteralType(util::StringView name, binder::Scope *scope, EnumLiteralTypeKind kind);
 
-    binder::Scope *Scope();
-    const binder::Scope *Scope() const;
-    EnumLiteralTypeKind Kind() const;
+    EnumLiteralType(util::StringView name, binder::Scope *scope, EnumLiteralTypeKind kind)
+        : Type(TypeFlag::ENUM_LITERAL), name_(name), scope_(scope), kind_(kind)
+    {
+    }
+
+    binder::Scope *Scope()
+    {
+        return scope_;
+    }
+
+    const binder::Scope *Scope() const
+    {
+        return scope_;
+    }
+
+    EnumLiteralTypeKind Kind() const
+    {
+        return kind_;
+    }
 
     void ToString(std::stringstream &ss) const override;
     void ToStringAsSrc(std::stringstream &ss) const override;
-    void Identical(TypeRelation *relation, const Type *other) const override;
-    void AssignmentTarget(TypeRelation *relation, const Type *source) const override;
+    void Identical(TypeRelation *relation, Type *other) override;
+    void AssignmentTarget(TypeRelation *relation, Type *source) override;
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 

@@ -102,7 +102,8 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
         level++;
         auto *funcVariableScope = iter->AsFunctionParamScope()->GetFunctionScope();
 
-        if (funcVariableScope->NeedLexEnv()) {
+        // we may only have function param scope without function scope in TS here
+        if ((funcVariableScope != nullptr) && (funcVariableScope->NeedLexEnv())) {
             lexLevel++;
         }
 
@@ -253,6 +254,7 @@ std::tuple<ParameterDecl *, const ir::AstNode *> ParamScope::AddParamDecl(ArenaA
     }
 
     if (!pattern) {
+        decl->BindNode(param);
         return {decl, nullptr};
     }
 

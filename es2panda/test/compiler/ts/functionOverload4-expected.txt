@@ -11,11 +11,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 10
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 13
             }
           }
@@ -31,11 +31,11 @@
               "type": "TSNumberKeyword",
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 17
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 23
                 }
               }
@@ -43,11 +43,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 14
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 15
               }
             }
@@ -59,11 +59,11 @@
               "type": "TSStringKeyword",
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 29
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 35
                 }
               }
@@ -72,11 +72,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 25
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 26
               }
             }
@@ -86,33 +86,33 @@
           "type": "TSNumberKeyword",
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 38
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 44
             }
           }
         },
         "loc": {
           "start": {
-            "line": 1,
+            "line": 17,
             "column": 1
           },
           "end": {
-            "line": 1,
+            "line": 17,
             "column": 45
           }
         }
       },
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 45
         }
       }
@@ -127,11 +127,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 10
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 13
             }
           }
@@ -150,11 +150,11 @@
                   "type": "TSStringKeyword",
                   "loc": {
                     "start": {
-                      "line": 2,
+                      "line": 18,
                       "column": 17
                     },
                     "end": {
-                      "line": 2,
+                      "line": 18,
                       "column": 23
                     }
                   }
@@ -163,11 +163,11 @@
                   "type": "TSNumberKeyword",
                   "loc": {
                     "start": {
-                      "line": 2,
+                      "line": 18,
                       "column": 26
                     },
                     "end": {
-                      "line": 2,
+                      "line": 18,
                       "column": 32
                     }
                   }
@@ -175,11 +175,11 @@
               ],
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 17
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 32
                 }
               }
@@ -187,11 +187,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 2,
+                "line": 18,
                 "column": 14
               },
               "end": {
-                "line": 2,
+                "line": 18,
                 "column": 15
               }
             }
@@ -203,11 +203,11 @@
               "type": "TSStringKeyword",
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 37
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 43
                 }
               }
@@ -215,11 +215,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 2,
+                "line": 18,
                 "column": 34
               },
               "end": {
-                "line": 2,
+                "line": 18,
                 "column": 35
               }
             }
@@ -231,11 +231,11 @@
               "type": "TSNumberKeyword",
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 48
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 54
                 }
               }
@@ -243,11 +243,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 2,
+                "line": 18,
                 "column": 45
               },
               "end": {
-                "line": 2,
+                "line": 18,
                 "column": 46
               }
             }
@@ -257,33 +257,33 @@
           "type": "TSNumberKeyword",
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 57
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 63
             }
           }
         },
         "loc": {
           "start": {
-            "line": 2,
+            "line": 18,
             "column": 1
           },
           "end": {
-            "line": 2,
+            "line": 18,
             "column": 64
           }
         }
       },
       "loc": {
         "start": {
-          "line": 2,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 64
         }
       }
@@ -298,11 +298,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 3,
+              "line": 19,
               "column": 10
             },
             "end": {
-              "line": 3,
+              "line": 19,
               "column": 13
             }
           }
@@ -321,11 +321,11 @@
                   "type": "TSStringKeyword",
                   "loc": {
                     "start": {
-                      "line": 3,
+                      "line": 19,
                       "column": 17
                     },
                     "end": {
-                      "line": 3,
+                      "line": 19,
                       "column": 23
                     }
                   }
@@ -334,11 +334,11 @@
                   "type": "TSNumberKeyword",
                   "loc": {
                     "start": {
-                      "line": 3,
+                      "line": 19,
                       "column": 26
                     },
                     "end": {
-                      "line": 3,
+                      "line": 19,
                       "column": 32
                     }
                   }
@@ -346,11 +346,11 @@
               ],
               "loc": {
                 "start": {
-                  "line": 3,
+                  "line": 19,
                   "column": 17
                 },
                 "end": {
-                  "line": 3,
+                  "line": 19,
                   "column": 32
                 }
               }
@@ -358,11 +358,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 3,
+                "line": 19,
                 "column": 14
               },
               "end": {
-                "line": 3,
+                "line": 19,
                 "column": 15
               }
             }
@@ -374,11 +374,11 @@
               "type": "TSStringKeyword",
               "loc": {
                 "start": {
-                  "line": 3,
+                  "line": 19,
                   "column": 38
                 },
                 "end": {
-                  "line": 3,
+                  "line": 19,
                   "column": 44
                 }
               }
@@ -387,11 +387,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 3,
+                "line": 19,
                 "column": 34
               },
               "end": {
-                "line": 3,
+                "line": 19,
                 "column": 35
               }
             }
@@ -403,11 +403,11 @@
               "type": "TSNumberKeyword",
               "loc": {
                 "start": {
-                  "line": 3,
+                  "line": 19,
                   "column": 50
                 },
                 "end": {
-                  "line": 3,
+                  "line": 19,
                   "column": 56
                 }
               }
@@ -416,11 +416,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 3,
+                "line": 19,
                 "column": 46
               },
               "end": {
-                "line": 3,
+                "line": 19,
                 "column": 47
               }
             }
@@ -436,22 +436,22 @@
                 "value": 12,
                 "loc": {
                   "start": {
-                    "line": 4,
+                    "line": 20,
                     "column": 12
                   },
                   "end": {
-                    "line": 4,
+                    "line": 20,
                     "column": 14
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 4,
+                  "line": 20,
                   "column": 5
                 },
                 "end": {
-                  "line": 4,
+                  "line": 20,
                   "column": 15
                 }
               }
@@ -459,33 +459,33 @@
           ],
           "loc": {
             "start": {
-              "line": 3,
+              "line": 19,
               "column": 58
             },
             "end": {
-              "line": 5,
+              "line": 21,
               "column": 2
             }
           }
         },
         "loc": {
           "start": {
-            "line": 3,
+            "line": 19,
             "column": 1
           },
           "end": {
-            "line": 5,
+            "line": 21,
             "column": 2
           }
         }
       },
       "loc": {
         "start": {
-          "line": 3,
+          "line": 19,
           "column": 1
         },
         "end": {
-          "line": 5,
+          "line": 21,
           "column": 2
         }
       }
@@ -502,11 +502,11 @@
               "type": "TSStringKeyword",
               "loc": {
                 "start": {
-                  "line": 7,
+                  "line": 23,
                   "column": 8
                 },
                 "end": {
-                  "line": 7,
+                  "line": 23,
                   "column": 14
                 }
               }
@@ -514,11 +514,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 7,
+                "line": 23,
                 "column": 5
               },
               "end": {
-                "line": 7,
+                "line": 23,
                 "column": 6
               }
             }
@@ -531,11 +531,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 7,
+                  "line": 23,
                   "column": 17
                 },
                 "end": {
-                  "line": 7,
+                  "line": 23,
                   "column": 20
                 }
               }
@@ -546,11 +546,11 @@
                 "value": 2,
                 "loc": {
                   "start": {
-                    "line": 7,
+                    "line": 23,
                     "column": 21
                   },
                   "end": {
-                    "line": 7,
+                    "line": 23,
                     "column": 22
                   }
                 }
@@ -559,22 +559,22 @@
             "optional": false,
             "loc": {
               "start": {
-                "line": 7,
+                "line": 23,
                 "column": 17
               },
               "end": {
-                "line": 7,
+                "line": 23,
                 "column": 23
               }
             }
           },
           "loc": {
             "start": {
-              "line": 7,
+              "line": 23,
               "column": 5
             },
             "end": {
-              "line": 7,
+              "line": 23,
               "column": 23
             }
           }
@@ -583,11 +583,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 7,
+          "line": 23,
           "column": 1
         },
         "end": {
-          "line": 7,
+          "line": 23,
           "column": 24
         }
       }
@@ -599,9 +599,9 @@
       "column": 1
     },
     "end": {
-      "line": 7,
+      "line": 23,
       "column": 24
     }
   }
 }
-TypeError: Type 'number' is not assignable to type 'string' [functionOverload4.ts:7:5]
+TypeError: Type 'number' is not assignable to type 'string'. [functionOverload4.ts:23:5]

@@ -43,4 +43,9 @@ checker::Type *TSConditionalType::Check([[maybe_unused]] checker::Checker *check
     return nullptr;
 }
 
+checker::Type *TSConditionalType::GetType([[maybe_unused]] checker::Checker *checker) const
+{
+    return nullptr;
+}
+
 }  // namespace panda::es2panda::ir

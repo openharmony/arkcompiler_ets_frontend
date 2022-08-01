@@ -15,6 +15,7 @@
 
 #include "tsUnknownKeyword.h"
 
+#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,6 +32,11 @@ void TSUnknownKeyword::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 checker::Type *TSUnknownKeyword::Check([[maybe_unused]] checker::Checker *checker) const
 {
     return nullptr;
+}
+
+checker::Type *TSUnknownKeyword::GetType(checker::Checker *checker) const
+{
+    return checker->GlobalUnknownType();
 }
 
 }  // namespace panda::es2panda::ir

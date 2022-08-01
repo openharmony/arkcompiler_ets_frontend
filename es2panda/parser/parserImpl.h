@@ -318,6 +318,8 @@ private:
     ir::SpreadElement *ParseSpreadElement(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::TSParameterProperty *CreateTsParameterProperty(ir::Expression *parameter, ir::ModifierFlags modifiers);
     ir::Expression *ParseFunctionParameter(bool isDeclare);
+    void CreateTSVariableForProperty(ir::AstNode *node, const ir::Expression *key, binder::VariableFlags flags);
+    void CheckObjectTypeForDuplicatedProperties(ir::Expression *key, ArenaVector<ir::Expression *> &members);
 
     // ExpressionParser.Cpp
 

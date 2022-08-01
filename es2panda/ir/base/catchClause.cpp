@@ -43,7 +43,7 @@ void CatchClause::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "CatchClause"}, {"body", body_}, {"param", AstDumper::Nullable(param_)}});
 }
 
-void CatchClause::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void CatchClause::Compile(compiler::PandaGen *pg) const
 {
     compiler::LocalRegScope lrs(pg, scope_->ParamScope());
 
@@ -56,7 +56,7 @@ void CatchClause::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     body_->Compile(pg);
 }
 
-checker::Type *CatchClause::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *CatchClause::Check(checker::Checker *checker) const
 {
     const ir::Expression *typeAnnotation = nullptr;
 

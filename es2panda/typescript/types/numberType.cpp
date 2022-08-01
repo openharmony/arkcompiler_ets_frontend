@@ -20,21 +20,19 @@
 
 namespace panda::es2panda::checker {
 
-NumberType::NumberType() : Type(TypeFlag::NUMBER) {}
-
 void NumberType::ToString(std::stringstream &ss) const
 {
     ss << "number";
 }
 
-void NumberType::Identical(TypeRelation *relation, const Type *other) const
+void NumberType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsNumberType()) {
         relation->Result(true);
     }
 }
 
-void NumberType::AssignmentTarget(TypeRelation *relation, const Type *source) const
+void NumberType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (source->IsNumberLiteralType()) {
         relation->Result(true);

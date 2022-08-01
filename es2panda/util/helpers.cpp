@@ -30,6 +30,7 @@
 #include <ir/expressions/objectExpression.h>
 #include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
+#include <ir/ts/tsParameterProperty.h>
 #include <parser/module/sourceTextModuleRecord.h>
 
 namespace panda::es2panda::util {
@@ -391,6 +392,9 @@ std::tuple<util::StringView, bool> Helpers::ParamName(ArenaAllocator *allocator,
                 return {param->AsRestElement()->Argument()->AsIdentifier()->Name(), false};
             }
             break;
+        }
+        case ir::AstNodeType::TS_PARAMETER_PROPERTY: {
+            return ParamName(allocator, param->AsTSParameterProperty()->Parameter(), index);
         }
         default:
             break;

@@ -19,32 +19,17 @@
 
 namespace panda::es2panda::checker {
 
-EnumType::EnumType(binder::Variable *enumLiteralVar, binder::EnumVariable *enumVar)
-    : Type(TypeFlag::ENUM), enumLiteralVar_(enumLiteralVar), enumVar_(enumVar)
-{
-}
-
-const binder::Variable *EnumType::EnumLiteralVar() const
-{
-    return enumLiteralVar_;
-}
-
-const binder::EnumVariable *EnumType::EnumVar() const
-{
-    return enumVar_;
-}
-
 void EnumType::ToString(std::stringstream &ss) const
 {
     ss << enumLiteralVar_->Name() << "." << enumVar_->Name();
 }
 
-void EnumType::Identical([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] const Type *other) const
+void EnumType::Identical([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *other)
 {
     // TODO(aszilagyi)
 }
 
-void EnumType::AssignmentTarget(TypeRelation *relation, const Type *source) const
+void EnumType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (source->IsNumberLiteralType()) {
         relation->Result(true);

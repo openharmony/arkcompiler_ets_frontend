@@ -38,4 +38,9 @@ checker::Type *TSIntersectionType::Check([[maybe_unused]] checker::Checker *chec
     return nullptr;
 }
 
+checker::Type *TSIntersectionType::GetType([[maybe_unused]] checker::Checker *checker) const
+{
+    return nullptr;
+}
+
 }  // namespace panda::es2panda::ir

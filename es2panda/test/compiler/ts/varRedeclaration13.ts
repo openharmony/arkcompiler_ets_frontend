@@ -14,7 +14,7 @@
  */
 
 
-interface a {
+interface z {
     a: number
 }
 
@@ -22,7 +22,7 @@ interface b {
     new(a: number, b: string): number
 }
 
-interface c extends a, b {
+interface c extends z, b {
     new(a: number, b: string): number
 }
 

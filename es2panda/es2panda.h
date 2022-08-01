@@ -57,6 +57,7 @@ struct CompilerOptions {
     bool dumpAsm {false};
     bool dumpDebugInfo {false};
     bool parseOnly {false};
+    bool enableTypeCheck {false};
     bool dumpLiteralBuffer {false};
     bool isDebuggerEvaluateExpressionMode {false};
 };

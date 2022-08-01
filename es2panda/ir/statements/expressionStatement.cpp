@@ -30,14 +30,14 @@ void ExpressionStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ExpressionStatement"}, {"expression", expression_}});
 }
 
-void ExpressionStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ExpressionStatement::Compile(compiler::PandaGen *pg) const
 {
     expression_->Compile(pg);
 }
 
-checker::Type *ExpressionStatement::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *ExpressionStatement::Check(checker::Checker *checker) const
 {
-    return nullptr;
+    return expression_->Check(checker);
 }
 
 }  // namespace panda::es2panda::ir

@@ -49,7 +49,7 @@ function func5(a: number, b: string, ...c) {
 func5(1, "foo");
 func5(1, "foo", 2, true, {});
 
-function func6(a, b?: string[], ...c: number[]) {
+function func6(a: any, b?: string[], ...c: number[]) {
     return true;
 }
 
@@ -62,7 +62,7 @@ var b: string = func7();
 var c: string = func7(1);
 var d: number = func7(1, "foo");
 
-var func8: { (a?: number, ...c): boolean, (a, b: string[], ...c: number[]): string, (a: number, b: boolean): number };
+var func8: { (a?: number, ...c): boolean, (a: any, b: string[], ...c: number[]): string, (a: number, b: boolean): number };
 var e: boolean = func8();
 var f: boolean = func8(1);
 var g: boolean = func8(2, true);

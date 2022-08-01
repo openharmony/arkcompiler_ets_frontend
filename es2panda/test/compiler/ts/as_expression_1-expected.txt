@@ -12,11 +12,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 6
               }
             }
@@ -25,14 +25,14 @@
             "type": "TSAsExpression",
             "expression": {
               "type": "StringLiteral",
-              "value": "",
+              "value": "foo",
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 9
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 14
                 }
               }
@@ -41,33 +41,33 @@
               "type": "TSNumberKeyword",
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 18
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 24
                 }
               }
             },
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 9
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 25
               }
             }
           },
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 25
             }
           }
@@ -76,11 +76,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 25
         }
       }
@@ -92,9 +92,9 @@
       "column": 1
     },
     "end": {
-      "line": 2,
+      "line": 18,
       "column": 1
     }
   }
 }
-TypeError: Conversion of type 'string' to type 'number' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first. [as_expression_1.ts:1:9]
+TypeError: Conversion of type 'string' to type 'number' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first. [as_expression_1.ts:17:9]

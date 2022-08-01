@@ -17,69 +17,12 @@
 
 #include <binder/variable.h>
 #include <typescript/types/typeParameter.h>
+#include <typescript/checker.h>
 
 #include <algorithm>
 #include <utility>
 
 namespace panda::es2panda::checker {
-
-InterfaceType::InterfaceType(util::StringView name, ObjectDescriptor *desc)
-    : ObjectType(ObjectType::ObjectTypeKind::INTERFACE, desc), name_(name)
-{
-}
-
-void InterfaceType::AddBase(ObjectType *base)
-{
-    bases_.push_back(base);
-}
-
-const std::vector<ObjectType *> &InterfaceType::Bases() const
-{
-    return bases_;
-}
-
-const util::StringView &InterfaceType::Name() const
-{
-    return name_;
-}
-
-void InterfaceType::SetMergedTypeParams(std::pair<std::vector<binder::Variable *>, size_t> &&mergedTypeParams)
-{
-    mergedTypeParams_ = std::move(mergedTypeParams);
-}
-
-const std::pair<std::vector<binder::Variable *>, size_t> &InterfaceType::GetMergedTypeParams() const
-{
-    return mergedTypeParams_;
-}
-
-void InterfaceType::SetTypeParamTypes(std::vector<Type *> &&typeParamTypes)
-{
-    typeParamTypes_ = std::move(typeParamTypes);
-}
-
-const std::vector<Type *> &InterfaceType::GetTypeParamTypes() const
-{
-    return typeParamTypes_;
-}
-
-binder::LocalVariable *InterfaceType::GetProperty(const util::StringView &name) const
-{
-    binder::LocalVariable *resultProp = ObjectType::GetProperty(name);
-
-    if (resultProp) {
-        return resultProp;
-    }
-
-    for (auto *base : bases_) {
-        resultProp = base->GetProperty(name);
-        if (resultProp) {
-            return resultProp;
-        }
-    }
-
-    return nullptr;
-}
 
 void InterfaceType::ToString(std::stringstream &ss) const
 {
@@ -100,45 +43,43 @@ void InterfaceType::ToString(std::stringstream &ss) const
     }
 }
 
-void InterfaceType::Identical(TypeRelation *relation, const Type *other) const
+void InterfaceType::Identical(TypeRelation *relation, Type *other)
 {
     if (!other->IsObjectType() || !other->AsObjectType()->IsInterfaceType()) {
         return;
     }
 
-    const InterfaceType *otherInterface = other->AsObjectType()->AsInterfaceType();
+    InterfaceType *otherInterface = other->AsObjectType()->AsInterfaceType();
 
-    std::vector<binder::LocalVariable *> targetProperties;
-    CollectProperties(&targetProperties);
-
-    std::vector<binder::LocalVariable *> sourceProperties;
-    otherInterface->CollectProperties(&sourceProperties);
+    const ArenaVector<binder::LocalVariable *> &targetProperties = Properties();
+    const ArenaVector<binder::LocalVariable *> &sourceProperties = otherInterface->Properties();
 
     if (targetProperties.size() != sourceProperties.size()) {
         relation->Result(false);
         return;
     }
 
-    for (const auto *targetProp : targetProperties) {
-        bool foundProp = std::any_of(sourceProperties.begin(), sourceProperties.end(),
-                                     [targetProp, relation](const binder::LocalVariable *sourceProp) {
-                                         if (targetProp->Name() == sourceProp->Name()) {
-                                             return relation->IsIdenticalTo(targetProp->TsType(), sourceProp->TsType());
-                                         }
+    for (auto *targetProp : targetProperties) {
+        bool foundProp =
+            std::any_of(sourceProperties.begin(), sourceProperties.end(),
+                        [targetProp, relation](binder::LocalVariable *sourceProp) {
+                            if (targetProp->Name() == sourceProp->Name()) {
+                                Type *targetType = relation->GetChecker()->GetTypeOfVariable(targetProp);
+                                Type *sourceType = relation->GetChecker()->GetTypeOfVariable(sourceProp);
+                                return relation->IsIdenticalTo(targetType, sourceType);
+                            }
 
-                                         return false;
-                                     });
+                            return false;
+                        });
+
         if (!foundProp) {
             relation->Result(false);
             return;
         }
     }
 
-    std::vector<Signature *> targetCallSignatures;
-    CollectSignatures(&targetCallSignatures, true);
-
-    std::vector<Signature *> sourceCallSignatures;
-    otherInterface->CollectSignatures(&sourceCallSignatures, true);
+    const ArenaVector<Signature *> &targetCallSignatures = CallSignatures();
+    const ArenaVector<Signature *> &sourceCallSignatures = otherInterface->CallSignatures();
 
     if (targetCallSignatures.size() != sourceCallSignatures.size()) {
         relation->Result(false);
@@ -150,11 +91,8 @@ void InterfaceType::Identical(TypeRelation *relation, const Type *other) const
         return;
     }
 
-    std::vector<Signature *> targetConstructSignatures;
-    CollectSignatures(&targetConstructSignatures, false);
-
-    std::vector<Signature *> sourceConstructSignatures;
-    otherInterface->CollectSignatures(&sourceConstructSignatures, false);
+    const ArenaVector<Signature *> &targetConstructSignatures = ConstructSignatures();
+    const ArenaVector<Signature *> &sourceConstructSignatures = otherInterface->ConstructSignatures();
 
     if (targetConstructSignatures.size() != sourceConstructSignatures.size()) {
         relation->Result(false);
@@ -166,8 +104,8 @@ void InterfaceType::Identical(TypeRelation *relation, const Type *other) const
         return;
     }
 
-    const IndexInfo *targetNumberInfo = FindIndexInfo(true);
-    const IndexInfo *sourceNumberInfo = otherInterface->FindIndexInfo(true);
+    IndexInfo *targetNumberInfo = NumberIndexInfo();
+    IndexInfo *sourceNumberInfo = otherInterface->NumberIndexInfo();
 
     if ((targetNumberInfo && !sourceNumberInfo) || (!targetNumberInfo && sourceNumberInfo)) {
         relation->Result(false);
@@ -177,8 +115,8 @@ void InterfaceType::Identical(TypeRelation *relation, const Type *other) const
     relation->IsIdenticalTo(targetNumberInfo, sourceNumberInfo);
 
     if (relation->IsTrue()) {
-        const IndexInfo *targetStringInfo = FindIndexInfo(false);
-        const IndexInfo *sourceStringInfo = otherInterface->FindIndexInfo(false);
+        IndexInfo *targetStringInfo = StringIndexInfo();
+        IndexInfo *sourceStringInfo = otherInterface->StringIndexInfo();
 
         if ((targetStringInfo && !sourceStringInfo) || (!targetStringInfo && sourceStringInfo)) {
             relation->Result(false);
@@ -191,11 +129,11 @@ void InterfaceType::Identical(TypeRelation *relation, const Type *other) const
 
 Type *InterfaceType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>();
+    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>(allocator);
 
     desc_->Copy(allocator, copiedDesc, relation, globalTypes);
 
-    Type *newInterfaceType = allocator->New<InterfaceType>(name_, copiedDesc);
+    Type *newInterfaceType = allocator->New<InterfaceType>(allocator, name_, copiedDesc);
 
     for (auto *it : bases_) {
         newInterfaceType->AsObjectType()->AsInterfaceType()->AddBase(
@@ -205,14 +143,14 @@ Type *InterfaceType::Instantiate(ArenaAllocator *allocator, TypeRelation *relati
     return newInterfaceType;
 }
 
-void InterfaceType::CollectSignatures(std::vector<Signature *> *collectedSignatures, bool collectCallSignatures) const
+void InterfaceType::CollectSignatures(ArenaVector<Signature *> *collectedSignatures, bool collectCallSignatures) const
 {
     if (collectCallSignatures) {
-        for (auto *it : CallSignatures()) {
+        for (auto *it : desc_->callSignatures) {
             collectedSignatures->push_back(it);
         }
     } else {
-        for (auto *it : ConstructSignatures()) {
+        for (auto *it : desc_->constructSignatures) {
             collectedSignatures->push_back(it);
         }
     }
@@ -222,9 +160,9 @@ void InterfaceType::CollectSignatures(std::vector<Signature *> *collectedSignatu
     }
 }
 
-void InterfaceType::CollectProperties(std::vector<binder::LocalVariable *> *collectedPropeties) const
+void InterfaceType::CollectProperties(ArenaVector<binder::LocalVariable *> *collectedPropeties) const
 {
-    for (auto *currentProp : Properties()) {
+    for (auto *currentProp : desc_->properties) {
         bool propAlreadyCollected = false;
         for (auto *collectedProp : *collectedPropeties) {
             if (currentProp->Name() == collectedProp->Name()) {
@@ -249,10 +187,10 @@ const IndexInfo *InterfaceType::FindIndexInfo(bool findNumberInfo) const
 {
     const IndexInfo *foundInfo = nullptr;
 
-    if (findNumberInfo && NumberIndexInfo()) {
-        foundInfo = NumberIndexInfo();
-    } else if (!findNumberInfo && StringIndexInfo()) {
-        foundInfo = StringIndexInfo();
+    if (findNumberInfo && desc_->numberIndexInfo) {
+        foundInfo = desc_->numberIndexInfo;
+    } else if (!findNumberInfo && desc_->stringIndexInfo) {
+        foundInfo = desc_->stringIndexInfo;
     }
 
     for (auto it = bases_.begin(); it != bases_.end() && !foundInfo; it++) {
@@ -266,10 +204,10 @@ IndexInfo *InterfaceType::FindIndexInfo(bool findNumberInfo)
 {
     IndexInfo *foundInfo = nullptr;
 
-    if (findNumberInfo && NumberIndexInfo()) {
-        foundInfo = NumberIndexInfo();
-    } else if (!findNumberInfo && StringIndexInfo()) {
-        foundInfo = StringIndexInfo();
+    if (findNumberInfo && desc_->numberIndexInfo) {
+        foundInfo = desc_->numberIndexInfo;
+    } else if (!findNumberInfo && desc_->stringIndexInfo) {
+        foundInfo = desc_->stringIndexInfo;
     }
 
     for (auto it = bases_.begin(); it != bases_.end() && !foundInfo; it++) {

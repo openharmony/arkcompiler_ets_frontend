@@ -14,4 +14,4 @@
  */
 
 
-var a: { b: number } = { get b(): string { return "foo" } }
+var a: { b: number } = { b: function (): string { return "foo" } }

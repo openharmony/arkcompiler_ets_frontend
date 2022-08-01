@@ -17,11 +17,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 6
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 7
                     }
                   }
@@ -34,25 +34,25 @@
                       "value": 1,
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 11
                         },
                         "end": {
-                          "line": 1,
+                          "line": 17,
                           "column": 12
                         }
                       }
                     },
                     {
                       "type": "StringLiteral",
-                      "value": "",
+                      "value": "foo",
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 14
                         },
                         "end": {
-                          "line": 1,
+                          "line": 17,
                           "column": 19
                         }
                       }
@@ -60,22 +60,22 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 10
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 20
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 6
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 20
                   }
                 }
@@ -86,11 +86,11 @@
                 "decorators": [],
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 22
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 23
                   }
                 }
@@ -98,11 +98,11 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 24
               }
             }
@@ -118,11 +118,11 @@
                     "value": true,
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 29
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 33
                       }
                     }
@@ -132,11 +132,11 @@
                     "value": false,
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 35
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 40
                       }
                     }
@@ -144,11 +144,11 @@
                 ],
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 28
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 41
                   }
                 }
@@ -158,28 +158,28 @@
                 "elements": [
                   {
                     "type": "StringLiteral",
-                    "value": "",
+                    "value": "foo",
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 44
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 49
                       }
                     }
                   },
                   {
                     "type": "StringLiteral",
-                    "value": "",
+                    "value": "bar",
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 51
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 56
                       }
                     }
@@ -187,11 +187,11 @@
                 ],
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 43
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 57
                   }
                 }
@@ -199,22 +199,22 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 27
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 58
               }
             }
           },
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 58
             }
           }
@@ -223,11 +223,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 59
         }
       }
@@ -243,11 +243,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 1
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 2
             }
           }
@@ -257,33 +257,33 @@
           "properties": [],
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 5
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 7
             }
           }
         },
         "loc": {
           "start": {
-            "line": 2,
+            "line": 18,
             "column": 1
           },
           "end": {
-            "line": 2,
+            "line": 18,
             "column": 7
           }
         }
       },
       "loc": {
         "start": {
-          "line": 2,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 8
         }
       }
@@ -295,9 +295,9 @@
       "column": 1
     },
     "end": {
-      "line": 2,
+      "line": 18,
       "column": 8
     }
   }
 }
-TypeError: Type '{ }' is not assignable to type '(number | string)[] | boolean[]'. [arrayDestructuring8.ts:2:1]
+TypeError: Type '{ }' is not assignable to type 'boolean[] | (number | string)[]'. [arrayDestructuring8.ts:18:1]

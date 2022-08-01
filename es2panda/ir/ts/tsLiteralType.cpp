@@ -15,6 +15,7 @@
 
 #include "tsLiteralType.h"
 
+#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,9 +32,23 @@ void TSLiteralType::Dump(ir::AstDumper *dumper) const
 
 void TSLiteralType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSLiteralType::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSLiteralType::Check(checker::Checker *checker) const
 {
+    GetType(checker);
     return nullptr;
+}
+
+checker::Type *TSLiteralType::GetType(checker::Checker *checker) const
+{
+    auto found = checker->NodeCache().find(this);
+
+    if (found != checker->NodeCache().end()) {
+        return found->second;
+    }
+
+    checker::Type *type = literal_->Check(checker);
+    checker->NodeCache().insert({this, type});
+    return type;
 }
 
 }  // namespace panda::es2panda::ir

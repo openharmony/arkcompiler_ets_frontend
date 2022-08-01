@@ -17,21 +17,19 @@
 
 namespace panda::es2panda::checker {
 
-StringType::StringType() : Type(TypeFlag::STRING) {}
-
 void StringType::ToString(std::stringstream &ss) const
 {
     ss << "string";
 }
 
-void StringType::Identical(TypeRelation *relation, const Type *other) const
+void StringType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsStringType()) {
         relation->Result(true);
     }
 }
 
-void StringType::AssignmentTarget(TypeRelation *relation, const Type *source) const
+void StringType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (source->IsStringLiteralType()) {
         relation->Result(true);

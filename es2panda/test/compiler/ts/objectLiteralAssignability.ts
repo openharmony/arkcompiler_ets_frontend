@@ -15,8 +15,8 @@
 
 
 var obj1: { c: number };
-var obj2: { a: number, b: string } | { a: string, b: string, c: string } = { a: 5, b: "foo", ...obj1 };
-obj2 = { a: "foo", b: "bar", c: "baz" };
+var obj2: { a: number, b: string } | { a: number, b: string, c: number } = { a: 5, b: "foo", ...obj1 };
+obj2 = { a: 2, b: "bar", c: 3 };
 
 var obj3: {} = {};
 var obj4: { a: typeof obj3, b?: { a: number, b?: string } } = { a: {}, b: { a: 5 } };
@@ -37,15 +37,13 @@ var obj8 = { ...obj6 };
 obj8 = obj6;
 obj8 = { a: function (a: number, b: string): number { return 12; }, b: function () { return true } };
 
-var a: 5;
-var b: "foo";
-var obj9: { [a]: number, [b]: string } = { 5: 5, "foo": "foo" };
+var obj9: { 5: number, "foo": string } = { 5: 5, "foo": "foo" };
 
 var c: number;
 var d: string;
 var obj10: { [x: number]: number, [y: string]: number } = { [c]: 1, [d]: 2 };
 
-var obj11 = { get 5() { return 5; }, set "foo"(a) { } };
+var obj11 = { get 5() { return 5; }, set "foo"(a: any) { } };
 obj9 = obj11;
 
 var obj12: { a?: number, b?: string, c?: boolean };

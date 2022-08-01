@@ -17,26 +17,24 @@
 
 namespace panda::es2panda::checker {
 
-AnyType::AnyType() : Type(TypeFlag::ANY) {}
-
 void AnyType::ToString(std::stringstream &ss) const
 {
     ss << "any";
 }
 
-void AnyType::Identical(TypeRelation *relation, const Type *other) const
+void AnyType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsAnyType()) {
         relation->Result(true);
     }
 }
 
-void AnyType::AssignmentTarget(TypeRelation *relation, [[maybe_unused]] const Type *source) const
+void AnyType::AssignmentTarget(TypeRelation *relation, [[maybe_unused]] Type *source)
 {
     relation->Result(true);
 }
 
-bool AnyType::AssignmentSource(TypeRelation *relation, [[maybe_unused]] const Type *target) const
+bool AnyType::AssignmentSource(TypeRelation *relation, [[maybe_unused]] Type *target)
 {
     relation->Result(true);
     return true;

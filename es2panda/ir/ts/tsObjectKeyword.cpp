@@ -15,6 +15,7 @@
 
 #include "tsObjectKeyword.h"
 
+#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,6 +32,11 @@ void TSObjectKeyword::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 checker::Type *TSObjectKeyword::Check([[maybe_unused]] checker::Checker *checker) const
 {
     return nullptr;
+}
+
+checker::Type *TSObjectKeyword::GetType(checker::Checker *checker) const
+{
+    return checker->GlobalNonPrimitiveType();
 }
 
 }  // namespace panda::es2panda::ir

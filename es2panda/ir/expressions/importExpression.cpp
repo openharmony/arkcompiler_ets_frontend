@@ -30,7 +30,7 @@ void ImportExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ImportExpression"}, {"source", source_}});
 }
 
-void ImportExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ImportExpression::Compile(compiler::PandaGen *pg) const
 {
     pg->Unimplemented();
 }

@@ -15,10 +15,13 @@
 
 #include "tsMethodSignature.h"
 
+#include <typescript/checker.h>
 #include <binder/scope.h>
 #include <ir/astDump.h>
+#include <ir/typeNode.h>
 #include <ir/ts/tsTypeParameter.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
+#include <ir/expressions/literals/numberLiteral.h>
 
 namespace panda::es2panda::ir {
 
@@ -52,8 +55,28 @@ void TSMethodSignature::Dump(ir::AstDumper *dumper) const
 
 void TSMethodSignature::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSMethodSignature::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSMethodSignature::Check(checker::Checker *checker) const
 {
+    if (computed_) {
+        checker->CheckComputedPropertyName(key_);
+    }
+
+    checker::ScopeContext scopeCtx(checker, scope_);
+
+    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(params_, signatureInfo);
+
+    auto *callSignature = checker->Allocator()->New<checker::Signature>(signatureInfo, checker->GlobalAnyType());
+    Variable()->SetTsType(checker->CreateFunctionTypeWithSignature(callSignature));
+
+    if (!returnTypeAnnotation_) {
+        checker->ThrowTypeError(
+            "Method signature, which lacks return-type annotation, implicitly has an 'any' return type.", Start());
+    }
+
+    returnTypeAnnotation_->Check(checker);
+    callSignature->SetReturnType(returnTypeAnnotation_->AsTypeNode()->GetType(checker));
+
     return nullptr;
 }
 

@@ -17,8 +17,6 @@
 class Baz {
     s: string;
     n: number;
-    constructor(s?: string);
-    constructor();
     constructor(s?: string, n?: number) {
         this.s = s || "";
         this.n = n || 0;

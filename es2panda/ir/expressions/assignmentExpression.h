@@ -74,7 +74,7 @@ public:
     void Dump(ir::AstDumper *dumper) const override;
     void Compile(compiler::PandaGen *pg) const override;
     void CompilePattern(compiler::PandaGen *pg) const;
-    checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *Check(checker::Checker *checker) const override;
 
 private:
     Expression *left_;

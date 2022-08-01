@@ -39,51 +39,87 @@ TYPE_MAPPING(DECLARE_TYPENAMES)
 
 class Type {
 public:
-    explicit Type(TypeFlag flag);
+    explicit Type(TypeFlag flag) : typeFlags_(flag), variable_(nullptr)
+    {
+        static uint64_t typeId_ = 0;
+        id_ = ++typeId_;
+    }
+
     NO_COPY_SEMANTIC(Type);
     NO_MOVE_SEMANTIC(Type);
 
     virtual ~Type() = default;
 
 #define TYPE_IS_CHECKS(typeFlag, typeName) \
-    bool Is##typeName() const               \
-    {                                        \
-        return HasTypeFlag(typeFlag);       \
+    bool Is##typeName() const              \
+    {                                      \
+        return HasTypeFlag(typeFlag);      \
     }
     TYPE_MAPPING(TYPE_IS_CHECKS)
 #undef DECLARE_IS_CHECKS
 
-#define TYPE_AS_CASTS(typeFlag, typeName)               \
-    typeName *As##typeName()                            \
-    {                                                     \
+#define TYPE_AS_CASTS(typeFlag, typeName)                \
+    typeName *As##typeName()                             \
+    {                                                    \
         ASSERT(Is##typeName());                          \
         return reinterpret_cast<typeName *>(this);       \
-    }                                                     \
-    const typeName *As##typeName() const                \
-    {                                                     \
+    }                                                    \
+    const typeName *As##typeName() const                 \
+    {                                                    \
         ASSERT(Is##typeName());                          \
         return reinterpret_cast<const typeName *>(this); \
     }
     TYPE_MAPPING(TYPE_AS_CASTS)
 #undef TYPE_AS_CASTS
 
-    TypeFlag TypeFlags() const;
-    bool HasTypeFlag(TypeFlag typeFlag) const;
-    void AddTypeFlag(TypeFlag typeFlag);
-    void RemoveTypeFlag(TypeFlag typeFlag);
-    uint64_t Id() const;
-    void SetVariable(binder::Variable *variable);
-    binder::Variable *Variable();
-    const binder::Variable *Variable() const;
+    TypeFlag TypeFlags() const
+    {
+        return typeFlags_;
+    }
+
+    bool HasTypeFlag(TypeFlag typeFlag) const
+    {
+        return (typeFlags_ & typeFlag) != 0;
+    }
+
+    void AddTypeFlag(TypeFlag typeFlag)
+    {
+        typeFlags_ |= typeFlag;
+    }
+
+    void RemoveTypeFlag(TypeFlag typeFlag)
+    {
+        typeFlags_ &= ~typeFlag;
+    }
+
+    uint64_t Id() const
+    {
+        return id_;
+    }
+
+    void SetVariable(binder::Variable *variable)
+    {
+        variable_ = variable;
+    }
+
+    binder::Variable *Variable()
+    {
+        return variable_;
+    }
+
+    const binder::Variable *Variable() const
+    {
+        return variable_;
+    }
 
     virtual void ToString(std::stringstream &ss) const = 0;
     virtual void ToStringAsSrc(std::stringstream &ss) const;
     virtual TypeFacts GetTypeFacts() const = 0;
 
-    virtual void Identical(TypeRelation *relation, const Type *other) const;
-    virtual void AssignmentTarget(TypeRelation *relation, const Type *source) const = 0;
-    virtual bool AssignmentSource(TypeRelation *relation, const Type *target) const;
-    virtual void Compare(TypeRelation *relation, const Type *other) const;
+    virtual void Identical(TypeRelation *relation, Type *other);
+    virtual void AssignmentTarget(TypeRelation *relation, Type *source) = 0;
+    virtual bool AssignmentSource(TypeRelation *relation, Type *target);
+    virtual void Compare(TypeRelation *relation, Type *other);
 
     virtual Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) = 0;
 

@@ -15,6 +15,7 @@
 
 #include "tsTypeQuery.h"
 
+#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,10 +32,25 @@ void TSTypeQuery::Dump(ir::AstDumper *dumper) const
 
 void TSTypeQuery::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSTypeQuery::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSTypeQuery::Check(checker::Checker *checker) const
 {
-    ASSERT(exprName_->IsIdentifier() || exprName_->IsTSQualifiedName());
-    return exprName_->Check(checker);
+    GetType(checker);
+    return nullptr;
+}
+
+checker::Type *TSTypeQuery::GetType(checker::Checker *checker) const
+{
+    auto found = checker->NodeCache().find(this);
+
+    if (found != checker->NodeCache().end()) {
+        return found->second;
+    }
+
+    checker::Type *type = exprName_->Check(checker);
+
+    checker->NodeCache().insert({this, type});
+
+    return type;
 }
 
 }  // namespace panda::es2panda::ir

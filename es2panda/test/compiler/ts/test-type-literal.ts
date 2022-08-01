@@ -14,12 +14,15 @@
  */
 
 
-var a: { new(a: number, b: string): number; a: string; b?(a, [c, d], k?) }
+var a: { new(a: number, b: string): number; a: string; b?(a: number, [c, d], k?: string): boolean }
 var b: { a: number, b: number; c?: string }
-var c: { a(a: number, b: string[]), (d: boolean, e): (g: number, l: string) => string }
+var c: { a(a: number, b: string[]): any, (d: boolean, e: [number]): (g: number, l: string) => string }
 var d: { ["foo"]: boolean, [5](a: undefined, b?: any): null }
-var e: { a: number, 5: number; b?: string, 6?: number,
-    readonly c: number, readonly 7: number; readonly d?: string, readonly 8?: number};
+var e: {
+    a: number, 5: number; b?: string, 6?: number,
+    readonly c: number, readonly 7: number; readonly d?: string, readonly 8?: number
+};
 
-var f: {[a:number]:number, readonly (a:number):string};
-var g: {readonly [a:number]:number};
+var f: { [a: number]: number, readonly(a: number): string };
+var g: { readonly [a: number]: number };
+

@@ -38,8 +38,8 @@ class TSTypeParameterDeclaration;
 
 class TSTypeAliasDeclaration : public Statement {
 public:
-    explicit TSTypeAliasDeclaration(Identifier *id, TSTypeParameterDeclaration *typeParams,
-                                    Expression *typeAnnotation, bool declare)
+    explicit TSTypeAliasDeclaration(Identifier *id, TSTypeParameterDeclaration *typeParams, Expression *typeAnnotation,
+                                    bool declare)
         : Statement(AstNodeType::TS_TYPE_ALIAS_DECLARATION),
           id_(id),
           typeParams_(typeParams),
@@ -71,12 +71,9 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
-    checker::Type *InferType(checker::Checker *checker, binder::Variable *bindingVar) const;
+    checker::Type *Check(checker::Checker *checker) const override;
 
 private:
-    checker::Type *CheckTypeAnnotation(checker::Checker *checker, binder::Variable *bindingVar) const;
-
     Identifier *id_;
     TSTypeParameterDeclaration *typeParams_;
     Expression *typeAnnotation_;

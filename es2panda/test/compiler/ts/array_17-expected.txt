@@ -15,22 +15,22 @@
                 "type": "TSBigIntKeyword",
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 8
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 14
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 8
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 16
                 }
               }
@@ -38,11 +38,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 6
               }
             }
@@ -50,11 +50,11 @@
           "init": null,
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 6
             }
           }
@@ -63,11 +63,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 17
         }
       }
@@ -83,11 +83,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 1
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 2
             }
           }
@@ -97,15 +97,14 @@
           "elements": [
             {
               "type": "BigIntLiteral",
-              "value": "",
-              "bigint": "",
+              "value": "5n",
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 6
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 8
                 }
               }
@@ -115,11 +114,11 @@
               "value": false,
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 9
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 14
                 }
               }
@@ -127,33 +126,33 @@
           ],
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 5
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 15
             }
           }
         },
         "loc": {
           "start": {
-            "line": 2,
+            "line": 18,
             "column": 1
           },
           "end": {
-            "line": 2,
+            "line": 18,
             "column": 15
           }
         }
       },
       "loc": {
         "start": {
-          "line": 2,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 16
         }
       }
@@ -165,9 +164,9 @@
       "column": 1
     },
     "end": {
-      "line": 3,
+      "line": 19,
       "column": 1
     }
   }
 }
-TypeError: Type 'boolean' is not assignable to type 'bigint'. [array_17.ts:2:9]
+TypeError: Type 'boolean' is not assignable to type 'bigint'. [array_17.ts:18:9]

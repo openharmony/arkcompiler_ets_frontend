@@ -61,6 +61,11 @@ public:
         return key_;
     }
 
+    Expression *Key()
+    {
+        return key_;
+    }
+
     const TSTypeParameterDeclaration *TypeParams() const
     {
         return typeParams_;
@@ -89,7 +94,7 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *Check(checker::Checker *checker) const override;
 
 private:
     binder::Scope *scope_;

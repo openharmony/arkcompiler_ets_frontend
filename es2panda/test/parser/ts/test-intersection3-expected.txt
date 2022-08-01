@@ -1,1 +1,1 @@
-SyntaxError: Type expected [test-intersection3.ts:1:16]
+SyntaxError: Type expected [test-intersection3.ts:17:16]

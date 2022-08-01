@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_UNION_TYPE_H
 #define ES2PANDA_IR_TS_UNION_TYPE_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -29,10 +29,10 @@ class Type;
 
 namespace panda::es2panda::ir {
 
-class TSUnionType : public Expression {
+class TSUnionType : public TypeNode {
 public:
     explicit TSUnionType(ArenaVector<Expression *> &&types)
-        : Expression(AstNodeType::TS_UNION_TYPE), types_(std::move(types))
+        : TypeNode(AstNodeType::TS_UNION_TYPE), types_(std::move(types))
     {
     }
 
@@ -44,7 +44,8 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *Check(checker::Checker *checker) const override;
+    checker::Type *GetType(checker::Checker *checker) const override;
 
 private:
     ArenaVector<Expression *> types_;

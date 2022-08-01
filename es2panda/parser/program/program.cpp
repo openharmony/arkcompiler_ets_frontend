@@ -22,7 +22,7 @@ namespace panda::es2panda::parser {
 
 Program::Program(ScriptExtension extension)
     : allocator_(std::make_unique<ArenaAllocator>(SpaceType::SPACE_TYPE_COMPILER, nullptr, true)),
-      binder_(allocator_->New<binder::Binder>(this)),
+      binder_(allocator_->New<binder::Binder>(this, extension)),
       sourceCode_(Allocator()),
       sourceFile_(Allocator()),
       extension_(extension)

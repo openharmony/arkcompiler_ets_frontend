@@ -21,6 +21,7 @@
 #include <ir/expressions/literal.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/expressions/unaryExpression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::ir {
 
@@ -75,12 +76,12 @@ static bool IsValidConstAssertionArgument(checker::Checker *checker, const ir::A
     }
 }
 
-checker::Type *TSAsExpression::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSAsExpression::Check(checker::Checker *checker) const
 {
-    // TODO(aszilagyi): params is_const_, is_const_
-    checker::Type *exprType = expression_->Check(checker);
-
     if (isConst_) {
+        auto context = checker::SavedCheckerContext(checker, checker::CheckerStatus::IN_CONST_CONTEXT);
+        checker::Type *exprType = expression_->Check(checker);
+
         if (!IsValidConstAssertionArgument(checker, expression_)) {
             checker->ThrowTypeError(
                 "A 'const' assertions can only be applied to references to enum members, or string, number, "
@@ -91,12 +92,11 @@ checker::Type *TSAsExpression::Check([[maybe_unused]] checker::Checker *checker)
         return exprType;
     }
 
-    exprType = checker->GetBaseTypeOfLiteralType(exprType);
-    if (exprType->IsObjectType() && exprType->AsObjectType()->IsObjectLiteralType()) {
-        exprType->AsObjectType()->RemoveObjectFlag(checker::ObjectType::ObjectFlags::CHECK_EXCESS_PROPS);
-    }
+    auto context = checker::SavedCheckerContext(checker, checker::CheckerStatus::NO_OPTS);
 
-    checker::Type *targetType = typeAnnotation_->Check(checker);
+    typeAnnotation_->Check(checker);
+    checker::Type *exprType = checker->GetBaseTypeOfLiteralType(expression_->Check(checker));
+    checker::Type *targetType = typeAnnotation_->AsTypeNode()->GetType(checker);
 
     checker->IsTypeComparableTo(
         targetType, exprType,

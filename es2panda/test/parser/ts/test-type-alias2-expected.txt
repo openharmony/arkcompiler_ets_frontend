@@ -1,1 +1,1 @@
-SyntaxError: '=' expected [test-type-alias2.ts:1:10]
+SyntaxError: '=' expected [test-type-alias2.ts:17:10]

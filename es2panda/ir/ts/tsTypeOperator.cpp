@@ -40,4 +40,9 @@ checker::Type *TSTypeOperator::Check([[maybe_unused]] checker::Checker *checker)
     return nullptr;
 }
 
+checker::Type *TSTypeOperator::GetType([[maybe_unused]] checker::Checker *checker) const
+{
+    return nullptr;
+}
+
 }  // namespace panda::es2panda::ir

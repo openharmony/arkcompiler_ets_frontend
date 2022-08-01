@@ -17,21 +17,19 @@
 
 namespace panda::es2panda::checker {
 
-BigintType::BigintType() : Type(TypeFlag::BIGINT) {}
-
 void BigintType::ToString(std::stringstream &ss) const
 {
     ss << "bigint";
 }
 
-void BigintType::Identical(TypeRelation *relation, const Type *other) const
+void BigintType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsBigintType()) {
         relation->Result(true);
     }
 }
 
-void BigintType::AssignmentTarget(TypeRelation *relation, const Type *source) const
+void BigintType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (source->IsBigintLiteralType()) {
         relation->Result(true);

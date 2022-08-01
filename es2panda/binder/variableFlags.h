@@ -33,6 +33,8 @@ namespace panda::es2panda::binder {
     _(INTERFACE, InterfaceDecl)          \
     _(ENUM_LITERAL, EnumLiteralDecl)     \
     _(TYPE_PARAMETER, TypeParameterDecl) \
+    _(PROPERTY, PropertyDecl)            \
+    _(METHOD, MethodDecl)                \
     _(ENUM, EnumDecl)
 
 enum class DeclType {
@@ -107,6 +109,8 @@ enum class VariableFlags {
     LOCAL_EXPORT = 1 << 12,
     INFERED_IN_PATTERN = 1 << 13,
     REST_ARG = 1 << 14,
+    NUMERIC_NAME = 1 << 15,
+    TYPE = 1 << 16,
 
     INDEX_LIKE = COMPUTED_INDEX | INDEX_NAME,
 

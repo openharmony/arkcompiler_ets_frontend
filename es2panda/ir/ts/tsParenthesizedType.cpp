@@ -15,6 +15,7 @@
 
 #include "tsParenthesizedType.h"
 
+#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,9 +32,23 @@ void TSParenthesizedType::Dump(ir::AstDumper *dumper) const
 
 void TSParenthesizedType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSParenthesizedType::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSParenthesizedType::Check(checker::Checker *checker) const
 {
+    type_->Check(checker);
     return nullptr;
+}
+
+checker::Type *TSParenthesizedType::GetType(checker::Checker *checker) const
+{
+    auto found = checker->NodeCache().find(this);
+
+    if (found != checker->NodeCache().end()) {
+        return found->second;
+    }
+
+    checker::Type *type = type_->AsTypeNode()->GetType(checker);
+    checker->NodeCache().insert({this, type});
+    return type;
 }
 
 }  // namespace panda::es2panda::ir

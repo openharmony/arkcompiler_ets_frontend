@@ -18,67 +18,105 @@
 
 #include <macros.h>
 
+#include <binder/variable.h>
 #include <typescript/types/elementFlags.h>
 #include <typescript/types/objectType.h>
 
 namespace panda::es2panda::checker {
 
-class TupleTypeIterator {
-public:
-    explicit TupleTypeIterator(TupleType *tuple);
-    ~TupleTypeIterator() = default;
-    NO_COPY_SEMANTIC(TupleTypeIterator);
-    NO_MOVE_SEMANTIC(TupleTypeIterator);
-
-    Type *Next();
-    Type *Current();
-    uint32_t Iter() const;
-
-private:
-    TupleType *tupleType_;
-    uint32_t iter_;
-};
-
 using NamedTupleMemberPool = std::unordered_map<binder::LocalVariable *, util::StringView>;
-using TupleElementFlagPool = std::unordered_map<util::StringView, checker::ElementFlags>;
 
 class TupleType : public ObjectType {
 public:
-    TupleType(ObjectDescriptor *desc, TupleElementFlagPool &&elementFlags, ElementFlags combinedFlags,
-              uint32_t minLength, uint32_t fixedLength, bool readonly);
-    TupleType(ObjectDescriptor *desc, TupleElementFlagPool &&elementFlags, ElementFlags combinedFlags,
-              uint32_t minLength, uint32_t fixedLength, bool readonly, NamedTupleMemberPool &&namedMembers);
-    TupleType();
-    ~TupleType() override;
-    NO_COPY_SEMANTIC(TupleType);
-    NO_MOVE_SEMANTIC(TupleType);
+    explicit TupleType(ArenaAllocator *allocator)
+        : ObjectType(ObjectTypeKind::TUPLE), elementFlags_(allocator->Adapter())
+    {
+    }
 
-    ElementFlags GetElementFlag(const util::StringView &index) const;
-    ElementFlags CombinedFlags() const;
-    uint32_t MinLength() const;
-    uint32_t FixedLength() const;
-    bool HasElementFlag(ElementFlags elementFlag) const;
-    bool HasCombinedFlag(ElementFlags combinedFlag) const;
-    bool IsReadOnly() const;
-    TupleTypeIterator *Iterator();
-    const TupleTypeIterator *Iterator() const;
-    const NamedTupleMemberPool &NamedMembers() const;
-    const util::StringView &FindNamedMemberName(binder::LocalVariable *member) const;
+    TupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&elementFlags, ElementFlags combinedFlags,
+              uint32_t minLength, uint32_t fixedLength, bool readonly)
+        : ObjectType(ObjectType::ObjectTypeKind::TUPLE, desc),
+          elementFlags_(std::move(elementFlags)),
+          combinedFlags_(combinedFlags),
+          minLength_(minLength),
+          fixedLength_(fixedLength),
+          readonly_(readonly)
+    {
+        if (readonly_) {
+            for (auto *it : Properties()) {
+                it->AddFlag(binder::VariableFlags::READONLY);
+            }
+        }
+    }
+
+    TupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&elementFlags, ElementFlags combinedFlags,
+              uint32_t minLength, uint32_t fixedLength, bool readonly, NamedTupleMemberPool &&namedMembers)
+        : ObjectType(ObjectType::ObjectTypeKind::TUPLE, desc),
+          elementFlags_(std::move(elementFlags)),
+          combinedFlags_(combinedFlags),
+          minLength_(minLength),
+          fixedLength_(fixedLength),
+          namedMembers_(std::move(namedMembers)),
+          readonly_(readonly)
+    {
+        if (readonly_) {
+            for (auto *it : Properties()) {
+                it->AddFlag(binder::VariableFlags::READONLY);
+            }
+        }
+    }
+
+    ElementFlags CombinedFlags() const
+    {
+        return combinedFlags_;
+    }
+
+    uint32_t MinLength() const
+    {
+        return minLength_;
+    }
+
+    uint32_t FixedLength() const
+    {
+        return fixedLength_;
+    }
+
+    bool HasCombinedFlag(ElementFlags combinedFlag) const
+    {
+        return (combinedFlags_ & combinedFlag) != 0;
+    }
+
+    bool IsReadOnly() const
+    {
+        return readonly_;
+    }
+
+    const NamedTupleMemberPool &NamedMembers() const
+    {
+        return namedMembers_;
+    }
+
+    const util::StringView &FindNamedMemberName(binder::LocalVariable *member) const
+    {
+        auto res = namedMembers_.find(member);
+        return res->second;
+    }
+
+    Type *ConvertToArrayType(Checker *checker);
 
     void ToString(std::stringstream &ss) const override;
-    void Identical(TypeRelation *relation, const Type *other) const override;
-    void AssignmentTarget(TypeRelation *relation, const Type *source) const override;
+    void Identical(TypeRelation *relation, Type *other) override;
+    void AssignmentTarget(TypeRelation *relation, Type *source) override;
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
 private:
-    TupleElementFlagPool elementFlags_ {};
+    ArenaVector<ElementFlags> elementFlags_;
     ElementFlags combinedFlags_ {};
     uint32_t minLength_ {};
     uint32_t fixedLength_ {};
     NamedTupleMemberPool namedMembers_ {};
     bool readonly_ {};
-    TupleTypeIterator *iterator_ {nullptr};
 };
 
 }  // namespace panda::es2panda::checker

@@ -68,6 +68,11 @@ public:
         return typeAnnotation_;
     }
 
+    Expression *TypeAnnotation()
+    {
+        return typeAnnotation_;
+    }
+
     const util::StringView &Name() const
     {
         return name_;
@@ -117,27 +122,16 @@ public:
         typeAnnotation_ = typeAnnotation;
     }
 
-    binder::Variable *Variable() const
-    {
-        return variable_;
-    }
-
-    void SetVariable(binder::Variable *variable)
-    {
-        variable_ = variable;
-    }
-
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    void Compile(compiler::PandaGen *pg) const override;
+    checker::Type *Check(checker::Checker *checker) const override;
 
 private:
     util::StringView name_;
     Expression *typeAnnotation_ {};
     IdentifierFlags flags_ {IdentifierFlags::NONE};
     ArenaVector<Decorator *> decorators_;
-    binder::Variable *variable_ {nullptr};
 };
 
 }  // namespace panda::es2panda::ir

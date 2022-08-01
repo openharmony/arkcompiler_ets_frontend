@@ -14,6 +14,6 @@
  */
 
 
-var a: { new(a: number, b: string), (a: number, b: string) };
-var b: { new(a: number, b: string), (a: string, b: string) }
+var a: { new(a: number, b: string): number, (a: number, b: string): string };
+var b: { new(a: number, b: string): number, (a: string, b: string): string }
 a = b;

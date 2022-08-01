@@ -20,6 +20,7 @@
 #include <typescript/types/globalTypesHolder.h>
 #include <typescript/types/typeRelation.h>
 #include <typescript/types/types.h>
+#include <typescript/core/checkerContext.h>
 #include <macros.h>
 #include <util/enumbitops.h>
 #include <util/ustring.h>
@@ -98,6 +99,7 @@ class TSSignatureDeclaration;
 class TSPropertySignature;
 class TSMethodSignature;
 class ChainExpression;
+class VariableDeclarator;
 
 enum class AstNodeType;
 }  // namespace panda::es2panda::ir
@@ -111,69 +113,7 @@ using InterfacePropertyMap = std::unordered_map<util::StringView, std::pair<bind
 using TypeOrNode = std::variant<Type *, const ir::AstNode *>;
 using IndexInfoTypePair = std::pair<Type *, Type *>;
 using PropertyMap = std::unordered_map<util::StringView, binder::LocalVariable *>;
-
-enum class DestructuringType {
-    NO_DESTRUCTURING,
-    ARRAY_DESTRUCTURING,
-    OBJECT_DESTRUCTURING,
-};
-
-class ObjectLiteralElaborationData {
-public:
-    ObjectLiteralElaborationData() = default;
-    ~ObjectLiteralElaborationData() = default;
-    NO_COPY_SEMANTIC(ObjectLiteralElaborationData);
-    NO_MOVE_SEMANTIC(ObjectLiteralElaborationData);
-
-    ObjectDescriptor *desc {};
-    std::vector<Type *> stringIndexTypes {};
-    Type *numberInfosType {};
-    Type *stringInfosType {};
-    std::vector<const ir::SpreadElement *> spreads {};
-    std::unordered_map<uint32_t, ObjectType *> potentialObjectTypes {};
-};
-
-class ObjectLiteralPropertyInfo {
-public:
-    ObjectLiteralPropertyInfo() = default;
-    ~ObjectLiteralPropertyInfo() = default;
-    NO_COPY_SEMANTIC(ObjectLiteralPropertyInfo);
-    DEFAULT_MOVE_SEMANTIC(ObjectLiteralPropertyInfo);
-
-    util::StringView propName {};
-    Type *propType {};
-    bool handleNextProp {};
-};
-
-class FunctionParameterInfo {
-public:
-    FunctionParameterInfo() = default;
-    ~FunctionParameterInfo() = default;
-    NO_COPY_SEMANTIC(FunctionParameterInfo);
-    DEFAULT_MOVE_SEMANTIC(FunctionParameterInfo);
-
-    const ir::Expression *typeAnnotation {};
-    const ir::Expression *initNode {};
-    const ir::Expression *bindingNode {};
-    Type *initType {};
-    Type *restType {};
-    DestructuringType destructuringType {DestructuringType::NO_DESTRUCTURING};
-    bool optionalParam {};
-    util::StringView paramName {};
-};
-
-enum class CheckerStatus {
-    NO_OPTS = 0,
-    FORCE_TUPLE = 1 << 0,
-};
-
-DEFINE_BITOPS(CheckerStatus)
-
-enum class VariableBindingContext {
-    REGULAR,
-    FOR_IN,
-    FOR_OF,
-};
+using ArgRange = std::pair<uint32_t, uint32_t>;
 
 class Checker {
 public:
@@ -181,8 +121,6 @@ public:
     ~Checker() = default;
     NO_COPY_SEMANTIC(Checker);
     NO_MOVE_SEMANTIC(Checker);
-
-    void StartChecker();
 
     ArenaAllocator *Allocator() const
     {
@@ -194,66 +132,216 @@ public:
         return binder_;
     }
 
-    binder::Scope *Scope() const;
+    binder::Scope *Scope() const
+    {
+        return scope_;
+    }
+
+    Type *GlobalNumberType()
+    {
+        return globalTypes_->GlobalNumberType();
+    }
+
+    Type *GlobalAnyType()
+    {
+        return globalTypes_->GlobalAnyType();
+    }
+
+    Type *GlobalStringType()
+    {
+        return globalTypes_->GlobalStringType();
+    }
+
+    Type *GlobalBooleanType()
+    {
+        return globalTypes_->GlobalBooleanType();
+    }
+
+    Type *GlobalVoidType()
+    {
+        return globalTypes_->GlobalVoidType();
+    }
+
+    Type *GlobalNullType()
+    {
+        return globalTypes_->GlobalNullType();
+    }
+
+    Type *GlobalUndefinedType()
+    {
+        return globalTypes_->GlobalUndefinedType();
+    }
+
+    Type *GlobalUnknownType()
+    {
+        return globalTypes_->GlobalUnknownType();
+    }
+
+    Type *GlobalNeverType()
+    {
+        return globalTypes_->GlobalNeverType();
+    }
+
+    Type *GlobalNonPrimitiveType()
+    {
+        return globalTypes_->GlobalNonPrimitiveType();
+    }
+
+    Type *GlobalBigintType()
+    {
+        return globalTypes_->GlobalBigintType();
+    }
+
+    Type *GlobalFalseType()
+    {
+        return globalTypes_->GlobalFalseType();
+    }
+
+    Type *GlobalTrueType()
+    {
+        return globalTypes_->GlobalTrueType();
+    }
+
+    Type *GlobalNumberOrBigintType()
+    {
+        return globalTypes_->GlobalNumberOrBigintType();
+    }
+
+    Type *GlobalStringOrNumberType()
+    {
+        return globalTypes_->GlobalStringOrNumberType();
+    }
+
+    Type *GlobalZeroType()
+    {
+        return globalTypes_->GlobalZeroType();
+    }
+
+    Type *GlobalEmptyStringType()
+    {
+        return globalTypes_->GlobalEmptyStringType();
+    }
+
+    Type *GlobalZeroBigintType()
+    {
+        return globalTypes_->GlobalZeroBigintType();
+    }
+
+    Type *GlobalPrimitiveType()
+    {
+        return globalTypes_->GlobalPrimitiveType();
+    }
+
+    Type *GlobalEmptyTupleType()
+    {
+        return globalTypes_->GlobalEmptyTupleType();
+    }
+
+    Type *GlobalEmptyObjectType()
+    {
+        return globalTypes_->GlobalEmptyObjectType();
+    }
+
+    Type *GlobalResolvingReturnType()
+    {
+        return globalTypes_->GlobalResolvingReturnType();
+    }
+
+    Type *GlobalErrorType()
+    {
+        return globalTypes_->GlobalErrorType();
+    }
+
+    CheckerContext Context()
+    {
+        return context_;
+    }
+
+    bool HasStatus(CheckerStatus status)
+    {
+        return (context_.Status() & status) != 0;
+    }
+
+    void RemoveStatus(CheckerStatus status)
+    {
+        context_.Status() &= ~status;
+    }
+
+    void AddStatus(CheckerStatus status)
+    {
+        context_.Status() |= status;
+    }
+
+    NumberLiteralPool &NumberLiteralMap()
+    {
+        return numberLiteralMap_;
+    }
+
+    StringLiteralPool &StringLiteralMap()
+    {
+        return stringLiteralMap_;
+    }
+
+    StringLiteralPool &BigintLiteralMap()
+    {
+        return bigintLiteralMap_;
+    }
+
+    TypeRelation *Relation()
+    {
+        return relation_;
+    }
+
+    RelationHolder &IdenticalResults()
+    {
+        return identicalResults_;
+    }
+
+    RelationHolder &AssignableResults()
+    {
+        return assignableResults_;
+    }
+
+    RelationHolder &ComparableResults()
+    {
+        return comparableResults_;
+    }
+
+    std::unordered_set<const void *> &TypeStack()
+    {
+        return typeStack_;
+    }
+
+    std::unordered_map<const ir::AstNode *, Type *> &NodeCache()
+    {
+        return nodeCache_;
+    }
+
+    void StartChecker();
+
+    Type *CheckTypeCached(const ir::Expression *expr);
 
     [[noreturn]] void ThrowTypeError(std::string_view message, const lexer::SourcePosition &pos);
     [[noreturn]] void ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list,
                                      const lexer::SourcePosition &pos);
 
-    Type *GlobalNumberType();
-    Type *GlobalAnyType();
-    Type *GlobalStringType();
-    Type *GlobalBooleanType();
-    Type *GlobalVoidType();
-    Type *GlobalNullType();
-    Type *GlobalUndefinedType();
-    Type *GlobalUnknownType();
-    Type *GlobalNeverType();
-    Type *GlobalNonPrimitiveType();
-    Type *GlobalBigintType();
-    Type *GlobalFalseType();
-    Type *GlobalTrueType();
-    Type *GlobalNumberOrBigintType();
-    Type *GlobalStringOrNumberType();
-    Type *GlobalZeroType();
-    Type *GlobalEmptyStringType();
-    Type *GlobalZeroBigintType();
-    Type *GlobalPrimitiveType();
-    Type *GlobalEmptyTupleType();
-    Type *GlobalEmptyObjectType();
-
-    NumberLiteralPool &NumberLiteralMap();
-    StringLiteralPool &StringLiteralMap();
-    StringLiteralPool &BigintLiteralMap();
-
-    TypeRelation *Relation();
-
-    RelationHolder &IdenticalResults();
-    RelationHolder &AssignableResults();
-    RelationHolder &ComparableResults();
-
-    std::unordered_set<const ir::AstNode *> &TypeStack();
-    std::unordered_map<const ir::AstNode *, Type *> &NodeCache();
-    Type *CheckTypeCached(const ir::Expression *expr);
-
-    CheckerStatus Status();
-
     // Util
     static bool InAssignment(const ir::AstNode *node);
     static bool IsAssignmentOperator(lexer::TokenType op);
-    Type *GetBaseTypeOfLiteralType(Type *type);
     static bool IsLiteralType(const Type *type);
     static const ir::AstNode *FindAncestorGivenByType(const ir::AstNode *node, ir::AstNodeType type);
-    void CheckNonNullType(Type *type, lexer::SourcePosition lineInfo);
+    static const ir::AstNode *FindAncestorUntilGivenType(const ir::AstNode *node, ir::AstNodeType stop);
     static bool MaybeTypeOfKind(const Type *type, TypeFlag flags);
     static bool MaybeTypeOfKind(const Type *type, ObjectType::ObjectTypeKind kind);
     static bool IsConstantMemberAccess(const ir::Expression *expr);
     static bool IsStringLike(const ir::Expression *expr);
-    void CheckTruthinessOfType(Type *type, lexer::SourcePosition lineInfo);
-
-    // Helpers
     static const ir::TSQualifiedName *ResolveLeftMostQualifiedName(const ir::TSQualifiedName *qualifiedName);
     static const ir::MemberExpression *ResolveLeftMostMemberExpression(const ir::MemberExpression *expr);
+
+    // Helpers
+    void CheckTruthinessOfType(Type *type, lexer::SourcePosition lineInfo);
+    Type *CheckNonNullType(Type *type, lexer::SourcePosition lineInfo);
+    Type *GetBaseTypeOfLiteralType(Type *type);
     void CheckReferenceExpression(const ir::Expression *expr, const char *invalidReferenceMsg,
                                   const char *invalidOptionalChainMsg);
     void CheckTestingKnownTruthyCallableOrAwaitableType(const ir::Expression *condExpr, Type *type,
@@ -264,29 +352,17 @@ public:
     bool IsVariableUsedInConditionBody(const ir::AstNode *parent, binder::Variable *searchVar);
     bool FindVariableInBinaryExpressionChain(const ir::AstNode *parent, binder::Variable *searchVar);
     bool IsVariableUsedInBinaryExpressionChain(const ir::AstNode *parent, binder::Variable *searchVar);
-    Type *CreateTupleTypeFromEveryArrayExpression(const ir::Expression *expr);
     [[noreturn]] void ThrowBinaryLikeError(lexer::TokenType op, Type *leftType, Type *rightType,
                                            lexer::SourcePosition lineInfo);
-    [[noreturn]] void ThrowAssignmentError(Type *leftType, Type *rightType, lexer::SourcePosition lineInfo,
+    [[noreturn]] void ThrowAssignmentError(Type *source, Type *target, lexer::SourcePosition lineInfo,
                                            bool isAsSrcLeftType = false);
-
-    // Generics
-    void CheckTypeParametersNotReferenced(const ir::AstNode *parent, const ir::TSTypeParameterDeclaration *typeParams,
-                                          size_t index);
-    std::vector<binder::Variable *> CheckTypeParameters(const ir::TSTypeParameterDeclaration *typeParams);
-    Type *InstantiateGenericTypeAlias(binder::Variable *bindingVar, const ir::TSTypeParameterDeclaration *decl,
-                                      const ir::TSTypeParameterInstantiation *typeParams,
-                                      const lexer::SourcePosition &locInfo);
-    Type *InstantiateGenericInterface(binder::Variable *bindingVar, const binder::Decl *decl,
-                                      const ir::TSTypeParameterInstantiation *typeParams,
-                                      const lexer::SourcePosition &locInfo);
-    void ValidateTypeParameterInstantiation(size_t typeArgumentCount, size_t minTypeArgumentCount,
-                                            size_t numOfTypeArguments, const util::StringView &name,
-                                            const lexer::SourcePosition &locInfo);
-    bool CheckTypeParametersAreIdentical(const std::pair<std::vector<binder::Variable *>, size_t> &collectedTypeParams,
-                                         std::vector<binder::Variable *> &currentTypeParams) const;
-    std::pair<std::vector<binder::Variable *>, size_t> CollectTypeParametersFromDeclarations(
-        const ArenaVector<ir::TSInterfaceDeclaration *> &declarations);
+    void ElaborateElementwise(Type *targetType, const ir::Expression *sourceNode, const lexer::SourcePosition &pos);
+    void InferSimpleVariableDeclaratorType(const ir::VariableDeclarator *declarator);
+    Type *GetTypeOfVariable(binder::Variable *var);
+    Type *GetUnaryResultType(Type *operandType);
+    Type *GetTypeFromClassOrInterfaceReference(const ir::TSTypeReference *node, binder::Variable *var);
+    Type *GetTypeFromTypeAliasReference(const ir::TSTypeReference *node, binder::Variable *var);
+    Type *GetTypeReferenceType(const ir::TSTypeReference *node, binder::Variable *var);
 
     // Type creation
     Type *CreateNumberLiteralType(double value);
@@ -294,163 +370,84 @@ public:
     Type *CreateStringLiteralType(const util::StringView &str);
     Type *CreateFunctionTypeWithSignature(Signature *callSignature);
     Type *CreateConstructorTypeWithSignature(Signature *constructSignature);
-    Type *CreateTupleType(ObjectDescriptor *desc, TupleElementFlagPool &&elementFlags, ElementFlags combinedFlags,
+    Type *CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&elementFlags, ElementFlags combinedFlags,
                           uint32_t minLength, uint32_t fixedLength, bool readonly);
-    Type *CreateTupleType(ObjectDescriptor *desc, TupleElementFlagPool &&elementFlags, ElementFlags combinedFlags,
+    Type *CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&elementFlags, ElementFlags combinedFlags,
                           uint32_t minLength, uint32_t fixedLength, bool readonly, NamedTupleMemberPool &&namedMembers);
-    Type *CreateUnionType(std::vector<Type *> &&constituentTypes);
     Type *CreateUnionType(std::initializer_list<Type *> constituentTypes);
+    Type *CreateUnionType(ArenaVector<Type *> &&constituentTypes);
+    Type *CreateUnionType(ArenaVector<Type *> &constituentTypes);
+    Type *CreateObjectTypeWithCallSignature(Signature *callSignature);
+    Type *CreateObjectTypeWithConstructSignature(Signature *constructSignature);
 
     // Object
-    ObjectLiteralPropertyInfo HandleObjectLiteralProperty(const ir::Property *prop, ObjectDescriptor *desc,
-                                                          std::vector<Type *> *stringIndexTypes, bool readonly = false);
-    void HandleSpreadElement(const ir::SpreadElement *spreadElem, ObjectDescriptor *desc, lexer::SourcePosition locInfo,
-                             bool readonly = false);
-    Type *CollectStringIndexInfoTypes(const ObjectDescriptor *desc, const std::vector<Type *> &stringIndexTypes);
-    binder::Variable *ResolveNonComputedObjectProperty(const ir::MemberExpression *expr);
-    util::StringView ToPropertyName(const ir::Expression *expr, TypeFlag propNameFlags, bool computed = false,
-                                    bool *hasName = nullptr, Type **exprType = nullptr);
-    void PrefetchTypeLiteralProperties(const ir::Expression *current, ObjectDescriptor *desc);
-    void CheckTsTypeLiteralOrInterfaceMember(const ir::Expression *current, ObjectDescriptor *desc);
-    Type *CheckIndexInfoProperty(IndexInfo *info, Type *objType, lexer::SourcePosition loc);
-    Type *ResolveBasePropForObject(ObjectType *objType, util::StringView &name, Type *propNameType, bool isComputed,
-                                   bool inAssignment, lexer::SourcePosition propLoc, lexer::SourcePosition exprLoc);
-    Type *ResolveBaseProp(Type *baseType, const ir::Expression *prop, bool isComputed, lexer::SourcePosition exprLoc);
-    binder::Variable *ResolveObjectProperty(const ir::MemberExpression *expr);
-    Type *CheckTsPropertySignature(const ir::TSPropertySignature *propSignature, binder::LocalVariable *savedProp);
-    Type *CheckTsMethodSignature(const ir::TSMethodSignature *methodSignature);
-    void CheckTsIndexSignature(const ir::TSIndexSignature *indexSignature, ObjectDescriptor *desc);
-    void CheckTsSignatureDeclaration(const ir::TSSignatureDeclaration *signatureNode, ObjectDescriptor *desc);
-    void CheckTsPropertyOrMethodSignature(const ir::Expression *current, ObjectDescriptor *desc);
-    void HandleNumberIndexInfo(ObjectDescriptor *desc, Type *indexType, bool readonly = false);
-    util::StringView HandleComputedPropertyName(const ir::Expression *propKey, ObjectDescriptor *desc, Type *propType,
-                                                std::vector<Type *> *stringIndexTypes, bool *handleNextProp,
-                                                lexer::SourcePosition locInfo, bool readonly = false);
-    void CheckIndexConstraints(Type *type) const;
+    void ResolvePropertiesOfObjectType(ObjectType *type, const ir::Expression *member,
+                                       ArenaVector<const ir::TSSignatureDeclaration *> &signatureDeclarations,
+                                       ArenaVector<const ir::TSIndexSignature *> &indexDeclarations, bool isInterface);
+    void ResolveSignaturesOfObjectType(ObjectType *type,
+                                       ArenaVector<const ir::TSSignatureDeclaration *> &signatureDeclarations);
+    void ResolveIndexInfosOfObjectType(ObjectType *type, ArenaVector<const ir::TSIndexSignature *> &indexDeclarations);
+    void ResolveDeclaredMembers(InterfaceType *type);
+    bool ValidateInterfaceMemberRedeclaration(ObjectType *type, binder::Variable *prop,
+                                              const lexer::SourcePosition &locInfo);
+    binder::Variable *GetPropertyOfType(Type *type, const util::StringView &name, bool getPartial = false,
+                                        binder::VariableFlags propagateFlags = binder::VariableFlags::NONE);
+    binder::Variable *GetPropertyOfUnionType(UnionType *type, const util::StringView &name, bool getPartial,
+                                             binder::VariableFlags propagateFlags);
+    void CheckIndexConstraints(Type *type);
+    void ResolveStructuredTypeMembers(Type *type);
+    void ResolveUnionTypeMembers(UnionType *type);
+    void ResolveObjectTypeMembers(ObjectType *type);
+    void ResolveInterfaceOrClassTypeMembers(InterfaceType *type);
+    Type *CheckComputedPropertyName(const ir::Expression *key);
+    Type *GetPropertyTypeForIndexType(Type *type, Type *indexType);
+    IndexInfo *GetApplicableIndexInfo(Type *type, Type *indexType);
+    ArenaVector<ObjectType *> GetBaseTypes(InterfaceType *type);
 
     // Function
-    Signature *HandleFunctionReturn(const ir::ScriptFunction *func, SignatureInfo *signatureInfo,
-                                    binder::Variable *funcVar = nullptr);
-    Type *CreateTypeForPatternParameter(const ir::Expression *patternNode, const ir::Expression *initNode);
-    void CreateTypeForObjectPatternParameter(ObjectType *patternType, const ir::Expression *patternNode,
-                                             const ir::Expression *initNode);
-    void CheckFunctionParameterDeclaration(const ArenaVector<ir::Expression *> &params, SignatureInfo *signatureInfo);
+    Type *HandleFunctionReturn(const ir::ScriptFunction *func);
+    void CheckFunctionParameterDeclarations(const ArenaVector<ir::Expression *> &params, SignatureInfo *signatureInfo);
+    std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> CheckFunctionParameter(
+        const ir::Expression *param, SignatureInfo *signatureInfo);
+    std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> CheckFunctionIdentifierParameter(
+        const ir::Identifier *param);
+    std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> CheckFunctionAssignmentPatternParameter(
+        const ir::AssignmentExpression *param);
+    std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> CheckFunctionRestParameter(
+        const ir::SpreadElement *param, SignatureInfo *signatureInfo);
+    std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> CheckFunctionArrayPatternParameter(
+        const ir::ArrayExpression *param);
+    std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> CheckFunctionObjectPatternParameter(
+        const ir::ObjectExpression *param);
     void InferFunctionDeclarationType(const binder::FunctionDecl *decl, binder::Variable *funcVar);
-    void CollectTypesFromReturnStatements(const ir::AstNode *parent, std::vector<Type *> &returnTypes);
+    void CollectTypesFromReturnStatements(const ir::AstNode *parent, ArenaVector<Type *> *returnTypes);
     void CheckAllCodePathsInNonVoidFunctionReturnOrThrow(const ir::ScriptFunction *func, lexer::SourcePosition lineInfo,
                                                          const char *errMsg);
-    FunctionParameterInfo GetFunctionParameterInfo(ir::Expression *expr);
-    Type *GetParamTypeFromParamInfo(const FunctionParameterInfo &paramInfo, Type *annotationType, Type *patternType);
-
-    // Destructuring
-    void HandleVariableDeclarationWithContext(const ir::Expression *id, Type *inferedType,
-                                              VariableBindingContext context, DestructuringType destructuringType,
-                                              bool annotationTypeUsed, bool inAssignment = false);
-    void HandleIdentifierDeclarationWithContext(const ir::Identifier *identNode, Type *inferedType,
-                                                DestructuringType destructuringType, bool annotationTypeUsed,
-                                                bool inAssignment);
-    void HandlePropertyDeclarationWithContext(const ir::Property *prop, Type *inferedType,
-                                              VariableBindingContext context, DestructuringType destructuringType,
-                                              bool annotationTypeUsed, bool inAssignment);
-    void HandleAssignmentPatternWithContext(const ir::AssignmentExpression *assignmentPattern, Type *inferedType,
-                                            VariableBindingContext context, DestructuringType destructuringType,
-                                            bool annotationTypeUsed, bool inAssignment);
-    void HandleArrayPatternWithContext(const ir::ArrayExpression *arrayPattern, Type *inferedType,
-                                       VariableBindingContext context, bool annotationTypeUsed, bool inAssignment);
-    void HandleRestElementWithContext(const ir::SpreadElement *restElement, Type *inferedType,
-                                      VariableBindingContext context, DestructuringType destructuringType,
-                                      bool annotationTypeUsed, bool inAssignment);
-    void ValidateTypeAnnotationAndInitType(const ir::Expression *initNode, Type **initType, const Type *annotationType,
-                                           Type *patternType, lexer::SourcePosition locInfo);
-    Type *GetVariableType(const util::StringView &name, Type *inferedType, Type *initType, binder::Variable *resultVar,
-                          DestructuringType destructuringType, const lexer::SourcePosition &locInfo,
-                          bool annotationTypeUsed, bool inAssignment = false);
-    Type *GetVariableTypeInObjectDestructuring(const util::StringView &name, Type *inferedType, Type *initType,
-                                               bool annotationTypeUsed, const lexer::SourcePosition &locInfo,
-                                               bool inAssignment = false);
-    Type *GetVariableTypeInObjectDestructuringWithTargetUnion(const util::StringView &name, UnionType *inferedType,
-                                                              Type *initType, bool annotationTypeUsed,
-                                                              const lexer::SourcePosition &locInfo,
-                                                              bool inAssignment = false);
-    Type *GetVariableTypeInArrayDestructuring(Type *inferedType, Type *initType, const lexer::SourcePosition &locInfo,
-                                              bool inAssignment);
-    Type *GetVariableTypeInArrayDestructuringWithTargetUnion(UnionType *inferedType, Type *initType,
-                                                             const lexer::SourcePosition &locInfo, bool inAssignment);
-    Type *GetRestElementType(Type *inferedType, binder::Variable *resultVar, DestructuringType destructuringType,
-                             const lexer::SourcePosition &locInfo, bool inAssignment = false);
-    Type *GetRestElementTypeInArrayDestructuring(Type *inferedType, const lexer::SourcePosition &locInfo);
-    Type *GetRestElementTypeInObjectDestructuring(Type *inferedType, const lexer::SourcePosition &locInfo);
-    Type *GetNextInferedTypeForArrayPattern(Type *inferedType);
-    Type *CreateTupleTypeForRest(TupleTypeIterator *iterator);
-    Type *CreateArrayTypeForRest(UnionType *inferedType);
-    Type *CreateObjectTypeForRest(ObjectType *objType);
-    Type *CreateInitializerTypeForPattern(const Type *patternType, const ir::Expression *initNode,
-                                          bool validateCurrent = true);
-    Type *CreateInitializerTypeForObjectPattern(const ObjectType *patternType, const ir::ObjectExpression *initNode,
-                                                bool validateCurrent);
-    Type *CreateInitializerTypeForArrayPattern(const TupleType *patternType, const ir::ArrayExpression *initNode,
-                                               bool validateCurrent);
-    static bool ShouldCreatePropertyValueName(const ir::Expression *propValue);
-    void CreatePatternName(const ir::AstNode *node, std::stringstream &ss) const;
-
-    // Type elaboration
-    bool ElaborateElementwise(TypeOrNode source, const Type *targetType, lexer::SourcePosition locInfo);
-    bool ElaborateObjectLiteral(TypeOrNode source, const Type *targetType, lexer::SourcePosition locInfo);
-    bool ElaborateObjectLiteralWithNode(const ir::ObjectExpression *sourceNode, const Type *targetType,
-                                        ObjectLiteralElaborationData *elaborationData);
-    void ElaborateObjectLiteralWithType(const ObjectLiteralType *sourceType, const Type *targetType,
-                                        const std::unordered_map<uint32_t, ObjectType *> &potentialObjectTypes,
-                                        lexer::SourcePosition locInfo);
-    bool ElaborateArrayLiteral(TypeOrNode source, const Type *targetType, lexer::SourcePosition locInfo);
-    void ElaborateArrayLiteralWithNode(const ir::ArrayExpression *sourceNode, const Type *targetType,
-                                       std::unordered_map<uint32_t, Type *> *potentialTypes,
-                                       lexer::SourcePosition locInfo);
-    void ElaborateArrayLiteralWithType(const TupleType *sourceType, const Type *targetType,
-                                       const std::unordered_map<uint32_t, Type *> &potentialTypes);
-    void GetPotentialTypesAndIndexInfosForElaboration(const Type *targetType,
-                                                      ObjectLiteralElaborationData *elaborationData);
-    static IndexInfoTypePair GetIndexInfoTypePair(const ObjectType *type);
-    void CheckTargetTupleLengthConstraints(const Type *targetType, const ir::ArrayExpression *sourceNode,
-                                           std::unordered_map<uint32_t, Type *> *potentialTypes,
-                                           const lexer::SourcePosition &locInfo);
-    std::vector<Type *> CollectTargetTypesForArrayElaborationWithNodeFromTargetUnion(
-        std::unordered_map<uint32_t, Type *> *potentialTypes, const ir::Expression *currentSourceElement,
-        uint32_t tupleIdx);
-    static std::vector<Type *> CollectTargetTypesForArrayElaborationWithTypeFromTargetUnion(
-        const std::unordered_map<uint32_t, Type *> &potentialTypes, uint32_t tupleIdx);
-    static bool CheckIfExcessTypeCheckNeededForObjectElaboration(const Type *targetType,
-                                                                 ObjectLiteralElaborationData *elaborationData);
-    Type *GetTargetPropertyTypeFromTargetForElaborationWithNode(const Type *targetType,
-                                                                ObjectLiteralElaborationData *elaborationData,
-                                                                const util::StringView &propName,
-                                                                const ir::Expression *propValue);
-    Type *GetTargetPropertyTypeFromTargetForElaborationWithType(
-        const Type *targetType, const std::unordered_map<uint32_t, ObjectType *> &potentialObjectTypes,
-        const util::StringView &propName);
-    Type *GetindexInfoTypeOrThrowError(const Type *targetType, ObjectLiteralElaborationData *elaborationData,
-                                       const util::StringView &propName, bool computed, bool numberLiteralName,
-                                       lexer::SourcePosition locInfo);
-    Type *GetUnaryResultType(Type *operandType);
-    Type *InferVariableDeclarationType(const ir::Identifier *decl);
+    void CreatePatternParameterName(const ir::AstNode *node, std::stringstream &ss);
+    void ThrowReturnTypeCircularityError(const ir::ScriptFunction *func);
+    ArgRange GetArgRange(const ArenaVector<Signature *> &signatures, ArenaVector<Signature *> *potentialSignatures,
+                         uint32_t callArgsSize, bool *haveSignatureWithRest);
+    bool CallMatchesSignature(const ArenaVector<ir::Expression *> &args, Signature *signature, bool throwError);
+    Type *resolveCallOrNewExpression(const ArenaVector<Signature *> &signatures,
+                                     ArenaVector<ir::Expression *> arguments, const lexer::SourcePosition &errPos);
+    Type *CreateParameterTypeForArrayAssignmentPattern(const ir::ArrayExpression *arrayPattern, Type *inferedType);
+    Type *CreateParameterTypeForObjectAssignmentPattern(const ir::ObjectExpression *objectPattern, Type *inferedType);
 
     // Type relation
-    bool IsTypeIdenticalTo(const Type *source, const Type *target) const;
-    bool IsTypeIdenticalTo(const Type *source, const Type *target, const std::string &errMsg,
-                           const lexer::SourcePosition &errPos) const;
-    bool IsTypeIdenticalTo(const Type *source, const Type *target, std::initializer_list<TypeErrorMessageElement> list,
-                           const lexer::SourcePosition &errPos) const;
-    bool IsTypeAssignableTo(const Type *source, const Type *target) const;
-    bool IsTypeAssignableTo(const Type *source, const Type *target, const std::string &errMsg,
-                            const lexer::SourcePosition &errPos) const;
-    bool IsTypeAssignableTo(const Type *source, const Type *target, std::initializer_list<TypeErrorMessageElement> list,
-                            const lexer::SourcePosition &errPos) const;
-    bool IsTypeComparableTo(const Type *source, const Type *target) const;
-    bool IsTypeComparableTo(const Type *source, const Type *target, const std::string &errMsg,
-                            const lexer::SourcePosition &errPos) const;
-    bool IsTypeComparableTo(const Type *source, const Type *target, std::initializer_list<TypeErrorMessageElement> list,
-                            const lexer::SourcePosition &errPos) const;
-    bool AreTypesComparable(const Type *source, const Type *target) const;
-    bool IsTypeEqualityComparableTo(const Type *source, const Type *target) const;
+    bool IsTypeIdenticalTo(Type *source, Type *target);
+    bool IsTypeIdenticalTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
+    bool IsTypeIdenticalTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
+                           const lexer::SourcePosition &errPos);
+    bool IsTypeAssignableTo(Type *source, Type *target);
+    bool IsTypeAssignableTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
+    bool IsTypeAssignableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
+                            const lexer::SourcePosition &errPos);
+    bool IsTypeComparableTo(Type *source, Type *target);
+    bool IsTypeComparableTo(Type *source, Type *target, const std::string &errMsg, const lexer::SourcePosition &errPos);
+    bool IsTypeComparableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
+                            const lexer::SourcePosition &errPos);
+    bool AreTypesComparable(Type *source, Type *target);
+    bool IsTypeEqualityComparableTo(Type *source, Type *target);
     bool IsAllTypesAssignableTo(Type *source, Type *target);
 
     // Binary like expression
@@ -469,12 +466,14 @@ public:
     void CheckAssignmentOperator(lexer::TokenType op, const ir::Expression *leftExpr, Type *leftType, Type *valueType);
 
     friend class ScopeContext;
+    friend class SavedCheckerContext;
 
 private:
     ArenaAllocator *allocator_;
     binder::Binder *binder_;
     const ir::BlockStatement *rootNode_;
     binder::Scope *scope_;
+    CheckerContext context_;
     GlobalTypesHolder *globalTypes_;
 
     NumberLiteralPool numberLiteralMap_;
@@ -487,11 +486,9 @@ private:
     RelationHolder assignableResults_;
     RelationHolder comparableResults_;
 
-    std::unordered_set<const ir::AstNode *> typeStack_;
+    std::unordered_set<const void *> typeStack_;
     std::unordered_map<const ir::AstNode *, Type *> nodeCache_;
     std::vector<binder::Scope *> scopeStack_;
-
-    CheckerStatus status_;
 };
 
 class ScopeContext {
@@ -512,6 +509,27 @@ public:
 private:
     Checker *checker_;
     binder::Scope *prevScope_;
+};
+
+class SavedCheckerContext {
+public:
+    explicit SavedCheckerContext(Checker *checker, CheckerStatus newStatus)
+        : checker_(checker), prev_(checker->context_)
+    {
+        checker_->context_ = CheckerContext(newStatus);
+    }
+
+    NO_COPY_SEMANTIC(SavedCheckerContext);
+    DEFAULT_MOVE_SEMANTIC(SavedCheckerContext);
+
+    ~SavedCheckerContext()
+    {
+        checker_->context_ = prev_;
+    }
+
+private:
+    Checker *checker_;
+    CheckerContext prev_;
 };
 
 }  // namespace panda::es2panda::checker

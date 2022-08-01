@@ -33,7 +33,7 @@ void LabelledStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "LabelledStatement"}, {"label", ident_}, {"body", body_}});
 }
 
-void LabelledStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void LabelledStatement::Compile(compiler::PandaGen *pg) const
 {
     compiler::LabelContext labelCtx(pg, this);
     body_->Compile(pg);

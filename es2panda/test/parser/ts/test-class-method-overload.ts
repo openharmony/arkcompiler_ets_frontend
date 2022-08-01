@@ -15,7 +15,6 @@
 
 
 declare class Class1 {
-    constructor();
     constructor(a: number);
     a();
     a();

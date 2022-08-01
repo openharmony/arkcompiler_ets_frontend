@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_LITERAL_TYPE_H
 #define ES2PANDA_IR_TS_LITERAL_TYPE_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -29,9 +29,9 @@ class Type;
 
 namespace panda::es2panda::ir {
 
-class TSLiteralType : public Expression {
+class TSLiteralType : public TypeNode {
 public:
-    explicit TSLiteralType(Expression *literal) : Expression(AstNodeType::TS_LITERAL_TYPE), literal_(literal) {}
+    explicit TSLiteralType(Expression *literal) : TypeNode(AstNodeType::TS_LITERAL_TYPE), literal_(literal) {}
 
     const Expression *Literal() const
     {
@@ -41,7 +41,8 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *Check(checker::Checker *checker) const override;
+    checker::Type *GetType(checker::Checker *checker) const override;
 
 private:
     Expression *literal_;

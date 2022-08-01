@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_INTERSECTION_TYPE_H
 #define ES2PANDA_IR_TS_INTERSECTION_TYPE_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -29,10 +29,10 @@ class Type;
 
 namespace panda::es2panda::ir {
 
-class TSIntersectionType : public Expression {
+class TSIntersectionType : public TypeNode {
 public:
     explicit TSIntersectionType(ArenaVector<Expression *> &&types)
-        : Expression(AstNodeType::TS_INTERSECTION_TYPE), types_(std::move(types))
+        : TypeNode(AstNodeType::TS_INTERSECTION_TYPE), types_(std::move(types))
     {
     }
 
@@ -45,6 +45,7 @@ public:
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *GetType([[maybe_unused]] checker::Checker *checker) const override;
 
 private:
     ArenaVector<Expression *> types_;

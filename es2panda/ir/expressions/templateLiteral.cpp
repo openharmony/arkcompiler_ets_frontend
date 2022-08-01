@@ -38,7 +38,7 @@ void TemplateLiteral::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TemplateLiteral"}, {"expressions", expressions_}, {"quasis", quasis_}});
 }
 
-void TemplateLiteral::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void TemplateLiteral::Compile(compiler::PandaGen *pg) const
 {
     auto quasisIt = quasis_.begin();
     auto expressionIt = expressions_.begin();
@@ -79,7 +79,7 @@ void TemplateLiteral::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     }
 }
 
-checker::Type *TemplateLiteral::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TemplateLiteral::Check(checker::Checker *checker) const
 {
     // TODO(aszilagyi)
     return checker->GlobalAnyType();

@@ -14,8 +14,8 @@
  */
 
 
-function foo([a = 2, { b: [c = 6, d] = [true, [5n, "foo"]], t = { a: 3, b: { a: 2, b: 5n } } }] = ["foo", {}, 4n], { r: [[r, z = 5] = [true]] = [[2, "foo"]] }) {
+function foo([a = 2, { b: [c = 6, d] = [true, [5n, "foo"]], t = { a: 3, b: { a: 2, b: 5n } } }], { r: [[r, z = 5] = [true]] = [[2, "foo"]] }) {
 
 }
 
-foo(["foo", { b: [true, []], t: { a: 1, z: "foo" } }, 5n], {});
+foo([2, { b: [true, []], t: { a: 1, z: "foo" } }, 5n], {});

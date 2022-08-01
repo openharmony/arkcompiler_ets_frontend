@@ -18,7 +18,7 @@ interface a {
     a: number,
     b(a: any, b: any): string,
     (a: number, b: string): boolean,
-    new()
+    new(): string
 }
 
 var b = a;

@@ -60,6 +60,8 @@ enum class ParserStatus {
     IN_CLASS_BODY = (1 << 25),
     IN_DECORATOR = (1 << 26),
     DISALLOW_CONTINUE = (1 << 27),
+
+    TS_MODULE = (1 << 28),
 };
 
 DEFINE_BITOPS(ParserStatus)
@@ -123,6 +125,11 @@ public:
     bool IsModule() const
     {
         return (status_ & ParserStatus::MODULE) != 0;
+    }
+
+    bool IsTsModule() const
+    {
+        return (status_ & ParserStatus::TS_MODULE) != 0;
     }
 
     const ParserContext *FindLabel(const util::StringView &label) const;

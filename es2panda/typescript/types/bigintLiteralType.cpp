@@ -17,21 +17,6 @@
 
 namespace panda::es2panda::checker {
 
-BigintLiteralType::BigintLiteralType(util::StringView value, bool negative)
-    : Type(TypeFlag::BIGINT_LITERAL), value_(value), negative_(negative)
-{
-}
-
-const util::StringView &BigintLiteralType::Value() const
-{
-    return value_;
-}
-
-bool BigintLiteralType::Negative() const
-{
-    return negative_;
-}
-
 void BigintLiteralType::ToString(std::stringstream &ss) const
 {
     ss << value_;
@@ -42,7 +27,7 @@ void BigintLiteralType::ToStringAsSrc(std::stringstream &ss) const
     ss << "bigint";
 }
 
-void BigintLiteralType::Identical(TypeRelation *relation, const Type *other) const
+void BigintLiteralType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsBigintLiteralType()) {
         if (negative_ == other->AsBigintLiteralType()->Negative()) {
@@ -51,10 +36,7 @@ void BigintLiteralType::Identical(TypeRelation *relation, const Type *other) con
     }
 }
 
-void BigintLiteralType::AssignmentTarget([[maybe_unused]] TypeRelation *relation,
-                                         [[maybe_unused]] const Type *source) const
-{
-}
+void BigintLiteralType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source) {}
 
 TypeFacts BigintLiteralType::GetTypeFacts() const
 {

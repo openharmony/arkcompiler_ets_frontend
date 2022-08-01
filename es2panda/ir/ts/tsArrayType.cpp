@@ -15,6 +15,7 @@
 
 #include "tsArrayType.h"
 
+#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,9 +32,15 @@ void TSArrayType::Dump(ir::AstDumper *dumper) const
 
 void TSArrayType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSArrayType::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSArrayType::Check(checker::Checker *checker) const
 {
+    elementType_->Check(checker);
     return nullptr;
+}
+
+checker::Type *TSArrayType::GetType(checker::Checker *checker) const
+{
+    return checker->Allocator()->New<checker::ArrayType>(elementType_->AsTypeNode()->GetType(checker));
 }
 
 }  // namespace panda::es2panda::ir

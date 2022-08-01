@@ -17,12 +17,14 @@
 
 #include <util/helpers.h>
 #include <typescript/checker.h>
+#include <typescript/core/destructuringContext.h>
 #include <compiler/base/literals.h>
 #include <compiler/core/pandagen.h>
 #include <ir/astDump.h>
 #include <ir/base/spreadElement.h>
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/objectExpression.h>
+#include <ir/expressions/identifier.h>
 
 namespace panda::es2panda::ir {
 
@@ -142,44 +144,48 @@ void ArrayExpression::Compile(compiler::PandaGen *pg) const
     pg->CreateArray(this, elements_, arrayObj);
 }
 
-checker::Type *GetSpreadElementTypeInArrayLiteral(checker::Checker *checker, const ir::SpreadElement *spreadElement)
+void GetSpreadElementType(checker::Checker *checker, checker::Type *spreadType,
+                          ArenaVector<checker::Type *> &elementTypes, const lexer::SourcePosition &loc)
 {
-    checker::Type *spreadType = spreadElement->Argument()->Check(checker);
-
-    if (spreadType->IsArrayType()) {
-        return spreadType->AsArrayType()->ElementType();
-    }
+    bool inConstContext = checker->HasStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
 
     if (spreadType->IsObjectType() && spreadType->AsObjectType()->IsTupleType()) {
-        std::vector<checker::Type *> tupleElementTypes;
+        ArenaVector<checker::Type *> tupleElementTypes(checker->Allocator()->Adapter());
         checker::TupleType *spreadTuple = spreadType->AsObjectType()->AsTupleType();
-        auto *it = spreadTuple->Iterator()->Next();
 
-        while (it) {
-            tupleElementTypes.push_back(it);
-            it = spreadTuple->Iterator()->Next();
-        }
-
-        return checker->CreateUnionType(std::move(tupleElementTypes));
-    }
-
-    if (spreadType->IsUnionType()) {
-        std::vector<checker::Type *> spreadTypes;
-        bool throwError = false;
-
-        for (auto *it : spreadType->AsUnionType()->ConstituentTypes()) {
-            if (it->IsArrayType()) {
-                spreadTypes.push_back(it->AsArrayType()->ElementType());
+        for (auto *it : spreadTuple->Properties()) {
+            if (inConstContext) {
+                elementTypes.push_back(it->TsType());
                 continue;
             }
 
-            if (it->IsObjectType() && it->AsObjectType()->IsTupleType()) {
-                checker::TupleType *tuple = it->AsObjectType()->AsTupleType();
-                auto *iter = tuple->Iterator()->Next();
+            tupleElementTypes.push_back(it->TsType());
+        }
 
-                while (iter) {
-                    spreadTypes.push_back(iter);
-                    iter = tuple->Iterator()->Next();
+        if (inConstContext) {
+            return;
+        }
+
+        elementTypes.push_back(checker->CreateUnionType(std::move(tupleElementTypes)));
+        return;
+    }
+
+    // TODO(aszilagyi) handle const context cases in case of union spread type
+    if (spreadType->IsUnionType()) {
+        ArenaVector<checker::Type *> spreadTypes(checker->Allocator()->Adapter());
+        bool throwError = false;
+
+        for (auto *type : spreadType->AsUnionType()->ConstituentTypes()) {
+            if (type->IsArrayType()) {
+                spreadTypes.push_back(type->AsArrayType()->ElementType());
+                continue;
+            }
+
+            if (type->IsObjectType() && type->AsObjectType()->IsTupleType()) {
+                checker::TupleType *tuple = type->AsObjectType()->AsTupleType();
+
+                for (auto *it : tuple->Properties()) {
+                    spreadTypes.push_back(it->TsType());
                 }
 
                 continue;
@@ -190,105 +196,73 @@ checker::Type *GetSpreadElementTypeInArrayLiteral(checker::Checker *checker, con
         }
 
         if (!throwError) {
-            return checker->CreateUnionType(std::move(spreadTypes));
+            elementTypes.push_back(checker->CreateUnionType(std::move(spreadTypes)));
+            return;
         }
     }
 
     checker->ThrowTypeError(
-        {"Type '", spreadType, "' must have a '[Symbol.Iterator]()' method that returns an iterator."},
-        spreadElement->Start());
-
-    return nullptr;
-}
-
-checker::Type *GetArrayLiteralElementType(checker::Checker *checker, const ir::Expression *expr, bool forceTuple,
-                                          bool noLiteralBaseType, bool destructuringSource, bool readonly)
-{
-    if (expr->IsSpreadElement()) {
-        return GetSpreadElementTypeInArrayLiteral(checker, expr->AsSpreadElement());
-    }
-
-    if (expr->IsOmittedExpression()) {
-        if (forceTuple) {
-            if (destructuringSource) {
-                return checker->GlobalAnyType();
-            }
-
-            return checker->GlobalUndefinedType();
-        }
-
-        return nullptr;
-    }
-
-    // TODO(aszilagyi): params force_tuple, readonly
-
-    checker::Type *returnType = expr->Check(checker);
-
-    if (noLiteralBaseType || readonly) {
-        return returnType;
-    }
-
-    if (returnType->IsEnumType()) {
-        return returnType->AsEnumType()->EnumLiteralVar()->TsType();
-    }
-
-    return checker->GetBaseTypeOfLiteralType(returnType);
+        {"Type '", spreadType, "' must have a '[Symbol.iterator]()' method that returns an iterator."}, loc);
 }
 
 checker::Type *ArrayExpression::Check(checker::Checker *checker) const
 {
-    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>();
-    checker::TupleElementFlagPool elementFlags;
-    std::vector<checker::Type *> elementTypes;
-    uint32_t index = 0;
-    bool forceTuple = (checker->Status() & checker::CheckerStatus::FORCE_TUPLE);
+    ArenaVector<checker::Type *> elementTypes(checker->Allocator()->Adapter());
+    ArenaVector<checker::ElementFlags> elementFlags(checker->Allocator()->Adapter());
+    bool inConstContext = checker->HasStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
+    bool createTuple = checker->HasStatus(checker::CheckerStatus::FORCE_TUPLE);
 
     for (auto *it : elements_) {
-        // TODO(aszilagyi): remove bool params
-        checker::Type *currentElementType = GetArrayLiteralElementType(checker, it, false, false, false, false);
+        if (it->IsSpreadElement()) {
+            checker::Type *spreadType = it->AsSpreadElement()->Argument()->Check(checker);
 
-        if (!currentElementType) {
-            continue;
-        }
-
-        if (forceTuple) {
-            util::StringView memberIndex = util::Helpers::ToStringView(checker->Allocator(), index);
-
-            auto *memberVar =
-                binder::Scope::CreateVar(checker->Allocator(), memberIndex, binder::VariableFlags::PROPERTY, it);
-
-            memberVar->AddFlag(binder::VariableFlags::PROPERTY);
-            memberVar->SetTsType(currentElementType);
-            elementFlags.insert({memberIndex, checker::ElementFlags::REQUIRED});
-            desc->properties.push_back(memberVar);
-            index++;
-        }
-
-        if (currentElementType->IsUnionType()) {
-            for (auto *iter : currentElementType->AsUnionType()->ConstituentTypes()) {
-                elementTypes.push_back(iter);
+            if (spreadType->IsArrayType()) {
+                elementTypes.push_back(inConstContext ? spreadType : spreadType->AsArrayType()->ElementType());
+                elementFlags.push_back(checker::ElementFlags::VARIADIC);
+                continue;
             }
 
+            GetSpreadElementType(checker, spreadType, elementTypes, it->Start());
+            elementFlags.push_back(checker::ElementFlags::REST);
             continue;
         }
 
-        elementTypes.push_back(currentElementType);
+        checker::Type *elementType = it->Check(checker);
+
+        if (!inConstContext) {
+            elementType = checker->GetBaseTypeOfLiteralType(elementType);
+        }
+
+        elementFlags.push_back(checker::ElementFlags::REQUIRED);
+        elementTypes.push_back(elementType);
+    }
+
+    if (inConstContext || createTuple) {
+        checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
+        uint32_t index = 0;
+
+        for (auto it = elementTypes.begin(); it != elementTypes.end(); it++, index++) {
+            util::StringView memberIndex = util::Helpers::ToStringView(checker->Allocator(), index);
+            binder::LocalVariable *tupleMember =
+                binder::Scope::CreateVar(checker->Allocator(), memberIndex, binder::VariableFlags::PROPERTY, nullptr);
+
+            if (inConstContext) {
+                tupleMember->AddFlag(binder::VariableFlags::READONLY);
+            }
+
+            tupleMember->SetTsType(*it);
+            desc->properties.push_back(tupleMember);
+        }
+
+        return checker->CreateTupleType(desc, std::move(elementFlags), checker::ElementFlags::REQUIRED, index, index,
+                                        inConstContext);
     }
 
     checker::Type *arrayElementType = nullptr;
     if (elementTypes.empty()) {
         arrayElementType = checker->GlobalAnyType();
-    } else if (elementTypes.size() == 1) {
-        arrayElementType = elementTypes[0];
     } else {
         arrayElementType = checker->CreateUnionType(std::move(elementTypes));
-    }
-
-    if (forceTuple) {
-        // TODO(aszilagyi): handle readonly when creating IndexInfo and TupleType
-        desc->numberIndexInfo = checker->Allocator()->New<checker::IndexInfo>(arrayElementType, "x", false);
-        return checker->CreateTupleType(desc, std::move(elementFlags), checker::ElementFlags::REQUIRED, index, index,
-                                        false);
     }
 
     return checker->Allocator()->New<checker::ArrayType>(arrayElementType);
@@ -296,47 +270,96 @@ checker::Type *ArrayExpression::Check(checker::Checker *checker) const
 
 checker::Type *ArrayExpression::CheckPattern(checker::Checker *checker) const
 {
-    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>();
-    checker::TupleElementFlagPool elementFlags;
+    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
+    ArenaVector<checker::ElementFlags> elementFlags(checker->Allocator()->Adapter());
     checker::ElementFlags combinedFlags = checker::ElementFlags::NO_OPTS;
     uint32_t minLength = 0;
-    uint32_t index = 0;
+    uint32_t index = elements_.size();
+    bool addOptional = true;
 
-    for (auto *it : elements_) {
+    for (auto it = elements_.rbegin(); it != elements_.rend(); it++) {
         checker::Type *elementType = nullptr;
         checker::ElementFlags memberFlag = checker::ElementFlags::NO_OPTS;
 
-        if (it->IsRestElement()) {
-            elementType = checker->Allocator()->New<checker::ArrayType>(checker->GlobalAnyType());
-            memberFlag = checker::ElementFlags::REST;
-        } else if (it->IsObjectPattern()) {
-            // TODO(aszilagyi): handle inAssignment parameter
-            elementType = it->AsObjectPattern()->CheckPattern(checker, false);
-            memberFlag = checker::ElementFlags::REQUIRED;
-        } else if (it->IsArrayPattern()) {
-            elementType = it->AsArrayPattern()->CheckPattern(checker);
-            memberFlag = checker::ElementFlags::REQUIRED;
-        } else if (it->IsAssignmentPattern()) {
-            const ir::AssignmentExpression *assignmentPattern = it->AsAssignmentPattern();
-
-            if (!assignmentPattern->Left()->IsIdentifier()) {
-                elementType = checker->CreateInitializerTypeForPattern(assignmentPattern->Left()->Check(checker),
-                                                                       assignmentPattern->Right());
-                checker->NodeCache().insert({assignmentPattern->Right(), elementType});
-            } else {
-                elementType = checker->GetBaseTypeOfLiteralType(assignmentPattern->Right()->Check(checker));
+        switch ((*it)->Type()) {
+            case ir::AstNodeType::REST_ELEMENT: {
+                elementType = checker->Allocator()->New<checker::ArrayType>(checker->GlobalAnyType());
+                memberFlag = checker::ElementFlags::REST;
+                addOptional = false;
+                break;
             }
+            case ir::AstNodeType::OBJECT_PATTERN: {
+                elementType = (*it)->AsObjectPattern()->CheckPattern(checker);
+                memberFlag = checker::ElementFlags::REQUIRED;
+                addOptional = false;
+                break;
+            }
+            case ir::AstNodeType::ARRAY_PATTERN: {
+                elementType = (*it)->AsArrayPattern()->CheckPattern(checker);
+                memberFlag = checker::ElementFlags::REQUIRED;
+                addOptional = false;
+                break;
+            }
+            case ir::AstNodeType::ASSIGNMENT_PATTERN: {
+                const ir::AssignmentExpression *assignmentPattern = (*it)->AsAssignmentPattern();
 
-            memberFlag = checker::ElementFlags::OPTIONAL;
-        } else {
-            elementType = checker->GlobalAnyType();
-            memberFlag = checker::ElementFlags::REQUIRED;
+                if (assignmentPattern->Left()->IsIdentifier()) {
+                    const ir::Identifier *ident = assignmentPattern->Left()->AsIdentifier();
+                    ASSERT(ident->Variable());
+                    binder::Variable *bindingVar = ident->Variable();
+                    checker::Type *initializerType =
+                        checker->GetBaseTypeOfLiteralType(assignmentPattern->Right()->Check(checker));
+                    bindingVar->SetTsType(initializerType);
+                    elementType = initializerType;
+                } else if (assignmentPattern->Left()->IsArrayPattern()) {
+                    auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
+                    auto destructuringContext =
+                        checker::ArrayDestructuringContext(checker, assignmentPattern->Left()->AsArrayPattern(), false,
+                                                           true, nullptr, assignmentPattern->Right());
+                    destructuringContext.Start();
+                    elementType = destructuringContext.InferedType();
+                } else {
+                    ASSERT(assignmentPattern->Left()->IsObjectPattern());
+                    auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
+                    auto destructuringContext =
+                        checker::ObjectDestructuringContext(checker, assignmentPattern->Left()->AsObjectPattern(),
+                                                            false, true, nullptr, assignmentPattern->Right());
+                    destructuringContext.Start();
+                    elementType = destructuringContext.InferedType();
+                }
+
+                if (addOptional) {
+                    memberFlag = checker::ElementFlags::OPTIONAL;
+                } else {
+                    memberFlag = checker::ElementFlags::REQUIRED;
+                }
+
+                break;
+            }
+            case ir::AstNodeType::OMITTED_EXPRESSION: {
+                elementType = checker->GlobalAnyType();
+                memberFlag = checker::ElementFlags::REQUIRED;
+                addOptional = false;
+                break;
+            }
+            case ir::AstNodeType::IDENTIFIER: {
+                const ir::Identifier *ident = (*it)->AsIdentifier();
+                ASSERT(ident->Variable());
+                elementType = checker->GlobalAnyType();
+                ident->Variable()->SetTsType(elementType);
+                memberFlag = checker::ElementFlags::REQUIRED;
+                addOptional = false;
+                break;
+            }
+            default: {
+                UNREACHABLE();
+            }
         }
 
-        util::StringView memberIndex = util::Helpers::ToStringView(checker->Allocator(), index);
+        util::StringView memberIndex = util::Helpers::ToStringView(checker->Allocator(), index - 1);
 
         auto *memberVar =
-            binder::Scope::CreateVar(checker->Allocator(), memberIndex, binder::VariableFlags::PROPERTY, it);
+            binder::Scope::CreateVar(checker->Allocator(), memberIndex, binder::VariableFlags::PROPERTY, *it);
 
         if (memberFlag == checker::ElementFlags::OPTIONAL) {
             memberVar->AddFlag(binder::VariableFlags::OPTIONAL);
@@ -345,11 +368,11 @@ checker::Type *ArrayExpression::CheckPattern(checker::Checker *checker) const
         }
 
         memberVar->SetTsType(elementType);
-        elementFlags.insert({memberIndex, memberFlag});
-        desc->properties.push_back(memberVar);
+        elementFlags.push_back(memberFlag);
+        desc->properties.insert(desc->properties.begin(), memberVar);
 
         combinedFlags |= memberFlag;
-        index++;
+        index--;
     }
 
     return checker->CreateTupleType(desc, std::move(elementFlags), combinedFlags, minLength, desc->properties.size(),

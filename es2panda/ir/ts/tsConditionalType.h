@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_CONDITIONAL_TYPE_H
 #define ES2PANDA_IR_TS_CONDITIONAL_TYPE_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -29,11 +29,11 @@ class Type;
 
 namespace panda::es2panda::ir {
 
-class TSConditionalType : public Expression {
+class TSConditionalType : public TypeNode {
 public:
     explicit TSConditionalType(Expression *checkType, Expression *extendsType, Expression *trueType,
                                Expression *falseType)
-        : Expression(AstNodeType::TS_CONDITIONAL_TYPE),
+        : TypeNode(AstNodeType::TS_CONDITIONAL_TYPE),
           checkType_(checkType),
           extendsType_(extendsType),
           trueType_(trueType),
@@ -65,6 +65,7 @@ public:
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *GetType([[maybe_unused]] checker::Checker *checker) const override;
 
 private:
     Expression *checkType_;

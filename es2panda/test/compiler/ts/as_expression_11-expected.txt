@@ -12,11 +12,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 6
               }
             }
@@ -31,11 +31,11 @@
                   "value": 5,
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 10
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 11
                     }
                   }
@@ -45,11 +45,11 @@
                   "value": 5,
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 12
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 13
                     }
                   }
@@ -59,11 +59,11 @@
                   "value": 5,
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 14
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 15
                     }
                   }
@@ -73,11 +73,11 @@
                   "value": 5,
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 16
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 17
                     }
                   }
@@ -85,11 +85,11 @@
               ],
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 9
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 18
                 }
               }
@@ -102,44 +102,44 @@
                 "decorators": [],
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 22
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 27
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 22
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 27
                 }
               }
             },
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 9
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 28
               }
             }
           },
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 28
             }
           }
@@ -148,11 +148,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 28
         }
       }
@@ -170,11 +170,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 2,
+                "line": 18,
                 "column": 1
               },
               "end": {
-                "line": 2,
+                "line": 18,
                 "column": 2
               }
             }
@@ -184,11 +184,11 @@
             "value": 0,
             "loc": {
               "start": {
-                "line": 2,
+                "line": 18,
                 "column": 3
               },
               "end": {
-                "line": 2,
+                "line": 18,
                 "column": 4
               }
             }
@@ -197,11 +197,11 @@
           "optional": false,
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 1
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 5
             }
           }
@@ -211,33 +211,33 @@
           "value": 5,
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 8
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 9
             }
           }
         },
         "loc": {
           "start": {
-            "line": 2,
+            "line": 18,
             "column": 1
           },
           "end": {
-            "line": 2,
+            "line": 18,
             "column": 9
           }
         }
       },
       "loc": {
         "start": {
-          "line": 2,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 10
         }
       }
@@ -249,9 +249,9 @@
       "column": 1
     },
     "end": {
-      "line": 3,
+      "line": 19,
       "column": 1
     }
   }
 }
-TypeError: Cannot assign to '0' because it is a read-only property. [as_expression_11.ts:2:3]
+TypeError: Cannot assign to this property because it is readonly. [as_expression_11.ts:18:1]

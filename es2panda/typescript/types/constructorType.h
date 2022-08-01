@@ -22,7 +22,7 @@ namespace panda::es2panda::checker {
 
 class ConstructorType : public ObjectType {
 public:
-    explicit ConstructorType(ObjectDescriptor *desc);
+    explicit ConstructorType(ObjectDescriptor *desc) : ObjectType(ObjectType::ObjectTypeKind::FUNCTION, desc) {}
 
     void ToString(std::stringstream &ss) const override;
     TypeFacts GetTypeFacts() const override;

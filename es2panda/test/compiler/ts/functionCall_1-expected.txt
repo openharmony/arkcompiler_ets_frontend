@@ -11,11 +11,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 10
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 14
             }
           }
@@ -31,11 +31,11 @@
               "type": "TSNumberKeyword",
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 19
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 25
                 }
               }
@@ -43,11 +43,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 15
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 16
               }
             }
@@ -57,11 +57,11 @@
           "type": "TSVoidKeyword",
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 29
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 33
             }
           }
@@ -71,33 +71,33 @@
           "statements": [],
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 34
             },
             "end": {
-              "line": 3,
+              "line": 19,
               "column": 2
             }
           }
         },
         "loc": {
           "start": {
-            "line": 1,
+            "line": 17,
             "column": 1
           },
           "end": {
-            "line": 3,
+            "line": 19,
             "column": 2
           }
         }
       },
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 3,
+          "line": 19,
           "column": 2
         }
       }
@@ -112,11 +112,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 4,
+              "line": 20,
               "column": 1
             },
             "end": {
-              "line": 4,
+              "line": 20,
               "column": 5
             }
           }
@@ -124,14 +124,14 @@
         "arguments": [
           {
             "type": "StringLiteral",
-            "value": "",
+            "value": "foo",
             "loc": {
               "start": {
-                "line": 4,
+                "line": 20,
                 "column": 6
               },
               "end": {
-                "line": 4,
+                "line": 20,
                 "column": 11
               }
             }
@@ -140,22 +140,22 @@
         "optional": false,
         "loc": {
           "start": {
-            "line": 4,
+            "line": 20,
             "column": 1
           },
           "end": {
-            "line": 4,
+            "line": 20,
             "column": 12
           }
         }
       },
       "loc": {
         "start": {
-          "line": 4,
+          "line": 20,
           "column": 1
         },
         "end": {
-          "line": 4,
+          "line": 20,
           "column": 13
         }
       }
@@ -167,9 +167,9 @@
       "column": 1
     },
     "end": {
-      "line": 4,
+      "line": 20,
       "column": 13
     }
   }
 }
-TypeError: Argument of type 'string' is not assignable to parameter of type 'number'. [functionCall_1.ts:4:6]
+TypeError: Type 'string' is not assignable to type 'number'. [functionCall_1.ts:20:6]

@@ -19,7 +19,7 @@
 
 namespace panda::es2panda::ir {
 
-void TSNonNullExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+void TSNonNullExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(expr_);
 }

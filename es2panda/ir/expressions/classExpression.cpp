@@ -30,7 +30,7 @@ void ClassExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ClassExpression"}, {"definition", def_}});
 }
 
-void ClassExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ClassExpression::Compile(compiler::PandaGen *pg) const
 {
     def_->Compile(pg);
 }

@@ -15,7 +15,11 @@
 
 #include "tsPropertySignature.h"
 
+#include <typescript/checker.h>
+#include <ir/expressions/literals/numberLiteral.h>
 #include <ir/astDump.h>
+#include <ir/typeNode.h>
+#include <binder/scope.h>
 
 namespace panda::es2panda::ir {
 
@@ -40,8 +44,22 @@ void TSPropertySignature::Dump(ir::AstDumper *dumper) const
 
 void TSPropertySignature::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSPropertySignature::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSPropertySignature::Check(checker::Checker *checker) const
 {
+    if (typeAnnotation_) {
+        typeAnnotation_->Check(checker);
+    }
+
+    if (computed_) {
+        checker->CheckComputedPropertyName(key_);
+    }
+
+    if (typeAnnotation_) {
+        Variable()->SetTsType(typeAnnotation_->AsTypeNode()->GetType(checker));
+        return nullptr;
+    }
+
+    checker->ThrowTypeError("Property implicitly has an 'any' type.", Start());
     return nullptr;
 }
 

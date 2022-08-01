@@ -1,1 +1,1 @@
-SyntaxError: Unexpected modifier [test-class-definiton3.ts:2:12]
+SyntaxError: Unexpected modifier [test-class-definiton3.ts:18:12]

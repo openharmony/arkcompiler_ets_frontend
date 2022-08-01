@@ -23,7 +23,7 @@ namespace panda::es2panda::checker {
 
 class FunctionType : public ObjectType {
 public:
-    explicit FunctionType(ObjectDescriptor *desc);
+    explicit FunctionType(ObjectDescriptor *desc) : ObjectType(ObjectType::ObjectTypeKind::FUNCTION, desc) {}
 
     void ToString(std::stringstream &ss) const override;
     TypeFacts GetTypeFacts() const override;

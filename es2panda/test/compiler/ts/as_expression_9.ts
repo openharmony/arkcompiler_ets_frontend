@@ -14,5 +14,5 @@
  */
 
 
-var a = [5,5,5,5] as const;
-a = [5,5];
+var a = [5, 5, 5, 5] as const;
+a = ["foo", 5];

@@ -1,1 +1,1 @@
-SyntaxError: ']' expected [test-ts-mapped-type3.ts:1:32]
+SyntaxError: ']' expected [test-ts-mapped-type3.ts:17:32]

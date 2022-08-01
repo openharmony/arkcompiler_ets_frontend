@@ -383,7 +383,7 @@ checker::Type *TSEnumDeclaration::InferType(checker::Checker *checker, bool isCo
     return enumType;
 }
 
-checker::Type *TSEnumDeclaration::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSEnumDeclaration::Check(checker::Checker *checker) const
 {
     binder::Variable *enumVar = key_->Variable();
     ASSERT(enumVar);

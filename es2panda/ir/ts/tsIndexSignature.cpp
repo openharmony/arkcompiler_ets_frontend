@@ -15,7 +15,9 @@
 
 #include "tsIndexSignature.h"
 
+#include <typescript/checker.h>
 #include <ir/astDump.h>
+#include <ir/typeNode.h>
 #include <ir/expressions/identifier.h>
 
 namespace panda::es2panda::ir {
@@ -42,9 +44,31 @@ void TSIndexSignature::Dump(ir::AstDumper *dumper) const
 
 void TSIndexSignature::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSIndexSignature::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSIndexSignature::Check(checker::Checker *checker) const
 {
-    return nullptr;
+    auto found = checker->NodeCache().find(this);
+
+    if (found != checker->NodeCache().end()) {
+        return found->second;
+    }
+
+    const util::StringView &paramName = param_->AsIdentifier()->Name();
+    typeAnnotation_->Check(checker);
+    checker::Type *indexType = typeAnnotation_->AsTypeNode()->GetType(checker);
+    checker::IndexInfo *info =
+        checker->Allocator()->New<checker::IndexInfo>(indexType, paramName, readonly_, this->Start());
+    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
+    checker::ObjectType *placeholder = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
+
+    if (Kind() == ir::TSIndexSignature::TSIndexSignatureKind::NUMBER) {
+        placeholder->Desc()->numberIndexInfo = info;
+    } else {
+        placeholder->Desc()->stringIndexInfo = info;
+    }
+
+    checker->NodeCache().insert({this, placeholder});
+
+    return placeholder;
 }
 
 }  // namespace panda::es2panda::ir

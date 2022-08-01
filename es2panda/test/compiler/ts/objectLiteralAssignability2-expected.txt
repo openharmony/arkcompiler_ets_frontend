@@ -23,11 +23,11 @@
                     "decorators": [],
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 10
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 11
                       }
                     }
@@ -36,22 +36,22 @@
                     "type": "TSNumberKeyword",
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 13
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 19
                       }
                     }
                   },
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 10
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 21
                     }
                   }
@@ -59,11 +59,11 @@
               ],
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 8
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 21
                 }
               }
@@ -71,11 +71,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 6
               }
             }
@@ -94,11 +94,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 26
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 27
                     }
                   }
@@ -108,11 +108,11 @@
                   "value": 5,
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 29
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 30
                     }
                   }
@@ -120,11 +120,11 @@
                 "kind": "init",
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 26
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 30
                   }
                 }
@@ -140,25 +140,25 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 32
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 33
                     }
                   }
                 },
                 "value": {
                   "type": "StringLiteral",
-                  "value": "",
+                  "value": "foo",
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 35
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 40
                     }
                   }
@@ -166,11 +166,11 @@
                 "kind": "init",
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 32
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 40
                   }
                 }
@@ -178,22 +178,22 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 24
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 42
               }
             }
           },
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 42
             }
           }
@@ -202,11 +202,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 43
         }
       }
@@ -218,9 +218,9 @@
       "column": 1
     },
     "end": {
-      "line": 1,
+      "line": 17,
       "column": 43
     }
   }
 }
-TypeError: Object literal may only specify known properties, and 'b' does not exist in type '{ a: number; }' [objectLiteralAssignability2.ts:1:32]
+TypeError: Object literal may only specify known properties, and "b" does not exist in type '{ a: number; }'. [objectLiteralAssignability2.ts:17:32]

@@ -56,10 +56,6 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
             std::cout << ast.Dump() << std::endl;
         }
 
-        if (options.parseOnly) {
-            return nullptr;
-        }
-
         auto *prog = compiler_->Compile(&ast, options);
 
         return prog;

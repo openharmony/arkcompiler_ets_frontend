@@ -15,6 +15,7 @@
 
 #include "tsNumberKeyword.h"
 
+#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,6 +32,11 @@ void TSNumberKeyword::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 checker::Type *TSNumberKeyword::Check([[maybe_unused]] checker::Checker *checker) const
 {
     return nullptr;
+}
+
+checker::Type *TSNumberKeyword::GetType(checker::Checker *checker) const
+{
+    return checker->GlobalNumberType();
 }
 
 }  // namespace panda::es2panda::ir

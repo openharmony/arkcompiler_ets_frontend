@@ -87,16 +87,18 @@ class TypeRelation {
 public:
     explicit TypeRelation(Checker *checker);
 
-    bool IsIdenticalTo(const Type *source, const Type *target);
-    bool IsIdenticalTo(const Signature *source, const Signature *target);
-    bool IsIdenticalTo(const IndexInfo *source, const IndexInfo *target);
-    bool IsAssignableTo(const Type *source, const Type *target);
-    bool IsComparableTo(const Type *source, const Type *target);
+    bool IsIdenticalTo(Type *source, Type *target);
+    bool IsIdenticalTo(Signature *source, Signature *target);
+    bool IsIdenticalTo(IndexInfo *source, IndexInfo *target);
+    bool IsAssignableTo(Type *source, Type *target);
+    bool IsComparableTo(Type *source, Type *target);
     void RaiseError(const std::string &errMsg, const lexer::SourcePosition &loc) const;
     void RaiseError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &loc) const;
 
     void Result(bool res);
     const Checker *GetChecker() const;
+    Checker *GetChecker();
+    ArenaAllocator *Allocator();
     bool IsTrue() const;
 
 private:
@@ -105,7 +107,7 @@ private:
 
     Checker *checker_;
     RelationResult result_;
-};
+};  // namespace panda::es2panda::checker
 
 }  // namespace panda::es2panda::checker
 

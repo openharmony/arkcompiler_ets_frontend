@@ -17,13 +17,6 @@
 
 namespace panda::es2panda::checker {
 
-BooleanLiteralType::BooleanLiteralType(bool value) : Type(TypeFlag::BOOLEAN_LITERAL), value_(value) {}
-
-bool BooleanLiteralType::Value() const
-{
-    return value_;
-}
-
 void BooleanLiteralType::ToString(std::stringstream &ss) const
 {
     if (value_) {
@@ -39,17 +32,14 @@ void BooleanLiteralType::ToStringAsSrc(std::stringstream &ss) const
     ss << "boolean";
 }
 
-void BooleanLiteralType::Identical(TypeRelation *relation, const Type *other) const
+void BooleanLiteralType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsBooleanLiteralType()) {
         relation->Result(other->AsBooleanLiteralType()->Value());
     }
 }
 
-void BooleanLiteralType::AssignmentTarget([[maybe_unused]] TypeRelation *relation,
-                                          [[maybe_unused]] const Type *source) const
-{
-}
+void BooleanLiteralType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source) {}
 
 TypeFacts BooleanLiteralType::GetTypeFacts() const
 {
