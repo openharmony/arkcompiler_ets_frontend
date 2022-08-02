@@ -16,8 +16,9 @@
 import * as ts from "typescript";
 import { GeneratorFunctionBuilder } from "./generatorFunctionBuilder";
 import { AsyncFunctionBuilder } from "./asyncFunctionBuilder";
+import { AsyncGeneratorFunctionBuilder } from "./asyncGeneratorFunctionBuilder";
 
-export type FunctionBuilderType = AsyncFunctionBuilder | GeneratorFunctionBuilder | FunctionBuilder;
+export type FunctionBuilderType = AsyncFunctionBuilder | GeneratorFunctionBuilder | FunctionBuilder | AsyncGeneratorFunctionBuilder;
 
 export class FunctionBuilder {
     // @ts-ignore

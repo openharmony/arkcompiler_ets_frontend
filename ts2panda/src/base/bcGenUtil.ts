@@ -34,6 +34,7 @@ import {
     EcmaDefineclasswithbuffer,
     EcmaDefinefuncdyn,
     EcmaDefinegeneratorfunc,
+    EcmaDefineasyncgeneratorfunc,
     EcmaDefinegettersetterbyvalue,
     EcmaDefinemethod,
     EcmaDefinencfuncdyn,
@@ -396,6 +397,10 @@ export function defineAsyncFunc(name: string, env: VReg, paramLength: number) {
 
 export function defineGeneratorFunc(name: string, env: VReg, paramLength: number) {
     return new EcmaDefinegeneratorfunc(name, new Imm(paramLength), env);
+}
+
+export function defineAsyncGeneratorFunc(name: string, env: VReg, paramLength: number) {
+    return new EcmaDefineasyncgeneratorfunc(name, new Imm(paramLength), env);
 }
 
 export function defineNCFunc(name: string, env: VReg, paramLength: number) {

@@ -17,10 +17,11 @@ import * as ts from "typescript";
 import { GeneratorFunctionBuilder } from "../function/generatorFunctionBuilder";
 import { DiagnosticCode, DiagnosticError } from "../diagnostic";
 import { CacheList, getVregisterCache } from "../base/vregisterCache";
+import { AsyncGeneratorFunctionBuilder } from "../function/asyncGeneratorFunctionBuilder";
 import { Compiler } from "../compiler";
 
 export function compileYieldExpression(compiler: Compiler, expr: ts.YieldExpression) {
-    if (!(compiler.getFuncBuilder() instanceof GeneratorFunctionBuilder)) {
+    if (!(compiler.getFuncBuilder() instanceof GeneratorFunctionBuilder || compiler.getFuncBuilder() instanceof AsyncGeneratorFunctionBuilder)) {
         throw new DiagnosticError(expr.parent, DiagnosticCode.A_yield_expression_is_only_allowed_in_a_generator_body);
     }
 
@@ -29,7 +30,7 @@ export function compileYieldExpression(compiler: Compiler, expr: ts.YieldExpress
 
 function genYieldExpr(compiler: Compiler, expr: ts.YieldExpression) {
     let pandaGen = compiler.getPandaGen();
-    let funcBuilder = <GeneratorFunctionBuilder>compiler.getFuncBuilder();
+    let funcBuilder = <GeneratorFunctionBuilder | AsyncGeneratorFunctionBuilder> compiler.getFuncBuilder();
     if (expr.expression) {
         let retValue = pandaGen.getTemp();
 

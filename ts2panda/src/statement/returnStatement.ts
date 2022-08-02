@@ -17,6 +17,7 @@ import * as ts from "typescript";
 import { CacheList, getVregisterCache } from "../base/vregisterCache";
 import { Compiler, ControlFlowChange } from "../compiler";
 import { AsyncFunctionBuilder } from "../function/asyncFunctionBuilder";
+import { AsyncGeneratorFunctionBuilder } from "../function/asyncGeneratorFunctionBuilder";
 import { Label, VReg } from "../irnodes";
 import * as jshelpers from "../jshelpers";
 import { checkValidUseSuperBeforeSuper } from "./classStatement";
@@ -122,7 +123,7 @@ function compileNormalReturn(stmt: ts.ReturnStatement, returnValue: VReg, compil
 
     pandaGen.loadAccumulator(stmt, returnValue);
     let funcBuilder = compiler.getFuncBuilder();
-    if (funcBuilder instanceof AsyncFunctionBuilder) {
+    if (funcBuilder instanceof AsyncFunctionBuilder || funcBuilder instanceof AsyncGeneratorFunctionBuilder) {
         let resovledVal = pandaGen.getTemp();
 
         pandaGen.storeAccumulator(stmt, resovledVal);
