@@ -396,12 +396,25 @@ ohos_executable("es2panda") {
 
   deps = [ ":es2panda_lib" ]
 
+  ldflags = []
   if (is_linux) {
     if (build_public_version) {
-      ldflags = [ "-static-libstdc++" ]
+      ldflags += [ "-static-libstdc++" ]
     } else {
       libs = [ libcpp_static_lib ]
     }
+
+    # for statically linking pthread
+    ldflags += [
+      "-Wl,--whole-archive",
+      "-lrt",
+      "-lpthread",
+      "-Wl,--no-whole-archive",
+    ]
+  }
+
+  if (!is_mac) {
+    static_link = true
   }
 
   if (enable_bytecode_optimizer) {
