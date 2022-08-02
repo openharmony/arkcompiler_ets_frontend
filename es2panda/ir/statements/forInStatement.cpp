@@ -63,9 +63,8 @@ void ForInStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     pg->LoadAccumulator(this, propName);
     lref.SetValue();
 
-    compiler::LoopEnvScope declEnvScope(pg, scope_->DeclScope());
-
     {
+        compiler::LoopEnvScope declEnvScope(pg, scope_->DeclScope());
         compiler::LoopEnvScope envScope(pg, scope_, labelTarget);
         body_->Compile(pg);
     }
