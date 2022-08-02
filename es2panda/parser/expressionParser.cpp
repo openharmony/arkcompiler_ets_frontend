@@ -1016,6 +1016,9 @@ ir::Expression *ParserImpl::ParsePrimaryExpression(ExpressionParseFlags flags)
         case lexer::TokenType::PUNCTUATOR_DIVIDE:
         case lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL: {
             lexer_->ResetTokenEnd();
+            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL) {
+                lexer_->BackwardToken(lexer::TokenType::PUNCTUATOR_DIVIDE, 1);
+            }
             auto regexp = lexer_->ScanRegExp();
 
             lexer::RegExpParser reParser(regexp, Allocator());
