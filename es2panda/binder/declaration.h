@@ -82,6 +82,11 @@ public:
         return IsLetDecl() || IsConstDecl() || IsClassDecl();
     }
 
+    DeclarationFlags Flags() const
+    {
+        return flags_;
+    }
+
     void AddFlag(DeclarationFlags flag)
     {
         flags_ |= flag;

@@ -17,10 +17,10 @@
 #define ES2PANDA_COMPILER_IR_EMITTER_H
 
 #include <assembly-literals.h>
+#include <compiler/core/emitter/moduleRecordEmitter.h>
 #include <ir/astNode.h>
 #include <lexer/token/sourceLocation.h>
 #include <macros.h>
-#include <parser/module/module.h>
 #include <util/ustring.h>
 
 #include <list>
@@ -91,39 +91,6 @@ private:
     panda::pandasm::Function *func_ {};
     ArenaVector<std::pair<int32_t, std::vector<panda::pandasm::LiteralArray::Literal>>> literalBuffers_;
     size_t offset_ {0};
-};
-
-class ModuleRecordEmitter {
-public:
-    explicit ModuleRecordEmitter(parser::SourceTextModuleRecord *moduleRecord, int32_t bufferIdx)
-        : moduleRecord_(moduleRecord), bufferIdx_(bufferIdx) {}
-    ~ModuleRecordEmitter() = default;
-    NO_COPY_SEMANTIC(ModuleRecordEmitter);
-    NO_MOVE_SEMANTIC(ModuleRecordEmitter);
-
-    int32_t Index() const
-    {
-        return bufferIdx_;
-    }
-
-    auto &Buffer()
-    {
-        return buffer_;
-    }
-
-    void Generate();
-
-private:
-    void GenModuleRequests();
-    void GenRegularImportEntries();
-    void GenNamespaceImportEntries();
-    void GenLocalExportEntries();
-    void GenIndirectExportEntries();
-    void GenStarExportEntries();
-
-    parser::SourceTextModuleRecord *moduleRecord_;
-    int32_t bufferIdx_ {};
-    std::vector<panda::pandasm::LiteralArray::Literal> buffer_;
 };
 
 class Emitter {

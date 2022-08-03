@@ -41,7 +41,7 @@ namespace panda::es2panda::parser {
         // the implicit indirect exports should be insert into indirectExportsEntries
         // when add an ImportEntry.
         // e.g. export { x }; import { x } from 'test.js'
-        ConvertLocalExportsToIndirect(entry);
+        CheckImplicitIndirectExport(entry);
     }
 
     // import * as x from 'test.js';
@@ -68,10 +68,10 @@ namespace panda::es2panda::parser {
         // the implicit indirect exports should be insert into indirectExportsEntries
         // when add an ExportEntry.
         // e.g. import { x } from 'test.js'; export { x }
-        if (ConvertLocalExportsToIndirect(entry)) {
+        if (CheckImplicitIndirectExport(entry)) {
             return true;
         }
-        if (CheckDuplicateExports(entry->exportName_)) {
+        if (!HasDuplicateExport(entry->exportName_)) {
             localExportEntries_.insert(std::make_pair(entry->localName_, entry));
             return true;
         }
@@ -87,7 +87,7 @@ namespace panda::es2panda::parser {
         ASSERT(!entry->exportName_.Empty());
         ASSERT(entry->localName_.Empty());
         ASSERT(entry->moduleRequestIdx_ != -1);
-        if (CheckDuplicateExports(entry->exportName_)) {
+        if (!HasDuplicateExport(entry->exportName_)) {
             indirectExportEntries_.push_back(entry);
             return true;
         }
@@ -104,42 +104,36 @@ namespace panda::es2panda::parser {
         starExportEntries_.push_back(entry);
     }
 
-    bool SourceTextModuleRecord::CheckDuplicateExports(util::StringView exportName)
+    bool SourceTextModuleRecord::HasDuplicateExport(util::StringView exportName)
     {
         for (auto const &entryUnit : localExportEntries_) {
             const SourceTextModuleRecord::ExportEntry *e = entryUnit.second;
             if (exportName == e->exportName_) {
-                return false;
+                return true;
             }
         }
 
         for (const auto *e : indirectExportEntries_) {
             if (exportName == e->exportName_) {
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
-    bool SourceTextModuleRecord::ConvertLocalExportsToIndirect(SourceTextModuleRecord::ExportEntry *exportEntry)
+    bool SourceTextModuleRecord::CheckImplicitIndirectExport(SourceTextModuleRecord::ExportEntry *exportEntry)
     {
         ASSERT(!exportEntry->localName_.Empty());
-        auto importEntry = regularImportEntries_.find(exportEntry->localName_);
-        if (importEntry != regularImportEntries_.end()) {
-            ASSERT(exportEntry->importName_.Empty());
-            ASSERT(exportEntry->moduleRequestIdx_ == -1);
-            ASSERT(!importEntry->second->importName_.Empty());
-            ASSERT(importEntry->second->moduleRequestIdx_ != -1);
-            exportEntry->importName_ = importEntry->second->importName_;
-            exportEntry->moduleRequestIdx_ = importEntry->second->moduleRequestIdx_;
-            exportEntry->localName_ = util::StringView("");
+        auto regularImport = regularImportEntries_.find(exportEntry->localName_);
+        if (regularImport != regularImportEntries_.end()) {
+            ConvertLocalExportToIndirect(regularImport->second, exportEntry);
             return AddIndirectExportEntry(exportEntry);
         }
         return false;
     }
 
-    void SourceTextModuleRecord::ConvertLocalExportsToIndirect(SourceTextModuleRecord::ImportEntry *importEntry)
+    void SourceTextModuleRecord::CheckImplicitIndirectExport(SourceTextModuleRecord::ImportEntry *importEntry)
     {
         ASSERT(!importEntry->localName_.Empty());
         auto range = localExportEntries_.equal_range(importEntry->localName_);
@@ -150,15 +144,21 @@ namespace panda::es2panda::parser {
 
         for (auto it = range.first; it != range.second; ++it) {
             SourceTextModuleRecord::ExportEntry *exportEntry = it->second;
-            ASSERT(exportEntry->importName_.Empty());
-            ASSERT(exportEntry->moduleRequestIdx_ == -1);
-            ASSERT(!importEntry->importName_.Empty());
-            ASSERT(importEntry->moduleRequestIdx_ != -1);
-            exportEntry->importName_ = importEntry->importName_;
-            exportEntry->moduleRequestIdx_ = importEntry->moduleRequestIdx_;
-            exportEntry->localName_ = util::StringView("");
+            ConvertLocalExportToIndirect(importEntry, exportEntry);
             indirectExportEntries_.push_back(exportEntry);
         }
         localExportEntries_.erase(range.first, range.second);
+    }
+
+    void SourceTextModuleRecord::ConvertLocalExportToIndirect(SourceTextModuleRecord::ImportEntry *importEntry,
+                                                              SourceTextModuleRecord::ExportEntry *exportEntry)
+    {
+        ASSERT(exportEntry->importName_.Empty());
+        ASSERT(exportEntry->moduleRequestIdx_ == -1);
+        ASSERT(!importEntry->importName_.Empty());
+        ASSERT(importEntry->moduleRequestIdx_ != -1);
+        exportEntry->importName_ = importEntry->importName_;
+        exportEntry->moduleRequestIdx_ = importEntry->moduleRequestIdx_;
+        exportEntry->localName_ = util::StringView("");
     }
 } // namespace panda::es2panda::parser

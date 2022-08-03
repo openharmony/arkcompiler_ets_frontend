@@ -521,9 +521,9 @@ ir::ClassDeclaration *ParserImpl::ParseClassDeclaration(bool idRequired, ArenaVe
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     ir::ClassDefinition *classDefinition = ParseClassDefinition(true, idRequired, isDeclare, isAbstract);
 
-    auto location = classDefinition->Ident() == nullptr ? startLoc : classDefinition->Ident()->Start();
-    auto className = classDefinition->Ident() == nullptr ? parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME :
-                                                           classDefinition->Ident()->Name();
+    auto location = classDefinition->Ident() ? classDefinition->Ident()->Start() : startLoc;
+    auto className = classDefinition->Ident() ? classDefinition->Ident()->Name() :
+                                                parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME;
 
     binder::DeclarationFlags flag = isExported ? binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
     auto *decl = Binder()->AddDecl<binder::ClassDecl>(location, flag, className);

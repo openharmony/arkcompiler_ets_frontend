@@ -82,8 +82,8 @@ class SourceTextModuleRecord {
         bool AddIndirectExportEntry(ExportEntry *entry);
         void AddStarExportEntry(ExportEntry *entry);
 
-        bool ConvertLocalExportsToIndirect(ExportEntry *exportEntry);
-        void ConvertLocalExportsToIndirect(ImportEntry *importEntry);
+        bool CheckImplicitIndirectExport(ExportEntry *exportEntry);
+        void CheckImplicitIndirectExport(ImportEntry *importEntry);
 
         using ModuleRequestList = ArenaVector<util::StringView>;
         using ModuleRequestMap = ArenaMap<const util::StringView, uint32_t>;
@@ -127,7 +127,8 @@ class SourceTextModuleRecord {
         static constexpr std::string_view ANONY_NAMESPACE_NAME = "=ens";
 
     private:
-        bool CheckDuplicateExports(util::StringView exportName);
+        bool HasDuplicateExport(util::StringView exportName);
+        void ConvertLocalExportToIndirect(ImportEntry *importEntry, ExportEntry *exportEntry);
 
         ArenaAllocator *allocator_;
         ModuleRequestMap moduleRequestsMap_;

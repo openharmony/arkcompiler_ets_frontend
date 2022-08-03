@@ -23,6 +23,16 @@
 
 namespace panda::es2panda::compiler {
 
+static void StoreModuleVarOrLocalVar(PandaGen *pg, binder::ScopeFindResult &result, const binder::Decl *decl)
+{
+    if (decl->IsImportOrExportDecl()) {
+        ASSERT(pg->Scope()->IsModuleScope());
+        pg->StoreModuleVariable(decl->Node(), decl->Name());
+    } else {
+        pg->StoreAccToLexEnv(decl->Node(), result, true);
+    }
+}
+
 static void HoistVar(PandaGen *pg, binder::Variable *var, const binder::VarDecl *decl)
 {
     auto *scope = pg->Scope();
@@ -41,12 +51,7 @@ static void HoistVar(PandaGen *pg, binder::Variable *var, const binder::VarDecl 
     binder::ScopeFindResult result(decl->Name(), scope, 0, var);
 
     pg->LoadConst(decl->Node(), Constant::JS_UNDEFINED);
-    if (decl->HasFlag(binder::DeclarationFlags::EXPORT)) {
-        ASSERT(scope->IsModuleScope());
-        pg->StoreModuleVariable(decl->Node(), decl->Name());
-    } else {
-        pg->StoreAccToLexEnv(decl->Node(), result, true);
-    }
+    StoreModuleVarOrLocalVar(pg, result, decl);
 }
 
 static void HoistFunction(PandaGen *pg, binder::Variable *var, const binder::FunctionDecl *decl)
@@ -66,12 +71,7 @@ static void HoistFunction(PandaGen *pg, binder::Variable *var, const binder::Fun
     binder::ScopeFindResult result(decl->Name(), scope, 0, var);
 
     pg->DefineFunction(decl->Node(), scriptFunction, internalName);
-    if (decl->HasFlag(binder::DeclarationFlags::EXPORT)) {
-        ASSERT(scope->IsModuleScope());
-        pg->StoreModuleVariable(decl->Node(), decl->Name());
-    } else {
-        pg->StoreAccToLexEnv(decl->Node(), result, true);
-    }
+    StoreModuleVarOrLocalVar(pg, result, decl);
 }
 
 static void HoistNameSpaceImports(PandaGen *pg)

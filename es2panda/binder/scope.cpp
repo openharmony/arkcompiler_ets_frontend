@@ -342,7 +342,7 @@ bool GlobalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariabl
 
 // ModuleScope
 
-void ModuleScope::SetVariableAsExported(ArenaAllocator *allocator, util::StringView localName)
+void ModuleScope::ConvertLocalVariableToModuleVariable(ArenaAllocator *allocator, util::StringView localName)
 {
     auto res = bindings_.find(localName);
     // Since the module's exported [localName] has been validated before,

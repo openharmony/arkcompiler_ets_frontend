@@ -97,7 +97,7 @@ void Binder::IdentifierAnalysis()
     AddMandatoryParams();
 }
 
-void Binder::ValidateLocalExportDeclared(const ir::ExportNamedDeclaration *exportDecl)
+void Binder::ValidateExportDecl(const ir::ExportNamedDeclaration *exportDecl)
 {
     if (exportDecl->Source() != nullptr || exportDecl->Decl() != nullptr) {
         return;
@@ -109,7 +109,7 @@ void Binder::ValidateLocalExportDeclared(const ir::ExportNamedDeclaration *expor
         if (topScope_->FindLocal(localName) == nullptr) {
             ThrowUndeclaredExport(it->AsExportSpecifier()->Local()->Start(), localName);
         }
-        topScope_->AsModuleScope()->SetVariableAsExported(Allocator(), localName);
+        topScope_->AsModuleScope()->ConvertLocalVariableToModuleVariable(Allocator(), localName);
     }
 }
 
@@ -477,7 +477,7 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             break;
         }
         case ir::AstNodeType::EXPORT_NAMED_DECLARATION: {
-            ValidateLocalExportDeclared(childNode->AsExportNamedDeclaration());
+            ValidateExportDecl(childNode->AsExportNamedDeclaration());
 
             ResolveReferences(childNode);
             break;

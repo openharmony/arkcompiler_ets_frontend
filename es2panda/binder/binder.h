@@ -146,7 +146,7 @@ private:
     void LookupIdentReference(ir::Identifier *ident);
     void ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode);
     void ResolveReferences(const ir::AstNode *parent);
-    void ValidateLocalExportDeclared(const ir::ExportNamedDeclaration *exportDecl);
+    void ValidateExportDecl(const ir::ExportNamedDeclaration *exportDecl);
 
     parser::Program *program_ {};
     FunctionScope *topScope_ {};

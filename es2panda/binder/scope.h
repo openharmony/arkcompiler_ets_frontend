@@ -295,6 +295,8 @@ protected:
     explicit VariableScope(ArenaAllocator *allocator, Scope *parent) : Scope(allocator, parent),
                                                                        lexicalVarNames_(allocator->Adapter()) {}
 
+    inline VariableFlags DeclFlagToVariableFlag(DeclarationFlags declFlag);
+
     template <typename T>
     bool AddVar(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl);
 
@@ -597,21 +599,28 @@ public:
         return ScopeType::MODULE;
     }
 
-    void SetVariableAsExported(ArenaAllocator *allocator, util::StringView localName);
+    void ConvertLocalVariableToModuleVariable(ArenaAllocator *allocator, util::StringView localName);
 
     bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                     [[maybe_unused]] ScriptExtension extension) override;
 };
 
+inline VariableFlags VariableScope::DeclFlagToVariableFlag(DeclarationFlags declFlag)
+{
+    VariableFlags varFlag = VariableFlags::NONE;
+    if (declFlag & DeclarationFlags::EXPORT) {
+        varFlag |= VariableFlags::LOCAL_EXPORT;
+    } else if (declFlag & DeclarationFlags::IMPORT) {
+        varFlag |= VariableFlags::IMPORT;
+    }
+    return varFlag;
+}
+
 template <typename T>
 bool VariableScope::AddVar(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl)
 {
     VariableFlags flags = VariableFlags::HOIST_VAR;
-    if (newDecl->HasFlag(DeclarationFlags::EXPORT)) {
-        flags |= VariableFlags::LOCAL_EXPORT;
-    } else if (newDecl->HasFlag(DeclarationFlags::IMPORT)) {
-        flags |= VariableFlags::IMPORT;
-    }
+    flags |= DeclFlagToVariableFlag(newDecl->Flags());
 
     if (!currentVariable) {
         bindings_.insert({newDecl->Name(), allocator->New<T>(newDecl, flags)});
@@ -640,11 +649,7 @@ bool VariableScope::AddFunction(ArenaAllocator *allocator, Variable *currentVari
                                 [[maybe_unused]] ScriptExtension extension)
 {
     VariableFlags flags = (extension == ScriptExtension::JS) ? VariableFlags::HOIST_VAR : VariableFlags::HOIST;
-    if (newDecl->HasFlag(DeclarationFlags::EXPORT)) {
-        flags |= VariableFlags::LOCAL_EXPORT;
-    } else if (newDecl->HasFlag(DeclarationFlags::IMPORT)) {
-        flags |= VariableFlags::IMPORT;
-    }
+    flags |= DeclFlagToVariableFlag(newDecl->Flags());
 
     if (!currentVariable) {
         bindings_.insert({newDecl->Name(), allocator->New<T>(newDecl, flags)});
@@ -681,12 +686,7 @@ bool VariableScope::AddTSBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
 template <typename T>
 bool VariableScope::AddLexical(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl)
 {
-    VariableFlags flags = VariableFlags::NONE;
-    if (newDecl->HasFlag(DeclarationFlags::EXPORT)) {
-        flags |= VariableFlags::LOCAL_EXPORT;
-    } else if (newDecl->HasFlag(DeclarationFlags::IMPORT)) {
-        flags |= VariableFlags::IMPORT;
-    }
+    VariableFlags flags = DeclFlagToVariableFlag(newDecl->Flags());
 
     if (currentVariable) {
         return false;

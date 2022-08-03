@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "emitter.h"
+#include "moduleRecordEmitter.h"
 
 namespace panda::es2panda::compiler {
 
