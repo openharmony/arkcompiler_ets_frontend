@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_PROGRAM_H
 #define ES2PANDA_PARSER_INCLUDE_PROGRAM_H
 
+#include <lexer/token/sourceLocation.h>
 #include <macros.h>
 #include <mem/arena_allocator.h>
 #include <util/ustring.h>
@@ -77,6 +78,11 @@ public:
         return sourceFile_.View();
     }
 
+    const lexer::LineIndex &GetLineIndex() const
+    {
+        return lineIndex_;
+    }
+
     ir::BlockStatement *Ast()
     {
         return ast_;
@@ -96,6 +102,7 @@ public:
     {
         sourceCode_ = util::UString(sourceCode, Allocator());
         sourceFile_ = util::UString(sourceFile, Allocator());
+        lineIndex_ = lexer::LineIndex(SourceCode());
     }
 
     std::string Dump() const;
@@ -109,6 +116,7 @@ private:
     util::UString sourceFile_ {};
     ScriptKind kind_ {};
     ScriptExtension extension_ {};
+    lexer::LineIndex lineIndex_ {};
 };
 
 }  // namespace panda::es2panda::parser

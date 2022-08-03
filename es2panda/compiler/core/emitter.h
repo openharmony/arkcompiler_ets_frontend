@@ -81,6 +81,7 @@ private:
     void GenSourceFileDebugInfo();
     void GenVariablesDebugInfo();
     util::StringView SourceCode() const;
+    lexer::LineIndex &GetLineIndex() const;
 
     void GenLiteralBuffers();
     void GenBufferLiterals(const LiteralBuffer *buff);

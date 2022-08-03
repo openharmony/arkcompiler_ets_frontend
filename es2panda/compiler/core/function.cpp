@@ -199,10 +199,10 @@ static VReg CompileFunctionOrProgram(PandaGen *pg)
 void Function::Compile(PandaGen *pg)
 {
     VReg lexEnv = CompileFunctionOrProgram(pg);
-    pg->SetIgnoreLocation();
+    pg->SetSourceLocationFlag(lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION);
     pg->CopyFunctionArguments(pg->RootNode());
     pg->InitializeLexEnv(pg->RootNode(), lexEnv);
-    pg->ResetIgnoreLocation();
+    pg->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
     pg->SortCatchTables();
 }
 

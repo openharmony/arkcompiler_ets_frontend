@@ -25,6 +25,11 @@
 
 namespace panda::es2panda::lexer {
 
+enum class SourceLocationFlag {
+    VALID_SOURCE_LOCATION,
+    INVALID_SOURCE_LOCATION
+};
+
 class SourcePosition {
 public:
     explicit SourcePosition() noexcept = default;
@@ -93,8 +98,9 @@ private:
 class LineIndex {
 public:
     explicit LineIndex(const util::StringView &source) noexcept;
-    NO_COPY_SEMANTIC(LineIndex);
-    NO_MOVE_SEMANTIC(LineIndex);
+    explicit LineIndex() noexcept = default;
+    DEFAULT_COPY_SEMANTIC(LineIndex);
+    DEFAULT_MOVE_SEMANTIC(LineIndex);
     ~LineIndex() = default;
 
     SourceLocation GetLocation(SourcePosition pos) noexcept;

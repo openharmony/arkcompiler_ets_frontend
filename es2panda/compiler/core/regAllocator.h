@@ -17,7 +17,7 @@
 #define ES2PANDA_COMPILER_CORE_REG_ALLOCATOR_H
 
 #include <gen/isa.h>
-#include <ir/inValidNode.h>
+#include <lexer/token/sourceLocation.h>
 #include <macros.h>
 
 namespace panda::es2panda::ir {
@@ -30,24 +30,22 @@ class PandaGen;
 
 class AllocatorBase {
 public:
-    explicit AllocatorBase(PandaGen *pg) : pg_(pg) {};
+    explicit AllocatorBase(PandaGen *pg)
+        : pg_(pg), sourceLocationFlag_(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION)
+    {
+    }
     NO_COPY_SEMANTIC(AllocatorBase);
     NO_MOVE_SEMANTIC(AllocatorBase);
     ~AllocatorBase() = default;
 
-    void SetIgnoreLocation()
+    void SetSourceLocationFlag(lexer::SourceLocationFlag flag)
     {
-        ignoreLocation_ = true;
+        sourceLocationFlag_ = flag;
     }
 
-    void ResetIgnoreLocation()
+    lexer::SourceLocationFlag GetSourceLocationFlag() const
     {
-        ignoreLocation_ = false;
-    }
-
-    bool IgnoreLocation() const
-    {
-        return ignoreLocation_;
+        return sourceLocationFlag_;
     }
 
 protected:
@@ -58,10 +56,8 @@ protected:
     T *Alloc(const ir::AstNode *node, Args &&... args)
     {
         ir::AstNode *invalidNode = nullptr;
-        if (IgnoreLocation()) {
-            invalidNode = Allocator()->New<ir::InValidNode>(ir::AstNodeType::INVALID);
-        }
-        return Allocator()->New<T>(IgnoreLocation() ? invalidNode : node, std::forward<Args>(args)...);
+        return Allocator()->New<T>((GetSourceLocationFlag() == lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION) ?
+                                   invalidNode : node, std::forward<Args>(args)...);
     }
 
     template <typename T, typename... Args>
@@ -71,7 +67,7 @@ protected:
     }
 
     PandaGen *pg_;
-    bool ignoreLocation_ {false}; // for instructions that need to be set with invalid debuginfo
+    lexer::SourceLocationFlag sourceLocationFlag_; // for instructions that need to be set with invalid debuginfo
 };
 
 class SimpleAllocator : public AllocatorBase {

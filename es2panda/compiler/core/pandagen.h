@@ -179,18 +179,11 @@ public:
         return ic_.Size();
     }
 
-    void SetIgnoreLocation()
+    void SetSourceLocationFlag(lexer::SourceLocationFlag flag)
     {
-        sa_.SetIgnoreLocation();
-        ra_.SetIgnoreLocation();
-        rra_.SetIgnoreLocation();
-    }
-
-    void ResetIgnoreLocation()
-    {
-        sa_.ResetIgnoreLocation();
-        ra_.ResetIgnoreLocation();
-        rra_.ResetIgnoreLocation();
+        sa_.SetSourceLocationFlag(flag);
+        ra_.SetSourceLocationFlag(flag);
+        rra_.SetSourceLocationFlag(flag);
     }
 
     bool IsDebug() const;
