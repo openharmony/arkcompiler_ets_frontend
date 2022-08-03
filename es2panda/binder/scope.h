@@ -214,6 +214,8 @@ public:
 
     Decl *FindDecl(const util::StringView &name) const;
 
+    bool HasVarDecl(const util::StringView &name) const;
+
 protected:
     explicit Scope(ArenaAllocator *allocator, Scope *parent)
         : parent_(parent), decls_(allocator->Adapter()), bindings_(allocator->Adapter())

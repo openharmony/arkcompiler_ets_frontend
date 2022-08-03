@@ -113,11 +113,10 @@ enum class VariableFlags {
 
     LOOP_DECL = 1 << 25,
     PER_ITERATION = 1 << 26,
-    LEXICAL_VAR = 1 << 27,
-    HOIST = 1 << 28,
-    VAR = 1 << 29,
-    INITIALIZED = 1 << 30,
-    LEXICAL_BOUND = 1 << 31,
+    HOIST = 1 << 27,
+    VAR = 1 << 28,
+    INITIALIZED = 1 << 29,
+    LEXICAL_BOUND = 1 << 30,
 
     HOIST_VAR = HOIST | VAR,
 };
