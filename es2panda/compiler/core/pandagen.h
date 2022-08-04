@@ -179,6 +179,13 @@ public:
         return ic_.Size();
     }
 
+    void SetSourceLocationFlag(lexer::SourceLocationFlag flag)
+    {
+        sa_.SetSourceLocationFlag(flag);
+        ra_.SetSourceLocationFlag(flag);
+        rra_.SetSourceLocationFlag(flag);
+    }
+
     bool IsDebug() const;
     uint32_t ParamCount() const;
     uint32_t FormalParametersCount() const;

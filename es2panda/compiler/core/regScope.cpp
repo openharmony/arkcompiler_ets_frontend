@@ -112,6 +112,7 @@ FunctionRegScope::FunctionRegScope(PandaGen *pg) : RegScope(pg), envScope_(pg->A
         pg_->debugInfo_.variableDebugInfo.push_back(funcScope);
     }
 
+    pg_->SetSourceLocationFlag(lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION);
     pg_->LoadAccFromArgs(pg_->rootNode_);
 
     if (funcScope->IsModuleScope()) {
@@ -119,6 +120,7 @@ FunctionRegScope::FunctionRegScope(PandaGen *pg) : RegScope(pg), envScope_(pg->A
     }
 
     Hoisting::Hoist(pg);
+    pg_->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
 }
 
 FunctionRegScope::~FunctionRegScope()

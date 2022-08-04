@@ -148,6 +148,11 @@ util::StringView FunctionEmitter::SourceCode() const
     return pg_->Binder()->Program()->SourceCode();
 }
 
+lexer::LineIndex &FunctionEmitter::GetLineIndex() const
+{
+    return const_cast<lexer::LineIndex &>(pg_->Binder()->Program()->GetLineIndex());
+}
+
 static Format MatchFormat(const IRNode *node, const Formats &formats)
 {
     std::array<const VReg *, IRNode::MAX_REG_OPERAND> regs {};
@@ -201,6 +206,8 @@ static size_t GetIRNodeWholeLength(const IRNode *node)
 void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, panda::pandasm::Ins *pandaIns)
 {
     const ir::AstNode *astNode = ins->Node();
+    constexpr size_t INVALID_LINE = -1;
+    constexpr uint32_t INVALID_COL = -1;
 
     ASSERT(astNode != nullptr);
 
@@ -211,7 +218,7 @@ void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, panda::pandasm:
         }
     }
 
-    pandaIns->ins_debug.line_number = astNode->Range().start.line;
+    pandaIns->ins_debug.line_number = astNode ? astNode->Range().start.line : INVALID_LINE;
 
     if (pg_->IsDebug()) {
         size_t insLen = GetIRNodeWholeLength(ins);
@@ -222,7 +229,8 @@ void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, panda::pandasm:
 
         offset_ += insLen;
 
-        pandaIns->ins_debug.column_number = astNode->Range().start.index;
+        pandaIns->ins_debug.column_number = astNode ?
+            (GetLineIndex().GetLocation(astNode->Range().start).col - 1) : INVALID_COL;
     }
 }
 

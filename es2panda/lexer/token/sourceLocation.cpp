@@ -79,8 +79,8 @@ SourceLocation LineIndex::GetLocation(SourcePosition pos) noexcept
     size_t diff = pos.index - entry.lineStart;
 
     for (const auto &range : entry.ranges) {
-        if (diff < range.cnt) {
-            col += diff;
+        if (diff < (range.cnt * range.byteSize)) {
+            col += (diff / range.byteSize) ;
             break;
         }
 

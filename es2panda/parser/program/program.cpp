@@ -36,7 +36,8 @@ Program::Program(Program &&other)
       sourceCode_(other.sourceCode_),
       sourceFile_(other.sourceFile_),
       kind_(other.kind_),
-      extension_(other.extension_)
+      extension_(other.extension_),
+      lineIndex_(other.lineIndex_)
 {
     other.binder_ = nullptr;
     other.ast_ = nullptr;
@@ -51,6 +52,7 @@ Program &Program::operator=(Program &&other)
     sourceFile_ = other.sourceFile_;
     kind_ = other.kind_;
     extension_ = other.extension_;
+    lineIndex_ = other.lineIndex_;
 
     other.ast_ = nullptr;
 
