@@ -59,6 +59,7 @@ enum class ParserStatus {
     IN_AMBIENT_CONTEXT = (1 << 24),
     IN_CLASS_BODY = (1 << 25),
     IN_DECORATOR = (1 << 26),
+    DISALLOW_CONTINUE = (1 << 27),
 };
 
 DEFINE_BITOPS(ParserStatus)

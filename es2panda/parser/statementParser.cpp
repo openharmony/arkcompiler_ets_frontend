@@ -116,6 +116,27 @@ void ParserImpl::CheckDeclare()
     }
 }
 
+bool ParserImpl::IsLabelFollowedByIterationStatement()
+{
+    lexer_->NextToken();
+
+    switch (lexer_->GetToken().Type()) {
+        case lexer::TokenType::KEYW_DO:
+        case lexer::TokenType::KEYW_FOR:
+        case lexer::TokenType::KEYW_WHILE: {
+            return true;
+        }
+        case lexer::TokenType::LITERAL_IDENT: {
+            if (lexer_->Lookahead() == LEX_CHAR_COLON) {
+                lexer_->NextToken();
+                return IsLabelFollowedByIterationStatement();
+            }
+        }
+        default:
+            return false;
+    }
+    return false;
+}
 ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
 {
     bool isDeclare = false;
@@ -877,7 +898,8 @@ ir::ContinueStatement *ParserImpl::ParseContinueStatement()
     const auto &label = lexer_->GetToken().Ident();
     const ParserContext *labelCtx = context_.FindLabel(label);
 
-    if (!labelCtx || !(labelCtx->Status() & ParserStatus::IN_ITERATION)) {
+    if (!labelCtx || !(labelCtx->Status() & ParserStatus::IN_ITERATION) ||
+       (labelCtx->Status() & ParserStatus::DISALLOW_CONTINUE)) {
         ThrowSyntaxError("Undefined label");
     }
 
@@ -1345,6 +1367,10 @@ ir::IfStatement *ParserImpl::ParseIfStatement()
 
 ir::LabelledStatement *ParserImpl::ParseLabelledStatement(const lexer::LexerPosition &pos)
 {
+    const auto savedPos = lexer_->Save();
+    bool isLabelFollowedByIterationStatement = IsLabelFollowedByIterationStatement();
+    lexer_->Rewind(savedPos);
+
     const util::StringView &actualLabel = pos.token.Ident();
 
     // TODO(frobert) : check correctness
@@ -1356,7 +1382,12 @@ ir::LabelledStatement *ParserImpl::ParseLabelledStatement(const lexer::LexerPosi
         ThrowSyntaxError("Label already declared", pos.token.Start());
     }
 
-    SavedParserContext newCtx(this, ParserStatus::IN_LABELED, actualLabel);
+    SavedParserContext newCtx(this, ParserStatus::IN_LABELED | context_.Status(), actualLabel);
+    if (isLabelFollowedByIterationStatement) {
+        context_.Status() &= ~ParserStatus::DISALLOW_CONTINUE;
+    } else {
+        context_.Status() |= ParserStatus::DISALLOW_CONTINUE;
+    }
 
     auto *identNode = AllocNode<ir::Identifier>(actualLabel, Allocator());
     identNode->SetRange(pos.token.Loc());
