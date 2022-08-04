@@ -23,6 +23,7 @@
 #include <macros.h>
 #include <mem/arena_allocator.h>
 #include <parser/context/parserContext.h>
+#include <parser/module/sourceTextModuleRecord.h>
 #include <parser/parserFlags.h>
 #include <parser/program/program.h>
 #include <util/enumbitops.h>
@@ -394,6 +395,14 @@ private:
 
     bool IsLabelFollowedByIterationStatement();
 
+    void AddImportEntryItem(const ir::StringLiteral *source, const ArenaVector<ir::AstNode *> *specifiers);
+    void AddExportNamedEntryItem(const ArenaVector<ir::ExportSpecifier *> &specifiers, const ir::StringLiteral *source);
+    void AddExportStarEntryItem(const lexer::SourcePosition &startLoc, const ir::StringLiteral *source,
+                                const ir::Identifier *exported);
+    void AddExportDefaultEntryItem(const ir::AstNode *declNode);
+    void AddExportLocalEntryItem(const ir::Statement *declNode);
+    parser::SourceTextModuleRecord *GetSourceTextModuleRecord();
+
     bool ParseDirective(ArenaVector<ir::Statement *> *statements);
     void ParseDirectivePrologue(ArenaVector<ir::Statement *> *statements);
     ArenaVector<ir::Statement *> ParseStatementList(StatementParsingFlags flags = StatementParsingFlags::ALLOW_LEXICAL);
@@ -439,7 +448,8 @@ private:
     ir::ClassDeclaration *ParseClassStatement(StatementParsingFlags flags, bool isDeclare,
                                               ArenaVector<ir::Decorator *> &&decorators, bool isAbstract = false);
     ir::ClassDeclaration *ParseClassDeclaration(bool idRequired, ArenaVector<ir::Decorator *> &&decorators,
-                                                bool isDeclare = false, bool isAbstract = false);
+                                                bool isDeclare = false, bool isAbstract = false,
+                                                bool isExported = false);
     ir::TSTypeAliasDeclaration *ParseTsTypeAliasDeclaration(bool isDeclare);
     ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart, bool isConst);
     ir::TSEnumDeclaration *ParseEnumDeclaration(bool isConst = false);
@@ -460,6 +470,15 @@ private:
     ir::VariableDeclaration *ParseContextualLet(VariableParsingFlags flags,
                                                 StatementParsingFlags stmFlags = StatementParsingFlags::ALLOW_LEXICAL,
                                                 bool isDeclare = false);
+
+    util::StringView GetNamespaceExportInternalName()
+    {
+        std::string name = std::string(parser::SourceTextModuleRecord::ANONY_NAMESPACE_NAME) +
+                           std::to_string(namespaceExportCount_++);
+        util::UString internalName(name, Allocator());
+        return internalName.View();
+    }
+
     ArenaAllocator *Allocator() const
     {
         return program_.Allocator();
@@ -477,6 +496,7 @@ private:
     Program program_;
     ParserContext context_;
     lexer::Lexer *lexer_ {nullptr};
+    size_t namespaceExportCount_ {0};
 };
 
 template <ParserStatus status>
@@ -637,53 +657,6 @@ private:
         return ParserStatus::FUNCTION | ParserStatus::ARROW_FUNCTION |
                static_cast<ParserStatus>(currentStatus & (ParserStatus::ALLOW_SUPER | ParserStatus::ALLOW_SUPER_CALL));
     }
-};
-
-class SavedBindingsContext {
-public:
-    explicit SavedBindingsContext(binder::Binder *binder)
-        : binder_(binder), savedBindings_(binder_->GetScope()->Bindings())
-    {
-    }
-    NO_COPY_SEMANTIC(SavedBindingsContext);
-    NO_MOVE_SEMANTIC(SavedBindingsContext);
-    ~SavedBindingsContext() = default;
-
-protected:
-    ArenaAllocator *Allocator() const
-    {
-        return binder_->Allocator();
-    }
-
-    binder::Binder *binder_;
-    binder::VariableMap savedBindings_;
-};
-
-class ExportDeclarationContext : public SavedBindingsContext {
-public:
-    explicit ExportDeclarationContext(binder::Binder *binder) : SavedBindingsContext(binder) {}
-    NO_COPY_SEMANTIC(ExportDeclarationContext);
-    NO_MOVE_SEMANTIC(ExportDeclarationContext);
-    ~ExportDeclarationContext() = default;
-
-    void BindExportDecl(const ir::AstNode *exportDecl);
-
-protected:
-    static constexpr std::string_view DEFAULT_EXPORT = "*default*";
-};
-
-class ImportDeclarationContext : public SavedBindingsContext {
-public:
-    explicit ImportDeclarationContext(binder::Binder *binder) : SavedBindingsContext(binder) {}
-
-    NO_COPY_SEMANTIC(ImportDeclarationContext);
-    NO_MOVE_SEMANTIC(ImportDeclarationContext);
-
-    ~ImportDeclarationContext() = default;
-
-    void BindImportDecl(const ir::ImportDeclaration *importDecl);
-
-private:
 };
 
 }  // namespace panda::es2panda::parser

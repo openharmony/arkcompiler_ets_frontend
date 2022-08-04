@@ -123,6 +123,13 @@ LReference LReference::CreateLRef(PandaGen *pg, const ir::AstNode *node, bool is
         case ir::AstNodeType::REST_ELEMENT: {
             return LReference::CreateLRef(pg, node->AsRestElement()->Argument(), true);
         }
+        case ir::AstNodeType::EXPORT_DEFAULT_DECLARATION: {
+            // export default [anonymous class decl]
+            util::StringView name = parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME;
+            binder::ScopeFindResult res = pg->Scope()->Find(name);
+
+            return {node, pg, isDeclaration, ReferenceKind::VAR_OR_GLOBAL, res};
+        }
         default: {
             UNREACHABLE();
         }

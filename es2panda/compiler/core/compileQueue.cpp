@@ -18,13 +18,29 @@
 #include <binder/binder.h>
 #include <binder/scope.h>
 #include <compiler/core/compilerContext.h>
-#include <compiler/core/emitter.h>
+#include <compiler/core/emitter/emitter.h>
 #include <compiler/core/function.h>
 #include <compiler/core/pandagen.h>
 
 namespace panda::es2panda::compiler {
 
-void CompileJob::Run()
+void CompileJob::DependsOn(CompileJob *job)
+{
+    job->dependant_ = this;
+    dependencies_++;
+}
+
+void CompileJob::Signal()
+{
+    {
+        std::lock_guard<std::mutex> lock(m_);
+        dependencies_--;
+    }
+
+    cond_.notify_one();
+}
+
+void CompileFunctionJob::Run()
 {
     std::unique_lock<std::mutex> lock(m_);
     cond_.wait(lock, [this] { return dependencies_ == 0; });
@@ -44,20 +60,19 @@ void CompileJob::Run()
     }
 }
 
-void CompileJob::DependsOn(CompileJob *job)
+void CompileModuleRecordJob::Run()
 {
-    job->dependant_ = this;
-    dependencies_++;
-}
+    std::unique_lock<std::mutex> lock(m_);
+    cond_.wait(lock, [this] { return dependencies_ == 0; });
 
-void CompileJob::Signal()
-{
-    {
-        std::lock_guard<std::mutex> lock(m_);
-        dependencies_--;
+    ModuleRecordEmitter moduleEmitter(context_->Binder()->Program()->ModuleRecord(), context_->NewLiteralIndex());
+    moduleEmitter.Generate();
+
+    context_->GetEmitter()->AddSourceTextModuleRecord(&moduleEmitter, context_);
+
+    if (dependant_) {
+        dependant_->Signal();
     }
-
-    cond_.notify_one();
 }
 
 CompileQueue::CompileQueue(size_t threadCount)
@@ -88,10 +103,18 @@ void CompileQueue::Schedule(CompilerContext *context)
     ASSERT(jobsCount_ == 0);
     std::unique_lock<std::mutex> lock(m_);
     const auto &functions = context->Binder()->Functions();
-    jobs_ = new CompileJob[functions.size()]();
 
     for (auto *function : functions) {
-        jobs_[jobsCount_++].SetConext(context, function);
+        auto *funcJob = new CompileFunctionJob(context);
+        funcJob->SetFunctionScope(function);
+        jobs_.push_back(funcJob);
+        jobsCount_++;
+    }
+
+    if (context->Binder()->Program()->Kind() == parser::ScriptKind::MODULE) {
+        auto *moduleRecordJob = new CompileModuleRecordJob(context);
+        jobs_.push_back(moduleRecordJob);
+        jobsCount_++;
     }
 
     lock.unlock();
@@ -122,7 +145,7 @@ void CompileQueue::Consume()
 
     while (jobsCount_ > 0) {
         --jobsCount_;
-        auto &job = jobs_[jobsCount_];
+        auto &job = *(jobs_[jobsCount_]);
 
         lock.unlock();
 
@@ -144,7 +167,13 @@ void CompileQueue::Wait()
 {
     std::unique_lock<std::mutex> lock(m_);
     jobsFinished_.wait(lock, [this]() { return activeWorkers_ == 0 && jobsCount_ == 0; });
-    delete[] jobs_;
+    for (auto it = jobs_.begin(); it != jobs_.end(); it++) {
+        if (*it != nullptr) {
+            delete *it;
+            *it =nullptr;
+        }
+    }
+    jobs_.clear();
 
     if (!errors_.empty()) {
         // NOLINTNEXTLINE

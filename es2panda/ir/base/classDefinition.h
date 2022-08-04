@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_CLASS_DEFINITION_H
 #define ES2PANDA_PARSER_INCLUDE_AST_CLASS_DEFINITION_H
 
-#include <ir/astNode.h>
 #include <binder/variable.h>
+#include <ir/astNode.h>
 #include <util/bitset.h>
 
 namespace panda::es2panda::compiler {
@@ -61,7 +61,8 @@ public:
           body_(std::move(body)),
           indexSignatures_(std::move(indexSignatures)),
           declare_(declare),
-          abstract_(abstract)
+          abstract_(abstract),
+          exportDefault_(false)
     {
     }
 
@@ -95,6 +96,11 @@ public:
         return abstract_;
     }
 
+    void SetAsExportDefault()
+    {
+        exportDefault_ = true;
+    }
+
     ArenaVector<Statement *> &Body()
     {
         return body_;
@@ -112,6 +118,8 @@ public:
     }
 
     const FunctionExpression *Ctor() const;
+
+    util::StringView GetName() const;
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -135,6 +143,7 @@ private:
     ArenaVector<TSIndexSignature *> indexSignatures_;
     bool declare_;
     bool abstract_;
+    bool exportDefault_;
 };
 
 }  // namespace panda::es2panda::ir

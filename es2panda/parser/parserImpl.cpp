@@ -122,11 +122,6 @@ Program ParserImpl::ParseModule(const std::string &fileName, const std::string &
 
     context_.Status() |= (ParserStatus::MODULE);
     ParseProgram(ScriptKind::MODULE);
-
-    if (!Binder()->TopScope()->AsModuleScope()->ExportAnalysis()) {
-        ThrowSyntaxError("Invalid exported binding");
-    }
-
     return std::move(program_);
 }
 
@@ -3250,58 +3245,9 @@ ScriptExtension ParserImpl::Extension() const
     return program_.Extension();
 }
 
-void ExportDeclarationContext::BindExportDecl(const ir::AstNode *exportDecl)
+parser::SourceTextModuleRecord *ParserImpl::GetSourceTextModuleRecord()
 {
-    if (!binder_) {
-        return;
-    }
-
-    binder::ModuleScope::ExportDeclList declList(Allocator()->Adapter());
-
-    if (exportDecl->IsExportDefaultDeclaration()) {
-        const auto *decl = exportDecl->AsExportDefaultDeclaration();
-        const auto *rhs = decl->Decl();
-
-        if (binder_->GetScope()->Bindings().size() == savedBindings_.size()) {
-            if (rhs->IsFunctionDeclaration()) {
-                binder_->AddDecl<binder::FunctionDecl>(rhs->Start(), binder_->Allocator(),
-                                                       util::StringView(DEFAULT_EXPORT),
-                                                       rhs->AsFunctionDeclaration()->Function());
-            } else {
-                binder_->AddDecl<binder::ConstDecl>(rhs->Start(), util::StringView(DEFAULT_EXPORT));
-            }
-        }
-    }
-
-    for (const auto &[name, variable] : binder_->GetScope()->Bindings()) {
-        if (savedBindings_.find(name) != savedBindings_.end()) {
-            continue;
-        }
-
-        util::StringView exportName(exportDecl->IsExportDefaultDeclaration() ? "default" : name);
-
-        variable->AddFlag(binder::VariableFlags::LOCAL_EXPORT);
-        auto *decl = binder_->AddDecl<binder::ExportDecl>(variable->Declaration()->Node()->Start(), exportName, name);
-        declList.push_back(decl);
-    }
-
-    auto *moduleScope = binder_->GetScope()->AsModuleScope();
-    moduleScope->AddExportDecl(exportDecl, std::move(declList));
-}
-
-void ImportDeclarationContext::BindImportDecl(const ir::ImportDeclaration *importDecl)
-{
-    binder::ModuleScope::ImportDeclList declList(Allocator()->Adapter());
-
-    for (const auto &[name, variable] : binder_->GetScope()->Bindings()) {
-        if (savedBindings_.find(name) != savedBindings_.end()) {
-            continue;
-        }
-
-        declList.push_back(variable->Declaration()->AsImportDecl());
-    }
-
-    binder_->GetScope()->AsModuleScope()->AddImportDecl(importDecl, std::move(declList));
+    return Binder()->Program()->ModuleRecord();
 }
 
 }  // namespace panda::es2panda::parser

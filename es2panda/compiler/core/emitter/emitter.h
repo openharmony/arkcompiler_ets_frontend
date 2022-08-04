@@ -17,6 +17,7 @@
 #define ES2PANDA_COMPILER_IR_EMITTER_H
 
 #include <assembly-literals.h>
+#include <compiler/core/emitter/moduleRecordEmitter.h>
 #include <ir/astNode.h>
 #include <lexer/token/sourceLocation.h>
 #include <macros.h>
@@ -44,7 +45,6 @@ class Scope;
 }  // namespace panda::es2panda::binder
 
 namespace panda::es2panda::compiler {
-
 class PandaGen;
 class LiteralBuffer;
 class DebugInfo;
@@ -100,17 +100,16 @@ public:
     NO_MOVE_SEMANTIC(Emitter);
 
     void AddFunction(FunctionEmitter *func);
+    void AddSourceTextModuleRecord(ModuleRecordEmitter *module, const CompilerContext *context);
     static void DumpAsm(const panda::pandasm::Program *prog);
     panda::pandasm::Program *Finalize(bool dumpDebugInfo);
 
 private:
     void GenESAnnoatationRecord();
-    void GenESModuleModeRecord(bool isModule);
 
     std::mutex m_;
     panda::pandasm::Program *prog_;
 };
-
 }  // namespace panda::es2panda::compiler
 
 #endif

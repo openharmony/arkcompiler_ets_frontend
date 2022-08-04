@@ -82,10 +82,31 @@ public:
         return IsLetDecl() || IsConstDecl() || IsClassDecl();
     }
 
+    DeclarationFlags Flags() const
+    {
+        return flags_;
+    }
+
+    void AddFlag(DeclarationFlags flag)
+    {
+        flags_ |= flag;
+    }
+
+    bool HasFlag(DeclarationFlags flag) const
+    {
+        return (flags_ & flag) != 0;
+    }
+
+    bool IsImportOrExportDecl() const
+    {
+        return HasFlag(DeclarationFlags::IMPORT | DeclarationFlags::EXPORT);
+    }
+
 protected:
     explicit Decl(util::StringView name) : name_(name) {}
 
     util::StringView name_;
+    DeclarationFlags flags_ {};
     const ir::AstNode *node_ {};
 };
 
@@ -252,70 +273,6 @@ public:
     {
         return DeclType::PARAM;
     }
-};
-
-class ImportDecl : public Decl {
-public:
-    explicit ImportDecl(util::StringView importName, util::StringView localName)
-        : Decl(localName), importName_(importName)
-    {
-    }
-
-    explicit ImportDecl(util::StringView importName, util::StringView localName, const ir::AstNode *node)
-        : Decl(localName), importName_(importName)
-    {
-        BindNode(node);
-    }
-
-    const util::StringView &ImportName() const
-    {
-        return importName_;
-    }
-
-    const util::StringView &LocalName() const
-    {
-        return name_;
-    }
-
-    DeclType Type() const override
-    {
-        return DeclType::IMPORT;
-    }
-
-private:
-    util::StringView importName_;
-};
-
-class ExportDecl : public Decl {
-public:
-    explicit ExportDecl(util::StringView exportName, util::StringView localName)
-        : Decl(localName), exportName_(exportName)
-    {
-    }
-
-    explicit ExportDecl(util::StringView exportName, util::StringView localName, const ir::AstNode *node)
-        : Decl(localName), exportName_(exportName)
-    {
-        BindNode(node);
-    }
-
-    const util::StringView &ExportName() const
-    {
-        return exportName_;
-    }
-
-    const util::StringView &LocalName() const
-    {
-        return name_;
-    }
-
-    DeclType Type() const override
-    {
-        return DeclType::EXPORT;
-    }
-
-private:
-    util::StringView exportName_;
 };
 
 }  // namespace panda::es2panda::binder

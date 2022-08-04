@@ -345,10 +345,9 @@ public:
     void DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctorId, int32_t litIdx, VReg lexenv,
                                VReg base);
 
-    void ImportModule(const ir::AstNode *node, const util::StringView &name);
-    void LoadModuleVariable(const ir::AstNode *node, VReg module, const util::StringView &name);
-    void StoreModuleVar(const ir::AstNode *node, const util::StringView &name);
-    void CopyModule(const ir::AstNode *node, VReg module);
+    void LoadModuleVariable(const ir::AstNode *node, const util::StringView &name, bool isLocalExport);
+    void StoreModuleVariable(const ir::AstNode *node, const util::StringView &name);
+    void GetModuleNamespace(const ir::AstNode *node, const util::StringView &name);
 
     void StSuperByName(const ir::AstNode *node, VReg obj, const util::StringView &key);
     void LdSuperByName(const ir::AstNode *node, VReg obj, const util::StringView &key);

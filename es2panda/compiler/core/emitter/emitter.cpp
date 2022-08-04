@@ -37,7 +37,6 @@
 #include <utility>
 
 namespace panda::es2panda::compiler {
-
 constexpr const auto LANG_EXT = panda::pandasm::extensions::Language::ECMASCRIPT;
 
 FunctionEmitter::FunctionEmitter(ArenaAllocator *allocator, const PandaGen *pg)
@@ -359,7 +358,6 @@ Emitter::Emitter(const CompilerContext *context)
 
     prog_->function_table.reserve(context->Binder()->Functions().size());
     GenESAnnoatationRecord();
-    GenESModuleModeRecord(context->Binder()->Program()->Kind() == parser::ScriptKind::MODULE);
 }
 
 Emitter::~Emitter()
@@ -373,22 +371,6 @@ void Emitter::GenESAnnoatationRecord()
     annotationRecord.metadata->SetAttribute("external");
     annotationRecord.metadata->SetAccessFlags(panda::ACC_ANNOTATION);
     prog_->record_table.emplace(annotationRecord.name, std::move(annotationRecord));
-}
-
-void Emitter::GenESModuleModeRecord(bool isModule)
-{
-    auto modeRecord = panda::pandasm::Record("_ESModuleMode", LANG_EXT);
-    modeRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
-
-    auto modeField = panda::pandasm::Field(LANG_EXT);
-    modeField.name = "isModule";
-    modeField.type = panda::pandasm::Type("u8", 0);
-    modeField.metadata->SetValue(
-        panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(isModule)));
-
-    modeRecord.field_list.emplace_back(std::move(modeField));
-
-    prog_->record_table.emplace(modeRecord.name, std::move(modeRecord));
 }
 
 void Emitter::AddFunction(FunctionEmitter *func)
@@ -406,6 +388,26 @@ void Emitter::AddFunction(FunctionEmitter *func)
 
     auto *function = func->Function();
     prog_->function_table.emplace(function->name, std::move(*function));
+}
+
+void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, const CompilerContext *context)
+{
+    std::lock_guard<std::mutex> lock(m_);
+
+    auto ecmaModuleRecord = panda::pandasm::Record("_ESModuleRecord", LANG_EXT);
+    ecmaModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
+
+    auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
+    moduleIdxField.name = std::string {context->Binder()->Program()->SourceFile()};
+    moduleIdxField.type = panda::pandasm::Type("u32", 0);
+    moduleIdxField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(
+        static_cast<uint32_t>(module->Index())));
+    ecmaModuleRecord.field_list.emplace_back(std::move(moduleIdxField));
+    prog_->record_table.emplace(ecmaModuleRecord.name, std::move(ecmaModuleRecord));
+
+    auto &moduleLiteralsBuffer = module->Buffer();
+    auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(moduleLiteralsBuffer));
+    prog_->literalarray_table.emplace(std::to_string(module->Index()), std::move(literalArrayInstance));
 }
 
 void Emitter::DumpAsm(const panda::pandasm::Program *prog)
@@ -454,5 +456,4 @@ panda::pandasm::Program *Emitter::Finalize(bool dumpDebugInfo)
     prog_ = nullptr;
     return prog;
 }
-
 }  // namespace panda::es2panda::compiler

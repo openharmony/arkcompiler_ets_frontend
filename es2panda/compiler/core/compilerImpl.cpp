@@ -17,7 +17,7 @@
 
 #include <compiler/core/compileQueue.h>
 #include <compiler/core/compilerContext.h>
-#include <compiler/core/emitter.h>
+#include <compiler/core/emitter/emitter.h>
 #include <typescript/checker.h>
 #include <es2panda.h>
 #include <parser/program/program.h>

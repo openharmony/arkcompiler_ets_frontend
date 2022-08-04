@@ -16,10 +16,12 @@
 #include "classDeclaration.h"
 
 #include <compiler/base/lreference.h>
+#include <compiler/core/pandagen.h>
 #include <ir/astDump.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/decorator.h>
 #include <ir/expressions/identifier.h>
+#include <ir/module/exportDefaultDeclaration.h>
 
 namespace panda::es2panda::ir {
 
@@ -39,7 +41,11 @@ void ClassDeclaration::Dump(ir::AstDumper *dumper) const
 
 void ClassDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    auto lref = compiler::LReference::CreateLRef(pg, def_->Ident(), true);
+    // [ClassDeclaration] without [Identifier] must have parent node
+    // of [ExportDefaultDeclaration] during compiling phase. So we use
+    // the parent node to create a lreference with boundName of [*default*].
+    const auto *node = def_->Ident() ? def_->Ident() : this->Parent();
+    auto lref = compiler::LReference::CreateLRef(pg, node, true);
     def_->Compile(pg);
     lref.SetValue();
 }

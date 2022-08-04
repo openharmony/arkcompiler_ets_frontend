@@ -28,6 +28,7 @@ class BlockStatement;
 class CatchClause;
 class ClassDefinition;
 class Expression;
+class ExportNamedDeclaration;
 class ForUpdateStatement;
 class Identifier;
 class ScriptFunction;
@@ -58,6 +59,9 @@ public:
     T *AddDecl(const lexer::SourcePosition &pos, Args &&... args);
 
     template <typename T, typename... Args>
+    T *AddDecl(const lexer::SourcePosition &pos, DeclarationFlags flag, Args &&... args);
+
+    template <typename T, typename... Args>
     T *AddTsDecl(const lexer::SourcePosition &pos, Args &&... args);
 
     ParameterDecl *AddParamDecl(const ir::AstNode *param);
@@ -67,12 +71,13 @@ public:
         return scope_;
     }
 
-    GlobalScope *TopScope() const
+    FunctionScope *TopScope() const
     {
         return topScope_;
     }
 
     [[noreturn]] void ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name);
+    [[noreturn]] void ThrowUndeclaredExport(const lexer::SourcePosition &pos, const util::StringView &name);
 
     template <typename T>
     friend class LexicalScope;
@@ -141,9 +146,10 @@ private:
     void LookupIdentReference(ir::Identifier *ident);
     void ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode);
     void ResolveReferences(const ir::AstNode *parent);
+    void ValidateExportDecl(const ir::ExportNamedDeclaration *exportDecl);
 
     parser::Program *program_ {};
-    GlobalScope *topScope_ {};
+    FunctionScope *topScope_ {};
     Scope *scope_ {};
     ArenaVector<FunctionScope *> functionScopes_;
     ArenaSet<util::StringView> functionNames_;
@@ -208,6 +214,19 @@ template <typename T, typename... Args>
 T *Binder::AddDecl(const lexer::SourcePosition &pos, Args &&... args)
 {
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
+
+    if (scope_->AddDecl(Allocator(), decl, program_->Extension())) {
+        return decl;
+    }
+
+    ThrowRedeclaration(pos, decl->Name());
+}
+
+template <typename T, typename... Args>
+T *Binder::AddDecl(const lexer::SourcePosition &pos, DeclarationFlags flag, Args &&... args)
+{
+    T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
+    decl->AddFlag(flag);
 
     if (scope_->AddDecl(Allocator(), decl, program_->Extension())) {
         return decl;

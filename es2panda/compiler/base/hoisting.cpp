@@ -16,10 +16,22 @@
 #include "hoisting.h"
 
 #include <ir/base/scriptFunction.h>
+#include <binder/binder.h>
 #include <binder/scope.h>
 #include <compiler/core/pandagen.h>
+#include <parser/module/sourceTextModuleRecord.h>
 
 namespace panda::es2panda::compiler {
+
+static void StoreModuleVarOrLocalVar(PandaGen *pg, binder::ScopeFindResult &result, const binder::Decl *decl)
+{
+    if (decl->IsImportOrExportDecl()) {
+        ASSERT(pg->Scope()->IsModuleScope());
+        pg->StoreModuleVariable(decl->Node(), decl->Name());
+    } else {
+        pg->StoreAccToLexEnv(decl->Node(), result, true);
+    }
+}
 
 static void HoistVar(PandaGen *pg, binder::Variable *var, const binder::VarDecl *decl)
 {
@@ -39,7 +51,7 @@ static void HoistVar(PandaGen *pg, binder::Variable *var, const binder::VarDecl 
     binder::ScopeFindResult result(decl->Name(), scope, 0, var);
 
     pg->LoadConst(decl->Node(), Constant::JS_UNDEFINED);
-    pg->StoreAccToLexEnv(decl->Node(), result, true);
+    StoreModuleVarOrLocalVar(pg, result, decl);
 }
 
 static void HoistFunction(PandaGen *pg, binder::Variable *var, const binder::FunctionDecl *decl)
@@ -59,7 +71,23 @@ static void HoistFunction(PandaGen *pg, binder::Variable *var, const binder::Fun
     binder::ScopeFindResult result(decl->Name(), scope, 0, var);
 
     pg->DefineFunction(decl->Node(), scriptFunction, internalName);
-    pg->StoreAccToLexEnv(decl->Node(), result, true);
+    StoreModuleVarOrLocalVar(pg, result, decl);
+}
+
+static void HoistNameSpaceImports(PandaGen *pg)
+{
+    if (pg->Scope()->IsModuleScope()) {
+        parser::SourceTextModuleRecord *moduleRecord = pg->Binder()->Program()->ModuleRecord();
+        ASSERT(moduleRecord != nullptr);
+        for (auto nameSpaceEntry : moduleRecord->GetNamespaceImportEntries()) {
+            auto *var = pg->TopScope()->FindLocal(nameSpaceEntry->localName_);
+            ASSERT(var != nullptr);
+            auto *node = var->Declaration()->Node();
+            ASSERT(node != nullptr);
+            pg->GetModuleNamespace(node, nameSpaceEntry->localName_);
+            pg->StoreVar(node, {nameSpaceEntry->localName_, pg->TopScope(), 0, var}, true);
+        }
+    }
 }
 
 void Hoisting::Hoist(PandaGen *pg)
@@ -81,6 +109,8 @@ void Hoisting::Hoist(PandaGen *pg)
             HoistFunction(pg, var, decl->AsFunctionDecl());
         }
     }
+
+    HoistNameSpaceImports(pg);
 }
 
 }  // namespace panda::es2panda::compiler

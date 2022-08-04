@@ -231,7 +231,10 @@ void PandaGen::LoadVar(const ir::Identifier *node, const binder::ScopeFindResult
     }
 
     if (var->IsModuleVariable()) {
-        LoadModuleVariable(node, var->AsModuleVariable()->ModuleReg(), var->AsModuleVariable()->ExoticName());
+        LoadModuleVariable(node, var->Name(), var->HasFlag(binder::VariableFlags::LOCAL_EXPORT));
+        if (var->Declaration()->IsLetOrConstOrClassDecl()) {
+            ThrowUndefinedIfHole(node, var->Name());
+        }
         return;
     }
 
@@ -260,7 +263,22 @@ void PandaGen::StoreVar(const ir::AstNode *node, const binder::ScopeFindResult &
     }
 
     if (var->IsModuleVariable()) {
-        ThrowConstAssignment(node, var->Name());
+        if (!isDeclaration && var->Declaration()->IsConstDecl()) {
+            ThrowConstAssignment(node, var->Name());
+            return;
+        }
+
+        if (!isDeclaration &&
+            (var->Declaration()->IsLetDecl() || var->Declaration()->IsClassDecl())) {
+            RegScope rs(this);
+            VReg valueReg = AllocReg();
+            StoreAccumulator(node, valueReg);
+            LoadModuleVariable(node, var->Name(), true);
+            ThrowUndefinedIfHole(node, var->Name());
+            LoadAccumulator(node, valueReg);
+        }
+
+        StoreModuleVariable(node, var->Name());
         return;
     }
 
@@ -1381,15 +1399,6 @@ void PandaGen::CloseIterator(const ir::AstNode *node, VReg iter)
     ra_.Emit<EcmaCloseiterator>(node, iter);
 }
 
-void PandaGen::ImportModule(const ir::AstNode *node, const util::StringView &name)
-{
-    /*
-     *  TODO: module
-     *  sa_.Emit<EcmaImportmodule>(node, name);
-     *  strings_.insert(name);
-     */
-}
-
 void PandaGen::DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctorId, int32_t litIdx,
                                      VReg lexenv, VReg base)
 {
@@ -1398,24 +1407,22 @@ void PandaGen::DefineClassWithBuffer(const ir::AstNode *node, const util::String
     strings_.insert(ctorId);
 }
 
-void PandaGen::LoadModuleVariable(const ir::AstNode *node, VReg module, const util::StringView &name)
+void PandaGen::LoadModuleVariable(const ir::AstNode *node, const util::StringView &name, bool isLocalExport)
 {
-    /*
-     *  TODO: module
-     *  ra_.Emit<EcmaLdmodvarbyname>(node, name, module);
-     *  strings_.insert(name);
-     */
+    ra_.Emit<EcmaLdmodulevar>(node, name, isLocalExport ? static_cast<uint8_t>(1) : static_cast<uint8_t>(0));
+    strings_.insert(name);
 }
 
-void PandaGen::StoreModuleVar(const ir::AstNode *node, const util::StringView &name)
+void PandaGen::StoreModuleVariable(const ir::AstNode *node, const util::StringView &name)
 {
     sa_.Emit<EcmaStmodulevar>(node, name);
     strings_.insert(name);
 }
 
-void PandaGen::CopyModule(const ir::AstNode *node, VReg module)
+void PandaGen::GetModuleNamespace(const ir::AstNode *node, const util::StringView &name)
 {
-    ra_.Emit<EcmaCopymodule>(node, module);
+    sa_.Emit<EcmaGetmodulenamespace>(node, name);
+    strings_.insert(name);
 }
 
 void PandaGen::StSuperByName(const ir::AstNode *node, VReg obj, const util::StringView &key)
