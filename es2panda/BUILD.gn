@@ -186,7 +186,7 @@ es2panda_src = [
   "lexer/token/token.cpp",
   "parser/context/parserContext.cpp",
   "parser/expressionParser.cpp",
-  "parser/module/module.cpp",
+  "parser/module/sourceTextModuleRecord.cpp",
   "parser/parserImpl.cpp",
   "parser/program/program.cpp",
   "parser/statementParser.cpp",

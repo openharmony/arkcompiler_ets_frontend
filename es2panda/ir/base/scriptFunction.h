@@ -49,7 +49,8 @@ public:
           body_(body),
           returnTypeAnnotation_(returnTypeAnnotation),
           flags_(flags),
-          declare_(declare)
+          declare_(declare),
+          exportDefault_(false)
     {
     }
 
@@ -133,12 +134,18 @@ public:
         id_ = id;
     }
 
+    void SetAsExportDefault()
+    {
+        exportDefault_ = true;
+    }
+
     void AddFlag(ir::ScriptFunctionFlags flags)
     {
         flags_ |= flags;
     }
 
     size_t FormalParamsLength() const;
+    util::StringView GetName() const;
 
     binder::FunctionScope *Scope() const
     {
@@ -159,6 +166,7 @@ private:
     Expression *returnTypeAnnotation_;
     ir::ScriptFunctionFlags flags_;
     bool declare_;
+    bool exportDefault_;
 };
 
 }  // namespace panda::es2panda::ir

@@ -34,9 +34,9 @@ void ExportDefaultDeclaration::Dump(ir::AstDumper *dumper) const
 void ExportDefaultDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
     decl_->Compile(pg);
-    if (!decl_->IsFunctionDeclaration() && !decl_->IsClassDeclaration()) {
-        // export default without [Function Declaration] & [Class Declaration]
-        // is [ExportAssignment]. e.g. export default 42 (42 be exported as [default])
+    if (decl_->IsExpression()) {
+        // export default [AssignmentExpression]
+        // e.g. export default 42 (42 be exported as [default])
         pg->StoreModuleVariable(this, parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME);
     }
 }

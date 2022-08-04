@@ -41,15 +41,13 @@ void ClassDeclaration::Dump(ir::AstDumper *dumper) const
 
 void ClassDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    if (def_->Ident()) {
-        auto lref = compiler::LReference::CreateLRef(pg, def_->Ident(), true);
-        def_->Compile(pg);
-        lref.SetValue();
-    } else {
-        ASSERT(this->Parent()->IsExportDefaultDeclaration() && pg->Scope()->IsModuleScope());
-        def_->Compile(pg);
-        pg->StoreModuleVariable(def_, parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME);
-    }
+    // [ClassDeclaration] without [Identifier] must have parent node
+    // of [ExportDefaultDeclaration] during compiling phase. So we use
+    // the parent node to create a lreference with boundName of [*default*].
+    const auto *node = def_->Ident() ? def_->Ident() : this->Parent();
+    auto lref = compiler::LReference::CreateLRef(pg, node, true);
+    def_->Compile(pg);
+    lref.SetValue();
 }
 
 checker::Type *ClassDeclaration::Check([[maybe_unused]] checker::Checker *checker) const

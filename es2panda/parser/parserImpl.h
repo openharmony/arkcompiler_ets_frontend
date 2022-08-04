@@ -23,7 +23,7 @@
 #include <macros.h>
 #include <mem/arena_allocator.h>
 #include <parser/context/parserContext.h>
-#include <parser/module/module.h>
+#include <parser/module/sourceTextModuleRecord.h>
 #include <parser/parserFlags.h>
 #include <parser/program/program.h>
 #include <util/enumbitops.h>

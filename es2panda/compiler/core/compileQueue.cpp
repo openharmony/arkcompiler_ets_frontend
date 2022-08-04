@@ -167,6 +167,12 @@ void CompileQueue::Wait()
 {
     std::unique_lock<std::mutex> lock(m_);
     jobsFinished_.wait(lock, [this]() { return activeWorkers_ == 0 && jobsCount_ == 0; });
+    for (auto it = jobs_.begin(); it != jobs_.end(); it++) {
+        if (*it != nullptr) {
+            delete *it;
+            *it =nullptr;
+        }
+    }
     jobs_.clear();
 
     if (!errors_.empty()) {

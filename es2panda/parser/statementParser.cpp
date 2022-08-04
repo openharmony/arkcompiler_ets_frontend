@@ -520,10 +520,13 @@ ir::ClassDeclaration *ParserImpl::ParseClassDeclaration(bool idRequired, ArenaVe
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     ir::ClassDefinition *classDefinition = ParseClassDefinition(true, idRequired, isDeclare, isAbstract);
+    if (isExported && !idRequired) {
+        classDefinition->SetAsExportDefault();
+    }
 
     auto location = classDefinition->Ident() ? classDefinition->Ident()->Start() : startLoc;
-    auto className = classDefinition->Ident() ? classDefinition->Ident()->Name() :
-                                                parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME;
+    auto className = classDefinition->GetName();
+    ASSERT(!className.Empty());
 
     binder::DeclarationFlags flag = isExported ? binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
     auto *decl = Binder()->AddDecl<binder::ClassDecl>(location, flag, className);
@@ -982,6 +985,7 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
         if (canBeAnonymous) {
             ir::ScriptFunction *func = ParseFunction(newStatus, isDeclare);
             func->SetStart(startLoc);
+            func->SetAsExportDefault();
 
             auto *funcDecl = AllocNode<ir::FunctionDeclaration>(func);
             funcDecl->SetRange(func->Range());
@@ -1924,7 +1928,7 @@ void ParserImpl::AddImportEntryItem(const ir::StringLiteral *source, const Arena
     }
 
     for (auto *it : *specifiers) {
-        switch(it->Type()) {
+        switch (it->Type()) {
             case ir::AstNodeType::IMPORT_DEFAULT_SPECIFIER: {
                 auto localName = it->AsImportDefaultSpecifier()->Local()->Name();
                 auto importName = parser::SourceTextModuleRecord::DEFAULT_EXTERNAL_NAME;
@@ -1980,7 +1984,7 @@ void ParserImpl::AddExportNamedEntryItem(const ArenaVector<ir::ExportSpecifier *
             auto exportName = exportSpecifier->Exported()->Name();
             auto localName = exportSpecifier->Local()->Name();
             auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(exportName, localName);
-            if(!moduleRecord->AddLocalExportEntry(entry)) {
+            if (!moduleRecord->AddLocalExportEntry(entry)) {
                 ThrowSyntaxError("Duplicate export name of '" + exportName.Mutf8() + "'",
                                  exportSpecifier->Start());
             }
@@ -2013,7 +2017,7 @@ void ParserImpl::AddExportStarEntryItem(const lexer::SourcePosition &startLoc, c
         auto *exportEntry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(
                                               exported->Name(), namespaceExportInternalName);
         moduleRecord->AddStarImportEntry(importEntry);
-        if(!moduleRecord->AddLocalExportEntry(exportEntry)) {
+        if (!moduleRecord->AddLocalExportEntry(exportEntry)) {
             ThrowSyntaxError("Duplicate export name of '" + exported->Name().Mutf8() + "'", exported->Start());
         }
         return;
@@ -2033,20 +2037,15 @@ void ParserImpl::AddExportDefaultEntryItem(const ir::AstNode *declNode)
     auto moduleRecord = GetSourceTextModuleRecord();
     ASSERT(moduleRecord != nullptr);
     util::StringView exportName = parser::SourceTextModuleRecord::DEFAULT_EXTERNAL_NAME;
-    util::StringView localName;
+    util::StringView localName = parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME;
     if (declNode->IsFunctionDeclaration() || declNode->IsClassDeclaration()) {
-        const ir::Identifier *name = declNode->IsFunctionDeclaration() ?
-                                     declNode->AsFunctionDeclaration()->Function()->Id() :
-                                     declNode->AsClassDeclaration()->Definition()->Ident();
-        localName = name == nullptr ? parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME : name->Name();
-    }
-    if (declNode->IsExpression()) {
-        localName = parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME;
+        localName = declNode->IsFunctionDeclaration() ? declNode->AsFunctionDeclaration()->Function()->GetName() :
+                                                        declNode->AsClassDeclaration()->Definition()->GetName();
     }
 
     ASSERT(!localName.Empty());
     auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(exportName, localName);
-    if(!moduleRecord->AddLocalExportEntry(entry)) {
+    if (!moduleRecord->AddLocalExportEntry(entry)) {
         ThrowSyntaxError("Duplicate export name of '" + exportName.Mutf8() + "'", declNode->Start());
     }
 }
@@ -2063,7 +2062,7 @@ void ParserImpl::AddExportLocalEntryItem(const ir::Statement *declNode)
             for (const auto *binding : bindings) {
                 auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(
                                                 binding->Name(), binding->Name());
-                if(!moduleRecord->AddLocalExportEntry(entry)) {
+                if (!moduleRecord->AddLocalExportEntry(entry)) {
                     ThrowSyntaxError("Duplicate export name of '" + binding->Name().Mutf8() + "'", binding->Start());
                 }
             }
@@ -2074,11 +2073,11 @@ void ParserImpl::AddExportLocalEntryItem(const ir::Statement *declNode)
                     declNode->AsFunctionDeclaration()->Function()->Id() :
                     declNode->AsClassDeclaration()->Definition()->Ident();
         if (name == nullptr) {
-           ThrowSyntaxError("A class or function declaration without the default modifier mush have a name.",
-                            declNode->Start());
+            ThrowSyntaxError("A class or function declaration without the default modifier mush have a name.",
+                             declNode->Start());
         }
         auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(name->Name(), name->Name());
-        if(!moduleRecord->AddLocalExportEntry(entry)) {
+        if (!moduleRecord->AddLocalExportEntry(entry)) {
             ThrowSyntaxError("Duplicate export name of '" + name->Name().Mutf8() + "'", name->Start());
         }
     }

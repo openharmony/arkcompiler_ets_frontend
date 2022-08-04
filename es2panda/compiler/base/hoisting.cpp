@@ -19,7 +19,7 @@
 #include <binder/binder.h>
 #include <binder/scope.h>
 #include <compiler/core/pandagen.h>
-#include <parser/module/module.h>
+#include <parser/module/sourceTextModuleRecord.h>
 
 namespace panda::es2panda::compiler {
 

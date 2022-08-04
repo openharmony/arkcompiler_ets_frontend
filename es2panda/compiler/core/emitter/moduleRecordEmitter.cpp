@@ -16,7 +16,6 @@
 #include "moduleRecordEmitter.h"
 
 namespace panda::es2panda::compiler {
-
 void ModuleRecordEmitter::GenModuleRequests()
 {
     ASSERT(moduleRecord_ != nullptr);
@@ -136,5 +135,4 @@ void ModuleRecordEmitter::Generate()
     GenIndirectExportEntries();
     GenStarExportEntries();
 }
-
 }  // namespace panda::es2panda::compiler

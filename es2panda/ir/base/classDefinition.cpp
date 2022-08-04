@@ -45,6 +45,19 @@ const FunctionExpression *ClassDefinition::Ctor() const
     return ctor_->Value();
 }
 
+util::StringView ClassDefinition::GetName() const
+{
+    if (ident_) {
+        return ident_->Name();
+    }
+
+    if (exportDefault_) {
+        return parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME;
+    }
+
+    return "";
+}
+
 void ClassDefinition::Iterate(const NodeTraverser &cb) const
 {
     if (ident_) {

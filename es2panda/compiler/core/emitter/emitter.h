@@ -45,7 +45,6 @@ class Scope;
 }  // namespace panda::es2panda::binder
 
 namespace panda::es2panda::compiler {
-
 class PandaGen;
 class LiteralBuffer;
 class DebugInfo;
@@ -111,7 +110,6 @@ private:
     std::mutex m_;
     panda::pandasm::Program *prog_;
 };
-
 }  // namespace panda::es2panda::compiler
 
 #endif

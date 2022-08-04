@@ -37,7 +37,6 @@
 #include <utility>
 
 namespace panda::es2panda::compiler {
-
 constexpr const auto LANG_EXT = panda::pandasm::extensions::Language::ECMASCRIPT;
 
 FunctionEmitter::FunctionEmitter(ArenaAllocator *allocator, const PandaGen *pg)
@@ -457,5 +456,4 @@ panda::pandasm::Program *Emitter::Finalize(bool dumpDebugInfo)
     prog_ = nullptr;
     return prog;
 }
-
 }  // namespace panda::es2panda::compiler

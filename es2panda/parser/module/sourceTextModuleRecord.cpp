@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 
-#include "module.h"
+#include "sourceTextModuleRecord.h"
 
 namespace panda::es2panda::parser {
-
     int SourceTextModuleRecord::AddModuleRequest(const util::StringView source)
     {
         ASSERT(!source.Empty());
@@ -28,9 +27,9 @@ namespace panda::es2panda::parser {
         return insertedRes.first->second;
     }
 
-    // import x from 'test.js';
-    // import {x} from 'test.js';
-    // import {x as y} from 'test.js';
+    // import x from 'test.js'
+    // import {x} from 'test.js'
+    // import {x as y} from 'test.js'
     // import defaultExport from 'test.js'
     void SourceTextModuleRecord::AddImportEntry(SourceTextModuleRecord::ImportEntry *entry)
     {
@@ -44,7 +43,7 @@ namespace panda::es2panda::parser {
         CheckImplicitIndirectExport(entry);
     }
 
-    // import * as x from 'test.js';
+    // import * as x from 'test.js'
     void SourceTextModuleRecord::AddStarImportEntry(SourceTextModuleRecord::ImportEntry *entry)
     {
         ASSERT(!entry->localName_.Empty());
@@ -53,8 +52,8 @@ namespace panda::es2panda::parser {
         namespaceImportEntries_.push_back(entry);
     }
 
-    // export {x};
-    // export {x as y};
+    // export {x}
+    // export {x as y}
     // export VariableStatement
     // export Declaration
     // export default ...
@@ -78,9 +77,9 @@ namespace panda::es2panda::parser {
         return false;
     }
 
-    // export {x} from 'test.js';
-    // export {x as y} from 'test.js';
-    // import { x } from 'test.js'; export { x };
+    // export {x} from 'test.js'
+    // export {x as y} from 'test.js'
+    // import { x } from 'test.js'; export { x }
     bool SourceTextModuleRecord::AddIndirectExportEntry(SourceTextModuleRecord::ExportEntry *entry)
     {
         ASSERT(!entry->importName_.Empty());
@@ -94,7 +93,7 @@ namespace panda::es2panda::parser {
         return false;
     }
 
-    // export * from 'test.js';
+    // export * from 'test.js'
     void SourceTextModuleRecord::AddStarExportEntry(SourceTextModuleRecord::ExportEntry *entry)
     {
         ASSERT(entry->importName_.Empty());

@@ -282,13 +282,8 @@ void Binder::BuildVarDeclarator(ir::VariableDeclarator *varDecl)
 void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
 {
     if (classDef->Parent()->IsClassDeclaration()) {
-        util::StringView className;
-        if (classDef->Ident()) {
-            className = classDef->Ident()->Name();
-        } else {
-            ASSERT(scope_->IsModuleScope());
-            className = parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME;
-        }
+        util::StringView className = classDef->GetName();
+        ASSERT(!className.Empty());
         ScopeFindResult res = scope_->Find(className);
 
         ASSERT(res.variable && res.variable->Declaration()->IsClassDecl());

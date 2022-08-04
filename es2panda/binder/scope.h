@@ -609,9 +609,9 @@ inline VariableFlags VariableScope::DeclFlagToVariableFlag(DeclarationFlags decl
 {
     VariableFlags varFlag = VariableFlags::NONE;
     if (declFlag & DeclarationFlags::EXPORT) {
-        varFlag |= VariableFlags::LOCAL_EXPORT;
+        varFlag = VariableFlags::LOCAL_EXPORT;
     } else if (declFlag & DeclarationFlags::IMPORT) {
-        varFlag |= VariableFlags::IMPORT;
+        varFlag = VariableFlags::IMPORT;
     }
     return varFlag;
 }

@@ -232,8 +232,9 @@ void PandaGen::LoadVar(const ir::Identifier *node, const binder::ScopeFindResult
 
     if (var->IsModuleVariable()) {
         LoadModuleVariable(node, var->Name(), var->HasFlag(binder::VariableFlags::LOCAL_EXPORT));
-        if (var->Declaration()->IsLetOrConstOrClassDecl())
+        if (var->Declaration()->IsLetOrConstOrClassDecl()) {
             ThrowUndefinedIfHole(node, var->Name());
+        }
         return;
     }
 
@@ -267,7 +268,8 @@ void PandaGen::StoreVar(const ir::AstNode *node, const binder::ScopeFindResult &
             return;
         }
 
-        if (!isDeclaration && var->Declaration()->IsLetDecl()) {
+        if (!isDeclaration &&
+            (var->Declaration()->IsLetDecl() || var->Declaration()->IsClassDecl())) {
             RegScope rs(this);
             VReg valueReg = AllocReg();
             StoreAccumulator(node, valueReg);

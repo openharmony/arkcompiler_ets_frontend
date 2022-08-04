@@ -17,12 +17,11 @@
 #define ES2PANDA_COMPILER_IR_MODULERECORD_EMITTER_H
 
 #include <assembly-literals.h>
-#include <parser/module/module.h>
+#include <parser/module/sourceTextModuleRecord.h>
 
 #include <vector>
 
 namespace panda::es2panda::compiler {
-
 class ModuleRecordEmitter {
 public:
     explicit ModuleRecordEmitter(parser::SourceTextModuleRecord *moduleRecord, int32_t bufferIdx)
@@ -55,7 +54,6 @@ private:
     int32_t bufferIdx_ {};
     std::vector<panda::pandasm::LiteralArray::Literal> buffer_;
 };
-
 }  // namespace panda::es2panda::compiler
 
 #endif

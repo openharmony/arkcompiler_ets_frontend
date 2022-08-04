@@ -45,7 +45,7 @@ static void ExpandLoadLexVar(PandaGen *pg, const ir::AstNode *node, const binder
     pg->LoadLexicalVar(node, result.lexLevel, result.variable->AsLocalVariable()->LexIdx());
     const auto *decl = result.variable->Declaration();
     if (decl->IsLetOrConstOrClassDecl()) {
-       pg->ThrowUndefinedIfHole(node, result.variable->Name());
+        pg->ThrowUndefinedIfHole(node, result.variable->Name());
     }
 }
 

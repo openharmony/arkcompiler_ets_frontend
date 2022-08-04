@@ -30,7 +30,7 @@
 #include <ir/expressions/objectExpression.h>
 #include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
-#include <parser/module/module.h>
+#include <parser/module/sourceTextModuleRecord.h>
 
 namespace panda::es2panda::util {
 

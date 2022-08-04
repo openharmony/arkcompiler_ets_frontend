@@ -19,7 +19,7 @@
 #include <lexer/token/sourceLocation.h>
 #include <macros.h>
 #include <mem/arena_allocator.h>
-#include <parser/module/module.h>
+#include <parser/module/sourceTextModuleRecord.h>
 #include <util/ustring.h>
 
 #include "es2panda.h"
