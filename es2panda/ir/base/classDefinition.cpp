@@ -165,6 +165,10 @@ int32_t ClassDefinition::CreateClassStaticProperties(compiler::PandaGen *pg, uti
                 break;
             }
 
+            if (!prop->IsStatic()) {
+                instancePropertyCount++;
+            }
+
             literalBuf->Add(pg->Allocator()->New<StringLiteral>(name));
             literalBuf->Add(nullptr); // save for method internalname
             literalBuf->Add(nullptr); // save for method affiliate
@@ -197,10 +201,6 @@ int32_t ClassDefinition::CreateClassStaticProperties(compiler::PandaGen *pg, uti
             default: {
                 UNREACHABLE();
             }
-        }
-
-        if (!prop->IsStatic()) {
-            instancePropertyCount++;
         }
     }
 
