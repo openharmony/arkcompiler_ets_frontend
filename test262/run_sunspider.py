@@ -217,7 +217,7 @@ class ArkProgram():
         cmd_args = []
         output_file = os.path.splitext(os.path.join(BASE_OUT_DIR, os.path.split(dependency)[1]))[0]
         output_abc = f"{output_file}.abc"
-        frontend_tool = ARK_FRONTEND_BINARY_LIST[1]
+        frontend_tool = self.ark_frontend_binary
         cmd_args = [frontend_tool, dependency, '--output', output_abc, '--module']
         proc = subprocess.Popen(cmd_args)
         proc.wait()
