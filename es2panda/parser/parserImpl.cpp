@@ -2006,6 +2006,7 @@ ir::MethodDefinition *ParserImpl::ParseClassMethod(ClassElmentDescriptor *desc,
     }
 
     ir::ScriptFunction *func = ParseFunction(desc->newStatus, isDeclare);
+    lexer_->NextToken();
 
     if (func->IsOverload() && !decorators.empty()) {
         ThrowSyntaxError("A decorator can only decorate a method implementation, not an overload.",

@@ -797,14 +797,15 @@ ir::BlockStatement *ParserImpl::ParseBlockStatement(binder::Scope *scope)
     blockNode->SetRange({startLoc, lexer_->GetToken().End()});
     scope->BindNode(blockNode);
 
-    lexer_->NextToken();
     return blockNode;
 }
 
 ir::BlockStatement *ParserImpl::ParseBlockStatement()
 {
     auto localCtx = binder::LexicalScope<binder::LocalScope>(Binder());
-    return ParseBlockStatement(localCtx.GetScope());
+    auto *blockNode = ParseBlockStatement(localCtx.GetScope());
+    lexer_->NextToken();
+    return blockNode;
 }
 
 ir::BreakStatement *ParserImpl::ParseBreakStatement()
@@ -984,6 +985,7 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
         lexer_->GetToken().Type() != lexer::TokenType::KEYW_AWAIT) {
         if (canBeAnonymous) {
             ir::ScriptFunction *func = ParseFunction(newStatus, isDeclare);
+            lexer_->NextToken();
             func->SetStart(startLoc);
             func->SetAsExportDefault();
 
@@ -1013,6 +1015,7 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
 
     newStatus |= ParserStatus::FUNCTION_DECLARATION;
     ir::ScriptFunction *func = ParseFunction(newStatus, isDeclare);
+    lexer_->NextToken();
 
     func->SetIdent(identNode);
     func->SetStart(startLoc);
@@ -1646,6 +1649,7 @@ ir::CatchClause *ParserImpl::ParseCatchClause()
     catchScope->AssignParamScope(catchParamScope);
 
     ir::BlockStatement *catchBlock = ParseBlockStatement(catchScope);
+    lexer_->NextToken();
     lexer::SourcePosition endLoc = catchBlock->End();
 
     auto *catchClause = AllocNode<ir::CatchClause>(catchScope, param, catchBlock);

@@ -208,8 +208,6 @@ void FunctionEmitter::GenInstructionDebugInfo(const IRNode *ins, panda::pandasm:
     constexpr size_t INVALID_LINE = -1;
     constexpr uint32_t INVALID_COL = -1;
 
-    ASSERT(astNode != nullptr);
-
     if (astNode == FIRST_NODE_OF_FUNCTION) {
         astNode = pg_->Debuginfo().firstStmt;
         if (!astNode) {

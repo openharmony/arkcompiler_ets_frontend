@@ -2032,6 +2032,7 @@ ir::Expression *ParserImpl::ParsePropertyValue(const ir::PropertyKind *propertyK
 
     ir::ScriptFunction *methodDefinitonNode =
         ParseFunction(*methodStatus | ParserStatus::FUNCTION | ParserStatus::ALLOW_SUPER);
+    lexer_->NextToken();
     methodDefinitonNode->AddFlag(ir::ScriptFunctionFlags::METHOD);
 
     size_t paramsSize = methodDefinitonNode->Params().size();
@@ -2330,6 +2331,7 @@ ir::FunctionExpression *ParserImpl::ParseFunctionExpression(ParserStatus newStat
     }
 
     ir::ScriptFunction *functionNode = ParseFunction(newStatus);
+    lexer_->NextToken();
     functionNode->SetStart(startLoc);
 
     if (ident) {
