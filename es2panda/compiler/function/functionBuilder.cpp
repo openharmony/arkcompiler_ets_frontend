@@ -44,6 +44,10 @@ void FunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
     const auto *rootNode = pg_->RootNode();
 
     if (!rootNode->IsScriptFunction() || !rootNode->AsScriptFunction()->IsConstructor()) {
+        if (pg_->isDebuggerEvaluateExpressionMode()) {
+            pg_->EmitReturn(node);
+            return;
+        }
         pg_->EmitReturnUndefined(node);
         return;
     }

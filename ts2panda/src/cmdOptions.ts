@@ -46,7 +46,8 @@ const ts2pandaOptions = [
     { name: 'debug-type', alias: 'g', type: Boolean, defaultValue: false, description: "Print type-related log. Default: false" },
     { name: 'output-type', type: Boolean, defaultValue: false, description: "set output type."},
     { name: 'display-typeinfo', type: Boolean, defaultValue: false, description: "Display typeinfo of pairs of instruction orders and types when enable-typeinfo is true" },
-    { name: 'function-sourcecode', type: Boolean, defaultValue: false, description: "Record functions' sourceCode to support the feature of [function].toString()" }
+    { name: 'function-sourcecode', type: Boolean, defaultValue: false, description: "Record functions' sourceCode to support the feature of [function].toString()" },
+    { name: 'expression-watch-toolchain', type: String, defaultValue: "es2panda", description: "Specify the tool chain used to transform the expression" }
 ]
 
 
@@ -126,6 +127,16 @@ export class CmdOptions {
             return 0;
         }
         return this.options["debug-add-watch"][2];
+    }
+
+    static watchViaEs2pandaToolchain(): boolean {
+        if (!this.options) {
+            return false;
+        }
+        if (this.options["expression-watch-toolchain"] && this.options["expression-watch-toolchain"] != "es2panda") {
+            return false;
+        }
+        return true;
     }
 
     static isCommonJs(): boolean {

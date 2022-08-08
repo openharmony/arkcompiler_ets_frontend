@@ -33,7 +33,7 @@ class Emitter;
 
 class CompilerContext {
 public:
-    CompilerContext(binder::Binder *binder, bool isDebug);
+    CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode);
     NO_COPY_SEMANTIC(CompilerContext);
     NO_MOVE_SEMANTIC(CompilerContext);
     ~CompilerContext() = default;
@@ -69,12 +69,18 @@ public:
         return isDebug_;
     }
 
+    bool isDebuggerEvaluateExpressionMode() const
+    {
+        return isDebuggerEvaluateExpressionMode_;
+    }
+
 private:
     binder::Binder *binder_;
     std::unique_ptr<Emitter> emitter_;
     int32_t literalBufferIdx_ {0};
     std::mutex m_;
     bool isDebug_;
+    bool isDebuggerEvaluateExpressionMode_;
 };
 
 }  // namespace panda::es2panda::compiler

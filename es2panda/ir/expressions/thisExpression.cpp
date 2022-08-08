@@ -35,7 +35,11 @@ void ThisExpression::Compile(compiler::PandaGen *pg) const
     binder::ScopeFindResult res = pg->Scope()->Find(binder::Binder::MANDATORY_PARAM_THIS);
 
     ASSERT(res.variable && res.variable->IsLocalVariable());
-    pg->LoadAccFromLexEnv(this, res);
+    if (pg->isDebuggerEvaluateExpressionMode()) {
+        pg->LoadObjByNameViaDebugger(this, "this", true);
+    } else {
+        pg->LoadAccFromLexEnv(this, res);
+    }
 
     const ir::ScriptFunction *func = util::Helpers::GetContainingConstructor(this);
 
