@@ -504,7 +504,7 @@ class SavedStatusContext {
 public:
     explicit SavedStatusContext(ParserContext *ctx)
         // NOLINTNEXTLINE(readability-magic-numbers)
-        : ctx_(ctx), savedStatus_(static_cast<ParserStatus>(ctx->Status() & status))
+        : ctx_(ctx), savedStatus_(static_cast<ParserStatus>(ctx->Status()))
     {
         // NOLINTNEXTLINE(readability-magic-numbers)
         ctx->Status() |= status;
@@ -515,9 +515,7 @@ public:
 
     ~SavedStatusContext()
     {
-        if (savedStatus_ == ParserStatus::NO_OPTS) {
-            ctx_->Status() &= ~savedStatus_;
-        }
+        ctx_->Status() = savedStatus_;
     }
 
 private:
