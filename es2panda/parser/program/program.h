@@ -34,7 +34,7 @@ class Binder;
 
 namespace panda::es2panda::parser {
 
-enum class ScriptKind { SCRIPT, MODULE };
+enum class ScriptKind { SCRIPT, MODULE, COMMONJS };
 
 class Program {
 public:

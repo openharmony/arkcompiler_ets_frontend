@@ -64,7 +64,7 @@ def gen_abc_info(input_arguments):
         cmd.insert(src_index, '--module')
     if input_arguments.commonjs:
         src_index = cmd.index(input_arguments.src_js)
-        # insert commonjs option to cmd later
+        cmd.insert(src_index, '--commonjs')
         # insert d.ts option to cmd later
     run_command(cmd, path)
 

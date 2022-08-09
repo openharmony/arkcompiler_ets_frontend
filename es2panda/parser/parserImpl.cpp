@@ -108,28 +108,50 @@ std::unique_ptr<lexer::Lexer> ParserImpl::InitLexer(const std::string &fileName,
     return lexer;
 }
 
-Program ParserImpl::ParseScript(const std::string &fileName, const std::string &source)
+Program ParserImpl::Parse(const std::string &fileName, const std::string &source, ScriptKind kind)
 {
-    auto lexer = InitLexer(fileName, source);
+    program_.SetKind(kind);
 
-    ParseProgram(ScriptKind::SCRIPT);
+    /*
+     * In order to make the lexer's memory alive, the return value 'lexer' can not be omitted.
+     */
+    auto lexer = InitLexer(fileName, source);
+    switch (kind) {
+        case ScriptKind::SCRIPT: {
+            ParseScript(fileName, source);
+            break;
+        }
+        case ScriptKind::MODULE: {
+            ParseModule(fileName, source);
+            break;
+        }
+        case ScriptKind::COMMONJS: {
+            ParseCommonjs(fileName, source);
+            break;
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+    Binder()->IdentifierAnalysis();
     return std::move(program_);
 }
 
-Program ParserImpl::ParseModule(const std::string &fileName, const std::string &source)
+void ParserImpl::ParseScript(const std::string &fileName, const std::string &source)
 {
-    auto lexer = InitLexer(fileName, source);
+    ParseProgram(ScriptKind::SCRIPT);
+}
 
+void ParserImpl::ParseModule(const std::string &fileName, const std::string &source)
+{
     context_.Status() |= (ParserStatus::MODULE);
     ParseProgram(ScriptKind::MODULE);
-    return std::move(program_);
 }
 
 void ParserImpl::ParseProgram(ScriptKind kind)
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer_->NextToken();
-    program_.SetKind(kind);
 
     auto statements = ParseStatementList(StatementParsingFlags::STMT_GLOBAL_LEXICAL);
 
@@ -138,7 +160,6 @@ void ParserImpl::ParseProgram(ScriptKind kind)
     blockStmt->SetRange({startLoc, lexer_->GetToken().End()});
 
     program_.SetAst(blockStmt);
-    Binder()->IdentifierAnalysis();
 }
 
 /*

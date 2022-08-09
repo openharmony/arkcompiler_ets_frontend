@@ -18,6 +18,7 @@
 
 #include <macros.h>
 #include <es2panda.h>
+#include <parser/program/program.h>
 
 #include <exception>
 #include <fstream>
@@ -34,9 +35,8 @@ namespace panda::es2panda::aot {
 enum class OptionFlags {
     DEFAULT = 0,
     PARSE_ONLY = 1 << 1,
-    PARSE_MODULE = 1 << 2,
-    SIZE_STAT = 1 << 3,
-    DEBUGGER_EVALUATE_EXPRESSION = 1 << 4,
+    SIZE_STAT = 1 << 2,
+    DEBUGGER_EVALUATE_EXPRESSION = 1 << 3,
 };
 
 inline std::underlying_type_t<OptionFlags> operator&(OptionFlags a, OptionFlags b)
@@ -72,6 +72,11 @@ public:
         return compilerOptions_;
     }
 
+    es2panda::parser::ScriptKind ScriptKind() const
+    {
+        return scriptKind_;
+    }
+
     const std::string &ParserInput() const
     {
         return parserInput_;
@@ -102,11 +107,6 @@ public:
         return threadCount_;
     }
 
-    bool ParseModule() const
-    {
-        return (options_ & OptionFlags::PARSE_MODULE) != 0;
-    }
-
     bool ParseOnly() const
     {
         return (options_ & OptionFlags::PARSE_ONLY) != 0;
@@ -127,6 +127,7 @@ public:
 private:
     es2panda::ScriptExtension extension_ {es2panda::ScriptExtension::JS};
     es2panda::CompilerOptions compilerOptions_ {};
+    es2panda::parser::ScriptKind scriptKind_ {es2panda::parser::ScriptKind::SCRIPT};
     OptionFlags options_ {OptionFlags::DEFAULT};
     panda::PandArgParser *argparser_;
     std::string parserInput_;

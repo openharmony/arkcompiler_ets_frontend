@@ -27,6 +27,7 @@ struct Program;
 namespace panda::es2panda {
 namespace parser {
 class ParserImpl;
+enum class ScriptKind;
 }  // namespace parser
 
 namespace compiler {
@@ -40,12 +41,14 @@ enum class ScriptExtension {
 };
 
 struct SourceFile {
-    SourceFile(std::string_view fn, std::string_view s) : fileName(fn), source(s) {};
-    SourceFile(std::string_view fn, std::string_view s, bool m) : fileName(fn), source(s), isModule(m) {};
+    SourceFile(std::string_view fn, std::string_view s, parser::ScriptKind sk)
+        : fileName(fn), source(s), scriptKind(sk)
+    {
+    }
 
     std::string_view fileName {};
     std::string_view source {};
-    bool isModule {false};
+    parser::ScriptKind scriptKind {};
 };
 
 struct CompilerOptions {

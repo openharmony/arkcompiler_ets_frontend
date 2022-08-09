@@ -500,13 +500,6 @@ void Binder::AddMandatoryParam(const std::string_view &name)
     scope_->AsFunctionVariableScope()->Bindings().insert({decl->Name(), param});
 }
 
-void Binder::AddMandatoryParams(const MandatoryParams &params)
-{
-    for (auto iter = params.rbegin(); iter != params.rend(); iter++) {
-        AddMandatoryParam(*iter);
-    }
-}
-
 void Binder::AddMandatoryParams()
 {
     ASSERT(scope_ == topScope_);
@@ -515,7 +508,12 @@ void Binder::AddMandatoryParams()
     [[maybe_unused]] auto *funcScope = *iter++;
 
     ASSERT(funcScope->IsGlobalScope() || funcScope->IsModuleScope());
-    AddMandatoryParams(FUNCTION_MANDATORY_PARAMS);
+
+    if (program_->Kind() == parser::ScriptKind::COMMONJS) {
+        AddMandatoryParams(CJS_MAINFUNC_MANDATORY_PARAMS);
+    } else {
+        AddMandatoryParams(FUNCTION_MANDATORY_PARAMS);
+    }
 
     for (; iter != functionScopes_.end(); iter++) {
         funcScope = *iter;
