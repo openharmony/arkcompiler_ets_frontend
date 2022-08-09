@@ -491,7 +491,7 @@ if (is_mac) {
 }
 
 ohos_copy("build_es2abc_for_hap") {
-  deps = [ ":es2panda(${toolchain_linux})" ]
+  deps = [ ":es2panda(${host_toolchain})" ]
   es2abc_root_out_dir =
       get_label_info(":es2panda_build($host_toolchain)", "root_out_dir")
   es2abc_target_out_dir =
