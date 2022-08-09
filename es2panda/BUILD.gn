@@ -424,6 +424,11 @@ ohos_executable("es2panda") {
     static_link = true
   }
 
+  if (!use_musl) {
+    static_link = false
+    ldflags += [ "-lc++" ]
+  }
+
   if (enable_bytecode_optimizer) {
     deps += [
       "$ark_root/bytecode_optimizer:libarkbytecodeopt_frontend_static",
