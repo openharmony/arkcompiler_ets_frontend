@@ -65,8 +65,10 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
     panda::PandArg<bool> opDumpLiteralBuffer("dump-literal-buffer", false, "Dump literal buffer");
     panda::PandArg<std::string> outputFile("output", "", "Compiler binary output (.abc)");
-    panda::PandArg<std::string> debuggerEvaluateExpression("debugger-evaluate-expression", "",
-        "input base64 data of an expression to be evaluated in debugger mode");
+    panda::PandArg<bool> debuggerEvaluateExpression("debugger-evaluate-expression", false,
+                                                    "evaluate expression in debugger mode");
+    panda::PandArg<std::string> base64Input("base64Input", "", "base64 input of js content");
+    panda::PandArg<bool> base64Output("base64Output", false, "output panda file content as base64 to std out");
 
     // tail arguments
     panda::PandArg<std::string> inputFile("input", "", "input file");
@@ -80,6 +82,8 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opDebugInfo);
     argparser_->Add(&opDumpDebugInfo);
     argparser_->Add(&debuggerEvaluateExpression);
+    argparser_->Add(&base64Input);
+    argparser_->Add(&base64Output);
 
     argparser_->Add(&opOptLevel);
     argparser_->Add(&opThreadCount);
@@ -93,7 +97,8 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->EnableTail();
     argparser_->EnableRemainder();
 
-    if (!argparser_->Parse(argc, argv) || opHelp.GetValue()) {
+    if (!argparser_->Parse(argc, argv) || opHelp.GetValue() || (inputFile.GetValue().empty()
+        && base64Input.GetValue().empty())) {
         std::stringstream ss;
 
         ss << argparser_->GetErrorString() << std::endl;
@@ -109,9 +114,16 @@ bool Options::Parse(int argc, const char **argv)
     }
 
     bool inputIsEmpty = inputFile.GetValue().empty();
-    bool base64InputIsEmpty = debuggerEvaluateExpression.GetValue().empty();
-    if (inputIsEmpty == base64InputIsEmpty) {
-        errorMsg_ = "--input and --debugger-evaluate-expression can not be used or unused simultaneously";
+    bool base64InputIsEmpty = base64Input.GetValue().empty();
+    bool outputIsEmpty = outputFile.GetValue().empty();
+
+    if (!inputIsEmpty && !base64InputIsEmpty) {
+        errorMsg_ = "--input and --base64Input can not be used simultaneously";
+        return false;
+    }
+
+    if (!outputIsEmpty && base64Output.GetValue()) {
+        errorMsg_ = "--output and --base64Output can not be used simultaneously";
         return false;
     }
 
@@ -129,22 +141,23 @@ bool Options::Parse(int argc, const char **argv)
         std::stringstream ss;
         ss << inputStream.rdbuf();
         parserInput_ = ss.str();
-        sourceFile_ = BaseName(sourceFile_);
 
-        if (!outputFile.GetValue().empty()) {
-            compilerOutput_ = outputFile.GetValue();
-        } else {
-            compilerOutput_ = RemoveExtension(sourceFile_).append(".abc");
-        }
+        sourceFile_ = BaseName(sourceFile_);
     } else {
-        // in watch expression mode: base64 input to be evaluated
-        parserInput_ = ExtractExpressionFromBase64(debuggerEvaluateExpression.GetValue());
+        // input content is base64 string
+        parserInput_ = ExtractContentFromBase64Input(base64Input.GetValue());
         if (parserInput_.empty()) {
-            errorMsg_ = "The input is not a valid base64 data";
+            errorMsg_ = "The input string is not a valid base64 data";
             return false;
         }
-        options_ |= OptionFlags::DEBUGGER_EVALUATE_EXPRESSION;
-        compilerOptions_.isDebuggerEvaluateExpressionMode = true;
+    }
+
+    if (base64Output.GetValue()) {
+        compilerOutput_ = "";
+    } else if (!outputIsEmpty) {
+        compilerOutput_ = outputFile.GetValue();
+    } else if (outputIsEmpty && !inputIsEmpty) {
+        compilerOutput_ = RemoveExtension(sourceFile_).append(".abc");
     }
 
     std::string extension = inputExtension.GetValue();
@@ -192,21 +205,22 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.isDebug = opDebugInfo.GetValue();
     compilerOptions_.parseOnly = opParseOnly.GetValue();
     compilerOptions_.dumpLiteralBuffer = opDumpLiteralBuffer.GetValue();
+    compilerOptions_.isDebuggerEvaluateExpressionMode = debuggerEvaluateExpression.GetValue();
 
     return true;
 }
 
-std::string Options::ExtractExpressionFromBase64(const std::string &watchedExpressionBase64String)
+std::string Options::ExtractContentFromBase64Input(const std::string &inputBase64String)
 {
-    std::string watchedExpression = util::Base64Decode(watchedExpressionBase64String);
-    if (watchedExpression == "") {
+    std::string inputContent = util::Base64Decode(inputBase64String);
+    if (inputContent == "") {
         return "";
     }
-    bool validBase64Input = util::Base64Encode(watchedExpression) == watchedExpressionBase64String;
+    bool validBase64Input = util::Base64Encode(inputContent) == inputBase64String;
     if (!validBase64Input) {
         return "";
     }
-    return watchedExpression;
+    return inputContent;
 }
 
 }  // namespace panda::es2panda::aot
