@@ -36,7 +36,6 @@ enum class OptionFlags {
     DEFAULT = 0,
     PARSE_ONLY = 1 << 1,
     SIZE_STAT = 1 << 2,
-    DEBUGGER_EVALUATE_EXPRESSION = 1 << 3,
 };
 
 inline std::underlying_type_t<OptionFlags> operator&(OptionFlags a, OptionFlags b)
@@ -117,12 +116,7 @@ public:
         return (options_ & OptionFlags::SIZE_STAT) != 0;
     }
 
-    bool isDebuggerEvaluateExpressionMode() const
-    {
-        return (options_ & OptionFlags::DEBUGGER_EVALUATE_EXPRESSION) != 0;
-    }
-
-    std::string ExtractExpressionFromBase64(const std::string &watchedExpression);
+    std::string ExtractContentFromBase64Input(const std::string &inputBase64String);
 
 private:
     es2panda::ScriptExtension extension_ {es2panda::ScriptExtension::JS};

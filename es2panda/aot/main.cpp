@@ -55,8 +55,8 @@ public:
     }
 };
 
-static void DebuggerEvaluateExpression(panda::pandasm::Program *prog,
-                                       panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp)
+static void GenerateBase64Output(panda::pandasm::Program *prog,
+                                 panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp)
 {
     auto pandaFile = panda::pandasm::AsmEmitter::Emit(*prog, mapsp);
     const uint8_t *buffer = pandaFile->GetBase();
@@ -118,8 +118,8 @@ static int GenerateProgram(panda::pandasm::Program *prog, std::unique_ptr<panda:
         es2panda::Compiler::DumpAsm(prog);
     }
 
-    if (options->isDebuggerEvaluateExpressionMode()) {
-        DebuggerEvaluateExpression(prog, mapsp);
+    if (output.empty()) {
+        GenerateBase64Output(prog, mapsp);
         return 0;
     }
 

@@ -173,10 +173,13 @@ const watchFileName = "watch_expressions";
 // this path is only available in sdk
 const es2abcBinaryPath = path["join"](__dirname, "..", "bin", path.sep);
 const es2abcBinaryName = /^win/.test(require('os').platform()) ? "es2abc.exe" : "es2abc";
-const es2abcCommandLineArgs = "--debugger-evaluate-expression";
+const es2abcBase64Input = "--base64Input";
+const es2abcDebuggerEvaluateFlag = "--debugger-evaluate-expression";
+const es2abcBase64Output = "--base64Output";
 
 function callEs2pandaToolChain(ideIputStr: string) {
-    let commandLine = es2abcBinaryPath + es2abcBinaryName + " " + es2abcCommandLineArgs + " \"" + ideIputStr + "\"";
+    let commandLine = es2abcBinaryPath + es2abcBinaryName + " " + es2abcBase64Input + " \"" + ideIputStr + "\" " +
+                      es2abcDebuggerEvaluateFlag + " " + es2abcBase64Output;
     var exec = require('child_process').exec;
     exec(`${commandLine}`, function(error, stdout) {
         if (error) {
