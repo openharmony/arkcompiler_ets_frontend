@@ -50,6 +50,7 @@ import { ModuleScope } from "./scope";
 import { getRecordTypeFlag } from "./base/util";
 import { TypeSummary } from "./base/typeSystem";
 import { TypeRecorder } from "./typeRecorder";
+import { isGlobalDeclare } from "./strictMode";
 
 const dollarSign: RegExp = /\$/g;
 
@@ -195,7 +196,8 @@ export class Ts2Panda {
             "log_enabled": CmdOptions.isEnableDebugLog(),
             "opt_level": CmdOptions.getOptLevel(),
             "opt_log_level": CmdOptions.getOptLogLevel(),
-            "display_typeinfo": CmdOptions.getDisplayTypeinfo()
+            "display_typeinfo": CmdOptions.getDisplayTypeinfo(),
+            "is_dts_file": isGlobalDeclare()
         };
         let jsonOpt = JSON.stringify(options, null, 2);
         jsonOpt = "$" + jsonOpt.replace(dollarSign, '#$') + "$";

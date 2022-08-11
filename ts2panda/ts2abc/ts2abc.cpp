@@ -42,6 +42,7 @@ bool g_debugLogEnabled = false;
 int g_optLevel = 0;
 bool g_enableTypeinfo = false;
 bool g_displayTypeinfo = false;
+bool g_isDtsFile = false;
 std::string g_optLogLevel = "error";
 uint32_t g_literalArrayCount = 0;
 using ts2abc_type_adapter::TypeAdapter;
@@ -777,6 +778,11 @@ static panda::pandasm::Function ParseFunction(const Json::Value &function)
     ParseFunctionExportedType(function, pandaFunc);
     ParseFunctionDeclaredType(function, pandaFunc);
 
+    if (g_isDtsFile && pandaFunc.name != "func_main_0") {
+        pandaFunc.metadata->SetAttribute("external");
+    }
+
+
     return pandaFunc;
 }
 
@@ -914,6 +920,14 @@ static void ParseOptLogLevel(const Json::Value &rootValue)
     }
 }
 
+static void ParseIsDtsFile(const Json::Value &rootValue)
+{
+    Logd("-----------------parse is dts file-----------------");
+    if (rootValue.isMember("is_dts_file") && rootValue["is_dts_file"].isBool()) {
+        g_isDtsFile = rootValue["is_dts_file"].asBool();
+    }
+}
+
 static void ReplaceAllDistinct(std::string &str, const std::string &oldValue, const std::string &newValue)
 {
     for (std::string::size_type pos(0); pos != std::string::npos; pos += newValue.length()) {
@@ -936,6 +950,7 @@ static void ParseOptions(const Json::Value &rootValue, panda::pandasm::Program &
     ParseOptLevel(rootValue);
     ParseDisplayTypeinfo(rootValue);
     ParseOptLogLevel(rootValue);
+    ParseIsDtsFile(rootValue);
 }
 
 static void ParseSingleFunc(const Json::Value &rootValue, panda::pandasm::Program &prog)

@@ -43,6 +43,7 @@ const ts2pandaOptions = [
     { name: 'included-files', alias: 'i', type: String, lazyMultiple: true, defaultValue: [], description: "The list of dependent files." },
     { name: 'record-type', alias: 'p', type: Boolean, defaultValue: false, description: "Record type info. Default: true" },
     { name: 'dts-type-record', alias: 'q', type: Boolean, defaultValue: false, description: "Record type info for .d.ts files. Default: false" },
+    { name: 'dts-builtin-type-record', alias: 'b', type: Boolean, defaultValue: false, description: "Recognize builtin types for .d.ts files. Default: false" },
     { name: 'debug-type', alias: 'g', type: Boolean, defaultValue: false, description: "Print type-related log. Default: false" },
     { name: 'output-type', type: Boolean, defaultValue: false, description: "set output type."},
     { name: 'display-typeinfo', type: Boolean, defaultValue: false, description: "Display typeinfo of pairs of instruction orders and types when enable-typeinfo is true" },
@@ -278,6 +279,13 @@ export class CmdOptions {
             return false;
         }
         return this.options["dts-type-record"];
+    }
+
+    static needRecordBuiltinDtsType(): boolean {
+        if (!this.options) {
+            return false;
+        }
+        return this.options["dts-builtin-type-record"];
     }
 
     static enableTypeLog(): boolean {
