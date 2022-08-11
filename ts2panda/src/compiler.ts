@@ -58,9 +58,10 @@ import { compileStringLiteral } from "./expression/stringLiteral";
 import { getTemplateObject } from "./expression/templateExpression";
 import { compileYieldExpression } from "./expression/yieldExpression";
 import { AsyncFunctionBuilder } from "./function/asyncFunctionBuilder";
+import { AsyncGeneratorFunctionBuilder } from "./function/asyncGeneratorFunctionBuilder";
 import { FunctionBuilder, FunctionBuilderType } from "./function/functionBuilder";
 import { GeneratorFunctionBuilder } from "./function/generatorFunctionBuilder";
-import { AsyncGeneratorFunctionBuilder } from "./function/asyncGeneratorFunctionBuilder";
+
 import {
     hoistFunctionInBlock
 } from "./hoisting";

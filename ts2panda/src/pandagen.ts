@@ -137,6 +137,7 @@ import {
     EcmaCreateasyncgeneratorobj,
     EcmaCreateiterresultobj,
     EcmaAsyncgeneratorresolve,
+    EcmaAsyncgeneratorreject,
     EcmaDecdyn,
     EcmaDiv2dyn,
     EcmaEqdyn,
@@ -1029,6 +1030,10 @@ export class PandaGen {
 
     EcmaAsyncgeneratorresolve(node: ts.Node | NodeKind, genObj: VReg, value: VReg, done: VReg) {
         this.add(node, new EcmaAsyncgeneratorresolve(genObj, value, done));
+    }
+
+    EcmaAsyncgeneratorreject(node: ts.Node, genObj: VReg, value: VReg) {
+        this.add(node, new EcmaAsyncgeneratorreject(genObj, value));
     }
 
     suspendGenerator(node: ts.Node, genObj: VReg, iterRslt: VReg) {
