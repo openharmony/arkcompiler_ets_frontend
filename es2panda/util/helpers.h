@@ -66,6 +66,7 @@ public:
                                                         uint32_t index);
 
     static const uint32_t INVALID_INDEX = 4294967295L;
+    static const uint32_t MAX_INT32 = 2147483647;
 };
 
 template <typename T>

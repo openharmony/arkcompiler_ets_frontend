@@ -1705,13 +1705,25 @@ Operand PandaGen::ToNamedPropertyKey(const ir::Expression *prop, bool isComputed
 Operand PandaGen::ToPropertyKey(const ir::Expression *prop, bool isComputed)
 {
     Operand op = ToNamedPropertyKey(prop, isComputed);
-    if (!std::holds_alternative<VReg>(op)) {
-        ASSERT(std::holds_alternative<util::StringView>(op) || std::holds_alternative<int64_t>(op));
+    if (std::holds_alternative<util::StringView>(op) || (std::holds_alternative<int64_t>(op) &&
+        (std::get<int64_t>(op) <= util::Helpers::MAX_INT32))) {
         return op;
     }
 
     VReg propReg = AllocReg();
 
+    /**
+     * Store index to vreg when index > MAX_INT32 to simplify ASM interpreter If byindex-related instructions support
+     * index > MAX_INT32, ASM interpreter will have to add a judgment whether index needs more than 32 bits which will
+     * cause inefficiency of it since cases when index > MAX_INT32 can be quite rare
+     **/
+    if (std::holds_alternative<int64_t>(op) && (std::get<int64_t>(op) > util::Helpers::MAX_INT32)) {
+        LoadAccumulatorFloat(prop, std::get<int64_t>(op));
+        StoreAccumulator(prop, propReg);
+        return propReg;
+    }
+
+    ASSERT(std::holds_alternative<VReg>(op));
     prop->Compile(this);
     StoreAccumulator(prop, propReg);
 
