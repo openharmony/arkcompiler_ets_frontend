@@ -27,7 +27,7 @@ class Record {
 public:
     static void Serialize(const panda::pandasm::Record &record, proto_panda::Record &protoRecord);
     static void Deserialize(const proto_panda::Record &protoRecord, panda::pandasm::Record &record,
-                            std::unique_ptr<panda::ArenaAllocator> &&allocator);
+                            panda::ArenaAllocator *allocator);
 };
 } // panda::proto
 #endif

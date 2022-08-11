@@ -28,7 +28,7 @@ class Program {
 public:
     static void Serialize(const panda::pandasm::Program &program, proto_panda::Program &protoProgram);
     static void Deserialize(const proto_panda::Program &protoProgram, panda::pandasm::Program &program,
-                            std::unique_ptr<panda::ArenaAllocator> &&allocator);
+                            panda::ArenaAllocator *allocator);
 };
 } // panda::proto
 #endif

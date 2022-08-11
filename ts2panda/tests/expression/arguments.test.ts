@@ -43,7 +43,7 @@ describe("arguments Keyword", function () {
             new EcmaLdobjbyindex(temp1, new Imm(0)),
             new EcmaReturnundefined()
         ];
-        let functionPg = snippetCompiler.getPandaGenByName("foo");
+        let functionPg = snippetCompiler.getPandaGenByName("UnitTest.foo");
         let insns = functionPg!.getInsns();
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -62,7 +62,7 @@ describe("arguments Keyword", function () {
             new EcmaLdobjbyindex(temp1, new Imm(0)),
             new EcmaReturnundefined()
         ];
-        let functionPg = snippetCompiler.getPandaGenByName("foo");
+        let functionPg = snippetCompiler.getPandaGenByName("UnitTest.foo");
         let insns = functionPg!.getInsns();
 
         expect(checkInstructions(insns, expected)).to.be.true;

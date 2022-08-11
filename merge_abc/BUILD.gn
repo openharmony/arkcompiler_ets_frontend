@@ -33,6 +33,7 @@ protobuf_snapshot_generator_sources = [
   "src/assemblyRecordProto.cpp",
   "src/assemblyTypeProto.cpp",
   "src/ideHelpersProto.cpp",
+  "src/mergeProgram.cpp",
   "src/metaProto.cpp",
   "src/protobufSnapshotGenerator.cpp",
 ]
@@ -40,6 +41,7 @@ protobuf_snapshot_generator_sources = [
 config("panda_assembly_proto_public_config") {
   include_dirs = [
     "$ark_root/assembler",
+    "$ark_root/libpandabase",
     "$ark_root/libpandabase/mem",
     "$ark_root",
     "src",
@@ -149,8 +151,8 @@ ohos_static_library("panda_assembly_proto_static") {
 ohos_executable("merge_abc") {
   use_exceptions = true
   sources = [
-    "src/mergeOptions.cpp",
-    "src/mergeProgramProto.cpp",
+    "src/main.cpp",
+    "src/Options.cpp",
   ]
 
   include_dirs = [ "./src" ]
@@ -182,12 +184,24 @@ ohos_executable("merge_abc") {
       libs = [ libcpp_static_lib ]
     }
 
+    defines = [
+      "PANDA_TARGET_LINUX",
+    ]
+
     # for statically linking pthread
     ldflags += [
       "-Wl,--whole-archive",
       "-lrt",
       "-lpthread",
       "-Wl,--no-whole-archive",
+    ]
+  } else if (is_mac) {
+    defines = [
+      "PANDA_TARGET_MACOS",
+    ]
+  } else if (is_mingw) {
+    defines = [
+      "PANDA_TARGET_WINDOWS",
     ]
   }
 

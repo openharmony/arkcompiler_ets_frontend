@@ -50,7 +50,7 @@ void Program::Serialize(const panda::pandasm::Program &program, proto_panda::Pro
 }
 
 void Program::Deserialize(const proto_panda::Program &protoProgram, panda::pandasm::Program &program,
-                          std::unique_ptr<panda::ArenaAllocator> &&allocator)
+                          panda::ArenaAllocator *allocator)
 {
     program.lang = static_cast<panda::panda_file::SourceLang>(protoProgram.lang());
 
@@ -59,7 +59,7 @@ void Program::Deserialize(const proto_panda::Program &protoProgram, panda::panda
         auto protoRecord = recordUnit.value();
         auto record = panda::pandasm::Record(protoRecord.name(),
                                              static_cast<panda::panda_file::SourceLang>(protoRecord.language()));
-        Record::Deserialize(protoRecord, record, std::move(allocator));
+        Record::Deserialize(protoRecord, record, allocator);
         program.record_table.insert({name, std::move(record)});
     }
 
@@ -68,7 +68,7 @@ void Program::Deserialize(const proto_panda::Program &protoProgram, panda::panda
         auto protoFunction = functionUnit.value();
         auto function = allocator->New<panda::pandasm::Function>(protoFunction.name(),
             static_cast<panda::panda_file::SourceLang>(protoFunction.language()));
-        Function::Deserialize(protoFunction, *function, std::move(allocator));
+        Function::Deserialize(protoFunction, *function, allocator);
         program.function_table.insert({name, std::move(*function)});
     }
 
@@ -85,7 +85,7 @@ void Program::Deserialize(const proto_panda::Program &protoProgram, panda::panda
     }
 
     for (const auto &protoArrayType : protoProgram.array_types()) {
-        auto arrayType = Type::Deserialize(protoArrayType, std::move(allocator));
+        auto arrayType = Type::Deserialize(protoArrayType, allocator);
         program.array_types.insert(std::move(arrayType));
     }
 }

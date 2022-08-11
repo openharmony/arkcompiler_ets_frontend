@@ -35,6 +35,12 @@ public:
 
     constexpr static std::string_view TYPE_ANNOTATION_RECORD = "_ESTypeAnnotation";
 
+    static bool GetProtoFiles(std::string &protoBinPath, std::string &protoBinSuffix,
+                              std::vector<std::string> &directoryFiles);
+    static bool AppendProtoFiles(std::string filePath, std::string protoBinSuffix,
+                                 std::vector<std::string> &protoFiles);
+    static bool CollectProtoFiles(std::string input, std::string protoBinSuffix, std::vector<std::string> &protoFiles);
+
 private:
     void CorrectLiteraArrayId(panda::pandasm::Program *src);
     void IncreaseInsLiteralArrayIdByBase(panda::pandasm::Ins &insn, size_t base);

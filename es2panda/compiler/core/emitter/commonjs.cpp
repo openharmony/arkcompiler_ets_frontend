@@ -20,17 +20,13 @@
 namespace panda::es2panda::compiler {
 constexpr const auto LANG_EXT = panda::pandasm::extensions::Language::ECMASCRIPT;
 
-void Emitter::GenCommonjsRecord() const
+void Emitter::SetCommonjsField(bool isCommonjs)
 {
-    auto commonjsRecord = panda::pandasm::Record("_CommonJsRecord", LANG_EXT);
-    commonjsRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
     auto isCommonJsField = panda::pandasm::Field(LANG_EXT);
-    isCommonJsField.name = "isCommonJs";
+    isCommonJsField.name = "isCommonjs";
     isCommonJsField.type = panda::pandasm::Type("u8", 0);
     isCommonJsField.metadata->SetValue(
-        panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(true)));
-    commonjsRecord.field_list.emplace_back(std::move(isCommonJsField));
-
-    prog_->record_table.emplace(commonjsRecord.name, std::move(commonjsRecord));
+        panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(isCommonjs)));
+    rec_->field_list.emplace_back(std::move(isCommonJsField));
 }
 }  // namespace panda::es2panda::compiler

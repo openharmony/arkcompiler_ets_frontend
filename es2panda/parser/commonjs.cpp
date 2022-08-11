@@ -53,7 +53,7 @@ void ParserImpl::AddCommonjsArgs(ArenaVector<ir::Expression *> &args)
     }
 }
 
-void ParserImpl::ParseCommonjs(const std::string &fileName, const std::string &source)
+void ParserImpl::ParseCommonjs()
 {
     // create FunctionExpression as callee
     ir::FunctionExpression *funcExpr = nullptr;

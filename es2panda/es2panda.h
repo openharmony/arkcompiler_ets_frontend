@@ -41,13 +41,14 @@ enum class ScriptExtension {
 };
 
 struct SourceFile {
-    SourceFile(std::string_view fn, std::string_view s, parser::ScriptKind sk)
-        : fileName(fn), source(s), scriptKind(sk)
+    SourceFile(std::string_view fn, std::string_view s, std::string_view rn, parser::ScriptKind sk)
+        : fileName(fn), source(s), recordName(rn), scriptKind(sk)
     {
     }
 
     std::string_view fileName {};
     std::string_view source {};
+    std::string_view recordName {};
     parser::ScriptKind scriptKind {};
 };
 

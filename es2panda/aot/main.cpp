@@ -32,7 +32,6 @@
 #include <memory>
 
 #include <protobufSnapshotGenerator.h>
-#include <mergeProgramProto.h>
 
 namespace panda::es2panda::aot {
 
@@ -126,7 +125,10 @@ static int GenerateProgram(panda::pandasm::Program *prog, std::unique_ptr<panda:
         return 0;
     }
 
-    proto::ProtobufSnapshotGenerator::GenerateSnapshot(*prog, output);
+    if (options->compilerProtoOutput().size() > 0) {
+        panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(*prog, options->compilerProtoOutput());
+        return 0;
+    }
 
     if (!panda::pandasm::AsmEmitter::Emit(output, *prog, statp, mapsp, true)) {
         return 1;
@@ -153,7 +155,8 @@ int Run(int argc, const char **argv)
     }
 
     es2panda::Compiler compiler(options->Extension(), options->ThreadCount());
-    es2panda::SourceFile input(options->SourceFile(), options->ParserInput(), options->ScriptKind());
+    es2panda::SourceFile input(options->SourceFile(), options->ParserInput(),
+                               options->RecordName(), options->ScriptKind());
 
     auto *program = compiler.Compile(input, options->CompilerOptions());
 

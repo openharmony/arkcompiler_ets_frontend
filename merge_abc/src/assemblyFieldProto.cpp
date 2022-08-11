@@ -31,11 +31,11 @@ void Field::Serialize(const panda::pandasm::Field &field, proto_panda::Field &pr
 }
 
 void Field::Deserialize(const proto_panda::Field &protoField, panda::pandasm::Field &field,
-                        std::unique_ptr<panda::ArenaAllocator> &&allocator)
+                        panda::ArenaAllocator *allocator)
 {
-    field.type = Type::Deserialize(protoField.type(), std::move(allocator));
+    field.type = Type::Deserialize(protoField.type(), allocator);
     field.name = protoField.name();
-    FieldMetadata::Deserialize(protoField.metadata(), field.metadata, std::move(allocator));
+    FieldMetadata::Deserialize(protoField.metadata(), field.metadata, allocator);
     field.line_of_def = protoField.line_of_def();
     field.whole_line = protoField.whole_line();
     field.bound_left = protoField.bound_left();

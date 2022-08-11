@@ -108,9 +108,11 @@ std::unique_ptr<lexer::Lexer> ParserImpl::InitLexer(const std::string &fileName,
     return lexer;
 }
 
-Program ParserImpl::Parse(const std::string &fileName, const std::string &source, ScriptKind kind)
+Program ParserImpl::Parse(const std::string &fileName, const std::string &source,
+                          const std::string &recordName, ScriptKind kind)
 {
     program_.SetKind(kind);
+    program_.SetRecordName(recordName);
 
     /*
      * In order to make the lexer's memory alive, the return value 'lexer' can not be omitted.
@@ -118,15 +120,15 @@ Program ParserImpl::Parse(const std::string &fileName, const std::string &source
     auto lexer = InitLexer(fileName, source);
     switch (kind) {
         case ScriptKind::SCRIPT: {
-            ParseScript(fileName, source);
+            ParseScript();
             break;
         }
         case ScriptKind::MODULE: {
-            ParseModule(fileName, source);
+            ParseModule();
             break;
         }
         case ScriptKind::COMMONJS: {
-            ParseCommonjs(fileName, source);
+            ParseCommonjs();
             break;
         }
         default: {
@@ -137,12 +139,12 @@ Program ParserImpl::Parse(const std::string &fileName, const std::string &source
     return std::move(program_);
 }
 
-void ParserImpl::ParseScript(const std::string &fileName, const std::string &source)
+void ParserImpl::ParseScript()
 {
     ParseProgram(ScriptKind::SCRIPT);
 }
 
-void ParserImpl::ParseModule(const std::string &fileName, const std::string &source)
+void ParserImpl::ParseModule()
 {
     context_.Status() |= (ParserStatus::MODULE);
     ParseProgram(ScriptKind::MODULE);

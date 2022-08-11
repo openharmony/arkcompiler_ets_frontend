@@ -29,7 +29,6 @@ import {
     Label,
     LdaDyn,
     LdaiDyn,
-    ResultType,
     StaDyn,
     VReg
 } from "../../src/irnodes";
@@ -43,9 +42,10 @@ describe("FunctionDeclarationTest", function () {
     it('function definition in the global scope', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("function foo() {}");
+        let funcInternalName = "UnitTest.foo";
         let funcName = "foo";
         let expected = [
-            new EcmaDefinefuncdyn(funcName, new Imm(0), new VReg()),
+            new EcmaDefinefuncdyn(funcInternalName, new Imm(0), new VReg()),
             new EcmaStglobalvar(funcName),
             new EcmaReturnundefined()
         ];
@@ -64,7 +64,7 @@ describe("FunctionDeclarationTest", function () {
       function foo() {}
       `);
         let expected = [
-            new EcmaDefinefuncdyn("#2#foo", new Imm(0), new VReg()),
+            new EcmaDefinefuncdyn("UnitTest.#2#foo", new Imm(0), new VReg()),
             new EcmaStglobalvar("foo"),
             new EcmaReturnundefined()
         ];
@@ -81,12 +81,12 @@ describe("FunctionDeclarationTest", function () {
         snippetCompiler.compile(`function out() {function foo() {}}`);
         let funcReg = new VReg();
         let expected = [
-            new EcmaDefinefuncdyn("foo", new Imm(0), new VReg()),
+            new EcmaDefinefuncdyn("UnitTest.foo", new Imm(0), new VReg()),
             new StaDyn(funcReg),
 
             new EcmaReturnundefined()
         ];
-        let functionPg = snippetCompiler.getPandaGenByName("out");
+        let functionPg = snippetCompiler.getPandaGenByName("UnitTest.out");
         let insns = functionPg!.getInsns();
         let functionScope = functionPg!.getScope();
 
@@ -103,7 +103,7 @@ describe("FunctionDeclarationTest", function () {
         snippetCompiler.compile("let foo = function() {}");
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new EcmaDefinefuncdyn("foo", new Imm(0), new VReg()),
+            new EcmaDefinefuncdyn("UnitTest.foo", new Imm(0), new VReg()),
             new EcmaStlettoglobalrecord("foo"),
             new EcmaReturnundefined()
         ];
@@ -117,7 +117,7 @@ describe("FunctionDeclarationTest", function () {
         let endLabel = new Label();
 
         let expected_main = [
-            new EcmaDefinefuncdyn("test", new Imm(1), new VReg()),
+            new EcmaDefinefuncdyn("UnitTest.test", new Imm(1), new VReg()),
             new EcmaStglobalvar("test"),
             new EcmaReturnundefined()
         ];
@@ -133,10 +133,10 @@ describe("FunctionDeclarationTest", function () {
         ];
 
         compilerunit.forEach(element => {
-            if (element.internalName == "func_main_0") {
+            if (element.internalName == "UnitTest.func_main_0") {
                 let insns = element.getInsns();
                 expect(checkInstructions(insns, expected_main)).to.be.true;
-            } else if (element.internalName == "test") {
+            } else if (element.internalName == "UnitTest.test") {
                 let insns = element.getInsns();
                 expect(checkInstructions(insns, expected_func)).to.be.true;
                 let parameterLength = element.getParameterLength();
@@ -158,7 +158,7 @@ describe("FunctionDeclarationTest", function () {
             new EcmaReturnundefined(),
         ];
 
-        let functionPg = snippetCompiler.getPandaGenByName("test");
+        let functionPg = snippetCompiler.getPandaGenByName("UnitTest.test");
         let insns = functionPg!.getInsns();
 
         expect(checkInstructions(insns, expected_func)).to.be.true;

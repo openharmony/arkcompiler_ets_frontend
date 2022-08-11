@@ -28,7 +28,7 @@ public:
     static void Serialize(const panda::pandasm::RecordMetadata &meta, proto_panda::RecordMetadata &protoMeta);
     static void Deserialize(const proto_panda::RecordMetadata &protoMeta,
                             std::unique_ptr<panda::pandasm::RecordMetadata> &meta,
-                            std::unique_ptr<panda::ArenaAllocator> &&allocator);
+                            panda::ArenaAllocator *allocator);
 };
 
 class FunctionMetadata {
@@ -37,7 +37,7 @@ public:
                                     proto_panda::FunctionMetadata &protoMeta);
     static void Deserialize(const proto_panda::FunctionMetadata &protoMeta,
                             std::unique_ptr<panda::pandasm::FunctionMetadata> &meta,
-                            std::unique_ptr<panda::ArenaAllocator> &&allocator);
+                            panda::ArenaAllocator *allocator);
 };
 
 class FieldMetadata {
@@ -45,7 +45,7 @@ public:
     static void Serialize(const panda::pandasm::FieldMetadata &meta, proto_panda::FieldMetadata &protoMeta);
     static void Deserialize(const proto_panda::FieldMetadata &protoMeta,
                             std::unique_ptr<panda::pandasm::FieldMetadata> &meta,
-                            std::unique_ptr<panda::ArenaAllocator> &&allocator);
+                            panda::ArenaAllocator *allocator);
 };
 
 class ParamMetadata {
@@ -53,7 +53,7 @@ public:
     static void Serialize(const panda::pandasm::ParamMetadata &meta, proto_panda::ParamMetadata &protoMeta);
     static void Deserialize(const proto_panda::ParamMetadata &protoMeta,
                             std::unique_ptr<panda::pandasm::ParamMetadata> &meta,
-                            std::unique_ptr<panda::ArenaAllocator> &&allocator);
+                            panda::ArenaAllocator *allocator);
 };
 
 class ItemMetadata {
@@ -67,7 +67,7 @@ public:
     static void Serialize(const panda::pandasm::AnnotationMetadata &meta,
                           proto_panda::AnnotationMetadata &protoMeta);
     static void Deserialize(const proto_panda::AnnotationMetadata &protoMeta, panda::pandasm::AnnotationMetadata &meta,
-                            std::unique_ptr<panda::ArenaAllocator> &&allocator);
+                            panda::ArenaAllocator *allocator);
 };
 
 class Metadata {

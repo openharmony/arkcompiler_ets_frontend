@@ -25,7 +25,7 @@ class Type {
 public:
     static void Serialize(const panda::pandasm::Type type, proto_panda::Type &protoType);
     static panda::pandasm::Type &Deserialize(const proto_panda::Type &protoType,
-                                             std::unique_ptr<panda::ArenaAllocator> &&allocator);
+                                             panda::ArenaAllocator *allocator);
 };
 } // panda::proto
 #endif

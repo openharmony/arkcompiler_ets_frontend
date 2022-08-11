@@ -25,7 +25,7 @@ void Type::Serialize(const panda::pandasm::Type type, proto_panda::Type &protoTy
 }
 
 panda::pandasm::Type &Type::Deserialize(const proto_panda::Type &protoType,
-                                        std::unique_ptr<panda::ArenaAllocator> &&allocator)
+                                        panda::ArenaAllocator *allocator)
 {
     auto type = allocator->New<panda::pandasm::Type>(protoType.component_name(), protoType.rank());
     return *type;

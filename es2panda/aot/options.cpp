@@ -66,13 +66,14 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
     panda::PandArg<bool> opDumpLiteralBuffer("dump-literal-buffer", false, "Dump literal buffer");
     panda::PandArg<std::string> outputFile("output", "", "Compiler binary output (.abc)");
+    panda::PandArg<std::string> recordName("record-name", "", "Specify the record name");
     panda::PandArg<bool> debuggerEvaluateExpression("debugger-evaluate-expression", false,
                                                     "evaluate expression in debugger mode");
     panda::PandArg<std::string> base64Input("base64Input", "", "base64 input of js content");
     panda::PandArg<bool> base64Output("base64Output", false, "output panda file content as base64 to std out");
     panda::PandArg<std::string> sourceFile("source-file", "",
                                            "specify the file path info recorded in generated abc");
-    panda::PandArg<std::string> outputProto("outputProto", "", "Compiler proto serialize binary output (.bin)");
+    panda::PandArg<std::string> outputProto("outputProto", "", "compiler proto serialize binary output (.proto)");
 
     // tail arguments
     panda::PandArg<std::string> inputFile("input", "", "input file");
@@ -98,6 +99,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&inputExtension);
     argparser_->Add(&outputFile);
     argparser_->Add(&sourceFile);
+    argparser_->Add(&recordName);
     argparser_->Add(&outputProto);
 
     argparser_->PushBackTail(&inputFile);
@@ -167,10 +169,13 @@ bool Options::Parse(int argc, const char **argv)
         compilerOutput_ = RemoveExtension(sourceFile_).append(".abc");
     }
 
+    recordName_ = recordName.GetValue();
+    if (recordName_.empty()) {
+        recordName_ = compilerOutput_.empty() ? "Base64Output" : RemoveExtension(BaseName(compilerOutput_));
+    }
+
     if (!outputProto.GetValue().empty()) {
         compilerProtoOutput_ = outputProto.GetValue();
-    } else {
-        compilerProtoOutput_ = "";
     }
 
     std::string extension = inputExtension.GetValue();

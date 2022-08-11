@@ -30,9 +30,9 @@ public:
 
     bool Parse(int argc, const char **argv);
 
-    const std::string &protoBinPath() const
+    const std::string &protoPathInput() const
     {
-        return protoBinPath_;
+        return protoPathInput_;
     }
 
     const std::string &protoBinSuffix() const
@@ -40,9 +40,14 @@ public:
         return protoBinSuffix_;
     }
 
-    const std::string &outputPandaFile() const
+    const std::string &outputFileName() const
     {
-        return outputPandaFile_;
+        return outputFileName_;
+    }
+
+    const std::string &outputFilePath() const
+    {
+        return outputFilePath_;
     }
 
     const std::string &ErrorMsg() const
@@ -53,9 +58,10 @@ public:
 private:
     panda::PandArgParser *argparser_;
     std::string errorMsg_;
-    std::string protoBinSuffix_ {"protoBin"};
-    std::string protoBinPath_;
-    std::string outputPandaFile_ {"merge.abc"};
+    std::string protoBinSuffix_ {"bin"};
+    std::string protoPathInput_;
+    std::string outputFileName_ {"modules.abc"};
+    std::string outputFilePath_;
 };
 }
 #endif

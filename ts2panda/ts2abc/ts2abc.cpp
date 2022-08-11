@@ -28,6 +28,7 @@
 #include "ts2abc_options.h"
 #include "type_adapter.h"
 #include "ts2abc.h"
+#include "protobufSnapshotGenerator.h"
 
 #ifdef ENABLE_BYTECODE_OPT
 #include "optimize_bytecode.h"
@@ -46,12 +47,14 @@ bool g_isDtsFile = false;
 std::string g_optLogLevel = "error";
 uint32_t g_literalArrayCount = 0;
 using ts2abc_type_adapter::TypeAdapter;
+std::string g_compilerOutputProto = "";
 
 constexpr std::size_t BOUND_LEFT = 0;
 constexpr std::size_t BOUND_RIGHT = 0;
 constexpr std::size_t LINE_NUMBER = 0;
 constexpr bool IS_DEFINED = true;
 int g_opCodeIndex = 0;
+std::string g_recordName = "";
 std::unordered_map<int, panda::pandasm::Opcode> g_opcodeMap = {
 #define OPLIST(opcode, name, optype, width, flags, def_idx, use_idxs) {g_opCodeIndex++, panda::pandasm::Opcode::opcode},
     PANDA_INSTRUCTION_LIST(OPLIST)
@@ -60,17 +63,9 @@ std::unordered_map<int, panda::pandasm::Opcode> g_opcodeMap = {
 };
 
 // pandasm helpers
-static panda::pandasm::Record MakeRecordDefinition(const std::string &name, const std::string &wholeLine,
-    size_t boundLeft, size_t boundRight, size_t lineNumber)
+static panda::pandasm::Record MakeRecordDefinition(const std::string &name)
 {
-    auto record = panda::pandasm::Record(
-        name,
-        LANG_EXT,
-        boundLeft,
-        boundRight,
-        wholeLine,
-        IS_DEFINED,
-        lineNumber);
+    auto record = panda::pandasm::Record(name, LANG_EXT);
 
     return record;
 }
@@ -270,6 +265,11 @@ static void ParseLiteral(const Json::Value &literal, std::vector<panda::pandasm:
             valueLiteral.value_ = static_cast<uint16_t>(literal["v"].asUInt());
             break;
         }
+        case static_cast<uint8_t>(panda::panda_file::LiteralTag::TYPEINDEX): {
+            valueLiteral.tag_ = panda::panda_file::LiteralTag::TYPEINDEX;
+            valueLiteral.value_ = static_cast<uint32_t>(literal["v"].asInt());
+            break;
+        }
         case static_cast<uint8_t>(panda::panda_file::LiteralTag::NULLVALUE): {
             valueLiteral.tag_ = panda::panda_file::LiteralTag::NULLVALUE;
             valueLiteral.value_ = static_cast<uint8_t>(0);
@@ -289,28 +289,7 @@ static panda::pandasm::Record ParseRecord(const Json::Value &record)
         recordName = record["name"].asString();
     }
 
-    std::string wholeLine = "";
-    if (record.isMember("whole_line") && record["whole_line"].isString()) {
-        wholeLine = ParseString(record["whole_line"].asString());
-    }
-
-    int boundLeft = -1;
-    if (record.isMember("bound_left") && record["bound_left"].isInt()) {
-        boundLeft = record["bound_left"].asInt();
-    }
-
-    int boundRight = -1;
-    if (record.isMember("bound_right") && record["bound_right"].isInt()) {
-        boundRight = record["bound_right"].asInt();
-    }
-
-    int lineNumber = -1;
-    if (record.isMember("line_number") && record["line_number"].isInt()) {
-        lineNumber = record["line_number"].asInt();
-    }
-
-    auto pandaRecord = MakeRecordDefinition(recordName, wholeLine, static_cast<size_t>(boundLeft),
-        static_cast<size_t>(boundRight), static_cast<size_t>(lineNumber));
+    auto pandaRecord = MakeRecordDefinition(recordName);
 
     if (record.isMember("metadata") && record["metadata"].isObject()) {
         auto metadata = record["metadata"];
@@ -800,35 +779,27 @@ static void GenerateESTypeAnnotationRecord(panda::pandasm::Program &prog)
     prog.record_table.emplace(tsTypeAnnotationRecord.name, std::move(tsTypeAnnotationRecord));
 }
 
-static void GenerateCommonJsRecord(panda::pandasm::Program &prog, bool isCommonJs)
+static void SetCommonjsField(panda::pandasm::Program &prog, bool isCommonjs)
 {
-    // when multi-abc file get merged, field should be inserted in abc's own record
-    auto commonjsRecord = panda::pandasm::Record("_CommonJsRecord", LANG_EXT);
-    commonjsRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
-    auto isCommonJsField = panda::pandasm::Field(LANG_EXT);
-    isCommonJsField.name = "isCommonJs";
-    isCommonJsField.type = panda::pandasm::Type("u8", 0);
-    isCommonJsField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(
-        static_cast<uint8_t>(isCommonJs)));
-    commonjsRecord.field_list.emplace_back(std::move(isCommonJsField));
-
-    prog.record_table.emplace(commonjsRecord.name, std::move(commonjsRecord));
+    auto iter = prog.record_table.find(g_recordName);
+    if (iter != prog.record_table.end()) {
+        auto &rec = iter->second;
+        auto isCommonJsField = panda::pandasm::Field(LANG_EXT);
+        isCommonJsField.name = "isCommonjs";
+        isCommonJsField.type = panda::pandasm::Type("u8", 0);
+        isCommonJsField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(isCommonjs)));
+        rec.field_list.emplace_back(std::move(isCommonJsField));
+    }
 }
 
-static void GenerateESModuleRecord(panda::pandasm::Program &prog)
+static void SetModuleRecordIdx(panda::pandasm::Program &prog, uint32_t moduleIdx)
 {
-    auto ecmaModuleRecord = panda::pandasm::Record("_ESModuleRecord", LANG_EXT);
-    ecmaModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
-    prog.record_table.emplace(ecmaModuleRecord.name, std::move(ecmaModuleRecord));
-}
-
-static void AddModuleRecord(panda::pandasm::Program &prog, const std::string &moduleName, uint32_t moduleIdx)
-{
-    auto iter = prog.record_table.find("_ESModuleRecord");
+    auto iter = prog.record_table.find(g_recordName);
     if (iter != prog.record_table.end()) {
         auto &rec = iter->second;
         auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
-        moduleIdxField.name = moduleName;
+        moduleIdxField.name = "moduleRecordIdx";
         moduleIdxField.type = panda::pandasm::Type("u32", 0);
         moduleIdxField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(
             static_cast<uint32_t>(moduleIdx)));
@@ -857,23 +828,11 @@ int ParseJson(const std::string &data, Json::Value &rootValue)
     return RETURN_SUCCESS;
 }
 
-static void ParseModuleMode(const Json::Value &rootValue, panda::pandasm::Program &prog)
-{
-    Logd("----------------parse module_mode-----------------");
-    if (rootValue.isMember("module_mode") && rootValue["module_mode"].isBool()) {
-        if (rootValue["module_mode"].asBool()) {
-            GenerateESModuleRecord(prog);
-        }
-    }
-}
-
-static void ParseCommonJsModuleMode(const Json::Value &rootValue, panda::pandasm::Program &prog)
+static void SetCommonJsModuleMode(const Json::Value &rootValue, panda::pandasm::Program &prog)
 {
     Logd("------------parse commonjs_module_mode-------------");
     if (rootValue.isMember("commonjs_module") && rootValue["commonjs_module"].isBool()) {
-        if (rootValue["commonjs_module"].asBool()) {
-            GenerateCommonJsRecord(prog, true);
-        }
+        SetCommonjsField(prog, rootValue["commonjs_module"].asBool());
     }
 }
 
@@ -927,6 +886,12 @@ static void ParseIsDtsFile(const Json::Value &rootValue)
     }
 }
 
+static void ParseCompilerOutputProto(const Json::Value &rootValue) {
+    Logd("-----------------parse compiler output proto-----------------");
+    if (rootValue.isMember("output-proto") && rootValue["output-proto"].isString()) {
+        g_compilerOutputProto = rootValue["output-proto"].asString();
+    }
+}
 static void ReplaceAllDistinct(std::string &str, const std::string &oldValue, const std::string &newValue)
 {
     for (std::string::size_type pos(0); pos != std::string::npos; pos += newValue.length()) {
@@ -942,14 +907,14 @@ static void ParseOptions(const Json::Value &rootValue, panda::pandasm::Program &
 {
     GenerateESCallTypeAnnotationRecord(prog);
     GenerateESTypeAnnotationRecord(prog);
-    ParseModuleMode(rootValue, prog);
-    ParseCommonJsModuleMode(rootValue, prog);
+    SetCommonJsModuleMode(rootValue, prog);
     ParseLogEnable(rootValue);
     ParseDebugMode(rootValue);
     ParseOptLevel(rootValue);
     ParseDisplayTypeinfo(rootValue);
     ParseOptLogLevel(rootValue);
     ParseIsDtsFile(rootValue);
+    ParseCompilerOutputProto(rootValue);
 }
 
 static void ParseSingleFunc(const Json::Value &rootValue, panda::pandasm::Program &prog)
@@ -958,9 +923,10 @@ static void ParseSingleFunc(const Json::Value &rootValue, panda::pandasm::Progra
     prog.function_table.emplace(function.name.c_str(), std::move(function));
 }
 
-static void ParseSingleRec(const Json::Value &rootValue, panda::pandasm::Program &prog)
+static void ParseRec(const Json::Value &rootValue, panda::pandasm::Program &prog)
 {
     auto record = ParseRecord(rootValue["rb"]);
+    g_recordName = record.name;
     prog.record_table.emplace(record.name.c_str(), std::move(record));
 }
 
@@ -1102,8 +1068,7 @@ static void ParseSingleModule(const Json::Value &rootValue, panda::pandasm::Prog
     ParseIndirectExportEntries(moduleRecord["indirectExportEntries"], moduleLiteralArray);
     ParseStarExportEntries(moduleRecord["starExportEntries"], moduleLiteralArray);
 
-    auto moduleName = ParseString(moduleRecord["moduleName"].asString());
-    AddModuleRecord(prog, moduleName, g_literalArrayCount);
+    SetModuleRecordIdx(prog, g_literalArrayCount);
 
     auto moduleLiteralarrayInstance = panda::pandasm::LiteralArray(moduleLiteralArray);
     prog.literalarray_table.emplace(std::to_string(g_literalArrayCount++), std::move(moduleLiteralarrayInstance));
@@ -1153,7 +1118,7 @@ static int ParseSmallPieceJson(const std::string &subJson, panda::pandasm::Progr
         }
         case static_cast<int>(JsonType::RECORD): {
             if (rootValue.isMember("rb") && rootValue["rb"].isObject()) {
-                ParseSingleRec(rootValue, prog);
+                ParseRec(rootValue, prog);
             }
             break;
         }
@@ -1301,9 +1266,11 @@ static bool ReadFromPipe(panda::pandasm::Program &prog)
     return true;
 }
 
-bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string &output, bool isParsingFromPipe,
-                     int optLevel, std::string &optLogLevel)
+bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string &output, panda::ts2abc::Options options)
 {
+    bool isParsingFromPipe = options.GetCompileByPipeArg();
+    int optLevel = options.GetOptLevelArg();
+    std::string optLogLevel = options.GetOptLogLevelArg();
     panda::pandasm::Program prog = panda::pandasm::Program();
     prog.lang = panda::pandasm::extensions::Language::ECMASCRIPT;
 
@@ -1320,6 +1287,11 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
     }
 
     Logd("parsing done, calling pandasm\n");
+
+    std::string compilerOutputProto = g_compilerOutputProto;
+    if (options.GetCompilerOutputProto().size() > 0) {
+        compilerOutputProto = options.GetCompilerOutputProto();
+    }
 
     TypeAdapter ada(g_displayTypeinfo);
     ada.AdaptTypeForProgram(&prog);
@@ -1346,7 +1318,14 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
             std::cerr << "Failed to emit binary data: " << panda::pandasm::AsmEmitter::GetLastError() << std::endl;
             return false;
         }
+
         panda::bytecodeopt::OptimizeBytecode(&prog, mapsp, output.c_str(), true);
+
+        if (compilerOutputProto.size() > 0) {
+            panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, compilerOutputProto);
+            return true;
+        }
+
         if (!panda::pandasm::AsmEmitter::Emit(output.c_str(), prog, statp, mapsp, emitDebugInfo)) {
             std::cerr << "Failed to emit binary data: " << panda::pandasm::AsmEmitter::GetLastError() << std::endl;
             return false;
@@ -1354,6 +1333,10 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
         return true;
     }
 #endif
+    if (compilerOutputProto.size() > 0) {
+        panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, compilerOutputProto);
+        return true;
+    }
 
     if (!panda::pandasm::AsmEmitter::Emit(output.c_str(), prog, nullptr)) {
         std::cerr << "Failed to emit binary data: " << panda::pandasm::AsmEmitter::GetLastError() << std::endl;

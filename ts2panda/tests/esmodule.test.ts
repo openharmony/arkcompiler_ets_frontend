@@ -45,7 +45,7 @@ describe("ExportDeclaration", function () {
         let classReg = new VReg();
         let expected = [
             new MovDyn(new VReg(), new VReg()),
-            new EcmaDefineclasswithbuffer("#1#C", new Imm(0), new Imm(0), new VReg(), new VReg()),
+            new EcmaDefineclasswithbuffer("UnitTest.#1#C", new Imm(0), new Imm(0), new VReg(), new VReg()),
             new StaDyn(classReg),
             new LdaDyn(classReg),
             new EcmaStmodulevar('C'),

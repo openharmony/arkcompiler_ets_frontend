@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "mergeOptions.h"
+#include "Options.h"
 
 #include <sstream>
 
@@ -29,22 +29,26 @@ Options::~Options()
 bool Options::Parse(int argc, const char **argv) {
     panda::PandArg<bool> opHelp("help", false, "Print this message and exit");
 
-    panda::PandArg<std::string> protoBinPath("protoBinPath", "", "path of proto bin files");
-    panda::PandArg<std::string> protoBinSuffix("protoBinSuffix", "", "suffix of proto bin file");
-    panda::PandArg<std::string> outputPandaFile("outputPandaFile", "", "name of merged panda file");
+    panda::PandArg<std::string> protoPathInput("input", "",
+                                               "Path of Proto bin file or directory. If input path starts with '@', "
+                                               "it considered as a text file with list of files or directories.");
+    panda::PandArg<std::string> protoBinSuffix("suffix", "", "suffix of proto bin file");
+    panda::PandArg<std::string> outputFileName("output", "", "name of merged panda file");
+    panda::PandArg<std::string> outputFilePath("outputFilePath", "", "output path for merged panda file");
 
     argparser_->Add(&opHelp);
-    argparser_->Add(&protoBinPath);
+    argparser_->Add(&protoPathInput);
     argparser_->Add(&protoBinSuffix);
-    argparser_->Add(&outputPandaFile);
+    argparser_->Add(&outputFileName);
+    argparser_->Add(&outputFilePath);
 
-    if (!argparser_->Parse(argc, argv) || opHelp.GetValue() || protoBinPath.GetValue().empty()) {
+    if (!argparser_->Parse(argc, argv) || opHelp.GetValue() || protoPathInput.GetValue().empty()) {
         std::stringstream ss;
 
         ss << argparser_->GetErrorString() << std::endl;
         ss << "Usage: "
            << "merge_abc"
-           << " [OPTIONS]" << std::endl;
+           << " [OPTIONS] --input" << std::endl;
         ss << std::endl;
         ss << "optional arguments:" << std::endl;
         ss << argparser_->GetHelpString() << std::endl;
@@ -53,12 +57,15 @@ bool Options::Parse(int argc, const char **argv) {
         return false;
     }
 
-    protoBinPath_ = protoBinPath.GetValue();
+    protoPathInput_ = protoPathInput.GetValue();
     if (!protoBinSuffix.GetValue().empty()) {
         protoBinSuffix_ = protoBinSuffix.GetValue();
     }
-    if (!outputPandaFile.GetValue().empty()) {
-        outputPandaFile_ = outputPandaFile.GetValue();
+    if (!outputFileName.GetValue().empty()) {
+        outputFileName_ = outputFileName.GetValue();
+    }
+    if (!outputFilePath.GetValue().empty()) {
+        outputFilePath_ = outputFilePath.GetValue();
     }
 
     return true;

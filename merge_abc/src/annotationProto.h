@@ -26,7 +26,7 @@ class AnnotationData {
 public:
     static void Serialize(const panda::pandasm::AnnotationData &anno, proto_panda::AnnotationData &protoAnno);
     static void Deserialize(const proto_panda::AnnotationData &protoAnno, panda::pandasm::AnnotationData &anno,
-                            std::unique_ptr<panda::ArenaAllocator> &&allocator);
+                            panda::ArenaAllocator *allocator);
 };
 
 class AnnotationElement {
@@ -34,14 +34,14 @@ public:
     static void Serialize(const panda::pandasm::AnnotationElement &element,
                                         proto_panda::AnnotationElement &protoElement);
     static panda::pandasm::AnnotationElement &Deserialize(const proto_panda::AnnotationElement &protoElement,
-                                                          std::unique_ptr<panda::ArenaAllocator> &&allocator);
+                                                          panda::ArenaAllocator *allocator);
 };
 
 class ScalarValue {
 public:
     static void Serialize(const panda::pandasm::ScalarValue &scalar, proto_panda::ScalarValue &protoScalar);
     static panda::pandasm::ScalarValue Deserialize(const proto_panda::ScalarValue &protoScalar,
-                                                   std::unique_ptr<panda::ArenaAllocator> &&allocator);
+                                                   panda::ArenaAllocator *allocator);
     static panda::pandasm::ScalarValue CreateScalarValue(const panda::pandasm::Value::Type &type,
         std::variant<uint64_t, float, double, std::string, panda::pandasm::Type, panda::pandasm::AnnotationData>
         &value);
@@ -51,7 +51,7 @@ class ArrayValue {
 public:
     static void Serialize(const panda::pandasm::ArrayValue &array, proto_panda::ArrayValue &protoArray);
     static panda::pandasm::ArrayValue &Deserialize(const proto_panda::ArrayValue &protoArray,
-                                                   std::unique_ptr<panda::ArenaAllocator> &&allocator);
+                                                   panda::ArenaAllocator *allocator);
 };
 } // panda::proto
 #endif

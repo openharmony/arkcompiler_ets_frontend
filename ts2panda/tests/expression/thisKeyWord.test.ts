@@ -50,7 +50,7 @@ describe("ThisKeyword", function () {
     it("this in function scope", function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("function a() {this}");
-        let functionPg = snippetCompiler.getPandaGenByName("a");
+        let functionPg = snippetCompiler.getPandaGenByName("UnitTest.a");
         let functionScope = functionPg!.getScope();
         let insns = compileMainSnippet("this;", pandaGen, functionScope);
         let expected = [

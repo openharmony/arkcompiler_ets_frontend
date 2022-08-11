@@ -23,7 +23,7 @@ class ProtobufSnapshotGenerator {
 public:
     static void GenerateSnapshot(const panda::pandasm::Program &prog, const std::string &outputName);
     static void GenerateProgram(const std::string &inputName, panda::pandasm::Program &prog,
-                                std::unique_ptr<panda::ArenaAllocator> &&allocator);
+                                panda::ArenaAllocator *allocator);
 };
 } // panda::proto
 #endif

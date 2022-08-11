@@ -50,6 +50,8 @@ const ts2pandaOptions = [
     { name: 'function-sourcecode', type: Boolean, defaultValue: false, description: "Record functions' sourceCode to support the feature of [function].toString()" },
     { name: 'expression-watch-toolchain', type: String, defaultValue: "es2panda", description: "Specify the tool chain used to transform the expression" },
     { name: 'source-file', type: String, defaultValue: "", description: "specify the file path info recorded in generated abc" },
+    { name: 'record-name', type: String, defaultValue: "", description: "specify the record name." },
+    { name: 'output-proto', type: String, defaultValue: "", description: "Compiler proto serialize binary output (.proto)" }
 ]
 
 
@@ -208,6 +210,13 @@ export class CmdOptions {
         return outputFile;
     }
 
+    static getRecordName(): string {
+        if (!this.options) {
+            return "";
+        }
+        return this.options["record-name"];
+    }
+
     static getTimeOut(): Number {
         if (!this.options) {
             return 0;
@@ -305,6 +314,10 @@ export class CmdOptions {
 
     static getSourceFile(): string {
         return this.options["source-file"];
+    }
+    
+    static getOutputproto(): string {
+        return this.options["output-proto"];
     }
 
     // @ts-ignore

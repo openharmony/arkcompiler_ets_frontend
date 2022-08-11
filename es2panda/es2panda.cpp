@@ -47,10 +47,11 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     /* TODO(dbatyai): pass string view */
     std::string fname(input.fileName);
     std::string src(input.source);
+    std::string rname(input.recordName);
     parser::ScriptKind kind(input.scriptKind);
 
     try {
-        auto ast = parser_->Parse(fname, src, kind);
+        auto ast = parser_->Parse(fname, src, rname, kind);
 
         if (options.dumpAst) {
             std::cout << ast.Dump() << std::endl;

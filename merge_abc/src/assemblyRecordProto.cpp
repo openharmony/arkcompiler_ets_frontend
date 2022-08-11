@@ -41,13 +41,13 @@ void Record::Serialize(const panda::pandasm::Record &record, proto_panda::Record
 }
 
 void Record::Deserialize(const proto_panda::Record &protoRecord, panda::pandasm::Record &record,
-                        std::unique_ptr<panda::ArenaAllocator> &&allocator)
+                        panda::ArenaAllocator *allocator)
 {
     record.conflict = protoRecord.conflict();
-    RecordMetadata::Deserialize(protoRecord.metadata(), record.metadata, std::move(allocator));
+    RecordMetadata::Deserialize(protoRecord.metadata(), record.metadata, allocator);
     for (const auto &protoField : protoRecord.field_list()) {
         auto recordField = panda::pandasm::Field(panda::panda_file::SourceLang::ECMASCRIPT);
-        Field::Deserialize(protoField, recordField, std::move(allocator));
+        Field::Deserialize(protoField, recordField, allocator);
         record.field_list.emplace_back(std::move(recordField));
     }
     record.params_num = protoRecord.params_num();

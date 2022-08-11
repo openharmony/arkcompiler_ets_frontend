@@ -41,7 +41,9 @@ enum class LiteralTag {
     GENERATOR_METHOD,
     ACCESSOR,
     METHODAFFILIATE,
-    ASYNC_GENERATOR_METHOD,
+    // 0x0a - 0x15 for ARRAY_Type
+    ASYNC_GENERATOR_METHOD = 22,
+    TYPEINDEX = 23,
     NULL_VALUE = 255,
 };
 

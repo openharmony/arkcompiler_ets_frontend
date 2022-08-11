@@ -34,7 +34,7 @@ void ProtobufSnapshotGenerator::GenerateSnapshot(const panda::pandasm::Program &
 }
 
 void ProtobufSnapshotGenerator::GenerateProgram(const std::string &inputName, panda::pandasm::Program &prog,
-                                                std::unique_ptr<panda::ArenaAllocator> &&allocator)
+                                                panda::ArenaAllocator *allocator)
 {
     std::fstream input(inputName, std::ios::in | std::ios::binary);
     if (!input) {
@@ -47,6 +47,6 @@ void ProtobufSnapshotGenerator::GenerateProgram(const std::string &inputName, pa
         return;
     }
     Program program;
-    program.Deserialize(proto_program, prog, std::move(allocator));
+    program.Deserialize(proto_program, prog, allocator);
 }
 } // panda::proto

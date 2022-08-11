@@ -91,6 +91,11 @@ public:
         return sourceFile_;
     }
 
+    const std::string &RecordName() const
+    {
+        return recordName_;
+    }
+
     const std::string &ErrorMsg() const
     {
         return errorMsg_;
@@ -133,6 +138,7 @@ private:
     std::string compilerOutput_;
     std::string result_;
     std::string sourceFile_;
+    std::string recordName_;
     std::string errorMsg_;
     std::string compilerProtoOutput_;
     int optLevel_ {0};

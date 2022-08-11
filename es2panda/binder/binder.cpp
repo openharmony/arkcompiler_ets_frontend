@@ -200,11 +200,13 @@ void Binder::BuildFunction(FunctionScope *funcScope, util::StringView name)
     bool funcNameWithoutDot = (name.Find(".") == std::string::npos);
     bool funcNameWithoutBackslash = (name.Find("\\") == std::string::npos);
     if (name != ANONYMOUS_FUNC_NAME && funcNameWithoutDot && funcNameWithoutBackslash && !functionNames_.count(name)) {
+        auto internalName = std::string(program_->RecordName()) + "." + std::string(name);
         functionNames_.insert(name);
-        funcScope->BindName(name, name);
+        funcScope->BindName(name, util::UString(internalName, Allocator()).View());
         return;
     }
     std::stringstream ss;
+    ss << std::string(program_->RecordName()) << ".";
     uint32_t idx = functionNameIndex_++;
     ss << "#" << std::to_string(idx) << "#";
     if (funcNameWithoutDot && funcNameWithoutBackslash) {

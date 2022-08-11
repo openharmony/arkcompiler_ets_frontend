@@ -30,7 +30,7 @@ describe("object tests in object.test.ts", function() {
     it("test object with primitives", function() {
         let fileNames = 'tests/types/object/object_primi.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -56,7 +56,7 @@ describe("object tests in object.test.ts", function() {
     it("test object with user defined type", function() {
         let fileNames = 'tests/types/object/object_class.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [

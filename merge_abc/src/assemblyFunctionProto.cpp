@@ -45,9 +45,9 @@ void Parameter::Serialize(const panda::pandasm::Function::Parameter &param, prot
 }
 
 void Parameter::Deserialize(const proto_panda::Parameter &protoParam, panda::pandasm::Function::Parameter &param,
-                            std::unique_ptr<panda::ArenaAllocator> &&allocator)
+                            panda::ArenaAllocator *allocator)
 {
-    ParamMetadata::Deserialize(protoParam.metadata(), param.metadata, std::move(allocator));
+    ParamMetadata::Deserialize(protoParam.metadata(), param.metadata, allocator);
 }
 
 void Function::Serialize(const panda::pandasm::Function &function, proto_panda::Function &protoFunction)
@@ -107,9 +107,9 @@ void Function::Serialize(const panda::pandasm::Function &function, proto_panda::
 }
 
 void Function::Deserialize(const proto_panda::Function &protoFunction, panda::pandasm::Function &function,
-                           std::unique_ptr<panda::ArenaAllocator> &&allocator)
+                           panda::ArenaAllocator *allocator)
 {
-    FunctionMetadata::Deserialize(protoFunction.metadata(), function.metadata, std::move(allocator));
+    FunctionMetadata::Deserialize(protoFunction.metadata(), function.metadata, allocator);
     for (const auto &labelUnit : protoFunction.label_table()) {
         auto name = labelUnit.key();
         auto protoLabel = labelUnit.value();
@@ -143,14 +143,14 @@ void Function::Deserialize(const proto_panda::Function &protoFunction, panda::pa
     function.regs_num = protoFunction.regs_num();
 
     for (const auto &protoParam : protoFunction.params()) {
-        auto paramType = Type::Deserialize(protoParam.type(), std::move(allocator));
+        auto paramType = Type::Deserialize(protoParam.type(), allocator);
         panda::pandasm::Function::Parameter param(paramType, panda::panda_file::SourceLang::ECMASCRIPT);
-        Parameter::Deserialize(protoParam, param, std::move(allocator));
+        Parameter::Deserialize(protoParam, param, allocator);
         function.params.emplace_back(std::move(param));
     }
 
     function.body_presence = protoFunction.body_presence();
-    function.return_type = Type::Deserialize(protoFunction.return_type(), std::move(allocator));
+    function.return_type = Type::Deserialize(protoFunction.return_type(), allocator);
     SourceLocation::Deserialize(protoFunction.body_location(), function.body_location);
 
     if (protoFunction.has_file_location()) {

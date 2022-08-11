@@ -54,7 +54,7 @@ describe("CommaListExpression", function () {
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
             new MovDyn(new VReg(), new VReg()),
-            new EcmaDefineclasswithbuffer("#1#Test", new Imm(0), new Imm(0), new VReg(), new VReg()),
+            new EcmaDefineclasswithbuffer("UnitTest.#1#Test", new Imm(0), new Imm(0), new VReg(), new VReg()),
             new StaDyn(new VReg()),
             new LdaDyn(new VReg()),
             new EcmaStclasstoglobalrecord("Test"),
