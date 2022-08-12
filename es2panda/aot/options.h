@@ -118,6 +118,11 @@ public:
 
     std::string ExtractContentFromBase64Input(const std::string &inputBase64String);
 
+    const std::string &compilerProtoOutput() const
+    {
+        return compilerProtoOutput_;
+    }
+
 private:
     es2panda::ScriptExtension extension_ {es2panda::ScriptExtension::JS};
     es2panda::CompilerOptions compilerOptions_ {};
@@ -129,6 +134,7 @@ private:
     std::string result_;
     std::string sourceFile_;
     std::string errorMsg_;
+    std::string compilerProtoOutput_;
     int optLevel_ {0};
     int threadCount_ {0};
 };

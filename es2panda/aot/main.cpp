@@ -31,6 +31,8 @@
 #include <iostream>
 #include <memory>
 
+#include <protobufSnapshotGenerator.h>
+
 namespace panda::es2panda::aot {
 
 using mem::MemConfig;
@@ -120,6 +122,11 @@ static int GenerateProgram(panda::pandasm::Program *prog, std::unique_ptr<panda:
 
     if (output.empty()) {
         GenerateBase64Output(prog, mapsp);
+        return 0;
+    }
+
+    if (options->compilerProtoOutput().size() > 0) {
+        proto::ProtobufSnapshotGenerator::GenerateSnapshot(*prog, options->compilerProtoOutput());
         return 0;
     }
 

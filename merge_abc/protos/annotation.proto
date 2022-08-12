@@ -1,0 +1,64 @@
+/**
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto3";
+package proto_panda;
+
+import "assemblyType.proto";
+
+message Value {
+    uint32 type = 1;
+}
+
+message ScalarValue {
+    enum VariantValueType {
+        UINT64 = 0;
+        FLOAT = 1;
+        DOUBLE = 2;
+        STRING = 3;
+        PANDASM_TYPE = 4;
+        ANNOTATION_DATA = 5;
+    }
+    Value father = 1;
+    oneof value {
+        uint64 value_u64 = 2;
+        float value_f = 3;
+        double value_d = 4;
+        bytes value_str = 5;
+        Type value_type = 6;
+        AnnotationData value_anno = 7;
+    }
+    VariantValueType type = 8;
+}
+
+message ArrayValue {
+    Value father = 1;
+    uint32 component_type = 2;
+    repeated ScalarValue values = 3;
+}
+
+message AnnotationElement {
+    bytes name = 1;
+    oneof value {
+        ScalarValue scalar = 2;
+        ArrayValue array = 3;
+    }
+    bool is_array = 4;
+}
+
+message AnnotationData {
+    bytes record_name = 1;
+    repeated AnnotationElement elements = 2;
+}

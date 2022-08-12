@@ -72,6 +72,7 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> base64Output("base64Output", false, "output panda file content as base64 to std out");
     panda::PandArg<std::string> sourceFile("source-file", "",
                                            "specify the file path info recorded in generated abc");
+    panda::PandArg<std::string> outputProto("outputProto", "", "Compiler proto serialize binary output (.bin)");
 
     // tail arguments
     panda::PandArg<std::string> inputFile("input", "", "input file");
@@ -97,6 +98,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&inputExtension);
     argparser_->Add(&outputFile);
     argparser_->Add(&sourceFile);
+    argparser_->Add(&outputProto);
 
     argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
@@ -148,6 +150,12 @@ bool Options::Parse(int argc, const char **argv)
         parserInput_ = ss.str();
 
         sourceFile_ = BaseName(sourceFile_);
+
+        if (!outputProto.GetValue().empty()) {
+            compilerProtoOutput_ = outputProto.GetValue();
+        } else {
+            compilerProtoOutput_ = "";
+        }
     } else {
         // input content is base64 string
         parserInput_ = ExtractContentFromBase64Input(base64Input.GetValue());

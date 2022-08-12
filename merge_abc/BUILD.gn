@@ -1,0 +1,145 @@
+# Copyright (c) 2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//arkcompiler/runtime_core/ark_config.gni")
+import("//build/config/clang/clang.gni")
+import("//build/ohos.gni")
+import("//developtools/profiler/build/config.gni")
+
+proto_base_dir = "protos"
+proto_out_dir = "$target_gen_dir" + "/protos_generated"
+
+protobuf_snapshot_generator_sources = [
+  "src/annotation.cpp",
+  "src/assemblyDebug.cpp",
+  "src/assemblyField.cpp",
+  "src/assemblyFileLocation.cpp",
+  "src/assemblyFunction.cpp",
+  "src/assemblyIns.cpp",
+  "src/assemblyLabel.cpp",
+  "src/assemblyLiterals.cpp",
+  "src/assemblyProgram.cpp",
+  "src/assemblyRecord.cpp",
+  "src/assemblyType.cpp",
+  "src/ideHelpers.cpp",
+  "src/meta.cpp",
+  "src/protobufSnapshotGenerator.cpp",
+]
+
+config("panda_assembly_proto_public_config") {
+  include_dirs = [
+    "$ark_root/assembler",
+    "$ark_root",
+    "src",
+    "$proto_out_dir",
+    "//third_party/protobuf/src",
+    "//third_party/protobuf/src/google",
+    "//third_party/protobuf/src/google/protobuf",
+  ]
+}
+
+assembly_proto_configs = [
+  sdk_libc_secshared_config,
+  "$ark_root:ark_config",
+  ":panda_assembly_proto_public_config",
+  "$ark_root/assembler:arkassembler_public_config",
+  "$ark_root/libpandabase:arkbase_public_config",
+  "$ark_root/libpandafile:arkfile_public_config",
+]
+
+proto_file_defines = [
+  # add your proto file here
+  "annotation",
+  "assemblyDebug",
+  "assemblyField",
+  "assemblyFileLocation",
+  "assemblyFunction",
+  "assemblyIns",
+  "assemblyLabel",
+  "assemblyLiterals",
+  "assemblyProgram",
+  "assemblyRecord",
+  "assemblyType",
+  "ideHelpers",
+  "meta",
+]
+
+proto_file_sources = []
+proto_generated_header = []
+proto_generated_source = []
+
+foreach(proto_file, proto_file_defines) {
+  proto_generated_header += [ "$proto_out_dir" + "/" + "$proto_file.pb.h" ]
+  proto_generated_source += [ "$proto_out_dir" + "/" + "$proto_file.pb.cc" ]
+  proto_file_sources += [ "$proto_base_dir" + "/" + "$proto_file.proto" ]
+}
+
+protoc_binary_out_path =
+    "${OHOS_PROFILER_SUBSYS_NAME}/${OHOS_PROFILER_PART_NAME}"
+
+if (default_toolchain == current_toolchain) {
+  #if target build
+  host_out_path = "/" + get_label_info(host_toolchain, "name")
+} else {
+  #if host build (for some linke mingw)
+  host_out_path = "/../" + get_label_info(host_toolchain, "name")
+}
+
+host_protoc_path =
+    root_out_dir + host_out_path + "/" + protoc_binary_out_path + "/protoc"
+
+action("arkcompiler_generate_proto") {
+  deps = [ "//third_party/protobuf:protoc($host_toolchain)" ]
+  args = []
+  sources = []
+  outputs = proto_generated_header + proto_generated_source
+  script = "./script/build_proto.sh"
+
+  args += [ rebase_path(host_protoc_path) ]
+  args += [
+    "--proto_path",
+    rebase_path(proto_base_dir),
+    "--cpp_out",
+    rebase_path(proto_out_dir),
+    "--experimental_allow_proto3_optional",
+  ]
+
+  foreach(proto_file_source, proto_file_sources) {
+    #tell gn to check which files as source time
+    sources += [ rebase_path(proto_file_source) ]
+    args += [ rebase_path(proto_file_source) ]
+  }
+}
+
+config("proto_file_cpp_config") {
+  include_dirs = [ proto_out_dir ]
+}
+
+ohos_source_set("assembly_proto_static") {
+  cflags = [ "-Wno-error=zero-length-array" ]
+
+  deps = [
+    ":arkcompiler_generate_proto",
+    "//third_party/protobuf:protobuf_lite_static",
+    "//third_party/protobuf:protobuf_static",
+  ]
+
+  sources = proto_generated_header + proto_generated_source +
+            protobuf_snapshot_generator_sources
+  public_configs = assembly_proto_configs
+  public_configs += [ ":proto_file_cpp_config" ]
+}
+
+ohos_static_library("panda_assembly_proto_static") {
+  deps = [ ":assembly_proto_static" ]
+}
