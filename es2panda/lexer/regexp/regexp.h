@@ -92,12 +92,14 @@ private:
     char32_t Next();
     void Advance();
     bool Eos() const;
+    void ValidateNamedGroupReferences();
 
     RegExp re_;
     ArenaAllocator *allocator_ {};
     util::StringView::Iterator iter_;
     uint32_t capturingGroupCount_;
     std::unordered_set<util::StringView> groupNames_;
+    std::unordered_set<util::StringView> namedGroupReferences_;
 };
 
 }  // namespace panda::es2panda::lexer

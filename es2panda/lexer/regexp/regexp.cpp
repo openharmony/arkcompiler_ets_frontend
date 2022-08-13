@@ -96,6 +96,7 @@ void RegExpParser::ParsePattern()
     if (iter_.HasNext()) {
         ThrowError("Invalid closing parenthesis");
     }
+    ValidateNamedGroupReferences();
 }
 
 void RegExpParser::ParseDisjunction()
@@ -699,10 +700,16 @@ void RegExpParser::ParseNamedBackreference()
     }
 
     util::StringView name = ParseIdent();
+    namedGroupReferences_.insert(name);
+}
 
-    auto result = groupNames_.find(name);
-    if (result == groupNames_.end()) {
-        ThrowError("Invalid named capture referenced");
+void RegExpParser::ValidateNamedGroupReferences()
+{
+    for (auto& ref : namedGroupReferences_) {
+        auto result = groupNames_.find(ref);
+        if (result == groupNames_.end()) {
+            ThrowError("Invalid named capture referenced");
+        }
     }
 }
 
