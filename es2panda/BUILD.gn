@@ -518,3 +518,7 @@ group("es2panda_build") {
 group("es2panda_build_win") {
   deps = [ ":es2panda(${toolchain_win})" ]
 }
+
+group("es2abc_tests") {
+  deps = [ "./test:es2abc_parser_tests" ]
+}
