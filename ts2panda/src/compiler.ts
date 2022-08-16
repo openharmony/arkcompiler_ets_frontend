@@ -938,6 +938,7 @@ export class Compiler {
                 compileClassDeclaration(this, <ts.ClassLikeDeclaration>expr);
                 break;
             case ts.SyntaxKind.PartiallyEmittedExpression:
+                this.compileExpression(findInnerExprOfParenthesis(<ts.ParenthesizedExpression>expr));
                 break;
             case ts.SyntaxKind.CommaListExpression:
 	        compileCommaListExpression(this, <ts.CommaListExpression>expr);
