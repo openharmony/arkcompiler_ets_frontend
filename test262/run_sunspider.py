@@ -151,16 +151,12 @@ def exec_command(cmd_args, timeout=DEFAULT_TIMEOUT):
 
 def print_command(cmd_args):
     sys.stderr.write("\n")
-    for arg in cmd_args:
-        sys.stderr.write("%s%s"%(arg, " "))
+    sys.stderr.write(" ".join(cmd_args))
     sys.stderr.write("\n")
 
+# for debug use, to keep aot file
 def run_command(cmd_args):
-    timeout = DEFAULT_TIMEOUT / 1000
-    cmd = f"timeout {timeout} "
-    for arg in cmd_args:
-        cmd += f"{arg} "
-    return subprocess.run(cmd)
+    return subprocess.run(" ".join(cmd_args))
 
 class ArkProgram():
     def __init__(self, args):
@@ -252,48 +248,44 @@ class ArkProgram():
             if file_name in self.module_list:
                 cmd_args.insert(mod_opt_index, "--module")
                 self.module = True
-        if self.ark_aot:
-            subprocess.run(f'''sed -i 's/;$262.destroy();/\/\/;$262.destroy();/g' {js_file}''')
-            if self.module:
-                js_dir = os.path.dirname(js_file)
-                for line in fileinput.input(js_file):
-                    import_line = re.findall(r"^(?:ex|im)port.*from.*\.js", line)
-                    if len(import_line):
-                        import_file = re.findall(r"['\"].*\.js", import_line[0])
-                        if len(import_file):
-                            abc_file = import_file[0][1:].replace(".js", ".abc")
-                            if self.abc_file.find(abc_file) < 0:
-                                self.abc_file += f':{js_dir}/{abc_file}'
+        # get abc file list from import statement
+        if self.ark_aot and self.module:
+            self.abc_file = os.path.abspath(out_file)
+            js_dir = os.path.dirname(js_file)
+            for line in fileinput.input(js_file):
+                import_line = re.findall(r"^(?:ex|im)port.*\.js", line)
+                if len(import_line):
+                    import_file = re.findall(r"['\"].*\.js", import_line[0])
+                    if len(import_file):
+                        abc_file = import_file[0][1:].replace(".js", ".abc")
+                        abc_file = os.path.abspath(f'{js_dir}/{abc_file}')
+                        if self.abc_file.find(abc_file) < 0:
+                            self.abc_file += f':{abc_file}'
         retcode = exec_command(cmd_args)
+        self.abc_cmd = cmd_args
         return retcode
 
     def compile_aot(self):
         os.environ["LD_LIBRARY_PATH"] = self.libs_dir
         file_name_pre = os.path.splitext(self.js_file)[0]
-        abc_file = f'{file_name_pre}.abc'
         cmd_args = []
         if self.arch == ARK_ARCH_LIST[1]:
             cmd_args = [self.ark_aot_tool, ICU_PATH,
                         f'--target-triple=aarch64-unknown-linux-gnu',
-                        f'--aot-file={file_name_pre}.m',
-                        f'--snapshot-output-file={file_name_pre}.snapshot',
-                        self.abc_file,
-                        f'> {file_name_pre}.log 2>&1']
+                        f'--aot-file={file_name_pre}',
+                        self.abc_file]
         elif self.arch == ARK_ARCH_LIST[2]:
             cmd_args = [self.ark_aot_tool, ICU_PATH,
                         f'--target-triple=arm-unknown-linux-gnu',
-                        f'--aot-file={file_name_pre}.m',
-                        f'--snapshot-output-file={file_name_pre}.snapshot',
-                        self.abc_file,
-                        f'> {file_name_pre}.log 2>&1']
+                        f'--aot-file={file_name_pre}',
+                        self.abc_file]
         elif self.arch == ARK_ARCH_LIST[0]:
             cmd_args = [self.ark_aot_tool, ICU_PATH,
-                        f'--aot-file={file_name_pre}.m',
-                        f'--snapshot-output-file={file_name_pre}.snapshot',
-                        self.abc_file,
-                        f'> {file_name_pre}.log 2>&1']
-        retcode = run_command(cmd_args)
+                        f'--aot-file={file_name_pre}',
+                        self.abc_file]
+        retcode = exec_command(cmd_args, 180000)
         if retcode:
+            print_command(self.abc_cmd)
             print_command(cmd_args)
 
     def execute_aot(self):
@@ -307,8 +299,7 @@ class ArkProgram():
             cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_tool,
                         ICU_PATH,
                         '--asm-interpreter=1',
-                        f'--aot-file={file_name_pre}.m',
-                        f'--snapshot-output-file={file_name_pre}.snapshot',
+                        f'--aot-file={file_name_pre}',
                         f'{file_name_pre}.abc']
         elif self.arch == ARK_ARCH_LIST[2]:
             qemu_tool = "qemu-arm"
@@ -317,19 +308,16 @@ class ArkProgram():
             cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_tool,
                         ICU_PATH,
                         '--asm-interpreter=1',
-                        f'--aot-file={file_name_pre}.m',
-                        f'--snapshot-output-file={file_name_pre}.snapshot',
+                        f'--aot-file={file_name_pre}',
                         f'{file_name_pre}.abc']
         elif self.arch == ARK_ARCH_LIST[0]:
             cmd_args = [self.ark_tool, ICU_PATH,
                         '--asm-interpreter=1',
-                        f'--aot-file={file_name_pre}.m',
-                        f'--snapshot-output-file={file_name_pre}.snapshot',
+                        f'--aot-file={file_name_pre}',
                         f'{file_name_pre}.abc']
 
-        retcode = run_command(cmd_args)
+        retcode = exec_command(cmd_args)
         if retcode:
-            subprocess.run(f'cp {self.js_file} {BASE_OUT_DIR}/../')
             print_command(cmd_args)
         return retcode
 
