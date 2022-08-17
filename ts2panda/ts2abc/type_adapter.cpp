@@ -21,7 +21,7 @@ void TypeAdapter::AdaptTypeForProgram(panda::pandasm::Program *prog) const
 {
     for (auto &[name, func] : prog->function_table) {
         if (ShouldDisplayTypeInfo()) {
-            std::cout << "Handle types for funtion: " << name << "\n";
+            std::cout << "Handle types for function: " << name << "\n";
         }
         AdaptTypeForFunction(&func);
     }

@@ -21,7 +21,7 @@
 #include <variant>
 
 namespace panda::es2panda::binder {
-// Note: if the bool operand is present, the expression cannot be evaluated during compliation
+// Note: if the bool operand is present, the expression cannot be evaluated during compilation
 using EnumMemberResult = std::variant<double, util::StringView, bool>;
 
 class TSBinding : public util::UString {
