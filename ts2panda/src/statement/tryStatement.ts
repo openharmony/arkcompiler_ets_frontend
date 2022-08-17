@@ -26,8 +26,6 @@ import {
     getVregisterCache
 } from "../base/vregisterCache";
 import { IteratorRecord } from "./forOfStatement";
-import * as astutils from "../astutils";
-import { VarDeclarationKind } from "../variable";
 import * as jshelpers from "../jshelpers";
 
 // adjust the try...catch...finally into nested try(try...catch) finally
@@ -117,6 +115,20 @@ export class TryStatement {
     constructor(stmt: ts.Statement, catchTable: CatchTable, trybuilder?: TryBuilderBase) {
         TryStatement.currentTryStatementDepth++;
         this.outer = TryStatement.currentTryStatement;
+        /*
+         * split the outer TryStatment's try block
+         * OuterTryBegin      ----        OuterTryBegin         ----
+         *               outerTry |                        outerTry |
+         *     InnerTryBegin --   |           InnerTryBegin --  ----
+         *            innerTry |  |  ==>             innerTry |
+         *     InnerTryEnd   --   |           InnerTryEnd   --  ----
+         *                        |                        outerTry |
+         * OuterTryEnd        ----        OuterTryEnd           ----
+         */
+        if (this.outer) {
+            let labelPairs: LabelPair[] = catchTable.getLabelPairs();
+            this.outer.catchTable.splitLabelPair(labelPairs[labelPairs.length - 1]);
+        }
         this.stmt = stmt;
         this.catchTable = catchTable;
         if (trybuilder) {

@@ -94,6 +94,7 @@ function compileArrayDestructuring(arr: ts.ArrayBindingOrAssignmentPattern, pand
 
         // if a hole exist, just let the iterator step ahead
         if (ts.isOmittedExpression(element)) {
+            iterator.iteratorComplete(nextResult);
             continue;
         }
 
