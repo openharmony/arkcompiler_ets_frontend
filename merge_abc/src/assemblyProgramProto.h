@@ -13,17 +13,22 @@
  * limitations under the License.
  */
 
-#ifndef MERGE_ABC_ASSEMBLY_LABEL_H
-#define MERGE_ABC_ASSEMBLY_LABEL_H
+#ifndef MERGE_ABC_ASSEMBLY_PROGRAM_H
+#define MERGE_ABC_ASSEMBLY_PROGRAM_H
 
 #include "assembly-program.h"
-#include "assemblyFileLocation.h"
-#include "assemblyLabel.pb.h"
+#include "assemblyRecordProto.h"
+#include "assemblyFunctionProto.h"
+#include "assemblyLiteralsProto.h"
+#include "assemblyProgram.pb.h"
+#include "arena_allocator.h"
 
 namespace panda::proto {
-class Label {
+class Program {
 public:
-    static void Serialize(const panda::pandasm::Label &label, proto_panda::Label &protoLabel);
+    static void Serialize(const panda::pandasm::Program &program, proto_panda::Program &protoProgram);
+    static void Deserialize(const proto_panda::Program &protoProgram, panda::pandasm::Program &program,
+                            std::unique_ptr<panda::ArenaAllocator> &&allocator);
 };
 } // panda::proto
 #endif

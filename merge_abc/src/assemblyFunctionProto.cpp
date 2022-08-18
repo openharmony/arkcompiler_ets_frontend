@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "assemblyFunction.h"
+#include "assemblyFunctionProto.h"
 
 namespace panda::proto {
 void CatchBlock::Serialize(const panda::pandasm::Function::CatchBlock &block, proto_panda::CatchBlock &protoBlock)
@@ -26,12 +26,28 @@ void CatchBlock::Serialize(const panda::pandasm::Function::CatchBlock &block, pr
     protoBlock.set_catch_end_label(block.catch_end_label);
 }
 
+void CatchBlock::Deserialize(const proto_panda::CatchBlock &protoBlock, panda::pandasm::Function::CatchBlock &block)
+{
+    block.whole_line = protoBlock.whole_line();
+    block.exception_record = protoBlock.exception_record();
+    block.try_begin_label = protoBlock.try_begin_label();
+    block.try_end_label = protoBlock.try_end_label();
+    block.catch_begin_label = protoBlock.catch_begin_label();
+    block.catch_end_label = protoBlock.catch_end_label();
+}
+
 void Parameter::Serialize(const panda::pandasm::Function::Parameter &param, proto_panda::Parameter &protoParam)
 {
     auto *type = protoParam.mutable_type();
     Type::Serialize(param.type, *type);
     auto *metadata = protoParam.mutable_metadata();
     ParamMetadata::Serialize(*(param.metadata), *metadata);
+}
+
+void Parameter::Deserialize(const proto_panda::Parameter &protoParam, panda::pandasm::Function::Parameter &param,
+                            std::unique_ptr<panda::ArenaAllocator> &&allocator)
+{
+    ParamMetadata::Deserialize(protoParam.metadata(), param.metadata, std::move(allocator));
 }
 
 void Function::Serialize(const panda::pandasm::Function &function, proto_panda::Function &protoFunction)
@@ -41,7 +57,6 @@ void Function::Serialize(const panda::pandasm::Function &function, proto_panda::
 
     auto *protoFuncMeta = protoFunction.mutable_metadata();
     FunctionMetadata::Serialize(*function.metadata, *protoFuncMeta);
-
 
     for (const auto &[name, label] : function.label_table) {
         auto *labelMap = protoFunction.add_label_table();
@@ -88,6 +103,58 @@ void Function::Serialize(const panda::pandasm::Function &function, proto_panda::
     if (fileLocation.has_value()) {
         auto *protoFileLocation = protoFunction.mutable_file_location();
         FileLocation::Serialize(fileLocation.value(), *protoFileLocation);
+    }
+}
+
+void Function::Deserialize(const proto_panda::Function &protoFunction, panda::pandasm::Function &function,
+                           std::unique_ptr<panda::ArenaAllocator> &&allocator)
+{
+    FunctionMetadata::Deserialize(protoFunction.metadata(), function.metadata, std::move(allocator));
+    for (const auto &labelUnit : protoFunction.label_table()) {
+        auto name = labelUnit.key();
+        auto protoLabel = labelUnit.value();
+        panda::pandasm::Label label(name);
+        Label::Deserialize(protoLabel, label);
+        function.label_table.insert({name, label});
+    }
+
+    for (const auto &protoIns : protoFunction.ins()) {
+        panda::pandasm::Ins ins;
+        Ins::Deserialize(protoIns, ins);
+        function.ins.emplace_back(std::move(ins));
+    }
+
+    for (const auto &protoLocalVariable : protoFunction.local_variable_debug()) {
+        panda::pandasm::debuginfo::LocalVariable localVariable;
+        LocalVariable::Deserialize(protoLocalVariable, localVariable);
+        function.local_variable_debug.emplace_back(std::move(localVariable));
+    }
+
+    function.source_file = protoFunction.source_file();
+    function.source_file = protoFunction.source_code();
+
+    for (const auto &protoCatchBlock : protoFunction.catch_blocks()) {
+        auto catchBlock = allocator->New<panda::pandasm::Function::CatchBlock>();
+        CatchBlock::Deserialize(protoCatchBlock, *catchBlock);
+        function.catch_blocks.emplace_back(std::move(*catchBlock));
+    }
+
+    function.value_of_first_param = protoFunction.value_of_first_param();
+    function.regs_num = protoFunction.regs_num();
+
+    for (const auto &protoParam : protoFunction.params()) {
+        auto paramType = Type::Deserialize(protoParam.type(), std::move(allocator));
+        panda::pandasm::Function::Parameter param(paramType, panda::panda_file::SourceLang::ECMASCRIPT);
+        Parameter::Deserialize(protoParam, param, std::move(allocator));
+        function.params.emplace_back(std::move(param));
+    }
+
+    function.body_presence = protoFunction.body_presence();
+    function.return_type = Type::Deserialize(protoFunction.return_type(), std::move(allocator));
+    SourceLocation::Deserialize(protoFunction.body_location(), function.body_location);
+
+    if (protoFunction.has_file_location()) {
+        FileLocation::Deserialize(protoFunction.file_location(), function.file_location.value());
     }
 }
 } // panda::proto

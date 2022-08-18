@@ -38,12 +38,12 @@ message TryCatchInfo {
         bytes key = 1;
         uint64 value = 2;
     }
-    message TryCatchUnit {
+    message TryCatchMap {
         bytes key = 1;
         repeated CatchBlock catch_blocks = 2;
     }
     repeated TryCatchLabel try_catch_labels = 1;
-    repeated TryCatchUnit try_catch_map = 2;
+    repeated TryCatchMap try_catch_map = 2;
     repeated bytes try_catch_order = 3;
 }
 
@@ -53,7 +53,7 @@ message Parameter {
 }
 
 message Function {
-    message LabelUnit {
+    message LabelTable {
         bytes key = 1;
         Label value = 2;
     }
@@ -61,7 +61,7 @@ message Function {
     bytes name = 1;
     uint32 language = 2;
     FunctionMetadata metadata = 3;
-    repeated LabelUnit label_table = 4;
+    repeated LabelTable label_table = 4;
     repeated Ins ins = 5;
     repeated LocalVariable local_variable_debug = 6;
     bytes source_file = 7;

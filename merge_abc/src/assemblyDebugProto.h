@@ -23,12 +23,15 @@ namespace panda::proto {
 class DebuginfoIns {
 public:
     static void Serialize(const panda::pandasm::debuginfo::Ins &debug, proto_panda::DebuginfoIns &protoDebug);
+    static void Deserialize(const proto_panda::DebuginfoIns &protoDebug, panda::pandasm::debuginfo::Ins &debug);
 };
 
 class LocalVariable {
 public:
     static void Serialize(const panda::pandasm::debuginfo::LocalVariable &debug,
-                                         proto_panda::LocalVariable &protoDebug);
+                          proto_panda::LocalVariable &protoDebug);
+    static void Deserialize(const proto_panda::LocalVariable &protoDebug,
+                            panda::pandasm::debuginfo::LocalVariable &debug);
 };
 } // panda::proto
 #endif

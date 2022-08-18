@@ -13,19 +13,19 @@
  * limitations under the License.
  */
 
-#ifndef MERGE_ABC_ASSEMBLY_RECORD_H
-#define MERGE_ABC_ASSEMBLY_RECORD_H
+#ifndef MERGE_ABC_ASSEMBLY_TYPE_H
+#define MERGE_ABC_ASSEMBLY_TYPE_H
 
 #include "assembly-program.h"
-#include "meta.h"
-#include "assemblyField.h"
-#include "assemblyFunction.h"
-#include "assemblyRecord.pb.h"
+#include "assemblyType.pb.h"
+#include "arena_allocator.h"
 
 namespace panda::proto {
-class Record {
+class Type {
 public:
-    static void Serialize(const panda::pandasm::Record &record, proto_panda::Record &protoRecord);
+    static void Serialize(const panda::pandasm::Type type, proto_panda::Type &protoType);
+    static panda::pandasm::Type &Deserialize(const proto_panda::Type &protoType,
+                                             std::unique_ptr<panda::ArenaAllocator> &&allocator);
 };
 } // panda::proto
 #endif

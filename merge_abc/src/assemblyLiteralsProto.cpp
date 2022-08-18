@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-#include "assemblyLiterals.h"
+#include "assemblyLiteralsProto.h"
 
 namespace panda::proto {
 void VariantValue::Serialize(const LiteralValueType &value, proto_panda::VariantValue &protoValue)
 {
     const auto type = static_cast<proto_panda::VariantValue_VariantValueType>(value.index());
     protoValue.set_type(type);
-    switch(type) {
+    switch (type) {
         case proto_panda::VariantValue_VariantValueType_BOOL: {
             protoValue.set_value_int(static_cast<uint64_t>(std::get<bool>(value)));
             return;
@@ -51,7 +51,48 @@ void VariantValue::Serialize(const LiteralValueType &value, proto_panda::Variant
         }
         case proto_panda::VariantValue_VariantValueType_STRING: {
             protoValue.set_value_str(std::get<std::string>(value));
-            return;;
+            return;
+        }
+        default:
+            UNREACHABLE();
+    }
+}
+
+void VariantValue::Deserialize(const proto_panda::VariantValue &protoValue, LiteralValueType &value)
+{
+    auto type = protoValue.type();
+    switch (type) {
+        case proto_panda::VariantValue_VariantValueType_BOOL: {
+            value = static_cast<bool>(protoValue.value_int());
+            return;
+        }
+        case proto_panda::VariantValue_VariantValueType_U8: {
+            value = static_cast<uint8_t>(protoValue.value_int());
+            return;
+        }
+        case proto_panda::VariantValue_VariantValueType_U16: {
+            value = static_cast<uint16_t>(protoValue.value_int());
+            return;
+        }
+        case proto_panda::VariantValue_VariantValueType_U32: {
+            value = static_cast<uint32_t>(protoValue.value_int());
+            return;
+        }
+        case proto_panda::VariantValue_VariantValueType_U64: {
+            value = static_cast<uint64_t>(protoValue.value_int());
+            return;
+        }
+        case proto_panda::VariantValue_VariantValueType_F32: {
+            value = protoValue.value_f();
+            return;
+        }
+        case proto_panda::VariantValue_VariantValueType_F64: {
+            value = protoValue.value_d();
+            return;
+        }
+        case proto_panda::VariantValue_VariantValueType_STRING: {
+            value = protoValue.value_str();
+            return;
         }
         default:
             UNREACHABLE();
@@ -66,10 +107,25 @@ void LiteralArray::Serialize(const panda::pandasm::LiteralArray &array, proto_pa
     }
 }
 
+void LiteralArray::Deserialize(const proto_panda::LiteralArray &protoArray, panda::pandasm::LiteralArray &array)
+{
+    for (const auto &protoLiteral : protoArray.literals()) {
+        panda::pandasm::LiteralArray::Literal literal;
+        Literal::Deserialize(protoLiteral, literal);
+        array.literals_.emplace_back(literal);
+    }
+}
+
 void Literal::Serialize(const panda::pandasm::LiteralArray::Literal &literal, proto_panda::Literal &protoLiteral)
 {
     protoLiteral.set_tag(static_cast<uint32_t>(literal.tag_));
     auto *value = protoLiteral.mutable_value();
     VariantValue::Serialize(literal.value_, *value);
+}
+
+void Literal::Deserialize(const proto_panda::Literal &protoLiteral, panda::pandasm::LiteralArray::Literal &literal)
+{
+    literal.tag_ = static_cast<panda::panda_file::LiteralTag>(protoLiteral.tag());
+    VariantValue::Deserialize(protoLiteral.value(), literal.value_);
 }
 } // panda::proto

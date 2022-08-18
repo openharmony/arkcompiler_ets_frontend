@@ -13,10 +13,9 @@
  * limitations under the License.
  */
 
-#include "assemblyField.h"
+#include "assemblyFieldProto.h"
 
 namespace panda::proto {
-
 void Field::Serialize(const panda::pandasm::Field &field, proto_panda::Field &protoField)
 {
     auto *protoType = protoField.mutable_type();
@@ -29,5 +28,18 @@ void Field::Serialize(const panda::pandasm::Field &field, proto_panda::Field &pr
     protoField.set_bound_left(field.bound_left);
     protoField.set_bound_right(field.bound_right);
     protoField.set_is_defined(field.is_defined);
+}
+
+void Field::Deserialize(const proto_panda::Field &protoField, panda::pandasm::Field &field,
+                        std::unique_ptr<panda::ArenaAllocator> &&allocator)
+{
+    field.type = Type::Deserialize(protoField.type(), std::move(allocator));
+    field.name = protoField.name();
+    FieldMetadata::Deserialize(protoField.metadata(), field.metadata, std::move(allocator));
+    field.line_of_def = protoField.line_of_def();
+    field.whole_line = protoField.whole_line();
+    field.bound_left = protoField.bound_left();
+    field.bound_right = protoField.bound_right();
+    field.is_defined = protoField.is_defined();
 }
 } // panda::proto

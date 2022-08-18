@@ -22,27 +22,27 @@ import "assemblyType.proto";
 import "assemblyLiterals.proto";
 
 message Program {
-    message RecordUnit  {
+    message RecordTable  {
         bytes key = 1;
         Record value = 2;
     }
-    message FunctionUnit  {
+    message FunctionTable  {
         bytes key = 1;
         Function value = 2;
     }
-    message FunctionSynnoym  {
+    message FunctionSynnoyms  {
         bytes key = 1;
         repeated bytes value = 2;
     }
-    message LiteralUnit {
+    message LiteralArrayTable {
         bytes key = 1;
         LiteralArray value = 2;
     }
     uint32 lang = 1;
-    repeated RecordUnit record_table = 2;
-    repeated FunctionUnit function_table = 3;
-    repeated FunctionSynnoym function_synonyms = 4;
-    repeated LiteralUnit literalarray_table = 5;
+    repeated RecordTable record_table = 2;
+    repeated FunctionTable function_table = 3;
+    repeated FunctionSynnoyms function_synonyms = 4;
+    repeated LiteralArrayTable literalarray_table = 5;
     repeated bytes strings = 6;
     repeated Type array_types = 7;
 }

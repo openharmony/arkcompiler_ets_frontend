@@ -15,7 +15,7 @@
 
 #include "protobufSnapshotGenerator.h"
 #include "assembly-program.h"
-#include "assemblyProgram.h"
+#include "assemblyProgramProto.h"
 
 namespace panda::proto {
 void ProtobufSnapshotGenerator::GenerateSnapshot(const panda::pandasm::Program &program, const std::string &outputName)
@@ -24,8 +24,29 @@ void ProtobufSnapshotGenerator::GenerateSnapshot(const panda::pandasm::Program &
 
     panda::proto::Program::Serialize(program, protoProgram);
 
-    std::ofstream output(outputName, std::ios::out | std::ios::trunc | std::ios::binary);
+    std::fstream output(outputName, std::ios::out | std::ios::trunc | std::ios::binary);
+    if (!output) {
+        std::cout << ": Fail to create file" << std::endl;
+        return;
+    }
     protoProgram.SerializeToOstream(&output);
     output.close();
+}
+
+void ProtobufSnapshotGenerator::GenerateProgram(const std::string &inputName, panda::pandasm::Program &prog,
+                                                std::unique_ptr<panda::ArenaAllocator> &&allocator)
+{
+    std::fstream input(inputName, std::ios::in | std::ios::binary);
+    if (!input) {
+        std::cerr << "Failed to open " << inputName << std::endl;
+        return;
+    }
+    proto_panda::Program proto_program;
+    if (!proto_program.ParseFromIstream(&input)) {
+        std::cerr << "Failed to parse " << inputName << std::endl;
+        return;
+    }
+    Program program;
+    program.Deserialize(proto_program, prog, std::move(allocator));
 }
 } // panda::proto

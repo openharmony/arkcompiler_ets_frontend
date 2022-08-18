@@ -150,12 +150,6 @@ bool Options::Parse(int argc, const char **argv)
         parserInput_ = ss.str();
 
         sourceFile_ = BaseName(sourceFile_);
-
-        if (!outputProto.GetValue().empty()) {
-            compilerProtoOutput_ = outputProto.GetValue();
-        } else {
-            compilerProtoOutput_ = "";
-        }
     } else {
         // input content is base64 string
         parserInput_ = ExtractContentFromBase64Input(base64Input.GetValue());
@@ -171,6 +165,12 @@ bool Options::Parse(int argc, const char **argv)
         compilerOutput_ = outputFile.GetValue();
     } else if (outputIsEmpty && !inputIsEmpty) {
         compilerOutput_ = RemoveExtension(sourceFile_).append(".abc");
+    }
+
+    if (!outputProto.GetValue().empty()) {
+        compilerProtoOutput_ = outputProto.GetValue();
+    } else {
+        compilerProtoOutput_ = "";
     }
 
     std::string extension = inputExtension.GetValue();

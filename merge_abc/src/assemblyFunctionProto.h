@@ -17,29 +17,35 @@
 #define MERGE_ABC_ASSEMBLY_FUNCTION_H
 
 #include "assembly-program.h"
-#include "assemblyLabel.h"
-#include "assemblyType.h"
-#include "assemblyIns.h"
-#include "assemblyDebug.h"
-#include "ideHelpers.h"
-#include "assemblyFileLocation.h"
-#include "meta.h"
+#include "assemblyLabelProto.h"
+#include "assemblyTypeProto.h"
+#include "assemblyInsProto.h"
+#include "assemblyDebugProto.h"
+#include "ideHelpersProto.h"
+#include "assemblyFileLocationProto.h"
+#include "metaProto.h"
 #include "assemblyFunction.pb.h"
+#include "arena_allocator.h"
 
 namespace panda::proto {
 class CatchBlock {
 public:
     static void Serialize(const panda::pandasm::Function::CatchBlock &block, proto_panda::CatchBlock &protoBlock);
+    static void Deserialize(const proto_panda::CatchBlock &protoBlock, panda::pandasm::Function::CatchBlock &block);
 };
 
 class Parameter {
 public:
     static void Serialize(const panda::pandasm::Function::Parameter &param, proto_panda::Parameter &protoParam);
+    static void Deserialize(const proto_panda::Parameter &protoParam, panda::pandasm::Function::Parameter &param,
+                            std::unique_ptr<panda::ArenaAllocator> &&allocator_);
 };
 
 class Function {
 public:
     static void Serialize(const panda::pandasm::Function &function, proto_panda::Function &protoFunction);
+    static void Deserialize(const proto_panda::Function &protoFunction, panda::pandasm::Function &function,
+                            std::unique_ptr<panda::ArenaAllocator> &&allocator_);
 };
 } // panda::proto
 #endif

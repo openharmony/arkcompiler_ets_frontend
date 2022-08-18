@@ -398,14 +398,14 @@ ohos_executable("es2panda") {
 
   include_dirs = [ "./aot" ]
 
-  configs = [ 
+  configs = [
     ":es2abc_config_common",
-    "//arkcompiler/ets_frontend/merge_abc:panda_assembly_proto_public_config"
-    ]
+    "//arkcompiler/ets_frontend/merge_abc:panda_assembly_proto_public_config",
+  ]
 
-  deps = [ 
+  deps = [
     ":es2panda_lib",
-    "//arkcompiler/ets_frontend/merge_abc:panda_assembly_proto_static"
+    "//arkcompiler/ets_frontend/merge_abc:panda_assembly_proto_static",
   ]
 
   ldflags = []

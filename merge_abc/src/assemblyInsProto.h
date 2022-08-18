@@ -13,14 +13,18 @@
  * limitations under the License.
  */
 
-#include "assemblyType.h"
+#ifndef MERGE_ABC_ASSEMBLY_INS_H
+#define MERGE_ABC_ASSEMBLY_INS_H
+
+#include "assembly-program.h"
+#include "assemblyDebugProto.h"
+#include "assemblyIns.pb.h"
 
 namespace panda::proto {
-void Type::Serialize(const panda::pandasm::Type type, proto_panda::Type &protoType)
-{   
-    protoType.set_component_name(type.GetComponentName());
-    protoType.set_rank(type.GetRank());
-    protoType.set_name(type.GetName());
-    protoType.set_type_id(static_cast<uint32_t>(type.GetId()));
-}
+class Ins {
+public:
+    static void Serialize(const panda::pandasm::Ins &insn, proto_panda::Ins &protoInsn);
+    static void Deserialize(const proto_panda::Ins &protoInsn, panda::pandasm::Ins &insn);
+};
 } // panda::proto
+#endif

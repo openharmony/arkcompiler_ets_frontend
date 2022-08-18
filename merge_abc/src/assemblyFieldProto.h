@@ -13,27 +13,20 @@
  * limitations under the License.
  */
 
-#ifndef MERGE_ABC_ASSEMBLY_LITERALS_H
-#define MERGE_ABC_ASSEMBLY_LITERALS_H
+#ifndef MERGE_ABC_ASSEMBLY_FIELD_H
+#define MERGE_ABC_ASSEMBLY_FIELD_H
 
 #include "assembly-program.h"
-#include "assemblyLiterals.pb.h"
+#include "assemblyField.pb.h"
+#include "metaProto.h"
+#include "assemblyTypeProto.h"
 
 namespace panda::proto {
-class VariantValue {
+class Field {
 public:
-    using LiteralValueType = std::variant<bool, uint8_t, uint16_t, uint32_t, uint64_t, float, double, std::string>;
-    static void Serialize(const LiteralValueType &value, proto_panda::VariantValue &protoValue);
-};
-
-class LiteralArray {
-public:
-    static void Serialize(const panda::pandasm::LiteralArray &array, proto_panda::LiteralArray &protoArray);
-};
-
-class Literal {
-public:
-    static void Serialize(const panda::pandasm::LiteralArray::Literal &literal, proto_panda::Literal &protoLiteral);
+    static void Serialize(const panda::pandasm::Field &field, proto_panda::Field &protoField);
+    static void Deserialize(const proto_panda::Field &protoField, panda::pandasm::Field &field,
+                            std::unique_ptr<panda::ArenaAllocator> &&allocator);
 };
 } // panda::proto
 #endif

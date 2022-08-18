@@ -13,16 +13,25 @@
  * limitations under the License.
  */
 
-#ifndef MERGE_ABC_ASSEMBLY_TYPE_H
-#define MERGE_ABC_ASSEMBLY_TYPE_H
+#ifndef MERGE_ABC_IDE_HELPERS_H
+#define MERGE_ABC_IDE_HELPERS_H
 
 #include "assembly-program.h"
-#include "assemblyType.pb.h"
+#include "ideHelpers.pb.h"
 
 namespace panda::proto {
-class Type {
+class SourceLocation {
 public:
-    static void Serialize(const panda::pandasm::Type type, proto_panda::Type &protoType);
+    static void Serialize(const panda::pandasm::SourceLocation &location,
+                          proto_panda::SourceLocation &protoLocation);
+    static void Deserialize(const proto_panda::SourceLocation &protoLocation, panda::pandasm::SourceLocation &location);
+};
+
+class SourcePosition {
+public:
+    static void Serialize(const panda::pandasm::SourcePosition &position,
+                          proto_panda::SourcePosition &protoPosition);
+    static void Deserialize(const proto_panda::SourcePosition &protoPosition, panda::pandasm::SourcePosition &position);
 };
 } // panda::proto
 #endif

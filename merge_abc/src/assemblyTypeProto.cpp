@@ -13,17 +13,21 @@
  * limitations under the License.
  */
 
-#ifndef MERGE_ABC_ASSEMBLY_FILE_LOCATION_H
-#define MERGE_ABC_ASSEMBLY_FILE_LOCATION_H
-
-#include "assembly-program.h"
-#include "assemblyFileLocation.pb.h"
-
+#include "assemblyTypeProto.h"
 
 namespace panda::proto {
-class FileLocation {
-public:
-    static void Serialize(const panda::pandasm::FileLocation &location, proto_panda::FileLocation &protoLocation);
-};
+void Type::Serialize(const panda::pandasm::Type type, proto_panda::Type &protoType)
+{
+    protoType.set_component_name(type.GetComponentName());
+    protoType.set_rank(type.GetRank());
+    protoType.set_name(type.GetName());
+    protoType.set_type_id(static_cast<uint32_t>(type.GetId()));
+}
+
+panda::pandasm::Type &Type::Deserialize(const proto_panda::Type &protoType,
+                                        std::unique_ptr<panda::ArenaAllocator> &&allocator)
+{
+    auto type = allocator->New<panda::pandasm::Type>(protoType.component_name(), protoType.rank());
+    return *type;
+}
 } // panda::proto
-#endif

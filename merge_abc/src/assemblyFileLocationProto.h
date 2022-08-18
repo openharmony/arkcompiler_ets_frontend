@@ -13,18 +13,17 @@
  * limitations under the License.
  */
 
-#ifndef MERGE_ABC_ASSEMBLY_FIELD_H
-#define MERGE_ABC_ASSEMBLY_FIELD_H
+#ifndef MERGE_ABC_ASSEMBLY_FILE_LOCATION_H
+#define MERGE_ABC_ASSEMBLY_FILE_LOCATION_H
 
 #include "assembly-program.h"
-#include "assemblyField.pb.h"
-#include "meta.h"
-#include "assemblyType.h"
+#include "assemblyFileLocation.pb.h"
 
 namespace panda::proto {
-class Field {
+class FileLocation {
 public:
-    static void Serialize(const panda::pandasm::Field &field, proto_panda::Field &protoField);
+    static void Serialize(const panda::pandasm::FileLocation &location, proto_panda::FileLocation &protoLocation);
+    static void Deserialize(const proto_panda::FileLocation &protoLocation, panda::pandasm::FileLocation &location);
 };
 } // panda::proto
 #endif

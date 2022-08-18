@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "assemblyFileLocation.h"
+#include "assemblyFileLocationProto.h"
 
 namespace panda::proto {
 void FileLocation::Serialize(const panda::pandasm::FileLocation &location, proto_panda::FileLocation &protoLocation)
@@ -22,5 +22,13 @@ void FileLocation::Serialize(const panda::pandasm::FileLocation &location, proto
     protoLocation.set_bound_left(location.bound_left);
     protoLocation.set_bound_right(location.bound_right);
     protoLocation.set_is_defined(location.is_defined);
+}
+
+void FileLocation::Deserialize(const proto_panda::FileLocation &protoLocation, panda::pandasm::FileLocation &location)
+{
+    location.whole_line = protoLocation.whole_line();
+    location.bound_left = protoLocation.bound_left();
+    location.bound_right = protoLocation.bound_right();
+    location.is_defined = protoLocation.is_defined();
 }
 } // panda::proto
