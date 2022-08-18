@@ -14,5 +14,5 @@
  */
 
 
-var func: { (a: number, ...c): boolean, (a, b: string[], ...c: number[]): string, (a: number, b: boolean): number };
+var func: { (a: number, ...c): boolean, (a: any, b: string[], ...c: number[]): string, (a: number, b: boolean): number };
 func();

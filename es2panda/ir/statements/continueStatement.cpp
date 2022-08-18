@@ -32,7 +32,7 @@ void ContinueStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ContinueStatement"}, {"label", AstDumper::Nullable(ident_)}});
 }
 
-void ContinueStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ContinueStatement::Compile(compiler::PandaGen *pg) const
 {
     compiler::Label *target = pg->ControlFlowChangeContinue(ident_);
     pg->Branch(this, target);

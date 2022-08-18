@@ -11,11 +11,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 10
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 14
             }
           }
@@ -31,11 +31,11 @@
               "type": "TSNumberKeyword",
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 18
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 24
                 }
               }
@@ -43,11 +43,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 15
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 16
               }
             }
@@ -57,11 +57,11 @@
           "type": "TSNumberKeyword",
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 28
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 34
             }
           }
@@ -81,33 +81,33 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 2,
+                      "line": 18,
                       "column": 5
                     },
                     "end": {
-                      "line": 2,
+                      "line": 18,
                       "column": 6
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 2,
+                    "line": 18,
                     "column": 5
                   },
                   "end": {
-                    "line": 2,
+                    "line": 18,
                     "column": 8
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 5
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 9
                 }
               }
@@ -125,11 +125,11 @@
                     "decorators": [],
                     "loc": {
                       "start": {
-                        "line": 3,
+                        "line": 19,
                         "column": 12
                       },
                       "end": {
-                        "line": 3,
+                        "line": 19,
                         "column": 13
                       }
                     }
@@ -139,22 +139,22 @@
                     "value": 0,
                     "loc": {
                       "start": {
-                        "line": 3,
+                        "line": 19,
                         "column": 16
                       },
                       "end": {
-                        "line": 3,
+                        "line": 19,
                         "column": 17
                       }
                     }
                   },
                   "loc": {
                     "start": {
-                      "line": 3,
+                      "line": 19,
                       "column": 12
                     },
                     "end": {
-                      "line": 3,
+                      "line": 19,
                       "column": 17
                     }
                   }
@@ -167,11 +167,11 @@
                     "decorators": [],
                     "loc": {
                       "start": {
-                        "line": 3,
+                        "line": 19,
                         "column": 20
                       },
                       "end": {
-                        "line": 3,
+                        "line": 19,
                         "column": 24
                       }
                     }
@@ -183,11 +183,11 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 3,
+                          "line": 19,
                           "column": 25
                         },
                         "end": {
-                          "line": 3,
+                          "line": 19,
                           "column": 26
                         }
                       }
@@ -196,11 +196,11 @@
                   "optional": false,
                   "loc": {
                     "start": {
-                      "line": 3,
+                      "line": 19,
                       "column": 20
                     },
                     "end": {
-                      "line": 3,
+                      "line": 19,
                       "column": 27
                     }
                   }
@@ -211,33 +211,33 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 3,
+                      "line": 19,
                       "column": 30
                     },
                     "end": {
-                      "line": 3,
+                      "line": 19,
                       "column": 31
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 3,
+                    "line": 19,
                     "column": 12
                   },
                   "end": {
-                    "line": 3,
+                    "line": 19,
                     "column": 31
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 3,
+                  "line": 19,
                   "column": 5
                 },
                 "end": {
-                  "line": 3,
+                  "line": 19,
                   "column": 32
                 }
               }
@@ -245,33 +245,33 @@
           ],
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 35
             },
             "end": {
-              "line": 4,
+              "line": 20,
               "column": 2
             }
           }
         },
         "loc": {
           "start": {
-            "line": 1,
+            "line": 17,
             "column": 1
           },
           "end": {
-            "line": 4,
+            "line": 20,
             "column": 2
           }
         }
       },
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 4,
+          "line": 20,
           "column": 2
         }
       }
@@ -286,11 +286,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 5,
+              "line": 21,
               "column": 1
             },
             "end": {
-              "line": 5,
+              "line": 21,
               "column": 5
             }
           }
@@ -298,14 +298,14 @@
         "arguments": [
           {
             "type": "StringLiteral",
-            "value": "",
+            "value": "foo",
             "loc": {
               "start": {
-                "line": 5,
+                "line": 21,
                 "column": 6
               },
               "end": {
-                "line": 5,
+                "line": 21,
                 "column": 11
               }
             }
@@ -314,22 +314,22 @@
         "optional": false,
         "loc": {
           "start": {
-            "line": 5,
+            "line": 21,
             "column": 1
           },
           "end": {
-            "line": 5,
+            "line": 21,
             "column": 12
           }
         }
       },
       "loc": {
         "start": {
-          "line": 5,
+          "line": 21,
           "column": 1
         },
         "end": {
-          "line": 5,
+          "line": 21,
           "column": 13
         }
       }
@@ -341,9 +341,9 @@
       "column": 1
     },
     "end": {
-      "line": 5,
+      "line": 21,
       "column": 13
     }
   }
 }
-TypeError: Argument of type 'string' is not assignable to parameter of type 'number'. [functionCall_4.ts:5:6]
+TypeError: Type 'string' is not assignable to type 'number'. [functionCall_4.ts:21:6]

@@ -40,7 +40,7 @@ void SwitchStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "SwitchStatement"}, {"discriminant", discriminant_}, {"cases", cases_}});
 }
 
-void SwitchStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void SwitchStatement::Compile(compiler::PandaGen *pg) const
 {
     compiler::LocalRegScope lrs(pg, scope_);
     compiler::SwitchBuilder builder(pg, this);
@@ -72,7 +72,7 @@ void SwitchStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     }
 }
 
-checker::Type *SwitchStatement::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *SwitchStatement::Check(checker::Checker *checker) const
 {
     checker::ScopeContext scopeCtx(checker, scope_);
 

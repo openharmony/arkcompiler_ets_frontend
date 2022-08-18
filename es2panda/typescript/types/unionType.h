@@ -24,33 +24,112 @@ class GlobalTypesHolder;
 
 class UnionType : public Type {
 public:
-    explicit UnionType(std::vector<Type *> &&constituentTypes);
-    UnionType(std::initializer_list<Type *> types);
+    UnionType(ArenaAllocator *allocator, std::initializer_list<Type *> types)
+        : Type(TypeFlag::UNION), constituentTypes_(allocator->Adapter())
+    {
+        for (auto *it : types) {
+            constituentTypes_.push_back(it);
+        }
 
-    const std::vector<Type *> &ConstituentTypes() const;
-    std::vector<Type *> &ConstituentTypes();
-    void AddConstituentType(Type *type, TypeRelation *relation);
-    void AddConstituentFlag(TypeFlag flag);
-    void RemoveConstituentFlag(TypeFlag flag);
-    bool HasConstituentFlag(TypeFlag flag) const;
+        for (auto *it : constituentTypes_) {
+            AddConstituentFlag(it->TypeFlags());
+        }
+    }
+
+    explicit UnionType(ArenaVector<Type *> &&constituentTypes)
+        : Type(TypeFlag::UNION), constituentTypes_(std::move(constituentTypes))
+    {
+        for (auto *it : constituentTypes_) {
+            AddConstituentFlag(it->TypeFlags());
+        }
+    }
+
+    explicit UnionType(ArenaVector<Type *> &constituentTypes)
+        : Type(TypeFlag::UNION), constituentTypes_(constituentTypes)
+    {
+        for (auto *it : constituentTypes_) {
+            AddConstituentFlag(it->TypeFlags());
+        }
+    }
+
+    const ArenaVector<Type *> &ConstituentTypes() const
+    {
+        return constituentTypes_;
+    }
+
+    ArenaVector<Type *> &ConstituentTypes()
+    {
+        return constituentTypes_;
+    }
+
+    void AddConstituentType(Type *type, TypeRelation *relation)
+    {
+        if ((HasConstituentFlag(TypeFlag::NUMBER) && type->IsNumberLiteralType()) ||
+            (HasConstituentFlag(TypeFlag::STRING) && type->IsStringLiteralType()) ||
+            (HasConstituentFlag(TypeFlag::BIGINT) && type->IsBigintLiteralType()) ||
+            (HasConstituentFlag(TypeFlag::BOOLEAN) && type->IsBooleanLiteralType())) {
+            return;
+        }
+
+        for (auto *it : constituentTypes_) {
+            if (relation->IsIdenticalTo(it, type)) {
+                return;
+            }
+        }
+
+        AddConstituentFlag(type->TypeFlags());
+        constituentTypes_.push_back(type);
+    }
+
+    void AddConstituentFlag(TypeFlag flag)
+    {
+        constituentFlags_ |= flag;
+    }
+
+    void RemoveConstituentFlag(TypeFlag flag)
+    {
+        constituentFlags_ &= ~flag;
+    }
+
+    bool HasConstituentFlag(TypeFlag flag) const
+    {
+        return (constituentFlags_ & flag) != 0;
+    }
+
+    std::unordered_map<util::StringView, binder::Variable *> &CachedSyntheticPropertis()
+    {
+        return cachedSynthecticProperties_;
+    }
+
+    ObjectType *MergedObjectType()
+    {
+        return mergedObjectType_;
+    }
+
+    void SetMergedObjectType(ObjectType *type)
+    {
+        mergedObjectType_ = type;
+    }
 
     void ToString(std::stringstream &ss) const override;
-    void Identical(TypeRelation *relation, const Type *other) const override;
-    void AssignmentTarget(TypeRelation *relation, const Type *source) const override;
-    bool AssignmentSource(TypeRelation *relation, const Type *target) const override;
+    void Identical(TypeRelation *relation, Type *other) override;
+    void AssignmentTarget(TypeRelation *relation, Type *source) override;
+    bool AssignmentSource(TypeRelation *relation, Type *target) override;
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
-    static void RemoveDuplicatedTypes(TypeRelation *relation, std::vector<Type *> &constituentTypes);
+    static void RemoveDuplicatedTypes(TypeRelation *relation, ArenaVector<Type *> &constituentTypes);
     static Type *HandleUnionType(UnionType *unionType, GlobalTypesHolder *globalTypesHolder);
     static void RemoveRedundantLiteralTypesFromUnion(UnionType *type);
 
 private:
-    static bool EachTypeRelatedToSomeType(TypeRelation *relation, const UnionType *source, const UnionType *target);
-    static bool TypeRelatedToSomeType(TypeRelation *relation, const Type *source, const UnionType *target);
+    static bool EachTypeRelatedToSomeType(TypeRelation *relation, UnionType *source, UnionType *target);
+    static bool TypeRelatedToSomeType(TypeRelation *relation, Type *source, UnionType *target);
 
-    std::vector<Type *> constituentTypes_;
+    ArenaVector<Type *> constituentTypes_;
     TypeFlag constituentFlags_ {TypeFlag::NONE};
+    std::unordered_map<util::StringView, binder::Variable *> cachedSynthecticProperties_ {};
+    ObjectType *mergedObjectType_ {nullptr};
 };
 
 }  // namespace panda::es2panda::checker

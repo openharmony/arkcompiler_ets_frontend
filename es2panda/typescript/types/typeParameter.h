@@ -22,18 +22,36 @@ namespace panda::es2panda::checker {
 
 class TypeParameter : public Type {
 public:
-    TypeParameter(Type *constraint, Type *defaultType);
+    TypeParameter(Type *constraint, Type *defaultType)
+        : Type(TypeFlag::TYPE_PARAMETER), constraint_(constraint), default_(defaultType)
+    {
+    }
+
+    const Type *ConstraintType() const
+    {
+        return constraint_;
+    }
+
+    Type *DefaultType()
+    {
+        return default_;
+    }
+
+    Type **DefaultTypeRef()
+    {
+        return &default_;
+    }
+
+    void SetDefaultType(Type *type)
+    {
+        default_ = type;
+    }
 
     void ToString(std::stringstream &ss) const override;
-    void Identical(TypeRelation *relation, const Type *other) const override;
-    void AssignmentTarget(TypeRelation *relation, const Type *source) const override;
+    void Identical(TypeRelation *relation, Type *other) override;
+    void AssignmentTarget(TypeRelation *relation, Type *source) override;
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
-
-    const Type *ConstraintType() const;
-    Type *DefaultType();
-    Type **DefaultTypeRef();
-    void SetDefaultType(Type *type);
 
 private:
     Type *constraint_;

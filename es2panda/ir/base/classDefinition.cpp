@@ -300,7 +300,7 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
     CompileMissingProperties(pg, compiled, classReg);
 }
 
-checker::Type *ClassDefinition::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *ClassDefinition::Check(checker::Checker *checker) const
 {
     // TODO(aszilagyi)
     return checker->GlobalAnyType();

@@ -34,6 +34,7 @@ class Identifier;
 class ScriptFunction;
 class Statement;
 class VariableDeclarator;
+class TSFunctionType;
 }  // namespace panda::es2panda::ir
 
 namespace panda::es2panda::binder {
@@ -42,12 +43,19 @@ class VariableScope;
 
 class Binder {
 public:
-    explicit Binder(parser::Program *program)
+    explicit Binder(parser::Program *program, ScriptExtension extension)
         : program_(program),
           functionScopes_(Allocator()->Adapter()),
           functionNames_(Allocator()->Adapter())
     {
+        if (extension == ScriptExtension::TS) {
+            bindingOptions_ = ResolveBindingOptions::ALL;
+            return;
+        }
+
+        bindingOptions_ = ResolveBindingOptions::BINDINGS;
     }
+
     NO_COPY_SEMANTIC(Binder);
     DEFAULT_MOVE_SEMANTIC(Binder);
     ~Binder() = default;
@@ -169,10 +177,14 @@ private:
     void ResolveReferences(const ir::AstNode *parent);
     void ValidateExportDecl(const ir::ExportNamedDeclaration *exportDecl);
 
+    // TypeScript specific functions
+    void BuildTSSignatureDeclarationBaseParams(const ir::AstNode *typeNode);
+
     parser::Program *program_ {};
     FunctionScope *topScope_ {};
     Scope *scope_ {};
     ArenaVector<FunctionScope *> functionScopes_;
+    ResolveBindingOptions bindingOptions_;
     ArenaSet<util::StringView> functionNames_;
     size_t functionNameIndex_ {1};
 };

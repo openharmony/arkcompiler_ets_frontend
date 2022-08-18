@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_TYPE_QUERY_H
 #define ES2PANDA_IR_TS_TYPE_QUERY_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -29,9 +29,9 @@ class Type;
 
 namespace panda::es2panda::ir {
 
-class TSTypeQuery : public Expression {
+class TSTypeQuery : public TypeNode {
 public:
-    explicit TSTypeQuery(Expression *exprName) : Expression(AstNodeType::TS_TYPE_QUERY), exprName_(exprName) {}
+    explicit TSTypeQuery(Expression *exprName) : TypeNode(AstNodeType::TS_TYPE_QUERY), exprName_(exprName) {}
 
     const Expression *ExprName() const
     {
@@ -41,7 +41,8 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *Check(checker::Checker *checker) const override;
+    checker::Type *GetType(checker::Checker *checker) const override;
 
 private:
     Expression *exprName_;

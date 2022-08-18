@@ -13,11 +13,11 @@
               "type": "TSNumberKeyword",
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 8
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 14
                 }
               }
@@ -25,11 +25,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 6
               }
             }
@@ -37,11 +37,11 @@
           "init": null,
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 6
             }
           }
@@ -50,11 +50,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 15
         }
       }
@@ -73,11 +73,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 2
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 3
                 }
               }
@@ -85,11 +85,11 @@
           ],
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 1
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 4
             }
           }
@@ -99,14 +99,14 @@
           "elements": [
             {
               "type": "StringLiteral",
-              "value": "",
+              "value": "foo",
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 8
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 13
                 }
               }
@@ -114,33 +114,33 @@
           ],
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 7
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 14
             }
           }
         },
         "loc": {
           "start": {
-            "line": 2,
+            "line": 18,
             "column": 1
           },
           "end": {
-            "line": 2,
+            "line": 18,
             "column": 14
           }
         }
       },
       "loc": {
         "start": {
-          "line": 2,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 15
         }
       }
@@ -152,9 +152,9 @@
       "column": 1
     },
     "end": {
-      "line": 2,
+      "line": 18,
       "column": 15
     }
   }
 }
-TypeError: Type 'string' is not assignable to type 'number'. [arrayDestructuring33.ts:2:2]
+TypeError: Type 'string' is not assignable to type 'number'. [arrayDestructuring33.ts:18:2]

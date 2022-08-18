@@ -12,11 +12,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 7
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 8
               }
             }
@@ -26,22 +26,22 @@
             "value": 5,
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 11
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 12
               }
             }
           },
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 7
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 12
             }
           }
@@ -50,11 +50,11 @@
       "kind": "const",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 13
         }
       }
@@ -70,47 +70,47 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 1
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 2
             }
           }
         },
         "right": {
           "type": "NumberLiteral",
-          "value": 6,
+          "value": 5,
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 5
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 6
             }
           }
         },
         "loc": {
           "start": {
-            "line": 2,
+            "line": 18,
             "column": 1
           },
           "end": {
-            "line": 2,
+            "line": 18,
             "column": 6
           }
         }
       },
       "loc": {
         "start": {
-          "line": 2,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 7
         }
       }
@@ -122,9 +122,9 @@
       "column": 1
     },
     "end": {
-      "line": 2,
-      "column": 7
+      "line": 19,
+      "column": 1
     }
   }
 }
-TypeError: Cannot assign to 'a' because it is a constant [cannotAssignToConst.ts:2:1]
+TypeError: Cannot assign to a because it is a constant. [cannotAssignToConst.ts:18:1]

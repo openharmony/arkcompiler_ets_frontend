@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_TUPLE_TYPE_H
 #define ES2PANDA_IR_TS_TUPLE_TYPE_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -31,10 +31,10 @@ namespace panda::es2panda::ir {
 
 enum class TSTupleKind { NONE, NAMED, DEFAULT };
 
-class TSTupleType : public Expression {
+class TSTupleType : public TypeNode {
 public:
     explicit TSTupleType(ArenaVector<Expression *> &&elementTypes)
-        : Expression(AstNodeType::TS_TUPLE_TYPE), elementTypes_(std::move(elementTypes))
+        : TypeNode(AstNodeType::TS_TUPLE_TYPE), elementTypes_(std::move(elementTypes))
     {
     }
 
@@ -46,7 +46,8 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *Check(checker::Checker *checker) const override;
+    checker::Type *GetType(checker::Checker *checker) const override;
 
 private:
     ArenaVector<Expression *> elementTypes_;

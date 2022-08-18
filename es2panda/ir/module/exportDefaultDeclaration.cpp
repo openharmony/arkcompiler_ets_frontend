@@ -31,7 +31,7 @@ void ExportDefaultDeclaration::Dump(ir::AstDumper *dumper) const
         {{"type", IsExportEquals() ? "TSExportAssignment" : "ExportDefaultDeclaration"}, {"declaration", decl_}});
 }
 
-void ExportDefaultDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ExportDefaultDeclaration::Compile(compiler::PandaGen *pg) const
 {
     decl_->Compile(pg);
     if (decl_->IsExpression()) {

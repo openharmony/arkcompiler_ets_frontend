@@ -22,6 +22,7 @@
 
 #include <ir/astDump.h>
 #include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::ir {
 
@@ -37,7 +38,7 @@ void ReturnStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ReturnStatement"}, {"argument", AstDumper::Nullable(argument_)}});
 }
 
-void ReturnStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ReturnStatement::Compile(compiler::PandaGen *pg) const
 {
     if (argument_) {
         argument_->Compile(pg);
@@ -62,7 +63,7 @@ void ReturnStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     }
 }
 
-checker::Type *ReturnStatement::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *ReturnStatement::Check(checker::Checker *checker) const
 {
     const ir::AstNode *ancestor = checker::Checker::FindAncestorGivenByType(this, ir::AstNodeType::SCRIPT_FUNCTION);
     ASSERT(ancestor && ancestor->IsScriptFunction());
@@ -77,14 +78,11 @@ checker::Type *ReturnStatement::Check([[maybe_unused]] checker::Checker *checker
 
     if (containingFunc->ReturnTypeAnnotation()) {
         checker::Type *returnType = checker->GlobalUndefinedType();
-        checker::Type *funcReturnType = containingFunc->ReturnTypeAnnotation()->Check(checker);
+        checker::Type *funcReturnType = containingFunc->ReturnTypeAnnotation()->AsTypeNode()->GetType(checker);
 
         if (argument_) {
-            if (checker->ElaborateElementwise(argument_, funcReturnType, Start())) {
-                return nullptr;
-            }
-
-            returnType = argument_->Check(checker);
+            checker->ElaborateElementwise(funcReturnType, argument_, Start());
+            returnType = checker->CheckTypeCached(argument_);
         }
 
         checker->IsTypeAssignableTo(returnType, funcReturnType,

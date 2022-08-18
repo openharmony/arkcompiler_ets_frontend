@@ -36,10 +36,8 @@ void FunctionDeclaration::Dump(ir::AstDumper *dumper) const
 
 void FunctionDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *FunctionDeclaration::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *FunctionDeclaration::Check(checker::Checker *checker) const
 {
-    checker::ScopeContext scopeCtx(checker, func_->Scope());
-
     if (func_->IsOverload()) {
         return nullptr;
     }
@@ -47,6 +45,8 @@ checker::Type *FunctionDeclaration::Check([[maybe_unused]] checker::Checker *che
     const util::StringView &funcName = func_->Id()->Name();
     binder::ScopeFindResult result = checker->Scope()->Find(funcName);
     ASSERT(result.variable);
+
+    checker::ScopeContext scopeCtx(checker, func_->Scope());
 
     if (!result.variable->TsType()) {
         checker->InferFunctionDeclarationType(result.variable->Declaration()->AsFunctionDecl(), result.variable);

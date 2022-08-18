@@ -19,6 +19,7 @@
 #include <ir/astNodeMapping.h>
 #include <lexer/token/sourceLocation.h>
 #include <util/enumbitops.h>
+#include <binder/scope.h>
 
 #include <functional>
 #include <macros.h>
@@ -257,6 +258,16 @@ public:
         parent_ = parent;
     }
 
+    binder::Variable *Variable() const
+    {
+        return variable_;
+    }
+
+    void SetVariable(binder::Variable *variable)
+    {
+        variable_ = variable;
+    }
+
     virtual void Iterate(const NodeTraverser &cb) const = 0;
     virtual void Dump(ir::AstDumper *dumper) const = 0;
     virtual void Compile([[maybe_unused]] compiler::PandaGen *pg) const = 0;
@@ -271,6 +282,7 @@ protected:
     const AstNode *parent_ {};
     lexer::SourceRange range_ {};
     AstNodeType type_;
+    binder::Variable *variable_ {nullptr};
 };
 
 }  // namespace panda::es2panda::ir

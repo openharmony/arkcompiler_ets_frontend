@@ -17,11 +17,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 6
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 7
                     }
                   }
@@ -31,22 +31,22 @@
                   "value": 5,
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 10
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 11
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 6
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 11
                   }
                 }
@@ -65,11 +65,11 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 15
                         },
                         "end": {
-                          "line": 1,
+                          "line": 17,
                           "column": 16
                         }
                       }
@@ -80,11 +80,11 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 15
                         },
                         "end": {
-                          "line": 1,
+                          "line": 17,
                           "column": 16
                         }
                       }
@@ -92,11 +92,11 @@
                     "kind": "init",
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 15
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 16
                       }
                     }
@@ -112,11 +112,11 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 18
                         },
                         "end": {
-                          "line": 1,
+                          "line": 17,
                           "column": 19
                         }
                       }
@@ -127,11 +127,11 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 18
                         },
                         "end": {
-                          "line": 1,
+                          "line": 17,
                           "column": 19
                         }
                       }
@@ -139,11 +139,11 @@
                     "kind": "init",
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 18
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 19
                       }
                     }
@@ -151,11 +151,11 @@
                 ],
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 13
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 21
                   }
                 }
@@ -163,11 +163,11 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 22
               }
             }
@@ -179,11 +179,11 @@
                 "type": "OmittedExpression",
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 26
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 27
                   }
                 }
@@ -202,11 +202,11 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 30
                         },
                         "end": {
-                          "line": 1,
+                          "line": 17,
                           "column": 31
                         }
                       }
@@ -216,11 +216,11 @@
                       "value": 5,
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 33
                         },
                         "end": {
-                          "line": 1,
+                          "line": 17,
                           "column": 34
                         }
                       }
@@ -228,11 +228,11 @@
                     "kind": "init",
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 30
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 34
                       }
                     }
@@ -240,11 +240,11 @@
                 ],
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 28
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 36
                   }
                 }
@@ -252,22 +252,22 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 25
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 37
               }
             }
           },
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 37
             }
           }
@@ -276,11 +276,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 37
         }
       }
@@ -292,9 +292,9 @@
       "column": 1
     },
     "end": {
-      "line": 1,
+      "line": 17,
       "column": 37
     }
   }
 }
-TypeError: Initializer provides no value for this binding element and the binding element has no default value [arrayDestructuring26.ts:1:18]
+TypeError: Property c does not exist on type { b: number; }. [arrayDestructuring26.ts:17:13]

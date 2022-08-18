@@ -19,6 +19,7 @@
 #include "type.h"
 
 #include <typescript/types/objectDescriptor.h>
+#include <binder/variable.h>
 
 #include <util/ustring.h>
 #include <util/enumbitops.h>
@@ -36,6 +37,16 @@ class IndexInfo;
 OBJECT_TYPE_MAPPING(DECLARE_OBJECT_TYPENAMES)
 #undef DECLARE_OBJECT_TYPENAMES
 
+enum class ObjectFlags {
+    NO_OPTS = 0,
+    CHECK_EXCESS_PROPS = 1 << 0,
+    RESOLVED_MEMBERS = 1 << 1,
+    RESOLVED_BASE_TYPES = 1 << 2,
+    RESOLVED_DECLARED_MEMBERS = 1 << 3,
+};
+
+DEFINE_BITOPS(ObjectFlags)
+
 class ObjectType : public Type {
 public:
     enum class ObjectTypeKind {
@@ -46,16 +57,10 @@ public:
         FUNCTION,
     };
 
-    enum class ObjectFlags {
-        NO_OPTS = 0,
-        CHECK_EXCESS_PROPS = 1 << 0,
-        HAVE_REST = 1 << 1,
-    };
-
-#define OBJECT_TYPE_IS_CHECKS(objectKind, typeName) \
-    bool Is##typeName() const                       \
-    {                                               \
-        return kind_ == objectKind;                 \
+#define OBJECT_TYPE_IS_CHECKS(objectKind, typeName)  \
+    bool Is##typeName() const                        \
+    {                                                \
+        return kind_ == objectKind;                  \
     }
     OBJECT_TYPE_MAPPING(OBJECT_TYPE_IS_CHECKS)
 #undef OBJECT_TYPE_IS_CHECKS
@@ -74,49 +79,127 @@ public:
     OBJECT_TYPE_MAPPING(OBJECT_TYPE_AS_CASTS)
 #undef OBJECT_TYPE_AS_CASTS
 
-    explicit ObjectType(ObjectTypeKind kind);
-    ObjectType(ObjectTypeKind kind, ObjectDescriptor *desc);
+    explicit ObjectType(ObjectType::ObjectTypeKind kind)
+        : Type(TypeFlag::OBJECT), kind_(kind), desc_(nullptr), objFlag_(ObjectFlags::NO_OPTS)
+    {
+    }
 
-    ObjectTypeKind Kind() const;
-    std::vector<Signature *> &CallSignatures();
-    const std::vector<Signature *> &CallSignatures() const;
-    const std::vector<Signature *> &ConstructSignatures() const;
-    const IndexInfo *StringIndexInfo() const;
-    const IndexInfo *NumberIndexInfo() const;
-    IndexInfo *StringIndexInfo();
-    IndexInfo *NumberIndexInfo();
-    const std::vector<binder::LocalVariable *> &Properties() const;
-    ObjectDescriptor *Desc();
-    const ObjectDescriptor *Desc() const;
+    ObjectType(ObjectType::ObjectTypeKind kind, ObjectDescriptor *desc)
+        : Type(TypeFlag::OBJECT), kind_(kind), desc_(desc), objFlag_(ObjectFlags::NO_OPTS)
+    {
+    }
 
-    void AddProperty(binder::LocalVariable *prop);
-    void AddSignature(Signature *signature, bool isCall = true);
-    void AddObjectFlag(ObjectFlags flag);
-    void RemoveObjectFlag(ObjectFlags flag);
-    bool HasObjectFlag(ObjectFlags flag) const;
+    ObjectType::ObjectTypeKind Kind() const
+    {
+        return kind_;
+    }
 
-    void Identical(TypeRelation *relation, const Type *other) const override;
-    void AssignmentTarget(TypeRelation *relation, const Type *source) const override;
-    virtual binder::LocalVariable *GetProperty(const util::StringView &name) const;
+    virtual ArenaVector<Signature *> CallSignatures()
+    {
+        return desc_->callSignatures;
+    }
 
-    static bool SignatureRelatedToSomeSignature(TypeRelation *relation, const Signature *sourceSignature,
-                                                std::vector<Signature *> *targetSignatures);
+    virtual ArenaVector<Signature *> ConstructSignatures()
+    {
+        return desc_->constructSignatures;
+    }
+
+    virtual const IndexInfo *StringIndexInfo() const
+    {
+        return desc_->stringIndexInfo;
+    }
+
+    virtual const IndexInfo *NumberIndexInfo() const
+    {
+        return desc_->numberIndexInfo;
+    }
+
+    virtual IndexInfo *StringIndexInfo()
+    {
+        return desc_->stringIndexInfo;
+    }
+
+    virtual IndexInfo *NumberIndexInfo()
+    {
+        return desc_->numberIndexInfo;
+    }
+
+    virtual ArenaVector<binder::LocalVariable *> Properties()
+    {
+        return desc_->properties;
+    }
+
+    ObjectDescriptor *Desc()
+    {
+        return desc_;
+    }
+
+    const ObjectDescriptor *Desc() const
+    {
+        return desc_;
+    }
+
+    void AddProperty(binder::LocalVariable *prop)
+    {
+        desc_->properties.push_back(prop);
+    }
+
+    virtual binder::LocalVariable *GetProperty(const util::StringView &name, [[maybe_unused]] bool searchInBase) const
+    {
+        for (auto *it : desc_->properties) {
+            if (name == it->Name()) {
+                return it;
+            }
+        }
+
+        return nullptr;
+    }
+
+    void AddCallSignature(Signature *signature)
+    {
+        desc_->callSignatures.push_back(signature);
+    }
+
+    void AddConstructSignature(Signature *signature)
+    {
+        desc_->constructSignatures.push_back(signature);
+    }
+
+    void AddObjectFlag(ObjectFlags flag)
+    {
+        objFlag_ |= flag;
+    }
+
+    void RemoveObjectFlag(ObjectFlags flag)
+    {
+        flag &= ~flag;
+    }
+
+    bool HasObjectFlag(ObjectFlags flag) const
+    {
+        return (objFlag_ & flag) != 0;
+    }
+
+    static bool SignatureRelatedToSomeSignature(TypeRelation *relation, Signature *sourceSignature,
+                                                ArenaVector<Signature *> *targetSignatures);
+
     static bool EachSignatureRelatedToSomeSignature(TypeRelation *relation,
-                                                    const std::vector<Signature *> &sourceSignatures,
-                                                    const std::vector<Signature *> &targetSignatures);
+                                                    const ArenaVector<Signature *> &sourceSignatures,
+                                                    const ArenaVector<Signature *> &targetSignatures);
 
-    void AssignProperties(TypeRelation *relation, const ObjectType *source,
-                          bool performExcessPropertyCheck = false) const;
-    void AssignSignatures(TypeRelation *relation, const ObjectType *source, bool assignCallSignatures = true) const;
-    void AssignIndexInfo(TypeRelation *relation, const ObjectType *source, bool assignNumberInfo = true) const;
+    void Identical(TypeRelation *relation, Type *other) override;
+    void AssignmentTarget(TypeRelation *relation, Type *source) override;
+
+    void checkExcessProperties(TypeRelation *relation, ObjectType *source);
+    void AssignProperties(TypeRelation *relation, ObjectType *source);
+    void AssignSignatures(TypeRelation *relation, ObjectType *source, bool assignCallSignatures = true);
+    void AssignIndexInfo(TypeRelation *relation, ObjectType *source, bool assignNumberInfo = true);
 
 protected:
     ObjectTypeKind kind_;
     ObjectDescriptor *desc_;
     ObjectFlags objFlag_;
 };
-
-DEFINE_BITOPS(ObjectType::ObjectFlags)
 
 }  // namespace panda::es2panda::checker
 

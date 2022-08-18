@@ -20,11 +20,11 @@
                 "decorators": [],
                 "loc": {
                   "start": {
-                    "line": 2,
+                    "line": 16,
                     "column": 3
                   },
                   "end": {
-                    "line": 2,
+                    "line": 16,
                     "column": 4
                   }
                 }
@@ -35,11 +35,11 @@
                 "decorators": [],
                 "loc": {
                   "start": {
-                    "line": 2,
+                    "line": 16,
                     "column": 3
                   },
                   "end": {
-                    "line": 2,
+                    "line": 16,
                     "column": 4
                   }
                 }
@@ -47,11 +47,11 @@
               "kind": "init",
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 16,
                   "column": 3
                 },
                 "end": {
-                  "line": 2,
+                  "line": 16,
                   "column": 4
                 }
               }
@@ -59,11 +59,11 @@
           ],
           "loc": {
             "start": {
-              "line": 2,
+              "line": 16,
               "column": 2
             },
             "end": {
-              "line": 2,
+              "line": 16,
               "column": 5
             }
           }
@@ -82,11 +82,11 @@
                 "decorators": [],
                 "loc": {
                   "start": {
-                    "line": 2,
+                    "line": 16,
                     "column": 9
                   },
                   "end": {
-                    "line": 2,
+                    "line": 16,
                     "column": 10
                   }
                 }
@@ -96,11 +96,11 @@
                 "value": 3,
                 "loc": {
                   "start": {
-                    "line": 2,
+                    "line": 16,
                     "column": 13
                   },
                   "end": {
-                    "line": 2,
+                    "line": 16,
                     "column": 14
                   }
                 }
@@ -108,11 +108,11 @@
               "kind": "init",
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 16,
                   "column": 9
                 },
                 "end": {
-                  "line": 2,
+                  "line": 16,
                   "column": 14
                 }
               }
@@ -120,33 +120,33 @@
           ],
           "loc": {
             "start": {
-              "line": 2,
+              "line": 16,
               "column": 8
             },
             "end": {
-              "line": 2,
+              "line": 16,
               "column": 15
             }
           }
         },
         "loc": {
           "start": {
-            "line": 2,
+            "line": 16,
             "column": 1
           },
           "end": {
-            "line": 2,
+            "line": 16,
             "column": 16
           }
         }
       },
       "loc": {
         "start": {
-          "line": 2,
+          "line": 16,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 16,
           "column": 16
         }
       }
@@ -158,9 +158,9 @@
       "column": 1
     },
     "end": {
-      "line": 4,
+      "line": 18,
       "column": 1
     }
   }
 }
-TypeError: No value exists in scope for the shorthand property 'a'. Either declare one or provide an initializer. [objectDestructuring32.ts:2:3]
+TypeError: Cannot find name 'a'. [objectDestructuring32.ts:16:3]

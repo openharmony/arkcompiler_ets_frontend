@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_ARRAY_TYPE_H
 #define ES2PANDA_IR_TS_ARRAY_TYPE_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -29,11 +29,9 @@ class Type;
 
 namespace panda::es2panda::ir {
 
-class TSArrayType : public Expression {
+class TSArrayType : public TypeNode {
 public:
-    explicit TSArrayType(Expression *elementType) : Expression(AstNodeType::TS_ARRAY_TYPE), elementType_(elementType)
-    {
-    }
+    explicit TSArrayType(Expression *elementType) : TypeNode(AstNodeType::TS_ARRAY_TYPE), elementType_(elementType) {}
 
     const Expression *ElementType() const
     {
@@ -43,7 +41,8 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *Check(checker::Checker *checker) const override;
+    checker::Type *GetType(checker::Checker *checker) const override;
 
 private:
     Expression *elementType_;

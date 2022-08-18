@@ -38,12 +38,13 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
 {
     CompilerContext context(program->Binder(), options.isDebug, options.isDebuggerEvaluateExpressionMode);
 
-    if (program->Extension() == ScriptExtension::TS) {
+    if (program->Extension() == ScriptExtension::TS && options.enableTypeCheck) {
         ArenaAllocator localAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
         auto checker = std::make_unique<checker::Checker>(&localAllocator, context.Binder());
         checker->StartChecker();
+    }
 
-        /* TODO(): TS files are not yet compiled */
+    if (options.parseOnly) {
         return nullptr;
     }
 

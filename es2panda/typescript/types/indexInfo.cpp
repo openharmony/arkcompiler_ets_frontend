@@ -19,31 +19,6 @@
 
 namespace panda::es2panda::checker {
 
-IndexInfo::IndexInfo(Type *type, util::StringView paramName, bool readonly)
-    : type_(type), paramName_(paramName), readonly_(readonly)
-{
-}
-
-Type *IndexInfo::InfoType()
-{
-    return type_;
-}
-
-const Type *IndexInfo::InfoType() const
-{
-    return type_;
-}
-
-void IndexInfo::SetInfoType(class Type *type)
-{
-    type_ = type;
-}
-
-const util::StringView &IndexInfo::ParamName()
-{
-    return paramName_;
-}
-
 IndexInfo *IndexInfo::Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
     return allocator->New<IndexInfo>(type_->Instantiate(allocator, relation, globalTypes), paramName_, readonly_);
@@ -66,19 +41,14 @@ void IndexInfo::ToString(std::stringstream &ss, bool numIndex) const
     type_->ToString(ss);
 }
 
-void IndexInfo::Identical(TypeRelation *relation, const IndexInfo *other) const
+void IndexInfo::Identical(TypeRelation *relation, IndexInfo *other)
 {
-    relation->IsIdenticalTo(type_, other->InfoType());
+    relation->IsIdenticalTo(type_, other->GetType());
 }
 
-void IndexInfo::AssignmentTarget(TypeRelation *relation, const IndexInfo *source) const
+void IndexInfo::AssignmentTarget(TypeRelation *relation, IndexInfo *source)
 {
-    relation->IsAssignableTo(source->InfoType(), type_);
-}
-
-bool IndexInfo::Readonly() const
-{
-    return readonly_;
+    relation->IsAssignableTo(source->GetType(), type_);
 }
 
 }  // namespace panda::es2panda::checker

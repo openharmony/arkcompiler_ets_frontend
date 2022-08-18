@@ -17,9 +17,6 @@
 
 namespace panda::es2panda::checker {
 
-// Unknown Type
-UnknownType::UnknownType() : Type(TypeFlag::UNKNOWN) {}
-
 void UnknownType::ToString(std::stringstream &ss) const
 {
     ss << "unknown";
@@ -30,14 +27,14 @@ TypeFacts UnknownType::GetTypeFacts() const
     return TypeFacts::ALL;
 }
 
-void UnknownType::Identical(TypeRelation *relation, const Type *other) const
+void UnknownType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsUnknownType()) {
         relation->Result(true);
     }
 }
 
-void UnknownType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] const Type *source) const
+void UnknownType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source)
 {
     relation->Result(true);
 }

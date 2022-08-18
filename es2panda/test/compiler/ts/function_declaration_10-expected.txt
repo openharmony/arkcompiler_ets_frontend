@@ -11,11 +11,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 10
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 13
             }
           }
@@ -28,11 +28,11 @@
           "type": "TSBooleanKeyword",
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 17
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 24
             }
           }
@@ -47,22 +47,22 @@
                 "value": 5,
                 "loc": {
                   "start": {
-                    "line": 2,
+                    "line": 18,
                     "column": 8
                   },
                   "end": {
-                    "line": 2,
+                    "line": 18,
                     "column": 9
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 1
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 10
                 }
               }
@@ -70,33 +70,33 @@
           ],
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 25
             },
             "end": {
-              "line": 3,
+              "line": 19,
               "column": 2
             }
           }
         },
         "loc": {
           "start": {
-            "line": 1,
+            "line": 17,
             "column": 1
           },
           "end": {
-            "line": 3,
+            "line": 19,
             "column": 2
           }
         }
       },
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 3,
+          "line": 19,
           "column": 2
         }
       }
@@ -108,9 +108,9 @@
       "column": 1
     },
     "end": {
-      "line": 4,
+      "line": 20,
       "column": 1
     }
   }
 }
-TypeError: Type '5' is not assignable to type 'boolean'. [function_declaration_10.ts:2:1]
+TypeError: Type 'number' is not assignable to type 'boolean'. [function_declaration_10.ts:18:1]

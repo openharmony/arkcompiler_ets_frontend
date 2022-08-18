@@ -20,11 +20,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 7
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 8
                     }
                   }
@@ -35,11 +35,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 7
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 8
                     }
                   }
@@ -47,11 +47,11 @@
                 "kind": "init",
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 7
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 8
                   }
                 }
@@ -59,11 +59,11 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 10
               }
             }
@@ -73,22 +73,22 @@
             "properties": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 13
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 15
               }
             }
           },
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 15
             }
           }
@@ -97,11 +97,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 16
         }
       }
@@ -113,9 +113,9 @@
       "column": 1
     },
     "end": {
-      "line": 1,
+      "line": 17,
       "column": 16
     }
   }
 }
-TypeError: Initializer provides no value for this binding element and the binding element has no default value [objectDestructuring1.ts:1:7]
+TypeError: Property a does not exist on type { }. [objectDestructuring1.ts:17:5]

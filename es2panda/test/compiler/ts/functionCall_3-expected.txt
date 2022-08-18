@@ -11,11 +11,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 10
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 14
             }
           }
@@ -31,11 +31,11 @@
               "type": "TSNumberKeyword",
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 19
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 25
                 }
               }
@@ -43,11 +43,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 15
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 16
               }
             }
@@ -57,11 +57,11 @@
           "type": "TSVoidKeyword",
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 29
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 33
             }
           }
@@ -71,33 +71,33 @@
           "statements": [],
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 34
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 37
             }
           }
         },
         "loc": {
           "start": {
-            "line": 1,
+            "line": 17,
             "column": 1
           },
           "end": {
-            "line": 1,
+            "line": 17,
             "column": 37
           }
         }
       },
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 37
         }
       }
@@ -112,11 +112,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 1
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 5
             }
           }
@@ -127,11 +127,11 @@
             "value": 5,
             "loc": {
               "start": {
-                "line": 2,
+                "line": 18,
                 "column": 6
               },
               "end": {
-                "line": 2,
+                "line": 18,
                 "column": 7
               }
             }
@@ -141,11 +141,11 @@
             "value": 5,
             "loc": {
               "start": {
-                "line": 2,
+                "line": 18,
                 "column": 9
               },
               "end": {
-                "line": 2,
+                "line": 18,
                 "column": 10
               }
             }
@@ -154,22 +154,22 @@
         "optional": false,
         "loc": {
           "start": {
-            "line": 2,
+            "line": 18,
             "column": 1
           },
           "end": {
-            "line": 2,
+            "line": 18,
             "column": 11
           }
         }
       },
       "loc": {
         "start": {
-          "line": 2,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 12
         }
       }
@@ -181,9 +181,9 @@
       "column": 1
     },
     "end": {
-      "line": 2,
+      "line": 18,
       "column": 12
     }
   }
 }
-TypeError: Expected 1 arguments, but got 2. [functionCall_3.ts:2:9]
+TypeError: Expected 1 arguments, but got 2. [functionCall_3.ts:18:9]

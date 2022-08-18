@@ -13,11 +13,11 @@
               "type": "TSNumberKeyword",
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 16,
                   "column": 8
                 },
                 "end": {
-                  "line": 2,
+                  "line": 16,
                   "column": 14
                 }
               }
@@ -25,11 +25,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 2,
+                "line": 16,
                 "column": 5
               },
               "end": {
-                "line": 2,
+                "line": 16,
                 "column": 6
               }
             }
@@ -37,11 +37,11 @@
           "init": null,
           "loc": {
             "start": {
-              "line": 2,
+              "line": 16,
               "column": 5
             },
             "end": {
-              "line": 2,
+              "line": 16,
               "column": 6
             }
           }
@@ -50,11 +50,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 2,
+          "line": 16,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 16,
           "column": 15
         }
       }
@@ -71,11 +71,11 @@
               "type": "TSStringKeyword",
               "loc": {
                 "start": {
-                  "line": 3,
+                  "line": 17,
                   "column": 8
                 },
                 "end": {
-                  "line": 3,
+                  "line": 17,
                   "column": 14
                 }
               }
@@ -83,11 +83,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 3,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 3,
+                "line": 17,
                 "column": 6
               }
             }
@@ -95,11 +95,11 @@
           "init": null,
           "loc": {
             "start": {
-              "line": 3,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 3,
+              "line": 17,
               "column": 6
             }
           }
@@ -108,11 +108,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 3,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 3,
+          "line": 17,
           "column": 15
         }
       }
@@ -136,11 +136,11 @@
                 "decorators": [],
                 "loc": {
                   "start": {
-                    "line": 4,
+                    "line": 18,
                     "column": 3
                   },
                   "end": {
-                    "line": 4,
+                    "line": 18,
                     "column": 4
                   }
                 }
@@ -151,11 +151,11 @@
                 "decorators": [],
                 "loc": {
                   "start": {
-                    "line": 4,
+                    "line": 18,
                     "column": 3
                   },
                   "end": {
-                    "line": 4,
+                    "line": 18,
                     "column": 4
                   }
                 }
@@ -163,11 +163,11 @@
               "kind": "init",
               "loc": {
                 "start": {
-                  "line": 4,
+                  "line": 18,
                   "column": 3
                 },
                 "end": {
-                  "line": 4,
+                  "line": 18,
                   "column": 4
                 }
               }
@@ -175,11 +175,11 @@
           ],
           "loc": {
             "start": {
-              "line": 4,
+              "line": 18,
               "column": 2
             },
             "end": {
-              "line": 4,
+              "line": 18,
               "column": 5
             }
           }
@@ -190,33 +190,33 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 4,
+              "line": 18,
               "column": 8
             },
             "end": {
-              "line": 4,
+              "line": 18,
               "column": 9
             }
           }
         },
         "loc": {
           "start": {
-            "line": 4,
+            "line": 18,
             "column": 1
           },
           "end": {
-            "line": 4,
+            "line": 18,
             "column": 10
           }
         }
       },
       "loc": {
         "start": {
-          "line": 4,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 4,
+          "line": 18,
           "column": 10
         }
       }
@@ -228,9 +228,9 @@
       "column": 1
     },
     "end": {
-      "line": 6,
+      "line": 20,
       "column": 1
     }
   }
 }
-TypeError: Property 'a' does not exist on type 'string [objectDestructuring34.ts:4:3]
+TypeError: Property a does not exist on type string. [objectDestructuring34.ts:18:2]

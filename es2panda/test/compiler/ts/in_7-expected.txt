@@ -18,11 +18,11 @@
                     "type": "TSStringKeyword",
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 9
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 15
                       }
                     }
@@ -31,11 +31,11 @@
                     "type": "TSNumberKeyword",
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 16
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 22
                       }
                     }
@@ -44,11 +44,11 @@
                     "type": "TSBigIntKeyword",
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 23
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 29
                       }
                     }
@@ -57,11 +57,11 @@
                     "type": "TSBooleanKeyword",
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 17,
                         "column": 30
                       },
                       "end": {
-                        "line": 1,
+                        "line": 17,
                         "column": 37
                       }
                     }
@@ -69,22 +69,22 @@
                 ],
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 9
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 37
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 8
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 38
                 }
               }
@@ -92,11 +92,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 6
               }
             }
@@ -104,11 +104,11 @@
           "init": null,
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 6
             }
           }
@@ -117,11 +117,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 39
         }
       }
@@ -138,11 +138,11 @@
               "type": "TSAnyKeyword",
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 8
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 11
                 }
               }
@@ -150,11 +150,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 2,
+                "line": 18,
                 "column": 5
               },
               "end": {
-                "line": 2,
+                "line": 18,
                 "column": 6
               }
             }
@@ -162,11 +162,11 @@
           "init": null,
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 5
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 6
             }
           }
@@ -175,11 +175,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 2,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 12
         }
       }
@@ -195,11 +195,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 3,
+              "line": 19,
               "column": 1
             },
             "end": {
-              "line": 3,
+              "line": 19,
               "column": 2
             }
           }
@@ -210,33 +210,33 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 3,
+              "line": 19,
               "column": 6
             },
             "end": {
-              "line": 3,
+              "line": 19,
               "column": 7
             }
           }
         },
         "loc": {
           "start": {
-            "line": 3,
+            "line": 19,
             "column": 1
           },
           "end": {
-            "line": 3,
+            "line": 19,
             "column": 7
           }
         }
       },
       "loc": {
         "start": {
-          "line": 3,
+          "line": 19,
           "column": 1
         },
         "end": {
-          "line": 3,
+          "line": 19,
           "column": 8
         }
       }
@@ -248,9 +248,9 @@
       "column": 1
     },
     "end": {
-      "line": 4,
+      "line": 20,
       "column": 1
     }
   }
 }
-TypeError: The left-hand side of an 'in' expression must be of type 'any', 'string', 'number', or 'symbol'. [in_7.ts:3:1]
+TypeError: The left-hand side of an 'in' expression must be of type 'any', 'string', 'number', or 'symbol'. [in_7.ts:19:1]

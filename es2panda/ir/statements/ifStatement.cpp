@@ -41,7 +41,7 @@ void IfStatement::Dump(ir::AstDumper *dumper) const
                  {"alternate", AstDumper::Nullable(alternate_)}});
 }
 
-void IfStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void IfStatement::Compile(compiler::PandaGen *pg) const
 {
     auto *consequentEnd = pg->AllocLabel();
     compiler::Label *statementEnd = consequentEnd;
@@ -60,7 +60,7 @@ void IfStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     pg->SetLabel(this, statementEnd);
 }
 
-checker::Type *IfStatement::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *IfStatement::Check(checker::Checker *checker) const
 {
     checker::Type *testType = test_->Check(checker);
     checker->CheckTruthinessOfType(testType, Start());

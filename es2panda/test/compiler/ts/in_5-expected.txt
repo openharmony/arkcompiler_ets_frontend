@@ -13,11 +13,11 @@
               "type": "TSBigIntKeyword",
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 8
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 14
                 }
               }
@@ -25,11 +25,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 6
               }
             }
@@ -37,11 +37,11 @@
           "init": null,
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 6
             }
           }
@@ -50,11 +50,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 15
         }
       }
@@ -71,11 +71,11 @@
               "type": "TSAnyKeyword",
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 8
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 11
                 }
               }
@@ -83,11 +83,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 2,
+                "line": 18,
                 "column": 5
               },
               "end": {
-                "line": 2,
+                "line": 18,
                 "column": 6
               }
             }
@@ -95,11 +95,11 @@
           "init": null,
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 5
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 6
             }
           }
@@ -108,11 +108,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 2,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 12
         }
       }
@@ -128,11 +128,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 3,
+              "line": 19,
               "column": 1
             },
             "end": {
-              "line": 3,
+              "line": 19,
               "column": 2
             }
           }
@@ -143,33 +143,33 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 3,
+              "line": 19,
               "column": 6
             },
             "end": {
-              "line": 3,
+              "line": 19,
               "column": 7
             }
           }
         },
         "loc": {
           "start": {
-            "line": 3,
+            "line": 19,
             "column": 1
           },
           "end": {
-            "line": 3,
+            "line": 19,
             "column": 7
           }
         }
       },
       "loc": {
         "start": {
-          "line": 3,
+          "line": 19,
           "column": 1
         },
         "end": {
-          "line": 3,
+          "line": 19,
           "column": 8
         }
       }
@@ -181,9 +181,9 @@
       "column": 1
     },
     "end": {
-      "line": 4,
+      "line": 20,
       "column": 1
     }
   }
 }
-TypeError: The left-hand side of an 'in' expression must be of type 'any', 'string', 'number', or 'symbol'. [in_5.ts:3:1]
+TypeError: The left-hand side of an 'in' expression must be of type 'any', 'string', 'number', or 'symbol'. [in_5.ts:19:1]

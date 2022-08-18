@@ -30,13 +30,13 @@ var var6: number;
 var var7: string;
 var var8: boolean;
 
-var [var9, [var10, , var11], ...var12] = [{}, [42, , "foo" + 2]];
+var [var9, [var10, , var11], ...var12] = [{ a: 6, b: "bar" }, [42, , "foo" + 2]];
 var9 = { a: 5, b: "foo" };
 var10 = var3;
 var11 = var7;
 var12 = [];
 
-var [var13 = [1, "foo"], [var14, var15] = [{}, true], ...var16] = [3, [true, {}], function (a, b): number { return 12 }, "bar"];
+var [var13 = [1, "foo"], [var14, var15] = [{}, true], ...var16] = [3, [true, {}], function (a: any, b: any): number { return 12 }, "bar"];
 var13 = 5;
 var13 = [2, "baz"];
 var14 = {};
@@ -46,12 +46,12 @@ var var16: [(a: any, b: any) => number, string];
 
 var [var17, var18 = 6, var19]: [number, number | string, boolean[]] = [1, "foo", [true, false]];
 var [var20, , var21]: number[] | [number, number, string] = [];
-var [var22, var23 = [{ a: 5, b: "foo" }, false], var24]: string[] | [number, ({} | boolean)[]] = [1, [{}, true]];
+var [var22, var23 = [{ a: 5, b: "foo" }, false], var24]: string[] | [number, ({ a: number, b: string } | boolean)[]] = [1, [{ a: 1, b: "bat" }, true]];
 var [[var25, var26] = ["foo", {}], [[var27]]]: number[][][] | [[number | string, {}], [[number]]] = [[1, {}], [[3]]];
-var [var28 = {}, { var29 }, ...var30]: [{}, { var29: number }, 1, "foo"] = [{}, { var29: 5 }, 1, "foo"];
+var [var28 = {}, { var29 }, ...var30]: [{}, { var29: number }, number, string] = [{}, { var29: 5 }, 1, "foo"];
 
-var var31:number;
-var var32:boolean;
+var var31: number;
+var var32: boolean;
 
 [var31, var32] = [var31, true];
 [var31, var31] = [5, 6];

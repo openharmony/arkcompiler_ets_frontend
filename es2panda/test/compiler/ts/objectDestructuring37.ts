@@ -14,7 +14,6 @@
  */
 
 var a = {};
-var b: number;
 var c: string;
-({a : {c}} = {a : {b}})
+({ a: { c } } = { a: { b } })
 

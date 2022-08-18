@@ -38,7 +38,7 @@ void ForOfStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ForOfStatement"}, {"await", isAwait_}, {"left", left_}, {"right", right_}, {"body", body_}});
 }
 
-void ForOfStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ForOfStatement::Compile(compiler::PandaGen *pg) const
 {
     compiler::LocalRegScope declRegScope(pg, scope_->DeclScope()->InitScope());
 

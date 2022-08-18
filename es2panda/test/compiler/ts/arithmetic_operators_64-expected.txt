@@ -13,11 +13,11 @@
               "type": "TSBooleanKeyword",
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 8
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 15
                 }
               }
@@ -25,11 +25,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 6
               }
             }
@@ -37,11 +37,11 @@
           "init": null,
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 6
             }
           }
@@ -50,11 +50,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 16
         }
       }
@@ -70,11 +70,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 1
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 2
             }
           }
@@ -84,33 +84,33 @@
           "value": false,
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 5
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 10
             }
           }
         },
         "loc": {
           "start": {
-            "line": 2,
+            "line": 18,
             "column": 1
           },
           "end": {
-            "line": 2,
+            "line": 18,
             "column": 10
           }
         }
       },
       "loc": {
         "start": {
-          "line": 2,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 11
         }
       }
@@ -127,33 +127,33 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 3,
+              "line": 19,
               "column": 1
             },
             "end": {
-              "line": 3,
+              "line": 19,
               "column": 2
             }
           }
         },
         "loc": {
           "start": {
-            "line": 3,
+            "line": 19,
             "column": 1
           },
           "end": {
-            "line": 3,
+            "line": 19,
             "column": 4
           }
         }
       },
       "loc": {
         "start": {
-          "line": 3,
+          "line": 19,
           "column": 1
         },
         "end": {
-          "line": 3,
+          "line": 19,
           "column": 5
         }
       }
@@ -165,9 +165,9 @@
       "column": 1
     },
     "end": {
-      "line": 4,
+      "line": 20,
       "column": 1
     }
   }
 }
-TypeError: An arithmetic operand must be of type 'any', 'number', 'bigint' or an enum type. [arithmetic_operators_64.ts:3:1]
+TypeError: An arithmetic operand must be of type 'any', 'number', 'bigint' or an enum type. [arithmetic_operators_64.ts:19:1]

@@ -34,23 +34,18 @@ Checker::Checker(ArenaAllocator *allocator, binder::Binder *binder)
     : allocator_(allocator),
       binder_(binder),
       rootNode_(binder->TopScope()->Node()->AsBlockStatement()),
-      scope_(binder->TopScope())
+      scope_(binder->TopScope()),
+      context_(CheckerStatus::NO_OPTS)
 {
     scopeStack_.push_back(scope_);
     globalTypes_ = allocator_->New<GlobalTypesHolder>(allocator_);
     relation_ = allocator_->New<TypeRelation>(this);
-    status_ = CheckerStatus::NO_OPTS;
 }
 
 void Checker::StartChecker()
 {
     ASSERT(rootNode_->IsProgram());
     rootNode_->Check(this);
-}
-
-binder::Scope *Checker::Scope() const
-{
-    return scope_;
 }
 
 void Checker::ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
@@ -85,161 +80,6 @@ void Checker::ThrowTypeError(std::string_view message, const lexer::SourcePositi
     lexer::SourceLocation loc = index.GetLocation(pos);
 
     throw Error {ErrorType::TYPE, message, loc.line, loc.col};
-}
-
-Type *Checker::GlobalNumberType()
-{
-    return globalTypes_->GlobalNumberType();
-}
-
-Type *Checker::GlobalAnyType()
-{
-    return globalTypes_->GlobalAnyType();
-}
-
-Type *Checker::GlobalStringType()
-{
-    return globalTypes_->GlobalStringType();
-}
-
-Type *Checker::GlobalBooleanType()
-{
-    return globalTypes_->GlobalBooleanType();
-}
-
-Type *Checker::GlobalVoidType()
-{
-    return globalTypes_->GlobalVoidType();
-}
-
-Type *Checker::GlobalNullType()
-{
-    return globalTypes_->GlobalNullType();
-}
-
-Type *Checker::GlobalUndefinedType()
-{
-    return globalTypes_->GlobalUndefinedType();
-}
-
-Type *Checker::GlobalUnknownType()
-{
-    return globalTypes_->GlobalUnknownType();
-}
-
-Type *Checker::GlobalNeverType()
-{
-    return globalTypes_->GlobalNeverType();
-}
-
-Type *Checker::GlobalNonPrimitiveType()
-{
-    return globalTypes_->GlobalNonPrimitiveType();
-}
-
-Type *Checker::GlobalBigintType()
-{
-    return globalTypes_->GlobalBigintType();
-}
-
-Type *Checker::GlobalFalseType()
-{
-    return globalTypes_->GlobalFalseType();
-}
-
-Type *Checker::GlobalTrueType()
-{
-    return globalTypes_->GlobalTrueType();
-}
-
-Type *Checker::GlobalNumberOrBigintType()
-{
-    return globalTypes_->GlobalNumberOrBigintType();
-}
-
-Type *Checker::GlobalStringOrNumberType()
-{
-    return globalTypes_->GlobalStringOrNumberType();
-}
-
-Type *Checker::GlobalZeroType()
-{
-    return globalTypes_->GlobalZeroType();
-}
-
-Type *Checker::GlobalEmptyStringType()
-{
-    return globalTypes_->GlobalEmptyStringType();
-}
-
-Type *Checker::GlobalZeroBigintType()
-{
-    return globalTypes_->GlobalZeroBigintType();
-}
-
-Type *Checker::GlobalPrimitiveType()
-{
-    return globalTypes_->GlobalPrimitiveType();
-}
-
-Type *Checker::GlobalEmptyTupleType()
-{
-    return globalTypes_->GlobalEmptyTupleType();
-}
-
-Type *Checker::GlobalEmptyObjectType()
-{
-    return globalTypes_->GlobalEmptyObjectType();
-}
-
-NumberLiteralPool &Checker::NumberLiteralMap()
-{
-    return numberLiteralMap_;
-}
-
-StringLiteralPool &Checker::StringLiteralMap()
-{
-    return stringLiteralMap_;
-}
-
-StringLiteralPool &Checker::BigintLiteralMap()
-{
-    return bigintLiteralMap_;
-}
-
-TypeRelation *Checker::Relation()
-{
-    return relation_;
-}
-
-RelationHolder &Checker::IdenticalResults()
-{
-    return identicalResults_;
-}
-
-RelationHolder &Checker::AssignableResults()
-{
-    return assignableResults_;
-}
-
-RelationHolder &Checker::ComparableResults()
-{
-    return comparableResults_;
-}
-
-std::unordered_set<const ir::AstNode *> &Checker::TypeStack()
-{
-    return typeStack_;
-}
-
-std::unordered_map<const ir::AstNode *, Type *> &Checker::NodeCache()
-{
-    return nodeCache_;
-}
-
-CheckerStatus Checker::Status()
-{
-    return status_;
 }
 
 Type *Checker::CheckTypeCached(const ir::Expression *expr)

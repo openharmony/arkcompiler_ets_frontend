@@ -14,8 +14,8 @@
  */
 
 
-var a;
-var a;
+var a: any;
+var a: any;
 
 var b: number;
 var b: number;
@@ -57,17 +57,17 @@ var h: interface3;
 var h: interface4;
 
 interface interface5 {
-    (a: number, b: string),
-    (a: number, b: string),
-    new(a: number[], b: { a: number, b: string }),
-    new(a: number[], b: { a: number, b: string }),
+    (a: number, b: string): number,
+    (a: number, b: string): string,
+    new(a: number[], b: { a: number, b: string }): boolean,
+    new(a: number[], b: { a: number, b: string }): void,
 }
 
 interface interface6 {
-    (a: number, b: string),
-    (a: number, b: string),
-    new(a: number[], b: { a: number, b: string }),
-    new(a: number[], b: { a: number, b: string }),
+    (a: number, b: string): number,
+    (a: number, b: string): string,
+    new(a: number[], b: { a: number, b: string }): void,
+    new(a: number[], b: { a: number, b: string }): boolean,
 }
 
 var i: interface5;

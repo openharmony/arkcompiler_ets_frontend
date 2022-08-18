@@ -17,21 +17,19 @@
 
 namespace panda::es2panda::checker {
 
-BooleanType::BooleanType() : Type(TypeFlag::BOOLEAN) {}
-
 void BooleanType::ToString(std::stringstream &ss) const
 {
     ss << "boolean";
 }
 
-void BooleanType::Identical(TypeRelation *relation, const Type *other) const
+void BooleanType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsBooleanType()) {
         relation->Result(true);
     }
 }
 
-void BooleanType::AssignmentTarget(TypeRelation *relation, const Type *source) const
+void BooleanType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (source->IsBooleanLiteralType()) {
         relation->Result(true);

@@ -20,18 +20,6 @@
 
 namespace panda::es2panda::checker {
 
-ArrayType::ArrayType(Type *elementType) : Type(TypeFlag::ARRAY), element_(elementType) {}
-
-Type *ArrayType::ElementType()
-{
-    return element_;
-}
-
-const Type *ArrayType::ElementType() const
-{
-    return element_;
-}
-
 void ArrayType::ToString(std::stringstream &ss) const
 {
     bool elemIsUnion = (element_->TypeFlags() == TypeFlag::UNION);
@@ -45,21 +33,20 @@ void ArrayType::ToString(std::stringstream &ss) const
     ss << "[]";
 }
 
-void ArrayType::Identical(TypeRelation *relation, const Type *other) const
+void ArrayType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsArrayType()) {
         relation->IsIdenticalTo(element_, other->AsArrayType()->ElementType());
     }
 }
 
-void ArrayType::AssignmentTarget(TypeRelation *relation, const Type *source) const
+void ArrayType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (source->IsArrayType()) {
-        const Type *targetElementType = source->AsArrayType()->ElementType();
-        relation->IsAssignableTo(targetElementType, element_);
+        relation->IsAssignableTo(source->AsArrayType()->ElementType(), element_);
     } else if (source->IsObjectType() && source->AsObjectType()->IsTupleType()) {
-        const ObjectType *sourceObj = source->AsObjectType();
-        for (const auto *it : sourceObj->Properties()) {
+        ObjectType *sourceObj = source->AsObjectType();
+        for (auto *it : sourceObj->Properties()) {
             if (!relation->IsAssignableTo(it->TsType(), element_)) {
                 return;
             }

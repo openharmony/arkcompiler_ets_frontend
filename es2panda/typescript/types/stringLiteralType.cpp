@@ -17,13 +17,6 @@
 
 namespace panda::es2panda::checker {
 
-StringLiteralType::StringLiteralType(util::StringView value) : Type(TypeFlag::STRING_LITERAL), value_(value) {}
-
-const util::StringView &StringLiteralType::Value() const
-{
-    return value_;
-}
-
 void StringLiteralType::ToString(std::stringstream &ss) const
 {
     ss << "\"" << value_ << "\"";
@@ -34,17 +27,14 @@ void StringLiteralType::ToStringAsSrc(std::stringstream &ss) const
     ss << "string";
 }
 
-void StringLiteralType::Identical(TypeRelation *relation, const Type *other) const
+void StringLiteralType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsStringLiteralType()) {
         relation->Result(value_ == other->AsStringLiteralType()->Value());
     }
 }
 
-void StringLiteralType::AssignmentTarget([[maybe_unused]] TypeRelation *relation,
-                                         [[maybe_unused]] const Type *source) const
-{
-}
+void StringLiteralType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source) {}
 
 TypeFacts StringLiteralType::GetTypeFacts() const
 {

@@ -33,7 +33,7 @@ void BreakStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "BreakStatement"}, {"label", AstDumper::Nullable(ident_)}});
 }
 
-void BreakStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void BreakStatement::Compile(compiler::PandaGen *pg) const
 {
     compiler::Label *target = pg->ControlFlowChangeBreak(ident_);
     pg->Branch(this, target);

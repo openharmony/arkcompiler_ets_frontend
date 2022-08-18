@@ -13,11 +13,11 @@
               "type": "TSNumberKeyword",
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 8
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 14
                 }
               }
@@ -25,11 +25,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 6
               }
             }
@@ -37,11 +37,11 @@
           "init": null,
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 6
             }
           }
@@ -50,11 +50,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 15
         }
       }
@@ -74,22 +74,22 @@
                 "value": 5,
                 "loc": {
                   "start": {
-                    "line": 2,
+                    "line": 18,
                     "column": 8
                   },
                   "end": {
-                    "line": 2,
+                    "line": 18,
                     "column": 9
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 8
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 9
                 }
               }
@@ -97,11 +97,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 2,
+                "line": 18,
                 "column": 5
               },
               "end": {
-                "line": 2,
+                "line": 18,
                 "column": 6
               }
             }
@@ -109,11 +109,11 @@
           "init": null,
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 5
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 6
             }
           }
@@ -122,11 +122,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 2,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 10
         }
       }
@@ -138,9 +138,9 @@
       "column": 1
     },
     "end": {
-      "line": 2,
+      "line": 18,
       "column": 10
     }
   }
 }
-TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type 'number', but here has type '5'. [varRedeclaration2.ts:2:5]
+TypeError: Subsequent variable declaration must have the same type. Variable 'a' must be of type 'number', but here has type '5'. [varRedeclaration2.ts:18:5]

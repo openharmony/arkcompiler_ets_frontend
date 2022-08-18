@@ -22,14 +22,21 @@ namespace panda::es2panda::checker {
 
 class ArrayType : public Type {
 public:
-    explicit ArrayType(Type *elementType);
+    explicit ArrayType(Type *elementType) : Type(TypeFlag::ARRAY), element_(elementType) {}
 
-    Type *ElementType();
-    const Type *ElementType() const;
+    Type *ElementType()
+    {
+        return element_;
+    }
+
+    const Type *ElementType() const
+    {
+        return element_;
+    }
 
     void ToString(std::stringstream &ss) const override;
-    void Identical(TypeRelation *relation, const Type *other) const override;
-    void AssignmentTarget(TypeRelation *relation, const Type *source) const override;
+    void Identical(TypeRelation *relation, Type *other) override;
+    void AssignmentTarget(TypeRelation *relation, Type *source) override;
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 

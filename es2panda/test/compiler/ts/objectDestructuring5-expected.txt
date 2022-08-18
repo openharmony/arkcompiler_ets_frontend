@@ -20,11 +20,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 7
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 8
                     }
                   }
@@ -40,36 +40,36 @@
                         "decorators": [],
                         "loc": {
                           "start": {
-                            "line": 1,
+                            "line": 17,
                             "column": 11
                           },
                           "end": {
-                            "line": 1,
+                            "line": 17,
                             "column": 12
                           }
                         }
                       },
                       "right": {
                         "type": "StringLiteral",
-                        "value": "",
+                        "value": "bar",
                         "loc": {
                           "start": {
-                            "line": 1,
+                            "line": 17,
                             "column": 15
                           },
                           "end": {
-                            "line": 1,
+                            "line": 17,
                             "column": 20
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 11
                         },
                         "end": {
-                          "line": 1,
+                          "line": 17,
                           "column": 20
                         }
                       }
@@ -80,11 +80,11 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 22
                         },
                         "end": {
-                          "line": 1,
+                          "line": 17,
                           "column": 23
                         }
                       }
@@ -92,11 +92,11 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 10
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 24
                     }
                   }
@@ -104,11 +104,11 @@
                 "kind": "init",
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 7
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 24
                   }
                 }
@@ -116,11 +116,11 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 26
               }
             }
@@ -139,25 +139,25 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 31
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 32
                     }
                   }
                 },
                 "value": {
                   "type": "StringLiteral",
-                  "value": "",
+                  "value": "foo",
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 34
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 39
                     }
                   }
@@ -165,11 +165,11 @@
                 "kind": "init",
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 31
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 39
                   }
                 }
@@ -177,22 +177,22 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 29
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 41
               }
             }
           },
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 41
             }
           }
@@ -201,11 +201,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 42
         }
       }
@@ -217,9 +217,9 @@
       "column": 1
     },
     "end": {
-      "line": 1,
+      "line": 17,
       "column": 42
     }
   }
 }
-TypeError: Object literal may only specify known properties, and 'b' does not exist in type '{ a: [string?, any]; }'. [objectDestructuring5.ts:1:31]
+TypeError: Object literal may only specify known properties, and property 'b' does not exist in the pattern. [objectDestructuring5.ts:17:5]

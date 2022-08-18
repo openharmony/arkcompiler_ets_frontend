@@ -85,7 +85,7 @@ interface E {
     d: (a: number, b: string) => {}
 }
 
-var e: E = { a: 1, b: "foo", d: function (a, b) { return {} } }
+var e: E = { a: 1, b: "foo", d: function (a: number, b: string) { return {} } }
 
 interface F {
     [x: number]: string,

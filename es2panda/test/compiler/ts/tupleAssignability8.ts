@@ -14,4 +14,4 @@
  */
 
 
-var a: [number, string, boolean, number, string] = [1, "foo", true, 5, 6] as [a: number, b: string, c: boolean, d: number, e: number];
+var a: [number, string, boolean, number, string] = [1, "foo", true, 5, 6]

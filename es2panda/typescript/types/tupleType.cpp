@@ -15,136 +15,20 @@
 
 #include "tupleType.h"
 
-#include <binder/variable.h>
+#include <typescript/checker.h>
 
 namespace panda::es2panda::checker {
 
-TupleTypeIterator::TupleTypeIterator(TupleType *tuple) : tupleType_(tuple), iter_(0) {}
-
-Type *TupleTypeIterator::Next()
+Type *TupleType::ConvertToArrayType(Checker *checker)
 {
-    if (iter_ >= tupleType_->Properties().size()) {
-        return nullptr;
+    ArenaVector<Type *> unionTypes(checker->Allocator()->Adapter());
+
+    for (const auto *it : desc_->properties) {
+        unionTypes.push_back(it->TsType());
     }
 
-    Type *returnType = tupleType_->Properties()[iter_]->TsType();
-
-    iter_++;
-
-    return returnType;
-}
-
-Type *TupleTypeIterator::Current()
-{
-    if (iter_ >= tupleType_->Properties().size()) {
-        return nullptr;
-    }
-
-    return tupleType_->Properties()[iter_]->TsType();
-}
-
-uint32_t TupleTypeIterator::Iter() const
-{
-    return iter_;
-}
-
-TupleType::TupleType(ObjectDescriptor *desc, TupleElementFlagPool &&elementFlags, ElementFlags combinedFlags,
-                     uint32_t minLength, uint32_t fixedLength, bool readonly)
-    : ObjectType(ObjectType::ObjectTypeKind::TUPLE, desc),
-      elementFlags_(std::move(elementFlags)),
-      combinedFlags_(combinedFlags),
-      minLength_(minLength),
-      fixedLength_(fixedLength),
-      readonly_(readonly)
-{
-    if (readonly_) {
-        for (auto *it : Properties()) {
-            it->AddFlag(binder::VariableFlags::READONLY);
-        }
-    }
-
-    iterator_ = new TupleTypeIterator(this);
-}
-
-TupleType::TupleType(ObjectDescriptor *desc, TupleElementFlagPool &&elementFlags, ElementFlags combinedFlags,
-                     uint32_t minLength, uint32_t fixedLength, bool readonly, NamedTupleMemberPool &&namedMembers)
-    : ObjectType(ObjectType::ObjectTypeKind::TUPLE, desc),
-      elementFlags_(std::move(elementFlags)),
-      combinedFlags_(combinedFlags),
-      minLength_(minLength),
-      fixedLength_(fixedLength),
-      namedMembers_(std::move(namedMembers)),
-      readonly_(readonly)
-{
-    if (readonly_) {
-        for (auto *it : Properties()) {
-            it->AddFlag(binder::VariableFlags::READONLY);
-        }
-    }
-
-    iterator_ = new TupleTypeIterator(this);
-}
-
-TupleType::TupleType() : ObjectType(ObjectType::ObjectTypeKind::TUPLE) {}
-
-TupleType::~TupleType()
-{
-    delete iterator_;
-}
-
-ElementFlags TupleType::CombinedFlags() const
-{
-    return combinedFlags_;
-}
-
-uint32_t TupleType::MinLength() const
-{
-    return minLength_;
-}
-
-uint32_t TupleType::FixedLength() const
-{
-    return fixedLength_;
-}
-
-ElementFlags TupleType::GetElementFlag(const util::StringView &index) const
-{
-    auto res = elementFlags_.find(index);
-    if (res != elementFlags_.end()) {
-        return res->second;
-    }
-    return ElementFlags::NO_OPTS;
-}
-
-bool TupleType::HasCombinedFlag(ElementFlags combinedFlag) const
-{
-    return (combinedFlags_ & combinedFlag) != 0;
-}
-
-bool TupleType::IsReadOnly() const
-{
-    return readonly_;
-}
-
-TupleTypeIterator *TupleType::Iterator()
-{
-    return iterator_;
-}
-
-const TupleTypeIterator *TupleType::Iterator() const
-{
-    return iterator_;
-}
-
-const NamedTupleMemberPool &TupleType::NamedMembers() const
-{
-    return namedMembers_;
-}
-
-const util::StringView &TupleType::FindNamedMemberName(binder::LocalVariable *member) const
-{
-    auto res = namedMembers_.find(member);
-    return res->second;
+    Type *arrayType = checker->CreateUnionType(std::move(unionTypes));
+    return checker->Allocator()->New<ArrayType>(arrayType);
 }
 
 void TupleType::ToString(std::stringstream &ss) const
@@ -185,15 +69,14 @@ void TupleType::ToString(std::stringstream &ss) const
     ss << "]";
 }
 
-void TupleType::Identical(TypeRelation *relation, const Type *other) const
+void TupleType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsObjectType() && other->AsObjectType()->IsTupleType()) {
-        const TupleType *otherTuple = other->AsObjectType()->AsTupleType();
+        TupleType *otherTuple = other->AsObjectType()->AsTupleType();
         if (kind_ == otherTuple->Kind() && desc_->properties.size() == otherTuple->Properties().size()) {
-            const auto &otherProperties = otherTuple->Properties();
             for (size_t i = 0; i < desc_->properties.size(); i++) {
                 binder::LocalVariable *targetProp = desc_->properties[i];
-                binder::LocalVariable *sourceProp = otherProperties[i];
+                binder::LocalVariable *sourceProp = otherTuple->Properties()[i];
 
                 if (targetProp->Flags() != sourceProp->Flags()) {
                     relation->Result(false);
@@ -211,14 +94,14 @@ void TupleType::Identical(TypeRelation *relation, const Type *other) const
     }
 }
 
-void TupleType::AssignmentTarget(TypeRelation *relation, const Type *source) const
+void TupleType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (!source->IsObjectType() || !source->AsObjectType()->IsTupleType()) {
         relation->Result(false);
         return;
     }
 
-    const TupleType *sourceTuple = source->AsObjectType()->AsTupleType();
+    TupleType *sourceTuple = source->AsObjectType()->AsTupleType();
     if (FixedLength() < sourceTuple->MinLength()) {
         relation->Result(false);
         return;
@@ -268,14 +151,18 @@ TypeFacts TupleType::GetTypeFacts() const
 
 Type *TupleType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>();
+    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>(allocator);
 
     desc_->Copy(allocator, copiedDesc, relation, globalTypes);
 
     NamedTupleMemberPool copiedNamedMemberPool = namedMembers_;
-    TupleElementFlagPool copiedElementFlagPool = elementFlags_;
+    ArenaVector<ElementFlags> copiedElementFlags(allocator->Adapter());
 
-    return allocator->New<TupleType>(copiedDesc, std::move(copiedElementFlagPool), combinedFlags_, minLength_,
+    for (auto it : elementFlags_) {
+        copiedElementFlags.push_back(it);
+    }
+
+    return allocator->New<TupleType>(copiedDesc, std::move(copiedElementFlags), combinedFlags_, minLength_,
                                      fixedLength_, readonly_, std::move(copiedNamedMemberPool));
 }
 

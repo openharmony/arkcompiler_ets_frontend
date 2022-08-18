@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_MAPPED_TYPE_H
 #define ES2PANDA_IR_TS_MAPPED_TYPE_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 #include <ir/ts/tsTypeParameter.h>
 
 namespace panda::es2panda::compiler {
@@ -30,11 +30,11 @@ class Type;
 
 namespace panda::es2panda::ir {
 
-class TSMappedType : public Expression {
+class TSMappedType : public TypeNode {
 public:
     explicit TSMappedType(TSTypeParameter *typeParameter, Expression *typeAnnotation, MappedOption readonly,
                           MappedOption optional)
-        : Expression(AstNodeType::TS_MAPPED_TYPE),
+        : TypeNode(AstNodeType::TS_MAPPED_TYPE),
           typeParameter_(typeParameter),
           typeAnnotation_(typeAnnotation),
           readonly_(readonly),
@@ -66,6 +66,7 @@ public:
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *GetType([[maybe_unused]] checker::Checker *checker) const override;
 
 private:
     TSTypeParameter *typeParameter_;

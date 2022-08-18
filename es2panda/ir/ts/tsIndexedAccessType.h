@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_INDEXED_ACCESS_TYPE_H
 #define ES2PANDA_IR_TS_INDEXED_ACCESS_TYPE_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -29,10 +29,10 @@ class Type;
 
 namespace panda::es2panda::ir {
 
-class TSIndexedAccessType : public Expression {
+class TSIndexedAccessType : public TypeNode {
 public:
     explicit TSIndexedAccessType(Expression *objectType, Expression *indexType)
-        : Expression(AstNodeType::TS_INDEXED_ACCESS_TYPE), objectType_(objectType), indexType_(indexType)
+        : TypeNode(AstNodeType::TS_INDEXED_ACCESS_TYPE), objectType_(objectType), indexType_(indexType)
     {
     }
 
@@ -49,7 +49,8 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *Check(checker::Checker *checker) const override;
+    checker::Type *GetType(checker::Checker *checker) const override;
 
 private:
     Expression *objectType_;

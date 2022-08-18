@@ -15,11 +15,11 @@
                 "type": "TSNumberKeyword",
                 "loc": {
                   "start": {
-                    "line": 2,
+                    "line": 18,
                     "column": 9
                   },
                   "end": {
-                    "line": 2,
+                    "line": 18,
                     "column": 15
                   }
                 }
@@ -27,11 +27,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 6
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 7
                 }
               }
@@ -40,11 +40,11 @@
               "type": "TSStringKeyword",
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 18
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 24
                 }
               }
@@ -52,11 +52,11 @@
             "readonly": false,
             "loc": {
               "start": {
-                "line": 2,
+                "line": 18,
                 "column": 5
               },
               "end": {
-                "line": 2,
+                "line": 18,
                 "column": 25
               }
             }
@@ -70,11 +70,11 @@
                 "type": "TSStringKeyword",
                 "loc": {
                   "start": {
-                    "line": 3,
+                    "line": 19,
                     "column": 9
                   },
                   "end": {
-                    "line": 3,
+                    "line": 19,
                     "column": 15
                   }
                 }
@@ -82,11 +82,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 3,
+                  "line": 19,
                   "column": 6
                 },
                 "end": {
-                  "line": 3,
+                  "line": 19,
                   "column": 7
                 }
               }
@@ -95,11 +95,11 @@
               "type": "TSNumberKeyword",
               "loc": {
                 "start": {
-                  "line": 3,
+                  "line": 19,
                   "column": 18
                 },
                 "end": {
-                  "line": 3,
+                  "line": 19,
                   "column": 24
                 }
               }
@@ -107,11 +107,11 @@
             "readonly": false,
             "loc": {
               "start": {
-                "line": 3,
+                "line": 19,
                 "column": 5
               },
               "end": {
-                "line": 3,
+                "line": 19,
                 "column": 25
               }
             }
@@ -119,11 +119,11 @@
         ],
         "loc": {
           "start": {
-            "line": 1,
+            "line": 17,
             "column": 13
           },
           "end": {
-            "line": 4,
+            "line": 20,
             "column": 2
           }
         }
@@ -134,11 +134,11 @@
         "decorators": [],
         "loc": {
           "start": {
-            "line": 1,
+            "line": 17,
             "column": 11
           },
           "end": {
-            "line": 1,
+            "line": 17,
             "column": 12
           }
         }
@@ -146,11 +146,11 @@
       "extends": [],
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 4,
+          "line": 20,
           "column": 2
         }
       }
@@ -162,9 +162,9 @@
       "column": 1
     },
     "end": {
-      "line": 5,
+      "line": 21,
       "column": 1
     }
   }
 }
-TypeError: Numeric index type 'string' is not assignable to string index type 'number' [interfaceWithNonCompatibleIndexInfos.ts:3:5]
+TypeError: Number index info type string is not assignable to string index info type number. [interfaceWithNonCompatibleIndexInfos.ts:18:5]

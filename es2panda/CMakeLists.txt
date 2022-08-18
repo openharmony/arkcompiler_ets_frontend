@@ -241,13 +241,12 @@ set(ES2PANDA_LIB_SRC
   parser/statementParser.cpp
   typescript/checker.cpp
   typescript/core/binaryLikeExpression.cpp
-  typescript/core/destructuring.cpp
+  typescript/core/destructuringContext.cpp
   typescript/core/function.cpp
-  typescript/core/generics.cpp
   typescript/core/helpers.cpp
   typescript/core/object.cpp
   typescript/core/typeCreation.cpp
-  typescript/core/typeElaboration.cpp
+  typescript/core/typeElaborationContext.cpp
   typescript/core/typeRelation.cpp
   typescript/core/util.cpp
   typescript/types/anyType.cpp

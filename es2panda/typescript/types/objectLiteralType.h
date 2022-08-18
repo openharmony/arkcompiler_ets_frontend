@@ -22,8 +22,8 @@ namespace panda::es2panda::checker {
 
 class ObjectLiteralType : public ObjectType {
 public:
-    explicit ObjectLiteralType(ObjectDescriptor *desc);
-    ObjectLiteralType();
+    explicit ObjectLiteralType(ObjectDescriptor *desc) : ObjectType(ObjectType::ObjectTypeKind::LITERAL, desc) {}
+    ObjectLiteralType() : ObjectType(ObjectType::ObjectTypeKind::LITERAL) {}
 
     void ToString(std::stringstream &ss) const override;
     TypeFacts GetTypeFacts() const override;

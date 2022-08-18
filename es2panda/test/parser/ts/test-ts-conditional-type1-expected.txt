@@ -1,1 +1,1 @@
-SyntaxError: '?' expected. [test-ts-conditional-type1.ts:1:34]
+SyntaxError: '?' expected. [test-ts-conditional-type1.ts:17:34]

@@ -39,7 +39,7 @@ void ClassDeclaration::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ClassDeclaration"}, {"definition", def_}, {"decorators", decorators_}});
 }
 
-void ClassDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ClassDeclaration::Compile(compiler::PandaGen *pg) const
 {
     // [ClassDeclaration] without [Identifier] must have parent node
     // of [ExportDefaultDeclaration] during compiling phase. So we use

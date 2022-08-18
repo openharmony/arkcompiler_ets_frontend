@@ -1,1 +1,1 @@
-SyntaxError: ';' expected [test-interface4.ts:1:27]
+SyntaxError: ';' expected [test-interface4.ts:17:27]

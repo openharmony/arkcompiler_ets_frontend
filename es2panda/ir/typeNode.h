@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+/**
+ * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,14 +13,23 @@
  * limitations under the License.
  */
 
+#ifndef ES2PANDA_IR_TYPE_NODE_H
+#define ES2PANDA_IR_TYPE_NODE_H
 
-type A<T = (a: number, b: string) => boolean, B = { a: number, b: string }> = (T | B)[];
+#include <ir/expression.h>
 
-var a: A;
+namespace panda::es2panda::checker {
+class Checker;
+class Type;
+}  // namespace panda::es2panda::checker
 
-var o = {
-    a: "foo",
-    b: "bar",
-}
+namespace panda::es2panda::ir {
+class TypeNode : public Expression {
+public:
+    explicit TypeNode(AstNodeType type) : Expression(type) {}
 
-a = [o];
+    virtual checker::Type *GetType([[maybe_unused]] checker::Checker *checker) const = 0;
+};
+}  // namespace panda::es2panda::ir
+
+#endif /* ES2PANDA_IR_TYPE_NODE_H */

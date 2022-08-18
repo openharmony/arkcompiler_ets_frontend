@@ -21,68 +21,22 @@
 
 namespace panda::es2panda::checker {
 
-Type::Type(TypeFlag flag) : typeFlags_(flag), variable_(nullptr)
-{
-    static uint64_t typeId = 0;
-    id_ = ++typeId;
-}
-
-TypeFlag Type::TypeFlags() const
-{
-    return typeFlags_;
-}
-
-bool Type::HasTypeFlag(TypeFlag typeFlag) const
-{
-    return (typeFlags_ & typeFlag) != 0;
-}
-
-void Type::AddTypeFlag(TypeFlag typeFlag)
-{
-    typeFlags_ |= typeFlag;
-}
-
-void Type::RemoveTypeFlag(TypeFlag typeFlag)
-{
-    typeFlags_ &= ~typeFlag;
-}
-
-uint64_t Type::Id() const
-{
-    return id_;
-}
-
 void Type::ToStringAsSrc(std::stringstream &ss) const
 {
     ToString(ss);
 }
 
-void Type::SetVariable(binder::Variable *variable)
-{
-    variable_ = variable;
-}
-
-binder::Variable *Type::Variable()
-{
-    return variable_;
-}
-
-const binder::Variable *Type::Variable() const
-{
-    return variable_;
-}
-
-void Type::Identical(TypeRelation *relation, const Type *other) const
+void Type::Identical(TypeRelation *relation, Type *other)
 {
     relation->Result(typeFlags_ == other->TypeFlags());
 }
 
-bool Type::AssignmentSource([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] const Type *target) const
+bool Type::AssignmentSource([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *target)
 {
     return false;
 }
 
-void Type::Compare([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] const Type *other) const {}
+void Type::Compare([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *other) {}
 
 Type *Type::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
                         [[maybe_unused]] GlobalTypesHolder *globalTypes)

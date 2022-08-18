@@ -1,1 +1,1 @@
-SyntaxError: Identifier expected. [test-type-query2.ts:1:14]
+SyntaxError: Identifier expected. [test-type-query2.ts:17:14]

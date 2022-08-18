@@ -17,42 +17,17 @@
 
 namespace panda::es2panda::checker {
 
-TypeParameter::TypeParameter(Type *constraint, Type *defaultType)
-    : Type(TypeFlag::TYPE_PARAMETER), constraint_(constraint), default_(defaultType)
-{
-}
-
-const Type *TypeParameter::ConstraintType() const
-{
-    return constraint_;
-}
-
-Type *TypeParameter::DefaultType()
-{
-    return default_;
-}
-
-Type **TypeParameter::DefaultTypeRef()
-{
-    return &default_;
-}
-
-void TypeParameter::SetDefaultType(Type *type)
-{
-    default_ = type;
-}
-
 void TypeParameter::ToString([[maybe_unused]] std::stringstream &ss) const
 {
     UNREACHABLE();
 }
 
-void TypeParameter::Identical([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] const Type *other) const
+void TypeParameter::Identical([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *other)
 {
     UNREACHABLE();
 }
 
-void TypeParameter::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] const Type *source) const
+void TypeParameter::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source)
 {
     UNREACHABLE();
 }

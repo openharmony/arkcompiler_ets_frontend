@@ -15,6 +15,7 @@
 
 #include "omittedExpression.h"
 
+#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -28,9 +29,9 @@ void OmittedExpression::Dump(ir::AstDumper *dumper) const
 
 void OmittedExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *OmittedExpression::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *OmittedExpression::Check(checker::Checker *checker) const
 {
-    return nullptr;
+    return checker->GlobalUndefinedType();
 }
 
 }  // namespace panda::es2panda::ir

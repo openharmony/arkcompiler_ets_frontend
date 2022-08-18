@@ -14,8 +14,8 @@
  */
 
 
-function foo({ a, b: { t = "foo" } = { t: 3 }, d: [e = {}, f = 6] = [3, ["foo", "bar"]] } = { a: true }) {
+function foo({ a, b: { t = "foo" } = { t: 3 }, d: [e = {}, f = 6] = [3, ["foo", "bar"]] }) {
 
 }
 
-foo({ a: false, b: {}, d: [2, 5n] });
+foo({ a: false, b: { t: 7 }, d: [2, 5n] });

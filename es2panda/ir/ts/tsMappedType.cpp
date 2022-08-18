@@ -49,4 +49,9 @@ checker::Type *TSMappedType::Check([[maybe_unused]] checker::Checker *checker) c
     return nullptr;
 }
 
+checker::Type *TSMappedType::GetType([[maybe_unused]] checker::Checker *checker) const
+{
+    return nullptr;
+}
+
 }  // namespace panda::es2panda::ir

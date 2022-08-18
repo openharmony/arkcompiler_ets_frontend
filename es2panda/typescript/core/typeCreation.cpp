@@ -56,7 +56,8 @@ Type *Checker::CreateStringLiteralType(const util::StringView &str)
 
 Type *Checker::CreateUnionType(std::initializer_list<Type *> constituentTypes)
 {
-    std::vector<Type *> newConstituentTypes;
+    ArenaVector<Type *> newConstituentTypes(allocator_->Adapter());
+
     for (auto *it : constituentTypes) {
         newConstituentTypes.push_back(it);
     }
@@ -64,59 +65,110 @@ Type *Checker::CreateUnionType(std::initializer_list<Type *> constituentTypes)
     return CreateUnionType(std::move(newConstituentTypes));
 }
 
-Type *Checker::CreateUnionType(std::vector<Type *> &&constituentTypes)
+Type *Checker::CreateUnionType(ArenaVector<Type *> &constituentTypes)
 {
-    UnionType::RemoveDuplicatedTypes(relation_, constituentTypes);
+    ArenaVector<Type *> newConstituentTypes(allocator_->Adapter());
 
-    if (constituentTypes.size() == 1) {
-        return constituentTypes[0];
+    for (auto *it : constituentTypes) {
+        if (it->IsUnionType()) {
+            for (auto *type : it->AsUnionType()->ConstituentTypes()) {
+                newConstituentTypes.push_back(type);
+            }
+
+            continue;
+        }
+
+        newConstituentTypes.push_back(it);
     }
 
-    auto *newUnionType = allocator_->New<UnionType>(std::move(constituentTypes));
+    UnionType::RemoveDuplicatedTypes(relation_, newConstituentTypes);
+
+    if (newConstituentTypes.size() == 1) {
+        return newConstituentTypes[0];
+    }
+
+    auto *newUnionType = allocator_->New<UnionType>(newConstituentTypes);
 
     return UnionType::HandleUnionType(newUnionType, globalTypes_);
 }
 
+Type *Checker::CreateUnionType(ArenaVector<Type *> &&constituentTypes)
+{
+    if (constituentTypes.empty()) {
+        return nullptr;
+    }
+
+    ArenaVector<Type *> newConstituentTypes(allocator_->Adapter());
+
+    for (auto *it : constituentTypes) {
+        if (it->IsUnionType()) {
+            for (auto *type : it->AsUnionType()->ConstituentTypes()) {
+                newConstituentTypes.push_back(type);
+            }
+
+            continue;
+        }
+
+        newConstituentTypes.push_back(it);
+    }
+
+    UnionType::RemoveDuplicatedTypes(relation_, newConstituentTypes);
+
+    if (newConstituentTypes.size() == 1) {
+        return newConstituentTypes[0];
+    }
+
+    auto *newUnionType = allocator_->New<UnionType>(std::move(newConstituentTypes));
+
+    return UnionType::HandleUnionType(newUnionType, globalTypes_);
+}
+
+Type *Checker::CreateObjectTypeWithCallSignature(Signature *callSignature)
+{
+    auto *objType = allocator_->New<ObjectLiteralType>(allocator_->New<ObjectDescriptor>(allocator_));
+    objType->AddCallSignature(callSignature);
+    return objType;
+}
+
+Type *Checker::CreateObjectTypeWithConstructSignature(Signature *constructSignature)
+{
+    auto *objType = allocator_->New<ObjectLiteralType>(allocator_->New<ObjectDescriptor>(allocator_));
+    objType->AddConstructSignature(constructSignature);
+    return objType;
+}
+
 Type *Checker::CreateFunctionTypeWithSignature(Signature *callSignature)
 {
-    auto *funcObjType = allocator_->New<FunctionType>(allocator_->New<ObjectDescriptor>());
-    funcObjType->AddSignature(callSignature);
+    auto *funcObjType = allocator_->New<FunctionType>(allocator_->New<ObjectDescriptor>(allocator_));
+    funcObjType->AddCallSignature(callSignature);
     return funcObjType;
 }
 
 Type *Checker::CreateConstructorTypeWithSignature(Signature *constructSignature)
 {
-    auto *constructObjType = allocator_->New<ConstructorType>(allocator_->New<ObjectDescriptor>());
-    constructObjType->AddSignature(constructSignature, false);
+    auto *constructObjType = allocator_->New<ConstructorType>(allocator_->New<ObjectDescriptor>(allocator_));
+    constructObjType->AddConstructSignature(constructSignature);
     return constructObjType;
 }
 
-Type *Checker::CreateTupleType(ObjectDescriptor *desc, TupleElementFlagPool &&elementFlags, ElementFlags combinedFlags,
-                               uint32_t minLength, uint32_t fixedLength, bool readonly)
+Type *Checker::CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&elementFlags,
+                               ElementFlags combinedFlags, uint32_t minLength, uint32_t fixedLength, bool readonly)
 {
-    desc->stringIndexInfo = allocator_->New<IndexInfo>(GlobalAnyType(), "x");
-
-    auto *tupleType =
-        allocator_->New<TupleType>(desc, std::move(elementFlags), combinedFlags, minLength, fixedLength, readonly);
-
-    return tupleType;
+    desc->stringIndexInfo = allocator_->New<IndexInfo>(GlobalAnyType(), "x", readonly);
+    return allocator_->New<TupleType>(desc, std::move(elementFlags), combinedFlags, minLength, fixedLength, readonly);
 }
 
-Type *Checker::CreateTupleType(ObjectDescriptor *desc, TupleElementFlagPool &&elementFlags, ElementFlags combinedFlags,
-                               uint32_t minLength, uint32_t fixedLength, bool readonly,
+Type *Checker::CreateTupleType(ObjectDescriptor *desc, ArenaVector<ElementFlags> &&elementFlags,
+                               ElementFlags combinedFlags, uint32_t minLength, uint32_t fixedLength, bool readonly,
                                NamedTupleMemberPool &&namedMembers)
 {
-    desc->stringIndexInfo = allocator_->New<IndexInfo>(GlobalAnyType(), "x");
-    ObjectType *tupleType = nullptr;
+    desc->stringIndexInfo = allocator_->New<IndexInfo>(GlobalAnyType(), "x", readonly);
 
     if (!namedMembers.empty()) {
-        tupleType = allocator_->New<TupleType>(desc, std::move(elementFlags), combinedFlags, minLength, fixedLength,
-                                               readonly, std::move(namedMembers));
-    } else {
-        tupleType =
-            allocator_->New<TupleType>(desc, std::move(elementFlags), combinedFlags, minLength, fixedLength, readonly);
+        return allocator_->New<TupleType>(desc, std::move(elementFlags), combinedFlags, minLength, fixedLength,
+                                          readonly, std::move(namedMembers));
     }
 
-    return tupleType;
+    return allocator_->New<TupleType>(desc, std::move(elementFlags), combinedFlags, minLength, fixedLength, readonly);
 }
 }  // namespace panda::es2panda::checker

@@ -14,4 +14,4 @@
  */
 
 
-var [a = 5, ...b]: [number, string, boolean] | string[] | 5 = ["foo", "bar"];
+var [a = 5, ...b]: [number, string, boolean] | string[] | number = ["foo", "bar"];

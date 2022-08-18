@@ -94,6 +94,11 @@ public:
         return returnTypeAnnotation_;
     }
 
+    Expression *ReturnTypeAnnotation()
+    {
+        return returnTypeAnnotation_;
+    }
+
     bool IsGenerator() const
     {
         return (flags_ & ir::ScriptFunctionFlags::GENERATOR) != 0;

@@ -11,11 +11,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 10
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 13
             }
           }
@@ -28,11 +28,11 @@
           "type": "TSStringKeyword",
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 17
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 23
             }
           }
@@ -42,33 +42,33 @@
           "statements": [],
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 24
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 2
             }
           }
         },
         "loc": {
           "start": {
-            "line": 1,
+            "line": 17,
             "column": 1
           },
           "end": {
-            "line": 2,
+            "line": 18,
             "column": 2
           }
         }
       },
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 2
         }
       }
@@ -80,9 +80,9 @@
       "column": 1
     },
     "end": {
-      "line": 3,
+      "line": 19,
       "column": 1
     }
   }
 }
-TypeError: A function whose declared type is neither 'void' nor 'any' must return a value. [function_declaration_1.ts:1:17]
+TypeError: A function whose declared type is neither 'void' nor 'any' must return a value. [function_declaration_1.ts:17:17]

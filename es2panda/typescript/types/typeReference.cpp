@@ -17,18 +17,6 @@
 
 namespace panda::es2panda::checker {
 
-TypeReference::TypeReference(Type **ref) : Type(TypeFlag::TYPE_REFERENCE), ref_(ref) {}
-
-Type *TypeReference::Ref()
-{
-    return (*ref_);
-}
-
-const Type *TypeReference::Ref() const
-{
-    return (*ref_);
-}
-
 void TypeReference::ToString(std::stringstream &ss) const
 {
     if (*ref_) {
@@ -36,14 +24,14 @@ void TypeReference::ToString(std::stringstream &ss) const
     }
 }
 
-void TypeReference::Identical(TypeRelation *relation, const Type *other) const
+void TypeReference::Identical(TypeRelation *relation, Type *other)
 {
     if (*ref_) {
         (*ref_)->Identical(relation, other);
     }
 }
 
-void TypeReference::AssignmentTarget(TypeRelation *relation, const Type *source) const
+void TypeReference::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (*ref_) {
         (*ref_)->AssignmentTarget(relation, source->IsTypeReference() ? source->AsTypeReference()->Ref() : source);

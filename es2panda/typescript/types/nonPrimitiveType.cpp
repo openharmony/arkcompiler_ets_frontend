@@ -17,21 +17,19 @@
 
 namespace panda::es2panda::checker {
 
-NonPrimitiveType::NonPrimitiveType() : Type(TypeFlag::NON_PRIMITIVE) {}
-
 void NonPrimitiveType::ToString(std::stringstream &ss) const
 {
     ss << "object";
 }
 
-void NonPrimitiveType::Identical(TypeRelation *relation, const Type *other) const
+void NonPrimitiveType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsNonPrimitiveType()) {
         relation->Result(true);
     }
 }
 
-void NonPrimitiveType::AssignmentTarget(TypeRelation *relation, const Type *source) const
+void NonPrimitiveType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (source->IsObjectType()) {
         relation->Result(true);

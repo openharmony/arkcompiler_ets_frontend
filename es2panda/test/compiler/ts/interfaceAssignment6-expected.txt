@@ -15,11 +15,11 @@
                 "type": "TSNumberKeyword",
                 "loc": {
                   "start": {
-                    "line": 2,
+                    "line": 18,
                     "column": 9
                   },
                   "end": {
-                    "line": 2,
+                    "line": 18,
                     "column": 15
                   }
                 }
@@ -27,11 +27,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 6
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 7
                 }
               }
@@ -40,11 +40,11 @@
               "type": "TSNumberKeyword",
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 18
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 24
                 }
               }
@@ -52,11 +52,11 @@
             "readonly": false,
             "loc": {
               "start": {
-                "line": 2,
+                "line": 18,
                 "column": 5
               },
               "end": {
-                "line": 2,
+                "line": 18,
                 "column": 25
               }
             }
@@ -70,11 +70,11 @@
                 "type": "TSStringKeyword",
                 "loc": {
                   "start": {
-                    "line": 3,
+                    "line": 19,
                     "column": 9
                   },
                   "end": {
-                    "line": 3,
+                    "line": 19,
                     "column": 15
                   }
                 }
@@ -82,11 +82,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 3,
+                  "line": 19,
                   "column": 6
                 },
                 "end": {
-                  "line": 3,
+                  "line": 19,
                   "column": 7
                 }
               }
@@ -98,11 +98,11 @@
                   "type": "TSNumberKeyword",
                   "loc": {
                     "start": {
-                      "line": 3,
+                      "line": 19,
                       "column": 18
                     },
                     "end": {
-                      "line": 3,
+                      "line": 19,
                       "column": 24
                     }
                   }
@@ -111,11 +111,11 @@
                   "type": "TSStringKeyword",
                   "loc": {
                     "start": {
-                      "line": 3,
+                      "line": 19,
                       "column": 27
                     },
                     "end": {
-                      "line": 3,
+                      "line": 19,
                       "column": 33
                     }
                   }
@@ -123,11 +123,11 @@
               ],
               "loc": {
                 "start": {
-                  "line": 3,
+                  "line": 19,
                   "column": 18
                 },
                 "end": {
-                  "line": 3,
+                  "line": 19,
                   "column": 33
                 }
               }
@@ -135,11 +135,11 @@
             "readonly": false,
             "loc": {
               "start": {
-                "line": 3,
+                "line": 19,
                 "column": 5
               },
               "end": {
-                "line": 3,
+                "line": 19,
                 "column": 34
               }
             }
@@ -147,11 +147,11 @@
         ],
         "loc": {
           "start": {
-            "line": 1,
+            "line": 17,
             "column": 13
           },
           "end": {
-            "line": 4,
+            "line": 20,
             "column": 2
           }
         }
@@ -162,11 +162,11 @@
         "decorators": [],
         "loc": {
           "start": {
-            "line": 1,
+            "line": 17,
             "column": 11
           },
           "end": {
-            "line": 1,
+            "line": 17,
             "column": 12
           }
         }
@@ -174,11 +174,11 @@
       "extends": [],
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 4,
+          "line": 20,
           "column": 2
         }
       }
@@ -199,22 +199,22 @@
                 "decorators": [],
                 "loc": {
                   "start": {
-                    "line": 6,
+                    "line": 22,
                     "column": 8
                   },
                   "end": {
-                    "line": 6,
+                    "line": 22,
                     "column": 9
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 6,
+                  "line": 22,
                   "column": 8
                 },
                 "end": {
-                  "line": 6,
+                  "line": 22,
                   "column": 9
                 }
               }
@@ -222,11 +222,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 6,
+                "line": 22,
                 "column": 5
               },
               "end": {
-                "line": 6,
+                "line": 22,
                 "column": 6
               }
             }
@@ -244,25 +244,25 @@
                   "value": 5,
                   "loc": {
                     "start": {
-                      "line": 6,
+                      "line": 22,
                       "column": 14
                     },
                     "end": {
-                      "line": 6,
+                      "line": 22,
                       "column": 15
                     }
                   }
                 },
                 "value": {
                   "type": "StringLiteral",
-                  "value": "",
+                  "value": "foo",
                   "loc": {
                     "start": {
-                      "line": 6,
+                      "line": 22,
                       "column": 17
                     },
                     "end": {
-                      "line": 6,
+                      "line": 22,
                       "column": 22
                     }
                   }
@@ -270,11 +270,11 @@
                 "kind": "init",
                 "loc": {
                   "start": {
-                    "line": 6,
+                    "line": 22,
                     "column": 14
                   },
                   "end": {
-                    "line": 6,
+                    "line": 22,
                     "column": 22
                   }
                 }
@@ -282,22 +282,22 @@
             ],
             "loc": {
               "start": {
-                "line": 6,
+                "line": 22,
                 "column": 12
               },
               "end": {
-                "line": 6,
+                "line": 22,
                 "column": 24
               }
             }
           },
           "loc": {
             "start": {
-              "line": 6,
+              "line": 22,
               "column": 5
             },
             "end": {
-              "line": 6,
+              "line": 22,
               "column": 24
             }
           }
@@ -306,11 +306,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 6,
+          "line": 22,
           "column": 1
         },
         "end": {
-          "line": 6,
+          "line": 22,
           "column": 25
         }
       }
@@ -322,9 +322,9 @@
       "column": 1
     },
     "end": {
-      "line": 7,
+      "line": 23,
       "column": 1
     }
   }
 }
-TypeError: Type 'string' is not assignable to type 'number'. [interfaceAssignment6.ts:6:14]
+TypeError: Type 'string' is not assignable to type 'number'. [interfaceAssignment6.ts:22:14]

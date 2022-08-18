@@ -15,11 +15,11 @@
                 "decorators": [],
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 6
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 7
                   }
                 }
@@ -35,11 +35,11 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 13
                         },
                         "end": {
-                          "line": 1,
+                          "line": 17,
                           "column": 14
                         }
                       }
@@ -50,11 +50,11 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 16
                         },
                         "end": {
-                          "line": 1,
+                          "line": 17,
                           "column": 17
                         }
                       }
@@ -62,22 +62,22 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 12
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 18
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 9
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 18
                   }
                 }
@@ -85,11 +85,11 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 19
               }
             }
@@ -102,11 +102,11 @@
                 "value": 1,
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 23
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 24
                   }
                 }
@@ -116,11 +116,11 @@
                 "value": 2,
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 26
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 27
                   }
                 }
@@ -128,22 +128,22 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 22
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 28
               }
             }
           },
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 28
             }
           }
@@ -152,11 +152,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 29
         }
       }
@@ -168,9 +168,9 @@
       "column": 1
     },
     "end": {
-      "line": 1,
+      "line": 17,
       "column": 29
     }
   }
 }
-TypeError: Initializer provides no value for this binding element and the binding element has no default value [arrayDestructuring25.ts:1:16]
+TypeError: Tuple type [number] of length 1 has no element at index 1. [arrayDestructuring25.ts:17:12]

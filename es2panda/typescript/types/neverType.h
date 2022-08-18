@@ -22,13 +22,13 @@ namespace panda::es2panda::checker {
 
 class NeverType : public Type {
 public:
-    NeverType();
+    NeverType() : Type(TypeFlag::NEVER) {}
 
     void ToString(std::stringstream &ss) const override;
     TypeFacts GetTypeFacts() const override;
-    void Identical(TypeRelation *relation, const Type *other) const override;
-    void AssignmentTarget(TypeRelation *relation, const Type *source) const override;
-    bool AssignmentSource(TypeRelation *relation, const Type *target) const override;
+    void Identical(TypeRelation *relation, Type *other) override;
+    void AssignmentTarget(TypeRelation *relation, Type *source) override;
+    bool AssignmentSource(TypeRelation *relation, Type *target) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 };
 

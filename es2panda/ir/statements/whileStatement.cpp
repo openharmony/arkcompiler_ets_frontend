@@ -54,7 +54,7 @@ void WhileStatement::Compile(compiler::PandaGen *pg) const
     pg->SetLabel(this, labelTarget.BreakTarget());
 }
 
-checker::Type *WhileStatement::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *WhileStatement::Check(checker::Checker *checker) const
 {
     checker::ScopeContext scopeCtx(checker, scope_);
 

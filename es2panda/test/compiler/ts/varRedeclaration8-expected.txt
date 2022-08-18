@@ -9,22 +9,22 @@
         "decorators": [],
         "loc": {
           "start": {
-            "line": 8,
+            "line": 24,
             "column": 1
           },
           "end": {
-            "line": 8,
+            "line": 24,
             "column": 2
           }
         }
       },
       "loc": {
         "start": {
-          "line": 8,
+          "line": 24,
           "column": 1
         },
         "end": {
-          "line": 8,
+          "line": 24,
           "column": 3
         }
       }
@@ -36,9 +36,9 @@
       "column": 1
     },
     "end": {
-      "line": 8,
+      "line": 24,
       "column": 3
     }
   }
 }
-TypeError: Cannot find name a [varRedeclaration8.ts:8:1]
+TypeError: Cannot find name a [varRedeclaration8.ts:24:1]

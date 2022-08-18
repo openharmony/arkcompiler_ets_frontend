@@ -129,8 +129,6 @@ Type *Checker::CheckCompareOperator(Type *leftType, Type *rightType, const ir::E
     CheckNonNullType(leftType, leftExpr->Start());
     CheckNonNullType(rightType, rightExpr->Start());
 
-    leftType = GetBaseTypeOfLiteralType(leftType);
-    rightType = GetBaseTypeOfLiteralType(rightType);
     if (AreTypesComparable(leftType, rightType) || (IsTypeAssignableTo(leftType, GlobalNumberOrBigintType()) &&
                                                     IsTypeAssignableTo(rightType, GlobalNumberOrBigintType()))) {
         return GlobalBooleanType();
@@ -146,8 +144,7 @@ Type *Checker::CheckAndOperator(Type *leftType, Type *rightType, const ir::Expre
     CheckTruthinessOfType(leftType, leftExpr->Start());
 
     if (static_cast<uint64_t>(leftType->GetTypeFacts()) & static_cast<uint64_t>(TypeFacts::TRUTHY)) {
-        Type *resultType =
-            CreateUnionType({ExtractDefinitelyFalsyTypes(GetBaseTypeOfLiteralType(rightType)), rightType});
+        Type *resultType = CreateUnionType({ExtractDefinitelyFalsyTypes(rightType), rightType});
         return resultType;
     }
 

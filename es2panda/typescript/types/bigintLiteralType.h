@@ -22,14 +22,25 @@ namespace panda::es2panda::checker {
 
 class BigintLiteralType : public Type {
 public:
-    BigintLiteralType(util::StringView value, bool negative);
+    BigintLiteralType(util::StringView value, bool negative)
+        : Type(TypeFlag::BIGINT_LITERAL), value_(value), negative_(negative)
+    {
+    }
 
-    const util::StringView &Value() const;
-    bool Negative() const;
+    const util::StringView &Value() const
+    {
+        return value_;
+    }
+
+    bool Negative() const
+    {
+        return negative_;
+    }
+
     void ToString(std::stringstream &ss) const override;
     void ToStringAsSrc(std::stringstream &ss) const override;
-    void Identical(TypeRelation *relation, const Type *other) const override;
-    void AssignmentTarget(TypeRelation *relation, const Type *source) const override;
+    void Identical(TypeRelation *relation, Type *other) override;
+    void AssignmentTarget(TypeRelation *relation, Type *source) override;
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 

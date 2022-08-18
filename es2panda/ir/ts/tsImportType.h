@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_IMPORT_TYPE_H
 #define ES2PANDA_IR_TS_IMPORT_TYPE_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -31,11 +31,11 @@ namespace panda::es2panda::ir {
 
 class TSTypeParameterInstantiation;
 
-class TSImportType : public Expression {
+class TSImportType : public TypeNode {
 public:
     explicit TSImportType(Expression *param, TSTypeParameterInstantiation *typeParams, Expression *qualifier,
                           bool isTypeof)
-        : Expression(AstNodeType::TS_IMPORT_TYPE),
+        : TypeNode(AstNodeType::TS_IMPORT_TYPE),
           param_(param),
           typeParams_(typeParams),
           qualifier_(qualifier),
@@ -67,6 +67,7 @@ public:
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *GetType([[maybe_unused]] checker::Checker *checker) const override;
 
 private:
     Expression *param_;

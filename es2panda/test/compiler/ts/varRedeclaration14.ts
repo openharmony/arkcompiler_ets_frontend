@@ -14,11 +14,11 @@
  */
 
 
-interface a {
+interface k {
     a: number,
 }
 
-interface b extends a {
+interface b extends k {
     a: number,
 }
 

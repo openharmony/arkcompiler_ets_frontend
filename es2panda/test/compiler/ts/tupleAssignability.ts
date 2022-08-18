@@ -36,7 +36,6 @@ tuple9 = tuple12;
 tuple11 = tuple12;
 tuple13 = tuple1;
 tuple13 = tuple13;
-tuple12 = [1, "foo", true, 5, 6] as [a: number, b: string, c: boolean, d: number, e?: number];
 
 var tuple14 = [[1, 2], func1(1, "foo"), true] as [a?: [number, number], b?: [a: number, b?: boolean[]], c?: boolean];
 tuple14 = [];
@@ -46,7 +45,7 @@ tuple14 = [[6, 7], [8, [true, false]]];
 tuple14 = [[9, 10], [11, [true, false]], true];
 
 function func1(a: number, b: string): [a: number, b?: boolean[]] {
-    let tuple15: [number];
+    var tuple15: [number];
     tuple15 = [123];
     return tuple15;
 }

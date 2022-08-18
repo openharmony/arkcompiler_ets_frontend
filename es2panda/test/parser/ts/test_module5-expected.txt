@@ -1,1 +1,1 @@
-SyntaxError: String literal expected. [test_module5.ts:2:24]
+SyntaxError: String literal expected. [test_module5.ts:18:24]

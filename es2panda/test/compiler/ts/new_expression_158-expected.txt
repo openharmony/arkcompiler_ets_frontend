@@ -16,22 +16,22 @@
                 "type": "TSStringKeyword",
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 20
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 26
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 10
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 26
                 }
               }
@@ -39,11 +39,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 8
               }
             }
@@ -51,11 +51,11 @@
           "init": null,
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 8
             }
           }
@@ -64,11 +64,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 27
         }
       }
@@ -84,11 +84,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 2,
+                "line": 18,
                 "column": 5
               },
               "end": {
-                "line": 2,
+                "line": 18,
                 "column": 6
               }
             }
@@ -101,11 +101,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 18,
                   "column": 13
                 },
                 "end": {
-                  "line": 2,
+                  "line": 18,
                   "column": 16
                 }
               }
@@ -113,22 +113,22 @@
             "arguments": [],
             "loc": {
               "start": {
-                "line": 2,
+                "line": 18,
                 "column": 9
               },
               "end": {
-                "line": 2,
+                "line": 18,
                 "column": 18
               }
             }
           },
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 5
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 18
             }
           }
@@ -137,11 +137,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 2,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 19
         }
       }
@@ -157,11 +157,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 3,
+              "line": 19,
               "column": 1
             },
             "end": {
-              "line": 3,
+              "line": 19,
               "column": 2
             }
           }
@@ -171,33 +171,33 @@
           "value": 5,
           "loc": {
             "start": {
-              "line": 3,
+              "line": 19,
               "column": 5
             },
             "end": {
-              "line": 3,
+              "line": 19,
               "column": 6
             }
           }
         },
         "loc": {
           "start": {
-            "line": 3,
+            "line": 19,
             "column": 1
           },
           "end": {
-            "line": 3,
+            "line": 19,
             "column": 6
           }
         }
       },
       "loc": {
         "start": {
-          "line": 3,
+          "line": 19,
           "column": 1
         },
         "end": {
-          "line": 3,
+          "line": 19,
           "column": 7
         }
       }
@@ -209,9 +209,9 @@
       "column": 1
     },
     "end": {
-      "line": 4,
+      "line": 20,
       "column": 1
     }
   }
 }
-TypeError: Type '5' is not assignable to type 'string'. [new_expression_158.ts:3:1]
+TypeError: Type 'number' is not assignable to type 'string'. [new_expression_158.ts:19:1]

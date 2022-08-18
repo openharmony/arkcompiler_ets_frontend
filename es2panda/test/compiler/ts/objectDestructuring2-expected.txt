@@ -20,11 +20,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 7
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 8
                     }
                   }
@@ -35,11 +35,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 7
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 8
                     }
                   }
@@ -47,11 +47,11 @@
                 "kind": "init",
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 7
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 8
                   }
                 }
@@ -59,11 +59,11 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 10
               }
             }
@@ -82,25 +82,25 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 15
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 16
                     }
                   }
                 },
                 "value": {
                   "type": "StringLiteral",
-                  "value": "",
+                  "value": "foo",
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 18
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 23
                     }
                   }
@@ -108,11 +108,11 @@
                 "kind": "init",
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 15
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 23
                   }
                 }
@@ -128,11 +128,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 25
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 26
                     }
                   }
@@ -142,11 +142,11 @@
                   "value": 5,
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 28
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 29
                     }
                   }
@@ -154,11 +154,11 @@
                 "kind": "init",
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 25
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 29
                   }
                 }
@@ -166,22 +166,22 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 13
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 31
               }
             }
           },
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 31
             }
           }
@@ -190,11 +190,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 32
         }
       }
@@ -206,9 +206,9 @@
       "column": 1
     },
     "end": {
-      "line": 1,
+      "line": 17,
       "column": 32
     }
   }
 }
-TypeError: Object literal may only specify known properties, and 'b' does not exist in type '{ a: any; }'. [objectDestructuring2.ts:1:25]
+TypeError: Object literal may only specify known properties, and property 'b' does not exist in the pattern. [objectDestructuring2.ts:17:5]

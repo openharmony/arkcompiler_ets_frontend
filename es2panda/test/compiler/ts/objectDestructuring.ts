@@ -29,7 +29,7 @@ var6 = "baz";
 var7 = false;
 var7 = "baz";
 
-var { prop: { prop: [var8 = 1, var9 = {}] } = { prop: ["foo", true] } } = { prop: { prop: [1, 2, 3] } };
+var { prop: { prop: [var8 = 1, var9 = { a: 3, b: "bar" }] } = { prop: ["foo", true] } } = { prop: { prop: [1, 2, 3] } };
 var8 = var6;
 var9 = 1;
 var9 = { a: 1, b: "foo" };

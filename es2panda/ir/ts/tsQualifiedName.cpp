@@ -34,35 +34,25 @@ void TSQualifiedName::Dump(ir::AstDumper *dumper) const
 
 void TSQualifiedName::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSQualifiedName::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSQualifiedName::Check(checker::Checker *checker) const
 {
-    checker::Type *baseType = left_->Check(checker);
+    checker::Type *baseType = checker->CheckNonNullType(left_->Check(checker), left_->Start());
+    binder::Variable *prop = checker->GetPropertyOfType(baseType, right_->Name());
 
-    if (!parent_->IsTSQualifiedName()) {
-        if (!checker->TypeStack().insert(right_).second) {
-            checker->ThrowTypeError({"'", checker->ToPropertyName(right_, checker::TypeFlag::COMPUTED_NAME),
-                                     "' is referenced directly or indirectly in its own type annotation."},
-                                    right_->Start());
+    if (prop) {
+        return checker->GetTypeOfVariable(prop);
+    }
+
+    if (baseType->IsObjectType()) {
+        checker::ObjectType *objType = baseType->AsObjectType();
+
+        if (objType->StringIndexInfo()) {
+            return objType->StringIndexInfo()->GetType();
         }
     }
 
-    checker::Type *propType = checker->ResolveBaseProp(baseType, right_, false, Start());
-
-    checker->TypeStack().erase(right_);
-
-    if (!parent_->IsTSIndexedAccessType() || !parent_->IsTSQualifiedName()) {
-        const ir::TSQualifiedName *leftMost = checker::Checker::ResolveLeftMostQualifiedName(this);
-
-        const util::StringView &objName = leftMost->Left()->AsIdentifier()->Name();
-        const util::StringView &propName = leftMost->Right()->Name();
-        checker->ThrowTypeError(
-            {"Cannot access '", objName, ".", propName, "' because '", objName,
-             "' is a type, but not a namespace. Did you mean to retrieve the type of the property '", propName,
-             "' in '", objName, "' with '", objName, "[\"", propName, "\"]'?"},
-            Start());
-    }
-
-    return propType;
+    checker->ThrowTypeError({"Property ", right_->Name(), " does not exist on this type."}, right_->Start());
+    return nullptr;
 }
 
 }  // namespace panda::es2panda::ir

@@ -20,11 +20,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 7
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 8
                     }
                   }
@@ -40,11 +40,11 @@
                         "decorators": [],
                         "loc": {
                           "start": {
-                            "line": 1,
+                            "line": 17,
                             "column": 11
                           },
                           "end": {
-                            "line": 1,
+                            "line": 17,
                             "column": 12
                           }
                         }
@@ -54,22 +54,22 @@
                         "value": 5,
                         "loc": {
                           "start": {
-                            "line": 1,
+                            "line": 17,
                             "column": 15
                           },
                           "end": {
-                            "line": 1,
+                            "line": 17,
                             "column": 16
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 11
                         },
                         "end": {
-                          "line": 1,
+                          "line": 17,
                           "column": 16
                         }
                       }
@@ -80,11 +80,11 @@
                       "decorators": [],
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 18
                         },
                         "end": {
-                          "line": 1,
+                          "line": 17,
                           "column": 19
                         }
                       }
@@ -92,11 +92,11 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 10
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 20
                     }
                   }
@@ -104,11 +104,11 @@
                 "kind": "init",
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 7
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 20
                   }
                 }
@@ -116,11 +116,11 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 22
               }
             }
@@ -139,11 +139,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 27
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 28
                     }
                   }
@@ -153,11 +153,11 @@
                   "value": 5,
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 30
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 31
                     }
                   }
@@ -165,11 +165,11 @@
                 "kind": "init",
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 27
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 31
                   }
                 }
@@ -177,22 +177,22 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 25
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 33
               }
             }
           },
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 33
             }
           }
@@ -201,11 +201,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 34
         }
       }
@@ -217,9 +217,9 @@
       "column": 1
     },
     "end": {
-      "line": 1,
+      "line": 17,
       "column": 34
     }
   }
 }
-TypeError: Type 'number' must have a '[Symbol.iterator]()' method that returns an interator [objectDestructuring4.ts:1:10]
+TypeError: Type number must have a '[Symbol.iterator]()' method that returns an iterator. [objectDestructuring4.ts:17:10]

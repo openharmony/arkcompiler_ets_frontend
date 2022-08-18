@@ -352,6 +352,8 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrTsMappedType(ir::Expression *typ
     lexer_->NextToken();
 
     auto *literalType = AllocNode<ir::TSTypeLiteral>(std::move(members));
+    auto *typeVar = binder::Scope::CreateVar(Allocator(), "__type", binder::VariableFlags::TYPE, literalType);
+    literalType->SetVariable(typeVar);
     literalType->SetRange({bodyStart, bodyEnd});
     return literalType;
 }
@@ -862,6 +864,7 @@ ir::Expression *ParserImpl::ParseTsTypeReferenceOrQuery(bool parseQuery)
 
     ir::Expression *typeName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
     typeName->SetRange(lexer_->GetToken().Loc());
+    typeName->AsIdentifier()->SetReference();
 
     if (lexer_->Lookahead() == LEX_CHAR_LESS_THAN) {
         lexer_->ForwardToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, 1);
@@ -1126,6 +1129,38 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceKey(bool *computed, boo
     return key;
 }
 
+void ParserImpl::CreateTSVariableForProperty(ir::AstNode *node, const ir::Expression *key, binder::VariableFlags flags)
+{
+    binder::Variable *propVar = nullptr;
+    bool isMethod = flags & binder::VariableFlags::METHOD;
+    util::StringView propName = "__computed";
+
+    switch (key->Type()) {
+        case ir::AstNodeType::IDENTIFIER: {
+            propName = key->AsIdentifier()->Name();
+            break;
+        }
+        case ir::AstNodeType::NUMBER_LITERAL: {
+            propName = key->AsNumberLiteral()->Str();
+            flags |= binder::VariableFlags::NUMERIC_NAME;
+            break;
+        }
+        case ir::AstNodeType::STRING_LITERAL: {
+            propName = key->AsStringLiteral()->Str();
+            break;
+        }
+        default: {
+            flags |= binder::VariableFlags::COMPUTED;
+            break;
+        }
+    }
+
+    propVar = isMethod ? binder::Scope::CreateVar<binder::MethodDecl>(Allocator(), propName, flags, node)
+                       : binder::Scope::CreateVar<binder::PropertyDecl>(Allocator(), propName, flags, node);
+
+    node->SetVariable(propVar);
+}
+
 ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceMember()
 {
     bool computed = false;
@@ -1180,19 +1215,26 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceMember()
 
     ir::Expression *member = nullptr;
     ir::Expression *typeAnnotation = nullptr;
+    binder::VariableFlags flags = binder::VariableFlags::NONE;
+
+    if (optional) {
+        flags |= binder::VariableFlags::OPTIONAL;
+    }
+
+    if (readonly) {
+        flags |= binder::VariableFlags::READONLY;
+    }
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS && !isIndexSignature) {
         FunctionParameterContext funcParamContext(&context_, Binder());
         auto *funcParamScope = funcParamContext.LexicalScope().GetScope();
         ArenaVector<ir::Expression *> params = ParseFunctionParams(true);
 
-        ir::Expression *returnTypeAnnotation = nullptr;
-
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
             lexer_->NextToken();  // eat ':'
             TypeAnnotationParsingOptions options =
                 TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
-            returnTypeAnnotation = ParseTsTypeAnnotation(&options);
+            typeAnnotation = ParseTsTypeAnnotation(&options);
         }
 
         if (signature) {
@@ -1200,12 +1242,13 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceMember()
                             ? ir::TSSignatureDeclaration::TSSignatureDeclarationKind::CONSTRUCT_SIGNATURE
                             : ir::TSSignatureDeclaration::TSSignatureDeclarationKind::CALL_SIGNATURE;
             member = AllocNode<ir::TSSignatureDeclaration>(funcParamScope, kind, typeParamDecl, std::move(params),
-                                                           returnTypeAnnotation);
+                                                           typeAnnotation);
             funcParamScope->BindNode(member);
         } else {
             member = AllocNode<ir::TSMethodSignature>(funcParamScope, key, typeParamDecl, std::move(params),
-                                                      returnTypeAnnotation, computed, optional);
+                                                      typeAnnotation, computed, optional);
             funcParamScope->BindNode(member);
+            CreateTSVariableForProperty(member, key, flags | binder::VariableFlags::METHOD);
         }
     } else if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         lexer_->NextToken();  // eat ':'
@@ -1220,6 +1263,7 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceMember()
         member = AllocNode<ir::TSIndexSignature>(key, typeAnnotation, readonly);
     } else if (!member) {
         member = AllocNode<ir::TSPropertySignature>(key, typeAnnotation, computed, optional, readonly);
+        CreateTSVariableForProperty(member, key, flags | binder::VariableFlags::PROPERTY);
     } else if (readonly) {
         ThrowSyntaxError(
             "'readonly' modifier can only appear on a property "
@@ -1232,6 +1276,57 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceMember()
     return member;
 }
 
+util::StringView GetTSPropertyName(ir::Expression *key)
+{
+    switch (key->Type()) {
+        case ir::AstNodeType::IDENTIFIER: {
+            return key->AsIdentifier()->Name();
+        }
+        case ir::AstNodeType::NUMBER_LITERAL: {
+            return key->AsNumberLiteral()->Str();
+        }
+        case ir::AstNodeType::STRING_LITERAL: {
+            return key->AsStringLiteral()->Str();
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+}
+
+void ParserImpl::CheckObjectTypeForDuplicatedProperties(ir::Expression *key, ArenaVector<ir::Expression *> &members)
+{
+    if (!key->IsIdentifier() && !key->IsNumberLiteral() && !key->IsStringLiteral()) {
+        return;
+    }
+
+    for (auto *it : members) {
+        ir::Expression *compare = nullptr;
+
+        switch (it->Type()) {
+            case ir::AstNodeType::TS_PROPERTY_SIGNATURE: {
+                compare = it->AsTSPropertySignature()->Key();
+                break;
+            }
+            case ir::AstNodeType::TS_METHOD_SIGNATURE: {
+                compare = it->AsTSMethodSignature()->Key();
+                break;
+            }
+            default: {
+                continue;
+            }
+        }
+
+        if (!compare->IsIdentifier() && !compare->IsNumberLiteral() && !compare->IsStringLiteral()) {
+            continue;
+        }
+
+        if (GetTSPropertyName(key) == GetTSPropertyName(compare)) {
+            ThrowSyntaxError("Duplicated identifier", key->Start());
+        }
+    }
+}
+
 ArenaVector<ir::Expression *> ParserImpl::ParseTsTypeLiteralOrInterface()
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
@@ -1242,6 +1337,13 @@ ArenaVector<ir::Expression *> ParserImpl::ParseTsTypeLiteralOrInterface()
 
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         ir::Expression *member = ParseTsTypeLiteralOrInterfaceMember();
+
+        if (member->IsTSPropertySignature()) {
+            CheckObjectTypeForDuplicatedProperties(member->AsTSPropertySignature()->Key(), members);
+        } else if (member->IsTSMethodSignature()) {
+            CheckObjectTypeForDuplicatedProperties(member->AsTSMethodSignature()->Key(), members);
+        }
+
         members.push_back(member);
 
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
@@ -1318,6 +1420,8 @@ ir::TSUnionType *ParserImpl::ParseTsUnionType(ir::Expression *type, bool restric
     lexer::SourcePosition endLoc = types.back()->End();
 
     auto *unionType = AllocNode<ir::TSUnionType>(std::move(types));
+    auto *typeVar = binder::Scope::CreateVar(Allocator(), "__type", binder::VariableFlags::TYPE, unionType);
+    unionType->SetVariable(typeVar);
     unionType->SetRange({startLoc, endLoc});
 
     return unionType;
@@ -1359,8 +1463,10 @@ ir::TSIntersectionType *ParserImpl::ParseTsIntersectionType(ir::Expression *type
     lexer::SourcePosition endLoc = types.back()->End();
 
     auto *intersectionType = AllocNode<ir::TSIntersectionType>(std::move(types));
-
+    auto *typeVar = binder::Scope::CreateVar(Allocator(), "__type", binder::VariableFlags::TYPE, intersectionType);
+    intersectionType->SetVariable(typeVar);
     intersectionType->SetRange({startLoc, endLoc});
+
     return intersectionType;
 }
 
@@ -1397,17 +1503,17 @@ ir::Expression *ParserImpl::ParseTsParenthesizedOrFunctionType(ir::Expression *t
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer_->NextToken();  // eat '('
 
-    char32_t nextCp = lexer_->Lookahead();
-    if (nextCp == LEX_CHAR_COMMA || nextCp == LEX_CHAR_QUESTION || nextCp == LEX_CHAR_COLON ||
-        (!CurrentIsBasicType() && lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS)) {
-        lexer_->Rewind(startPos);
-        return ParseTsFunctionType(typeStart, false, throwError);
-    }
-
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::NO_OPTS;
     ir::Expression *type = ParseTsTypeAnnotation(&options);
 
     if (!type) {
+        lexer_->Rewind(startPos);
+        return ParseTsFunctionType(typeStart, false, throwError);
+    }
+
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA ||
+        lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK ||
+        lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         lexer_->Rewind(startPos);
         return ParseTsFunctionType(typeStart, false, throwError);
     }
@@ -1594,7 +1700,7 @@ ir::ModifierFlags ParserImpl::ParseModifiers()
         char32_t nextCp = lexer_->Lookahead();
         if (!((Extension() == ScriptExtension::JS && nextCp != LEX_CHAR_LEFT_PAREN) ||
               (Extension() == ScriptExtension::TS && nextCp != LEX_CHAR_EQUALS && nextCp != LEX_CHAR_SEMICOLON &&
-               nextCp != LEX_CHAR_LEFT_PAREN))) {
+               nextCp != LEX_CHAR_COMMA && nextCp != LEX_CHAR_LEFT_PAREN))) {
             break;
         }
 
@@ -2027,7 +2133,9 @@ ir::MethodDefinition *ParserImpl::ParseClassMethod(ClassElmentDescriptor *desc,
     }
 
     ir::ScriptFunction *func = ParseFunction(desc->newStatus, isDeclare);
-    lexer_->NextToken();
+    if (func->Body() != nullptr) {
+        lexer_->NextToken();
+    }
 
     if (func->IsOverload() && !decorators.empty()) {
         ThrowSyntaxError("A decorator can only decorate a method implementation, not an overload.",
@@ -2633,6 +2741,7 @@ ir::TSEnumDeclaration *ParserImpl::ParseEnumDeclaration(bool isConst)
 
     auto *key = AllocNode<ir::Identifier>(ident, Allocator());
     key->SetRange(lexer_->GetToken().Loc());
+    key->SetReference();
     lexer_->NextToken();
 
     const auto &bindings = Binder()->GetScope()->Bindings();

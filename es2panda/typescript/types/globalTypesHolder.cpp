@@ -52,17 +52,20 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator)
     globalTypes_[static_cast<size_t>(GlobalTypeId::FALSE_ID)] = allocator->New<BooleanLiteralType>(false);
     globalTypes_[static_cast<size_t>(GlobalTypeId::TRUE_ID)] = allocator->New<BooleanLiteralType>(true);
     globalTypes_[static_cast<size_t>(GlobalTypeId::NUMBER_OR_BIGINT)] =
-        allocator->New<UnionType>(std::initializer_list<Type *> {GlobalNumberType(), GlobalBigintType()});
+        allocator->New<UnionType>(allocator, std::initializer_list<Type *> {GlobalNumberType(), GlobalBigintType()});
     globalTypes_[static_cast<size_t>(GlobalTypeId::STRING_OR_NUMBER)] =
-        allocator->New<UnionType>(std::initializer_list<Type *> {GlobalStringType(), GlobalNumberType()});
+        allocator->New<UnionType>(allocator, std::initializer_list<Type *> {GlobalStringType(), GlobalNumberType()});
     globalTypes_[static_cast<size_t>(GlobalTypeId::ZERO)] = allocator->New<NumberLiteralType>(0);
     globalTypes_[static_cast<size_t>(GlobalTypeId::EMPTY_STRING)] = allocator->New<StringLiteralType>("");
     globalTypes_[static_cast<size_t>(GlobalTypeId::ZERO_BIGINT)] = allocator->New<BigintLiteralType>("0n", false);
     globalTypes_[static_cast<size_t>(GlobalTypeId::PRIMITIVE)] = allocator->New<UnionType>(
+        allocator,
         std::initializer_list<Type *> {GlobalNumberType(), GlobalStringType(), GlobalBigintType(), GlobalBooleanType(),
                                        GlobalVoidType(), GlobalUndefinedType(), GlobalNullType()});
-    globalTypes_[static_cast<size_t>(GlobalTypeId::EMPTY_TUPLE)] = allocator->New<TupleType>();
+    globalTypes_[static_cast<size_t>(GlobalTypeId::EMPTY_TUPLE)] = allocator->New<TupleType>(allocator);
     globalTypes_[static_cast<size_t>(GlobalTypeId::EMPTY_OBJECT)] = allocator->New<ObjectLiteralType>();
+    globalTypes_[static_cast<size_t>(GlobalTypeId::RESOLVING_RETURN_TYPE)] = allocator->New<AnyType>();
+    globalTypes_[static_cast<size_t>(GlobalTypeId::ERROR_TYPE)] = allocator->New<AnyType>();
 }
 
 Type *GlobalTypesHolder::GlobalNumberType()
@@ -168,6 +171,16 @@ Type *GlobalTypesHolder::GlobalEmptyTupleType()
 Type *GlobalTypesHolder::GlobalEmptyObjectType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::EMPTY_OBJECT));
+}
+
+Type *GlobalTypesHolder::GlobalResolvingReturnType()
+{
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::RESOLVING_RETURN_TYPE));
+}
+
+Type *GlobalTypesHolder::GlobalErrorType()
+{
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ERROR_TYPE));
 }
 
 }  // namespace panda::es2panda::checker

@@ -42,45 +42,30 @@ void FunctionExpression::Compile(compiler::PandaGen *pg) const
 checker::Type *FunctionExpression::Check(checker::Checker *checker) const
 {
     binder::Variable *funcVar = nullptr;
-    const ir::VariableDeclarator *varDecl = nullptr;
 
-    if (func_->Parent()->Parent()->IsVariableDeclarator()) {
-        varDecl = func_->Parent()->Parent()->AsVariableDeclarator();
-    }
-
-    if (varDecl) {
-        ASSERT(varDecl->IsVariableDeclarator());
-        if (varDecl->AsVariableDeclarator()->Id()->IsIdentifier() && !varDecl->Id()->AsIdentifier()->TypeAnnotation()) {
-            const util::StringView &varName = varDecl->AsVariableDeclarator()->Id()->AsIdentifier()->Name();
-
-            binder::ScopeFindResult result = checker->Scope()->Find(varName);
-            ASSERT(result.variable);
-
-            funcVar = result.variable;
-        }
+    if (func_->Parent()->Parent() && func_->Parent()->Parent()->IsVariableDeclarator() &&
+        func_->Parent()->Parent()->AsVariableDeclarator()->Id()->IsIdentifier()) {
+        funcVar = func_->Parent()->Parent()->AsVariableDeclarator()->Id()->AsIdentifier()->Variable();
     }
 
     checker::ScopeContext scopeCtx(checker, func_->Scope());
 
-    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>();
-    checker->CheckFunctionParameterDeclaration(func_->Params(), signatureInfo);
+    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(func_->Params(), signatureInfo);
 
-    checker::Type *returnType = nullptr;
+    auto *signature =
+        checker->Allocator()->New<checker::Signature>(signatureInfo, checker->GlobalResolvingReturnType());
+    checker::Type *funcType = checker->CreateFunctionTypeWithSignature(signature);
 
-    if (funcVar) {
-        checker->HandleFunctionReturn(func_, signatureInfo, funcVar);
-        returnType = funcVar->TsType();
-    } else {
-        checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>();
-        desc->callSignatures.push_back(checker->HandleFunctionReturn(func_, signatureInfo, funcVar));
-        returnType = checker->Allocator()->New<checker::FunctionType>(desc);
+    if (funcVar && !funcVar->TsType()) {
+        funcVar->SetTsType(funcType);
     }
 
-    if (!func_->IsArrow() || !func_->Body()->IsExpression()) {
-        func_->Body()->Check(checker);
-    }
+    signature->SetReturnType(checker->HandleFunctionReturn(func_));
 
-    return returnType;
+    func_->Body()->Check(checker);
+
+    return funcType;
 }
 
 }  // namespace panda::es2panda::ir

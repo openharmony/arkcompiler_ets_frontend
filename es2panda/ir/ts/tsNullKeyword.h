@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_NULL_KEYWORD_H
 #define ES2PANDA_IR_TS_NULL_KEYWORD_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -29,14 +29,15 @@ class Type;
 
 namespace panda::es2panda::ir {
 
-class TSNullKeyword : public Expression {
+class TSNullKeyword : public TypeNode {
 public:
-    explicit TSNullKeyword() : Expression(AstNodeType::TS_NULL_KEYWORD) {}
+    explicit TSNullKeyword() : TypeNode(AstNodeType::TS_NULL_KEYWORD) {}
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *GetType(checker::Checker *checker) const override;
 };
 }  // namespace panda::es2panda::ir
 

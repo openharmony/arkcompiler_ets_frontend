@@ -19,10 +19,12 @@
 #include <compiler/core/pandagen.h>
 #include <compiler/core/regScope.h>
 #include <typescript/checker.h>
+#include <typescript/core/destructuringContext.h>
 #include <ir/astDump.h>
 #include <ir/base/spreadElement.h>
 #include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/objectExpression.h>
+#include <ir/expressions/identifier.h>
 
 namespace panda::es2panda::ir {
 
@@ -139,28 +141,34 @@ void AssignmentExpression::CompilePattern(compiler::PandaGen *pg) const
 checker::Type *AssignmentExpression::Check(checker::Checker *checker) const
 {
     if (left_->IsArrayPattern()) {
-        auto *leftType = left_->AsArrayPattern()->Check(checker);
-        auto *rightType = checker->CreateInitializerTypeForPattern(leftType, right_);
-        checker->HandleVariableDeclarationWithContext(left_, rightType, checker::VariableBindingContext::REGULAR,
-                                                      checker::DestructuringType::ARRAY_DESTRUCTURING, false, true);
-
-        return rightType;
+        auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
+        auto destructuringContext = checker::ArrayDestructuringContext(checker, left_, true, true, nullptr, right_);
+        destructuringContext.Start();
+        return destructuringContext.InferedType();
     }
 
     if (left_->IsObjectPattern()) {
-        auto *leftType = left_->AsObjectPattern()->Check(checker);
-        auto *rightType = checker->CreateInitializerTypeForPattern(leftType, right_);
-        checker->HandleVariableDeclarationWithContext(left_, rightType, checker::VariableBindingContext::REGULAR,
-                                                      checker::DestructuringType::OBJECT_DESTRUCTURING, false, true);
+        auto savedContext = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
+        auto destructuringContext = checker::ObjectDestructuringContext(checker, left_, true, true, nullptr, right_);
+        destructuringContext.Start();
+        return destructuringContext.InferedType();
+    }
 
-        return rightType;
+    if (left_->IsIdentifier() && left_->AsIdentifier()->Variable() &&
+        left_->AsIdentifier()->Variable()->Declaration()->IsConstDecl()) {
+        checker->ThrowTypeError({"Cannot assign to ", left_->AsIdentifier()->Name(), " because it is a constant."},
+                                left_->Start());
     }
 
     auto *leftType = left_->Check(checker);
 
-    if (operator_ == lexer::TokenType::PUNCTUATOR_SUBSTITUTION &&
-        checker->ElaborateElementwise(right_, leftType, left_->Start())) {
-        return right_->Check(checker);
+    if (leftType->HasTypeFlag(checker::TypeFlag::READONLY)) {
+        checker->ThrowTypeError("Cannot assign to this property because it is readonly.", left_->Start());
+    }
+
+    if (operator_ == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+        checker->ElaborateElementwise(leftType, right_, left_->Start());
+        return checker->CheckTypeCached(right_);
     }
 
     auto *rightType = right_->Check(checker);

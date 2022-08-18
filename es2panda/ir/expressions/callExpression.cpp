@@ -151,122 +151,18 @@ void CallExpression::Compile(compiler::PandaGen *pg) const
     pg->Call(this, callee, arguments_.size());
 }
 
-using ArgRange = std::pair<uint32_t, uint32_t>;
-
-static ArgRange GetArgRange(const std::vector<checker::Signature *> &signatures,
-                            std::vector<checker::Signature *> *potentialSignatures, uint32_t callArgsSize,
-                            bool *haveSignatureWithRest)
-{
-    uint32_t minArg = UINT32_MAX;
-    uint32_t maxArg = 0;
-
-    for (auto *it : signatures) {
-        if (it->RestVar()) {
-            *haveSignatureWithRest = true;
-        }
-
-        if (it->MinArgCount() < minArg) {
-            minArg = it->MinArgCount();
-        }
-
-        if (it->Params().size() > maxArg) {
-            maxArg = it->Params().size();
-        }
-
-        if (callArgsSize >= it->MinArgCount() && (callArgsSize <= it->Params().size() || it->RestVar())) {
-            potentialSignatures->push_back(it);
-        }
-    }
-
-    return {minArg, maxArg};
-}
-
-static bool CallMatchesSignature(checker::Checker *checker, const ArenaVector<ir::Expression *> &args,
-                                 checker::Signature *signature, bool throwError)
-{
-    for (size_t index = 0; index < args.size(); index++) {
-        checker::Type *sigArgType = nullptr;
-        bool validateRestArg = false;
-
-        if (index >= signature->Params().size()) {
-            ASSERT(signature->RestVar());
-            validateRestArg = true;
-            sigArgType = signature->RestVar()->TsType();
-        } else {
-            sigArgType = signature->Params()[index]->TsType();
-        }
-
-        if (validateRestArg || !throwError ||
-            !checker->ElaborateElementwise(args[index], sigArgType, args[index]->Start())) {
-            checker::Type *callArgType = checker->GetBaseTypeOfLiteralType(args[index]->Check(checker));
-            if (!checker->IsTypeAssignableTo(callArgType, sigArgType)) {
-                if (throwError) {
-                    checker->ThrowTypeError({"Argument of type '", callArgType,
-                                             "' is not assignable to parameter of type '", sigArgType, "'."},
-                                            args[index]->Start());
-                }
-
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
-
 checker::Type *CallExpression::Check(checker::Checker *checker) const
 {
-    auto *calleeType = callee_->Check(checker);
+    checker::Type *calleeType = callee_->Check(checker);
 
     // TODO(aszilagyi): handle optional chain
     if (calleeType->IsObjectType()) {
         checker::ObjectType *calleeObj = calleeType->AsObjectType();
-
-        const std::vector<checker::Signature *> &signatures = calleeObj->CallSignatures();
-
-        if (!signatures.empty()) {
-            std::vector<checker::Signature *> potentialSignatures;
-            bool haveSignatureWithRest = false;
-
-            auto argRange = GetArgRange(signatures, &potentialSignatures, arguments_.size(), &haveSignatureWithRest);
-
-            if (potentialSignatures.empty()) {
-                if (haveSignatureWithRest) {
-                    checker->ThrowTypeError(
-                        {"Expected at least ", argRange.first, " arguments, but got ", arguments_.size(), "."},
-                        Start());
-                }
-
-                if (signatures.size() == 1 && argRange.first == argRange.second) {
-                    lexer::SourcePosition loc =
-                        (argRange.first > arguments_.size()) ? Start() : arguments_[argRange.second]->Start();
-                    checker->ThrowTypeError(
-                        {"Expected ", argRange.first, " arguments, but got ", arguments_.size(), "."}, loc);
-                }
-
-                checker->ThrowTypeError(
-                    {"Expected ", argRange.first, "-", argRange.second, " arguments, but got ", arguments_.size()},
-                    Start());
-            }
-
-            checker::Type *returnType = nullptr;
-            for (auto *it : potentialSignatures) {
-                if (CallMatchesSignature(checker, arguments_, it, potentialSignatures.size() == 1)) {
-                    returnType = it->ReturnType();
-                    break;
-                }
-            }
-
-            if (!returnType) {
-                checker->ThrowTypeError("No overload matches this call.", Start());
-            }
-
-            return returnType;
-        }
+        return checker->resolveCallOrNewExpression(calleeObj->CallSignatures(), arguments_, Start());
     }
 
     checker->ThrowTypeError("This expression is not callable.", Start());
-    return checker->GlobalAnyType();
+    return nullptr;
 }
 
 }  // namespace panda::es2panda::ir

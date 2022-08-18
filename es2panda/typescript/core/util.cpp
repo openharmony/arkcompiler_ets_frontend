@@ -17,10 +17,33 @@
 #include <ir/expressions/binaryExpression.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/expressions/templateLiteral.h>
+#include <ir/ts/tsQualifiedName.h>
 
 #include <typescript/checker.h>
 
 namespace panda::es2panda::checker {
+
+const ir::TSQualifiedName *Checker::ResolveLeftMostQualifiedName(const ir::TSQualifiedName *qualifiedName)
+{
+    const ir::TSQualifiedName *iter = qualifiedName;
+
+    while (iter->Left()->IsTSQualifiedName()) {
+        iter = iter->Left()->AsTSQualifiedName();
+    }
+
+    return iter;
+}
+
+const ir::MemberExpression *Checker::ResolveLeftMostMemberExpression(const ir::MemberExpression *expr)
+{
+    const ir::MemberExpression *iter = expr;
+
+    while (iter->Object()->IsMemberExpression()) {
+        iter = iter->Object()->AsMemberExpression();
+    }
+
+    return iter;
+}
 
 bool Checker::InAssignment(const ir::AstNode *node)
 {
@@ -69,39 +92,6 @@ bool Checker::IsAssignmentOperator(lexer::TokenType op)
     }
 }
 
-Type *Checker::GetBaseTypeOfLiteralType(Type *type)
-{
-    if (type->IsStringLiteralType()) {
-        return GlobalStringType();
-    }
-
-    if (type->IsNumberLiteralType()) {
-        return GlobalNumberType();
-    }
-
-    if (type->IsBooleanLiteralType()) {
-        return GlobalBooleanType();
-    }
-
-    if (type->IsBigintLiteralType()) {
-        return GlobalBigintType();
-    }
-
-    if (type->IsUnionType()) {
-        std::vector<Type *> &constituentTypes = type->AsUnionType()->ConstituentTypes();
-        std::vector<Type *> newConstituentTypes;
-
-        newConstituentTypes.reserve(constituentTypes.size());
-        for (auto *it : constituentTypes) {
-            newConstituentTypes.push_back(GetBaseTypeOfLiteralType(it));
-        }
-
-        return CreateUnionType(std::move(newConstituentTypes));
-    }
-
-    return type;
-}
-
 bool Checker::IsLiteralType(const Type *type)
 {
     if (type->IsBooleanType()) {
@@ -109,7 +99,7 @@ bool Checker::IsLiteralType(const Type *type)
     }
 
     if (type->IsUnionType()) {
-        std::vector<Type *> constituentTypes = type->AsUnionType()->ConstituentTypes();
+        auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
         bool result = true;
         for (auto *it : constituentTypes) {
             result &= it->HasTypeFlag(TypeFlag::UNIT);
@@ -136,15 +126,18 @@ const ir::AstNode *Checker::FindAncestorGivenByType(const ir::AstNode *node, ir:
     return node;
 }
 
-void Checker::CheckNonNullType(Type *type, lexer::SourcePosition lineInfo)
+const ir::AstNode *Checker::FindAncestorUntilGivenType(const ir::AstNode *node, ir::AstNodeType stop)
 {
-    if (type->IsNullType()) {
-        ThrowTypeError("Object is possibly 'null'.", lineInfo);
+    while (node->Parent()->Type() != stop) {
+        if (node->Parent()) {
+            node = node->Parent();
+            continue;
+        }
+
+        return nullptr;
     }
 
-    if (type->IsUndefinedType()) {
-        ThrowTypeError("Object is possibly 'undefined'.", lineInfo);
-    }
+    return node;
 }
 
 bool Checker::MaybeTypeOfKind(const Type *type, TypeFlag flags)
@@ -155,7 +148,7 @@ bool Checker::MaybeTypeOfKind(const Type *type, TypeFlag flags)
 
     if (type->HasTypeFlag(TypeFlag::UNION_OR_INTERSECTION)) {
         if (type->IsUnionType()) {
-            const std::vector<Type *> &constituentTypes = type->AsUnionType()->ConstituentTypes();
+            const auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
             for (auto *it : constituentTypes) {
                 if (MaybeTypeOfKind(it, flags)) {
                     return true;
@@ -175,7 +168,7 @@ bool Checker::MaybeTypeOfKind(const Type *type, ObjectType::ObjectTypeKind kind)
 
     if (type->HasTypeFlag(TypeFlag::UNION_OR_INTERSECTION)) {
         if (type->IsUnionType()) {
-            const std::vector<Type *> &constituentTypes = type->AsUnionType()->ConstituentTypes();
+            const auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
             for (auto *it : constituentTypes) {
                 if (MaybeTypeOfKind(it, kind)) {
                     return true;
@@ -215,13 +208,6 @@ bool Checker::IsStringLike(const ir::Expression *expr)
     }
 
     return false;
-}
-
-void Checker::CheckTruthinessOfType(Type *type, lexer::SourcePosition lineInfo)
-{
-    if (type->IsVoidType()) {
-        ThrowTypeError("An expression of type void cannot be tested for truthiness", lineInfo);
-    }
 }
 
 }  // namespace panda::es2panda::checker

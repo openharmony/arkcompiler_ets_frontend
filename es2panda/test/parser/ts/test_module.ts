@@ -32,14 +32,14 @@ namespace a {
 module a.b.c {
     let a;
 
-    function b() { }
+    function t() { }
 }
 
 
 module a.b.c {
     let a;
 
-    function b() { }
+    function t() { }
 }
 
 declare namespace k.z {

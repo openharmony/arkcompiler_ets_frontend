@@ -20,21 +20,6 @@
 
 namespace panda::es2panda::checker {
 
-EnumLiteralType::EnumLiteralType(util::StringView name, binder::Scope *scope, EnumLiteralTypeKind kind)
-    : Type(TypeFlag::ENUM_LITERAL), name_(name), scope_(scope), kind_(kind)
-{
-}
-
-binder::Scope *EnumLiteralType::Scope()
-{
-    return scope_;
-}
-
-const binder::Scope *EnumLiteralType::Scope() const
-{
-    return scope_;
-}
-
 void EnumLiteralType::ToString(std::stringstream &ss) const
 {
     ss << name_;
@@ -45,14 +30,9 @@ void EnumLiteralType::ToStringAsSrc(std::stringstream &ss) const
     ss << "typeof " << name_;
 }
 
-EnumLiteralType::EnumLiteralTypeKind EnumLiteralType::Kind() const
-{
-    return kind_;
-}
+void EnumLiteralType::Identical([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *other) {}
 
-void EnumLiteralType::Identical([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] const Type *other) const {}
-
-void EnumLiteralType::AssignmentTarget(TypeRelation *relation, const Type *source) const
+void EnumLiteralType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (source->IsEnumType()) {
         const EnumType *sourceEnumType = source->AsEnumType();

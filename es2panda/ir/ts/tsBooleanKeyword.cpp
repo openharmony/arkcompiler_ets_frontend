@@ -15,6 +15,7 @@
 
 #include "tsBooleanKeyword.h"
 
+#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,6 +32,11 @@ void TSBooleanKeyword::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 checker::Type *TSBooleanKeyword::Check([[maybe_unused]] checker::Checker *checker) const
 {
     return nullptr;
+}
+
+checker::Type *TSBooleanKeyword::GetType(checker::Checker *checker) const
+{
+    return checker->GlobalBooleanType();
 }
 
 }  // namespace panda::es2panda::ir

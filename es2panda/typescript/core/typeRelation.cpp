@@ -31,13 +31,13 @@ bool Checker::IsAllTypesAssignableTo(Type *source, Type *target)
     return relation_->IsAssignableTo(source, target);
 }
 
-bool Checker::IsTypeIdenticalTo(const Type *source, const Type *target) const
+bool Checker::IsTypeIdenticalTo(Type *source, Type *target)
 {
     return relation_->IsIdenticalTo(source, target);
 }
 
-bool Checker::IsTypeIdenticalTo(const Type *source, const Type *target, const std::string &errMsg,
-                                const lexer::SourcePosition &errPos) const
+bool Checker::IsTypeIdenticalTo(Type *source, Type *target, const std::string &errMsg,
+                                const lexer::SourcePosition &errPos)
 {
     if (!IsTypeIdenticalTo(source, target)) {
         relation_->RaiseError(errMsg, errPos);
@@ -46,9 +46,8 @@ bool Checker::IsTypeIdenticalTo(const Type *source, const Type *target, const st
     return true;
 }
 
-bool Checker::IsTypeIdenticalTo(const Type *source, const Type *target,
-                                std::initializer_list<TypeErrorMessageElement> list,
-                                const lexer::SourcePosition &errPos) const
+bool Checker::IsTypeIdenticalTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
+                                const lexer::SourcePosition &errPos)
 {
     if (!IsTypeIdenticalTo(source, target)) {
         relation_->RaiseError(list, errPos);
@@ -57,13 +56,13 @@ bool Checker::IsTypeIdenticalTo(const Type *source, const Type *target,
     return true;
 }
 
-bool Checker::IsTypeAssignableTo(const Type *source, const Type *target) const
+bool Checker::IsTypeAssignableTo(Type *source, Type *target)
 {
     return relation_->IsAssignableTo(source, target);
 }
 
-bool Checker::IsTypeAssignableTo(const Type *source, const Type *target, const std::string &errMsg,
-                                 const lexer::SourcePosition &errPos) const
+bool Checker::IsTypeAssignableTo(Type *source, Type *target, const std::string &errMsg,
+                                 const lexer::SourcePosition &errPos)
 {
     if (!IsTypeAssignableTo(source, target)) {
         relation_->RaiseError(errMsg, errPos);
@@ -72,9 +71,8 @@ bool Checker::IsTypeAssignableTo(const Type *source, const Type *target, const s
     return true;
 }
 
-bool Checker::IsTypeAssignableTo(const Type *source, const Type *target,
-                                 std::initializer_list<TypeErrorMessageElement> list,
-                                 const lexer::SourcePosition &errPos) const
+bool Checker::IsTypeAssignableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
+                                 const lexer::SourcePosition &errPos)
 {
     if (!IsTypeAssignableTo(source, target)) {
         relation_->RaiseError(list, errPos);
@@ -83,13 +81,13 @@ bool Checker::IsTypeAssignableTo(const Type *source, const Type *target,
     return true;
 }
 
-bool Checker::IsTypeComparableTo(const Type *source, const Type *target) const
+bool Checker::IsTypeComparableTo(Type *source, Type *target)
 {
     return relation_->IsComparableTo(source, target);
 }
 
-bool Checker::IsTypeComparableTo(const Type *source, const Type *target, const std::string &errMsg,
-                                 const lexer::SourcePosition &errPos) const
+bool Checker::IsTypeComparableTo(Type *source, Type *target, const std::string &errMsg,
+                                 const lexer::SourcePosition &errPos)
 {
     if (!IsTypeComparableTo(source, target)) {
         relation_->RaiseError(errMsg, errPos);
@@ -98,9 +96,8 @@ bool Checker::IsTypeComparableTo(const Type *source, const Type *target, const s
     return true;
 }
 
-bool Checker::IsTypeComparableTo(const Type *source, const Type *target,
-                                 std::initializer_list<TypeErrorMessageElement> list,
-                                 const lexer::SourcePosition &errPos) const
+bool Checker::IsTypeComparableTo(Type *source, Type *target, std::initializer_list<TypeErrorMessageElement> list,
+                                 const lexer::SourcePosition &errPos)
 {
     if (!IsTypeComparableTo(source, target)) {
         relation_->RaiseError(list, errPos);
@@ -109,12 +106,12 @@ bool Checker::IsTypeComparableTo(const Type *source, const Type *target,
     return true;
 }
 
-bool Checker::AreTypesComparable(const Type *source, const Type *target) const
+bool Checker::AreTypesComparable(Type *source, Type *target)
 {
     return IsTypeComparableTo(source, target) || IsTypeComparableTo(target, source);
 }
 
-bool Checker::IsTypeEqualityComparableTo(const Type *source, const Type *target) const
+bool Checker::IsTypeEqualityComparableTo(Type *source, Type *target)
 {
     return target->HasTypeFlag(TypeFlag::NULLABLE) || IsTypeComparableTo(source, target);
 }

@@ -14,5 +14,5 @@
  */
 
 
-var a;
+var a: any;
 var a: number;

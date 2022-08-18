@@ -22,16 +22,23 @@ namespace panda::es2panda::checker {
 
 class TypeReference : public Type {
 public:
-    explicit TypeReference(Type **ref);
+    explicit TypeReference(Type **ref) : Type(TypeFlag::TYPE_REFERENCE), ref_(ref) {}
+
+    Type *Ref()
+    {
+        return *ref_;
+    }
+
+    const Type *Ref() const
+    {
+        return *ref_;
+    }
 
     void ToString(std::stringstream &ss) const override;
-    void Identical(TypeRelation *relation, const Type *other) const override;
-    void AssignmentTarget(TypeRelation *relation, const Type *source) const override;
+    void Identical(TypeRelation *relation, Type *other) override;
+    void AssignmentTarget(TypeRelation *relation, Type *source) override;
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
-
-    Type *Ref();
-    const Type *Ref() const;
 
 private:
     Type **ref_;

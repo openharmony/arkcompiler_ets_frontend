@@ -22,30 +22,127 @@ namespace panda::es2panda::checker {
 
 class InterfaceType : public ObjectType {
 public:
-    InterfaceType(util::StringView name, ObjectDescriptor *desc);
+    InterfaceType(ArenaAllocator *allocator, util::StringView name, ObjectDescriptor *desc)
+        : ObjectType(ObjectType::ObjectTypeKind::INTERFACE, desc),
+          name_(name),
+          bases_(allocator->Adapter()),
+          allocator_(allocator)
+    {
+    }
 
-    void AddBase(ObjectType *base);
-    const std::vector<ObjectType *> &Bases() const;
-    const util::StringView &Name() const;
+    void AddBase(ObjectType *base)
+    {
+        bases_.push_back(base);
+    }
+
+    ArenaVector<ObjectType *> &Bases()
+    {
+        return bases_;
+    }
+
+    const util::StringView &Name() const
+    {
+        return name_;
+    }
+
+    void SetMergedTypeParams(std::pair<std::vector<binder::Variable *>, size_t> &&mergedTypeParams)
+    {
+        mergedTypeParams_ = std::move(mergedTypeParams);
+    }
+
+    const std::pair<std::vector<binder::Variable *>, size_t> &GetMergedTypeParams() const
+    {
+        return mergedTypeParams_;
+    }
+
+    void SetTypeParamTypes(std::vector<Type *> &&typeParamTypes)
+    {
+        typeParamTypes_ = std::move(typeParamTypes);
+    }
+
+    const std::vector<Type *> &GetTypeParamTypes() const
+    {
+        return typeParamTypes_;
+    }
+
+    binder::LocalVariable *GetProperty(const util::StringView &name, [[maybe_unused]] bool searchInBase) const override
+    {
+        binder::LocalVariable *resultProp = ObjectType::GetProperty(name, false);
+
+        if (resultProp) {
+            return resultProp;
+        }
+
+        if (!searchInBase) {
+            return nullptr;
+        }
+
+        for (auto *base : bases_) {
+            resultProp = base->GetProperty(name, true);
+
+            if (resultProp) {
+                return resultProp;
+            }
+        }
+
+        return nullptr;
+    }
+
+    ArenaVector<Signature *> CallSignatures() override
+    {
+        ArenaVector<Signature *> signatures(allocator_->Adapter());
+        CollectSignatures(&signatures, true);
+        return signatures;
+    }
+
+    ArenaVector<Signature *> ConstructSignatures() override
+    {
+        ArenaVector<Signature *> signatures(allocator_->Adapter());
+        CollectSignatures(&signatures, false);
+        return signatures;
+    }
+
+    const IndexInfo *StringIndexInfo() const override
+    {
+        return FindIndexInfo(false);
+    }
+
+    const IndexInfo *NumberIndexInfo() const override
+    {
+        return FindIndexInfo(true);
+    }
+
+    IndexInfo *StringIndexInfo() override
+    {
+        return FindIndexInfo(false);
+    }
+
+    IndexInfo *NumberIndexInfo() override
+    {
+        return FindIndexInfo(true);
+    }
+
+    ArenaVector<binder::LocalVariable *> Properties() override
+    {
+        ArenaVector<binder::LocalVariable *> properties(allocator_->Adapter());
+        CollectProperties(&properties);
+        return properties;
+    }
 
     void ToString(std::stringstream &ss) const override;
     TypeFacts GetTypeFacts() const override;
-    void Identical(TypeRelation *relation, const Type *other) const override;
+    void Identical(TypeRelation *relation, Type *other) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
-    binder::LocalVariable *GetProperty(const util::StringView &name) const override;
-    void SetMergedTypeParams(std::pair<std::vector<binder::Variable *>, size_t> &&mergedTypeParams);
-    const std::pair<std::vector<binder::Variable *>, size_t> &GetMergedTypeParams() const;
-    void SetTypeParamTypes(std::vector<Type *> &&typeParamTypes);
-    const std::vector<Type *> &GetTypeParamTypes() const;
 
-    void CollectSignatures(std::vector<Signature *> *collectedSignatures, bool collectCallSignatures) const;
-    void CollectProperties(std::vector<binder::LocalVariable *> *collectedPropeties) const;
+    void CollectSignatures(ArenaVector<Signature *> *collectedSignatures, bool collectCallSignatures) const;
+    void CollectProperties(ArenaVector<binder::LocalVariable *> *collectedPropeties) const;
     const IndexInfo *FindIndexInfo(bool findNumberInfo) const;
     IndexInfo *FindIndexInfo(bool findNumberInfo);
 
 private:
     util::StringView name_;
-    std::vector<ObjectType *> bases_;
+    ArenaVector<ObjectType *> bases_;
+    ArenaAllocator *allocator_;
     std::pair<std::vector<binder::Variable *>, size_t> mergedTypeParams_ {};
     std::vector<Type *> typeParamTypes_ {};
 };

@@ -34,7 +34,7 @@ void BlockStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", IsProgram() ? "Program" : "BlockStatement"}, {"statements", statements_}});
 }
 
-void BlockStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void BlockStatement::Compile(compiler::PandaGen *pg) const
 {
     compiler::LocalRegScope lrs(pg, scope_);
 
@@ -43,7 +43,7 @@ void BlockStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     }
 }
 
-checker::Type *BlockStatement::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *BlockStatement::Check(checker::Checker *checker) const
 {
     checker::ScopeContext scopeCtx(checker, scope_);
 

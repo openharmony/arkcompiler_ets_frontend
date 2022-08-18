@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_INFER_TYPE_H
 #define ES2PANDA_IR_TS_INFER_TYPE_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -31,11 +31,9 @@ namespace panda::es2panda::ir {
 
 class TSTypeParameter;
 
-class TSInferType : public Expression {
+class TSInferType : public TypeNode {
 public:
-    explicit TSInferType(TSTypeParameter *typeParam) : Expression(AstNodeType::TS_INFER_TYPE), typeParam_(typeParam)
-    {
-    }
+    explicit TSInferType(TSTypeParameter *typeParam) : TypeNode(AstNodeType::TS_INFER_TYPE), typeParam_(typeParam) {}
 
     const TSTypeParameter *TypeParam() const
     {
@@ -46,6 +44,7 @@ public:
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *GetType([[maybe_unused]] checker::Checker *checker) const override;
 
 private:
     TSTypeParameter *typeParam_;

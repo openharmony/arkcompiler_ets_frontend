@@ -32,24 +32,6 @@ binder::LocalVariable *ObjectDescriptor::FindProperty(const util::StringView &na
     return nullptr;
 }
 
-ObjectDescriptor::~ObjectDescriptor()
-{
-    for (auto *it : properties) {
-        delete it;
-    }
-
-    for (auto *it : callSignatures) {
-        delete it;
-    }
-
-    for (auto *it : constructSignatures) {
-        delete it;
-    }
-
-    delete stringIndexInfo;
-    delete numberIndexInfo;
-}
-
 void ObjectDescriptor::Copy(ArenaAllocator *allocator, ObjectDescriptor *copiedDesc, TypeRelation *relation,
                             GlobalTypesHolder *globalTypes)
 {

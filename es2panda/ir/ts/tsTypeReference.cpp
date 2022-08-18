@@ -45,72 +45,36 @@ void TSTypeReference::Dump(ir::AstDumper *dumper) const
 
 void TSTypeReference::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSTypeReference::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSTypeReference::Check(checker::Checker *checker) const
 {
-    if (typeName_->IsIdentifier()) {
-        return ResolveReference(checker, typeName_->AsIdentifier()->Variable(), typeName_->AsIdentifier(), typeParams_);
-    }
-
-    ASSERT(typeName_->IsTSQualifiedName());
-    return typeName_->Check(checker);
+    GetType(checker);
+    return nullptr;
 }
 
-checker::Type *TSTypeReference::ResolveReference(checker::Checker *checker, binder::Variable *var,
-                                                 const ir::Identifier *refIdent,
-                                                 const ir::TSTypeParameterInstantiation *typeParams)
+checker::Type *TSTypeReference::GetType(checker::Checker *checker) const
 {
+    auto found = checker->NodeCache().find(this);
+
+    if (found != checker->NodeCache().end()) {
+        return found->second;
+    }
+
+    // TODO(aszilagyi): handle cases where type type_name_ is a QualifiedName
+    if (typeName_->IsTSQualifiedName()) {
+        return checker->GlobalAnyType();
+    }
+
+    ASSERT(typeName_->IsIdentifier());
+    binder::Variable *var = typeName_->AsIdentifier()->Variable();
+
     if (!var) {
-        checker->ThrowTypeError({"Cannot find name ", refIdent->Name()}, refIdent->Start());
+        checker->ThrowTypeError({"Cannot find name ", typeName_->AsIdentifier()->Name()}, Start());
     }
 
-    const binder::Decl *decl = var->Declaration();
+    checker::Type *type = checker->GetTypeReferenceType(this, var);
 
-    if (decl->IsTypeParameterDecl()) {
-        ASSERT(var->TsType() && var->TsType()->IsTypeParameter());
-        return checker->Allocator()->New<checker::TypeReference>(var->TsType()->AsTypeParameter()->DefaultTypeRef());
-    }
-
-    if (!var->TsType()) {
-        checker::Type *bindingType = nullptr;
-
-        if (var->HasFlag(binder::VariableFlags::TYPE_ALIAS)) {
-            if (!checker->TypeStack().insert(decl->Node()).second) {
-                checker->ThrowTypeError({"Type alias '", refIdent->Name(), "' circularly references itself"},
-                                        decl->Node()->Start());
-            }
-
-            bindingType = decl->Node()->AsTSTypeAliasDeclaration()->InferType(checker, var);
-            checker->TypeStack().erase(decl->Node());
-        } else if (var->HasFlag(binder::VariableFlags::INTERFACE)) {
-            bindingType = decl->Node()->AsTSInterfaceDeclaration()->InferType(checker, var);
-        } else if (var->HasFlag(binder::VariableFlags::ENUM_LITERAL)) {
-            bindingType =
-                decl->Node()->AsTSEnumDeclaration()->InferType(checker, decl->Node()->AsTSEnumDeclaration()->IsConst());
-        } else {
-            // TODO(aszilagyi)
-            bindingType = checker->GlobalAnyType();
-        }
-
-        bindingType->SetVariable(var);
-        var->SetTsType(bindingType);
-    }
-
-    if (var->HasFlag(binder::VariableFlags::INTERFACE)) {
-        for (const auto *it : decl->AsInterfaceDecl()->Decls()) {
-            if (!it->TypeParams()) {
-                continue;
-            }
-
-            return checker->InstantiateGenericInterface(var, decl, typeParams, refIdent->Start());
-        }
-    }
-
-    if (var->HasFlag(binder::VariableFlags::TYPE_ALIAS) && decl->Node()->AsTSTypeAliasDeclaration()->TypeParams()) {
-        return checker->InstantiateGenericTypeAlias(var, decl->Node()->AsTSTypeAliasDeclaration()->TypeParams(),
-                                                    typeParams, refIdent->Start());
-    }
-
-    return var->TsType();
+    checker->NodeCache().insert({this, type});
+    return type;
 }
 
 }  // namespace panda::es2panda::ir

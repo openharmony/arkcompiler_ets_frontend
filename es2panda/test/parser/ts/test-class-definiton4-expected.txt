@@ -1,1 +1,1 @@
-SyntaxError: Expected '(' [test-class-definiton4.ts:2:7]
+SyntaxError: Expected '(' [test-class-definiton4.ts:18:7]

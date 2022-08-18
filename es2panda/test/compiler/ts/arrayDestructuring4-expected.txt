@@ -15,11 +15,11 @@
                 "decorators": [],
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 6
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 7
                   }
                 }
@@ -32,11 +32,11 @@
                   "type": "TSNumberKeyword",
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 11
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 18
                     }
                   }
@@ -45,11 +45,11 @@
                   "type": "TSStringKeyword",
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 17,
                       "column": 19
                     },
                     "end": {
-                      "line": 1,
+                      "line": 17,
                       "column": 26
                     }
                   }
@@ -57,22 +57,22 @@
               ],
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 17,
                   "column": 10
                 },
                 "end": {
-                  "line": 1,
+                  "line": 17,
                   "column": 26
                 }
               }
             },
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 8
               }
             }
@@ -85,11 +85,11 @@
                 "value": 1,
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 17,
                     "column": 30
                   },
                   "end": {
-                    "line": 1,
+                    "line": 17,
                     "column": 31
                   }
                 }
@@ -97,22 +97,22 @@
             ],
             "loc": {
               "start": {
-                "line": 1,
+                "line": 17,
                 "column": 29
               },
               "end": {
-                "line": 1,
+                "line": 17,
                 "column": 32
               }
             }
           },
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 5
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 32
             }
           }
@@ -121,11 +121,11 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 1,
+          "line": 17,
           "column": 33
         }
       }
@@ -137,9 +137,9 @@
       "column": 1
     },
     "end": {
-      "line": 1,
+      "line": 17,
       "column": 33
     }
   }
 }
-TypeError: Type '[number]' is not assignable to type '[number, string]'. [arrayDestructuring4.ts:1:5]
+TypeError: Type '[1]' is not assignable to type '[number, string]'. [arrayDestructuring4.ts:17:5]

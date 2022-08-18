@@ -21,13 +21,6 @@
 
 namespace panda::es2panda::checker {
 
-NumberLiteralType::NumberLiteralType(double value) : Type(TypeFlag::NUMBER_LITERAL), value_(value) {}
-
-double NumberLiteralType::Value() const
-{
-    return value_;
-}
-
 void NumberLiteralType::ToString(std::stringstream &ss) const
 {
     ss << util::Helpers::ToString(value_);
@@ -38,14 +31,14 @@ void NumberLiteralType::ToStringAsSrc(std::stringstream &ss) const
     ss << "number";
 }
 
-void NumberLiteralType::Identical(TypeRelation *relation, const Type *other) const
+void NumberLiteralType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsNumberLiteralType()) {
         relation->Result(value_ == other->AsNumberLiteralType()->Value());
     }
 }
 
-void NumberLiteralType::AssignmentTarget(TypeRelation *relation, const Type *source) const
+void NumberLiteralType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (source->IsEnumType()) {
         const EnumType *sourceEnumType = source->AsEnumType();
