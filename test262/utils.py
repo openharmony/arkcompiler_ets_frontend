@@ -168,7 +168,7 @@ def search_dependency(file, directory):
 def collect_module_dependencies(file, directory, traversedDependencies):
     dependencies = []
     traversedDependencies.append(file)
-    with open(file, 'r') as f:
+    with open(file, 'r', encoding='utf-8') as f:
         content = f.read()
         result_arr = re.findall(r'(import|from)(?:\s*)(\'(\.\/.*)\'|"(\.\/.*)")', content)
         for result in result_arr:
