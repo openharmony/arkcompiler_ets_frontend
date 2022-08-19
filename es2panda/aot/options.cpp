@@ -69,6 +69,8 @@ bool Options::Parse(int argc, const char **argv)
                                                     "evaluate expression in debugger mode");
     panda::PandArg<std::string> base64Input("base64Input", "", "base64 input of js content");
     panda::PandArg<bool> base64Output("base64Output", false, "output panda file content as base64 to std out");
+    panda::PandArg<std::string> sourceFile("source-file", "",
+                                           "specify the file path info recorded in generated abc");
 
     // tail arguments
     panda::PandArg<std::string> inputFile("input", "", "input file");
@@ -92,6 +94,7 @@ bool Options::Parse(int argc, const char **argv)
 
     argparser_->Add(&inputExtension);
     argparser_->Add(&outputFile);
+    argparser_->Add(&sourceFile);
 
     argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
@@ -206,6 +209,7 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.parseOnly = opParseOnly.GetValue();
     compilerOptions_.dumpLiteralBuffer = opDumpLiteralBuffer.GetValue();
     compilerOptions_.isDebuggerEvaluateExpressionMode = debuggerEvaluateExpression.GetValue();
+    compilerOptions_.sourceFile = sourceFile.GetValue();
 
     return true;
 }

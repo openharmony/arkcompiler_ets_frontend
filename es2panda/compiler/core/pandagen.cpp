@@ -62,6 +62,11 @@ bool PandaGen::isDebuggerEvaluateExpressionMode() const
     return context_->isDebuggerEvaluateExpressionMode();
 }
 
+std::string PandaGen::SourceFile() const
+{
+    return context_->SourceFile();
+}
+
 uint32_t PandaGen::ParamCount() const
 {
     if (rootNode_->IsProgram()) {

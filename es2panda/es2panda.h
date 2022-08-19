@@ -59,6 +59,7 @@ struct CompilerOptions {
     bool parseOnly {false};
     bool dumpLiteralBuffer {false};
     bool isDebuggerEvaluateExpressionMode {false};
+    std::string sourceFile {};
 };
 
 enum class ErrorType {

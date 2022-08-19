@@ -19,9 +19,10 @@
 
 namespace panda::es2panda::compiler {
 
-CompilerContext::CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode)
+CompilerContext::CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
+                                 std::string sourceFile)
     : binder_(binder), emitter_(std::make_unique<class Emitter>(this)), isDebug_(isDebug),
-      isDebuggerEvaluateExpressionMode_(isDebuggerEvaluateExpressionMode)
+      isDebuggerEvaluateExpressionMode_(isDebuggerEvaluateExpressionMode), sourceFile_(sourceFile)
 {
 }
 
