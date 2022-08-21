@@ -43,7 +43,8 @@ const ts2pandaOptions = [
     { name: 'record-type', alias: 'p', type: Boolean, defaultValue: false, description: "Record type info. Default: true" },
     { name: 'dts-type-record', alias: 'q', type: Boolean, defaultValue: false, description: "Record type info for .d.ts files. Default: false" },
     { name: 'debug-type', alias: 'g', type: Boolean, defaultValue: false, description: "Print type-related log. Default: false" },
-    { name: 'output-type', type: Boolean, defaultValue: false, description: "set output type."}
+    { name: 'output-type', type: Boolean, defaultValue: false, description: "set output type."},
+    { name: 'source-file', type: String, defaultValue: "", description: "specify the file path info recorded in generated abc" },
 ]
 
 
@@ -247,6 +248,10 @@ export class CmdOptions {
             return false;
         }
         return this.options["debug-type"];
+    }
+
+    static  getSourceFile(): string {
+        return this.options["source-file"];
     }
 
     // @ts-ignore
