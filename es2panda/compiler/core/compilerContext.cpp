@@ -19,8 +19,8 @@
 
 namespace panda::es2panda::compiler {
 
-CompilerContext::CompilerContext(binder::Binder *binder, bool isDebug)
-    : binder_(binder), emitter_(std::make_unique<class Emitter>(this)), isDebug_(isDebug)
+CompilerContext::CompilerContext(binder::Binder *binder, bool isDebug, std::string sourceFile)
+    : binder_(binder), emitter_(std::make_unique<class Emitter>(this)), isDebug_(isDebug), sourceFile_(sourceFile)
 {
 }
 

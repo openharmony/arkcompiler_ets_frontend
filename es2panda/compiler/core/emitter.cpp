@@ -281,7 +281,11 @@ void FunctionEmitter::GenLiteralBuffers()
 
 void FunctionEmitter::GenSourceFileDebugInfo()
 {
-    func_->source_file = std::string {pg_->Binder()->Program()->SourceFile()};
+    if (pg_->SourceFile().size() > 0) {
+        func_->source_file = pg_->SourceFile();
+    } else {
+        func_->source_file = std::string {pg_->Binder()->Program()->SourceFile()};
+    }
 
     if (!pg_->IsDebug()) {
         return;

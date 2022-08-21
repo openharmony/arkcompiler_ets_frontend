@@ -62,6 +62,8 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<int> opThreadCount("thread", 0, "Number of worker theads");
     panda::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
     panda::PandArg<std::string> outputFile("output", "", "Compiler binary output (.abc)");
+    panda::PandArg<std::string> sourceFile("source-file", "",
+                                           "specify the file path info recorded in generated abc");
 
     // tail arguments
     panda::PandArg<std::string> inputFile("input", "", "input file");
@@ -80,6 +82,7 @@ bool Options::Parse(int argc, const char **argv)
 
     argparser_->Add(&inputExtension);
     argparser_->Add(&outputFile);
+    argparser_->Add(&sourceFile);
 
     argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
@@ -156,6 +159,7 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.dumpDebugInfo = opDumpDebugInfo.GetValue();
     compilerOptions_.isDebug = opDebugInfo.GetValue();
     compilerOptions_.parseOnly = opParseOnly.GetValue();
+    compilerOptions_.sourceFile = sourceFile.GetValue();
 
     return true;
 }

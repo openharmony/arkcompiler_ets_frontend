@@ -46,7 +46,8 @@ const ts2pandaOptions = [
     { name: 'debug-type', alias: 'g', type: Boolean, defaultValue: false, description: "Print type-related log. Default: false" },
     { name: 'output-type', type: Boolean, defaultValue: false, description: "set output type."},
     { name: 'enable-typeinfo', type: Boolean, defaultValue: false, description: "Enable typeinfo of pairs of instruction orders and types" },
-    { name: 'display-typeinfo', type: Boolean, defaultValue: false, description: "Display typeinfo of pairs of instruction orders and types when enable-typeinfo is true" }
+    { name: 'display-typeinfo', type: Boolean, defaultValue: false, description: "Display typeinfo of pairs of instruction orders and types when enable-typeinfo is true" },
+    { name: 'source-file', type: String, defaultValue: "", description: "specify the file path info recorded in generated abc" },
 ]
 
 
@@ -269,6 +270,10 @@ export class CmdOptions {
             return false;
         }
         return this.options["debug-type"];
+    }
+
+    static getSourceFile(): string {
+        return this.options["source-file"];
     }
 
     // @ts-ignore
