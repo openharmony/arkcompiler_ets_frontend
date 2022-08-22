@@ -723,8 +723,8 @@ def main():
         runner = RegressionRunner(args)
         runner.add_directory("parser/js", "js", ["--parse-only"])
         runner.add_directory("parser/ts", "ts",
-                             ["--parse-only", "--module", '--extension=ts'])
-        runner.add_directory("compiler/ts", "ts",
+                             ["--parse-only", "--module", "--extension=ts"])
+        runner.add_directory("parser/ts/type_checker", "ts",
                              ["--parse-only", "--enable-type-check", "--module", "--extension=ts"])
 
         runners.append(runner)
