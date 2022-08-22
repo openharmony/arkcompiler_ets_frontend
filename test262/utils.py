@@ -159,11 +159,13 @@ def npm_install(cwd):
     ret = run_cmd_cwd(cmd, cwd)
     assert not ret, f"\n error: Failed to 'npm install'"
 
+
 def search_dependency(file, directory):
     for root, dirs, files in os.walk(directory, topdown=True):
         for f in files:
             if f == file:
                 return os.path.join(root, f)
+
 
 def collect_module_dependencies(file, directory, traversedDependencies):
     dependencies = []

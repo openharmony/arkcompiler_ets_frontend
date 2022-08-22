@@ -20,9 +20,7 @@
 #include "assembler/assembly-function.h"
 
 namespace ts2abc_type_adapter {
-
 const int builtinTypeOffset = 21;
-
 const std::vector<std::string> builtinTypes {
     "Function",
     "RangeError",
