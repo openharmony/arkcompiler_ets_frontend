@@ -60,6 +60,7 @@ struct CompilerOptions {
     bool enableTypeCheck {false};
     bool dumpLiteralBuffer {false};
     bool isDebuggerEvaluateExpressionMode {false};
+    std::string sourceFile {};
 };
 
 enum class ErrorType {
