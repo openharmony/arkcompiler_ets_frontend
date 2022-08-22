@@ -27,11 +27,11 @@ import argparse
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--src-js',
-                        help = 'js source file')
+                        help='js source file')
     parser.add_argument('--dst-file',
-                        help = 'the converted target file')
+                        help='the converted target file')
     parser.add_argument('--frontend-tool-path',
-                        help = 'path of the frontend conversion tool')
+                        help='path of the frontend conversion tool')
     parser.add_argument("--debug", action='store_true',
                         help='whether add debuginfo')
     parser.add_argument("--module", action='store_true',
