@@ -713,7 +713,27 @@ export class Compiler {
                 // restore pandaGen.tryStatement
                 TryStatement.setCurrentTryStatement(saveTry);
 
-                updateCatchTables(originTry, startTry, inlinedLabelPair);
+                /*
+                 * split the catchZone in most Inner try & add the insertedZone by the finally-nearset TryZone.
+                 * the inserted innerTry's FinallyBlock can only be catched by the outer's tryBlock. so here just
+                 * need append the inserted finally's Zone into the outerTry's catchTable in order.
+                 * OuterTryBegin      ----
+                 *           <outerTry_0> |
+                 *     InnerTryBegin  ----
+                 *
+                 *          ----    InnerTry's FinallyBegin --
+                 * <outerTry_2> |                             |
+                 *          ----    InnerTry's FinallyEnd   --
+                 *                  return;
+                 *     InnerTryEnd    ----
+                 *           <outerTry_1> |
+                 * OuterTryEnd        ----
+                 */
+                originTry.getCatchTable().splitLabelPair(inlinedLabelPair);
+                if (startTry.getOuterTryStatement()) {
+                    let outerLabelPairs: LabelPair[] = startTry.getOuterTryStatement().getCatchTable().getLabelPairs();
+                    outerLabelPairs.splice(outerLabelPairs.length - 2, 0, inlinedLabelPair);
+                }
             }
         }
         this.scope = currentScope;
@@ -941,8 +961,8 @@ export class Compiler {
                 this.compileExpression(findInnerExprOfParenthesis(<ts.ParenthesizedExpression>expr));
                 break;
             case ts.SyntaxKind.CommaListExpression:
-	        compileCommaListExpression(this, <ts.CommaListExpression>expr);
-		break;
+                compileCommaListExpression(this, <ts.CommaListExpression>expr);
+                break;
             default:
                 throw new Error("Expression of type " + this.getNodeName(expr) + " is unimplemented");
         }
