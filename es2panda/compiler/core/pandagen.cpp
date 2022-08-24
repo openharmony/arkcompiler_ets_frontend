@@ -53,6 +53,11 @@ bool PandaGen::IsDebug() const
     return context_->IsDebug();
 }
 
+std::string PandaGen::SourceFile() const
+{
+    return context_->SourceFile();
+}
+
 uint32_t PandaGen::ParamCount() const
 {
     if (rootNode_->IsProgram()) {
