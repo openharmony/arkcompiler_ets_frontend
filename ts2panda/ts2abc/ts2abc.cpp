@@ -782,7 +782,6 @@ static panda::pandasm::Function ParseFunction(const Json::Value &function)
         pandaFunc.metadata->SetAttribute("external");
     }
 
-
     return pandaFunc;
 }
 
