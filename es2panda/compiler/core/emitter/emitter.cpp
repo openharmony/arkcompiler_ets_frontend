@@ -341,7 +341,8 @@ Emitter::Emitter(const CompilerContext *context)
     prog_->function_table.reserve(context->Binder()->Functions().size());
 
     if (context->IsMergeAbc()) {
-        rec_ = new panda::pandasm::Record(context->Binder()->Program()->RecordName().Mutf8(), LANG_EXT);
+        auto recordName = context->Binder()->Program()->RecordName().Mutf8();
+        rec_ = new panda::pandasm::Record(recordName.substr(0, recordName.find_last_of('.')), LANG_EXT);
         SetCommonjsField(context->Binder()->Program()->Kind() == parser::ScriptKind::COMMONJS);
     } else {
         rec_ = nullptr;

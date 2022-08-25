@@ -93,8 +93,8 @@ if (!defined(ark_independent_build)) {
     ]
 
     deps = [
-      sdk_libc_secshared_dep,
       "//arkcompiler/ets_frontend/merge_abc:panda_assembly_proto_static",
+      sdk_libc_secshared_dep,
     ]
 
     if (is_linux || is_mingw || is_mac) {

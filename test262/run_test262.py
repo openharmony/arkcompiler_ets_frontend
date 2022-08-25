@@ -98,6 +98,10 @@ def parse_args():
     parser.add_argument('--es2abc-thread-count',
                         default=DEFAULT_ES2ABC_THREAD_COUNT,
                         help="the thread count for es2abc")
+    parser.add_argument('--merge-abc-binary',
+                        help="frontend merge abc binary tool")
+    parser.add_argument('--merge-abc-mode',
+                        help="run test for merge abc mode")
     return parser.parse_args()
 
 
@@ -482,6 +486,8 @@ def get_host_args(args, host_type):
     ark_arch = DEFAULT_ARK_ARCH
     opt_level = DEFAULT_OPT_LEVEL
     es2abc_thread_count = DEFAULT_ES2ABC_THREAD_COUNT
+    merge_abc_binary = DEFAULT_MERGE_ABC_BINARY
+    merge_abc_mode = DEFAULT_MERGE_ABC_MODE
 
     if args.hostArgs:
         host_args = args.hostArgs
@@ -507,6 +513,12 @@ def get_host_args(args, host_type):
     if args.es2abc_thread_count:
         es2abc_thread_count = args.es2abc_thread_count
 
+    if args.merge_abc_binary:
+        merge_abc_binary = args.merge_abc_binary
+
+    if args.merge_abc_mode:
+        merge_abc_mode = args.merge_abc_mode
+
     if host_type == DEFAULT_HOST_TYPE:
         host_args = f"-B test262/run_sunspider.py "
         host_args += f"--ark-tool={ark_tool} "
@@ -518,6 +530,8 @@ def get_host_args(args, host_type):
         host_args += f"--ark-frontend-binary={ark_frontend_binary} "
         host_args += f"--opt-level={opt_level} "
         host_args += f"--es2abc-thread-count={es2abc_thread_count} "
+        host_args += f"--merge-abc-binary={merge_abc_binary} "
+        host_args += f"--merge-abc-mode={merge_abc_mode} "
 
     if args.ark_arch != ark_arch:
         host_args += f"--ark-arch={args.ark_arch} "

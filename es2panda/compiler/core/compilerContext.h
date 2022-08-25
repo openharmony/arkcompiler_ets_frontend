@@ -87,13 +87,13 @@ public:
 
 private:
     binder::Binder *binder_;
-    std::unique_ptr<Emitter> emitter_;
     int32_t literalBufferIdx_ {0};
     std::mutex m_;
     bool isDebug_;
     bool isDebuggerEvaluateExpressionMode_;
     bool isMergeAbc_;
     std::string sourceFile_;
+    std::unique_ptr<Emitter> emitter_;
 };
 
 }  // namespace panda::es2panda::compiler
