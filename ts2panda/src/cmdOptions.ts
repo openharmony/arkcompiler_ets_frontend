@@ -48,7 +48,8 @@ const ts2pandaOptions = [
     { name: 'output-type', type: Boolean, defaultValue: false, description: "set output type."},
     { name: 'display-typeinfo', type: Boolean, defaultValue: false, description: "Display typeinfo of pairs of instruction orders and types when enable-typeinfo is true" },
     { name: 'function-sourcecode', type: Boolean, defaultValue: false, description: "Record functions' sourceCode to support the feature of [function].toString()" },
-    { name: 'expression-watch-toolchain', type: String, defaultValue: "es2panda", description: "Specify the tool chain used to transform the expression" }
+    { name: 'expression-watch-toolchain', type: String, defaultValue: "es2panda", description: "Specify the tool chain used to transform the expression" },
+    { name: 'source-file', type: String, defaultValue: "", description: "specify the file path info recorded in generated abc" },
 ]
 
 
@@ -300,6 +301,10 @@ export class CmdOptions {
             return false;
         }
         return this.options["function-sourcecode"];
+    }
+
+    static getSourceFile(): string {
+        return this.options["source-file"];
     }
 
     // @ts-ignore
