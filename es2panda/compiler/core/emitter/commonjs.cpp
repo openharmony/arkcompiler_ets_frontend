@@ -20,7 +20,7 @@
 namespace panda::es2panda::compiler {
 constexpr const auto LANG_EXT = panda::pandasm::extensions::Language::ECMASCRIPT;
 
-void Emitter::GenCommonjsRecord()
+void Emitter::GenCommonjsRecord() const
 {
     auto commonjsRecord = panda::pandasm::Record("_CommonJsRecord", LANG_EXT);
     commonjsRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);

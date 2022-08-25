@@ -16,7 +16,6 @@
 #include "base64.h"
 
 namespace panda::es2panda::util {
-
 std::string Base64Encode(const std::string &inputString)
 {
     size_t strLen = inputString.length();
@@ -37,8 +36,7 @@ std::string Base64Encode(const std::string &inputString)
         // 00 + the last 6 bits of the third char
         encodedRes[i + 3] = base64CharSet[inputString[j + 2] & 0x3f];
     }
-    switch (strLen % TO_TRANSFORM_CHAR_NUM)
-    {
+    switch (strLen % TO_TRANSFORM_CHAR_NUM) {
         case 1:
             encodedRes[encodedRes.length() - 2] = '=';
             encodedRes[encodedRes.length() - 1] = '=';
@@ -91,7 +89,7 @@ std::string Base64Decode(const std::string &base64String)
         }
         // the last 6 bit of the first char + the 2~3 bit of the second char(first 4 bit - 00)
         decodedRes[j] = (firstChar << 2) | (secondChar >> 4);
-        if (j == decodedStrLen-1) {
+        if (j == decodedStrLen - 1) {
             break;
         }
         if (thirdChar == -1) {
@@ -99,7 +97,7 @@ std::string Base64Decode(const std::string &base64String)
         }
         // the last 4 bit of the second char +  the 2~5 bit of the third char(first 6 bit - 00)
         decodedRes[j + 1] = (secondChar << 4) | (thirdChar >> 2);
-        if (j + 1 == decodedStrLen-1) {
+        if (j + 1 == decodedStrLen - 1) {
             break;
         }
         if (fourthChar == -1) {
@@ -110,5 +108,4 @@ std::string Base64Decode(const std::string &base64String)
     }
     return decodedRes;
 }
-
 }  // namespace panda::es2panda::util
