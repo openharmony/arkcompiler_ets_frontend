@@ -174,7 +174,9 @@ export class VariableAcessStore extends VariableAccessBase {
 
         // save the value first
         let valueReg: VReg = pandaGen.getTemp();
-        insns.push(storeAccumulator(valueReg));
+        let storeAccInst: IRNode = storeAccumulator(valueReg);
+        pandaGen.setInstType(storeAccInst, v.getTypeIndex());
+        insns.push(storeAccInst);
 
         let slot = v.idxLex;
         if (v.isLetOrConst() || v.isClass()) {
