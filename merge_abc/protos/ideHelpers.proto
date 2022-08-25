@@ -14,7 +14,7 @@
  */
 
 syntax = "proto3";
-package proto_panda;
+package protoPanda;
 
 message SourcePosition {
     uint64 line = 1;

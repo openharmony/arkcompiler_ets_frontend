@@ -13,18 +13,22 @@
  * limitations under the License.
  */
 
-#ifndef MERGE_ABC_ASSEMBLY_INS_H
-#define MERGE_ABC_ASSEMBLY_INS_H
+#ifndef MERGE_ABC_BUILD_COMPOSITE_PROGRAM_H
+#define MERGE_ABC_BUILD_COMPOSITE_PROGRAM_H
 
-#include "assembly-program.h"
-#include "assemblyDebugProto.h"
-#include "assemblyIns.pb.h"
+#include "compositeHelpers.h"
+#include "compositeProgram.pb.h"
+#include "assemblyProgramProto.h"
 
 namespace panda::proto {
-class Ins {
+class CompositeProgram {
 public:
-    static void Serialize(const panda::pandasm::Ins &insn, protoPanda::Ins &protoInsn);
-    static void Deserialize(const protoPanda::Ins &protoInsn, panda::pandasm::Ins &insn);
+    static void Serialize(const panda::es2panda::util::CompositeProgram &compositeProgram,
+                          protoPanda::CompositeProgram &protoCompositeProgram);
+    static void Deserialize(const protoPanda::CompositeProgram &protoCompositeProgram,
+                            panda::es2panda::util::CompositeProgramMap &compositeProgramMap,
+                            panda::ArenaAllocator *allocator);
 };
 } // panda::proto
+
 #endif

@@ -32,6 +32,7 @@ protobuf_snapshot_generator_sources = [
   "src/assemblyProgramProto.cpp",
   "src/assemblyRecordProto.cpp",
   "src/assemblyTypeProto.cpp",
+  "src/compositeProgramProto.cpp",
   "src/ideHelpersProto.cpp",
   "src/mergeProgram.cpp",
   "src/metaProto.cpp",
@@ -49,6 +50,7 @@ config("panda_assembly_proto_public_config") {
     "//third_party/protobuf/src",
     "//third_party/protobuf/src/google",
     "//third_party/protobuf/src/google/protobuf",
+    "//arkcompiler/ets_frontend/es2panda/util",
   ]
 }
 
@@ -74,6 +76,7 @@ proto_file_defines = [
   "assemblyProgram",
   "assemblyRecord",
   "assemblyType",
+  "compositeProgram",
   "ideHelpers",
   "meta",
 ]

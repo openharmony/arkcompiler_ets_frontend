@@ -16,19 +16,19 @@
 #include "assemblyFileLocationProto.h"
 
 namespace panda::proto {
-void FileLocation::Serialize(const panda::pandasm::FileLocation &location, proto_panda::FileLocation &protoLocation)
+void FileLocation::Serialize(const panda::pandasm::FileLocation &location, protoPanda::FileLocation &protoLocation)
 {
-    protoLocation.set_whole_line(location.whole_line);
-    protoLocation.set_bound_left(location.bound_left);
-    protoLocation.set_bound_right(location.bound_right);
-    protoLocation.set_is_defined(location.is_defined);
+    protoLocation.set_wholeline(location.whole_line);
+    protoLocation.set_boundleft(location.bound_left);
+    protoLocation.set_boundright(location.bound_right);
+    protoLocation.set_isdefined(location.is_defined);
 }
 
-void FileLocation::Deserialize(const proto_panda::FileLocation &protoLocation, panda::pandasm::FileLocation &location)
+void FileLocation::Deserialize(const protoPanda::FileLocation &protoLocation, panda::pandasm::FileLocation &location)
 {
-    location.whole_line = protoLocation.whole_line();
-    location.bound_left = protoLocation.bound_left();
-    location.bound_right = protoLocation.bound_right();
-    location.is_defined = protoLocation.is_defined();
+    location.whole_line = protoLocation.wholeline();
+    location.bound_left = protoLocation.boundleft();
+    location.bound_right = protoLocation.boundright();
+    location.is_defined = protoLocation.isdefined();
 }
 } // panda::proto

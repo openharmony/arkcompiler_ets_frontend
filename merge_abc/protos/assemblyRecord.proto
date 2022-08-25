@@ -14,7 +14,7 @@
  */
 
 syntax = "proto3";
-package proto_panda;
+package protoPanda;
 
 import "assemblyField.proto";
 import "assemblyFileLocation.proto";
@@ -26,10 +26,10 @@ message Record {
     bool conflict = 2;
     uint32 language = 3;
     RecordMetadata metadata = 4;
-    repeated Field field_list = 5;
-    uint64 params_num = 6;
-    bool body_presence = 7;
-    SourceLocation body_location = 8;
-    bytes source_file = 9;
-    optional FileLocation file_location = 10;
+    repeated Field fieldList = 5;
+    uint64 paramsNum = 6;
+    bool bodyPresence = 7;
+    SourceLocation bodyLocation = 8;
+    bytes sourceFile = 9;
+    optional FileLocation fileLocation = 10;
 }

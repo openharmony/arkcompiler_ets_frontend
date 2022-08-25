@@ -23,15 +23,15 @@ namespace panda::proto {
 class SourceLocation {
 public:
     static void Serialize(const panda::pandasm::SourceLocation &location,
-                          proto_panda::SourceLocation &protoLocation);
-    static void Deserialize(const proto_panda::SourceLocation &protoLocation, panda::pandasm::SourceLocation &location);
+                          protoPanda::SourceLocation &protoLocation);
+    static void Deserialize(const protoPanda::SourceLocation &protoLocation, panda::pandasm::SourceLocation &location);
 };
 
 class SourcePosition {
 public:
     static void Serialize(const panda::pandasm::SourcePosition &position,
-                          proto_panda::SourcePosition &protoPosition);
-    static void Deserialize(const proto_panda::SourcePosition &protoPosition, panda::pandasm::SourcePosition &position);
+                          protoPanda::SourcePosition &protoPosition);
+    static void Deserialize(const protoPanda::SourcePosition &protoPosition, panda::pandasm::SourcePosition &position);
 };
 } // panda::proto
 #endif

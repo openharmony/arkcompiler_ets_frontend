@@ -14,7 +14,7 @@
  */
 
 syntax = "proto3";
-package proto_panda;
+package protoPanda;
 
 import "assemblyIns.proto";
 import "assemblyLabel.proto";
@@ -25,12 +25,12 @@ import "ideHelpers.proto";
 import "meta.proto";
 
 message CatchBlock {
-    bytes whole_line = 1;
-    bytes exception_record = 2;
-    bytes try_begin_label = 3;
-    bytes try_end_label = 4;
-    bytes catch_begin_label = 5;
-    bytes catch_end_label = 6;
+    bytes wholeLine = 1;
+    bytes exceptionRecord = 2;
+    bytes tryBeginLabel = 3;
+    bytes tryEndLabel = 4;
+    bytes catchBeginLabel = 5;
+    bytes catchEndLabel = 6;
 }
 
 message TryCatchInfo {
@@ -40,11 +40,11 @@ message TryCatchInfo {
     }
     message TryCatchMap {
         bytes key = 1;
-        repeated CatchBlock catch_blocks = 2;
+        repeated CatchBlock catchBlocks = 2;
     }
-    repeated TryCatchLabel try_catch_labels = 1;
-    repeated TryCatchMap try_catch_map = 2;
-    repeated bytes try_catch_order = 3;
+    repeated TryCatchLabel tryCatchLabels = 1;
+    repeated TryCatchMap tryCatchMap = 2;
+    repeated bytes tryCatchOrder = 3;
 }
 
 message Parameter {
@@ -61,18 +61,18 @@ message Function {
     bytes name = 1;
     uint32 language = 2;
     FunctionMetadata metadata = 3;
-    repeated LabelTable label_table = 4;
+    repeated LabelTable labelTable = 4;
     repeated Ins ins = 5;
-    repeated LocalVariable local_variable_debug = 6;
-    bytes source_file = 7;
-    bytes source_code = 8;
-    repeated CatchBlock catch_blocks = 9;
-    int64 value_of_first_param = 10;
-    uint64 regs_num = 11;
+    repeated LocalVariable localVariableDebug = 6;
+    bytes sourceFile = 7;
+    bytes sourceCode = 8;
+    repeated CatchBlock catchBlocks = 9;
+    int64 valueOfFirstParam = 10;
+    uint64 regsNum = 11;
     repeated Parameter params = 12;
-    bool body_presence = 13;
-    Type return_type = 14;
-    SourceLocation body_location = 15;
-    optional FileLocation file_location = 16;
+    bool bodyPresence = 13;
+    Type returnType = 14;
+    SourceLocation bodyLocation = 15;
+    optional FileLocation fileLocation = 16;
 }
 

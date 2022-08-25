@@ -13,12 +13,26 @@
  * limitations under the License.
  */
 
-syntax = "proto3";
-package protoPanda;
+#ifndef ES2PANDA_UTIL_COMPOSITE_HELPERS_H
+#define ES2PANDA_UTIL_COMPOSITE_HELPERS_H
 
-import "assemblyFileLocation.proto";
+#include <assembly-program.h>
 
-message Label {
-    bytes name = 1;
-    optional FileLocation fileLocation = 2;
-}
+namespace panda::es2panda::util {
+
+struct HashProgram {
+    uint32_t hashCode;
+    panda::pandasm::Program* program;
+
+    HashProgram(uint32_t hashCode, panda::pandasm::Program* program) : hashCode(hashCode), program(program)
+    {
+    }
+};
+
+struct CompositeProgramMap {
+    std::unordered_map<std::string, HashProgram*> compositeProgramInfo;
+};
+
+} //panda::es2panda::util
+
+#endif

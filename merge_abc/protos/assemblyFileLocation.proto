@@ -14,12 +14,12 @@
  */
 
 syntax = "proto3";
-package proto_panda;
+package protoPanda;
 
 message FileLocation {
-    bytes whole_line = 1;
-    uint64 bound_left = 2;
-    uint64 bound_right = 3;
-    uint64 line_number = 4;
-    bool is_defined = 5;
+    bytes wholeLine = 1;
+    uint64 boundLeft = 2;
+    uint64 boundRight = 3;
+    uint64 lineNumber = 4;
+    bool isDefined = 5;
 }

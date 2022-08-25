@@ -16,7 +16,7 @@
 #include "assemblyRecordProto.h"
 
 namespace panda::proto {
-void Record::Serialize(const panda::pandasm::Record &record, proto_panda::Record &protoRecord)
+void Record::Serialize(const panda::pandasm::Record &record, protoPanda::Record &protoRecord)
 {
     protoRecord.set_name(record.name);
     protoRecord.set_conflict(record.conflict);
@@ -25,36 +25,36 @@ void Record::Serialize(const panda::pandasm::Record &record, proto_panda::Record
     RecordMetadata::Serialize(*record.metadata, *proto_record_meta);
 
     for (const auto &field : record.field_list) {
-        auto *proto_field = protoRecord.add_field_list();
+        auto *proto_field = protoRecord.add_fieldlist();
         Field::Serialize(field, *proto_field);
     }
 
-    protoRecord.set_params_num(record.params_num);
-    protoRecord.set_body_presence(record.body_presence);
-    protoRecord.set_source_file(record.source_file);
+    protoRecord.set_paramsnum(record.params_num);
+    protoRecord.set_bodypresence(record.body_presence);
+    protoRecord.set_sourcefile(record.source_file);
 
     const auto &location = record.file_location;
     if (location.has_value()) {
-        auto *proto_location = protoRecord.mutable_file_location();
+        auto *proto_location = protoRecord.mutable_filelocation();
         FileLocation::Serialize(location.value(), *proto_location);
     }
 }
 
-void Record::Deserialize(const proto_panda::Record &protoRecord, panda::pandasm::Record &record,
+void Record::Deserialize(const protoPanda::Record &protoRecord, panda::pandasm::Record &record,
                         panda::ArenaAllocator *allocator)
 {
     record.conflict = protoRecord.conflict();
     RecordMetadata::Deserialize(protoRecord.metadata(), record.metadata, allocator);
-    for (const auto &protoField : protoRecord.field_list()) {
+    for (const auto &protoField : protoRecord.fieldlist()) {
         auto recordField = panda::pandasm::Field(panda::panda_file::SourceLang::ECMASCRIPT);
         Field::Deserialize(protoField, recordField, allocator);
         record.field_list.emplace_back(std::move(recordField));
     }
-    record.params_num = protoRecord.params_num();
-    record.body_presence = protoRecord.body_presence();
-    record.source_file = protoRecord.source_file();
-    if (protoRecord.has_file_location()) {
-        const auto &protoLocation = protoRecord.file_location();
+    record.params_num = protoRecord.paramsnum();
+    record.body_presence = protoRecord.bodypresence();
+    record.source_file = protoRecord.sourcefile();
+    if (protoRecord.has_filelocation()) {
+        const auto &protoLocation = protoRecord.filelocation();
         FileLocation::Deserialize(protoLocation, record.file_location.value());
     }
 }

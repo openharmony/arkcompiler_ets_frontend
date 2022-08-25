@@ -14,7 +14,7 @@
  */
 
 syntax = "proto3";
-package proto_panda;
+package protoPanda;
 
 import "annotation.proto";
 import "assemblyType.proto";
@@ -35,7 +35,7 @@ message AnnotationMetadata {
 
 message ItemMetadata {
     AnnotationMetadata father = 1;
-    uint32 access_flags = 2;
+    uint32 accessFlags = 2;
 }
 
 message RecordMetadata {
@@ -44,7 +44,7 @@ message RecordMetadata {
 
 message FieldMetadata {
     ItemMetadata father = 1;
-    Type field_type = 2;
+    Type fieldType = 2;
     optional ScalarValue value = 3;
 }
 

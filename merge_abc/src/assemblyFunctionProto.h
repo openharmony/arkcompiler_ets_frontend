@@ -30,21 +30,21 @@
 namespace panda::proto {
 class CatchBlock {
 public:
-    static void Serialize(const panda::pandasm::Function::CatchBlock &block, proto_panda::CatchBlock &protoBlock);
-    static void Deserialize(const proto_panda::CatchBlock &protoBlock, panda::pandasm::Function::CatchBlock &block);
+    static void Serialize(const panda::pandasm::Function::CatchBlock &block, protoPanda::CatchBlock &protoBlock);
+    static void Deserialize(const protoPanda::CatchBlock &protoBlock, panda::pandasm::Function::CatchBlock &block);
 };
 
 class Parameter {
 public:
-    static void Serialize(const panda::pandasm::Function::Parameter &param, proto_panda::Parameter &protoParam);
-    static void Deserialize(const proto_panda::Parameter &protoParam, panda::pandasm::Function::Parameter &param,
+    static void Serialize(const panda::pandasm::Function::Parameter &param, protoPanda::Parameter &protoParam);
+    static void Deserialize(const protoPanda::Parameter &protoParam, panda::pandasm::Function::Parameter &param,
                             panda::ArenaAllocator *allocator_);
 };
 
 class Function {
 public:
-    static void Serialize(const panda::pandasm::Function &function, proto_panda::Function &protoFunction);
-    static void Deserialize(const proto_panda::Function &protoFunction, panda::pandasm::Function &function,
+    static void Serialize(const panda::pandasm::Function &function, protoPanda::Function &protoFunction);
+    static void Deserialize(const protoPanda::Function &protoFunction, panda::pandasm::Function &function,
                             panda::ArenaAllocator *allocator_);
 };
 } // panda::proto

@@ -16,30 +16,30 @@
 #include "assemblyFieldProto.h"
 
 namespace panda::proto {
-void Field::Serialize(const panda::pandasm::Field &field, proto_panda::Field &protoField)
+void Field::Serialize(const panda::pandasm::Field &field, protoPanda::Field &protoField)
 {
     auto *protoType = protoField.mutable_type();
     Type::Serialize(field.type, *protoType);
     protoField.set_name(field.name);
     auto *protoFieldmeta = protoField.mutable_metadata();
     FieldMetadata::Serialize(*field.metadata, *protoFieldmeta);
-    protoField.set_line_of_def(field.line_of_def);
-    protoField.set_whole_line(field.whole_line);
-    protoField.set_bound_left(field.bound_left);
-    protoField.set_bound_right(field.bound_right);
-    protoField.set_is_defined(field.is_defined);
+    protoField.set_lineofdef(field.line_of_def);
+    protoField.set_wholeline(field.whole_line);
+    protoField.set_boundleft(field.bound_left);
+    protoField.set_boundright(field.bound_right);
+    protoField.set_isdefined(field.is_defined);
 }
 
-void Field::Deserialize(const proto_panda::Field &protoField, panda::pandasm::Field &field,
+void Field::Deserialize(const protoPanda::Field &protoField, panda::pandasm::Field &field,
                         panda::ArenaAllocator *allocator)
 {
     field.type = Type::Deserialize(protoField.type(), allocator);
     field.name = protoField.name();
     FieldMetadata::Deserialize(protoField.metadata(), field.metadata, allocator);
-    field.line_of_def = protoField.line_of_def();
-    field.whole_line = protoField.whole_line();
-    field.bound_left = protoField.bound_left();
-    field.bound_right = protoField.bound_right();
-    field.is_defined = protoField.is_defined();
+    field.line_of_def = protoField.lineofdef();
+    field.whole_line = protoField.wholeline();
+    field.bound_left = protoField.boundleft();
+    field.bound_right = protoField.boundright();
+    field.is_defined = protoField.isdefined();
 }
 } // panda::proto

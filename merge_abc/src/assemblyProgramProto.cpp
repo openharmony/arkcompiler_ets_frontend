@@ -16,26 +16,26 @@
 #include "assemblyProgramProto.h"
 
 namespace panda::proto {
-void Program::Serialize(const panda::pandasm::Program &program, proto_panda::Program &protoProgram)
+void Program::Serialize(const panda::pandasm::Program &program, protoPanda::Program &protoProgram)
 {
     protoProgram.set_lang(static_cast<uint32_t>(program.lang));
 
     for (const auto &[name, record] : program.record_table) {
-        auto *recordMap = protoProgram.add_record_table();
+        auto *recordMap = protoProgram.add_recordtable();
         recordMap->set_key(name);
         auto *protoRecord = recordMap->mutable_value();
         Record::Serialize(record, *protoRecord);
     }
 
     for (const auto &[name, func] : program.function_table) {
-        auto *functionMap = protoProgram.add_function_table();
+        auto *functionMap = protoProgram.add_functiontable();
         functionMap->set_key(name);
         auto *protoFunc = functionMap->mutable_value();
         Function::Serialize(func, *protoFunc);
     }
 
     for (const auto &[name, array] : program.literalarray_table) {
-        auto *literalarrayMap = protoProgram.add_literalarray_table();
+        auto *literalarrayMap = protoProgram.add_literalarraytable();
         literalarrayMap->set_key(name);
         auto *protoArray = literalarrayMap->mutable_value();
         LiteralArray::Serialize(array, *protoArray);
@@ -44,17 +44,17 @@ void Program::Serialize(const panda::pandasm::Program &program, proto_panda::Pro
         protoProgram.add_strings(str);
     }
     for (const auto &type : program.array_types) {
-        auto *protoType = protoProgram.add_array_types();
+        auto *protoType = protoProgram.add_arraytypes();
         Type::Serialize(type, *protoType);
     }
 }
 
-void Program::Deserialize(const proto_panda::Program &protoProgram, panda::pandasm::Program &program,
+void Program::Deserialize(const protoPanda::Program &protoProgram, panda::pandasm::Program &program,
                           panda::ArenaAllocator *allocator)
 {
     program.lang = static_cast<panda::panda_file::SourceLang>(protoProgram.lang());
 
-    for (const auto &recordUnit : protoProgram.record_table()) {
+    for (const auto &recordUnit : protoProgram.recordtable()) {
         auto name = recordUnit.key();
         auto protoRecord = recordUnit.value();
         auto record = panda::pandasm::Record(protoRecord.name(),
@@ -63,7 +63,7 @@ void Program::Deserialize(const proto_panda::Program &protoProgram, panda::panda
         program.record_table.insert({name, std::move(record)});
     }
 
-    for (const auto &functionUnit : protoProgram.function_table()) {
+    for (const auto &functionUnit : protoProgram.functiontable()) {
         auto name = functionUnit.key();
         auto protoFunction = functionUnit.value();
         auto function = allocator->New<panda::pandasm::Function>(protoFunction.name(),
@@ -72,7 +72,7 @@ void Program::Deserialize(const proto_panda::Program &protoProgram, panda::panda
         program.function_table.insert({name, std::move(*function)});
     }
 
-    for (const auto &literalUnit : protoProgram.literalarray_table()) {
+    for (const auto &literalUnit : protoProgram.literalarraytable()) {
         auto name = literalUnit.key();
         auto protoLiteralArray = literalUnit.value();
         panda::pandasm::LiteralArray literalArray;
@@ -84,7 +84,7 @@ void Program::Deserialize(const proto_panda::Program &protoProgram, panda::panda
         program.strings.insert(protoString);
     }
 
-    for (const auto &protoArrayType : protoProgram.array_types()) {
+    for (const auto &protoArrayType : protoProgram.arraytypes()) {
         auto arrayType = Type::Deserialize(protoArrayType, allocator);
         program.array_types.insert(std::move(arrayType));
     }

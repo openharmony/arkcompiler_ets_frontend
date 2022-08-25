@@ -16,41 +16,41 @@
 #include "assemblyDebugProto.h"
 
 namespace panda::proto {
-void DebuginfoIns::Serialize(const panda::pandasm::debuginfo::Ins &debug, proto_panda::DebuginfoIns &protoDebug)
+void DebuginfoIns::Serialize(const panda::pandasm::debuginfo::Ins &debug, protoPanda::DebuginfoIns &protoDebug)
 {
-    protoDebug.set_line_number(debug.line_number);
-    protoDebug.set_column_number(debug.column_number);
-    protoDebug.set_whole_line(debug.whole_line);
-    protoDebug.set_bound_left(debug.bound_left);
-    protoDebug.set_bound_right(debug.bound_right);
+    protoDebug.set_linenumber(debug.line_number);
+    protoDebug.set_columnnumber(debug.column_number);
+    protoDebug.set_wholeline(debug.whole_line);
+    protoDebug.set_boundleft(debug.bound_left);
+    protoDebug.set_boundright(debug.bound_right);
 }
 
-void DebuginfoIns::Deserialize(const proto_panda::DebuginfoIns &protoDebug, panda::pandasm::debuginfo::Ins &debug)
+void DebuginfoIns::Deserialize(const protoPanda::DebuginfoIns &protoDebug, panda::pandasm::debuginfo::Ins &debug)
 {
-    debug.line_number = protoDebug.line_number();
-    debug.column_number = protoDebug.column_number();
-    debug.whole_line = protoDebug.whole_line();
-    debug.bound_left = protoDebug.bound_left();
-    debug.bound_right = protoDebug.bound_right();
+    debug.line_number = protoDebug.linenumber();
+    debug.column_number = protoDebug.columnnumber();
+    debug.whole_line = protoDebug.wholeline();
+    debug.bound_left = protoDebug.boundleft();
+    debug.bound_right = protoDebug.boundright();
 }
 
 void LocalVariable::Serialize(const panda::pandasm::debuginfo::LocalVariable &debug,
-                              proto_panda::LocalVariable &protoDebug)
+                              protoPanda::LocalVariable &protoDebug)
 {
     protoDebug.set_name(debug.name);
     protoDebug.set_signature(debug.signature);
-    protoDebug.set_signature_type(debug.signature_type);
+    protoDebug.set_signaturetype(debug.signature_type);
     protoDebug.set_reg(debug.reg);
     protoDebug.set_start(debug.start);
     protoDebug.set_length(debug.length);
 }
 
-void LocalVariable::Deserialize(const proto_panda::LocalVariable &protoDebug,
+void LocalVariable::Deserialize(const protoPanda::LocalVariable &protoDebug,
                                 panda::pandasm::debuginfo::LocalVariable &debug)
 {
     debug.name = protoDebug.name();
     debug.signature = protoDebug.signature();
-    debug.signature_type = protoDebug.signature_type();
+    debug.signature_type = protoDebug.signaturetype();
     debug.reg = protoDebug.reg();
     debug.start = protoDebug.start();
     debug.length = protoDebug.length();

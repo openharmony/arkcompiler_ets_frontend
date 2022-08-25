@@ -14,15 +14,15 @@
  */
 
 syntax = "proto3";
-package proto_panda;
+package protoPanda;
 
 import "assemblyDebug.proto";
 
 message Ins {
     message IType {
         oneof type {
-            int64 value_int = 1;
-            double value_double = 2;
+            int64 valueInt = 1;
+            double valueDouble = 2;
         }
     }
 
@@ -31,6 +31,7 @@ message Ins {
     repeated bytes ids = 3;
     repeated IType imms = 4;
     bytes label = 5;
-    bool set_label = 6;
-    DebuginfoIns ins_debug = 7;
+    // duplicate name
+    bool setLabelVal = 6;
+    DebuginfoIns insDebug = 7;
 }

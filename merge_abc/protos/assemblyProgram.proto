@@ -14,7 +14,7 @@
  */
 
 syntax = "proto3";
-package proto_panda;
+package protoPanda;
 
 import "assemblyFunction.proto";
 import "assemblyRecord.proto";
@@ -39,10 +39,10 @@ message Program {
         LiteralArray value = 2;
     }
     uint32 lang = 1;
-    repeated RecordTable record_table = 2;
-    repeated FunctionTable function_table = 3;
-    repeated FunctionSynnoyms function_synonyms = 4;
-    repeated LiteralArrayTable literalarray_table = 5;
+    repeated RecordTable recordTable = 2;
+    repeated FunctionTable functionTable = 3;
+    repeated FunctionSynnoyms functionSynonyms = 4;
+    repeated LiteralArrayTable literalArrayTable = 5;
     repeated bytes strings = 6;
-    repeated Type array_types = 7;
+    repeated Type arrayTypes = 7;
 }

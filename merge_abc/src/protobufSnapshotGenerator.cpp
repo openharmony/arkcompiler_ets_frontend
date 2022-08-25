@@ -20,9 +20,9 @@
 namespace panda::proto {
 void ProtobufSnapshotGenerator::GenerateSnapshot(const panda::pandasm::Program &program, const std::string &outputName)
 {
-    proto_panda::Program protoProgram;
+    protoPanda::Program protoProgram;
 
-    panda::proto::Program::Serialize(program, protoProgram);
+    Program::Serialize(program, protoProgram);
 
     std::fstream output(outputName, std::ios::out | std::ios::trunc | std::ios::binary);
     if (!output) {
@@ -41,12 +41,46 @@ void ProtobufSnapshotGenerator::GenerateProgram(const std::string &inputName, pa
         std::cerr << "Failed to open " << inputName << std::endl;
         return;
     }
-    proto_panda::Program proto_program;
+    protoPanda::Program proto_program;
     if (!proto_program.ParseFromIstream(&input)) {
         std::cerr << "Failed to parse " << inputName << std::endl;
         return;
     }
-    Program program;
-    program.Deserialize(proto_program, prog, allocator);
+    Program::Deserialize(proto_program, prog, allocator);
 }
+
+void ProtobufSnapshotGenerator::UpdateCacheFile(panda::es2panda::util::CompositeProgramMap compositeProgramMap,
+                                                const std::string &cacheFilePath)
+{
+    protoPanda::CompositeProgram protoCompositeProgram;
+    CompositeProgram::Serialize(compositeProgram, protoCompositeProgram);
+    std::fstream output(cacheFilePath, std::ios::out | std::ios::trunc | std::ios::binary);
+    if (!output) {
+        std::cout << "Fail to create cache file: " << cacheFilePath << std::endl;
+        return;
+    }
+    protoCompositeProgram.SerializeToOstream(&output);
+    output.close();
+}
+
+panda::es2panda::util::CompositeProgramMap *ProtobufSnapshotGenerator::GetCacheContext(const std::string &cacheFilePath,
+                                                                                       panda::ArenaAllocator *allocator)
+{
+    std::fstream input(cacheFilePath, std::ios::in | std::ios::binary);
+    if (!input) {
+        std::cerr << "Failed to open cache file: " << cacheFilePath << std::endl;
+        return nullptr;
+    }
+    protoPanda::CompositeProgram protoCompositeProgram;
+    if (!protoCompositeProgram.ParseFromIstream(&input)) {
+        std::cerr << "Failed to parse cache file: " << cacheFilePath << std::endl;
+        return nullptr;
+    }
+
+    auto compositeProgramMap = allocator->New<panda::es2panda::util::CompositeProgramMap>();
+    CompositeProgram::Deserialize(protoCompositeProgram, *compositeProgramMap, allocator);
+
+    return compositeProgramMap;
+}
+
 } // panda::proto

@@ -23,20 +23,20 @@ namespace panda::proto {
 class VariantValue {
 public:
     using LiteralValueType = std::variant<bool, uint8_t, uint16_t, uint32_t, uint64_t, float, double, std::string>;
-    static void Serialize(const LiteralValueType &value, proto_panda::VariantValue &protoValue);
-    static void Deserialize(const proto_panda::VariantValue &protoValue, LiteralValueType &value);
+    static void Serialize(const LiteralValueType &value, protoPanda::VariantValue &protoValue);
+    static void Deserialize(const protoPanda::VariantValue &protoValue, LiteralValueType &value);
 };
 
 class LiteralArray {
 public:
-    static void Serialize(const panda::pandasm::LiteralArray &array, proto_panda::LiteralArray &protoArray);
-    static void Deserialize(const proto_panda::LiteralArray &protoArray, panda::pandasm::LiteralArray &array);
+    static void Serialize(const panda::pandasm::LiteralArray &array, protoPanda::LiteralArray &protoArray);
+    static void Deserialize(const protoPanda::LiteralArray &protoArray, panda::pandasm::LiteralArray &array);
 };
 
 class Literal {
 public:
-    static void Serialize(const panda::pandasm::LiteralArray::Literal &literal, proto_panda::Literal &protoLiteral);
-    static void Deserialize(const proto_panda::Literal &protoLiteral, panda::pandasm::LiteralArray::Literal &literal);
+    static void Serialize(const panda::pandasm::LiteralArray::Literal &literal, protoPanda::Literal &protoLiteral);
+    static void Deserialize(const protoPanda::Literal &protoLiteral, panda::pandasm::LiteralArray::Literal &literal);
 };
 } // panda::proto
 #endif

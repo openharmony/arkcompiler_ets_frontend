@@ -16,27 +16,27 @@
 #include "assemblyFunctionProto.h"
 
 namespace panda::proto {
-void CatchBlock::Serialize(const panda::pandasm::Function::CatchBlock &block, proto_panda::CatchBlock &protoBlock)
+void CatchBlock::Serialize(const panda::pandasm::Function::CatchBlock &block, protoPanda::CatchBlock &protoBlock)
 {
-    protoBlock.set_whole_line(block.whole_line);
-    protoBlock.set_exception_record(block.exception_record);
-    protoBlock.set_try_begin_label(block.try_begin_label);
-    protoBlock.set_try_end_label(block.try_end_label);
-    protoBlock.set_catch_begin_label(block.catch_begin_label);
-    protoBlock.set_catch_end_label(block.catch_end_label);
+    protoBlock.set_wholeline(block.whole_line);
+    protoBlock.set_exceptionrecord(block.exception_record);
+    protoBlock.set_trybeginlabel(block.try_begin_label);
+    protoBlock.set_tryendlabel(block.try_end_label);
+    protoBlock.set_catchbeginlabel(block.catch_begin_label);
+    protoBlock.set_catchendlabel(block.catch_end_label);
 }
 
-void CatchBlock::Deserialize(const proto_panda::CatchBlock &protoBlock, panda::pandasm::Function::CatchBlock &block)
+void CatchBlock::Deserialize(const protoPanda::CatchBlock &protoBlock, panda::pandasm::Function::CatchBlock &block)
 {
-    block.whole_line = protoBlock.whole_line();
-    block.exception_record = protoBlock.exception_record();
-    block.try_begin_label = protoBlock.try_begin_label();
-    block.try_end_label = protoBlock.try_end_label();
-    block.catch_begin_label = protoBlock.catch_begin_label();
-    block.catch_end_label = protoBlock.catch_end_label();
+    block.whole_line = protoBlock.wholeline();
+    block.exception_record = protoBlock.exceptionrecord();
+    block.try_begin_label = protoBlock.trybeginlabel();
+    block.try_end_label = protoBlock.tryendlabel();
+    block.catch_begin_label = protoBlock.catchbeginlabel();
+    block.catch_end_label = protoBlock.catchendlabel();
 }
 
-void Parameter::Serialize(const panda::pandasm::Function::Parameter &param, proto_panda::Parameter &protoParam)
+void Parameter::Serialize(const panda::pandasm::Function::Parameter &param, protoPanda::Parameter &protoParam)
 {
     auto *type = protoParam.mutable_type();
     Type::Serialize(param.type, *type);
@@ -44,13 +44,13 @@ void Parameter::Serialize(const panda::pandasm::Function::Parameter &param, prot
     ParamMetadata::Serialize(*(param.metadata), *metadata);
 }
 
-void Parameter::Deserialize(const proto_panda::Parameter &protoParam, panda::pandasm::Function::Parameter &param,
+void Parameter::Deserialize(const protoPanda::Parameter &protoParam, panda::pandasm::Function::Parameter &param,
                             panda::ArenaAllocator *allocator)
 {
     ParamMetadata::Deserialize(protoParam.metadata(), param.metadata, allocator);
 }
 
-void Function::Serialize(const panda::pandasm::Function &function, proto_panda::Function &protoFunction)
+void Function::Serialize(const panda::pandasm::Function &function, protoPanda::Function &protoFunction)
 {
     protoFunction.set_name(function.name);
     protoFunction.set_language(static_cast<uint32_t>(function.language));
@@ -59,7 +59,7 @@ void Function::Serialize(const panda::pandasm::Function &function, proto_panda::
     FunctionMetadata::Serialize(*function.metadata, *protoFuncMeta);
 
     for (const auto &[name, label] : function.label_table) {
-        auto *labelMap = protoFunction.add_label_table();
+        auto *labelMap = protoFunction.add_labeltable();
         labelMap->set_key(name);
         auto *protoLabel = labelMap->mutable_value();
         Label::Serialize(label, *protoLabel);
@@ -71,46 +71,46 @@ void Function::Serialize(const panda::pandasm::Function &function, proto_panda::
     }
 
     for (const auto &debug : function.local_variable_debug) {
-        auto *protoDebug = protoFunction.add_local_variable_debug();
+        auto *protoDebug = protoFunction.add_localvariabledebug();
         LocalVariable::Serialize(debug, *protoDebug);
     }
 
-    protoFunction.set_source_file(function.source_file);
-    protoFunction.set_source_code(function.source_code);
+    protoFunction.set_sourcefile(function.source_file);
+    protoFunction.set_sourcecode(function.source_code);
 
     for (const auto &block : function.catch_blocks) {
-        auto *protoBlock = protoFunction.add_catch_blocks();
+        auto *protoBlock = protoFunction.add_catchblocks();
         CatchBlock::Serialize(block, *protoBlock);
     }
 
-    protoFunction.set_value_of_first_param(function.value_of_first_param);
-    protoFunction.set_regs_num(function.regs_num);
+    protoFunction.set_valueoffirstparam(function.value_of_first_param);
+    protoFunction.set_regsnum(function.regs_num);
 
     for (const auto &param : function.params) {
         auto *protoParam = protoFunction.add_params();
         Parameter::Serialize(param, *protoParam);
     }
 
-    protoFunction.set_body_presence(function.body_presence);
+    protoFunction.set_bodypresence(function.body_presence);
 
-    auto *protoReturnType = protoFunction.mutable_return_type();
+    auto *protoReturnType = protoFunction.mutable_returntype();
     Type::Serialize(function.return_type, *protoReturnType);
 
-    auto *protoBodyLocation = protoFunction.mutable_body_location();
+    auto *protoBodyLocation = protoFunction.mutable_bodylocation();
     SourceLocation::Serialize(function.body_location, *protoBodyLocation);
 
     const auto &fileLocation = function.file_location;
     if (fileLocation.has_value()) {
-        auto *protoFileLocation = protoFunction.mutable_file_location();
+        auto *protoFileLocation = protoFunction.mutable_filelocation();
         FileLocation::Serialize(fileLocation.value(), *protoFileLocation);
     }
 }
 
-void Function::Deserialize(const proto_panda::Function &protoFunction, panda::pandasm::Function &function,
+void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pandasm::Function &function,
                            panda::ArenaAllocator *allocator)
 {
     FunctionMetadata::Deserialize(protoFunction.metadata(), function.metadata, allocator);
-    for (const auto &labelUnit : protoFunction.label_table()) {
+    for (const auto &labelUnit : protoFunction.labeltable()) {
         auto name = labelUnit.key();
         auto protoLabel = labelUnit.value();
         panda::pandasm::Label label(name);
@@ -124,23 +124,23 @@ void Function::Deserialize(const proto_panda::Function &protoFunction, panda::pa
         function.ins.emplace_back(std::move(ins));
     }
 
-    for (const auto &protoLocalVariable : protoFunction.local_variable_debug()) {
+    for (const auto &protoLocalVariable : protoFunction.localvariabledebug()) {
         panda::pandasm::debuginfo::LocalVariable localVariable;
         LocalVariable::Deserialize(protoLocalVariable, localVariable);
         function.local_variable_debug.emplace_back(std::move(localVariable));
     }
 
-    function.source_file = protoFunction.source_file();
-    function.source_file = protoFunction.source_code();
+    function.source_file = protoFunction.sourcefile();
+    function.source_code = protoFunction.sourcecode();
 
-    for (const auto &protoCatchBlock : protoFunction.catch_blocks()) {
+    for (const auto &protoCatchBlock : protoFunction.catchblocks()) {
         auto catchBlock = allocator->New<panda::pandasm::Function::CatchBlock>();
         CatchBlock::Deserialize(protoCatchBlock, *catchBlock);
         function.catch_blocks.emplace_back(std::move(*catchBlock));
     }
 
-    function.value_of_first_param = protoFunction.value_of_first_param();
-    function.regs_num = protoFunction.regs_num();
+    function.value_of_first_param = protoFunction.valueoffirstparam();
+    function.regs_num = protoFunction.regsnum();
 
     for (const auto &protoParam : protoFunction.params()) {
         auto paramType = Type::Deserialize(protoParam.type(), allocator);
@@ -149,12 +149,12 @@ void Function::Deserialize(const proto_panda::Function &protoFunction, panda::pa
         function.params.emplace_back(std::move(param));
     }
 
-    function.body_presence = protoFunction.body_presence();
-    function.return_type = Type::Deserialize(protoFunction.return_type(), allocator);
-    SourceLocation::Deserialize(protoFunction.body_location(), function.body_location);
+    function.body_presence = protoFunction.bodypresence();
+    function.return_type = Type::Deserialize(protoFunction.returntype(), allocator);
+    SourceLocation::Deserialize(protoFunction.bodylocation(), function.body_location);
 
-    if (protoFunction.has_file_location()) {
-        FileLocation::Deserialize(protoFunction.file_location(), function.file_location.value());
+    if (protoFunction.has_filelocation()) {
+        FileLocation::Deserialize(protoFunction.filelocation(), function.file_location.value());
     }
 }
 } // panda::proto

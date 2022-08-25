@@ -16,16 +16,16 @@
 #include "annotationProto.h"
 
 namespace panda::proto {
-void AnnotationData::Serialize(const panda::pandasm::AnnotationData &anno, proto_panda::AnnotationData &protoAnno)
+void AnnotationData::Serialize(const panda::pandasm::AnnotationData &anno, protoPanda::AnnotationData &protoAnno)
 {
-    protoAnno.set_record_name(anno.GetName());
+    protoAnno.set_recordname(anno.GetName());
     for (const auto &element : anno.GetElements()) {
         auto *protoElement = protoAnno.add_elements();
         AnnotationElement::Serialize(element, *protoElement);
     }
 }
 
-void AnnotationData::Deserialize(const proto_panda::AnnotationData &protoAnno, panda::pandasm::AnnotationData &anno,
+void AnnotationData::Deserialize(const protoPanda::AnnotationData &protoAnno, panda::pandasm::AnnotationData &anno,
                                  panda::ArenaAllocator *allocator)
 {
     for (const auto &protoElement : protoAnno.elements()) {
@@ -35,24 +35,24 @@ void AnnotationData::Deserialize(const proto_panda::AnnotationData &protoAnno, p
 }
 
 void AnnotationElement::Serialize(const panda::pandasm::AnnotationElement &element,
-                                  proto_panda::AnnotationElement &protoElement)
+                                  protoPanda::AnnotationElement &protoElement)
 {
     protoElement.set_name(element.GetName());
-    bool is_array = element.GetValue()->IsArray();
-    protoElement.set_is_array(is_array);
-    if (is_array) {
+    if (element.GetValue()->IsArray()) {
+        protoElement.set_valuetype(protoPanda::AnnotationElement_ValueType::AnnotationElement_ValueType_ARRAY);
         auto *protoArray = protoElement.mutable_array();
         ArrayValue::Serialize(*(element.GetValue()->GetAsArray()), *protoArray);
     } else {
+        protoElement.set_valuetype(protoPanda::AnnotationElement_ValueType::AnnotationElement_ValueType_SCALAR);
         auto *protoScalar = protoElement.mutable_scalar();
         ScalarValue::Serialize(*(element.GetValue()->GetAsScalar()), *protoScalar);
     }
 }
 
-panda::pandasm::AnnotationElement &AnnotationElement::Deserialize(const proto_panda::AnnotationElement &protoElement,
+panda::pandasm::AnnotationElement &AnnotationElement::Deserialize(const protoPanda::AnnotationElement &protoElement,
                                                                   panda::ArenaAllocator *allocator)
 {
-    if (protoElement.is_array()) {
+    if (protoElement.valuetype() == protoPanda::AnnotationElement_ValueType::AnnotationElement_ValueType_ARRAY) {
         panda::pandasm::ArrayValue array = ArrayValue::Deserialize(protoElement.array(), allocator);
         auto element = allocator->New<panda::pandasm::AnnotationElement>(protoElement.name(),
             std::make_unique<panda::pandasm::ArrayValue>(array));
@@ -64,61 +64,61 @@ panda::pandasm::AnnotationElement &AnnotationElement::Deserialize(const proto_pa
     return *element;
 }
 
-void ScalarValue::Serialize(const panda::pandasm::ScalarValue &scalar, proto_panda::ScalarValue &protoScalar)
+void ScalarValue::Serialize(const panda::pandasm::ScalarValue &scalar, protoPanda::ScalarValue &protoScalar)
 {
-    const auto &value_type = scalar.GetType();
-    protoScalar.mutable_father()->set_type(static_cast<uint32_t>(value_type));
-    auto type = proto_panda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_UINT64;
-    switch (value_type) {
+    const auto &valueType = scalar.GetType();
+    protoScalar.mutable_father()->set_type(static_cast<uint32_t>(valueType));
+    auto type = protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_UINT64;
+    switch (valueType) {
         case panda::pandasm::Value::Type::U1:
         case panda::pandasm::Value::Type::U8:
-            protoScalar.set_value_u64(static_cast<uint64_t>(scalar.GetValue<uint8_t>()));
+            protoScalar.set_valueu64(static_cast<uint64_t>(scalar.GetValue<uint8_t>()));
             break;
         case panda::pandasm::Value::Type::U16:
-            protoScalar.set_value_u64(static_cast<uint64_t>(scalar.GetValue<uint16_t>()));
+            protoScalar.set_valueu64(static_cast<uint64_t>(scalar.GetValue<uint16_t>()));
             break;
         case panda::pandasm::Value::Type::STRING_NULLPTR:
         case panda::pandasm::Value::Type::U32:
-            protoScalar.set_value_u64(static_cast<uint64_t>(scalar.GetValue<uint32_t>()));
+            protoScalar.set_valueu64(static_cast<uint64_t>(scalar.GetValue<uint32_t>()));
             break;
         case panda::pandasm::Value::Type::U64:
-            protoScalar.set_value_u64(scalar.GetValue<uint64_t>());
+            protoScalar.set_valueu64(scalar.GetValue<uint64_t>());
             break;
         case panda::pandasm::Value::Type::I8:
-            protoScalar.set_value_u64(static_cast<uint64_t>(scalar.GetValue<int8_t>()));
+            protoScalar.set_valueu64(static_cast<uint64_t>(scalar.GetValue<int8_t>()));
             break;
         case panda::pandasm::Value::Type::I16:
-            protoScalar.set_value_u64(static_cast<uint64_t>(scalar.GetValue<int16_t>()));
+            protoScalar.set_valueu64(static_cast<uint64_t>(scalar.GetValue<int16_t>()));
             break;
         case panda::pandasm::Value::Type::I32:
-            protoScalar.set_value_u64(static_cast<uint64_t>(scalar.GetValue<int32_t>()));
+            protoScalar.set_valueu64(static_cast<uint64_t>(scalar.GetValue<int32_t>()));
             break;
         case panda::pandasm::Value::Type::I64:
-            protoScalar.set_value_u64(static_cast<uint64_t>(scalar.GetValue<int64_t>()));
+            protoScalar.set_valueu64(static_cast<uint64_t>(scalar.GetValue<int64_t>()));
             break;
         case panda::pandasm::Value::Type::F32:
-            type = proto_panda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_FLOAT;
-            protoScalar.set_value_f(scalar.GetValue<float>());
+            type = protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_FLOAT;
+            protoScalar.set_valuefloat(scalar.GetValue<float>());
             break;
         case panda::pandasm::Value::Type::F64:
-            type = proto_panda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_DOUBLE;
-            protoScalar.set_value_d(scalar.GetValue<double>());
+            type = protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_DOUBLE;
+            protoScalar.set_valuedouble(scalar.GetValue<double>());
             break;
         case panda::pandasm::Value::Type::STRING:
         case panda::pandasm::Value::Type::METHOD:
         case panda::pandasm::Value::Type::ENUM:
-            type = proto_panda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_STRING;
-            protoScalar.set_value_str(scalar.GetValue<std::string>());
+            type = protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_STRING;
+            protoScalar.set_valuestr(scalar.GetValue<std::string>());
             break;
         case panda::pandasm::Value::Type::RECORD: {
-            type = proto_panda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_PANDASM_TYPE;
-            auto *protoType = protoScalar.mutable_value_type();
+            type = protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_PANDASM_TYPE;
+            auto *protoType = protoScalar.mutable_valuetype();
             Type::Serialize(scalar.GetValue<panda::pandasm::Type>(), *protoType);
             break;
         }
         case panda::pandasm::Value::Type::ANNOTATION: {
-            type = proto_panda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_ANNOTATION_DATA;
-            auto *protoAnno = protoScalar.mutable_value_anno();
+            type = protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_ANNOTATION_DATA;
+            auto *protoAnno = protoScalar.mutable_valueanno();
             AnnotationData::Serialize(scalar.GetValue<panda::pandasm::AnnotationData>(), *protoAnno);
             break;
         }
@@ -128,35 +128,35 @@ void ScalarValue::Serialize(const panda::pandasm::ScalarValue &scalar, proto_pan
     protoScalar.set_type(type);
 }
 
-panda::pandasm::ScalarValue ScalarValue::Deserialize(const proto_panda::ScalarValue &protoScalar,
+panda::pandasm::ScalarValue ScalarValue::Deserialize(const protoPanda::ScalarValue &protoScalar,
                                                      panda::ArenaAllocator *allocator)
 {
-    proto_panda::ScalarValue_VariantValueType scalarType = protoScalar.type();
+    protoPanda::ScalarValue_VariantValueType scalarType = protoScalar.type();
     std::variant<uint64_t, float, double, std::string, panda::pandasm::Type, panda::pandasm::AnnotationData> value;
     switch (scalarType) {
-        case proto_panda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_UINT64: {
-            value = static_cast<uint64_t>(protoScalar.value_u64());
+        case protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_UINT64: {
+            value = static_cast<uint64_t>(protoScalar.valueu64());
             break;
         }
-        case proto_panda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_FLOAT: {
-            value = static_cast<float>(protoScalar.value_f());
+        case protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_FLOAT: {
+            value = static_cast<float>(protoScalar.valuefloat());
             break;
         }
-        case proto_panda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_DOUBLE: {
-            value = static_cast<double>(protoScalar.value_d());
+        case protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_DOUBLE: {
+            value = static_cast<double>(protoScalar.valuedouble());
             break;
         }
-        case proto_panda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_STRING: {
-            value = static_cast<std::string>(protoScalar.value_str());
+        case protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_STRING: {
+            value = static_cast<std::string>(protoScalar.valuestr());
             break;
         }
-        case proto_panda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_PANDASM_TYPE: {
-            value = static_cast<panda::pandasm::Type>(Type::Deserialize(protoScalar.value_type(), allocator));
+        case protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_PANDASM_TYPE: {
+            value = static_cast<panda::pandasm::Type>(Type::Deserialize(protoScalar.valuetype(), allocator));
             break;
         }
-        case proto_panda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_ANNOTATION_DATA: {
-            auto protoAnnotationData = protoScalar.value_anno();
-            auto value = allocator->New<panda::pandasm::AnnotationData>(protoAnnotationData.record_name());
+        case protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_ANNOTATION_DATA: {
+            auto protoAnnotationData = protoScalar.valueanno();
+            auto value = allocator->New<panda::pandasm::AnnotationData>(protoAnnotationData.recordname());
             AnnotationData::Deserialize(protoAnnotationData, *value, allocator);
             break;
         }
@@ -242,17 +242,17 @@ panda::pandasm::ScalarValue ScalarValue::CreateScalarValue(const panda::pandasm:
     }
 }
 
-void ArrayValue::Serialize(const panda::pandasm::ArrayValue &array, proto_panda::ArrayValue &protoArray)
+void ArrayValue::Serialize(const panda::pandasm::ArrayValue &array, protoPanda::ArrayValue &protoArray)
 {
     protoArray.mutable_father()->set_type(static_cast<uint32_t>(array.GetType()));
-    protoArray.set_component_type(static_cast<uint32_t>(array.GetComponentType()));
+    protoArray.set_componenttype(static_cast<uint32_t>(array.GetComponentType()));
     for (const auto &val : array.GetValues()) {
         auto *protoScalar = protoArray.add_values();
         ScalarValue::Serialize(val, *protoScalar);
     }
 }
 
-panda::pandasm::ArrayValue &ArrayValue::Deserialize(const proto_panda::ArrayValue &protoArray,
+panda::pandasm::ArrayValue &ArrayValue::Deserialize(const protoPanda::ArrayValue &protoArray,
                                                     panda::ArenaAllocator *allocator)
 {
     std::vector<panda::pandasm::ScalarValue> values;
@@ -261,7 +261,7 @@ panda::pandasm::ArrayValue &ArrayValue::Deserialize(const proto_panda::ArrayValu
         values.emplace_back(std::move(scalar));
     }
     auto array = allocator->New<panda::pandasm::ArrayValue>(
-        static_cast<panda::pandasm::Value::Type>(protoArray.component_type()), values);
+        static_cast<panda::pandasm::Value::Type>(protoArray.componenttype()), values);
     return *array;
 }
 } // panda::proto

@@ -123,6 +123,11 @@ void FunctionEmitter::GenBufferLiterals(const LiteralBuffer *buff)
                 valueLit.value_ = literal->GetMethod().Mutf8();
                 break;
             }
+            case ir::LiteralTag::LITERALBUFFERINDEX: {
+                valueLit.tag_ = panda::panda_file::LiteralTag::LITERALBUFFERINDEX;
+                valueLit.value_ = literal->GetInt();
+                break;
+            }
             // TODO: support ir::LiteralTag::ASYNC_GENERATOR_METHOD
             case ir::LiteralTag::NULL_VALUE: {
                 valueLit.tag_ = panda::panda_file::LiteralTag::NULLVALUE;

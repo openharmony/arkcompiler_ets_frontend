@@ -14,20 +14,20 @@
  */
 
 syntax = "proto3";
-package proto_panda;
+package protoPanda;
 
 message DebuginfoIns {
-    uint64 line_number = 1;
-    uint32 column_number = 2;
-    bytes whole_line = 3;
-    uint64 bound_left = 4;
-    uint64 bound_right = 5;
+    uint64 lineNumber = 1;
+    uint32 columnNumber = 2;
+    bytes wholeLine = 3;
+    uint64 boundLeft = 4;
+    uint64 boundRight = 5;
 }
 
 message LocalVariable {
     bytes name = 1;
     bytes signature = 2;
-    bytes signature_type = 3;
+    bytes signatureType = 3;
     int32 reg = 4;
     uint32 start = 5;
     uint32 length = 6;

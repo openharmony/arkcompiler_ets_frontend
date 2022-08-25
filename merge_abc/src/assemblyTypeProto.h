@@ -23,8 +23,8 @@
 namespace panda::proto {
 class Type {
 public:
-    static void Serialize(const panda::pandasm::Type type, proto_panda::Type &protoType);
-    static panda::pandasm::Type &Deserialize(const proto_panda::Type &protoType,
+    static void Serialize(const panda::pandasm::Type type, protoPanda::Type &protoType);
+    static panda::pandasm::Type &Deserialize(const protoPanda::Type &protoType,
                                              panda::ArenaAllocator *allocator);
 };
 } // panda::proto

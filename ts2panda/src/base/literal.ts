@@ -24,7 +24,7 @@ export enum LiteralTag {
   METHODAFFILIATE = 9,
   // 0x0a - 0x15 for ARRAY_Type
   ASYNCGENERATOR = 22,
-  TYPEINDEX = 23,
+  LITERALBUFFERINDEX = 23,
   NULLVALUE = 255
 }
 

@@ -14,7 +14,7 @@
  */
 
 syntax = "proto3";
-package proto_panda;
+package protoPanda;
 
 message VariantValue {
     enum VariantValueType {
@@ -29,10 +29,10 @@ message VariantValue {
     }
 
     oneof value {
-        uint64 value_int = 1;
-        float value_f = 2;
-        double value_d = 3;
-        bytes value_str = 4;
+        uint64 valueInt = 1;
+        float valueFloat = 2;
+        double valueDouble = 3;
+        bytes valueStr = 4;
     }
     VariantValueType type = 5;
 }

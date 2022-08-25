@@ -14,11 +14,11 @@
  */
 
 syntax = "proto3";
-package proto_panda;
+package protoPanda;
 
 message Type {
-    bytes component_name = 1;
+    bytes componentName = 1;
     uint64 rank = 2;
     bytes name = 3;
-    uint32 type_id = 4;
+    uint32 typeId = 4;
 }

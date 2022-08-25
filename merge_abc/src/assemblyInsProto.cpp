@@ -16,7 +16,7 @@
 #include "assemblyInsProto.h"
 
 namespace panda::proto {
-void Ins::Serialize(const panda::pandasm::Ins &insn, proto_panda::Ins &protoInsn)
+void Ins::Serialize(const panda::pandasm::Ins &insn, protoPanda::Ins &protoInsn)
 {
     protoInsn.set_opcode(static_cast<uint32_t>(insn.opcode));
     for (const auto &reg : insn.regs) {
@@ -27,24 +27,24 @@ void Ins::Serialize(const panda::pandasm::Ins &insn, proto_panda::Ins &protoInsn
     }
     for (const auto &imm : insn.imms) {
         auto *protoImm = protoInsn.add_imms();
-        switch (static_cast<proto_panda::Ins_IType::TypeCase>(imm.index() + 1)) {  // 1: enum TypeCase start from 1
-            case proto_panda::Ins_IType::kValueInt:
-                protoImm->set_value_int(std::get<int64_t>(imm));
+        switch (static_cast<protoPanda::Ins_IType::TypeCase>(imm.index() + 1)) {  // 1: enum TypeCase start from 1
+            case protoPanda::Ins_IType::kValueInt:
+                protoImm->set_valueint(std::get<int64_t>(imm));
                 break;
-            case proto_panda::Ins_IType::kValueDouble:
-                protoImm->set_value_double(std::get<double>(imm));
+            case protoPanda::Ins_IType::kValueDouble:
+                protoImm->set_valuedouble(std::get<double>(imm));
                 break;
             default:
                 UNREACHABLE();
         }
     }
     protoInsn.set_label(insn.label);
-    protoInsn.set_set_label(insn.set_label);
-    auto *protoDebug = protoInsn.mutable_ins_debug();
+    protoInsn.set_setlabelval(insn.set_label);
+    auto *protoDebug = protoInsn.mutable_insdebug();
     DebuginfoIns::Serialize(insn.ins_debug, *protoDebug);
 }
 
-void Ins::Deserialize(const proto_panda::Ins &protoInsn, panda::pandasm::Ins &insn)
+void Ins::Deserialize(const protoPanda::Ins &protoInsn, panda::pandasm::Ins &insn)
 {
     insn.opcode = static_cast<panda::pandasm::Opcode>(protoInsn.opcode());
     for (const auto &protoReg : protoInsn.regs()) {
@@ -55,12 +55,12 @@ void Ins::Deserialize(const proto_panda::Ins &protoInsn, panda::pandasm::Ins &in
     }
     for (const auto &protoImm : protoInsn.imms()) {
         switch (protoImm.type_case()) {
-            case proto_panda::Ins_IType::kValueInt: {
-                insn.imms.push_back(protoImm.value_int());
+            case protoPanda::Ins_IType::kValueInt: {
+                insn.imms.push_back(protoImm.valueint());
                 break;
             }
-            case proto_panda::Ins_IType::kValueDouble: {
-                insn.imms.push_back(protoImm.value_double());
+            case protoPanda::Ins_IType::kValueDouble: {
+                insn.imms.push_back(protoImm.valuedouble());
                 break;
             }
             default:
@@ -68,8 +68,8 @@ void Ins::Deserialize(const proto_panda::Ins &protoInsn, panda::pandasm::Ins &in
         }
     }
     insn.label = protoInsn.label();
-    insn.set_label = protoInsn.set_label();
-    const proto_panda::DebuginfoIns protoDebugInfoIns = protoInsn.ins_debug();
+    insn.set_label = protoInsn.setlabelval();
+    const protoPanda::DebuginfoIns protoDebugInfoIns = protoInsn.insdebug();
     DebuginfoIns::Deserialize(protoDebugInfoIns, insn.ins_debug);
 }
 } // panda::proto

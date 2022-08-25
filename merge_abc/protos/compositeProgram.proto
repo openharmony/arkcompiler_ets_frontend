@@ -16,9 +16,14 @@
 syntax = "proto3";
 package protoPanda;
 
-import "assemblyFileLocation.proto";
+import "assemblyProgram.proto";
 
-message Label {
-    bytes name = 1;
-    optional FileLocation fileLocation = 2;
+message HashNameProgram {
+    bytes fileName = 1;
+    uint32 hashCode = 2;
+    Program program = 3;
+}
+
+message CompositeProgram {
+    repeated HashNameProgram hashNameProgram = 1;
 }

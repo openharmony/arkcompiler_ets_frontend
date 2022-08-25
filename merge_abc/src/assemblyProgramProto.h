@@ -26,8 +26,8 @@
 namespace panda::proto {
 class Program {
 public:
-    static void Serialize(const panda::pandasm::Program &program, proto_panda::Program &protoProgram);
-    static void Deserialize(const proto_panda::Program &protoProgram, panda::pandasm::Program &program,
+    static void Serialize(const panda::pandasm::Program &program, protoPanda::Program &protoProgram);
+    static void Deserialize(const protoPanda::Program &protoProgram, panda::pandasm::Program &program,
                             panda::ArenaAllocator *allocator);
 };
 } // panda::proto

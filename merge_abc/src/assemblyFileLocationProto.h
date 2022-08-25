@@ -22,8 +22,8 @@
 namespace panda::proto {
 class FileLocation {
 public:
-    static void Serialize(const panda::pandasm::FileLocation &location, proto_panda::FileLocation &protoLocation);
-    static void Deserialize(const proto_panda::FileLocation &protoLocation, panda::pandasm::FileLocation &location);
+    static void Serialize(const panda::pandasm::FileLocation &location, protoPanda::FileLocation &protoLocation);
+    static void Deserialize(const protoPanda::FileLocation &protoLocation, panda::pandasm::FileLocation &location);
 };
 } // panda::proto
 #endif

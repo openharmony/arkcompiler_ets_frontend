@@ -14,7 +14,7 @@
  */
 
 syntax = "proto3";
-package proto_panda;
+package protoPanda;
 
 import "assemblyType.proto";
 import "meta.proto";
@@ -23,9 +23,9 @@ message Field {
     Type type = 1;
     bytes name = 2;
     FieldMetadata metadata = 3;
-    uint64 line_of_def = 4;
-    bytes whole_line = 5;
-    uint64 bound_left = 6;
-    uint64 bound_right = 7;
-    bool is_defined = 8;
+    uint64 lineOfDef = 4;
+    bytes wholeLine = 5;
+    uint64 boundLeft = 6;
+    uint64 boundRight = 7;
+    bool isDefined = 8;
 }

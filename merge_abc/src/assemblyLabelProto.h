@@ -23,8 +23,8 @@
 namespace panda::proto {
 class Label {
 public:
-    static void Serialize(const panda::pandasm::Label &label, proto_panda::Label &protoLabel);
-    static void Deserialize(const proto_panda::Label &protoLabel, panda::pandasm::Label &label);
+    static void Serialize(const panda::pandasm::Label &label, protoPanda::Label &protoLabel);
+    static void Deserialize(const protoPanda::Label &protoLabel, panda::pandasm::Label &label);
 };
 } // panda::proto
 #endif

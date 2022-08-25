@@ -24,23 +24,23 @@
 namespace panda::proto {
 class AnnotationData {
 public:
-    static void Serialize(const panda::pandasm::AnnotationData &anno, proto_panda::AnnotationData &protoAnno);
-    static void Deserialize(const proto_panda::AnnotationData &protoAnno, panda::pandasm::AnnotationData &anno,
+    static void Serialize(const panda::pandasm::AnnotationData &anno, protoPanda::AnnotationData &protoAnno);
+    static void Deserialize(const protoPanda::AnnotationData &protoAnno, panda::pandasm::AnnotationData &anno,
                             panda::ArenaAllocator *allocator);
 };
 
 class AnnotationElement {
 public:
     static void Serialize(const panda::pandasm::AnnotationElement &element,
-                                        proto_panda::AnnotationElement &protoElement);
-    static panda::pandasm::AnnotationElement &Deserialize(const proto_panda::AnnotationElement &protoElement,
+                                        protoPanda::AnnotationElement &protoElement);
+    static panda::pandasm::AnnotationElement &Deserialize(const protoPanda::AnnotationElement &protoElement,
                                                           panda::ArenaAllocator *allocator);
 };
 
 class ScalarValue {
 public:
-    static void Serialize(const panda::pandasm::ScalarValue &scalar, proto_panda::ScalarValue &protoScalar);
-    static panda::pandasm::ScalarValue Deserialize(const proto_panda::ScalarValue &protoScalar,
+    static void Serialize(const panda::pandasm::ScalarValue &scalar, protoPanda::ScalarValue &protoScalar);
+    static panda::pandasm::ScalarValue Deserialize(const protoPanda::ScalarValue &protoScalar,
                                                    panda::ArenaAllocator *allocator);
     static panda::pandasm::ScalarValue CreateScalarValue(const panda::pandasm::Value::Type &type,
         std::variant<uint64_t, float, double, std::string, panda::pandasm::Type, panda::pandasm::AnnotationData>
@@ -49,8 +49,8 @@ public:
 
 class ArrayValue {
 public:
-    static void Serialize(const panda::pandasm::ArrayValue &array, proto_panda::ArrayValue &protoArray);
-    static panda::pandasm::ArrayValue &Deserialize(const proto_panda::ArrayValue &protoArray,
+    static void Serialize(const panda::pandasm::ArrayValue &array, protoPanda::ArrayValue &protoArray);
+    static panda::pandasm::ArrayValue &Deserialize(const protoPanda::ArrayValue &protoArray,
                                                    panda::ArenaAllocator *allocator);
 };
 } // panda::proto

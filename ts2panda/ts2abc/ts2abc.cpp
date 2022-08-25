@@ -265,8 +265,8 @@ static void ParseLiteral(const Json::Value &literal, std::vector<panda::pandasm:
             valueLiteral.value_ = static_cast<uint16_t>(literal["v"].asUInt());
             break;
         }
-        case static_cast<uint8_t>(panda::panda_file::LiteralTag::TYPEINDEX): {
-            valueLiteral.tag_ = panda::panda_file::LiteralTag::TYPEINDEX;
+        case static_cast<uint8_t>(panda::panda_file::LiteralTag::LITERALBUFFERINDEX): {
+            valueLiteral.tag_ = panda::panda_file::LiteralTag::LITERALBUFFERINDEX;
             valueLiteral.value_ = static_cast<uint32_t>(literal["v"].asInt());
             break;
         }

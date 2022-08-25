@@ -14,7 +14,7 @@
  */
 
 syntax = "proto3";
-package proto_panda;
+package protoPanda;
 
 import "assemblyType.proto";
 
@@ -33,32 +33,36 @@ message ScalarValue {
     }
     Value father = 1;
     oneof value {
-        uint64 value_u64 = 2;
-        float value_f = 3;
-        double value_d = 4;
-        bytes value_str = 5;
-        Type value_type = 6;
-        AnnotationData value_anno = 7;
+        uint64 valueU64 = 2;
+        float valueFloat = 3;
+        double valueDouble = 4;
+        bytes valueStr = 5;
+        Type valueType = 6;
+        AnnotationData valueAnno = 7;
     }
     VariantValueType type = 8;
 }
 
 message ArrayValue {
     Value father = 1;
-    uint32 component_type = 2;
+    uint32 componentType = 2;
     repeated ScalarValue values = 3;
 }
 
 message AnnotationElement {
+    enum ValueType {
+        SCALAR = 0;
+        ARRAY = 1;
+    }
     bytes name = 1;
     oneof value {
         ScalarValue scalar = 2;
         ArrayValue array = 3;
     }
-    bool is_array = 4;
+    ValueType valueType = 4;
 }
 
 message AnnotationData {
-    bytes record_name = 1;
+    bytes recordName = 1;
     repeated AnnotationElement elements = 2;
 }
