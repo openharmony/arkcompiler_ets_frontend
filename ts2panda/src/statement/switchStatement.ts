@@ -45,7 +45,10 @@ export class SwitchBase {
          * switchStatements doesn't have continue target
          * so we use the uplevel continue label as it's continue target.
          */
-        let labelTarget = new LabelTarget(stmt, switchEndLabel, LabelTarget.getCloseContinueTarget());
+        let continueLabel = LabelTarget.getCloseContinueTarget();
+        let closeLabelTarget = LabelTarget.getCloseLabelTarget();
+        let hasLoopEnv = closeLabelTarget ? closeLabelTarget.containLoopEnv() : false;
+        let labelTarget = new LabelTarget(stmt, switchEndLabel, continueLabel, hasLoopEnv);
         LabelTarget.pushLabelTarget(labelTarget);
         LabelTarget.updateName2LabelTarget(stmt.parent, labelTarget);
     }
