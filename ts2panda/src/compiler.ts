@@ -611,8 +611,17 @@ export class Compiler {
                 this.popLoopEnv(node, popTimes);
                 break;
             }
-            // SwitchStatement & BlockStatement could also have break labelTarget which changes
-            // the control flow out of their inner env loop. We should pop Loop env with such cases either.
+            case ts.SyntaxKind.SwitchStatement: {
+                if (!isContinue) {
+                    return;
+                }
+                this.popLoopEnv(node, loopEnvLevel);
+                break;
+            }
+            /**
+             * BlockStatement could also have break labelTarget which changes the control flow
+             * out of their inner env loop. We should pop Loop env with such cases either.
+             */
             default: {
                 this.popLoopEnv(node, loopEnvLevel);
             }
