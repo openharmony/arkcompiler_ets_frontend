@@ -626,8 +626,7 @@ export class Recorder {
             this.collectHoistDecls(node, <GlobalScope | ModuleScope>hoistScope, funcDecl);
         } else if (scope instanceof LocalScope) {
             hoistScope = <Scope>scope.getNearestVariableScope();
-            let expectHoistScope = this.getScopeOfNode(node.parent.parent);
-            if ((hoistScope == expectHoistScope) && (hoistScope instanceof FunctionScope)) {
+            if (hoistScope instanceof FunctionScope) {
                 need2AddDecls = this.collectHoistDecls(node, hoistScope, funcDecl);
             }
         } else {
