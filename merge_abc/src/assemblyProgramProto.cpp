@@ -54,38 +54,42 @@ void Program::Deserialize(const protoPanda::Program &protoProgram, panda::pandas
 {
     program.lang = static_cast<panda::panda_file::SourceLang>(protoProgram.lang());
 
+    program.record_table.reserve(protoProgram.recordtable_size());
     for (const auto &recordUnit : protoProgram.recordtable()) {
-        auto name = recordUnit.key();
-        auto protoRecord = recordUnit.value();
+        auto &name = recordUnit.key();
+        auto &protoRecord = recordUnit.value();
         auto record = panda::pandasm::Record(protoRecord.name(),
                                              static_cast<panda::panda_file::SourceLang>(protoRecord.language()));
         Record::Deserialize(protoRecord, record, allocator);
         program.record_table.insert({name, std::move(record)});
     }
 
+    program.function_table.reserve(protoProgram.functiontable_size());
     for (const auto &functionUnit : protoProgram.functiontable()) {
-        auto name = functionUnit.key();
-        auto protoFunction = functionUnit.value();
-        auto function = allocator->New<panda::pandasm::Function>(protoFunction.name(),
+        auto &name = functionUnit.key();
+        auto &protoFunction = functionUnit.value();
+        auto *function = allocator->New<panda::pandasm::Function>(protoFunction.name(),
             static_cast<panda::panda_file::SourceLang>(protoFunction.language()));
         Function::Deserialize(protoFunction, *function, allocator);
         program.function_table.insert({name, std::move(*function)});
     }
 
     for (const auto &literalUnit : protoProgram.literalarraytable()) {
-        auto name = literalUnit.key();
-        auto protoLiteralArray = literalUnit.value();
+        auto &name = literalUnit.key();
+        auto &protoLiteralArray = literalUnit.value();
         panda::pandasm::LiteralArray literalArray;
         LiteralArray::Deserialize(protoLiteralArray, literalArray);
         program.literalarray_table.insert({name, std::move(literalArray)});
     }
 
+    program.strings.reserve(protoProgram.strings_size());
     for (const auto &protoString : protoProgram.strings()) {
         program.strings.insert(protoString);
     }
 
+    program.array_types.reserve(protoProgram.arraytypes_size());
     for (const auto &protoArrayType : protoProgram.arraytypes()) {
-        auto arrayType = Type::Deserialize(protoArrayType, allocator);
+        auto &arrayType = Type::Deserialize(protoArrayType, allocator);
         program.array_types.insert(std::move(arrayType));
     }
 }

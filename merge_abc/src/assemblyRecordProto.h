@@ -16,11 +16,11 @@
 #ifndef MERGE_ABC_ASSEMBLY_RECORD_H
 #define MERGE_ABC_ASSEMBLY_RECORD_H
 
-#include "assembly-program.h"
-#include "metaProto.h"
 #include "assemblyFieldProto.h"
 #include "assemblyFunctionProto.h"
 #include "assemblyRecord.pb.h"
+#include "assembly-program.h"
+#include "metaProto.h"
 
 namespace panda::proto {
 class Record {

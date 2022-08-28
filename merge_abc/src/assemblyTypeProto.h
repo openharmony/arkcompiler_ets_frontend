@@ -16,9 +16,9 @@
 #ifndef MERGE_ABC_ASSEMBLY_TYPE_H
 #define MERGE_ABC_ASSEMBLY_TYPE_H
 
-#include "assembly-program.h"
-#include "assemblyType.pb.h"
 #include "arena_allocator.h"
+#include "assemblyType.pb.h"
+#include "assembly-program.h"
 
 namespace panda::proto {
 class Type {

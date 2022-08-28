@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "Options.h"
+#include "options.h"
 
 #include <sstream>
 
@@ -26,7 +26,8 @@ Options::~Options()
     delete argparser_;
 }
 
-bool Options::Parse(int argc, const char **argv) {
+bool Options::Parse(int argc, const char **argv)
+{
     panda::PandArg<bool> opHelp("help", false, "Print this message and exit");
 
     panda::PandArg<std::string> protoPathInput("input", "",

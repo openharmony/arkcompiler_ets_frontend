@@ -16,16 +16,16 @@
 #ifndef MERGE_ABC_ASSEMBLY_FUNCTION_H
 #define MERGE_ABC_ASSEMBLY_FUNCTION_H
 
-#include "assembly-program.h"
+#include "arena_allocator.h"
+#include "assemblyDebugProto.h"
+#include "assemblyFileLocationProto.h"
+#include "assemblyFunction.pb.h"
+#include "assemblyInsProto.h"
 #include "assemblyLabelProto.h"
 #include "assemblyTypeProto.h"
-#include "assemblyInsProto.h"
-#include "assemblyDebugProto.h"
+#include "assembly-program.h"
 #include "ideHelpersProto.h"
-#include "assemblyFileLocationProto.h"
 #include "metaProto.h"
-#include "assemblyFunction.pb.h"
-#include "arena_allocator.h"
 
 namespace panda::proto {
 class CatchBlock {

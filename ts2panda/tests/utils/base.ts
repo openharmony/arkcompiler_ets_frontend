@@ -146,7 +146,7 @@ export function compileAllSnippet(snippet: string, passes?: Pass[], literalBuffe
     jshelpers.bindSourceFile(sourceFile, {});
     CmdOptions.isWatchEvaluateExpressionMode() ? setGlobalStrict(true)
                             : setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(sourceFile, compileOptions));
-    let compilerDriver = new CompilerDriver('UnitTest', 'UnitTest');
+    let compilerDriver = new CompilerDriver('UnitTest');
 
     if (!passes) {
         passes = [];
@@ -166,7 +166,7 @@ export function compileMainSnippet(snippet: string, pandaGen?: PandaGen, scope?:
     // only return main function
     if (compileFunc) {
         compileUnits.filter((pg) => {
-            return (pg.internalName == "UnitTest.func_main_0");
+            return (pg.internalName == "func_main_0");
         })
     }
 
@@ -191,7 +191,7 @@ export function compileAfterSnippet(snippet: string, name:string, isCommonJs: bo
                         }
                         jshelpers.bindSourceFile(sourceFile, {});
                         setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(sourceFile, compileOptions));
-                        let compilerDriver = new CompilerDriver('UnitTest', 'UnitTest');
+                        let compilerDriver = new CompilerDriver('UnitTest');
                         compilerDriver.setCustomPasses([]);
                         compilerDriver.compileUnitTest(sourceFile, []);
                         compileUnits = compilerDriver.getCompilationUnits();
@@ -228,7 +228,7 @@ export class SnippetCompiler {
     }
 
     getGlobalInsns(): IRNode[] {
-        let root = this.getPandaGenByName("UnitTest.func_main_0");
+        let root = this.getPandaGenByName("func_main_0");
         if (root) {
             return root.getInsns();
         } else {
@@ -237,7 +237,7 @@ export class SnippetCompiler {
     }
 
     getGlobalScope(): Scope | undefined {
-        let globalPandaGen = this.getPandaGenByName("UnitTest.func_main_0");
+        let globalPandaGen = this.getPandaGenByName("func_main_0");
 
         return globalPandaGen ? globalPandaGen.getScope()!.getNearestVariableScope() : undefined;
     }

@@ -30,7 +30,7 @@ describe("union tests in union.test.ts", function () {
     it("test union with primitives", function () {
         let fileNames = 'tests/types/union/union_primitives.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -68,7 +68,7 @@ describe("union tests in union.test.ts", function () {
     it("test union with user defined type", function () {
         let fileNames = 'tests/types/union/union_userDefinedType.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -104,7 +104,7 @@ describe("union tests in union.test.ts", function () {
     it("test union with multi same primitives", function () {
         let fileNames = 'tests/types/union/union_multi_same_primi.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -130,7 +130,7 @@ describe("union tests in union.test.ts", function () {
     it("test union with multi same user defined type", function () {
         let fileNames = 'tests/types/union/union_multi_userDefinedType.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [

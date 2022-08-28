@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-#include "protobufSnapshotGenerator.h"
-#include "assembly-program.h"
 #include "assemblyProgramProto.h"
+#include "assembly-program.h"
+#include "protobufSnapshotGenerator.h"
 
 namespace panda::proto {
 void ProtobufSnapshotGenerator::GenerateSnapshot(const panda::pandasm::Program &program, const std::string &outputName)
@@ -26,7 +26,7 @@ void ProtobufSnapshotGenerator::GenerateSnapshot(const panda::pandasm::Program &
 
     std::fstream output(outputName, std::ios::out | std::ios::trunc | std::ios::binary);
     if (!output) {
-        std::cout << ": Fail to create file" << std::endl;
+        std::cerr << "Failed to create: " << outputName << std::endl;
         return;
     }
     protoProgram.SerializeToOstream(&output);
@@ -38,37 +38,38 @@ void ProtobufSnapshotGenerator::GenerateProgram(const std::string &inputName, pa
 {
     std::fstream input(inputName, std::ios::in | std::ios::binary);
     if (!input) {
-        std::cerr << "Failed to open " << inputName << std::endl;
+        std::cerr << "Failed to open: " << inputName << std::endl;
         return;
     }
     protoPanda::Program proto_program;
     if (!proto_program.ParseFromIstream(&input)) {
-        std::cerr << "Failed to parse " << inputName << std::endl;
+        std::cerr << "Failed to parse: " << inputName << std::endl;
         return;
     }
     Program::Deserialize(proto_program, prog, allocator);
 }
 
-void ProtobufSnapshotGenerator::UpdateCacheFile(panda::es2panda::util::CompositeProgramMap compositeProgramMap,
-                                                const std::string &cacheFilePath)
+void ProtobufSnapshotGenerator::UpdateCacheFile(
+    const std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap,
+    bool &isDebug, const std::string &cacheFilePath)
 {
     protoPanda::CompositeProgram protoCompositeProgram;
-    CompositeProgram::Serialize(compositeProgram, protoCompositeProgram);
+    CompositeProgram::Serialize(compositeProgramMap, isDebug, protoCompositeProgram);
     std::fstream output(cacheFilePath, std::ios::out | std::ios::trunc | std::ios::binary);
     if (!output) {
-        std::cout << "Fail to create cache file: " << cacheFilePath << std::endl;
+        std::cerr << "Failed to create cache file: " << cacheFilePath << std::endl;
         return;
     }
     protoCompositeProgram.SerializeToOstream(&output);
     output.close();
 }
 
-panda::es2panda::util::CompositeProgramMap *ProtobufSnapshotGenerator::GetCacheContext(const std::string &cacheFilePath,
-                                                                                       panda::ArenaAllocator *allocator)
+std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *ProtobufSnapshotGenerator::GetCacheContext(
+    const std::string &cacheFilePath, bool isDebug, panda::ArenaAllocator *allocator)
 {
     std::fstream input(cacheFilePath, std::ios::in | std::ios::binary);
     if (!input) {
-        std::cerr << "Failed to open cache file: " << cacheFilePath << std::endl;
+        std::cerr << "Cache file: " << cacheFilePath << " doesn't exist" << std::endl;
         return nullptr;
     }
     protoPanda::CompositeProgram protoCompositeProgram;
@@ -77,10 +78,13 @@ panda::es2panda::util::CompositeProgramMap *ProtobufSnapshotGenerator::GetCacheC
         return nullptr;
     }
 
-    auto compositeProgramMap = allocator->New<panda::es2panda::util::CompositeProgramMap>();
+    if (protoCompositeProgram.isdebug() != isDebug) {
+        return nullptr;
+    }
+
+    auto compositeProgramMap = allocator->New<std::unordered_map<std::string, panda::es2panda::util::ProgramCache*>>();
     CompositeProgram::Deserialize(protoCompositeProgram, *compositeProgramMap, allocator);
 
     return compositeProgramMap;
 }
-
 } // panda::proto

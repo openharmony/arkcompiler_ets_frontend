@@ -27,7 +27,7 @@ void Type::Serialize(const panda::pandasm::Type type, protoPanda::Type &protoTyp
 panda::pandasm::Type &Type::Deserialize(const protoPanda::Type &protoType,
                                         panda::ArenaAllocator *allocator)
 {
-    auto type = allocator->New<panda::pandasm::Type>(protoType.componentname(), protoType.rank());
+    auto *type = allocator->New<panda::pandasm::Type>(protoType.componentname(), protoType.rank());
     return *type;
 }
 } // panda::proto

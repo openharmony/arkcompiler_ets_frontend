@@ -16,8 +16,8 @@
 #ifndef MERGE_ABC_ASSEMBLY_FILE_LOCATION_H
 #define MERGE_ABC_ASSEMBLY_FILE_LOCATION_H
 
-#include "assembly-program.h"
 #include "assemblyFileLocation.pb.h"
+#include "assembly-program.h"
 
 namespace panda::proto {
 class FileLocation {

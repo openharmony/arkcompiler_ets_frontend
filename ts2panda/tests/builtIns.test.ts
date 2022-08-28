@@ -45,7 +45,7 @@ describe("FunctionToStringTest", function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compileAfter(`function foo() {return 123;}\nfunction bar() {return 321;}\n`, 'toStringTest.js');
         CmdOptions.needRecordSourceCode = () => {return false};
-        let pandaGen = snippetCompiler.getPandaGenByName('UnitTest.foo');
+        let pandaGen = snippetCompiler.getPandaGenByName('foo');
         let expected = "function foo() {return 123;}";
         expect(pandaGen.getSourceCode() == expected).to.be.true;
     })

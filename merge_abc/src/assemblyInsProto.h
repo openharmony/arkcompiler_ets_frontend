@@ -16,9 +16,9 @@
 #ifndef MERGE_ABC_ASSEMBLY_INS_H
 #define MERGE_ABC_ASSEMBLY_INS_H
 
-#include "assembly-program.h"
 #include "assemblyDebugProto.h"
 #include "assemblyIns.pb.h"
+#include "assembly-program.h"
 
 namespace panda::proto {
 class Ins {

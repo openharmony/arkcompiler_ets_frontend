@@ -21,8 +21,41 @@
 #include <compiler/core/emitter/emitter.h>
 #include <compiler/core/function.h>
 #include <compiler/core/pandagen.h>
+#include <es2panda.h>
+#include <mem/arena_allocator.h>
+#include <mem/pool_manager.h>
+#include <util/dumper.h>
+#include <util/helpers.h>
+
+#include <fstream>
+#include <iostream>
+#include <dirent.h>
+
+#include <chrono>
+
+#include <assembly-literals.h>
+#ifdef ENABLE_BYTECODE_OPT
+#include <bytecode_optimizer/bytecodeopt_options.h>
+#include <bytecode_optimizer/optimize_bytecode.h>
+#else
+#include <assembly-type.h>
+#include <assembly-program.h>
+#include <assembly-emitter.h>
+#endif
+#include <es2panda.h>
+#include <mem/arena_allocator.h>
+#include <mem/pool_manager.h>
+#include <util/dumper.h>
+
+#include <fstream>
+#include <iostream>
+#include <dirent.h>
+
+#include <chrono>
 
 namespace panda::es2panda::compiler {
+
+std::mutex CompileFileJob::global_m_;
 
 void CompileJob::DependsOn(CompileJob *job)
 {
@@ -75,6 +108,24 @@ void CompileModuleRecordJob::Run()
     }
 }
 
+void CompileFileJob::Run()
+{
+    es2panda::Compiler compiler(options_->extension, options_->functionThreadCount);
+
+    auto *prog = compiler.CompileFile(*options_, src_);
+
+    if (options_->optLevel != 0) {
+        util::Helpers::OptimizeProgram(prog, options_);
+    }
+
+    {
+        std::unique_lock<std::mutex> lock(global_m_);
+        auto *cache = allocator_->New<util::ProgramCache>(src_->hash, prog);
+        progsInfo_.insert({src_->fileName, cache});
+        progs_.push_back(prog);
+    }
+}
+
 CompileQueue::CompileQueue(size_t threadCount)
 {
     threads_.reserve(threadCount);
@@ -96,29 +147,6 @@ CompileQueue::~CompileQueue()
     for (const auto handle_id : threads_) {
         os::thread::ThreadJoin(handle_id, &retval);
     }
-}
-
-void CompileQueue::Schedule(CompilerContext *context)
-{
-    ASSERT(jobsCount_ == 0);
-    std::unique_lock<std::mutex> lock(m_);
-    const auto &functions = context->Binder()->Functions();
-
-    for (auto *function : functions) {
-        auto *funcJob = new CompileFunctionJob(context);
-        funcJob->SetFunctionScope(function);
-        jobs_.push_back(funcJob);
-        jobsCount_++;
-    }
-
-    if (context->Binder()->Program()->Kind() == parser::ScriptKind::MODULE) {
-        auto *moduleRecordJob = new CompileModuleRecordJob(context);
-        jobs_.push_back(moduleRecordJob);
-        jobsCount_++;
-    }
-
-    lock.unlock();
-    jobsAvailable_.notify_all();
 }
 
 void CompileQueue::Worker(CompileQueue *queue)
@@ -179,6 +207,44 @@ void CompileQueue::Wait()
         // NOLINTNEXTLINE
         throw errors_.front();
     }
+}
+
+void CompileFuncQueue::Schedule()
+{
+    ASSERT(jobsCount_ == 0);
+    std::unique_lock<std::mutex> lock(m_);
+    const auto &functions = context_->Binder()->Functions();
+
+    for (auto *function : functions) {
+        auto *funcJob = new CompileFunctionJob(context_);
+        funcJob->SetFunctionScope(function);
+        jobs_.push_back(funcJob);
+        jobsCount_++;
+    }
+
+    if (context_->Binder()->Program()->Kind() == parser::ScriptKind::MODULE) {
+        auto *moduleRecordJob = new CompileModuleRecordJob(context_);
+        jobs_.push_back(moduleRecordJob);
+        jobsCount_++;
+    }
+
+    lock.unlock();
+    jobsAvailable_.notify_all();
+}
+
+void CompileFileQueue::Schedule()
+{
+    ASSERT(jobsCount_ == 0);
+    std::unique_lock<std::mutex> lock(m_);
+
+    for (auto &input: options_->sourceFiles) {
+        auto *fileJob = new CompileFileJob(&input, options_, progs_, progsInfo_, allocator_);
+        jobs_.push_back(fileJob);
+        jobsCount_++;
+    }
+
+    lock.unlock();
+    jobsAvailable_.notify_all();
 }
 
 }  // namespace panda::es2panda::compiler

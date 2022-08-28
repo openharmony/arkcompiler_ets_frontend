@@ -13,26 +13,22 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_UTIL_COMPOSITE_HELPERS_H
-#define ES2PANDA_UTIL_COMPOSITE_HELPERS_H
+#ifndef ES2PANDA_UTIL_MODULE_HELPERS_H
+#define ES2PANDA_UTIL_MODULE_HELPERS_H
 
 #include <assembly-program.h>
+#include <mem/arena_allocator.h>
+#include <util/programCache.h>
 
 namespace panda::es2panda::util {
-
-struct HashProgram {
-    uint32_t hashCode;
-    panda::pandasm::Program* program;
-
-    HashProgram(uint32_t hashCode, panda::pandasm::Program* program) : hashCode(hashCode), program(program)
-    {
-    }
+class ModuleHelpers {
+public:
+    static void CompileNpmModuleEntryList(const std::string &entriesInfo,
+        std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
+        std::vector<panda::pandasm::Program *> &progs,
+        std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+        panda::ArenaAllocator *allocator);
 };
-
-struct CompositeProgramMap {
-    std::unordered_map<std::string, HashProgram*> compositeProgramInfo;
-};
-
-} //panda::es2panda::util
+} // panda::es2panda::util
 
 #endif

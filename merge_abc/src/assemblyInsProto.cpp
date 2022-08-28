@@ -47,12 +47,15 @@ void Ins::Serialize(const panda::pandasm::Ins &insn, protoPanda::Ins &protoInsn)
 void Ins::Deserialize(const protoPanda::Ins &protoInsn, panda::pandasm::Ins &insn)
 {
     insn.opcode = static_cast<panda::pandasm::Opcode>(protoInsn.opcode());
+    insn.regs.reserve(protoInsn.regs_size());
     for (const auto &protoReg : protoInsn.regs()) {
         insn.regs.push_back(static_cast<uint16_t>(protoReg));
     }
+    insn.ids.reserve(protoInsn.ids_size());
     for (const auto &protoId : protoInsn.ids()) {
         insn.ids.push_back(protoId);
     }
+    insn.imms.reserve(protoInsn.imms_size());
     for (const auto &protoImm : protoInsn.imms()) {
         switch (protoImm.type_case()) {
             case protoPanda::Ins_IType::kValueInt: {
@@ -69,7 +72,7 @@ void Ins::Deserialize(const protoPanda::Ins &protoInsn, panda::pandasm::Ins &ins
     }
     insn.label = protoInsn.label();
     insn.set_label = protoInsn.setlabelval();
-    const protoPanda::DebuginfoIns protoDebugInfoIns = protoInsn.insdebug();
+    const protoPanda::DebuginfoIns &protoDebugInfoIns = protoInsn.insdebug();
     DebuginfoIns::Deserialize(protoDebugInfoIns, insn.ins_debug);
 }
 } // panda::proto

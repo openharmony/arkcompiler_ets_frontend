@@ -16,12 +16,12 @@
 #ifndef MERGE_ABC_ASSEMBLY_PROGRAM_H
 #define MERGE_ABC_ASSEMBLY_PROGRAM_H
 
-#include "assembly-program.h"
-#include "assemblyRecordProto.h"
+#include "arena_allocator.h"
 #include "assemblyFunctionProto.h"
 #include "assemblyLiteralsProto.h"
 #include "assemblyProgram.pb.h"
-#include "arena_allocator.h"
+#include "assemblyRecordProto.h"
+#include "assembly-program.h"
 
 namespace panda::proto {
 class Program {

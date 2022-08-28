@@ -25,13 +25,13 @@ void RecordMetadata::Deserialize(const protoPanda::RecordMetadata &protoMeta,
                                  std::unique_ptr<panda::pandasm::RecordMetadata> &meta,
                                  panda::ArenaAllocator *allocator)
 {
-    auto protoItemMetadata = protoMeta.father();
+    auto &protoItemMetadata = protoMeta.father();
     ItemMetadata::Deserialize(protoItemMetadata, *meta);
 
-    auto protoAnnoMetadata = protoItemMetadata.father();
+    auto &protoAnnoMetadata = protoItemMetadata.father();
     AnnotationMetadata::Deserialize(protoAnnoMetadata, *meta, allocator);
 
-    auto protoMetadata = protoAnnoMetadata.father();
+    auto &protoMetadata = protoAnnoMetadata.father();
     Metadata::Deserialize(protoMetadata, *meta);
 }
 
@@ -46,13 +46,13 @@ void FunctionMetadata::Deserialize(const protoPanda::FunctionMetadata &protoMeta
                                    std::unique_ptr<panda::pandasm::FunctionMetadata> &meta,
                                    panda::ArenaAllocator *allocator)
 {
-    auto protoItemMetadata = protoMeta.father();
+    auto &protoItemMetadata = protoMeta.father();
     ItemMetadata::Deserialize(protoItemMetadata, *meta);
 
-    auto protoAnnoMetadata = protoItemMetadata.father();
+    auto &protoAnnoMetadata = protoItemMetadata.father();
     AnnotationMetadata::Deserialize(protoAnnoMetadata, *meta, allocator);
 
-    auto protoMetadata = protoAnnoMetadata.father();
+    auto &protoMetadata = protoAnnoMetadata.father();
     Metadata::Deserialize(protoMetadata, *meta);
 }
 
@@ -73,14 +73,14 @@ void FieldMetadata::Deserialize(const protoPanda::FieldMetadata &protoMeta,
                                 std::unique_ptr<panda::pandasm::FieldMetadata> &meta,
                                 panda::ArenaAllocator *allocator)
 {
-    auto protoItemMetadata = protoMeta.father();
+    auto &protoItemMetadata = protoMeta.father();
     ItemMetadata::Deserialize(protoItemMetadata, *meta);
-    auto protoAnnoMetadata = protoItemMetadata.father();
+    auto &protoAnnoMetadata = protoItemMetadata.father();
     AnnotationMetadata::Deserialize(protoAnnoMetadata, *meta, allocator);
-    auto protoMetadata = protoAnnoMetadata.father();
+    auto &protoMetadata = protoAnnoMetadata.father();
     Metadata::Deserialize(protoMetadata, *meta);
 
-    auto fieldType = Type::Deserialize(protoMeta.fieldtype(), allocator);
+    auto &fieldType = Type::Deserialize(protoMeta.fieldtype(), allocator);
     meta->SetFieldType(fieldType);
     ScalarValue scalarValue;
     if (protoMeta.has_value()) {
@@ -99,7 +99,7 @@ void ParamMetadata::Deserialize(const protoPanda::ParamMetadata &protoMeta,
                                 std::unique_ptr<panda::pandasm::ParamMetadata> &meta,
                                 panda::ArenaAllocator *allocator)
 {
-    auto protoAnnoMetadata = protoMeta.father();
+    auto &protoAnnoMetadata = protoMeta.father();
     AnnotationMetadata::Deserialize(protoAnnoMetadata, *meta, allocator);
 }
 
@@ -131,8 +131,9 @@ void AnnotationMetadata::Deserialize(const protoPanda::AnnotationMetadata &proto
                                      panda::ArenaAllocator *allocator)
 {
     std::vector<panda::pandasm::AnnotationData> annotations;
+    annotations.reserve(protoMeta.annotations_size());
     for (const auto &protoAnnotation : protoMeta.annotations()) {
-        auto annotation = allocator->New<panda::pandasm::AnnotationData>(protoAnnotation.recordname());
+        auto *annotation = allocator->New<panda::pandasm::AnnotationData>(protoAnnotation.recordname());
         AnnotationData::Deserialize(protoAnnotation, *annotation, allocator);
         annotations.emplace_back(std::move(*annotation));
     }
@@ -159,9 +160,9 @@ void Metadata::Deserialize(const protoPanda::Metadata &protoMeta, panda::pandasm
         meta.SetAttribute(attr);
     }
     for (const auto &protoKeyVal: protoMeta.attributes()) {
-        auto key = protoKeyVal.key();
+        auto &key = protoKeyVal.key();
         for (const auto &attr : protoKeyVal.value()) {
-            meta.SetAttributeValue(protoKeyVal.key(), attr);
+            meta.SetAttributeValue(key, attr);
         }
     }
 }

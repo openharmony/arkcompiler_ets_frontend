@@ -16,10 +16,10 @@
 #ifndef MERGE_ABC_ASSEMBLY_FIELD_H
 #define MERGE_ABC_ASSEMBLY_FIELD_H
 
-#include "assembly-program.h"
 #include "assemblyField.pb.h"
-#include "metaProto.h"
 #include "assemblyTypeProto.h"
+#include "assembly-program.h"
+#include "metaProto.h"
 
 namespace panda::proto {
 class Field {

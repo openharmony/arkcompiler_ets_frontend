@@ -29,6 +29,7 @@ import {
     LdaDyn,
     LdaiDyn,
     LdaStr,
+    ResultType,
     StaDyn,
     VReg
 } from "../src/irnodes";
@@ -78,7 +79,7 @@ describe("HoistTest", function () {
 
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new EcmaDefinefuncdyn("UnitTest.a", new Imm(0), new VReg()),
+            new EcmaDefinefuncdyn("a", new Imm(0), new VReg()),
             new EcmaStglobalvar("a"),
             new EcmaReturnundefined()
         ]
@@ -92,7 +93,7 @@ describe("HoistTest", function () {
 
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new EcmaDefinefuncdyn("UnitTest.#2#a", new Imm(0), new VReg()),
+            new EcmaDefinefuncdyn("#2#a", new Imm(0), new VReg()),
             new EcmaStglobalvar("a"),
             new EcmaReturnundefined()
         ]
@@ -106,7 +107,7 @@ describe("HoistTest", function () {
         snippetCompiler.compile(`var a = 1; function a() {}`);
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new EcmaDefinefuncdyn("UnitTest.a", new Imm(0), new VReg()),
+            new EcmaDefinefuncdyn("a", new Imm(0), new VReg()),
             new EcmaStglobalvar("a"),
             new LdaiDyn(new Imm(1)),
             new EcmaStglobalvar("a"),
@@ -120,7 +121,7 @@ describe("HoistTest", function () {
     it('case 6', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`function a() {var a = 1;}`);
-        let funcPg = snippetCompiler.getPandaGenByName("UnitTest.a");
+        let funcPg = snippetCompiler.getPandaGenByName("a");
         let insns = funcPg!.getInsns();
 
         let a = new VReg();
@@ -139,11 +140,11 @@ describe("HoistTest", function () {
     it('case 7', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`function a() {function b() {}};`);
-        let funcPg = snippetCompiler.getPandaGenByName("UnitTest.a");
+        let funcPg = snippetCompiler.getPandaGenByName("a");
         let insns = funcPg!.getInsns();
         let a = new VReg();
         let expected = [
-            new EcmaDefinefuncdyn("UnitTest.b", new Imm(0), new VReg()),
+            new EcmaDefinefuncdyn("b", new Imm(0), new VReg()),
             new StaDyn(a),
 
             new EcmaReturnundefined()
@@ -157,7 +158,7 @@ describe("HoistTest", function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`a = 1;
                                  let a;`);
-        let funcPg = snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
+        let funcPg = snippetCompiler.getPandaGenByName("func_main_0");
         let insns = funcPg!.getInsns();
         let idReg = new VReg();
         let expected = [
@@ -176,7 +177,7 @@ describe("HoistTest", function () {
                                  a = 1;
                                  let a;
                                  }`);
-        let funcPg = snippetCompiler.getPandaGenByName("UnitTest.b");
+        let funcPg = snippetCompiler.getPandaGenByName("b");
         let insns = funcPg!.getInsns();
         let idReg = new VReg();
 
@@ -196,7 +197,7 @@ describe("HoistTest", function () {
                                     a = 1;
                                     let a;
                                  }`);
-        let funcPg = snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
+        let funcPg = snippetCompiler.getPandaGenByName("func_main_0");
         let insns = funcPg!.getInsns();
         let idReg = new VReg();
 

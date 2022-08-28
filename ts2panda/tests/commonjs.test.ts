@@ -44,7 +44,7 @@ describe("CommonJsTest", function () {
         CmdOptions.isCommonJs = () => {return false};
         let funcMainInsns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new EcmaDefinefuncdyn('UnitTest.#1#', new Imm(5), new VReg()),
+            new EcmaDefinefuncdyn('#1#', new Imm(5), new VReg()),
             new StaDyn(new VReg()),
             new LdaDyn(new VReg()),
             new StaDyn(new VReg()),
@@ -67,7 +67,7 @@ describe("CommonJsTest", function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compileCommonjs(`let a = require('a.js')`, 'cjs.js');
         CmdOptions.isCommonJs = () => {return false};
-        let execInsns = snippetCompiler.getPandaGenByName('UnitTest.#1#')!.getInsns();
+        let execInsns = snippetCompiler.getPandaGenByName('#1#')!.getInsns();
         let requirePara = new VReg();
         let requireReg = new VReg();
         let moduleRequest = new VReg();
@@ -88,7 +88,7 @@ describe("CommonJsTest", function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compileCommonjs(`let a = 1; exports.a = a;`, 'cjs.js');
         CmdOptions.isCommonJs = () => {return false};
-        let execInsns = snippetCompiler.getPandaGenByName('UnitTest.#1#')!.getInsns();
+        let execInsns = snippetCompiler.getPandaGenByName('#1#')!.getInsns();
         let exportsPara = new VReg();
         let exportsReg = new VReg();
         let tmpReg = new VReg();

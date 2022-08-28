@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 
-#include "mergeProgram.h"
 #include "arena_allocator.h"
-#include "Options.h"
+#include "mergeProgram.h"
+#include "options.h"
 #include "protobufSnapshotGenerator.h"
-#include <mem/pool_manager.h>
+
 #include <assembly-emitter.h>
+#include <mem/pool_manager.h>
 
 namespace panda::proto {
-
 using mem::MemConfig;
 
 class ProtoMemManager {
@@ -55,7 +55,6 @@ int Run(int argc, const char **argv)
     std::string protoPathInput = options->protoPathInput();
     std::string protoBinSuffix = options->protoBinSuffix();
     std::string outputFilePath = options->outputFilePath();
-
     if (outputFilePath.empty()) {
         outputFilePath = panda::os::file::File::GetExecutablePath().Value();
     }
@@ -68,6 +67,7 @@ int Run(int argc, const char **argv)
     panda::ArenaAllocator allocator(panda::SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
 
     std::vector<panda::pandasm::Program *> programs;
+    programs.reserve(protoFiles.size());
     for(size_t i = 0; i < protoFiles.size(); i++) {
         auto *prog = allocator.New<panda::pandasm::Program>();
         programs.emplace_back(prog);
@@ -80,7 +80,6 @@ int Run(int argc, const char **argv)
 
     std::string outputFileName = outputFilePath.append(panda::os::file::File::GetPathDelim()).
         append(options->outputFileName());
-
     if (!panda::pandasm::AsmEmitter::EmitPrograms(outputFileName, programs, true)) {
         return 1;
     }

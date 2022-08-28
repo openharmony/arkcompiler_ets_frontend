@@ -155,7 +155,7 @@ ohos_executable("merge_abc") {
   use_exceptions = true
   sources = [
     "src/main.cpp",
-    "src/Options.cpp",
+    "src/options.cpp",
   ]
 
   include_dirs = [ "./src" ]
@@ -171,12 +171,12 @@ ohos_executable("merge_abc") {
   ]
 
   deps = [
+    ":panda_assembly_proto_static",
     "$ark_root/assembler:libarkassembler_frontend_static",
     "$ark_root/libpandabase:libarkbase_frontend_static",
     "$ark_root/libpandafile:libarkfile_frontend_static",
     "$ark_root/libziparchive:libarkziparchive_frontend_static",
     "//third_party/icu/icu4c:static_icuuc",
-    ":panda_assembly_proto_static",
   ]
 
   ldflags = []
@@ -187,9 +187,7 @@ ohos_executable("merge_abc") {
       libs = [ libcpp_static_lib ]
     }
 
-    defines = [
-      "PANDA_TARGET_LINUX",
-    ]
+    defines = [ "PANDA_TARGET_LINUX" ]
 
     # for statically linking pthread
     ldflags += [
@@ -199,13 +197,9 @@ ohos_executable("merge_abc") {
       "-Wl,--no-whole-archive",
     ]
   } else if (is_mac) {
-    defines = [
-      "PANDA_TARGET_MACOS",
-    ]
+    defines = [ "PANDA_TARGET_MACOS" ]
   } else if (is_mingw) {
-    defines = [
-      "PANDA_TARGET_WINDOWS",
-    ]
+    defines = [ "PANDA_TARGET_WINDOWS" ]
   }
 
   if (!is_mac) {

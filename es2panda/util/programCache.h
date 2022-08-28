@@ -13,18 +13,19 @@
  * limitations under the License.
  */
 
-syntax = "proto3";
-package protoPanda;
+#ifndef ES2PANDA_UTIL_PROGRAM_CACHE_H
+#define ES2PANDA_UTIL_PROGRAM_CACHE_H
 
-import "assemblyProgram.proto";
+#include <assembly-program.h>
 
-message ProgramCache {
-    bytes fileName = 1;
-    uint32 hashCode = 2;
-    Program program = 3;
-}
+namespace panda::es2panda::util {
+struct ProgramCache {
+    uint32_t hashCode;
+    panda::pandasm::Program* program;
 
-message CompositeProgram {
-    repeated ProgramCache ProgramCache = 1;
-    bool isDebug = 2;
-}
+    ProgramCache(uint32_t hashCode, panda::pandasm::Program* program) : hashCode(hashCode), program(program)
+    {
+    }
+};
+} //panda::es2panda::util
+#endif

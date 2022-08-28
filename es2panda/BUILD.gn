@@ -239,6 +239,7 @@ es2panda_src = [
   "util/bitset.cpp",
   "util/dumper.cpp",
   "util/helpers.cpp",
+  "util/moduleHelpers.cpp",
   "util/ustring.cpp",
 ]
 

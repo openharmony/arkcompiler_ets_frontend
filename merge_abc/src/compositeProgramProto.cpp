@@ -16,32 +16,33 @@
 #include "compositeProgramProto.h"
 
 namespace panda::proto {
-
-void CompositeProgram::Serialize(const panda::es2panda::util::CompositeProgram &compositeProgram,
-                                 protoPanda::CompositeProgram &protoCompositeProgram)
+void CompositeProgram::Serialize(
+    const std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap, bool isDebug,
+    protoPanda::CompositeProgram &protoCompositeProgram)
 {
-    for (const auto &[fileName, hashProgram] : compositeProgramMap.compositeProgramInfo) {
-        auto protoHashNameProgram = protoCompositeProgram.add_hashnameprogram();
-        protoHashNameProgram->set_filename(fileName);
-        protoHashNameProgram->set_hashcode(hashProgram->hashCode);
-        auto *protoProgram = protoHashNameProgram->mutable_program();
-        Program::Serialize(*(hashProgram->program), *protoProgram);
+    for (const auto &[fileName, programCache] : compositeProgramMap) {
+        auto *protoProgramcache = protoCompositeProgram.add_programcache();
+        protoProgramcache->set_filename(fileName);
+        protoProgramcache->set_hashcode(programCache->hashCode);
+        auto *protoProgram = protoProgramcache->mutable_program();
+        Program::Serialize(*(programCache->program), *protoProgram);
     }
+    protoCompositeProgram.set_isdebug(isDebug);
 }
 
 void CompositeProgram::Deserialize(const protoPanda::CompositeProgram &protoCompositeProgram,
-                                   panda::es2panda::util::CompositeProgramMap &compositeProgramMap,
-                                   panda::ArenaAllocator *allocator)
+    std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap,
+    panda::ArenaAllocator *allocator)
 {
-    for (const auto &protoHashNameProgram : protoCompositeProgram.hashnameprogram()) {
-        auto fileName = protoHashNameProgram.filename();
-        auto hashCode = protoHashNameProgram.hashcode();
-        auto protoProgram = protoHashNameProgram.program();
+    compositeProgramMap.reserve(protoCompositeProgram.programcache_size());
+    for (const auto &protoProgramcache : protoCompositeProgram.programcache()) {
+        auto &fileName = protoProgramcache.filename();
+        auto hashCode = protoProgramcache.hashcode();
+        auto &protoProgram = protoProgramcache.program();
         auto *program = allocator->New<panda::pandasm::Program>();
         Program::Deserialize(protoProgram, *program, allocator);
-        auto *hashProgram = allocator->New<panda::es2panda::util::HashProgram>(hashCode, program);
-        compositeProgramMap.compositeProgramInfo.insert({fileName, hashProgram});
+        auto *programCache = allocator->New<panda::es2panda::util::ProgramCache>(hashCode, program);
+        compositeProgramMap.insert({fileName, programCache});
     }
 }
-
 } // namespace panda::proto

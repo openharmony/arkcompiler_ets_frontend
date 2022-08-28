@@ -25,10 +25,11 @@ public:
     static void GenerateSnapshot(const panda::pandasm::Program &prog, const std::string &outputName);
     static void GenerateProgram(const std::string &inputName, panda::pandasm::Program &prog,
                                 panda::ArenaAllocator *allocator);
-    static panda::es2panda::util::CompositeProgramMap *GetCacheContext(const std::string &cacheFilePath,
-                                                                       panda::ArenaAllocator *allocator);
-    static void UpdateCacheFile(panda::es2panda::util::CompositeProgramMap compositeProgramMap,
-                                const std::string &cacheFilePath);
+    static std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *GetCacheContext(
+        const std::string &cacheFilePath, bool isDebug, panda::ArenaAllocator *allocator);
+    static void UpdateCacheFile(
+        const std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgram,
+        bool &isDebug, const std::string &cacheFilePath);
 };
 } // panda::proto
 #endif

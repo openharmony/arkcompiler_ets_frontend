@@ -41,10 +41,11 @@ void Record::Serialize(const panda::pandasm::Record &record, protoPanda::Record 
 }
 
 void Record::Deserialize(const protoPanda::Record &protoRecord, panda::pandasm::Record &record,
-                        panda::ArenaAllocator *allocator)
+                         panda::ArenaAllocator *allocator)
 {
     record.conflict = protoRecord.conflict();
     RecordMetadata::Deserialize(protoRecord.metadata(), record.metadata, allocator);
+    record.field_list.reserve(protoRecord.fieldlist_size());
     for (const auto &protoField : protoRecord.fieldlist()) {
         auto recordField = panda::pandasm::Field(panda::panda_file::SourceLang::ECMASCRIPT);
         Field::Deserialize(protoField, recordField, allocator);

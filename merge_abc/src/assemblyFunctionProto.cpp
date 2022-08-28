@@ -110,20 +110,23 @@ void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pan
                            panda::ArenaAllocator *allocator)
 {
     FunctionMetadata::Deserialize(protoFunction.metadata(), function.metadata, allocator);
+    function.label_table.reserve(protoFunction.labeltable_size());
     for (const auto &labelUnit : protoFunction.labeltable()) {
-        auto name = labelUnit.key();
-        auto protoLabel = labelUnit.value();
+        auto &name = labelUnit.key();
+        auto &protoLabel = labelUnit.value();
         panda::pandasm::Label label(name);
         Label::Deserialize(protoLabel, label);
         function.label_table.insert({name, label});
     }
 
+    function.ins.reserve(protoFunction.ins_size());
     for (const auto &protoIns : protoFunction.ins()) {
         panda::pandasm::Ins ins;
         Ins::Deserialize(protoIns, ins);
         function.ins.emplace_back(std::move(ins));
     }
 
+    function.local_variable_debug.reserve(protoFunction.localvariabledebug_size());
     for (const auto &protoLocalVariable : protoFunction.localvariabledebug()) {
         panda::pandasm::debuginfo::LocalVariable localVariable;
         LocalVariable::Deserialize(protoLocalVariable, localVariable);
@@ -133,8 +136,9 @@ void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pan
     function.source_file = protoFunction.sourcefile();
     function.source_code = protoFunction.sourcecode();
 
+    function.catch_blocks.reserve(protoFunction.catchblocks_size());
     for (const auto &protoCatchBlock : protoFunction.catchblocks()) {
-        auto catchBlock = allocator->New<panda::pandasm::Function::CatchBlock>();
+        auto *catchBlock = allocator->New<panda::pandasm::Function::CatchBlock>();
         CatchBlock::Deserialize(protoCatchBlock, *catchBlock);
         function.catch_blocks.emplace_back(std::move(*catchBlock));
     }
@@ -142,8 +146,9 @@ void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pan
     function.value_of_first_param = protoFunction.valueoffirstparam();
     function.regs_num = protoFunction.regsnum();
 
+    function.params.reserve(protoFunction.params_size());
     for (const auto &protoParam : protoFunction.params()) {
-        auto paramType = Type::Deserialize(protoParam.type(), allocator);
+        auto &paramType = Type::Deserialize(protoParam.type(), allocator);
         panda::pandasm::Function::Parameter param(paramType, panda::panda_file::SourceLang::ECMASCRIPT);
         Parameter::Deserialize(protoParam, param, allocator);
         function.params.emplace_back(std::move(param));

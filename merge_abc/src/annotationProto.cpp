@@ -29,7 +29,7 @@ void AnnotationData::Deserialize(const protoPanda::AnnotationData &protoAnno, pa
                                  panda::ArenaAllocator *allocator)
 {
     for (const auto &protoElement : protoAnno.elements()) {
-        panda::pandasm::AnnotationElement element = AnnotationElement::Deserialize(protoElement, allocator);
+        panda::pandasm::AnnotationElement &element = AnnotationElement::Deserialize(protoElement, allocator);
         anno.AddElement(std::move(element));
     }
 }
@@ -53,13 +53,13 @@ panda::pandasm::AnnotationElement &AnnotationElement::Deserialize(const protoPan
                                                                   panda::ArenaAllocator *allocator)
 {
     if (protoElement.valuetype() == protoPanda::AnnotationElement_ValueType::AnnotationElement_ValueType_ARRAY) {
-        panda::pandasm::ArrayValue array = ArrayValue::Deserialize(protoElement.array(), allocator);
-        auto element = allocator->New<panda::pandasm::AnnotationElement>(protoElement.name(),
+        panda::pandasm::ArrayValue &array = ArrayValue::Deserialize(protoElement.array(), allocator);
+        auto *element = allocator->New<panda::pandasm::AnnotationElement>(protoElement.name(),
             std::make_unique<panda::pandasm::ArrayValue>(array));
         return *element;
     }
     panda::pandasm::ScalarValue scalar = ScalarValue::Deserialize(protoElement.scalar(), allocator);
-    auto element = allocator->New<panda::pandasm::AnnotationElement>(protoElement.name(),
+    auto *element = allocator->New<panda::pandasm::AnnotationElement>(protoElement.name(),
         std::make_unique<panda::pandasm::ScalarValue>(scalar));
     return *element;
 }
@@ -155,8 +155,8 @@ panda::pandasm::ScalarValue ScalarValue::Deserialize(const protoPanda::ScalarVal
             break;
         }
         case protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_ANNOTATION_DATA: {
-            auto protoAnnotationData = protoScalar.valueanno();
-            auto value = allocator->New<panda::pandasm::AnnotationData>(protoAnnotationData.recordname());
+            auto &protoAnnotationData = protoScalar.valueanno();
+            auto *value = allocator->New<panda::pandasm::AnnotationData>(protoAnnotationData.recordname());
             AnnotationData::Deserialize(protoAnnotationData, *value, allocator);
             break;
         }
@@ -256,11 +256,12 @@ panda::pandasm::ArrayValue &ArrayValue::Deserialize(const protoPanda::ArrayValue
                                                     panda::ArenaAllocator *allocator)
 {
     std::vector<panda::pandasm::ScalarValue> values;
+    values.reserve(protoArray.values_size());
     for (const auto &protoValue : protoArray.values()) {
         panda::pandasm::ScalarValue scalar = ScalarValue::Deserialize(protoValue, allocator);
         values.emplace_back(std::move(scalar));
     }
-    auto array = allocator->New<panda::pandasm::ArrayValue>(
+    auto *array = allocator->New<panda::pandasm::ArrayValue>(
         static_cast<panda::pandasm::Value::Type>(protoArray.componenttype()), values);
     return *array;
 }

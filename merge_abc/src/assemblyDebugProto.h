@@ -16,8 +16,8 @@
 #ifndef MERGE_ABC_ASSEMBLY_DEBUG_H
 #define MERGE_ABC_ASSEMBLY_DEBUG_H
 
-#include "assembly-program.h"
 #include "assemblyDebug.pb.h"
+#include "assembly-program.h"
 
 namespace panda::proto {
 class DebuginfoIns {

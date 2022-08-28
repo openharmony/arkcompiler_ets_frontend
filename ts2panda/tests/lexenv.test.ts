@@ -39,6 +39,7 @@ import {
     LdaDyn,
     LdaiDyn,
     LdaStr,
+    ResultType,
     ReturnDyn,
     StaDyn,
     VReg
@@ -115,7 +116,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
     it("test CompilerDriver.scanFunctions-with-empty", function () {
         let source: string = ``;
         let sourceFile = creatAstFromSnippet(source);
-        let compilerDriver = new CompilerDriver('UnitTest', 'UnitTest');
+        let compilerDriver = new CompilerDriver('UnitTest');
         let globalScope = new GlobalScope(sourceFile);
         let recorder = new Recorder(sourceFile, globalScope, compilerDriver, false, false, true);
         recorder.record();
@@ -143,7 +144,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
       var funcExpression = function() { }
     `;
         let sourceFile = creatAstFromSnippet(source);
-        let compilerDriver = new CompilerDriver('UnitTest', 'UnitTest');
+        let compilerDriver = new CompilerDriver('UnitTest');
         let globalScope = new GlobalScope(sourceFile);
         let recorder = new Recorder(sourceFile, globalScope, compilerDriver, false, false, true);
         recorder.record();
@@ -190,7 +191,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
         let source: string = `
     `;
         let sourceFile = creatAstFromSnippet(source);
-        let compilerDriver = new CompilerDriver('UnitTest', 'UnitTest');
+        let compilerDriver = new CompilerDriver('UnitTest');
         let globalScope = new GlobalScope(sourceFile);
 
         let recorder = new Recorder(sourceFile, globalScope, compilerDriver, false, false, true);
@@ -214,7 +215,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
       var funcExt = function() { }
     `;
         let sourceFile = creatAstFromSnippet(source);
-        let compilerDriver = new CompilerDriver('UnitTest', 'UnitTest');
+        let compilerDriver = new CompilerDriver('UnitTest');
         let globalScope = new GlobalScope(sourceFile);
 
         let recorder = new Recorder(sourceFile, globalScope, compilerDriver, false, false, true);
@@ -268,7 +269,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
     })))
     `;
         let sourceFile = creatAstFromSnippet(source);
-        let compilerDriver = new CompilerDriver('UnitTest', 'UnitTest');
+        let compilerDriver = new CompilerDriver('UnitTest');
         let globalScope = new GlobalScope(sourceFile);
 
         let recorder = new Recorder(sourceFile, globalScope, compilerDriver, false, false, true);
@@ -411,7 +412,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
         let expected_main = [
             new LdaDyn(new VReg()),
             new EcmaStglobalvar("outer"),
-            new EcmaDefinefuncdyn("UnitTest.func", new Imm(0), new VReg()),
+            new EcmaDefinefuncdyn("func", new Imm(0), new VReg()),
             new EcmaStglobalvar("func"),
             new LdaiDyn(new Imm(1)),
             new EcmaStglobalvar("outer"),
@@ -424,9 +425,9 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
         ];
 
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "UnitTest.func_main_0") {
+            if (pg.internalName == "func_main_0") {
                 expect(checkInstructions(pg.getInsns(), expected_main)).to.be.true;
-            } else if (pg.internalName == "UnitTest.func") {
+            } else if (pg.internalName == "func") {
                 expect(checkInstructions(pg.getInsns(), expected_func)).to.be.true;
             }
         })
@@ -446,7 +447,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
         let pandaGens = compileAllSnippet(source, passes);
         let expected_main = [
             ...insnsCreateLexEnv_main,
-            new EcmaDefinefuncdyn("UnitTest.func", new Imm(0), new VReg()),
+            new EcmaDefinefuncdyn("func", new Imm(0), new VReg()),
             new EcmaStglobalvar("func"), // global.func = func_func_1
             new LdaiDyn(new Imm(1)), // value = 1
             // ...insnsStoreLexVar_main,
@@ -464,11 +465,11 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
 
         pandaGens.forEach((pg) => {
             let scope = <VariableScope>pg.getScope();
-            if (pg.internalName == "UnitTest.func_main_0") {
+            if (pg.internalName == "func_main_0") {
                 expect(checkInstructions(pg.getInsns(), expected_main), "check main insns").to.be.true;
                 expect(scope.getNumLexEnv(), "main scope has 0 lexvar").to.be.equal(0);
                 // expect(scope.hasLexEnv(), "main scope has lexenv").to.be.true;
-            } else if (pg.internalName == "UnitTest.func") {
+            } else if (pg.internalName == "func") {
 
                 expect(checkInstructions(pg.getInsns(), expected_func), "check func insns").to.be.true;
                 expect(scope.getNumLexEnv(), "func scope has 1 lexvar").to.be.equal(0);
@@ -504,7 +505,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
             new LdaDyn(new VReg()),
             new StaDyn(new VReg()),
             ...insnsStoreLexVar_outer_2,
-            new EcmaDefinefuncdyn("UnitTest.#1#", new Imm(0), new VReg()),
+            new EcmaDefinefuncdyn("#1#", new Imm(0), new VReg()),
             // returnStatement
             new StaDyn(new VReg()),
             new LdaDyn(new VReg()),
@@ -535,13 +536,13 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
         snippetCompiler.compile(source, passes);
 
         // check compile result!
-        let outerPg = snippetCompiler.getPandaGenByName("UnitTest.outer");
+        let outerPg = snippetCompiler.getPandaGenByName("outer");
         let outerScope = outerPg!.getScope();
         let outerA = outerScope!.findLocal("a");
         expect(outerA instanceof LocalVariable, "a in outer is local variable").to.be.true;
         // expect((<FunctionScope>outerScope).hasLexEnv(), "outer scope need to create lex env").to.be.true;
         expect((<FunctionScope>outerScope).getNumLexEnv(), "number of lexvar at outer scope").to.be.equal(2);
-        let anonymousPg = snippetCompiler.getPandaGenByName("UnitTest.#1#");
+        let anonymousPg = snippetCompiler.getPandaGenByName("#1#");
         let anonymousScope = anonymousPg!.getScope();
         let anonymousA = anonymousScope!.findLocal("a");
         let searchRlt = anonymousScope!.find("a");
@@ -550,7 +551,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
         expect(anonymousA, "no a in anonymous function").to.be.undefined;
         // expect((<FunctionScope>anonymousScope).hasLexEnv(), "anonymous scope had lex env").to.be.true;
         expect((<FunctionScope>anonymousScope).getNumLexEnv()).to.be.equal(0);
-        let globalPg = snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
+        let globalPg = snippetCompiler.getPandaGenByName("func_main_0");
         let globalScope = globalPg!.getScope();
         let globalA = globalScope!.findLocal("a");
         expect(globalA instanceof GlobalVariable, "globalA is GlobalVariable").to.be.true;

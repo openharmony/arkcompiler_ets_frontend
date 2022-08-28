@@ -109,6 +109,7 @@ void LiteralArray::Serialize(const panda::pandasm::LiteralArray &array, protoPan
 
 void LiteralArray::Deserialize(const protoPanda::LiteralArray &protoArray, panda::pandasm::LiteralArray &array)
 {
+    array.literals_.reserve(protoArray.literals_size());
     for (const auto &protoLiteral : protoArray.literals()) {
         panda::pandasm::LiteralArray::Literal literal;
         Literal::Deserialize(protoLiteral, literal);

@@ -16,8 +16,8 @@
 #ifndef MERGE_ABC_ASSEMBLY_LITERALS_H
 #define MERGE_ABC_ASSEMBLY_LITERALS_H
 
-#include "assembly-program.h"
 #include "assemblyLiterals.pb.h"
+#include "assembly-program.h"
 
 namespace panda::proto {
 class VariantValue {

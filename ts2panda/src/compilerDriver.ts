@@ -61,7 +61,6 @@ export class PendingCompilationUnit {
 export class CompilerDriver {
     static isTsFile: boolean = false;
     private fileName: string;
-    private recordName: string;
     private passes: Pass[] = [];
     private compilationUnits: PandaGen[];
     pendingCompilationUnits: PendingCompilationUnit[];
@@ -71,9 +70,8 @@ export class CompilerDriver {
     private needDumpHeader: boolean = true;
     private ts2abcProcess: any = undefined;
 
-    constructor(fileName: string, recordName: string) {
+    constructor(fileName: string) {
         this.fileName = fileName;
-        this.recordName = recordName;
         // register passes here
         this.passes = [
             new CacheExpander(),
@@ -180,7 +178,6 @@ export class CompilerDriver {
             listenErrorEvent(ts2abcProc);
 
             try {
-                Ts2Panda.dumpRecord(ts2abcProc, this.recordName);
                 Ts2Panda.dumpCmdOptions(ts2abcProc);
 
                 for (let i = 0; i < this.pendingCompilationUnits.length; i++) {
@@ -366,13 +363,13 @@ export class CompilerDriver {
             if (name == '') {
                 if ((ts.isFunctionDeclaration(node) && hasExportKeywordModifier(node) && hasDefaultKeywordModifier(node))
                     || ts.isExportAssignment(findOuterNodeOfParenthesis(node))) {
-                    return `${this.recordName}.default`;
+                    return 'default';
                 }
-                return `${this.recordName}.#${this.getFuncId(funcNode)}#`;
+                return `#${this.getFuncId(funcNode)}#`;
             }
 
             if (name == "func_main_0") {
-                return `${this.recordName}.#${this.getFuncId(funcNode)}#${name}`;
+                return `#${this.getFuncId(funcNode)}#${name}`;
             }
 
             let funcNameMap = recorder.getFuncNameMap();
@@ -389,7 +386,7 @@ export class CompilerDriver {
                 name = `#${this.getFuncId(funcNode)}#`
             }
         }
-        return `${this.recordName}.${name}`;
+        return name;
     }
 
     getInternalNameForCtor(node: ts.ClassLikeDeclaration, ctor: ts.ConstructorDeclaration) {
@@ -398,7 +395,7 @@ export class CompilerDriver {
         if (name.lastIndexOf(".") != -1) {
             name = `#${this.getFuncId(ctor)}#`
         }
-        return `${this.recordName}.${name}`;
+        return name;
     }
 
     writeBinaryFile(pandaGen: PandaGen) {

@@ -16,18 +16,19 @@
 #ifndef MERGE_ABC_MERGE_PROGRAM_H
 #define MERGE_ABC_MERGE_PROGRAM_H
 
+#include "assembly-function.h"
 #include "assembly-ins.h"
 #include "assembly-program.h"
-#include "assembler/assembly-function.h"
 
 namespace panda::proto {
 class MergeProgram {
 public:
-    static bool GetProtoFiles(std::string &protoBinPath, std::string &protoBinSuffix,
+    static bool GetProtoFiles(const std::string &protoBinPath, const std::string &protoBinSuffix,
                               std::vector<std::string> &directoryFiles);
-    static bool AppendProtoFiles(std::string filePath, std::string protoBinSuffix,
+    static bool AppendProtoFiles(const std::string &filePath, const std::string &protoBinSuffix,
                                  std::vector<std::string> &protoFiles);
-    static bool CollectProtoFiles(std::string input, std::string protoBinSuffix, std::vector<std::string> &protoFiles);
+    static bool CollectProtoFiles(std::string &input, const std::string &protoBinSuffix,
+                                  std::vector<std::string> &protoFiles);
 };
 } // namespace panda::proto
-#endif  // MERGE_ABC_MERGE_PROGRAM_H
+#endif

@@ -16,9 +16,9 @@
 #ifndef MERGE_ABC_ASSEMBLY_LABEL_H
 #define MERGE_ABC_ASSEMBLY_LABEL_H
 
-#include "assembly-program.h"
 #include "assemblyFileLocationProto.h"
 #include "assemblyLabel.pb.h"
+#include "assembly-program.h"
 
 namespace panda::proto {
 class Label {

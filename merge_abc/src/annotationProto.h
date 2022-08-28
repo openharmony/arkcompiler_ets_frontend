@@ -16,10 +16,10 @@
 #ifndef MERGE_ABC_ANNOTATION_H
 #define MERGE_ABC_ANNOTATION_H
 
-#include "assembly-program.h"
-#include "assemblyTypeProto.h"
 #include "annotation.pb.h"
 #include "arena_allocator.h"
+#include "assembly-program.h"
+#include "assemblyTypeProto.h"
 
 namespace panda::proto {
 class AnnotationData {

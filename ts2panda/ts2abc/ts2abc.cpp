@@ -26,8 +26,8 @@
 #include "json/json.h"
 #include "securec.h"
 #include "ts2abc_options.h"
-#include "type_adapter.h"
 #include "ts2abc.h"
+#include "type_adapter.h"
 #include "protobufSnapshotGenerator.h"
 
 #ifdef ENABLE_BYTECODE_OPT
@@ -886,7 +886,8 @@ static void ParseIsDtsFile(const Json::Value &rootValue)
     }
 }
 
-static void ParseCompilerOutputProto(const Json::Value &rootValue) {
+static void ParseCompilerOutputProto(const Json::Value &rootValue)
+{
     Logd("-----------------parse compiler output proto-----------------");
     if (rootValue.isMember("output-proto") && rootValue["output-proto"].isString()) {
         g_compilerOutputProto = rootValue["output-proto"].asString();
@@ -1266,7 +1267,8 @@ static bool ReadFromPipe(panda::pandasm::Program &prog)
     return true;
 }
 
-bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string &output, panda::ts2abc::Options options)
+bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string &output,
+                     panda::ts2abc::Options options)
 {
     bool isParsingFromPipe = options.GetCompileByPipeArg();
     int optLevel = options.GetOptLevelArg();

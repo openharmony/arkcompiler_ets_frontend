@@ -16,11 +16,11 @@
 #ifndef MERGE_ABC_META_H
 #define MERGE_ABC_META_H
 
-#include "assembly-program.h"
 #include "annotationProto.h"
+#include "arena_allocator.h"
+#include "assembly-program.h"
 #include "assemblyTypeProto.h"
 #include "meta.pb.h"
-#include "arena_allocator.h"
 
 namespace panda::proto {
 class RecordMetadata {

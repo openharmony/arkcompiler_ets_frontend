@@ -36,8 +36,7 @@ import {
     ModuleRecord,
     NamespaceImportEntry,
     RegularImportEntry,
-    Signature,
-    Record
+    Signature
 } from "./pandasm";
 import { generateCatchTables } from "./statement/tryStatement";
 import {
@@ -198,8 +197,7 @@ export class Ts2Panda {
             "opt_level": CmdOptions.getOptLevel(),
             "opt_log_level": CmdOptions.getOptLogLevel(),
             "display_typeinfo": CmdOptions.getDisplayTypeinfo(),
-            "is_dts_file": isGlobalDeclare(),
-            "output-proto": CmdOptions.getOutputproto()
+            "is_dts_file": isGlobalDeclare()
         };
         let jsonOpt = JSON.stringify(options, null, 2);
         jsonOpt = "$" + jsonOpt.replace(dollarSign, '#$') + "$";
@@ -207,19 +205,6 @@ export class Ts2Panda {
             Ts2Panda.jsonString += jsonOpt;
         }
         ts2abc.stdio[3].write(jsonOpt + '\n');
-    }
-
-    static dumpRecord(ts2abc: any, recordName: string): void {
-        let record = {
-            "t": JsonType.record,
-            "rb": new Record(recordName)
-        }
-        let jsonRecord = escapeUnicode(JSON.stringify(record, null, 2));
-        jsonRecord = "$" + jsonRecord.replace(dollarSign, '#$') + "$";
-        if (CmdOptions.isEnableDebugLog()) {
-            Ts2Panda.jsonString += jsonRecord;
-        }
-        ts2abc.stdio[3].write(jsonRecord + '\n');
     }
 
     // @ts-ignore
@@ -245,7 +230,7 @@ export class Ts2Panda {
                 }
             });
 
-            if (funcName.indexOf("func_main_0") !== -1) {
+            if (funcName == "func_main_0") {
                 let exportedTypes = PandaGen.getExportedTypes();
                 let declareddTypes = PandaGen.getDeclaredTypes();
                 if (exportedTypes.size != 0) {

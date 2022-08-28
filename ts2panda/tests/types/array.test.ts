@@ -30,7 +30,7 @@ describe("array tests in array.test.ts", function() {
     it("test array with primitives", function() {
         let fileNames = 'tests/types/array/array_primitives.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -75,7 +75,7 @@ describe("array tests in array.test.ts", function() {
     it("test array with class", function() {
         let fileNames = 'tests/types/array/array_class.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -108,7 +108,7 @@ describe("array tests in array.test.ts", function() {
     it("test array with multi same primitive", function() {
         let fileNames = 'tests/types/array/array_multi_same_primi.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -159,7 +159,7 @@ describe("array tests in array.test.ts", function() {
     it("test array with multi same class", function() {
         let fileNames = 'tests/types/array/array_multi_same_class.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -193,7 +193,7 @@ describe("array tests in array.test.ts", function() {
     it("test array with union", function() {
         let fileNames = 'tests/types/array/array_union.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -222,7 +222,7 @@ describe("array tests in array.test.ts", function() {
     it("test array with object", function() {
         let fileNames = 'tests/types/array/array_object.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
