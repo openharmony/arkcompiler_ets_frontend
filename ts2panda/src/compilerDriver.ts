@@ -148,8 +148,11 @@ export class CompilerDriver {
     }
 
     compileForSyntaxCheck(node: ts.SourceFile): void {
-       let recorder = this.compilePrologue(node, false, true);
-       checkDuplicateDeclaration(recorder);
+        if (CompilerDriver.isTypeScriptSourceFile(node)) {
+            return;
+        }
+        let recorder = this.compilePrologue(node, false, true);
+        checkDuplicateDeclaration(recorder);
     }
 
     compile(node: ts.SourceFile): void {

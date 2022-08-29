@@ -626,6 +626,7 @@ function generatePropertyFromExpr(node: ts.ClassLikeDeclaration, classFields: Ar
                 break;
             }
             case ts.SyntaxKind.SemicolonClassElement:
+            case ts.SyntaxKind.IndexSignature:
                 break;
             default:
                 throw new Error("Unreachable Kind");

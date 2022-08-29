@@ -351,7 +351,9 @@ export class TypeChecker {
         switch (node.kind) {
             case ts.SyntaxKind.VariableStatement:
                 let variableStatementNode = <ts.VariableStatement>ts.getOriginalNode(node);
-                this.formatVariableStatement(variableStatementNode);
+                if (variableStatementNode.kind == ts.SyntaxKind.VariableStatement) {
+                    this.formatVariableStatement(variableStatementNode);
+                }
                 break;
             case ts.SyntaxKind.FunctionDeclaration:
                 let functionDeclNode = <ts.FunctionDeclaration>ts.getOriginalNode(node);
