@@ -379,7 +379,7 @@ class TestPrepare():
         pool.join()
 
     def prepare_test262_test(self):
-        src_dir = os.path.join(DATA_DIR, "test")
+        src_dir = TEST_FULL_DIR
         if self.args.es51:
             self.prepare_test_suit()
             src_dir = TEST_ES5_DIR
@@ -480,11 +480,8 @@ def get_host_args(args, host_type):
     ark_frontend = DEFAULT_ARK_FRONTEND
     ark_frontend_binary = DEFAULT_ARK_FRONTEND_BINARY
     ark_arch = DEFAULT_ARK_ARCH
-    module_list = ''
     opt_level = DEFAULT_OPT_LEVEL
     es2abc_thread_count = DEFAULT_ES2ABC_THREAD_COUNT
-    with open(MODULE_FILES_LIST) as fopen:
-        module_list = fopen.read()
 
     if args.hostArgs:
         host_args = args.hostArgs
@@ -519,7 +516,6 @@ def get_host_args(args, host_type):
         host_args += f"--libs-dir={libs_dir} "
         host_args += f"--ark-frontend={ark_frontend} "
         host_args += f"--ark-frontend-binary={ark_frontend_binary} "
-        host_args += f"--module-list={module_list} "
         host_args += f"--opt-level={opt_level} "
         host_args += f"--es2abc-thread-count={es2abc_thread_count} "
 

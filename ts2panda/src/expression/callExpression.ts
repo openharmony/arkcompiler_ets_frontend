@@ -26,7 +26,15 @@ import { getObjAndProp } from "./memberAccessExpression";
 // @ts-ignore
 export function compileCallExpression(expr: ts.CallExpression, compiler: Compiler, inTailPos?: boolean) {
     let pandaGen = compiler.getPandaGen();
-    // import call should be supported further
+
+    if (expr.expression.kind == ts.SyntaxKind.ImportKeyword) {
+        let moduleSpecifierReg = pandaGen.getTemp();
+        compiler.compileExpression(expr.arguments[0]);
+        pandaGen.storeAccumulator(expr.arguments[0], moduleSpecifierReg);
+        pandaGen.dynamicImportCall(expr, moduleSpecifierReg);
+        pandaGen.freeTemps(moduleSpecifierReg);
+        return;
+    }
 
     if ((expr.expression.kind == ts.SyntaxKind.CallExpression) || (expr.expression.kind == ts.SyntaxKind.NewExpression)) {
         let processed = compiler.compileFunctionReturnThis(<ts.NewExpression | ts.CallExpression>expr.expression);

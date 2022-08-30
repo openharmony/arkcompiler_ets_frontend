@@ -39,6 +39,7 @@ import {
     EcmaDefinemethod,
     EcmaDefinencfuncdyn,
     EcmaDelobjprop,
+    EcmaDynamicimport,
     EcmaGetiterator,
     EcmaGetiteratornext,
     EcmaGetnextpropname,
@@ -381,6 +382,10 @@ export function storeModuleVariable(name: string) {
 
 export function getModuleNamespace(localName: string) {
     return new EcmaGetmodulenamespace(localName);
+}
+
+export function dynamicImport(moduleSpecifier: VReg) {
+    return new EcmaDynamicimport(moduleSpecifier);
 }
 
 export function loadHomeObject() {

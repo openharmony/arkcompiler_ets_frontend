@@ -172,8 +172,9 @@ def collect_module_dependencies(file, directory, traversedDependencies):
     traversedDependencies.append(file)
     with open(file, 'r', encoding='utf-8') as f:
         content = f.read()
-        result_arr = re.findall(r'(import|from)(?:\s*)(\'(\.\/.*)\'|"(\.\/.*)")', content)
-        for result in result_arr:
+        module_import_list = re.findall(r'(import|from)(?:\s*)\(?(\'(\.\/.*)\'|"(\.\/.*)")\)?', content)
+
+        for result in list(set(module_import_list)):
             specifier = result[2] if len(result[2]) != 0 else result[3]
             if re.search(r'\S+_FIXTURE.js$', specifier):
                 dependency = search_dependency(specifier.lstrip('./'), directory)

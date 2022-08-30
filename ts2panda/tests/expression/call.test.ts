@@ -24,6 +24,7 @@ import {
     EcmaCallspreaddyn,
     EcmaCreatearraywithbuffer,
     EcmaCreateemptyarray,
+    EcmaDynamicimport,
     EcmaLdobjbyname,
     EcmaLdobjbyvalue,
     EcmaReturnundefined,
@@ -34,6 +35,7 @@ import {
     Imm,
     LdaDyn,
     LdaiDyn,
+    LdaStr,
     ResultType,
     StaDyn,
     VReg
@@ -150,4 +152,16 @@ describe("CallTest", function () {
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
+
+    it("import calls", function () {
+        let insns = compileMainSnippet(`import('./test.js');`);
+        let specifier = new VReg();
+        let expected = [
+            new LdaStr("./test.js"),
+            new StaDyn(specifier),
+            new EcmaDynamicimport(specifier),
+            new EcmaReturnundefined()
+        ];
+        expect(checkInstructions(insns, expected)).to.be.true;
+    })
 });

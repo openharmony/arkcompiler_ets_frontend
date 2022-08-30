@@ -1486,6 +1486,11 @@ void PandaGen::GetModuleNamespace(const ir::AstNode *node, const util::StringVie
     strings_.insert(name);
 }
 
+void PandaGen::DynamicImportCall(const ir::AstNode *node, VReg moduleSpecifier)
+{
+    ra_.Emit<EcmaDynamicimport>(node, moduleSpecifier);
+}
+
 void PandaGen::StSuperByName(const ir::AstNode *node, VReg obj, const util::StringView &key)
 {
     ra_.Emit<EcmaStsuperbyname>(node, key, obj);
