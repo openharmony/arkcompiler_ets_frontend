@@ -45,6 +45,8 @@
 #include <ir/ts/tsConstructorType.h>
 #include <ir/ts/tsFunctionType.h>
 #include <ir/ts/tsMethodSignature.h>
+#include <ir/ts/tsModuleBlock.h>
+#include <ir/ts/tsModuleDeclaration.h>
 #include <ir/ts/tsSignatureDeclaration.h>
 
 namespace panda::es2panda::binder {
@@ -551,6 +553,16 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
         case ir::AstNodeType::TS_METHOD_SIGNATURE:
         case ir::AstNodeType::TS_SIGNATURE_DECLARATION: {
             BuildTSSignatureDeclarationBaseParams(childNode);
+            break;
+        }
+        case ir::AstNodeType::TS_MODULE_DECLARATION: {
+            auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsTSModuleDeclaration()->Scope());
+            ResolveReferences(childNode);
+            break;
+        }
+        case ir::AstNodeType::TS_MODULE_BLOCK: {
+            auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsTSModuleBlock()->Scope());
+            ResolveReferences(childNode);
             break;
         }
         default: {
