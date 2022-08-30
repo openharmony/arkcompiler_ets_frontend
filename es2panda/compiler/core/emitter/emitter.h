@@ -106,6 +106,7 @@ public:
 
 private:
     void SetCommonjsField(bool isCommonjs);
+    void GenCommonjsRecord() const;
 
     std::mutex m_;
     panda::pandasm::Program *prog_;

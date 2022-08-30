@@ -338,12 +338,17 @@ Emitter::Emitter(const CompilerContext *context)
 {
     prog_ = new panda::pandasm::Program();
     prog_->lang = LANG_EXT;
-
-    rec_ = new panda::pandasm::Record(context->Binder()->Program()->RecordName().Mutf8(), LANG_EXT);
-
     prog_->function_table.reserve(context->Binder()->Functions().size());
 
-    SetCommonjsField(context->Binder()->Program()->Kind() == parser::ScriptKind::COMMONJS);
+    if (context->IsMergeAbc()) {
+        rec_ = new panda::pandasm::Record(context->Binder()->Program()->RecordName().Mutf8(), LANG_EXT);
+        SetCommonjsField(context->Binder()->Program()->Kind() == parser::ScriptKind::COMMONJS);
+    } else {
+        rec_ = nullptr;
+        if (context->Binder()->Program()->Kind() == parser::ScriptKind::COMMONJS) {
+            GenCommonjsRecord();
+        }
+    }
 }
 
 Emitter::~Emitter()
@@ -372,13 +377,25 @@ void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, const Compi
 {
     std::lock_guard<std::mutex> lock(m_);
 
-    auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
-    moduleIdxField.name = "moduleRecordIdx";
-    moduleIdxField.type = panda::pandasm::Type("u32", 0);
-    moduleIdxField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(
-        static_cast<uint32_t>(module->Index())));
-    rec_->field_list.emplace_back(std::move(moduleIdxField));
+    if (context->IsMergeAbc()) {
+        auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
+        moduleIdxField.name = "moduleRecordIdx";
+        moduleIdxField.type = panda::pandasm::Type("u32", 0);
+        moduleIdxField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(
+            static_cast<uint32_t>(module->Index())));
+        rec_->field_list.emplace_back(std::move(moduleIdxField));
+    } else {
+        auto ecmaModuleRecord = panda::pandasm::Record("_ESModuleRecord", LANG_EXT);
+        ecmaModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
 
+        auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
+        moduleIdxField.name = std::string {context->Binder()->Program()->SourceFile()};
+        moduleIdxField.type = panda::pandasm::Type("u32", 0);
+        moduleIdxField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(
+            static_cast<uint32_t>(module->Index())));
+        ecmaModuleRecord.field_list.emplace_back(std::move(moduleIdxField));
+        prog_->record_table.emplace(ecmaModuleRecord.name, std::move(ecmaModuleRecord));
+    }
     auto &moduleLiteralsBuffer = module->Buffer();
     auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(moduleLiteralsBuffer));
     prog_->literalarray_table.emplace(std::to_string(module->Index()), std::move(literalArrayInstance));
@@ -416,10 +433,6 @@ void Emitter::DumpAsm(const panda::pandasm::Program *prog)
         }
     }
 
-    for (auto &[name, rec] : prog->record_table) {
-        ss << ".record " << name << '(';
-    }
-
     ss << std::endl;
 }
 
@@ -430,9 +443,11 @@ panda::pandasm::Program *Emitter::Finalize(bool dumpDebugInfo)
         dumper.Dump();
     }
 
-    prog_->record_table.emplace(rec_->name, std::move(*rec_));
-    delete rec_;
-    rec_ = nullptr;
+    if (rec_) {
+        prog_->record_table.emplace(rec_->name, std::move(*rec_));
+        delete rec_;
+        rec_ = nullptr;
+    }
 
     auto *prog = prog_;
     prog_ = nullptr;

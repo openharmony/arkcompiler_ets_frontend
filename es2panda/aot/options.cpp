@@ -42,6 +42,11 @@ T RemoveExtension(T const &filename)
     return P > 0 && P != T::npos ? filename.substr(0, P) : filename;
 }
 
+static std::string FormatRecordName(const std::string &recordName)
+{
+    return recordName + ".";
+}
+
 static std::vector<std::string> GetStringItems(std::string &input, const std::string &delimiter)
 {
     std::vector<std::string> items;
@@ -79,7 +84,7 @@ bool Options::CollectInputFilesFromFileList(const std::string &input)
             return false;
         }
         std::string fileName = itemList[0];
-        std::string recordName = itemList[1];
+        std::string recordName = FormatRecordName(itemList[1]);
         parser::ScriptKind scriptKind;
         if (itemList[2] == "script") {
             scriptKind = parser::ScriptKind::SCRIPT;
@@ -150,6 +155,7 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<std::string> outputProto("outputProto", "", "compiler proto serialize binary output (.proto)");
     panda::PandArg<std::string> opCacheFile("cache-file", "", "cache file for incremental compile");
     panda::PandArg<std::string> opNpmModuleEntryList("npm-module-entry-list", "", "entry list file for module compile");
+    panda::PandArg<bool> opMergeAbc("merge-abc", false, "Compile as merge abc");
 
     // tail arguments
     panda::PandArg<std::string> inputFile("input", "", "input file");
@@ -180,6 +186,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&outputProto);
     argparser_->Add(&opCacheFile);
     argparser_->Add(&opNpmModuleEntryList);
+    argparser_->Add(&opMergeAbc);
 
     argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
@@ -258,9 +265,12 @@ bool Options::Parse(int argc, const char **argv)
         compilerOutput_ = RemoveExtension(BaseName(sourceFile_)).append(".abc");
     }
 
-    recordName_ = recordName.GetValue();
-    if (recordName_.empty()) {
-        recordName_ = compilerOutput_.empty() ? "Base64Output" : RemoveExtension(BaseName(compilerOutput_));
+    if (opMergeAbc.GetValue()) {
+        recordName_ = recordName.GetValue();
+        if (recordName_.empty()) {
+            recordName_ = compilerOutput_.empty() ? "Base64Output" : RemoveExtension(BaseName(compilerOutput_));
+        }
+        recordName_ = FormatRecordName(recordName_);
     }
 
     if (!inputIsEmpty) {
@@ -327,6 +337,7 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.debugInfoSourceFile = sourceFile.GetValue();
     compilerOptions_.optLevel = opOptLevel.GetValue();
     compilerOptions_.sourceFiles = sourceFiles_;
+    compilerOptions_.mergeAbc = opMergeAbc.GetValue();
 
     return true;
 }

@@ -34,7 +34,7 @@ class Emitter;
 class CompilerContext {
 public:
     CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
-                    std::string sourceFile);
+                    bool isMergeAbc, std::string sourceFile);
     NO_COPY_SEMANTIC(CompilerContext);
     NO_MOVE_SEMANTIC(CompilerContext);
     ~CompilerContext() = default;
@@ -75,6 +75,11 @@ public:
         return isDebuggerEvaluateExpressionMode_;
     }
 
+    bool IsMergeAbc() const
+    {
+        return isMergeAbc_;
+    }
+
     std::string SourceFile() const
     {
         return sourceFile_;
@@ -87,6 +92,7 @@ private:
     std::mutex m_;
     bool isDebug_;
     bool isDebuggerEvaluateExpressionMode_;
+    bool isMergeAbc_;
     std::string sourceFile_;
 };
 

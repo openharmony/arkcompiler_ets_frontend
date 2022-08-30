@@ -39,7 +39,7 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
     const std::string &debugInfoSourceFile)
 {
     CompilerContext context(program->Binder(), options.isDebug, options.isDebuggerEvaluateExpressionMode,
-        debugInfoSourceFile);
+                            options.mergeAbc, debugInfoSourceFile);
 
     if (program->Extension() == ScriptExtension::TS && options.enableTypeCheck) {
         ArenaAllocator localAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
