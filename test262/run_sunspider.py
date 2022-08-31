@@ -76,6 +76,14 @@ def parse_args():
                         default=DEFAULT_ES2ABC_THREAD_COUNT,
                         required=False,
                         help="the thread count for es2abc")
+    parser.add_argument('--merge-abc-binary',
+                        default=DEFAULT_MERGE_ABC_BINARY,
+                        required=False,
+                        help="frontend merge abc binary tool")
+    parser.add_argument('--merge-abc-mode',
+                        default=DEFAULT_MERGE_ABC_MODE,
+                        required=False,
+                        help="run test for merge abc mode")
     arguments = parser.parse_args()
     return arguments
 
@@ -173,6 +181,8 @@ class ArkProgram():
         self.arch_root = ""
         self.opt_level = DEFAULT_OPT_LEVEL
         self.es2abc_thread_count = DEFAULT_ES2ABC_THREAD_COUNT
+        self.merge_abc_binary = DEFAULT_MERGE_ABC_BINARY
+        self.merge_abc_mode = DEFAULT_MERGE_ABC_MODE
 
     def proce_parameters(self):
         if self.args.ark_tool:
@@ -199,6 +209,12 @@ class ArkProgram():
         if self.args.es2abc_thread_count:
             self.es2abc_thread_count = self.args.es2abc_thread_count
 
+        if self.args.merge_abc_binary:
+            self.merge_abc_binary = self.args.merge_abc_binary
+
+        if self.args.merge_abc_mode:
+            self.merge_abc_mode = self.args.merge_abc_mode
+
         self.module_list = MODULE_LIST
 
         self.dynamicImport_list = DYNAMIC_IMPORT_LIST
@@ -211,10 +227,12 @@ class ArkProgram():
 
     def gen_dependency_abc(self, dependency):
         cmd_args = []
-        output_file = os.path.splitext(os.path.join(BASE_OUT_DIR, os.path.split(dependency)[1]))[0]
+        output_file = os.path.splitext(os.path.join(BASE_OUT_DIR,
+                                       os.path.split(dependency)[1]))[0]
         output_abc = f"{output_file}.abc"
         frontend_tool = self.ark_frontend_binary
-        cmd_args = [frontend_tool, dependency, '--output', output_abc, '--module']
+        cmd_args = [frontend_tool, dependency, '--output', output_abc,
+                    '--module']
         proc = subprocess.Popen(cmd_args)
         proc.wait()
 
@@ -222,11 +240,16 @@ class ArkProgram():
         js_file = self.js_file
         file_name_pre = os.path.splitext(js_file)[0]
         file_name = os.path.basename(js_file)
+        file_dir = os.path.split(js_file)[0]
         out_file = f"{file_name_pre}.abc"
+        proto_bin_file = f"{file_name_pre}.bin"
+        proto_abc_file = ".".join([os.path.splitext(file_name)[0], "abc"])
         self.abc_file = out_file
         mod_opt_index = 0
         cmd_args = []
         frontend_tool = self.ark_frontend_binary
+        merge_abc_binary = self.args.merge_abc_binary
+        merge_abc_mode = self.merge_abc_mode
 
         # pre-generate the dependencies' abc when ark_frontend is [es2panda]
         if (file_name in self.module_list or file_name in self.dynamicImport_list) and \
@@ -245,8 +268,14 @@ class ArkProgram():
                 self.module = True
         elif self.ark_frontend == ARK_FRONTEND_LIST[1]:
             mod_opt_index = 1
-            cmd_args = [frontend_tool, '--opt-level=' + str(self.opt_level),
-                        '--thread=' + str(self.es2abc_thread_count), '--output', out_file, js_file]
+            if merge_abc_mode != "0":
+                cmd_args = [frontend_tool, '--outputProto',
+                            proto_bin_file, js_file]
+            else:
+                cmd_args = [frontend_tool, '--opt-level=' + str(self.opt_level),
+                            '--function-threads=' +
+                            str(self.es2abc_thread_count), '--output',
+                            out_file, js_file]
             if file_name in self.module_list:
                 cmd_args.insert(mod_opt_index, "--module")
                 self.module = True
@@ -265,6 +294,11 @@ class ArkProgram():
                             self.abc_file += f':{abc_file}'
         retcode = exec_command(cmd_args)
         self.abc_cmd = cmd_args
+        if self.ark_frontend == ARK_FRONTEND_LIST[1] and merge_abc_mode != "0":
+            cmd_args = [merge_abc_binary, '--input', proto_bin_file,
+                        '--suffix', "bin", '--outputFilePath',
+                        file_dir, '--output', proto_abc_file]
+            retcode = exec_command(cmd_args)
         return retcode
 
     def compile_aot(self):

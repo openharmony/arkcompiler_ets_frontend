@@ -31,6 +31,15 @@ class Identifier;
 class AstNode;
 }  // namespace panda::es2panda::ir
 
+namespace panda::es2panda {
+struct CompilerOptions;
+}  // namespace panda::es2panda
+
+namespace panda::pandasm {
+struct Program;
+}  // namespace panda::pandasm
+
+
 namespace panda::es2panda::util {
 
 class Helpers {
@@ -64,6 +73,8 @@ public:
     static util::StringView FunctionName(const ir::ScriptFunction *func);
     static std::tuple<util::StringView, bool> ParamName(ArenaAllocator *allocator, const ir::AstNode *param,
                                                         uint32_t index);
+
+    static bool OptimizeProgram(panda::pandasm::Program *prog, es2panda::CompilerOptions *options);
 
     static const uint32_t INVALID_INDEX = 4294967295L;
     static const uint32_t MAX_INT32 = 2147483647;

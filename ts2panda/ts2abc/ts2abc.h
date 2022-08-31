@@ -49,8 +49,7 @@ enum class OptLevel {
 };
 
 bool HandleJsonFile(const std::string &input, std::string &data);
-bool GenerateProgram(const std::string &data, const std::string &output, bool isParsingFromPipe,
-                     int optLevel, std::string &optLogLevel);
+bool GenerateProgram(const std::string &data, const std::string &output, panda::ts2abc::Options options);
 bool GetDebugLog();
 void ParseLogEnable(const Json::Value &rootValue);
 bool GetDebugModeEnabled();

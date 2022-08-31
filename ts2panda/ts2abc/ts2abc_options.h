@@ -39,6 +39,7 @@ namespace panda::ts2abc {
             parser->Add(&bc_version_arg_);
             parser->Add(&bc_min_version_arg_);
             parser->Add(&compile_by_pipe_arg_);
+            parser->Add(&compiler_output_proto_);
             parser->EnableTail();
             parser->PushBackTail(&Tail_Arg1_arg_);
             parser->PushBackTail(&Tail_Arg2_arg_);
@@ -149,6 +150,21 @@ namespace panda::ts2abc {
             return compile_by_pipe_arg_.WasSet();
         }
 
+        std::string GetCompilerOutputProto() const
+        {
+            return compiler_output_proto_.GetValue();
+        }
+
+        void SetCompilerOutputProto(std::string value)
+        {
+            compiler_output_proto_.SetValue(value);
+        }
+
+        bool WasSetCompilerOutputProto() const
+        {
+            return compiler_output_proto_.WasSet();
+        }
+
         std::string GetTailArg1() const
         {
             return Tail_Arg1_arg_.GetValue();
@@ -207,6 +223,8 @@ namespace panda::ts2abc {
                 R"(Print ark bytecode minimum supported version)"};
         panda::PandArg<bool> compile_by_pipe_arg_{ "compile-by-pipe", false,
                 R"(Compile a json file that is passed by pipe)"};
+        panda::PandArg<std::string> compiler_output_proto_{ "output-proto", "",
+                R"(compiler proto serialize binary output (.proto))"};
         panda::PandArg<std::string> Tail_Arg1_arg_{ "ARG_1", "",
                 R"(Path to input(json file) or path to output(ark bytecode)"
                   " when 'compile-by-pipe' enabled)"};

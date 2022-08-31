@@ -21,6 +21,8 @@
 #include <parser/parserImpl.h>
 #include <parser/program/program.h>
 
+#include <libpandabase/utils/hash.h>
+
 #include <iostream>
 #include <thread>
 
@@ -47,16 +49,18 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     /* TODO(dbatyai): pass string view */
     std::string fname(input.fileName);
     std::string src(input.source);
+    std::string rname(input.recordName);
     parser::ScriptKind kind(input.scriptKind);
 
     try {
-        auto ast = parser_->Parse(fname, src, kind);
+        auto ast = parser_->Parse(fname, src, rname, kind);
 
         if (options.dumpAst) {
             std::cout << ast.Dump() << std::endl;
         }
 
-        auto *prog = compiler_->Compile(&ast, options);
+        std::string debugInfoSourceFile = options.debugInfoSourceFile.empty() ? fname : options.debugInfoSourceFile;
+        auto *prog = compiler_->Compile(&ast, options, debugInfoSourceFile);
 
         return prog;
     } catch (const class Error &e) {
@@ -69,4 +73,104 @@ void Compiler::DumpAsm(const panda::pandasm::Program *prog)
 {
     compiler::CompilerImpl::DumpAsm(prog);
 }
+
+static bool ReadFileToBuffer(const std::string &file, std::stringstream &ss)
+{
+    std::ifstream inputStream(file);
+    if (inputStream.fail()) {
+        std::cerr << "Failed to read file to buffer: " << file << std::endl;
+        return false;
+    }
+    ss << inputStream.rdbuf();
+    return true;
+}
+
+void Compiler::SelectCompileFile(CompilerOptions &options,
+    std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
+    std::vector<panda::pandasm::Program *> &progs,
+    std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+    panda::ArenaAllocator *allocator)
+{
+    if (cacheProgs == nullptr) {
+        return;
+    }
+
+    auto fullList = options.sourceFiles;
+    std::vector<SourceFile> inputList;
+
+    for (auto &input: fullList) {
+        if (input.fileName.empty()) {
+            // base64 source
+            inputList.push_back(input);
+            continue;
+        }
+
+        std::stringstream ss;
+        if (!ReadFileToBuffer(input.fileName, ss)) {
+            continue;
+        }
+
+        uint32_t hash = GetHash32String(reinterpret_cast<const uint8_t *>(ss.str().c_str()));
+
+        auto it = cacheProgs->find(input.fileName);
+        if (it != cacheProgs->end() && hash == it->second->hashCode) {
+            progs.push_back(it->second->program);
+            auto *cache = allocator->New<util::ProgramCache>(it->second->hashCode, it->second->program);
+            progsInfo.insert({input.fileName, cache});
+        } else {
+            input.hash = hash;
+            inputList.push_back(input);
+        }
+    }
+    options.sourceFiles = inputList;
+}
+
+void Compiler::CompileFiles(CompilerOptions &options,
+    std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
+    std::vector<panda::pandasm::Program *> &progs,
+    std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+    panda::ArenaAllocator *allocator)
+{
+    SelectCompileFile(options, cacheProgs, progs, progsInfo, allocator);
+
+    auto queue = new compiler::CompileFileQueue(options.fileThreadCount, &options, progs, progsInfo, allocator);
+
+    queue->Schedule();
+    queue->Consume();
+    queue->Wait();
+
+    delete queue;
+}
+
+panda::pandasm::Program *Compiler::CompileFile(CompilerOptions &options, SourceFile *src)
+{
+    std::string buffer;
+    if (src->source.empty()) {
+        std::stringstream ss;
+        if (!ReadFileToBuffer(src->fileName, ss)) {
+            return nullptr;
+        }
+        buffer = ss.str();
+        src->source = buffer;
+
+        if (src->hash == 0) {
+            src->hash = GetHash32String(reinterpret_cast<const uint8_t *>(buffer.c_str()));
+        }
+    }
+
+    auto *program = Compile(*src, options);
+    if (!program) {
+        const auto &err = GetError();
+
+        if (err.Message().empty() && options.parseOnly) {
+            return nullptr;
+        }
+
+        std::cerr << err.TypeString() << ": " << err.Message();
+        std::cerr << " [" << src->fileName << ":" << err.Line() << ":" << err.Col() << "]" << std::endl;
+        return nullptr;
+    }
+    return program;
+}
+
 }  // namespace panda::es2panda

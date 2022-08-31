@@ -32,20 +32,22 @@ class Program;
 }  // namespace panda::es2panda::parser
 
 namespace panda::es2panda::compiler {
-class CompileQueue;
+class CompileFuncQueue;
 
 class CompilerImpl {
 public:
-    explicit CompilerImpl(size_t threadCount);
+    explicit CompilerImpl(size_t threadCount): threadCount_(threadCount) {}
     ~CompilerImpl();
     NO_COPY_SEMANTIC(CompilerImpl);
     NO_MOVE_SEMANTIC(CompilerImpl);
 
-    panda::pandasm::Program *Compile(parser::Program *program, const es2panda::CompilerOptions &options);
+    panda::pandasm::Program *Compile(parser::Program *program, const es2panda::CompilerOptions &options,
+                                     const std::string &debugInfoSourceFile);
     static void DumpAsm(const panda::pandasm::Program *prog);
 
 private:
-    CompileQueue *queue_;
+    size_t threadCount_ {0};
+    CompileFuncQueue *queue_ {nullptr};
 };
 }  // namespace panda::es2panda::compiler
 

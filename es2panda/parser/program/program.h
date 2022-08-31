@@ -84,6 +84,11 @@ public:
         return sourceFile_.View();
     }
 
+    util::StringView RecordName() const
+    {
+        return recordName_.View();
+    }
+
     const lexer::LineIndex &GetLineIndex() const
     {
         return lineIndex_;
@@ -111,6 +116,11 @@ public:
         lineIndex_ = lexer::LineIndex(SourceCode());
     }
 
+    void SetRecordName(const std::string &recordName)
+    {
+        recordName_ = util::UString(recordName, Allocator());
+    }
+
     std::string Dump() const;
     void SetKind(ScriptKind kind);
 
@@ -120,6 +130,7 @@ private:
     ir::BlockStatement *ast_ {};
     util::UString sourceCode_ {};
     util::UString sourceFile_ {};
+    util::UString recordName_ {};
     ScriptKind kind_ {};
     ScriptExtension extension_ {};
     lexer::LineIndex lineIndex_ {};
