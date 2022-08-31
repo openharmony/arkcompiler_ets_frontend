@@ -111,6 +111,16 @@ public:
         return body_;
     }
 
+    ArenaVector<TSClassImplements *> &Implements()
+    {
+        return implements_;
+    }
+
+    const ArenaVector<TSClassImplements *> &Implements() const
+    {
+        return implements_;
+    }
+
     MethodDefinition *Ctor()
     {
         ASSERT(ctor_ != nullptr);

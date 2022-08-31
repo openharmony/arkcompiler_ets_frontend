@@ -75,6 +75,8 @@ struct CompilerOptions {
     bool dumpLiteralBuffer {false};
     bool isDebuggerEvaluateExpressionMode {false};
     bool mergeAbc {false};
+    bool typeExtractor {false};
+    bool typeDtsBuiltin {false};
     ScriptExtension extension {};
     int fileThreadCount {0};
     int functionThreadCount {0};

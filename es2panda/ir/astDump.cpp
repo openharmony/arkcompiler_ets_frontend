@@ -27,6 +27,18 @@ AstDumper::AstDumper(const BlockStatement *program, util::StringView sourceCode)
     SerializeObject(reinterpret_cast<const ir::AstNode *>(program));
 }
 
+AstDumper::AstDumper(const ir::AstNode *node) : indent_(0), dumpNodeOnly_(true)
+{
+    SerializeNode(node);
+}
+
+void AstDumper::SerializeNode(const ir::AstNode *node)
+{
+    Wrap([this, node]() -> void {
+        node->Dump(this);
+    });
+}
+
 void AstDumper::Add(std::initializer_list<AstDumper::Property> props)
 {
     AddList<std::initializer_list<AstDumper::Property>>(props);
@@ -85,7 +97,11 @@ void AstDumper::Serialize(const AstDumper::Property &prop)
     } else if (std::holds_alternative<double>(value)) {
         SerializeNumber(std::get<double>(value));
     } else if (std::holds_alternative<const ir::AstNode *>(value)) {
-        SerializeObject(std::get<const ir::AstNode *>(value));
+        if (dumpNodeOnly_) {
+            SerializeNode(std::get<const ir::AstNode *>(value));
+        } else {
+            SerializeObject(std::get<const ir::AstNode *>(value));
+        }
     } else if (std::holds_alternative<std::vector<const ir::AstNode *>>(value)) {
         SerializeArray(std::get<std::vector<const ir::AstNode *>>(value));
     } else if (std::holds_alternative<lexer::TokenType>(value)) {
@@ -104,6 +120,9 @@ void AstDumper::SerializeToken(lexer::TokenType token)
 
 void AstDumper::SerializePropKey(const char *str)
 {
+    if (dumpNodeOnly_) {
+        return;
+    }
     ss_ << std::endl;
     Indent();
     SerializeString(str);
@@ -173,10 +192,13 @@ void AstDumper::SerializeArray(std::vector<const ir::AstNode *> array)
     Wrap(
         [this, &array]() -> void {
             for (auto it = array.begin(); it != array.end(); ++it) {
-                ss_ << std::endl;
-                Indent();
-
-                SerializeObject(*it);
+                if (dumpNodeOnly_) {
+                    SerializeNode(*it);
+                } else {
+                    ss_ << std::endl;
+                    Indent();
+                    SerializeObject(*it);
+                }
 
                 if (std::next(it) != array.end()) {
                     ss_ << ',';
@@ -197,12 +219,17 @@ void AstDumper::SerializeObject(const ir::AstNode *object)
 void AstDumper::Wrap(const WrapperCb &cb, char delimStart, char delimEnd)
 {
     ss_ << delimStart;
-    indent_++;
 
-    cb();
-    ss_ << std::endl;
-    indent_--;
-    Indent();
+    if (dumpNodeOnly_) {
+        cb();
+    } else {
+        indent_++;
+        cb();
+        ss_ << std::endl;
+        indent_--;
+        Indent();
+    }
+
     ss_ << delimEnd;
 }
 

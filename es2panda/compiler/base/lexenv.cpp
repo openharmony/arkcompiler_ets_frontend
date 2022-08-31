@@ -16,9 +16,11 @@
 #include "lexenv.h"
 
 #include <binder/variable.h>
+#include <compiler/core/compilerContext.h>
 #include <compiler/core/envScope.h>
 #include <compiler/core/pandagen.h>
 #include <ir/expressions/identifier.h>
+#include <typescript/extractor/typeRecorder.h>
 
 namespace panda::es2panda::compiler {
 
@@ -111,6 +113,30 @@ static void ExpandStoreNormalVar(PandaGen *pg, const ir::AstNode *node, const bi
         CheckConstAssignment(pg, node, local);
     }
 
+    auto context = pg->Context();
+    if (context->IsTypeExtractorEnabled()) {
+        auto typeIndex = context->TypeRecorder()->GetVariableTypeIndex(local);
+        if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
+            pg->StoreAccumulatorWithType(node, typeIndex, localReg);
+#ifndef NDEBUG
+            std::cout << "[LOG]Local vreg in variable has type index: " << local->Name() << "@" <<
+                local << " | " << typeIndex << std::endl;
+#endif
+            return;
+        }
+        typeIndex = context->TypeRecorder()->GetNodeTypeIndex(node);
+        if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
+            pg->StoreAccumulatorWithType(node, typeIndex, localReg);
+#ifndef NDEBUG
+            std::cout << "[LOG]Local vreg in declnode has type index: " << local->Name() << "@" <<
+                local << " | " << typeIndex << std::endl;
+#endif
+            return;
+        }
+#ifndef NDEBUG
+        std::cout << "[WARNING]Local vreg lose type index: " << local->Name() << "@" << local << std::endl;
+#endif
+    }
     pg->StoreAccumulator(node, localReg);
 }
 

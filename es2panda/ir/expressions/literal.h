@@ -62,6 +62,7 @@ public:
     const util::StringView &GetString() const;
     const util::StringView &GetMethod() const;
     uint16_t GetMethodAffiliate() const;
+    std::optional<util::StringView> GetName() const;
 
 protected:
     explicit Literal(AstNodeType type) : Expression(type) {}

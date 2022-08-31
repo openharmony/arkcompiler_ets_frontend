@@ -42,6 +42,7 @@
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/newExpression.h>
 #include <ir/statement.h>
+#include <typescript/extractor/typeExtractor.h>
 
 namespace panda::es2panda::compiler {
 
@@ -214,9 +215,17 @@ void PandaGen::CopyFunctionArguments(const ir::AstNode *node)
     for (const auto *param : topScope_->ParamScope()->Params()) {
         if (param->LexicalBound()) {
             StoreLexicalVar(node, 0, param->LexIdx(), targetReg++);
-        } else {
-            MoveVreg(node, param->Vreg(), targetReg++);
+            continue;
         }
+        if (context_->IsTypeExtractorEnabled()) {
+            auto typeIndex = context_->TypeRecorder()->GetVariableTypeIndex(param);
+            if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
+                // Simply encode type index for params
+                MoveVregWithType(node, -(typeIndex + 1), param->Vreg(), targetReg++);
+                continue;
+            }
+        }
+        MoveVreg(node, param->Vreg(), targetReg++);
     }
 }
 
@@ -352,6 +361,11 @@ void PandaGen::StoreAccumulator(const ir::AstNode *node, VReg vreg)
     ra_.Emit<Sta>(node, vreg);
 }
 
+void PandaGen::StoreAccumulatorWithType(const ir::AstNode *node, int64_t typeIndex, VReg vreg)
+{
+    ra_.EmitWithType<Sta>(node, typeIndex, vreg);
+}
+
 void PandaGen::LoadAccFromArgs(const ir::AstNode *node)
 {
     const auto *varScope = scope_->AsVariableScope();
@@ -446,7 +460,12 @@ void PandaGen::TryLoadGlobalByName(const ir::AstNode *node, const util::StringVi
     if (isDebuggerEvaluateExpressionMode()) {
         LoadObjByNameViaDebugger(node, name, true);
     } else {
-        sa_.Emit<Tryldglobalbyname>(node, 0, name);
+        int64_t typeIndex = extractor::TypeExtractor::GetBuiltinTypeIndex(name);
+        if (context_->IsTypeExtractorEnabled() && typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
+            sa_.EmitWithType<Tryldglobalbyname>(node, typeIndex, 0, name);
+        } else {
+            sa_.Emit<Tryldglobalbyname>(node, 0, name);
+        }
     }
     strings_.insert(name);
 }
@@ -668,6 +687,11 @@ void PandaGen::LoadConst(const ir::AstNode *node, Constant id)
 void PandaGen::MoveVreg(const ir::AstNode *node, VReg vd, VReg vs)
 {
     ra_.Emit<Mov>(node, vd, vs);
+}
+
+void PandaGen::MoveVregWithType(const ir::AstNode *node, int64_t typeIndex, VReg vd, VReg vs)
+{
+    ra_.EmitWithType<Mov>(node, typeIndex, vd, vs);
 }
 
 void PandaGen::SetLabel([[maybe_unused]] const ir::AstNode *node, Label *label)

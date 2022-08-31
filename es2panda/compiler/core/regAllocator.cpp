@@ -39,6 +39,12 @@ void AllocatorBase::UpdateIcSlot(IRNode *node)
     pg_->IncreaseCurrentSlot(inc);
 }
 
+void SimpleAllocator::Run(IRNode *ins, int64_t typeIndex)
+{
+    PushBack(ins);
+    pg_->TypedInsns()[ins] = typeIndex;
+}
+
 // FrontAllocator
 
 FrontAllocator::FrontAllocator(PandaGen *pg)
@@ -117,6 +123,12 @@ void RegAllocator::Run(IRNode *ins)
     }
 
     spillMap_.clear();
+}
+
+void RegAllocator::Run(IRNode *ins, int64_t typeIndex)
+{
+    Run(ins);
+    pg_->TypedInsns()[ins] = typeIndex;
 }
 
 // RangeRegAllocator
