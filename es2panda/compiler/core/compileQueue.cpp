@@ -106,6 +106,10 @@ void CompileFileJob::Run()
 
     auto *prog = compiler.CompileFile(*options_, src_);
 
+    if (prog == nullptr) {
+        return;
+    }
+
     if (options_->optLevel != 0) {
         util::Helpers::OptimizeProgram(prog, options_);
     }

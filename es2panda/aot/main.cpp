@@ -83,11 +83,6 @@ static void DumpPandaFileSizeStatistic(std::map<std::string, size_t> &stat)
 static bool GenerateProgram(std::vector<panda::pandasm::Program *> &progs,
     std::unique_ptr<panda::es2panda::aot::Options> &options)
 {
-    if (progs.size() == 0) {
-        std::cerr << "Failed to generate program " << std::endl;
-        return false;
-    }
-
     int optLevel = options->OptLevel();
     bool dumpSize = options->SizeStat();
     const std::string output = options->CompilerOutput();
@@ -148,8 +143,8 @@ int Run(int argc, const char **argv)
 
     std::vector<panda::pandasm::Program*> programs;
     std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> programsInfo;
+    size_t expectedProgsCount = options->CompilerOptions().sourceFiles.size();
     panda::ArenaAllocator allocator(panda::SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
-
     std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *cachePrograms = nullptr;
 
     if (!options->CacheFile().empty()) {
@@ -159,18 +154,27 @@ int Run(int argc, const char **argv)
 
     Compiler::CompileFiles(options->CompilerOptions(), cachePrograms, programs, programsInfo, &allocator);
 
+    if (options->ParseOnly()) {
+        return 0;
+    }
+
     if (!options->NpmModuleEntryList().empty()) {
         es2panda::util::ModuleHelpers::CompileNpmModuleEntryList(options->NpmModuleEntryList(), cachePrograms,
             programs, programsInfo, &allocator);
-    }
-
-    if (!GenerateProgram(programs, options)) {
-        return 1;
+        expectedProgsCount++;
     }
 
     if (!options->CacheFile().empty()) {
         proto::ProtobufSnapshotGenerator::UpdateCacheFile(programsInfo, options->CompilerOptions().isDebug,
             options->CacheFile());
+    }
+
+    if (programs.size() != expectedProgsCount) {
+        return 1;
+    }
+
+    if (!GenerateProgram(programs, options)) {
+        return 1;
     }
 
     return 0;
