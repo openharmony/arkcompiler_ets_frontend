@@ -51,11 +51,9 @@ import {
     extractCtorOfClass
 } from "./statement/classStatement";
 import { checkSyntaxError } from "./syntaxChecker";
-import { isGlobalIdentifier } from "./syntaxCheckHelper";
+import { isGlobalIdentifier, isFunctionLikeDeclaration } from "./syntaxCheckHelper";
 import { TypeChecker } from "./typeChecker";
 import { VarDeclarationKind } from "./variable";
-import { TypeRecorder } from "./typeRecorder";
-import { PandaGen } from "./pandagen";
 import path from "path";
 
 export class Recorder {
@@ -626,8 +624,7 @@ export class Recorder {
             this.collectHoistDecls(node, <GlobalScope | ModuleScope>hoistScope, funcDecl);
         } else if (scope instanceof LocalScope) {
             hoistScope = <Scope>scope.getNearestVariableScope();
-            let expectHoistScope = this.getScopeOfNode(node.parent.parent);
-            if ((hoistScope == expectHoistScope) && (hoistScope instanceof FunctionScope)) {
+            if ((hoistScope instanceof FunctionScope) && isFunctionLikeDeclaration(node.parent.parent)) {
                 need2AddDecls = this.collectHoistDecls(node, hoistScope, funcDecl);
             }
         } else {

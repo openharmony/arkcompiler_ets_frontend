@@ -70,8 +70,18 @@ export function compileForOfStatement(stmt: ts.ForOfStatement, compiler: Compile
     // for now Async is not handled.
     let type: IteratorType = IteratorType.Normal;
 
+    if (needCreateLoopEnv) {
+        pandaGen.createLexEnv(stmt, loopEnv, loopScope);
+        compiler.pushEnv(loopEnv);
+    }
+
     compiler.compileExpression(stmt.expression);
     let iterator: IteratorRecord = getIteratorRecord(pandaGen, stmt, method, object, type);
+
+    if (needCreateLoopEnv) {
+        pandaGen.popLexicalEnv(stmt);
+        compiler.popEnv();
+    }
 
     pandaGen.loadAccumulator(stmt, getVregisterCache(pandaGen, CacheList.False));
     pandaGen.storeAccumulator(stmt, doneReg);
