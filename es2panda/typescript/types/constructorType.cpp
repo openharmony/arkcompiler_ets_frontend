@@ -19,8 +19,6 @@
 
 namespace panda::es2panda::checker {
 
-ConstructorType::ConstructorType(ObjectDescriptor *desc) : ObjectType(ObjectType::ObjectTypeKind::FUNCTION, desc) {}
-
 void ConstructorType::ToString(std::stringstream &ss) const
 {
     if (desc_->constructSignatures.size() > 1) {
@@ -46,7 +44,7 @@ TypeFacts ConstructorType::GetTypeFacts() const
 
 Type *ConstructorType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>();
+    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>(allocator);
     desc_->Copy(allocator, copiedDesc, relation, globalTypes);
     return allocator->New<ConstructorType>(copiedDesc);
 }

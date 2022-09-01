@@ -16,7 +16,8 @@
 #include "tsTypeLiteral.h"
 
 #include <ir/astDump.h>
-
+#include <ir/ts/tsPropertySignature.h>
+#include <ir/expressions/identifier.h>
 #include <binder/variable.h>
 #include <binder/declaration.h>
 #include <typescript/checker.h>
@@ -40,45 +41,30 @@ void TSTypeLiteral::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
 checker::Type *TSTypeLiteral::Check(checker::Checker *checker) const
 {
-    // TODO(aszilagyi): came from param
-    binder::Variable *bindingVar = nullptr;
-
-    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>();
-    checker::Type *returnType = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
-
-    checker::Type *savedType = nullptr;
-
-    if (bindingVar) {
-        if (bindingVar->TsType()) {
-            savedType = bindingVar->TsType();
-        }
-
-        bindingVar->SetTsType(returnType);
-    }
-
     for (auto *it : members_) {
-        if (it->IsTSPropertySignature() || it->IsTSMethodSignature()) {
-            checker->PrefetchTypeLiteralProperties(it, desc);
-        }
+        it->Check(checker);
     }
 
-    for (auto *it : members_) {
-        checker->CheckTsTypeLiteralOrInterfaceMember(it, desc);
-    }
+    checker::Type *type = GetType(checker);
+    checker->CheckIndexConstraints(type);
 
-    if (bindingVar) {
-        if (savedType) {
-            checker->IsTypeIdenticalTo(savedType, bindingVar->TsType(),
-                                       {"Subsequent variable declaration must have the same type. Variable '",
-                                        bindingVar->Name(), "' must be of type '", savedType, "', but here has type '",
-                                        bindingVar->TsType(), "'."},
-                                       bindingVar->Declaration()->Node()->Start());
-        }
-    }
-
-    checker->CheckIndexConstraints(returnType);
-
-    return returnType;
+    return nullptr;
 }
 
+checker::Type *TSTypeLiteral::GetType(checker::Checker *checker) const
+{
+    auto found = checker->NodeCache().find(this);
+
+    if (found != checker->NodeCache().end()) {
+        return found->second;
+    }
+
+    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
+    checker::Type *type = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
+    type->SetVariable(Variable());
+
+    checker->NodeCache().insert({this, type});
+
+    return type;
+}
 }  // namespace panda::es2panda::ir

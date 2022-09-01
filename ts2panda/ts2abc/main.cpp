@@ -92,8 +92,7 @@ int main(int argc, const char *argv[])
         return panda::ts2abc::RETURN_FAILED;
     }
 
-    if (!panda::ts2abc::GenerateProgram(data, output, options.GetCompileByPipeArg(),
-                                        options.GetOptLevelArg(), optLogLevel)) {
+    if (!panda::ts2abc::GenerateProgram(data, output, options)) {
         std::cerr << "call GenerateProgram fail" << std::endl;
         return panda::ts2abc::RETURN_FAILED;
     }

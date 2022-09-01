@@ -22,13 +22,17 @@ namespace panda::es2panda::checker {
 
 class NumberLiteralType : public Type {
 public:
-    explicit NumberLiteralType(double value);
+    explicit NumberLiteralType(double value) : Type(TypeFlag::NUMBER_LITERAL), value_(value) {}
 
-    double Value() const;
+    double Value() const
+    {
+        return value_;
+    }
+
     void ToString(std::stringstream &ss) const override;
     void ToStringAsSrc(std::stringstream &ss) const override;
-    void Identical(TypeRelation *relation, const Type *other) const override;
-    void AssignmentTarget(TypeRelation *relation, const Type *source) const override;
+    void Identical(TypeRelation *relation, Type *other) override;
+    void AssignmentTarget(TypeRelation *relation, Type *source) override;
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 

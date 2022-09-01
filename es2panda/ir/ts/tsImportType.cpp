@@ -50,4 +50,9 @@ checker::Type *TSImportType::Check([[maybe_unused]] checker::Checker *checker) c
     return nullptr;
 }
 
+checker::Type *TSImportType::GetType([[maybe_unused]] checker::Checker *checker) const
+{
+    return nullptr;
+}
+
 }  // namespace panda::es2panda::ir

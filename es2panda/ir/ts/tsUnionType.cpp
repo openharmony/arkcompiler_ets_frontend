@@ -34,15 +34,35 @@ void TSUnionType::Dump(ir::AstDumper *dumper) const
 
 void TSUnionType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSUnionType::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSUnionType::Check(checker::Checker *checker) const
 {
-    std::vector<checker::Type *> types;
-
     for (auto *it : types_) {
-        types.push_back(it->Check(checker));
+        it->Check(checker);
     }
 
-    return checker->CreateUnionType(std::move(types));
+    GetType(checker);
+    return nullptr;
+}
+
+checker::Type *TSUnionType::GetType(checker::Checker *checker) const
+{
+    auto found = checker->NodeCache().find(this);
+
+    if (found != checker->NodeCache().end()) {
+        return found->second;
+    }
+
+    ArenaVector<checker::Type *> types(checker->Allocator()->Adapter());
+
+    for (auto *it : types_) {
+        types.push_back(it->AsTypeNode()->GetType(checker));
+    }
+
+    checker::Type *type = checker->CreateUnionType(std::move(types));
+
+    checker->NodeCache().insert({this, type});
+
+    return type;
 }
 
 }  // namespace panda::es2panda::ir

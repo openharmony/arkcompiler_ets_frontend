@@ -67,7 +67,7 @@ public:
 protected:
     PandaGen *pg_;
     const ir::AstNode *node_;
-    // These 3 regs must be allocated continously
+    // These 3 regs must be allocated continuously
     VReg method_;
     VReg iterator_;
     VReg nextResult_;

@@ -56,6 +56,11 @@ public:
         return typeAnnotation_;
     }
 
+    Expression *TypeAnnotation()
+    {
+        return typeAnnotation_;
+    }
+
     bool IsDeclaration() const
     {
         return isDeclaration_;
@@ -76,7 +81,7 @@ public:
     void Dump(ir::AstDumper *dumper) const override;
     void Compile(compiler::PandaGen *pg) const override;
     checker::Type *Check(checker::Checker *checker) const override;
-    checker::Type *CheckPattern(checker::Checker *checker, bool inAssignment) const;
+    checker::Type *CheckPattern(checker::Checker *checker) const;
 
 private:
     void FillInLiteralBuffer(compiler::LiteralBuffer *buf,

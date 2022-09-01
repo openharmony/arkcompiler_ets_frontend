@@ -16,7 +16,6 @@
 #include "emitter.h"
 
 #include <binder/binder.h>
-#include <util/helpers.h>
 #include <binder/scope.h>
 #include <binder/variable.h>
 #include <compiler/base/literals.h>
@@ -30,6 +29,7 @@
 #include <ir/statements/blockStatement.h>
 #include <macros.h>
 #include <parser/program/program.h>
+#include <util/helpers.h>
 
 #include <string>
 #include <string_view>
@@ -61,7 +61,6 @@ void FunctionEmitter::Generate()
     GenVariablesDebugInfo();
     GenSourceFileDebugInfo();
     GenFunctionCatchTables();
-    GenFunctionICSize();
     GenLiteralBuffers();
 }
 
@@ -122,6 +121,11 @@ void FunctionEmitter::GenBufferLiterals(const LiteralBuffer *buff)
             case ir::LiteralTag::GENERATOR_METHOD: {
                 valueLit.tag_ = panda::panda_file::LiteralTag::GENERATORMETHOD;
                 valueLit.value_ = literal->GetMethod().Mutf8();
+                break;
+            }
+            case ir::LiteralTag::LITERALBUFFERINDEX: {
+                valueLit.tag_ = panda::panda_file::LiteralTag::LITERALBUFFERINDEX;
+                valueLit.value_ = literal->GetInt();
                 break;
             }
             // TODO: support ir::LiteralTag::ASYNC_GENERATOR_METHOD
@@ -243,29 +247,6 @@ void FunctionEmitter::GenFunctionInstructions()
     }
 }
 
-void FunctionEmitter::GenFunctionICSize()
-{
-    panda::pandasm::AnnotationData funcAnnotationData("_ESAnnotation");
-    panda::pandasm::AnnotationElement icSizeAnnotationElement(
-        "icSize", std::make_unique<panda::pandasm::ScalarValue>(
-                      panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(pg_->IcSize())));
-    funcAnnotationData.AddElement(std::move(icSizeAnnotationElement));
-
-    panda::pandasm::AnnotationElement parameterLengthAnnotationElement(
-        "parameterLength",
-        std::make_unique<panda::pandasm::ScalarValue>(
-            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(pg_->FormalParametersCount())));
-    funcAnnotationData.AddElement(std::move(parameterLengthAnnotationElement));
-
-    panda::pandasm::AnnotationElement funcNameAnnotationElement(
-        "funcName",
-        std::make_unique<panda::pandasm::ScalarValue>(
-            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::STRING>(pg_->FunctionName().Mutf8())));
-    funcAnnotationData.AddElement(std::move(funcNameAnnotationElement));
-
-    func_->metadata->AddAnnotations({funcAnnotationData});
-}
-
 void FunctionEmitter::GenFunctionCatchTables()
 {
     func_->catch_blocks.reserve(pg_->CatchList().size());
@@ -290,7 +271,11 @@ void FunctionEmitter::GenLiteralBuffers()
 
 void FunctionEmitter::GenSourceFileDebugInfo()
 {
-    func_->source_file = std::string {pg_->Binder()->Program()->SourceFile()};
+    if (pg_->SourceFile().size() > 0) {
+        func_->source_file = pg_->SourceFile();
+    } else {
+        func_->source_file = std::string {pg_->Binder()->Program()->SourceFile()};
+    }
 
     if (!pg_->IsDebug()) {
         return;
@@ -352,26 +337,24 @@ void FunctionEmitter::GenVariablesDebugInfo()
 Emitter::Emitter(const CompilerContext *context)
 {
     prog_ = new panda::pandasm::Program();
-    prog_->lang = panda::pandasm::extensions::Language::ECMASCRIPT;
-
+    prog_->lang = LANG_EXT;
     prog_->function_table.reserve(context->Binder()->Functions().size());
-    GenESAnnoatationRecord();
-    if (context->Binder()->Program()->Kind() == parser::ScriptKind::COMMONJS) {
-        GenCommonjsRecord();
+
+    if (context->IsMergeAbc()) {
+        auto recordName = context->Binder()->Program()->RecordName().Mutf8();
+        rec_ = new panda::pandasm::Record(recordName.substr(0, recordName.find_last_of('.')), LANG_EXT);
+        SetCommonjsField(context->Binder()->Program()->Kind() == parser::ScriptKind::COMMONJS);
+    } else {
+        rec_ = nullptr;
+        if (context->Binder()->Program()->Kind() == parser::ScriptKind::COMMONJS) {
+            GenCommonjsRecord();
+        }
     }
 }
 
 Emitter::~Emitter()
 {
     delete prog_;
-}
-
-void Emitter::GenESAnnoatationRecord()
-{
-    auto annotationRecord = panda::pandasm::Record("_ESAnnotation", LANG_EXT);
-    annotationRecord.metadata->SetAttribute("external");
-    annotationRecord.metadata->SetAccessFlags(panda::ACC_ANNOTATION);
-    prog_->record_table.emplace(annotationRecord.name, std::move(annotationRecord));
 }
 
 void Emitter::AddFunction(FunctionEmitter *func)
@@ -395,17 +378,25 @@ void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, const Compi
 {
     std::lock_guard<std::mutex> lock(m_);
 
-    auto ecmaModuleRecord = panda::pandasm::Record("_ESModuleRecord", LANG_EXT);
-    ecmaModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
+    if (context->IsMergeAbc()) {
+        auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
+        moduleIdxField.name = "moduleRecordIdx";
+        moduleIdxField.type = panda::pandasm::Type("u32", 0);
+        moduleIdxField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(
+            static_cast<uint32_t>(module->Index())));
+        rec_->field_list.emplace_back(std::move(moduleIdxField));
+    } else {
+        auto ecmaModuleRecord = panda::pandasm::Record("_ESModuleRecord", LANG_EXT);
+        ecmaModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
 
-    auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
-    moduleIdxField.name = std::string {context->Binder()->Program()->SourceFile()};
-    moduleIdxField.type = panda::pandasm::Type("u32", 0);
-    moduleIdxField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(
-        static_cast<uint32_t>(module->Index())));
-    ecmaModuleRecord.field_list.emplace_back(std::move(moduleIdxField));
-    prog_->record_table.emplace(ecmaModuleRecord.name, std::move(ecmaModuleRecord));
-
+        auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
+        moduleIdxField.name = std::string {context->Binder()->Program()->SourceFile()};
+        moduleIdxField.type = panda::pandasm::Type("u32", 0);
+        moduleIdxField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(
+            static_cast<uint32_t>(module->Index())));
+        ecmaModuleRecord.field_list.emplace_back(std::move(moduleIdxField));
+        prog_->record_table.emplace(ecmaModuleRecord.name, std::move(ecmaModuleRecord));
+    }
     auto &moduleLiteralsBuffer = module->Buffer();
     auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(moduleLiteralsBuffer));
     prog_->literalarray_table.emplace(std::to_string(module->Index()), std::move(literalArrayInstance));
@@ -451,6 +442,12 @@ panda::pandasm::Program *Emitter::Finalize(bool dumpDebugInfo)
     if (dumpDebugInfo) {
         debuginfo::DebugInfoDumper dumper(prog_);
         dumper.Dump();
+    }
+
+    if (rec_) {
+        prog_->record_table.emplace(rec_->name, std::move(*rec_));
+        delete rec_;
+        rec_ = nullptr;
     }
 
     auto *prog = prog_;

@@ -51,12 +51,18 @@ checker::Type *TSFunctionType::Check(checker::Checker *checker) const
 {
     checker::ScopeContext scopeCtx(checker, scope_);
 
-    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>();
-    checker->CheckFunctionParameterDeclaration(params_, signatureInfo);
-    checker::Type *returnType = returnType_->Check(checker);
-    auto *callSignature = checker->Allocator()->New<checker::Signature>(signatureInfo, returnType);
+    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(params_, signatureInfo);
+    returnType_->Check(checker);
+    auto *callSignature =
+        checker->Allocator()->New<checker::Signature>(signatureInfo, returnType_->AsTypeNode()->GetType(checker));
 
     return checker->CreateFunctionTypeWithSignature(callSignature);
+}
+
+checker::Type *TSFunctionType::GetType(checker::Checker *checker) const
+{
+    return checker->CheckTypeCached(this);
 }
 
 }  // namespace panda::es2panda::ir

@@ -94,12 +94,6 @@ void BinaryExpression::Compile(compiler::PandaGen *pg) const
 checker::Type *BinaryExpression::Check(checker::Checker *checker) const
 {
     auto *leftType = left_->Check(checker);
-
-    if (operator_ == lexer::TokenType::PUNCTUATOR_SUBSTITUTION &&
-        checker->ElaborateElementwise(right_, leftType, left_->Start())) {
-        return right_->Check(checker);
-    }
-
     auto *rightType = right_->Check(checker);
 
     switch (operator_) {

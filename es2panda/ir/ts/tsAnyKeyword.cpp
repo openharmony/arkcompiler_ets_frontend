@@ -15,6 +15,7 @@
 
 #include "tsAnyKeyword.h"
 
+#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,6 +32,11 @@ void TSAnyKeyword::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 checker::Type *TSAnyKeyword::Check([[maybe_unused]] checker::Checker *checker) const
 {
     return nullptr;
+}
+
+checker::Type *TSAnyKeyword::GetType(checker::Checker *checker) const
+{
+    return checker->GlobalAnyType();
 }
 
 }  // namespace panda::es2panda::ir

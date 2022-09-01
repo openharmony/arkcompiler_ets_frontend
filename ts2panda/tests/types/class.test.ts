@@ -22,9 +22,9 @@ import {
     createVRegTypePair,
     compareVReg2Type
 } from "./typeUtils";
-import { PrimitiveType } from '../../src/base/typeSystem';
+import { userDefinedTypeStartIndex } from '../../src/base/typeSystem';
 
-let shift = PrimitiveType._LENGTH;
+let shift = userDefinedTypeStartIndex;
 
 describe("class tests in class.test.ts", function () {
     it("test class with no parameter in block", function () {
@@ -256,8 +256,8 @@ describe("class tests in class.test.ts", function () {
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
-            ["#3#animal", shift + 2],
-            ["#4#dog", shift + 1],
+            ["#3#animal", shift + 1],
+            ["#4#dog", shift + 3],
             ["#5#d", shift + 5],
         ]
         let vreg2TypeMap = createVRegTypePair(extectedVRegTypePair);
@@ -269,25 +269,25 @@ describe("class tests in class.test.ts", function () {
                 [2, 0], [2, 5], [2, 0]
             ],
             [
-                [2, 1], [2, 0], [2, shift + 2], [2, 0],
+                [2, 1], [2, 1], [2, 0], [2, 0],
+                [2, 0], [2, 1], [5, 'eat'], [2, shift + 2],
+                [2, 0], [2, 0]
+            ],
+            [
+                [2, 3], [2, 0], [5, 'eat'],
+                [2, 0], [2, 0], [2, 0]
+            ],
+            [
+                [2, 1], [2, 1], [2, shift + 1], [2, 0],
                 [2, 0], [2, 1], [5, 'constructor'], [2, shift + 4],
                 [2, 0], [2, 0]
             ],
             [
-                [2, 1], [2, 1], [2, 0], [2, 0],
-                [2, 0], [2, 1], [5, 'eat'], [2, shift + 3],
-                [2, 0], [2, 0]
+                [2, 3], [2, 0], [5, 'constructor'],
+                [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 3], [2, 0], [2, 0], [5, 'eat'],
-                [2, 0], [2, 0]
-            ],
-            [
-                [2, 3], [2, 0], [2, 0], [5, 'constructor'],
-                [2, 0], [2, 0]
-            ],
-            [
-                [2, 2], [2, shift + 1]
+                [2, 2], [2, shift + 3]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -301,9 +301,9 @@ describe("class tests in class.test.ts", function () {
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
-            ["#3#base1", shift + 2],
-            ["#4#base2", shift + 3],
-            ["#5#A", shift + 1],
+            ["#3#base1", shift + 1],
+            ["#4#base2", shift + 2],
+            ["#5#A", shift + 3],
             ["#6#a", shift + 4],
         ]
         let vreg2TypeMap = createVRegTypePair(extectedVRegTypePair);
@@ -315,20 +315,20 @@ describe("class tests in class.test.ts", function () {
                 [2, 0], [2, 4], [2, 0]
             ],
             [
+                [2, 1], [2, 0], [2, 0], [2, 0],
+                [2, 0], [2, 0], [2, 0], [2, 0]
+            ],
+            [
+                [2, 1], [2, 0], [2, 0], [2, 0],
+                [2, 0], [2, 0], [2, 0], [2, 0]
+            ],
+            [
                 [2, 1], [2, 0], [2, 0], [2, 2],
-                [2, shift + 2], [2, shift + 3], [2, 0], [2, 0],
+                [2, shift + 1], [2, shift + 2], [2, 0], [2, 0],
                 [2, 0], [2, 0]
             ],
             [
-                [2, 1], [2, 0], [2, 0], [2, 0],
-                [2, 0], [2, 0], [2, 0], [2, 0]
-            ],
-            [
-                [2, 1], [2, 0], [2, 0], [2, 0],
-                [2, 0], [2, 0], [2, 0], [2, 0]
-            ],
-            [
-                [2, 2], [2, shift + 1]
+                [2, 2], [2, shift + 3]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);

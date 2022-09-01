@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_TYPE_OPERATOR_H
 #define ES2PANDA_IR_TS_TYPE_OPERATOR_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -29,10 +29,10 @@ class Type;
 
 namespace panda::es2panda::ir {
 
-class TSTypeOperator : public Expression {
+class TSTypeOperator : public TypeNode {
 public:
     explicit TSTypeOperator(Expression *type, TSOperatorType operatorType)
-        : Expression(AstNodeType::TS_TYPE_OPERATOR), type_(type), operatorType_(operatorType)
+        : TypeNode(AstNodeType::TS_TYPE_OPERATOR), type_(type), operatorType_(operatorType)
     {
     }
 
@@ -60,6 +60,7 @@ public:
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *GetType([[maybe_unused]] checker::Checker *checker) const override;
 
 private:
     Expression *type_;

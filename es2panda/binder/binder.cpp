@@ -42,6 +42,10 @@
 #include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
 #include <ir/statements/whileStatement.h>
+#include <ir/ts/tsConstructorType.h>
+#include <ir/ts/tsFunctionType.h>
+#include <ir/ts/tsMethodSignature.h>
+#include <ir/ts/tsSignatureDeclaration.h>
 
 namespace panda::es2panda::binder {
 void Binder::InitTopScope()
@@ -169,7 +173,8 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
         InstantiateArguments();
     }
 
-    ScopeFindResult res = scope_->Find(ident->Name());
+    ScopeFindResult res = scope_->Find(ident->Name(), bindingOptions_);
+
     if (res.level != 0) {
         ASSERT(res.variable);
         res.variable->SetLexical(res.scope);
@@ -195,11 +200,13 @@ void Binder::BuildFunction(FunctionScope *funcScope, util::StringView name)
     bool funcNameWithoutDot = (name.Find(".") == std::string::npos);
     bool funcNameWithoutBackslash = (name.Find("\\") == std::string::npos);
     if (name != ANONYMOUS_FUNC_NAME && funcNameWithoutDot && funcNameWithoutBackslash && !functionNames_.count(name)) {
+        auto internalName = std::string(program_->RecordName()) + std::string(name);
         functionNames_.insert(name);
-        funcScope->BindName(name, name);
+        funcScope->BindName(name, util::UString(internalName, Allocator()).View());
         return;
     }
     std::stringstream ss;
+    ss << std::string(program_->RecordName());
     uint32_t idx = functionNameIndex_++;
     ss << "#" << std::to_string(idx) << "#";
     if (funcNameWithoutDot && funcNameWithoutBackslash) {
@@ -225,25 +232,41 @@ void Binder::BuildVarDeclaratorId(const ir::AstNode *parent, ir::AstNode *childN
 
     switch (childNode->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
-            const auto &name = childNode->AsIdentifier()->Name();
-            if (util::Helpers::IsGlobalIdentifier(childNode->AsIdentifier()->Name())) {
+            auto *ident = childNode->AsIdentifier();
+            const auto &name = ident->Name();
+
+            if (util::Helpers::IsGlobalIdentifier(name)) {
                 break;
             }
 
             auto *variable = scope_->FindLocal(name);
+
+            if (Program()->Extension() == ScriptExtension::TS) {
+                ident->SetVariable(variable);
+                BuildTSSignatureDeclarationBaseParams(ident->TypeAnnotation());
+            }
+
             variable->AddFlag(VariableFlags::INITIALIZED);
             break;
         }
         case ir::AstNodeType::OBJECT_PATTERN: {
-            for (auto *prop : childNode->AsObjectPattern()->Properties()) {
+            auto *objPattern = childNode->AsObjectPattern();
+
+            for (auto *prop : objPattern->Properties()) {
                 BuildVarDeclaratorId(childNode, prop);
             }
+
+            BuildTSSignatureDeclarationBaseParams(objPattern->TypeAnnotation());
             break;
         }
         case ir::AstNodeType::ARRAY_PATTERN: {
+            auto *arrayPattern = childNode->AsArrayPattern();
+
             for (auto *element : childNode->AsArrayPattern()->Elements()) {
                 BuildVarDeclaratorId(childNode, element);
             }
+
+            BuildTSSignatureDeclarationBaseParams(arrayPattern->TypeAnnotation());
             break;
         }
         case ir::AstNodeType::ASSIGNMENT_PATTERN: {
@@ -263,6 +286,43 @@ void Binder::BuildVarDeclaratorId(const ir::AstNode *parent, ir::AstNode *childN
         default:
             break;
     }
+}
+
+void Binder::BuildTSSignatureDeclarationBaseParams(const ir::AstNode *typeNode)
+{
+    if (!typeNode) {
+        return;
+    }
+
+    Scope *scope = nullptr;
+
+    switch (typeNode->Type()) {
+        case ir::AstNodeType::TS_FUNCTION_TYPE: {
+            scope = typeNode->AsTSFunctionType()->Scope();
+            break;
+        }
+        case ir::AstNodeType::TS_CONSTRUCTOR_TYPE: {
+            scope = typeNode->AsTSConstructorType()->Scope();
+            break;
+        }
+        case ir::AstNodeType::TS_SIGNATURE_DECLARATION: {
+            scope = typeNode->AsTSSignatureDeclaration()->Scope();
+            break;
+        }
+        case ir::AstNodeType::TS_METHOD_SIGNATURE: {
+            scope = typeNode->AsTSMethodSignature()->Scope();
+            break;
+        }
+        default: {
+            ResolveReferences(typeNode);
+            return;
+        }
+    }
+
+    ASSERT(scope && scope->IsFunctionParamScope());
+
+    auto scopeCtx = LexicalScope<FunctionParamScope>::Enter(this, scope->AsFunctionParamScope());
+    ResolveReferences(typeNode);
 }
 
 void Binder::BuildVarDeclarator(ir::VariableDeclarator *varDecl)
@@ -396,6 +456,16 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
                 }
             }
 
+            if (Program()->Extension() == ScriptExtension::TS) {
+                if (scriptFunc->ReturnTypeAnnotation()) {
+                    ResolveReference(scriptFunc, scriptFunc->ReturnTypeAnnotation());
+                }
+
+                if (scriptFunc->IsOverload()) {
+                    break;
+                }
+            }
+
             auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, funcScope);
 
             BuildScriptFunction(outerScope, scriptFunc);
@@ -475,6 +545,14 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             ValidateExportDecl(childNode->AsExportNamedDeclaration());
 
             ResolveReferences(childNode);
+            break;
+        }
+        // TypeScript specific part
+        case ir::AstNodeType::TS_FUNCTION_TYPE:
+        case ir::AstNodeType::TS_CONSTRUCTOR_TYPE:
+        case ir::AstNodeType::TS_METHOD_SIGNATURE:
+        case ir::AstNodeType::TS_SIGNATURE_DECLARATION: {
+            BuildTSSignatureDeclarationBaseParams(childNode);
             break;
         }
         default: {

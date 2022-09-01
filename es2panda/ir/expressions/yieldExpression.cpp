@@ -34,7 +34,7 @@ void YieldExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "YieldExpression"}, {"delegate", delegate_}, {"argument", AstDumper::Nullable(argument_)}});
 }
 
-void YieldExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void YieldExpression::Compile(compiler::PandaGen *pg) const
 {
     compiler::RegScope rs(pg);
 
@@ -52,7 +52,7 @@ void YieldExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     }
 }
 
-checker::Type *YieldExpression::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *YieldExpression::Check(checker::Checker *checker) const
 {
     // TODO(aszilagyi)
     return checker->GlobalAnyType();

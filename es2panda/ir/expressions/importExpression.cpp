@@ -30,9 +30,13 @@ void ImportExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ImportExpression"}, {"source", source_}});
 }
 
-void ImportExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ImportExpression::Compile(compiler::PandaGen *pg) const
 {
-    pg->Unimplemented();
+    compiler::RegScope rs(pg);
+    compiler::VReg moduleSpecifier = pg->AllocReg();
+    source_->Compile(pg);
+    pg->StoreAccumulator(this, moduleSpecifier);
+    pg->DynamicImportCall(this, moduleSpecifier);
 }
 
 checker::Type *ImportExpression::Check([[maybe_unused]] checker::Checker *checker) const

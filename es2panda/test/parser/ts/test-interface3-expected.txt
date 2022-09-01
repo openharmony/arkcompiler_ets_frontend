@@ -1,1 +1,1 @@
-SyntaxError: Identifier expected [test-interface3.ts:1:23]
+SyntaxError: Identifier expected [test-interface3.ts:17:23]

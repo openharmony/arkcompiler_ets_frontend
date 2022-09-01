@@ -55,8 +55,8 @@ enum class TypeFlag : uint64_t {
     ARRAY = 1ULL << 29,             // x: number[]
     FUNCTION = 1ULL << 30,          // x: (a) => b
     NON_PRIMITIVE = 1ULL << 31,     // x: object
-    RELATION_CHECKED = 1ULL << 32,
-    TYPE_REFERENCE = 1ULL << 33,
+    TYPE_REFERENCE = 1ULL << 32,
+    READONLY = 1ULL << 33,
     COMPUTED_TYPE_LITERAL_NAME = STRING_LITERAL | NUMBER_LITERAL | ENUM,
     COMPUTED_NAME = COMPUTED_TYPE_LITERAL_NAME | STRING | NUMBER | ANY | SYMBOL,
     ANY_OR_UNKNOWN = ANY | UNKNOWN,

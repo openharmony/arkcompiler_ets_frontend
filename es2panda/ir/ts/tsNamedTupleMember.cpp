@@ -35,8 +35,9 @@ void TSNamedTupleMember::Dump(ir::AstDumper *dumper) const
 
 void TSNamedTupleMember::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSNamedTupleMember::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSNamedTupleMember::Check(checker::Checker *checker) const
 {
+    elementType_->Check(checker);
     return nullptr;
 }
 

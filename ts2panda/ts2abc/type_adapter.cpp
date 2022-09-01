@@ -21,7 +21,7 @@ void TypeAdapter::AdaptTypeForProgram(panda::pandasm::Program *prog) const
 {
     for (auto &[name, func] : prog->function_table) {
         if (ShouldDisplayTypeInfo()) {
-            std::cout << "Handle types for funtion: " << name << "\n";
+            std::cout << "Handle types for function: " << name << "\n";
         }
         AdaptTypeForFunction(&func);
     }
@@ -79,6 +79,9 @@ void TypeAdapter::HandleTypeForFunction(panda::pandasm::Function *func, size_t a
             continue;
         }
         order++;
+
+        FillInBuiltinType(insn, order_type_map, order);
+
         bool maybe_arg = MaybeArg(func, i);
         if (!maybe_arg && insn.opcode != panda::pandasm::Opcode::STA_DYN) {
             continue;
@@ -112,6 +115,22 @@ void TypeAdapter::HandleTypeForFunction(panda::pandasm::Function *func, size_t a
     }
 
     UpdateTypeAnnotation(func, anno_idx, ele_idx, order_type_map);
+}
+
+void TypeAdapter::FillInBuiltinType(const panda::pandasm::Ins &insn,
+                                    std::unordered_map<int32_t, int32_t> &order_type_map,
+                                    const int32_t order) const
+{
+    if (insn.opcode != panda::pandasm::Opcode::ECMA_TRYLDGLOBALBYNAME) {
+        return;
+    }
+
+    auto objName = insn.ids[0];
+    auto typeIter = std::find(builtinTypes.begin(), builtinTypes.end(), objName);
+    if (typeIter != builtinTypes.end()) {
+        int builtinTypeIdx = typeIter - builtinTypes.begin() + builtinTypeOffset;
+        order_type_map.emplace(order - 1, builtinTypeIdx);
+    }
 }
 
 void TypeAdapter::UpdateTypeAnnotation(panda::pandasm::Function *func, size_t anno_idx, size_t ele_idx,

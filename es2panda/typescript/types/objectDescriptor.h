@@ -34,8 +34,14 @@ class GlobalTypesHolder;
 
 class ObjectDescriptor {
 public:
-    ObjectDescriptor() = default;
-    ~ObjectDescriptor();
+    explicit ObjectDescriptor(ArenaAllocator *allocator)
+        : properties(allocator->Adapter()),
+          callSignatures(allocator->Adapter()),
+          constructSignatures(allocator->Adapter())
+    {
+    }
+
+    ~ObjectDescriptor() = default;
     NO_COPY_SEMANTIC(ObjectDescriptor);
     NO_MOVE_SEMANTIC(ObjectDescriptor);
 
@@ -43,11 +49,11 @@ public:
     void Copy(ArenaAllocator *allocator, ObjectDescriptor *copiedDesc, TypeRelation *relation,
               GlobalTypesHolder *globalTypes);
 
-    std::vector<binder::LocalVariable *> properties {};
-    std::vector<Signature *> callSignatures {};
-    std::vector<Signature *> constructSignatures {};
-    IndexInfo *stringIndexInfo {nullptr};
-    IndexInfo *numberIndexInfo {nullptr};
+    ArenaVector<binder::LocalVariable *> properties;
+    ArenaVector<Signature *> callSignatures;
+    ArenaVector<Signature *> constructSignatures;
+    IndexInfo *stringIndexInfo {};
+    IndexInfo *numberIndexInfo {};
 };
 
 }  // namespace panda::es2panda::checker

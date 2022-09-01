@@ -1,1 +1,1 @@
-SyntaxError: Enum declarations can only merge with namespace or other enum declarations. [test-enum-declaration5.ts:3:16]
+SyntaxError: Variable 'Foo' has already been declared. [test-enum-declaration5.ts:19:16]

@@ -17,6 +17,7 @@
 
 #include <typescript/checker.h>
 #include <ir/astDump.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::ir {
 
@@ -33,12 +34,45 @@ void TSIndexedAccessType::Dump(ir::AstDumper *dumper) const
 
 void TSIndexedAccessType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSIndexedAccessType::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSIndexedAccessType::Check(checker::Checker *checker) const
 {
-    checker::Type *baseType = objectType_->Check(checker);
-    checker::Type *propType = checker->ResolveBaseProp(baseType, indexType_, false, Start());
+    objectType_->Check(checker);
+    indexType_->Check(checker);
+    checker::Type *resolved = GetType(checker);
 
-    return propType;
+    if (resolved) {
+        return nullptr;
+    }
+
+    checker::Type *indexType = checker->CheckTypeCached(indexType_);
+
+    if (!indexType->HasTypeFlag(checker::TypeFlag::STRING_LIKE | checker::TypeFlag::NUMBER_LIKE)) {
+        checker->ThrowTypeError({"Type ", indexType, " cannot be used as index type"}, indexType_->Start());
+    }
+
+    if (indexType->IsNumberType()) {
+        checker->ThrowTypeError("Type has no matching singature for type 'number'", Start());
+    }
+
+    checker->ThrowTypeError("Type has no matching singature for type 'string'", Start());
+    return nullptr;
+}
+
+checker::Type *TSIndexedAccessType::GetType(checker::Checker *checker) const
+{
+    auto found = checker->NodeCache().find(this);
+
+    if (found != checker->NodeCache().end()) {
+        return found->second;
+    }
+
+    checker::Type *baseType = objectType_->AsTypeNode()->GetType(checker);
+    checker::Type *indexType = indexType_->AsTypeNode()->GetType(checker);
+    checker::Type *resolved = checker->GetPropertyTypeForIndexType(baseType, indexType);
+
+    checker->NodeCache().insert({this, resolved});
+
+    return resolved;
 }
 
 }  // namespace panda::es2panda::ir

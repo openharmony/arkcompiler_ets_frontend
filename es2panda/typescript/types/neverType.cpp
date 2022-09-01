@@ -17,8 +17,6 @@
 
 namespace panda::es2panda::checker {
 
-NeverType::NeverType() : Type(TypeFlag::NEVER) {}
-
 void NeverType::ToString(std::stringstream &ss) const
 {
     ss << "never";
@@ -29,19 +27,19 @@ TypeFacts NeverType::GetTypeFacts() const
     return TypeFacts::NONE;
 }
 
-void NeverType::Identical(TypeRelation *relation, const Type *other) const
+void NeverType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsNeverType()) {
         relation->Result(true);
     }
 }
 
-void NeverType::AssignmentTarget(TypeRelation *relation, [[maybe_unused]] const Type *source) const
+void NeverType::AssignmentTarget(TypeRelation *relation, [[maybe_unused]] Type *source)
 {
     relation->Result(false);
 }
 
-bool NeverType::AssignmentSource(TypeRelation *relation, [[maybe_unused]] const Type *target) const
+bool NeverType::AssignmentSource(TypeRelation *relation, [[maybe_unused]] Type *target)
 {
     relation->Result(true);
     return true;

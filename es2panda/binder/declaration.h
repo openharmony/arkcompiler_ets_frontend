@@ -22,7 +22,7 @@
 
 namespace panda::es2panda::ir {
 class AstNode;
-class FunctionDeclaration;
+class ScriptFunction;
 class TSInterfaceDeclaration;
 class ImportDeclaration;
 }  // namespace panda::es2panda::ir
@@ -171,7 +171,7 @@ public:
     }
 };
 
-class FunctionDecl : public MultiDecl<ir::FunctionDeclaration> {
+class FunctionDecl : public MultiDecl<ir::ScriptFunction> {
 public:
     explicit FunctionDecl(ArenaAllocator *allocator, util::StringView name, const ir::AstNode *node)
         : MultiDecl(allocator, name)
@@ -192,6 +192,26 @@ public:
     DeclType Type() const override
     {
         return DeclType::TYPE_PARAMETER;
+    }
+};
+
+class PropertyDecl : public Decl {
+public:
+    explicit PropertyDecl(util::StringView name) : Decl(name) {}
+
+    DeclType Type() const override
+    {
+        return DeclType::PROPERTY;
+    }
+};
+
+class MethodDecl : public Decl {
+public:
+    explicit MethodDecl(util::StringView name) : Decl(name) {}
+
+    DeclType Type() const override
+    {
+        return DeclType::METHOD;
     }
 };
 

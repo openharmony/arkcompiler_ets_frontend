@@ -18,6 +18,8 @@
 
 #include "type.h"
 
+#include <binder/variable.h>
+
 namespace panda::es2panda::binder {
 class LocalVariable;
 }  // namespace panda::es2panda::binder
@@ -26,41 +28,100 @@ namespace panda::es2panda::checker {
 
 class SignatureInfo {
 public:
-    SignatureInfo() = default;
-    explicit SignatureInfo(const SignatureInfo *other, ArenaAllocator *allocator);
+    explicit SignatureInfo(ArenaAllocator *allocator) : params(allocator->Adapter()) {}
+
+    SignatureInfo(const SignatureInfo *other, ArenaAllocator *allocator) : params(allocator->Adapter())
+    {
+        for (auto *it : other->params) {
+            params.push_back(it->Copy(allocator, it->Declaration()));
+        }
+
+        minArgCount = other->minArgCount;
+
+        if (other->restVar) {
+            restVar = other->restVar->Copy(allocator, other->restVar->Declaration());
+        }
+    }
+
+    ~SignatureInfo() = default;
     NO_COPY_SEMANTIC(SignatureInfo);
     NO_MOVE_SEMANTIC(SignatureInfo);
-    ~SignatureInfo() = default;
 
     uint32_t minArgCount {};
     binder::LocalVariable *restVar {};
-    std::vector<binder::LocalVariable *> funcParams {};
+    ArenaVector<binder::LocalVariable *> params;
 };
 
 class Signature {
 public:
-    Signature(SignatureInfo *signatureInfo, Type *returnType);
+    Signature(SignatureInfo *signatureInfo, Type *returnType) : signatureInfo_(signatureInfo), returnType_(returnType)
+    {
+    }
+
     ~Signature() = default;
     NO_COPY_SEMANTIC(Signature);
     NO_MOVE_SEMANTIC(Signature);
 
-    const SignatureInfo *Info() const;
-    const std::vector<binder::LocalVariable *> &Params() const;
-    const Type *ReturnType() const;
-    Type *ReturnType();
-    uint32_t MinArgCount() const;
-    uint32_t OptionalArgCount() const;
-    void SetReturnType(Type *type);
-    const binder::LocalVariable *RestVar() const;
+    const SignatureInfo *GetSignatureInfo() const
+    {
+        return signatureInfo_;
+    }
+
+    const ArenaVector<binder::LocalVariable *> &Params() const
+    {
+        return signatureInfo_->params;
+    }
+
+    const Type *ReturnType() const
+    {
+        return returnType_;
+    }
+
+    Type *ReturnType()
+    {
+        return returnType_;
+    }
+
+    uint32_t MinArgCount() const
+    {
+        return signatureInfo_->minArgCount;
+    }
+
+    uint32_t OptionalArgCount() const
+    {
+        return signatureInfo_->params.size() - signatureInfo_->minArgCount;
+    }
+
+    void SetReturnType(Type *type)
+    {
+        returnType_ = type;
+    }
+
+    void SetNode(const ir::AstNode *node)
+    {
+        node_ = node;
+    }
+
+    const ir::AstNode *Node() const
+    {
+        return node_;
+    }
+
+    const binder::LocalVariable *RestVar() const
+    {
+        return signatureInfo_->restVar;
+    }
+
     Signature *Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);
 
     void ToString(std::stringstream &ss, const binder::Variable *variable, bool printAsMethod = false) const;
-    void Identical(TypeRelation *relation, const Signature *other) const;
-    void AssignmentTarget(TypeRelation *relation, const Signature *source) const;
+    void Identical(TypeRelation *relation, Signature *other);
+    void AssignmentTarget(TypeRelation *relation, Signature *source);
 
 private:
-    SignatureInfo *signatureInfo_;
+    checker::SignatureInfo *signatureInfo_;
     Type *returnType_;
+    const ir::AstNode *node_ {nullptr};
 };
 
 }  // namespace panda::es2panda::checker

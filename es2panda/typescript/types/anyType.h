@@ -22,12 +22,12 @@ namespace panda::es2panda::checker {
 
 class AnyType : public Type {
 public:
-    AnyType();
+    AnyType() : Type(TypeFlag::ANY) {}
 
     void ToString(std::stringstream &ss) const override;
-    void Identical(TypeRelation *relation, const Type *other) const override;
-    void AssignmentTarget(TypeRelation *relation, const Type *source) const override;
-    bool AssignmentSource(TypeRelation *relation, const Type *target) const override;
+    void Identical(TypeRelation *relation, Type *other) override;
+    void AssignmentTarget(TypeRelation *relation, Type *source) override;
+    bool AssignmentSource(TypeRelation *relation, Type *target) override;
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 };

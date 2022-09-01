@@ -1,1 +1,1 @@
-SyntaxError: Unexpected modifier [test-ts-parameter-property3.ts:2:26]
+SyntaxError: Unexpected modifier [test-ts-parameter-property3.ts:18:26]

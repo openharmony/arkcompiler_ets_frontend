@@ -534,6 +534,9 @@ export class Compiler {
             case ts.SyntaxKind.ExportDeclaration:
             case ts.SyntaxKind.NotEmittedStatement:
             case ts.SyntaxKind.InterfaceDeclaration:
+            case ts.SyntaxKind.EndOfDeclarationMarker:
+            case ts.SyntaxKind.ModuleDeclaration:
+            case ts.SyntaxKind.TypeAliasDeclaration:
                 break;
             default:
                 throw new Error("Statement " + this.getNodeName(stmt) + " is unimplemented");
@@ -612,8 +615,17 @@ export class Compiler {
                 this.popLoopEnv(node, popTimes);
                 break;
             }
-            // SwitchStatement & BlockStatement could also have break labelTarget which changes
-            // the control flow out of their inner env loop. We should pop Loop env with such cases either.
+            case ts.SyntaxKind.SwitchStatement: {
+                if (!isContinue) {
+                    return;
+                }
+                this.popLoopEnv(node, loopEnvLevel);
+                break;
+            }
+            /**
+             * BlockStatement could also have break labelTarget which changes the control flow
+             * out of their inner env loop. We should pop Loop env with such cases either.
+             */
             default: {
                 this.popLoopEnv(node, loopEnvLevel);
             }
@@ -714,7 +726,27 @@ export class Compiler {
                 // restore pandaGen.tryStatement
                 TryStatement.setCurrentTryStatement(saveTry);
 
-                updateCatchTables(originTry, startTry, inlinedLabelPair);
+                /*
+                 * split the catchZone in most Inner try & add the insertedZone by the finally-nearset TryZone.
+                 * the inserted innerTry's FinallyBlock can only be catched by the outer's tryBlock. so here just
+                 * need append the inserted finally's Zone into the outerTry's catchTable in order.
+                 * OuterTryBegin      ----
+                 *           <outerTry_0> |
+                 *     InnerTryBegin  ----
+                 *
+                 *          ----    InnerTry's FinallyBegin --
+                 * <outerTry_2> |                             |
+                 *          ----    InnerTry's FinallyEnd   --
+                 *                  return;
+                 *     InnerTryEnd    ----
+                 *           <outerTry_1> |
+                 * OuterTryEnd        ----
+                 */
+                originTry.getCatchTable().splitLabelPair(inlinedLabelPair);
+                if (startTry.getOuterTryStatement()) {
+                    let outerLabelPairs: LabelPair[] = startTry.getOuterTryStatement().getCatchTable().getLabelPairs();
+                    outerLabelPairs.splice(outerLabelPairs.length - 2, 0, inlinedLabelPair);
+                }
             }
         }
         this.scope = currentScope;
@@ -939,10 +971,11 @@ export class Compiler {
                 compileClassDeclaration(this, <ts.ClassLikeDeclaration>expr);
                 break;
             case ts.SyntaxKind.PartiallyEmittedExpression:
+                this.compileExpression((<ts.PartiallyEmittedExpression>expr).expression);
                 break;
             case ts.SyntaxKind.CommaListExpression:
-	        compileCommaListExpression(this, <ts.CommaListExpression>expr);
-		break;
+                compileCommaListExpression(this, <ts.CommaListExpression>expr);
+                break;
             default:
                 throw new Error("Expression of type " + this.getNodeName(expr) + " is unimplemented");
         }

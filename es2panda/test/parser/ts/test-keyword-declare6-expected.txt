@@ -11,11 +11,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 1,
+              "line": 17,
               "column": 18
             },
             "end": {
-              "line": 1,
+              "line": 17,
               "column": 19
             }
           }
@@ -27,35 +27,22 @@
         "declare": true,
         "loc": {
           "start": {
-            "line": 1,
+            "line": 17,
             "column": 9
           },
           "end": {
-            "line": 1,
+            "line": 17,
             "column": 22
           }
         }
       },
       "loc": {
         "start": {
-          "line": 1,
+          "line": 17,
           "column": 9
         },
         "end": {
-          "line": 1,
-          "column": 22
-        }
-      }
-    },
-    {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 1,
-          "column": 21
-        },
-        "end": {
-          "line": 1,
+          "line": 17,
           "column": 22
         }
       }
@@ -70,11 +57,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 10
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 11
             }
           }
@@ -88,33 +75,33 @@
           "statements": [],
           "loc": {
             "start": {
-              "line": 2,
+              "line": 18,
               "column": 14
             },
             "end": {
-              "line": 2,
+              "line": 18,
               "column": 17
             }
           }
         },
         "loc": {
           "start": {
-            "line": 2,
+            "line": 18,
             "column": 1
           },
           "end": {
-            "line": 2,
+            "line": 18,
             "column": 17
           }
         }
       },
       "loc": {
         "start": {
-          "line": 2,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 17
         }
       }
@@ -123,11 +110,11 @@
       "type": "EmptyStatement",
       "loc": {
         "start": {
-          "line": 2,
+          "line": 18,
           "column": 17
         },
         "end": {
-          "line": 2,
+          "line": 18,
           "column": 18
         }
       }
@@ -139,7 +126,7 @@
       "column": 1
     },
     "end": {
-      "line": 2,
+      "line": 18,
       "column": 18
     }
   }

@@ -351,6 +351,10 @@
         "category": "Error",
         "code": 1319
     },
+    "Argument of dynamic import cannot be spread element.": {
+        "category": "Error",
+        "code": 1325
+    },
     "use strict directive cannot be used with non-simple parameter list.": {
         "category": "Error",
         "code": 1347
@@ -358,6 +362,10 @@
     "Identifier expected. '{0}' is a reserved word that cannot be used here.": {
         "category": "Error",
         "code": 1359
+    },
+    "Dynamic imports can only accept a module specifier, optional assertion is not supported yet.": {
+        "category": "Error",
+        "code": 1450
     },
     "Duplicate identifier '{0}'.": {
         "category": "Error",

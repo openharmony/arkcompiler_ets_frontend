@@ -38,6 +38,16 @@ const Checker *TypeRelation::GetChecker() const
     return checker_;
 }
 
+Checker *TypeRelation::GetChecker()
+{
+    return checker_;
+}
+
+ArenaAllocator *TypeRelation::Allocator()
+{
+    return checker_->Allocator();
+}
+
 RelationResult TypeRelation::CacheLookup(const Type *source, const Type *target, const RelationHolder &holder,
                                          RelationType type) const
 {
@@ -62,7 +72,7 @@ RelationResult TypeRelation::CacheLookup(const Type *source, const Type *target,
     return RelationResult::CACHE_MISS;
 }
 
-bool TypeRelation::IsIdenticalTo(const Type *source, const Type *target)
+bool TypeRelation::IsIdenticalTo(Type *source, Type *target)
 {
     if (source == target) {
         Result(true);
@@ -71,6 +81,8 @@ bool TypeRelation::IsIdenticalTo(const Type *source, const Type *target)
 
     result_ = CacheLookup(source, target, checker_->IdenticalResults(), RelationType::IDENTICAL);
     if (result_ == RelationResult::CACHE_MISS) {
+        checker_->ResolveStructuredTypeMembers(source);
+        checker_->ResolveStructuredTypeMembers(target);
         result_ = RelationResult::FALSE;
         target->Identical(this, source);
         checker_->IdenticalResults().cached.insert({{source->Id(), target->Id()}, {result_, RelationType::IDENTICAL}});
@@ -79,7 +91,7 @@ bool TypeRelation::IsIdenticalTo(const Type *source, const Type *target)
     return result_ == RelationResult::TRUE;
 }
 
-bool TypeRelation::IsIdenticalTo(const Signature *source, const Signature *target)
+bool TypeRelation::IsIdenticalTo(Signature *source, Signature *target)
 {
     if (source == target) {
         Result(true);
@@ -92,7 +104,7 @@ bool TypeRelation::IsIdenticalTo(const Signature *source, const Signature *targe
     return result_ == RelationResult::TRUE;
 }
 
-bool TypeRelation::IsIdenticalTo(const IndexInfo *source, const IndexInfo *target)
+bool TypeRelation::IsIdenticalTo(IndexInfo *source, IndexInfo *target)
 {
     if (source == target) {
         Result(true);
@@ -105,7 +117,7 @@ bool TypeRelation::IsIdenticalTo(const IndexInfo *source, const IndexInfo *targe
     return result_ == RelationResult::TRUE;
 }
 
-bool TypeRelation::IsAssignableTo(const Type *source, const Type *target)
+bool TypeRelation::IsAssignableTo(Type *source, Type *target)
 {
     result_ = CacheLookup(source, target, checker_->AssignableResults(), RelationType::ASSIGNABLE);
     if (result_ == RelationResult::CACHE_MISS) {
@@ -126,7 +138,7 @@ bool TypeRelation::IsAssignableTo(const Type *source, const Type *target)
     return result_ == RelationResult::TRUE;
 }
 
-bool TypeRelation::IsComparableTo(const Type *source, const Type *target)
+bool TypeRelation::IsComparableTo(Type *source, Type *target)
 {
     result_ = CacheLookup(source, target, checker_->ComparableResults(), RelationType::COMPARABLE);
 

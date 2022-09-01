@@ -15,73 +15,13 @@
 
 #include "signature.h"
 
-#include <binder/variable.h>
-
 namespace panda::es2panda::checker {
-
-SignatureInfo::SignatureInfo(const SignatureInfo *other, ArenaAllocator *allocator)
-{
-    for (auto *it : other->funcParams) {
-        funcParams.push_back(it->Copy(allocator, it->Declaration()));
-    }
-
-    minArgCount = other->minArgCount;
-
-    if (other->restVar) {
-        restVar = other->restVar->Copy(allocator, other->restVar->Declaration());
-    }
-}
-
-Signature::Signature(SignatureInfo *signatureInfo, Type *returnType)
-    : signatureInfo_(signatureInfo), returnType_(returnType)
-{
-}
-
-const SignatureInfo *Signature::Info() const
-{
-    return signatureInfo_;
-}
-
-const std::vector<binder::LocalVariable *> &Signature::Params() const
-{
-    return signatureInfo_->funcParams;
-}
-
-const Type *Signature::ReturnType() const
-{
-    return returnType_;
-}
-
-Type *Signature::ReturnType()
-{
-    return returnType_;
-}
-
-uint32_t Signature::MinArgCount() const
-{
-    return signatureInfo_->minArgCount;
-}
-
-uint32_t Signature::OptionalArgCount() const
-{
-    return signatureInfo_->funcParams.size() - signatureInfo_->minArgCount;
-}
-
-void Signature::SetReturnType(Type *type)
-{
-    returnType_ = type;
-}
-
-const binder::LocalVariable *Signature::RestVar() const
-{
-    return signatureInfo_->restVar;
-}
 
 Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    SignatureInfo *copiedInfo = allocator->New<checker::SignatureInfo>(signatureInfo_, allocator);
+    checker::SignatureInfo *copiedInfo = allocator->New<checker::SignatureInfo>(signatureInfo_, allocator);
 
-    for (auto *it : copiedInfo->funcParams) {
+    for (auto *it : copiedInfo->params) {
         it->SetTsType(it->TsType()->Instantiate(allocator, relation, globalTypes));
     }
 
@@ -94,7 +34,7 @@ void Signature::ToString(std::stringstream &ss, const binder::Variable *variable
 {
     ss << "(";
 
-    for (auto it = signatureInfo_->funcParams.begin(); it != signatureInfo_->funcParams.end(); it++) {
+    for (auto it = signatureInfo_->params.begin(); it != signatureInfo_->params.end(); it++) {
         ss << (*it)->Name();
 
         if ((*it)->HasFlag(binder::VariableFlags::OPTIONAL)) {
@@ -105,13 +45,13 @@ void Signature::ToString(std::stringstream &ss, const binder::Variable *variable
 
         (*it)->TsType()->ToString(ss);
 
-        if (std::next(it) != signatureInfo_->funcParams.end()) {
+        if (std::next(it) != signatureInfo_->params.end()) {
             ss << ", ";
         }
     }
 
     if (signatureInfo_->restVar) {
-        if (!signatureInfo_->funcParams.empty()) {
+        if (!signatureInfo_->params.empty()) {
             ss << ", ";
         }
 
@@ -133,10 +73,10 @@ void Signature::ToString(std::stringstream &ss, const binder::Variable *variable
     returnType_->ToString(ss);
 }
 
-void Signature::Identical(TypeRelation *relation, const Signature *other) const
+void Signature::Identical(TypeRelation *relation, Signature *other)
 {
     if (signatureInfo_->minArgCount != other->MinArgCount() ||
-        signatureInfo_->funcParams.size() != other->Params().size()) {
+        signatureInfo_->params.size() != other->Params().size()) {
         relation->Result(false);
         return;
     }
@@ -144,8 +84,8 @@ void Signature::Identical(TypeRelation *relation, const Signature *other) const
     relation->IsIdenticalTo(returnType_, other->ReturnType());
 
     if (relation->IsTrue()) {
-        for (uint64_t i = 0; i < signatureInfo_->funcParams.size(); i++) {
-            relation->IsIdenticalTo(signatureInfo_->funcParams[i]->TsType(), other->Params()[i]->TsType());
+        for (uint64_t i = 0; i < signatureInfo_->params.size(); i++) {
+            relation->IsIdenticalTo(signatureInfo_->params[i]->TsType(), other->Params()[i]->TsType());
             if (!relation->IsTrue()) {
                 return;
             }
@@ -159,10 +99,10 @@ void Signature::Identical(TypeRelation *relation, const Signature *other) const
     }
 }
 
-void Signature::AssignmentTarget(TypeRelation *relation, const Signature *source) const
+void Signature::AssignmentTarget(TypeRelation *relation, Signature *source)
 {
     if (!signatureInfo_->restVar &&
-        (source->Params().size() - source->OptionalArgCount()) > signatureInfo_->funcParams.size()) {
+        (source->Params().size() - source->OptionalArgCount()) > signatureInfo_->params.size()) {
         relation->Result(false);
         return;
     }
@@ -189,7 +129,7 @@ void Signature::AssignmentTarget(TypeRelation *relation, const Signature *source
         }
     }
 
-    relation->IsAssignableTo(source->ReturnType(), ReturnType());
+    relation->IsAssignableTo(source->ReturnType(), returnType_);
 
     if (relation->IsTrue() && signatureInfo_->restVar && source->RestVar()) {
         relation->IsAssignableTo(source->RestVar()->TsType(), signatureInfo_->restVar->TsType());

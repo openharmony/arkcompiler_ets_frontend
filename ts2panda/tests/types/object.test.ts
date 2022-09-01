@@ -22,9 +22,9 @@ import {
     createVRegTypePair,
     compareVReg2Type
 } from "./typeUtils";
-import { PrimitiveType } from '../../src/base/typeSystem';
+import { userDefinedTypeStartIndex } from '../../src/base/typeSystem';
 
-let shift = PrimitiveType._LENGTH;
+let shift = userDefinedTypeStartIndex;
 
 describe("object tests in object.test.ts", function() {
     it("test object with primitives", function() {
@@ -60,8 +60,8 @@ describe("object tests in object.test.ts", function() {
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
-            ["#3#A", shift + 2],
-            ["#4#a", shift + 1],
+            ["#3#A", shift + 1],
+            ["#4#a", shift + 2],
         ]
         let vreg2TypeMap = createVRegTypePair(extectedVRegTypePair);
         expect(compareVReg2Type(vreg2TypeMap, locals), "check vreg typeInfo").to.be.true;
@@ -72,15 +72,15 @@ describe("object tests in object.test.ts", function() {
                 [2, 0], [2, 4], [2, 0]
             ],
             [
-                [2, 6],[2, 2],[5, 'a'],[2, 53],
-                [5, 'b'],[2, 54]
-            ],
-            [
                 [2, 1],[2, 0],[2, 0],[2, 0],
                 [2, 0],[2, 0],[2, 0],[2, 0]
             ],
             [
-                [2, 2], [2, 52]
+                [2, 6],[2, 2],[5, 'a'],[2, shift + 3],
+                [5, 'b'],[2, shift + 4]
+            ],
+            [
+                [2, 2], [2, shift + 1]
             ],
             [
                 [2, 4],[2, 2],[2, 4],[2, 1]

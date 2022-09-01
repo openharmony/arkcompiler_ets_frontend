@@ -18,11 +18,13 @@ import * as jshelpers from "../jshelpers";
 import { PandaGen } from "../pandagen";
 import { TypeChecker } from "../typeChecker";
 import { TypeRecorder } from "../typeRecorder";
+import { isGlobalDeclare } from "../strictMode";
 import {
     Literal,
     LiteralBuffer,
     LiteralTag
 } from "./literal";
+import { CmdOptions } from "../cmdOptions";
 
 export enum PrimitiveType {
     ANY,
@@ -34,8 +36,75 @@ export enum PrimitiveType {
     NULL,
     UNDEFINED,
     INT,
-    _LENGTH = 50
 }
+
+export enum BuiltinType {
+    _HEAD = 20,
+    Function,
+    RangeError,
+    Error,
+    Object,
+    SyntaxError,
+    TypeError,
+    ReferenceError,
+    URIError,
+    Symbol,
+    EvalError,
+    Number,
+    parseFloat,
+    Date,
+    Boolean,
+    BigInt,
+    parseInt,
+    WeakMap,
+    RegExp,
+    Set,
+    Map,
+    WeakRef,
+    WeakSet,
+    FinalizationRegistry,
+    Array,
+    Uint8ClampedArray,
+    Uint8Array,
+    TypedArray,
+    Int8Array,
+    Uint16Array,
+    Uint32Array,
+    Int16Array,
+    Int32Array,
+    Float32Array,
+    Float64Array,
+    BigInt64Array,
+    BigUint64Array,
+    SharedArrayBuffer,
+    DataView,
+    String,
+    ArrayBuffer,
+    eval,
+    isFinite,
+    ArkPrivate,
+    print,
+    decodeURI,
+    decodeURIComponent,
+    isNaN,
+    encodeURI,
+    NaN,
+    globalThis,
+    encodeURIComponent,
+    Infinity,
+    Math,
+    JSON,
+    Atomics,
+    undefined,
+    Reflect,
+    Promise,
+    Proxy,
+    GeneratorFunction,
+    Intl,
+}
+
+export const userDefinedTypeStartIndex = 100;
+let literalBufferIndexShift = userDefinedTypeStartIndex;
 
 export enum L2Type {
     _COUNTER,
@@ -46,17 +115,20 @@ export enum L2Type {
     ARRAY,
     OBJECT,
     EXTERNAL,
-    INTERFACE
+    INTERFACE,
+    BUILTINCONTAINER
 }
+
 
 export enum ModifierAbstract {
     NONABSTRACT,
     ABSTRACT
 }
 
-export enum ModifierStatic {
-    NONSTATIC,
-    STATIC
+export enum Modifier {
+    STATIC = 4,
+    ASYNC = 8,
+    ASTERISK = 16
 }
 
 export enum ModifierReadonly {
@@ -106,6 +178,23 @@ export abstract class BaseType {
         PandaGen.setTypeArrayBuffer(type, index);
     }
 
+    protected calculateIndex(builtinTypeIdx) {
+        let typeIndex: number;
+        let shiftedTypeIndex: number;
+        let recordBuiltin = builtinTypeIdx && CmdOptions.needRecordBuiltinDtsType();
+        if (recordBuiltin) {
+            typeIndex = undefined;
+            shiftedTypeIndex = builtinTypeIdx;
+            if (isGlobalDeclare()) {
+                typeIndex = builtinTypeIdx - BuiltinType._HEAD;
+            }
+        } else {
+            typeIndex = this.getIndexFromTypeArrayBuffer(new PlaceHolderType());
+            shiftedTypeIndex = typeIndex + literalBufferIndexShift;
+        }
+        return {typeIndex: typeIndex, shiftedTypeIndex: shiftedTypeIndex};
+    }
+
 }
 
 export class PlaceHolderType extends BaseType {
@@ -121,6 +210,13 @@ export class TypeSummary extends BaseType {
     constructor() {
         super();
         this.preservedIndex = this.getIndexFromTypeArrayBuffer(new PlaceHolderType());
+        if (isGlobalDeclare()) {
+            let builtinTypeSlotNum = userDefinedTypeStartIndex - BuiltinType._HEAD;
+            for (let i = 0; i < builtinTypeSlotNum; i++) {
+                this.getIndexFromTypeArrayBuffer(new PlaceHolderType());
+            }
+            literalBufferIndexShift = BuiltinType._HEAD;
+        }
     }
 
     public setInfo(userDefinedClassNum: number, anonymousRedirect: Array<string>) {
@@ -137,7 +233,11 @@ export class TypeSummary extends BaseType {
         let countBuf = new LiteralBuffer();
         let summaryLiterals: Array<Literal> = new Array<Literal>();
         summaryLiterals.push(new Literal(LiteralTag.INTEGER, L2Type._COUNTER));
-        summaryLiterals.push(new Literal(LiteralTag.INTEGER, this.userDefinedClassNum));
+        let definedTypeNum = this.userDefinedClassNum;
+        if (isGlobalDeclare()) {
+            definedTypeNum += userDefinedTypeStartIndex - BuiltinType._HEAD;
+        }
+        summaryLiterals.push(new Literal(LiteralTag.INTEGER, definedTypeNum));
         summaryLiterals.push(new Literal(LiteralTag.INTEGER, this.anonymousRedirect.length));
         for (let element of this.anonymousRedirect) {
             summaryLiterals.push(new Literal(LiteralTag.STRING, element));
@@ -159,17 +259,22 @@ export class ClassType extends BaseType {
     typeIndex: number;
     shiftedTypeIndex: number;
 
-    constructor(classNode: ts.ClassDeclaration | ts.ClassExpression) {
+    constructor(classNode: ts.ClassDeclaration | ts.ClassExpression, builtinTypeIdx: number = undefined) {
         super();
-        this.typeIndex = this.getIndexFromTypeArrayBuffer(new PlaceHolderType());
-        this.shiftedTypeIndex = this.typeIndex + PrimitiveType._LENGTH;
+        let res = this.calculateIndex(builtinTypeIdx);
+        this.typeIndex = res.typeIndex;
+        this.shiftedTypeIndex = res.shiftedTypeIndex;
+        
         // record type before its initialization, so its index can be recorded
         // in case there's recursive reference of this type
         this.addCurrentType(classNode, this.shiftedTypeIndex);
         this.fillInModifiers(classNode);
         this.fillInHeritages(classNode);
         this.fillInFieldsAndMethods(classNode);
-        this.setTypeArrayBuffer(this, this.typeIndex);
+
+        if (!builtinTypeIdx || isGlobalDeclare()) {
+            this.setTypeArrayBuffer(this, this.typeIndex);
+        }
     }
 
     private fillInModifiers(node: ts.ClassDeclaration | ts.ClassExpression) {
@@ -290,6 +395,9 @@ export class ClassType extends BaseType {
     }
 
     transfer2LiteralBuffer() {
+        if (!this.typeIndex) {
+            return;
+        }
         let classTypeBuf = new LiteralBuffer();
         let classTypeLiterals: Array<Literal> = new Array<Literal>();
         // the first element is to determine the L2 type
@@ -345,7 +453,7 @@ export class ClassInstType extends BaseType {
         super();
         this.shiftedReferredClassIndex = referredClassIndex;
         this.typeIndex = this.getIndexFromTypeArrayBuffer(this);
-        this.shiftedTypeIndex = this.typeIndex + PrimitiveType._LENGTH;
+        this.shiftedTypeIndex = this.typeIndex + literalBufferIndexShift;
         this.typeRecorder.setClass2InstanceMap(this.shiftedReferredClassIndex, this.shiftedTypeIndex);
     }
 
@@ -363,17 +471,20 @@ export class ClassInstType extends BaseType {
 
 export class FunctionType extends BaseType {
     name: string = '';
-    accessFlag: number = AccessFlag.PUBLIC; // 0 -> public -> 0, private -> 1, protected -> 2
-    modifierStatic: number = ModifierStatic.NONSTATIC; // 0 -> unstatic, 1 -> static
+    accessFlag: number = AccessFlag.PUBLIC; // 0 -> public, 1 -> private, 2 -> protected
+    modifiers: number = 0; // 0 -> non-static, 4 -> static, 8 -> async, 16-> asterisk
+    containThisParam: boolean = false;
     parameters: Array<number> = new Array<number>();
     returnType: number = PrimitiveType.ANY;
     typeIndex: number;
     shiftedTypeIndex: number;
 
-    constructor(funcNode: ts.FunctionLikeDeclaration | ts.MethodSignature) {
+    constructor(funcNode: ts.FunctionLikeDeclaration | ts.MethodSignature, builtinTypeIdx: number = undefined) {
         super();
-        this.typeIndex = this.getIndexFromTypeArrayBuffer(new PlaceHolderType());
-        this.shiftedTypeIndex = this.typeIndex + PrimitiveType._LENGTH;
+        let res = this.calculateIndex(builtinTypeIdx);
+        this.typeIndex = res.typeIndex;
+        this.shiftedTypeIndex = res.shiftedTypeIndex;
+
         // record type before its initialization, so its index can be recorded
         // in case there's recursive reference of this type
         this.addCurrentType(funcNode, this.shiftedTypeIndex);
@@ -406,13 +517,21 @@ export class FunctionType extends BaseType {
                         break;
                     }
                     case ts.SyntaxKind.StaticKeyword: {
-                        this.modifierStatic = ModifierStatic.STATIC;
+                        this.modifiers = Modifier.STATIC;
+                        break;
+                    }
+                    case ts.SyntaxKind.AsyncKeyword: {
+                        this.modifiers += Modifier.ASYNC;
                         break;
                     }
                     default:
                         break;
                 }
             }
+        }
+
+        if (!ts.isMethodSignature(node) && node.asteriskToken) {
+            this.modifiers += Modifier.ASTERISK;
         }
     }
 
@@ -423,6 +542,9 @@ export class FunctionType extends BaseType {
                 let variableNode = parameter.name;
                 let typeIndex = this.getOrCreateRecordForTypeNode(typeNode, variableNode);
                 this.parameters.push(typeIndex);
+                if (variableNode.getFullText() == 'this') {
+                    this.containThisParam = true;
+                }
             }
         }
     }
@@ -434,20 +556,29 @@ export class FunctionType extends BaseType {
     }
 
     getModifier() {
-        return this.modifierStatic;
+        return this.modifiers;
     }
 
     transfer2LiteralBuffer(): LiteralBuffer {
         let funcTypeBuf = new LiteralBuffer();
         let funcTypeLiterals: Array<Literal> = new Array<Literal>();
         funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, L2Type.FUNCTION));
-        funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.accessFlag));
-        funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.modifierStatic));
+        funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.accessFlag + this.modifiers));
         funcTypeLiterals.push(new Literal(LiteralTag.STRING, this.name));
-        funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.parameters.length));
-        this.parameters.forEach((type) => {
-            funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, type));
-        });
+        if (this.containThisParam) {
+            funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, 1)); // marker for having 'this' param
+            funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.parameters[0]));
+            funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.parameters.length - 1));
+            for (let i = 1; i < this.parameters.length; i++) {
+                funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.parameters[i]));
+            }
+        } else {
+            funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, 0)); // marker for not having 'this' param
+            funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.parameters.length));
+            for (let i = 0; i < this.parameters.length; i++) {
+                funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.parameters[i]));
+            }
+        }
 
         funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.returnType));
         funcTypeBuf.addLiterals(...funcTypeLiterals);
@@ -464,7 +595,7 @@ export class ExternalType extends BaseType {
         super();
         this.fullRedirectNath = `#${importName}#${redirectPath}`;
         this.typeIndex = this.getIndexFromTypeArrayBuffer(this);
-        this.shiftedTypeIndex = this.typeIndex + PrimitiveType._LENGTH;
+        this.shiftedTypeIndex = this.typeIndex + literalBufferIndexShift;
     }
 
     transfer2LiteralBuffer(): LiteralBuffer {
@@ -494,7 +625,7 @@ export class UnionType extends BaseType {
             return;
         }
         this.typeIndex = this.getIndexFromTypeArrayBuffer(new PlaceHolderType());
-        this.shiftedTypeIndex = this.typeIndex + PrimitiveType._LENGTH;
+        this.shiftedTypeIndex = this.typeIndex + literalBufferIndexShift;
         this.fillInUnionArray(typeNode, this.unionedTypeArray);
         this.setUnionTypeMap(unionStr, this.shiftedTypeIndex);
         this.setTypeArrayBuffer(this, this.typeIndex);
@@ -549,7 +680,7 @@ export class ArrayType extends BaseType {
             this.shiftedTypeIndex = this.getFromArrayTypeMap(this.referedTypeIndex)!;
         } else {
             this.typeIndex = this.getIndexFromTypeArrayBuffer(this);
-            this.shiftedTypeIndex = this.typeIndex + PrimitiveType._LENGTH;
+            this.shiftedTypeIndex = this.typeIndex + literalBufferIndexShift;
             this.setTypeArrayBuffer(this, this.typeIndex);
             this.setArrayTypeMap(this.referedTypeIndex, this.shiftedTypeIndex);
         }
@@ -585,7 +716,7 @@ export class ObjectType extends BaseType {
     constructor(objNode: ts.TypeLiteralNode) {
         super();
         this.typeIndex = this.getIndexFromTypeArrayBuffer(new PlaceHolderType());
-        this.shiftedTypeIndex = this.typeIndex + PrimitiveType._LENGTH;
+        this.shiftedTypeIndex = this.typeIndex + literalBufferIndexShift;
         this.fillInMembers(objNode);
         this.setTypeArrayBuffer(this, this.typeIndex);
     }
@@ -624,7 +755,7 @@ export class InterfaceType extends BaseType {
     constructor(interfaceNode: ts.InterfaceDeclaration) {
         super();
         this.typeIndex = this.getIndexFromTypeArrayBuffer(new PlaceHolderType());
-        this.shiftedTypeIndex = this.typeIndex + PrimitiveType._LENGTH;
+        this.shiftedTypeIndex = this.typeIndex + literalBufferIndexShift;
         // record type before its initialization, so its index can be recorded
         // in case there's recursive reference of this type
         this.addCurrentType(interfaceNode, this.shiftedTypeIndex);
@@ -746,5 +877,39 @@ export class InterfaceType extends BaseType {
         transferredTarget.forEach(method => {
             interfaceTypeLiterals.push(new Literal(LiteralTag.INTEGER, method));
         });
+    }
+}
+
+export class BuiltinContainerType extends BaseType {
+    containerArray: Array<number> = [];
+    builtinTypeIndex: number;
+    typeIndex: number = PrimitiveType.ANY;
+    shiftedTypeIndex: number = PrimitiveType.ANY;
+
+    constructor(builtinContainerSignature: object) {
+        super();
+        this.typeIndex = this.getIndexFromTypeArrayBuffer(new PlaceHolderType());
+        this.shiftedTypeIndex = this.typeIndex + literalBufferIndexShift;
+        this.builtinTypeIndex = builtinContainerSignature['typeIndex'];
+        this.containerArray = builtinContainerSignature['typeArgIdxs'];
+        this.setBuiltinContainer2InstanceMap(builtinContainerSignature, this.shiftedTypeIndex);
+        this.setTypeArrayBuffer(this, this.typeIndex);
+    }
+
+    setBuiltinContainer2InstanceMap(builtinContainerSignature: object, index: number) {
+        return this.typeRecorder.setBuiltinContainer2InstanceMap(builtinContainerSignature, index);
+    }
+
+    transfer2LiteralBuffer(): LiteralBuffer {
+        let UnionTypeBuf = new LiteralBuffer();
+        let UnionTypeLiterals: Array<Literal> = new Array<Literal>();
+        UnionTypeLiterals.push(new Literal(LiteralTag.INTEGER, L2Type.BUILTINCONTAINER));
+        UnionTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.builtinTypeIndex));
+        UnionTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.containerArray.length));
+        for (let type of this.containerArray) {
+            UnionTypeLiterals.push(new Literal(LiteralTag.INTEGER, type));
+        }
+        UnionTypeBuf.addLiterals(...UnionTypeLiterals);
+        return UnionTypeBuf;
     }
 }

@@ -34,10 +34,7 @@ namespace panda::es2panda::ir {
 class ArrayExpression : public Expression {
 public:
     explicit ArrayExpression(AstNodeType nodeType, ArenaVector<Expression *> &&elements, bool trailingComma)
-        : Expression(nodeType),
-          elements_(std::move(elements)),
-          typeAnnotation_(nullptr),
-          trailingComma_(trailingComma)
+        : Expression(nodeType), elements_(std::move(elements)), typeAnnotation_(nullptr), trailingComma_(trailingComma)
     {
     }
 
@@ -47,6 +44,11 @@ public:
     }
 
     const Expression *TypeAnnotation() const
+    {
+        return typeAnnotation_;
+    }
+
+    Expression *TypeAnnotation()
     {
         return typeAnnotation_;
     }

@@ -15,7 +15,7 @@
 
 
 @foo @bar()
-export default class Baz {
+class Baz {
     a();
     @c
     a() { }

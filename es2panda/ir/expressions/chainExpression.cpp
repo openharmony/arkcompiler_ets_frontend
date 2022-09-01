@@ -65,7 +65,7 @@ void ChainExpression::Compile(compiler::PandaGen *pg) const
     pg->SetLabel(this, endLabel);
 }
 
-checker::Type *ChainExpression::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *ChainExpression::Check(checker::Checker *checker) const
 {
     return expression_->Check(checker);
 }

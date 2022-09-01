@@ -65,10 +65,18 @@ void NewExpression::Compile(compiler::PandaGen *pg) const
     }
 }
 
-checker::Type *NewExpression::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *NewExpression::Check(checker::Checker *checker) const
 {
-    // TODO(aszilagyi)
-    return checker->GlobalAnyType();
+    checker::Type *calleeType = callee_->Check(checker);
+
+    // TODO(aszilagyi): handle optional chain
+    if (calleeType->IsObjectType()) {
+        checker::ObjectType *calleeObj = calleeType->AsObjectType();
+        return checker->resolveCallOrNewExpression(calleeObj->ConstructSignatures(), arguments_, Start());
+    }
+
+    checker->ThrowTypeError("This expression is not callable.", Start());
+    return nullptr;
 }
 
 }  // namespace panda::es2panda::ir

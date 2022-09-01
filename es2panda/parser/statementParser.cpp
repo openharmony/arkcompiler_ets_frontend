@@ -70,6 +70,7 @@
 #include <ir/ts/tsTypeParameter.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
 #include <ir/ts/tsTypeParameterInstantiation.h>
+#include <ir/ts/tsTypeReference.h>
 #include <lexer/lexer.h>
 #include <lexer/token/letters.h>
 #include <lexer/token/sourceLocation.h>
@@ -245,7 +246,7 @@ ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
 ir::TSModuleDeclaration *ParserImpl::ParseTsModuleDeclaration(bool isDeclare)
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
-    context_.Status() |= ParserStatus::MODULE;
+    context_.Status() |= ParserStatus::TS_MODULE;
 
     if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_GLOBAL) {
         return ParseTsAmbientExternalModuleDeclaration(startLoc, isDeclare);
@@ -419,10 +420,6 @@ ir::Statement *ParserImpl::ParseLetStatement(StatementParsingFlags flags, bool i
 
 ir::Statement *ParserImpl::ParseConstStatement(StatementParsingFlags flags, bool isDeclare)
 {
-    if (!(flags & StatementParsingFlags::ALLOW_LEXICAL)) {
-        ThrowSyntaxError("The 'const' declarations can only be declared at the top level or inside a block.");
-    }
-
     lexer::SourcePosition constVarStar = lexer_->GetToken().Start();
     lexer_->NextToken();
 
@@ -431,6 +428,10 @@ ir::Statement *ParserImpl::ParseConstStatement(StatementParsingFlags flags, bool
             return ParseEnumDeclaration(true);
         }
         ThrowSyntaxError("Unexpected token");
+    }
+
+    if (!(flags & StatementParsingFlags::ALLOW_LEXICAL)) {
+        ThrowSyntaxError("The 'const' declarations can only be declared at the top level or inside a block.");
     }
 
     auto *variableDecl =
@@ -620,6 +621,7 @@ ir::TSInterfaceDeclaration *ParserImpl::ParseTsInterfaceDeclaration()
 
     auto *id = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
     id->SetRange(lexer_->GetToken().Loc());
+    id->SetReference();
     lexer_->NextToken();
 
     binder::LexicalScope<binder::LocalScope> localScope(Binder());
@@ -640,6 +642,7 @@ ir::TSInterfaceDeclaration *ParserImpl::ParseTsInterfaceDeclaration()
             const lexer::SourcePosition &heritageStart = lexer_->GetToken().Start();
             lexer::SourcePosition heritageEnd = lexer_->GetToken().End();
             ir::Expression *expr = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+            expr->AsIdentifier()->SetReference();
             expr->SetRange(lexer_->GetToken().Loc());
 
             if (lexer_->Lookahead() == LEX_CHAR_LESS_THAN) {
@@ -658,8 +661,10 @@ ir::TSInterfaceDeclaration *ParserImpl::ParseTsInterfaceDeclaration()
                 heritageEnd = typeParamInst->End();
             }
 
-            auto *heritage = AllocNode<ir::TSInterfaceHeritage>(expr, typeParamInst);
-            heritage->SetRange({heritageStart, heritageEnd});
+            auto *typeReference = AllocNode<ir::TSTypeReference>(expr, typeParamInst);
+            typeReference->SetRange({heritageStart, heritageEnd});
+            auto *heritage = AllocNode<ir::TSInterfaceHeritage>(typeReference);
+            heritage->SetRange(typeReference->Range());
             extends.push_back(heritage);
 
             if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
@@ -688,9 +693,8 @@ ir::TSInterfaceDeclaration *ParserImpl::ParseTsInterfaceDeclaration()
 
     if (res == bindings.end()) {
         decl->BindNode(interfaceDecl);
-    } else {
-        decl->AsInterfaceDecl()->Add(interfaceDecl);
     }
+    decl->AsInterfaceDecl()->Add(interfaceDecl);
 
     lexer_->NextToken();
     context_.Status() &= ~ParserStatus::ALLOW_THIS_TYPE;
@@ -985,7 +989,9 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
         lexer_->GetToken().Type() != lexer::TokenType::KEYW_AWAIT) {
         if (canBeAnonymous) {
             ir::ScriptFunction *func = ParseFunction(newStatus, isDeclare);
-            lexer_->NextToken();
+            if (func->Body() != nullptr) {
+                lexer_->NextToken();
+            }
             func->SetStart(startLoc);
             func->SetAsExportDefault();
 
@@ -1015,18 +1021,47 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
 
     newStatus |= ParserStatus::FUNCTION_DECLARATION;
     ir::ScriptFunction *func = ParseFunction(newStatus, isDeclare);
-    lexer_->NextToken();
+    if (func->Body() != nullptr) {
+        lexer_->NextToken();
+    }
 
     func->SetIdent(identNode);
     func->SetStart(startLoc);
     auto *funcDecl = AllocNode<ir::FunctionDeclaration>(func);
     funcDecl->SetRange(func->Range());
 
-    if (!func->IsOverload()) {
-        binder::DeclarationFlags declflag = newStatus & ParserStatus::EXPORT_REACHED ?
-                                            binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
+    binder::DeclarationFlags declflag = newStatus & ParserStatus::EXPORT_REACHED ?
+                                        binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
+    if (Extension() == ScriptExtension::TS) {
+        const auto &bindings = Binder()->GetScope()->Bindings();
+        auto res = bindings.find(ident);
+        binder::FunctionDecl *decl {};
+
+        if (res == bindings.end()) {
+            decl = Binder()->AddDecl<binder::FunctionDecl>(identNode->Start(), declflag, Allocator(), ident, func);
+        } else {
+            binder::Decl *currentDecl = res->second->Declaration();
+
+            if (!currentDecl->IsFunctionDecl()) {
+                Binder()->ThrowRedeclaration(startLoc, currentDecl->Name());
+            }
+
+            decl = currentDecl->AsFunctionDecl();
+
+            if (!decl->Node()->AsScriptFunction()->IsOverload()) {
+                Binder()->ThrowRedeclaration(startLoc, currentDecl->Name());
+            }
+            if (!func->IsOverload()) {
+                decl->BindNode(func);
+            }
+        }
+
+        decl->Add(func);
+    } else {
         Binder()->AddDecl<binder::FunctionDecl>(identNode->Start(), declflag, Allocator(), ident, func);
-    } else if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
+    }
+
+    if (func->IsOverload() && lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
         lexer_->NextToken();
     }
 
@@ -1253,7 +1288,7 @@ ir::Statement *ParserImpl::ParseForStatement()
     bool canBeForInOf = true;
     bool isAwait = false;
     lexer_->NextToken();
-    VariableParsingFlags varFlags = VariableParsingFlags::STOP_AT_IN;
+    VariableParsingFlags varFlags = VariableParsingFlags::STOP_AT_IN | VariableParsingFlags::IN_FOR;
     ExpressionParseFlags exprFlags = ExpressionParseFlags::NO_OPTS;
 
     if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_AWAIT) {
@@ -1784,6 +1819,10 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
             init = AllocNode<ir::Identifier>(identStr, Allocator());
             init->SetRange(lexer_->GetToken().Loc());
 
+            if (Extension() == ScriptExtension::TS) {
+                init->AsIdentifier()->SetReference();
+            }
+
             lexer_->NextToken();
             break;
         }
@@ -1817,6 +1856,10 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
             !(flags & VariableParsingFlags::ACCEPT_CONST_NO_INIT) &&
             !(context_.Status() & ParserStatus::IN_AMBIENT_CONTEXT)) {
             ThrowSyntaxError("Missing initializer in const declaration");
+        }
+
+        if (!(flags & VariableParsingFlags::IN_FOR) && (init->IsArrayPattern() || init->IsObjectPattern())) {
+            ThrowSyntaxError("Missing initializer in destructuring declaration");
         }
 
         lexer::SourcePosition endLoc = init->End();
@@ -2325,7 +2368,9 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
         ConsumeSemicolon(decl);
     }
 
-    AddExportLocalEntryItem(decl);
+    if (Extension() != ScriptExtension::TS || !context_.IsTsModule()) {
+        AddExportLocalEntryItem(decl);
+    }
 
     lexer::SourcePosition endLoc = decl->End();
     ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
@@ -2585,6 +2630,12 @@ ir::AstNode *ParserImpl::ParseImportSpecifiers(ArenaVector<ir::AstNode *> *speci
 
 ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
 {
+    char32_t nextChar = lexer_->Lookahead();
+    // dynamic import || import.meta
+    if (nextChar == LEX_CHAR_LEFT_PAREN || nextChar == LEX_CHAR_DOT) {
+        return ParseExpressionStatement();
+    }
+
     if (Extension() == ScriptExtension::JS) {
         if (!(flags & StatementParsingFlags::GLOBAL)) {
             ThrowSyntaxError("'import' and 'export' may only appear at the top level");
@@ -2593,12 +2644,6 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
         if (!context_.IsModule()) {
             ThrowSyntaxError("'import' and 'export' may appear only with 'sourceType: module'");
         }
-    }
-
-    char32_t nextChar = lexer_->Lookahead();
-    // dynamic import || import.meta
-    if (nextChar == LEX_CHAR_LEFT_PAREN || nextChar == LEX_CHAR_DOT) {
-        return ParseExpressionStatement();
     }
 
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();

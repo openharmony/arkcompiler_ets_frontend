@@ -51,7 +51,7 @@ void ForUpdateStatement::Dump(ir::AstDumper *dumper) const
                  {"body", body_}});
 }
 
-void ForUpdateStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ForUpdateStatement::Compile(compiler::PandaGen *pg) const
 {
     compiler::LocalRegScope declRegScope(pg, scope_->DeclScope()->InitScope());
 
@@ -87,7 +87,7 @@ void ForUpdateStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     pg->SetLabel(this, labelTarget.BreakTarget());
 }
 
-checker::Type *ForUpdateStatement::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *ForUpdateStatement::Check(checker::Checker *checker) const
 {
     checker::ScopeContext scopeCtx(checker, scope_);
 

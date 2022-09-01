@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_CONSTRUCTOR_TYPE_H
 #define ES2PANDA_IR_TS_CONSTRUCTOR_TYPE_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::binder {
 class Scope;
@@ -35,11 +35,11 @@ namespace panda::es2panda::ir {
 
 class TSTypeParameterDeclaration;
 
-class TSConstructorType : public Expression {
+class TSConstructorType : public TypeNode {
 public:
     explicit TSConstructorType(binder::Scope *scope, ArenaVector<Expression *> &&params,
                                TSTypeParameterDeclaration *typeParams, Expression *returnType, bool abstract)
-        : Expression(AstNodeType::TS_CONSTRUCTOR_TYPE),
+        : TypeNode(AstNodeType::TS_CONSTRUCTOR_TYPE),
           scope_(scope),
           params_(std::move(params)),
           typeParams_(typeParams),
@@ -76,7 +76,8 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *Check(checker::Checker *checker) const override;
+    checker::Type *GetType(checker::Checker *checker) const override;
 
 private:
     binder::Scope *scope_;

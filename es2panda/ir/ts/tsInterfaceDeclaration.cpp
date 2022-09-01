@@ -36,11 +36,11 @@ void TSInterfaceDeclaration::Iterate(const NodeTraverser &cb) const
         cb(typeParams_);
     }
 
-    cb(body_);
-
     for (auto *it : extends_) {
         cb(it);
     }
+
+    cb(body_);
 }
 
 void TSInterfaceDeclaration::Dump(ir::AstDumper *dumper) const
@@ -55,11 +55,16 @@ void TSInterfaceDeclaration::Dump(ir::AstDumper *dumper) const
 void TSInterfaceDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
 void CheckInheritedPropertiesAreIdentical(checker::Checker *checker, checker::InterfaceType *type,
-                                          lexer::SourcePosition locInfo)
+                                          const lexer::SourcePosition &locInfo)
 {
-    if (type->Bases().size() < 2) {
+    checker->GetBaseTypes(type);
+
+    size_t constexpr BASE_SIZE_LIMIT = 2;
+    if (type->Bases().size() < BASE_SIZE_LIMIT) {
         return;
     }
+
+    checker->ResolveDeclaredMembers(type);
 
     checker::InterfacePropertyMap properties;
 
@@ -68,7 +73,8 @@ void CheckInheritedPropertiesAreIdentical(checker::Checker *checker, checker::In
     }
 
     for (auto *base : type->Bases()) {
-        std::vector<binder::LocalVariable *> inheritedProperties;
+        checker->ResolveStructuredTypeMembers(base);
+        ArenaVector<binder::LocalVariable *> inheritedProperties(checker->Allocator()->Adapter());
         base->AsInterfaceType()->CollectProperties(&inheritedProperties);
 
         for (auto *inheritedProp : inheritedProperties) {
@@ -76,7 +82,9 @@ void CheckInheritedPropertiesAreIdentical(checker::Checker *checker, checker::In
             if (res == properties.end()) {
                 properties.insert({inheritedProp->Name(), {inheritedProp, base->AsInterfaceType()}});
             } else if (res->second.second != type) {
-                checker->IsTypeIdenticalTo(inheritedProp->TsType(), res->second.first->TsType(),
+                checker::Type *sourceType = checker->GetTypeOfVariable(inheritedProp);
+                checker::Type *targetType = checker->GetTypeOfVariable(res->second.first);
+                checker->IsTypeIdenticalTo(sourceType, targetType,
                                            {"Interface '", type, "' cannot simultaneously extend types '",
                                             res->second.second, "' and '", base->AsInterfaceType(), "'."},
                                            locInfo);
@@ -85,126 +93,35 @@ void CheckInheritedPropertiesAreIdentical(checker::Checker *checker, checker::In
     }
 }
 
-checker::Type *TSInterfaceDeclaration::InferType(checker::Checker *checker, binder::Variable *bindingVar) const
+checker::Type *TSInterfaceDeclaration::Check(checker::Checker *checker) const
 {
-    auto *decl = bindingVar->Declaration();
-    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>();
-    std::set<const ir::TSInterfaceHeritage *> extendsSet;
-    const auto &declarations = decl->AsInterfaceDecl()->Decls();
-    ASSERT(!declarations.empty());
+    binder::Variable *var = id_->Variable();
+    ASSERT(var->Declaration()->Node() && var->Declaration()->Node()->IsTSInterfaceDeclaration());
 
-    checker::InterfaceType *newInterface = checker->Allocator()->New<checker::InterfaceType>(decl->Name(), desc);
-    newInterface->SetVariable(bindingVar);
-    bindingVar->SetTsType(newInterface);
+    if (this == var->Declaration()->Node()) {
+        checker::Type *resolvedType = var->TsType();
 
-    std::pair<std::vector<binder::Variable *>, size_t> mergedTypeParams =
-        checker->CollectTypeParametersFromDeclarations(declarations);
-
-    newInterface->SetMergedTypeParams(std::move(mergedTypeParams));
-
-    for (const auto *it : declarations) {
-        const ir::TSInterfaceDeclaration *currentDecl = it->AsTSInterfaceDeclaration();
-
-        checker::ScopeContext scopeCtx(checker, currentDecl->Scope());
-
-        bool throwTypeParameterMismatchError = false;
-
-        if (currentDecl->TypeParams()) {
-            std::vector<binder::Variable *> typeParams = checker->CheckTypeParameters(currentDecl->TypeParams());
-
-            throwTypeParameterMismatchError =
-                checker->CheckTypeParametersAreIdentical(newInterface->GetMergedTypeParams(), typeParams);
-        } else if (!newInterface->GetMergedTypeParams().first.empty() &&
-                   newInterface->GetMergedTypeParams().second != 0) {
-            throwTypeParameterMismatchError = true;
+        if (!resolvedType) {
+            checker::ObjectDescriptor *desc =
+                checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
+            resolvedType = checker->Allocator()->New<checker::InterfaceType>(checker->Allocator(), id_->Name(), desc);
+            resolvedType->SetVariable(var);
+            var->SetTsType(resolvedType);
         }
 
-        if (throwTypeParameterMismatchError) {
-            checker->ThrowTypeError(
-                {"All declarations of '", newInterface->Name(), "' must have identical type parameters."},
-                currentDecl->Id()->Start());
+        checker::InterfaceType *resolvedInterface = resolvedType->AsObjectType()->AsInterfaceType();
+        CheckInheritedPropertiesAreIdentical(checker, resolvedInterface, id_->Start());
+
+        for (auto *base : resolvedInterface->Bases()) {
+            checker->IsTypeAssignableTo(resolvedInterface, base,
+                                        {"Interface '", id_->Name(), "' incorrectly extends interface '", base, "'"},
+                                        id_->Start());
         }
 
-        for (const auto *iter : currentDecl->Body()->AsTSInterfaceBody()->Body()) {
-            if (iter->IsTSPropertySignature() || iter->IsTSMethodSignature()) {
-                checker->PrefetchTypeLiteralProperties(iter, desc);
-            }
-        }
-
-        for (auto *member : currentDecl->Body()->AsTSInterfaceBody()->Body()) {
-            checker->CheckTsTypeLiteralOrInterfaceMember(member, desc);
-        }
-
-        for (const auto *extends : currentDecl->Extends()) {
-            // TODO(Csaba Repasi): Handle TSQualifiedName here
-
-            binder::Variable *extendsVar = extends->Expr()->AsIdentifier()->Variable();
-
-            if (!extendsVar) {
-                checker->ThrowTypeError({"Cannot find name ", extendsVar->Name()}, extends->Start());
-            }
-
-            if (!extendsVar->HasFlag(binder::VariableFlags::INTERFACE)) {
-                checker->ThrowTypeError(
-                    "An interface can only extend an object type or intersection of object types with statically "
-                    "known "
-                    "members",
-                    extends->Start());
-            }
-
-            extendsSet.insert(extends);
-        }
+        checker->CheckIndexConstraints(resolvedInterface);
     }
 
-    for (const auto *base : extendsSet) {
-        // TODO(Csaba Repasi): Handle TSQualifiedName here
-        binder::Variable *extendsVar = base->Expr()->AsIdentifier()->Variable();
-
-        if (!checker->TypeStack().insert(extendsVar->Declaration()->Node()).second) {
-            checker->ThrowTypeError({"Type '", newInterface->Name(), "' recursively references itself as a base type"},
-                                    decl->AsInterfaceDecl()->Node()->AsTSInterfaceDeclaration()->Id()->Start());
-        }
-
-        checker::ObjectType *resolvedBaseType = InferType(checker, extendsVar)->AsObjectType();
-
-        if (extendsVar->HasFlag(binder::VariableFlags::INTERFACE)) {
-            for (const auto *it : extendsVar->Declaration()->AsInterfaceDecl()->Decls()) {
-                if (!it->TypeParams()) {
-                    continue;
-                }
-
-                resolvedBaseType = checker
-                                       ->InstantiateGenericInterface(extendsVar, extendsVar->Declaration(),
-                                                                     base->TypeParams(), base->Start())
-                                       ->AsObjectType();
-                break;
-            }
-        }
-
-        newInterface->AddBase(resolvedBaseType);
-
-        checker->TypeStack().erase(extendsVar->Declaration()->Node());
-    }
-
-    CheckInheritedPropertiesAreIdentical(checker, newInterface, declarations[0]->Id()->Start());
-
-    for (auto *it : newInterface->Bases()) {
-        checker->IsTypeAssignableTo(
-            newInterface, it,
-            {"Interface '", newInterface, "' incorrectly extends interface '", it->AsInterfaceType(), "'"},
-            declarations[0]->Start());
-    }
-
-    checker->CheckIndexConstraints(newInterface);
-
-    return newInterface;
-}
-
-checker::Type *TSInterfaceDeclaration::Check([[maybe_unused]] checker::Checker *checker) const
-{
-    if (!id_->Variable()->TsType()) {
-        InferType(checker, id_->Variable());
-    }
+    body_->Check(checker);
 
     return nullptr;
 }

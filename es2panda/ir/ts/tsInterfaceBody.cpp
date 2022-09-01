@@ -33,8 +33,12 @@ void TSInterfaceBody::Dump(ir::AstDumper *dumper) const
 
 void TSInterfaceBody::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSInterfaceBody::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TSInterfaceBody::Check(checker::Checker *checker) const
 {
+    for (auto *it : body_) {
+        it->Check(checker);
+    }
+
     return nullptr;
 }
 

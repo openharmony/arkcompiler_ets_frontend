@@ -15,6 +15,7 @@
 
 #include "tsNeverKeyword.h"
 
+#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,6 +32,11 @@ void TSNeverKeyword::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 checker::Type *TSNeverKeyword::Check([[maybe_unused]] checker::Checker *checker) const
 {
     return nullptr;
+}
+
+checker::Type *TSNeverKeyword::GetType(checker::Checker *checker) const
+{
+    return checker->GlobalNeverType();
 }
 
 }  // namespace panda::es2panda::ir

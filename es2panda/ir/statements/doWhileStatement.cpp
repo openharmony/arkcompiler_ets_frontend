@@ -36,7 +36,7 @@ void DoWhileStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "DoWhileStatement"}, {"body", body_}, {"test", test_}});
 }
 
-void DoWhileStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void DoWhileStatement::Compile(compiler::PandaGen *pg) const
 {
     auto *startLabel = pg->AllocLabel();
     compiler::LabelTarget labelTarget(pg);
@@ -56,7 +56,7 @@ void DoWhileStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     pg->SetLabel(this, labelTarget.BreakTarget());
 }
 
-checker::Type *DoWhileStatement::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *DoWhileStatement::Check(checker::Checker *checker) const
 {
     checker::ScopeContext scopeCtx(checker, scope_);
 

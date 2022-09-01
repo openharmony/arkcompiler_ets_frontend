@@ -15,6 +15,7 @@
 
 #include "tsVoidKeyword.h"
 
+#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,6 +32,11 @@ void TSVoidKeyword::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 checker::Type *TSVoidKeyword::Check([[maybe_unused]] checker::Checker *checker) const
 {
     return nullptr;
+}
+
+checker::Type *TSVoidKeyword::GetType(checker::Checker *checker) const
+{
+    return checker->GlobalVoidType();
 }
 
 }  // namespace panda::es2panda::ir

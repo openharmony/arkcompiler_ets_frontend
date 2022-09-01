@@ -1,1 +1,0 @@
-SyntaxError: ';' expected [test-interface4.ts:1:27]

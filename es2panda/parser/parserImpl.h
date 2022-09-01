@@ -176,7 +176,8 @@ public:
     NO_MOVE_SEMANTIC(ParserImpl);
     ~ParserImpl() = default;
 
-    Program Parse(const std::string &fileName, const std::string &source, ScriptKind kind);
+    Program Parse(const std::string &fileName, const std::string &source,
+                  const std::string &recordName, ScriptKind kind);
 
     ScriptExtension Extension() const;
 
@@ -205,15 +206,15 @@ private:
     }
 
     [[nodiscard]] std::unique_ptr<lexer::Lexer> InitLexer(const std::string &fileName, const std::string &source);
-    void ParseScript(const std::string &fileName, const std::string &source);
-    void ParseModule(const std::string &fileName, const std::string &source);
+    void ParseScript();
+    void ParseModule();
     /*
      * Transform the commonjs's AST by wrapping the sourceCode
      * e.g. (function (exports, require, module, __filename, __dirname) {
      *          [Origin_SourceCode]
      *      })(exports, require, module, __filename, __dirname);
      */
-    void ParseCommonjs(const std::string &fileName, const std::string &source);
+    void ParseCommonjs();
     void AddCommonjsParams(ArenaVector<ir::Expression *> &params);
     void AddCommonjsArgs(ArenaVector<ir::Expression *> &args);
     void ParseProgram(ScriptKind kind);
@@ -318,6 +319,8 @@ private:
     ir::SpreadElement *ParseSpreadElement(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::TSParameterProperty *CreateTsParameterProperty(ir::Expression *parameter, ir::ModifierFlags modifiers);
     ir::Expression *ParseFunctionParameter(bool isDeclare);
+    void CreateTSVariableForProperty(ir::AstNode *node, const ir::Expression *key, binder::VariableFlags flags);
+    void CheckObjectTypeForDuplicatedProperties(ir::Expression *key, ArenaVector<ir::Expression *> &members);
 
     // ExpressionParser.Cpp
 

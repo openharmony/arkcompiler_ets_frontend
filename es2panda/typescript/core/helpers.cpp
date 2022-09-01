@@ -13,40 +13,83 @@
  * limitations under the License.
  */
 
+#include <ir/typeNode.h>
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/binaryExpression.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/expressions/identifier.h>
+#include <ir/statements/variableDeclarator.h>
+#include <ir/statements/functionDeclaration.h>
 #include <ir/ts/tsQualifiedName.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
 #include <ir/ts/tsTypeParameter.h>
+#include <ir/ts/tsTypeReference.h>
+#include <ir/ts/tsTypeAliasDeclaration.h>
+#include <ir/ts/tsPropertySignature.h>
+#include <ir/base/scriptFunction.h>
 #include <binder/variable.h>
 #include <binder/scope.h>
 
 #include <typescript/checker.h>
+#include <typescript/core/typeElaborationContext.h>
 
 namespace panda::es2panda::checker {
 
-const ir::TSQualifiedName *Checker::ResolveLeftMostQualifiedName(const ir::TSQualifiedName *qualifiedName)
+void Checker::CheckTruthinessOfType(Type *type, lexer::SourcePosition lineInfo)
 {
-    const ir::TSQualifiedName *iter = qualifiedName;
-
-    while (iter->Left()->IsTSQualifiedName()) {
-        iter = iter->Left()->AsTSQualifiedName();
+    if (type->IsVoidType()) {
+        ThrowTypeError("An expression of type void cannot be tested for truthiness", lineInfo);
     }
-
-    return iter;
 }
 
-const ir::MemberExpression *Checker::ResolveLeftMostMemberExpression(const ir::MemberExpression *expr)
+Type *Checker::CheckNonNullType(Type *type, lexer::SourcePosition lineInfo)
 {
-    const ir::MemberExpression *iter = expr;
-
-    while (iter->Object()->IsMemberExpression()) {
-        iter = iter->Object()->AsMemberExpression();
+    if (type->IsNullType()) {
+        ThrowTypeError("Object is possibly 'null'.", lineInfo);
     }
 
-    return iter;
+    if (type->IsUndefinedType()) {
+        ThrowTypeError("Object is possibly 'undefined'.", lineInfo);
+    }
+
+    return type;
+}
+
+Type *Checker::GetBaseTypeOfLiteralType(Type *type)
+{
+    if (HasStatus(CheckerStatus::KEEP_LITERAL_TYPE)) {
+        return type;
+    }
+
+    if (type->IsStringLiteralType()) {
+        return GlobalStringType();
+    }
+
+    if (type->IsNumberLiteralType()) {
+        return GlobalNumberType();
+    }
+
+    if (type->IsBooleanLiteralType()) {
+        return GlobalBooleanType();
+    }
+
+    if (type->IsBigintLiteralType()) {
+        return GlobalBigintType();
+    }
+
+    if (type->IsUnionType()) {
+        auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
+        ArenaVector<Type *> newConstituentTypes(allocator_->Adapter());
+
+        newConstituentTypes.reserve(constituentTypes.size());
+        for (auto *it : constituentTypes) {
+            newConstituentTypes.push_back(GetBaseTypeOfLiteralType(it));
+        }
+
+        return CreateUnionType(std::move(newConstituentTypes));
+    }
+
+    return type;
 }
 
 void Checker::CheckReferenceExpression(const ir::Expression *expr, const char *invalidReferenceMsg,
@@ -69,57 +112,11 @@ void Checker::CheckReferenceExpression(const ir::Expression *expr, const char *i
     }
 }
 
-void Checker::CheckTestingKnownTruthyCallableOrAwaitableType(const ir::Expression *condExpr, Type *type,
-                                                             const ir::AstNode *body)
+void Checker::CheckTestingKnownTruthyCallableOrAwaitableType([[maybe_unused]] const ir::Expression *condExpr,
+                                                             [[maybe_unused]] Type *type,
+                                                             [[maybe_unused]] const ir::AstNode *body)
 {
-    if (GetFalsyFlags(type) != TypeFlag::NONE) {
-        return;
-    }
-
-    const ir::AstNode *location = condExpr;
-    if (condExpr->IsBinaryExpression()) {
-        location = condExpr->AsBinaryExpression()->Right();
-    } else if (condExpr->IsAssignmentExpression()) {
-        location = condExpr->AsAssignmentExpression()->Right();
-    }
-
-    binder::Variable *testVar = nullptr;
-    binder::ScopeFindResult result {};
-
-    if (location->IsIdentifier()) {
-        result = scope_->Find(location->AsIdentifier()->Name(), binder::ResolveBindingOptions::ALL);
-        ASSERT(result.variable);
-        testVar = result.variable;
-    } else if (location->IsBinaryExpression() && location->AsBinaryExpression()->Right()->IsIdentifier()) {
-        result = scope_->Find(location->AsBinaryExpression()->Right()->AsIdentifier()->Name(),
-                              binder::ResolveBindingOptions::ALL);
-        ASSERT(result.variable);
-        testVar = result.variable;
-    } else if (location->IsAssignmentExpression() && location->AsAssignmentExpression()->Right()->IsIdentifier()) {
-        result = scope_->Find(location->AsAssignmentExpression()->Right()->AsIdentifier()->Name(),
-                              binder::ResolveBindingOptions::ALL);
-        ASSERT(result.variable);
-        testVar = result.variable;
-    } else if (location->IsMemberExpression() && !location->AsMemberExpression()->IsComputed()) {
-        testVar = ResolveNonComputedObjectProperty(location->AsMemberExpression());
-    }
-
-    if (!testVar) {
-        return;
-    }
-
-    if (testVar->TsType() && testVar->TsType()->IsObjectType() &&
-        !testVar->TsType()->AsObjectType()->CallSignatures().empty()) {
-        if (condExpr->Parent()->IsBinaryExpression() &&
-            IsVariableUsedInBinaryExpressionChain(condExpr->Parent(), testVar) &&
-            IsVariableUsedInConditionBody(body, testVar)) {
-            ThrowTypeError(
-                "This condition will always return true since this function appears to always be defined. "
-                "Did "
-                "you mean to call it insted?",
-                location->Start());
-        }
-    }
+    // TODO(aszilagyi) rework this
 }
 
 Type *Checker::ExtractDefinitelyFalsyTypes(Type *type)
@@ -145,8 +142,8 @@ Type *Checker::ExtractDefinitelyFalsyTypes(Type *type)
     }
 
     if (type->IsUnionType()) {
-        std::vector<Type *> &constituentTypes = type->AsUnionType()->ConstituentTypes();
-        std::vector<Type *> newConstituentTypes;
+        auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
+        ArenaVector<Type *> newConstituentTypes(allocator_->Adapter());
 
         newConstituentTypes.reserve(constituentTypes.size());
         for (auto &it : constituentTypes) {
@@ -163,8 +160,8 @@ Type *Checker::RemoveDefinitelyFalsyTypes(Type *type)
 {
     if (static_cast<uint64_t>(GetFalsyFlags(type)) & static_cast<uint64_t>(TypeFlag::DEFINITELY_FALSY)) {
         if (type->IsUnionType()) {
-            std::vector<Type *> &constituentTypes = type->AsUnionType()->ConstituentTypes();
-            std::vector<Type *> newConstituentTypes;
+            auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
+            ArenaVector<Type *> newConstituentTypes(allocator_->Adapter());
 
             for (auto &it : constituentTypes) {
                 if (!(static_cast<uint64_t>(GetFalsyFlags(it)) & static_cast<uint64_t>(TypeFlag::DEFINITELY_FALSY))) {
@@ -208,7 +205,7 @@ TypeFlag Checker::GetFalsyFlags(Type *type)
     }
 
     if (type->IsUnionType()) {
-        std::vector<Type *> &constituentTypes = type->AsUnionType()->ConstituentTypes();
+        auto &constituentTypes = type->AsUnionType()->ConstituentTypes();
         TypeFlag returnFlag = TypeFlag::NONE;
 
         for (auto &it : constituentTypes) {
@@ -227,9 +224,7 @@ bool Checker::IsVariableUsedInConditionBody(const ir::AstNode *parent, binder::V
 
     parent->Iterate([this, searchVar, &found](const ir::AstNode *childNode) -> void {
         binder::Variable *resultVar = nullptr;
-        if (childNode->IsMemberExpression()) {
-            resultVar = ResolveNonComputedObjectProperty(childNode->AsMemberExpression());
-        } else if (childNode->IsIdentifier()) {
+        if (childNode->IsIdentifier()) {
             binder::ScopeFindResult result = scope_->Find(childNode->AsIdentifier()->Name());
             ASSERT(result.variable);
             resultVar = result.variable;
@@ -282,30 +277,243 @@ bool Checker::IsVariableUsedInBinaryExpressionChain(const ir::AstNode *parent, b
     return false;
 }
 
-Type *Checker::CreateTupleTypeFromEveryArrayExpression(const ir::Expression *expr)
-{
-    status_ |= CheckerStatus::FORCE_TUPLE;
-
-    Type *returnType = expr->Check(this);
-
-    status_ &= ~CheckerStatus::FORCE_TUPLE;
-
-    return returnType;
-}
-
 void Checker::ThrowBinaryLikeError(lexer::TokenType op, Type *leftType, Type *rightType, lexer::SourcePosition lineInfo)
 {
+    if (!HasStatus(CheckerStatus::IN_CONST_CONTEXT)) {
+        ThrowTypeError({"operator ", op, " cannot be applied to types ", leftType, " and ", AsSrc(rightType)},
+                       lineInfo);
+    }
+
     ThrowTypeError({"operator ", op, " cannot be applied to types ", leftType, " and ", rightType}, lineInfo);
 }
 
-void Checker::ThrowAssignmentError(Type *leftType, Type *rightType, lexer::SourcePosition lineInfo,
-                                   bool isAsSrcLeftType)
+void Checker::ThrowAssignmentError(Type *source, Type *target, lexer::SourcePosition lineInfo, bool isAsSrcLeftType)
 {
-    if (isAsSrcLeftType) {
-        ThrowTypeError({"Type '", AsSrc(leftType), "' is not assignable to type '", rightType, "'."}, lineInfo);
-    } else {
-        ThrowTypeError({"Type '", leftType, "' is not assignable to type '", rightType, "'."}, lineInfo);
+    if (isAsSrcLeftType || !target->HasTypeFlag(TypeFlag::LITERAL)) {
+        ThrowTypeError({"Type '", AsSrc(source), "' is not assignable to type '", target, "'."}, lineInfo);
     }
+
+    ThrowTypeError({"Type '", source, "' is not assignable to type '", target, "'."}, lineInfo);
+}
+
+Type *Checker::GetUnaryResultType(Type *operandType)
+{
+    if (checker::Checker::MaybeTypeOfKind(operandType, checker::TypeFlag::BIGINT_LIKE)) {
+        if (operandType->HasTypeFlag(checker::TypeFlag::UNION_OR_INTERSECTION) &&
+            checker::Checker::MaybeTypeOfKind(operandType, checker::TypeFlag::NUMBER_LIKE)) {
+            return GlobalNumberOrBigintType();
+        }
+
+        return GlobalBigintType();
+    }
+
+    return GlobalNumberType();
+}
+
+void Checker::ElaborateElementwise(Type *targetType, const ir::Expression *sourceNode, const lexer::SourcePosition &pos)
+{
+    auto savedContext = SavedCheckerContext(this, CheckerStatus::FORCE_TUPLE | CheckerStatus::KEEP_LITERAL_TYPE);
+
+    Type *sourceType = CheckTypeCached(sourceNode);
+
+    if (IsTypeAssignableTo(sourceType, targetType)) {
+        return;
+    }
+
+    if (targetType->IsArrayType() && sourceNode->IsArrayExpression()) {
+        ArrayElaborationContext(this, targetType, sourceType, sourceNode, pos).Start();
+    } else if (targetType->IsObjectType() || targetType->IsUnionType()) {
+        if (sourceNode->IsObjectExpression()) {
+            ObjectElaborationContext(this, targetType, sourceType, sourceNode, pos).Start();
+        } else if (sourceNode->IsArrayExpression()) {
+            ArrayElaborationContext(this, targetType, sourceType, sourceNode, pos).Start();
+        }
+    }
+
+    ThrowAssignmentError(sourceType, targetType, pos);
+}
+
+void Checker::InferSimpleVariableDeclaratorType(const ir::VariableDeclarator *declarator)
+{
+    ASSERT(declarator->Id()->IsIdentifier());
+
+    binder::Variable *var = declarator->Id()->AsIdentifier()->Variable();
+    ASSERT(var);
+
+    if (declarator->Id()->AsIdentifier()->TypeAnnotation()) {
+        var->SetTsType(declarator->Id()->AsIdentifier()->TypeAnnotation()->AsTypeNode()->GetType(this));
+        return;
+    }
+
+    if (declarator->Init()) {
+        var->SetTsType(CheckTypeCached(declarator->Init()));
+        return;
+    }
+
+    ThrowTypeError({"Variable ", declarator->Id()->AsIdentifier()->Name(), " implicitly has an any type."},
+                   declarator->Id()->Start());
+}
+
+Type *Checker::GetTypeOfVariable(binder::Variable *var)
+{
+    if (var->TsType()) {
+        return var->TsType();
+    }
+
+    const binder::Decl *decl = var->Declaration();
+
+    if (!typeStack_.insert(decl->Node()).second) {
+        ThrowTypeError({"'", var->Name(),
+                        "' is referenced directly or indirectly in its "
+                        "own initializer ot type annotation."},
+                       decl->Node()->Start());
+    }
+
+    switch (decl->Type()) {
+        case binder::DeclType::CONST:
+        case binder::DeclType::LET: {
+            if (!decl->Node()->Parent()->IsTSTypeQuery()) {
+                ThrowTypeError({"Block-scoped variable '", var->Name(), "' used before its declaration"},
+                               decl->Node()->Start());
+                break;
+            }
+
+            [[fallthrough]];
+        }
+        case binder::DeclType::VAR: {
+            const ir::AstNode *declarator = FindAncestorGivenByType(decl->Node(), ir::AstNodeType::VARIABLE_DECLARATOR);
+            ASSERT(declarator);
+
+            if (declarator->AsVariableDeclarator()->Id()->IsIdentifier()) {
+                InferSimpleVariableDeclaratorType(declarator->AsVariableDeclarator());
+                break;
+            }
+
+            declarator->Check(this);
+            break;
+        }
+        case binder::DeclType::PROPERTY: {
+            var->SetTsType(decl->Node()->AsTSPropertySignature()->TypeAnnotation()->AsTypeNode()->GetType(this));
+            break;
+        }
+        case binder::DeclType::METHOD: {
+            auto *signatureInfo = allocator_->New<checker::SignatureInfo>(allocator_);
+            auto *callSignature = allocator_->New<checker::Signature>(signatureInfo, GlobalAnyType());
+            var->SetTsType(CreateFunctionTypeWithSignature(callSignature));
+            break;
+        }
+        case binder::DeclType::FUNC: {
+            checker::ScopeContext scopeCtx(this, decl->Node()->AsScriptFunction()->Scope());
+            InferFunctionDeclarationType(decl->AsFunctionDecl(), var);
+            break;
+        }
+        case binder::DeclType::PARAM: {
+            const ir::AstNode *declaration = FindAncestorUntilGivenType(decl->Node(), ir::AstNodeType::SCRIPT_FUNCTION);
+
+            if (declaration->IsIdentifier()) {
+                const ir::Identifier *ident = declaration->AsIdentifier();
+                if (ident->TypeAnnotation()) {
+                    ASSERT(ident->Variable() == var);
+                    var->SetTsType(ident->TypeAnnotation()->AsTypeNode()->GetType(this));
+                    break;
+                }
+
+                ThrowTypeError({"Parameter ", ident->Name(), " implicitly has an 'any' type."}, ident->Start());
+            }
+
+            if (declaration->IsAssignmentPattern() && declaration->AsAssignmentPattern()->Left()->IsIdentifier()) {
+                const ir::Identifier *ident = declaration->AsAssignmentPattern()->Left()->AsIdentifier();
+
+                if (ident->TypeAnnotation()) {
+                    ASSERT(ident->Variable() == var);
+                    var->SetTsType(ident->TypeAnnotation()->AsTypeNode()->GetType(this));
+                    break;
+                }
+
+                var->SetTsType(declaration->AsAssignmentPattern()->Right()->Check(this));
+            }
+
+            CheckFunctionParameter(declaration->AsExpression(), nullptr);
+            break;
+        }
+        case binder::DeclType::ENUM: {
+            ASSERT(var->IsEnumVariable());
+            binder::EnumVariable *enumVar = var->AsEnumVariable();
+
+            if (std::holds_alternative<bool>(enumVar->Value())) {
+                ThrowTypeError(
+                    "A member initializer in a enum declaration cannot reference members declared after it, "
+                    "including "
+                    "members defined in other enums.",
+                    decl->Node()->Start());
+            }
+
+            var->SetTsType(std::holds_alternative<double>(enumVar->Value()) ? GlobalNumberType() : GlobalStringType());
+            break;
+        }
+        case binder::DeclType::ENUM_LITERAL: {
+            UNREACHABLE();  // TODO(aszilagyi)
+        }
+        default: {
+            break;
+        }
+    }
+
+    typeStack_.erase(decl->Node());
+    return var->TsType();
+}
+
+Type *Checker::GetTypeFromClassOrInterfaceReference([[maybe_unused]] const ir::TSTypeReference *node,
+                                                    binder::Variable *var)
+{
+    Type *resolvedType = var->TsType();
+
+    if (!resolvedType) {
+        ObjectDescriptor *desc = allocator_->New<ObjectDescriptor>(allocator_);
+        resolvedType = allocator_->New<InterfaceType>(allocator_, var->Name(), desc);
+        resolvedType->SetVariable(var);
+        var->SetTsType(resolvedType);
+    }
+
+    return resolvedType;
+}
+
+Type *Checker::GetTypeFromTypeAliasReference(const ir::TSTypeReference *node, binder::Variable *var)
+{
+    Type *resolvedType = var->TsType();
+
+    if (!resolvedType) {
+        if (!typeStack_.insert(var).second) {
+            ThrowTypeError({"Type alias ", var->Name(), " circularly refences itself"}, node->Start());
+        }
+
+        ASSERT(var->Declaration()->Node() && var->Declaration()->Node()->IsTSTypeAliasDeclaration());
+        const ir::TSTypeAliasDeclaration *declaration = var->Declaration()->Node()->AsTSTypeAliasDeclaration();
+        resolvedType = declaration->TypeAnnotation()->AsTypeNode()->GetType(this);
+        var->SetTsType(resolvedType);
+
+        typeStack_.erase(var);
+    }
+
+    return resolvedType;
+}
+
+Type *Checker::GetTypeReferenceType(const ir::TSTypeReference *node, binder::Variable *var)
+{
+    ASSERT(var->Declaration());
+    binder::Decl *decl = var->Declaration();
+
+    if (decl->IsInterfaceDecl()) {
+        return GetTypeFromClassOrInterfaceReference(node, var);
+    }
+
+    if (decl->IsTypeAliasDecl()) {
+        return GetTypeFromTypeAliasReference(node, var);
+    }
+
+    ThrowTypeError("This reference refers to a value, but is beign used as a type here. Did you mean to use 'typeof'?",
+                   node->Start());
+    return nullptr;
 }
 
 }  // namespace panda::es2panda::checker

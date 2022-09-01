@@ -22,13 +22,17 @@ namespace panda::es2panda::checker {
 
 class BooleanLiteralType : public Type {
 public:
-    explicit BooleanLiteralType(bool value);
+    explicit BooleanLiteralType(bool value) : Type(TypeFlag::BOOLEAN_LITERAL), value_(value) {}
 
-    bool Value() const;
+    bool Value() const
+    {
+        return value_;
+    }
+
     void ToString(std::stringstream &ss) const override;
     void ToStringAsSrc(std::stringstream &ss) const override;
-    void Identical(TypeRelation *relation, const Type *other) const override;
-    void AssignmentTarget(TypeRelation *relation, const Type *source) const override;
+    void Identical(TypeRelation *relation, Type *other) override;
+    void AssignmentTarget(TypeRelation *relation, Type *source) override;
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 

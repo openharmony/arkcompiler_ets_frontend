@@ -21,6 +21,7 @@
 namespace panda::es2panda::ir {
 
 class Literal;
+class TypeNode;
 
 class Expression : public AstNode {
 public:
@@ -59,6 +60,16 @@ public:
     bool IsExpression() const override
     {
         return true;
+    }
+
+    TypeNode *AsTypeNode()
+    {
+        return reinterpret_cast<TypeNode *>(this);
+    }
+
+    const TypeNode *AsTypeNode() const
+    {
+        return reinterpret_cast<const TypeNode *>(this);
     }
 
 protected:

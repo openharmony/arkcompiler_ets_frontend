@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_BOOLEAN_KEYWORD_H
 #define ES2PANDA_IR_TS_BOOLEAN_KEYWORD_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -29,14 +29,15 @@ class Type;
 
 namespace panda::es2panda::ir {
 
-class TSBooleanKeyword : public Expression {
+class TSBooleanKeyword : public TypeNode {
 public:
-    explicit TSBooleanKeyword() : Expression(AstNodeType::TS_BOOLEAN_KEYWORD) {}
+    explicit TSBooleanKeyword() : TypeNode(AstNodeType::TS_BOOLEAN_KEYWORD) {}
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *GetType(checker::Checker *checker) const override;
 };
 }  // namespace panda::es2panda::ir
 

@@ -34,19 +34,11 @@ class TSTypeParameterInstantiation;
 
 class TSInterfaceHeritage : public Expression {
 public:
-    explicit TSInterfaceHeritage(Expression *expr, TSTypeParameterInstantiation *typeParams)
-        : Expression(AstNodeType::TS_INTERFACE_HERITAGE), expr_(expr), typeParams_(typeParams)
-    {
-    }
+    explicit TSInterfaceHeritage(Expression *expr) : Expression(AstNodeType::TS_INTERFACE_HERITAGE), expr_(expr) {}
 
     const Expression *Expr() const
     {
         return expr_;
-    }
-
-    const TSTypeParameterInstantiation *TypeParams() const
-    {
-        return typeParams_;
     }
 
     void Iterate(const NodeTraverser &cb) const override;
@@ -56,7 +48,6 @@ public:
 
 private:
     Expression *expr_;
-    TSTypeParameterInstantiation *typeParams_;
 };
 
 }  // namespace panda::es2panda::ir

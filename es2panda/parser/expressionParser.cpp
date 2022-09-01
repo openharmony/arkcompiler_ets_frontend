@@ -2277,7 +2277,16 @@ ir::Expression *ParserImpl::ParseImportExpression()
 
     lexer_->NextToken();  // eat left parentheses
 
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
+        ThrowSyntaxError("Argument of dynamic import cannot be spread element.");
+    }
+
     ir::Expression *source = ParseExpression();
+
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
+        ThrowSyntaxError(
+            "Dynamic imports can only accept a module specifier, optional assertion is not supported yet.");
+    }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         ThrowSyntaxError("Unexpected token");
@@ -2331,7 +2340,9 @@ ir::FunctionExpression *ParserImpl::ParseFunctionExpression(ParserStatus newStat
     }
 
     ir::ScriptFunction *functionNode = ParseFunction(newStatus);
-    lexer_->NextToken();
+    if (functionNode->Body() != nullptr) {
+        lexer_->NextToken();
+    }
     functionNode->SetStart(startLoc);
 
     if (ident) {

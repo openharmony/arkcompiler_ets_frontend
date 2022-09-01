@@ -40,6 +40,7 @@ config("ts2abc_config") {
     "$ark_root/libpandabase:arkbase_public_config",
     "$ark_root/runtime:arkruntime_public_config",
     "$ark_root/assembler:arkassembler_public_config",
+    "//arkcompiler/ets_frontend/merge_abc:panda_assembly_proto_public_config",
   ]
 
   if (enable_bytecode_optimizer) {
@@ -91,7 +92,10 @@ if (!defined(ark_independent_build)) {
       "-Wno-unknown-warning-option",
     ]
 
-    deps = [ sdk_libc_secshared_dep ]
+    deps = [
+      "//arkcompiler/ets_frontend/merge_abc:panda_assembly_proto_static",
+      sdk_libc_secshared_dep,
+    ]
 
     if (is_linux || is_mingw || is_mac) {
       deps += [

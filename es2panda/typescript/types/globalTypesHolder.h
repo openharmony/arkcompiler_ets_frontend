@@ -42,6 +42,8 @@ enum class GlobalTypeId {
     PRIMITIVE,
     EMPTY_TUPLE,
     EMPTY_OBJECT,
+    RESOLVING_RETURN_TYPE,
+    ERROR_TYPE,
     COUNT
 };
 
@@ -73,6 +75,8 @@ public:
     Type *GlobalPrimitiveType();
     Type *GlobalEmptyTupleType();
     Type *GlobalEmptyObjectType();
+    Type *GlobalResolvingReturnType();
+    Type *GlobalErrorType();
 
 private:
     std::array<Type *, static_cast<size_t>(GlobalTypeId::COUNT)> globalTypes_ {};

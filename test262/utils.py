@@ -159,19 +159,22 @@ def npm_install(cwd):
     ret = run_cmd_cwd(cmd, cwd)
     assert not ret, f"\n error: Failed to 'npm install'"
 
+
 def search_dependency(file, directory):
     for root, dirs, files in os.walk(directory, topdown=True):
         for f in files:
             if f == file:
                 return os.path.join(root, f)
 
+
 def collect_module_dependencies(file, directory, traversedDependencies):
     dependencies = []
     traversedDependencies.append(file)
-    with open(file, 'r') as f:
+    with open(file, 'r', encoding='utf-8') as f:
         content = f.read()
-        result_arr = re.findall(r'(import|from)(?:\s*)(\'(\.\/.*)\'|"(\.\/.*)")', content)
-        for result in result_arr:
+        module_import_list = re.findall(r'(import|from)(?:\s*)\(?(\'(\.\/.*)\'|"(\.\/.*)")\)?', content)
+
+        for result in list(set(module_import_list)):
             specifier = result[2] if len(result[2]) != 0 else result[3]
             if re.search(r'\S+_FIXTURE.js$', specifier):
                 dependency = search_dependency(specifier.lstrip('./'), directory)

@@ -46,37 +46,9 @@ void TSTypeAliasDeclaration::Dump(ir::AstDumper *dumper) const
 
 void TSTypeAliasDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSTypeAliasDeclaration::CheckTypeAnnotation(checker::Checker *checker,
-                                                           binder::Variable *bindingVar) const
+checker::Type *TSTypeAliasDeclaration::Check(checker::Checker *checker) const
 {
-    checker::Type *aliasType = typeAnnotation_->Check(checker);
-    aliasType->SetVariable(bindingVar);
-    bindingVar->SetTsType(aliasType);
-
-    return bindingVar->TsType();
-}
-
-checker::Type *TSTypeAliasDeclaration::InferType(checker::Checker *checker, binder::Variable *bindingVar) const
-{
-    if (typeParams_) {
-        checker::ScopeContext scopeCtx(checker, typeParams_->Scope());
-        checker->CheckTypeParameters(typeParams_);
-        return CheckTypeAnnotation(checker, bindingVar);
-    }
-
-    return CheckTypeAnnotation(checker, bindingVar);
-}
-
-checker::Type *TSTypeAliasDeclaration::Check([[maybe_unused]] checker::Checker *checker) const
-{
-    const util::StringView &aliasName = id_->Name();
-    binder::ScopeFindResult result = checker->Scope()->Find(aliasName);
-    ASSERT(result.variable);
-
-    if (!result.variable->TsType()) {
-        InferType(checker, result.variable);
-    }
-
+    typeAnnotation_->Check(checker);
     return nullptr;
 }
 

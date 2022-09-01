@@ -15,6 +15,7 @@
 
 #include "tsNullKeyword.h"
 
+#include <typescript/checker.h>
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -31,6 +32,11 @@ void TSNullKeyword::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 checker::Type *TSNullKeyword::Check([[maybe_unused]] checker::Checker *checker) const
 {
     return nullptr;
+}
+
+checker::Type *TSNullKeyword::GetType(checker::Checker *checker) const
+{
+    return checker->GlobalNullType();
 }
 
 }  // namespace panda::es2panda::ir

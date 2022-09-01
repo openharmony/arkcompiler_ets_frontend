@@ -20,6 +20,71 @@
 #include "assembler/assembly-function.h"
 
 namespace ts2abc_type_adapter {
+const int builtinTypeOffset = 21;
+const std::vector<std::string> builtinTypes {
+    "Function",
+    "RangeError",
+    "Error",
+    "Object",
+    "SyntaxError",
+    "TypeError",
+    "ReferenceError",
+    "URIError",
+    "Symbol",
+    "EvalError",
+    "Number",
+    "parseFloat",
+    "Date",
+    "Boolean",
+    "BigInt",
+    "parseInt",
+    "WeakMap",
+    "RegExp",
+    "Set",
+    "Map",
+    "WeakRef",
+    "WeakSet",
+    "FinalizationRegistry",
+    "Array",
+    "Uint8ClampedArray",
+    "Uint8Array",
+    "TypedArray",
+    "Int8Array",
+    "Uint16Array",
+    "Uint32Array",
+    "Int16Array",
+    "Int32Array",
+    "Float32Array",
+    "Float64Array",
+    "BigInt64Array",
+    "BigUint64Array",
+    "SharedArrayBuffer",
+    "DataView",
+    "String",
+    "ArrayBuffer",
+    "eval",
+    "isFinite",
+    "ArkPrivate",
+    "print",
+    "decodeURI",
+    "decodeURIComponent",
+    "isNaN",
+    "encodeURI",
+    "NaN",
+    "globalThis",
+    "encodeURIComponent",
+    "Infinity",
+    "Math",
+    "JSON",
+    "Atomics",
+    "undefined",
+    "Reflect",
+    "Promise",
+    "Proxy",
+    "GeneratorFunction",
+    "Intl",
+};
+
 class TypeAdapter {
 public:
     TypeAdapter() {};
@@ -40,6 +105,8 @@ private:
     void AdaptTypeForFunction(panda::pandasm::Function *func) const;
     void HandleTypeForFunction(panda::pandasm::Function *func, size_t anno_idx, size_t ele_idx,
                                const std::unordered_map<int32_t, int32_t> &vreg_type_map) const;
+    void FillInBuiltinType(const panda::pandasm::Ins &insn, std::unordered_map<int32_t, int32_t> &order_type_map,
+                            const int32_t order) const;
     void UpdateTypeAnnotation(panda::pandasm::Function *func, size_t anno_idx, size_t ele_idx,
                               const std::unordered_map<int32_t, int32_t> &order_type_map) const;
     bool display_typeinfo_ = false;

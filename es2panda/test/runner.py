@@ -145,7 +145,7 @@ class Test:
         process = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate()
-        self.output = out.decode("utf-8", errors="ignore")
+        self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
 
         expected_path = "%s-expected.txt" % (path.splitext(self.path)[0])
         try:
@@ -228,6 +228,7 @@ class Test262Test(Test):
             self.fail_kind = self.FailKind.ES2PANDA_FAIL
             self.error = "out:{}\nerr:{}\ncode:{}".format(
                 out, err, process.returncode)
+            print(self.error)
             return self
 
         if not need_exec:
@@ -309,6 +310,7 @@ class Test262Test(Test):
             self.fail_kind = self.FailKind.RUNTIME_FAIL
             self.error = "out:{}\nerr:{}\ncode:{}".format(
                 out, err, process.returncode)
+            print(self.error)
 
         return self
 
@@ -379,7 +381,7 @@ class Runner:
         self.tests = []
         self.failed = 0
         self.passed = 0
-        self.es2panda = path.join(args.build_dir, 'bin', 'es2panda')
+        self.es2panda = path.join(args.build_dir, 'es2abc')
         self.cmd_prefix = []
 
         if args.arm64_qemu:
@@ -720,10 +722,10 @@ def main():
     if args.regression:
         runner = RegressionRunner(args)
         runner.add_directory("parser/js", "js", ["--parse-only"])
-        # TODO(aszilagyi): reenable TS tests
-        # runner.add_directory("parser/ts", "ts",
-        #                      ["--parse-only", '--extension=ts'])
-        # runner.add_directory("compiler/ts", "ts", ["--extension=ts", ])
+        runner.add_directory("parser/ts", "ts",
+                             ["--parse-only", "--module", "--extension=ts"])
+        runner.add_directory("parser/ts/type_checker", "ts",
+                             ["--parse-only", "--enable-type-check", "--module", "--extension=ts"])
 
         runners.append(runner)
 

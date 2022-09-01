@@ -188,6 +188,7 @@ public:
 
     bool IsDebug() const;
     bool isDebuggerEvaluateExpressionMode() const;
+    std::string SourceFile() const;
     uint32_t ParamCount() const;
     uint32_t FormalParametersCount() const;
     uint32_t InternalParamCount() const;
@@ -351,6 +352,7 @@ public:
     void LoadModuleVariable(const ir::AstNode *node, const util::StringView &name, bool isLocalExport);
     void StoreModuleVariable(const ir::AstNode *node, const util::StringView &name);
     void GetModuleNamespace(const ir::AstNode *node, const util::StringView &name);
+    void DynamicImportCall(const ir::AstNode *node, VReg moduleSpecifier);
 
     void StSuperByName(const ir::AstNode *node, VReg obj, const util::StringView &key);
     void LdSuperByName(const ir::AstNode *node, VReg obj, const util::StringView &key);

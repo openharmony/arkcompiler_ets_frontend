@@ -194,13 +194,12 @@ es2panda_src = [
   "parser/statementParser.cpp",
   "typescript/checker.cpp",
   "typescript/core/binaryLikeExpression.cpp",
-  "typescript/core/destructuring.cpp",
+  "typescript/core/destructuringContext.cpp",
   "typescript/core/function.cpp",
-  "typescript/core/generics.cpp",
   "typescript/core/helpers.cpp",
   "typescript/core/object.cpp",
   "typescript/core/typeCreation.cpp",
-  "typescript/core/typeElaboration.cpp",
+  "typescript/core/typeElaborationContext.cpp",
   "typescript/core/typeRelation.cpp",
   "typescript/core/util.cpp",
   "typescript/types/anyType.cpp",
@@ -240,6 +239,7 @@ es2panda_src = [
   "util/bitset.cpp",
   "util/dumper.cpp",
   "util/helpers.cpp",
+  "util/moduleHelpers.cpp",
   "util/ustring.cpp",
 ]
 
@@ -384,6 +384,13 @@ ohos_static_library("es2panda_lib") {
     "//third_party/icu/icu4c:static_icuuc",
   ]
 
+  if (enable_bytecode_optimizer) {
+    deps += [
+      "$ark_root/bytecode_optimizer:libarkbytecodeopt_frontend_static",
+      "$ark_root/compiler:libarkcompiler_frontend_static",
+    ]
+  }
+
   cflags = [
     "-Wno-c++20-designator",
     "-Wno-implicit-fallthrough",
@@ -399,9 +406,15 @@ ohos_executable("es2panda") {
 
   include_dirs = [ "./aot" ]
 
-  configs = [ ":es2abc_config_common" ]
+  configs = [
+    ":es2abc_config_common",
+    "//arkcompiler/ets_frontend/merge_abc:panda_assembly_proto_public_config",
+  ]
 
-  deps = [ ":es2panda_lib" ]
+  deps = [
+    ":es2panda_lib",
+    "//arkcompiler/ets_frontend/merge_abc:panda_assembly_proto_static",
+  ]
 
   ldflags = []
   if (is_linux) {
@@ -427,13 +440,6 @@ ohos_executable("es2panda") {
   if (!use_musl) {
     static_link = false
     ldflags += [ "-lc++" ]
-  }
-
-  if (enable_bytecode_optimizer) {
-    deps += [
-      "$ark_root/bytecode_optimizer:libarkbytecodeopt_frontend_static",
-      "$ark_root/compiler:libarkcompiler_frontend_static",
-    ]
   }
 
   output_name = "es2abc"

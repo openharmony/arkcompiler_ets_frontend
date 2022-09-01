@@ -67,6 +67,10 @@ void ScriptFunction::Iterate(const NodeTraverser &cb) const
         cb(it);
     }
 
+    if (returnTypeAnnotation_) {
+        cb(returnTypeAnnotation_);
+    }
+
     if (body_) {
         cb(body_);
     }

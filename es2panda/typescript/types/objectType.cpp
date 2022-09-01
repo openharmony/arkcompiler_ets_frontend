@@ -15,133 +15,26 @@
 
 #include "objectType.h"
 
-#include <algorithm>
-#include <binder/variable.h>
 #include <typescript/types/indexInfo.h>
 #include <typescript/types/interfaceType.h>
 #include <typescript/types/signature.h>
+#include <typescript/checker.h>
 
 namespace panda::es2panda::checker {
 
-ObjectType::ObjectType(ObjectTypeKind kind)
-    : Type(TypeFlag::OBJECT), kind_(kind), desc_(nullptr), objFlag_(ObjectFlags::CHECK_EXCESS_PROPS)
-{
-}
-
-ObjectType::ObjectType(ObjectTypeKind kind, ObjectDescriptor *desc)
-    : Type(TypeFlag::OBJECT), kind_(kind), desc_(desc), objFlag_(ObjectFlags::CHECK_EXCESS_PROPS)
-{
-}
-
-ObjectType::ObjectTypeKind ObjectType::Kind() const
-{
-    return kind_;
-}
-
-std::vector<Signature *> &ObjectType::CallSignatures()
-{
-    return desc_->callSignatures;
-}
-
-const std::vector<Signature *> &ObjectType::CallSignatures() const
-{
-    return desc_->callSignatures;
-}
-
-const std::vector<Signature *> &ObjectType::ConstructSignatures() const
-{
-    return desc_->constructSignatures;
-}
-
-const IndexInfo *ObjectType::StringIndexInfo() const
-{
-    return desc_->stringIndexInfo;
-}
-
-const IndexInfo *ObjectType::NumberIndexInfo() const
-{
-    return desc_->numberIndexInfo;
-}
-
-IndexInfo *ObjectType::StringIndexInfo()
-{
-    return desc_->stringIndexInfo;
-}
-
-IndexInfo *ObjectType::NumberIndexInfo()
-{
-    return desc_->numberIndexInfo;
-}
-
-const std::vector<binder::LocalVariable *> &ObjectType::Properties() const
-{
-    return desc_->properties;
-}
-
-ObjectDescriptor *ObjectType::Desc()
-{
-    return desc_;
-}
-
-const ObjectDescriptor *ObjectType::Desc() const
-{
-    return desc_;
-}
-
-void ObjectType::AddProperty(binder::LocalVariable *prop)
-{
-    desc_->properties.push_back(prop);
-}
-
-binder::LocalVariable *ObjectType::GetProperty(const util::StringView &name) const
-{
-    for (auto *it : desc_->properties) {
-        if (name == it->Name()) {
-            return it;
-        }
-    }
-
-    return nullptr;
-}
-
-void ObjectType::AddSignature(Signature *signature, bool isCall)
-{
-    if (isCall) {
-        desc_->callSignatures.push_back(signature);
-    } else {
-        desc_->constructSignatures.push_back(signature);
-    }
-}
-
-void ObjectType::AddObjectFlag(ObjectFlags flag)
-{
-    objFlag_ |= flag;
-}
-
-void ObjectType::RemoveObjectFlag(ObjectFlags flag)
-{
-    objFlag_ &= ~flag;
-}
-
-bool ObjectType::HasObjectFlag(ObjectFlags flag) const
-{
-    return (objFlag_ & flag) != 0;
-}
-
 bool ObjectType::EachSignatureRelatedToSomeSignature(TypeRelation *relation,
-                                                     const std::vector<Signature *> &sourceSignatures,
-                                                     const std::vector<Signature *> &targetSignatures)
+                                                     const ArenaVector<Signature *> &sourceSignatures,
+                                                     const ArenaVector<Signature *> &targetSignatures)
 {
-    std::vector<Signature *> targetCopy = targetSignatures;
+    ArenaVector<Signature *> targetCopy = targetSignatures;
 
-    return std::all_of(sourceSignatures.begin(), sourceSignatures.end(),
-                       [relation, &targetCopy](const Signature *source) {
-                           return SignatureRelatedToSomeSignature(relation, source, &targetCopy);
-                       });
+    return std::all_of(sourceSignatures.begin(), sourceSignatures.end(), [relation, &targetCopy](Signature *source) {
+        return SignatureRelatedToSomeSignature(relation, source, &targetCopy);
+    });
 }
 
-bool ObjectType::SignatureRelatedToSomeSignature(TypeRelation *relation, const Signature *sourceSignature,
-                                                 std::vector<Signature *> *targetSignatures)
+bool ObjectType::SignatureRelatedToSomeSignature(TypeRelation *relation, Signature *sourceSignature,
+                                                 ArenaVector<Signature *> *targetSignatures)
 {
     for (auto it = targetSignatures->begin(); it != targetSignatures->end();) {
         if (relation->IsIdenticalTo(sourceSignature, *it)) {
@@ -155,13 +48,13 @@ bool ObjectType::SignatureRelatedToSomeSignature(TypeRelation *relation, const S
     return false;
 }
 
-void ObjectType::Identical(TypeRelation *relation, const Type *other) const
+void ObjectType::Identical(TypeRelation *relation, Type *other)
 {
     if (!other->IsObjectType() || kind_ != other->AsObjectType()->Kind()) {
         return;
     }
 
-    const ObjectType *otherObj = other->AsObjectType();
+    ObjectType *otherObj = other->AsObjectType();
 
     if (desc_->properties.size() != otherObj->Properties().size() ||
         CallSignatures().size() != otherObj->CallSignatures().size() ||
@@ -218,38 +111,24 @@ void ObjectType::Identical(TypeRelation *relation, const Type *other) const
     }
 }
 
-void ObjectType::AssignProperties(TypeRelation *relation, const ObjectType *source,
-                                  bool performExcessPropertyCheck) const
+void ObjectType::AssignProperties(TypeRelation *relation, ObjectType *source)
 {
-    std::vector<binder::LocalVariable *> targetProperties;
-    const IndexInfo *numberInfo = nullptr;
-    const IndexInfo *stringInfo = nullptr;
-
-    if (this->IsInterfaceType()) {
-        this->AsInterfaceType()->CollectProperties(&targetProperties);
-        numberInfo = this->AsInterfaceType()->FindIndexInfo(true);
-        stringInfo = this->AsInterfaceType()->FindIndexInfo(false);
-    } else {
-        targetProperties = desc_->properties;
-        numberInfo = desc_->numberIndexInfo;
-        stringInfo = desc_->stringIndexInfo;
-    }
+    const ArenaVector<binder::LocalVariable *> &targetProperties = Properties();
+    IndexInfo *numberInfo = NumberIndexInfo();
+    IndexInfo *stringInfo = StringIndexInfo();
 
     for (auto *it : targetProperties) {
-        binder::LocalVariable *found = source->GetProperty(it->Name());
+        binder::LocalVariable *found = source->GetProperty(it->Name(), true);
+        Type *targetType = relation->GetChecker()->GetTypeOfVariable(it);
 
         if (found) {
-            if (found->TsType()->HasTypeFlag(TypeFlag::RELATION_CHECKED)) {
-                found->TsType()->RemoveTypeFlag(TypeFlag::RELATION_CHECKED);
-                continue;
-            }
+            Type *sourceType = relation->GetChecker()->GetTypeOfVariable(found);
 
-            if (!relation->IsAssignableTo(found->TsType(), it->TsType())) {
+            if (!relation->IsAssignableTo(sourceType, targetType)) {
                 return;
             }
 
-            if (performExcessPropertyCheck && found->HasFlag(binder::VariableFlags::OPTIONAL) &&
-                !it->HasFlag(binder::VariableFlags::OPTIONAL)) {
+            if (found->HasFlag(binder::VariableFlags::OPTIONAL) && !it->HasFlag(binder::VariableFlags::OPTIONAL)) {
                 relation->Result(false);
                 return;
             }
@@ -257,17 +136,13 @@ void ObjectType::AssignProperties(TypeRelation *relation, const ObjectType *sour
             continue;
         }
 
-        if (numberInfo && it->HasFlag(binder::VariableFlags::COMPUTED_INDEX) &&
-            !relation->IsAssignableTo(numberInfo->InfoType(), it->TsType())) {
+        if (numberInfo && it->HasFlag(binder::VariableFlags::NUMERIC_NAME) &&
+            !relation->IsAssignableTo(numberInfo->GetType(), targetType)) {
             return;
         }
 
-        if (stringInfo && !relation->IsAssignableTo(stringInfo->InfoType(), it->TsType())) {
+        if (stringInfo && !relation->IsAssignableTo(stringInfo->GetType(), targetType)) {
             return;
-        }
-
-        if (!performExcessPropertyCheck) {
-            continue;
         }
 
         if (!it->HasFlag(binder::VariableFlags::OPTIONAL)) {
@@ -277,22 +152,11 @@ void ObjectType::AssignProperties(TypeRelation *relation, const ObjectType *sour
     }
 }
 
-void ObjectType::AssignSignatures(TypeRelation *relation, const ObjectType *source, bool assignCallSignatures) const
+void ObjectType::AssignSignatures(TypeRelation *relation, ObjectType *source, bool assignCallSignatures)
 {
-    std::vector<Signature *> targetSignatures;
-    std::vector<Signature *> sourceSignatures;
-
-    if (this->IsInterfaceType()) {
-        this->AsInterfaceType()->CollectSignatures(&targetSignatures, assignCallSignatures);
-    } else {
-        targetSignatures = assignCallSignatures ? CallSignatures() : ConstructSignatures();
-    }
-
-    if (source->IsInterfaceType()) {
-        source->AsInterfaceType()->CollectSignatures(&sourceSignatures, assignCallSignatures);
-    } else {
-        sourceSignatures = assignCallSignatures ? source->CallSignatures() : source->ConstructSignatures();
-    }
+    ArenaVector<Signature *> targetSignatures = assignCallSignatures ? CallSignatures() : ConstructSignatures();
+    ArenaVector<Signature *> sourceSignatures =
+        assignCallSignatures ? source->CallSignatures() : source->ConstructSignatures();
 
     for (auto *targetSignature : targetSignatures) {
         bool foundCompatible = false;
@@ -312,30 +176,44 @@ void ObjectType::AssignSignatures(TypeRelation *relation, const ObjectType *sour
     }
 }
 
-void ObjectType::AssignIndexInfo([[maybe_unused]] TypeRelation *relation, const ObjectType *source,
-                                 bool assignNumberInfo) const
+void ObjectType::AssignIndexInfo([[maybe_unused]] TypeRelation *relation, ObjectType *source, bool assignNumberInfo)
 {
-    const IndexInfo *targetInfo = nullptr;
-    const IndexInfo *sourceInfo = nullptr;
+    IndexInfo *targetInfo = assignNumberInfo ? NumberIndexInfo() : StringIndexInfo();
+    IndexInfo *sourceInfo = assignNumberInfo ? source->NumberIndexInfo() : source->StringIndexInfo();
 
-    if (this->IsInterfaceType()) {
-        targetInfo = this->AsInterfaceType()->FindIndexInfo(assignNumberInfo);
-    } else {
-        targetInfo = assignNumberInfo ? NumberIndexInfo() : StringIndexInfo();
-    }
+    if (targetInfo) {
+        if (sourceInfo) {
+            targetInfo->AssignmentTarget(relation, sourceInfo);
+            return;
+        }
 
-    if (source->IsInterfaceType()) {
-        sourceInfo = source->AsInterfaceType()->FindIndexInfo(assignNumberInfo);
-    } else {
-        sourceInfo = assignNumberInfo ? source->NumberIndexInfo() : source->StringIndexInfo();
-    }
+        for (auto *it : source->Properties()) {
+            if (assignNumberInfo && !it->HasFlag(binder::VariableFlags::NUMERIC_NAME)) {
+                continue;
+            }
 
-    if (targetInfo && sourceInfo) {
-        targetInfo->AssignmentTarget(relation, sourceInfo);
+            if (!relation->IsAssignableTo(relation->GetChecker()->GetTypeOfVariable(it), targetInfo->GetType())) {
+                return;
+            }
+        }
     }
 }
 
-void ObjectType::AssignmentTarget(TypeRelation *relation, const Type *source) const
+void ObjectType::checkExcessProperties(TypeRelation *relation, ObjectType *source)
+{
+    for (auto *it : source->Properties()) {
+        auto *found = GetProperty(it->Name(), true);
+
+        if (found || (it->HasFlag(binder::VariableFlags::NUMERIC_NAME) && NumberIndexInfo()) || StringIndexInfo()) {
+            continue;
+        }
+
+        relation->Result(false);
+        return;
+    }
+}
+
+void ObjectType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (!source->IsObjectType()) {
         relation->Result(false);
@@ -344,21 +222,27 @@ void ObjectType::AssignmentTarget(TypeRelation *relation, const Type *source) co
 
     relation->Result(true);
 
-    const ObjectType *sourceObj = source->AsObjectType();
+    ObjectType *sourceObj = source->AsObjectType();
 
-    AssignProperties(relation, sourceObj, HasObjectFlag(ObjectFlags::CHECK_EXCESS_PROPS));
+    if (sourceObj->HasObjectFlag(ObjectFlags::CHECK_EXCESS_PROPS)) {
+        checkExcessProperties(relation, sourceObj);
+    }
 
     if (relation->IsTrue()) {
-        AssignSignatures(relation, sourceObj);
+        AssignProperties(relation, sourceObj);
 
         if (relation->IsTrue()) {
-            AssignSignatures(relation, sourceObj, false);
+            AssignSignatures(relation, sourceObj);
 
             if (relation->IsTrue()) {
-                AssignIndexInfo(relation, sourceObj);
+                AssignSignatures(relation, sourceObj, false);
 
                 if (relation->IsTrue()) {
-                    AssignIndexInfo(relation, sourceObj, false);
+                    AssignIndexInfo(relation, sourceObj);
+
+                    if (relation->IsTrue()) {
+                        AssignIndexInfo(relation, sourceObj, false);
+                    }
                 }
             }
         }

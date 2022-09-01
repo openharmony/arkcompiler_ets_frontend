@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ void ParserImpl::AddCommonjsArgs(ArenaVector<ir::Expression *> &args)
     }
 }
 
-void ParserImpl::ParseCommonjs(const std::string &fileName, const std::string &source)
+void ParserImpl::ParseCommonjs()
 {
     // create FunctionExpression as callee
     ir::FunctionExpression *funcExpr = nullptr;

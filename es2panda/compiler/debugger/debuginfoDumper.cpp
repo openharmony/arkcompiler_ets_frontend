@@ -136,7 +136,7 @@ void DebugInfoDumper::WritePosInfo(const pandasm::debuginfo::Ins &posInfo)
     ss_ << "\"debug_pos_info\": {";
     WriteProperty("boundLeft", posInfo.bound_left);
     WriteProperty("boundRight", posInfo.bound_right);
-    WriteProperty("sourecLineNum", static_cast<int32_t>(posInfo.line_number));
+    WriteProperty("sourceLineNum", static_cast<int32_t>(posInfo.line_number));
     WriteProperty("wholeLine", posInfo.whole_line, false);
     Indent();
     ss_ << "}" << std::endl;

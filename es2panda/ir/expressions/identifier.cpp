@@ -19,7 +19,12 @@
 #include <compiler/core/pandagen.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
+#include <ir/typeNode.h>
 #include <ir/base/decorator.h>
+#include <ir/base/scriptFunction.h>
+#include <ir/expressions/assignmentExpression.h>
+#include <ir/statements/functionDeclaration.h>
+#include <ir/statements/variableDeclarator.h>
 #include <ir/expression.h>
 
 namespace panda::es2panda::ir {
@@ -77,7 +82,7 @@ void Identifier::Compile(compiler::PandaGen *pg) const
 
 checker::Type *Identifier::Check(checker::Checker *checker) const
 {
-    if (!variable_) {
+    if (!Variable()) {
         if (name_.Is("undefined")) {
             return checker->GlobalUndefinedType();
         }
@@ -85,67 +90,13 @@ checker::Type *Identifier::Check(checker::Checker *checker) const
         checker->ThrowTypeError({"Cannot find name ", name_}, Start());
     }
 
-    const binder::Decl *decl = variable_->Declaration();
+    const binder::Decl *decl = Variable()->Declaration();
 
-    if (decl->IsConstDecl() && checker::Checker::InAssignment(this)) {
-        checker->ThrowTypeError({"Cannot assign to '", name_, "' because it is a constant"}, Start());
+    if (decl->IsTypeAliasDecl() || decl->IsInterfaceDecl()) {
+        checker->ThrowTypeError({name_, " only refers to a type, but is being used as a value here."}, Start());
     }
 
-    if (!variable_->TsType()) {
-        checker::Type *bindingType = checker->GlobalAnyType();
-        switch (decl->Type()) {
-            case binder::DeclType::CONST:
-            case binder::DeclType::LET: {
-                if (!parent_->IsTSTypeQuery()) {
-                    checker->ThrowTypeError({"Block-scoped variable '", name_, "' used before its declaration"},
-                                            Start());
-                    break;
-                }
-
-                [[fallthrough]];
-            }
-            case binder::DeclType::PARAM:
-            case binder::DeclType::VAR: {
-                bindingType = checker->InferVariableDeclarationType(decl->Node()->AsIdentifier());
-                break;
-            }
-            case binder::DeclType::FUNC: {
-                checker->InferFunctionDeclarationType(decl->AsFunctionDecl(), variable_);
-                return variable_->TsType();
-            }
-            case binder::DeclType::ENUM: {
-                ASSERT(variable_->IsEnumVariable());
-                binder::EnumVariable *enumVar = variable_->AsEnumVariable();
-
-                if (std::holds_alternative<bool>(enumVar->Value())) {
-                    checker->ThrowTypeError(
-                        "A member initializer in a enum declaration cannot reference members declared after it, "
-                        "including "
-                        "members defined in other enums.",
-                        Start());
-                }
-
-                bindingType = std::holds_alternative<double>(enumVar->Value()) ? checker->GlobalNumberType()
-                                                                               : checker->GlobalStringType();
-                break;
-            }
-            case binder::DeclType::ENUM_LITERAL: {
-                UNREACHABLE();  // TODO(aszilagyi)
-            }
-            default: {
-                break;
-            }
-        }
-
-        bindingType->SetVariable(variable_);
-        variable_->SetTsType(bindingType);
-    }
-
-    if (decl->IsInterfaceDecl() || decl->IsTypeAliasDecl()) {
-        checker->ThrowTypeError({name_, " only refers to a type , but is being used as a value here"}, Start());
-    }
-
-    return variable_->TsType();
+    return checker->GetTypeOfVariable(Variable());
 }
 
 }  // namespace panda::es2panda::ir

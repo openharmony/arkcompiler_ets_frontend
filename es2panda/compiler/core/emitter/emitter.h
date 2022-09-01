@@ -34,6 +34,7 @@ namespace panda::pandasm {
 struct Program;
 struct Function;
 struct Ins;
+struct Record;
 }  // namespace panda::pandasm
 
 namespace panda::es2panda::ir {
@@ -76,7 +77,6 @@ private:
     void GenInstructionDebugInfo(const IRNode *ins, panda::pandasm::Ins *pandaIns);
     void GenFunctionInstructions();
     void GenFunctionCatchTables();
-    void GenFunctionICSize();
     void GenScopeVariableInfo(const binder::Scope *scope);
     void GenSourceFileDebugInfo();
     void GenVariablesDebugInfo();
@@ -105,11 +105,12 @@ public:
     panda::pandasm::Program *Finalize(bool dumpDebugInfo);
 
 private:
-    void GenESAnnoatationRecord();
-    void GenCommonjsRecord();
+    void SetCommonjsField(bool isCommonjs);
+    void GenCommonjsRecord() const;
 
     std::mutex m_;
     panda::pandasm::Program *prog_;
+    panda::pandasm::Record *rec_;
 };
 }  // namespace panda::es2panda::compiler
 

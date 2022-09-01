@@ -37,4 +37,9 @@ checker::Type *TSInferType::Check([[maybe_unused]] checker::Checker *checker) co
     return nullptr;
 }
 
+checker::Type *TSInferType::GetType([[maybe_unused]] checker::Checker *checker) const
+{
+    return nullptr;
+}
+
 }  // namespace panda::es2panda::ir

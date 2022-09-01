@@ -17,29 +17,25 @@
 
 namespace panda::es2panda::checker {
 
-UndefinedType::UndefinedType() : Type(TypeFlag::UNDEFINED) {}
-
 void UndefinedType::ToString(std::stringstream &ss) const
 {
     ss << "undefined";
 }
 
-void UndefinedType::Identical(TypeRelation *relation, const Type *other) const
+void UndefinedType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsUndefinedType()) {
         relation->Result(true);
     }
 }
 
-bool UndefinedType::AssignmentSource(TypeRelation *relation, [[maybe_unused]] const Type *target) const
+bool UndefinedType::AssignmentSource(TypeRelation *relation, [[maybe_unused]] Type *target)
 {
     relation->Result(!target->IsNeverType());
     return relation->IsTrue();
 }
 
-void UndefinedType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] const Type *source) const
-{
-}
+void UndefinedType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source) {}
 
 TypeFacts UndefinedType::GetTypeFacts() const
 {

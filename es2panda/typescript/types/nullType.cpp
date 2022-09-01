@@ -17,27 +17,25 @@
 
 namespace panda::es2panda::checker {
 
-NullType::NullType() : Type(TypeFlag::NULL_TYPE) {}
-
 void NullType::ToString(std::stringstream &ss) const
 {
     ss << "null";
 }
 
-void NullType::Identical(TypeRelation *relation, const Type *other) const
+void NullType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsNullType()) {
         relation->Result(true);
     }
 }
 
-bool NullType::AssignmentSource(TypeRelation *relation, [[maybe_unused]] const Type *target) const
+bool NullType::AssignmentSource(TypeRelation *relation, [[maybe_unused]] Type *target)
 {
     relation->Result(!target->IsNeverType());
     return relation->IsTrue();
 }
 
-void NullType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] const Type *source) const {}
+void NullType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source) {}
 
 TypeFacts NullType::GetTypeFacts() const
 {

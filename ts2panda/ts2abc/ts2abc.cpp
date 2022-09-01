@@ -26,8 +26,9 @@
 #include "json/json.h"
 #include "securec.h"
 #include "ts2abc_options.h"
-#include "type_adapter.h"
 #include "ts2abc.h"
+#include "type_adapter.h"
+#include "protobufSnapshotGenerator.h"
 
 #ifdef ENABLE_BYTECODE_OPT
 #include "optimize_bytecode.h"
@@ -42,9 +43,11 @@ bool g_debugLogEnabled = false;
 int g_optLevel = 0;
 bool g_enableTypeinfo = false;
 bool g_displayTypeinfo = false;
+bool g_isDtsFile = false;
 std::string g_optLogLevel = "error";
 uint32_t g_literalArrayCount = 0;
 using ts2abc_type_adapter::TypeAdapter;
+std::string g_compilerOutputProto = "";
 
 constexpr std::size_t BOUND_LEFT = 0;
 constexpr std::size_t BOUND_RIGHT = 0;
@@ -59,17 +62,9 @@ std::unordered_map<int, panda::pandasm::Opcode> g_opcodeMap = {
 };
 
 // pandasm helpers
-static panda::pandasm::Record MakeRecordDefinition(const std::string &name, const std::string &wholeLine,
-    size_t boundLeft, size_t boundRight, size_t lineNumber)
+static panda::pandasm::Record MakeRecordDefinition(const std::string &name)
 {
-    auto record = panda::pandasm::Record(
-        name,
-        LANG_EXT,
-        boundLeft,
-        boundRight,
-        wholeLine,
-        IS_DEFINED,
-        lineNumber);
+    auto record = panda::pandasm::Record(name, LANG_EXT);
 
     return record;
 }
@@ -269,6 +264,11 @@ static void ParseLiteral(const Json::Value &literal, std::vector<panda::pandasm:
             valueLiteral.value_ = static_cast<uint16_t>(literal["v"].asUInt());
             break;
         }
+        case static_cast<uint8_t>(panda::panda_file::LiteralTag::LITERALBUFFERINDEX): {
+            valueLiteral.tag_ = panda::panda_file::LiteralTag::LITERALBUFFERINDEX;
+            valueLiteral.value_ = static_cast<uint32_t>(literal["v"].asInt());
+            break;
+        }
         case static_cast<uint8_t>(panda::panda_file::LiteralTag::NULLVALUE): {
             valueLiteral.tag_ = panda::panda_file::LiteralTag::NULLVALUE;
             valueLiteral.value_ = static_cast<uint8_t>(0);
@@ -288,28 +288,7 @@ static panda::pandasm::Record ParseRecord(const Json::Value &record)
         recordName = record["name"].asString();
     }
 
-    std::string wholeLine = "";
-    if (record.isMember("whole_line") && record["whole_line"].isString()) {
-        wholeLine = ParseString(record["whole_line"].asString());
-    }
-
-    int boundLeft = -1;
-    if (record.isMember("bound_left") && record["bound_left"].isInt()) {
-        boundLeft = record["bound_left"].asInt();
-    }
-
-    int boundRight = -1;
-    if (record.isMember("bound_right") && record["bound_right"].isInt()) {
-        boundRight = record["bound_right"].asInt();
-    }
-
-    int lineNumber = -1;
-    if (record.isMember("line_number") && record["line_number"].isInt()) {
-        lineNumber = record["line_number"].asInt();
-    }
-
-    auto pandaRecord = MakeRecordDefinition(recordName, wholeLine, static_cast<size_t>(boundLeft),
-        static_cast<size_t>(boundRight), static_cast<size_t>(lineNumber));
+    auto pandaRecord = MakeRecordDefinition(recordName);
 
     if (record.isMember("metadata") && record["metadata"].isObject()) {
         auto metadata = record["metadata"];
@@ -777,6 +756,10 @@ static panda::pandasm::Function ParseFunction(const Json::Value &function)
     ParseFunctionExportedType(function, pandaFunc);
     ParseFunctionDeclaredType(function, pandaFunc);
 
+    if (g_isDtsFile && pandaFunc.name != "func_main_0") {
+        pandaFunc.metadata->SetAttribute("external");
+    }
+
     return pandaFunc;
 }
 
@@ -914,6 +897,21 @@ static void ParseOptLogLevel(const Json::Value &rootValue)
     }
 }
 
+static void ParseIsDtsFile(const Json::Value &rootValue)
+{
+    Logd("-----------------parse is dts file-----------------");
+    if (rootValue.isMember("is_dts_file") && rootValue["is_dts_file"].isBool()) {
+        g_isDtsFile = rootValue["is_dts_file"].asBool();
+    }
+}
+
+static void ParseCompilerOutputProto(const Json::Value &rootValue)
+{
+    Logd("-----------------parse compiler output proto-----------------");
+    if (rootValue.isMember("output-proto") && rootValue["output-proto"].isString()) {
+        g_compilerOutputProto = rootValue["output-proto"].asString();
+    }
+}
 static void ReplaceAllDistinct(std::string &str, const std::string &oldValue, const std::string &newValue)
 {
     for (std::string::size_type pos(0); pos != std::string::npos; pos += newValue.length()) {
@@ -936,6 +934,8 @@ static void ParseOptions(const Json::Value &rootValue, panda::pandasm::Program &
     ParseOptLevel(rootValue);
     ParseDisplayTypeinfo(rootValue);
     ParseOptLogLevel(rootValue);
+    ParseIsDtsFile(rootValue);
+    ParseCompilerOutputProto(rootValue);
 }
 
 static void ParseSingleFunc(const Json::Value &rootValue, panda::pandasm::Program &prog)
@@ -1287,9 +1287,12 @@ static bool ReadFromPipe(panda::pandasm::Program &prog)
     return true;
 }
 
-bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string &output, bool isParsingFromPipe,
-                     int optLevel, std::string &optLogLevel)
+bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string &output,
+                     panda::ts2abc::Options options)
 {
+    bool isParsingFromPipe = options.GetCompileByPipeArg();
+    int optLevel = options.GetOptLevelArg();
+    std::string optLogLevel = options.GetOptLogLevelArg();
     panda::pandasm::Program prog = panda::pandasm::Program();
     prog.lang = panda::pandasm::extensions::Language::ECMASCRIPT;
 
@@ -1306,6 +1309,11 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
     }
 
     Logd("parsing done, calling pandasm\n");
+
+    std::string compilerOutputProto = g_compilerOutputProto;
+    if (options.GetCompilerOutputProto().size() > 0) {
+        compilerOutputProto = options.GetCompilerOutputProto();
+    }
 
     TypeAdapter ada(g_displayTypeinfo);
     ada.AdaptTypeForProgram(&prog);
@@ -1332,7 +1340,14 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
             std::cerr << "Failed to emit binary data: " << panda::pandasm::AsmEmitter::GetLastError() << std::endl;
             return false;
         }
+
         panda::bytecodeopt::OptimizeBytecode(&prog, mapsp, output.c_str(), true);
+
+        if (compilerOutputProto.size() > 0) {
+            panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, compilerOutputProto);
+            return true;
+        }
+
         if (!panda::pandasm::AsmEmitter::Emit(output.c_str(), prog, statp, mapsp, emitDebugInfo)) {
             std::cerr << "Failed to emit binary data: " << panda::pandasm::AsmEmitter::GetLastError() << std::endl;
             return false;
@@ -1340,6 +1355,10 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
         return true;
     }
 #endif
+    if (compilerOutputProto.size() > 0) {
+        panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, compilerOutputProto);
+        return true;
+    }
 
     if (!panda::pandasm::AsmEmitter::Emit(output.c_str(), prog, nullptr)) {
         std::cerr << "Failed to emit binary data: " << panda::pandasm::AsmEmitter::GetLastError() << std::endl;

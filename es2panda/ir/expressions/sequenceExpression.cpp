@@ -32,14 +32,14 @@ void SequenceExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "SequenceExpression"}, {"expressions", sequence_}});
 }
 
-void SequenceExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void SequenceExpression::Compile(compiler::PandaGen *pg) const
 {
     for (const auto *it : sequence_) {
         it->Compile(pg);
     }
 }
 
-checker::Type *SequenceExpression::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *SequenceExpression::Check(checker::Checker *checker) const
 {
     // TODO(aszilagyi)
     return checker->GlobalAnyType();

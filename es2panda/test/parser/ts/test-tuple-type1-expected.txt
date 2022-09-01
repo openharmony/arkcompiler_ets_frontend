@@ -1,1 +1,1 @@
-SyntaxError: ',' expected. [test-tuple-type1.ts:1:19]
+SyntaxError: ',' expected. [test-tuple-type1.ts:17:19]

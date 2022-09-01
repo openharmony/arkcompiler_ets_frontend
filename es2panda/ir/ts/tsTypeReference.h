@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_TYPE_REFERENCE_H
 #define ES2PANDA_IR_TS_TYPE_REFERENCE_H
 
-#include <ir/expression.h>
+#include <ir/typeNode.h>
 
 namespace panda::es2panda::binder {
 class ScopeFindResult;
@@ -36,10 +36,10 @@ namespace panda::es2panda::ir {
 
 class TSTypeParameterInstantiation;
 
-class TSTypeReference : public Expression {
+class TSTypeReference : public TypeNode {
 public:
     explicit TSTypeReference(Expression *typeName, TSTypeParameterInstantiation *typeParams)
-        : Expression(AstNodeType::TS_TYPE_REFERENCE), typeName_(typeName), typeParams_(typeParams)
+        : TypeNode(AstNodeType::TS_TYPE_REFERENCE), typeName_(typeName), typeParams_(typeParams)
     {
     }
 
@@ -53,14 +53,11 @@ public:
         return typeName_;
     }
 
-    static checker::Type *ResolveReference(checker::Checker *checker, binder::Variable *var,
-                                           const ir::Identifier *refIdent,
-                                           const ir::TSTypeParameterInstantiation *typeParams);
-
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    checker::Type *Check(checker::Checker *checker) const override;
+    checker::Type *GetType(checker::Checker *checker) const override;
 
 private:
     Expression *typeName_;

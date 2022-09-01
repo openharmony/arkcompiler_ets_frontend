@@ -142,7 +142,7 @@ void TryStatement::CompileTryCatch(compiler::PandaGen *pg) const
     pg->SetLabel(this, labelSet.CatchEnd());
 }
 
-void TryStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void TryStatement::Compile(compiler::PandaGen *pg) const
 {
     if (finalizer_) {
         if (catchClause_) {
@@ -155,7 +155,7 @@ void TryStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     }
 }
 
-checker::Type *TryStatement::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *TryStatement::Check(checker::Checker *checker) const
 {
     block_->Check(checker);
 

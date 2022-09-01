@@ -17,8 +17,6 @@
 
 namespace panda::es2panda::checker {
 
-VoidType::VoidType() : Type(TypeFlag::VOID) {}
-
 void VoidType::ToString(std::stringstream &ss) const
 {
     ss << "void";
@@ -29,14 +27,14 @@ TypeFacts VoidType::GetTypeFacts() const
     return TypeFacts::UNDEFINED_FACTS;
 }
 
-void VoidType::Identical(TypeRelation *relation, const Type *other) const
+void VoidType::Identical(TypeRelation *relation, Type *other)
 {
     if (other->IsVoidType()) {
         relation->Result(true);
     }
 }
 
-void VoidType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] const Type *source) const {}
+void VoidType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source) {}
 
 Type *VoidType::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unused]] TypeRelation *relation,
                             [[maybe_unused]] GlobalTypesHolder *globalTypes)

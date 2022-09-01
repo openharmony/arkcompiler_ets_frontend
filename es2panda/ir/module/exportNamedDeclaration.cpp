@@ -45,7 +45,7 @@ void ExportNamedDeclaration::Dump(ir::AstDumper *dumper) const
                  {"specifiers", specifiers_}});
 }
 
-void ExportNamedDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ExportNamedDeclaration::Compile(compiler::PandaGen *pg) const
 {
     if (!decl_) {
         return;

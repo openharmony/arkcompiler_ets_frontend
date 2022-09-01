@@ -117,7 +117,7 @@ void UnaryExpression::Compile(compiler::PandaGen *pg) const
     }
 }
 
-checker::Type *UnaryExpression::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *UnaryExpression::Check(checker::Checker *checker) const
 {
     checker::Type *operandType = argument_->Check(checker);
 
@@ -126,6 +126,8 @@ checker::Type *UnaryExpression::Check([[maybe_unused]] checker::Checker *checker
     }
 
     if (operator_ == lexer::TokenType::KEYW_DELETE) {
+        checker::Type *propType = argument_->Check(checker);
+
         if (!argument_->IsMemberExpression()) {
             checker->ThrowTypeError("The operand of a delete operator must be a property reference.",
                                     argument_->Start());
@@ -138,15 +140,14 @@ checker::Type *UnaryExpression::Check([[maybe_unused]] checker::Checker *checker
                                     argument_->Start());
         }
 
-        binder::Variable *argVar = checker->ResolveObjectProperty(argument_->AsMemberExpression());
-        ASSERT(argVar);
+        ASSERT(propType->Variable());
 
-        if (argVar->HasFlag(binder::VariableFlags::READONLY)) {
+        if (propType->Variable()->HasFlag(binder::VariableFlags::READONLY)) {
             checker->ThrowTypeError("The operand of a delete operator cannot be a readonly property.",
                                     argument_->Start());
         }
 
-        if (!argVar->HasFlag(binder::VariableFlags::OPTIONAL)) {
+        if (!propType->Variable()->HasFlag(binder::VariableFlags::OPTIONAL)) {
             checker->ThrowTypeError("The operand of a delete operator must be a optional.", argument_->Start());
         }
 

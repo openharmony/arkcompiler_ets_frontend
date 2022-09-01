@@ -20,6 +20,7 @@
 #include <typescript/checker.h>
 #include <typescript/types/indexInfo.h>
 #include <ir/astDump.h>
+#include <ir/typeNode.h>
 #include <ir/expressions/identifier.h>
 #include <ir/ts/tsNamedTupleMember.h>
 
@@ -39,15 +40,21 @@ void TSTupleType::Dump(ir::AstDumper *dumper) const
 
 void TSTupleType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-checker::Type *TSTupleType::Check(checker::Checker *checker) const
+checker::Type *TSTupleType::GetType(checker::Checker *checker) const
 {
-    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>();
+    auto found = checker->NodeCache().find(this);
+
+    if (found != checker->NodeCache().end()) {
+        return found->second;
+    }
+
+    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
     checker::NamedTupleMemberPool namedMembers;
-    checker::TupleElementFlagPool elementFlags;
+    ArenaVector<checker::ElementFlags> elementFlags(checker->Allocator()->Adapter());
     checker::ElementFlags combinedFlags = checker::ElementFlags::NO_OPTS;
     uint32_t minLength = 0;
     uint32_t index = 0;
-    std::vector<checker::Type *> numberIndexTypes;
+    ArenaVector<checker::Type *> numberIndexTypes(checker->Allocator()->Adapter());
     for (auto *it : elementTypes_) {
         util::StringView memberIndex = util::Helpers::ToStringView(checker->Allocator(), index);
 
@@ -57,7 +64,7 @@ checker::Type *TSTupleType::Check(checker::Checker *checker) const
         checker::ElementFlags memberFlag = checker::ElementFlags::NO_OPTS;
         if (it->IsTSNamedTupleMember()) {
             const ir::TSNamedTupleMember *namedMember = it->AsTSNamedTupleMember();
-            checker::Type *memberType = namedMember->ElementType()->Check(checker);
+            checker::Type *memberType = namedMember->ElementType()->AsTypeNode()->GetType(checker);
 
             if (namedMember->IsOptional()) {
                 memberVar->AddFlag(binder::VariableFlags::OPTIONAL);
@@ -72,7 +79,7 @@ checker::Type *TSTupleType::Check(checker::Checker *checker) const
             numberIndexTypes.push_back(memberType);
             namedMembers.insert({memberVar, namedMember->Label()->AsIdentifier()->Name()});
         } else {
-            checker::Type *memberType = it->Check(checker);
+            checker::Type *memberType = it->AsTypeNode()->GetType(checker);
             memberType->SetVariable(memberVar);
             memberVar->SetTsType(memberType);
             memberFlag = checker::ElementFlags::REQUIRED;
@@ -82,7 +89,7 @@ checker::Type *TSTupleType::Check(checker::Checker *checker) const
 
         combinedFlags |= memberFlag;
 
-        elementFlags.insert({memberIndex, memberFlag});
+        elementFlags.push_back(memberFlag);
         desc->properties.push_back(memberVar);
         index++;
     }
@@ -99,10 +106,23 @@ checker::Type *TSTupleType::Check(checker::Checker *checker) const
         numberIndexType = checker->CreateUnionType(std::move(numberIndexTypes));
     }
 
-    desc->numberIndexInfo = checker->Allocator()->New<checker::IndexInfo>(numberIndexType, "x");
+    desc->numberIndexInfo = checker->Allocator()->New<checker::IndexInfo>(numberIndexType, "x", false);
 
-    return checker->CreateTupleType(desc, std::move(elementFlags), combinedFlags, minLength, fixedLength, false,
-                                    std::move(namedMembers));
+    checker::Type *tupleType = checker->CreateTupleType(desc, std::move(elementFlags), combinedFlags, minLength,
+                                                        fixedLength, false, std::move(namedMembers));
+
+    checker->NodeCache().insert({this, tupleType});
+    return tupleType;
+}
+
+checker::Type *TSTupleType::Check(checker::Checker *checker) const
+{
+    for (const auto *it : elementTypes_) {
+        it->Check(checker);
+    }
+
+    GetType(checker);
+    return nullptr;
 }
 
 }  // namespace panda::es2panda::ir

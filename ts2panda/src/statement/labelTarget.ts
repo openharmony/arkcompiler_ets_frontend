@@ -38,6 +38,10 @@ export class LabelTarget {
         this.tryStatement = TryStatement.getCurrentTryStatement();
     }
 
+    containLoopEnv() {
+        return this.hasLoopEnv;
+    }
+
     getBreakTargetLabel() {
         return this.breakTargetLabel;
     }
@@ -73,7 +77,7 @@ export class LabelTarget {
         return false;
     }
 
-    private static getCloseLabelTarget(): LabelTarget | undefined {
+    static getCloseLabelTarget(): LabelTarget | undefined {
         if (!LabelTarget.isLabelTargetsEmpty()) {
             return LabelTarget.labelTargetStack[LabelTarget.labelTargetStack.length - 1];
         }

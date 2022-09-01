@@ -15,6 +15,7 @@
 
 #include "helpers.h"
 
+#include <es2panda.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/classProperty.h>
 #include <ir/base/methodDefinition.h>
@@ -30,7 +31,17 @@
 #include <ir/expressions/objectExpression.h>
 #include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
+#include <ir/ts/tsParameterProperty.h>
 #include <parser/module/sourceTextModuleRecord.h>
+
+#ifdef ENABLE_BYTECODE_OPT
+#include <bytecode_optimizer/bytecodeopt_options.h>
+#include <bytecode_optimizer/optimize_bytecode.h>
+#else
+#include <assembly-type.h>
+#include <assembly-program.h>
+#include <assembly-emitter.h>
+#endif
 
 namespace panda::es2panda::util {
 
@@ -392,11 +403,37 @@ std::tuple<util::StringView, bool> Helpers::ParamName(ArenaAllocator *allocator,
             }
             break;
         }
+        case ir::AstNodeType::TS_PARAMETER_PROPERTY: {
+            return ParamName(allocator, param->AsTSParameterProperty()->Parameter(), index);
+        }
         default:
             break;
     }
 
     return {Helpers::ToStringView(allocator, index), true};
+}
+
+bool Helpers::OptimizeProgram(panda::pandasm::Program * prog, es2panda::CompilerOptions *options)
+{
+    std::map<std::string, size_t> stat;
+    std::map<std::string, size_t> *statp = &stat;
+    panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps{};
+    panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp = &maps;
+
+#ifdef PANDA_WITH_BYTECODE_OPTIMIZER
+    const uint32_t COMPONENT_MASK = panda::Logger::Component::ASSEMBLER |
+                                    panda::Logger::Component::BYTECODE_OPTIMIZER |
+                                    panda::Logger::Component::COMPILER;
+    panda::Logger::InitializeStdLogging(panda::Logger::Level::ERROR, COMPONENT_MASK);
+
+    if (!panda::pandasm::AsmEmitter::Emit(options->output, *prog, statp, mapsp, true)) {
+        return false;
+    }
+
+    panda::bytecodeopt::options.SetOptLevel(options->optLevel);
+    panda::bytecodeopt::OptimizeBytecode(prog, mapsp, options->output, true, true);
+#endif
+    return true;
 }
 
 }  // namespace panda::es2panda::util

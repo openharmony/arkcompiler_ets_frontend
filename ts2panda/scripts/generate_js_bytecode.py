@@ -44,6 +44,8 @@ def parse_args():
                         help='whether is commonjs')
     parser.add_argument("--q", action='store_true',
                         help='whether is d.ts')
+    parser.add_argument("--b", action='store_true',
+                        help='enable builtin types recognition for .d.ts files')
     parser.add_argument("--functionSourceCode", action='store_true',
                         help='compile abc with function sourcecode info')
     arguments = parser.parse_args()
@@ -94,8 +96,10 @@ def gen_abc_info(input_arguments):
         cmd.insert(5, '-c')
     if input_arguments.q:
         cmd.insert(6, '-q')
+    if input_arguments.b:
+        cmd.insert(7, '-b')
     if input_arguments.functionSourceCode:
-        cmd.insert(7, '--function-sourcecode')
+        cmd.insert(8, '--function-sourcecode')
     run_command(cmd, path)
 
 

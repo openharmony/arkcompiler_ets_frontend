@@ -44,7 +44,7 @@ void MetaProperty::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "MetaProperty"}, {"kind", kind}});
 }
 
-void MetaProperty::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void MetaProperty::Compile(compiler::PandaGen *pg) const
 {
     if (kind_ == ir::MetaProperty::MetaPropertyKind::NEW_TARGET) {
         pg->GetNewTarget(this);
@@ -57,7 +57,7 @@ void MetaProperty::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     }
 }
 
-checker::Type *MetaProperty::Check([[maybe_unused]] checker::Checker *checker) const
+checker::Type *MetaProperty::Check(checker::Checker *checker) const
 {
     // TODO(aszilagyi)
     return checker->GlobalAnyType();

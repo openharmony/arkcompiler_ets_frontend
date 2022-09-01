@@ -1204,6 +1204,19 @@ function checkSuperExpression(node: ts.SuperExpression) {
     }
 }
 
+function checkImportExpression(node: ts.ImportExpression) {
+    let args = (<ts.CallExpression>node.parent).arguments;
+    if (args.length != 1) {
+        throw new DiagnosticError(node, DiagnosticCode.Dynamic_imports_can_only_accept_a_module_specifier_optional_assertion_is_not_supported_yet);
+    }
+
+    args.forEach(arg => {
+        if (ts.isSpreadElement(arg)) {
+            throw new DiagnosticError(node, DiagnosticCode.Argument_of_dynamic_import_cannot_be_spread_element);
+        }
+    });
+}
+
 function checkRegularExpression(regexp: ts.RegularExpressionLiteral) {
     let regexpText = regexp.text;
     let regexpParse = require("regexpp").RegExpParser;
@@ -1253,6 +1266,9 @@ function checkSyntaxErrorForSloppyAndStrictMode(node: ts.Node) {
             break;
         case ts.SyntaxKind.SuperKeyword:
             checkSuperExpression(<ts.SuperExpression>node);
+            break;
+        case ts.SyntaxKind.ImportKeyword:
+            checkImportExpression(<ts.ImportExpression>node);
             break;
         case ts.SyntaxKind.BinaryExpression:
             checkBinaryExpression(<ts.BinaryExpression>node);

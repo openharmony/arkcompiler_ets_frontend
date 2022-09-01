@@ -15,15 +15,22 @@
 
 #include "options.h"
 
+#include "mergeProgram.h"
+#include "os/file.h"
 #include <utils/pandargs.h>
+#if defined(PANDA_TARGET_WINDOWS)
+#include <io.h>
+#else
+#include <dirent.h>
+#endif
 
-#include <utility>
+#include <fstream>
 #include <sstream>
+#include <utility>
 
 namespace panda::es2panda::aot {
-
 template <class T>
-T BaseName(T const &path, T const &delims = "/")
+T BaseName(T const &path, T const &delims = std::string(panda::os::file::File::GetPathDelim()))
 {
     return path.substr(path.find_last_of(delims) + 1);
 }
@@ -35,8 +42,79 @@ T RemoveExtension(T const &filename)
     return P > 0 && P != T::npos ? filename.substr(0, P) : filename;
 }
 
-// Options
+static std::string FormatRecordName(const std::string &recordName)
+{
+    return recordName + ".";
+}
 
+static std::vector<std::string> GetStringItems(std::string &input, const std::string &delimiter)
+{
+    std::vector<std::string> items;
+    size_t pos = 0;
+    std::string token;
+    while ((pos = input.find(delimiter)) != std::string::npos) {
+        token = input.substr(0, pos);
+        if (!token.empty()) {
+            items.push_back(token);
+        }
+        input.erase(0, pos + delimiter.length());
+    }
+    if (!input.empty()) {
+        items.push_back(input);
+    }
+    return items;
+}
+
+bool Options::CollectInputFilesFromFileList(const std::string &input)
+{
+    std::ifstream ifs;
+    std::string line;
+    ifs.open(input.c_str());
+    if (!ifs.is_open()) {
+        std::cerr << "Failed to open source list: " << input << std::endl;
+        return false;
+    }
+
+    constexpr size_t ITEM_COUNT = 3;
+    while (std::getline(ifs, line)) {
+        const std::string seperator = ";";
+        std::vector<std::string> itemList = GetStringItems(line, seperator);
+        if (itemList.size() != ITEM_COUNT) {
+            std::cerr << "Failed to parse input file" << std::endl;
+            return false;
+        }
+        std::string fileName = itemList[0];
+        std::string recordName = FormatRecordName(itemList[1]);
+        parser::ScriptKind scriptKind;
+        if (itemList[2] == "script") {
+            scriptKind = parser::ScriptKind::SCRIPT;
+        } else if (itemList[2] == "commonjs") {
+            scriptKind = parser::ScriptKind::COMMONJS;
+        } else {
+            scriptKind = parser::ScriptKind::MODULE;
+        }
+
+        es2panda::SourceFile src(fileName, recordName, scriptKind);
+        sourceFiles_.push_back(src);
+    }
+    return true;
+}
+
+bool Options::CollectInputFilesFromFileDirectory(const std::string &input, const std::string &extension)
+{
+    std::vector<std::string> files;
+    if (!proto::MergeProgram::GetProtoFiles(input, extension, files)) {
+        return false;
+    }
+    for (auto &f : files) {
+        es2panda::SourceFile src(f, BaseName(f), scriptKind_);
+        sourceFiles_.push_back(src);
+    }
+
+    return true;
+}
+
+// Options
 Options::Options() : argparser_(new panda::PandArgParser()) {}
 
 Options::~Options()
@@ -54,6 +132,7 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opModule("module", false, "Parse the input as module");
     panda::PandArg<bool> opCommonjs("commonjs", false, "Parse the input as commonjs");
     panda::PandArg<bool> opParseOnly("parse-only", false, "Parse the input only");
+    panda::PandArg<bool> opEnableTypeCheck("enable-type-check", false, "Check the type in ts after parse");
     panda::PandArg<bool> opDumpAst("dump-ast", false, "Dump the parsed AST");
 
     // compiler
@@ -61,12 +140,22 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opDebugInfo("debug-info", false, "Compile with debug info");
     panda::PandArg<bool> opDumpDebugInfo("dump-debug-info", false, "Dump debug info");
     panda::PandArg<int> opOptLevel("opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)");
-    panda::PandArg<int> opThreadCount("thread", 0, "Number of worker theads");
+    panda::PandArg<int> opFunctionThreadCount("function-threads", 0, "Number of worker threads to compile function");
+    panda::PandArg<int> opFileThreadCount("file-threads", 0, "Number of worker threads to compile file");
     panda::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
     panda::PandArg<bool> opDumpLiteralBuffer("dump-literal-buffer", false, "Dump literal buffer");
     panda::PandArg<std::string> outputFile("output", "", "Compiler binary output (.abc)");
-    panda::PandArg<std::string> debuggerEvaluateExpression("debugger-evaluate-expression", "",
-        "input base64 data of an expression to be evaluated in debugger mode");
+    panda::PandArg<std::string> recordName("record-name", "", "Specify the record name");
+    panda::PandArg<bool> debuggerEvaluateExpression("debugger-evaluate-expression", false,
+                                                    "evaluate expression in debugger mode");
+    panda::PandArg<std::string> base64Input("base64Input", "", "base64 input of js content");
+    panda::PandArg<bool> base64Output("base64Output", false, "output panda file content as base64 to std out");
+    panda::PandArg<std::string> sourceFile("source-file", "",
+                                           "specify the file path info recorded in generated abc");
+    panda::PandArg<std::string> outputProto("outputProto", "", "compiler proto serialize binary output (.proto)");
+    panda::PandArg<std::string> opCacheFile("cache-file", "", "cache file for incremental compile");
+    panda::PandArg<std::string> opNpmModuleEntryList("npm-module-entry-list", "", "entry list file for module compile");
+    panda::PandArg<bool> opMergeAbc("merge-abc", false, "Compile as merge abc");
 
     // tail arguments
     panda::PandArg<std::string> inputFile("input", "", "input file");
@@ -76,24 +165,35 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opCommonjs);
     argparser_->Add(&opDumpAst);
     argparser_->Add(&opParseOnly);
+    argparser_->Add(&opEnableTypeCheck);
     argparser_->Add(&opDumpAssembly);
     argparser_->Add(&opDebugInfo);
     argparser_->Add(&opDumpDebugInfo);
     argparser_->Add(&debuggerEvaluateExpression);
+    argparser_->Add(&base64Input);
+    argparser_->Add(&base64Output);
 
     argparser_->Add(&opOptLevel);
-    argparser_->Add(&opThreadCount);
+    argparser_->Add(&opFunctionThreadCount);
+    argparser_->Add(&opFileThreadCount);
     argparser_->Add(&opSizeStat);
     argparser_->Add(&opDumpLiteralBuffer);
 
     argparser_->Add(&inputExtension);
     argparser_->Add(&outputFile);
+    argparser_->Add(&sourceFile);
+    argparser_->Add(&recordName);
+    argparser_->Add(&outputProto);
+    argparser_->Add(&opCacheFile);
+    argparser_->Add(&opNpmModuleEntryList);
+    argparser_->Add(&opMergeAbc);
 
     argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
     argparser_->EnableRemainder();
 
-    if (!argparser_->Parse(argc, argv) || opHelp.GetValue()) {
+    if (!argparser_->Parse(argc, argv) || opHelp.GetValue() || (inputFile.GetValue().empty()
+        && base64Input.GetValue().empty())) {
         std::stringstream ss;
 
         ss << argparser_->GetErrorString() << std::endl;
@@ -109,46 +209,33 @@ bool Options::Parse(int argc, const char **argv)
     }
 
     bool inputIsEmpty = inputFile.GetValue().empty();
-    bool base64InputIsEmpty = debuggerEvaluateExpression.GetValue().empty();
-    if (inputIsEmpty == base64InputIsEmpty) {
-        errorMsg_ = "--input and --debugger-evaluate-expression can not be used or unused simultaneously";
+    bool base64InputIsEmpty = base64Input.GetValue().empty();
+    bool outputIsEmpty = outputFile.GetValue().empty();
+
+    if (!inputIsEmpty && !base64InputIsEmpty) {
+        errorMsg_ = "--input and --base64Input can not be used simultaneously";
         return false;
     }
 
-    if (!inputIsEmpty) {
-        // in common mode: passed argument is js file path
-        sourceFile_ = inputFile.GetValue();
-        std::ifstream inputStream(sourceFile_.c_str());
+    if (!outputIsEmpty && base64Output.GetValue()) {
+        errorMsg_ = "--output and --base64Output can not be used simultaneously";
+        return false;
+    }
 
-        if (inputStream.fail()) {
-            errorMsg_ = "Failed to open file: ";
-            errorMsg_.append(sourceFile_);
-            return false;
-        }
+    if (opModule.GetValue() && opCommonjs.GetValue()) {
+        errorMsg_ = "[--module] and [--commonjs] can not be used simultaneously";
+        return false;
+    }
 
-        std::stringstream ss;
-        ss << inputStream.rdbuf();
-        parserInput_ = ss.str();
-        sourceFile_ = BaseName(sourceFile_);
-
-        if (!outputFile.GetValue().empty()) {
-            compilerOutput_ = outputFile.GetValue();
-        } else {
-            compilerOutput_ = RemoveExtension(sourceFile_).append(".abc");
-        }
+    if (opModule.GetValue()) {
+        scriptKind_ = es2panda::parser::ScriptKind::MODULE;
+    } else if (opCommonjs.GetValue()) {
+        scriptKind_ = es2panda::parser::ScriptKind::COMMONJS;
     } else {
-        // in watch expression mode: base64 input to be evaluated
-        parserInput_ = ExtractExpressionFromBase64(debuggerEvaluateExpression.GetValue());
-        if (parserInput_.empty()) {
-            errorMsg_ = "The input is not a valid base64 data";
-            return false;
-        }
-        options_ |= OptionFlags::DEBUGGER_EVALUATE_EXPRESSION;
-        compilerOptions_.isDebuggerEvaluateExpressionMode = true;
+        scriptKind_ = es2panda::parser::ScriptKind::SCRIPT;
     }
 
     std::string extension = inputExtension.GetValue();
-
     if (!extension.empty()) {
         if (extension == "js") {
             extension_ = es2panda::ScriptExtension::JS;
@@ -162,24 +249,72 @@ bool Options::Parse(int argc, const char **argv)
         }
     }
 
+    bool isInputFileList = false;
+    if (!inputIsEmpty) {
+        std::string rawInput = inputFile.GetValue();
+        isInputFileList = rawInput[0] == '@';
+        std::string input = isInputFileList ? rawInput.substr(1) : rawInput;
+        sourceFile_ = input;
+    }
+
+    if (base64Output.GetValue()) {
+        compilerOutput_ = "";
+    } else if (!outputIsEmpty) {
+        compilerOutput_ = outputFile.GetValue();
+    } else if (outputIsEmpty && !inputIsEmpty) {
+        compilerOutput_ = RemoveExtension(BaseName(sourceFile_)).append(".abc");
+    }
+
+    if (opMergeAbc.GetValue()) {
+        recordName_ = recordName.GetValue();
+        if (recordName_.empty()) {
+            recordName_ = compilerOutput_.empty() ? "Base64Output" : RemoveExtension(BaseName(compilerOutput_));
+        }
+        recordName_ = FormatRecordName(recordName_);
+    }
+
+    if (!inputIsEmpty) {
+        // common mode
+        auto inputAbs = panda::os::file::File::GetAbsolutePath(sourceFile_);
+        if (!inputAbs) {
+            std::cerr << "Failed to find: " << sourceFile_ << std::endl;
+            return false;
+        }
+
+        auto fpath = inputAbs.Value();
+        if (isInputFileList) {
+            CollectInputFilesFromFileList(fpath);
+        } else if (panda::os::file::File::IsDirectory(fpath)) {
+            CollectInputFilesFromFileDirectory(fpath, extension);
+        } else {
+            es2panda::SourceFile src(sourceFile_, recordName_, scriptKind_);
+            sourceFiles_.push_back(src);
+        }
+    } else if (!base64InputIsEmpty) {
+        // input content is base64 string
+        base64Input_ = ExtractContentFromBase64Input(base64Input.GetValue());
+        if (base64Input_.empty()) {
+            errorMsg_ = "The input string is not a valid base64 data";
+            return false;
+        }
+
+        es2panda::SourceFile src("", recordName_, es2panda::parser::ScriptKind::SCRIPT);
+        src.source = base64Input_;
+        sourceFiles_.push_back(src);
+    }
+
+    if (!outputProto.GetValue().empty()) {
+        compilerProtoOutput_ = outputProto.GetValue();
+    }
+
     optLevel_ = opOptLevel.GetValue();
-    threadCount_ = opThreadCount.GetValue();
+    functionThreadCount_ = opFunctionThreadCount.GetValue();
+    fileThreadCount_ = opFileThreadCount.GetValue();
+    npmModuleEntryList_ = opNpmModuleEntryList.GetValue();
+    cacheFile_ = opCacheFile.GetValue();
 
     if (opParseOnly.GetValue()) {
         options_ |= OptionFlags::PARSE_ONLY;
-    }
-
-    if (opModule.GetValue() && opCommonjs.GetValue()) {
-        errorMsg_ = "[--module] and [--commonjs] can not be used simultaneously";
-        return false;
-    }
-
-    if (opModule.GetValue()) {
-        scriptKind_ = es2panda::parser::ScriptKind::MODULE;
-    }
-
-    if (opCommonjs.GetValue()) {
-        scriptKind_ = es2panda::parser::ScriptKind::COMMONJS;
     }
 
     if (opSizeStat.GetValue()) {
@@ -191,22 +326,32 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.dumpDebugInfo = opDumpDebugInfo.GetValue();
     compilerOptions_.isDebug = opDebugInfo.GetValue();
     compilerOptions_.parseOnly = opParseOnly.GetValue();
+    compilerOptions_.enableTypeCheck = opEnableTypeCheck.GetValue();
     compilerOptions_.dumpLiteralBuffer = opDumpLiteralBuffer.GetValue();
+    compilerOptions_.isDebuggerEvaluateExpressionMode = debuggerEvaluateExpression.GetValue();
+
+    compilerOptions_.extension = extension_;
+    compilerOptions_.functionThreadCount = functionThreadCount_;
+    compilerOptions_.fileThreadCount = fileThreadCount_;
+    compilerOptions_.output = compilerOutput_;
+    compilerOptions_.debugInfoSourceFile = sourceFile.GetValue();
+    compilerOptions_.optLevel = opOptLevel.GetValue();
+    compilerOptions_.sourceFiles = sourceFiles_;
+    compilerOptions_.mergeAbc = opMergeAbc.GetValue();
 
     return true;
 }
 
-std::string Options::ExtractExpressionFromBase64(const std::string &watchedExpressionBase64String)
+std::string Options::ExtractContentFromBase64Input(const std::string &inputBase64String)
 {
-    std::string watchedExpression = util::Base64Decode(watchedExpressionBase64String);
-    if (watchedExpression == "") {
+    std::string inputContent = util::Base64Decode(inputBase64String);
+    if (inputContent == "") {
         return "";
     }
-    bool validBase64Input = util::Base64Encode(watchedExpression) == watchedExpressionBase64String;
+    bool validBase64Input = util::Base64Encode(inputContent) == inputBase64String;
     if (!validBase64Input) {
         return "";
     }
-    return watchedExpression;
+    return inputContent;
 }
-
 }  // namespace panda::es2panda::aot

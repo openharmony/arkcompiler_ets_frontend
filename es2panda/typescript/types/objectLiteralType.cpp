@@ -23,9 +23,6 @@ namespace panda::es2panda::checker {
 
 class Checker;
 
-ObjectLiteralType::ObjectLiteralType(ObjectDescriptor *desc) : ObjectType(ObjectType::ObjectTypeKind::LITERAL, desc) {}
-ObjectLiteralType::ObjectLiteralType() : ObjectType(ObjectType::ObjectTypeKind::LITERAL) {}
-
 void ObjectLiteralType::ToString(std::stringstream &ss) const
 {
     ss << "{ ";
@@ -63,7 +60,13 @@ void ObjectLiteralType::ToString(std::stringstream &ss) const
         if (it->HasFlag(binder::VariableFlags::PROPERTY)) {
             ss << ": ";
         }
-        it->TsType()->ToString(ss);
+
+        if (it->TsType()) {
+            it->TsType()->ToString(ss);
+        } else {
+            ss << "any";
+        }
+
         ss << "; ";
     }
 
@@ -82,7 +85,7 @@ TypeFacts ObjectLiteralType::GetTypeFacts() const
 
 Type *ObjectLiteralType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes)
 {
-    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>();
+    ObjectDescriptor *copiedDesc = allocator->New<ObjectDescriptor>(allocator);
     desc_->Copy(allocator, copiedDesc, relation, globalTypes);
     return allocator->New<ObjectLiteralType>(copiedDesc);
 }

@@ -27,24 +27,21 @@ namespace panda::es2panda::ir {
 void TSInterfaceHeritage::Iterate(const NodeTraverser &cb) const
 {
     cb(expr_);
-
-    if (typeParams_) {
-        cb(typeParams_);
-    }
 }
 
 void TSInterfaceHeritage::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add(
-        {{"type", "TSInterfaceHeritage"}, {"expression", expr_}, {"typeParameters", AstDumper::Optional(typeParams_)}});
+    dumper->Add({
+        {"type", "TSInterfaceHeritage"},
+        {"expression", expr_},
+    });
 }
 
 void TSInterfaceHeritage::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
 checker::Type *TSInterfaceHeritage::Check([[maybe_unused]] checker::Checker *checker) const
-{  // TODO(Csaba Repasi): Handle TSQualifiedName here
-    return TSTypeReference::ResolveReference(checker, expr_->AsIdentifier()->Variable(), expr_->AsIdentifier(),
-                                             nullptr);
+{
+    return nullptr;
 }
 
 }  // namespace panda::es2panda::ir
