@@ -59,6 +59,10 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
             std::cout << ast.Dump() << std::endl;
         }
 
+        if (options.parseOnly) {
+            return nullptr;
+        }
+
         std::string debugInfoSourceFile = options.debugInfoSourceFile.empty() ? fname : options.debugInfoSourceFile;
         auto *prog = compiler_->Compile(&ast, options, debugInfoSourceFile);
 
