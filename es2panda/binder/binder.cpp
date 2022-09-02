@@ -461,7 +461,7 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
                     ResolveReference(scriptFunc, scriptFunc->ReturnTypeAnnotation());
                 }
 
-                if (scriptFunc->IsOverload()) {
+                if (scriptFunc->IsOverload() || scriptFunc->Declare()) {
                     break;
                 }
             }

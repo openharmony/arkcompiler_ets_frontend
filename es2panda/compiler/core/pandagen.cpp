@@ -1091,6 +1091,10 @@ void PandaGen::LoadHomeObject(const ir::AstNode *node)
 
 void PandaGen::DefineFunction(const ir::AstNode *node, const ir::ScriptFunction *realNode, const util::StringView &name)
 {
+    if (realNode->IsOverload() || realNode->Declare()) {
+        return;
+    }
+
     auto formalParamCnt = realNode->FormalParamsLength();
     if (realNode->IsMethod()) {
         ra_.Emit<EcmaDefinemethod>(node, name, static_cast<int64_t>(formalParamCnt), LexEnv());
