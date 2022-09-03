@@ -26,7 +26,6 @@ import subprocess
 import sys
 import test262util
 
-
 def is_directory(parser, arg):
     if not path.isdir(arg):
         parser.error("The directory '%s' does not exist" % arg)
