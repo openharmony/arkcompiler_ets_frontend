@@ -2398,7 +2398,7 @@ static bool IsConstructor(ir::Statement *stmt)
     return def->Kind() == ir::MethodDefinitionKind::CONSTRUCTOR;
 }
 
-ir::MethodDefinition *ParserImpl::CreateImplicitConstructor(bool hasSuperClass)
+ir::MethodDefinition *ParserImpl::CreateImplicitConstructor(bool hasSuperClass, bool isDeclare)
 {
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
@@ -2423,7 +2423,7 @@ ir::MethodDefinition *ParserImpl::CreateImplicitConstructor(bool hasSuperClass)
 
     auto *body = AllocNode<ir::BlockStatement>(scope, std::move(statements));
     auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, body, nullptr,
-                                               ir::ScriptFunctionFlags::CONSTRUCTOR, false);
+                                               ir::ScriptFunctionFlags::CONSTRUCTOR, isDeclare);
     scope->BindNode(func);
     paramScope->BindNode(func);
     scope->BindParamScope(paramScope);
@@ -2657,7 +2657,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
 
     lexer::SourcePosition classBodyEndLoc = lexer_->GetToken().End();
     if (ctor == nullptr) {
-        ctor = CreateImplicitConstructor(hasSuperClass);
+        ctor = CreateImplicitConstructor(hasSuperClass, isDeclare);
         ctor->SetRange({startLoc, classBodyEndLoc});
     }
     lexer_->NextToken();
