@@ -30,7 +30,7 @@ describe("ThisKeyword", function () {
     let pandaGen: PandaGen;
 
     beforeEach(function () {
-        pandaGen = new PandaGen("" /* internalName */, 0 /* number of parameters */);
+        pandaGen = new PandaGen("" /* internalName */, undefined, 0 /* number of parameters */);
     });
 
     it("this in global scope", function () {

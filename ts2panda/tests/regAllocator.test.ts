@@ -132,7 +132,7 @@ describe("RegAllocator", function () {
     });
 
     it("VReg sequence of CalliDynRange is not continuous", function () {
-        let pandaGen = new PandaGen('', 0);
+        let pandaGen = new PandaGen('', undefined, 0);
 
         let para1 = pandaGen.getTemp();
         let para2 = pandaGen.getTemp();
@@ -155,7 +155,7 @@ describe("RegAllocator", function () {
     });
 
     it("VReg sequence of DynRange is not continuous", function () {
-        let pandaGen = new PandaGen('', 0);
+        let pandaGen = new PandaGen('', undefined, 0);
 
         let para1 = pandaGen.getTemp();
         let para2 = pandaGen.getTemp();

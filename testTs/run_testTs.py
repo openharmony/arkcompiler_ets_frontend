@@ -25,6 +25,7 @@ import datetime
 import sys
 import shutil
 import json
+from glob import glob
 from utils import *
 from config import *
 
@@ -36,6 +37,7 @@ class MyException(Exception):
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--testinstype', action='store_true', dest='testinstype', default=False, help="ins type test")
     parser.add_argument('--dir', metavar='DIR', help="Directory to test")
     parser.add_argument('--file', metavar='FILE', help="File to test")
     parser.add_argument(
@@ -276,13 +278,64 @@ def prepare_ts_code():
         print("pull test code fail")
 
 
+def test_instype(args):
+    # output path for abc file generation
+    outpath = os.path.join(OUT_TEST_DIR, 'instype')
+    mk_dir(outpath)
+
+    # source ts files
+    files = glob('./testTs/instype/*.ts');
+    ark_frontend_tool = DEFAULT_ARK_FRONTEND_TOOL
+    if args.ark_frontend_tool:
+        ark_frontend_tool = args.ark_frontend_tool
+
+    fail_list = []
+    for file in files:
+        abc_file = os.path.abspath(os.path.join(outpath, '%s.abc' % os.path.splitext(os.path.basename(file))[0]))
+        cmd = ['node', '--expose-gc', ark_frontend_tool, os.path.abspath(file), '--display-typeinfo', '-o', abc_file];
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            out, err = process.communicate(timeout=10)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            fail_list.append(file)
+            print("TIMEOUT:", " ".join(cmd))
+            continue
+        output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
+
+        expected_file = "%s-expected.txt" % (os.path.splitext(file)[0])
+        expected = ""
+        try:
+            with open(expected_file, 'r') as expected_fp:
+                expected = expected_fp.read()
+            passed = expected == output
+        except Exception:
+            passed = False
+        if not passed:
+            fail_list.append(file)
+            print("FAILED:", " ".join(cmd))
+            print("output:")
+            print(output)
+            print("expected:")
+            print(expected)
+
+    print("Summary:")
+    print("\033[37mTotal:   %5d" % (len(files)))
+    print("\033[92mPassed:  %5d" % (len(files) - len(fail_list)))
+    print("\033[91mFailed:  %5d" % (len(fail_list)))
+    print("\033[0m")
+
+
 def main(args):
     try:
         init_path()
-        excuting_npm_install(args)
-        prepare_ts_code()
-        run_test_machine(args)
-        summary()
+        if (args.testinstype):
+            test_instype(args)
+        else:
+            excuting_npm_install(args)
+            prepare_ts_code()
+            run_test_machine(args)
+            summary()
     except BaseException:
         print("Run Python Script Fail")
 

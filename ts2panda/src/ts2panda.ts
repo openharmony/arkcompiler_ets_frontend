@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import * as ts from "typescript";
 import { CmdOptions } from "./cmdOptions";
 import { SourceTextModuleRecord } from "./ecmaModule";
 import {
@@ -42,15 +43,17 @@ import { generateCatchTables } from "./statement/tryStatement";
 import {
     escapeUnicode,
     isRangeInst,
-    getRangeStartVregPos
+    getRangeStartVregPos,
+    getRecordTypeFlag
 } from "./base/util";
 import { LiteralBuffer } from "./base/literal";
-import { CompilerDriver } from "./compilerDriver";
-import { ModuleScope } from "./scope";
-import { getRecordTypeFlag } from "./base/util";
 import { PrimitiveType, BuiltinType } from "./base/typeSystem";
+import { CompilerDriver } from "./compilerDriver";
+import { hasStaticModifier } from "./jshelpers";
+import { ModuleScope } from "./scope";
 import { TypeRecorder } from "./typeRecorder";
 import { isGlobalDeclare } from "./strictMode";
+import { isFunctionLikeDeclaration } from "./syntaxCheckHelper";
 
 const dollarSign: RegExp = /\$/g;
 
@@ -235,24 +238,49 @@ export class Ts2Panda {
                 continue;
             }
 
-            // local vreg -> inst
-            let vreg = undefined;
-            let instIdx = i;
+            // skip arg type
             if (i < paraCount && inst.kind == IRNodeKind.MOV_DYN) {
-                vreg = (inst.operands[0] as VReg).num;
+                let vreg = (inst.operands[0] as VReg).num;
                 let arg = (inst.operands[1] as VReg).num;
                 if (vreg >= paraCount || arg < vregCount) {
                     continue;  // not arg
                 }
-                // param's inst idx start from -1
-                instIdx = vregCount - arg - 1;
-            } else if (inst.kind == IRNodeKind.STA_DYN) {
-                vreg = (inst.operands[0] as VReg).num;
-            }
-            if (vreg != undefined && vreg < locals.length && !handledSet.has(vreg)) {
-                typeIdx = locals[vreg].getTypeIndex();
-                instTypeMap.set(instIdx, typeIdx);
+                // no need to record arg type
                 handledSet.add(vreg);
+                continue;
+            }
+
+            // local vreg -> inst
+            if (inst.kind == IRNodeKind.STA_DYN) {
+                let vreg = (inst.operands[0] as VReg).num;
+                if (vreg < locals.length && !handledSet.has(vreg)) {
+                    typeIdx = locals[vreg].getTypeIndex();
+                    instTypeMap.set(i, typeIdx);
+                    handledSet.add(vreg);
+                }
+            }
+        }
+
+        // add function/this type
+        let functionNode = pg.getNode();
+        let typeRecorder = TypeRecorder.getInstance();
+        if (typeRecorder != undefined && isFunctionLikeDeclaration(functionNode)) {
+            // -1 for function type
+            const functionTypeIndex = -1;
+            let typeIdx = typeRecorder.tryGetTypeIndex(ts.getOriginalNode(functionNode));
+            instTypeMap.set(functionTypeIndex, typeIdx);
+
+            // -2 for this type
+            let classNode = functionNode.parent;
+            if (ts.isClassLike(classNode)) {
+                const thisTypeIndex = -2;
+                typeIdx = typeRecorder.tryGetTypeIndex(ts.getOriginalNode(classNode));
+                if (!hasStaticModifier(functionNode)) {
+                    typeIdx = typeRecorder.getClass2InstanceMap(typeIdx);
+                }
+                if (typeIdx != undefined) {
+                    instTypeMap.set(thisTypeIndex, typeIdx);
+                }
             }
         }
 

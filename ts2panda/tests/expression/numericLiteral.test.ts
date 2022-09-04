@@ -29,7 +29,7 @@ import { checkInstructions } from "../utils/base";
 
 describe("compileNumericLiteral", function () {
     it("NaN", function () {
-        let pandaGen = new PandaGen("ignored", 0, undefined);
+        let pandaGen = new PandaGen("ignored", undefined, 0, undefined);
         let node: ts.NumericLiteral = ts.createNumericLiteral("NaN");
         compileNumericLiteral(pandaGen, node);
         let insns = pandaGen.getInsns();
@@ -38,7 +38,7 @@ describe("compileNumericLiteral", function () {
     });
 
     it("Infinity", function () {
-        let pandaGen = new PandaGen("ignored", 0, undefined);
+        let pandaGen = new PandaGen("ignored", undefined, 0, undefined);
         let node: ts.NumericLiteral = ts.createNumericLiteral("10e10000");
         compileNumericLiteral(pandaGen, node);
         let insns = pandaGen.getInsns();
@@ -46,7 +46,7 @@ describe("compileNumericLiteral", function () {
         expect(checkInstructions(insns, expected)).to.be.true;
     });
     it("int", function () {
-        let pandaGen = new PandaGen("ignored", 0, undefined);
+        let pandaGen = new PandaGen("ignored", undefined, 0, undefined);
         let node: ts.NumericLiteral = ts.createNumericLiteral("1");
         compileNumericLiteral(pandaGen, node);
         let insns = pandaGen.getInsns();
@@ -54,7 +54,7 @@ describe("compileNumericLiteral", function () {
         expect(checkInstructions(insns, expected)).to.be.true;
     });
     it("Integer overflow", function () {
-        let pandaGen = new PandaGen("ignored", 0, undefined);
+        let pandaGen = new PandaGen("ignored", undefined, 0, undefined);
         let node: ts.NumericLiteral = ts.createNumericLiteral("2147483648");
         compileNumericLiteral(pandaGen, node);
         let insns = pandaGen.getInsns();
@@ -62,7 +62,7 @@ describe("compileNumericLiteral", function () {
         expect(checkInstructions(insns, expected)).to.be.true;
     });
     it("double", function () {
-        let pandaGen = new PandaGen("ignored", 0, undefined);
+        let pandaGen = new PandaGen("ignored", undefined, 0, undefined);
         let node: ts.NumericLiteral = ts.createNumericLiteral("1.1");
         compileNumericLiteral(pandaGen, node);
         let insns = pandaGen.getInsns();

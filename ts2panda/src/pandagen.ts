@@ -196,6 +196,7 @@ export class PandaGen {
     // @ts-ignore
     private debugTag: string = "PandaGen";
     readonly internalName: string;
+    private node: ts.SourceFile | ts.FunctionLikeDeclaration;
     private parametersCount: number;
     private locals: VReg[] = [];
     private temps: VReg[] = [];
@@ -214,8 +215,10 @@ export class PandaGen {
 
     private static literalArrayBuffer: Array<LiteralBuffer> = new Array<LiteralBuffer>();
 
-    constructor(internalName: string, parametersCount: number, scope: Scope | undefined = undefined) {
+    constructor(internalName: string, node: ts.SourceFile | ts.FunctionLikeDeclaration,
+                parametersCount: number, scope: Scope | undefined = undefined) {
         this.internalName = internalName;
+        this.node = node;
         this.parametersCount = parametersCount;
         this.scope = scope;
         this.vregisterCache = new VregisterCache();
@@ -409,16 +412,20 @@ export class PandaGen {
         this.locals = locals;
     }
 
-    getInstTypeMap() {
-        return this.instTypeMap;
-    }
-
     getLocals(): VReg[] {
         return this.locals;
     }
 
     getTemps(): VReg[] {
         return this.temps;
+    }
+
+    getInstTypeMap() {
+        return this.instTypeMap;
+    }
+
+    getNode() {
+        return this.node;
     }
 
     storeAccumulator(node: ts.Node | NodeKind, vreg: VReg) {

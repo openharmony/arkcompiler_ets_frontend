@@ -235,10 +235,10 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
      * the function inherit chart, total IIFE expression
      *            +---------+
      *            | global  |
-     *            +---.-----+   
-     *              .`   `.     
-     *            .`       `,   
-     *          .`           ', 
+     *            +---.-----+
+     *              .`   `.
+     *            .`       `,
+     *          .`           ',
      *  +-----`--+       +----'---+
      *  |   1    |       |   2    |
      *  +--------+       +----/---+
@@ -247,9 +247,9 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
      *                        |
      *                    +----\---+
      *                    |    3   |
-     *                    +--,.-,--+  
-     *                    ,-`    `.   
-     *                .'`         `. 
+     *                    +--,.-,--+
+     *                    ,-`    `.
+     *                .'`         `.
      *          +----'`-+        +---'--+
      *          |   4   |        |  5   |
      *          +-------+        +------+
@@ -289,7 +289,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
 
     it("test loadAccFromLexEnv with local variable", function () {
         let globalScope = new GlobalScope();
-        let pandaGen = new PandaGen("lexVarPassPandaGen", 1, globalScope);
+        let pandaGen = new PandaGen("lexVarPassPandaGen", undefined, 1, globalScope);
         let var1 = globalScope.add("var1", VarDeclarationKind.LET);
         let funcObj = globalScope.add("4funcObj", VarDeclarationKind.LET);
         funcObj!.bindVreg(new VReg());
@@ -311,7 +311,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
 
     it("test loadAccFromLexEnv with lex env variable", function () {
         let globalScope = new GlobalScope();
-        let pandaGen = new PandaGen("lexVarPassPandaGen", 1, globalScope);
+        let pandaGen = new PandaGen("lexVarPassPandaGen", undefined, 1, globalScope);
         let var1 = globalScope.add("var1", VarDeclarationKind.LET);
         let funcObj = globalScope.add("4funcObj", VarDeclarationKind.LET);
         funcObj!.bindVreg(new VReg());
@@ -337,7 +337,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
 
     it("test storeAccFromLexEnv with local variable", function () {
         let globalScope = new GlobalScope();
-        let pandaGen = new PandaGen("lexVarPassPandaGen", 1, globalScope);
+        let pandaGen = new PandaGen("lexVarPassPandaGen", undefined, 1, globalScope);
         let var1 = globalScope.add("var1", VarDeclarationKind.LET);
         let pass = new CacheExpander();
         let varReg = pandaGen.getVregForVariable(var1!);
@@ -356,7 +356,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
 
     it("test storeAccFromLexEnv with lex env let-variable", function () {
         let globalScope = new GlobalScope();
-        let pandaGen = new PandaGen("lexVarPassPandaGen", 1, globalScope);
+        let pandaGen = new PandaGen("lexVarPassPandaGen", undefined, 1, globalScope);
         let var1 = globalScope.add("var1", VarDeclarationKind.LET);
         let funcObj = globalScope.add("4funcObj", VarDeclarationKind.LET);
         funcObj!.bindVreg(new VReg());
@@ -379,7 +379,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
 
     it("test storeAccFromLexEnv with lex env const-variable", function () {
         let globalScope = new GlobalScope();
-        let pandaGen = new PandaGen("lexVarPassPandaGen", 1, globalScope);
+        let pandaGen = new PandaGen("lexVarPassPandaGen", undefined, 1, globalScope);
         let var1 = globalScope.add("var1", VarDeclarationKind.CONST);
         let funcObj = globalScope.add("4funcObj", VarDeclarationKind.LET);
         funcObj!.bindVreg(new VReg());

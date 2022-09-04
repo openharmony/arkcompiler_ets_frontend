@@ -339,3 +339,19 @@ export function transformCommonjsModule(sourceFile: ts.SourceFile) {
 
     return ts.factory.updateSourceFile(sourceFile, newStatements);
 }
+
+export function hasAbstractModifier(node: ts.Node): boolean {
+    if (!node.modifiers) {
+        return false;
+    }
+    for (let modifier of node.modifiers) {
+        switch (modifier.kind) {
+            case ts.SyntaxKind.AbstractKeyword: {
+                return true;
+            }
+            default:
+                break;
+        }
+    }
+    return false;
+}

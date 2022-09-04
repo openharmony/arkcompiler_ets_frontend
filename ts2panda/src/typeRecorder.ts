@@ -59,7 +59,9 @@ export class TypeRecorder {
     }
 
     public addUserDefinedTypeSet(index: number) {
-        this.userDefinedTypeSet.add(index);
+        if (index > userDefinedTypeStartIndex) {
+            this.userDefinedTypeSet.add(index);
+        }
     }
 
     public countUserDefinedTypeSet(): number {
@@ -68,16 +70,12 @@ export class TypeRecorder {
 
     public addType2Index(typeNode: ts.Node, index: number) {
         this.type2Index.set(typeNode, index);
-        if (index > userDefinedTypeStartIndex) {
-            this.addUserDefinedTypeSet(index);
-        }
+        this.addUserDefinedTypeSet(index);
     }
 
     public setVariable2Type(variableNode: ts.Node, index: number) {
         this.variable2Type.set(variableNode, index);
-        if (index > userDefinedTypeStartIndex) {
-            this.addUserDefinedTypeSet(index);
-        }
+        this.addUserDefinedTypeSet(index);
     }
 
     public hasType(typeNode: ts.Node): boolean {
