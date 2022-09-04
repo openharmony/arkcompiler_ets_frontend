@@ -393,14 +393,16 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
 {
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_BITWISE_OR: {
-            if (*options & (TypeAnnotationParsingOptions::IN_UNION | TypeAnnotationParsingOptions::IN_INTERSECTION)) {
+            if (*options & (TypeAnnotationParsingOptions::IN_MODIFIER | TypeAnnotationParsingOptions::IN_UNION |
+                TypeAnnotationParsingOptions::IN_INTERSECTION)) {
                 break;
             }
 
             return ParseTsUnionType(typeAnnotation, *options & TypeAnnotationParsingOptions::RESTRICT_EXTENDS);
         }
         case lexer::TokenType::PUNCTUATOR_BITWISE_AND: {
-            if (*options & TypeAnnotationParsingOptions::IN_INTERSECTION) {
+            if (*options & (TypeAnnotationParsingOptions::IN_MODIFIER |
+	        TypeAnnotationParsingOptions::IN_INTERSECTION)) {
                 break;
             }
 
@@ -655,6 +657,7 @@ ir::Expression *ParserImpl::ParseTsTypeOperatorOrTypeReference()
         lexer::SourcePosition typeOperatorStart = lexer_->GetToken().Start();
         lexer_->NextToken();
 
+        options |= TypeAnnotationParsingOptions::IN_MODIFIER;
         ir::Expression *type = ParseTsTypeAnnotation(&options);
 
         if (!type->IsTSArrayType() && !type->IsTSTupleType()) {
@@ -674,6 +677,7 @@ ir::Expression *ParserImpl::ParseTsTypeOperatorOrTypeReference()
         lexer::SourcePosition typeOperatorStart = lexer_->GetToken().Start();
         lexer_->NextToken();
 
+        options |= TypeAnnotationParsingOptions::IN_MODIFIER;
         ir::Expression *type = ParseTsTypeAnnotation(&options);
 
         auto *typeOperator = AllocNode<ir::TSTypeOperator>(type, ir::TSOperatorType::KEYOF);
@@ -1907,7 +1911,7 @@ void ParserImpl::ThrowIfPrivateIdent(ClassElmentDescriptor *desc, const char *ms
     }
 }
 
-void ParserImpl::ValidateClassKey(ClassElmentDescriptor *desc)
+void ParserImpl::ValidateClassKey(ClassElmentDescriptor *desc, bool isDeclare)
 {
     if ((desc->modifiers & ir::ModifierFlags::ASYNC) &&
         (desc->methodKind == ir::MethodDefinitionKind::GET || desc->methodKind == ir::MethodDefinitionKind::SET)) {
@@ -1935,12 +1939,12 @@ void ParserImpl::ValidateClassKey(ClassElmentDescriptor *desc)
         } else if (Extension() == ScriptExtension::TS) {
             ThrowSyntaxError("Static modifier can not appear on a constructor");
         }
-    } else if (propNameStr.Is("prototype") && (desc->modifiers & ir::ModifierFlags::STATIC)) {
+    } else if (!isDeclare && propNameStr.Is("prototype") && (desc->modifiers & ir::ModifierFlags::STATIC)) {
         ThrowSyntaxError("Classes may not have static property named prototype");
     }
 }
 
-ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc)
+ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDeclare)
 {
     ir::Expression *propName = nullptr;
     if (lexer_->GetToken().IsKeyword()) {
@@ -1949,7 +1953,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc)
 
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::LITERAL_IDENT: {
-            ValidateClassKey(desc);
+            ValidateClassKey(desc, isDeclare);
 
             propName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
             propName->SetRange(lexer_->GetToken().Loc());
@@ -2319,7 +2323,7 @@ ir::Statement *ParserImpl::ParseClassElement(const ArenaVector<ir::Statement *> 
         context_.Status() |= ParserStatus::ALLOW_THIS_TYPE;
     }
 
-    ir::Expression *propName = ParseClassKey(&desc);
+    ir::Expression *propName = ParseClassKey(&desc, isDeclare);
 
     if (desc.methodKind == ir::MethodDefinitionKind::CONSTRUCTOR && !decorators.empty()) {
         ThrowSyntaxError("Decorators are not valid here.", decorators.front()->Start());
@@ -2422,7 +2426,7 @@ ir::MethodDefinition *ParserImpl::CreateImplicitConstructor(bool hasSuperClass, 
     }
 
     auto *body = AllocNode<ir::BlockStatement>(scope, std::move(statements));
-    auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, body, nullptr,
+    auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, isDeclare ? nullptr : body, nullptr,
                                                ir::ScriptFunctionFlags::CONSTRUCTOR, isDeclare);
     scope->BindNode(func);
     paramScope->BindNode(func);
@@ -2644,7 +2648,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
         }
 
         if (IsConstructor(property)) {
-            if (ctor) {
+            if (!isDeclare && ctor) {
                 ThrowSyntaxError("Multiple constructor implementations are not allowed.", property->Start());
             }
             ctor = property->AsMethodDefinition();
