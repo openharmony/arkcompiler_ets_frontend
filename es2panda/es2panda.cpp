@@ -20,6 +20,7 @@
 #include <compiler/core/compilerImpl.h>
 #include <parser/parserImpl.h>
 #include <parser/program/program.h>
+#include <util/helpers.h>
 
 #include <libpandabase/utils/hash.h>
 
@@ -57,10 +58,6 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
 
         if (options.dumpAst) {
             std::cout << ast.Dump() << std::endl;
-        }
-
-        if (options.parseOnly) {
-            return nullptr;
         }
 
         std::string debugInfoSourceFile = options.debugInfoSourceFile.empty() ? fname : options.debugInfoSourceFile;
@@ -161,6 +158,7 @@ panda::pandasm::Program *Compiler::CompileFile(CompilerOptions &options, SourceF
             src->hash = GetHash32String(reinterpret_cast<const uint8_t *>(buffer.c_str()));
         }
     }
+    src->fileName = util::Helpers::BaseName(src->fileName);
 
     auto *program = Compile(*src, options);
     if (!program) {
