@@ -72,7 +72,7 @@ describe("CommaListExpression", function () {
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
             new Mov(new VReg(), new VReg()),
-            new Defineclasswithbuffer(new Imm(0), "#1#Test", "_0", new Imm(0), new VReg()),
+            new Defineclasswithbuffer(new Imm(0), "UnitTest.#1#Test", "_0", new Imm(0), new VReg()),
             new Sta(new VReg()),
             new Lda(new VReg()),
             new Sttoglobalrecord(new Imm(1), "Test"),

@@ -230,9 +230,23 @@ class ArkProgram():
         output_file = os.path.splitext(os.path.join(BASE_OUT_DIR,
                                        os.path.split(dependency)[1]))[0]
         output_abc = f"{output_file}.abc"
+        proto_bin_file = f"{output_file}.bin"
+        output_abc_name = os.path.basename(output_abc)
+
         frontend_tool = self.ark_frontend_binary
-        cmd_args = [frontend_tool, dependency, '--output', output_abc,
-                    '--module']
+        merge_abc_binary = self.args.merge_abc_binary
+        merge_abc_mode = self.merge_abc_mode
+
+        if merge_abc_mode != "0":
+            cmd_args = [frontend_tool, dependency, '--outputProto',
+                        proto_bin_file, '--module', '--merge-abc']
+            proc = subprocess.call(cmd_args)
+            cmd_args = [merge_abc_binary, '--input', proto_bin_file, '--suffix',
+                        "bin", '--outputFilePath', BASE_OUT_DIR, '--output',
+                        output_abc_name]
+        else:
+            cmd_args = [frontend_tool, dependency, '--output', output_abc,
+                        '--module', '--merge-abc']
         proc = subprocess.Popen(cmd_args)
         proc.wait()
 
@@ -262,8 +276,13 @@ class ArkProgram():
 
         if self.ark_frontend == ARK_FRONTEND_LIST[0]:
             mod_opt_index = 3
-            cmd_args = ['node', '--expose-gc', frontend_tool,
-                        js_file, '-o', out_file]
+            if merge_abc_mode != "0":
+                # '--opt-level=0' is added due to failure in optimizer, should be removed later
+                cmd_args = ['node', '--expose-gc', frontend_tool, js_file,
+                            '--output-proto', proto_bin_file, '--opt-level=0']
+            else:
+                cmd_args = ['node', '--expose-gc', frontend_tool,
+                            js_file, '-o', out_file]
             if file_name in self.module_list:
                 cmd_args.insert(mod_opt_index, "-m")
                 self.module = True
@@ -271,7 +290,7 @@ class ArkProgram():
             mod_opt_index = 1
             if merge_abc_mode != "0":
                 cmd_args = [frontend_tool, '--outputProto',
-                            proto_bin_file, js_file]
+                            proto_bin_file, js_file, '--merge-abc']
             else:
                 cmd_args = [frontend_tool, '--opt-level=' + str(self.opt_level),
                             '--function-threads=' +
@@ -293,12 +312,14 @@ class ArkProgram():
                         abc_file = os.path.abspath(f'{js_dir}/{abc_file}')
                         if self.abc_file.find(abc_file) < 0:
                             self.abc_file += f':{abc_file}'
-        retcode = exec_command(cmd_args)
         self.abc_cmd = cmd_args
-        if self.ark_frontend == ARK_FRONTEND_LIST[1] and merge_abc_mode != "0":
+        if merge_abc_mode != "0":
+            proc = subprocess.call(cmd_args)
             cmd_args = [merge_abc_binary, '--input', proto_bin_file,
                         '--suffix', "bin", '--outputFilePath',
                         file_dir, '--output', proto_abc_file]
+            retcode = exec_command(cmd_args)
+        else:
             retcode = exec_command(cmd_args)
         return retcode
 
@@ -353,6 +374,8 @@ class ArkProgram():
                         f'--aot-file={file_name_pre}',
                         f'{file_name_pre}.abc']
 
+        record_name = os.path.splitext(os.path.split(self.js_file)[1])[0]
+        cmd_args.insert(-1, f'--entry-point={record_name}')
         retcode = exec_command(cmd_args)
         if retcode:
             print_command(cmd_args)
@@ -388,6 +411,8 @@ class ArkProgram():
             cmd_args = [self.ark_tool, ICU_PATH,
                         f'{file_name_pre}.abc']
 
+        record_name = os.path.splitext(os.path.split(self.js_file)[1])[0]
+        cmd_args.insert(-1, f'--entry-point={record_name}')
         retcode = exec_command(cmd_args)
         if retcode:
             print_command(cmd_args)

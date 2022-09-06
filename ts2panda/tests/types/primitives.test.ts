@@ -30,7 +30,7 @@ describe("primitives tests in primitives.test.ts", function() {
     it("test primitives in block", function() {
         let fileNames = 'tests/types/primitives/primitives_in_block.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -59,18 +59,18 @@ describe("primitives tests in primitives.test.ts", function() {
     it("test number in function", function() {
         let fileNames = 'tests/types/primitives/primitives_in_function.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("numberFunc");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.numberFunc");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
-            ["#0#input", 1],
-            ["#1#num", 1],
-            ["#2#bool", 2],
-            ["#3#str", 4],
-            ["#4#sym", 5],
-            ["#5#nu", 6],
-            ["#6#und", 7],
-            ["#7#vd", 3],
+            ["#3#input", 1],
+            ["#4#num", 1],
+            ["#5#bool", 2],
+            ["#6#str", 4],
+            ["#7#sym", 5],
+            ["#8#nu", 6],
+            ["#9#und", 7],
+            ["#10#vd", 3],
         ]
         let vreg2TypeMap = createVRegTypePair(extectedVRegTypePair);
         expect(compareVReg2Type(vreg2TypeMap, locals), "check vreg typeInfo").to.be.true;
@@ -99,7 +99,7 @@ describe("primitives tests in primitives.test.ts", function() {
     it("test primitives in for", function() {
         let fileNames = 'tests/types/primitives/primitives_in_for.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -129,7 +129,7 @@ describe("primitives tests in primitives.test.ts", function() {
     it("test primitives in if", function() {
         let fileNames = 'tests/types/primitives/primitives_in_if.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -158,7 +158,7 @@ describe("primitives tests in primitives.test.ts", function() {
     it("test primitives in class", function() {
         let fileNames = 'tests/types/primitives/primitives_in_class.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -196,7 +196,7 @@ describe("primitives tests in primitives.test.ts", function() {
     it("test primitives with only type annotations", function() {
         let fileNames = 'tests/types/primitives/primitives_only_type_annotation.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -224,7 +224,7 @@ describe("primitives tests in primitives.test.ts", function() {
     it("test primitives without type annotations", function() {
         let fileNames = 'tests/types/primitives/primitives_no_type_annotation.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [

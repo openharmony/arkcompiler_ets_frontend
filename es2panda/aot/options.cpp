@@ -149,7 +149,8 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> base64Output("base64Output", false, "output panda file content as base64 to std out");
     panda::PandArg<std::string> sourceFile("source-file", "",
                                            "specify the file path info recorded in generated abc");
-    panda::PandArg<std::string> outputProto("outputProto", "", "compiler proto serialize binary output (.proto)");
+    panda::PandArg<std::string> outputProto("outputProto", "",
+                                            "specify the output name for serializd protobuf file (.protoBin)");
     panda::PandArg<std::string> opCacheFile("cache-file", "", "cache file for incremental compile");
     panda::PandArg<std::string> opNpmModuleEntryList("npm-module-entry-list", "", "entry list file for module compile");
     panda::PandArg<bool> opMergeAbc("merge-abc", false, "Compile as merge abc");

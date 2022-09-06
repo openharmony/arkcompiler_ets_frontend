@@ -47,7 +47,7 @@ describe("arguments Keyword", function () {
             new Ldobjbyindex(new Imm(0), new Imm(0)),
             new Returnundefined()
         ];
-        let functionPg = snippetCompiler.getPandaGenByName("foo");
+        let functionPg = snippetCompiler.getPandaGenByName("UnitTest.foo");
         let insns = functionPg!.getInsns();
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -68,7 +68,7 @@ describe("arguments Keyword", function () {
             new Ldobjbyindex(new Imm(0), new Imm(0)),
             new Returnundefined()
         ];
-        let functionPg = snippetCompiler.getPandaGenByName("foo");
+        let functionPg = snippetCompiler.getPandaGenByName("UnitTest.foo");
         let insns = functionPg!.getInsns();
 
         expect(checkInstructions(insns, expected)).to.be.true;
