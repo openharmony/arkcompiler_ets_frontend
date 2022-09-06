@@ -51,6 +51,8 @@ const ts2pandaOptions = [
     { name: 'expression-watch-toolchain', type: String, defaultValue: "es2panda", description: "Specify the tool chain used to transform the expression" },
     { name: 'source-file', type: String, defaultValue: "", description: "specify the file path info recorded in generated abc" },
     { name: 'generate-tmp-file', type: Boolean, defaultValue: false, description: "whether to generate intermediate temporary files"},
+    { name: 'record-name', type: String, defaultValue: "", description: "specify the record name." },
+    { name: 'output-proto', type: String, defaultValue: "", description: "specify the output name for serializd protobuf file (.protoBin)" },
 ]
 
 
@@ -209,6 +211,13 @@ export class CmdOptions {
         return outputFile;
     }
 
+    static getRecordName(): string {
+        if (!this.options) {
+            return "";
+        }
+        return this.options["record-name"];
+    }
+
     static getTimeOut(): Number {
         if (!this.options) {
             return 0;
@@ -313,6 +322,10 @@ export class CmdOptions {
             return false;
         }
         return this.options["generate-tmp-file"];
+    }
+
+    static getOutputproto(): string {
+        return this.options["output-proto"];
     }
 
     // @ts-ignore

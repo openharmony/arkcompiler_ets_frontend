@@ -49,7 +49,7 @@ describe("CommonJsTest", function () {
         CmdOptions.isCommonJs = () => {return false};
         let funcMainInsns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new Definefunc(new Imm(0), '#1#', new Imm(5)),
+            new Definefunc(new Imm(0), 'UnitTest.#1#', new Imm(5)),
             new Sta(new VReg()),
             new Lda(new VReg()),
             new Sta(new VReg()),
@@ -74,7 +74,7 @@ describe("CommonJsTest", function () {
         snippetCompiler.compileCommonjs(`let a = require('a.js')`, 'cjs.js');
         IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`let a = require('a.js')`), 0, undefined);
         CmdOptions.isCommonJs = () => {return false};
-        let execInsns = snippetCompiler.getPandaGenByName('#1#')!.getInsns();
+        let execInsns = snippetCompiler.getPandaGenByName('UnitTest.#1#')!.getInsns();
         let requirePara = new VReg();
         let requireReg = new VReg();
         let moduleRequest = new VReg();
@@ -97,7 +97,7 @@ describe("CommonJsTest", function () {
         snippetCompiler.compileCommonjs(`let a = 1; exports.a = a;`, 'cjs.js');
         IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`let a = 1; exports.a = a;`), 0, undefined);
         CmdOptions.isCommonJs = () => {return false};
-        let execInsns = snippetCompiler.getPandaGenByName('#1#')!.getInsns();
+        let execInsns = snippetCompiler.getPandaGenByName('UnitTest.#1#')!.getInsns();
         let exportsPara = new VReg();
         let exportsReg = new VReg();
         let tmpReg = new VReg();

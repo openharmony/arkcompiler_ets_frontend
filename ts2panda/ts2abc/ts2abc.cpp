@@ -58,6 +58,7 @@ constexpr std::size_t BOUND_RIGHT = 0;
 constexpr std::size_t LINE_NUMBER = 0;
 constexpr bool IS_DEFINED = true;
 int g_opCodeIndex = 0;
+std::string g_recordName = "";
 std::unordered_map<int, panda::pandasm::Opcode> g_opcodeMap = {
 #define OPLIST(opcode, name, optype, width, flags, def_idx, use_idxs) {g_opCodeIndex++, panda::pandasm::Opcode::opcode},
     PANDA_INSTRUCTION_LIST(OPLIST)
@@ -69,7 +70,6 @@ std::unordered_map<int, panda::pandasm::Opcode> g_opcodeMap = {
 static panda::pandasm::Record MakeRecordDefinition(const std::string &name)
 {
     auto record = panda::pandasm::Record(name, LANG_EXT);
-
     return record;
 }
 
@@ -879,35 +879,27 @@ static void GenerateESTypeAnnotationRecord(panda::pandasm::Program &prog)
     prog.record_table.emplace(tsTypeAnnotationRecord.name, std::move(tsTypeAnnotationRecord));
 }
 
-static void GenerateCommonJsRecord(panda::pandasm::Program &prog, bool isCommonJs)
+static void SetCommonjsField(panda::pandasm::Program &prog, bool isCommonjs)
 {
-    // when multi-abc file get merged, field should be inserted in abc's own record
-    auto commonjsRecord = panda::pandasm::Record("_CommonJsRecord", LANG_EXT);
-    commonjsRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
-    auto isCommonJsField = panda::pandasm::Field(LANG_EXT);
-    isCommonJsField.name = "isCommonJs";
-    isCommonJsField.type = panda::pandasm::Type("u8", 0);
-    isCommonJsField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(
-        static_cast<uint8_t>(isCommonJs)));
-    commonjsRecord.field_list.emplace_back(std::move(isCommonJsField));
-
-    prog.record_table.emplace(commonjsRecord.name, std::move(commonjsRecord));
-}
-
-static void GenerateESModuleRecord(panda::pandasm::Program &prog)
-{
-    auto ecmaModuleRecord = panda::pandasm::Record("_ESModuleRecord", LANG_EXT);
-    ecmaModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
-    prog.record_table.emplace(ecmaModuleRecord.name, std::move(ecmaModuleRecord));
+    auto iter = prog.record_table.find(g_recordName);
+    if (iter != prog.record_table.end()) {
+        auto &rec = iter->second;
+        auto isCommonJsField = panda::pandasm::Field(LANG_EXT);
+        isCommonJsField.name = "isCommonjs";
+        isCommonJsField.type = panda::pandasm::Type("u8", 0);
+        isCommonJsField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(isCommonjs)));
+        rec.field_list.emplace_back(std::move(isCommonJsField));
+    }
 }
 
 static void AddModuleRecord(panda::pandasm::Program &prog, const std::string &moduleName)
 {
-    auto iter = prog.record_table.find("_ESModuleRecord");
+    auto iter = prog.record_table.find(g_recordName);
     if (iter != prog.record_table.end()) {
         auto &rec = iter->second;
         auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
-        moduleIdxField.name = moduleName;
+        moduleIdxField.name = "moduleRecordIdx";
         moduleIdxField.type = panda::pandasm::Type("u32", 0);
         std::string moduleId = GetLiteralId(g_newLiteralArrayIndex);
         moduleIdxField.metadata->SetValue(
@@ -937,23 +929,11 @@ int ParseJson(const std::string &data, Json::Value &rootValue)
     return RETURN_SUCCESS;
 }
 
-static void ParseModuleMode(const Json::Value &rootValue, panda::pandasm::Program &prog)
-{
-    Logd("----------------parse module_mode-----------------");
-    if (rootValue.isMember("module_mode") && rootValue["module_mode"].isBool()) {
-        if (rootValue["module_mode"].asBool()) {
-            GenerateESModuleRecord(prog);
-        }
-    }
-}
-
-static void ParseCommonJsModuleMode(const Json::Value &rootValue, panda::pandasm::Program &prog)
+static void SetCommonJsModuleMode(const Json::Value &rootValue, panda::pandasm::Program &prog)
 {
     Logd("------------parse commonjs_module_mode-------------");
     if (rootValue.isMember("commonjs_module") && rootValue["commonjs_module"].isBool()) {
-        if (rootValue["commonjs_module"].asBool()) {
-            GenerateCommonJsRecord(prog, true);
-        }
+        SetCommonjsField(prog, rootValue["commonjs_module"].asBool());
     }
 }
 
@@ -1037,8 +1017,7 @@ static void ParseOptions(const Json::Value &rootValue, panda::pandasm::Program &
 {
     GenerateESCallTypeAnnotationRecord(prog);
     GenerateESTypeAnnotationRecord(prog);
-    ParseModuleMode(rootValue, prog);
-    ParseCommonJsModuleMode(rootValue, prog);
+    SetCommonJsModuleMode(rootValue, prog);
     ParseLogEnable(rootValue);
     ParseDebugMode(rootValue);
     ParseOptLevel(rootValue);
@@ -1055,9 +1034,10 @@ static void ParseSingleFunc(const Json::Value &rootValue, panda::pandasm::Progra
     prog.function_table.emplace(function.name.c_str(), std::move(function));
 }
 
-static void ParseSingleRec(const Json::Value &rootValue, panda::pandasm::Program &prog)
+static void ParseRec(const Json::Value &rootValue, panda::pandasm::Program &prog)
 {
     auto record = ParseRecord(rootValue["rb"]);
+    g_recordName = record.name;
     prog.record_table.emplace(record.name.c_str(), std::move(record));
 }
 
@@ -1255,7 +1235,7 @@ static int ParseSmallPieceJson(const std::string &subJson, panda::pandasm::Progr
         }
         case static_cast<int>(JsonType::RECORD): {
             if (rootValue.isMember("rb") && rootValue["rb"].isObject()) {
-                ParseSingleRec(rootValue, prog);
+                ParseRec(rootValue, prog);
             }
             break;
         }

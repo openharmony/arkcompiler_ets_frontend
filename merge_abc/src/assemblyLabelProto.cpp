@@ -31,7 +31,7 @@ void Label::Deserialize(const protoPanda::Label &protoLabel, panda::pandasm::Lab
     label.name = protoLabel.name();
     if (protoLabel.has_filelocation()) {
         protoPanda::FileLocation protoLocation = protoLabel.filelocation();
-        FileLocation::Deserialize(protoLocation, label.file_location.value());
+        FileLocation::Deserialize(protoLocation, label.file_location);
     }
 }
 } // panda::proto

@@ -224,7 +224,7 @@ namespace panda::ts2abc {
         panda::PandArg<bool> compile_by_pipe_arg_{ "compile-by-pipe", false,
                 R"(Compile a json file that is passed by pipe)"};
         panda::PandArg<std::string> compiler_output_proto_{ "output-proto", "",
-                R"(compiler proto serialize binary output (.proto))"};
+                R"(Specify the output name for serializd protobuf file (.protoBin))"};
         panda::PandArg<std::string> Tail_Arg1_arg_{ "ARG_1", "",
                 R"(Path to input(json file) or path to output(ark bytecode)"
                   " when 'compile-by-pipe' enabled)"};

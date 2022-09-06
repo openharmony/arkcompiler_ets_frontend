@@ -30,7 +30,7 @@ describe("class tests in class.test.ts", function () {
     it("test class with no parameter in block", function () {
         let fileNames = 'tests/types/class/class_constr_no_para.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -67,7 +67,7 @@ describe("class tests in class.test.ts", function () {
     it("test class with parameter in block", function () {
         let fileNames = 'tests/types/class/class_constr_para.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -103,7 +103,7 @@ describe("class tests in class.test.ts", function () {
     it("test class fields type", function () {
         let fileNames = 'tests/types/class/class_fields.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -138,7 +138,7 @@ describe("class tests in class.test.ts", function () {
     it("test class methods type", function () {
         let fileNames = 'tests/types/class/class_methods.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -180,7 +180,7 @@ describe("class tests in class.test.ts", function () {
     it("test class static fields type", function () {
         let fileNames = 'tests/types/class/class_static_fields.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -215,7 +215,7 @@ describe("class tests in class.test.ts", function () {
     it("test class static methods type", function () {
         let fileNames = 'tests/types/class/class_static_methods.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -258,7 +258,7 @@ describe("class tests in class.test.ts", function () {
     it("test abstract class type", function () {
         let fileNames = 'tests/types/class/class_abstract.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -303,7 +303,7 @@ describe("class tests in class.test.ts", function () {
     it("test class implements type", function () {
         let fileNames = 'tests/types/class/class_implements.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
