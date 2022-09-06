@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-import { Scope } from "src/scope";
 import ts from "typescript";
 import { CacheList, getVregisterCache } from "../base/vregisterCache";
 import { Compiler, ControlFlowChange } from "../compiler";
@@ -23,9 +22,9 @@ import {
 } from "../irnodes";
 import { PandaGen } from "../pandagen";
 import { Recorder } from "../recorder";
-import { IteratorRecord, IteratorType, getIteratorRecord } from "../statement/forOfStatement";
-import { AsyncFunctionBuilder } from "./asyncFunctionBuilder";
 import { NodeKind } from "../debuginfo";
+import { CatchTable, LabelPair } from "../statement/tryStatement";
+
 enum ResumeMode { Return = 0, Throw, Next };
 
 /**
@@ -38,17 +37,20 @@ export class AsyncGeneratorFunctionBuilder {
     private compiler: Compiler;
     private asyncGenObj: VReg;
     private retValue: VReg;
+    private beginLabel: Label;
+    private endLabel: Label;
 
     constructor(pandaGen: PandaGen, compiler: Compiler) {
         this.asyncPandaGen = pandaGen;
         this.compiler = compiler;
+        this.beginLabel = new Label();
+        this.endLabel = new Label();
         this.asyncGenObj = pandaGen.getTemp();
         this.retValue = pandaGen.getTemp();
     }
- 
-    prepare(node: ts.Node, recorder: Recorder) {  
+
+    prepare(node: ts.Node, recorder: Recorder) {
         let pandaGen = this.asyncPandaGen;
-		let scope = <Scope>recorder.getScopeOfNode(node);
 
         // backend handle funcobj, frontend set undefined
         pandaGen.createAsyncGeneratorObj(node, getVregisterCache(pandaGen, CacheList.FUNC));
@@ -166,7 +168,16 @@ export class AsyncGeneratorFunctionBuilder {
         pandaGen.EcmaAsyncgeneratorresolve(node, this.asyncGenObj, value, getVregisterCache(pandaGen, CacheList.True));
     }
 
-    cleanUp() {
+    cleanUp(node: ts.Node) {
+        let pandaGen = this.asyncPandaGen;
+        pandaGen.label(node, this.endLabel);
+        // catch
+        let exception = pandaGen.getTemp();
+        pandaGen.storeAccumulator(NodeKind.Invalid, exception);
+        pandaGen.EcmaAsyncgeneratorreject(node, this.asyncGenObj, exception);
+        pandaGen.return(NodeKind.Invalid);
+        pandaGen.freeTemps(exception);
         this.asyncPandaGen.freeTemps(this.asyncGenObj, this.retValue);
+        new CatchTable(pandaGen, this.endLabel, new LabelPair(this.beginLabel, this.endLabel));
     }
 }
