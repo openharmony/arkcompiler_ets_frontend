@@ -157,6 +157,11 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<std::string> opNpmModuleEntryList("npm-module-entry-list", "", "entry list file for module compile");
     panda::PandArg<bool> opMergeAbc("merge-abc", false, "Compile as merge abc");
 
+    // hotfix
+    panda::PandArg<std::string> opDumpSymbolTable("dump-symbol-table", "", "dump symbol table to file");
+    panda::PandArg<std::string> opInputSymbolTable("input-symbol-table", "", "input symbol table file");
+    panda::PandArg<bool> opGeneratePatch("generate-patch", false, "generate patch abc");
+
     // tail arguments
     panda::PandArg<std::string> inputFile("input", "", "input file");
 
@@ -187,6 +192,10 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opCacheFile);
     argparser_->Add(&opNpmModuleEntryList);
     argparser_->Add(&opMergeAbc);
+
+    argparser_->Add(&opDumpSymbolTable);
+    argparser_->Add(&opInputSymbolTable);
+    argparser_->Add(&opGeneratePatch);
 
     argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
@@ -338,6 +347,10 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.optLevel = opOptLevel.GetValue();
     compilerOptions_.sourceFiles = sourceFiles_;
     compilerOptions_.mergeAbc = opMergeAbc.GetValue();
+
+    compilerOptions_.hotfixOptions.dumpSymbolTable = opDumpSymbolTable.GetValue();
+    compilerOptions_.hotfixOptions.symbolTable = opInputSymbolTable.GetValue();
+    compilerOptions_.hotfixOptions.generatePatch = opGeneratePatch.GetValue();
 
     return true;
 }

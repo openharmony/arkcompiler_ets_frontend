@@ -48,7 +48,7 @@ import { LiteralBuffer } from "./base/literal";
 import { CompilerDriver } from "./compilerDriver";
 import { ModuleScope } from "./scope";
 import { getRecordTypeFlag } from "./base/util";
-import { TypeSummary } from "./base/typeSystem";
+import { PrimitiveType, BuiltinType } from "./base/typeSystem";
 import { TypeRecorder } from "./typeRecorder";
 import { isGlobalDeclare } from "./strictMode";
 
@@ -208,6 +208,67 @@ export class Ts2Panda {
     }
 
     // @ts-ignore
+    static dumpInstTypeMap(pg: PandaGen): any {
+        let insts = pg.getInsns();
+        let locals = pg.getLocals();
+
+        // build instidx - typeidx map
+        let handledSet: Set<number> = new Set<number>();
+        let instTypeMap: Map<number, number> = new Map<number, number>();
+        let paraCount = pg.getParametersCount();
+        let vregCount = pg.getTotalRegsNum() - paraCount;
+        for (let i = 0; i < insts.length; i++) {
+            let inst = insts[i];
+            let typeIdx = pg.getInstTypeMap().get(inst);
+            if (typeIdx != undefined) {
+                instTypeMap.set(i, typeIdx);
+                continue;
+            }
+
+            // get builtin type for tryloadglobal instruction
+            if (inst.kind == IRNodeKind.ECMA_TRYLDGLOBALBYNAME) {
+                let name = inst.operands[0] as string;
+                if (name in BuiltinType) {
+                    typeIdx = BuiltinType[name];
+                    instTypeMap.set(i, typeIdx);
+                }
+                continue;
+            }
+
+            // local vreg -> inst
+            let vreg = undefined;
+            let instIdx = i;
+            if (i < paraCount && inst.kind == IRNodeKind.MOV_DYN) {
+                vreg = (inst.operands[0] as VReg).num;
+                let arg = (inst.operands[1] as VReg).num;
+                if (vreg >= paraCount || arg < vregCount) {
+                    continue;  // not arg
+                }
+                // param's inst idx start from -1
+                instIdx = vregCount - arg - 1;
+            } else if (inst.kind == IRNodeKind.STA_DYN) {
+                vreg = (inst.operands[0] as VReg).num;
+            }
+            if (vreg != undefined && vreg < locals.length && !handledSet.has(vreg)) {
+                typeIdx = locals[vreg].getTypeIndex();
+                instTypeMap.set(instIdx, typeIdx);
+                handledSet.add(vreg);
+            }
+        }
+
+        // sort and save type info
+        let typeInfo = new Array<number>();
+        [...instTypeMap].sort((a, b) => a[0] - b[0]).forEach(([instIdx, typeIdx]) => {
+            if (typeIdx != PrimitiveType.ANY) {
+                typeInfo.push(instIdx);
+                typeInfo.push(typeIdx);
+            }
+        });
+
+        return typeInfo;
+    }
+
+    // @ts-ignore
     static dumpPandaGen(pg: PandaGen, ts2abc: any, recordType?: boolean): void {
         let funcName = pg.internalName;
         let funcSignature = Ts2Panda.getFuncSignature(pg);
@@ -219,16 +280,16 @@ export class Ts2Panda {
         let exportedSymbol2Types: undefined | Array<ExportedSymbol2Type> = undefined;
         let declaredSymbol2Types: undefined | Array<DeclaredSymbol2Type> = undefined;
         if (CmdOptions.needRecordType() && CompilerDriver.isTsFile) {
-            typeInfo = new Array<number>();
-            typeRecord.forEach((vreg) => {
-                typeInfo.push(vreg.getTypeIndex());
-                if (CmdOptions.enableTypeLog()) {
+            if (CmdOptions.enableTypeLog()) {
+                console.log("[", funcName, "]");
+                typeRecord.forEach((vreg) => {
                     console.log("---------------------------------------");
                     console.log("- vreg name:", vreg.getVariableName());
                     console.log("- vreg local num:", vreg.num);
                     console.log("- vreg type:", vreg.getTypeIndex());
-                }
-            });
+                });
+            }
+            typeInfo = Ts2Panda.dumpInstTypeMap(pg);
 
             if (funcName == "func_main_0") {
                 let exportedTypes = PandaGen.getExportedTypes();

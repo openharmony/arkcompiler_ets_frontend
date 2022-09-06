@@ -27,7 +27,6 @@
 #include "securec.h"
 #include "ts2abc_options.h"
 #include "ts2abc.h"
-#include "type_adapter.h"
 #include "protobufSnapshotGenerator.h"
 
 #ifdef ENABLE_BYTECODE_OPT
@@ -46,7 +45,8 @@ bool g_displayTypeinfo = false;
 bool g_isDtsFile = false;
 std::string g_optLogLevel = "error";
 uint32_t g_literalArrayCount = 0;
-using ts2abc_type_adapter::TypeAdapter;
+static constexpr const char* TSTYPE_ANNO_RECORD_NAME = "_ESTypeAnnotation";
+static constexpr const char* TSTYPE_ANNO_ELEMENT_NAME = "_TypeOfInstruction";
 std::string g_compilerOutputProto = "";
 
 constexpr std::size_t BOUND_LEFT = 0;
@@ -602,27 +602,66 @@ static void ParseFunctionCallType(const Json::Value &function, panda::pandasm::F
         pandaFunc.metadata->GetAnnotations()).push_back(std::move(callTypeAnnotation));
 }
 
-static void ParseFunctionTypeInfo(const Json::Value &function, panda::pandasm::Function &pandaFunc)
+static std::vector<std::pair<int32_t, uint32_t>> GetInstTypeMap(const Json::Value &function,
+                                                                panda::pandasm::Function &pandaFunc)
 {
-    if (function.isMember("ti") && function["ti"].isArray()) {
-        auto typeInfo = function["ti"];
-        panda::pandasm::AnnotationData funcAnnotation(TypeAdapter::TSTYPE_ANNO_RECORD_NAME);
-        std::vector<panda::pandasm::ScalarValue> elements;
+    constexpr const char* TYPE_INFO = "ti";
+    std::vector<std::pair<int32_t, uint32_t>> instTypeMap;
+    if (!function.isMember(TYPE_INFO) || !function[TYPE_INFO].isArray()) {
+        return instTypeMap;
+    }
 
-        for (Json::ArrayIndex i = 0; i < typeInfo.size(); i++) {
-            auto typeIndex = typeInfo[i].asUInt();
+    // must be instidx <-> typeidx pair
+    auto sourceTypeMap = function[TYPE_INFO];
+    constexpr size_t TYPE_MAP_ELEMENT_SIZE = 2;
+    ASSERT(sourceTypeMap.size() % TYPE_MAP_ELEMENT_SIZE == 0);
+    instTypeMap.reserve(sourceTypeMap.size() / TYPE_MAP_ELEMENT_SIZE);
 
-            panda::pandasm::ScalarValue vNum(
-                panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(i));
-            elements.emplace_back(std::move(vNum));
-            panda::pandasm::ScalarValue tIndex(
-                panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(typeIndex));
-            elements.emplace_back(std::move(tIndex));
+    // fix inst index since invalid inst won't be emit
+    int32_t start = 0;
+    int32_t remove = 0;
+    for (Json::ArrayIndex i = 0; i < sourceTypeMap.size(); i += TYPE_MAP_ELEMENT_SIZE) {
+        auto instIndex = sourceTypeMap[i].asInt();
+        auto typeIndex = sourceTypeMap[i + 1].asUInt();
+        if (instIndex < 0) { // para
+            instTypeMap.emplace_back(instIndex, typeIndex);
+            continue;
         }
 
-        std::string annotationName = TypeAdapter::TSTYPE_ANNO_ELEMENT_NAME;
+        // remove the invalid instruction
+        for (; start < instIndex; start++) {
+            if (pandaFunc.ins[start].opcode == panda::pandasm::Opcode::INVALID) {
+                remove++;
+            }
+        }
+        instTypeMap.emplace_back(instIndex - remove, typeIndex);
+    }
+
+    if (g_displayTypeinfo) {
+        std::cout << "Handle types for function: " << pandaFunc.name << std::endl;
+        std::cout << "(instruction order, type): ";
+        for (auto &it : instTypeMap) {
+            std::cout << "(" << it.first << ", " << it.second << "), ";
+        }
+        std::cout << std::endl;
+    }
+
+    return instTypeMap;
+}
+
+static void ParseFunctionTypeInfo(const Json::Value &function, panda::pandasm::Function &pandaFunc)
+{
+    auto instTypeMap = GetInstTypeMap(function, pandaFunc);
+    if (!instTypeMap.empty()) {
+        std::vector<panda::pandasm::ScalarValue> elements;
+        for (auto &it : instTypeMap) {
+            elements.emplace_back(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::I32>(it.first));
+            elements.emplace_back(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(it.second));
+        }
+
+        panda::pandasm::AnnotationData funcAnnotation(TSTYPE_ANNO_RECORD_NAME);
         panda::pandasm::AnnotationElement typeOfVregElement(
-            annotationName, std::make_unique<panda::pandasm::ArrayValue>(panda::pandasm::ArrayValue(
+            TSTYPE_ANNO_ELEMENT_NAME, std::make_unique<panda::pandasm::ArrayValue>(panda::pandasm::ArrayValue(
             panda::pandasm::Value::Type::U32, elements)));
         funcAnnotation.AddElement(std::move(typeOfVregElement));
         const_cast<std::vector<panda::pandasm::AnnotationData>&>(pandaFunc.metadata->GetAnnotations()).push_back(
@@ -642,7 +681,7 @@ static void ParseFunctionExportedType(const Json::Value &function, panda::pandas
 
     if (function.isMember("es2t") && function["es2t"].isArray()) {
         auto exportedTypes = function["es2t"];
-        panda::pandasm::AnnotationData funcAnnotation(TypeAdapter::TSTYPE_ANNO_RECORD_NAME);
+        panda::pandasm::AnnotationData funcAnnotation(TSTYPE_ANNO_RECORD_NAME);
         std::vector<panda::pandasm::ScalarValue> symbolElements;
         std::vector<panda::pandasm::ScalarValue> symbolTypeElements;
         for (Json::ArrayIndex i = 0; i < exportedTypes.size(); i++) {
@@ -698,7 +737,7 @@ static void ParseFunctionDeclaredType(const Json::Value &function, panda::pandas
 
     if (function.isMember("ds2t") && function["ds2t"].isArray()) {
         auto declaredTypes = function["ds2t"];
-        panda::pandasm::AnnotationData funcAnnotation(TypeAdapter::TSTYPE_ANNO_RECORD_NAME);
+        panda::pandasm::AnnotationData funcAnnotation(TSTYPE_ANNO_RECORD_NAME);
         std::vector<panda::pandasm::ScalarValue> symbolElements;
         std::vector<panda::pandasm::ScalarValue> symbolTypeElements;
         for (Json::ArrayIndex i = 0; i < declaredTypes.size(); i++) {
@@ -772,7 +811,7 @@ static void GenerateESCallTypeAnnotationRecord(panda::pandasm::Program &prog)
 }
 static void GenerateESTypeAnnotationRecord(panda::pandasm::Program &prog)
 {
-    auto tsTypeAnnotationRecord = panda::pandasm::Record(TypeAdapter::TSTYPE_ANNO_RECORD_NAME, LANG_EXT);
+    auto tsTypeAnnotationRecord = panda::pandasm::Record(TSTYPE_ANNO_RECORD_NAME, LANG_EXT);
     tsTypeAnnotationRecord.metadata->SetAttribute("external");
     tsTypeAnnotationRecord.metadata->SetAccessFlags(panda::ACC_ANNOTATION);
     prog.record_table.emplace(tsTypeAnnotationRecord.name, std::move(tsTypeAnnotationRecord));
@@ -1314,9 +1353,6 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
     if (options.GetCompilerOutputProto().size() > 0) {
         compilerOutputProto = options.GetCompilerOutputProto();
     }
-
-    TypeAdapter ada(g_displayTypeinfo);
-    ada.AdaptTypeForProgram(&prog);
 
 #ifdef ENABLE_BYTECODE_OPT
     if (g_optLevel != static_cast<int>(OptLevel::O_LEVEL0) || optLevel != static_cast<int>(OptLevel::O_LEVEL0)) {

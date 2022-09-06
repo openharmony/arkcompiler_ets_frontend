@@ -267,10 +267,3 @@ group("ts2abc_unittests") {
     deps = [ "tests:ts2abc_tests(${toolchain_linux})" ]
   }
 }
-
-group("ts2abc_type_adapter_unit_tests") {
-  if (host_os == "linux") {
-    testonly = true
-    deps = [ "${ts2abc_root}/ts2abc/tests/type_adapter_test:ts2abc_type_adapter_unit_tests(${toolchain_linux})" ]
-  }
-}

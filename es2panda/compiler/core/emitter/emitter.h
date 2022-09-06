@@ -21,6 +21,7 @@
 #include <ir/astNode.h>
 #include <lexer/token/sourceLocation.h>
 #include <macros.h>
+#include <util/hotfix.h>
 #include <util/ustring.h>
 
 #include <list>
@@ -70,7 +71,7 @@ public:
         return literalBuffers_;
     }
 
-    void Generate();
+    void Generate(util::Hotfix *hotfixHelper);
     const ArenaSet<util::StringView> &Strings() const;
 
 private:
@@ -100,9 +101,9 @@ public:
     NO_MOVE_SEMANTIC(Emitter);
 
     void AddFunction(FunctionEmitter *func);
-    void AddSourceTextModuleRecord(ModuleRecordEmitter *module, const CompilerContext *context);
+    void AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerContext *context);
     static void DumpAsm(const panda::pandasm::Program *prog);
-    panda::pandasm::Program *Finalize(bool dumpDebugInfo);
+    panda::pandasm::Program *Finalize(bool dumpDebugInfo, util::Hotfix *hotfixHelper);
 
 private:
     void SetCommonjsField(bool isCommonjs);

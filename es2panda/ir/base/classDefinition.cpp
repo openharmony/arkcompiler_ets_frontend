@@ -281,6 +281,10 @@ void ClassDefinition::CompileMissingProperties(compiler::PandaGen *pg, const uti
 
 void ClassDefinition::Compile(compiler::PandaGen *pg) const
 {
+    if (declare_) {
+        return;
+    }
+
     compiler::RegScope rs(pg);
     compiler::VReg classReg = pg->AllocReg();
     compiler::VReg lexenv = pg->LexEnv();

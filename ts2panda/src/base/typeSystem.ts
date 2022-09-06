@@ -354,8 +354,11 @@ export class ClassType extends BaseType {
     private fillInMethods(member: ClassMemberFunction) {
         /**
          * a method like declaration in a new class must be a new type,
-         * create this type and add it into typeRecorder
+         * create this type and add it into typeRecorder if it's not from tsc's library
          */
+        if (this.typeChecker.isFromDefaultLib(member)) {
+            return;
+        }
         let variableNode = member.name ? member.name : undefined;
         let funcType = new FunctionType(<ts.FunctionLikeDeclaration>member);
         if (variableNode) {
@@ -808,8 +811,11 @@ export class InterfaceType extends BaseType {
     private fillInMethods(member: ts.MethodSignature) {
         /**
          * a method like declaration in a new class must be a new type,
-         * create this type and add it into typeRecorder
+         * create this type and add it into typeRecorder if it's not from tsc's library
          */
+        if (this.typeChecker.isFromDefaultLib(member)) {
+            return;
+        }
         let variableNode = member.name ? member.name : undefined;
         let funcType = new FunctionType(<ts.MethodSignature>member);
         if (variableNode) {

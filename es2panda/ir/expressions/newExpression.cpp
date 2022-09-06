@@ -20,12 +20,17 @@
 #include <compiler/core/regScope.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
+#include <ir/ts/tsTypeParameterInstantiation.h>
 
 namespace panda::es2panda::ir {
 
 void NewExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(callee_);
+
+    if (typeParams_) {
+        cb(typeParams_);
+    }
 
     for (auto *it : arguments_) {
         cb(it);
@@ -34,7 +39,8 @@ void NewExpression::Iterate(const NodeTraverser &cb) const
 
 void NewExpression::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "NewExpression"}, {"callee", callee_}, {"arguments", arguments_}});
+    dumper->Add({{"type", "NewExpression"}, {"callee", callee_}, {"typeParameters", AstDumper::Optional(typeParams_)},
+                 {"arguments", arguments_}});
 }
 
 void NewExpression::Compile(compiler::PandaGen *pg) const

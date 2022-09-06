@@ -29,16 +29,25 @@ class Type;
 
 namespace panda::es2panda::ir {
 
+class TSTypeParameterInstantiation;
+
 class NewExpression : public Expression {
 public:
-    explicit NewExpression(Expression *callee, ArenaVector<Expression *> &&arguments)
-        : Expression(AstNodeType::NEW_EXPRESSION), callee_(callee), arguments_(std::move(arguments))
+    explicit NewExpression(Expression *callee, TSTypeParameterInstantiation *typeParams,
+                           ArenaVector<Expression *> &&arguments)
+        : Expression(AstNodeType::NEW_EXPRESSION), callee_(callee),
+          typeParams_(typeParams), arguments_(std::move(arguments))
     {
     }
 
     const Expression *Callee() const
     {
         return callee_;
+    }
+
+    const TSTypeParameterInstantiation *TypeParams() const
+    {
+        return typeParams_;
     }
 
     const ArenaVector<Expression *> &Arguments() const
@@ -53,6 +62,7 @@ public:
 
 private:
     Expression *callee_;
+    TSTypeParameterInstantiation *typeParams_;
     ArenaVector<Expression *> arguments_;
 };
 

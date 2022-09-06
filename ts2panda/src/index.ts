@@ -58,7 +58,12 @@ function main(fileNames: string[], options: ts.CompilerOptions) {
 
     if (CmdOptions.needRecordDtsType()) {
         for (let sourceFile of program.getSourceFiles()) {
-            let originFileNames = new Set(fileNames.slice(0, fileNames.length - dtsFiles.length));
+            let originFileNames;
+            if (!Compiler.Options.Default["lib"]) {
+                originFileNames = new Set(fileNames.slice(0, fileNames.length - dtsFiles.length));
+            } else {
+                originFileNames = new Set(fileNames.slice(0, fileNames.length));
+            }
             if (sourceFile.isDeclarationFile && !program.isSourceFileDefaultLibrary(sourceFile) && originFileNames.has(sourceFile.fileName)) {
                 setGlobalDeclare(checkIsGlobalDeclaration(sourceFile));
                 generateDTs(sourceFile, options);
@@ -165,6 +170,29 @@ function getDtsFiles(libDir: string): string[] {
     }
     finDtsFile(libDir);
     return dtsFiles;
+}
+
+function specifyCustomLib(customLib) {
+    Compiler.Options.Default["lib"] = customLib;
+    let curFiles = fs.readdirSync(__dirname);
+    const { execSync } = require('child_process');
+    dtsFiles.forEach(function (dtsFile, _) {
+        let target = dtsFile.split(path.sep).pop();
+        if (curFiles.indexOf(target) === -1){
+            let createSymlinkCmd;
+            if (/^win/.test(require('os').platform())) {
+                // On windows platform, administrator permission is needed to create Symlink.
+                createSymlinkCmd = `mklink ${__dirname}${path.sep}${target} ${dtsFile}`;
+            } else {
+                createSymlinkCmd = `ln -s ${dtsFile} ${__dirname}${path.sep}${target}`;
+            }
+            execSync(createSymlinkCmd, (err, stdout, stderr) => {
+                if (err) {
+                    LOGE(err);
+                }
+            });
+        }
+    });
 }
 
 const stopWatchingStr = "####";
@@ -373,10 +401,10 @@ namespace Compiler {
             outDir: "../tmp/build",
             allowJs: true,
             noEmitOnError: false,
-            noImplicitAny: true,
+            noImplicitAny: false,
             target: ts.ScriptTarget.ES2018,
             module: ts.ModuleKind.ES2015,
-            strictNullChecks: true,
+            strictNullChecks: false,
             skipLibCheck: true,
             alwaysStrict: true,
             importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Preserve
@@ -430,7 +458,12 @@ function run(args: string[], options?: ts.CompilerOptions): void {
 }
 
 let dtsFiles = getDtsFiles(path["join"](__dirname, "../node_modules/typescript/lib"));
-// keep these dtsFiles been pushed here
-process.argv.push(...dtsFiles);
+let customLib = CmdOptions.parseCustomLibrary(process.argv);
+if (!customLib || customLib.length === 0) {
+    process.argv.push(...dtsFiles);
+} else {
+    specifyCustomLib(customLib);
+}
+
 run(process.argv.slice(2), Compiler.Options.Default);
 global.gc();

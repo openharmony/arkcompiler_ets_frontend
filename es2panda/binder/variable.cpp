@@ -40,22 +40,34 @@ LocalVariable *LocalVariable::Copy(ArenaAllocator *allocator, Decl *decl) const
     return var;
 }
 
-void LocalVariable::SetLexical(Scope *scope)
+void LocalVariable::SetLexical(Scope *scope, util::Hotfix *hotfixHelper)
 {
     if (LexicalBound()) {
         return;
     }
 
     VariableScope *varScope = scope->EnclosingVariableScope();
-    uint32_t slot = varScope->NextSlot();
+    uint32_t slot = 0;
     auto name = Declaration()->Name();
-    varScope->AddLexicalVarName(slot, name); // gather lexical variables for debuginfo
+
+    if (hotfixHelper && hotfixHelper->IsScopeValidToPatchLexical(varScope)) {
+        slot = hotfixHelper->GetSlotIdFromSymbolTable(std::string(name));
+        if (hotfixHelper->IsPatchVar(slot)) {
+            hotfixHelper->AllocSlotfromPatchEnv(std::string(name));
+        }
+    } else {
+        slot = varScope->NextSlot();
+    }
+
     BindLexEnvSlot(slot);
+    // gather lexical variables for debuginfo
+    varScope->AddLexicalVarNameAndType(slot, name,
+        static_cast<typename std::underlying_type<binder::DeclType>::type>(Declaration()->Type()));
 }
 
-void GlobalVariable::SetLexical([[maybe_unused]] Scope *scope) {}
-void ModuleVariable::SetLexical([[maybe_unused]] Scope *scope) {}
-void EnumVariable::SetLexical([[maybe_unused]] Scope *scope) {}
+void GlobalVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper) {}
+void ModuleVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper) {}
+void EnumVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper) {}
 
 void EnumVariable::ResetDecl(Decl *decl)
 {

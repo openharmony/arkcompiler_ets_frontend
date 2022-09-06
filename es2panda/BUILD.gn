@@ -239,7 +239,9 @@ es2panda_src = [
   "util/bitset.cpp",
   "util/dumper.cpp",
   "util/helpers.cpp",
+  "util/hotfix.cpp",
   "util/moduleHelpers.cpp",
+  "util/symbolTable.cpp",
   "util/ustring.cpp",
 ]
 
@@ -524,4 +526,8 @@ group("es2panda_build") {
 
 group("es2panda_build_win") {
   deps = [ ":es2panda(${toolchain_win})" ]
+}
+
+group("es2abc_tests") {
+  deps = [ "./test:es2abc_parser_tests" ]
 }

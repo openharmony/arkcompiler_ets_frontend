@@ -18,6 +18,7 @@
 
 #include <macros.h>
 #include <mem/arena_allocator.h>
+#include <util/hotfix.h>
 
 #include <cstdint>
 #include <mutex>
@@ -85,6 +86,16 @@ public:
         return sourceFile_;
     }
 
+    void AddHotfixHelper(util::Hotfix *hotfixHelper)
+    {
+        hotfixHelper_ = hotfixHelper;
+    }
+
+    util::Hotfix *HotfixHelper()
+    {
+        return hotfixHelper_;
+    }
+
 private:
     binder::Binder *binder_;
     int32_t literalBufferIdx_ {0};
@@ -94,6 +105,7 @@ private:
     bool isMergeAbc_;
     std::string sourceFile_;
     std::unique_ptr<Emitter> emitter_;
+    util::Hotfix *hotfixHelper_ {nullptr};
 };
 
 }  // namespace panda::es2panda::compiler

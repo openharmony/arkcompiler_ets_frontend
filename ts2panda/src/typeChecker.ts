@@ -125,9 +125,18 @@ export class TypeChecker {
     }
 
     public getTypeForClassDeclOrExp(typeDeclNode: ts.Node, getTypeForInstace: boolean): number {
+        if (this.isFromDefaultLib(typeDeclNode)) {
+            return PrimitiveType.ANY;
+        }
         let classTypeIndex = TypeRecorder.getInstance().tryGetTypeIndex(typeDeclNode);
         if (classTypeIndex == PrimitiveType.ANY) {
-            let classType = new ClassType(<ts.ClassDeclaration>typeDeclNode);
+            let classDeclNode = <ts.ClassDeclaration>typeDeclNode;
+            let className = "";
+            let classNameNode = classDeclNode.name;
+            if (classNameNode) {
+                className = jshelpers.getTextOfIdentifierOrLiteral(classNameNode).replace(/\s/g, "");
+            }
+            let classType = new ClassType(classDeclNode, BuiltinType[className]);
             classTypeIndex = classType.shiftedTypeIndex;
         }
         if (getTypeForInstace) {
@@ -154,6 +163,9 @@ export class TypeChecker {
     }
 
     public getInterfaceDeclaration(typeDeclNode: ts.Node) {
+        if (this.isFromDefaultLib(typeDeclNode)) {
+            return PrimitiveType.ANY;
+        }
         let interfaceTypeIndex = TypeRecorder.getInstance().tryGetTypeIndex(typeDeclNode);
         if (interfaceTypeIndex == PrimitiveType.ANY) {
             let interefaceType = new InterfaceType(<ts.InterfaceDeclaration>typeDeclNode);
@@ -229,6 +241,10 @@ export class TypeChecker {
     isBuiltinType(expr: ts.NewExpression) {
         let name = expr.expression.getFullText().replace(/\s/g, "");
         return name in BuiltinType;
+    }
+
+    isFromDefaultLib(node: ts.Node) {
+        return node.getSourceFile().hasNoDefaultLib;
     }
 
     getOrCreateInstanceTypeForBuiltin(builtinIdx: number) {
@@ -327,14 +343,20 @@ export class TypeChecker {
     }
 
     public formatClassDeclaration(classDeclNode: ts.ClassDeclaration) {
+        if (this.isFromDefaultLib(classDeclNode)) {
+            return;
+        }
         let classNameNode = classDeclNode.name;
         let className = "default";
         if (classNameNode) {
             className = jshelpers.getTextOfIdentifierOrLiteral(classNameNode).replace(/\s/g, "");
         }
 
-        let classType = new ClassType(classDeclNode, BuiltinType[className]);
-        let typeIndex = classType.shiftedTypeIndex;
+        let typeIndex = TypeRecorder.getInstance().tryGetTypeIndex(classDeclNode);
+        if (typeIndex == PrimitiveType.ANY) {
+            let classType = new ClassType(classDeclNode, BuiltinType[className]);
+            typeIndex = classType.shiftedTypeIndex;
+        }
         
         if (this.hasExportKeyword(classDeclNode)) {
             TypeRecorder.getInstance().setExportedType(className, typeIndex);
@@ -357,11 +379,21 @@ export class TypeChecker {
                 break;
             case ts.SyntaxKind.FunctionDeclaration:
                 let functionDeclNode = <ts.FunctionDeclaration>ts.getOriginalNode(node);
+                if (this.isFromDefaultLib(functionDeclNode)) {
+                    break;
+                }
                 let functionName = functionDeclNode.name ? functionDeclNode.name : undefined;
-                let nameText = jshelpers.getTextOfIdentifierOrLiteral(functionName);
-                let funcType = new FunctionType(functionDeclNode, BuiltinType[nameText]);
+                let funcTypeIndex = TypeRecorder.getInstance().tryGetTypeIndex(functionDeclNode);
+                if (funcTypeIndex == PrimitiveType.ANY) {
+                    let functionnameText = "";
+                    if (functionName) {
+                        functionnameText = jshelpers.getTextOfIdentifierOrLiteral(functionName);
+                    }
+                    let funcType = new FunctionType(functionDeclNode, BuiltinType[functionnameText]);
+                    funcTypeIndex = funcType.shiftedTypeIndex;
+                }
                 if (functionName) {
-                    TypeRecorder.getInstance().setVariable2Type(functionName, funcType.shiftedTypeIndex);
+                    TypeRecorder.getInstance().setVariable2Type(functionName, funcTypeIndex);
                 }
                 break;
             case ts.SyntaxKind.ClassDeclaration:
@@ -373,6 +405,9 @@ export class TypeChecker {
             case ts.SyntaxKind.InterfaceDeclaration:
                 if (isGlobalDeclare()) {
                     let interfaceDeclNode = <ts.InterfaceDeclaration>ts.getOriginalNode(node);
+                    if (this.isFromDefaultLib(interfaceDeclNode)) {
+                        break;
+                    }
                     let interfaceType = new InterfaceType(interfaceDeclNode);
                     let interfaceName = interfaceDeclNode.name;
                     if (interfaceName) {

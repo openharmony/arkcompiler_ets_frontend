@@ -877,11 +877,25 @@ ir::NewExpression *ParserImpl::ParseNewExpression()
         ThrowSyntaxError("Cannot use new with import(...)");
     }
 
+    // parse type params of NewExpression
+    lexer::SourcePosition endLoc = callee->End();
+    ir::TSTypeParameterInstantiation *typeParamInst = nullptr;
+    if (Extension() == ScriptExtension::TS) {
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SHIFT) {
+            lexer_->BackwardToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, 1);
+        }
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
+            typeParamInst = ParseTsTypeParameterInstantiation();
+            if (typeParamInst != nullptr) {
+                endLoc = typeParamInst->End();
+            }
+        }
+    }
+
     ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
-        lexer::SourcePosition endLoc = callee->End();
-        auto *newExprNode = AllocNode<ir::NewExpression>(callee, std::move(arguments));
+        auto *newExprNode = AllocNode<ir::NewExpression>(callee, typeParamInst, std::move(arguments));
         newExprNode->SetRange({start, endLoc});
 
         return newExprNode;
@@ -910,7 +924,7 @@ ir::NewExpression *ParserImpl::ParseNewExpression()
         }
     }
 
-    auto *newExprNode = AllocNode<ir::NewExpression>(callee, std::move(arguments));
+    auto *newExprNode = AllocNode<ir::NewExpression>(callee, typeParamInst, std::move(arguments));
     newExprNode->SetRange({start, lexer_->GetToken().End()});
 
     lexer_->NextToken();
@@ -1464,8 +1478,6 @@ bool ParserImpl::ParsePotentialTsGenericFunctionCall(ir::Expression **returnExpr
             (*returnExpression)->AsCallExpression()->SetTypeParams(typeParams);
             return false;
         }
-
-        return true;
     }
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BACK_TICK) {

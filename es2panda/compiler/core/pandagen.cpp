@@ -17,6 +17,7 @@
 
 #include <binder/binder.h>
 #include <util/helpers.h>
+#include <util/hotfix.h>
 #include <binder/scope.h>
 #include <binder/variable.h>
 #include <compiler/base/catchTable.h>
@@ -195,12 +196,12 @@ int32_t PandaGen::AddLiteralBuffer(LiteralBuffer *buf)
     return buf->Index();
 }
 
-int32_t PandaGen::AddLexicalVarNamesForDebugInfo(ArenaMap<uint32_t, util::StringView> &lexicalVars)
+int32_t PandaGen::AddLexicalVarNamesForDebugInfo(ArenaMap<uint32_t, std::pair<util::StringView, int>> &lexicalVars)
 {
     auto *buf = NewLiteralBuffer();
     buf->Add(Allocator()->New<ir::NumberLiteral>(lexicalVars.size()));
-    for (auto iter : lexicalVars) {
-        buf->Add(Allocator()->New<ir::StringLiteral>(iter.second));
+    for (auto &iter : lexicalVars) {
+        buf->Add(Allocator()->New<ir::StringLiteral>(iter.second.first));
         buf->Add(Allocator()->New<ir::NumberLiteral>(iter.first));
     }
     return AddLiteralBuffer(buf);
@@ -1091,6 +1092,10 @@ void PandaGen::LoadHomeObject(const ir::AstNode *node)
 
 void PandaGen::DefineFunction(const ir::AstNode *node, const ir::ScriptFunction *realNode, const util::StringView &name)
 {
+    if (realNode->IsOverload() || realNode->Declare()) {
+        return;
+    }
+
     auto formalParamCnt = realNode->FormalParamsLength();
     if (realNode->IsMethod()) {
         ra_.Emit<EcmaDefinemethod>(node, name, static_cast<int64_t>(formalParamCnt), LexEnv());
@@ -1563,6 +1568,16 @@ void PandaGen::LoadLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t 
     sa_.Emit<EcmaLdlexvardyn>(node, level, slot);
 }
 
+void PandaGen::LoadLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot, const util::StringView &name)
+{
+    if (context_->HotfixHelper() && context_->HotfixHelper()->IsPatchVar(slot)) {
+        uint32_t patchSlot = context_->HotfixHelper()->GetPatchLexicalIdx(std::string(name));
+        sa_.Emit<EcmaLdpatchvar>(node, patchSlot);
+        return;
+    }
+    sa_.Emit<EcmaLdlexvardyn>(node, level, slot);
+}
+
 void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot)
 {
     RegScope rs(this);
@@ -1573,6 +1588,19 @@ void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t
 
 void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot, VReg value)
 {
+    ra_.Emit<EcmaStlexvardyn>(node, level, slot, value);
+}
+
+void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot, const util::StringView &name)
+{
+    if (context_->HotfixHelper() && context_->HotfixHelper()->IsPatchVar(slot)) {
+        uint32_t patchSlot = context_->HotfixHelper()->GetPatchLexicalIdx(std::string(name));
+        sa_.Emit<EcmaStpatchvar>(node, patchSlot);
+        return;
+    }
+    RegScope rs(this);
+    VReg value = AllocReg();
+    StoreAccumulator(node, value);
     ra_.Emit<EcmaStlexvardyn>(node, level, slot, value);
 }
 
@@ -1620,7 +1648,7 @@ void PandaGen::CopyLexEnv(const ir::AstNode *node)
 void PandaGen::NewLexicalEnv(const ir::AstNode *node, uint32_t num, binder::VariableScope *scope)
 {
     if (IsDebug()) {
-        int32_t scopeInfoIdx = AddLexicalVarNamesForDebugInfo(scope->GetLexicalVarNames());
+        int32_t scopeInfoIdx = AddLexicalVarNamesForDebugInfo(scope->GetLexicalVarNameAndTypes());
         NewLexEnvWithScopeInfo(node, num, scopeInfoIdx);
         return;
     }

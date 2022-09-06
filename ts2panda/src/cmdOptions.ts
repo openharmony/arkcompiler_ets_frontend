@@ -330,4 +330,12 @@ export class CmdOptions {
         return this.parsedResult;
     }
 
+    static parseCustomLibrary(args: string[]): string[] | undefined {
+        this.options = commandLineArgs(ts2pandaOptions, { partial: true });
+        if (this.options.help || this.isBcVersion() || this.isBcMinVersion() || !this.options._unknown) {
+            return undefined;
+        }
+        this.parsedResult = ts.parseCommandLine(this.options._unknown!);
+        return this.parsedResult.options["lib"];
+    }
 }

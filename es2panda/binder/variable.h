@@ -20,6 +20,7 @@
 #include <binder/variableFlags.h>
 #include <ir/irnode.h>
 #include <macros.h>
+#include <util/hotfix.h>
 #include <util/ustring.h>
 
 #include <limits>
@@ -111,7 +112,7 @@ public:
     }
 
     const util::StringView &Name() const;
-    virtual void SetLexical(Scope *scope) = 0;
+    virtual void SetLexical(Scope *scope, util::Hotfix *hotfixHelper = nullptr) = 0;
 
 protected:
     explicit Variable(Decl *decl, VariableFlags flags) : decl_(decl), flags_(flags) {}
@@ -154,7 +155,7 @@ public:
         return vreg_;
     }
 
-    void SetLexical([[maybe_unused]] Scope *scope) override;
+    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
     LocalVariable *Copy(ArenaAllocator *allocator, Decl *decl) const;
 
 private:
@@ -170,7 +171,7 @@ public:
         return VariableType::GLOBAL;
     }
 
-    void SetLexical([[maybe_unused]] Scope *scope) override;
+    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
 };
 
 class ModuleVariable : public Variable {
@@ -182,7 +183,7 @@ public:
         return VariableType::MODULE;
     }
 
-    void SetLexical([[maybe_unused]] Scope *scope) override;
+    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
 };
 
 class EnumVariable : public Variable {
@@ -219,7 +220,7 @@ public:
 
     void ResetDecl(Decl *decl);
 
-    void SetLexical([[maybe_unused]] Scope *scope) override;
+    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
 
 private:
     EnumMemberResult value_ {false};

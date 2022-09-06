@@ -45,6 +45,8 @@
 #include <ir/ts/tsConstructorType.h>
 #include <ir/ts/tsFunctionType.h>
 #include <ir/ts/tsMethodSignature.h>
+#include <ir/ts/tsModuleBlock.h>
+#include <ir/ts/tsModuleDeclaration.h>
 #include <ir/ts/tsSignatureDeclaration.h>
 
 namespace panda::es2panda::binder {
@@ -125,7 +127,7 @@ void Binder::LookupReference(const util::StringView &name)
     }
 
     ASSERT(res.variable);
-    res.variable->SetLexical(res.scope);
+    res.variable->SetLexical(res.scope, program_->HotfixHelper());
 }
 
 void Binder::InstantiateArguments()
@@ -177,7 +179,7 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
 
     if (res.level != 0) {
         ASSERT(res.variable);
-        res.variable->SetLexical(res.scope);
+        res.variable->SetLexical(res.scope, program_->HotfixHelper());
     }
 
     if (!res.variable) {
@@ -461,7 +463,7 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
                     ResolveReference(scriptFunc, scriptFunc->ReturnTypeAnnotation());
                 }
 
-                if (scriptFunc->IsOverload()) {
+                if (scriptFunc->IsOverload() || scriptFunc->Declare()) {
                     break;
                 }
             }
@@ -553,6 +555,16 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
         case ir::AstNodeType::TS_METHOD_SIGNATURE:
         case ir::AstNodeType::TS_SIGNATURE_DECLARATION: {
             BuildTSSignatureDeclarationBaseParams(childNode);
+            break;
+        }
+        case ir::AstNodeType::TS_MODULE_DECLARATION: {
+            auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsTSModuleDeclaration()->Scope());
+            ResolveReferences(childNode);
+            break;
+        }
+        case ir::AstNodeType::TS_MODULE_BLOCK: {
+            auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsTSModuleBlock()->Scope());
+            ResolveReferences(childNode);
             break;
         }
         default: {

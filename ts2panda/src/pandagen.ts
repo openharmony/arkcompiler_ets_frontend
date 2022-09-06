@@ -201,6 +201,7 @@ export class PandaGen {
     private locals: VReg[] = [];
     private temps: VReg[] = [];
     private insns: IRNode[] = [];
+    private instTypeMap: Map<IRNode, number> = new Map<IRNode, number>();
     private scope: Scope | undefined;
     private vregisterCache: VregisterCache;
     private catchMap: Map<Label, CatchTable> = new Map<Label, CatchTable>();
@@ -407,6 +408,10 @@ export class PandaGen {
 
     setLocals(locals: VReg[]) {
         this.locals = locals;
+    }
+
+    getInstTypeMap() {
+        return this.instTypeMap;
     }
 
     getLocals(): VReg[] {
@@ -1364,5 +1369,11 @@ export class PandaGen {
         DebugInfo.setDebuginfoForIns(node, ...insns);
 
         this.insns.push(...insns);
+    }
+
+    public setInstType(inst: IRNode, typeId: number | undefined): void {
+        if (typeId != undefined && TypeRecorder.getInstance() != undefined) {
+            this.instTypeMap.set(inst, typeId);
+        }
     }
 }
