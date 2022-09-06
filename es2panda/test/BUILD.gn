@@ -12,6 +12,8 @@
 # limitations under the License.
 
 import("//arkcompiler/ets_frontend/es2panda/es2abc_config.gni")
+import("//arkcompiler/ets_runtime/js_runtime_config.gni")
+import("//build/ohos.gni")
 
 action("es2abc_parser_tests") {
   script = "${es2abc_root}/test/runner.py"
@@ -25,4 +27,38 @@ action("es2abc_parser_tests") {
   ]
 
   outputs = [ "${es2abc_build_path}/keep_es2abc_parser_tests_run" ]
+}
+
+action("es2abc_compiler_tests") {
+  script = "${es2abc_root}/test/runner.py"
+
+  deps = es2abc_build_deps
+  deps += [ "${js_root}:ark_js_host_linux_tools_packages" ]
+
+  host_jsvm_target = "${js_root}/ecmascript/js_vm:ark_js_vm(${host_toolchain})"
+  root_out_dir = get_label_info(host_jsvm_target, "root_out_dir")
+  ark_js_runtime_dir = rebase_path("${root_out_dir}/ark/ark_js_runtime")
+
+  if (is_standard_system) {
+    icu_path = "thirdparty/icu"
+  } else {
+    icu_path = "global/i18n"
+  }
+  icu_dir = rebase_path("${root_out_dir}/${icu_path}")
+
+  llvm_lib_dir = rebase_path("//prebuilts/clang/ohos/linux-x86_64/llvm/lib/")
+
+  ld_library_path = "${ark_js_runtime_dir}:${icu_dir}:${llvm_lib_dir}"
+
+  args = [
+    "--no-progress",
+    "--js-runtime",
+    ark_js_runtime_dir,
+    "--LD_LIBRARY_PATH",
+    ld_library_path,
+    "--compiler",
+    rebase_path("${es2abc_build_path}"),
+  ]
+
+  outputs = [ "${es2abc_build_path}/keep_es2abc_compiler_tests_run" ]
 }

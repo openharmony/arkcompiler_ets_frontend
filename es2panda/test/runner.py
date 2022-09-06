@@ -26,6 +26,7 @@ import subprocess
 import sys
 import test262util
 
+
 def is_directory(parser, arg):
     if not path.isdir(arg):
         parser.error("The directory '%s' does not exist" % arg)
@@ -62,6 +63,9 @@ def get_args():
     parser.add_argument(
         '--regression', '-r', action='store_true', dest='regression',
         default=False, help='run regression tests')
+    parser.add_argument(
+        '--compiler', '-c', action='store_true', dest='compiler',
+        default=False, help='run compiler tests')
     parser.add_argument(
         '--tsc', action='store_true', dest='tsc',
         default=False, help='run tsc tests')
@@ -118,6 +122,11 @@ def get_args():
     parser.add_argument(
         '--verbose', '-v', action='store_true', dest='verbose', default=False,
         help='Enable verbose output')
+    parser.add_argument(
+        '--js-runtime', dest='js_runtime_path', default=None, type=lambda arg: is_directory(parser, arg),
+        help='the path of js vm runtime')
+    parser.add_argument(
+        '--LD_LIBRARY_PATH', dest='ld_library_path', default=None, help='LD_LIBRARY_PATH')
 
     return parser.parse_args()
 
@@ -381,7 +390,16 @@ class Runner:
         self.failed = 0
         self.passed = 0
         self.es2panda = path.join(args.build_dir, 'es2abc')
+        self.test_abc = path.join(args.build_dir, 'runner_test.abc')
         self.cmd_prefix = []
+        self.ark_js_vm = ""
+        self.ld_library_path = ""
+
+        if args.js_runtime_path:
+            self.ark_js_vm = path.join(args.js_runtime_path, 'ark_js_vm')
+
+        if args.ld_library_path:
+            self.ld_library_path = args.ld_library_path
 
         if args.arm64_qemu:
             self.cmd_prefix = ["qemu-aarch64", "-L", "/usr/aarch64-linux-gnu/"]
@@ -434,7 +452,9 @@ class Runner:
 
                 if self.args.error:
                     print("steps:", test.reproduce)
+                    print("error:")
                     print(test.error)
+                    print("\n")
 
             print("")
 
@@ -713,6 +733,65 @@ class TSCRunner(Runner):
         return src
 
 
+class CompilerRunner(Runner):
+    def __init__(self, args):
+        Runner.__init__(self, args, "Compiler")
+
+    def add_directory(self, directory, extension, flags):
+        glob_expression = path.join(
+            self.test_root, directory, "**/*.%s" % (extension))
+        files = glob(glob_expression, recursive=True)
+        files = fnmatch.filter(files, self.test_root + '**' + self.args.filter)
+
+        self.tests += list(map(lambda f: CompilerTest(f, flags), files))
+
+    def test_path(self, src):
+        return src
+
+
+class CompilerTest(Test):
+    def __init__(self, test_path, flags):
+        Test.__init__(self, test_path, flags)
+
+    def run(self, runner):
+        es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
+        es2abc_cmd.extend(self.flags)
+        es2abc_cmd.extend(["--output=" + runner.test_abc])
+        es2abc_cmd.append(self.path)
+        self.log_cmd(es2abc_cmd)
+
+        process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        if err:
+            self.passed = False
+            self.error = err.decode("utf-8", errors="ignore")
+            return self
+
+        ld_library_path = runner.ld_library_path
+        os.environ.setdefault("LD_LIBRARY_PATH", ld_library_path)
+        run_abc_cmd = [runner.ark_js_vm]
+        run_abc_cmd.extend([runner.test_abc])
+        self.log_cmd(run_abc_cmd)
+
+        process = subprocess.Popen(run_abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
+        expected_path = "%s-expected.txt" % (path.splitext(self.path)[0])
+        try:
+            with open(expected_path, 'r') as fp:
+                expected = fp.read()
+            self.passed = expected == self.output and process.returncode in [0, 1]
+        except Exception:
+            self.passed = False
+
+        if not self.passed:
+            self.error = err.decode("utf-8", errors="ignore")
+
+        os.remove(runner.test_abc)
+
+        return self
+
+
 def main():
     args = get_args()
 
@@ -733,6 +812,13 @@ def main():
 
     if args.tsc:
         runners.append(TSCRunner(args))
+
+    if args.compiler:
+        runner = CompilerRunner(args)
+        runner.add_directory("compiler/js", "js", [])
+        runner.add_directory("compiler/ts", "ts", ["--extension=ts"])
+
+        runners.append(runner)
 
     failed_tests = 0
 
