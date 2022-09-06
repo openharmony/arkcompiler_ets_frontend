@@ -18,6 +18,7 @@
 
 #include <binder/variableFlags.h>
 #include <mem/arena_allocator.h>
+#include <os/file.h>
 #include <util/ustring.h>
 
 #include <cmath>
@@ -75,6 +76,8 @@ public:
                                                         uint32_t index);
 
     static bool OptimizeProgram(panda::pandasm::Program *prog, es2panda::CompilerOptions *options);
+    template <typename T>
+    static T BaseName(T const &path, T const &delims = std::string(panda::os::file::File::GetPathDelim()));
 
     static const uint32_t INVALID_INDEX = 4294967295L;
     static const uint32_t MAX_INT32 = 2147483647;
@@ -92,6 +95,12 @@ bool Helpers::IsInteger(double number)
     }
 
     return false;
+}
+
+template <class T>
+T Helpers::BaseName(T const &path, T const &delims)
+{
+    return path.substr(path.find_last_of(delims) + 1);
 }
 
 }  // namespace panda::es2panda::util
