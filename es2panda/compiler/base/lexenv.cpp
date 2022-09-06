@@ -42,7 +42,7 @@ static void CheckConstAssignment(PandaGen *pg, const ir::AstNode *node, binder::
 
 static void ExpandLoadLexVar(PandaGen *pg, const ir::AstNode *node, const binder::ScopeFindResult &result)
 {
-    pg->LoadLexicalVar(node, result.lexLevel, result.variable->AsLocalVariable()->LexIdx());
+    pg->LoadLexicalVar(node, result.lexLevel, result.variable->AsLocalVariable()->LexIdx(), result.variable->Name());
     const auto *decl = result.variable->Declaration();
     if (decl->IsLetOrConstOrClassDecl()) {
         pg->ThrowUndefinedIfHole(node, result.variable->Name());
@@ -93,7 +93,7 @@ static void ExpandStoreLexVar(PandaGen *pg, const ir::AstNode *node, const binde
         pg->LoadAccumulator(node, valueReg);
     }
 
-    pg->StoreLexicalVar(node, result.lexLevel, local->LexIdx());
+    pg->StoreLexicalVar(node, result.lexLevel, local->LexIdx(), local->Name());
 }
 
 static void ExpandStoreNormalVar(PandaGen *pg, const ir::AstNode *node, const binder::ScopeFindResult &result,

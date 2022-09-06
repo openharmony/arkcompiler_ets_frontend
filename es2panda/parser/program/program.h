@@ -20,6 +20,7 @@
 #include <macros.h>
 #include <mem/arena_allocator.h>
 #include <parser/module/sourceTextModuleRecord.h>
+#include <util/hotfix.h>
 #include <util/ustring.h>
 
 #include "es2panda.h"
@@ -121,6 +122,16 @@ public:
         recordName_ = util::UString(recordName, Allocator());
     }
 
+    void AddHotfixHelper(util::Hotfix *hotfixHelper)
+    {
+        hotfixHelper_ = hotfixHelper;
+    }
+
+    util::Hotfix *HotfixHelper()
+    {
+        return hotfixHelper_;
+    }
+
     std::string Dump() const;
     void SetKind(ScriptKind kind);
 
@@ -135,6 +146,7 @@ private:
     ScriptExtension extension_ {};
     lexer::LineIndex lineIndex_ {};
     SourceTextModuleRecord *moduleRecord_ {nullptr};
+    util::Hotfix *hotfixHelper_ {nullptr};
 };
 
 }  // namespace panda::es2panda::parser

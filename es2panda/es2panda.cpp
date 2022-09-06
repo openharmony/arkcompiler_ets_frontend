@@ -21,6 +21,7 @@
 #include <parser/parserImpl.h>
 #include <parser/program/program.h>
 #include <util/helpers.h>
+#include <util/hotfix.h>
 
 #include <libpandabase/utils/hash.h>
 
@@ -45,13 +46,23 @@ Compiler::~Compiler()
     delete compiler_;
 }
 
-panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const CompilerOptions &options)
+panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const CompilerOptions &options,
+    util::SymbolTable *symbolTable)
 {
     /* TODO(dbatyai): pass string view */
     std::string fname(input.fileName);
     std::string src(input.source);
     std::string rname(input.recordName);
     parser::ScriptKind kind(input.scriptKind);
+
+    bool needDumpSymbolFile = !options.hotfixOptions.dumpSymbolTable.empty();
+    bool needGeneratePatch = options.hotfixOptions.generatePatch && !options.hotfixOptions.symbolTable.empty();
+    util::Hotfix *hotfixHelper = nullptr;
+    if (symbolTable && (needDumpSymbolFile || needGeneratePatch)) {
+        hotfixHelper = new util::Hotfix(needDumpSymbolFile, needGeneratePatch, input.recordName, symbolTable);
+        parser_->AddHotfixHelper(hotfixHelper);
+        compiler_->AddHotfixHelper(hotfixHelper);
+    }
 
     try {
         auto ast = parser_->Parse(fname, src, rname, kind);
@@ -63,9 +74,18 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
         std::string debugInfoSourceFile = options.debugInfoSourceFile.empty() ? fname : options.debugInfoSourceFile;
         auto *prog = compiler_->Compile(&ast, options, debugInfoSourceFile);
 
+        if (hotfixHelper) {
+            delete hotfixHelper;
+            hotfixHelper = nullptr;
+        }
         return prog;
     } catch (const class Error &e) {
         error_ = e;
+
+        if (hotfixHelper) {
+            delete hotfixHelper;
+            hotfixHelper = nullptr;
+        }
         return nullptr;
     }
 }
@@ -132,18 +152,35 @@ void Compiler::CompileFiles(CompilerOptions &options,
     std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
     panda::ArenaAllocator *allocator)
 {
+    util::SymbolTable *symbolTable = nullptr;
+    if (!options.hotfixOptions.symbolTable.empty() || !options.hotfixOptions.dumpSymbolTable.empty()) {
+        symbolTable = new util::SymbolTable(options.hotfixOptions.symbolTable, options.hotfixOptions.dumpSymbolTable);
+        if (!symbolTable->Initialize()) {
+            std::cerr << "Exits due to hot fix initialize failed!" << std::endl;
+            return;
+        }
+    }
+
     SelectCompileFile(options, cacheProgs, progs, progsInfo, allocator);
 
-    auto queue = new compiler::CompileFileQueue(options.fileThreadCount, &options, progs, progsInfo, allocator);
+    auto queue = new compiler::CompileFileQueue(options.fileThreadCount, &options, progs, progsInfo, symbolTable,
+        allocator);
 
     queue->Schedule();
     queue->Consume();
     queue->Wait();
 
     delete queue;
+    queue = nullptr;
+
+    if (symbolTable) {
+        delete symbolTable;
+        symbolTable = nullptr;
+    }
 }
 
-panda::pandasm::Program *Compiler::CompileFile(CompilerOptions &options, SourceFile *src)
+panda::pandasm::Program *Compiler::CompileFile(CompilerOptions &options, SourceFile *src,
+    util::SymbolTable *symbolTable)
 {
     std::string buffer;
     if (src->source.empty()) {
@@ -160,7 +197,7 @@ panda::pandasm::Program *Compiler::CompileFile(CompilerOptions &options, SourceF
     }
     src->fileName = util::Helpers::BaseName(src->fileName);
 
-    auto *program = Compile(*src, options);
+    auto *program = Compile(*src, options, symbolTable);
     if (!program) {
         const auto &err = GetError();
 

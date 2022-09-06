@@ -2623,6 +2623,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
     // Parse ClassBody
     auto savedStatus = context_.Status();
     context_.Status() |= ParserStatus::IN_CLASS_BODY;
+    context_.Status() &= ~(ParserStatus::CONSTRUCTOR_FUNCTION);
     lexer::SourcePosition classBodyStartLoc = lexer_->GetToken().Start();
     lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);
 
@@ -3381,6 +3382,11 @@ ScriptExtension ParserImpl::Extension() const
 parser::SourceTextModuleRecord *ParserImpl::GetSourceTextModuleRecord()
 {
     return Binder()->Program()->ModuleRecord();
+}
+
+void ParserImpl::AddHotfixHelper(util::Hotfix *hotfixHelper)
+{
+    program_.AddHotfixHelper(hotfixHelper);
 }
 
 }  // namespace panda::es2panda::parser

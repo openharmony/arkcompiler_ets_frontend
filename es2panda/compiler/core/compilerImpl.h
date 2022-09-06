@@ -20,6 +20,7 @@
 #include <macros.h>
 #include <mem/arena_allocator.h>
 #include <os/thread.h>
+#include <util/hotfix.h>
 
 #include <string>
 
@@ -45,9 +46,15 @@ public:
                                      const std::string &debugInfoSourceFile);
     static void DumpAsm(const panda::pandasm::Program *prog);
 
+    void AddHotfixHelper(util::Hotfix *hotfixHelper)
+    {
+        hotfixHelper_ = hotfixHelper;
+    }
+
 private:
     size_t threadCount_ {0};
     CompileFuncQueue *queue_ {nullptr};
+    util::Hotfix *hotfixHelper_ {nullptr};
 };
 }  // namespace panda::es2panda::compiler
 

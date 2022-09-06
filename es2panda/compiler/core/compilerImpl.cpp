@@ -41,6 +41,10 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
     CompilerContext context(program->Binder(), options.isDebug, options.isDebuggerEvaluateExpressionMode,
                             options.mergeAbc, debugInfoSourceFile);
 
+    if (hotfixHelper_ != nullptr) {
+        context.AddHotfixHelper(hotfixHelper_);
+    }
+
     if (program->Extension() == ScriptExtension::TS && options.enableTypeCheck) {
         ArenaAllocator localAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
         auto checker = std::make_unique<checker::Checker>(&localAllocator, context.Binder());
@@ -58,7 +62,7 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
     queue_->Consume();
     queue_->Wait();
 
-    return context.GetEmitter()->Finalize(options.dumpDebugInfo);
+    return context.GetEmitter()->Finalize(options.dumpDebugInfo, hotfixHelper_);
 }
 
 void CompilerImpl::DumpAsm(const panda::pandasm::Program *prog)

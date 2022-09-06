@@ -127,7 +127,7 @@ void Binder::LookupReference(const util::StringView &name)
     }
 
     ASSERT(res.variable);
-    res.variable->SetLexical(res.scope);
+    res.variable->SetLexical(res.scope, program_->HotfixHelper());
 }
 
 void Binder::InstantiateArguments()
@@ -179,7 +179,7 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
 
     if (res.level != 0) {
         ASSERT(res.variable);
-        res.variable->SetLexical(res.scope);
+        res.variable->SetLexical(res.scope, program_->HotfixHelper());
     }
 
     if (!res.variable) {
