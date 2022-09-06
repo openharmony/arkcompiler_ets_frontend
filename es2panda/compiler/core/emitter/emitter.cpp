@@ -341,7 +341,6 @@ Emitter::Emitter(const CompilerContext *context)
 {
     prog_ = new panda::pandasm::Program();
     prog_->lang = LANG_EXT;
-    prog_->function_table.reserve(context->Binder()->Functions().size());
 
     if (context->IsMergeAbc()) {
         auto recordName = context->Binder()->Program()->RecordName().Mutf8();

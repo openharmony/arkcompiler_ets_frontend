@@ -24,9 +24,8 @@ namespace panda::es2panda::util {
 class ModuleHelpers {
 public:
     static void CompileNpmModuleEntryList(const std::string &entriesInfo,
-        std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
-        std::vector<panda::pandasm::Program *> &progs,
-        std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+        std::map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
+        std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
         panda::ArenaAllocator *allocator);
 };
 } // panda::es2panda::util

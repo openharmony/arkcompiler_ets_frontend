@@ -50,7 +50,7 @@ void ProtobufSnapshotGenerator::GenerateProgram(const std::string &inputName, pa
 }
 
 void ProtobufSnapshotGenerator::UpdateCacheFile(
-    const std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap,
+    const std::map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap,
     bool &isDebug, const std::string &cacheFilePath)
 {
     protoPanda::CompositeProgram protoCompositeProgram;
@@ -64,7 +64,7 @@ void ProtobufSnapshotGenerator::UpdateCacheFile(
     output.close();
 }
 
-std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *ProtobufSnapshotGenerator::GetCacheContext(
+std::map<std::string, panda::es2panda::util::ProgramCache*> *ProtobufSnapshotGenerator::GetCacheContext(
     const std::string &cacheFilePath, bool isDebug, panda::ArenaAllocator *allocator)
 {
     std::fstream input(cacheFilePath, std::ios::in | std::ios::binary);
@@ -82,7 +82,7 @@ std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *ProtobufS
         return nullptr;
     }
 
-    auto compositeProgramMap = allocator->New<std::unordered_map<std::string, panda::es2panda::util::ProgramCache*>>();
+    auto compositeProgramMap = allocator->New<std::map<std::string, panda::es2panda::util::ProgramCache *>>();
     CompositeProgram::Deserialize(protoCompositeProgram, *compositeProgramMap, allocator);
 
     return compositeProgramMap;

@@ -16,9 +16,8 @@
 #include "compositeProgramProto.h"
 
 namespace panda::proto {
-void CompositeProgram::Serialize(
-    const std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap, bool isDebug,
-    protoPanda::CompositeProgram &protoCompositeProgram)
+void CompositeProgram::Serialize(const std::map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap,
+                                 bool isDebug, protoPanda::CompositeProgram &protoCompositeProgram)
 {
     for (const auto &[fileName, programCache] : compositeProgramMap) {
         auto *protoProgramcache = protoCompositeProgram.add_programcache();
@@ -31,10 +30,9 @@ void CompositeProgram::Serialize(
 }
 
 void CompositeProgram::Deserialize(const protoPanda::CompositeProgram &protoCompositeProgram,
-    std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap,
-    panda::ArenaAllocator *allocator)
+                                   std::map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap,
+                                   panda::ArenaAllocator *allocator)
 {
-    compositeProgramMap.reserve(protoCompositeProgram.programcache_size());
     for (const auto &protoProgramcache : protoCompositeProgram.programcache()) {
         auto &fileName = protoProgramcache.filename();
         auto hashCode = protoProgramcache.hashcode();
