@@ -213,6 +213,7 @@ set(ES2PANDA_LIB_SRC
   ir/ts/tsQualifiedName.cpp
   ir/ts/tsSignatureDeclaration.cpp
   ir/ts/tsStringKeyword.cpp
+  ir/ts/tsTemplateLiteralType.cpp
   ir/ts/tsThisType.cpp
   ir/ts/tsTupleType.cpp
   ir/ts/tsTypeAliasDeclaration.cpp

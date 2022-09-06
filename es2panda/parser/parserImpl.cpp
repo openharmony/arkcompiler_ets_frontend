@@ -77,6 +77,7 @@
 #include <ir/ts/tsQualifiedName.h>
 #include <ir/ts/tsSignatureDeclaration.h>
 #include <ir/ts/tsStringKeyword.h>
+#include <ir/ts/tsTemplateLiteralType.h>
 #include <ir/ts/tsThisType.h>
 #include <ir/ts/tsTupleType.h>
 #include <ir/ts/tsTypeLiteral.h>
@@ -388,6 +389,59 @@ ir::Expression *ParserImpl::ParseTsThisTypeOrTsTypePredicate(ir::Expression *typ
     return ParseTsThisType(throwError);
 }
 
+ir::Expression *ParserImpl::ParseTsTemplateLiteralType()
+{
+    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BACK_TICK);
+    lexer::SourcePosition startLoc = lexer_->GetToken().Start();
+
+    ArenaVector<ir::TemplateElement *> quasis(Allocator()->Adapter());
+    ArenaVector<ir::Expression *> references(Allocator()->Adapter());
+
+    while (true) {
+        lexer_->ResetTokenEnd();
+        const auto startPos = lexer_->Save();
+
+        lexer_->ScanString<LEX_CHAR_BACK_TICK>();
+        util::StringView cooked = lexer_->GetToken().String();
+
+        lexer_->Rewind(startPos);
+        auto [raw, end, scanExpression] = lexer_->ScanTemplateString();
+
+        auto *element = AllocNode<ir::TemplateElement>(raw.View(), cooked);
+        element->SetRange({lexer::SourcePosition{startPos.iterator.Index(), startPos.line},
+                           lexer::SourcePosition{end, lexer_->Line()}});
+        quasis.push_back(element);
+
+        if (!scanExpression) {
+            lexer_->ScanTemplateStringEnd();
+            break;
+        }
+
+        ir::Expression *reference = nullptr;
+
+        {
+            lexer::TemplateLiteralParserContext ctx(lexer_);
+            lexer_->PushTemplateContext(&ctx);
+            lexer_->NextToken();
+            TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+            reference = ParseTsTypeAnnotation(&options);
+        }
+
+        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+            ThrowSyntaxError("Unexpected token, expected '}'.");
+        }
+
+        references.push_back(reference);
+    }
+
+    ir::Expression *typeAnnotation = AllocNode<ir::TSTemplateLiteralType>(std::move(quasis), std::move(references));
+    typeAnnotation->SetRange({startLoc, lexer_->GetToken().End()});
+
+    lexer_->NextToken();
+
+    return typeAnnotation;
+}
+
 ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnnotation,
                                                          TypeAnnotationParsingOptions *options)
 {
@@ -489,6 +543,9 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
             return ParseTsThisTypeOrTsTypePredicate(typeAnnotation,
                                                     *options & TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE,
                                                     *options & TypeAnnotationParsingOptions::THROW_ERROR);
+        }
+        case lexer::TokenType::PUNCTUATOR_BACK_TICK: {
+            return ParseTsTemplateLiteralType();
         }
         default: {
             break;
