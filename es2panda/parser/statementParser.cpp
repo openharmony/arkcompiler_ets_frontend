@@ -1009,7 +1009,7 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
         ThrowSyntaxError("Unexpected token, expected identifier after 'function' keyword");
     }
 
-    if (lexer_->GetToken().KeywordType() >= lexer::TokenType::KEYW_ARGUMENTS) {
+    if (!isDeclare && lexer_->GetToken().KeywordType() >= lexer::TokenType::KEYW_ARGUMENTS) {
         ThrowSyntaxError("Unexpected reserved word in strict mode.");
     }
 

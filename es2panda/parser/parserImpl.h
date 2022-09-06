@@ -163,6 +163,7 @@ enum class TypeAnnotationParsingOptions {
     THROW_ERROR = 1 << 4,
     CAN_BE_TS_TYPE_PREDICATE = 1 << 5,
     BREAK_AT_NEW_LINE = 1 << 6,
+    IN_MODIFIER = 1 << 7,
 };
 
 DEFINE_BITOPS(TypeAnnotationParsingOptions)
@@ -262,10 +263,10 @@ private:
     ir::ModifierFlags ParseModifiers();
 
     void ThrowIfPrivateIdent(ClassElmentDescriptor *desc, const char *msg);
-    void ValidateClassKey(ClassElmentDescriptor *desc);
+    void ValidateClassKey(ClassElmentDescriptor *desc, bool isDeclare);
 
     void ValidateClassMethodStart(ClassElmentDescriptor *desc, ir::Expression *typeAnnotation);
-    ir::Expression *ParseClassKey(ClassElmentDescriptor *desc);
+    ir::Expression *ParseClassKey(ClassElmentDescriptor *desc, bool isDeclare);
 
     void ValidateClassSetter(ClassElmentDescriptor *desc, const ArenaVector<ir::Statement *> &properties,
                              ir::Expression *propName, ir::ScriptFunction *func, bool hasDecorator,
