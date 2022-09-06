@@ -181,6 +181,8 @@ public:
 
     ScriptExtension Extension() const;
 
+    void AddHotfixHelper(util::Hotfix *hotfixHelper);
+
 private:
     bool IsStartOfMappedType() const;
     bool IsStartOfTsTypePredicate() const;

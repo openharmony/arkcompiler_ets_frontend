@@ -76,7 +76,7 @@ void CompileFunctionJob::Run()
     Function::Compile(&pg);
 
     FunctionEmitter funcEmitter(&allocator, &pg);
-    funcEmitter.Generate();
+    funcEmitter.Generate(context_->HotfixHelper());
 
     context_->GetEmitter()->AddFunction(&funcEmitter);
 
@@ -104,7 +104,11 @@ void CompileFileJob::Run()
 {
     es2panda::Compiler compiler(options_->extension, options_->functionThreadCount);
 
-    auto *prog = compiler.CompileFile(*options_, src_);
+    auto *prog = compiler.CompileFile(*options_, src_, symbolTable_);
+
+    if (prog == nullptr) {
+        return;
+    }
 
     if (prog == nullptr) {
         return;
@@ -234,7 +238,7 @@ void CompileFileQueue::Schedule()
     std::unique_lock<std::mutex> lock(m_);
 
     for (auto &input: options_->sourceFiles) {
-        auto *fileJob = new CompileFileJob(&input, options_, progs_, progsInfo_, allocator_);
+        auto *fileJob = new CompileFileJob(&input, options_, progs_, progsInfo_, symbolTable_, allocator_);
         jobs_.push_back(fileJob);
         jobsCount_++;
     }

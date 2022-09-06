@@ -281,19 +281,19 @@ public:
         return slotIndex_ != 0;
     }
 
-    void AddLexicalVarName(uint32_t slot, util::StringView name)
+    void AddLexicalVarNameAndType(uint32_t slot, util::StringView name, int type)
     {
-        lexicalVarNames_.emplace(slot, name);
+        lexicalVarNameAndTypes_.emplace(slot, std::pair<util::StringView, int>(name, type));
     }
 
-    ArenaMap<uint32_t, util::StringView> &GetLexicalVarNames()
+    ArenaMap<uint32_t, std::pair<util::StringView, int>> &GetLexicalVarNameAndTypes()
     {
-        return lexicalVarNames_;
+        return lexicalVarNameAndTypes_;
     }
 
 protected:
     explicit VariableScope(ArenaAllocator *allocator, Scope *parent) : Scope(allocator, parent),
-                                                                       lexicalVarNames_(allocator->Adapter()) {}
+                                                                       lexicalVarNameAndTypes_(allocator->Adapter()) {}
 
     inline VariableFlags DeclFlagToVariableFlag(DeclarationFlags declFlag);
 
@@ -312,7 +312,7 @@ protected:
 
     VariableScopeFlags flags_ {};
     uint32_t slotIndex_ {};
-    ArenaMap<uint32_t, util::StringView> lexicalVarNames_; // for debuginfo
+    ArenaMap<uint32_t, std::pair<util::StringView, int>> lexicalVarNameAndTypes_; // for debuginfo and hotfix
 };
 
 class ParamScope : public Scope {

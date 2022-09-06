@@ -55,13 +55,16 @@ FunctionEmitter::FunctionEmitter(ArenaAllocator *allocator, const PandaGen *pg)
     func_->return_type = panda::pandasm::Type("any", 0);
 }
 
-void FunctionEmitter::Generate()
+void FunctionEmitter::Generate(util::Hotfix *hotfixHelper)
 {
     GenFunctionInstructions();
     GenVariablesDebugInfo();
     GenSourceFileDebugInfo();
     GenFunctionCatchTables();
     GenLiteralBuffers();
+    if (hotfixHelper != nullptr) {
+        hotfixHelper->ProcessFunction(pg_, func_, literalBuffers_);
+    }
 }
 
 const ArenaSet<util::StringView> &FunctionEmitter::Strings() const
@@ -374,7 +377,7 @@ void Emitter::AddFunction(FunctionEmitter *func)
     prog_->function_table.emplace(function->name, std::move(*function));
 }
 
-void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, const CompilerContext *context)
+void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerContext *context)
 {
     std::lock_guard<std::mutex> lock(m_);
 
@@ -385,6 +388,10 @@ void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, const Compi
         moduleIdxField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(
             static_cast<uint32_t>(module->Index())));
         rec_->field_list.emplace_back(std::move(moduleIdxField));
+
+        if (context->HotfixHelper()) {
+            context->HotfixHelper()->ProcessModule(rec_->name, module->Buffer());
+        }
     } else {
         auto ecmaModuleRecord = panda::pandasm::Record("_ESModuleRecord", LANG_EXT);
         ecmaModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
@@ -395,6 +402,10 @@ void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, const Compi
         moduleIdxField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(
             static_cast<uint32_t>(module->Index())));
         ecmaModuleRecord.field_list.emplace_back(std::move(moduleIdxField));
+
+        if (context->HotfixHelper()) {
+            context->HotfixHelper()->ProcessModule(ecmaModuleRecord.name, module->Buffer());
+        }
         prog_->record_table.emplace(ecmaModuleRecord.name, std::move(ecmaModuleRecord));
     }
     auto &moduleLiteralsBuffer = module->Buffer();
@@ -437,7 +448,7 @@ void Emitter::DumpAsm(const panda::pandasm::Program *prog)
     ss << std::endl;
 }
 
-panda::pandasm::Program *Emitter::Finalize(bool dumpDebugInfo)
+panda::pandasm::Program *Emitter::Finalize(bool dumpDebugInfo, util::Hotfix *hotfixHelper)
 {
     if (dumpDebugInfo) {
         debuginfo::DebugInfoDumper dumper(prog_);
@@ -448,6 +459,10 @@ panda::pandasm::Program *Emitter::Finalize(bool dumpDebugInfo)
         prog_->record_table.emplace(rec_->name, std::move(*rec_));
         delete rec_;
         rec_ = nullptr;
+    }
+
+    if (hotfixHelper) {
+        hotfixHelper->Finalize(&prog_);
     }
 
     auto *prog = prog_;
