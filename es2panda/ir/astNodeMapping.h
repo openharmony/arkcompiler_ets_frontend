@@ -95,6 +95,7 @@
     _(TS_SIGNATURE_DECLARATION, TSSignatureDeclaration)              \
     _(TS_PARENT_TYPE, TSParenthesizedType)                           \
     _(TS_LITERAL_TYPE, TSLiteralType)                                \
+    _(TS_TEMPLATE_LITERAL_TYPE, TSTemplateLiteralType)               \
     _(TS_INFER_TYPE, TSInferType)                                    \
     _(TS_CONDITIONAL_TYPE, TSConditionalType)                        \
     _(TS_IMPORT_TYPE, TSImportType)                                  \

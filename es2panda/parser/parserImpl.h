@@ -259,6 +259,7 @@ private:
     ir::Expression *ParseTsTypeReferenceOrTsTypePredicate(ir::Expression *typeAnnotation, bool canBeTsTypePredicate);
     ir::Expression *ParseTsThisTypeOrTsTypePredicate(ir::Expression *typeAnnotation, bool canBeTsTypePredicate,
                                                      bool throwError);
+    ir::Expression *ParseTsTemplateLiteralType();
     ir::Expression *ParseTsTypeAnnotationElement(ir::Expression *typeAnnotation, TypeAnnotationParsingOptions *options);
     ir::ModifierFlags ParseModifiers();
 
