@@ -122,7 +122,6 @@ void CompileFileJob::Run()
         std::unique_lock<std::mutex> lock(global_m_);
         auto *cache = allocator_->New<util::ProgramCache>(src_->hash, prog);
         progsInfo_.insert({src_->fileName, cache});
-        progs_.push_back(prog);
     }
 }
 
@@ -238,7 +237,7 @@ void CompileFileQueue::Schedule()
     std::unique_lock<std::mutex> lock(m_);
 
     for (auto &input: options_->sourceFiles) {
-        auto *fileJob = new CompileFileJob(&input, options_, progs_, progsInfo_, symbolTable_, allocator_);
+        auto *fileJob = new CompileFileJob(&input, options_, progsInfo_, symbolTable_, allocator_);
         jobs_.push_back(fileJob);
         jobsCount_++;
     }

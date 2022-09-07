@@ -19,9 +19,8 @@
 
 namespace panda::es2panda::util {
 void ModuleHelpers::CompileNpmModuleEntryList(const std::string &entriesInfo,
-    std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
-    std::vector<panda::pandasm::Program *> &progs,
-    std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+    std::map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
+    std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
     panda::ArenaAllocator *allocator)
 {
     std::stringstream ss;
@@ -37,7 +36,6 @@ void ModuleHelpers::CompileNpmModuleEntryList(const std::string &entriesInfo,
     if (cacheProgs != nullptr) {
         auto it = cacheProgs->find(entriesInfo);
         if (it != cacheProgs->end() && hash == it->second->hashCode) {
-            progs.push_back(it->second->program);
             auto *cache = allocator->New<util::ProgramCache>(it->second->hashCode, it->second->program);
             progsInfo.insert({entriesInfo, cache});
             return;
@@ -63,7 +61,6 @@ void ModuleHelpers::CompileNpmModuleEntryList(const std::string &entriesInfo,
         prog->record_table.emplace(recordName, std::move(*entryRecord));
     }
 
-    progs.push_back(prog);
     auto *cache = allocator->New<util::ProgramCache>(hash, prog);
     progsInfo.insert({entriesInfo, cache});
 }

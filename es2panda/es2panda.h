@@ -166,15 +166,13 @@ public:
     panda::pandasm::Program *CompileFile(CompilerOptions &options, SourceFile *src, util::SymbolTable *symbolTable_);
 
     static void CompileFiles(CompilerOptions &options,
-        std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
-        std::vector<panda::pandasm::Program *> &progs,
-        std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+        std::map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
+        std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
         panda::ArenaAllocator *allocator);
 
     static void SelectCompileFile(CompilerOptions &options,
-        std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
-        std::vector<panda::pandasm::Program *> &progs,
-        std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+        std::map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
+        std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
         panda::ArenaAllocator *allocator);
 
     inline panda::pandasm::Program *Compile(const SourceFile &input)

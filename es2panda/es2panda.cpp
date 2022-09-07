@@ -107,9 +107,8 @@ static bool ReadFileToBuffer(const std::string &file, std::stringstream &ss)
 }
 
 void Compiler::SelectCompileFile(CompilerOptions &options,
-    std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
-    std::vector<panda::pandasm::Program *> &progs,
-    std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+    std::map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
+    std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
     panda::ArenaAllocator *allocator)
 {
     if (cacheProgs == nullptr) {
@@ -135,7 +134,6 @@ void Compiler::SelectCompileFile(CompilerOptions &options,
 
         auto it = cacheProgs->find(input.fileName);
         if (it != cacheProgs->end() && hash == it->second->hashCode) {
-            progs.push_back(it->second->program);
             auto *cache = allocator->New<util::ProgramCache>(it->second->hashCode, it->second->program);
             progsInfo.insert({input.fileName, cache});
         } else {
@@ -147,9 +145,8 @@ void Compiler::SelectCompileFile(CompilerOptions &options,
 }
 
 void Compiler::CompileFiles(CompilerOptions &options,
-    std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
-    std::vector<panda::pandasm::Program *> &progs,
-    std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+    std::map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
+    std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
     panda::ArenaAllocator *allocator)
 {
     util::SymbolTable *symbolTable = nullptr;
@@ -161,10 +158,9 @@ void Compiler::CompileFiles(CompilerOptions &options,
         }
     }
 
-    SelectCompileFile(options, cacheProgs, progs, progsInfo, allocator);
+    SelectCompileFile(options, cacheProgs, progsInfo, allocator);
 
-    auto queue = new compiler::CompileFileQueue(options.fileThreadCount, &options, progs, progsInfo, symbolTable,
-        allocator);
+    auto queue = new compiler::CompileFileQueue(options.fileThreadCount, &options, progsInfo, symbolTable, allocator);
 
     queue->Schedule();
     queue->Consume();
@@ -180,7 +176,7 @@ void Compiler::CompileFiles(CompilerOptions &options,
 }
 
 panda::pandasm::Program *Compiler::CompileFile(CompilerOptions &options, SourceFile *src,
-    util::SymbolTable *symbolTable)
+                                               util::SymbolTable *symbolTable)
 {
     std::string buffer;
     if (src->source.empty()) {

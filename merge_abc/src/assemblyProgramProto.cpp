@@ -54,7 +54,6 @@ void Program::Deserialize(const protoPanda::Program &protoProgram, panda::pandas
 {
     program.lang = static_cast<panda::panda_file::SourceLang>(protoProgram.lang());
 
-    program.record_table.reserve(protoProgram.recordtable_size());
     for (const auto &recordUnit : protoProgram.recordtable()) {
         auto &name = recordUnit.key();
         auto &protoRecord = recordUnit.value();
@@ -64,7 +63,6 @@ void Program::Deserialize(const protoPanda::Program &protoProgram, panda::pandas
         program.record_table.insert({name, std::move(record)});
     }
 
-    program.function_table.reserve(protoProgram.functiontable_size());
     for (const auto &functionUnit : protoProgram.functiontable()) {
         auto &name = functionUnit.key();
         auto &protoFunction = functionUnit.value();
@@ -82,12 +80,10 @@ void Program::Deserialize(const protoPanda::Program &protoProgram, panda::pandas
         program.literalarray_table.insert({name, std::move(literalArray)});
     }
 
-    program.strings.reserve(protoProgram.strings_size());
     for (const auto &protoString : protoProgram.strings()) {
         program.strings.insert(protoString);
     }
 
-    program.array_types.reserve(protoProgram.arraytypes_size());
     for (const auto &protoArrayType : protoProgram.arraytypes()) {
         auto &arrayType = Type::Deserialize(protoArrayType, allocator);
         program.array_types.insert(std::move(arrayType));

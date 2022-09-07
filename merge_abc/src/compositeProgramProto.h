@@ -23,12 +23,11 @@
 namespace panda::proto {
 class CompositeProgram {
 public:
-    static void Serialize(
-        const std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap, bool isDebug,
-        protoPanda::CompositeProgram &protoCompositeProgram);
+    static void Serialize(const std::map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap,
+                          bool isDebug, protoPanda::CompositeProgram &protoCompositeProgram);
     static void Deserialize(const protoPanda::CompositeProgram &protoCompositeProgram,
-        std::unordered_map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap,
-        panda::ArenaAllocator *allocator);
+                            std::map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap,
+                            panda::ArenaAllocator *allocator);
 };
 } // panda::proto
 #endif
