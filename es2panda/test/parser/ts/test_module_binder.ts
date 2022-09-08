@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+
 module A {
     class A { s: string }
 }
