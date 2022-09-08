@@ -54,6 +54,7 @@ struct SourceFile {
     std::string recordName {};
     std::string_view source {};
     parser::ScriptKind scriptKind {};
+    std::string sourcefile {};
     uint32_t hash {0};
 };
 
