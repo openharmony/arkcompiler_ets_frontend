@@ -24,6 +24,7 @@ import {
     LiteralBuffer,
     LiteralTag
 } from "./literal";
+import { hasAbstractModifier } from "./util";
 import { CmdOptions } from "../cmdOptions";
 
 export enum PrimitiveType {
@@ -258,13 +259,15 @@ export class ClassType extends BaseType {
     methods: Map<string, number> = new Map<string, number>();
     typeIndex: number;
     shiftedTypeIndex: number;
+    field_with_init_num: number = 0;
+    method_with_body_num: number = 0;
 
     constructor(classNode: ts.ClassDeclaration | ts.ClassExpression, builtinTypeIdx: number = undefined) {
         super();
         let res = this.calculateIndex(builtinTypeIdx);
         this.typeIndex = res.typeIndex;
         this.shiftedTypeIndex = res.shiftedTypeIndex;
-        
+
         // record type before its initialization, so its index can be recorded
         // in case there's recursive reference of this type
         this.addCurrentType(classNode, this.shiftedTypeIndex);
@@ -274,6 +277,12 @@ export class ClassType extends BaseType {
 
         if (!builtinTypeIdx || isGlobalDeclare()) {
             this.setTypeArrayBuffer(this, this.typeIndex);
+        }
+
+        // create class instance type used by recording 'this' later
+        if ((this.method_with_body_num > 0 || this.field_with_init_num > 0) && !hasAbstractModifier(classNode)) {
+            let instTypeIdx = this.typeChecker.getOrCreateInstanceType(this.shiftedTypeIndex);
+            this.typeRecorder.addUserDefinedTypeSet(instTypeIdx);
         }
     }
 
@@ -348,6 +357,9 @@ export class ClassType extends BaseType {
             this.staticFields.set(fieldName, fieldInfo);
         } else {
             this.fields.set(fieldName, fieldInfo);
+            if (member.initializer != undefined) {
+                this.field_with_init_num++;
+            }
         }
     }
 
@@ -372,6 +384,9 @@ export class ClassType extends BaseType {
             this.staticMethods.set(funcType.getFunctionName(), typeIndex!);
         } else {
             this.methods.set(funcType.getFunctionName(), typeIndex!);
+            if (member.body != undefined) {
+                this.method_with_body_num++;
+            }
         }
     }
 

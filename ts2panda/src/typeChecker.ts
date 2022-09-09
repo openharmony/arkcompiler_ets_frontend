@@ -140,11 +140,7 @@ export class TypeChecker {
             classTypeIndex = classType.shiftedTypeIndex;
         }
         if (getTypeForInstace) {
-            // class type was already created, need to get the classInstance
-            if (!TypeRecorder.getInstance().hasClass2InstanceMap(classTypeIndex)) {
-                new ClassInstType(classTypeIndex);
-            }
-            classTypeIndex = TypeRecorder.getInstance().getClass2InstanceMap(classTypeIndex)!;
+            classTypeIndex = this.getOrCreateInstanceType(classTypeIndex);
         }
         return classTypeIndex;
     }
@@ -171,7 +167,7 @@ export class TypeChecker {
             let interefaceType = new InterfaceType(<ts.InterfaceDeclaration>typeDeclNode);
             interfaceTypeIndex = interefaceType.shiftedTypeIndex;
         }
-        return interfaceTypeIndex;        
+        return interfaceTypeIndex;
     }
 
     public getTypeFromDecl(typeDeclNode: ts.Node, getTypeForInstace: boolean): number {
@@ -247,12 +243,12 @@ export class TypeChecker {
         return node.getSourceFile().hasNoDefaultLib;
     }
 
-    getOrCreateInstanceTypeForBuiltin(builtinIdx: number) {
+    getOrCreateInstanceType(classTypeIdx: number) {
         let typeRec = TypeRecorder.getInstance();
-        if (typeRec.hasClass2InstanceMap(builtinIdx)) {
-            return typeRec.getClass2InstanceMap(builtinIdx);
+        if (typeRec.hasClass2InstanceMap(classTypeIdx)) {
+            return typeRec.getClass2InstanceMap(classTypeIdx);
         }
-        let instanceType = new ClassInstType(builtinIdx);
+        let instanceType = new ClassInstType(classTypeIdx);
         return instanceType.shiftedTypeIndex;
     }
 
@@ -263,11 +259,7 @@ export class TypeChecker {
         }
         let builtinContainerType = new BuiltinContainerType(builtinContainerSignature);
         let builtinContainerTypeIdx = builtinContainerType.shiftedTypeIndex;
-        if (typeRec.hasClass2InstanceMap(builtinContainerTypeIdx)) {
-            return typeRec.getClass2InstanceMap(builtinContainerTypeIdx);
-        }
-        let instanceType = new ClassInstType(builtinContainerTypeIdx);
-        return instanceType.shiftedTypeIndex;
+        return this.getOrCreateInstanceType(builtinContainerTypeIdx);
     }
 
     getBuiltinTypeIndex(expr: ts.NewExpression) {
@@ -286,14 +278,14 @@ export class TypeChecker {
             }
             return this.getOrCreateInstanceTypeForBuiltinContainer(builtinContainerSignature);
         }
-        return this.getOrCreateInstanceTypeForBuiltin(BuiltinType[name]);
+        return this.getOrCreateInstanceType(BuiltinType[name]);
     }
 
     public getOrCreateRecordForDeclNode(initializer: ts.Node | undefined, variableNode?: ts.Node) {
         if (!initializer) {
             return PrimitiveType.ANY;
         }
-        
+
         let typeIndex = PrimitiveType.ANY;
         if (initializer.kind == ts.SyntaxKind.NewExpression && this.isBuiltinType(<ts.NewExpression>initializer)) {
             typeIndex = this.getBuiltinTypeIndex(<ts.NewExpression>initializer);
@@ -357,7 +349,7 @@ export class TypeChecker {
             let classType = new ClassType(classDeclNode, BuiltinType[className]);
             typeIndex = classType.shiftedTypeIndex;
         }
-        
+
         if (this.hasExportKeyword(classDeclNode)) {
             TypeRecorder.getInstance().setExportedType(className, typeIndex);
         } else if (this.hasDeclareKeyword(classDeclNode) && isGlobalDeclare()) {

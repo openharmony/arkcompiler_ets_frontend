@@ -218,7 +218,7 @@ export class CompilerDriver {
 
     private compileImpl(node: ts.SourceFile | ts.FunctionLikeDeclaration, scope: Scope,
         internalName: string, recorder: Recorder): void {
-        let pandaGen = new PandaGen(internalName, this.getParametersCount(node), scope);
+        let pandaGen = new PandaGen(internalName, node, this.getParametersCount(node), scope);
 
         if (CmdOptions.needRecordSourceCode() && !ts.isSourceFile(node)) {
             // souceCode of [ts.sourceFile] will be record in debugInfo later.
@@ -269,7 +269,7 @@ export class CompilerDriver {
 
     private compileUnitTestImpl(node: ts.SourceFile | ts.FunctionLikeDeclaration, scope: Scope,
         internalName: string, recorder: Recorder) {
-        let pandaGen = new PandaGen(internalName, this.getParametersCount(node), scope);
+        let pandaGen = new PandaGen(internalName, node, this.getParametersCount(node), scope);
         if (CmdOptions.needRecordSourceCode() && !ts.isSourceFile(node)) {
             pandaGen.setSourceCode(node.getText());
         }

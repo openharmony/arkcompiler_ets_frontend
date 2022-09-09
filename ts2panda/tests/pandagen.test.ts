@@ -27,7 +27,7 @@ import { checkInstructions } from "./utils/base";
 
 describe("PandaGenTest", function () {
     it("StoreAccumulator", function () {
-        let pandaGen = new PandaGen("pandaGen", 0);
+        let pandaGen = new PandaGen("pandaGen", undefined, 0);
         let vreg = new VReg();
         pandaGen.storeAccumulator(ts.createNode(0), vreg);
         let insns = pandaGen.getInsns();

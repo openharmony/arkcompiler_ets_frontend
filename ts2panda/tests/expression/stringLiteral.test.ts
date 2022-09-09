@@ -24,7 +24,7 @@ import { checkInstructions } from "../utils/base";
 
 describe("compileStringLiteral", function () {
     it("i am a string", function () {
-        let pandaGen = new PandaGen("ignored", 0, undefined);
+        let pandaGen = new PandaGen("ignored", undefined, 0, undefined);
         let node: ts.StringLiteral = ts.createStringLiteral("i am a string");
         compileStringLiteral(pandaGen, node);
         let insns = pandaGen.getInsns();
