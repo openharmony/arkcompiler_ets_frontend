@@ -141,6 +141,7 @@ protected:
     VReg spillIndex_ {0};
     VReg regEnd_ {0};
     size_t limit_ {0};
+    std::unordered_map<VReg, VReg> spillMap_ {};
 };
 
 class RegAllocator : public RegAllocatorBase {

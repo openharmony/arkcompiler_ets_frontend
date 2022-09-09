@@ -59,6 +59,7 @@ VReg RegAllocatorBase::Spill(IRNode *ins, VReg reg)
 {
     VReg spillReg = pg_->AllocReg();
     VReg origin = spillIndex_++;
+    spillMap_.emplace(origin, reg);
 
     Add<MovDyn>(ins->Node(), spillReg, origin);
     Add<MovDyn>(ins->Node(), origin, reg);
@@ -71,8 +72,10 @@ void RegAllocatorBase::Restore(IRNode *ins)
     spillIndex_--;
     VReg spillReg = spillIndex_;
     VReg origin = regEnd_ + spillIndex_;
+    VReg actualReg = spillMap_[spillReg];
 
-    Add<MovDyn>(ins->Node(), origin, spillReg);
+    Add<MovDyn>(ins->Node(), actualReg, spillReg);
+    Add<MovDyn>(ins->Node(), spillReg, origin);
 }
 
 // RegAllocator
@@ -107,6 +110,8 @@ void RegAllocator::Run(IRNode *ins)
     while (spillIndex_ != 0) {
         Restore(ins);
     }
+
+    spillMap_.clear();
 }
 
 // RangeRegAllocator
