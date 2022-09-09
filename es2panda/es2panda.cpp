@@ -144,7 +144,7 @@ void Compiler::SelectCompileFile(CompilerOptions &options,
     options.sourceFiles = inputList;
 }
 
-void Compiler::CompileFiles(CompilerOptions &options,
+int Compiler::CompileFiles(CompilerOptions &options,
     std::map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
     std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
     panda::ArenaAllocator *allocator)
@@ -154,17 +154,22 @@ void Compiler::CompileFiles(CompilerOptions &options,
         symbolTable = new util::SymbolTable(options.hotfixOptions.symbolTable, options.hotfixOptions.dumpSymbolTable);
         if (!symbolTable->Initialize()) {
             std::cerr << "Exits due to hot fix initialize failed!" << std::endl;
-            return;
+            return 1;
         }
     }
 
     SelectCompileFile(options, cacheProgs, progsInfo, allocator);
 
+    bool failed = false;
     auto queue = new compiler::CompileFileQueue(options.fileThreadCount, &options, progsInfo, symbolTable, allocator);
 
-    queue->Schedule();
-    queue->Consume();
-    queue->Wait();
+    try {
+        queue->Schedule();
+        queue->Consume();
+        queue->Wait();
+    } catch (const class Error &e) {
+        failed = true;
+    }
 
     delete queue;
     queue = nullptr;
@@ -173,6 +178,8 @@ void Compiler::CompileFiles(CompilerOptions &options,
         delete symbolTable;
         symbolTable = nullptr;
     }
+
+    return failed ? 1 : 0;
 }
 
 panda::pandasm::Program *Compiler::CompileFile(CompilerOptions &options, SourceFile *src,
@@ -203,7 +210,7 @@ panda::pandasm::Program *Compiler::CompileFile(CompilerOptions &options, SourceF
 
         std::cerr << err.TypeString() << ": " << err.Message();
         std::cerr << " [" << src->fileName << ":" << err.Line() << ":" << err.Col() << "]" << std::endl;
-        return nullptr;
+        throw err;
     }
     return program;
 }

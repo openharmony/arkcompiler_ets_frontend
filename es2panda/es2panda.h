@@ -165,7 +165,7 @@ public:
         util::SymbolTable *symbolTable = nullptr);
     panda::pandasm::Program *CompileFile(CompilerOptions &options, SourceFile *src, util::SymbolTable *symbolTable_);
 
-    static void CompileFiles(CompilerOptions &options,
+    static int CompileFiles(CompilerOptions &options,
         std::map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
         std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
         panda::ArenaAllocator *allocator);
