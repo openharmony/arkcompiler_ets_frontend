@@ -2657,6 +2657,7 @@ ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition()
 ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool idRequired, bool isDeclare,
                                                       bool isAbstract)
 {
+    isDeclare = isDeclare | (context_.Status() & ParserStatus::IN_AMBIENT_CONTEXT);
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer_->NextToken();
 
@@ -2758,6 +2759,8 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
     ir::MethodDefinition *ctor = nullptr;
     ArenaVector<ir::Statement *> properties(Allocator()->Adapter());
     ArenaVector<ir::TSIndexSignature *> indexSignatures(Allocator()->Adapter());
+    bool hasConstructorFuncBody = false;
+    bool isCtorContinuousDefined = true;
 
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
@@ -2772,13 +2775,18 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
         }
 
         if (IsConstructor(property)) {
-            if (!isDeclare && ctor) {
+            if (!isDeclare && !isCtorContinuousDefined) {
+                ThrowSyntaxError("Constructor implementation is missing.", property->Start());
+            }
+  
+            if (hasConstructorFuncBody) {
                 ThrowSyntaxError("Multiple constructor implementations are not allowed.", property->Start());
             }
             ctor = property->AsMethodDefinition();
+            hasConstructorFuncBody = ctor->Value()->Function()->Body() != nullptr;
             continue;
         }
-
+        isCtorContinuousDefined = ctor == nullptr;
         properties.push_back(property);
     }
 
@@ -2788,8 +2796,13 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
     if (ctor == nullptr) {
         ctor = CreateImplicitConstructor(hasSuperClass, isDeclare);
         ctor->SetRange({startLoc, classBodyEndLoc});
+        hasConstructorFuncBody = !isDeclare;
     }
     lexer_->NextToken();
+
+    if (!isDeclare && !hasConstructorFuncBody) {
+        ThrowSyntaxError("Constructor implementation is missing.", ctor->Start());
+    }
 
     auto *classDefinition = AllocNode<ir::ClassDefinition>(
         classCtx.GetScope(), identNode, typeParamDecl, superTypeParams, std::move(implements), ctor, superClass,
