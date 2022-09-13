@@ -81,6 +81,8 @@ struct CompilerOptions {
     std::string debugInfoSourceFile {};
     std::vector<es2panda::SourceFile> sourceFiles;
     HotfixOptions hotfixOptions;
+    bool bcVersion {false};
+    bool bcMinVersion {false};
 };
 
 enum class ErrorType {

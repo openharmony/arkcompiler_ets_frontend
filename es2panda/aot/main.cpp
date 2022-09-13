@@ -141,6 +141,14 @@ int Run(int argc, const char **argv)
         return 1;
     }
 
+    if (options->CompilerOptions().bcVersion || options->CompilerOptions().bcMinVersion) {
+        std::string version = options->CompilerOptions().bcVersion ?
+            panda::panda_file::GetVersion(panda::panda_file::version) :
+            panda::panda_file::GetVersion(panda::panda_file::minVersion);
+        std::cout << version << std::endl;
+        return 0;
+    }
+
     std::map<std::string, panda::es2panda::util::ProgramCache*> programsInfo;
     size_t expectedProgsCount = options->CompilerOptions().sourceFiles.size();
     panda::ArenaAllocator allocator(panda::SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
