@@ -151,10 +151,9 @@ int Run(int argc, const char **argv)
             options->CompilerOptions().isDebug, &allocator);
     }
 
-    Compiler::CompileFiles(options->CompilerOptions(), cachePrograms, programsInfo, &allocator);
-
+    int ret = Compiler::CompileFiles(options->CompilerOptions(), cachePrograms, programsInfo, &allocator);
     if (options->ParseOnly()) {
-        return 0;
+        return ret;
     }
 
     if (!options->NpmModuleEntryList().empty()) {
