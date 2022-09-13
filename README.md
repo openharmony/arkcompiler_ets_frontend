@@ -9,7 +9,7 @@
 
 ## Introduction<a name="section11660541593"></a>
 
-ets_frontend is a front-end tool in the ARK Runtime Subsystem. It converts JavaScript(JS) files into ARK bytecode files.
+ets_frontend is a front-end tool in the ARK Runtime Subsystem. Combined with the ace-ets2bundle component, it supports converting ETS files into ARK bytecode files.
 
 For more information, see: [ARK Runtime Subsystem](https://gitee.com/openharmony/docs/blob/master/en/readme/ARK-Runtime-Subsystem.md).
 
