@@ -9,7 +9,7 @@
 
 ## 简介<a name="section11660541593"></a>
 
-ets_frontend组件是方舟运行时子系统的前端工具，支持将JavaScript文件转换为方舟字节码文件。
+ets_frontend组件是方舟运行时子系统的前端工具，结合ace-ets2bundle组件，支持将ets文件转换为方舟字节码文件。
 
 更多信息请参考：[方舟运行时子系统](https://gitee.com/openharmony/docs/blob/master/zh-cn/readme/ARK-Runtime-Subsystem-zh.md)
 
