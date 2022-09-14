@@ -38,6 +38,8 @@ def parse_args():
                         help='whether is module')
     parser.add_argument("--commonjs", action='store_true',
                         help='whether is commonjs')
+    parser.add_argument("--merge-abc", action='store_true',
+                        help='whether is merge abc')
     arguments = parser.parse_args()
     return arguments
 
@@ -65,6 +67,9 @@ def gen_abc_info(input_arguments):
     if input_arguments.commonjs:
         src_index = cmd.index(input_arguments.src_js)
         cmd.insert(src_index, '--commonjs')
+    if input_arguments.merge_abc:
+        src_index = cmd.index(input_arguments.src_js)
+        cmd.insert(src_index, '--merge-abc')
         # insert d.ts option to cmd later
     run_command(cmd, path)
 
