@@ -699,7 +699,7 @@
                               },
                               "end": {
                                 "line": 19,
-                                "column": 66
+                                "column": 65
                               }
                             }
                           }

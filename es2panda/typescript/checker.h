@@ -152,6 +152,11 @@ public:
         return globalTypes_->GlobalStringType();
     }
 
+    Type *GlobalSymbolType()
+    {
+        return globalTypes_->GlobalSymbolType();
+    }
+
     Type *GlobalBooleanType()
     {
         return globalTypes_->GlobalBooleanType();

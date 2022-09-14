@@ -24,6 +24,7 @@
     _(TypeFlag::BIGINT_LITERAL, BigintLiteralType)   \
     _(TypeFlag::NUMBER, NumberType)                  \
     _(TypeFlag::STRING, StringType)                  \
+    _(TypeFlag::SYMBOL, SymbolType)                  \
     _(TypeFlag::BOOLEAN, BooleanType)                \
     _(TypeFlag::VOID, VoidType)                      \
     _(TypeFlag::NULL_TYPE, NullType)                 \

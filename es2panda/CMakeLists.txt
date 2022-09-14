@@ -206,13 +206,16 @@ set(ES2PANDA_LIB_SRC
   ir/ts/tsNullKeyword.cpp
   ir/ts/tsNumberKeyword.cpp
   ir/ts/tsObjectKeyword.cpp
+  ir/ts/tsOptionalType.cpp
   ir/ts/tsParameterProperty.cpp
   ir/ts/tsParenthesizedType.cpp
   ir/ts/tsPrivateIdentifier.cpp
   ir/ts/tsPropertySignature.cpp
   ir/ts/tsQualifiedName.cpp
+  ir/ts/tsRestType.cpp
   ir/ts/tsSignatureDeclaration.cpp
   ir/ts/tsStringKeyword.cpp
+  ir/ts/tsSymbolKeyword.cpp
   ir/ts/tsTemplateLiteralType.cpp
   ir/ts/tsThisType.cpp
   ir/ts/tsTupleType.cpp
@@ -274,6 +277,7 @@ set(ES2PANDA_LIB_SRC
   typescript/types/signature.cpp
   typescript/types/stringLiteralType.cpp
   typescript/types/stringType.cpp
+  typescript/types/symbolType.cpp
   typescript/types/tupleType.cpp
   typescript/types/type.cpp
   typescript/types/typeParameter.cpp

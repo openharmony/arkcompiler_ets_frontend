@@ -31,11 +31,12 @@ namespace panda::es2panda::ir {
 
 class TSNamedTupleMember : public Expression {
 public:
-    explicit TSNamedTupleMember(Expression *label, Expression *elementType, bool optional)
+    explicit TSNamedTupleMember(Expression *label, Expression *elementType, bool optional, bool rest)
         : Expression(AstNodeType::TS_NAMED_TUPLE_MEMBER),
           label_(label),
           elementType_(elementType),
-          optional_(optional)
+          optional_(optional),
+          rest_(rest)
     {
     }
 
@@ -54,6 +55,11 @@ public:
         return optional_;
     }
 
+    bool IsRest() const
+    {
+        return rest_;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
@@ -63,6 +69,7 @@ private:
     Expression *label_;
     Expression *elementType_;
     bool optional_;
+    bool rest_;
 };
 }  // namespace panda::es2panda::ir
 

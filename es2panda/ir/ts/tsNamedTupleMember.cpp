@@ -30,7 +30,8 @@ void TSNamedTupleMember::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSNamedTupleMember"},
                  {"elementType", elementType_},
                  {"label", label_},
-                 {"optional", AstDumper::Optional(optional_)}});
+                 {"optional", AstDumper::Optional(optional_)},
+                 {"rest", AstDumper::Optional(rest_)}});
 }
 
 void TSNamedTupleMember::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}

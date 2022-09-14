@@ -142,6 +142,7 @@ keywords = [
         "string" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_STRING"],
         "super" => ["TokenType::KEYW_SUPER", "TokenType::KEYW_SUPER"],
         "switch" => ["TokenType::KEYW_SWITCH", "TokenType::KEYW_SWITCH"],
+        "symbol" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_SYMBOL"],
     },
 
     # keywords start with 't'
@@ -157,6 +158,7 @@ keywords = [
     # keywords start with 'u'
     {
         "undefined" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_UNDEFINED"],
+        "unique" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_UNIQUE"],
         "unknown" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_UNKNOWN"],
     },
 

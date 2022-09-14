@@ -21,7 +21,7 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 16
+                      "column": 15
                     }
                   }
                 },
@@ -34,7 +34,7 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 24
+                      "column": 23
                     }
                   }
                 },
@@ -47,7 +47,7 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 33
+                      "column": 32
                     }
                   }
                 },
@@ -60,7 +60,7 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 41
+                      "column": 40
                     }
                   }
                 },
@@ -73,7 +73,7 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 49
+                      "column": 48
                     }
                   }
                 }

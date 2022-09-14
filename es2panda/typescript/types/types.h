@@ -36,6 +36,7 @@
 #include "objectType.h"
 #include "stringLiteralType.h"
 #include "stringType.h"
+#include "symbolType.h"
 #include "tupleType.h"
 #include "undefinedType.h"
 #include "unionType.h"

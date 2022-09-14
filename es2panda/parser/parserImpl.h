@@ -251,6 +251,7 @@ private:
     ir::Expression *ParseTsIndexAccessType(ir::Expression *typeName);
     ir::Expression *ParseTsQualifiedReference(ir::Expression *typeName);
     ir::Expression *ParseTsTypeReferenceOrQuery(bool parseQuery = false);
+    bool IsTSNamedTupleMember();
     ir::Expression *ParseTsTupleElement(ir::TSTupleKind *kind, bool *seenOptional);
     ir::TSTupleType *ParseTsTupleType();
     ir::TSImportType *ParseTsImportType(const lexer::SourcePosition &startLoc, bool isTypeof = false);

@@ -52,7 +52,7 @@
                         },
                         "end": {
                           "line": 17,
-                          "column": 20
+                          "column": 19
                         }
                       }
                     },
@@ -94,7 +94,7 @@
                         },
                         "end": {
                           "line": 17,
-                          "column": 32
+                          "column": 31
                         }
                       }
                     }
@@ -106,7 +106,7 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 33
+                      "column": 32
                     }
                   }
                 },
@@ -150,7 +150,7 @@
                         },
                         "end": {
                           "line": 17,
-                          "column": 52
+                          "column": 51
                         }
                       }
                     },
@@ -176,7 +176,7 @@
                         },
                         "end": {
                           "line": 17,
-                          "column": 62
+                          "column": 61
                         }
                       }
                     }
@@ -188,7 +188,7 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 63
+                      "column": 62
                     }
                   }
                 }

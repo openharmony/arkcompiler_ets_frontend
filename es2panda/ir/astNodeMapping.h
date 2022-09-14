@@ -78,6 +78,7 @@
     _(TS_NUMBER_KEYWORD, TSNumberKeyword)                            \
     _(TS_ANY_KEYWORD, TSAnyKeyword)                                  \
     _(TS_STRING_KEYWORD, TSStringKeyword)                            \
+    _(TS_SYMBOL_KEYWORD, TSSymbolKeyword)                            \
     _(TS_BOOLEAN_KEYWORD, TSBooleanKeyword)                          \
     _(TS_VOID_KEYWORD, TSVoidKeyword)                                \
     _(TS_UNDEFINED_KEYWORD, TSUndefinedKeyword)                      \
@@ -87,6 +88,8 @@
     _(TS_NEVER_KEYWORD, TSNeverKeyword)                              \
     _(TS_NON_NULL_EXPRESSION, TSNonNullExpression)                   \
     _(TS_NULL_KEYWORD, TSNullKeyword)                                \
+    _(TS_OPTIONAL_TYPE, TSOptionalType)                              \
+    _(TS_REST_TYPE, TSRestType)                                      \
     _(TS_ARRAY_TYPE, TSArrayType)                                    \
     _(TS_UNION_TYPE, TSUnionType)                                    \
     _(TS_TYPE_LITERAL, TSTypeLiteral)                                \

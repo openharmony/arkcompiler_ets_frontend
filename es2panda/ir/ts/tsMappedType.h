@@ -32,10 +32,11 @@ namespace panda::es2panda::ir {
 
 class TSMappedType : public TypeNode {
 public:
-    explicit TSMappedType(TSTypeParameter *typeParameter, Expression *typeAnnotation, MappedOption readonly,
-                          MappedOption optional)
+    explicit TSMappedType(TSTypeParameter *typeParameter, Expression *nameKeyType, Expression *typeAnnotation,
+                          MappedOption readonly, MappedOption optional)
         : TypeNode(AstNodeType::TS_MAPPED_TYPE),
           typeParameter_(typeParameter),
+          nameKeyType_(nameKeyType),
           typeAnnotation_(typeAnnotation),
           readonly_(readonly),
           optional_(optional)
@@ -70,6 +71,7 @@ public:
 
 private:
     TSTypeParameter *typeParameter_;
+    Expression *nameKeyType_;
     Expression *typeAnnotation_;
     MappedOption readonly_;
     MappedOption optional_;

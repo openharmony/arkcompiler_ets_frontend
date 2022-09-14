@@ -149,7 +149,7 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 41
+                      "column": 40
                     }
                   }
                 },
@@ -190,7 +190,7 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 58
+                      "column": 57
                     }
                   }
                 }

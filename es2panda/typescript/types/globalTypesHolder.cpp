@@ -18,6 +18,7 @@
 #include <typescript/types/numberType.h>
 #include <typescript/types/anyType.h>
 #include <typescript/types/stringType.h>
+#include <typescript/types/symbolType.h>
 #include <typescript/types/booleanType.h>
 #include <typescript/types/voidType.h>
 #include <typescript/types/nullType.h>
@@ -41,6 +42,7 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator)
     globalTypes_[static_cast<size_t>(GlobalTypeId::NUMBER)] = allocator->New<NumberType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::ANY)] = allocator->New<AnyType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::STRING)] = allocator->New<StringType>();
+    globalTypes_[static_cast<size_t>(GlobalTypeId::SYMBOL)] = allocator->New<SymbolType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::BOOLEAN)] = allocator->New<BooleanType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::VOID)] = allocator->New<VoidType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::NULL_ID)] = allocator->New<NullType>();
@@ -61,7 +63,7 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator)
     globalTypes_[static_cast<size_t>(GlobalTypeId::PRIMITIVE)] = allocator->New<UnionType>(
         allocator,
         std::initializer_list<Type *> {GlobalNumberType(), GlobalStringType(), GlobalBigintType(), GlobalBooleanType(),
-                                       GlobalVoidType(), GlobalUndefinedType(), GlobalNullType()});
+                                       GlobalVoidType(), GlobalUndefinedType(), GlobalNullType(), GlobalSymbolType()});
     globalTypes_[static_cast<size_t>(GlobalTypeId::EMPTY_TUPLE)] = allocator->New<TupleType>(allocator);
     globalTypes_[static_cast<size_t>(GlobalTypeId::EMPTY_OBJECT)] = allocator->New<ObjectLiteralType>();
     globalTypes_[static_cast<size_t>(GlobalTypeId::RESOLVING_RETURN_TYPE)] = allocator->New<AnyType>();
@@ -81,6 +83,11 @@ Type *GlobalTypesHolder::GlobalAnyType()
 Type *GlobalTypesHolder::GlobalStringType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::STRING));
+}
+
+Type *GlobalTypesHolder::GlobalSymbolType()
+{
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::SYMBOL));
 }
 
 Type *GlobalTypesHolder::GlobalBooleanType()
