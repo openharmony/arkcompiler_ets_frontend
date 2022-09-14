@@ -1357,8 +1357,18 @@ util::StringView GetTSPropertyName(ir::Expression *key)
     }
 }
 
-void ParserImpl::CheckObjectTypeForDuplicatedProperties(ir::Expression *key, ArenaVector<ir::Expression *> &members)
+void ParserImpl::CheckObjectTypeForDuplicatedProperties(ir::Expression *member, ArenaVector<ir::Expression *> &members)
 {
+    ir::Expression *key = nullptr;
+
+    if (member->IsTSPropertySignature()) {
+        key = member->AsTSPropertySignature()->Key();
+    } else if (member->IsTSMethodSignature()) {
+        key = member->AsTSMethodSignature()->Key();
+    } else {
+        return;
+    }
+
     if (!key->IsIdentifier() && !key->IsNumberLiteral() && !key->IsStringLiteral()) {
         return;
     }
@@ -1384,6 +1394,10 @@ void ParserImpl::CheckObjectTypeForDuplicatedProperties(ir::Expression *key, Are
             continue;
         }
 
+        if (member->IsTSMethodSignature() && it->Type() == ir::AstNodeType::TS_METHOD_SIGNATURE) {
+            continue;
+        }
+
         if (GetTSPropertyName(key) == GetTSPropertyName(compare)) {
             ThrowSyntaxError("Duplicated identifier", key->Start());
         }
@@ -1401,11 +1415,7 @@ ArenaVector<ir::Expression *> ParserImpl::ParseTsTypeLiteralOrInterface()
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         ir::Expression *member = ParseTsTypeLiteralOrInterfaceMember();
 
-        if (member->IsTSPropertySignature()) {
-            CheckObjectTypeForDuplicatedProperties(member->AsTSPropertySignature()->Key(), members);
-        } else if (member->IsTSMethodSignature()) {
-            CheckObjectTypeForDuplicatedProperties(member->AsTSMethodSignature()->Key(), members);
-        }
+        CheckObjectTypeForDuplicatedProperties(member, members);
 
         members.push_back(member);
 
