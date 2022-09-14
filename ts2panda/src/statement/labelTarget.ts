@@ -22,9 +22,11 @@ import { Label } from "../irnodes";
 export class LabelTarget {
     private static name2LabelTarget: Map<string, LabelTarget> = new Map<string, LabelTarget>();
     private static labelTargetStack: LabelTarget[] = [];
+    private static curLoopLabelTarget: LabelTarget | undefined = undefined;
     private node: ts.Node;
     private breakTargetLabel: Label;
     private continueTargetLabel: Label | undefined;
+    private preLoopLabelTarget: LabelTarget | undefined = undefined;
     private hasLoopEnv: boolean;
     private loopEnvLevel: number;
     private tryStatement: TryStatement | undefined;
@@ -36,6 +38,10 @@ export class LabelTarget {
         this.hasLoopEnv = hasLoopEnv;
         this.loopEnvLevel = hasLoopEnv ? 1 : 0;
         this.tryStatement = TryStatement.getCurrentTryStatement();
+        if (continueTargetLabel) {
+            this.preLoopLabelTarget = LabelTarget.curLoopLabelTarget;
+            LabelTarget.curLoopLabelTarget = this;
+        }
     }
 
     containLoopEnv() {
@@ -56,6 +62,10 @@ export class LabelTarget {
 
     getTryStatement() {
         return this.tryStatement;
+    }
+
+    getPreLoopLabelTarget() {
+        return this.preLoopLabelTarget;
     }
 
     getCorrespondingNode() {
@@ -84,15 +94,6 @@ export class LabelTarget {
         return undefined;
     }
 
-    // this API used for get uplevel continueLabel when compile switchStatement
-    static getCloseContinueTarget(): Label | undefined {
-        let labelTarget = LabelTarget.getCloseLabelTarget();
-        if (labelTarget) {
-            return labelTarget.continueTargetLabel;
-        }
-        return undefined;
-    }
-
     static pushLabelTarget(labelTarget: LabelTarget) {
         if (labelTarget.hasLoopEnv) {
             if (TryStatement.getCurrentTryStatement()) {
@@ -104,11 +105,17 @@ export class LabelTarget {
     }
 
     static popLabelTarget() {
-        if (!LabelTarget.isLabelTargetsEmpty() && LabelTarget.labelTargetStack.pop().hasLoopEnv) {
-            if (TryStatement.getCurrentTryStatement()) {
-                TryStatement.getCurrentTryStatement().decreaseLoopEnvLevel();
+        if (!LabelTarget.isLabelTargetsEmpty()) {
+            let popedLabelTarget = LabelTarget.labelTargetStack.pop();
+            if (popedLabelTarget.containLoopEnv()) {
+                if (TryStatement.getCurrentTryStatement()) {
+                    TryStatement.getCurrentTryStatement().decreaseLoopEnvLevel();
+                }
+                LabelTarget.labelTargetStack.forEach(lt => lt.decreaseLoopEnvLevel());
             }
-            LabelTarget.labelTargetStack.forEach(lt => lt.decreaseLoopEnvLevel());
+            if (popedLabelTarget.getContinueTargetLabel()) {
+                LabelTarget.curLoopLabelTarget = popedLabelTarget.getPreLoopLabelTarget();
+            }
         }
     }
 
@@ -131,13 +138,18 @@ export class LabelTarget {
         LabelTarget.name2LabelTarget.delete(labelName);
     }
 
+    static getCurLoopLabelTarget() {
+        return LabelTarget.curLoopLabelTarget;
+    }
+
     static getLabelTarget(stmt: ts.BreakOrContinueStatement): LabelTarget {
         let labelTarget: LabelTarget;
         if (stmt.label) {
             let labelName = jshelpers.getTextOfIdentifierOrLiteral(stmt.label);
             labelTarget = LabelTarget.name2LabelTarget.get(labelName)!;
         } else {
-            labelTarget = LabelTarget.getCloseLabelTarget()!;
+            labelTarget =
+                ts.isContinueStatement(stmt) ? LabelTarget.getCurLoopLabelTarget() : LabelTarget.getCloseLabelTarget()!;
         }
         return labelTarget;
     }
