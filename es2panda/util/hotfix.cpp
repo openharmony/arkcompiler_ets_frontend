@@ -32,12 +32,6 @@ const std::string EXTERNAL_ATTRIBUTE = "external";
 const uint32_t PATCH_ENV_VREG = 0;  // reuse first param vreg
 const panda::panda_file::SourceLang SRC_LANG = panda::panda_file::SourceLang::ECMASCRIPT;
 
-const std::string FUNC_MAIN = "func_main_0";
-// stores newly added function define ins, runtime will execute
-const std::string PATCH_FUNC_MAIN_0 = "patch_main_0";
-// stores modified function and class define ins, runtime will scan but not execute
-const std::string PATCH_FUNC_MAIN_1 = "patch_main_1";
-
 void Hotfix::ProcessFunction(const compiler::PandaGen *pg, panda::pandasm::Function *func,
     LiteralBuffers &literalBuffers)
 {
@@ -219,7 +213,7 @@ bool Hotfix::IsScopeValidToPatchLexical(binder::VariableScope *scope)
     }
 
     auto funcName = scope->AsFunctionVariableScope()->InternalName();
-    if (std::string(funcName) != (recordName_ + FUNC_MAIN)) {
+    if (std::string(funcName) != funcMain0_) {
         return false;
     }
     return true;
@@ -234,7 +228,7 @@ void Hotfix::AllocSlotfromPatchEnv(const std::string &variableName)
 
 uint32_t Hotfix::GetSlotIdFromSymbolTable(const std::string &variableName)
 {
-    auto functionIter = originFunctionInfo_->find(recordName_ + FUNC_MAIN);
+    auto functionIter = originFunctionInfo_->find(funcMain0_);
     if (functionIter != originFunctionInfo_->end()) {
         auto lexenvIter = functionIter->second.lexenv.find(variableName);
         if (lexenvIter != functionIter->second.lexenv.end()) {
@@ -374,8 +368,8 @@ void Hotfix::Finalize(panda::pandasm::Program **prog)
         return;
     }
 
-    panda::pandasm::Function patchFuncMain0(recordName_ + PATCH_FUNC_MAIN_0, SRC_LANG);
-    panda::pandasm::Function patchFuncMain1(recordName_ + PATCH_FUNC_MAIN_1, SRC_LANG);
+    panda::pandasm::Function patchFuncMain0(patchMain0_, SRC_LANG);
+    panda::pandasm::Function patchFuncMain1(patchMain1_, SRC_LANG);
     CreateFunctionPatchMain0AndMain1(patchFuncMain0, patchFuncMain1);
 
     (*prog)->function_table.emplace(patchFuncMain0.name, std::move(patchFuncMain0));
@@ -387,7 +381,7 @@ bool Hotfix::CompareLexenv(const std::string &funcName, const compiler::PandaGen
 {
     auto &lexicalVarNameAndTypes = pg->TopScope()->GetLexicalVarNameAndTypes();
     auto &lexenv = bytecodeInfo.lexenv;
-    if (funcName != (recordName_ + FUNC_MAIN)) {
+    if (funcName != funcMain0_) {
         if (lexenv.size() != lexicalVarNameAndTypes.size()) {
             std::cerr << "Found lexenv size changed, not supported!" << std::endl;
             patchError_ = true;
@@ -458,7 +452,7 @@ void Hotfix::HandleFunction(const compiler::PandaGen *pg, panda::pandasm::Functi
     }
 
     auto funcHash = std::to_string(hashList.back().second);
-    if (funcHash == bytecodeInfo.funcHash) {
+    if (funcHash == bytecodeInfo.funcHash || funcName == funcMain0_) {
         func->metadata->SetAttribute(EXTERNAL_ATTRIBUTE);
     } else {
         patchFuncNames_.insert(funcName);
