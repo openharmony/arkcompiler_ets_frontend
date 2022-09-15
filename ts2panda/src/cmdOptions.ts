@@ -50,6 +50,7 @@ const ts2pandaOptions = [
     { name: 'function-sourcecode', type: Boolean, defaultValue: false, description: "Record functions' sourceCode to support the feature of [function].toString()" },
     { name: 'expression-watch-toolchain', type: String, defaultValue: "es2panda", description: "Specify the tool chain used to transform the expression" },
     { name: 'source-file', type: String, defaultValue: "", description: "specify the file path info recorded in generated abc" },
+    { name: 'generate-tmp-file', type: Boolean, defaultValue: false, description: "whether to generate intermediate temporary files"},
 ]
 
 
@@ -305,6 +306,13 @@ export class CmdOptions {
 
     static getSourceFile(): string {
         return this.options["source-file"];
+    }
+
+    static needGenerateTmpFile(): boolean {
+        if (!this.options) {
+            return false;
+        }
+        return this.options["generate-tmp-file"];
     }
 
     // @ts-ignore
