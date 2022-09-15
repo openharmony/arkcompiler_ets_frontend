@@ -171,8 +171,9 @@ export class Ts2Panda {
         let literalArrays = PandaGen.getLiteralArrayBuffer();
         if (CmdOptions.enableTypeLog()) {
             console.log("-------- LiteralArrayBuffer --------");
+            const util = require('util');
             for (let e of PandaGen.getLiteralArrayBuffer()) {
-                console.log(JSON.parse(JSON.stringify(e)));
+                console.log(util.inspect(JSON.parse(JSON.stringify(e)), { maxArrayLength: null }));
             }
         }
 
