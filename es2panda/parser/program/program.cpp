@@ -36,6 +36,7 @@ Program::Program(Program &&other)
       sourceCode_(other.sourceCode_),
       sourceFile_(other.sourceFile_),
       recordName_(other.recordName_),
+      formatedRecordName_(other.formatedRecordName_),
       kind_(other.kind_),
       extension_(other.extension_),
       lineIndex_(other.lineIndex_),

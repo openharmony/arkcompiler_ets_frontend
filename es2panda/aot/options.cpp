@@ -38,11 +38,6 @@ T RemoveExtension(T const &filename)
     return P > 0 && P != T::npos ? filename.substr(0, P) : filename;
 }
 
-static std::string FormatRecordName(const std::string &recordName)
-{
-    return recordName + ".";
-}
-
 static std::vector<std::string> GetStringItems(std::string &input, const std::string &delimiter)
 {
     std::vector<std::string> items;
@@ -81,7 +76,7 @@ bool Options::CollectInputFilesFromFileList(const std::string &input)
         }
         // itemList: [filePath, recordName, moduleKind, sourceFile]
         std::string fileName = itemList[0];
-        std::string recordName = FormatRecordName(itemList[1]);
+        std::string recordName = itemList[1];
         parser::ScriptKind scriptKind;
         if (itemList[2] == "script") {
             scriptKind = parser::ScriptKind::SCRIPT;
@@ -292,7 +287,6 @@ bool Options::Parse(int argc, const char **argv)
             recordName_ = compilerOutput_.empty() ? "Base64Output" :
                 RemoveExtension(util::Helpers::BaseName(compilerOutput_));
         }
-        recordName_ = FormatRecordName(recordName_);
     }
 
     if (!inputIsEmpty) {

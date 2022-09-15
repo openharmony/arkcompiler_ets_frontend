@@ -252,16 +252,14 @@ function compileUnCompiledVariable(compiler: Compiler, prop: Property, classReg:
 
 function createClassLiteralBuf(compiler: Compiler, classBuffer: LiteralBuffer,
     stmt: ts.ClassLikeDeclaration, vregs: VReg[]) {
-    let classLiteralBuf = PandaGen.getLiteralArrayBuffer();
-    classLiteralBuf.push(classBuffer);
+    let litId: string = PandaGen.appendLiteralArrayBuffer(classBuffer);
 
     let ctorNode = compiler.getRecorder().getCtorOfClass(stmt);
     let internalName = compiler.getCompilerDriver().getInternalNameForCtor(stmt, <ts.ConstructorDeclaration>ctorNode);
 
     let pandaGen = compiler.getPandaGen();
     let parameterLength = getParameterLength4Ctor(stmt);
-    let buffIdx = classLiteralBuf.length - 1;
-    pandaGen.defineClassWithBuffer(stmt, internalName, buffIdx, parameterLength, vregs[0]);
+    pandaGen.defineClassWithBuffer(stmt, internalName, litId, parameterLength, vregs[0]);
     pandaGen.storeAccumulator(stmt, vregs[1]);
 }
 

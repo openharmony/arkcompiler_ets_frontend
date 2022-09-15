@@ -346,9 +346,8 @@ export function createEmptyObject() {
     return new Createemptyobject();
 }
 
-export function createObjectWithBuffer(idx: number) {
-    let litId: string = idx.toString();
-    return new Createobjectwithbuffer(new Imm(0), litId);
+export function createObjectWithBuffer(bufferId: string) {
+    return new Createobjectwithbuffer(new Imm(0), bufferId);
 }
 
 export function setObjectWithProto(proto: VReg) {
@@ -367,17 +366,15 @@ export function createEmptyArray() {
     return new Createemptyarray(new Imm(0));
 }
 
-export function createArrayWithBuffer(idx: number) {
-    let litId: string = idx.toString();
-    return new Createarraywithbuffer(new Imm(0), litId);
+export function createArrayWithBuffer(bufferId: string) {
+    return new Createarraywithbuffer(new Imm(0), bufferId);
 }
 
 export function storeArraySpread(array: VReg, index: VReg) {
     return new Starrayspread(array, index);
 }
 
-export function defineClassWithBuffer(id: string, idx: number, parameterLength: number, base: VReg) {
-    let litId: string = idx.toString();
+export function defineClassWithBuffer(id: string, litId: string, parameterLength: number, base: VReg) {
     return new Defineclasswithbuffer(new Imm(0), id, litId, new Imm(parameterLength), base);
 }
 

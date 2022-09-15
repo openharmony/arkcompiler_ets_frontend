@@ -112,10 +112,8 @@ function createObject(expr: ts.ObjectLiteralExpression, pandaGen: PandaGen, objR
     if (literalBuffer.isEmpty()) {
         pandaGen.createEmptyObject(expr);
     } else {
-        let literalArrayBuffer = PandaGen.getLiteralArrayBuffer();
-        let bufferIdx = literalArrayBuffer.length;
-        literalArrayBuffer.push(literalBuffer);
-        pandaGen.createObjectWithBuffer(expr, bufferIdx);
+        let bufferId = PandaGen.appendLiteralArrayBuffer(literalBuffer);
+        pandaGen.createObjectWithBuffer(expr, bufferId);
     }
     pandaGen.storeAccumulator(expr, objReg);
 }

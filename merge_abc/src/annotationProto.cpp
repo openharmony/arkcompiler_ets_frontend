@@ -107,6 +107,7 @@ void ScalarValue::Serialize(const panda::pandasm::ScalarValue &scalar, protoPand
         case panda::pandasm::Value::Type::STRING:
         case panda::pandasm::Value::Type::METHOD:
         case panda::pandasm::Value::Type::ENUM:
+        case panda::pandasm::Value::Type::LITERALARRAY:
             type = protoPanda::ScalarValue_VariantValueType::ScalarValue_VariantValueType_STRING;
             protoScalar.set_valuestr(scalar.GetValue<std::string>());
             break;
@@ -123,6 +124,7 @@ void ScalarValue::Serialize(const panda::pandasm::ScalarValue &scalar, protoPand
             break;
         }
         default:
+            std::cerr << "unknown panda::pandasm::Value::Type" << std::endl;
             UNREACHABLE();
     }
     protoScalar.set_type(type);
@@ -236,6 +238,10 @@ panda::pandasm::ScalarValue ScalarValue::CreateScalarValue(const panda::pandasm:
         case panda::pandasm::Value::Type::ANNOTATION: {
             return panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::ANNOTATION>(
                 std::get<panda::pandasm::AnnotationData>(value));
+        }
+        case panda::pandasm::Value::Type::LITERALARRAY: {
+            return panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(
+                std::get<std::string>(value));
         }
         default:
             UNREACHABLE();

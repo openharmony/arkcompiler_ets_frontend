@@ -14,59 +14,66 @@
  */
 
 export enum LiteralTag {
-  BOOLEAN = 1,
-  INTEGER = 2,
-  DOUBLE = 4,
-  STRING = 5,
-  METHOD = 6,
-  GENERATOR = 7,
-  ACCESSOR = 8,
-  METHODAFFILIATE = 9,
-  // 0x0a - 0x15 for ARRAY_Type
-  ASYNCGENERATOR = 22,
-  LITERALBUFFERINDEX = 23,
-  NULLVALUE = 255
+    BOOLEAN = 1,
+    INTEGER = 2,
+    DOUBLE = 4,
+    STRING = 5,
+    METHOD = 6,
+    GENERATOR = 7,
+    ACCESSOR = 8,
+    METHODAFFILIATE = 9,
+    // 0x0a - 0x15 for ARRAY_Type
+    ASYNCGENERATOR = 22,
+    LITERALBUFFERINDEX = 23,
+    LITERALARRAY = 24,
+    BUILTINTYPEINDEX = 25,
+    NULLVALUE = 255
 }
 
 export class Literal {
-  private t: LiteralTag;
-  private v: any;
+    private t: LiteralTag;
+    private v: any;
 
-  constructor(t: LiteralTag, v: any) {
-      this.t = t;
-      this.v = v;
-  }
+    constructor(t: LiteralTag, v: any) {
+        this.t = t;
+        this.v = v;
+    }
 
-  getTag() {
-      return this.t;
-  }
+    getTag() {
+        return this.t;
+    }
 
-  getValue() {
-      return this.v;
-  }
+    getValue() {
+        return this.v;
+    }
 }
 
 export class LiteralBuffer {
-  private lb: Literal[] = [];
+    private k: string;
+    private lb: Literal[] = [];
 
-  constructor() { };
+    constructor() {};
 
-  addLiterals(...literals: Array<Literal>) {
-      this.lb.push(...literals);
-  }
-
-  getLiterals() {
-    return this.lb;
-  }
-
-  isEmpty() {
-      return this.lb.length == 0;
-  }
-
-  getLiteral(index: number) {
-    if (index >= this.lb.length || this.lb.length <=0) {
-      return ;
+    addLiterals(...literals: Array<Literal>) {
+        this.lb.push(...literals);
     }
-    return this.lb[index];
-  }
+
+    getLiterals() {
+        return this.lb;
+    }
+
+    isEmpty() {
+        return this.lb.length == 0;
+    }
+
+    getLiteral(index: number) {
+        if (index >= this.lb.length || this.lb.length <=0) {
+        return ;
+        }
+        return this.lb[index];
+    }
+
+    setKey(key: string) {
+        this.k = key;
+    }
 }

@@ -43,7 +43,7 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 3], [2, 0]
+                [2, 3], [24, "_1"], [24, "_2"], [24, "_3"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [2, 0],
@@ -79,7 +79,7 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 3], [2, 0]
+                [2, 3], [24, "_1"], [24, "_2"], [24, "_3"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [2, 0], [2, 0],
@@ -115,7 +115,7 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 2], [2, 0]
+                [2, 2], [24, "_1"], [24, "_2"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [2, 0], [2, 0],
@@ -149,7 +149,7 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 4], [2, 0]
+                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [2, 0], [2, 0],
@@ -189,7 +189,7 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 2], [2, 0]
+                [2, 2], [24, "_1"], [24, "_2"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [2, 0], [2, 0],
@@ -224,7 +224,7 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 4], [2, 0]
+                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [2, 0], [2, 0],
@@ -266,7 +266,7 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 5], [2, 0]
+                [2, 5], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [24, "_5"], [2, 0]
             ],
             [
                 [2, 1], [2, 1], [2, 0], [2, 0],
@@ -312,7 +312,7 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 4], [2, 0]
+                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [2, 0], [2, 0],

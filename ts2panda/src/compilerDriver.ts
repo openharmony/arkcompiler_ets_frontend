@@ -49,6 +49,7 @@ import { TypeRecorder } from "./typeRecorder";
 import { LiteralBuffer } from "./base/literal";
 import { findOuterNodeOfParenthesis } from "./expression/parenthesizedExpression";
 import { IRNode } from "./irnodes";
+import { getRecordName } from "./base/util";
 
 export class PendingCompilationUnit {
     constructor(
@@ -63,6 +64,7 @@ export class PendingCompilationUnit {
  * It handles all dependencies and run passes.
  */
 export class CompilerDriver {
+    static srcNode: ts.SourceFile | undefined = undefined;
     static isTsFile: boolean = false;
     private fileName: string;
     private passes: Pass[] = [];
@@ -183,6 +185,7 @@ export class CompilerDriver {
 
             try {
                 Ts2Panda.dumpCmdOptions(ts2abcProc);
+                Ts2Panda.dumpRecordName(ts2abcProc, getRecordName(CompilerDriver.srcNode));
 
                 for (let i = 0; i < this.pendingCompilationUnits.length; i++) {
                     let unit: PendingCompilationUnit = this.pendingCompilationUnits[i];

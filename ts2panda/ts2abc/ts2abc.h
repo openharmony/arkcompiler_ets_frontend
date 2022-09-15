@@ -36,7 +36,8 @@ enum class JsonType {
     LITERALBUFFER,
     MODULE,
     OPTIONS,
-    TYPEINFO
+    TYPEINFO,
+    RECORDNAME
 };
 
 constexpr int RETURN_SUCCESS = 0;

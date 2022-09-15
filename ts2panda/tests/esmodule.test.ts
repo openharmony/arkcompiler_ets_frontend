@@ -49,7 +49,7 @@ describe("ExportDeclaration", function () {
         let classReg = new VReg();
         let expected = [
             new Mov(new VReg(), new VReg()),
-            new Defineclasswithbuffer(new Imm(0), "#1#C", "0", new Imm(0), new VReg()),
+            new Defineclasswithbuffer(new Imm(0), "#1#C", "_0", new Imm(0), new VReg()),
             new Sta(classReg),
             new Lda(classReg),
             new Stmodulevar(new Imm(0)),
