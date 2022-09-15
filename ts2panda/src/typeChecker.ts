@@ -195,6 +195,22 @@ export class TypeChecker {
         }
     }
 
+    public getTypeForLiteralTypeNode(node: ts.Node) {
+        switch (node.kind) {
+            case ts.SyntaxKind.NumericLiteral:
+                return PrimitiveType.NUMBER;
+            case ts.SyntaxKind.TrueKeyword:
+            case ts.SyntaxKind.FalseKeyword:
+                return PrimitiveType.BOOLEAN;
+            case ts.SyntaxKind.StringLiteral:
+                return PrimitiveType.STRING;
+            case ts.SyntaxKind.NullKeyword:
+                return PrimitiveType.NULL;
+            default:
+                return PrimitiveType.ANY;
+        }
+    }
+
     public getTypeFromAnotation(typeNode: ts.TypeNode | undefined) {
         if (!typeNode) {
             return PrimitiveType.ANY;
@@ -206,13 +222,15 @@ export class TypeChecker {
             case ts.SyntaxKind.SymbolKeyword:
             case ts.SyntaxKind.UndefinedKeyword:
             case ts.SyntaxKind.VoidKeyword:
-            case ts.SyntaxKind.LiteralType:
                 let typeName = typeNode.getText().toUpperCase();
                 let typeIndex = PrimitiveType.ANY;
                 if (typeName && typeName in PrimitiveType) {
                     typeIndex = PrimitiveType[typeName as keyof typeof PrimitiveType];
                 }
                 return typeIndex;
+            case ts.SyntaxKind.LiteralType:
+                let literalType = (<ts.LiteralTypeNode>typeNode).literal;
+                return this.getTypeForLiteralTypeNode(literalType);
             case ts.SyntaxKind.UnionType:
                 let unionType = new UnionType(typeNode);
                 return unionType.shiftedTypeIndex;
@@ -229,6 +247,17 @@ export class TypeChecker {
             case ts.SyntaxKind.TypeLiteral:
                 let objectType = new ObjectType(<ts.TypeLiteralNode>typeNode);
                 return objectType.shiftedTypeIndex;
+            case ts.SyntaxKind.TypeReference:
+                let typeIdentifier = (<ts.TypeReferenceNode>typeNode).typeName;
+                let typeIdentifierName = jshelpers.getTextOfIdentifierOrLiteral(typeIdentifier);
+                if (BuiltinType[typeIdentifierName]) {
+                    let declNode = this.getDeclNodeForInitializer(typeIdentifier);
+                    if (declNode && ts.isClassLike(declNode)) {
+                        return this.getBuiltinTypeIndex(<ts.TypeReferenceNode>typeNode, typeIdentifierName);
+                    } else {
+                        return BuiltinType[typeIdentifierName];
+                    }
+                }
             default:
                 return PrimitiveType.ANY;
         }
@@ -262,10 +291,8 @@ export class TypeChecker {
         return this.getOrCreateInstanceType(builtinContainerTypeIdx);
     }
 
-    getBuiltinTypeIndex(expr: ts.NewExpression) {
-        let origExprNode = <ts.NewExpression>ts.getOriginalNode(expr);
-        let name = origExprNode.expression.getFullText().replace(/\s/g, "");
-        let typeArguments = origExprNode.typeArguments;
+    getBuiltinTypeIndex(node: ts.NewExpression | ts.TypeReferenceNode, name: string) {
+        let typeArguments = node.typeArguments;
         if (typeArguments) {
             let typeArgIdxs = new Array<number>();
             for(let typeArg of typeArguments) {
@@ -281,6 +308,12 @@ export class TypeChecker {
         return this.getOrCreateInstanceType(BuiltinType[name]);
     }
 
+    getBuiltinTypeIndexForExpr(expr: ts.NewExpression) {
+        let origExprNode = <ts.NewExpression>ts.getOriginalNode(expr);
+        let name = origExprNode.expression.getFullText().replace(/\s/g, "");
+        return this.getBuiltinTypeIndex(origExprNode, name);
+    }
+
     public getOrCreateRecordForDeclNode(initializer: ts.Node | undefined, variableNode?: ts.Node) {
         if (!initializer) {
             return PrimitiveType.ANY;
@@ -288,7 +321,7 @@ export class TypeChecker {
 
         let typeIndex = PrimitiveType.ANY;
         if (initializer.kind == ts.SyntaxKind.NewExpression && this.isBuiltinType(<ts.NewExpression>initializer)) {
-            typeIndex = this.getBuiltinTypeIndex(<ts.NewExpression>initializer);
+            typeIndex = this.getBuiltinTypeIndexForExpr(<ts.NewExpression>initializer);
         } else {
             let declNode = this.getDeclNodeForInitializer(initializer);
             typeIndex = this.getTypeFromDecl(declNode, initializer.kind == ts.SyntaxKind.NewExpression);
