@@ -258,7 +258,12 @@ public:
         return node_;
     }
 
-    void BindNode(const ir::AstNode *node)
+    ir::AstNode *Node()
+    {
+        return node_;
+    }
+
+    void BindNode(ir::AstNode *node)
     {
         node_ = node;
     }
@@ -358,7 +363,7 @@ protected:
     ArenaVector<Decl *> decls_;
     VariableMap bindings_;
     TSBindings tsBindings_;
-    const ir::AstNode *node_ {};
+    ir::AstNode *node_ {};
     const compiler::IRNode *startIns_ {};
     const compiler::IRNode *endIns_ {};
 };

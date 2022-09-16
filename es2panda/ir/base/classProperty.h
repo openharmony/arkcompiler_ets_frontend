@@ -51,7 +51,22 @@ public:
         return key_;
     }
 
+    Expression *Key()
+    {
+        return key_;
+    }
+
+    void SetKey(Expression *key)
+    {
+        key_ = key;
+    }
+
     const Expression *Value() const
+    {
+        return value_;
+    }
+
+    Expression *Value()
     {
         return value_;
     }
@@ -66,9 +81,19 @@ public:
         return modifiers_;
     }
 
+    bool IsStatic() const
+    {
+        return (modifiers_ & ModifierFlags::STATIC) != 0;
+    }
+
     const ArenaVector<Decorator *> &Decorators() const
     {
         return decorators_;
+    }
+
+    bool HasDecorators() const
+    {
+        return !decorators_.empty();
     }
 
     bool IsComputed() const

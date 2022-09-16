@@ -64,4 +64,9 @@ void TSModuleBlock::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::B
     }
 }
 
+void TSModuleBlock::AddStatementInFront(Statement *statement)
+{
+    statements_.insert(statements_.begin(), statement);
+}
+
 }  // namespace panda::es2panda::ir

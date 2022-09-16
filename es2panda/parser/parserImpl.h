@@ -19,6 +19,7 @@
 #include <binder/binder.h>
 #include <es2panda.h>
 #include <ir/astNode.h>
+#include <ir/base/methodDefinition.h>
 #include <lexer/token/sourceLocation.h>
 #include <macros.h>
 #include <mem/arena_allocator.h>
@@ -319,14 +320,17 @@ private:
     ir::TSTypeParameter *ParseTsTypeParameter(bool throwError, bool addBinding = false);
     ir::TSTypeParameterDeclaration *ParseTsTypeParameterDeclaration(bool throwError = true);
     ir::TSTypeParameterInstantiation *ParseTsTypeParameterInstantiation(bool throwError = true);
-    ir::ScriptFunction *ParseFunction(ParserStatus newStatus = ParserStatus::NO_OPTS, bool isDeclare = false);
+    ir::ScriptFunction *ParseFunction(ParserStatus newStatus = ParserStatus::NO_OPTS,
+                                      bool isDeclare = false,
+                                      ArenaVector<ir::ParamDecorators> *paramDecorators = nullptr);
     void ValidateFunctionParam(const ArenaVector<ir::Expression *> &params, const ir::Expression *parameter,
                                bool *seenOptional);
     void ValidateTsFunctionOverloadParams(const ArenaVector<ir::Expression *> &params);
     void CheckAccessorPair(const ArenaVector<ir::Statement *> &properties, const ir::Expression *propName,
                            ir::MethodDefinitionKind methodKind, ir::ModifierFlags access, bool hasDecorator,
                            lexer::SourcePosition errorInfo);
-    ArenaVector<ir::Expression *> ParseFunctionParams(bool isDeclare = false);
+    ArenaVector<ir::Expression *> ParseFunctionParams(bool isDeclare = false,
+                                                      ArenaVector<ir::ParamDecorators> *paramDecorators = nullptr);
     ir::SpreadElement *ParseSpreadElement(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::TSParameterProperty *CreateTsParameterProperty(ir::Expression *parameter, ir::ModifierFlags modifiers);
     ir::Expression *ParseFunctionParameter(bool isDeclare);

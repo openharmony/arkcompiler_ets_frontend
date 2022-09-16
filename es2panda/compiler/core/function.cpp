@@ -26,6 +26,7 @@
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/identifier.h>
 #include <ir/statements/blockStatement.h>
+#include <ir/ts/tsParameterProperty.h>
 #include <util/helpers.h>
 
 namespace panda::es2panda::compiler {
@@ -58,7 +59,11 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
 
     uint32_t index = 0;
 
-    for (const auto *param : func->Params()) {
+    for (const auto *it : func->Params()) {
+        auto *param = it;
+        if (param->IsTSParameterProperty()) {
+            param = param->AsTSParameterProperty()->Parameter();
+        }
         LReference ref = LReference::CreateLRef(pg, param, true);
 
         [[maybe_unused]] binder::Variable *paramVar = ref.Variable();
@@ -124,6 +129,9 @@ static void CompileInstanceFields(PandaGen *pg, const ir::ScriptFunction *decl)
     for (auto const &stmt : statements) {
         if (stmt->IsClassProperty()) {
             const auto *prop = stmt->AsClassProperty();
+            if (prop->IsStatic()) {
+                continue;
+            }
             if (!prop->Value()) {
                 pg->LoadConst(stmt, Constant::JS_UNDEFINED);
             } else {

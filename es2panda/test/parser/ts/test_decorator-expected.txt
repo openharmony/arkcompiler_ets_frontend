@@ -67,40 +67,11 @@
                       }
                     }
                   },
-                  "decorators": [
-                    {
-                      "type": "Decorator",
-                      "expression": {
-                        "type": "Identifier",
-                        "name": "g",
-                        "decorators": [],
-                        "loc": {
-                          "start": {
-                            "line": 27,
-                            "column": 18
-                          },
-                          "end": {
-                            "line": 27,
-                            "column": 19
-                          }
-                        }
-                      },
-                      "loc": {
-                        "start": {
-                          "line": 27,
-                          "column": 17
-                        },
-                        "end": {
-                          "line": 27,
-                          "column": 19
-                        }
-                      }
-                    }
-                  ],
+                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 27,
-                      "column": 17
+                      "column": 20
                     },
                     "end": {
                       "line": 27,

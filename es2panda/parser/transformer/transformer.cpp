@@ -15,15 +15,26 @@
 
 #include "transformer.h"
 
-#include "ir/base/scriptFunction.h"
+#include <util/ustring.h>
+
 #include "ir/base/classDefinition.h"
+#include "ir/base/classProperty.h"
+#include "ir/base/decorator.h"
+#include "ir/base/methodDefinition.h"
+#include "ir/base/scriptFunction.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/binaryExpression.h"
 #include "ir/expressions/callExpression.h"
+#include "ir/expressions/classExpression.h"
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/identifier.h"
+#include "ir/expressions/literals/stringLiteral.h"
+#include "ir/expressions/literals/numberLiteral.h"
+#include "ir/expressions/literals/bigIntLiteral.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/objectExpression.h"
+#include "ir/expressions/sequenceExpression.h"
+#include "ir/expressions/thisExpression.h"
 #include "ir/module/exportNamedDeclaration.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/classDeclaration.h"
@@ -35,9 +46,10 @@
 #include "ir/ts/tsImportEqualsDeclaration.h"
 #include "ir/ts/tsModuleBlock.h"
 #include "ir/ts/tsModuleDeclaration.h"
+#include "ir/ts/tsParameterProperty.h"
+#include "ir/ts/tsPrivateIdentifier.h"
 #include "ir/ts/tsQualifiedName.h"
 #include "util/helpers.h"
-
 
 namespace panda::es2panda::parser {
 
@@ -53,6 +65,7 @@ void Transformer::TransformFromTS()
 {
     ASSERT(Extension() == ScriptExtension::TS);
     VisitTSNodes(program_->Ast());
+    PushVariablesToNearestStatements(program_->Ast());
 }
 
 ir::AstNode *Transformer::VisitTSNodes(ir::AstNode *parent)
@@ -62,6 +75,74 @@ ir::AstNode *Transformer::VisitTSNodes(ir::AstNode *parent)
     }
     parent->UpdateSelf([this](auto *childNode) { return VisitTSNode(childNode); }, Binder());
     return parent;
+}
+
+void Transformer::AddVariableToNearestStatements(util::StringView name)
+{
+    /*
+     *  Add variable declare like 'var ##var_1;' to nearest statements in namespace function or top level scope
+     *  Record the variable name and scope in tempVarDeclStatements_ and will push the VariableDeclaration nodes
+     *  to statements in PushVariablesToNearestStatements
+     */
+    auto currentScope = Scope();
+    while (currentScope != nullptr) {
+        if (currentScope->IsTSModuleScope()) {
+            auto node = currentScope->Node();
+            ASSERT(node->IsTSModuleDeclaration());
+            if (node->AsTSModuleDeclaration()->Body()->IsTSModuleBlock()) {
+                break;
+            }
+        }
+        if (currentScope->IsFunctionScope()) {
+            auto node = currentScope->Node();
+            ASSERT(node->IsScriptFunction());
+            if (!node->AsScriptFunction()->FunctionBodyIsExpression()) {
+                break;
+            }
+        }
+        currentScope = currentScope->Parent();
+    }
+    tempVarDeclStatements_.insert({name, currentScope});
+}
+
+void Transformer::PushVariablesToNearestStatements(ir::BlockStatement *ast)
+{
+    /*
+     *  Push the VariableDeclaration nodes to nearest statements
+     *  For example, transform:
+     *  namespace ns {
+     *    ...
+     *  }
+     *
+     *  To:
+     *  namespace ns {
+     *    var ##var_1;
+     *    ...
+     *  }
+     */
+    if (tempVarDeclStatements_.empty()) {
+        return;
+    }
+    for (auto it : tempVarDeclStatements_) {
+        auto *scope = it.second;
+        if (scope == nullptr) {
+            auto scopeCtx = binder::LexicalScope<binder::Scope>::Enter(Binder(), ast->Scope());
+            ast->AddStatementInFront(CreateVariableDeclarationWithIdentify(it.first, VariableParsingFlags::VAR,
+                nullptr, false));
+        } else if (scope->IsFunctionScope()) {
+            auto *body = scope->Node()->AsScriptFunction()->Body();
+            ASSERT(body->IsBlockStatement());
+            auto scopeCtx = binder::LexicalScope<binder::Scope>::Enter(Binder(), scope);
+            body->AsBlockStatement()->AddStatementInFront(CreateVariableDeclarationWithIdentify(it.first,
+                VariableParsingFlags::VAR, nullptr, false));
+        } else if (scope->IsTSModuleScope()) {
+            auto *body = scope->Node()->AsTSModuleDeclaration()->Body();
+            ASSERT(body->IsTSModuleBlock());
+            auto scopeCtx = binder::LexicalScope<binder::Scope>::Enter(Binder(), scope);
+            body->AsTSModuleBlock()->AddStatementInFront(CreateVariableDeclarationWithIdentify(it.first,
+                VariableParsingFlags::VAR, nullptr, false));
+        }
+    }
 }
 
 binder::Scope *Transformer::FindExportVariableInTsModuleScope(util::StringView name) const
@@ -110,8 +191,7 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
             auto scope = FindExportVariableInTsModuleScope(name);
             if (scope) {
                 auto moduleName = FindTSModuleNameByScope(scope);
-                auto *id = AllocNode<ir::Identifier>(moduleName, Allocator());
-                id->AsIdentifier()->SetReference();
+                auto *id = CreateReferenceIdentifier(moduleName);
                 auto *res = AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(name, Allocator()),
                     ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
                 SetOriginalNode(res, childNode);
@@ -164,10 +244,605 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
             SetOriginalNode(res, childNode);
             return res;
         }
+        case ir::AstNodeType::CLASS_DECLARATION: {
+            auto *node = childNode->AsClassDeclaration();
+            DuringClass duringClass(&classList_, node->Definition()->GetName());
+            node = VisitTSNodes(node)->AsClassDeclaration();
+            auto res = VisitClassDeclaration(node);
+            SetOriginalNode(res, childNode);
+            return res;
+        }
+        case ir::AstNodeType::CLASS_EXPRESSION: {
+            auto *node = childNode->AsClassExpression();
+            DuringClass duringClass(&classList_, node->Definition()->GetName());
+            node = VisitTSNodes(node)->AsClassExpression();
+            auto res = VisitClassExpression(node);
+            SetOriginalNode(res, childNode);
+            return res;
+        }
+        case ir::AstNodeType::CLASS_DEFINITION: {
+            auto *node = childNode->AsClassDefinition();
+            VisitPrivateProperty(node);
+            VisitComputedProperty(node);
+            VisitTSParameterProperty(node);
+            auto res = VisitTSNodes(childNode);
+            SetOriginalNode(res, childNode);
+            return res;
+        }
+        case ir::AstNodeType::TS_PRIVATE_IDENTIFIER: {
+            auto id = childNode->AsTSPrivateIdentifier()->Key()->AsIdentifier();
+            auto name = FindPrivatePropertyBindName(id->Name());
+            auto res = CreateReferenceIdentifier(name);
+            SetOriginalNode(res, childNode);
+            return res;
+        }
         default: {
             return VisitTSNodes(childNode);
         }
     }
+}
+
+util::StringView Transformer::CreateNewVariable(bool needAddToStatements)
+{
+    util::StringView name = CreateNewVariableName();
+    if (needAddToStatements) {
+        AddVariableToNearestStatements(name);
+    }
+    return name;
+}
+
+util::StringView Transformer::CreateUniqueName(const std::string &head, size_t *index) const
+{
+    util::StringView name;
+    size_t idx = 0;
+    if (index != nullptr) {
+        idx = *index;
+    }
+    do {
+        idx++;
+        std::stringstream ss;
+        ss << head << std::to_string(idx);
+        auto s = ss.str();
+        if (!Binder()->HasVariableName(util::StringView(s))) {
+            name = util::UString(s, Allocator()).View();
+            break;
+        }
+    } while (true);
+    if (index != nullptr) {
+        *index = idx;
+    }
+    Binder()->AddDeclarationName(name);
+    return name;
+}
+
+util::StringView Transformer::CreateNewVariableName() const
+{
+    auto name = CreateUniqueName(std::string(NEW_VAR_PREFIX) + std::string(NEW_VAR_HEAD));
+    return name;
+}
+
+ir::UpdateNodes Transformer::VisitClassExpression(ir::ClassExpression *node)
+{
+    /*
+     *  Transform:
+     *  var c = class C {
+     *    static a = 1
+     *  }
+     *
+     *  To:
+     *  var ##var_1;
+     *  var c = (##var_1 = class C {},
+     *           ##var_1.a = 1,
+     *           ##var_1)
+     */
+    auto varName = CreateNewVariable(false);
+    auto staticProperty = VisitStaticProperty(node->Definition(), varName);
+    if (staticProperty.empty()) {
+        return node;
+    }
+    AddVariableToNearestStatements(varName);
+
+    auto assignment = AllocNode<ir::AssignmentExpression>(CreateReferenceIdentifier(varName),
+        node->AsExpression(), lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    ArenaVector<ir::Expression *> sequence(Allocator()->Adapter());
+    sequence.push_back(assignment);
+    for (auto *it : staticProperty) {
+        sequence.push_back(it->GetExpression());
+    }
+    sequence.push_back(CreateReferenceIdentifier(varName));
+    return AllocNode<ir::SequenceExpression>(std::move(sequence));
+}
+
+void Transformer::VisitComputedProperty(ir::ClassDefinition *node)
+{
+    /*
+     *  Only create variable for the computed members with decorators or static class property
+     *  The new value will be used in the decorators or static property initialize
+     *  Transform:
+     *  class C {
+     *    @f
+     *    [a](){}
+     *    static [b] = 1
+     *  }
+     *
+     *  To:
+     *  var ##var_1;
+     *  var ##var_2;
+     *  class C {
+     *    @f
+     *    [##var_1 = a](){}
+     *    static [##var_2 = b] = 1
+     *  }
+     */
+    for (auto *it : node->Body()) {
+        if (it->IsClassProperty()) {
+            auto *classProperty = it->AsClassProperty();
+            if (!classProperty->IsComputed() || (!classProperty->HasDecorators() && !classProperty->IsStatic())) {
+                continue;
+            }
+            auto *key = classProperty->Key();
+            auto name = CreateNewVariable();
+            auto *newKey = AllocNode<ir::AssignmentExpression>(CreateReferenceIdentifier(name),
+                key, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+            classProperty->SetKey(newKey);
+            AddComputedPropertyBinding(it, name);
+        } else if (it->IsMethodDefinition()) {
+            auto *methodDefinition = it->AsMethodDefinition();
+            if (!methodDefinition->Computed() ||
+                (!methodDefinition->HasDecorators() && !methodDefinition->HasParamDecorators())) {
+                continue;
+            }
+            auto *key = methodDefinition->Key();
+            auto name = CreateNewVariable();
+            auto *newKey = AllocNode<ir::AssignmentExpression>(CreateReferenceIdentifier(name),
+                key, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+            methodDefinition->SetKey(newKey);
+            AddComputedPropertyBinding(it, name);
+        }
+    }
+}
+
+void Transformer::VisitPrivateProperty(ir::ClassDefinition *node)
+{
+    /*
+     *  Create an unique variable name for private property member in class
+     *  Transform:
+     *  class C {
+     *    #a = 1
+     *  }
+     *
+     *  To:
+     *  class C {
+     *    ##${RecordName}#C#a#1 = 1
+     *  }
+     */
+    for (auto *it : node->Body()) {
+        if (!it->IsClassProperty()) {
+            continue;
+        }
+        auto *key = it->AsClassProperty()->Key();
+        if (!key->IsTSPrivateIdentifier()) {
+            continue;
+        }
+        auto name = key->AsTSPrivateIdentifier()->Key()->AsIdentifier()->Name();
+        auto bindName = CreatePrivatePropertyBindName(name);
+        AddPrivatePropertyBinding(name, bindName);
+    }
+}
+
+util::StringView Transformer::FindPrivatePropertyBindName(util::StringView name)
+{
+    for (size_t i = classList_.size() - 1; i >= 0; i--) {
+        auto res = classList_[i].bindNameMap->find(name);
+        if (res != classList_[i].bindNameMap->end()) {
+            return res->second;
+        }
+    }
+    UNREACHABLE();
+}
+
+util::StringView Transformer::CreatePrivatePropertyBindName(util::StringView name)
+{
+    std::stringstream head;
+    head << NEW_VAR_PREFIX << std::string(RecordName());
+    for (auto it : classList_) {
+        head << PRIVATE_PROPERTY_SIGN << std::string(it.name);
+    }
+    head << PRIVATE_PROPERTY_SIGN << std::string(name) << PRIVATE_PROPERTY_SIGN;
+    size_t index = GetCurrentClassInfoPropertyIndex();
+    auto uniqueName = CreateUniqueName(head.str(), &index);
+    SetCurrentClassInfoPropertyIndex(index);
+    return uniqueName;
+}
+
+void Transformer::VisitTSParameterProperty(ir::ClassDefinition *node)
+{
+    /*
+     *  Add class property for the parameter property declaration in constructor
+     *  Transform:
+     *  class C {
+     *    constructor(public a = 1) {}
+     *  }
+     *
+     *  To:
+     *  class C {
+     *    constructor(public a = 1) {
+     *      this.a = a;
+     *    }
+     *  }
+     */
+    auto *func = node->Ctor()->Function();
+    auto *body = func->Body();
+    if (body == nullptr) {
+        return;
+    }
+    auto blockStatement = body->AsBlockStatement();
+    for (auto *it : func->Params()) {
+        if (!it->IsTSParameterProperty()) {
+            continue;
+        }
+        auto *parameter = it->AsTSParameterProperty()->Parameter();
+        util::StringView name;
+        // TSParameterPropert only can be identifier or assignment expression
+        if (parameter->IsIdentifier()) {
+            name = parameter->AsIdentifier()->Name();
+        } else {
+            ASSERT(parameter->IsAssignmentExpression());
+            auto *left = parameter->AsAssignmentExpression()->Left();
+            ASSERT(left->IsIdentifier());
+            name = left->AsIdentifier()->Name();
+        }
+        auto left = AllocNode<ir::MemberExpression>(AllocNode<ir::ThisExpression>(),
+            AllocNode<ir::Identifier>(name, Allocator()),
+            ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        auto right = CreateReferenceIdentifier(name);
+        auto assignment = AllocNode<ir::AssignmentExpression>(left, right,
+            lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+        blockStatement->AddStatementInFront(AllocNode<ir::ExpressionStatement>(assignment));
+    }
+}
+
+std::vector<ir::ExpressionStatement *> Transformer::VisitStaticProperty(ir::ClassDefinition *node,
+                                                                        util::StringView name)
+{
+    /*
+     *  Create statement for static class property
+     *  If it's a conputed property, we should initialize it's new variable first.
+     *  Transform:
+     *  var ##var_1;
+     *  class C {
+     *    static a = 1
+     *    static [##var_1 = s] = 1
+     *  }
+     *
+     *  To:
+     *  var ##var_1;
+     *  class C {
+     *  }
+     *  C.a = 1;
+     *  ##var_1 = s;
+     *  C[##var_1] = 1;
+     *
+     *  TODO(xucheng): should support static private property
+     */
+    std::vector<ir::ExpressionStatement *> res;
+    auto classDefinitionBody = node->Body();
+    for (auto *it : classDefinitionBody) {
+        if (!it->IsClassProperty()) {
+            continue;
+        }
+        auto *classProperty = it->AsClassProperty();
+        if (!classProperty->IsStatic()) {
+            continue;
+        }
+        if (classProperty->IsComputed()) {
+            res.push_back(AllocNode<ir::ExpressionStatement>(classProperty->Key()));
+        }
+        auto right = classProperty->Value();
+        if (right == nullptr) {
+            continue;
+        }
+        auto *member = GetClassMemberName(classProperty->Key(), classProperty->IsComputed(), classProperty);
+        auto left = AllocNode<ir::MemberExpression>(CreateReferenceIdentifier(name), member,
+            ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, classProperty->IsComputed(), false);
+        auto assignment = AllocNode<ir::AssignmentExpression>(left, right, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+        res.push_back(AllocNode<ir::ExpressionStatement>(assignment));
+    }
+    return res;
+}
+
+ir::UpdateNodes Transformer::VisitClassDeclaration(ir::ClassDeclaration *node)
+{
+    // TODO(xucheng): maybe will support metadata later
+    auto name = node->Definition()->GetName();
+    std::vector<ir::AstNode *> res;
+    bool hasClassDecorators = node->HasDecorators();
+    if (hasClassDecorators) {
+        auto definiton = node->Definition();
+        auto *clsExpression = AllocNode<ir::ClassExpression>(definiton);
+        res.push_back(CreateVariableDeclarationWithIdentify(name, VariableParsingFlags::LET, node, false,
+            clsExpression, false));
+    } else {
+        res.push_back(node);
+    }
+
+    auto staticProperty = VisitStaticProperty(node->Definition(), name);
+    if (!staticProperty.empty()) {
+        res.insert(res.end(), staticProperty.begin(), staticProperty.end());
+    }
+
+    auto classDefinitionBody = node->Definition()->Body();
+    // decorators of static members, should be called after instance members
+    std::vector<ir::AstNode *> staticMemberDecorators;
+    for (auto *it : classDefinitionBody) {
+        if (it->IsMethodDefinition()) {
+            auto *definition = it->AsMethodDefinition();
+            bool isStatic = definition->IsStatic();
+            auto paramDecorators = CreateParamDecorators(name, definition, false, isStatic);
+            if (isStatic) {
+                staticMemberDecorators.insert(staticMemberDecorators.end(),
+                    paramDecorators.begin(), paramDecorators.end());
+            } else {
+                res.insert(res.end(), paramDecorators.begin(), paramDecorators.end());
+            }
+            if (!definition->HasDecorators()) {
+                continue;
+            }
+            auto methodDecorators = CreateMethodDecorators(name, definition, isStatic);
+            if (isStatic) {
+                staticMemberDecorators.insert(staticMemberDecorators.end(),
+                    methodDecorators.begin(), methodDecorators.end());
+            } else {
+                res.insert(res.end(), methodDecorators.begin(), methodDecorators.end());
+            }
+        } else if (it->IsClassProperty()) {
+            auto *classProperty = it->AsClassProperty();
+            bool isStatic = classProperty->IsStatic();
+            if (!classProperty->HasDecorators()) {
+                continue;
+            }
+            auto propertyDecorators = CreatePropertyDecorators(name, classProperty, isStatic);
+            if (isStatic) {
+                staticMemberDecorators.insert(staticMemberDecorators.end(),
+                    propertyDecorators.begin(), propertyDecorators.end());
+            } else {
+                res.insert(res.end(), propertyDecorators.begin(), propertyDecorators.end());
+            }
+        }
+    }
+
+    if (!staticMemberDecorators.empty()) {
+        res.insert(res.end(), staticMemberDecorators.begin(), staticMemberDecorators.end());
+    }
+
+    // constructor decorators
+    auto *ctor = node->Definition()->Ctor();
+    auto ctorParamDecorators = CreateParamDecorators(name, ctor, true, false);
+    res.insert(res.end(), ctorParamDecorators.begin(), ctorParamDecorators.end());
+
+    // class decorators
+    if (hasClassDecorators) {
+        auto classDecorators = CreateClassDecorators(node);
+        res.insert(res.end(), classDecorators.begin(), classDecorators.end());
+    }
+    if (res.size() == 1) {
+        return res.front();
+    }
+    return res;
+}
+
+std::vector<ir::AstNode *> Transformer::CreateParamDecorators(util::StringView className,
+                                                              ir::MethodDefinition *node,
+                                                              bool isConstructor,
+                                                              bool isStatic)
+{
+    /*
+     *  Param decorators
+     *  Transform:
+     *  class C {
+     *    f(@g a){}
+     *  }
+     *
+     *  To:
+     *  class C {
+     *    f(a){}
+     *  }
+     *  g(C.prototype, "f", 0)
+     *
+     *  Static method or constructor will use constructor function of the class instead of prototype of class
+     */
+    std::vector<ir::AstNode *> res;
+    auto paramsDecorators = node->GetParamDecorators();
+    for (int i = paramsDecorators.size() - 1; i >= 0; i--) {
+        auto paramIndex = paramsDecorators[i].paramIndex;
+        auto decorators = paramsDecorators[i].decorators;
+        for (int j = decorators.size() - 1; j >= 0; j--) {
+            ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
+            arguments.push_back(CreateDecoratorTarget(className, isConstructor || isStatic));
+            arguments.push_back(isConstructor ?
+                CreateReferenceIdentifier(CONSTRUCTOR_NAME) :
+                GetClassMemberName(node->Key(), node->Computed(), node));
+            arguments.push_back(AllocNode<ir::NumberLiteral>(paramIndex));
+            auto *callExpr = AllocNode<ir::CallExpression>(decorators[j]->Expr(),
+                std::move(arguments), nullptr, false);
+            res.push_back(AllocNode<ir::ExpressionStatement>(callExpr));
+        }
+    }
+    return res;
+}
+
+std::vector<ir::AstNode *> Transformer::CreatePropertyDecorators(util::StringView className,
+                                                                 ir::ClassProperty *node,
+                                                                 bool isStatic)
+{
+    /*
+     *  Property decorators
+     *  Transform:
+     *  class C {
+     *    @f a = 1
+     *  }
+     *
+     *  To:
+     *  class C {
+     *    a = 1
+     *  }
+     *  f(C.prototype, "a")
+     *
+     *  Static property will use constructor function of the class instead of prototype of class
+     */
+    std::vector<ir::AstNode *> res;
+    auto decorators = node->Decorators();
+    for (int i = decorators.size() - 1; i >= 0; i--) {
+        ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
+        arguments.push_back(CreateDecoratorTarget(className, isStatic));
+        arguments.push_back(GetClassMemberName(node->Key(), node->IsComputed(), node));
+        auto *callExpr = AllocNode<ir::CallExpression>(decorators[i]->Expr(), std::move(arguments), nullptr, false);
+
+        res.push_back(AllocNode<ir::ExpressionStatement>(callExpr));
+    }
+    return res;
+}
+
+std::vector<ir::AstNode *> Transformer::CreateMethodDecorators(util::StringView className,
+                                                               ir::MethodDefinition *node,
+                                                               bool isStatic)
+{
+    /*
+     *  Method decorators and accessor decorators
+     *  Transform:
+     *  class C {
+     *    @g
+     *    f(){}
+     *  }
+     *
+     *  To:
+     *  class C {
+     *    f(){}
+     *  }
+     *  Object.defineProperty(C.prototype, "f",
+     *    g(C.prototype, "f", Object.getOwnPropertyDescriptor(C.prototype, "f")) ||
+     *    Object.getOwnPropertyDescriptor(C.prototype, "f"));
+     *
+     *  static method will use constructor function of the class instead of prototype of class
+     *  If the decorator has a return value, it will be set as the new property of the method
+     */
+    std::vector<ir::AstNode *> res;
+    auto decorators = node->Decorators();
+    for (int i = decorators.size() - 1; i >= 0; i--) {
+        ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
+        arguments.push_back(CreateDecoratorTarget(className, isStatic));
+        arguments.push_back(GetClassMemberName(node->Key(), node->Computed(), node));
+        arguments.push_back(CreateGetOwnPropertyDescriptorCall(CreateDecoratorTarget(className, isStatic),
+            GetClassMemberName(node->Key(), node->Computed(), node)));
+        auto *callExpr = AllocNode<ir::CallExpression>(decorators[i]->Expr(), std::move(arguments), nullptr, false);
+
+        auto *getProperty = CreateGetOwnPropertyDescriptorCall(CreateDecoratorTarget(className, isStatic),
+            GetClassMemberName(node->Key(), node->Computed(), node));
+        auto newValue = AllocNode<ir::BinaryExpression>(callExpr, getProperty,
+            lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
+
+        auto *defineProperty = CreateDefinePropertyCall(CreateDecoratorTarget(className, isStatic),
+            GetClassMemberName(node->Key(), node->Computed(), node), newValue);
+
+        res.push_back(AllocNode<ir::ExpressionStatement>(defineProperty));
+    }
+    return res;
+}
+
+ir::Expression *Transformer::CreateDecoratorTarget(util::StringView className, bool targetCtor)
+{
+    if (targetCtor) {
+        return CreateReferenceIdentifier(className);
+    }
+    return CreateClassPrototype(className);
+}
+
+ir::MemberExpression *Transformer::CreateClassPrototype(util::StringView className)
+{
+    auto *cls = CreateReferenceIdentifier(className);
+    return AllocNode<ir::MemberExpression>(cls, AllocNode<ir::Identifier>(CLASS_PROTOTYPE, Allocator()),
+        ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+}
+
+ir::CallExpression *Transformer::CreateDefinePropertyCall(ir::Expression *target,
+                                                          ir::Expression *key,
+                                                          ir::Expression *value)
+{
+    auto *id = CreateReferenceIdentifier(OBJECT_VAR_NAME);
+    auto *caller = AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(FUNC_NAME_OF_DEFINE_PROPERTY,
+        Allocator()), ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+    ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
+    arguments.push_back(target);
+    arguments.push_back(key);
+    arguments.push_back(value);
+    return AllocNode<ir::CallExpression>(caller, std::move(arguments), nullptr, false);
+}
+
+ir::CallExpression *Transformer::CreateGetOwnPropertyDescriptorCall(ir::Expression *target, ir::Expression *key)
+{
+    auto *id = CreateReferenceIdentifier(OBJECT_VAR_NAME);
+    auto *caller = AllocNode<ir::MemberExpression>(id,
+        AllocNode<ir::Identifier>(FUNC_NAME_OF_GET_OWN_PROPERTY_DESCRIPTOR, Allocator()),
+        ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+    ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
+    arguments.push_back(target);
+    arguments.push_back(key);
+    return AllocNode<ir::CallExpression>(caller, std::move(arguments), nullptr, false);
+}
+
+ir::Expression *Transformer::GetClassMemberName(ir::Expression *key, bool isComputed, ir::Statement *node)
+{
+    if (isComputed) {
+        auto name = GetComputedPropertyBinding(node);
+        return AllocNode<ir::Identifier>(name, Allocator());
+    }
+    if (key->IsIdentifier()) {
+        return AllocNode<ir::StringLiteral>(key->AsIdentifier()->Name());
+    } else if (key->IsStringLiteral()) {
+        return AllocNode<ir::StringLiteral>(key->AsStringLiteral()->Str());
+    } else if (key->IsNumberLiteral()) {
+        return AllocNode<ir::NumberLiteral>(key->AsNumberLiteral()->Number(), key->AsNumberLiteral()->Str());
+    } else if (key->IsBigIntLiteral()) {
+        return AllocNode<ir::BigIntLiteral>(key->AsBigIntLiteral()->Str());
+    }
+    UNREACHABLE();
+    return nullptr;
+}
+
+std::vector<ir::AstNode *> Transformer::CreateClassDecorators(ir::ClassDeclaration *node)
+{
+    /*
+     *  Class decorators
+     *  Transform:
+     *  @f
+     *  class C {
+     *  }
+     *
+     *  To:
+     *  class C {
+     *  }
+     *  C = f(C) || C;
+     *
+     *  If the decorator has a return value, it will be used as the new declaration of the class
+     */
+    auto name = node->Definition()->GetName();
+    auto decorators = node->Decorators();
+    auto size = decorators.size();
+    std::vector<ir::AstNode *> res;
+    for (int i = size - 1; i >= 0; i--) {
+        ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
+        arguments.push_back(CreateReferenceIdentifier(name));
+        auto *callExpr = AllocNode<ir::CallExpression>(decorators[i]->Expr(), std::move(arguments), nullptr, false);
+
+        auto left = CreateReferenceIdentifier(name);
+        auto id = CreateReferenceIdentifier(name);
+        auto right = AllocNode<ir::BinaryExpression>(callExpr, id, lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
+        auto *assignExpr = AllocNode<ir::AssignmentExpression>(left, right,
+            lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+
+        res.push_back(AllocNode<ir::ExpressionStatement>(assignExpr));
+    }
+    return res;
 }
 
 ir::AstNode *Transformer::VisitTsImportEqualsDeclaration(ir::TSImportEqualsDeclaration *node)
@@ -179,8 +854,7 @@ ir::AstNode *Transformer::VisitTsImportEqualsDeclaration(ir::TSImportEqualsDecla
     auto name = node->Id()->Name();
     if (IsTsModule() && node->IsExport()) {
         auto moduleName = GetCurrentTSModuleName();
-        auto *id = AllocNode<ir::Identifier>(moduleName, Allocator());
-        id->AsIdentifier()->SetReference();
+        auto *id = CreateReferenceIdentifier(moduleName);
         auto *left = AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(name, Allocator()),
             ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
         ir::Expression *right = CreateMemberExpressionFromQualified(express);
@@ -303,8 +977,7 @@ ir::Expression *Transformer::CreateMemberExpressionFromQualified(ir::Expression 
             ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     }
     ASSERT(node->IsIdentifier());
-    auto *id = AllocNode<ir::Identifier>(node->AsIdentifier()->Name(), Allocator());
-    id->AsIdentifier()->SetReference();
+    auto *id = CreateReferenceIdentifier(node->AsIdentifier()->Name());
     return id;
 }
 
@@ -329,12 +1002,10 @@ void Transformer::SetOriginalNode(ir::UpdateNodes res, ir::AstNode *originalNode
 ir::ExpressionStatement *Transformer::CreateTsModuleAssignment(util::StringView name)
 {
     auto moduleName = GetCurrentTSModuleName();
-    auto *id = AllocNode<ir::Identifier>(moduleName, Allocator());
-    id->AsIdentifier()->SetReference();
+    auto *id = CreateReferenceIdentifier(moduleName);
     auto *left = AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(name, Allocator()),
         ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-    auto *right = AllocNode<ir::Identifier>(name, Allocator());
-    right->AsIdentifier()->SetReference();
+    auto *right = CreateReferenceIdentifier(name);
     auto *assignExpr = AllocNode<ir::AssignmentExpression>(left, right, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     return AllocNode<ir::ExpressionStatement>(assignExpr);
 }
@@ -348,31 +1019,41 @@ ir::VariableDeclaration *Transformer::CreateVariableDeclarationWithIdentify(util
                                                                             VariableParsingFlags flags,
                                                                             ir::AstNode *node,
                                                                             bool isExport,
-                                                                            ir::Expression *init)
+                                                                            ir::Expression *init,
+                                                                            bool needBinding)
 {
-    auto *ident = AllocNode<ir::Identifier>(name, Allocator());
-    ident->AsIdentifier()->SetReference();
+    auto *ident = CreateReferenceIdentifier(name);
     auto *declarator = AllocNode<ir::VariableDeclarator>(ident, init);
     ArenaVector<ir::VariableDeclarator *> declarators(Allocator()->Adapter());
     declarators.push_back(declarator);
 
-    binder::Decl *decl = nullptr;
-    binder::DeclarationFlags declflag = isExport ?
-        binder::DeclarationFlags::EXPORT :
-        binder::DeclarationFlags::NONE;
     auto varKind = ir::VariableDeclaration::VariableDeclarationKind::VAR;
     if (flags & VariableParsingFlags::VAR) {
-        decl = Binder()->AddDecl<binder::VarDecl>(node->Start(), declflag, name);
     } else if (flags & VariableParsingFlags::LET) {
         varKind = ir::VariableDeclaration::VariableDeclarationKind::LET;
-        decl = Binder()->AddDecl<binder::LetDecl>(node->Start(), declflag, name);
     } else {
         varKind = ir::VariableDeclaration::VariableDeclarationKind::CONST;
-        decl = Binder()->AddDecl<binder::ConstDecl>(node->Start(), declflag, name);
     }
-
     auto *declaration = AllocNode<ir::VariableDeclaration>(varKind, std::move(declarators), false);
-    decl->BindNode(declaration);
+
+    lexer::SourcePosition startPos(0, 0);
+    if (node != nullptr) {
+        startPos = node->Start();
+    }
+    if (needBinding) {
+        binder::Decl *decl = nullptr;
+        binder::DeclarationFlags declflag = isExport ?
+            binder::DeclarationFlags::EXPORT :
+            binder::DeclarationFlags::NONE;
+        if (flags & VariableParsingFlags::VAR) {
+            decl = Binder()->AddDecl<binder::VarDecl>(startPos, declflag, name);
+        } else if (flags & VariableParsingFlags::LET) {
+            decl = Binder()->AddDecl<binder::LetDecl>(startPos, declflag, name);
+        } else {
+            decl = Binder()->AddDecl<binder::ConstDecl>(startPos, declflag, name);
+        }
+        decl->BindNode(declaration);
+    }
 
     return declaration;
 }
@@ -383,19 +1064,8 @@ util::StringView Transformer::GetParamName(ir::TSModuleDeclaration *node, util::
     if (!scope->HasVariableName(name)) {
         return name;
     }
-
-    auto pramaName = name;
-    uint32_t idx = 0;
-    do {
-        std::stringstream ss;
-        ss << name;
-        idx++;
-        ss << "_" << std::to_string(idx);
-        util::UString internalName(ss.str(), Allocator());
-        pramaName = internalName.View();
-    } while (Binder()->HasVariableName(pramaName));
-    Binder()->AddDeclarationName(pramaName);
-    return pramaName;
+    auto uniqueName = CreateUniqueName(std::string(name) + std::string(INDEX_DIVISION));
+    return uniqueName;
 }
 
 ir::CallExpression *Transformer::CreateCallExpressionForTsModule(ir::TSModuleDeclaration *node,
@@ -411,8 +1081,7 @@ ir::CallExpression *Transformer::CreateCallExpressionForTsModule(ir::TSModuleDec
         auto paramScopeCtx = binder::LexicalScope<binder::FunctionParamScope>::Enter(Binder(), funcParamScope);
 
         ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-        auto *parameter = AllocNode<ir::Identifier>(paramName, Allocator());
-        parameter->AsIdentifier()->SetReference();
+        auto *parameter = CreateReferenceIdentifier(paramName);
         Binder()->AddParamDecl(parameter);
         params.push_back(parameter);
 
@@ -458,8 +1127,7 @@ ir::CallExpression *Transformer::CreateCallExpressionForTsModule(ir::TSModuleDec
                                                     assignExpr,
                                                     lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
     if (isExport) {
-        auto *id = AllocNode<ir::Identifier>(name, Allocator());
-        id->AsIdentifier()->SetReference();
+        auto *id = CreateReferenceIdentifier(name);
         arguments.push_back(AllocNode<ir::AssignmentExpression>(id, argument,
             lexer::TokenType::PUNCTUATOR_SUBSTITUTION));
     } else {
@@ -475,14 +1143,12 @@ ir::Expression *Transformer::CreateTsModuleParam(util::StringView paramName, boo
 {
     if (isExport) {
         auto moduleName = GetCurrentTSModuleName();
-        auto *id = AllocNode<ir::Identifier>(moduleName, Allocator());
-        id->AsIdentifier()->SetReference();
+        auto *id = CreateReferenceIdentifier(moduleName);
         return AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(paramName, Allocator()),
             ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     }
 
-    auto *id = AllocNode<ir::Identifier>(paramName, Allocator());
-    id->AsIdentifier()->SetReference();
+    auto *id = CreateReferenceIdentifier(paramName);
     return id;
 }
 
@@ -522,6 +1188,13 @@ ir::UpdateNodes Transformer::VisitTsModuleDeclaration(ir::TSModuleDeclaration *n
     res.push_back(exprStatementNode);
 
     return res;
+}
+
+ir::Identifier *Transformer::CreateReferenceIdentifier(util::StringView name)
+{
+    auto *node = AllocNode<ir::Identifier>(name, Allocator());
+    node->AsIdentifier()->SetReference();
+    return node;
 }
 
 }  // namespace panda::es2panda::parser
