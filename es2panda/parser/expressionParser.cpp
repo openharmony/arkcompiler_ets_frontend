@@ -496,7 +496,7 @@ ir::ArrowFunctionExpression *ParserImpl::ParseTsGenericArrowFunction()
 
     ir::TSTypeParameterDeclaration *typeParamDecl = ParseTsTypeParameterDeclaration(false);
 
-    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
+    if (typeParamDecl == nullptr || lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
         return nullptr;
     }
 
