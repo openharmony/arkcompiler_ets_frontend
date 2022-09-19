@@ -13,6 +13,10 @@ ets_frontend is a front-end tool in the ARK Runtime Subsystem. Combined with the
 
 For more information, see: [ARK Runtime Subsystem](https://gitee.com/openharmony/docs/blob/master/en/readme/ARK-Runtime-Subsystem.md).
 
+**ets_frontend architecture**
+
+![](/figures/en-us_image_ets_frontend_arch.png)
+
 ## Directory Structure<a name="section161941989596"></a>
 
 ```
