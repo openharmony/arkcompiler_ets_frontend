@@ -199,6 +199,12 @@ export function compileForStatement(stmt: ts.ForStatement, compiler: Compiler) {
         compiler.popEnv();
         pandaGen.freeTemps(...tmpVregs);
     } else { // compile for in fast mode
+        // createLoopEnv if needed
+        if (needCreateLoopEnv) {
+            pandaGen.createLexEnv(stmt, loopEnv, loopScope);
+            compiler.pushEnv(loopEnv);
+        }
+
         if (stmt.initializer) {
             if (ts.isVariableDeclarationList(stmt.initializer)) {
                 let declList = <ts.VariableDeclarationList>stmt.initializer;
@@ -210,12 +216,6 @@ export function compileForStatement(stmt: ts.ForStatement, compiler: Compiler) {
 
         // loopCondition
         pandaGen.label(stmt, loopStartLabel);
-
-        // createLoopEnv if needed
-        if (needCreateLoopEnv) {
-            pandaGen.createLexEnv(stmt, loopEnv, loopScope);
-            compiler.pushEnv(loopEnv);
-        }
 
         if (stmt.condition) {
             compiler.compileCondition(stmt.condition, loopEndLabel);
@@ -268,10 +268,20 @@ export function compileForInStatement(stmt: ts.ForInStatement, compiler: Compile
     let iterReg = pandaGen.getTemp();
     let propName = pandaGen.getTemp();
 
+    if (needCreateLexEnv) {
+        pandaGen.createLexEnv(stmt, loopEnv, loopScope);
+        compiler.pushEnv(loopEnv);
+    }
+
     // create enumerator
     compiler.compileExpression(stmt.expression);
     pandaGen.getPropIterator(stmt);
     pandaGen.storeAccumulator(stmt, iterReg);
+
+    if (needCreateLexEnv) {
+        pandaGen.popLexicalEnv(stmt);
+        compiler.popEnv();
+    }
 
     pandaGen.label(stmt, loopStartLabel);
     if (needCreateLexEnv) {
