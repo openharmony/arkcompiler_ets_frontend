@@ -199,7 +199,6 @@ export function compileForStatement(stmt: ts.ForStatement, compiler: Compiler) {
         compiler.popEnv();
         pandaGen.freeTemps(...tmpVregs);
     } else { // compile for in fast mode
-        // createLoopEnv if needed
         if (needCreateLoopEnv) {
             pandaGen.createLexEnv(stmt, loopEnv, loopScope);
             compiler.pushEnv(loopEnv);
@@ -214,8 +213,19 @@ export function compileForStatement(stmt: ts.ForStatement, compiler: Compiler) {
             }
         }
 
+        if (needCreateLoopEnv) {
+            pandaGen.popLexicalEnv(stmt);
+            compiler.popEnv();
+        }
+
         // loopCondition
         pandaGen.label(stmt, loopStartLabel);
+
+        // createLoopEnv if needed
+        if (needCreateLoopEnv) {
+            pandaGen.createLexEnv(stmt, loopEnv, loopScope);
+            compiler.pushEnv(loopEnv);
+        }
 
         if (stmt.condition) {
             compiler.compileCondition(stmt.condition, loopEndLabel);
