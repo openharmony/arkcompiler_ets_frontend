@@ -23,6 +23,7 @@
 #include <typescript/types/signature.h>
 #include <typescript/types/type.h>
 #include <ir/astDump.h>
+#include <ir/expressions/chainExpression.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/ts/tsTypeParameterInstantiation.h>
 
@@ -119,11 +120,15 @@ void CallExpression::Compile(compiler::PandaGen *pg) const
 
         compiler::RegScope mrs(pg);
         callee_->AsMemberExpression()->Compile(pg, thisReg);
+    } else if (callee_->IsChainExpression()) {
+        hasThis = true;
+        callee_->AsChainExpression()->Compile(pg);
     } else {
         callee_->Compile(pg);
     }
 
     pg->StoreAccumulator(this, callee);
+    pg->GetOptionalChain()->CheckNullish(optional_, callee);
 
     if (containsSpread) {
         if (!hasThis) {

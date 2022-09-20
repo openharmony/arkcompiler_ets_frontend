@@ -14,11 +14,12 @@
  */
 
 #include "chainExpression.h"
-#include <compiler/core/pandagen.h>
 
+#include <compiler/base/optionalChain.h>
+#include <compiler/core/pandagen.h>
 #include <ir/astDump.h>
-#include <ir/expressions/memberExpression.h>
 #include <ir/expressions/callExpression.h>
+#include <ir/expressions/memberExpression.h>
 
 namespace panda::es2panda::ir {
 
@@ -34,35 +35,14 @@ void ChainExpression::Dump(ir::AstDumper *dumper) const
 
 void ChainExpression::Compile(compiler::PandaGen *pg) const
 {
-    // TODO: support continuous optional chain expression
-    compiler::RegScope rs(pg);
-    const MemberExpression *memberExpr = nullptr;
-    if (this->GetExpression()->IsMemberExpression()) {
-        memberExpr = this->GetExpression()->AsMemberExpression();
+    compiler::OptionalChain chain(pg, this);
+
+    if (expression_->IsMemberExpression()) {
+        expression_->AsMemberExpression()->Compile(pg);
     } else {
-        auto callExpr = this->GetExpression()->AsCallExpression();
-        memberExpr = callExpr->Callee()->AsMemberExpression();
+        assert(expression_->IsCallExpression());
+        expression_->AsCallExpression()->Compile(pg);
     }
-
-    compiler::VReg objReg = pg->AllocReg();
-    auto *isNullOrUndefinedLabel = pg->AllocLabel();
-    auto *endLabel = pg->AllocLabel();
-
-    memberExpr->CompileObject(pg, objReg);
-    pg->LoadConst(this, compiler::Constant::JS_NULL);
-    pg->Condition(this, lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL, objReg, isNullOrUndefinedLabel);
-    pg->LoadConst(this, compiler::Constant::JS_UNDEFINED);
-    pg->Condition(this, lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL, objReg, isNullOrUndefinedLabel);
-
-    // obj (ahead ?.) is not null/undefined, continue to compile sub-expression)
-    this->GetExpression()->Compile(pg);
-    pg->Branch(this, endLabel);
-
-    // obj (ahead ?.) is null/undefined, return undefined)
-    pg->SetLabel(this, isNullOrUndefinedLabel);
-    pg->LoadConst(this, compiler::Constant::JS_UNDEFINED);
-
-    pg->SetLabel(this, endLabel);
 }
 
 checker::Type *ChainExpression::Check(checker::Checker *checker) const
