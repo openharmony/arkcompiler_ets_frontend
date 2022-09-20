@@ -158,6 +158,10 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<std::string> opInputSymbolTable("input-symbol-table", "", "input symbol table file");
     panda::PandArg<bool> opGeneratePatch("generate-patch", false, "generate patch abc");
 
+    // version
+    panda::PandArg<bool> bcVersion("bc-version", false, "Print ark bytecode version");
+    panda::PandArg<bool> bcMinVersion("bc-min-version", false, "Print ark bytecode minimum supported version");
+
     // tail arguments
     panda::PandArg<std::string> inputFile("input", "", "input file");
 
@@ -193,12 +197,22 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opInputSymbolTable);
     argparser_->Add(&opGeneratePatch);
 
+    argparser_->Add(&bcVersion);
+    argparser_->Add(&bcMinVersion);
+
     argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
     argparser_->EnableRemainder();
 
-    if (!argparser_->Parse(argc, argv) || opHelp.GetValue() || (inputFile.GetValue().empty()
-        && base64Input.GetValue().empty())) {
+    bool parseStatus = argparser_->Parse(argc, argv);
+
+    if (parseStatus && (bcVersion.GetValue() || bcMinVersion.GetValue())) {
+        compilerOptions_.bcVersion = bcVersion.GetValue();
+        compilerOptions_.bcMinVersion = bcMinVersion.GetValue();
+        return true;
+    }
+
+    if (!parseStatus || opHelp.GetValue() || (inputFile.GetValue().empty() && base64Input.GetValue().empty())) {
         std::stringstream ss;
 
         ss << argparser_->GetErrorString() << std::endl;
