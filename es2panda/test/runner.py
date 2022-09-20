@@ -708,6 +708,8 @@ class TSCRunner(Runner):
         files = glob(glob_expression, recursive=True)
         files = fnmatch.filter(files, ts_suite_dir + '**' + self.args.filter)
 
+        failed_references = open(path.join(self.test_root, 'test_tsc_ignore_list.txt'), 'r').read()
+
         for f in files:
             test_name = path.basename(f.split(".ts")[0])
             negative_references = path.join(
@@ -726,6 +728,10 @@ class TSCRunner(Runner):
 
             if is_negative or "filename" in test.options:
                 continue
+
+            if self.args.skip:
+                if path.relpath(f, self.test_root) in failed_references:
+                    continue
 
             self.tests.append(test)
 
