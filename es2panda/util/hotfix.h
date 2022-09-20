@@ -50,6 +50,9 @@ public:
         classMemberFunctions_(allocator_.Adapter()) {
             originFunctionInfo_ = symbolTable_->GetOriginFunctionInfo();
             originModuleInfo_ = symbolTable_->GetOriginModuleInfo();
+            patchMain0_ = recordName_ + "patch_main_0";
+            patchMain1_ = recordName_ + "patch_main_1";
+            funcMain0_ = recordName_ + "func_main_0";
         }
 
     void Finalize(panda::pandasm::Program **prog);
@@ -91,6 +94,9 @@ private:
     bool generateSymbolFile_ {false};
     bool generatePatch_ {false};
     std::string recordName_;
+    std::string funcMain0_;
+    std::string patchMain0_;  // stores newly added function define ins, runtime will execute
+    std::string patchMain1_;  // stores modified function and class define ins, runtime will scan but not execute
 
     util::SymbolTable* symbolTable_ {nullptr};
     ArenaAllocator allocator_;
