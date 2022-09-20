@@ -29,6 +29,7 @@ es2panda_src = [
   "compiler/base/lexenv.cpp",
   "compiler/base/literals.cpp",
   "compiler/base/lreference.cpp",
+  "compiler/base/optionalChain.cpp",
   "compiler/core/compileQueue.cpp",
   "compiler/core/compilerContext.cpp",
   "compiler/core/compilerImpl.cpp",

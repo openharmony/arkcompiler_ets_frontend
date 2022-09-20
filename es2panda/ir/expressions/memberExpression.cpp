@@ -43,6 +43,7 @@ void MemberExpression::CompileObject(compiler::PandaGen *pg, compiler::VReg dest
 {
     object_->Compile(pg);
     pg->StoreAccumulator(this, dest);
+    pg->GetOptionalChain()->CheckNullish(optional_, dest);
 }
 
 compiler::Operand MemberExpression::CompileKey(compiler::PandaGen *pg) const
@@ -54,14 +55,7 @@ void MemberExpression::Compile(compiler::PandaGen *pg) const
 {
     compiler::RegScope rs(pg);
     compiler::VReg objReg = pg->AllocReg();
-    CompileObject(pg, objReg);
-    compiler::Operand prop = CompileKey(pg);
-
-    if (object_->IsSuperExpression()) {
-        pg->LoadSuperProperty(this, objReg, prop);
-    } else {
-        pg->LoadObjProperty(this, objReg, prop);
-    }
+    Compile(pg, objReg);
 }
 
 void MemberExpression::Compile(compiler::PandaGen *pg, compiler::VReg objReg) const

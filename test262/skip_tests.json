@@ -676,7 +676,8 @@
             "built-ins/Function/internals/Construct/derived-return-val-realm.js",
             "built-ins/Function/internals/Construct/base-ctor-revoked-proxy-realm.js",
             "built-ins/Function/internals/Call/class-ctor-realm.js",
-            "built-ins/Proxy/get-fn-realm-recursive.js"
+            "built-ins/Proxy/get-fn-realm-recursive.js",
+            "language/expressions/optional-chaining/eval-optional-call.js"
         ]
     },
     {
@@ -1625,7 +1626,9 @@
             "built-ins/AsyncGeneratorPrototype/return/return-suspendedYield-try-finally-return.js",
             "built-ins/AsyncGeneratorPrototype/return/request-queue-order-state-executing.js",
             "built-ins/AsyncGeneratorPrototype/return/this-val-not-object.js",
-            "built-ins/AsyncGeneratorPrototype/return/return-suspendedYield-try-finally.js"
+            "built-ins/AsyncGeneratorPrototype/return/return-suspendedYield-try-finally.js",
+            "language/expressions/optional-chaining/member-expression.js",
+            "language/expressions/optional-chaining/iteration-statement-for-await-of.js"
         ]
     }
 ]
