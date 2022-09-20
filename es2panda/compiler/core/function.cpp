@@ -75,7 +75,7 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
 
         if (param->IsAssignmentPattern()) {
             RegScope rs(pg);
-            pg->LoadAccumulator(func, paramReg);
+            ref.GetValue();
             auto *nonDefaultLabel = pg->AllocLabel();
 
             if (ref.Kind() == ReferenceKind::DESTRUCTURING) {
