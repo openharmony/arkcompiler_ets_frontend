@@ -33,8 +33,8 @@ public:
         ArenaMap<std::string, std::pair<uint32_t, int>> lexenv;  // lexenv: <name, <slot, type>>
         ArenaMap<std::string, std::string> classHash;
 
-        OriginFunctionInfo(ArenaAllocator *allocator) : lexenv(allocator->Adapter()),
-                                                        classHash(allocator->Adapter()) {}
+        explicit OriginFunctionInfo(ArenaAllocator *allocator) : lexenv(allocator->Adapter()),
+                                                                 classHash(allocator->Adapter()) {}
     };
 
     SymbolTable(const std::string &inputSymbolTable, const std::string &dumpSymbolTable)
