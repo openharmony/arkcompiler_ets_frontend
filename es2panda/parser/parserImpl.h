@@ -281,7 +281,7 @@ private:
     ir::Statement *ParseClassProperty(ClassElmentDescriptor *desc, const ArenaVector<ir::Statement *> &properties,
                                       ir::Expression *propName, ir::Expression *typeAnnotation,
                                       ArenaVector<ir::Decorator *> &&decorators, bool isDeclare);
-    void ParseClassKeyModifiers(ClassElmentDescriptor *descy);
+    void ParseClassKeyModifiers(ClassElmentDescriptor *desc);
     void CheckClassGeneratorMethod(ClassElmentDescriptor *desc);
     void CheckClassPrivateIdentifier(ClassElmentDescriptor *desc);
     ir::Expression *ParseClassKeyAnnotation();
