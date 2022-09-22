@@ -55,7 +55,7 @@ public:
     explicit CompileFunctionJob(CompilerContext *context) : context_(context) {};
     NO_COPY_SEMANTIC(CompileFunctionJob);
     NO_MOVE_SEMANTIC(CompileFunctionJob);
-    ~CompileFunctionJob() = default;
+    ~CompileFunctionJob() override = default;
 
     binder::FunctionScope *Scope() const
     {
@@ -79,7 +79,7 @@ public:
     explicit CompileModuleRecordJob(CompilerContext *context) : context_(context) {};
     NO_COPY_SEMANTIC(CompileModuleRecordJob);
     NO_MOVE_SEMANTIC(CompileModuleRecordJob);
-    ~CompileModuleRecordJob() = default;
+    ~CompileModuleRecordJob() override = default;
 
     void Run() override;
 
@@ -95,7 +95,7 @@ public:
         : src_(src), options_(options), progsInfo_(progsInfo), symbolTable_(symbolTable), allocator_(allocator) {};
     NO_COPY_SEMANTIC(CompileFileJob);
     NO_MOVE_SEMANTIC(CompileFileJob);
-    ~CompileFileJob() = default;
+    ~CompileFileJob() override = default;
 
     void Run() override;
 
@@ -140,7 +140,7 @@ public:
 
     NO_COPY_SEMANTIC(CompileFuncQueue);
     NO_MOVE_SEMANTIC(CompileFuncQueue);
-    ~CompileFuncQueue() = default;
+    ~CompileFuncQueue() override = default;
 
     void Schedule() override;
 
@@ -158,7 +158,7 @@ public:
 
     NO_COPY_SEMANTIC(CompileFileQueue);
     NO_MOVE_SEMANTIC(CompileFileQueue);
-    ~CompileFileQueue() = default;
+    ~CompileFileQueue() override = default;
 
     void Schedule() override;
 
