@@ -15,7 +15,6 @@
 
 #include "binder.h"
 
-#include <util/helpers.h>
 #include <binder/scope.h>
 #include <binder/tsBinding.h>
 #include <es2panda.h>
@@ -44,11 +43,13 @@
 #include <ir/statements/variableDeclarator.h>
 #include <ir/statements/whileStatement.h>
 #include <ir/ts/tsConstructorType.h>
+#include <ir/ts/tsEnumDeclaration.h>
 #include <ir/ts/tsFunctionType.h>
 #include <ir/ts/tsMethodSignature.h>
 #include <ir/ts/tsModuleBlock.h>
 #include <ir/ts/tsModuleDeclaration.h>
 #include <ir/ts/tsSignatureDeclaration.h>
+#include <util/helpers.h>
 
 namespace panda::es2panda::binder {
 void Binder::InitTopScope()
@@ -262,7 +263,7 @@ void Binder::BuildScriptFunction(Scope *outerScope, const ir::ScriptFunction *sc
         outerVarScope->AddFlag(VariableScopeFlags::INNER_ARROW);
     }
 
-    ASSERT(scope_->IsFunctionScope() || scope_->IsTSModuleScope());
+    ASSERT(scope_->IsFunctionScope() || scope_->IsTSModuleScope() || scope_->IsTSEnumScope());
     BuildFunction(scope_->AsFunctionVariableScope(), util::Helpers::FunctionName(scriptFunc), scriptFunc);
 }
 
@@ -604,6 +605,11 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             ResolveReferences(childNode);
             break;
         }
+        case ir::AstNodeType::TS_ENUM_DECLARATION: {
+            auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsTSEnumDeclaration()->Scope());
+            ResolveReferences(childNode);
+            break;
+        }
         default: {
             ResolveReferences(childNode);
             break;
@@ -680,16 +686,23 @@ void Binder::AddMandatoryParams()
     }
 }
 
-void Binder::AddDeclarationName(const util::StringView &name)
+void Binder::AddDeclarationName(const util::StringView &name, DeclType type)
 {
     if (extension_ != ScriptExtension::TS) {
         return;
     }
     variableNames_.insert(name);
+    
+    if (type == DeclType::ENUM) {
+        return;
+    }
     auto *scope = GetScope();
     while (scope != nullptr) {
         if (scope->IsTSModuleScope()) {
             scope->AsTSModuleScope()->AddDeclarationName(name);
+        }
+        if (scope->IsTSEnumScope()) {
+            scope->AsTSEnumScope()->AddDeclarationName(name);
         }
         scope = scope->Parent();
     }

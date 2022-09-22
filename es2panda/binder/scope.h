@@ -806,6 +806,48 @@ private:
     ArenaSet<util::StringView> variableNames_;
 };
 
+class TSEnumScope : public FunctionScope {
+public:
+    explicit TSEnumScope(ArenaAllocator *allocator, Scope *parent, VariableMap *enumMemberBindings) : FunctionScope(
+        allocator, nullptr), enumMemberBindings_(enumMemberBindings), variableNames_(allocator->Adapter())
+    {
+        paramScope_ = allocator->New<FunctionParamScope>(allocator, parent);
+        paramScope_->BindFunctionScope(this);
+        SetParent(paramScope_);
+    }
+
+    ScopeType Type() const override
+    {
+        return ScopeType::TSENUM;
+    }
+
+    Variable *FindEnumMemberVariable(const util::StringView &name) const
+    {
+        auto res = enumMemberBindings_->find(name);
+        if (res == enumMemberBindings_->end()) {
+            return nullptr;
+        }
+        return res->second;
+    }
+
+    void AddDeclarationName(const util::StringView &name)
+    {
+        variableNames_.insert(name);
+    }
+
+    bool HasDeclarationName(const util::StringView &name) const
+    {
+        return variableNames_.find(name) != variableNames_.end();
+    }
+
+    bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
+                    [[maybe_unused]] ScriptExtension extension) override;
+
+private:
+    VariableMap *enumMemberBindings_;
+    ArenaSet<util::StringView> variableNames_;
+};
+
 inline VariableFlags VariableScope::DeclFlagToVariableFlag(DeclarationFlags declFlag)
 {
     VariableFlags varFlag = VariableFlags::NONE;
@@ -894,7 +936,7 @@ bool VariableScope::AddTSBinding(ArenaAllocator *allocator, Decl *newDecl, Varia
                 newDecl->Name(), allocator->New<T>(newDecl, flags));
         }
         case VariableFlags::ENUM_LITERAL: {
-            return tsBindings_.AddTSVariable<TSBindingType::ENUM>(
+            return tsBindings_.AddTSVariable<TSBindingType::ENUMLITERAL>(
                 newDecl->Name(), allocator->New<T>(newDecl, flags));
         }
         case VariableFlags::INTERFACE: {

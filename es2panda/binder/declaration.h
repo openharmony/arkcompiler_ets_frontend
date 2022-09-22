@@ -25,6 +25,7 @@ class AstNode;
 class ScriptFunction;
 class TSInterfaceDeclaration;
 class TSModuleDeclaration;
+class TSEnumDeclaration;
 class ImportDeclaration;
 }  // namespace panda::es2panda::ir
 
@@ -32,6 +33,7 @@ namespace panda::es2panda::binder {
 
 class Scope;
 class LocalScope;
+class TSEnumScope;
 
 #define DECLARE_CLASSES(decl_kind, className) class className;
 DECLARATION_KINDS(DECLARE_CLASSES)
@@ -133,13 +135,25 @@ private:
     ArenaVector<T *> declarations_;
 };
 
-class EnumLiteralDecl : public Decl {
+class EnumLiteralDecl : public MultiDecl<ir::TSEnumDeclaration> {
 public:
-    explicit EnumLiteralDecl(util::StringView name, bool isConst) : Decl(name), isConst_(isConst) {}
-
+    explicit EnumLiteralDecl(ArenaAllocator *allocator, util::StringView name,
+        bool isExport, bool isDeclare, bool isConst) : MultiDecl(allocator, name),
+        isExport_(isExport), isDeclare_(isDeclare), isConst_(isConst) {}
+    
     DeclType Type() const override
     {
         return DeclType::ENUM_LITERAL;
+    }
+
+    bool IsExport() const
+    {
+        return isExport_;
+    }
+
+    bool IsDeclare() const
+    {
+        return isDeclare_;
     }
 
     bool IsConst() const
@@ -147,18 +161,20 @@ public:
         return isConst_;
     }
 
-    void BindScope(LocalScope *scope)
+    void BindScope(TSEnumScope *scope)
     {
         scope_ = scope;
     }
 
-    LocalScope *Scope()
+    TSEnumScope *Scope()
     {
         return scope_;
     }
 
 private:
-    LocalScope *scope_ {};
+    TSEnumScope *scope_ {nullptr};
+    bool isExport_ {};
+    bool isDeclare_ {};
     bool isConst_ {};
 };
 

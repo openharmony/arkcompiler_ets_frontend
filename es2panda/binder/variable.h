@@ -35,6 +35,9 @@ class Decl;
 class Scope;
 class VariableScope;
 class ExportBindings;
+class Variable;
+
+using VariableMap = ArenaUnorderedMap<util::StringView, Variable *>;
 
 #define DECLARE_CLASSES(type, className) class className;
 VARIABLE_TYPES(DECLARE_CLASSES)
@@ -232,6 +235,26 @@ public:
         backReference_ = true;
     }
 
+    bool IsVisited() const
+    {
+        return isVisited_;
+    }
+
+    void SetVisited()
+    {
+        isVisited_ = true;
+    }
+
+    bool StringInit() const
+    {
+        return isStringInit_;
+    }
+
+    void SetStringInit()
+    {
+        isStringInit_ = true;
+    }
+
     void ResetDecl(Decl *decl);
 
     void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
@@ -239,6 +262,8 @@ public:
 private:
     EnumMemberResult value_ {false};
     bool backReference_ {};
+    bool isVisited_ {false};
+    bool isStringInit_ {false};
 };
 
 class NamespaceVariable : public Variable {
@@ -264,6 +289,40 @@ public:
 
 private:
     ExportBindings *exportBindings_ {nullptr};
+};
+
+class EnumLiteralVariable : public Variable {
+public:
+    explicit EnumLiteralVariable(Decl *decl, VariableFlags flags) : Variable(decl, flags) {}
+
+    VariableType Type() const override
+    {
+        return VariableType::ENUMLITERAL;
+    }
+
+    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
+
+    VariableMap *GetEnumMembers() const
+    {
+        return enumMemberBindings_;
+    }
+
+    Variable *FindEnumMemberVariable(const util::StringView &name) const
+    {
+        auto res = enumMemberBindings_->find(name);
+        if (res == enumMemberBindings_->end()) {
+            return nullptr;
+        }
+        return res->second;
+    }
+
+    void SetEnumMembers(VariableMap *enumMemberBindings)
+    {
+        enumMemberBindings_ = enumMemberBindings;
+    }
+
+private:
+    VariableMap *enumMemberBindings_ {nullptr};
 };
 
 class ImportEqualsVariable : public Variable {

@@ -40,17 +40,19 @@ class TSEnumMember;
 
 class TSEnumDeclaration : public Statement {
 public:
-    explicit TSEnumDeclaration(binder::LocalScope *scope, Identifier *key, ArenaVector<TSEnumMember *> &&members,
-                               bool isConst)
+    explicit TSEnumDeclaration(binder::TSEnumScope *scope, Identifier *key, ArenaVector<TSEnumMember *> &&members,
+                               bool isExport, bool isDeclare, bool isConst)
         : Statement(AstNodeType::TS_ENUM_DECLARATION),
           scope_(scope),
           key_(key),
           members_(std::move(members)),
+          isExport_(isExport),
+          isDeclare_(isDeclare),
           isConst_(isConst)
     {
     }
 
-    binder::LocalScope *Scope() const
+    binder::TSEnumScope *Scope() const
     {
         return scope_;
     }
@@ -63,6 +65,16 @@ public:
     const ArenaVector<TSEnumMember *> &Members() const
     {
         return members_;
+    }
+
+    bool IsExport() const
+    {
+        return isExport_;
+    }
+
+    bool IsDeclare() const
+    {
+        return isDeclare_;
     }
 
     bool IsConst() const
@@ -81,9 +93,11 @@ public:
     void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
 
 private:
-    binder::LocalScope *scope_;
+    binder::TSEnumScope *scope_;
     Identifier *key_;
     ArenaVector<TSEnumMember *> members_;
+    bool isExport_;
+    bool isDeclare_;
     bool isConst_;
 };
 

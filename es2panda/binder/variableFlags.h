@@ -58,7 +58,8 @@ enum class DeclType {
     _(FUNCTION, FunctionScope)            \
     _(GLOBAL, GlobalScope)                \
     _(MODULE, ModuleScope)                \
-    _(TSMODULE, TSModuleScope)
+    _(TSMODULE, TSModuleScope)            \
+    _(TSENUM, TSEnumScope)
 
 
 enum class ScopeType {
@@ -89,7 +90,8 @@ DEFINE_BITOPS(ResolveBindingFlags)
     _(MODULE, ModuleVariable)              \
     _(ENUM, EnumVariable)                  \
     _(NAMESPACE, NamespaceVariable)        \
-    _(IMPORT_EQUALS, ImportEqualsVariable)
+    _(IMPORT_EQUALS, ImportEqualsVariable) \
+    _(ENUMLITERAL, EnumLiteralVariable)
 
 enum class VariableType {
 #define GEN_VARIABLE_TYPES(type, class_name) type,
@@ -167,7 +169,7 @@ DEFINE_BITOPS(DeclarationFlags)
 
 enum class TSBindingType : size_t {
     NAMESPACE = 0,
-    ENUM,
+    ENUMLITERAL,
     INTERFACE,
     IMPORT_EQUALS,
     COUNT,

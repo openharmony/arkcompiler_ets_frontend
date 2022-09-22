@@ -510,7 +510,7 @@ ir::Statement *ParserImpl::ParseConstStatement(StatementParsingFlags flags, bool
 
     if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_ENUM) {
         if (Extension() == ScriptExtension::TS) {
-            return ParseEnumDeclaration(true);
+            return ParseEnumDeclaration(false, isDeclare, true);
         }
         ThrowSyntaxError("Unexpected token");
     }
@@ -575,7 +575,7 @@ ir::Statement *ParserImpl::ParsePotentialExpressionStatement(StatementParsingFla
     if (Extension() == ScriptExtension::TS) {
         switch (lexer_->GetToken().KeywordType()) {
             case lexer::TokenType::KEYW_ENUM: {
-                return ParseEnumDeclaration();
+                return ParseEnumDeclaration(false, isDeclare, false);
             }
             case lexer::TokenType::KEYW_TYPE: {
                 return ParseTsTypeAliasDeclaration(isDeclare);
@@ -1982,7 +1982,7 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
     return declarator;
 }
 
-ir::Statement *ParserImpl::ParseVariableDeclaration(VariableParsingFlags flags, bool isDeclare)
+ir::Statement *ParserImpl::ParseVariableDeclaration(VariableParsingFlags flags, bool isDeclare, bool isExport)
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
 
@@ -1999,7 +1999,7 @@ ir::Statement *ParserImpl::ParseVariableDeclaration(VariableParsingFlags flags, 
         if (!(flags & VariableParsingFlags::CONST)) {
             ThrowSyntaxError("Variable declaration expected.");
         }
-        return ParseEnumDeclaration(true);
+        return ParseEnumDeclaration(isExport, isDeclare, true);
     }
 
     ArenaVector<ir::VariableDeclarator *> declarators(Allocator()->Adapter());
@@ -2427,15 +2427,15 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
 
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::KEYW_VAR: {
-            decl = ParseVariableDeclaration(flag | VariableParsingFlags::VAR, isDeclare);
+            decl = ParseVariableDeclaration(flag | VariableParsingFlags::VAR, isDeclare, true);
             break;
         }
         case lexer::TokenType::KEYW_CONST: {
-            decl = ParseVariableDeclaration(flag | VariableParsingFlags::CONST, isDeclare);
+            decl = ParseVariableDeclaration(flag | VariableParsingFlags::CONST, isDeclare, true);
             break;
         }
         case lexer::TokenType::KEYW_LET: {
-            decl = ParseVariableDeclaration(flag | VariableParsingFlags::LET, isDeclare);
+            decl = ParseVariableDeclaration(flag | VariableParsingFlags::LET, isDeclare, true);
             break;
         }
         case lexer::TokenType::KEYW_FUNCTION: {
@@ -2454,7 +2454,7 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
                         break;
                     }
                     case lexer::TokenType::KEYW_ENUM: {
-                        decl = ParseEnumDeclaration();
+                        decl = ParseEnumDeclaration(true, isDeclare, false);
                         break;
                     }
                     case lexer::TokenType::KEYW_INTERFACE: {

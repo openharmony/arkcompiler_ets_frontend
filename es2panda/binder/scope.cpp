@@ -196,13 +196,9 @@ bool Scope::AddLocal(ArenaAllocator *allocator, Variable *currentVariable, Decl 
 
             return true;
         }
-        case DeclType::ENUM: {
-            bindings_.insert({newDecl->Name(), allocator->New<EnumVariable>(newDecl, false)});
-            return true;
-        }
         case DeclType::ENUM_LITERAL: {
-            bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::ENUM_LITERAL)});
-            return true;
+            return tsBindings_.AddTSVariable<TSBindingType::ENUMLITERAL>(
+                newDecl->Name(), allocator->New<EnumLiteralVariable>(newDecl, VariableFlags::ENUM_LITERAL));
         }
         case DeclType::INTERFACE: {
             bindings_.insert({newDecl->Name(), allocator->New<LocalVariable>(newDecl, VariableFlags::INTERFACE)});
@@ -298,12 +294,8 @@ bool FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *currentVaria
         case DeclType::FUNC: {
             return AddFunction<LocalVariable>(allocator, currentVariable, newDecl, extension);
         }
-        case DeclType::ENUM: {
-            bindings_.insert({newDecl->Name(), allocator->New<EnumVariable>(newDecl, false)});
-            return true;
-        }
         case DeclType::ENUM_LITERAL: {
-            return AddTSBinding<LocalVariable>(allocator, currentVariable, newDecl, VariableFlags::ENUM_LITERAL);
+            return AddTSBinding<EnumLiteralVariable>(allocator, newDecl, VariableFlags::ENUM_LITERAL);
         }
         case DeclType::NAMESPACE: {
             return AddTSBinding<NamespaceVariable>(allocator, newDecl, VariableFlags::NAMESPACE);
@@ -320,6 +312,13 @@ bool FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *currentVaria
     }
 }
 
+bool TSEnumScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
+                             [[maybe_unused]] ScriptExtension extension)
+{
+    ASSERT(newDecl->Type() == DeclType::ENUM);
+    return enumMemberBindings_->insert({newDecl->Name(), allocator->New<EnumVariable>(newDecl, false)}).second;
+}
+
 bool GlobalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                              [[maybe_unused]] ScriptExtension extension)
 {
@@ -330,12 +329,8 @@ bool GlobalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariabl
         case DeclType::FUNC: {
             return AddFunction<GlobalVariable>(allocator, currentVariable, newDecl, extension);
         }
-        case DeclType::ENUM: {
-            bindings_.insert({newDecl->Name(), allocator->New<EnumVariable>(newDecl, false)});
-            return true;
-        }
         case DeclType::ENUM_LITERAL: {
-            return AddTSBinding<LocalVariable>(allocator, currentVariable, newDecl, VariableFlags::ENUM_LITERAL);
+            return AddTSBinding<EnumLiteralVariable>(allocator, newDecl, VariableFlags::ENUM_LITERAL);
         }
         case DeclType::NAMESPACE: {
             return AddTSBinding<NamespaceVariable>(allocator, newDecl, VariableFlags::NAMESPACE);
@@ -401,12 +396,8 @@ bool ModuleScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariabl
                    AddFunction<ModuleVariable>(allocator, currentVariable, newDecl, extension) :
                    AddFunction<LocalVariable>(allocator, currentVariable, newDecl, extension);
         }
-        case DeclType::ENUM: {
-            bindings_.insert({newDecl->Name(), allocator->New<EnumVariable>(newDecl, false)});
-            return true;
-        }
         case DeclType::ENUM_LITERAL: {
-            return AddTSBinding<LocalVariable>(allocator, currentVariable, newDecl, VariableFlags::ENUM_LITERAL);
+            return AddTSBinding<EnumLiteralVariable>(allocator, newDecl, VariableFlags::ENUM_LITERAL);
         }
         case DeclType::NAMESPACE: {
             return AddTSBinding<NamespaceVariable>(allocator, newDecl, VariableFlags::NAMESPACE);

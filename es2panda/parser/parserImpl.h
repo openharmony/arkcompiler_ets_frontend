@@ -484,8 +484,9 @@ private:
                                                 bool isDeclare = false, bool isAbstract = false,
                                                 bool isExported = false);
     ir::TSTypeAliasDeclaration *ParseTsTypeAliasDeclaration(bool isDeclare);
-    ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart, bool isConst);
-    ir::TSEnumDeclaration *ParseEnumDeclaration(bool isConst = false);
+    ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart,
+                                            bool isExport, bool isDeclare, bool isConst);
+    ir::TSEnumDeclaration *ParseEnumDeclaration(bool isExport = false, bool isDeclare = false, bool isConst = false);
     ir::TSInterfaceDeclaration *ParseTsInterfaceDeclaration();
     ir::SwitchCaseStatement *ParseSwitchCaseStatement(bool *seenDefault);
     ir::SwitchStatement *ParseSwitchStatement();
@@ -498,7 +499,7 @@ private:
                                                                const lexer::SourcePosition &startLoc, bool isDeclare);
     ir::VariableDeclarator *ParseVariableDeclarator(VariableParsingFlags flags, bool isDeclare);
     ir::Statement *ParseVariableDeclaration(VariableParsingFlags flags = VariableParsingFlags::NO_OPTS,
-                                            bool isDeclare = false);
+                                            bool isDeclare = false, bool isExport = false);
     ir::WhileStatement *ParseWhileStatement();
     ir::VariableDeclaration *ParseContextualLet(VariableParsingFlags flags,
                                                 StatementParsingFlags stmFlags = StatementParsingFlags::ALLOW_LEXICAL,

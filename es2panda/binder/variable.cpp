@@ -70,6 +70,7 @@ void ModuleVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] 
 void EnumVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper) {}
 void NamespaceVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper) {}
 void ImportEqualsVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper) {}
+void EnumLiteralVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper) {}
 
 void EnumVariable::ResetDecl(Decl *decl)
 {
