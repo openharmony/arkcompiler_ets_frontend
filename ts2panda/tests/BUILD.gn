@@ -15,7 +15,20 @@ import("//arkcompiler/ets_frontend/ts2panda/ts2abc_config.gni")
 import("//build/config/clang/clang.gni")
 import("//build/ohos.gni")
 
-action("ts2abc_tests") {
+action("ts2abc_ts_type_system_test") {
+  script = "${ts2abc_root}/../testTs/run_testTs.py"
+  deps = [ "${ts2abc_root}:copy_ts2abc_tests" ]
+  outputs = [ "$target_out_dir/ts2abc_ts_type_system_test/" ]
+}
+
+action("ts2abc_ts_instruction_type_test") {
+  script = "${ts2abc_root}/../testTs/run_testTs.py"
+  deps = [ "${ts2abc_root}:copy_ts2abc_tests" ]
+  args = [ "--testinstype" ]
+  outputs = [ "$target_out_dir/ts2abc_ts_instruction_type_test/" ]
+}
+
+action("ts2abc_ts_ut_test") {
   script = "${ts2abc_root}/scripts/run_tests.py"
   deps = [ "${ts2abc_root}:copy_ts2abc_tests" ]
 
@@ -44,5 +57,5 @@ action("ts2abc_tests") {
       "win",
     ]
   }
-  outputs = [ "$target_out_dir/ts2abc_tests/" ]
+  outputs = [ "$target_out_dir/ts2abc_ts_ut_test/" ]
 }

@@ -29,6 +29,20 @@ action("es2abc_parser_tests") {
   outputs = [ "${es2abc_build_path}/keep_es2abc_parser_tests_run" ]
 }
 
+action("es2abc_parser_tsc_tests") {
+  script = "${es2abc_root}/test/runner.py"
+
+  deps = es2abc_build_deps
+
+  args = [
+    "--no-progress",
+    "--tsc",
+    rebase_path("${es2abc_build_path}"),
+  ]
+
+  outputs = [ "${es2abc_build_path}/keep_es2abc_parser_tsc_tests_run" ]
+}
+
 action("es2abc_compiler_tests") {
   script = "${es2abc_root}/test/runner.py"
 

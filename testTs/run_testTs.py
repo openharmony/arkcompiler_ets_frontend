@@ -229,7 +229,7 @@ def compare(file, flag=False):
 
 def summary():
     if not os.path.exists(OUT_RESULT_FILE):
-        return
+        return 1
     count = -1
     fail_count = 0
     with open(OUT_RESULT_FILE, 'r') as read_outfile:
@@ -246,6 +246,8 @@ def summary():
     print("     Passed tests: %5d         " % (count - fail_count))
     print("     Failed tests: %5d         " % (fail_count))
     print("===============================")
+
+    return 0 if fail_count == 0 else 1
 
 
 def init_path():
@@ -284,7 +286,7 @@ def test_instype(args):
     mk_dir(outpath)
 
     # source ts files
-    files = glob('./testTs/instype/*.ts');
+    files = glob(os.path.join(CUR_FILE_DIR, './instype/*.ts'));
     ark_frontend_tool = DEFAULT_ARK_FRONTEND_TOOL
     if args.ark_frontend_tool:
         ark_frontend_tool = args.ark_frontend_tool
@@ -325,19 +327,22 @@ def test_instype(args):
     print("\033[91mFailed:  %5d" % (len(fail_list)))
     print("\033[0m")
 
+    return 0 if len(fail_list) == 0 else 1
 
 def main(args):
     try:
         init_path()
         if (args.testinstype):
-            test_instype(args)
+            excuting_npm_install(args)
+            return test_instype(args)
         else:
             excuting_npm_install(args)
             prepare_ts_code()
             run_test_machine(args)
-            summary()
+            return summary()
     except BaseException:
         print("Run Python Script Fail")
+        return 1
 
 
 if __name__ == "__main__":

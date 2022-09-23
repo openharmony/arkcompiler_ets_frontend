@@ -264,6 +264,10 @@ ohos_copy("copy_ts2abc_tests") {
 group("ts2abc_unittests") {
   if (host_os == "linux") {
     testonly = true
-    deps = [ "tests:ts2abc_tests(${toolchain_linux})" ]
+    deps = [
+      "tests:ts2abc_ts_instruction_type_test(${toolchain_linux})",
+      "tests:ts2abc_ts_type_system_test(${toolchain_linux})",
+      "tests:ts2abc_ts_ut_test(${toolchain_linux})",
+    ]
   }
 }
