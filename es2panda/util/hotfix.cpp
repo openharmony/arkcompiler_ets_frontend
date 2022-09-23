@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -432,7 +432,8 @@ void Hotfix::HandleFunction(const compiler::PandaGen *pg, panda::pandasm::Functi
     auto originFunction = originFunctionInfo_->find(funcName);
     if (originFunction == originFunctionInfo_->end()) {
         if (IsAnonymousOrDuplicateNameFunction(funcName)) {
-            std::cerr << "Found new anonymous or duplicate name function " << funcName << " not supported!" << std::endl;
+            std::cerr << "Found new anonymous or duplicate name function " << funcName
+                      << " not supported!" << std::endl;
             patchError_ = true;
             return;
         }
