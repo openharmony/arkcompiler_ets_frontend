@@ -254,7 +254,8 @@ class ArkProgram():
         # pre-generate the dependencies' abc when ark_frontend is [es2panda]
         if (file_name in self.module_list or file_name in self.dynamicImport_list) and \
             self.ark_frontend == ARK_FRONTEND_LIST[1]:
-            search_dir = "language/module-code" if file_name in self.module_list else "language/expressions/dynamic-import"
+            search_dir = "language/module-code" if file_name in self.module_list \
+                                                else "language/expressions/dynamic-import"
             dependencies = collect_module_dependencies(js_file, os.path.join(TEST_FULL_DIR, search_dir), [])
             for dependency in list(set(dependencies)):
                 self.gen_dependency_abc(dependency)
