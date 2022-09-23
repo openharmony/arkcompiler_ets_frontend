@@ -71,7 +71,7 @@ bool Options::CollectInputFilesFromFileList(const std::string &input)
         return false;
     }
 
-    constexpr size_t ITEM_COUNT = 3;
+    constexpr size_t ITEM_COUNT = 4;
     while (std::getline(ifs, line)) {
         const std::string seperator = ";";
         std::vector<std::string> itemList = GetStringItems(line, seperator);
@@ -79,6 +79,7 @@ bool Options::CollectInputFilesFromFileList(const std::string &input)
             std::cerr << "Failed to parse input file" << std::endl;
             return false;
         }
+        // itemList: [filePath, recordName, moduleKind, sourceFile]
         std::string fileName = itemList[0];
         std::string recordName = FormatRecordName(itemList[1]);
         parser::ScriptKind scriptKind;
@@ -91,6 +92,7 @@ bool Options::CollectInputFilesFromFileList(const std::string &input)
         }
 
         es2panda::SourceFile src(fileName, recordName, scriptKind);
+        src.sourcefile = itemList[3];
         sourceFiles_.push_back(src);
     }
     return true;
