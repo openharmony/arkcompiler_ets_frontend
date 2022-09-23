@@ -179,7 +179,8 @@ def collect_module_dependencies(file, directory, traversedDependencies):
             if re.search(r'\S+_FIXTURE.js$', specifier):
                 dependency = search_dependency(specifier.lstrip('./'), directory)
                 if dependency not in traversedDependencies:
-                    dependencies.extend(collect_module_dependencies(dependency, directory, list(set(traversedDependencies))))
+                    dependencies.extend(collect_module_dependencies(dependency, directory,
+                                                                   list(set(traversedDependencies))))
                 dependencies.append(dependency)
 
     return dependencies
