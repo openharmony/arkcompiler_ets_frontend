@@ -2555,7 +2555,8 @@ ir::MethodDefinition *ParserImpl::CreateImplicitConstructor(bool hasSuperClass, 
 
     auto *body = AllocNode<ir::BlockStatement>(scope, std::move(statements));
     auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, isDeclare ? nullptr : body, nullptr,
-                                               ir::ScriptFunctionFlags::CONSTRUCTOR, isDeclare);
+                                               ir::ScriptFunctionFlags::CONSTRUCTOR, isDeclare,
+                                               Extension() == ScriptExtension::TS);
     scope->BindNode(func);
     paramScope->BindNode(func);
     scope->BindParamScope(paramScope);
@@ -3248,7 +3249,8 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus, bool isDec
 
     auto *funcNode =
         AllocNode<ir::ScriptFunction>(functionScope, std::move(params), typeParamDecl, body, returnTypeAnnotation,
-                                      functionContext.Flags(), isDeclare && letDeclare);
+                                      functionContext.Flags(), isDeclare && letDeclare,
+                                      Extension() == ScriptExtension::TS);
     functionScope->BindNode(funcNode);
     funcParamScope->BindNode(funcNode);
     funcNode->SetRange({startLoc, endLoc});

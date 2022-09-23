@@ -508,6 +508,11 @@ public:
     bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                     [[maybe_unused]] ScriptExtension extension) override;
 
+    void RemoveThisParam()
+    {
+        params_.erase(params_.begin());
+    }
+
     friend class FunctionScope;
     template <typename E, typename T>
     friend class ScopeWithParamScope;

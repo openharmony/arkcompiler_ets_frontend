@@ -74,7 +74,7 @@ void ParserImpl::ParseCommonjs()
 
         auto *funcNode =
             AllocNode<ir::ScriptFunction>(functionScope, std::move(params), nullptr, program_.Ast(), nullptr,
-                                          functionContext.Flags(), false);
+                                          functionContext.Flags(), false, Extension() == ScriptExtension::TS);
         functionScope->BindNode(funcNode);
         funcParamScope->BindNode(funcNode);
 

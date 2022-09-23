@@ -438,7 +438,7 @@ ir::CallExpression *Transformer::CreateCallExpressionForTsModule(ir::TSModuleDec
         }
 
         funcNode = AllocNode<ir::ScriptFunction>(funcScope, std::move(params), nullptr, blockNode, nullptr,
-            ir::ScriptFunctionFlags::NONE, false);
+            ir::ScriptFunctionFlags::NONE, false, Extension() == ScriptExtension::TS);
 
         funcScope->BindNode(funcNode);
         funcParamScope->BindNode(funcNode);
