@@ -166,12 +166,10 @@ ir::Expression *ParserImpl::ParseExpression(ExpressionParseFlags flags)
 
         // TODO(rsipka): ParseTsGenericArrowFunction and ParseTsTypeAssertion might be in a common function
         ir::Expression *expr = ParseTsGenericArrowFunction();
-        // TODO(rsipka): negative cases are not covered, probably this is not a complete solution yet
-        if (expr == nullptr) {
-            lexer_->Rewind(startPos);
-            expr = ParseTsTypeAssertion();
+        if (expr != nullptr) {
+            return expr;
         }
-        return expr;
+        lexer_->Rewind(startPos);
     }
 
     ir::Expression *unaryExpressionNode = ParseUnaryOrPrefixUpdateExpression(flags);
@@ -527,7 +525,7 @@ ir::ArrowFunctionExpression *ParserImpl::ParseTsGenericArrowFunction()
                                             returnTypeAnnotation);
 }
 
-ir::TSTypeAssertion *ParserImpl::ParseTsTypeAssertion()
+ir::TSTypeAssertion *ParserImpl::ParseTsTypeAssertion(ExpressionParseFlags flags)
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
     lexer::SourcePosition start = lexer_->GetToken().Start();
@@ -541,7 +539,7 @@ ir::TSTypeAssertion *ParserImpl::ParseTsTypeAssertion()
     }
 
     lexer_->NextToken();  // eat '>'
-    ir::Expression *expression = ParseExpression();
+    ir::Expression *expression = ParseUnaryOrPrefixUpdateExpression(flags);
     auto *typeAssertion = AllocNode<ir::TSTypeAssertion>(typeAnnotation, expression);
     typeAssertion->SetRange({start, lexer_->GetToken().End()});
 
@@ -2219,6 +2217,11 @@ ir::SequenceExpression *ParserImpl::ParseSequenceExpression(ir::Expression *star
 
 ir::Expression *ParserImpl::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFlags flags)
 {
+    if (Extension() == ScriptExtension::TS && lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
+        // TODO(rsipka): negative cases are not covered, probably this is not a complete solution yet
+        return ParseTsTypeAssertion(flags);
+    }
+
     if (!lexer_->GetToken().IsUnary()) {
         return ParseLeftHandSideExpression(flags);
     }
@@ -2226,9 +2229,7 @@ ir::Expression *ParserImpl::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFl
     lexer::TokenType operatorType = lexer_->GetToken().Type();
     lexer::SourcePosition start = lexer_->GetToken().Start();
     lexer_->NextToken();
-
-    ir::Expression *argument =
-        lexer_->GetToken().IsUnary() ? ParseUnaryOrPrefixUpdateExpression() : ParseLeftHandSideExpression();
+    ir::Expression *argument = ParseUnaryOrPrefixUpdateExpression();
 
     if (lexer::Token::IsUpdateToken(operatorType)) {
         if (!argument->IsIdentifier() && !argument->IsMemberExpression() && !argument->IsTSNonNullExpression()) {
