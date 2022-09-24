@@ -18,21 +18,23 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaIncdyn,
-    EcmaLessdyn,
-    EcmaReturnundefined,
-    EcmaTonumeric,
+    Inc,
+    Less,
+    Returnundefined,
+    Tonumeric,
     Imm,
     Jeqz,
     Jmp,
     Label,
-    LdaDyn,
-    LdaiDyn,
-    ResultType,
-    StaDyn,
-    VReg
+    Lda,
+    Ldai,
+    Sta,
+    VReg,
+    IRNode
 } from "../../src/irnodes";
 import { checkInstructions, compileMainSnippet } from "../utils/base";
+import { creatAstFromSnippet } from "../utils/asthelper"
+import { PandaGen } from '../../src/pandagen';
 
 describe("ForLoopTest", function () {
     it('forLoopEmpty', function () {
@@ -40,12 +42,13 @@ describe("ForLoopTest", function () {
         let labelPre = new Label();
         let labelPost = new Label();
         let labelIncr = new Label();
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let expected = [
             labelPre,
             labelIncr,
             new Jmp(labelPre),
             labelPost,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         let jumps = insns.filter(item => item instanceof Jmp);
 
@@ -95,10 +98,10 @@ describe("ForLoopTest", function () {
         let jmpLabel = (<Jmp>jumps[1]).getTarget();
 
         expect(jmpLabel).to.equal(insns[2]);
-        expect(jgezLabel).to.equal(insns[15]);
+        expect(jgezLabel).to.equal(insns[17]);
 
         expect(insns[7]).to.equal(jumps[0]);
-        expect(insns[14]).to.equal(jumps[1]);
+        expect(insns[16]).to.equal(jumps[1]);
     });
 
     it('forLoopWithContinue', function () {
@@ -109,29 +112,31 @@ describe("ForLoopTest", function () {
         let labelPre = new Label();
         let labelPost = new Label();
         let labelIncr = new Label();
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let expected = [
             // initializer
-            new LdaiDyn(new Imm(0)),
-            new StaDyn(i),
+            new Ldai(new Imm(0)),
+            new Sta(i),
             labelPre,
             // condition
-            new LdaDyn(i),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(5)),
-            new EcmaLessdyn(lhs),
+            new Lda(i),
+            new Sta(lhs),
+            new Ldai(new Imm(5)),
+            new Less(new Imm(0), lhs),
             new Jeqz(labelPost),
             // body
             new Jmp(labelIncr), // continue
             labelIncr,
             // incrementor
-            new LdaDyn(i),
-            new StaDyn(operand),
-            new EcmaIncdyn(operand),
-            new StaDyn(i),
+            new Lda(i),
+            new Sta(operand),
+            new Lda(operand),
+            new Inc(new Imm(1)),
+            new Sta(i),
             // jump to the loop header
             new Jmp(new Label()),
             labelPost,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         // check the instruction kinds are the same as we expect
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -149,36 +154,38 @@ describe("ForLoopTest", function () {
         let labelPre = new Label();
         let labelPost = new Label();
         let labelIncr = new Label();
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let expected = [
             // initializer
-            new LdaiDyn(new Imm(0)),
-            new StaDyn(i),
+            new Ldai(new Imm(0)),
+            new Sta(i),
             labelPre,
             // condition
-            new LdaDyn(i),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(5)),
-            new EcmaLessdyn(lhs),
+            new Lda(i),
+            new Sta(lhs),
+            new Ldai(new Imm(5)),
+            new Less(new Imm(0), lhs),
             new Jeqz(labelPost),
             // body
             new Jmp(labelPost), // break
             // incrementor
             labelIncr,
-            new LdaDyn(i),
-            new StaDyn(operand),
-            new EcmaIncdyn(operand),
-            new StaDyn(i),
+            new Lda(i),
+            new Sta(operand),
+            new Lda(operand),
+            new Inc(new Imm(1)),
+            new Sta(i),
             // jump to the loop header
             new Jmp(labelPre),
             labelPost,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         // check the instruction kinds are the same as we expect
         expect(checkInstructions(insns, expected)).to.be.true;
         // check continue jumps to the expected instruction
         let jmp = <Jmp>insns[8];
         let targetLabel = (jmp).getTarget();
-        expect(targetLabel).to.equal(insns[15]);
+        expect(targetLabel).to.equal(insns[16]);
     });
 });
 
@@ -199,49 +206,53 @@ describe("LoopWithLabelTests", function () {
         let labelPre1 = new Label();
         let labelPost1 = new Label();
         let labelIncr1 = new Label();
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let expected = [
             // initializer
-            new LdaiDyn(new Imm(0.0)),
-            new StaDyn(i),
+            new Ldai(new Imm(0.0)),
+            new Sta(i),
             labelPre,
             // condition
-            new LdaDyn(i),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(5.0)),
-            new EcmaLessdyn(lhs),
+            new Lda(i),
+            new Sta(lhs),
+            new Ldai(new Imm(5.0)),
+            new Less(new Imm(0), lhs),
             new Jeqz(labelPost),
 
             // second for
-            new LdaiDyn(new Imm(0.0)),
-            new StaDyn(j),
+            new Ldai(new Imm(0.0)),
+            new Sta(j),
             labelPre1,
             // condition
-            new LdaDyn(j),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(6.0)),
-            new EcmaLessdyn(lhs),
+            new Lda(j),
+            new Sta(lhs),
+            new Ldai(new Imm(6.0)),
+            new Less(new Imm(1), lhs),
             new Jeqz(labelPost1),
             new Jmp(labelPost),
             labelIncr1,
             // incrementor
-            new LdaDyn(j),
-            new StaDyn(j),
-            new EcmaIncdyn(j),
-            new StaDyn(j),
-            new EcmaTonumeric(j),
+            new Lda(j),
+            new Sta(j),
+            new Lda(j),
+            new Inc(new Imm(2)),
+            new Sta(j),
+            new Lda(j),
+            new Tonumeric(new Imm(3)),
             // jump to the loop header
             new Jmp(labelPre1),
             labelPost1,
             labelIncr,
             // incrementor
-            new LdaDyn(i),
-            new StaDyn(i),
-            new EcmaIncdyn(i),
-            new StaDyn(i),
+            new Lda(i),
+            new Sta(i),
+            new Lda(i),
+            new Inc(new Imm(4)),
+            new Sta(i),
             // jump to the loop header
             new Jmp(labelPre),
             labelPost,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
 
         // check the instruction kinds are the same as we expect
@@ -249,7 +260,7 @@ describe("LoopWithLabelTests", function () {
         // check break jumps to the expected instruction
         let jmp = <Jmp>insns[16];
         let targetLabel = (jmp).getTarget();
-        expect(targetLabel).to.equal(insns[31]);
+        expect(targetLabel).to.equal(insns[34]);
     });
 
     it('forLoopWithContinueWithLabel', function () {
@@ -270,49 +281,53 @@ describe("LoopWithLabelTests", function () {
         let labelPre1 = new Label();
         let labelPost1 = new Label();
         let labelIncr1 = new Label();
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let expected = [
             // initializer
-            new LdaiDyn(new Imm(0.0)),
-            new StaDyn(i),
+            new Ldai(new Imm(0.0)),
+            new Sta(i),
             labelPre,
             // condition
-            new LdaDyn(i),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(5.0)),
-            new EcmaLessdyn(lhs),
+            new Lda(i),
+            new Sta(lhs),
+            new Ldai(new Imm(5.0)),
+            new Less(new Imm(0), lhs),
             new Jeqz(labelPost),
 
             // second for
-            new LdaiDyn(new Imm(0.0)),
-            new StaDyn(j),
+            new Ldai(new Imm(0.0)),
+            new Sta(j),
             labelPre1,
             // condition
-            new LdaDyn(j),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(6.0)),
-            new EcmaLessdyn(lhs),
+            new Lda(j),
+            new Sta(lhs),
+            new Ldai(new Imm(6.0)),
+            new Less(new Imm(1), lhs),
             new Jeqz(labelPost1),
             new Jmp(labelIncr),
             labelIncr1,
             // incrementor
-            new LdaDyn(j),
-            new StaDyn(j),
-            new EcmaIncdyn(j),
-            new StaDyn(j),
-            new EcmaTonumeric(j),
+            new Lda(j),
+            new Sta(j),
+            new Lda(j),
+            new Inc(new Imm(2)),
+            new Sta(j),
+            new Lda(j),
+            new Tonumeric(new Imm(3)),
             // jump to the loop header
             new Jmp(labelPre1),
             labelPost1,
             labelIncr,
             // incrementor
-            new LdaDyn(i),
-            new StaDyn(i),
-            new EcmaIncdyn(i),
-            new StaDyn(i),
+            new Lda(i),
+            new Sta(i),
+            new Lda(i),
+            new Inc(new Imm(4)),
+            new Sta(i),
             // jump to the loop header
             new Jmp(labelPre),
             labelPost,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
 
         // check the instruction kinds are the same as we expect
@@ -320,6 +335,6 @@ describe("LoopWithLabelTests", function () {
         // check break jumps to the expected instruction
         let jmp = <Jmp>insns[16];
         let targetLabel = (jmp).getTarget();
-        expect(targetLabel).to.equal(insns[25]);
+        expect(targetLabel).to.equal(insns[27]);
     });
 });

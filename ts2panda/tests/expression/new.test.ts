@@ -18,37 +18,37 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaCreateemptyarray,
-    EcmaLdobjbyname,
-    EcmaNewobjdynrange,
-    EcmaNewobjspreaddyn,
-    EcmaReturnundefined,
-    EcmaStarrayspread,
-    EcmaTryldglobalbyname,
+    Createemptyarray,
+    Ldobjbyname,
+    Newobjrange,
+    Newobjapply,
+    Returnundefined,
+    Starrayspread,
+    Tryldglobalbyname,
     Imm,
-    LdaDyn,
-    LdaiDyn,
-    MovDyn,
-    ResultType,
-    StaDyn,
-    VReg
+    Lda,
+    Ldai,
+    Mov,
+    Sta,
+    VReg,
+    IRNode
 } from "../../src/irnodes";
 import { checkInstructions, compileMainSnippet } from "../utils/base";
+import { creatAstFromSnippet } from "../utils/asthelper"
+import { PandaGen } from '../../src/pandagen';
 
 describe("NewTest", function () {
     it("new Object", function () {
         let insns = compileMainSnippet("new Object");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet("new Object"), 0, undefined);
         let arg0 = new VReg();
-        let targetReg = new VReg();
-
         let expected = [
-            new EcmaTryldglobalbyname("Object"),
-            new StaDyn(arg0),
-            new MovDyn(targetReg, arg0),
+            new Tryldglobalbyname(new Imm(0), "Object"),
+            new Sta(arg0),
 
-            new EcmaNewobjdynrange(new Imm(2), [arg0, targetReg]),
+            new Newobjrange(new Imm(1), new Imm(1), [arg0]),
 
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -56,17 +56,16 @@ describe("NewTest", function () {
 
     it("new Object()", function () {
         let insns = compileMainSnippet("new Object()");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet("new Object()"), 0, undefined);
         let arg0 = new VReg();
-        let targetReg = new VReg();
 
         let expected = [
-            new EcmaTryldglobalbyname("Object"),
-            new StaDyn(arg0),
-            new MovDyn(targetReg, arg0),
+            new Tryldglobalbyname(new Imm(0), "Object"),
+            new Sta(arg0),
 
-            new EcmaNewobjdynrange(new Imm(2), [arg0, targetReg]),
+            new Newobjrange(new Imm(1), new Imm(1), [arg0]),
 
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -74,21 +73,20 @@ describe("NewTest", function () {
 
     it("new Object(2)", function () {
         let insns = compileMainSnippet("new Object(2)");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet("new Object(2)"), 0, undefined);
         let arg0 = new VReg();
         let arg1 = new VReg();
-        let targetReg = new VReg();
 
         let expected = [
-            new EcmaTryldglobalbyname("Object"),
-            new StaDyn(arg0),
-            new MovDyn(targetReg, arg0),
+            new Tryldglobalbyname(new Imm(0), "Object"),
+            new Sta(arg0),
 
-            new LdaiDyn(new Imm(2)),
-            new StaDyn(arg1),
+            new Ldai(new Imm(2)),
+            new Sta(arg1),
 
-            new EcmaNewobjdynrange(new Imm(3), [arg0, targetReg, arg1]),
+            new Newobjrange(new Imm(1), new Imm(2), [arg0, arg1]),
 
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -96,52 +94,51 @@ describe("NewTest", function () {
 
     it("new obj.ctor()", function () {
         let insns = compileMainSnippet("let obj; new obj.ctor()");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet("let obj; new obj.ctor()"), 0, undefined);
+        IRNode.pg.updateIcSize(1);
         let obj = new VReg();
         let arg0 = new VReg();
         let temp = new VReg();
-        let targetReg = new VReg();
 
         let expected = [
-            new EcmaTryldglobalbyname('obj'),
-            new StaDyn(temp),
+            new Tryldglobalbyname(new Imm(0), 'obj'),
+            new Sta(temp),
 
-            new EcmaLdobjbyname("ctor", obj),
-            new StaDyn(arg0),
-            new MovDyn(targetReg, arg0),
+            new Lda(obj),
+            new Ldobjbyname(new Imm(1), "ctor"),
+            new Sta(arg0),
 
-            new EcmaNewobjdynrange(new Imm(2), [arg0, targetReg]),
+            new Newobjrange(new Imm(3), new Imm(1), [arg0]),
         ];
 
         insns = insns.slice(2, insns.length - 1);
-
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("new Object(...args)", function () {
         let insns = compileMainSnippet(`new Object(...args);`);
+        IRNode.pg = new PandaGen("", creatAstFromSnippet("new Object(...args);"), 0, undefined);
         let arg0 = new VReg();
         let elemIdxReg = new VReg();
-        let targetReg = new VReg();
         let arrayInstance = new VReg();
 
         let expected = [
-            new EcmaTryldglobalbyname("Object"),
-            new StaDyn(arg0),
-            new MovDyn(targetReg, arg0),
+            new Tryldglobalbyname(new Imm(0), "Object"),
+            new Sta(arg0),
 
-            new EcmaCreateemptyarray(),
-            new StaDyn(arrayInstance),
-            new LdaiDyn(new Imm(0)),
-            new StaDyn(elemIdxReg),
+            new Createemptyarray(new Imm(1)),
+            new Sta(arrayInstance),
+            new Ldai(new Imm(0)),
+            new Sta(elemIdxReg),
 
-            new EcmaTryldglobalbyname("args"),
-            new EcmaStarrayspread(arrayInstance, elemIdxReg),
-            new StaDyn(elemIdxReg),
-            new LdaDyn(arrayInstance),
+            new Tryldglobalbyname(new Imm(2), "args"),
+            new Starrayspread(arrayInstance, elemIdxReg),
+            new Sta(elemIdxReg),
+            new Lda(arrayInstance),
 
-            new EcmaNewobjspreaddyn(arg0, targetReg),
+            new Newobjapply(new Imm(3), arg0),
 
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;

@@ -64,7 +64,7 @@ public:
         ins->label = id_;
     }
 
-    ICSlot SetIcSlot(ICSize currentSlot) override
+    ICSlot SetIcSlot(IcSizeType currentSlot) override
     {
         return 0;
     }
@@ -229,7 +229,7 @@ public:
 % end
     }
 
-    ICSlot SetIcSlot(ICSize slot) override
+    ICSlot SetIcSlot(IcSizeType slot) override
     {
 % is_jit_ic = insn.properties.include?("jit_ic_slot")
 % is_ic = (!is_jit_ic) && insn.properties.include?("ic_slot")

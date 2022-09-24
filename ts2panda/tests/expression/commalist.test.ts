@@ -18,19 +18,22 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaReturnundefined,
-    EcmaStglobalvar,
-    EcmaTryldglobalbyname,
+    Returnundefined,
+    Stglobalvar,
+    Tryldglobalbyname,
     Imm,
-    LdaDyn,
-    MovDyn,
-    StaDyn,
-    EcmaDefineclasswithbuffer,
-    EcmaStclasstoglobalrecord,
-    EcmaNewobjdynrange,
-    VReg
+    Lda,
+    Mov,
+    Sta,
+    Defineclasswithbuffer,
+    Sttoglobalrecord,
+    Newobjrange,
+    VReg,
+    IRNode
 } from "../../src/irnodes";
 import { checkInstructions, SnippetCompiler } from "../utils/base";
+import { creatAstFromSnippet } from "../utils/asthelper"
+import { PandaGen } from '../../src/pandagen';
 
 describe("CommaListExpression", function () {
     it("computedPropertyName", function () {
@@ -51,69 +54,74 @@ describe("CommaListExpression", function () {
         } \
         ",
         "test.ts");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(" \
+        class Test { \
+            #filed1; \
+            #filed2; \
+            #filed3; \
+            #filed4; \
+            #filed5; \
+            #filed6; \
+            #filed7; \
+            #filed8; \
+            #filed9; \
+            #filed10; \
+            #filed11; \
+        } \
+        "), 0, undefined);
         let insns = snippetCompiler.getGlobalInsns();
+        console.log(insns);
         let expected = [
-            new MovDyn(new VReg(), new VReg()),
-            new EcmaDefineclasswithbuffer("#1#Test", new Imm(0), new Imm(0), new VReg(), new VReg()),
-            new StaDyn(new VReg()),
-            new LdaDyn(new VReg()),
-            new EcmaStclasstoglobalrecord("Test"),
-            new EcmaTryldglobalbyname('WeakMap'),
-            new StaDyn(new VReg()),
-            new MovDyn(new VReg(), new VReg()),
-            new EcmaNewobjdynrange(new Imm(2), [new VReg(), new VReg()]),
-            new EcmaStglobalvar('_Test_filed1'),
-            new EcmaTryldglobalbyname('WeakMap'),
-            new StaDyn(new VReg()),
-            new MovDyn(new VReg(), new VReg()),
-            new EcmaNewobjdynrange(new Imm(2), [new VReg(), new VReg()]),
-            new EcmaStglobalvar('_Test_filed2'),
-            new EcmaTryldglobalbyname('WeakMap'),
-            new StaDyn(new VReg()),
-            new MovDyn(new VReg(), new VReg()),
-            new EcmaNewobjdynrange(new Imm(2), [new VReg(), new VReg()]),
-            new EcmaStglobalvar('_Test_filed3'),
-            new EcmaTryldglobalbyname('WeakMap'),
-            new StaDyn(new VReg()),
-            new MovDyn(new VReg(), new VReg()),
-            new EcmaNewobjdynrange(new Imm(2), [new VReg(), new VReg()]),
-            new EcmaStglobalvar('_Test_filed4'),
-            new EcmaTryldglobalbyname('WeakMap'),
-            new StaDyn(new VReg()),
-            new MovDyn(new VReg(), new VReg()),
-            new EcmaNewobjdynrange(new Imm(2), [new VReg(), new VReg()]),
-            new EcmaStglobalvar('_Test_filed5'),
-            new EcmaTryldglobalbyname('WeakMap'),
-            new StaDyn(new VReg()),
-            new MovDyn(new VReg(), new VReg()),
-            new EcmaNewobjdynrange(new Imm(2), [new VReg(), new VReg()]),
-            new EcmaStglobalvar('_Test_filed6'),
-            new EcmaTryldglobalbyname('WeakMap'),
-            new StaDyn(new VReg()),
-            new MovDyn(new VReg(), new VReg()),
-            new EcmaNewobjdynrange(new Imm(2), [new VReg(), new VReg()]),
-            new EcmaStglobalvar('_Test_filed7'),
-            new EcmaTryldglobalbyname('WeakMap'),
-            new StaDyn(new VReg()),
-            new MovDyn(new VReg(), new VReg()),
-            new EcmaNewobjdynrange(new Imm(2), [new VReg(), new VReg()]),
-            new EcmaStglobalvar('_Test_filed8'),
-            new EcmaTryldglobalbyname('WeakMap'),
-            new StaDyn(new VReg()),
-            new MovDyn(new VReg(), new VReg()),
-            new EcmaNewobjdynrange(new Imm(2), [new VReg(), new VReg()]),
-            new EcmaStglobalvar('_Test_filed9'),
-            new EcmaTryldglobalbyname('WeakMap'),
-            new StaDyn(new VReg()),
-            new MovDyn(new VReg(), new VReg()),
-            new EcmaNewobjdynrange(new Imm(2), [new VReg(), new VReg()]),
-            new EcmaStglobalvar('_Test_filed10'),
-            new EcmaTryldglobalbyname('WeakMap'),
-            new StaDyn(new VReg()),
-            new MovDyn(new VReg(), new VReg()),
-            new EcmaNewobjdynrange(new Imm(2), [new VReg(), new VReg()]),
-            new EcmaStglobalvar('_Test_filed11'),
-            new EcmaReturnundefined()
+            new Mov(new VReg(), new VReg()),
+            new Defineclasswithbuffer(new Imm(0), "#1#Test", "0", new Imm(0), new VReg()),
+            new Sta(new VReg()),
+            new Lda(new VReg()),
+            new Sttoglobalrecord(new Imm(1), "Test"),
+            new Tryldglobalbyname(new Imm(2), 'WeakMap'),
+            new Sta(new VReg()),
+            new Newobjrange(new Imm(3), new Imm(1), [new VReg()]),
+            new Stglobalvar(new Imm(4), '_Test_filed1'),
+            new Tryldglobalbyname(new Imm(5), 'WeakMap'),
+            new Sta(new VReg()),
+            new Newobjrange(new Imm(6), new Imm(1), [new VReg()]),
+            new Stglobalvar(new Imm(7), '_Test_filed2'),
+            new Tryldglobalbyname(new Imm(8), 'WeakMap'),
+            new Sta(new VReg()),
+            new Newobjrange(new Imm(9), new Imm(1), [new VReg()]),
+            new Stglobalvar(new Imm(10), '_Test_filed3'),
+            new Tryldglobalbyname(new Imm(11), 'WeakMap'),
+            new Sta(new VReg()),
+            new Newobjrange(new Imm(12), new Imm(1), [new VReg()]),
+            new Stglobalvar(new Imm(13), '_Test_filed4'),
+            new Tryldglobalbyname(new Imm(14), 'WeakMap'),
+            new Sta(new VReg()),
+            new Newobjrange(new Imm(15), new Imm(1), [new VReg()]),
+            new Stglobalvar(new Imm(16), '_Test_filed5'),
+            new Tryldglobalbyname(new Imm(17), 'WeakMap'),
+            new Sta(new VReg()),
+            new Newobjrange(new Imm(18), new Imm(1), [new VReg()]),
+            new Stglobalvar(new Imm(19), '_Test_filed6'),
+            new Tryldglobalbyname(new Imm(20), 'WeakMap'),
+            new Sta(new VReg()),
+            new Newobjrange(new Imm(21), new Imm(1), [new VReg()]),
+            new Stglobalvar(new Imm(22), '_Test_filed7'),
+            new Tryldglobalbyname(new Imm(23), 'WeakMap'),
+            new Sta(new VReg()),
+            new Newobjrange(new Imm(24), new Imm(1), [new VReg()]),
+            new Stglobalvar(new Imm(25), '_Test_filed8'),
+            new Tryldglobalbyname(new Imm(26), 'WeakMap'),
+            new Sta(new VReg()),
+            new Newobjrange(new Imm(27), new Imm(1), [new VReg()]),
+            new Stglobalvar(new Imm(28), '_Test_filed9'),
+            new Tryldglobalbyname(new Imm(29), 'WeakMap'),
+            new Sta(new VReg()),
+            new Newobjrange(new Imm(30), new Imm(1), [new VReg()]),
+            new Stglobalvar(new Imm(31), '_Test_filed10'),
+            new Tryldglobalbyname(new Imm(32), 'WeakMap'),
+            new Sta(new VReg()),
+            new Newobjrange(new Imm(33), new Imm(1), [new VReg()]),
+            new Stglobalvar(new Imm(34), '_Test_filed11'),
+            new Returnundefined()
         ]
         expect(checkInstructions(insns, expected)).to.be.true;
     });

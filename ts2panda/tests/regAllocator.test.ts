@@ -17,23 +17,22 @@ import { expect } from 'chai';
 import 'mocha';
 import * as ts from "typescript";
 import {
-    CallRange,
-    EcmaCallirangedyn,
-    EcmaReturnundefined,
-    EcmaStlettoglobalrecord,
-    EcmaTryldglobalbyname,
+    Callrange,
+    Returnundefined,
+    Sttoglobalrecord,
+    Tryldglobalbyname,
     Imm,
     IRNode,
-    LdaiDyn,
-    ResultType,
-    StaDyn,
+    Ldai,
+    Lda,
+    Sta,
     VReg
 } from "../src/irnodes";
 import { PandaGen } from "../src/pandagen";
 import { CacheExpander } from "../src/pass/cacheExpander";
 import { RegAlloc } from "../src/regAllocator";
 import { basicChecker, checkInstructions, compileAllSnippet } from "./utils/base";
-
+import { creatAstFromSnippet } from "./utils/asthelper";
 
 function checkRegisterNumber(left: IRNode, right: IRNode): boolean {
     if (!basicChecker(left, right)) {
@@ -65,18 +64,20 @@ describe("RegAllocator", function () {
 
         let pgs = compileAllSnippet(string, [new CacheExpander(), new RegAlloc()]);
         let insns = pgs[0].getInsns();
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(""), 0, undefined);
+        IRNode.pg.updateIcSize(252);
 
         let expected: IRNode[] = [
-            new LdaiDyn(new Imm(252)),
-            new EcmaStlettoglobalrecord('a252'),
-            new LdaiDyn(new Imm(253)),
-            new EcmaStlettoglobalrecord('a253'),
-            new LdaiDyn(new Imm(254)),
-            new EcmaStlettoglobalrecord('a254'),
-            new LdaiDyn(new Imm(255)),
-            new EcmaStlettoglobalrecord('a255'),
-            new EcmaTryldglobalbyname('a255'),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(252)),
+            new Sttoglobalrecord(new Imm(0), 'a252'),
+            new Ldai(new Imm(253)),
+            new Sttoglobalrecord(new Imm(1), 'a253'),
+            new Ldai(new Imm(254)),
+            new Sttoglobalrecord(new Imm(2), 'a254'),
+            new Ldai(new Imm(255)),
+            new Sttoglobalrecord(new Imm(3), 'a255'),
+            new Tryldglobalbyname(new Imm(4), 'a255'),
+            new Returnundefined()
         ]
 
         expect(checkInstructions(insns.slice(insns.length - 10), expected, checkRegisterNumber)).to.be.true;
@@ -89,8 +90,8 @@ describe("RegAllocator", function () {
         expect(true).to.be.true;
     });
 
-    it("make spill for CalliDynRange", function () {
-        /* since the bitwidth for CalliDynRange source register is 16 now, we do not need to make spill at all.
+    it("make spill for CalliRange", function () {
+        /* since the bitwidth for CalliRange source register is 16 now, we do not need to make spill at all.
            but in case later 16 might be changed to 8, then spill operation will be needed in some cases. this testcase is designed
            for 8bits constraints.
         */
@@ -101,39 +102,42 @@ describe("RegAllocator", function () {
         string += "call(a252, a253, a254, a255);";
         let pgs = compileAllSnippet(string, [new CacheExpander(), new RegAlloc()]);
         let insns = pgs[0].getInsns();
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(""), 0, undefined);
+        IRNode.pg.updateIcSize(252);
         let v = [];
         for (let i = 0; i < 8; ++i) {
             v[i] = new VReg();
             v[i].num = i;
         }
         let expected = [
-            new LdaiDyn(new Imm(252)),
-            new EcmaStlettoglobalrecord('a252'),
-            new LdaiDyn(new Imm(253)),
-            new EcmaStlettoglobalrecord('a253'),
-            new LdaiDyn(new Imm(254)),
-            new EcmaStlettoglobalrecord('a254'),
-            new LdaiDyn(new Imm(255)),
-            new EcmaStlettoglobalrecord('a255'),
-            new EcmaTryldglobalbyname('call'),
-            new StaDyn(v[3]),
-            new EcmaTryldglobalbyname('a252'),
-            new StaDyn(v[4]),
-            new EcmaTryldglobalbyname('a253'),
-            new StaDyn(v[5]),
-            new EcmaTryldglobalbyname('a254'),
-            new StaDyn(v[6]),
-            new EcmaTryldglobalbyname('a255'),
-            new StaDyn(v[7]),
-            new EcmaCallirangedyn(new Imm(4), [v[3],v[4],v[5],v[6],v[7]]),
-            new EcmaReturnundefined(),
+            new Ldai(new Imm(252)),
+            new Sttoglobalrecord(new Imm(252), 'a252'),
+            new Ldai(new Imm(253)),
+            new Sttoglobalrecord(new Imm(253), 'a253'),
+            new Ldai(new Imm(254)),
+            new Sttoglobalrecord(new Imm(254), 'a254'),
+            new Ldai(new Imm(255)),
+            new Sttoglobalrecord(new Imm(256), 'a255'),
+            new Tryldglobalbyname(new Imm(257), 'call'),
+            new Sta(v[3]),
+            new Tryldglobalbyname(new Imm(258), 'a252'),
+            new Sta(v[4]),
+            new Tryldglobalbyname(new Imm(259), 'a253'),
+            new Sta(v[5]),
+            new Tryldglobalbyname(new Imm(260), 'a254'),
+            new Sta(v[6]),
+            new Tryldglobalbyname(new Imm(261), 'a255'),
+            new Sta(v[7]),
+            new Lda(v[3]),
+            new Callrange(new Imm(255), new Imm(4), [v[4], v[5], v[6], v[7]]),
+            new Returnundefined(),
         ];
-        expect(checkInstructions(insns.slice(insns.length - 20), expected, checkRegisterNumber)).to.be.true;
+
+        expect(checkInstructions(insns.slice(insns.length - 21), expected, checkRegisterNumber)).to.be.true;
     });
 
     it("VReg sequence of CalliDynRange is not continuous", function () {
-        let pandaGen = new PandaGen('', undefined, 0);
-
+        let pandaGen = new PandaGen('', creatAstFromSnippet(""), 0);
         let para1 = pandaGen.getTemp();
         let para2 = pandaGen.getTemp();
         let para3 = pandaGen.getTemp();
@@ -155,13 +159,12 @@ describe("RegAllocator", function () {
     });
 
     it("VReg sequence of DynRange is not continuous", function () {
-        let pandaGen = new PandaGen('', undefined, 0);
-
+        let pandaGen = new PandaGen('', creatAstFromSnippet(""), 0);
         let para1 = pandaGen.getTemp();
         let para2 = pandaGen.getTemp();
         let para3 = pandaGen.getTemp();
 
-        pandaGen.getInsns().push(new CallRange('test', [para1, para2, para3]))
+        pandaGen.getInsns().push(new Callrange(new Imm(0), new Imm(3), [para1, para2, para3]))
 
         pandaGen.freeTemps(para1, para3, para2);
 

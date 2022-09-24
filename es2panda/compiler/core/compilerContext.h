@@ -97,7 +97,7 @@ public:
         return hotfixHelper_;
     }
 
-    util::StringView RecordName() const
+    util::StringView &RecordName()
     {
         return recordName_;
     }

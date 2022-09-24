@@ -18,211 +18,221 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaAnd2dyn,
-    EcmaEqdyn,
-    EcmaGreaterdyn,
-    EcmaGreatereqdyn,
-    EcmaIncdyn,
-    EcmaInstanceofdyn,
-    EcmaIsindyn,
-    EcmaLessdyn,
-    EcmaLesseqdyn,
-    EcmaNoteqdyn,
-    EcmaOr2dyn,
-    EcmaReturnundefined,
-    EcmaStlettoglobalrecord,
-    EcmaStricteqdyn,
-    EcmaStrictnoteqdyn,
-    EcmaTonumeric,
-    EcmaTryldglobalbyname,
-    EcmaTrystglobalbyname,
-    EcmaXor2dyn,
+    And2,
+    Eq,
+    Greater,
+    Greatereq,
+    Inc,
+    Instanceof,
+    Isin,
+    Less,
+    Lesseq,
+    Noteq,
+    Or2,
+    Returnundefined,
+    Sttoglobalrecord,
+    Stricteq,
+    Strictnoteq,
+    Tonumeric,
+    Tryldglobalbyname,
+    Trystglobalbyname,
+    Xor2,
     Imm,
     Jeqz,
     Jmp,
     Label,
-    LdaDyn,
-    LdaiDyn,
+    Lda,
+    Ldai,
     LdaStr,
-    ResultType,
-    StaDyn,
-    VReg
+    Sta,
+    VReg,
+    IRNode
 } from "../../src/irnodes";
 import { checkInstructions, compileMainSnippet } from "../utils/base";
+import { creatAstFromSnippet } from "../utils/asthelper";
+import { PandaGen } from '../../src/pandagen';
 
 describe("CmpBinaryOperators", function () {
     it("LessThan", function () {
         let insns = compileMainSnippet("2 < 3;");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("2 < 3;"), 0, undefined);
         let lhs = new VReg();
         let falseLabel = new Label();
         let endLabel = new Label();
 
         let expected = [
-            new LdaiDyn(new Imm(2)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(3)),
-            new EcmaLessdyn(lhs),
+            new Ldai(new Imm(2)),
+            new Sta(lhs),
+            new Ldai(new Imm(3)),
+            new Less(new Imm(0), lhs),
             new Jeqz(falseLabel),
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             new Jmp(endLabel),
             falseLabel,
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             endLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("GreaterThan", function () {
         let insns = compileMainSnippet("3 > 1;");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("3 > 1;"), 0, undefined);
         let lhs = new VReg();
         let falseLabel = new Label();
         let endLabel = new Label();
 
         let expected = [
-            new LdaiDyn(new Imm(3)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(1)),
-            new EcmaGreaterdyn(lhs),
+            new Ldai(new Imm(3)),
+            new Sta(lhs),
+            new Ldai(new Imm(1)),
+            new Greater(new Imm(0), lhs),
             new Jeqz(falseLabel),
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             new Jmp(endLabel),
             falseLabel,
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             endLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("LessThanEquals", function () {
         let insns = compileMainSnippet("3 <= 4;");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("3 <= 4;"), 0, undefined);
         let lhs = new VReg();
         let falseLabel = new Label();
         let endLabel = new Label();
 
         let expected = [
-            new LdaiDyn(new Imm(3)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(4)),
-            new EcmaLesseqdyn(lhs),
+            new Ldai(new Imm(3)),
+            new Sta(lhs),
+            new Ldai(new Imm(4)),
+            new Lesseq(new Imm(0), lhs),
             new Jeqz(falseLabel),
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             new Jmp(endLabel),
             falseLabel,
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             endLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("GreaterThanEquals", function () {
         let insns = compileMainSnippet("3 >= 2;");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("3 >= 2;"), 0, undefined);
         let lhs = new VReg();
         let falseLabel = new Label();
         let endLabel = new Label();
 
         let expected = [
-            new LdaiDyn(new Imm(3)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(2)),
-            new EcmaGreatereqdyn(lhs),
+            new Ldai(new Imm(3)),
+            new Sta(lhs),
+            new Ldai(new Imm(2)),
+            new Greatereq(new Imm(0), lhs),
             new Jeqz(falseLabel),
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             new Jmp(endLabel),
             falseLabel,
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             endLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("EqualsEquals", function () {
         let insns = compileMainSnippet("3 == 3;");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("3 == 3;"), 0, undefined);
         let lhs = new VReg();
         let falseLabel = new Label();
         let endLabel = new Label();
 
         let expected = [
-            new LdaiDyn(new Imm(3)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(3)),
-            new EcmaEqdyn(lhs),
+            new Ldai(new Imm(3)),
+            new Sta(lhs),
+            new Ldai(new Imm(3)),
+            new Eq(new Imm(0), lhs),
             new Jeqz(falseLabel),
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             new Jmp(endLabel),
             falseLabel,
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             endLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("ExclamationEquals", function () {
         let insns = compileMainSnippet("3 != 2;");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("3 != 2;"), 0, undefined);
         let lhs = new VReg();
         let falseLabel = new Label();
         let endLabel = new Label();
 
         let expected = [
-            new LdaiDyn(new Imm(3)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(2)),
-            new EcmaNoteqdyn(lhs),
+            new Ldai(new Imm(3)),
+            new Sta(lhs),
+            new Ldai(new Imm(2)),
+            new Noteq(new Imm(0), lhs),
             new Jeqz(falseLabel),
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             new Jmp(endLabel),
             falseLabel,
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             endLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("EqualsEqualsEquals", function () {
         let insns = compileMainSnippet("3 === 3;");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("3 === 3;"), 0, undefined);
         let lhs = new VReg();
         let falseLabel = new Label();
         let endLabel = new Label();
 
         let expected = [
-            new LdaiDyn(new Imm(3)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(3)),
-            new EcmaStricteqdyn(lhs),
+            new Ldai(new Imm(3)),
+            new Sta(lhs),
+            new Ldai(new Imm(3)),
+            new Stricteq(new Imm(0), lhs),
             new Jeqz(falseLabel),
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             new Jmp(endLabel),
             falseLabel,
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             endLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("ExclamationEqualsEquals", function () {
         let insns = compileMainSnippet("3 !== 3;");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("3 !== 3;"), 0, undefined);
         let lhs = new VReg();
         let falseLabel = new Label();
         let endLabel = new Label();
 
         let expected = [
-            new LdaiDyn(new Imm(3)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(3)),
-            new EcmaStrictnoteqdyn(lhs),
+            new Ldai(new Imm(3)),
+            new Sta(lhs),
+            new Ldai(new Imm(3)),
+            new Strictnoteq(new Imm(0), lhs),
             new Jeqz(falseLabel),
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             new Jmp(endLabel),
             falseLabel,
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             endLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
@@ -230,17 +240,18 @@ describe("CmpBinaryOperators", function () {
     it("ampersandEqual", function () {
         let insns = compileMainSnippet("let a = 5;\n" +
             "a &= 3;");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("let a = 5;\n" + "a &= 3;"), 0, undefined);
         let lhs = new VReg();
 
         let expected = [
-            new LdaiDyn(new Imm(5)),
-            new EcmaStlettoglobalrecord('a'),
-            new EcmaTryldglobalbyname('a'),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(3)),
-            new EcmaAnd2dyn(lhs),
-            new EcmaTrystglobalbyname('a'),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(5)),
+            new Sttoglobalrecord(new Imm(0), 'a'),
+            new Tryldglobalbyname(new Imm(1), 'a'),
+            new Sta(lhs),
+            new Ldai(new Imm(3)),
+            new And2(new Imm(2), lhs),
+            new Trystglobalbyname(new Imm(3), 'a'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
@@ -248,17 +259,18 @@ describe("CmpBinaryOperators", function () {
     it("barEqual", function () {
         let insns = compileMainSnippet("let a = 5;\n" +
             "a |= 3;");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("let a = 5;\n" + "a |= 3;"), 0, undefined);
         let lhs = new VReg();
 
         let expected = [
-            new LdaiDyn(new Imm(5)),
-            new EcmaStlettoglobalrecord('a'),
-            new EcmaTryldglobalbyname('a'),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(3)),
-            new EcmaOr2dyn(lhs),
-            new EcmaTrystglobalbyname('a'),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(5)),
+            new Sttoglobalrecord(new Imm(0), 'a'),
+            new Tryldglobalbyname(new Imm(1), 'a'),
+            new Sta(lhs),
+            new Ldai(new Imm(3)),
+            new Or2(new Imm(2), lhs),
+            new Trystglobalbyname(new Imm(3), 'a'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
@@ -266,17 +278,18 @@ describe("CmpBinaryOperators", function () {
     it("caretEqual", function () {
         let insns = compileMainSnippet("let a = 5;\n" +
             "a ^= 3;");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("let a = 5;\n" + "a ^= 3;"), 0, undefined);
         let lhs = new VReg();
 
         let expected = [
-            new LdaiDyn(new Imm(5)),
-            new EcmaStlettoglobalrecord('a'),
-            new EcmaTryldglobalbyname('a'),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(3)),
-            new EcmaXor2dyn(lhs),
-            new EcmaTrystglobalbyname('a'),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(5)),
+            new Sttoglobalrecord(new Imm(0), 'a'),
+            new Tryldglobalbyname(new Imm(1), 'a'),
+            new Sta(lhs),
+            new Ldai(new Imm(3)),
+            new Xor2(new Imm(2), lhs),
+            new Trystglobalbyname(new Imm(3), 'a'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
@@ -284,50 +297,54 @@ describe("CmpBinaryOperators", function () {
     it("CommaToken", function () {
         let insns = compileMainSnippet(`let x = 1;
                                 x = (x++, x);`);
-        let variable = new VReg();
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`let x = 1; x = (x++, x);`), 0, undefined);
         let rhs = new VReg();
         let lhs = new VReg();
 
         let expected = [
-            new LdaiDyn(new Imm(1)),
-            new EcmaStlettoglobalrecord('x'),
-            new EcmaTryldglobalbyname('x'),
-            new StaDyn(lhs),
-            new EcmaIncdyn(lhs),
-            new EcmaTrystglobalbyname('x'),
-            new EcmaTonumeric(variable),
-            new StaDyn(rhs),
-            new EcmaTryldglobalbyname('x'),
-            new EcmaTrystglobalbyname('x'),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(1)),
+            new Sttoglobalrecord(new Imm(0), 'x'),
+            new Tryldglobalbyname(new Imm(1), 'x'),
+            new Sta(lhs),
+            new Lda(lhs),
+            new Inc(new Imm(2)),
+            new Trystglobalbyname(new Imm(3), 'x'),
+            new Lda(new VReg()),
+            new Tonumeric(new Imm(4)),
+            new Sta(rhs),
+            new Tryldglobalbyname(new Imm(5), 'x'),
+            new Trystglobalbyname(new Imm(6), 'x'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("InKeyword", function () {
         let insns = compileMainSnippet(`'o' in C;`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`'o' in C;`), 0, undefined);
         let rhs = new VReg();
 
         let expected = [
             new LdaStr('o'),
-            new StaDyn(rhs),
-            new EcmaTryldglobalbyname("C"),
-            new EcmaIsindyn(rhs),
-            new EcmaReturnundefined()
+            new Sta(rhs),
+            new Tryldglobalbyname(new Imm(0), "C"),
+            new Isin(new Imm(1), rhs),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("InstanceOfKeyword", function () {
         let insns = compileMainSnippet(`o instanceof C;`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`o instanceof C;`), 0, undefined);
         let rhs = new VReg();
 
         let expected = [
-            new EcmaTryldglobalbyname("o"),
-            new StaDyn(rhs),
-            new EcmaTryldglobalbyname("C"),
-            new EcmaInstanceofdyn(rhs),
-            new EcmaReturnundefined()
+            new Tryldglobalbyname(new Imm(0), "o"),
+            new Sta(rhs),
+            new Tryldglobalbyname(new Imm(1), "C"),
+            new Instanceof(new Imm(2), rhs),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });

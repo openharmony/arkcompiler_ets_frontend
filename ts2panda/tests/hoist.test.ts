@@ -18,34 +18,37 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaDefinefuncdyn,
-    EcmaIstrue,
-    EcmaReturnundefined,
-    EcmaStglobalvar,
-    EcmaThrowundefinedifhole,
+    Definefunc,
+    Istrue,
+    Returnundefined,
+    Stglobalvar,
+    ThrowUndefinedifhole,
     Imm,
     Jeqz,
     Label,
-    LdaDyn,
-    LdaiDyn,
+    Lda,
+    Ldai,
     LdaStr,
-    ResultType,
-    StaDyn,
-    VReg
+    Sta,
+    VReg,
+    IRNode
 } from "../src/irnodes";
 import { checkInstructions, compileMainSnippet, SnippetCompiler } from "./utils/base";
+import { creatAstFromSnippet } from "./utils/asthelper";
+import { PandaGen } from '../src/pandagen';
 
 describe("HoistTest", function () {
 
     // case 1: hoist var declared variable ((declared in global scope)) in global scope
     it('case 1;', function () {
         let insns = compileMainSnippet("var a = 1;");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("var a = 1;"), 0, undefined);
         let expected = [
-            new LdaDyn(new VReg()),
-            new EcmaStglobalvar("a"),
-            new LdaiDyn(new Imm(1)),
-            new EcmaStglobalvar("a"),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Stglobalvar(new Imm(0), "a"),
+            new Ldai(new Imm(1)),
+            new Stglobalvar(new Imm(1), "a"),
+            new Returnundefined()
         ]
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -56,18 +59,21 @@ describe("HoistTest", function () {
         let insns = compileMainSnippet(`if (true) {
                                   var a = 2;
                                 }`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`if (true) {
+            var a = 2;
+          }`), 0, undefined);
         let endLabel = new Label();
 
         let expected = [
-            new LdaDyn(new VReg()),
-            new EcmaStglobalvar("a"),
-            new LdaDyn(new VReg()),
-            new EcmaIstrue(),
+            new Lda(new VReg()),
+            new Stglobalvar(new Imm(0), "a"),
+            new Lda(new VReg()),
+            new Istrue(),
             new Jeqz(endLabel),
-            new LdaiDyn(new Imm(2)),
-            new EcmaStglobalvar("a"),
+            new Ldai(new Imm(2)),
+            new Stglobalvar(new Imm(1), "a"),
             endLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ]
         expect(checkInstructions(insns, expected)).to.be.true;
     });
@@ -76,12 +82,13 @@ describe("HoistTest", function () {
     it('case 3', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`function a() {};`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`function a() {};`), 0, undefined);
 
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new EcmaDefinefuncdyn("a", new Imm(0), new VReg()),
-            new EcmaStglobalvar("a"),
-            new EcmaReturnundefined()
+            new Definefunc(new Imm(0), "a", new Imm(0)),
+            new Stglobalvar(new Imm(1), "a"),
+            new Returnundefined()
         ]
         expect(checkInstructions(insns, expected)).to.be.true;
     });
@@ -90,12 +97,13 @@ describe("HoistTest", function () {
     it('case 4', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`function a() {}; function a() {}`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`function a() {}; function a() {}`), 0, undefined);
 
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new EcmaDefinefuncdyn("#2#a", new Imm(0), new VReg()),
-            new EcmaStglobalvar("a"),
-            new EcmaReturnundefined()
+            new Definefunc(new Imm(0), "#2#a", new Imm(0)),
+            new Stglobalvar(new Imm(1), "a"),
+            new Returnundefined()
         ]
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -105,13 +113,15 @@ describe("HoistTest", function () {
     it('case 5', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`var a = 1; function a() {}`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`var a = 1; function a() {}`), 0, undefined);
+
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new EcmaDefinefuncdyn("a", new Imm(0), new VReg()),
-            new EcmaStglobalvar("a"),
-            new LdaiDyn(new Imm(1)),
-            new EcmaStglobalvar("a"),
-            new EcmaReturnundefined()
+            new Definefunc(new Imm(0), "a", new Imm(0)),
+            new Stglobalvar(new Imm(1), "a"),
+            new Ldai(new Imm(1)),
+            new Stglobalvar(new Imm(2), "a"),
+            new Returnundefined()
         ]
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -121,17 +131,18 @@ describe("HoistTest", function () {
     it('case 6', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`function a() {var a = 1;}`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`function a() {var a = 1;}`), 0, undefined);
         let funcPg = snippetCompiler.getPandaGenByName("a");
         let insns = funcPg!.getInsns();
 
         let a = new VReg();
         let expected = [
-            new LdaDyn(a),
-            new StaDyn(new VReg()),
-            new LdaiDyn(new Imm(1)),
-            new StaDyn(a),
+            new Lda(a),
+            new Sta(new VReg()),
+            new Ldai(new Imm(1)),
+            new Sta(a),
 
-            new EcmaReturnundefined()
+            new Returnundefined()
         ]
         expect(checkInstructions(insns!, expected)).to.be.true;
     });
@@ -140,14 +151,15 @@ describe("HoistTest", function () {
     it('case 7', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`function a() {function b() {}};`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`function a() {function b() {}};`), 0, undefined);
         let funcPg = snippetCompiler.getPandaGenByName("a");
         let insns = funcPg!.getInsns();
         let a = new VReg();
         let expected = [
-            new EcmaDefinefuncdyn("b", new Imm(0), new VReg()),
-            new StaDyn(a),
+            new Definefunc(new Imm(0), "b", new Imm(0)),
+            new Sta(a),
 
-            new EcmaReturnundefined()
+            new Returnundefined()
         ]
 
         expect(checkInstructions(insns!, expected)).to.be.true;
@@ -163,8 +175,8 @@ describe("HoistTest", function () {
         let idReg = new VReg();
         let expected = [
             new LdaStr("a"),
-            new StaDyn(idReg),
-            new EcmaThrowundefinedifhole(new VReg(), idReg)
+            new Sta(idReg),
+            new ThrowUndefinedifhole(new VReg(), idReg)
         ]
 
         expect(checkInstructions(insns.slice(3, 5), expected));
@@ -183,8 +195,8 @@ describe("HoistTest", function () {
 
         let expected = [
             new LdaStr("a"),
-            new StaDyn(idReg),
-            new EcmaThrowundefinedifhole(new VReg(), idReg)
+            new Sta(idReg),
+            new ThrowUndefinedifhole(new VReg(), idReg)
         ]
 
         expect(checkInstructions(insns.slice(3, 5), expected));
@@ -203,8 +215,8 @@ describe("HoistTest", function () {
 
         let expected = [
             new LdaStr("a"),
-            new StaDyn(idReg),
-            new EcmaThrowundefinedifhole(new VReg(), idReg)
+            new Sta(idReg),
+            new ThrowUndefinedifhole(new VReg(), idReg)
         ]
 
         expect(checkInstructions(insns.slice(3, 5), expected));

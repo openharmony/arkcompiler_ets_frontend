@@ -23,6 +23,7 @@
 #include <compiler/core/regScope.h>
 #include <ir/irnode.h>
 #include <lexer/token/tokenType.h>
+#include <libpandafile/file_items.h>
 #include <macros.h>
 
 #include <regex>
@@ -60,16 +61,6 @@ enum class Constant {
     JS_FALSE,
     JS_SYMBOL,
     JS_GLOBAL,
-};
-
-enum class FunctionKind : uint8_t {
-    NONE = 0x0, // represent method for now
-    FUNCTION = 0x1,
-    NC_FUNCTION = 0x2,
-    GENERATOR_FUNCTION = 0x3,
-    ASYNC_FUNCTION = 0x4,
-    ASYNC_GENERATOR_FUNCTION = 0x5,
-    ASYNC_NCFUNCTION = 0x6
 };
 
 class DebugInfo {
@@ -203,7 +194,7 @@ public:
         rra_.SetSourceLocationFlag(flag);
     }
 
-    FunctionKind GetFunctionKind() const
+    panda::panda_file::FunctionKind GetFunctionKind() const
     {
         return funcKind_;
     }
@@ -347,7 +338,7 @@ public:
     void SuspendAsyncGenerator(const ir::AstNode *node, VReg asyncGenObj);
 
     void AsyncGeneratorResolve(const ir::AstNode *node, VReg asyncGenObj, VReg value, VReg canSuspend);
-    void AsyncGeneratorReject(const ir::AstNode *node, VReg asyncGenObj, VReg value);
+    void AsyncGeneratorReject(const ir::AstNode *node, VReg asyncGenObj);
 
     void GetTemplateObject(const ir::AstNode *node, VReg value);
     void CopyRestArgs(const ir::AstNode *node, uint32_t index);
@@ -442,7 +433,7 @@ public:
         throw Error(ErrorType::GENERIC, "Unimplemented code path");
     }
 
-    ICSize GetCurrentSlot() const
+    IcSizeType GetCurrentSlot() const
     {
         return currentSlot_;
     }
@@ -471,7 +462,7 @@ private:
     SimpleAllocator sa_;
     RegAllocator ra_;
     RangeRegAllocator rra_;
-    ICSize currentSlot_ {0};
+    IcSizeType currentSlot_ {0};
 
     uint32_t usedRegs_ {0};
     uint32_t totalRegs_ {0};
@@ -486,7 +477,7 @@ private:
     friend class DynamicContext;
     friend class OptionalChain;
     size_t labelId_ {0};
-    FunctionKind funcKind_ {FunctionKind::NONE};
+    panda::panda_file::FunctionKind funcKind_ {panda::panda_file::FunctionKind::NONE};
 };
 }  // namespace panda::es2panda::compiler
 

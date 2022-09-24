@@ -19,19 +19,22 @@ import {
 import 'mocha';
 import { checkInstructions, SnippetCompiler } from "./utils/base";
 import {
-    EcmaDefineclasswithbuffer,
-    EcmaLdmodulevar,
-    EcmaReturnundefined,
-    EcmaStmodulevar,
-    EcmaThrowundefinedifhole,
+    Defineclasswithbuffer,
+    Returnundefined,
+    Stmodulevar,
+    ThrowUndefinedifhole,
     Imm,
-    LdaDyn,
+    Lda,
     LdaStr,
-    MovDyn,
-    StaDyn,
-    VReg
+    Mov,
+    Sta,
+    VReg,
+    IRNode,
+    Ldexternalmodulevar
 } from "../src/irnodes";
 import { CmdOptions } from '../src/cmdOptions';
+import { creatAstFromSnippet } from "./utils/asthelper";
+import { PandaGen } from '../src/pandagen';
 
 
 describe("ExportDeclaration", function () {
@@ -40,16 +43,17 @@ describe("ExportDeclaration", function () {
         CmdOptions.isModules = () => {return true};
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`class C {}; export {C}`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`class C {}; export {C}`), 0, undefined);
         CmdOptions.isModules = () => {return false};
         let funcMainInsns = snippetCompiler.getGlobalInsns();
         let classReg = new VReg();
         let expected = [
-            new MovDyn(new VReg(), new VReg()),
-            new EcmaDefineclasswithbuffer("#1#C", new Imm(0), new Imm(0), new VReg(), new VReg()),
-            new StaDyn(classReg),
-            new LdaDyn(classReg),
-            new EcmaStmodulevar('C'),
-            new EcmaReturnundefined(),
+            new Mov(new VReg(), new VReg()),
+            new Defineclasswithbuffer(new Imm(0), "#1#C", "0", new Imm(0), new VReg()),
+            new Sta(classReg),
+            new Lda(classReg),
+            new Stmodulevar(new Imm(0)),
+            new Returnundefined(),
         ];
         expect(checkInstructions(funcMainInsns, expected)).to.be.true;
     });
@@ -64,14 +68,14 @@ describe("ExportDeclaration", function () {
         let v = new VReg();
         let name = new VReg();
         let expected = [
-            new EcmaLdmodulevar("a", new Imm(0)),
-            new StaDyn(a),
+            new Ldexternalmodulevar(new Imm(0)),
+            new Sta(a),
             new LdaStr("a"),
-            new StaDyn(name),
-            new EcmaThrowundefinedifhole(a, name),
-            new LdaDyn(a),
-            new StaDyn(v),
-            new EcmaReturnundefined(),
+            new Sta(name),
+            new ThrowUndefinedifhole(a, name),
+            new Lda(a),
+            new Sta(v),
+            new Returnundefined(),
         ];
         expect(checkInstructions(funcMainInsns, expected)).to.be.true;
     });

@@ -18,35 +18,42 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaReturnundefined,
-    EcmaStlettoglobalrecord,
-    EcmaTryldglobalbyname,
-    LdaDyn,
-    VReg
+    Returnundefined,
+    Sttoglobalrecord,
+    Tryldglobalbyname,
+    Lda,
+    VReg,
+    Imm,
+    IRNode
 } from "../../src/irnodes";
 import { checkInstructions, compileMainSnippet } from "../utils/base";
+import { creatAstFromSnippet } from "../utils/asthelper"
+import { PandaGen } from '../../src/pandagen';
 
 describe("ParenthesizedExpressionTest", function () {
     it("(a)", function () {
         let insns = compileMainSnippet("let a; (a);");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet("let a; (a);"), 0, undefined);
+
         let a = new VReg();
         let expected = [
-            new LdaDyn(new VReg()),
-            new EcmaStlettoglobalrecord('a'),
-            new EcmaTryldglobalbyname('a'),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Sttoglobalrecord(new Imm(0), 'a'),
+            new Tryldglobalbyname(new Imm(1), 'a'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("(((a)))", function () {
         let insns = compileMainSnippet("let a; (((a)))");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet("let a; (((a)))"), 0, undefined);
         let a = new VReg();
         let expected = [
-            new LdaDyn(new VReg()),
-            new EcmaStlettoglobalrecord('a'),
-            new EcmaTryldglobalbyname('a'),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Sttoglobalrecord(new Imm(0), 'a'),
+            new Tryldglobalbyname(new Imm(1), 'a'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });

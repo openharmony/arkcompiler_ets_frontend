@@ -13,9 +13,8 @@
  * limitations under the License.
  */
 
-#include <binder/scope.h>
-
 #include "sourceTextModuleRecord.h"
+#include <binder/scope.h>
 
 namespace panda::es2panda::parser {
     int SourceTextModuleRecord::AddModuleRequest(const util::StringView source)

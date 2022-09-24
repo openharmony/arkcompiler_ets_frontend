@@ -42,7 +42,6 @@
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/newExpression.h>
 #include <ir/statement.h>
-#include <util/helpers.h>
 
 namespace panda::es2panda::compiler {
 
@@ -51,7 +50,7 @@ namespace panda::es2panda::compiler {
 void PandaGen::SetFunctionKind()
 {
     if (rootNode_->IsProgram()) {
-        funcKind_ = FunctionKind::FUNCTION;
+        funcKind_ = panda::panda_file::FunctionKind::FUNCTION;
         return;
     }
 
@@ -62,30 +61,30 @@ void PandaGen::SetFunctionKind()
 
     if (func->IsAsync()) {
         if (func->IsGenerator()) {
-            funcKind_ = FunctionKind::ASYNC_GENERATOR_FUNCTION;
+            funcKind_ = panda::panda_file::FunctionKind::ASYNC_GENERATOR_FUNCTION;
             return;
         }
 
         if (func->IsArrow()) {
-            funcKind_ = FunctionKind::ASYNC_NCFUNCTION;
+            funcKind_ = panda::panda_file::FunctionKind::ASYNC_NC_FUNCTION;
             return;
         }
 
-        funcKind_ = FunctionKind::ASYNC_FUNCTION;
+        funcKind_ = panda::panda_file::FunctionKind::ASYNC_FUNCTION;
         return;
     }
 
     if (func->IsGenerator()) {
-        funcKind_ = FunctionKind::GENERATOR_FUNCTION;
+        funcKind_ = panda::panda_file::FunctionKind::GENERATOR_FUNCTION;
         return;
     }
 
     if (func->IsArrow()) {
-        funcKind_ = FunctionKind::NC_FUNCTION;
+        funcKind_ = panda::panda_file::FunctionKind::NC_FUNCTION;
         return;
     }
 
-    funcKind_ = FunctionKind::FUNCTION;
+    funcKind_ = panda::panda_file::FunctionKind::FUNCTION;
 }
 
 Label *PandaGen::AllocLabel()
@@ -447,7 +446,6 @@ void PandaGen::TryLoadGlobalByName(const ir::AstNode *node, const util::StringVi
     if (isDebuggerEvaluateExpressionMode()) {
         LoadObjByNameViaDebugger(node, name, true);
     } else {
-        // modify ic later
         sa_.Emit<Tryldglobalbyname>(node, 0, name);
     }
     strings_.insert(name);
@@ -476,7 +474,6 @@ void PandaGen::TryStoreGlobalByName(const ir::AstNode *node, const util::StringV
     if (isDebuggerEvaluateExpressionMode()) {
         StoreObjByNameViaDebugger(node, name);
     } else {
-        // modify ic later
         sa_.Emit<Trystglobalbyname>(node, 0, name);
     }
     strings_.insert(name);
@@ -484,7 +481,6 @@ void PandaGen::TryStoreGlobalByName(const ir::AstNode *node, const util::StringV
 
 void PandaGen::LoadObjByName(const ir::AstNode *node, VReg obj, const util::StringView &prop)
 {
-    // modify ic later
     LoadAccumulator(node, obj); // object is load to acc
     sa_.Emit<Ldobjbyname>(node, 0, prop);
     strings_.insert(prop);
@@ -492,7 +488,6 @@ void PandaGen::LoadObjByName(const ir::AstNode *node, VReg obj, const util::Stri
 
 void PandaGen::StoreObjByName(const ir::AstNode *node, VReg obj, const util::StringView &prop)
 {
-    // modify ic later
     ra_.Emit<Stobjbyname>(node, 0, prop, obj);
     strings_.insert(prop);
 }
@@ -501,7 +496,6 @@ void PandaGen::LoadObjByIndex(const ir::AstNode *node, VReg obj, int64_t index)
 {
     LoadAccumulator(node, obj); // object is load to acc
     if (index <= util::Helpers::MAX_INT16) {
-        // modify ic later
         sa_.Emit<Ldobjbyindex>(node, 0, index);
         return;
     }
@@ -511,20 +505,17 @@ void PandaGen::LoadObjByIndex(const ir::AstNode *node, VReg obj, int64_t index)
 
 void PandaGen::LoadObjByValue(const ir::AstNode *node, VReg obj)
 {
-    // modify ic later
     ra_.Emit<Ldobjbyvalue>(node, 0, obj); // prop is in acc
 }
 
 void PandaGen::StoreObjByValue(const ir::AstNode *node, VReg obj, VReg prop)
 {
-    // modify ic later
     ra_.Emit<Stobjbyvalue>(node, 0, obj, prop);
 }
 
 void PandaGen::StoreObjByIndex(const ir::AstNode *node, VReg obj, int64_t index)
 {
     if (index <= util::Helpers::MAX_INT16) {
-        // modify ic later
         ra_.Emit<Stobjbyindex>(node, 0, obj, index);
         return;
     }
@@ -534,7 +525,6 @@ void PandaGen::StoreObjByIndex(const ir::AstNode *node, VReg obj, int64_t index)
 
 void PandaGen::StOwnByName(const ir::AstNode *node, VReg obj, const util::StringView &prop, bool nameSetting)
 {
-    // modify ic later
     nameSetting ? ra_.Emit<Stownbynamewithnameset>(node, 0, prop, obj) :
                   ra_.Emit<Stownbyname>(node, 0, prop, obj);
     strings_.insert(prop);
@@ -542,7 +532,6 @@ void PandaGen::StOwnByName(const ir::AstNode *node, VReg obj, const util::String
 
 void PandaGen::StOwnByValue(const ir::AstNode *node, VReg obj, VReg prop, bool nameSetting)
 {
-    // modify ic later
     nameSetting ? ra_.Emit<Stownbyvaluewithnameset>(node, 0, obj, prop) :
                   ra_.Emit<Stownbyvalue>(node, 0, obj, prop);
 }
@@ -550,7 +539,6 @@ void PandaGen::StOwnByValue(const ir::AstNode *node, VReg obj, VReg prop, bool n
 void PandaGen::StOwnByIndex(const ir::AstNode *node, VReg obj, int64_t index)
 {
     if (index <= util::Helpers::MAX_INT16) {
-        // modify ic later
         ra_.Emit<Stownbyindex>(node, 0, obj, index);
         return;
     }
@@ -579,14 +567,12 @@ void PandaGen::LoadAccumulator(const ir::AstNode *node, VReg reg)
 
 void PandaGen::LoadGlobalVar(const ir::AstNode *node, const util::StringView &name)
 {
-    // modify ic later
     sa_.Emit<Ldglobalvar>(node, 0, name);
     strings_.insert(name);
 }
 
 void PandaGen::StoreGlobalVar(const ir::AstNode *node, const util::StringView &name)
 {
-    // modify ic later
     sa_.Emit<Stglobalvar>(node, 0, name);
     strings_.insert(name);
 }
@@ -847,7 +833,6 @@ void PandaGen::Unary(const ir::AstNode *node, lexer::TokenType op, VReg operand)
 
 void PandaGen::Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
 {
-    // modify ic later
     switch (op) {
         case lexer::TokenType::PUNCTUATOR_EQUAL: {
             Equal(node, lhs);
@@ -962,49 +947,41 @@ void PandaGen::Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
 
 void PandaGen::Equal(const ir::AstNode *node, VReg lhs)
 {
-    // modify ic later
     ra_.Emit<Eq>(node, 0, lhs);
 }
 
 void PandaGen::NotEqual(const ir::AstNode *node, VReg lhs)
 {
-    // modify ic later
     ra_.Emit<Noteq>(node, 0, lhs);
 }
 
 void PandaGen::StrictEqual(const ir::AstNode *node, VReg lhs)
 {
-    // modify ic later
     ra_.Emit<Stricteq>(node, 0, lhs);
 }
 
 void PandaGen::StrictNotEqual(const ir::AstNode *node, VReg lhs)
 {
-    // modify ic later
     ra_.Emit<Strictnoteq>(node, 0, lhs);
 }
 
 void PandaGen::LessThan(const ir::AstNode *node, VReg lhs)
 {
-    // modify ic later
     ra_.Emit<Less>(node, 0, lhs);
 }
 
 void PandaGen::LessEqual(const ir::AstNode *node, VReg lhs)
 {
-    // modify ic later
     ra_.Emit<Lesseq>(node, 0, lhs);
 }
 
 void PandaGen::GreaterThan(const ir::AstNode *node, VReg lhs)
 {
-    // modify ic later
     ra_.Emit<Greater>(node, 0, lhs);
 }
 
 void PandaGen::GreaterEqual(const ir::AstNode *node, VReg lhs)
 {
-    // modify ic later
     ra_.Emit<Greatereq>(node, 0, lhs);
 }
 
@@ -1142,7 +1119,6 @@ void PandaGen::EmitAwait(const ir::AstNode *node)
 
 void PandaGen::CallThis(const ir::AstNode *node, VReg startReg, size_t argCount)
 {
-    // modify ic later
     LoadAccumulator(node, startReg); // callee is load to acc
     VReg thisReg = startReg + 1;
     switch (argCount) {
@@ -1184,7 +1160,6 @@ void PandaGen::CallThis(const ir::AstNode *node, VReg startReg, size_t argCount)
 void PandaGen::Call(const ir::AstNode *node, VReg startReg, size_t argCount)
 {
     LoadAccumulator(node, startReg); // callee is load to acc
-    // modify ic later
     switch (argCount) {
         case 0: { // 0 args
             sa_.Emit<Callarg0>(node, 0);
@@ -1223,7 +1198,6 @@ void PandaGen::Call(const ir::AstNode *node, VReg startReg, size_t argCount)
 
 void PandaGen::SuperCall(const ir::AstNode *node, VReg startReg, size_t argCount)
 {
-    // modify ic later
     if (RootNode()->AsScriptFunction()->IsArrow()) {
         GetFunctionObject(node); // load funcobj to acc for super call in arrow function
         if (argCount <= util::Helpers::MAX_INT8) {
@@ -1245,14 +1219,12 @@ void PandaGen::SuperCall(const ir::AstNode *node, VReg startReg, size_t argCount
 
 void PandaGen::SuperCallSpread(const ir::AstNode *node, VReg vs)
 {
-    // modify ic later
     ra_.Emit<Supercallspread>(node, 0, vs);
 }
 
 void PandaGen::NewObject(const ir::AstNode *node, VReg startReg, size_t argCount)
 {
     if (argCount <= util::Helpers::MAX_INT8) {
-        // modify ic later
         rra_.Emit<Newobjrange>(node, startReg, argCount, 0, static_cast<int64_t>(argCount), startReg);
         return;
     }
@@ -1266,7 +1238,6 @@ void PandaGen::DefineFunction(const ir::AstNode *node, const ir::ScriptFunction 
         return;
     }
 
-    // modify ic later
     auto formalParamCnt = realNode->FormalParamsLength();
     if (realNode->IsMethod()) {
         ra_.Emit<Definemethod>(node, 0, name, static_cast<int64_t>(formalParamCnt));
@@ -1279,20 +1250,17 @@ void PandaGen::DefineFunction(const ir::AstNode *node, const ir::ScriptFunction 
 
 void PandaGen::TypeOf(const ir::AstNode *node)
 {
-    // modify ic later
     sa_.Emit<Typeof>(node, 0);
 }
 
 void PandaGen::CallSpread(const ir::AstNode *node, VReg func, VReg thisReg, VReg args)
 {
-    // modify ic later
     LoadAccumulator(node, func); // callee is load to acc
     ra_.Emit<Apply>(node, 0, thisReg, args);
 }
 
 void PandaGen::NewObjSpread(const ir::AstNode *node, VReg obj)
 {
-    // modify ic later
     ra_.Emit<Newobjapply>(node, 0, obj);
 }
 
@@ -1315,14 +1283,12 @@ void PandaGen::Negate(const ir::AstNode *node)
 
 void PandaGen::ToNumber(const ir::AstNode *node, VReg arg)
 {
-    // modify ic later
     LoadAccumulator(node, arg);
     sa_.Emit<Tonumber>(node, 0);
 }
 
 void PandaGen::ToNumeric(const ir::AstNode *node, VReg arg)
 {
-    // modify ic later
     LoadAccumulator(node, arg);
     sa_.Emit<Tonumeric>(node, 0);
 }
@@ -1408,14 +1374,13 @@ void PandaGen::AsyncGeneratorResolve(const ir::AstNode *node, VReg asyncGenObj, 
     ra_.Emit<Asyncgeneratorresolve>(node, asyncGenObj, value, canSuspend);
 }
 
-void PandaGen::AsyncGeneratorReject(const ir::AstNode *node, VReg asyncGenObj, VReg value)
+void PandaGen::AsyncGeneratorReject(const ir::AstNode *node, VReg asyncGenObj)
 {
-    ra_.Emit<EcmaAsyncgeneratorreject>(node, asyncGenObj, value);
+    ra_.Emit<Asyncgeneratorreject>(node, asyncGenObj); // value is in acc
 }
 
 void PandaGen::GetTemplateObject(const ir::AstNode *node, VReg value)
 {
-    // modify ic later
     LoadAccumulator(node, value);
     sa_.Emit<Gettemplateobject>(node, 0);
 }
@@ -1468,7 +1433,6 @@ void PandaGen::DefineGetterSetterByValue(const ir::AstNode *node, VReg obj, VReg
 
 void PandaGen::CreateEmptyArray(const ir::AstNode *node)
 {
-    // modify ic later
     sa_.Emit<Createemptyarray>(node, 0);
 }
 
@@ -1593,7 +1557,6 @@ void PandaGen::ThrowThrowNotExist(const ir::AstNode *node)
 
 void PandaGen::GetIterator(const ir::AstNode *node)
 {
-    // modify ic later
     sa_.Emit<Getiterator>(node, 0);
 }
 
@@ -1632,13 +1595,11 @@ void PandaGen::ThrowObjectNonCoercible(const ir::AstNode *node)
 
 void PandaGen::CloseIterator(const ir::AstNode *node, VReg iter)
 {
-    // modify ic later
     ra_.Emit<Closeiterator>(node, 0, iter);
 }
 
 void PandaGen::DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctorId, int32_t litIdx, VReg base)
 {
-    // modify ic later
     auto formalParamCnt = node->AsClassDefinition()->Ctor()->Function()->FormalParamsLength();
     std::string idxStr = std::string(context_->RecordName()) + std::to_string(litIdx);
     util::UString litId(idxStr, allocator_);
@@ -1686,7 +1647,6 @@ void PandaGen::StSuperByName(const ir::AstNode *node, VReg obj, const util::Stri
 
 void PandaGen::LdSuperByName(const ir::AstNode *node, VReg obj, const util::StringView &key)
 {
-    // modify ic later
     LoadAccumulator(node, obj); // object is load to acc
     sa_.Emit<Ldsuperbyname>(node, 0, key);
     strings_.insert(key);
@@ -1699,7 +1659,6 @@ void PandaGen::StSuperByValue(const ir::AstNode *node, VReg obj, VReg prop)
 
 void PandaGen::LdSuperByValue(const ir::AstNode *node, VReg obj)
 {
-    // modify ic later
     ra_.Emit<Ldsuperbyvalue>(node, 0, obj); // prop is in acc
 }
 
@@ -1988,14 +1947,12 @@ VReg PandaGen::LoadPropertyKey(const ir::Expression *prop, bool isComputed)
 
 void PandaGen::StLetOrClassToGlobalRecord(const ir::AstNode *node, const util::StringView &name)
 {
-    // modify ic later
     sa_.Emit<Sttoglobalrecord>(node, 0, name);
     strings_.insert(name);
 }
 
 void PandaGen::StConstToGlobalRecord(const ir::AstNode *node, const util::StringView &name)
 {
-    // modify ic later
     sa_.Emit<Stconsttoglobalrecord>(node, 0, name);
     strings_.insert(name);
 }

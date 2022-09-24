@@ -18,27 +18,32 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaCallarg1dyn,
-    EcmaLdobjbyname,
-    EcmaReturnundefined,
-    EcmaTryldglobalbyname,
-    EcmaTypeofdyn,
+    Callarg1,
+    Ldobjbyname,
+    Returnundefined,
+    Tryldglobalbyname,
+    Typeof,
     Imm,
-    LdaiDyn,
+    Ldai,
     LdaStr,
-    ResultType,
-    StaDyn,
-    VReg
+    Sta,
+    VReg,
+    Lda,
+    IRNode
 } from "../../src/irnodes";
 import { checkInstructions, compileMainSnippet } from "../utils/base";
+import { creatAstFromSnippet } from "../utils/asthelper"
+import { PandaGen } from '../../src/pandagen';
 
 describe("TypeOfTest", function () {
     it("typeof 12", function () {
         let insns = compileMainSnippet("typeof 5");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet("typeof 5"), 0, undefined);
+
         let expected = [
-            new LdaiDyn(new Imm(5)),
-            new EcmaTypeofdyn(),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(5)),
+            new Typeof(new Imm(0)),
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -46,17 +51,20 @@ describe("TypeOfTest", function () {
 
     it("typeof Number(\"12\")", function () {
         let insns = compileMainSnippet("typeof Number(\"5\")");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet("typeof Number(\"5\")"), 0, undefined);
+
         let arg1 = new VReg();
         let arg3 = new VReg();
         let expected = [
-            new EcmaTryldglobalbyname("Number"),
-            new StaDyn(arg1),
+            new Tryldglobalbyname(new Imm(0), "Number"),
+            new Sta(arg1),
 
             new LdaStr("5"),
-            new StaDyn(arg3),
-            new EcmaCallarg1dyn(arg1, arg3),
-            new EcmaTypeofdyn(),
-            new EcmaReturnundefined()
+            new Sta(arg3),
+            new Lda(arg1),
+            new Callarg1(new Imm(1), arg3),
+            new Typeof(new Imm(2)),
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -64,11 +72,13 @@ describe("TypeOfTest", function () {
 
     it("typeof x", function () {
         let insns = compileMainSnippet("typeof x");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet("typeof x"), 0, undefined);
 
         let expected = [
-            new EcmaLdobjbyname("x", new VReg()),
-            new EcmaTypeofdyn(),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Ldobjbyname(new Imm(0), "x"),
+            new Typeof(new Imm(2)),
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -76,11 +86,13 @@ describe("TypeOfTest", function () {
 
     it("typeof(x)", function () {
         let insns = compileMainSnippet("typeof(x)");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet("typeof(x)"), 0, undefined);
 
         let expected = [
-            new EcmaLdobjbyname("x", new VReg()),
-            new EcmaTypeofdyn(),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Ldobjbyname(new Imm(0), "x"),
+            new Typeof(new Imm(2)),
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;

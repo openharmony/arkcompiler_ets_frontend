@@ -41,12 +41,10 @@ void AsyncGeneratorFunctionBuilder::CleanUp(const ir::ScriptFunction *node) cons
     const auto &labelSet = catchTable_->LabelSet();
 
     RegScope rs(pg_);
-    VReg value = pg_->AllocReg();
 
     pg_->SetLabel(node, labelSet.TryEnd());
     pg_->SetLabel(node, labelSet.CatchBegin());
-    pg_->StoreAccumulator(node, value);
-    pg_->AsyncGeneratorReject(node, funcObj_, value);
+    pg_->AsyncGeneratorReject(node, funcObj_);
     pg_->EmitReturn(node);
     pg_->SetLabel(node, labelSet.CatchEnd());
 }

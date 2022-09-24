@@ -18,27 +18,29 @@ import {
 } from 'chai';
 import 'mocha';
 import { DiagnosticCode, DiagnosticError } from '../../src/diagnostic';
+import { creatAstFromSnippet } from "../utils/asthelper"
+import { PandaGen } from '../../src/pandagen';
 import {
-    EcmaAdd2dyn,
-    EcmaCreatearraywithbuffer,
-    EcmaCreateemptyarray,
-    EcmaCreateemptyobject,
-    EcmaCreateobjectwithbuffer,
-    EcmaIncdyn,
-    EcmaReturnundefined,
-    EcmaStarrayspread,
-    EcmaStlettoglobalrecord,
-    EcmaStownbyindex,
-    EcmaStownbyname,
-    EcmaStownbyvalue,
-    EcmaTryldglobalbyname,
+    Add2,
+    Createarraywithbuffer,
+    Createemptyarray,
+    Createemptyobject,
+    Createobjectwithbuffer,
+    Inc,
+    Returnundefined,
+    Starrayspread,
+    Sttoglobalrecord,
+    Stownbyindex,
+    Stownbyname,
+    Stownbyvalue,
+    Tryldglobalbyname,
     Imm,
-    LdaDyn,
-    LdaiDyn,
+    Lda,
+    Ldai,
     LdaStr,
-    ResultType,
-    StaDyn,
-    VReg
+    Sta,
+    VReg,
+    IRNode
 } from "../../src/irnodes";
 import { checkInstructions, compileMainSnippet } from "../utils/base";
 
@@ -46,8 +48,8 @@ describe("LiteralTest", function () {
     it("5", function () {
         let insns = compileMainSnippet("5");
         let expected = [
-            new LdaiDyn(new Imm(5)),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(5)),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
@@ -56,7 +58,7 @@ describe("LiteralTest", function () {
         let insns = compileMainSnippet("\"stringLiteral\"");
         let expected = [
             new LdaStr("stringLiteral"),
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
@@ -64,8 +66,8 @@ describe("LiteralTest", function () {
     it("true", function () {
         let insns = compileMainSnippet("true");
         let expected = [
-            new LdaDyn(new VReg()),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
@@ -73,8 +75,8 @@ describe("LiteralTest", function () {
     it("false", function () {
         let insns = compileMainSnippet("false");
         let expected = [
-            new LdaDyn(new VReg()),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
@@ -82,49 +84,52 @@ describe("LiteralTest", function () {
     it("null", function () {
         let insns = compileMainSnippet("null");
         let expected = [
-            new LdaDyn(new VReg()),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("let arr = [1]", function () {
         let insns = compileMainSnippet("let arr = [1]");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let arrayInstance = new VReg();
 
         let expected = [
-            new EcmaCreatearraywithbuffer(new Imm(0)),
-            new StaDyn(arrayInstance),
-            new LdaDyn(arrayInstance),
-            new EcmaStlettoglobalrecord('arr'),
-            new EcmaReturnundefined()
+            new Createarraywithbuffer(new Imm(0), "0"),
+            new Sta(arrayInstance),
+            new Lda(arrayInstance),
+            new Sttoglobalrecord(new Imm(1), 'arr'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("let arr = []", function () {
         let insns = compileMainSnippet("let arr = []");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let arrayInstance = new VReg();
 
         let expected = [
-            new EcmaCreateemptyarray(),
-            new StaDyn(arrayInstance),
-            new EcmaStlettoglobalrecord('arr'),
-            new EcmaReturnundefined()
+            new Createemptyarray(new Imm(0)),
+            new Sta(arrayInstance),
+            new Sttoglobalrecord(new Imm(1), 'arr'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("let arr = [1, 2]", function () {
         let insns = compileMainSnippet("let arr = [1, 2]");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let arrayInstance = new VReg();
 
         let expected = [
-            new EcmaCreatearraywithbuffer(new Imm(0)),
-            new StaDyn(arrayInstance),
-            new LdaDyn(arrayInstance),
-            new EcmaStlettoglobalrecord('arr'),
-            new EcmaReturnundefined()
+            new Createarraywithbuffer(new Imm(0), "0"),
+            new Sta(arrayInstance),
+            new Lda(arrayInstance),
+            new Sttoglobalrecord(new Imm(1), 'arr'),
+            new Returnundefined()
         ];
         insns = insns.slice(0, insns.length);
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -132,16 +137,17 @@ describe("LiteralTest", function () {
 
     it("let arr = [, 1]", function () {
         let insns = compileMainSnippet("let arr = [, 1]");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let arrayInstance = new VReg();
 
         let expected = [
-            new EcmaCreateemptyarray(),
-            new StaDyn(arrayInstance),
-            new LdaiDyn(new Imm(1)),
-            new EcmaStownbyindex(arrayInstance, new Imm(1)),
-            new LdaDyn(arrayInstance),
-            new EcmaStlettoglobalrecord('arr'),
-            new EcmaReturnundefined()
+            new Createemptyarray(new Imm(0)),
+            new Sta(arrayInstance),
+            new Ldai(new Imm(1)),
+            new Stownbyindex(new Imm(1), arrayInstance, new Imm(1)),
+            new Lda(arrayInstance),
+            new Sttoglobalrecord(new Imm(3), 'arr'),
+            new Returnundefined()
         ];
         insns = insns.slice(0, insns.length);
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -149,16 +155,17 @@ describe("LiteralTest", function () {
 
     it("let arr = [1, , 3]", function () {
         let insns = compileMainSnippet("let arr = [1,, 3]");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let arrayInstance = new VReg();
 
         let expected = [
-            new EcmaCreatearraywithbuffer(new Imm(0)),
-            new StaDyn(arrayInstance),
-            new LdaiDyn(new Imm(3)),
-            new EcmaStownbyindex(arrayInstance, new Imm(2)),
-            new LdaDyn(arrayInstance),
-            new EcmaStlettoglobalrecord('arr'),
-            new EcmaReturnundefined()
+            new Createarraywithbuffer(new Imm(0), "0"),
+            new Sta(arrayInstance),
+            new Ldai(new Imm(3)),
+            new Stownbyindex(new Imm(1), arrayInstance, new Imm(2)),
+            new Lda(arrayInstance),
+            new Sttoglobalrecord(new Imm(3), 'arr'),
+            new Returnundefined()
         ];
 
         insns = insns.slice(0, insns.length);
@@ -168,28 +175,30 @@ describe("LiteralTest", function () {
     it("let arr = [1, ...arr1, 3]", function () {
         let insns = compileMainSnippet(`let arr1 = [1, 2];
                                 let arr = [1, ...arr1, 3]`);
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let elemIdxReg = new VReg();
         let arrayInstance = new VReg();
 
         let expected = [
-            new EcmaCreatearraywithbuffer(new Imm(0)),
-            new StaDyn(arrayInstance),
-            new LdaDyn(arrayInstance),
-            new EcmaStlettoglobalrecord('arr1'),
+            new Createarraywithbuffer(new Imm(0), "0"),
+            new Sta(arrayInstance),
+            new Lda(arrayInstance),
+            new Sttoglobalrecord(new Imm(1), 'arr1'),
 
-            new EcmaCreatearraywithbuffer(new Imm(1)),
-            new StaDyn(arrayInstance),
-            new LdaiDyn(new Imm(1)),
-            new StaDyn(elemIdxReg),
-            new EcmaTryldglobalbyname('arr1'),
-            new EcmaStarrayspread(arrayInstance, elemIdxReg),
-            new StaDyn(elemIdxReg),
-            new LdaiDyn(new Imm(3)),
-            new EcmaStownbyvalue(arrayInstance, elemIdxReg),
-            new EcmaIncdyn(elemIdxReg),
-            new StaDyn(elemIdxReg),
-            new LdaDyn(arrayInstance),
-            new EcmaStlettoglobalrecord('arr'),
+            new Createarraywithbuffer(new Imm(2), "1"),
+            new Sta(arrayInstance),
+            new Ldai(new Imm(1)),
+            new Sta(elemIdxReg),
+            new Tryldglobalbyname(new Imm(3), 'arr1'),
+            new Starrayspread(arrayInstance, elemIdxReg),
+            new Sta(elemIdxReg),
+            new Ldai(new Imm(3)),
+            new Stownbyvalue(new Imm(4), arrayInstance, elemIdxReg),
+            new Lda(elemIdxReg),
+            new Inc(new Imm(6)),
+            new Sta(elemIdxReg),
+            new Lda(arrayInstance),
+            new Sttoglobalrecord(new Imm(7), 'arr'),
         ];
         insns = insns.slice(0, insns.length - 1);
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -197,76 +206,82 @@ describe("LiteralTest", function () {
 
     it("let obj = {}", function () {
         let insns = compileMainSnippet("let obj = {}");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let objInstance = new VReg();
 
         let expected = [
-            new EcmaCreateemptyobject(),
-            new StaDyn(objInstance),
+            new Createemptyobject(),
+            new Sta(objInstance),
 
-            new EcmaStlettoglobalrecord('obj'),
-            new EcmaReturnundefined()
+            new Sttoglobalrecord(new Imm(0), 'obj'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("let obj = {a: 1}", function () {
         let insns = compileMainSnippet("let obj = {a: 1}");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let objInstance = new VReg();
         let expected = [
-            new EcmaCreateobjectwithbuffer(new Imm(0)),
-            new StaDyn(objInstance),
-            new LdaDyn(objInstance),
-            new EcmaStlettoglobalrecord('obj'),
-            new EcmaReturnundefined()
+            new Createobjectwithbuffer(new Imm(0), "0"),
+            new Sta(objInstance),
+            new Lda(objInstance),
+            new Sttoglobalrecord(new Imm(1), 'obj'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("let obj = {0: 1 + 2}", function () {
         let insns = compileMainSnippet("let obj = {0: 1 + 2}");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let objInstance = new VReg();
         let lhs = new VReg();
 
         let expected = [
-            new EcmaCreateobjectwithbuffer(new Imm(0)),
-            new StaDyn(objInstance),
-            new LdaiDyn(new Imm(1)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(2)),
-            new EcmaAdd2dyn(lhs),
-            new EcmaStownbyindex(objInstance, new Imm(0)),
-            new LdaDyn(objInstance),
-            new EcmaStlettoglobalrecord('obj'),
-            new EcmaReturnundefined()
+            new Createobjectwithbuffer(new Imm(0), "0"),
+            new Sta(objInstance),
+            new Ldai(new Imm(1)),
+            new Sta(lhs),
+            new Ldai(new Imm(2)),
+            new Add2(new Imm(1), lhs),
+            new Stownbyindex(new Imm(2), objInstance, new Imm(0)),
+            new Lda(objInstance),
+            new Sttoglobalrecord(new Imm(4), 'obj'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("let obj = {\"str\": 1}", function () {
         let insns = compileMainSnippet("let obj = {\"str\": 1}");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let objInstance = new VReg();
 
         let expected = [
-            new EcmaCreateobjectwithbuffer(new Imm(0)),
-            new StaDyn(objInstance),
-            new LdaDyn(objInstance),
-            new EcmaStlettoglobalrecord('obj'),
-            new EcmaReturnundefined()
+            new Createobjectwithbuffer(new Imm(0), "0"),
+            new Sta(objInstance),
+            new Lda(objInstance),
+            new Sttoglobalrecord(new Imm(1), 'obj'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("let a; let obj = {a}", function () {
         let insns = compileMainSnippet("let a; let obj = {a}");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
+        (<PandaGen>(IRNode.pg)).updateIcSize(1);
         let objInstance = new VReg();
 
         let expected = [
-            new EcmaCreateobjectwithbuffer(new Imm(0)),
-            new StaDyn(objInstance),
-            new EcmaTryldglobalbyname('a'),
-            new EcmaStownbyname("a", objInstance),
-            new LdaDyn(objInstance),
-            new EcmaStlettoglobalrecord('obj')
+            new Createobjectwithbuffer(new Imm(0), "0"),
+            new Sta(objInstance),
+            new Tryldglobalbyname(new Imm(1), 'a'),
+            new Stownbyname(new Imm(2), "a", objInstance),
+            new Lda(objInstance),
+            new Sttoglobalrecord(new Imm(4), 'obj')
         ];
         insns = insns.slice(2, insns.length - 1);
         expect(checkInstructions(insns, expected)).to.be.true;

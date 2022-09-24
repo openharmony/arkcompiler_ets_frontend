@@ -276,6 +276,7 @@ export class CompilerDriver {
     private compileUnitTestImpl(node: ts.SourceFile | ts.FunctionLikeDeclaration, scope: Scope,
         internalName: string, recorder: Recorder) {
         let pandaGen = new PandaGen(internalName, node, this.getParametersCount(node), scope);
+        IRNode.pg = pandaGen;
         if (CmdOptions.needRecordSourceCode() && !ts.isSourceFile(node)) {
             pandaGen.setSourceCode(node.getText());
         }

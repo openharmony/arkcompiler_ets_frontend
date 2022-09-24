@@ -152,10 +152,6 @@ export class Compiler {
 
         // spare v3 to save the currrent lexcial env
         getVregisterCache(this.pandaGen, CacheList.LexEnv);
-        // this.envUnion.push(getVregisterCache(this.pandaGen, CacheList.LexEnv));
-        // if ((<VariableScope>(this.scope)).need2CreateLexEnv()) {
-        //     this.pandaGen.newLexicalEnv(NodeKind.FirstNodeOfFunction, (<VariableScope>(this.scope)).getNumLexEnv());
-        // }
 
         this.pandaGen.loadAccFromArgs(this.rootNode);
     }

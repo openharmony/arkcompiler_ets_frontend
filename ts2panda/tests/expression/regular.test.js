@@ -18,10 +18,9 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaCreateregexpwithliteral,
-    EcmaStlettoglobalrecord,
+    Createregexpwithliteral,
+    Sttoglobalrecord,
     Imm,
-    ResultType
 } from "../../src/irnodes";
 import { checkInstructions, compileMainSnippet } from "../utils/base";
 
@@ -31,8 +30,8 @@ describe("Regular Expression", function () {
         insns = insns.slice(0, insns.length - 1);
 
         let expected = [
-            new EcmaCreateregexpwithliteral("abc", new Imm(0)),
-            new EcmaStlettoglobalrecord('a')
+            new Createregexpwithliteral(new Imm(0), "abc", new Imm(0)),
+            new Sttoglobalrecord(new Imm(1), 'a')
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
@@ -42,8 +41,8 @@ describe("Regular Expression", function () {
         insns = insns.slice(0, insns.length - 1);
 
         let expected = [
-            new EcmaCreateregexpwithliteral("abc", new Imm(2)),
-            new EcmaStlettoglobalrecord('a')
+            new Createregexpwithliteral(new Imm(0), "abc", new Imm(2)),
+            new Sttoglobalrecord(new Imm(1), 'a')
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });

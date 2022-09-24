@@ -20,28 +20,26 @@ import {
     CompilerDriver
 } from "../src/compilerDriver";
 import {
-    EcmaAdd2dyn,
-    EcmaDefinefuncdyn,
-    EcmaIncdyn,
-    EcmaLdlexenvdyn,
-    EcmaLdlexvardyn,
-    EcmaNewlexenvdyn,
-    EcmaReturnundefined,
-    EcmaStglobalvar,
-    EcmaStlettoglobalrecord,
-    EcmaStlexvardyn,
-    EcmaThrowconstassignment,
-    EcmaThrowundefinedifhole,
-    EcmaTonumeric,
-    EcmaTrystglobalbyname,
+    Add2,
+    Definefunc,
+    Inc,
+    Ldlexvar,
+    Newlexenv,
+    Returnundefined,
+    Stglobalvar,
+    Sttoglobalrecord,
+    Stlexvar,
+    ThrowConstassignment,
+    ThrowUndefinedifhole,
+    Tonumeric,
+    Trystglobalbyname,
     Imm,
     IRNode,
-    LdaDyn,
-    LdaiDyn,
+    Lda,
+    Ldai,
     LdaStr,
-    ResultType,
-    ReturnDyn,
-    StaDyn,
+    Return,
+    Sta,
     VReg
 } from "../src/irnodes";
 import { PandaGen } from "../src/pandagen";
@@ -64,34 +62,24 @@ import {
     SnippetCompiler
 } from "./utils/base";
 
-function MicroCreateLexEnv(numVars: number, hasLexEnv: boolean): IRNode[] {
-    let insns = [];
 
-    if (hasLexEnv) {
-        insns.push(new EcmaNewlexenvdyn(new Imm(numVars)));
-    } else {
-        insns.push(new EcmaLdlexenvdyn());
-    }
-    insns.push(new StaDyn(new VReg())); // create lexenv
-
-    return insns;
-}
 
 function MicroStoreLexVar(level: number, slot: number, kind?: VarDeclarationKind, name?: string): IRNode[] {
     let insns = [];
 
     if (kind && name) {
-        insns.push(new EcmaLdlexvardyn(new Imm(level), new Imm(slot)));
-        insns.push(new StaDyn(new VReg()));
+        insns.push(new Ldlexvar(new Imm(level), new Imm(slot)));
+        insns.push(new Sta(new VReg()));
         insns.push(new LdaStr(name));
-        insns.push(new StaDyn(new VReg()));
-        insns.push(new EcmaThrowundefinedifhole(new VReg(), new VReg()));
+        insns.push(new Sta(new VReg()));
+        insns.push(new ThrowUndefinedifhole(new VReg(), new VReg()));
         if (kind == VarDeclarationKind.CONST) {
-            insns.push(new EcmaThrowconstassignment(new VReg()));
+            insns.push(new ThrowConstassignment(new VReg()));
         }
     }
-    insns.push(new EcmaStlexvardyn(new Imm(level), new Imm(slot), new VReg()));
-    insns.push(new LdaDyn(new VReg()));
+    insns.push(new Lda(new VReg()));
+    insns.push(new Stlexvar(new Imm(level), new Imm(slot)));
+    insns.push(new Lda(new VReg()));
 
     return insns;
 }
@@ -99,13 +87,13 @@ function MicroStoreLexVar(level: number, slot: number, kind?: VarDeclarationKind
 function MicroLoadLexVar(level: number, slot: number, kind?: VarDeclarationKind, name?: string): IRNode[] {
     let insns = [];
 
-    insns.push(new EcmaLdlexvardyn(new Imm(level), new Imm(slot)));
+    insns.push(new Ldlexvar(new Imm(level), new Imm(slot)));
     if (kind && name) {
-        insns.push(new StaDyn(new VReg()));
+        insns.push(new Sta(new VReg()));
         insns.push(new LdaStr(name));
-        insns.push(new StaDyn(new VReg()));
-        insns.push(new EcmaThrowundefinedifhole(new VReg(), new VReg()));
-        insns.push(new LdaDyn(new VReg()));
+        insns.push(new Sta(new VReg()));
+        insns.push(new ThrowUndefinedifhole(new VReg(), new VReg()));
+        insns.push(new Lda(new VReg()));
     }
 
     return insns;
@@ -289,7 +277,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
 
     it("test loadAccFromLexEnv with local variable", function () {
         let globalScope = new GlobalScope();
-        let pandaGen = new PandaGen("lexVarPassPandaGen", undefined, 1, globalScope);
+        let pandaGen = new PandaGen("lexVarPassPandaGen", creatAstFromSnippet(`class C {}; export {C}`), 1, globalScope);
         let var1 = globalScope.add("var1", VarDeclarationKind.LET);
         let funcObj = globalScope.add("4funcObj", VarDeclarationKind.LET);
         funcObj!.bindVreg(new VReg());
@@ -303,7 +291,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
         // load local register to acc
         let outInsns = pandaGen.getInsns();
         let expected = [
-            new LdaDyn(varReg),
+            new Lda(varReg),
         ];
 
         expect(checkInstructions(outInsns, expected)).to.be.true;
@@ -311,7 +299,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
 
     it("test loadAccFromLexEnv with lex env variable", function () {
         let globalScope = new GlobalScope();
-        let pandaGen = new PandaGen("lexVarPassPandaGen", undefined, 1, globalScope);
+        let pandaGen = new PandaGen("lexVarPassPandaGen", creatAstFromSnippet(`class C {}; export {C}`), 1, globalScope);
         let var1 = globalScope.add("var1", VarDeclarationKind.LET);
         let funcObj = globalScope.add("4funcObj", VarDeclarationKind.LET);
         funcObj!.bindVreg(new VReg());
@@ -325,19 +313,19 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
         let tempReg = new VReg();
         let nameReg = new VReg();
         let expected = [
-            new EcmaLdlexvardyn(new Imm(0), new Imm(0)),
-            new StaDyn(tempReg),
+            new Ldlexvar(new Imm(0), new Imm(0)),
+            new Sta(tempReg),
             new LdaStr("var1"),
-            new StaDyn(nameReg),
-            new EcmaThrowundefinedifhole(new VReg(), nameReg),
-            new LdaDyn(tempReg)
+            new Sta(nameReg),
+            new ThrowUndefinedifhole(new VReg(), nameReg),
+            new Lda(tempReg)
         ];
         expect(checkInstructions(outInsns, expected)).to.be.true;
     });
 
     it("test storeAccFromLexEnv with local variable", function () {
         let globalScope = new GlobalScope();
-        let pandaGen = new PandaGen("lexVarPassPandaGen", undefined, 1, globalScope);
+        let pandaGen = new PandaGen("lexVarPassPandaGen", creatAstFromSnippet(`class C {}; export {C}`), 1, globalScope);
         let var1 = globalScope.add("var1", VarDeclarationKind.LET);
         let pass = new CacheExpander();
         let varReg = pandaGen.getVregForVariable(var1!);
@@ -348,7 +336,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
         // load local register to acc
         let outInsns = pandaGen.getInsns();
         let expected = [
-            new StaDyn(varReg),
+            new Sta(varReg),
         ];
 
         expect(checkInstructions(outInsns, expected)).to.be.true;
@@ -356,7 +344,7 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
 
     it("test storeAccFromLexEnv with lex env let-variable", function () {
         let globalScope = new GlobalScope();
-        let pandaGen = new PandaGen("lexVarPassPandaGen", undefined, 1, globalScope);
+        let pandaGen = new PandaGen("lexVarPassPandaGen", creatAstFromSnippet(`class C {}; export {C}`), 1, globalScope);
         let var1 = globalScope.add("var1", VarDeclarationKind.LET);
         let funcObj = globalScope.add("4funcObj", VarDeclarationKind.LET);
         funcObj!.bindVreg(new VReg());
@@ -370,16 +358,17 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
         let outInsns = pandaGen.getInsns();
         let valueReg = new VReg();
         let expected = [
-            new StaDyn(valueReg),
-            new EcmaStlexvardyn(new Imm(0), new Imm(0), valueReg),
-            new LdaDyn(new VReg())
+            new Sta(valueReg),
+            new Lda(valueReg),
+            new Stlexvar(new Imm(0), new Imm(0)),
+            new Lda(new VReg())
         ];
         expect(checkInstructions(outInsns, expected)).to.be.true;
     });
 
     it("test storeAccFromLexEnv with lex env const-variable", function () {
         let globalScope = new GlobalScope();
-        let pandaGen = new PandaGen("lexVarPassPandaGen", undefined, 1, globalScope);
+        let pandaGen = new PandaGen("lexVarPassPandaGen", creatAstFromSnippet(`class C {}; export {C}`), 1, globalScope);
         let var1 = globalScope.add("var1", VarDeclarationKind.CONST);
         let funcObj = globalScope.add("4funcObj", VarDeclarationKind.LET);
         funcObj!.bindVreg(new VReg());
@@ -392,9 +381,10 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
         let outInsns = pandaGen.getInsns();
         let valueReg = new VReg();
         let expected = [
-            new StaDyn(valueReg),
-            new EcmaStlexvardyn(new Imm(0), new Imm(0), valueReg),
-            new LdaDyn(valueReg)
+            new Sta(valueReg),
+            new Lda(valueReg),
+            new Stlexvar(new Imm(0), new Imm(0)),
+            new Lda(valueReg)
         ];
         expect(checkInstructions(outInsns, expected)).to.be.true;
     });
@@ -409,19 +399,21 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
     `;
 
         let pandaGens = compileAllSnippet(source);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`class C {}; export {C}`), 0, undefined);
         let expected_main = [
-            new LdaDyn(new VReg()),
-            new EcmaStglobalvar("outer"),
-            new EcmaDefinefuncdyn("func", new Imm(0), new VReg()),
-            new EcmaStglobalvar("func"),
-            new LdaiDyn(new Imm(1)),
-            new EcmaStglobalvar("outer"),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Stglobalvar(new Imm(0), "outer"),
+            new Definefunc(new Imm(1), "func", new Imm(0)),
+            new Stglobalvar(new Imm(2), "func"),
+            new Ldai(new Imm(1)),
+            new Stglobalvar(new Imm(3), "outer"),
+            new Returnundefined()
         ];
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`class C {}; export {C}`), 0, undefined);
         let expected_func = [
-            new LdaiDyn(new Imm(2)),
-            new EcmaStglobalvar("outer"),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(2)),
+            new Stglobalvar(new Imm(0), "outer"),
+            new Returnundefined()
         ];
 
         pandaGens.forEach((pg) => {
@@ -442,25 +434,23 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
       }
     `;
 
-        let insnsCreateLexEnv_main = MicroCreateLexEnv(1, false);
         let passes = [new CacheExpander()];
         let pandaGens = compileAllSnippet(source, passes);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`class C {}; export {C}`), 0, undefined);
         let expected_main = [
-            ...insnsCreateLexEnv_main,
-            new EcmaDefinefuncdyn("func", new Imm(0), new VReg()),
-            new EcmaStglobalvar("func"), // global.func = func_func_1
-            new LdaiDyn(new Imm(1)), // value = 1
-            // ...insnsStoreLexVar_main,
-            new EcmaStlettoglobalrecord("outer"),
-            new EcmaReturnundefined()
+            new Definefunc(new Imm(0), "func", new Imm(0)),
+            new Stglobalvar(new Imm(1), "func"), // global.func = func_func_1
+            new Ldai(new Imm(1)), // value = 1
+            new Sttoglobalrecord(new Imm(2), "outer"),
+            new Returnundefined()
         ];
-        let insnsCreateLexEnv_func = MicroCreateLexEnv(0, false);
+
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`class C {}; export {C}`), 0, undefined);
         let expected_func = [
-            ...insnsCreateLexEnv_func,
-            new LdaiDyn(new Imm(2)),
+            new Ldai(new Imm(2)),
             // ...insnsStoreLexVar_func,
-            new EcmaTrystglobalbyname("outer"),
-            new EcmaReturnundefined()
+            new Trystglobalbyname(new Imm(0), "outer"),
+            new Returnundefined()
         ];
 
         pandaGens.forEach((pg) => {
@@ -493,42 +483,52 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
       func();
     `;
 
-        let insnsCreateLexEnv_outer = MicroCreateLexEnv(2, true);
         let insnsStoreLexVar_outer_1 = MicroStoreLexVar(0, 0);
         let insnsStoreLexVar_outer_2 = MicroStoreLexVar(0, 1);
 
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`class C {}; export {C}`), 0, undefined);
         let expect_outer: IRNode[] = [
-            ...insnsCreateLexEnv_outer,
-            new LdaDyn(new VReg()),
-            new StaDyn(new VReg()),
-            ...insnsStoreLexVar_outer_1,
-            new LdaDyn(new VReg()),
-            new StaDyn(new VReg()),
-            ...insnsStoreLexVar_outer_2,
-            new EcmaDefinefuncdyn("#1#", new Imm(0), new VReg()),
+            new Newlexenv(new Imm(2)),
+            new Sta(new VReg()),
+            new Lda(new VReg()),
+            new Sta(new VReg()),
+            new Lda(new VReg()),
+            new Stlexvar(new Imm(0), new Imm(0)),
+            new Lda(new VReg()),
+            new Lda(new VReg()),
+            new Sta(new VReg()),
+            new Lda(new VReg()),
+            new Stlexvar(new Imm(0), new Imm(1)),
+            new Lda(new VReg()),
+            new Definefunc(new Imm(0), "#1#", new Imm(0)),
             // returnStatement
-            new StaDyn(new VReg()),
-            new LdaDyn(new VReg()),
-            new ReturnDyn()
+            new Sta(new VReg()),
+            new Lda(new VReg()),
+            new Return()
         ];
 
-
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`class C {}; export {C}`), 0, undefined);
         let expect_anonymous = [
-            ...MicroCreateLexEnv(0, true),
-            ...MicroLoadLexVar(1, 0),
-            new StaDyn(new VReg()),
-            new EcmaIncdyn(new VReg()),
-            new StaDyn(new VReg()),
-            ...MicroStoreLexVar(1, 0),
-            new EcmaTonumeric(new VReg()), // this is redundant load varialbe
-            ...MicroLoadLexVar(1, 0),
-            new StaDyn(new VReg),
-            ...MicroLoadLexVar(1, 1),
-            new EcmaAdd2dyn(new VReg()),
+            new Newlexenv(new Imm(0)),
+            new Sta(new VReg()),
+            new Ldlexvar(new Imm(1), new Imm(0)),
+            new Sta(new VReg()),
+            new Lda(new VReg()),
+            new Inc(new Imm(0)),
+            new Sta(new VReg()),
+            new Lda(new VReg()),
+            new Stlexvar(new Imm(1), new Imm(0)),
+            new Lda(new VReg()),
+            new Lda(new VReg()),
+            new Tonumeric(new Imm(1)), // this is redundant load varialbe
+            new Ldlexvar(new Imm(1), new Imm(0)),
+            new Sta(new VReg),
+            new Ldlexvar(new Imm(1), new Imm(1)),
+            new Add2(new Imm(2), new VReg()),
             // returnStatement
-            new StaDyn(new VReg()),
-            new LdaDyn(new VReg()),
-            new ReturnDyn()
+            new Sta(new VReg()),
+            new Lda(new VReg()),
+            new Return()
         ];
 
         let passes = [new CacheExpander()];

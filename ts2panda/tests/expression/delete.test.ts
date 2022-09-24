@@ -18,37 +18,39 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaDelobjprop,
-    EcmaReturnundefined,
-    EcmaStlettoglobalrecord,
-    EcmaTryldglobalbyname,
+    Delobjprop,
+    Returnundefined,
+    Sttoglobalrecord,
+    Tryldglobalbyname,
     Imm,
-    LdaDyn,
-    LdaiDyn,
+    Lda,
+    Ldai,
     LdaStr,
-    StaDyn,
-    VReg
+    Sta,
+    VReg,
+    IRNode
 } from "../../src/irnodes";
 import { checkInstructions, compileMainSnippet, SnippetCompiler } from "../utils/base";
+import { creatAstFromSnippet } from "../utils/asthelper";
+import { PandaGen } from '../../src/pandagen';
 
 describe("deleteExpressionTest", function () {
     it("deleteElementFromArray", function () {
         let insns = compileMainSnippet("let arr = [1, 2]; delete arr[1];");
-
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("let arr = [1, 2]; delete arr[1];"), 0, undefined);
+        IRNode.pg.updateIcSize(1);
         let objReg = new VReg();
-        let propReg = new VReg();
-
+ 
         let expected = [
-            new EcmaStlettoglobalrecord('arr'),
-            new EcmaTryldglobalbyname('arr'),
-            new StaDyn(objReg),
-            new LdaiDyn(new Imm(1)),
-            new StaDyn(propReg),
-            new EcmaDelobjprop(objReg, propReg),
-            new EcmaReturnundefined()
+            new Sttoglobalrecord(new Imm(1), 'arr'),
+            new Tryldglobalbyname(new Imm(2), 'arr'),
+            new Sta(objReg),
+            new Ldai(new Imm(1)),
+            new Delobjprop(new VReg()),
+            new Returnundefined()
         ];
 
-        insns = insns.slice(insns.length - 7, insns.length);
+        insns = insns.slice(insns.length - 6, insns.length);
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
@@ -58,21 +60,21 @@ describe("deleteExpressionTest", function () {
                                   a: 1,
                                   b: 2};
                                   delete obj.b;`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("let arr = [1, 2]; delete arr[1];"), 0, undefined);
+        IRNode.pg.updateIcSize(1);
         let objReg = new VReg();
-        let propReg = new VReg();
 
         let expected = [
             // delete obj.b;
-            new EcmaStlettoglobalrecord('obj'),
-            new EcmaTryldglobalbyname('obj'),
-            new StaDyn(objReg),
+            new Sttoglobalrecord(new Imm(1), 'obj'),
+            new Tryldglobalbyname(new Imm(2), 'obj'),
+            new Sta(objReg),
             new LdaStr("b"),
-            new StaDyn(propReg),
-            new EcmaDelobjprop(objReg, propReg),
-            new EcmaReturnundefined()
+            new Delobjprop(new VReg()),
+            new Returnundefined()
         ];
 
-        insns = insns.slice(insns.length - 7, insns.length);
+        insns = insns.slice(insns.length - 6, insns.length);
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
@@ -83,13 +85,18 @@ describe("deleteExpressionTest", function () {
                                   bIsFooCalled = true;
                               };
                               let a = delete foo();`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`var foo = function() {
+            bIsFooCalled = true;
+        };
+        let a = delete foo();`), 0, undefined);
+        IRNode.pg.updateIcSize(6);
 
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
             // function call insns
-            new LdaDyn(new VReg()),
-            new EcmaStlettoglobalrecord('a'),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Sttoglobalrecord(new Imm(6), 'a'),
+            new Returnundefined()
         ];
 
         insns = insns.slice(insns.length - 3, insns.length);
@@ -99,12 +106,13 @@ describe("deleteExpressionTest", function () {
     // delete keywords won't use delObjProp
     it("deleteKeywords", function () {
         let insns = compileMainSnippet(`let a = delete false;`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`let a = delete false;`), 0, undefined);
 
         let expected = [
-            new LdaDyn(new VReg()),
-            new LdaDyn(new VReg()),
-            new EcmaStlettoglobalrecord('a'),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Lda(new VReg()),
+            new Sttoglobalrecord(new Imm(0), 'a'),
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -112,14 +120,11 @@ describe("deleteExpressionTest", function () {
 
     it("deleteUnresolvable", function () {
         let insns = compileMainSnippet(`delete a;`);
-        let globalReg = new VReg();
-        let a = new VReg();
 
         let expected = [
             new LdaStr("a"),
-            new StaDyn(a),
-            new EcmaDelobjprop(globalReg, a),
-            new EcmaReturnundefined()
+            new Delobjprop(new VReg()),
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -127,15 +132,12 @@ describe("deleteExpressionTest", function () {
 
     it("double delete", function () {
         let insns = compileMainSnippet(`delete delete a;`);
-        let globalReg = new VReg();
-        let a = new VReg();
 
         let expected = [
             new LdaStr("a"),
-            new StaDyn(a),
-            new EcmaDelobjprop(globalReg, a),
-            new LdaDyn(new VReg()),
-            new EcmaReturnundefined()
+            new Delobjprop(new VReg()),
+            new Lda(new VReg()),
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;

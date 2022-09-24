@@ -18,86 +18,91 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaAdd2dyn,
-    EcmaAnd2dyn,
-    EcmaAshr2dyn,
-    EcmaCreateemptyobject,
-    EcmaDiv2dyn,
-    EcmaExpdyn,
-    EcmaMod2dyn,
-    EcmaMul2dyn,
-    EcmaOr2dyn,
-    EcmaReturnundefined,
-    EcmaShl2dyn,
-    EcmaShr2dyn,
-    EcmaStglobalvar,
-    EcmaStlettoglobalrecord,
-    EcmaStobjbyname,
-    EcmaStrictnoteqdyn,
-    EcmaSub2dyn,
-    EcmaTryldglobalbyname,
-    EcmaTrystglobalbyname,
-    EcmaXor2dyn,
+    Add2,
+    And2,
+    Ashr2,
+    Createemptyobject,
+    Div2,
+    Exp,
+    Mod2,
+    Mul2,
+    Or2,
+    Returnundefined,
+    Shl2,
+    Shr2,
+    Stglobalvar,
+    Sttoglobalrecord,
+    Stobjbyname,
+    Strictnoteq,
+    Sub2,
+    Tryldglobalbyname,
+    Trystglobalbyname,
+    Xor2,
     Imm,
     Jeqz,
     Jmp,
     Label,
-    LdaDyn,
-    LdaiDyn,
+    Lda,
+    Ldai,
     LdaStr,
-    MovDyn,
-    ResultType,
-    StaDyn,
-    VReg
+    Mov,
+    Sta,
+    VReg,
+    IRNode
 } from "../../src/irnodes";
 import { checkInstructions, compileMainSnippet } from "../utils/base";
+import { creatAstFromSnippet } from "../utils/asthelper";
+import { PandaGen } from '../../src/pandagen';
 
 describe("BinaryOperationsTest", function () {
     it("2 + 3", function () {
         let insns = compileMainSnippet("2 + 3");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("2 + 3"), 0, undefined);
         let lhs = new VReg();
         let expected = [
-            new LdaiDyn(new Imm(2)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(3)),
-            new EcmaAdd2dyn(lhs),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(2)),
+            new Sta(lhs),
+            new Ldai(new Imm(3)),
+            new Add2(new Imm(0), lhs),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("5 - 1", function () {
         let insns = compileMainSnippet("5 - 1");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("5 - 1"), 0, undefined);
         let lhs = new VReg();
         let expected = [
-            new LdaiDyn(new Imm(5)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(1)),
-            new EcmaSub2dyn(lhs),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(5)),
+            new Sta(lhs),
+            new Ldai(new Imm(1)),
+            new Sub2(new Imm(0), lhs),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("null ?? 1", function () {
         let insns = compileMainSnippet("null ?? 1");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("null ?? 1"), 0, undefined);
 
         let leftNullishLabel = new Label();
         let endLabel = new Label();
         let expected = [
-            new LdaDyn(new VReg()),
-            new StaDyn(new VReg()),
-            new EcmaStrictnoteqdyn(new VReg()),
+            new Lda(new VReg()),
+            new Sta(new VReg()),
+            new Strictnoteq(new Imm(0), new VReg()),
             new Jeqz(leftNullishLabel),
-            new LdaDyn(new VReg()),
-            new EcmaStrictnoteqdyn(new VReg()),
+            new Lda(new VReg()),
+            new Strictnoteq(new Imm(1), new VReg()),
             new Jeqz(leftNullishLabel),
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             new Jmp(endLabel),
             leftNullishLabel,
-            new LdaiDyn(new Imm(1)),
+            new Ldai(new Imm(1)),
             endLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -109,25 +114,26 @@ describe("BinaryOperationsTest", function () {
 
     it("undefined ?? 1", function () {
         let insns = compileMainSnippet("undefined ?? 1");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("undefined ?? 1"), 0, undefined);
 
         let leftNullishLabel = new Label();
         let endLabel = new Label();
         let expected = [
-            new LdaDyn(new VReg()),
-            new StaDyn(new VReg()),
-            new EcmaStrictnoteqdyn(new VReg()),
+            new Lda(new VReg()),
+            new Sta(new VReg()),
+            new Strictnoteq(new Imm(0), new VReg()),
             new Jeqz(leftNullishLabel),
-            new LdaDyn(new VReg()),
-            new EcmaStrictnoteqdyn(new VReg()),
+            new Lda(new VReg()),
+            new Strictnoteq(new Imm(1), new VReg()),
             new Jeqz(leftNullishLabel),
 
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             new Jmp(endLabel),
 
             leftNullishLabel,
-            new LdaiDyn(new Imm(1)),
+            new Ldai(new Imm(1)),
             endLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
 
@@ -138,26 +144,27 @@ describe("BinaryOperationsTest", function () {
 
     it("2 ?? 1", function () {
         let insns = compileMainSnippet("2 ?? 1");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("2 ?? 1"), 0, undefined);
         let lhs = new VReg();
 
         let leftNullishLabel = new Label();
         let endLabel = new Label();
         let expected = [
-            new LdaiDyn(new Imm(2)),
-            new StaDyn(new VReg()),
-            new EcmaStrictnoteqdyn(new VReg()),
+            new Ldai(new Imm(2)),
+            new Sta(new VReg()),
+            new Strictnoteq(new Imm(0), new VReg()),
             new Jeqz(leftNullishLabel),
-            new LdaDyn(new VReg()),
-            new EcmaStrictnoteqdyn(new VReg()),
+            new Lda(new VReg()),
+            new Strictnoteq(new Imm(1), new VReg()),
             new Jeqz(leftNullishLabel),
 
-            new LdaDyn(lhs),
+            new Lda(lhs),
             new Jmp(endLabel),
 
             leftNullishLabel,
-            new LdaiDyn(new Imm(1)),
+            new Ldai(new Imm(1)),
             endLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
 
@@ -168,142 +175,153 @@ describe("BinaryOperationsTest", function () {
 
     it("3 * 4", function () {
         let insns = compileMainSnippet("3 * 4");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("3 * 4"), 0, undefined);
         let lhs = new VReg();
         let expected = [
-            new LdaiDyn(new Imm(3)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(4)),
-            new EcmaMul2dyn(lhs),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(3)),
+            new Sta(lhs),
+            new Ldai(new Imm(4)),
+            new Mul2(new Imm(0), lhs),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("2 ** 3", function () {
         let insns = compileMainSnippet("2 ** 3");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("2 ** 3"), 0, undefined);
         let lhs = new VReg();
         let expected = [
-            new LdaiDyn(new Imm(2)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(3)),
-            new EcmaExpdyn(lhs),
-            new EcmaReturnundefined(),
+            new Ldai(new Imm(2)),
+            new Sta(lhs),
+            new Ldai(new Imm(3)),
+            new Exp(new Imm(0), lhs),
+            new Returnundefined(),
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("7 / 1", function () {
         let insns = compileMainSnippet("7 / 1");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("7 / 1"), 0, undefined);
         let lhs = new VReg();
         let expected = [
-            new LdaiDyn(new Imm(7)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(1)),
-            new EcmaDiv2dyn(lhs),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(7)),
+            new Sta(lhs),
+            new Ldai(new Imm(1)),
+            new Div2(new Imm(0), lhs),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("8 % 2", function () {
         let insns = compileMainSnippet("8 % 2");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("8 % 2"), 0, undefined);
         let lhs = new VReg();
         let expected = [
-            new LdaiDyn(new Imm(8)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(2)),
-            new EcmaMod2dyn(lhs),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(8)),
+            new Sta(lhs),
+            new Ldai(new Imm(2)),
+            new Mod2(new Imm(0), lhs),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("2 << 3", function () {
         let insns = compileMainSnippet("2 << 3");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("2 << 3"), 0, undefined);
         let lhs = new VReg();
         let expected = [
-            new LdaiDyn(new Imm(2)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(3)),
-            new EcmaShl2dyn(lhs),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(2)),
+            new Sta(lhs),
+            new Ldai(new Imm(3)),
+            new Shl2(new Imm(0), lhs),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("4 >> 1", function () {
         let insns = compileMainSnippet("4 >> 1");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("4 >> 1"), 0, undefined);
         let lhs = new VReg();
         let expected = [
-            new LdaiDyn(new Imm(4)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(1)),
-            new EcmaShr2dyn(lhs),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(4)),
+            new Sta(lhs),
+            new Ldai(new Imm(1)),
+            new Ashr2(new Imm(0), lhs),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("12 >>> 2", function () {
         let insns = compileMainSnippet("12 >>> 2");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("12 >>> 2"), 0, undefined);
         let lhs = new VReg();
         let expected = [
-            new LdaiDyn(new Imm(12)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(2)),
-            new EcmaAshr2dyn(lhs),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(12)),
+            new Sta(lhs),
+            new Ldai(new Imm(2)),
+            new Shr2(new Imm(0), lhs),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("3 & 4", function () {
         let insns = compileMainSnippet("3 & 4");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("3 & 4"), 0, undefined);
         let lhs = new VReg();
         let expected = [
-            new LdaiDyn(new Imm(3)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(4)),
-            new EcmaAnd2dyn(lhs),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(3)),
+            new Sta(lhs),
+            new Ldai(new Imm(4)),
+            new And2(new Imm(0), lhs),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("2 | 5", function () {
         let insns = compileMainSnippet("2 | 5");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("2 | 5"), 0, undefined);
         let lhs = new VReg();
         let expected = [
-            new LdaiDyn(new Imm(2)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(5)),
-            new EcmaOr2dyn(lhs),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(2)),
+            new Sta(lhs),
+            new Ldai(new Imm(5)),
+            new Or2(new Imm(0), lhs),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("7 ^ 3", function () {
         let insns = compileMainSnippet("7 ^ 3");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("7 ^ 3"), 0, undefined);
         let lhs = new VReg();
         let expected = [
-            new LdaiDyn(new Imm(7)),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(3)),
-            new EcmaXor2dyn(lhs),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(7)),
+            new Sta(lhs),
+            new Ldai(new Imm(3)),
+            new Xor2(new Imm(0), lhs),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("let i; i = 2", function () {
         let insns = compileMainSnippet("let i; i = 2;");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("let i; i = 2;"), 0, undefined);
         let expected = [
-            new LdaDyn(new VReg()),
-            new EcmaStlettoglobalrecord('i'),
-            new LdaiDyn(new Imm(2)),
-            new EcmaTrystglobalbyname('i'),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Sttoglobalrecord(new Imm(0), 'i'),
+            new Ldai(new Imm(2)),
+            new Trystglobalbyname(new Imm(1), 'i'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
@@ -313,11 +331,12 @@ describe("BinaryOperationsTest", function () {
                                         "use strict";
                                         a = 1;
                                         `);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`"use strict";a = 1;`), 0, undefined);
         let expected = [
             new LdaStr("use strict"),
-            new LdaiDyn(new Imm(1)),
-            new EcmaTrystglobalbyname("a"),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(1)),
+            new Trystglobalbyname(new Imm(0), "a"),
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -325,11 +344,12 @@ describe("BinaryOperationsTest", function () {
 
     it("Assignment to ParenthesizedExpression case1", function () {
         let insns = compileMainSnippet("((x)) = 1;");
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet("((x)) = 1;"), 0, undefined);
 
         let expected = [
-            new LdaiDyn(new Imm(1)),
-            new EcmaStglobalvar("x"),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(1)),
+            new Stglobalvar(new Imm(0), "x"),
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -338,21 +358,22 @@ describe("BinaryOperationsTest", function () {
     it("Assignment to ParenthesizedExpression case2", function () {
         let insns = compileMainSnippet(`let a = {};
                                 ((a.b)) = 1;`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`let a = {};((a.b)) = 1;`), 0, undefined);
         let objReg = new VReg();
         let tempObj = new VReg();
 
         let expected = [
-            new EcmaCreateemptyobject(),
-            new StaDyn(new VReg()),
+            new Createemptyobject(),
+            new Sta(new VReg()),
             // insns for `((a.b)) = 1`
-            new EcmaStlettoglobalrecord('a'),
-            new EcmaTryldglobalbyname('a'),
-            new StaDyn(tempObj),
-            new MovDyn(objReg, tempObj),
-            new LdaiDyn(new Imm(1)),
+            new Sttoglobalrecord(new Imm(0), 'a'),
+            new Tryldglobalbyname(new Imm(1), 'a'),
+            new Sta(tempObj),
+            new Mov(objReg, tempObj),
+            new Ldai(new Imm(1)),
 
-            new EcmaStobjbyname("b", objReg),
-            new EcmaReturnundefined()
+            new Stobjbyname(new Imm(2), "b", objReg),
+            new Returnundefined()
         ]
         expect(checkInstructions(insns, expected)).to.be.true;
     });
