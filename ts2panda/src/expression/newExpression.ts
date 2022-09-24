@@ -22,36 +22,31 @@ import { createArrayFromElements } from "./arrayLiteralExpression";
 export function compileNewExpression(expr: ts.NewExpression, compiler: Compiler) {
     let pandaGen = compiler.getPandaGen();
     let ctorReg = pandaGen.getTemp();
-    let newTargetReg = pandaGen.getTemp();
 
     // get the ctor function
     compiler.compileExpression(expr.expression);
     pandaGen.storeAccumulator(expr, ctorReg);
 
-    // new.target will be the same as ctor
-    pandaGen.moveVreg(expr, newTargetReg, ctorReg);
-
     if (containSpreadElement(expr.arguments)) {
         let argRegs = pandaGen.getTemp();
         createArrayFromElements(expr, compiler, <ts.NodeArray<ts.Expression>>expr.arguments, argRegs);
 
-        pandaGen.newObjSpread(expr, ctorReg, newTargetReg);
-        pandaGen.freeTemps(ctorReg, newTargetReg, argRegs);
+        pandaGen.newObjSpread(expr, ctorReg);
+        pandaGen.freeTemps(ctorReg, argRegs);
 
         return;
     }
 
     // prepare arguments for newobj.dyn.range instruction
-    let numArgs = 2; // for the ctor
+    let numArgs = 1; // for the ctor
     if (expr.arguments) {
         numArgs += expr.arguments.length;
     }
 
     let argRegs = new Array<VReg>(numArgs);
     argRegs[0] = ctorReg;
-    argRegs[1] = newTargetReg;
 
-    let argIndex = 2;
+    let argIndex = 1;
     if (expr.arguments) {
         // store ctor arguments in registers
         expr.arguments.forEach((argExpr: ts.Expression) => {

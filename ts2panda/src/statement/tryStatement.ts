@@ -285,8 +285,7 @@ export class TryBuilderWithForOf extends TryBuilderBase {
 
         pandaGen.label(stmt, this.labelTarget.getContinueTargetLabel()!);
         if (this.hasLoopEnv) {
-            pandaGen.createLexEnv(stmt, <VReg>this.loopEnv, loopScope);
-            compiler.pushEnv(<VReg>this.loopEnv);
+            pandaGen.createLexEnv(stmt, loopScope);
         }
 
         this.compileIteratorNext(stmt, pandaGen, this.iterator, resultReg);

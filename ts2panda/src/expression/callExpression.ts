@@ -28,11 +28,8 @@ export function compileCallExpression(expr: ts.CallExpression, compiler: Compile
     let pandaGen = compiler.getPandaGen();
 
     if (expr.expression.kind == ts.SyntaxKind.ImportKeyword) {
-        let moduleSpecifierReg = pandaGen.getTemp();
         compiler.compileExpression(expr.arguments[0]);
-        pandaGen.storeAccumulator(expr.arguments[0], moduleSpecifierReg);
-        pandaGen.dynamicImportCall(expr, moduleSpecifierReg);
-        pandaGen.freeTemps(moduleSpecifierReg);
+        pandaGen.dynamicImportCall(expr);
         return;
     }
 

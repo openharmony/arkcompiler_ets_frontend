@@ -197,7 +197,8 @@ export class VariableAcessStore extends VariableAccessBase {
             }
         }
 
-        insns.push(storeLexicalVar(this.level, slot, valueReg));
+        insns.push(loadAccumulator(valueReg));
+        insns.push(storeLexicalVar(this.level, slot));
         insns.push(loadAccumulator(valueReg));
 
         pandaGen.freeTemps(valueReg);

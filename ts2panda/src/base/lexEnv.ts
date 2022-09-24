@@ -20,7 +20,6 @@ import {
 import { PandaGen } from "../pandagen";
 import { VariableScope } from "../scope";
 import {
-    loadLexicalEnv,
     newLexicalEnv,
     storeAccumulator
 } from "./bcGenUtil";
@@ -43,16 +42,6 @@ function createLexEnv(pandaGen: PandaGen, scope: VariableScope): IRNode[] {
     return insns;
 }
 
-function loadLexEnv(pandaGen: PandaGen): IRNode[] {
-    let insns: IRNode[] = [];
-
-    insns.push(
-        loadLexicalEnv(),
-        storeAccumulator(getVregisterCache(pandaGen, CacheList.LexEnv)),
-    );
-    return insns;
-}
-
 export function expandLexEnv(pandaGen: PandaGen): IRNode[] {
     let scope = pandaGen.getScope()!.getNearestVariableScope();
     let insns: IRNode[];
@@ -63,8 +52,6 @@ export function expandLexEnv(pandaGen: PandaGen): IRNode[] {
 
     if (scope.need2CreateLexEnv()) {
         insns = createLexEnv(pandaGen, scope);
-    } else {
-        insns = loadLexEnv(pandaGen);
     }
 
     return insns;

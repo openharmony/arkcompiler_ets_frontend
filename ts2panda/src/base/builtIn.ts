@@ -16,96 +16,96 @@
 import { PandaGen } from "src/pandagen";
 import {
     IRNode,
-    EcmaLdfalse,
-    EcmaLdglobal,
-    EcmaLdhole,
-    EcmaLdinfinity,
-    EcmaLdnan,
-    EcmaLdnull,
-    EcmaLdsymbol,
-    EcmaLdtrue,
-    EcmaLdundefined,
-    StaDyn,
-    EcmaLdfunction
+    Ldfalse,
+    Ldglobal,
+    Ldhole,
+    Ldinfinity,
+    Ldnan,
+    Ldnull,
+    Ldsymbol,
+    Ldtrue,
+    Ldundefined,
+    Sta,
+    Ldfunction
 } from "../irnodes";
 import { CacheList, getVregisterCache } from "./vregisterCache";
 
 export function expandHole(pandaGen: PandaGen): IRNode[] {
     let vreg = getVregisterCache(pandaGen, CacheList.HOLE);
     return [
-        new EcmaLdhole(),
-        new StaDyn(vreg)
+        new Ldhole(),
+        new Sta(vreg)
     ]
 }
 
 export function expandNaN(pandaGen: PandaGen): IRNode[] {
     let vreg = getVregisterCache(pandaGen, CacheList.NaN);
     return [
-        new EcmaLdnan(),
-        new StaDyn(vreg)
+        new Ldnan(),
+        new Sta(vreg)
     ];
 }
 
 export function expandInfinity(pandaGen: PandaGen): IRNode[] {
     let vreg = getVregisterCache(pandaGen, CacheList.Infinity);
     return [
-        new EcmaLdinfinity(),
-        new StaDyn(vreg)
+        new Ldinfinity(),
+        new Sta(vreg)
     ];
 }
 
 export function expandGlobal(pandaGen: PandaGen): IRNode[] {
     let vreg = getVregisterCache(pandaGen, CacheList.Global);
     return [
-        new EcmaLdglobal(),
-        new StaDyn(vreg)
+        new Ldglobal(),
+        new Sta(vreg)
     ];
 }
 
 export function expandUndefined(pandaGen: PandaGen): IRNode[] {
     let vreg = getVregisterCache(pandaGen, CacheList.undefined);
     return [
-        new EcmaLdundefined(),
-        new StaDyn(vreg)
+        new Ldundefined(),
+        new Sta(vreg)
     ];
 }
 
 export function expandSymbol(pandaGen: PandaGen): IRNode[] {
     let vreg = getVregisterCache(pandaGen, CacheList.Symbol);
     return [
-        new EcmaLdsymbol(),
-        new StaDyn(vreg)
+        new Ldsymbol(),
+        new Sta(vreg)
     ];
 }
 
 export function expandNull(pandaGen: PandaGen): IRNode[] {
     let vreg = getVregisterCache(pandaGen, CacheList.Null);
     return [
-        new EcmaLdnull(),
-        new StaDyn(vreg)
+        new Ldnull(),
+        new Sta(vreg)
     ];
 }
 
 export function expandTrue(pandaGen: PandaGen): IRNode[] {
     let vreg = getVregisterCache(pandaGen, CacheList.True);
     return [
-        new EcmaLdtrue(),
-        new StaDyn(vreg)
+        new Ldtrue(),
+        new Sta(vreg)
     ];
 }
 
 export function expandFalse(pandaGen: PandaGen): IRNode[] {
     let vreg = getVregisterCache(pandaGen, CacheList.False);
     return [
-        new EcmaLdfalse(),
-        new StaDyn(vreg)
+        new Ldfalse(),
+        new Sta(vreg)
     ];
 }
 
 export function expandFunc(pandaGen: PandaGen): IRNode[] {
     let vreg = getVregisterCache(pandaGen, CacheList.FUNC);
     return [
-        new EcmaLdfunction(),
-        new StaDyn(vreg)
+        new Ldfunction(),
+        new Sta(vreg)
     ];
 }

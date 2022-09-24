@@ -17,7 +17,10 @@ import { writeFileSync } from "fs";
 import * as ts from "typescript";
 import { addVariableToScope } from "./addVariable2Scope";
 import { AssemblyDumper } from "./assemblyDumper";
-import { hasDefaultKeywordModifier, hasExportKeywordModifier, initiateTs2abc, listenChildExit, listenErrorEvent, terminateWritePipe, getRecordTypeFlag } from "./base/util";
+import {
+    hasDefaultKeywordModifier, hasExportKeywordModifier, initiateTs2abc, listenChildExit,
+    listenErrorEvent, terminateWritePipe, getRecordTypeFlag
+} from "./base/util";
 import { CmdOptions } from "./cmdOptions";
 import {
     Compiler
@@ -26,7 +29,7 @@ import { CompilerStatistics } from "./compilerStatistics";
 import { DebugInfo } from "./debuginfo";
 import { hoisting } from "./hoisting";
 import { LOGD } from "./log";
-import { setModuleNamespaceImports } from "./ecmaModule";
+import { setModuleNamespaceImports, assignIndexToModuleVariable } from "./ecmaModule";
 import { PandaGen } from "./pandagen";
 import { Pass } from "./pass";
 import { CacheExpander } from "./pass/cacheExpander";
@@ -45,6 +48,7 @@ import { Ts2Panda } from "./ts2panda";
 import { TypeRecorder } from "./typeRecorder";
 import { LiteralBuffer } from "./base/literal";
 import { findOuterNodeOfParenthesis } from "./expression/parenthesizedExpression";
+import { IRNode } from "./irnodes";
 
 export class PendingCompilationUnit {
     constructor(
@@ -218,7 +222,9 @@ export class CompilerDriver {
 
     private compileImpl(node: ts.SourceFile | ts.FunctionLikeDeclaration, scope: Scope,
         internalName: string, recorder: Recorder): void {
+
         let pandaGen = new PandaGen(internalName, node, this.getParametersCount(node), scope);
+        IRNode.pg = pandaGen;
 
         if (CmdOptions.needRecordSourceCode() && !ts.isSourceFile(node)) {
             // souceCode of [ts.sourceFile] will be record in debugInfo later.
@@ -310,6 +316,7 @@ export class CompilerDriver {
             topLevelScope.module().setModuleEnvironment(topLevelScope);
         }
         addVariableToScope(recorder, enableTypeRecord);
+        assignIndexToModuleVariable(topLevelScope);
 
         let postOrderVariableScopes = this.postOrderAnalysis(topLevelScope);
 

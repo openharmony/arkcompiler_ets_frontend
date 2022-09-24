@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import { loadAccumulator } from "src/base/bcGenUtil";
 import * as ts from "typescript";
 import { CacheList, getVregisterCache } from "../base/vregisterCache";
 import { NodeKind } from "../debuginfo";
@@ -58,10 +59,10 @@ export class AsyncFunctionBuilder {
         let pandaGen = this.pandaGen;
         let promise = this.pandaGen.getTemp();
 
-        pandaGen.asyncFunctionAwaitUncaught(node, this.asyncObj, value);
-        pandaGen.storeAccumulator(node, promise);
+        pandaGen.loadAccumulator(node, value);
+        pandaGen.asyncFunctionAwaitUncaught(node, this.asyncObj);
 
-        pandaGen.suspendGenerator(node, this.asyncObj, promise);
+        pandaGen.suspendGenerator(node, this.asyncObj);
 
         pandaGen.freeTemps(promise);
 
@@ -97,8 +98,8 @@ export class AsyncFunctionBuilder {
 
     resolve(node: ts.Node | NodeKind, value: VReg) {
         let pandaGen = this.pandaGen;
-
-        pandaGen.asyncFunctionResolve(node, this.asyncObj, getVregisterCache(pandaGen, CacheList.True), value);
+        pandaGen.loadAccumulator(node, value);
+        pandaGen.asyncFunctionResolve(node, this.asyncObj);
     }
 
     cleanUp(node: ts.Node): void {
@@ -106,14 +107,9 @@ export class AsyncFunctionBuilder {
 
         pandaGen.label(node, this.endLabel);
 
-        // catch
-        let exception = pandaGen.getTemp();
-
-        pandaGen.storeAccumulator(NodeKind.Invalid, exception);
-        pandaGen.asyncFunctionReject(NodeKind.Invalid, this.asyncObj, getVregisterCache(pandaGen, CacheList.True), exception);
+        // exception is in acc
+        pandaGen.asyncFunctionReject(NodeKind.Invalid, this.asyncObj);
         pandaGen.return(NodeKind.Invalid);
-
-        pandaGen.freeTemps(exception);
 
         pandaGen.freeTemps(this.asyncObj, this.retVal);
 

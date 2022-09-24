@@ -18,25 +18,20 @@ import {
 } from "../irnodes";
 import { PandaGen } from "../pandagen";
 import {
-    // expandBigInt,
-    // expandBoolean,
     expandFalse,
-    // expandFunction,
     expandGlobal,
     expandHole,
     expandInfinity,
     expandNaN,
     expandNull,
-    // expandNumber,
-    // expandObject,
-    // expandRegExp,
-    // expandString,
     expandSymbol,
     expandTrue,
     expandUndefined,
     expandFunc
 } from "./builtIn";
 import { expandLexEnv } from "./lexEnv";
+
+
 export enum CacheList {
     MIN,
     NaN = MIN,
@@ -47,7 +42,7 @@ export enum CacheList {
     Symbol,
     Null,
     Global,
-    LexEnv, // Lex Env must come before True and False, because LexEnv depends on True and False
+    LexEnv,
     True,
     False,
     MAX

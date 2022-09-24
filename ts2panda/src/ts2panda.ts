@@ -96,10 +96,28 @@ export class Ts2Panda {
             } else if (isRangeInst(insn)) {
                 // For DynRange insn we only pass the first vreg of continuous vreg array
                 let operands = insn.operands;
-                insImms.push((<Imm>operands[0]).value);
-                insRegs.push((<VReg>operands[1]).num);
-                if (getRangeStartVregPos(insn) == 2) {
-                    insRegs.push((<VReg>operands[2]).num);
+                for (let i = 0; i <= getRangeStartVregPos(insn); i++) {
+                    let operand = operands[i];
+                    if (operand instanceof VReg) {
+                        insRegs.push((<VReg>operand).num);
+                        continue;
+                    }
+
+                    if (operand instanceof Imm) {
+                        insImms.push((<Imm>operand).value);
+                        continue;
+                    }
+
+                    if (typeof (operand) === "string") {
+                        insIds.push(operand);
+                        continue;
+                    }
+
+                    if (operand instanceof Label) {
+                        let labelName = Ts2Panda.labelPrefix + operand.id;
+                        insIds.push(labelName);
+                        continue;
+                    }
                 }
             } else {
                 insn.operands.forEach((operand: OperandType) => {
@@ -230,8 +248,8 @@ export class Ts2Panda {
             }
 
             // get builtin type for tryloadglobal instruction
-            if (inst.kind == IRNodeKind.ECMA_TRYLDGLOBALBYNAME) {
-                let name = inst.operands[0] as string;
+            if (inst.kind == IRNodeKind.TRYLDGLOBALBYNAME) {
+                let name = inst.operands[1] as string;
                 if (name in BuiltinType) {
                     typeIdx = BuiltinType[name];
                     instTypeMap.set(i, typeIdx);
@@ -240,7 +258,7 @@ export class Ts2Panda {
             }
 
             // skip arg type
-            if (i < paraCount && inst.kind == IRNodeKind.MOV_DYN) {
+            if (i < paraCount && inst.kind == IRNodeKind.MOV) {
                 let vreg = (inst.operands[0] as VReg).num;
                 let arg = (inst.operands[1] as VReg).num;
                 if (vreg >= paraCount || arg < vregCount) {
@@ -252,7 +270,7 @@ export class Ts2Panda {
             }
 
             // local vreg -> inst
-            if (inst.kind == IRNodeKind.STA_DYN) {
+            if (inst.kind == IRNodeKind.STA) {
                 let vreg = (inst.operands[0] as VReg).num;
                 if (vreg < locals.length && !handledSet.has(vreg)) {
                     typeIdx = locals[vreg].getTypeIndex();
@@ -388,7 +406,9 @@ export class Ts2Panda {
             callType,
             typeInfo,
             exportedSymbol2Types,
-            declaredSymbol2Types
+            declaredSymbol2Types,
+            pg.getFunctionKind(),
+            pg.getIcSize()
         );
 
         LOGD(func);

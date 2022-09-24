@@ -53,7 +53,8 @@ export class GeneratorFunctionBuilder {
         // backend handle funcobj, frontend set undefined
         pandaGen.createGeneratorObj(node, getVregisterCache(pandaGen, CacheList.FUNC));
         pandaGen.storeAccumulator(node, this.genObj);
-        pandaGen.suspendGenerator(node, this.genObj, getVregisterCache(pandaGen, CacheList.undefined));
+        pandaGen.loadAccumulator(node, getVregisterCache(pandaGen, CacheList.undefined));
+        pandaGen.suspendGenerator(node, this.genObj);
         pandaGen.resumeGenerator(node, this.genObj);
         pandaGen.storeAccumulator(node, this.retVal);
 
@@ -64,9 +65,8 @@ export class GeneratorFunctionBuilder {
         let pandaGen = this.pandaGen;
 
         let iterRslt = pandaGen.getTemp();
-        pandaGen.EcmaCreateiterresultobj(node, value, getVregisterCache(pandaGen, CacheList.False));
-        pandaGen.storeAccumulator(node, iterRslt);
-        pandaGen.suspendGenerator(node, this.genObj, iterRslt);
+        pandaGen.Createiterresultobj(node, value, getVregisterCache(pandaGen, CacheList.False));
+        pandaGen.suspendGenerator(node, this.genObj);
         pandaGen.freeTemps(iterRslt);
 
         pandaGen.resumeGenerator(node, this.genObj);
@@ -177,7 +177,8 @@ export class GeneratorFunctionBuilder {
         pandaGen.loadObjProperty(expr, this.retVal, "done");
         pandaGen.jumpIfTrue(expr, exitLabel_value);
 
-        pandaGen.suspendGenerator(expr, this.genObj, this.retVal);
+        pandaGen.loadAccumulator(expr, this.retVal);
+        pandaGen.suspendGenerator(expr, this.genObj);
         pandaGen.resumeGenerator(expr, this.genObj);
         pandaGen.storeAccumulator(expr, receivedValue);
         pandaGen.getResumeMode(expr, this.genObj);

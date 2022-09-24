@@ -20,6 +20,7 @@ import { ModuleScope, Scope } from "./scope";
 import { getSourceFileOfNode } from "./jshelpers";
 import { LReference } from "./base/lreference";
 import { Compiler } from "./compiler";
+import { ModuleVariable } from "./variable";
 
 class Entry {
     node: ts.Node;
@@ -234,7 +235,23 @@ export function setModuleNamespaceImports(compiler: Compiler, moduleScope: Scope
 
     moduleScope.module().getNamespaceImportEntries().forEach(entry => {
         let namespace_lref = LReference.generateLReference(compiler, (<ts.NamespaceImport>entry.node).name, true);
-        pandagen.getModuleNamespace(entry.node, entry.localName!);
+        pandagen.getModuleNamespace(entry.node, entry.moduleRequest);
         namespace_lref.setValue();
+    });
+}
+
+export function assignIndexToModuleVariable(moduleScope: Scope) {
+    if (!(moduleScope instanceof ModuleScope)) {
+        return;
+    }
+    let index: number = 0;
+    // @ts-ignore
+    moduleScope.module().getLocalExportEntries().forEach((entries: Array<Entry>, localName: string) => {
+        (<ModuleVariable>moduleScope.findLocal(localName)!).assignIndex(index++);
+    });
+    index = 0;
+    // @ts-ignore
+    moduleScope.module().getRegularImportEntries().forEach((entry: Entry, localName: string) => {
+        (<ModuleVariable>moduleScope.findLocal(localName)!).assignIndex(index++);
     });
 }

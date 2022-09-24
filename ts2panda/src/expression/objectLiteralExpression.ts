@@ -115,12 +115,7 @@ function createObject(expr: ts.ObjectLiteralExpression, pandaGen: PandaGen, objR
         let literalArrayBuffer = PandaGen.getLiteralArrayBuffer();
         let bufferIdx = literalArrayBuffer.length;
         literalArrayBuffer.push(literalBuffer);
-        if (hasMethod) {
-            let env = compiler.getCurrentEnv();
-            pandaGen.createObjectHavingMethod(expr, bufferIdx, env);
-        } else {
-            pandaGen.createObjectWithBuffer(expr, bufferIdx);
-        }
+        pandaGen.createObjectWithBuffer(expr, bufferIdx);
     }
     pandaGen.storeAccumulator(expr, objReg);
 }
@@ -188,11 +183,9 @@ function compileAccessorProperty(pandaGen: PandaGen, compiler: Compiler, objReg:
 function compileSpreadProperty(compiler: Compiler, prop: Property, objReg: VReg) {
     let pandaGen = compiler.getPandaGen();
 
-    let srcObj = pandaGen.getTemp();
     compiler.compileExpression(<ts.Expression>prop.getValue());
-    pandaGen.storeAccumulator(<ts.Expression>prop.getValue(), srcObj);
-    pandaGen.copyDataProperties(<ts.Expression>prop.getValue().parent, objReg, srcObj);
-    pandaGen.freeTemps(srcObj);
+    // srcObj is in acc now
+    pandaGen.copyDataProperties(<ts.Expression>prop.getValue().parent, objReg);
 }
 
 function compileComputedProperty(compiler: Compiler, prop: Property, objReg: VReg) {
@@ -293,11 +286,10 @@ function setUncompiledProperties(compiler: Compiler, pandaGen: PandaGen, propert
 export function createMethodOrAccessor(pandaGen: PandaGen, compiler: Compiler, objReg: VReg,
                                        func: ts.MethodDeclaration | ts.GetAccessorDeclaration | ts.SetAccessorDeclaration | ts.ConstructorDeclaration) {
     let internalName = compiler.getCompilerDriver().getFuncInternalName(func, compiler.getRecorder());
-    let env = compiler.getCurrentEnv();
     if (ts.isMethodDeclaration(func) && func.asteriskToken) {
-        pandaGen.defineFunction(func, func, internalName, env);
+        pandaGen.defineFunction(func, func, internalName);
     } else {
-        pandaGen.defineMethod(func, internalName, objReg, env);
+        pandaGen.defineMethod(func, internalName, objReg);
     }
 }
 

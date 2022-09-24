@@ -54,7 +54,7 @@ export class Iterator {
      *  }
      */
     callNext(iterResult: VReg) {
-        this.pandaGen.getIteratorNext(this.node, this.iterRecord.iterator, this.iterRecord.nextMethod);
+        this.pandaGen.call(this.node, [this.iterRecord.nextMethod, this.iterRecord.iterator], true);
         this.pandaGen.storeAccumulator(this.node, iterResult);
     }
 
