@@ -1101,7 +1101,7 @@ void PandaGen::DefineFunction(const ir::AstNode *node, const ir::ScriptFunction 
         ra_.Emit<EcmaDefinemethod>(node, name, static_cast<int64_t>(formalParamCnt), LexEnv());
     } else if (realNode->IsAsync()) {
         if (realNode->IsGenerator()) {
-            // TODO(): async generator
+            ra_.Emit<EcmaDefineasyncgeneratorfunc>(node, name, static_cast<int64_t>(formalParamCnt), LexEnv());
         } else {
             ra_.Emit<EcmaDefineasyncfunc>(node, name, static_cast<int64_t>(formalParamCnt), LexEnv());
         }
@@ -1166,10 +1166,7 @@ void PandaGen::CreateGeneratorObj(const ir::AstNode *node, VReg funcObj)
 
 void PandaGen::CreateAsyncGeneratorObj(const ir::AstNode *node, VReg funcObj)
 {
-    /*
-     *  TODO: async generator
-     *  ra_.Emit<EcmaCreateasyncgeneratorobj>(node, funcObj);
-     */
+    ra_.Emit<EcmaCreateasyncgeneratorobj>(node, funcObj);
 }
 
 void PandaGen::CreateIterResultObject(const ir::AstNode *node, VReg value, VReg done)
@@ -1236,20 +1233,14 @@ void PandaGen::AsyncFunctionReject(const ir::AstNode *node, VReg asyncFuncObj, V
     ra_.Emit<EcmaAsyncfunctionreject>(node, asyncFuncObj, canSuspend, value);
 }
 
-void PandaGen::AsyncGeneratorResolve(const ir::AstNode *node, VReg asyncGenObj)
+void PandaGen::AsyncGeneratorResolve(const ir::AstNode *node, VReg asyncGenObj, VReg value, VReg canSuspend)
 {
-    /*
-     *  TODO: async generator resolve
-     *  ra_.Emit<EcmaAsyncgeneratorresolve>(node, asyncGenObj);
-     */
+    ra_.Emit<EcmaAsyncgeneratorresolve>(node, asyncGenObj, value, canSuspend);
 }
 
-void PandaGen::AsyncGeneratorReject(const ir::AstNode *node, VReg asyncGenObj)
+void PandaGen::AsyncGeneratorReject(const ir::AstNode *node, VReg asyncGenObj, VReg value)
 {
-    /*
-     *  TODO: async generator reject
-     *  ra_.Emit<EcmaAsyncgeneratorreject>(node, asyncGenObj);
-     */
+    ra_.Emit<EcmaAsyncgeneratorreject>(node, asyncGenObj, value);
 }
 
 void PandaGen::GetTemplateObject(const ir::AstNode *node, VReg value)

@@ -318,8 +318,8 @@ public:
     void SuspendGenerator(const ir::AstNode *node, VReg genObj, VReg iterResult);
     void SuspendAsyncGenerator(const ir::AstNode *node, VReg asyncGenObj);
 
-    void AsyncGeneratorResolve(const ir::AstNode *node, VReg asyncGenObj);
-    void AsyncGeneratorReject(const ir::AstNode *node, VReg asyncGenObj);
+    void AsyncGeneratorResolve(const ir::AstNode *node, VReg asyncGenObj, VReg value, VReg canSuspend);
+    void AsyncGeneratorReject(const ir::AstNode *node, VReg asyncGenObj, VReg value);
 
     void GetTemplateObject(const ir::AstNode *node, VReg value);
     void CopyRestArgs(const ir::AstNode *node, uint32_t index);
