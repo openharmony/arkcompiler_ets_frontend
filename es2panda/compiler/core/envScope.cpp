@@ -30,11 +30,10 @@ ScopeContext::~ScopeContext()
     pg_->scope_ = prevScope_;
 }
 
-void EnvScope::Initialize(PandaGen *pg, VReg lexEnv)
+void EnvScope::Initialize(PandaGen *pg)
 {
     pg_ = pg;
     prev_ = pg_->envScope_;
-    lexEnv_ = lexEnv;
     pg_->envScope_ = this;
 }
 
@@ -53,10 +52,9 @@ void LoopEnvScope::CopyBindings(PandaGen *pg, binder::VariableScope *scope, bind
         return;
     }
 
-    Initialize(pg, pg->AllocReg());
+    Initialize(pg);
 
     pg_->NewLexicalEnv(scope_->Node(), scope->LexicalSlots(), scope_);
-    pg_->StoreAccumulator(scope_->Node(), lexEnv_);
 
     ASSERT(scope->NeedLexEnv());
 
@@ -89,7 +87,6 @@ void LoopEnvScope::CopyPetIterationCtx()
     }
     pg_->PopLexEnv(scope_->Node());
     pg_->NewLexicalEnv(scope_->Node(), num, scope_);
-    pg_->StoreAccumulator(scope_->Node(), lexEnv_);
 
     for (uint32_t i = 0; i < num; i++) {
         pg_->StoreLexicalVar(scope_->Node(), 0, i, lexicals[i]);

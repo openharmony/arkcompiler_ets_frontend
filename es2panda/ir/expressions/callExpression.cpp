@@ -95,7 +95,6 @@ void CallExpression::Compile(compiler::PandaGen *pg) const
                 pg->StoreAccumulator(it, arg);
             }
 
-            pg->GetFunctionObject(this);
             pg->SuperCall(this, argStart, arguments_.size());
         }
 

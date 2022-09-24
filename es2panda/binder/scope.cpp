@@ -358,6 +358,14 @@ void ModuleScope::ConvertLocalVariableToModuleVariable(ArenaAllocator *allocator
     }
 }
 
+void ModuleScope::AssignIndexToModuleVariable(util::StringView name, uint32_t index)
+{
+    auto *moduleVar = FindLocal(name);
+    ASSERT(moduleVar != nullptr);
+    ASSERT(moduleVar->IsModuleVariable());
+    moduleVar->AsModuleVariable()->AssignIndex(index);
+}
+
 bool ModuleScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                              [[maybe_unused]] ScriptExtension extension)
 {

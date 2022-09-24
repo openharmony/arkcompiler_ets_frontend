@@ -72,10 +72,7 @@ void FunctionBuilder::SuspendResumeExecution(const ir::AstNode *node, VReg compl
     ASSERT(BuilderKind() == BuilderType::ASYNC || BuilderKind() == BuilderType::ASYNC_GENERATOR ||
            BuilderKind() == BuilderType::GENERATOR);
 
-    RegScope rs(pg_);
-    VReg iterResult = pg_->AllocReg();
-    pg_->StoreAccumulator(node, iterResult);
-    pg_->SuspendGenerator(node, funcObj_, iterResult);
+    pg_->SuspendGenerator(node, funcObj_); // iterResult is in acc
     resumeGenerator(node, completionType, completionValue);
 }
 
@@ -110,10 +107,8 @@ void FunctionBuilder::Await(const ir::AstNode *node)
     RegScope rs(pg_);
     VReg completionType = pg_->AllocReg();
     VReg completionValue = pg_->AllocReg();
-    VReg retVal = pg_->AllocReg();
 
-    pg_->StoreAccumulator(node, retVal);
-    pg_->AsyncFunctionAwait(node, funcObj_, retVal);
+    pg_->AsyncFunctionAwait(node, funcObj_);
     SuspendResumeExecution(node, completionType, completionValue);
 
     HandleCompletion(node, completionType, completionValue);
@@ -276,7 +271,8 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
         pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, receivedType, loopStart);
 
         // b. Let awaited be Await(resumptionValue.[[Value]]).
-        pg_->AsyncFunctionAwait(node, funcObj_, receivedValue);
+        pg_->LoadAccumulator(node, receivedValue);
+        pg_->AsyncFunctionAwait(node, funcObj_);
         SuspendResumeExecution(node, receivedType, receivedValue);
 
         // c. If awaited.[[Type]] is throw, return Completion(awaited).

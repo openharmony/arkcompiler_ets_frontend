@@ -93,6 +93,12 @@ void Binder::ThrowUndeclaredExport(const lexer::SourcePosition &pos, const util:
     throw Error(ErrorType::SYNTAX, ss.str(), loc.line, loc.col);
 }
 
+void Binder::AssignIndexToModuleVariable()
+{
+    ASSERT(program_->ModuleRecord());
+    program_->ModuleRecord()->AssignIndexToModuleVariable(topScope_->AsModuleScope());
+}
+
 void Binder::IdentifierAnalysis()
 {
     ASSERT(program_->Ast());
@@ -101,6 +107,9 @@ void Binder::IdentifierAnalysis()
     BuildFunction(topScope_, MAIN_FUNC_NAME);
     ResolveReferences(program_->Ast());
     AddMandatoryParams();
+    if (topScope_->IsModuleScope()) {
+        AssignIndexToModuleVariable();
+    }
 }
 
 void Binder::ValidateExportDecl(const ir::ExportNamedDeclaration *exportDecl)

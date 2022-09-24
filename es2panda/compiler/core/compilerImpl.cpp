@@ -39,7 +39,7 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
     const std::string &debugInfoSourceFile)
 {
     CompilerContext context(program->Binder(), options.isDebug, options.isDebuggerEvaluateExpressionMode,
-                            options.mergeAbc, debugInfoSourceFile);
+                            options.mergeAbc, debugInfoSourceFile, program->RecordName());
 
     if (hotfixHelper_ != nullptr) {
         context.AddHotfixHelper(hotfixHelper_);

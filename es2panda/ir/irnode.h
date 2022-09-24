@@ -98,6 +98,10 @@ using Operand = std::variant<compiler::VReg, double, int64_t, util::StringView, 
 
 #define FIRST_NODE_OF_FUNCTION (reinterpret_cast<ir::AstNode *>(0x1))
 
+using ICSlot = uint16_t;
+
+using ICSize = uint32_t;
+
 class IRNode {
 public:
     explicit IRNode(const ir::AstNode *node) : node_(node) {};
@@ -117,6 +121,7 @@ public:
     virtual size_t Registers([[maybe_unused]] std::array<VReg *, MAX_REG_OPERAND> *regs) = 0;
     virtual size_t Registers([[maybe_unused]] std::array<const VReg *, MAX_REG_OPERAND> *regs) const = 0;
     virtual void Transform(panda::pandasm::Ins *ins) const = 0;
+    virtual ICSlot SetIcSlot(ICSize currentSlot) = 0;
 
 private:
     const ir::AstNode *node_;

@@ -56,9 +56,13 @@ protected:
     T *Alloc(const ir::AstNode *node, Args &&... args)
     {
         ir::AstNode *invalidNode = nullptr;
-        return Allocator()->New<T>((GetSourceLocationFlag() == lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION) ?
-                                   invalidNode : node, std::forward<Args>(args)...);
+        bool isInvalid = GetSourceLocationFlag() == lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION;
+        auto *ret = Allocator()->New<T>(isInvalid ? invalidNode : node, std::forward<Args>(args)...);
+        UpdateIcSlot(ret);
+        return ret;
     }
+
+    void UpdateIcSlot(IRNode *node);
 
     template <typename T, typename... Args>
     void Add(const ir::AstNode *node, Args &&... args)

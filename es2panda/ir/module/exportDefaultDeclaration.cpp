@@ -37,7 +37,10 @@ void ExportDefaultDeclaration::Compile(compiler::PandaGen *pg) const
     if (decl_->IsExpression()) {
         // export default [AssignmentExpression]
         // e.g. export default 42 (42 be exported as [default])
-        pg->StoreModuleVariable(this, parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME);
+        ASSERT(pg->Scope()->IsModuleScope());
+        auto *var = pg->Scope()->FindLocal(parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME);
+        ASSERT(var->IsModuleVariable());
+        pg->StoreModuleVariable(this, var->AsModuleVariable());
     }
 }
 

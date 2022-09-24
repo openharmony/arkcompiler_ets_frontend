@@ -81,6 +81,8 @@ public:
 
     static const uint32_t INVALID_INDEX = 4294967295L;
     static const uint32_t MAX_INT32 = 2147483647;
+    static const uint32_t MAX_INT16 = std::numeric_limits<int16_t>::max();
+    static const uint32_t MAX_INT8 = std::numeric_limits<int8_t>::max();
 };
 
 template <typename T>

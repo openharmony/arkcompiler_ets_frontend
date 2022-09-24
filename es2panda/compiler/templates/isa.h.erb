@@ -64,6 +64,11 @@ public:
         ins->label = id_;
     }
 
+    ICSlot SetIcSlot(ICSize currentSlot) override
+    {
+        return 0;
+    }
+
 private:
     std::string id_;
 };
@@ -130,6 +135,7 @@ private:
 %     ops = Array.new
 %     ctor_args = Array.new
 %     op_map = Hash.new { |h, k| h[k] = [] }
+%     id_count = 0
 %     operands.map do |operand|
 %     operand_parts = operand.split(':')
 %       case operand_parts.size
@@ -146,7 +152,9 @@ private:
 %       name_tmp = name_tmp = name.to_s.gsub(/[0-9]/, '').to_sym;
 %
 %       if is_Id(name_tmp)
-%           name = "stringId"
+%           name = "stringId_"
+%           name.concat(id_count.to_s)
+%           id_count = id_count + 1
 %       end
 %
 %       ops.push(name)
@@ -195,28 +203,74 @@ public:
         return <%= reg_cnt %>;
     }
 
-    void Transform(pandasm::Ins* ins) const override {
-      ins->opcode = pandasm::Opcode::<%= node_kind %>;
+    void Transform(pandasm::Ins* ins) const override
+    {
+        ins->opcode = pandasm::Opcode::<%= node_kind %>;
 % if op_map['reg'].length != 0
-      ins->regs.reserve(<%= op_map['reg'].length %>);
+        ins->regs.reserve(<%= op_map['reg'].length %>);
 % end
 % if op_map['imm'].length != 0
-      ins->imms.reserve(<%= op_map['imm'].length %>);
+        ins->imms.reserve(<%= op_map['imm'].length %>);
 % end
 % if op_map['str'].length + op_map['lbl'].length != 0
-      ins->ids.reserve(<%= op_map['str'].length + op_map['lbl'].length %>);
+        ins->ids.reserve(<%= op_map['str'].length + op_map['lbl'].length %>);
 % end
 % for reg in op_map['reg']
-      ins->regs.emplace_back(<%= reg %>);
+        ins->regs.emplace_back(<%= reg %>);
 % end
 % for imm in op_map['imm']
-      ins->imms.emplace_back(<%= imm %>);
+        ins->imms.emplace_back(<%= imm %>);
 % end
 % for str in op_map['str']
-      ins->ids.emplace_back(<%= str %>.Mutf8());
+        ins->ids.emplace_back(<%= str %>.Mutf8());
 % end
 % for lbl in op_map['lbl']
-      ins->ids.emplace_back(<%= lbl %>->Id());
+        ins->ids.emplace_back(<%= lbl %>->Id());
+% end
+    }
+
+    ICSlot SetIcSlot(ICSize slot) override
+    {
+% is_jit_ic = insn.properties.include?("jit_ic_slot")
+% is_ic = (!is_jit_ic) && insn.properties.include?("ic_slot")
+% if (!is_jit_ic && !is_ic)
+        return 0;
+% else
+%   ret = insn.properties.include?("one_slot") ? 1 : 2;
+        constexpr static ICSlot invalid = 0xFF;
+%   if (is_ic)
+        if (slot <= 0xFF) {
+            if ((slot + <%= ret %>) > 0xFF) {
+                <%= op_map['imm'][0] %> = 0x100;
+                return <%= ret %> + (0x100 - slot);
+            }
+
+            <%= op_map['imm'][0] %> = slot;
+            return <%= ret %>;
+        }
+
+        if (slot > 0xFF && slot <= 0xFFFF) {
+            <%= op_map['imm'][0] %> = slot;
+            return <%= ret %>;
+        }
+
+        <%= op_map['imm'][0] %> = invalid;
+        return 0;
+%   end
+%   if (is_jit_ic && !is_ic)
+        if (slot < 0xFF) {
+            if ((slot + <%= ret %>) > 0xFF) {
+                <%= op_map['imm'][0] %> = invalid;
+                return 0;
+            }
+
+            <%= op_map['imm'][0] %> = slot;
+            return <%= ret %>;
+        }
+
+        <%= op_map['imm'][0] %> = invalid;
+        return 0;
+%   end
 % end
     }
 

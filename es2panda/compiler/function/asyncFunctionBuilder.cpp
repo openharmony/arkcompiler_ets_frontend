@@ -23,13 +23,7 @@ namespace panda::es2panda::compiler {
 
 void AsyncFunctionBuilder::DirectReturn(const ir::AstNode *node) const
 {
-    RegScope rs(pg_);
-    VReg retVal = pg_->AllocReg();
-    VReg canSuspend = pg_->AllocReg();
-
-    pg_->StoreAccumulator(node, retVal);
-    pg_->StoreConst(node, canSuspend, Constant::JS_TRUE);
-    pg_->AsyncFunctionResolve(node, funcObj_, retVal, canSuspend);
+    pg_->AsyncFunctionResolve(node, funcObj_); // retVal is in acc
     pg_->EmitReturn(node);
 }
 
@@ -54,10 +48,8 @@ void AsyncFunctionBuilder::CleanUp(const ir::ScriptFunction *node) const
     pg_->SetLabel(node, labelSet.TryEnd());
     pg_->SetLabel(node, labelSet.CatchBegin());
     VReg exception = pg_->AllocReg();
-    VReg canSuspend = pg_->AllocReg();
     pg_->StoreAccumulator(node, exception);
-    pg_->StoreConst(node, canSuspend, Constant::JS_TRUE);
-    pg_->AsyncFunctionReject(node, funcObj_, exception, canSuspend);
+    pg_->AsyncFunctionReject(node, funcObj_);
     pg_->EmitReturn(node);
     pg_->SetLabel(node, labelSet.CatchEnd());
 }

@@ -234,12 +234,7 @@ void ObjectExpression::EmitCreateObjectWithBuffer(compiler::PandaGen *pg, compil
     }
 
     uint32_t bufIdx = pg->AddLiteralBuffer(buf);
-
-    if (hasMethod) {
-        pg->CreateObjectHavingMethod(this, bufIdx);
-    } else {
-        pg->CreateObjectWithBuffer(this, bufIdx);
-    }
+    pg->CreateObjectWithBuffer(this, bufIdx);
 }
 
 static const Literal *CreateLiteral(compiler::PandaGen *pg, const ir::Property *prop, util::BitSet *compiled,
@@ -355,13 +350,11 @@ void ObjectExpression::CompileRemainingProperties(compiler::PandaGen *pg, const 
         compiler::RegScope rs(pg);
 
         if (properties_[i]->IsSpreadElement()) {
-            compiler::VReg srcObj = pg->AllocReg();
             const ir::SpreadElement *spread = properties_[i]->AsSpreadElement();
 
             spread->Argument()->Compile(pg);
-            pg->StoreAccumulator(spread, srcObj);
-
-            pg->CopyDataProperties(spread, objReg, srcObj);
+            // srcObj is now stored in acc
+            pg->CopyDataProperties(spread, objReg);
             continue;
         }
 
