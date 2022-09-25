@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CORE_PANDAGEN_H
 #define ES2PANDA_COMPILER_CORE_PANDAGEN_H
 
+#include <compiler/base/optionalChain.h>
 #include <compiler/core/envScope.h>
 #include <compiler/core/inlineCache.h>
 #include <compiler/core/regAllocator.h>
@@ -172,6 +173,11 @@ public:
     const ArenaVector<compiler::LiteralBuffer *> &BuffStorage() const
     {
         return buffStorage_;
+    }
+
+    OptionalChain *GetOptionalChain() const
+    {
+        return optionalChain_;
     }
 
     uint32_t IcSize() const
@@ -430,6 +436,7 @@ private:
     ArenaVector<LiteralBuffer *> buffStorage_;
     EnvScope *envScope_ {};
     DynamicContext *dynamicContext_ {};
+    OptionalChain *optionalChain_ {};
     InlineCache ic_;
     SimpleAllocator sa_;
     RegAllocator ra_;
@@ -446,6 +453,7 @@ private:
     friend class EnvScope;
     friend class LoopEnvScope;
     friend class DynamicContext;
+    friend class OptionalChain;
     size_t labelId_ {0};
 };
 }  // namespace panda::es2panda::compiler
