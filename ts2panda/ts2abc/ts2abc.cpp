@@ -52,13 +52,14 @@ std::string g_compilerOutputProto = "";
 std::string g_recordName = "";
 constexpr uint32_t LITERALBUFFERINDEXOFFSET = 100;
 uint32_t MAX_UINT8 = static_cast<uint32_t>(std::numeric_limits<uint8_t>::max());
+bool g_isOutputProto = false;
+static constexpr const char* PROTO_BIN_SUFFIX = "protoBin";
 
 constexpr std::size_t BOUND_LEFT = 0;
 constexpr std::size_t BOUND_RIGHT = 0;
 constexpr std::size_t LINE_NUMBER = 0;
 constexpr bool IS_DEFINED = true;
 int g_opCodeIndex = 0;
-std::string g_recordName = "";
 std::unordered_map<int, panda::pandasm::Opcode> g_opcodeMap = {
 #define OPLIST(opcode, name, optype, width, flags, def_idx, use_idxs) {g_opCodeIndex++, panda::pandasm::Opcode::opcode},
     PANDA_INSTRUCTION_LIST(OPLIST)
@@ -826,8 +827,6 @@ static panda::pandasm::Function ParseFunction(const Json::Value &function, panda
     ParseSourceFileInfo(function, pandaFunc);
     ParseFunctionLabels(function, pandaFunc);
     ParseFunctionCatchTables(function, pandaFunc);
-    // parsing call opt type
-    ParseFunctionCallType(function, pandaFunc);
     ParseFunctionTypeInfo(function, pandaFunc, prog);
     ParseFunctionExportedType(function, pandaFunc, prog);
     ParseFunctionDeclaredType(function, pandaFunc, prog);
@@ -975,10 +974,14 @@ static void ParseEnableTypeInfo(const Json::Value &rootValue)
 static void ParseCompilerOutputProto(const Json::Value &rootValue)
 {
     Logd("-----------------parse compiler output proto-----------------");
-    if (rootValue.isMember("output-proto") && rootValue["output-proto"].isString()) {
-        g_compilerOutputProto = rootValue["output-proto"].asString();
+    if (rootValue.isMember("output-proto") && rootValue["output-proto"].isBool()) {
+        g_isOutputProto = rootValue["output-proto"].asBool();
+    }
+    if (rootValue.isMember("proto-name") && rootValue["proto-name"].isString()) {
+        g_compilerOutputProto = rootValue["proto-name"].asString();
     }
 }
+
 static void ReplaceAllDistinct(std::string &str, const std::string &oldValue, const std::string &newValue)
 {
     for (std::string::size_type pos(0); pos != std::string::npos; pos += newValue.length()) {
@@ -1173,7 +1176,7 @@ static void ParseSingleTypeInfo(const Json::Value &rootValue, panda::pandasm::Pr
 
         auto typeInfoRecord = rootValue["ti"];
         auto typeFlag = typeInfoRecord["tf"].asBool();
-        auto typeSummaryIndex = typeInfoRecord["tsi"].asUInt();
+        auto typeSummaryIndex = typeInfoRecord["tsi"].asString();
 
         auto typeFlagField = panda::pandasm::Field(LANG_EXT);
         typeFlagField.name = "typeFlag";
@@ -1390,9 +1393,14 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
 
     Logd("parsing done, calling pandasm\n");
 
-    std::string compilerOutputProto = g_compilerOutputProto;
     if (options.GetCompilerOutputProto().size() > 0) {
-        compilerOutputProto = options.GetCompilerOutputProto();
+        g_compilerOutputProto = options.GetCompilerOutputProto();
+    }
+
+    std::string compilerOutputProto = g_compilerOutputProto;
+
+    if (compilerOutputProto.size() == 0 && g_isOutputProto) {
+        compilerOutputProto = output.substr(0, output.find_last_of(".") + 1).append(PROTO_BIN_SUFFIX);
     }
 
 #ifdef ENABLE_BYTECODE_OPT
@@ -1443,6 +1451,52 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
     }
 
     Logd("Successfully generated: %s\n", output.c_str());
+    return true;
+}
+
+bool CompileNpmEntries(const std::string &input, const std::string &output)
+{
+    auto inputAbs = panda::os::file::File::GetAbsolutePath(input);
+    if (!inputAbs) {
+        std::cerr << "Input file does not exist" << std::endl;
+        return false;
+    }
+    auto fpath = inputAbs.Value();
+    if (panda::os::file::File::IsRegularFile(fpath) == false) {
+        std::cerr << "Input must be either a regular file or a directory" << std::endl;
+        return false;
+    }
+
+    std::stringstream ss;
+    std::ifstream inputStream(input);
+    if (inputStream.fail()) {
+        std::cerr << "Failed to read file to buffer: " << input << std::endl;
+        return false;
+    }
+    ss << inputStream.rdbuf();
+
+    panda::pandasm::Program prog = panda::pandasm::Program();
+    prog.lang = LANG_EXT;
+
+    std::string line;
+    while (getline(ss, line)) {
+        std::size_t pos = line.find(":");
+        std::string recordName = line.substr(0, pos);
+        std::string field = line.substr(pos + 1);
+
+        auto langExt = LANG_EXT;
+        auto entryNameField = panda::pandasm::Field(langExt);
+        entryNameField.name = field;
+        entryNameField.type = panda::pandasm::Type("u8", 0);
+        entryNameField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(
+            static_cast<bool>(0)));
+
+        panda::pandasm::Record entryRecord = panda::pandasm::Record(recordName, langExt);
+        entryRecord.field_list.emplace_back(std::move(entryNameField));
+        prog.record_table.emplace(recordName, std::move(entryRecord));
+    }
+
+    panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, output);
     return true;
 }
 

@@ -392,8 +392,30 @@ export function hasAbstractModifier(node: ts.Node): boolean {
 export const MAX_INT8 = 127;
 export const MAX_INT16 = 32767;
 
+export function getOutputBinName(node: ts.SourceFile) {
+    let outputBinName = CmdOptions.getOutputBinName();
+    let fileName = node.fileName.substring(0, node.fileName.lastIndexOf('.'));
+    let inputFileName = CmdOptions.getInputFileName();
+    if (/^win/.test(require('os').platform())) {
+        var inputFileTmps = inputFileName.split(path.sep);
+        inputFileName = path.posix.join(...inputFileTmps);
+    }
+
+    if (fileName != inputFileName) {
+        outputBinName = fileName + ".abc";
+    }
+    return outputBinName;
+}
+
 export function getRecordName(node: ts.SourceFile): string {
-    return ""; // need to be fixed later
+    let recordName = CmdOptions.getRecordName();
+
+    if (recordName == "") {
+        let outputBinName = getOutputBinName(node);
+        recordName = path.basename(outputBinName, path.extname(outputBinName));
+    }
+
+    return recordName;
 }
 
 export function getLiteralKey(node: ts.SourceFile, idx:number): string {

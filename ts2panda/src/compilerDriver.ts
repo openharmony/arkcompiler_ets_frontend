@@ -189,7 +189,6 @@ export class CompilerDriver {
                 // must keep [dumpRecord] at first
                 Ts2Panda.dumpRecord(ts2abcProc, this.recordName);
                 Ts2Panda.dumpCmdOptions(ts2abcProc);
-                Ts2Panda.dumpRecordName(ts2abcProc, getRecordName(CompilerDriver.srcNode));
 
                 for (let i = 0; i < this.pendingCompilationUnits.length; i++) {
                     let unit: PendingCompilationUnit = this.pendingCompilationUnits[i];

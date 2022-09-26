@@ -79,7 +79,7 @@ describe("primitives tests in primitives.test.ts", function() {
         let expectedBuffValues = [
             [
                 [2, 1],
-                [24, "_1"],
+                [24, "snippet_1"],
                 [2, 0]
             ],
             [
@@ -171,7 +171,7 @@ describe("primitives tests in primitives.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 2], [24, "_1"], [24, "_2"], [2, 0]
+                [2, 2], [24, "snippet_1"], [24, "snippet_2"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [25, 0], [2, 0],
@@ -186,7 +186,7 @@ describe("primitives tests in primitives.test.ts", function() {
                 [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 2], [24, "_1"]
+                [2, 2], [24, "snippet_1"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);

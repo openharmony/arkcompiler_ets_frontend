@@ -58,7 +58,7 @@ public:
 private:
     panda::PandArgParser *argparser_;
     std::string errorMsg_;
-    std::string protoBinSuffix_ {"bin"};
+    std::string protoBinSuffix_ {"protoBin"};
     std::string protoPathInput_;
     std::string outputFileName_ {"modules.abc"};
     std::string outputFilePath_;

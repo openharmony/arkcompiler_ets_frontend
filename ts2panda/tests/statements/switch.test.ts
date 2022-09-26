@@ -249,7 +249,7 @@ describe("switchTest", function () {
             switchEndLabel,
             new Returnundefined()
         ];
-        let functionPg = snippetCompiler.getPandaGenByName("test");
+        let functionPg = snippetCompiler.getPandaGenByName("UnitTest.test");
         let insns = functionPg!.getInsns();
 
         expect(checkInstructions(insns, expected)).to.be.true;

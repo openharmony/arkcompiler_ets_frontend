@@ -115,11 +115,9 @@ export class Function {
 
 export class Record {
     public name: string;
-    public metadata: Metadata;
 
     constructor(name: string) {
         this.name = name;
-        this.metadata = new Metadata();
     }
 }
 

@@ -17,6 +17,7 @@ import {
     expect
 } from 'chai';
 import 'mocha';
+import { CmdOptions } from '../../src/cmdOptions';
 import { DiagnosticCode, DiagnosticError } from '../../src/diagnostic';
 import { creatAstFromSnippet } from "../utils/asthelper"
 import { PandaGen } from '../../src/pandagen';
@@ -91,12 +92,13 @@ describe("LiteralTest", function () {
     });
 
     it("let arr = [1]", function () {
+        CmdOptions.parseUserCmd([""]);
         let insns = compileMainSnippet("let arr = [1]");
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let arrayInstance = new VReg();
 
         let expected = [
-            new Createarraywithbuffer(new Imm(0), "_0"),
+            new Createarraywithbuffer(new Imm(0), "snippet_1"),
             new Sta(arrayInstance),
             new Lda(arrayInstance),
             new Sttoglobalrecord(new Imm(1), 'arr'),
@@ -120,12 +122,13 @@ describe("LiteralTest", function () {
     });
 
     it("let arr = [1, 2]", function () {
+        CmdOptions.parseUserCmd([""]);
         let insns = compileMainSnippet("let arr = [1, 2]");
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let arrayInstance = new VReg();
 
         let expected = [
-            new Createarraywithbuffer(new Imm(0), "_0"),
+            new Createarraywithbuffer(new Imm(0), "snippet_1"),
             new Sta(arrayInstance),
             new Lda(arrayInstance),
             new Sttoglobalrecord(new Imm(1), 'arr'),
@@ -154,12 +157,13 @@ describe("LiteralTest", function () {
     });
 
     it("let arr = [1, , 3]", function () {
+        CmdOptions.parseUserCmd([""]);
         let insns = compileMainSnippet("let arr = [1,, 3]");
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let arrayInstance = new VReg();
 
         let expected = [
-            new Createarraywithbuffer(new Imm(0), "_0"),
+            new Createarraywithbuffer(new Imm(0), "snippet_1"),
             new Sta(arrayInstance),
             new Ldai(new Imm(3)),
             new Stownbyindex(new Imm(1), arrayInstance, new Imm(2)),
@@ -173,6 +177,7 @@ describe("LiteralTest", function () {
     });
 
     it("let arr = [1, ...arr1, 3]", function () {
+        CmdOptions.parseUserCmd([""]);
         let insns = compileMainSnippet(`let arr1 = [1, 2];
                                 let arr = [1, ...arr1, 3]`);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
@@ -180,12 +185,12 @@ describe("LiteralTest", function () {
         let arrayInstance = new VReg();
 
         let expected = [
-            new Createarraywithbuffer(new Imm(0), "_0"),
+            new Createarraywithbuffer(new Imm(0), "snippet_1"),
             new Sta(arrayInstance),
             new Lda(arrayInstance),
             new Sttoglobalrecord(new Imm(1), 'arr1'),
 
-            new Createarraywithbuffer(new Imm(2), "_1"),
+            new Createarraywithbuffer(new Imm(2), "snippet_2"),
             new Sta(arrayInstance),
             new Ldai(new Imm(1)),
             new Sta(elemIdxReg),
@@ -220,11 +225,12 @@ describe("LiteralTest", function () {
     });
 
     it("let obj = {a: 1}", function () {
+        CmdOptions.parseUserCmd([""]);
         let insns = compileMainSnippet("let obj = {a: 1}");
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let objInstance = new VReg();
         let expected = [
-            new Createobjectwithbuffer(new Imm(0), "_0"),
+            new Createobjectwithbuffer(new Imm(0), "snippet_1"),
             new Sta(objInstance),
             new Lda(objInstance),
             new Sttoglobalrecord(new Imm(1), 'obj'),
@@ -234,13 +240,14 @@ describe("LiteralTest", function () {
     });
 
     it("let obj = {0: 1 + 2}", function () {
+        CmdOptions.parseUserCmd([""]);
         let insns = compileMainSnippet("let obj = {0: 1 + 2}");
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let objInstance = new VReg();
         let lhs = new VReg();
 
         let expected = [
-            new Createobjectwithbuffer(new Imm(0), "_0"),
+            new Createobjectwithbuffer(new Imm(0), "snippet_1"),
             new Sta(objInstance),
             new Ldai(new Imm(1)),
             new Sta(lhs),
@@ -255,12 +262,13 @@ describe("LiteralTest", function () {
     });
 
     it("let obj = {\"str\": 1}", function () {
+        CmdOptions.parseUserCmd([""]);
         let insns = compileMainSnippet("let obj = {\"str\": 1}");
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let objInstance = new VReg();
 
         let expected = [
-            new Createobjectwithbuffer(new Imm(0), "_0"),
+            new Createobjectwithbuffer(new Imm(0), "snippet_1"),
             new Sta(objInstance),
             new Lda(objInstance),
             new Sttoglobalrecord(new Imm(1), 'obj'),
@@ -270,13 +278,14 @@ describe("LiteralTest", function () {
     });
 
     it("let a; let obj = {a}", function () {
+        CmdOptions.parseUserCmd([""]);
         let insns = compileMainSnippet("let a; let obj = {a}");
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         (<PandaGen>(IRNode.pg)).updateIcSize(1);
         let objInstance = new VReg();
 
         let expected = [
-            new Createobjectwithbuffer(new Imm(0), "_0"),
+            new Createobjectwithbuffer(new Imm(0), "snippet_1"),
             new Sta(objInstance),
             new Tryldglobalbyname(new Imm(1), 'a'),
             new Stownbyname(new Imm(2), "a", objInstance),
