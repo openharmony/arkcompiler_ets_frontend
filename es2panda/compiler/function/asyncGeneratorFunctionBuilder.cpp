@@ -22,28 +22,45 @@
 namespace panda::es2panda::compiler {
 void AsyncGeneratorFunctionBuilder::Prepare(const ir::ScriptFunction *node)
 {
+    RegScope rs(pg_);
     VReg callee = FunctionReg(node);
+    VReg completionType = pg_->AllocReg();
+    VReg completionValue = pg_->AllocReg();
 
     pg_->CreateAsyncGeneratorObj(node, callee);
     pg_->StoreAccumulator(node, funcObj_);
-    // pg_->SuspendGenerator(node, funcObj_); TODO implement this part correctly while implementing async generator
+
     pg_->SetLabel(node, catchTable_->LabelSet().TryBegin());
+
+    pg_->LoadConst(node, Constant::JS_UNDEFINED);
+    SuspendResumeExecution(node, completionType, completionValue);
 }
 
 void AsyncGeneratorFunctionBuilder::CleanUp(const ir::ScriptFunction *node) const
 {
     const auto &labelSet = catchTable_->LabelSet();
 
+    RegScope rs(pg_);
+    VReg value = pg_->AllocReg();
+
     pg_->SetLabel(node, labelSet.TryEnd());
     pg_->SetLabel(node, labelSet.CatchBegin());
-    pg_->AsyncGeneratorReject(node, funcObj_);
+    pg_->StoreAccumulator(node, value);
+    pg_->AsyncGeneratorReject(node, funcObj_, value);
     pg_->EmitReturn(node);
     pg_->SetLabel(node, labelSet.CatchEnd());
 }
 
 void AsyncGeneratorFunctionBuilder::DirectReturn(const ir::AstNode *node) const
 {
-    pg_->AsyncGeneratorResolve(node, funcObj_);
+    RegScope rs(pg_);
+    VReg retVal = pg_->AllocReg();
+    VReg canSuspend = pg_->AllocReg();
+
+    pg_->StoreAccumulator(node, retVal);
+    pg_->StoreConst(node, canSuspend, Constant::JS_TRUE);
+
+    pg_->AsyncGeneratorResolve(node, funcObj_, retVal, canSuspend);
     pg_->EmitReturn(node);
 }
 
@@ -55,48 +72,36 @@ void AsyncGeneratorFunctionBuilder::ImplicitReturn(const ir::AstNode *node) cons
 
 void AsyncGeneratorFunctionBuilder::Yield(const ir::AstNode *node)
 {
-    Await(node);
-
     RegScope rs(pg_);
+    VReg value = pg_->AllocReg();
+    VReg done = pg_->AllocReg();
     VReg completionType = pg_->AllocReg();
     VReg completionValue = pg_->AllocReg();
 
-    AsyncYield(node, completionType, completionValue);
-
-    auto *notReturnCompletion = pg_->AllocLabel();
-    auto *normalCompletion = pg_->AllocLabel();
+    auto *notNextCompletion = pg_->AllocLabel();
     auto *notThrowCompletion = pg_->AllocLabel();
 
-    // 27.6.3.8.8.a. If resumptionValue.[[Type]] is not return
-    pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::RETURN));
-    pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, completionType, notReturnCompletion);
-    // 27.6.3.8.8.b. Let awaited be Await(resumptionValue.[[Value]]).
-    pg_->LoadAccumulator(node, completionValue);
-    pg_->AsyncFunctionAwait(node, funcObj_, completionValue);
+    pg_->StoreAccumulator(node, value);
+    pg_->StoreConst(node, done, Constant::JS_FALSE);
+    pg_->AsyncGeneratorResolve(node, funcObj_, value, done);
     SuspendResumeExecution(node, completionType, completionValue);
 
-    // 27.6.3.8.8.c. If awaited.[[Type]] is throw, return Completion(awaited).
-    pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::THROW));
-
-    pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, completionType, normalCompletion);
+    // .next(value)
+    pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::NEXT));
+    pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, completionType, notNextCompletion);
     pg_->LoadAccumulator(node, completionValue);
-    pg_->EmitThrow(node);
 
-    pg_->SetLabel(node, normalCompletion);
-    // 27.6.3.8.8.d. Assert: awaited.[[Type]] is normal.
-    // 27.6.3.8.8.e. Return Completion { [[Type]]: return, [[Value]]: awaited.[[Value]], [[Target]]: empty }.
-    pg_->ControlFlowChangeBreak();
-    pg_->LoadAccumulator(node, completionValue);
-    pg_->DirectReturn(node);
-
-    pg_->SetLabel(node, notReturnCompletion);
-    // 27.6.3.8.8.a. return Completion(resumptionValue).
+    // .throw(value)
+    pg_->SetLabel(node, notNextCompletion);
     pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::THROW));
     pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, completionType, notThrowCompletion);
     pg_->LoadAccumulator(node, completionValue);
     pg_->EmitThrow(node);
+
+    // .return(value)
     pg_->SetLabel(node, notThrowCompletion);
     pg_->LoadAccumulator(node, completionValue);
+    pg_->EmitReturn(node);
 }
 
 IteratorType AsyncGeneratorFunctionBuilder::GeneratorKind() const
