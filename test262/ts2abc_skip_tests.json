@@ -134,5 +134,48 @@
             "language/expressions/dynamic-import/syntax/valid/nested-if-braceless-script-code-valid.js",
             "language/expressions/dynamic-import/syntax/valid/nested-if-script-code-valid.js"
         ]
+    },
+    {
+        "reason": "Optional chain failed testcases : optional chain is not supported",
+        "files": [
+            "language/expressions/optional-chaining/call-expression.js",
+            "language/expressions/optional-chaining/call-expression-super-no-base.js",
+            "language/expressions/optional-chaining/early-errors-tail-position-null-optchain-template-string-esi.js",
+            "language/expressions/optional-chaining/early-errors-tail-position-null-optchain-template-string.js",
+            "language/expressions/optional-chaining/early-errors-tail-position-null-op-template-string-esi.js",
+            "language/expressions/optional-chaining/early-errors-tail-position-null-op-template-string.js",
+            "language/expressions/optional-chaining/early-errors-tail-position-optchain-template-string-esi.js",
+            "language/expressions/optional-chaining/early-errors-tail-position-optchain-template-string.js",
+            "language/expressions/optional-chaining/early-errors-tail-position-op-template-string-esi.js",
+            "language/expressions/optional-chaining/early-errors-tail-position-op-template-string.js",
+            "language/expressions/optional-chaining/eval-optional-call.js",
+            "language/expressions/optional-chaining/iteration-statement-do.js",
+            "language/expressions/optional-chaining/iteration-statement-for-await-of.js",
+            "language/expressions/optional-chaining/iteration-statement-for-in.js",
+            "language/expressions/optional-chaining/iteration-statement-for.js",
+            "language/expressions/optional-chaining/iteration-statement-for-of-type-error.js",
+            "language/expressions/optional-chaining/iteration-statement-while.js",
+            "language/expressions/optional-chaining/member-expression-async-identifier.js",
+            "language/expressions/optional-chaining/member-expression-async-literal.js",
+            "language/expressions/optional-chaining/member-expression-async-this.js",
+            "language/expressions/optional-chaining/member-expression.js",
+            "language/expressions/optional-chaining/new-target-optional-call.js",
+            "language/expressions/optional-chaining/optional-call-preserves-this.js",
+            "language/expressions/optional-chaining/optional-chain-async-optional-chain-square-brackets.js",
+            "language/expressions/optional-chaining/optional-chain-async-square-brackets.js",
+            "language/expressions/optional-chaining/optional-chain-expression-optional-expression.js",
+            "language/expressions/optional-chaining/optional-chain.js",
+            "language/expressions/optional-chaining/optional-chain-prod-arguments.js",
+            "language/expressions/optional-chaining/optional-chain-prod-expression.js",
+            "language/expressions/optional-chaining/optional-chain-prod-identifiername.js",
+            "language/expressions/optional-chaining/optional-expression.js",
+            "language/expressions/optional-chaining/punctuator-decimal-lookahead.js",
+            "language/expressions/optional-chaining/runtime-semantics-evaluation.js",
+            "language/expressions/optional-chaining/short-circuiting.js",
+            "language/expressions/optional-chaining/static-semantics-simple-assignment.js",
+            "language/expressions/optional-chaining/super-property-optional-call.js",
+            "language/expressions/optional-chaining/update-expression-postfix.js",
+            "language/expressions/optional-chaining/update-expression-prefix.js"
+        ]
     }
 ]
