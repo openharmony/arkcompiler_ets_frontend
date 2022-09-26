@@ -114,6 +114,7 @@
     _(TS_PARAMETER_PROPERTY, TSParameterProperty)                    \
     _(TS_MODULE_DECLARATION, TSModuleDeclaration)                    \
     _(TS_IMPORT_EQUALS_DECLARATION, TSImportEqualsDeclaration)       \
+    _(TS_NAMESPACE_EXPORT_DECLARATION, TSNamespaceExportDeclaration) \
     _(TS_FUNCTION_TYPE, TSFunctionType)                              \
     _(TS_CONSTRUCTOR_TYPE, TSConstructorType)                        \
     _(TS_TYPE_ALIAS_DECLARATION, TSTypeAliasDeclaration)             \

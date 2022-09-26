@@ -66,6 +66,7 @@
 #include <ir/ts/tsInterfaceHeritage.h>
 #include <ir/ts/tsModuleBlock.h>
 #include <ir/ts/tsModuleDeclaration.h>
+#include <ir/ts/tsNamespaceExportDeclaration.h>
 #include <ir/ts/tsTypeAliasDeclaration.h>
 #include <ir/ts/tsTypeParameter.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
@@ -99,7 +100,7 @@ void ParserImpl::CheckDeclare()
         case lexer::TokenType::KEYW_CLASS: {
             break;
         }
-        case lexer::TokenType::LITERAL_IDENT:
+        case lexer::TokenType::LITERAL_IDENT: {
             if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE ||
                 lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_MODULE ||
                 lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_GLOBAL ||
@@ -111,6 +112,7 @@ void ParserImpl::CheckDeclare()
             }
 
             [[fallthrough]];
+        }
         default: {
             ThrowSyntaxError("Unexpected token.");
         }
@@ -132,6 +134,8 @@ bool ParserImpl::IsLabelFollowedByIterationStatement()
                 lexer_->NextToken();
                 return IsLabelFollowedByIterationStatement();
             }
+
+            [[fallthrough]];
         }
         default:
             return false;
@@ -427,6 +431,33 @@ ir::TSImportEqualsDeclaration *ParserImpl::ParseTsImportEqualsDeclaration(const 
     ConsumeSemicolon(importEqualsDecl);
 
     return importEqualsDecl;
+}
+
+ir::TSNamespaceExportDeclaration *ParserImpl::ParseTsNamespaceExportDeclaration(const lexer::SourcePosition &startLoc)
+{
+    if (!IsDtsFile()) {
+        ThrowSyntaxError("namespace export declaration is only supported in TypeScript '.d.ts'");
+    }
+    ASSERT(lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_AS);
+    lexer_->NextToken();  // eat as keyword
+    if (lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_NAMESPACE) {
+        ThrowSyntaxError("'namespace' expected");
+    }
+    lexer_->NextToken();  // eat namespace keyword
+    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        ThrowSyntaxError("identifier expected");
+    }
+
+    auto *id = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+    id->SetRange(lexer_->GetToken().Loc());
+    lexer_->NextToken();  // eat identifier
+
+    auto *namespaceExportDecl = AllocNode<ir::TSNamespaceExportDeclaration>(id);
+    namespaceExportDecl->SetRange({startLoc, lexer_->GetToken().End()});
+
+    ConsumeSemicolon(namespaceExportDecl);
+
+    return namespaceExportDecl;
 }
 
 ir::TSModuleBlock *ParserImpl::ParseTsModuleBlock()
@@ -2492,6 +2523,13 @@ ir::Statement *ParserImpl::ParseExportDeclaration(StatementParsingFlags flags,
         case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
             if (Extension() == ScriptExtension::TS) {
                 return ParseExportDefaultDeclaration(startLoc, std::move(decorators), true);
+            }
+
+            [[fallthrough]];
+        }
+        case lexer::TokenType::LITERAL_IDENT: {
+            if (Extension() == ScriptExtension::TS && lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_AS) {
+                return ParseTsNamespaceExportDeclaration(startLoc);
             }
 
             [[fallthrough]];

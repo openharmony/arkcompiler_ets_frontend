@@ -145,6 +145,9 @@ class Test:
     def log_cmd(self, cmd):
         self.reproduce += "\n" + ' '.join(cmd)
 
+    def get_path_to_expected(self):
+        return "%s-expected.txt" % (path.splitext(self.path)[0])
+
     def run(self, runner):
         cmd = runner.cmd_prefix + [runner.es2panda, "--dump-ast"]
         cmd.extend(self.flags)
@@ -156,7 +159,7 @@ class Test:
         out, err = process.communicate()
         self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
 
-        expected_path = "%s-expected.txt" % (path.splitext(self.path)[0])
+        expected_path = self.get_path_to_expected();
         try:
             with open(expected_path, 'r') as fp:
                 expected = fp.read()
@@ -496,13 +499,13 @@ class RegressionRunner(Runner):
     def __init__(self, args):
         Runner.__init__(self, args, "Regresssion")
 
-    def add_directory(self, directory, extension, flags):
+    def add_directory(self, directory, extension, flags, func=Test):
         glob_expression = path.join(
             self.test_root, directory, "*.%s" % (extension))
         files = glob(glob_expression)
         files = fnmatch.filter(files, self.test_root + '**' + self.args.filter)
 
-        self.tests += list(map(lambda f: Test(f, flags), files))
+        self.tests += list(map(lambda f: func(f, flags), files))
 
     def test_path(self, src):
         return src
@@ -807,7 +810,7 @@ class CompilerTest(Test):
         process = subprocess.Popen(run_abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out, err = process.communicate()
         self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
-        expected_path = "%s-expected.txt" % (path.splitext(self.path)[0])
+        expected_path = self.get_path_to_expected()
         try:
             with open(expected_path, 'r') as fp:
                 expected = fp.read()
@@ -823,6 +826,12 @@ class CompilerTest(Test):
         return self
 
 
+class TSDeclarationTest(Test):
+    def get_path_to_expected(self):
+        file_name = self.path[:self.path.find(".d.ts")]
+        return "%s-expected.txt" % file_name
+
+
 def main():
     args = get_args()
 
@@ -835,7 +844,8 @@ def main():
                              ["--parse-only", "--module", "--extension=ts"])
         runner.add_directory("parser/ts/type_checker", "ts",
                              ["--parse-only", "--enable-type-check", "--module", "--extension=ts"])
-
+        runner.add_directory("parser/ts/cases/declaration", "d.ts",
+                             ["--parse-only", "--module", "--extension=ts"], TSDeclarationTest)
         runners.append(runner)
 
     if args.test262:

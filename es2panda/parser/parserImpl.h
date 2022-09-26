@@ -188,6 +188,7 @@ public:
     {
         return program_.Allocator();
     }
+    bool IsDtsFile() const;
 
 private:
     bool IsStartOfMappedType() const;
@@ -439,6 +440,7 @@ private:
 
     ir::TSImportEqualsDeclaration *ParseTsImportEqualsDeclaration(const lexer::SourcePosition &startLoc,
                                                                   bool isExport = false);
+    ir::TSNamespaceExportDeclaration *ParseTsNamespaceExportDeclaration(const lexer::SourcePosition &startLoc);
     ir::TSModuleBlock *ParseTsModuleBlock();
     ir::BlockStatement *ParseFunctionBody();
     ir::BlockStatement *ParseBlockStatement();
