@@ -45,6 +45,7 @@ const ts2pandaOptions = [
     { name: 'debug-type', alias: 'g', type: Boolean, defaultValue: false, description: "Print type-related log. Default: false" },
     { name: 'output-type', type: Boolean, defaultValue: false, description: "set output type."},
     { name: 'source-file', type: String, defaultValue: "", description: "specify the file path info recorded in generated abc" },
+    { name: 'generate-tmp-file', type: Boolean, defaultValue: false, description: "whether to generate intermediate temporary files"},
 ]
 
 
@@ -252,6 +253,13 @@ export class CmdOptions {
 
     static  getSourceFile(): string {
         return this.options["source-file"];
+    }
+
+    static needGenerateTmpFile(): boolean {
+        if (!this.options) {
+            return false;
+        }
+        return this.options["generate-tmp-file"];
     }
 
     // @ts-ignore
