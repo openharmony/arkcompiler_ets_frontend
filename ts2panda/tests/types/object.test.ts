@@ -42,7 +42,7 @@ describe("object tests in object.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 1], [24, "_1"], [2, 0]
+                [2, 1], [24, "snippet_1"], [2, 0]
             ],
             [
                 [2, 6], [2, 2], [5, "a"],
@@ -69,7 +69,7 @@ describe("object tests in object.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
+                [2, 4], [24, "snippet_1"], [24, "snippet_2"], [24, "snippet_3"], [24, "snippet_4"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [25, 0], [2, 0],
@@ -77,10 +77,10 @@ describe("object tests in object.test.ts", function() {
             ],
             [
                 [2, 6], [2, 2], [5, "a"],
-                [24, "_3"], [5, "b"], [24, "_4"]
+                [24, "snippet_3"], [5, "b"], [24, "snippet_4"]
             ],
             [
-                [2, 2], [24, "_1"]
+                [2, 2], [24, "snippet_1"]
             ],
             [
                 [2, 4], [2, 2], [25, 4], [25, 1]

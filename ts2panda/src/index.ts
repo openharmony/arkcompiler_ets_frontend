@@ -21,10 +21,19 @@ import { CompilerDriver } from "./compilerDriver";
 import * as diag from "./diagnostic";
 import * as jshelpers from "./jshelpers";
 import { LOGE } from "./log";
-import { setGlobalDeclare, setGlobalStrict } from "./strictMode";
+import {
+    setGlobalDeclare,
+    setGlobalStrict
+} from "./strictMode";
 import { TypeChecker } from "./typeChecker";
-import { setPos, isBase64Str, transformCommonjsModule } from "./base/util";
-import { IGNORE_ERROR_CODE } from './ignoreSyntaxError'
+import { IGNORE_ERROR_CODE } from './ignoreSyntaxError';
+import {
+    setPos,
+    isBase64Str,
+    transformCommonjsModule,
+    getRecordName,
+    getOutputBinName
+} from "./base/util";
 
 function checkIsGlobalDeclaration(sourceFile: ts.SourceFile) {
     for (let statement of sourceFile.statements) {
@@ -46,6 +55,7 @@ function checkIsGlobalDeclaration(sourceFile: ts.SourceFile) {
 function generateDTs(node: ts.SourceFile, options: ts.CompilerOptions) {
     let outputBinName = getOutputBinName(node);
     let compilerDriver = new CompilerDriver(outputBinName, getRecordName(node));
+    CompilerDriver.srcNode = node;
     setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(node, options));
     compilerDriver.compile(node);
     compilerDriver.showStatistics();
@@ -143,21 +153,6 @@ function main(fileNames: string[], options: ts.CompilerOptions) {
     });
 }
 
-function getOutputBinName(node: ts.SourceFile) {
-    let outputBinName = CmdOptions.getOutputBinName();
-    let fileName = node.fileName.substring(0, node.fileName.lastIndexOf('.'));
-    let inputFileName = CmdOptions.getInputFileName();
-    if (/^win/.test(require('os').platform())) {
-        var inputFileTmps = inputFileName.split(path.sep);
-        inputFileName = path.posix.join(...inputFileTmps);
-    }
-
-    if (fileName != inputFileName) {
-        outputBinName = fileName + ".abc";
-    }
-    return outputBinName;
-}
-
 function getDtsFiles(libDir: string): string[] {
     let dtsFiles:string[] = [];
     function finDtsFile(dir){
@@ -175,17 +170,6 @@ function getDtsFiles(libDir: string): string[] {
     }
     finDtsFile(libDir);
     return dtsFiles;
-}
-
-function getRecordName(node: ts.SourceFile): string {
-    let recordName = CmdOptions.getRecordName();
-
-    if (recordName == "") {
-        let outputBinName = getOutputBinName(node);
-        recordName = path.basename(outputBinName, path.extname(outputBinName));
-    }
-
-    return recordName;
 }
 
 function specifyCustomLib(customLib) {
@@ -345,6 +329,7 @@ function compileWatchExpression(jsFileName: string, errorMsgFileName: string, op
                         }
                         let outputBinName = getOutputBinName(node);
                         let compilerDriver = new CompilerDriver(outputBinName, watchOutputFileName);
+                        CompilerDriver.srcNode = node;
                         setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(node, options));
                         compilerDriver.compile(node);
                         return node;

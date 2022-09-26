@@ -212,20 +212,6 @@ export class Ts2Panda {
         });
     }
 
-    static dumpRecordName(ts2abc: any, recordName: string) {
-        let recordNameObject = {
-            "t": JsonType.record_name,
-            "rn": recordName
-        }
-
-        let jsonRecordName = escapeUnicode(JSON.stringify(recordNameObject, null, 2));
-        jsonRecordName = "$" + jsonRecordName.replace(dollarSign, '#$') + "$";
-        if (CmdOptions.isEnableDebugLog()) {
-            Ts2Panda.jsonString += jsonRecordName;
-        }
-        ts2abc.stdio[3].write(jsonRecordName + '\n');
-    }
-
     static dumpCmdOptions(ts2abc: any): void {
         let enableRecordType: boolean = CmdOptions.needRecordType() && CompilerDriver.isTsFile;
         let options = {

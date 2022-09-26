@@ -147,6 +147,7 @@ export function compileAllSnippet(snippet: string, passes?: Pass[], literalBuffe
     CmdOptions.isWatchEvaluateExpressionMode() ? setGlobalStrict(true)
                             : setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(sourceFile, compileOptions));
     let compilerDriver = new CompilerDriver('UnitTest', 'UnitTest');
+    CompilerDriver.srcNode = sourceFile;
 
     if (!passes) {
         passes = [];
@@ -192,6 +193,7 @@ export function compileAfterSnippet(snippet: string, name:string, isCommonJs: bo
                         jshelpers.bindSourceFile(sourceFile, {});
                         setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(sourceFile, compileOptions));
                         let compilerDriver = new CompilerDriver('UnitTest', 'UnitTest');
+                        CompilerDriver.srcNode = sourceFile;
                         compilerDriver.setCustomPasses([]);
                         compilerDriver.compileUnitTest(sourceFile, []);
                         compileUnits = compilerDriver.getCompilationUnits();

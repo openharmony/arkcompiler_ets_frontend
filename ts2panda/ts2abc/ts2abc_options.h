@@ -39,7 +39,9 @@ namespace panda::ts2abc {
             parser->Add(&bc_version_arg_);
             parser->Add(&bc_min_version_arg_);
             parser->Add(&compile_by_pipe_arg_);
+            parser->Add(&compile_npm_entries_);
             parser->Add(&compiler_output_proto_);
+            parser->Add(&output_proto_name_);
             parser->EnableTail();
             parser->PushBackTail(&Tail_Arg1_arg_);
             parser->PushBackTail(&Tail_Arg2_arg_);
@@ -150,19 +152,49 @@ namespace panda::ts2abc {
             return compile_by_pipe_arg_.WasSet();
         }
 
-        std::string GetCompilerOutputProto() const
+        bool GetCompileNpmEntries() const
+        {
+            return compile_npm_entries_.GetValue();
+        }
+
+        void SetCompileNpmEntries(bool value)
+        {
+            compile_npm_entries_.SetValue(value);
+        }
+
+        bool WasSetCompileNpmEntries() const
+        {
+            return compile_npm_entries_.WasSet();
+        }
+
+        bool IsOutputProto() const
         {
             return compiler_output_proto_.GetValue();
         }
 
-        void SetCompilerOutputProto(std::string value)
+        void SetOutputProto(bool value)
         {
             compiler_output_proto_.SetValue(value);
         }
 
-        bool WasSetCompilerOutputProto() const
+        bool WasSetOutputProto() const
         {
             return compiler_output_proto_.WasSet();
+        }
+
+        std::string GetCompilerOutputProto() const
+        {
+            return output_proto_name_.GetValue();
+        }
+
+        void SetCompilerOutputProto(std::string value)
+        {
+            output_proto_name_.SetValue(value);
+        }
+
+        bool WasSetCompilerOutputProto() const
+        {
+            return output_proto_name_.WasSet();
         }
 
         std::string GetTailArg1() const
@@ -223,7 +255,11 @@ namespace panda::ts2abc {
                 R"(Print ark bytecode minimum supported version)"};
         panda::PandArg<bool> compile_by_pipe_arg_{ "compile-by-pipe", false,
                 R"(Compile a json file that is passed by pipe)"};
-        panda::PandArg<std::string> compiler_output_proto_{ "output-proto", "",
+        panda::PandArg<bool> compile_npm_entries_{ "compile-npm-entries", false,
+                R"(Compile npm entries info into an abc file)"};
+        panda::PandArg<bool> compiler_output_proto_{ "output-proto", false,
+                R"(Output protoBin file)"};
+        panda::PandArg<std::string> output_proto_name_{ "proto-name", "",
                 R"(Specify the output name for serializd protobuf file (.protoBin))"};
         panda::PandArg<std::string> Tail_Arg1_arg_{ "ARG_1", "",
                 R"(Path to input(json file) or path to output(ark bytecode)"

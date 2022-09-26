@@ -235,13 +235,12 @@ export class PandaGen {
         this.setFunctionKind(node);
     }
 
-    public appendScopeInfo(lexVarInfo: Map<string, number>): number | undefined {
+    public appendScopeInfo(lexVarInfo: Map<string, number>): string | undefined {
         if (lexVarInfo.size == 0) {
             return undefined;
         }
 
-        let scopeInfoIdx: number | undefined = undefined;
-        scopeInfoIdx = PandaGen.getLiteralArrayBuffer().length;
+        let scopeInfoId: string | undefined = undefined;
         let scopeInfo = new LiteralBuffer();
         let scopeInfoLiterals = new Array<Literal>();
         scopeInfoLiterals.push(new Literal(LiteralTag.INTEGER, lexVarInfo.size));
@@ -250,8 +249,8 @@ export class PandaGen {
             scopeInfoLiterals.push(new Literal(LiteralTag.INTEGER, slot));
         });
         scopeInfo.addLiterals(...scopeInfoLiterals);
-        PandaGen.getLiteralArrayBuffer().push(scopeInfo);
-        return scopeInfoIdx;
+        scopeInfoId = PandaGen.appendLiteralArrayBuffer(scopeInfo);
+        return scopeInfoId;
     }
 
     public setFunctionKind(node: ts.SourceFile | ts.FunctionLikeDeclaration) {
@@ -534,15 +533,15 @@ export class PandaGen {
 
     createLexEnv(node: ts.Node, scope: VariableScope | LoopScope) {
         let numVars = scope.getNumLexEnv();
-        let scopeInfoIdx: number | undefined = undefined;
+        let scopeInfoId: string | undefined = undefined;
         let lexVarInfo = scope.getLexVarInfo();
         if (CmdOptions.isDebugMode()) {
-            scopeInfoIdx = this.appendScopeInfo(lexVarInfo);
+            scopeInfoId = this.appendScopeInfo(lexVarInfo);
         }
 
         this.add(
             node,
-            newLexicalEnv(numVars, scopeInfoIdx),
+            newLexicalEnv(numVars, scopeInfoId),
         )
     }
 
