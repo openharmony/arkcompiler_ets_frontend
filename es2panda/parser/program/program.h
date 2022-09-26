@@ -60,6 +60,11 @@ public:
         return binder_;
     }
 
+    bool IsDeclarationFile() const
+    {
+        return isDeclarationFile_;
+    }
+
     ScriptExtension Extension() const
     {
         return extension_;
@@ -139,6 +144,11 @@ public:
         return hotfixHelper_;
     }
 
+    void SetDeclarationFileFlag(bool isDeclarationFile)
+    {
+        isDeclarationFile_ = isDeclarationFile;
+    }
+
     std::string Dump() const;
     void SetKind(ScriptKind kind);
 
@@ -150,6 +160,7 @@ private:
     util::UString sourceFile_ {};
     util::UString recordName_ {};
     util::UString formatedRecordName_ {};
+    bool isDeclarationFile_ {false};
     ScriptKind kind_ {};
     ScriptExtension extension_ {};
     lexer::LineIndex lineIndex_ {};

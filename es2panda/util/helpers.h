@@ -56,6 +56,8 @@ public:
     static bool IsIndex(double number);
     static int64_t GetIndex(const util::StringView &str);
 
+    static bool FileExtensionIs(std::string_view filePath, std::string_view extension);
+    static bool EndsWith(std::string_view str, std::string_view suffix);
     static std::string ToString(double number);
     static util::StringView ToStringView(ArenaAllocator *allocator, double number);
     static util::StringView ToStringView(ArenaAllocator *allocator, int32_t number);

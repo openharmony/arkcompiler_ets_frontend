@@ -177,9 +177,10 @@ public:
     NO_MOVE_SEMANTIC(ParserImpl);
     ~ParserImpl() = default;
 
-    Program Parse(const std::string &fileName, const std::string &source,
-                  const std::string &recordName, ScriptKind kind);
+    Program Parse(const std::string &fileName, const std::string &source, const std::string &recordName,
+                  bool isDeclarationFile, ScriptKind kind);
 
+    bool IsDeclarationFile() const;
     ScriptExtension Extension() const;
 
     void AddHotfixHelper(util::Hotfix *hotfixHelper);
@@ -439,6 +440,7 @@ private:
 
     ir::TSImportEqualsDeclaration *ParseTsImportEqualsDeclaration(const lexer::SourcePosition &startLoc,
                                                                   bool isExport = false);
+    ir::TSNamespaceExportDeclaration *ParseTsNamespaceExportDeclaration(const lexer::SourcePosition &startLoc);
     ir::TSModuleBlock *ParseTsModuleBlock();
     ir::BlockStatement *ParseFunctionBody();
     ir::BlockStatement *ParseBlockStatement();

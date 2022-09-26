@@ -153,6 +153,7 @@ es2panda_src = [
   "ir/ts/tsModuleBlock.cpp",
   "ir/ts/tsModuleDeclaration.cpp",
   "ir/ts/tsNamedTupleMember.cpp",
+  "ir/ts/tsNamespaceExportDeclaration.cpp",
   "ir/ts/tsNeverKeyword.cpp",
   "ir/ts/tsNonNullExpression.cpp",
   "ir/ts/tsNullKeyword.cpp",

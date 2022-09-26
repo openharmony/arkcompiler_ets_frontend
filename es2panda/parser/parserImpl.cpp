@@ -112,9 +112,10 @@ std::unique_ptr<lexer::Lexer> ParserImpl::InitLexer(const std::string &fileName,
     return lexer;
 }
 
-Program ParserImpl::Parse(const std::string &fileName, const std::string &source,
-                          const std::string &recordName, ScriptKind kind)
+Program ParserImpl::Parse(const std::string &fileName, const std::string &source, const std::string &recordName,
+                          bool isDeclarationFile, ScriptKind kind)
 {
+    program_.SetDeclarationFileFlag(isDeclarationFile);
     program_.SetKind(kind);
     program_.SetRecordName(recordName);
 
@@ -3517,6 +3518,11 @@ void ParserImpl::ThrowSyntaxError(std::string_view errorMessage, const lexer::So
     lexer::SourceLocation loc = index.GetLocation(pos);
 
     throw Error {ErrorType::SYNTAX, errorMessage, loc.line, loc.col};
+}
+
+bool ParserImpl::IsDeclarationFile() const
+{
+    return program_.IsDeclarationFile();
 }
 
 ScriptExtension ParserImpl::Extension() const

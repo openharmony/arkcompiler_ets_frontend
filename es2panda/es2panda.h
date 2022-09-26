@@ -18,6 +18,7 @@
 
 #include <macros.h>
 #include <mem/arena_allocator.h>
+#include <util/helpers.h>
 #include <util/programCache.h>
 #include <util/symbolTable.h>
 
@@ -49,11 +50,13 @@ struct SourceFile {
     SourceFile(std::string fn, std::string rn, parser::ScriptKind sk)
         : fileName(fn), recordName(rn), scriptKind(sk)
     {
+        isDeclarationFile = util::Helpers::FileExtensionIs(fileName, ".d.ts");
     }
 
     std::string fileName {};
     std::string recordName {};
     std::string_view source {};
+    bool isDeclarationFile {false};
     parser::ScriptKind scriptKind {};
     std::string sourcefile {};
     uint32_t hash {0};

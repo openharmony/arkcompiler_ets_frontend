@@ -20,9 +20,12 @@
 #include <compiler/core/compilerImpl.h>
 #include <parser/parserImpl.h>
 #include <parser/program/program.h>
+<<<<<<< HEAD
 #include <parser/transformer/transformer.h>
 #include <typescript/checker.h>
 #include <util/helpers.h>
+=======
+>>>>>>> Support namespace export declaration
 #include <util/hotfix.h>
 
 #include <libpandabase/utils/hash.h>
@@ -59,6 +62,7 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     std::string src(input.source);
     std::string rname(input.recordName);
     std::string sourcefile(input.sourcefile);
+    bool isDeclarationFile = input.isDeclarationFile;
     parser::ScriptKind kind(input.scriptKind);
 
     bool needDumpSymbolFile = !options.hotfixOptions.dumpSymbolTable.empty();
@@ -71,7 +75,7 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     }
 
     try {
-        auto ast = parser_->Parse(fname, src, rname, kind);
+        auto ast = parser_->Parse(fname, src, rname, isDeclarationFile, kind);
         ast.Binder()->SetProgram(&ast);
 
         if (options.dumpAst) {
