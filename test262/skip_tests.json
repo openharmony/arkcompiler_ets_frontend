@@ -1627,7 +1627,6 @@
             "built-ins/AsyncGeneratorPrototype/return/request-queue-order-state-executing.js",
             "built-ins/AsyncGeneratorPrototype/return/this-val-not-object.js",
             "built-ins/AsyncGeneratorPrototype/return/return-suspendedYield-try-finally.js",
-            "language/expressions/optional-chaining/member-expression.js",
             "language/expressions/optional-chaining/iteration-statement-for-await-of.js"
         ]
     }
