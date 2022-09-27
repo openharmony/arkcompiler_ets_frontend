@@ -57,6 +57,9 @@ Note:If the text contains special characters, please escape them according to th
         </policy>
         <filefilterlist>
             <filefilter name="binaryFileTypePolicyFilter" desc="" >
+                    <filteritem type="filepath" name="legacy_bin/api8/bin/linux/js2abc" desc="js2abc for linux"/>
+                    <filteritem type="filepath" name="legacy_bin/api8/bin/mac/js2abc" desc="js2abc for max"/>
+                    <filteritem type="filepath" name="legacy_bin/api8/bin/win/js2abc.exe" desc="js2abc for win"/>
             </filefilter>
             <filefilter name="copyrightPolicyFilter" desc="" >
             </filefilter>
