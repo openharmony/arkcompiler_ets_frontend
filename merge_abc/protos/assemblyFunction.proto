@@ -74,5 +74,6 @@ message Function {
     Type returnType = 14;
     SourceLocation bodyLocation = 15;
     optional FileLocation fileLocation = 16;
+    uint32 function_kind = 17;
 }
 

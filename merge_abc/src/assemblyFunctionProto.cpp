@@ -14,6 +14,7 @@
  */
 
 #include "assemblyFunctionProto.h"
+#include "libpandafile/file_items.h"
 
 namespace panda::proto {
 void CatchBlock::Serialize(const panda::pandasm::Function::CatchBlock &block, protoPanda::CatchBlock &protoBlock)
@@ -104,6 +105,7 @@ void Function::Serialize(const panda::pandasm::Function &function, protoPanda::F
         auto *protoFileLocation = protoFunction.mutable_filelocation();
         FileLocation::Serialize(fileLocation.value(), *protoFileLocation);
     }
+    protoFunction.set_function_kind(static_cast<uint8_t>(function.function_kind));
 }
 
 void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pandasm::Function &function,
@@ -161,5 +163,6 @@ void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pan
     if (protoFunction.has_filelocation()) {
         FileLocation::Deserialize(protoFunction.filelocation(), function.file_location.value());
     }
+    function.SetFunctionKind(static_cast<panda::panda_file::FunctionKind>(protoFunction.function_kind()));
 }
 } // panda::proto

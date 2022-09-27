@@ -17,6 +17,6 @@ Handle types for function: test
 Handle types for function: testwiththis
 (instruction order, type): (-2, 111), (-1, 110), 
 Handle types for function: add
-(instruction order, type): (-1, 112), (9, 1), 
+(instruction order, type): (-1, 112), (7, 1), 
 Handle types for function: func_main_0
 (instruction order, type): 
