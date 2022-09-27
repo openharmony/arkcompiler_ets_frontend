@@ -52,7 +52,11 @@ function generateDTs(node: ts.SourceFile, options: ts.CompilerOptions) {
 }
 
 function main(fileNames: string[], options: ts.CompilerOptions) {
-    let program = ts.createProgram(fileNames, options);
+    const host = ts.createCompilerHost(options);
+    if (!CmdOptions.needGenerateTmpFile()) {
+        host.writeFile = () => {};
+    }
+    let program = ts.createProgram(fileNames, options, host);
     let typeChecker = TypeChecker.getInstance();
     typeChecker.setTypeChecker(program.getTypeChecker());
 
