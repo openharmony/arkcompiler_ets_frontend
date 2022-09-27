@@ -18,16 +18,16 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaIsfalse,
-    EcmaIstrue,
-    EcmaReturnundefined,
+    Isfalse,
+    Istrue,
+    Returnundefined,
     Imm,
     Jeqz,
     Jmp,
     Label,
-    LdaDyn,
-    LdaiDyn, ResultType,
-    StaDyn,
+    Lda,
+    Ldai,
+    Sta,
     VReg
 } from "../../src/irnodes";
 import { checkInstructions, compileMainSnippet } from "../utils/base";
@@ -41,16 +41,16 @@ describe("LogicBinaryOperators", function () {
         let postLabel = new Label();
 
         let expected = [
-            new LdaiDyn(new Imm(8)),
-            new StaDyn(lhs),
-            new EcmaIstrue(),
+            new Ldai(new Imm(8)),
+            new Sta(lhs),
+            new Istrue(),
             new Jeqz(preLabel),
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             new Jmp(postLabel),
             preLabel,
-            new LdaDyn(lhs),
+            new Lda(lhs),
             postLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ]
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -62,16 +62,16 @@ describe("LogicBinaryOperators", function () {
         let preLabel = new Label();
         let postLabel = new Label();
         let expected = [
-            new LdaiDyn(new Imm(8)),
-            new StaDyn(lhs),
-            new EcmaIsfalse(),
+            new Ldai(new Imm(8)),
+            new Sta(lhs),
+            new Isfalse(),
             new Jeqz(preLabel),
-            new LdaDyn(new VReg()),
+            new Lda(new VReg()),
             new Jmp(postLabel),
             preLabel,
-            new LdaDyn(lhs),
+            new Lda(lhs),
             postLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ]
 
         expect(checkInstructions(insns, expected)).to.be.true;

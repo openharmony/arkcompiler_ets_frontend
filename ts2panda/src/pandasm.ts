@@ -75,6 +75,8 @@ export class Function {
     public ti: Array<number> | undefined;  // typeinfo: record type index array, starts from reg_0
     public es2t: Array<ExportedSymbol2Type> | undefined;  // exportedSymbol2Types
     public ds2t: Array<DeclaredSymbol2Type> | undefined;  // declaredSymbol2Types
+    public kind: number;
+    public icSize: number;
 
     constructor(
         name: string,
@@ -89,7 +91,9 @@ export class Function {
         callType: number | undefined = undefined,
         typeInfo: Array<number> | undefined = undefined,
         exportedSymbol2Types: Array<ExportedSymbol2Type> | undefined = undefined,
-        declaredSymbol2Types: Array<DeclaredSymbol2Type> | undefined = undefined
+        declaredSymbol2Types: Array<DeclaredSymbol2Type> | undefined = undefined,
+        kind: number,
+        icSize: number
     ) {
         this.n = name;
         this.s = signature;
@@ -104,6 +108,8 @@ export class Function {
         this.ti = typeInfo;
         this.es2t = exportedSymbol2Types;
         this.ds2t = declaredSymbol2Types;
+        this.kind = kind;
+        this.icSize = icSize;
     }
 }
 

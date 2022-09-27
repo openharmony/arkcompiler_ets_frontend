@@ -14,6 +14,7 @@
  */
 
 #include "sourceTextModuleRecord.h"
+#include <binder/scope.h>
 
 namespace panda::es2panda::parser {
     int SourceTextModuleRecord::AddModuleRequest(const util::StringView source)
@@ -159,5 +160,22 @@ namespace panda::es2panda::parser {
         exportEntry->importName_ = importEntry->importName_;
         exportEntry->moduleRequestIdx_ = importEntry->moduleRequestIdx_;
         exportEntry->localName_ = util::StringView("");
+    }
+
+    void SourceTextModuleRecord::AssignIndexToModuleVariable(binder::ModuleScope *moduleScope)
+    {
+        uint32_t index = 0;
+        for (auto it = localExportEntries_.begin(); it != localExportEntries_.end();
+             it = localExportEntries_.upper_bound(it->first))
+        {
+            moduleScope->AssignIndexToModuleVariable(it->first, index);
+            index++;
+        }
+
+        index = 0;
+        for (const auto &elem : regularImportEntries_) {
+            moduleScope->AssignIndexToModuleVariable(elem.first, index);
+            index++;
+        }
     }
 } // namespace panda::es2panda::parser

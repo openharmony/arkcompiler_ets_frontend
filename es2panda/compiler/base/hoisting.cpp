@@ -27,7 +27,9 @@ static void StoreModuleVarOrLocalVar(PandaGen *pg, binder::ScopeFindResult &resu
 {
     if (decl->IsImportOrExportDecl()) {
         ASSERT(pg->Scope()->IsModuleScope());
-        pg->StoreModuleVariable(decl->Node(), decl->Name());
+        auto *var = pg->Scope()->FindLocal(decl->Name());
+        ASSERT(var->IsModuleVariable());
+        pg->StoreModuleVariable(decl->Node(), var->AsModuleVariable());
     } else {
         pg->StoreAccToLexEnv(decl->Node(), result, true);
     }
@@ -84,7 +86,7 @@ static void HoistNameSpaceImports(PandaGen *pg)
             ASSERT(var != nullptr);
             auto *node = var->Declaration()->Node();
             ASSERT(node != nullptr);
-            pg->GetModuleNamespace(node, nameSpaceEntry->localName_);
+            pg->GetModuleNamespace(node, nameSpaceEntry->moduleRequestIdx_);
             pg->StoreVar(node, {nameSpaceEntry->localName_, pg->TopScope(), 0, var}, true);
         }
     }

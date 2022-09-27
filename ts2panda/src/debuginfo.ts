@@ -16,13 +16,13 @@
 import * as ts from "typescript";
 import { CmdOptions } from "./cmdOptions";
 import {
-    CalliDynRange,
-    CallRange,
+    Callrange,
     DebugInsStartPlaceHolder,
     DebugInsEndPlaceHolder,
     IRNode,
     Label,
-    VReg
+    VReg,
+    WideCallrange
 } from "./irnodes";
 import * as jshelpers from "./jshelpers";
 import { PandaGen } from "./pandagen";
@@ -263,7 +263,7 @@ export class DebugInfo {
         let formats = irnode.getFormats()[formatIndex];
         // count operands length
         for (let i = 0; i < formats.length; i++) {
-            if ((irnode instanceof CalliDynRange) || (irnode instanceof CallRange)) {
+            if ((irnode instanceof WideCallrange) || (irnode instanceof Callrange)) {
                 length += formats[0][1] / 8; // 8 indicates that one byte is composed of 8 bits
                 length += formats[1][1] / 8;
                 break;
@@ -331,7 +331,7 @@ export class DebugInfo {
                 }
                 let variableInfo = new VariableDebugInfo(key, "any", "any", (value.getVreg().num));
                 variableInfo.setStart(scope.getScopeStartInsIdx());
-                variableInfo.setLength(scope.getScopeEndInsIdx() - scope.getScopeStartInsIdx());
+                variableInfo.setLength(scope.getScopeEndInsIdx() - scope.getScopeStartInsIdx() + 1);
                 pandaGen.addDebugVariableInfo(variableInfo);
             });
         });

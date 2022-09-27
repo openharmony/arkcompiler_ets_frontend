@@ -31,6 +31,7 @@ import {
     VarDecl,
     VariableScope
 } from "./scope";
+import { ModuleVariable } from "./variable";
 
 export function hoisting(rootNode: ts.SourceFile | ts.FunctionLikeDeclaration, pandaGen: PandaGen,
     recorder: Recorder, compiler: Compiler) {
@@ -59,7 +60,7 @@ export function hoistVar(decl: VarDecl, scope: Scope, pandaGen: PandaGen) {
         let v = scope.findLocal(name)!;
         pandaGen.loadAccumulator(NodeKind.FirstNodeOfFunction, getVregisterCache(pandaGen, CacheList.undefined));
         if (decl.isModule !== ModuleVarKind.NOT) {
-            pandaGen.storeModuleVariable(NodeKind.FirstNodeOfFunction, name);
+            pandaGen.storeModuleVariable(NodeKind.FirstNodeOfFunction, (<ModuleVariable>v).getIndex());
         } else {
             pandaGen.storeAccToLexEnv(NodeKind.FirstNodeOfFunction, scope, 0, v, true);
         }
@@ -74,13 +75,13 @@ export function hoistFunction(decl: FuncDecl, scope: Scope, pandaGen: PandaGen, 
     let env = compiler.getCurrentEnv();
 
     if (scope instanceof GlobalScope) {
-        pandaGen.defineFunction(NodeKind.FirstNodeOfFunction, <ts.FunctionDeclaration>decl.node, internalName, env);
+        pandaGen.defineFunction(NodeKind.FirstNodeOfFunction, <ts.FunctionDeclaration>decl.node, internalName);
         pandaGen.storeGlobalVar(NodeKind.FirstNodeOfFunction, funcName);
     } else if ((scope instanceof FunctionScope) || (scope instanceof LocalScope) || (scope instanceof ModuleScope)) {
         let v = scope.findLocal(funcName)!;
-        pandaGen.defineFunction(NodeKind.FirstNodeOfFunction, <ts.FunctionDeclaration>decl.node, internalName, env);
+        pandaGen.defineFunction(NodeKind.FirstNodeOfFunction, <ts.FunctionDeclaration>decl.node, internalName);
         if (decl.isModule !== ModuleVarKind.NOT) {
-            pandaGen.storeModuleVariable(NodeKind.FirstNodeOfFunction, funcName);
+            pandaGen.storeModuleVariable(NodeKind.FirstNodeOfFunction, (<ModuleVariable>v).getIndex());
         } else {
             pandaGen.storeAccToLexEnv(NodeKind.FirstNodeOfFunction, scope, 0, v, true);
         }

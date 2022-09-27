@@ -35,13 +35,11 @@ void RegExpLiteral::Compile(compiler::PandaGen *pg) const
     compiler::RegScope rs(pg);
     /* [ ctor, newTarget, regexpPattern(, regexpFlags) ] */
     compiler::VReg ctor = pg->AllocReg();
-    compiler::VReg newTarget = pg->AllocReg();
     compiler::VReg pattern = pg->AllocReg();
-    size_t argCount = 3;
+    size_t argCount = 2;
 
     pg->TryLoadGlobalByName(this, "RegExp");
     pg->StoreAccumulator(this, ctor);
-    pg->StoreAccumulator(this, newTarget);
 
     pg->LoadAccumulatorString(this, pattern_);
     pg->StoreAccumulator(this, pattern);

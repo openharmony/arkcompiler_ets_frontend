@@ -122,11 +122,11 @@ export function compileClassDeclaration(compiler: Compiler, stmt: ts.ClassLikeDe
     if (hasExportKeywordModifier(stmt)) {
         if (stmt.name) {
             let className = jshelpers.getTextOfIdentifierOrLiteral(stmt.name);
-            let classInfo = classScope.find(className);
-            (<ModuleVariable>classInfo.v).initialize();
-            pandaGen.storeModuleVariable(stmt, className);
+            let v = pandaGen.getScope().findLocal(className);
+            (<ModuleVariable>v).initialize();
+            pandaGen.storeModuleVariable(stmt, (<ModuleVariable>v).getIndex());
         } else if (hasDefaultKeywordModifier(stmt)) {
-            pandaGen.storeModuleVariable(stmt, "*default*");
+            pandaGen.storeModuleVariable(stmt, (<ModuleVariable>pandaGen.getScope().findLocal("*default*")).getIndex());
         } else {
             // throw SyntaxError in Recorder
         }
@@ -134,12 +134,12 @@ export function compileClassDeclaration(compiler: Compiler, stmt: ts.ClassLikeDe
         if (stmt.name) {
             let className = jshelpers.getTextOfIdentifierOrLiteral(stmt.name);
             if (!ts.isClassExpression(stmt) && classScope.getParent() instanceof GlobalScope) {
-                pandaGen.stClassToGlobalRecord(stmt, className);
+                pandaGen.stLetOrClassToGlobalRecord(stmt, className);
             } else {
                 let classInfo = classScope.find(className);
                 (<LocalVariable | ModuleVariable>classInfo.v).initialize();
                 if (classInfo.v instanceof ModuleVariable) {
-                    pandaGen.storeModuleVariable(stmt, className);
+                    pandaGen.storeModuleVariable(stmt, (<ModuleVariable>pandaGen.getScope().findLocal(className)).getIndex());
                 } else {
                     pandaGen.storeAccToLexEnv(stmt, classInfo.scope!, classInfo.level, classInfo.v!, true);
                 }
@@ -396,9 +396,8 @@ export function compileSuperCall(compiler: Compiler, node: ts.CallExpression, ar
         pandaGen.freeTemps(argArray);
     } else {
         let num = args.length;
-        let startReg = num ? args[0] : getVregisterCache(pandaGen, CacheList.undefined);
         loadCtorObj(node, compiler);
-        pandaGen.superCall(node, num, startReg);
+        pandaGen.superCall(node, num, num ? args : [getVregisterCache(pandaGen, CacheList.undefined)]);
     }
 
     let tmpReg = pandaGen.getTemp();

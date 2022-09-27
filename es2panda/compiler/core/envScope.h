@@ -52,12 +52,7 @@ public:
     NO_MOVE_SEMANTIC(EnvScope);
     ~EnvScope();
 
-    void Initialize(PandaGen *pg, VReg lexEnv);
-
-    VReg LexEnv() const
-    {
-        return lexEnv_;
-    }
+    void Initialize(PandaGen *pg);
 
     EnvScope *Prev() const
     {
@@ -69,7 +64,6 @@ protected:
 
     PandaGen *pg_ {};
     EnvScope *prev_ {};
-    VReg lexEnv_ {};
 };
 
 class LoopEnvScope : public EnvScope {

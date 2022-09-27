@@ -94,7 +94,7 @@ FunctionRegScope::FunctionRegScope(PandaGen *pg) : RegScope(pg), envScope_(pg->A
         }
     }
 
-    envScope_->Initialize(pg_, pg->AllocReg());
+    envScope_->Initialize(pg_);
 
     for (const auto &[_, var] : funcScope->Bindings()) {
         (void)_;

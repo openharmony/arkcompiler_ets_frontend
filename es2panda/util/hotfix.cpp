@@ -111,11 +111,11 @@ std::vector<std::pair<std::string, size_t>> Hotfix::GenerateFunctionAndClassHash
 
     for (const auto &ins : func->ins) {
         ss << (ins.set_label ? "" : "\t") << ins.ToString("", true, func->GetTotalRegs()) << " ";
-        if (ins.opcode == panda::pandasm::Opcode::ECMA_CREATEARRAYWITHBUFFER ||
-            ins.opcode == panda::pandasm::Opcode::ECMA_CREATEOBJECTWITHBUFFER) {
+        if (ins.opcode == panda::pandasm::Opcode::CREATEARRAYWITHBUFFER ||
+            ins.opcode == panda::pandasm::Opcode::CREATEOBJECTWITHBUFFER) {
             int64_t bufferIdx = std::get<int64_t>(ins.imms[0]);
             ss << ExpandLiteral(bufferIdx, literalBuffers) << " ";
-        } else if (ins.opcode == panda::pandasm::Opcode::ECMA_DEFINECLASSWITHBUFFER) {
+        } else if (ins.opcode == panda::pandasm::Opcode::DEFINECLASSWITHBUFFER) {
             int64_t bufferIdx = std::get<int64_t>(ins.imms[0]);
             std::string literalStr = ExpandLiteral(bufferIdx, literalBuffers);
             auto classHash = std::hash<std::string>{}(literalStr);
@@ -246,11 +246,9 @@ uint32_t Hotfix::GetPatchLexicalIdx(const std::string &variableName)
 
 bool IsFunctionOrClassDefineIns(panda::pandasm::Ins &ins)
 {
-    if (ins.opcode == panda::pandasm::Opcode::ECMA_DEFINEGENERATORFUNC ||
-        ins.opcode == panda::pandasm::Opcode::ECMA_DEFINEMETHOD ||
-        ins.opcode == panda::pandasm::Opcode::ECMA_DEFINEFUNCDYN ||
-        ins.opcode == panda::pandasm::Opcode::ECMA_DEFINEASYNCFUNC ||
-        ins.opcode == panda::pandasm::Opcode::ECMA_DEFINECLASSWITHBUFFER) {
+    if (ins.opcode == panda::pandasm::Opcode::DEFINEMETHOD ||
+        ins.opcode == panda::pandasm::Opcode::DEFINEFUNC ||
+        ins.opcode == panda::pandasm::Opcode::DEFINECLASSWITHBUFFER) {
         return true;
     }
     return false;
@@ -295,7 +293,7 @@ void Hotfix::HandleModifiedClasses(panda::pandasm::Program *prog)
 void Hotfix::AddHeadAndTailInsForPatchFuncMain0(std::vector<panda::pandasm::Ins> &ins)
 {
     panda::pandasm::Ins returnUndefine;
-    returnUndefine.opcode = pandasm::Opcode::ECMA_RETURNUNDEFINED;
+    returnUndefine.opcode = pandasm::Opcode::RETURNUNDEFINED;
 
     if (ins.size() == 0) {
         ins.push_back(returnUndefine);
@@ -303,13 +301,13 @@ void Hotfix::AddHeadAndTailInsForPatchFuncMain0(std::vector<panda::pandasm::Ins>
     }
 
     panda::pandasm::Ins newLexenv;
-    newLexenv.opcode = pandasm::Opcode::ECMA_NEWLEXENVDYN;
+    newLexenv.opcode = pandasm::Opcode::NEWLEXENV;
     newLexenv.imms.reserve(1);
     auto newFuncNum = long(ins.size() / 2);  // each new function has 2 ins: define and store
     newLexenv.imms.emplace_back(newFuncNum);
 
     panda::pandasm::Ins stLexenv;
-    stLexenv.opcode = pandasm::Opcode::STA_DYN;
+    stLexenv.opcode = pandasm::Opcode::STA;
     stLexenv.regs.reserve(1);
     stLexenv.regs.emplace_back(PATCH_ENV_VREG);
 

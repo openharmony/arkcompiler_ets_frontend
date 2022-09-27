@@ -133,6 +133,7 @@ export class LocalVariable extends Variable {
 export class ModuleVariable extends Variable {
     private isExport: boolean = false;
     private status: InitStatus | null;
+    private index: number;
 
 
     constructor(declKind: VarDeclarationKind, name: string, status?: InitStatus) {
@@ -157,6 +158,14 @@ export class ModuleVariable extends Variable {
 
     isExportVar() {
         return this.isExport;
+    }
+
+    assignIndex(index: number) {
+        this.index = index;
+    }
+
+    getIndex() {
+        return this.index;
     }
 }
 

@@ -18,36 +18,39 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaCopyrestargs,
-    EcmaDefinefuncdyn,
-    EcmaReturnundefined,
-    EcmaStglobalvar,
-    EcmaStlettoglobalrecord,
-    EcmaStricteqdyn,
+    Copyrestargs,
+    Definefunc,
+    Returnundefined,
+    Stglobalvar,
+    Sttoglobalrecord,
+    Stricteq,
     Imm,
     Jeqz,
     Label,
-    LdaDyn,
-    LdaiDyn,
-    ResultType,
-    StaDyn,
-    VReg
+    Lda,
+    Ldai,
+    Sta,
+    VReg,
+    IRNode
 } from "../../src/irnodes";
 import {
     GlobalVariable,
     LocalVariable
 } from "../../src/variable";
 import { checkInstructions, compileAllSnippet, SnippetCompiler } from "../utils/base";
+import { creatAstFromSnippet } from "../utils/asthelper"
+import { PandaGen } from '../../src/pandagen';
 
 describe("FunctionDeclarationTest", function () {
     it('function definition in the global scope', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("function foo() {}");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let funcName = "foo";
         let expected = [
-            new EcmaDefinefuncdyn(funcName, new Imm(0), new VReg()),
-            new EcmaStglobalvar(funcName),
-            new EcmaReturnundefined()
+            new Definefunc(new Imm(0), funcName, new Imm(0)),
+            new Stglobalvar(new Imm(1), funcName),
+            new Returnundefined()
         ];
         let insns = snippetCompiler.getGlobalInsns();
         let globalScope = snippetCompiler.getGlobalScope();
@@ -63,10 +66,11 @@ describe("FunctionDeclarationTest", function () {
       function foo() {}
       function foo() {}
       `);
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let expected = [
-            new EcmaDefinefuncdyn("#2#foo", new Imm(0), new VReg()),
-            new EcmaStglobalvar("foo"),
-            new EcmaReturnundefined()
+            new Definefunc(new Imm(0), "#2#foo", new Imm(0)),
+            new Stglobalvar(new Imm(1), "foo"),
+            new Returnundefined()
         ];
         let insns = snippetCompiler.getGlobalInsns();
         let globalScope = snippetCompiler.getGlobalScope();
@@ -79,12 +83,13 @@ describe("FunctionDeclarationTest", function () {
     it('function definition inside a function', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`function out() {function foo() {}}`);
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let funcReg = new VReg();
         let expected = [
-            new EcmaDefinefuncdyn("foo", new Imm(0), new VReg()),
-            new StaDyn(funcReg),
+            new Definefunc(new Imm(0), "foo", new Imm(0)),
+            new Sta(funcReg),
 
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         let functionPg = snippetCompiler.getPandaGenByName("out");
         let insns = functionPg!.getInsns();
@@ -102,10 +107,11 @@ describe("FunctionDeclarationTest", function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("let foo = function() {}");
         let insns = snippetCompiler.getGlobalInsns();
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let expected = [
-            new EcmaDefinefuncdyn("foo", new Imm(0), new VReg()),
-            new EcmaStlettoglobalrecord("foo"),
-            new EcmaReturnundefined()
+            new Definefunc(new Imm(0), "foo", new Imm(0)),
+            new Sttoglobalrecord(new Imm(1), "foo"),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });
@@ -116,20 +122,23 @@ describe("FunctionDeclarationTest", function () {
         let value = new VReg();
         let endLabel = new Label();
 
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let expected_main = [
-            new EcmaDefinefuncdyn("test", new Imm(1), new VReg()),
-            new EcmaStglobalvar("test"),
-            new EcmaReturnundefined()
+            new Definefunc(new Imm(0), "test", new Imm(1)),
+            new Stglobalvar(new Imm(1), "test"),
+            new Returnundefined()
         ];
+
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let expected_func = [
             // func_test_0
-            new LdaDyn(new VReg()),
-            new EcmaStricteqdyn(undefinedVReg),
+            new Lda(new VReg()),
+            new Stricteq(new Imm(0), undefinedVReg),
             new Jeqz(endLabel),
-            new LdaiDyn(new Imm(1)),
-            new StaDyn(value),
+            new Ldai(new Imm(1)),
+            new Sta(value),
             endLabel,
-            new EcmaReturnundefined(),
+            new Returnundefined(),
         ];
 
         compilerunit.forEach(element => {
@@ -149,13 +158,14 @@ describe("FunctionDeclarationTest", function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`function test(a, ...b) {}`);
 
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let idx = new Imm(1);
         let lastParam = new VReg();
         let expected_func = [
             // func_test_0
-            new EcmaCopyrestargs(idx),
-            new StaDyn(lastParam),
-            new EcmaReturnundefined(),
+            new Copyrestargs(idx),
+            new Sta(lastParam),
+            new Returnundefined(),
         ];
 
         let functionPg = snippetCompiler.getPandaGenByName("test");

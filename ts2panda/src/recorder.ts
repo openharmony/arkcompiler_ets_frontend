@@ -265,12 +265,12 @@ export class Recorder {
         } else {
             this.setCtorOfClass(childNode, ctor);
         }
-        if (childNode.name) {
-            let name = jshelpers.getTextOfIdentifierOrLiteral(childNode.name);
-            let moduleKind = isExport ? ModuleVarKind.EXPORTED : ModuleVarKind.NOT;
-            let classDecl = new ClassDecl(name, childNode, moduleKind);
-            scope.setDecls(classDecl);
-        }
+
+        let name: string =  childNode.name ? jshelpers.getTextOfIdentifierOrLiteral(childNode.name) : "*default*";
+
+        let moduleKind = isExport ? ModuleVarKind.EXPORTED : ModuleVarKind.NOT;
+        let classDecl = new ClassDecl(name, childNode, moduleKind);
+        scope.setDecls(classDecl);
         this.recordInfo(childNode, localScope);
     }
 
@@ -571,6 +571,7 @@ export class Recorder {
                 // export default v;
                 // "*default*" is used within this specification as a synthetic name for anonymous default export values.
                 scope.module().addLocalExportEntry(node, "default", "*default*");
+                scope.setDecls(new LetDecl("*default*", node, ModuleVarKind.EXPORTED));
                 break;
             }
             case ts.SyntaxKind.VariableStatement: {

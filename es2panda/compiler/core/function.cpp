@@ -170,7 +170,7 @@ static void CompileFunction(PandaGen *pg)
     pg->FunctionExit();
 }
 
-static VReg CompileFunctionOrProgram(PandaGen *pg)
+static void CompileFunctionOrProgram(PandaGen *pg)
 {
     FunctionRegScope lrs(pg);
     const auto *topScope = pg->TopScope();
@@ -192,16 +192,15 @@ static VReg CompileFunctionOrProgram(PandaGen *pg)
             CompileSourceBlock(pg, pg->RootNode()->AsBlockStatement());
         }
     }
-
-    return pg->GetEnvScope()->LexEnv();
 }
 
 void Function::Compile(PandaGen *pg)
 {
-    VReg lexEnv = CompileFunctionOrProgram(pg);
+    CompileFunctionOrProgram(pg);
+    pg->SetFunctionKind();
     pg->SetSourceLocationFlag(lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION);
     pg->CopyFunctionArguments(pg->RootNode());
-    pg->InitializeLexEnv(pg->RootNode(), lexEnv);
+    pg->InitializeLexEnv(pg->RootNode());
     pg->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
     pg->SortCatchTables();
 }

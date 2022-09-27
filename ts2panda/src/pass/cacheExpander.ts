@@ -32,6 +32,9 @@ export class CacheExpander implements Pass {
             if (item.isNeeded()) {
                 let expander = item.getExpander();
                 let expansion = expander(pandaGen);
+                if (!expansion) {
+                    continue;
+                }
                 insns.unshift(...expansion);
             }
         }

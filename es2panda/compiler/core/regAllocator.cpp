@@ -21,7 +21,7 @@
 
 namespace panda::es2panda::compiler {
 
-// RegAllocatorBase
+// AllocatorBase
 
 void AllocatorBase::PushBack(IRNode *ins)
 {
@@ -33,12 +33,10 @@ ArenaAllocator *AllocatorBase::Allocator() const
     return pg_->Allocator();
 }
 
-// SimpleAllocator
-
-Label *SimpleAllocator::AllocLabel(std::string &&id)
+void AllocatorBase::UpdateIcSlot(IRNode *node)
 {
-    const auto *lastInsNode = pg_->Insns().empty() ? FIRST_NODE_OF_FUNCTION : pg_->Insns().back()->Node();
-    return Alloc<Label>(lastInsNode, std::move(id));
+    auto inc = node->SetIcSlot(pg_->GetCurrentSlot());
+    pg_->IncreaseCurrentSlot(inc);
 }
 
 // FrontAllocator
@@ -53,6 +51,13 @@ FrontAllocator::~FrontAllocator()
     pg_->Insns().splice(pg_->Insns().end(), std::move(insn_));
 }
 
+// SimpleAllocator
+Label *SimpleAllocator::AllocLabel(std::string &&id)
+{
+    const auto *lastInsNode = pg_->Insns().empty() ? FIRST_NODE_OF_FUNCTION : pg_->Insns().back()->Node();
+    return Alloc<Label>(lastInsNode, std::move(id));
+}
+
 // RegAllocatorBase
 
 VReg RegAllocatorBase::Spill(IRNode *ins, VReg reg)
@@ -61,8 +66,8 @@ VReg RegAllocatorBase::Spill(IRNode *ins, VReg reg)
     VReg origin = spillIndex_++;
     spillMap_.emplace(origin, reg);
 
-    Add<MovDyn>(ins->Node(), spillReg, origin);
-    Add<MovDyn>(ins->Node(), origin, reg);
+    Add<Mov>(ins->Node(), spillReg, origin);
+    Add<Mov>(ins->Node(), origin, reg);
 
     return origin;
 }
@@ -74,8 +79,8 @@ void RegAllocatorBase::Restore(IRNode *ins)
     VReg origin = regEnd_ + spillIndex_;
     VReg actualReg = spillMap_[spillReg];
 
-    Add<MovDyn>(ins->Node(), actualReg, spillReg);
-    Add<MovDyn>(ins->Node(), spillReg, origin);
+    Add<Mov>(ins->Node(), actualReg, spillReg);
+    Add<Mov>(ins->Node(), spillReg, origin);
 }
 
 // RegAllocator

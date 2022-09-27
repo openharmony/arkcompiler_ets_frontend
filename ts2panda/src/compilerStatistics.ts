@@ -124,11 +124,6 @@ class HistogramStatistics {
             return "Label"
         }
 
-        if ((ins.kind == IRNodeKind.CALL) || (ins.kind == IRNodeKind.CALL_SHORT) || (ins.kind == IRNodeKind.CALL_RANGE)) {
-            let mnemonic = <string>ins.operands[0];
-            let part = mnemonic.split('.');
-            return part[2];
-        }
         return ins.getMnemonic();
     }
 

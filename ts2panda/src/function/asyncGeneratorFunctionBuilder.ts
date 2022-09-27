@@ -55,7 +55,8 @@ export class AsyncGeneratorFunctionBuilder {
         // backend handle funcobj, frontend set undefined
         pandaGen.createAsyncGeneratorObj(node, getVregisterCache(pandaGen, CacheList.FUNC));
         pandaGen.storeAccumulator(node, this.asyncGenObj);
-        pandaGen.suspendGenerator(node, this.asyncGenObj, getVregisterCache(pandaGen, CacheList.undefined));
+        pandaGen.loadAccumulator(node, getVregisterCache(pandaGen, CacheList.undefined));
+        pandaGen.suspendGenerator(node, this.asyncGenObj);
         pandaGen.resumeGenerator(node, this.asyncGenObj);
         pandaGen.storeAccumulator(node, this.retValue);
     }
@@ -64,10 +65,10 @@ export class AsyncGeneratorFunctionBuilder {
         let pandaGen = this.asyncPandaGen;
         let promise = this.asyncPandaGen.getTemp();
 
-        pandaGen.asyncFunctionAwaitUncaught(node, this.asyncGenObj, value);
-        pandaGen.storeAccumulator(node, promise);
+        pandaGen.loadAccumulator(node, value);
+        pandaGen.asyncFunctionAwaitUncaught(node, this.asyncGenObj);
 
-        pandaGen.suspendGenerator(node, this.asyncGenObj, promise);
+        pandaGen.suspendGenerator(node, this.asyncGenObj);
 
         pandaGen.freeTemps(promise);
 
@@ -80,9 +81,8 @@ export class AsyncGeneratorFunctionBuilder {
     yield(node: ts.Node, value: VReg) {
         let pandaGen = this.asyncPandaGen;
         let promise = this.asyncPandaGen.getTemp();
-        pandaGen.EcmaAsyncgeneratorresolve(node, this.asyncGenObj, value, getVregisterCache(pandaGen, CacheList.False));
-        pandaGen.storeAccumulator(node, promise);
-        pandaGen.suspendGenerator(node, this.asyncGenObj, promise);
+        pandaGen.Asyncgeneratorresolve(node, this.asyncGenObj, value, getVregisterCache(pandaGen, CacheList.False));
+        pandaGen.suspendGenerator(node, this.asyncGenObj);
         pandaGen.freeTemps(promise);
         pandaGen.resumeGenerator(node, this.asyncGenObj);
         pandaGen.storeAccumulator(node, this.retValue);
@@ -165,18 +165,15 @@ export class AsyncGeneratorFunctionBuilder {
 
     resolve(node: ts.Node | NodeKind, value: VReg) {
         let pandaGen = this.asyncPandaGen;
-        pandaGen.EcmaAsyncgeneratorresolve(node, this.asyncGenObj, value, getVregisterCache(pandaGen, CacheList.True));
+        pandaGen.Asyncgeneratorresolve(node, this.asyncGenObj, value, getVregisterCache(pandaGen, CacheList.True));
     }
 
     cleanUp(node: ts.Node) {
         let pandaGen = this.asyncPandaGen;
         pandaGen.label(node, this.endLabel);
         // catch
-        let exception = pandaGen.getTemp();
-        pandaGen.storeAccumulator(NodeKind.Invalid, exception);
-        pandaGen.EcmaAsyncgeneratorreject(node, this.asyncGenObj, exception);
+        pandaGen.asyncgeneratorreject(node, this.asyncGenObj); // exception is in acc
         pandaGen.return(NodeKind.Invalid);
-        pandaGen.freeTemps(exception);
         this.asyncPandaGen.freeTemps(this.asyncGenObj, this.retValue);
         new CatchTable(pandaGen, this.endLabel, new LabelPair(this.beginLabel, this.endLabel));
     }

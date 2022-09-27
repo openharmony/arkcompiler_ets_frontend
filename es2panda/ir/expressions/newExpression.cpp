@@ -47,13 +47,9 @@ void NewExpression::Compile(compiler::PandaGen *pg) const
 {
     compiler::RegScope rs(pg);
     compiler::VReg ctor = pg->AllocReg();
-    compiler::VReg newTarget = pg->AllocReg();
 
     callee_->Compile(pg);
     pg->StoreAccumulator(this, ctor);
-
-    // new.Target will be the same as ctor
-    pg->StoreAccumulator(this, newTarget);
 
     if (!util::Helpers::ContainSpreadElement(arguments_)) {
         for (const auto *it : arguments_) {
@@ -62,12 +58,12 @@ void NewExpression::Compile(compiler::PandaGen *pg) const
             pg->StoreAccumulator(this, arg);
         }
 
-        pg->NewObject(this, ctor, arguments_.size() + 2);
+        pg->NewObject(this, ctor, arguments_.size() + 1);
     } else {
         compiler::VReg argsObj = pg->AllocReg();
 
         pg->CreateArray(this, arguments_, argsObj);
-        pg->NewObjSpread(this, ctor, newTarget);
+        pg->NewObjSpread(this, ctor);
     }
 }
 

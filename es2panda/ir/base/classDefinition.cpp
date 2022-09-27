@@ -287,7 +287,6 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
 
     compiler::RegScope rs(pg);
     compiler::VReg classReg = pg->AllocReg();
-    compiler::VReg lexenv = pg->LexEnv();
 
     compiler::LocalRegScope lrs(pg, scope_);
 
@@ -296,7 +295,7 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
     util::BitSet compiled(body_.size());
 
     int32_t bufIdx = CreateClassStaticProperties(pg, compiled);
-    pg->DefineClassWithBuffer(this, ctorId, bufIdx, lexenv, baseReg);
+    pg->DefineClassWithBuffer(this, ctorId, bufIdx, baseReg);
 
     pg->StoreAccumulator(this, classReg);
     InitializeClassName(pg);

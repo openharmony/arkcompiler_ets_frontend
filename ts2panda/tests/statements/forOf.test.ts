@@ -19,28 +19,32 @@ import {
 import 'mocha';
 import { DiagnosticCode, DiagnosticError } from '../../src/diagnostic';
 import {
-    EcmaCallithisrangedyn,
-    EcmaCreateemptyarray,
-    EcmaGetiterator,
-    EcmaIsfalse,
-    EcmaLdobjbyname,
-    EcmaReturnundefined,
-    EcmaStrictnoteqdyn,
-    EcmaThrowdyn,
-    EcmaThrowifnotobject,
+    Callthis0,
+    Createemptyarray,
+    Getiterator,
+    Isfalse,
+    Ldobjbyname,
+    Returnundefined,
+    Strictnoteq,
+    Throw,
+    ThrowIfnotobject,
     Imm,
     Jeqz,
     Jmp,
     Label,
-    LdaDyn, ResultType,
-    StaDyn,
-    VReg
+    Lda,
+    Sta,
+    VReg,
+    IRNode
 } from "../../src/irnodes";
 import { checkInstructions, compileMainSnippet } from "../utils/base";
+import { creatAstFromSnippet } from "../utils/asthelper"
+import { PandaGen } from '../../src/pandagen';
 
 describe("ForOfLoopTest", function () {
     it("forOfLoopWithEmptyArray", function () {
         let insns = compileMainSnippet("for (let a of []) {}");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let a = new VReg();
         let arrInstance = new VReg();
         let iterReg = new VReg();
@@ -59,54 +63,60 @@ describe("ForOfLoopTest", function () {
         let isDone = new Label();
 
         let expected = [
-            new EcmaCreateemptyarray(),
-            new StaDyn(arrInstance),
-            new EcmaGetiterator(),
-            new StaDyn(iterReg),
-            new EcmaLdobjbyname("next", iterReg),
-            new StaDyn(nextMethodReg),
+            new Createemptyarray(new Imm(0)),
+            new Sta(arrInstance),
+            new Getiterator(new Imm(1)),
+            new Sta(iterReg),
+            new Lda(iterReg),
+            new Ldobjbyname(new Imm(2), "next"),
+            new Sta(nextMethodReg),
 
-            new LdaDyn(new VReg()),
-            new StaDyn(done),
+            new Lda(new VReg()),
+            new Sta(done),
 
             tryBeginLabel,
-            new LdaDyn(trueReg),
-            new StaDyn(done),
+            new Lda(trueReg),
+            new Sta(done),
             loopStartLabel,
-            new EcmaCallithisrangedyn(new Imm(1), [nextMethodReg, iterReg]),
-            new StaDyn(resultObj),
-            new EcmaThrowifnotobject(resultObj),
-            new EcmaLdobjbyname("done", resultObj),
-            new EcmaIsfalse(),
+            new Lda(nextMethodReg),
+            new Callthis0(new Imm(4), iterReg),
+            new Sta(resultObj),
+            new ThrowIfnotobject(resultObj),
+            new Lda(resultObj),
+            new Ldobjbyname(new Imm(5), "done"),
+            new Isfalse(),
             new Jeqz(loopEndLabel),
-            new EcmaLdobjbyname("value", resultObj),
-            new StaDyn(value),
+            new Lda(resultObj),
+            new Ldobjbyname(new Imm(7), "value"),
+            new Sta(value),
 
-            new LdaDyn(new VReg()),
-            new StaDyn(done),
+            new Lda(new VReg()),
+            new Sta(done),
 
-            new LdaDyn(value),
-            new StaDyn(a),
+            new Lda(value),
+            new Sta(a),
             tryEndLabel,
 
             new Jmp(loopStartLabel),
 
             catchBeginLabel,
-            new StaDyn(exceptionVreg),
-            new LdaDyn(done),
-            new EcmaStrictnoteqdyn(trueReg),
+            new Sta(exceptionVreg),
+            new Lda(done),
+            new Strictnoteq(new Imm(9), trueReg),
             new Jeqz(isDone),
-            new EcmaLdobjbyname("return", iterReg),
-            new StaDyn(nextMethodReg),
-            new EcmaStrictnoteqdyn(new VReg()),
+            new Lda(iterReg),
+            new Ldobjbyname(new Imm(10), "return"),
+            new Sta(nextMethodReg),
+            new Strictnoteq(new Imm(12), new VReg()),
             new Jeqz(isDone),
-            new EcmaCallithisrangedyn(new Imm(1), [nextMethodReg, iterReg]),
+            new Lda(nextMethodReg),
+            new Callthis0(new Imm(13), iterReg),
             isDone,
-            new LdaDyn(exceptionVreg),
-            new EcmaThrowdyn(),
+            new Lda(exceptionVreg),
+            new Throw(),
 
             loopEndLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
 
@@ -117,6 +127,7 @@ describe("ForOfLoopTest", function () {
 
     it("forOfLoopWithContinue", function () {
         let insns = compileMainSnippet("for (let a of []) {continue;}");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let a = new VReg();
         let arrInstance = new VReg();
         let resultObj = new VReg();
@@ -137,34 +148,38 @@ describe("ForOfLoopTest", function () {
         let insertedtryEndLabel = new Label();
 
         let expected = [
-            new EcmaCreateemptyarray(),
-            new StaDyn(arrInstance),
-            new EcmaGetiterator(),
-            new StaDyn(iterReg),
-            new EcmaLdobjbyname("next", iterReg),
-            new StaDyn(nextMethodReg),
+            new Createemptyarray(new Imm(0)),
+            new Sta(arrInstance),
+            new Getiterator(new Imm(1)),
+            new Sta(iterReg),
+            new Lda(iterReg),
+            new Ldobjbyname(new Imm(2), "next"),
+            new Sta(nextMethodReg),
 
-            new LdaDyn(new VReg()),
-            new StaDyn(done),
+            new Lda(new VReg()),
+            new Sta(done),
 
             tryBeginLabel,
-            new LdaDyn(trueReg),
-            new StaDyn(done),
+            new Lda(trueReg),
+            new Sta(done),
             loopStartLabel,
-            new EcmaCallithisrangedyn(new Imm(1), [nextMethodReg, iterReg]),
-            new StaDyn(resultObj),
-            new EcmaThrowifnotobject(resultObj),
-            new EcmaLdobjbyname("done", resultObj),
-            new EcmaIsfalse(),
+            new Lda(nextMethodReg),
+            new Callthis0(new Imm(4), iterReg),
+            new Sta(resultObj),
+            new ThrowIfnotobject(resultObj),
+            new Lda(resultObj),
+            new Ldobjbyname(new Imm(5), "done"),
+            new Isfalse(),
             new Jeqz(loopEndLabel),
-            new EcmaLdobjbyname("value", resultObj),
-            new StaDyn(value),
+            new Lda(resultObj),
+            new Ldobjbyname(new Imm(7), "value"),
+            new Sta(value),
 
-            new LdaDyn(new VReg()),
-            new StaDyn(done),
+            new Lda(new VReg()),
+            new Sta(done),
 
-            new LdaDyn(value),
-            new StaDyn(a),
+            new Lda(value),
+            new Sta(a),
 
             insertedtryBeginLabel,
             insertedtryEndLabel,
@@ -175,21 +190,23 @@ describe("ForOfLoopTest", function () {
             new Jmp(loopStartLabel),
 
             catchBeginLabel,
-            new StaDyn(exceptionVreg),
-            new LdaDyn(done),
-            new EcmaStrictnoteqdyn(trueReg),
+            new Sta(exceptionVreg),
+            new Lda(done),
+            new Strictnoteq(new Imm(9), trueReg),
             new Jeqz(isDone),
-            new EcmaLdobjbyname("return", iterReg),
-            new StaDyn(nextMethodReg),
-            new EcmaStrictnoteqdyn(new VReg()),
+            new Lda(iterReg),
+            new Ldobjbyname(new Imm(10), "return"),
+            new Sta(nextMethodReg),
+            new Strictnoteq(new Imm(12), new VReg()),
             new Jeqz(isDone),
-            new EcmaCallithisrangedyn(new Imm(1), [nextMethodReg, iterReg]),
+            new Lda(nextMethodReg),
+            new Callthis0(new Imm(13), iterReg),
             isDone,
-            new LdaDyn(exceptionVreg),
-            new EcmaThrowdyn(),
+            new Lda(exceptionVreg),
+            new Throw(),
 
             loopEndLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
 
@@ -200,6 +217,7 @@ describe("ForOfLoopTest", function () {
 
     it("forOfLoopWithBreak", function () {
         let insns = compileMainSnippet("for (let a of []) {break;}");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let a = new VReg();
         let arrInstance = new VReg();
         let resultObj = new VReg();
@@ -220,43 +238,49 @@ describe("ForOfLoopTest", function () {
         let insertedtryEndLabel = new Label();
 
         let expected = [
-            new EcmaCreateemptyarray(),
-            new StaDyn(arrInstance),
-            new EcmaGetiterator(),
-            new StaDyn(iterReg),
-            new EcmaLdobjbyname("next", iterReg),
-            new StaDyn(nextMethodReg),
+            new Createemptyarray(new Imm(0)),
+            new Sta(arrInstance),
+            new Getiterator(new Imm(1)),
+            new Sta(iterReg),
+            new Lda(iterReg),
+            new Ldobjbyname(new Imm(2), "next"),
+            new Sta(nextMethodReg),
 
-            new LdaDyn(new VReg()),
-            new StaDyn(done),
+            new Lda(new VReg()),
+            new Sta(done),
 
             tryBeginLabel,
-            new LdaDyn(trueReg),
-            new StaDyn(done),
+            new Lda(trueReg),
+            new Sta(done),
             loopStartLabel,
-            new EcmaCallithisrangedyn(new Imm(1), [nextMethodReg, iterReg]),
-            new StaDyn(resultObj),
-            new EcmaThrowifnotobject(resultObj),
-            new EcmaLdobjbyname("done", resultObj),
-            new EcmaIsfalse(),
+            new Lda(nextMethodReg),
+            new Callthis0(new Imm(4), iterReg),
+            new Sta(resultObj),
+            new ThrowIfnotobject(resultObj),
+            new Lda(resultObj),
+            new Ldobjbyname(new Imm(5), "done"),
+            new Isfalse(),
             new Jeqz(loopEndLabel),
-            new EcmaLdobjbyname("value", resultObj),
-            new StaDyn(value),
+            new Lda(resultObj),
+            new Ldobjbyname(new Imm(7), "value"),
+            new Sta(value),
 
-            new LdaDyn(new VReg()),
-            new StaDyn(done),
+            new Lda(new VReg()),
+            new Sta(done),
 
-            new LdaDyn(value),
-            new StaDyn(a),
+            new Lda(value),
+            new Sta(a),
 
             insertedtryBeginLabel,
-            new EcmaLdobjbyname("return", iterReg),
-            new StaDyn(nextMethodReg),
-            new EcmaStrictnoteqdyn(new VReg()), // undefined
+            new Lda(iterReg),
+            new Ldobjbyname(new Imm(9), "return"),
+            new Sta(nextMethodReg),
+            new Strictnoteq(new Imm(11), new VReg()), // undefined
             new Jeqz(noReturn),
-            new EcmaCallithisrangedyn(new Imm(1), [nextMethodReg, iterReg]),
-            new StaDyn(new VReg()),
-            new EcmaThrowifnotobject(new VReg()),
+            new Lda(nextMethodReg),
+            new Callthis0(new Imm(12), iterReg),
+            new Sta(new VReg()),
+            new ThrowIfnotobject(new VReg()),
             noReturn,
             insertedtryEndLabel,
             new Jmp(loopEndLabel),
@@ -266,21 +290,23 @@ describe("ForOfLoopTest", function () {
             new Jmp(loopStartLabel),
 
             catchBeginLabel,
-            new StaDyn(exceptionVreg),
-            new LdaDyn(done),
-            new EcmaStrictnoteqdyn(trueReg),
+            new Sta(exceptionVreg),
+            new Lda(done),
+            new Strictnoteq(new Imm(13), trueReg),
             new Jeqz(isDone),
-            new EcmaLdobjbyname("return", iterReg),
-            new StaDyn(nextMethodReg),
-            new EcmaStrictnoteqdyn(new VReg()),
+            new Lda(iterReg),
+            new Ldobjbyname(new Imm(14), "return"),
+            new Sta(nextMethodReg),
+            new Strictnoteq(new Imm(16), new VReg()),
             new Jeqz(isDone),
-            new EcmaCallithisrangedyn(new Imm(1), [nextMethodReg, iterReg]),
+            new Lda(nextMethodReg),
+            new Callthis0(new Imm(17), iterReg),
             isDone,
-            new LdaDyn(exceptionVreg),
-            new EcmaThrowdyn(),
+            new Lda(exceptionVreg),
+            new Throw(),
 
             loopEndLabel,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;

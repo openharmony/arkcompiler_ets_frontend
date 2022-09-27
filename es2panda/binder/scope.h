@@ -599,6 +599,8 @@ public:
         return ScopeType::MODULE;
     }
 
+    void AssignIndexToModuleVariable(util::StringView name, uint32_t index);
+
     void ConvertLocalVariableToModuleVariable(ArenaAllocator *allocator, util::StringView localName);
 
     bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,

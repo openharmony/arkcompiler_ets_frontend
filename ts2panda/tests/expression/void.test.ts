@@ -18,24 +18,29 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaReturnundefined,
-    EcmaStlettoglobalrecord,
-    EcmaTryldglobalbyname,
-    LdaDyn,
-    VReg
+    Returnundefined,
+    Sttoglobalrecord,
+    Tryldglobalbyname,
+    Lda,
+    VReg,
+    Imm,
+    IRNode
 } from "../../src/irnodes";
 import { checkInstructions, compileMainSnippet } from "../utils/base";
+import { creatAstFromSnippet } from "../utils/asthelper"
+import { PandaGen } from '../../src/pandagen';
 
 describe("voidExpressionTest", function () {
     it("void (a)", function () {
         let insns = compileMainSnippet("let a; void (a);");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet("let a; void (a);"), 0, undefined);
 
         let expected = [
-            new LdaDyn(new VReg()),
-            new EcmaStlettoglobalrecord('a'),
-            new EcmaTryldglobalbyname('a'),
-            new LdaDyn(new VReg()),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Sttoglobalrecord(new Imm(0), 'a'),
+            new Tryldglobalbyname(new Imm(1), 'a'),
+            new Lda(new VReg()),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });

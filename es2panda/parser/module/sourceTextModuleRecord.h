@@ -18,6 +18,10 @@
 
 #include <util/ustring.h>
 
+namespace panda::es2panda::binder {
+class ModuleScope;
+}
+
 namespace panda::es2panda::parser {
 class SourceTextModuleRecord {
 public:
@@ -79,6 +83,8 @@ public:
 
     bool CheckImplicitIndirectExport(ExportEntry *exportEntry);
     void CheckImplicitIndirectExport(ImportEntry *importEntry);
+
+    void AssignIndexToModuleVariable(binder::ModuleScope *moduleScope);
 
     using ModuleRequestList = ArenaVector<util::StringView>;
     using ModuleRequestMap = ArenaMap<const util::StringView, uint32_t>;

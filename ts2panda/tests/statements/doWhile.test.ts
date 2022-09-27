@@ -18,21 +18,23 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaLessdyn,
-    EcmaReturnundefined,
-    EcmaStlettoglobalrecord,
-    EcmaTryldglobalbyname,
-    EcmaTrystglobalbyname,
+    Less,
+    Returnundefined,
+    Sttoglobalrecord,
+    Tryldglobalbyname,
+    Trystglobalbyname,
     Imm,
     Jeqz,
     Jmp,
-    Label, LdaiDyn,
-    ResultType,
-    StaDyn,
-    VReg
+    Label,
+    Ldai,
+    Sta,
+    VReg,
+    IRNode
 } from "../../src/irnodes";
 import { checkInstructions, compileMainSnippet } from "../utils/base";
-
+import { creatAstFromSnippet } from "../utils/asthelper"
+import { PandaGen } from '../../src/pandagen';
 
 describe("DoWhileLoopTest", function () {
     it('doWhileLoopEmpty', function () {
@@ -50,7 +52,7 @@ describe("DoWhileLoopTest", function () {
     it('doWhileLoopWithBody', function () {
         let insns = compileMainSnippet("let a = 5;" +
             "do { a++ } while (a < 11);");
-
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let jumps = insns.filter(item => (item instanceof Jmp || item instanceof Jeqz));
 
         expect(jumps.length).to.equal(2);
@@ -59,38 +61,38 @@ describe("DoWhileLoopTest", function () {
         let jmpLabel = (<Jmp>jumps[1]).getTarget();
 
         expect(jmpLabel).to.equal(insns[2]);
-        expect(jgezLabel).to.equal(insns[15]);
+        expect(jgezLabel).to.equal(insns[17]);
 
-        expect(insns[13]).to.equal(jumps[0]);
-        expect(insns[14]).to.equal(jumps[1]);
+        expect(insns[15]).to.equal(jumps[0]);
+        expect(insns[16]).to.equal(jumps[1]);
     });
 
     it('doWhileLoopWithContinue', function () {
         let insns = compileMainSnippet("let a = 5;" +
             "do { a = 1; continue; } while (a < 1);");
-        let a = new VReg();
         let lhs = new VReg();
         let labelPre = new Label();
         let labelCond = new Label();
         let labelPost = new Label();
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let expected = [
-            new LdaiDyn(new Imm(5)),
-            new EcmaStlettoglobalrecord('a'),
+            new Ldai(new Imm(5)),
+            new Sttoglobalrecord(new Imm(0), 'a'),
             // body
             labelPre,
-            new LdaiDyn(new Imm(1)),
-            new EcmaTrystglobalbyname('a'),
+            new Ldai(new Imm(1)),
+            new Trystglobalbyname(new Imm(1), 'a'),
             new Jmp(labelCond), // continue
             // condition
             labelCond,
-            new EcmaTryldglobalbyname('a'),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(1)),
-            new EcmaLessdyn(lhs),
+            new Tryldglobalbyname(new Imm(2), 'a'),
+            new Sta(lhs),
+            new Ldai(new Imm(1)),
+            new Less(new Imm(3), lhs),
             new Jeqz(labelPost),
             new Jmp(labelPre),
             labelPost,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ]
 
         // check the instruction kinds are the same as we expect
@@ -104,29 +106,29 @@ describe("DoWhileLoopTest", function () {
     it('doWhileLoopWithBreak', function () {
         let insns = compileMainSnippet("let a = 5;" +
             "do { a = 1; break; } while (a < 1);");
-        let a = new VReg();
         let lhs = new VReg();
         let labelPre = new Label();
         let labelPost = new Label();
         let labelCond = new Label();
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let expected = [
-            new LdaiDyn(new Imm(5)),
-            new EcmaStlettoglobalrecord('a'),
+            new Ldai(new Imm(5)),
+            new Sttoglobalrecord(new Imm(0), 'a'),
             //body
             labelPre,
-            new LdaiDyn(new Imm(1)),
-            new EcmaTrystglobalbyname('a'),
+            new Ldai(new Imm(1)),
+            new Trystglobalbyname(new Imm(1), 'a'),
             new Jmp(labelPost), // break
             // condition
             labelCond,
-            new EcmaTryldglobalbyname('a'),
-            new StaDyn(lhs),
-            new LdaiDyn(new Imm(1)),
-            new EcmaLessdyn(lhs),
+            new Tryldglobalbyname(new Imm(2), 'a'),
+            new Sta(lhs),
+            new Ldai(new Imm(1)),
+            new Less(new Imm(3), lhs),
             new Jeqz(labelPost),
             new Jmp(labelPre),
             labelPost,
-            new EcmaReturnundefined()
+            new Returnundefined()
         ]
 
         // check the instruction kinds are the same as we expect

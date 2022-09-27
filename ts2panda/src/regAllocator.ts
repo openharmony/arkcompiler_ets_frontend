@@ -21,7 +21,7 @@ import { DebugInfo } from "./debuginfo";
 import {
     Format,
     IRNode,
-    MovDyn,
+    Mov,
     OperandKind,
     OperandType,
     VReg
@@ -141,19 +141,19 @@ class RegAllocator {
                     } catch {
                         throw Error("no available tmp vReg");
                     }
-                    head.push(new MovDyn(spill, vTmp));
+                    head.push(new Mov(spill, vTmp));
                     operands[j] = vTmp;
                     if (format[j][0] == OperandKind.SrcVReg) {
-                        head.push(new MovDyn(vTmp, vOrigin));
+                        head.push(new Mov(vTmp, vOrigin));
                     } else if (format[j][0] == OperandKind.DstVReg) {
-                        tail.push(new MovDyn(vOrigin, vTmp))
+                        tail.push(new Mov(vOrigin, vTmp))
                     } else if (format[j][0] == OperandKind.SrcDstVReg) {
-                        head.push(new MovDyn(vTmp, vOrigin));
-                        tail.push(new MovDyn(vOrigin, vTmp))
+                        head.push(new Mov(vTmp, vOrigin));
+                        tail.push(new Mov(vOrigin, vTmp))
                     } else {
                         // here we do nothing
                     }
-                    tail.push(new MovDyn(vTmp, spill));
+                    tail.push(new Mov(vTmp, spill));
                 }
             }
         }
@@ -182,7 +182,7 @@ class RegAllocator {
           3. if v.num is bigger than 255, it means all register less than 255 has been already used, they should have been pushed
           into usedVreg
         */
-        if ((<VReg>operands[1]).num >= level) {
+        if ((<VReg>operands[rangeRegOffset]).num >= level) {
             // needs to be adjusted.
             return false;
         }
@@ -224,10 +224,10 @@ class RegAllocator {
             spills.push(spill);
 
             /* We need to make sure that the register input in the .range instruction is continuous(small to big). */
-            head.push(new MovDyn(spill, this.usedVreg[tmp.num + i].vreg));
-            head.push(new MovDyn(this.usedVreg[tmp.num + i].vreg, <VReg>operands[i + rangeRegOffset]));
+            head.push(new Mov(spill, this.usedVreg[tmp.num + i].vreg));
+            head.push(new Mov(this.usedVreg[tmp.num + i].vreg, <VReg>operands[i + rangeRegOffset]));
             operands[i + rangeRegOffset] = this.usedVreg[tmp.num + i].vreg;
-            tail.push(new MovDyn(this.usedVreg[tmp.num + i].vreg, spill));
+            tail.push(new Mov(this.usedVreg[tmp.num + i].vreg, spill));
         }
 
         // for debuginfo
@@ -298,7 +298,7 @@ class RegAllocator {
         for (let i = 0; i < parametersCount; ++i) {
             let v = new VReg();
             this.allocIndexForVreg(v);
-            this.newInsns.unshift(new MovDyn(locals[i], v));
+            this.newInsns.unshift(new Mov(locals[i], v));
         }
 
         pandaGen.setInsns(this.newInsns);

@@ -57,6 +57,8 @@ FunctionEmitter::FunctionEmitter(ArenaAllocator *allocator, const PandaGen *pg)
 
 void FunctionEmitter::Generate(util::Hotfix *hotfixHelper)
 {
+    GenFunctionKind();
+    GenIcSize();
     GenFunctionInstructions();
     GenVariablesDebugInfo();
     GenSourceFileDebugInfo();
@@ -70,6 +72,16 @@ void FunctionEmitter::Generate(util::Hotfix *hotfixHelper)
 const ArenaSet<util::StringView> &FunctionEmitter::Strings() const
 {
     return pg_->Strings();
+}
+
+void FunctionEmitter::GenFunctionKind()
+{
+    func_->SetFunctionKind(static_cast<panda::panda_file::FunctionKind>(pg_->GetFunctionKind()));
+}
+
+void FunctionEmitter::GenIcSize()
+{
+    func_->SetSlotsNum(pg_->GetCurrentSlot());
 }
 
 void FunctionEmitter::GenBufferLiterals(const LiteralBuffer *buff)

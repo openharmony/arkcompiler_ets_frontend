@@ -19,20 +19,23 @@ import {
 import 'mocha';
 import { checkInstructions, SnippetCompiler } from "./utils/base";
 import {
-    EcmaCallarg1dyn,
-    EcmaCallirangedyn,
-    EcmaDefinefuncdyn,
-    EcmaReturnundefined,
-    EcmaStobjbyname,
+    Callarg1,
+    Callrange,
+    Definefunc,
+    Returnundefined,
+    Stobjbyname,
     Imm,
-    LdaDyn,
-    LdaiDyn,
+    Lda,
+    Ldai,
     LdaStr,
-    MovDyn,
-    StaDyn,
-    VReg
+    Mov,
+    Sta,
+    VReg,
+    IRNode
 } from "../src/irnodes";
 import { CmdOptions } from '../src/cmdOptions';
+import { creatAstFromSnippet } from "./utils/asthelper";
+import { PandaGen } from '../src/pandagen';
 
 
 describe("CommonJsTest", function () {
@@ -41,23 +44,26 @@ describe("CommonJsTest", function () {
         CmdOptions.isCommonJs = () => {return true};
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compileCommonjs(`let a = 1`, 'cjs.js');
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`let a = 1`), 0, undefined);
+
         CmdOptions.isCommonJs = () => {return false};
         let funcMainInsns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new EcmaDefinefuncdyn('#1#', new Imm(5), new VReg()),
-            new StaDyn(new VReg()),
-            new LdaDyn(new VReg()),
-            new StaDyn(new VReg()),
-            new LdaDyn(new VReg()),
-            new StaDyn(new VReg()),
-            new LdaDyn(new VReg()),
-            new StaDyn(new VReg()),
-            new LdaDyn(new VReg()),
-            new StaDyn(new VReg()),
-            new LdaDyn(new VReg()),
-            new StaDyn(new VReg()),
-            new EcmaCallirangedyn(new Imm(5), [new VReg(), new VReg(), new VReg(), new VReg(), new VReg(), new VReg()]),
-            new EcmaReturnundefined(),
+            new Definefunc(new Imm(0), '#1#', new Imm(5)),
+            new Sta(new VReg()),
+            new Lda(new VReg()),
+            new Sta(new VReg()),
+            new Lda(new VReg()),
+            new Sta(new VReg()),
+            new Lda(new VReg()),
+            new Sta(new VReg()),
+            new Lda(new VReg()),
+            new Sta(new VReg()),
+            new Lda(new VReg()),
+            new Sta(new VReg()),
+            new Lda(new VReg()),
+            new Callrange(new Imm(1), new Imm(5), [new VReg(), new VReg(), new VReg(), new VReg(), new VReg()]),
+            new Returnundefined(),
         ];
         expect(checkInstructions(funcMainInsns, expected)).to.be.true;
     });
@@ -66,19 +72,21 @@ describe("CommonJsTest", function () {
         CmdOptions.isCommonJs = () => {return true};
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compileCommonjs(`let a = require('a.js')`, 'cjs.js');
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`let a = require('a.js')`), 0, undefined);
         CmdOptions.isCommonJs = () => {return false};
         let execInsns = snippetCompiler.getPandaGenByName('#1#')!.getInsns();
         let requirePara = new VReg();
         let requireReg = new VReg();
         let moduleRequest = new VReg();
         let expected = [
-            new LdaDyn(requirePara),
-            new StaDyn(requireReg),
+            new Lda(requirePara),
+            new Sta(requireReg),
             new LdaStr("a.js"),
-            new StaDyn(moduleRequest),
-            new EcmaCallarg1dyn(requireReg, moduleRequest),
-            new StaDyn(new VReg()),
-            new EcmaReturnundefined()
+            new Sta(moduleRequest),
+            new Lda(new VReg()),
+            new Callarg1(new Imm(0), moduleRequest),
+            new Sta(new VReg()),
+            new Returnundefined()
         ];
         expect(checkInstructions(execInsns, expected)).to.be.true;
     });
@@ -87,6 +95,7 @@ describe("CommonJsTest", function () {
         CmdOptions.isCommonJs = () => {return true};
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compileCommonjs(`let a = 1; exports.a = a;`, 'cjs.js');
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`let a = 1; exports.a = a;`), 0, undefined);
         CmdOptions.isCommonJs = () => {return false};
         let execInsns = snippetCompiler.getPandaGenByName('#1#')!.getInsns();
         let exportsPara = new VReg();
@@ -94,14 +103,14 @@ describe("CommonJsTest", function () {
         let tmpReg = new VReg();
         let a = new VReg();
         let expected = [
-            new LdaiDyn(new Imm(1)),
-            new StaDyn(a),
-            new LdaDyn(exportsPara),
-            new StaDyn(exportsReg),
-            new MovDyn(tmpReg, exportsReg),
-            new LdaDyn(a),
-            new EcmaStobjbyname("a", tmpReg),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(1)),
+            new Sta(a),
+            new Lda(exportsPara),
+            new Sta(exportsReg),
+            new Mov(tmpReg, exportsReg),
+            new Lda(a),
+            new Stobjbyname(new Imm(0), "a", tmpReg),
+            new Returnundefined()
         ];
         expect(checkInstructions(execInsns, expected)).to.be.true;
     });

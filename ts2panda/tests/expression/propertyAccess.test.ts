@@ -18,80 +18,95 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaCreateobjectwithbuffer,
-    EcmaDefinegettersetterbyvalue,
-    EcmaDefinemethod,
-    EcmaLdobjbyname,
-    EcmaStobjbyname,
-    EcmaTryldglobalbyname,
+    Createobjectwithbuffer,
+    Definegettersetterbyvalue,
+    Definemethod,
+    Ldobjbyname,
+    Stobjbyname,
+    Tryldglobalbyname,
     Imm,
-    LdaDyn,
-    LdaiDyn,
+    Lda,
+    Ldai,
     LdaStr,
-    MovDyn,
-    ResultType,
-    StaDyn,
-    VReg
+    Mov,
+    Sta,
+    VReg,
+    IRNode
 } from "../../src/irnodes";
 import { checkInstructions, compileAllSnippet, compileMainSnippet } from "../utils/base";
+import { creatAstFromSnippet } from "../utils/asthelper";
+import { PandaGen } from '../../src/pandagen';
 
 describe("PropertyAccess", function () {
     it('get obj.property', function () {
         let insns = compileMainSnippet(`let obj;
                                 obj.property;`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`let obj;
+        obj.property;`), 0, undefined);
+        IRNode.pg.updateIcSize(1);
 
         let objReg = new VReg();
 
         let expected = [
-            new EcmaTryldglobalbyname('obj'),
-            new StaDyn(objReg),
-            new EcmaLdobjbyname("property", objReg)
+            new Tryldglobalbyname(new Imm(1), 'obj'),
+            new Sta(objReg),
+            new Lda(objReg),
+            new Ldobjbyname(new Imm(2), "property")
         ];
 
-        insns = insns.slice(2, insns.length - 1); // cut off let obj and return.dyn
+        insns = insns.slice(2, insns.length - 1); // cut off let obj and return.
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it('set obj.property', function () {
         let insns = compileMainSnippet(`let obj;
                                 obj.property = 0;`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`let obj;
+        obj.property;`), 0, undefined);
+        IRNode.pg.updateIcSize(1);
         let objReg = new VReg();
         let tempObj = new VReg();
 
         let expected = [
-            new EcmaTryldglobalbyname('obj'),
-            new StaDyn(tempObj),
-            new MovDyn(objReg, tempObj),
-            new LdaiDyn(new Imm(0)),
-            new EcmaStobjbyname("property", objReg),
+            new Tryldglobalbyname(new Imm(1), 'obj'),
+            new Sta(tempObj),
+            new Mov(objReg, tempObj),
+            new Ldai(new Imm(0)),
+            new Stobjbyname(new Imm(2), "property", objReg),
         ];
 
-        insns = insns.slice(2, insns.length - 1); // cut off let obj and return.dyn
+        insns = insns.slice(2, insns.length - 1); // cut off let obj and return.
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it('SetAccessor', function () {
         let compilerunit = compileAllSnippet(`
-            let obj = { 
-                set myMethod (arg) { 
-                    this.a = arg; 
-                } 
+            let obj = {
+                set myMethod (arg) {
+                    this.a = arg;
+                }
             }`);
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`
+        let obj = {
+            set myMethod (arg) {
+                this.a = arg;
+            }
+        }`), 0, undefined);
 
         let objInstance = new VReg();
         let funcReg = new VReg();
         let propReg = new VReg();
 
         let expected = [
-            new EcmaCreateobjectwithbuffer(new Imm(0)),
-            new StaDyn(objInstance),
-            new LdaDyn(new VReg()),
-            new EcmaDefinemethod("myMethod", new Imm(1), new VReg()),
-            new StaDyn(funcReg),
+            new Createobjectwithbuffer(new Imm(0), "0"),
+            new Sta(objInstance),
+            new Lda(new VReg()),
+            new Definemethod(new Imm(1), "myMethod", new Imm(1)),
+            new Sta(funcReg),
             new LdaStr("myMethod"),
-            new StaDyn(propReg),
-            new LdaDyn(new VReg()),
-            new EcmaDefinegettersetterbyvalue(objInstance, propReg, new VReg(), funcReg),
+            new Sta(propReg),
+            new Lda(new VReg()),
+            new Definegettersetterbyvalue(objInstance, propReg, new VReg(), funcReg),
         ];
 
         compilerunit.forEach(element => {
@@ -111,24 +126,29 @@ describe("PropertyAccess", function () {
 
     it('GetAccessor', function () {
         let compilerunit = compileAllSnippet(`
-            let obj = { 
-                get a() { return 'a'; }; 
+            let obj = {
+                get a() { return 'a'; },
             }`);
+
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`
+        let obj = {
+            get a() { return 'a'; },
+        }`), 0, undefined);
 
         let objInstance = new VReg();
         let funcReg = new VReg();
         let propReg = new VReg();
 
         let expected = [
-            new EcmaCreateobjectwithbuffer(new Imm(0)),
-            new StaDyn(objInstance),
-            new LdaDyn(new VReg()),
-            new EcmaDefinemethod("a", new Imm(0), new VReg()),
-            new StaDyn(funcReg),
+            new Createobjectwithbuffer(new Imm(0), "0"),
+            new Sta(objInstance),
+            new Lda(new VReg()),
+            new Definemethod(new Imm(1), "a", new Imm(0)),
+            new Sta(funcReg),
             new LdaStr("a"),
-            new StaDyn(propReg),
-            new LdaDyn(new VReg()),
-            new EcmaDefinegettersetterbyvalue(objInstance, propReg, funcReg, new VReg()),
+            new Sta(propReg),
+            new Lda(new VReg()),
+            new Definegettersetterbyvalue(objInstance, propReg, funcReg, new VReg()),
         ];
 
         compilerunit.forEach(element => {
@@ -142,10 +162,15 @@ describe("PropertyAccess", function () {
     });
 
     it('GetAccessor&SetAccessor', function () {
-        let compilerunit = compileAllSnippet(`let obj = { 
-            get a() { return 'a'; }, 
+        let compilerunit = compileAllSnippet(`let obj = {
+            get a() { return 'a'; },
             set a(x) {}
         }`);
+
+        IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`let obj = {
+            get a() { return 'a'; },
+            set a(x) {}
+        }`), 0, undefined);
 
         let objInstance = new VReg();
         let getterReg = new VReg();
@@ -153,18 +178,18 @@ describe("PropertyAccess", function () {
         let propReg = new VReg();
 
         let expected = [
-            new EcmaCreateobjectwithbuffer(new Imm(0)),
-            new StaDyn(objInstance),
-            new LdaDyn(new VReg()),
-            new EcmaDefinemethod("#1#a", new Imm(0), new VReg()),
-            new StaDyn(getterReg),
-            new LdaDyn(new VReg()),
-            new EcmaDefinemethod("#2#a", new Imm(1), new VReg()),
-            new StaDyn(setterReg),
+            new Createobjectwithbuffer(new Imm(0), "0"),
+            new Sta(objInstance),
+            new Lda(new VReg()),
+            new Definemethod(new Imm(1), "#1#a", new Imm(0)),
+            new Sta(getterReg),
+            new Lda(new VReg()),
+            new Definemethod(new Imm(2), "#2#a", new Imm(1)),
+            new Sta(setterReg),
             new LdaStr("a"),
-            new StaDyn(propReg),
-            new LdaDyn(new VReg()),
-            new EcmaDefinegettersetterbyvalue(objInstance, propReg, getterReg, setterReg),
+            new Sta(propReg),
+            new Lda(new VReg()),
+            new Definegettersetterbyvalue(objInstance, propReg, getterReg, setterReg),
         ];
 
         compilerunit.forEach(element => {

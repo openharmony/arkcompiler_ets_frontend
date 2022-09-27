@@ -19,20 +19,21 @@ import {
 import 'mocha';
 import * as ts from "typescript";
 import {
-    StaDyn,
+    Sta,
     VReg
 } from "../src/irnodes";
 import { PandaGen } from "../src/pandagen";
 import { checkInstructions } from "./utils/base";
+import { creatAstFromSnippet } from "./utils/asthelper";
 
 describe("PandaGenTest", function () {
     it("StoreAccumulator", function () {
-        let pandaGen = new PandaGen("pandaGen", undefined, 0);
+        let pandaGen = new PandaGen("pandaGen", creatAstFromSnippet(""), 0);
         let vreg = new VReg();
         pandaGen.storeAccumulator(ts.createNode(0), vreg);
         let insns = pandaGen.getInsns();
         let expected = [
-            new StaDyn(vreg)
+            new Sta(vreg)
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });

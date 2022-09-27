@@ -18,8 +18,8 @@ import {
 } from 'chai';
 import 'mocha';
 import {
-    EcmaDebugger,
-    EcmaReturnundefined
+    Debugger,
+    Returnundefined
 } from "../../src/irnodes";
 import { checkInstructions, compileMainSnippet } from "../utils/base";
 
@@ -27,8 +27,8 @@ describe("DebuggerTest", function () {
     it("debugger", function () {
         let insns = compileMainSnippet("debugger;");
         let expected = [
-            new EcmaDebugger(),
-            new EcmaReturnundefined()
+            new Debugger(),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
     });

@@ -145,8 +145,8 @@ static void GenArray(PandaGen *pg, const ir::ArrayExpression *array)
     pg->SetLabel(array, labelSet.CatchEnd());
 }
 
-static void GenObjectProperty(PandaGen *pg, const ir::ObjectExpression *object, const ir::Expression *element,
-                              VReg value, VReg propReg)
+static void GenObjectProperty(PandaGen *pg, const ir::ObjectExpression *object,
+                              const ir::Expression *element, VReg value)
 {
     RegScope propScope(pg);
     VReg loadedValue = pg->AllocReg();
@@ -169,12 +169,10 @@ static void GenObjectProperty(PandaGen *pg, const ir::ObjectExpression *object, 
         key->Compile(pg);
     }
 
-    pg->StoreAccumulator(key, propReg);
-
     LReference lref = LReference::CreateLRef(pg, target, object->IsDeclaration());
 
     // load obj property from rhs, return undefined if no corresponding property exists
-    pg->LoadObjByValue(element, value, propReg);
+    pg->LoadObjByValue(element, value);
     pg->StoreAccumulator(element, loadedValue);
 
     if (init != nullptr) {
@@ -211,8 +209,7 @@ static void GenObjectWithRest(PandaGen *pg, const ir::ObjectExpression *object, 
             break;
         }
 
-        VReg propReg = pg->AllocReg();
-        GenObjectProperty(pg, object, element, rhs, propReg);
+        GenObjectProperty(pg, object, element, rhs);
     }
 }
 
@@ -241,10 +238,7 @@ static void GenObject(PandaGen *pg, const ir::ObjectExpression *object, VReg rhs
     }
 
     for (const auto *element : properties) {
-        RegScope rs(pg);
-        VReg propReg = pg->AllocReg();
-
-        GenObjectProperty(pg, object, element, rhs, propReg);
+        GenObjectProperty(pg, object, element, rhs);
     }
 }
 

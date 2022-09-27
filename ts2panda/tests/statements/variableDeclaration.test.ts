@@ -19,16 +19,16 @@ import {
 import 'mocha';
 import { DiagnosticCode, DiagnosticError } from '../../src/diagnostic';
 import {
-    EcmaReturnundefined,
-    EcmaStconsttoglobalrecord,
-    EcmaStglobalvar,
-    EcmaStlettoglobalrecord,
+    Returnundefined,
+    Stconsttoglobalrecord,
+    Stglobalvar,
+    Sttoglobalrecord,
     Imm,
-    LdaDyn,
-    LdaiDyn,
-    ResultType,
-    StaDyn,
-    VReg
+    Lda,
+    Ldai,
+    Sta,
+    VReg,
+    IRNode
 } from "../../src/irnodes";
 import {
     FunctionScope,
@@ -39,6 +39,8 @@ import {
     LocalVariable
 } from "../../src/variable";
 import { checkInstructions, SnippetCompiler } from "../utils/base";
+import { creatAstFromSnippet } from "../utils/asthelper"
+import { PandaGen } from '../../src/pandagen';
 
 describe("VariableDeclarationTest", function () {
 
@@ -46,13 +48,14 @@ describe("VariableDeclarationTest", function () {
         let snippetCompiler = new SnippetCompiler();
 
         snippetCompiler.compile("var i;");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let globalScope = <GlobalScope>snippetCompiler.getGlobalScope();
         let insns = snippetCompiler.getGlobalInsns();
 
         let expected = [
-            new LdaDyn(new VReg()),
-            new EcmaStglobalvar("i"),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Stglobalvar(new Imm(0), "i"),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
         let v = globalScope.findLocal("i");
@@ -62,12 +65,13 @@ describe("VariableDeclarationTest", function () {
     it('let i in the global scope', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("let i;");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let globalScope = <GlobalScope>snippetCompiler.getGlobalScope();
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new LdaDyn(new VReg()),
-            new EcmaStlettoglobalrecord('i'),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Sttoglobalrecord(new Imm(0), 'i'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
         let v = globalScope.findLocal("i");
@@ -77,12 +81,13 @@ describe("VariableDeclarationTest", function () {
     it('const i in the global scope', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("const i = 5;");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let globalScope = <GlobalScope>snippetCompiler.getGlobalScope();
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new LdaiDyn(new Imm(5)),
-            new EcmaStconsttoglobalrecord('i'),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(5)),
+            new Stconsttoglobalrecord(new Imm(0), 'i'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
         let v = globalScope.findLocal("i");
@@ -92,14 +97,15 @@ describe("VariableDeclarationTest", function () {
     it('var i = 5 in the global scope', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("var i = 5;");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let globalScope = <GlobalScope>snippetCompiler.getGlobalScope();
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new LdaDyn(new VReg()),
-            new EcmaStglobalvar("i"),
-            new LdaiDyn(new Imm(5)),
-            new EcmaStglobalvar("i"),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Stglobalvar(new Imm(0), "i"),
+            new Ldai(new Imm(5)),
+            new Stglobalvar(new Imm(1), "i"),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
         let v = globalScope.findLocal("i");
@@ -109,12 +115,13 @@ describe("VariableDeclarationTest", function () {
     it('let i = 5 in the global scope', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("let i = 5;");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let globalScope = <GlobalScope>snippetCompiler.getGlobalScope();
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new LdaiDyn(new Imm(5)),
-            new EcmaStlettoglobalrecord('i'),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(5)),
+            new Sttoglobalrecord(new Imm(0), 'i'),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
         let v = globalScope.findLocal("i");
@@ -124,6 +131,7 @@ describe("VariableDeclarationTest", function () {
     it('var i, j in the global scope', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("var i, j;");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let globalScope = <GlobalScope>snippetCompiler.getGlobalScope();
         let i = globalScope.findLocal("i");
         expect(i instanceof GlobalVariable).to.be.true;
@@ -134,6 +142,7 @@ describe("VariableDeclarationTest", function () {
     it('let i, j in the global scope', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("let i, j;");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let globalScope = <GlobalScope>snippetCompiler.getGlobalScope();
         let i = globalScope.findLocal("i");
         expect(i instanceof LocalVariable).to.be.true;
@@ -144,6 +153,7 @@ describe("VariableDeclarationTest", function () {
     it('const i, j in the global scope', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("const i=5, j=5;");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let globalScope = <GlobalScope>snippetCompiler.getGlobalScope();
         let i = globalScope.findLocal("i");
         expect(i instanceof LocalVariable).to.be.true;
@@ -154,13 +164,14 @@ describe("VariableDeclarationTest", function () {
     it('var i in a function scope', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("function a() {var i;}");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let funcPg = snippetCompiler.getPandaGenByName("a");
         let functionScope = <FunctionScope>funcPg!.getScope();
         let insns = funcPg!.getInsns();
         let expected = [
-            new LdaDyn(new VReg()),
-            new StaDyn(new VReg()),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Sta(new VReg()),
+            new Returnundefined()
         ];
 
         expect(checkInstructions(insns, expected)).to.be.true;
@@ -172,13 +183,14 @@ describe("VariableDeclarationTest", function () {
     it('let i in a function scope', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("function a() {let i;}");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let funcPg = snippetCompiler.getPandaGenByName("a");
         let functionScope = <FunctionScope>funcPg!.getScope();
         let insns = funcPg!.getInsns();
         let expected = [
-            new LdaDyn(new VReg()),
-            new StaDyn(new VReg()),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Sta(new VReg()),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
         let i = functionScope.findLocal("i");
@@ -188,13 +200,14 @@ describe("VariableDeclarationTest", function () {
     it('const i in a function scope', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("function a() {const i = 5;}");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let funcPg = snippetCompiler.getPandaGenByName("a");
         let functionScope = <FunctionScope>funcPg!.getScope();
         let insns = funcPg!.getInsns();
         let expected = [
-            new LdaiDyn(new Imm(5)),
-            new StaDyn(new VReg()),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(5)),
+            new Sta(new VReg()),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
         let i = functionScope.findLocal("i");
@@ -209,9 +222,9 @@ describe("VariableDeclarationTest", function () {
         let insns = funcPg!.getInsns();
 
         let expected = [
-            new LdaDyn(new VReg()),
-            new StaDyn(new VReg()),
-            new EcmaReturnundefined()
+            new Lda(new VReg()),
+            new Sta(new VReg()),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
         let i = localScope!.findLocal("i");
@@ -234,12 +247,13 @@ describe("VariableDeclarationTest", function () {
     it('const i in a local scope', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("{const i = 5;}");
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let insns = snippetCompiler.getGlobalInsns();
         let scope = snippetCompiler.getGlobalScope();
         let expected = [
-            new LdaiDyn(new Imm(5)),
-            new StaDyn(new VReg()),
-            new EcmaReturnundefined()
+            new Ldai(new Imm(5)),
+            new Sta(new VReg()),
+            new Returnundefined()
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
         let i = scope!.findLocal("i");

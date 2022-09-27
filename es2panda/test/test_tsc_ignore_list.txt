@@ -175,3 +175,8 @@ es2panda/test/TypeScript/tests/cases/compiler/cloduleWithRecursiveReference.ts
 es2panda/test/TypeScript/tests/cases/compiler/sourceMap-LineBreaks.ts
 es2panda/test/TypeScript/tests/cases/compiler/declareExternalModuleWithExportAssignedFundule.ts
 es2panda/test/TypeScript/tests/cases/compiler/classFunctionMerging.ts
+es2panda/test/TypeScript/tests/cases/compiler/es5ExportDefaultFunctionDeclaration4.ts
+es2panda/test/TypeScript/tests/cases/compiler/typeAliasExport.ts
+es2panda/test/TypeScript/tests/cases/compiler/es5ExportDefaultClassDeclaration4.ts
+es2panda/test/TypeScript/tests/cases/compiler/exportDefaultVariable.ts
+es2panda/test/TypeScript/tests/cases/compiler/declarationEmitModuleWithScopeMarker.ts

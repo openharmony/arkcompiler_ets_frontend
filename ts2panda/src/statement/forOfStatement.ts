@@ -71,7 +71,7 @@ export function compileForOfStatement(stmt: ts.ForOfStatement, compiler: Compile
     let type: IteratorType = IteratorType.Normal;
 
     if (needCreateLoopEnv) {
-        pandaGen.createLexEnv(stmt, loopEnv, loopScope);
+        pandaGen.createLexEnv(stmt, loopScope);
         compiler.pushEnv(loopEnv);
     }
 
