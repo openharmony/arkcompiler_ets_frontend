@@ -41,6 +41,25 @@ def is_file(parser, arg):
 
     return path.abspath(arg)
 
+def prepare_tsc_testcases(test_root):
+    third_party_tsc = path.join(test_root, "TypeScript")
+    ohos_third_party_tsc = path.join(test_root, "../../../../third_party/typescript")
+
+    if not path.isdir(third_party_tsc):
+        if (path.isdir(ohos_third_party_tsc)):
+            return path.abspath(ohos_third_party_tsc)
+        subprocess.run(
+            f"git clone https://gitee.com/openharmony/third_party_typescript.git {third_party_tsc}",
+            shell=True,
+            stdout=subprocess.DEVNULL,
+        )
+    else:
+        subprocess.run(
+            f"cd {third_party_tsc} && git clean -f > /dev/null 2>&1",
+            shell=True,
+            stdout=subprocess.DEVNULL,
+        )
+    return third_party_tsc
 
 def check_timeout(value):
     ivalue = int(value)
@@ -70,6 +89,9 @@ def get_args():
     parser.add_argument(
         '--tsc', action='store_true', dest='tsc',
         default=False, help='run tsc tests')
+    parser.add_argument(
+        '--type-extractor', action='store_true', dest='type_extractor',
+        default=False, help='run type extractor tests')
     parser.add_argument(
         '--no-progress', action='store_false', dest='progress', default=True,
         help='don\'t show progress bar')
@@ -408,10 +430,12 @@ class Runner:
         self.build_dir = args.build_dir
         self.cmd_prefix = []
         self.ark_js_vm = ""
+        self.ark_aot_compiler = ""
         self.ld_library_path = ""
 
         if args.js_runtime_path:
             self.ark_js_vm = path.join(args.js_runtime_path, 'ark_js_vm')
+            self.ark_aot_compiler = path.join(args.js_runtime_path, 'ark_aot_compiler')
 
         if args.ld_library_path:
             self.ld_library_path = args.ld_library_path
@@ -724,24 +748,7 @@ class TSCRunner(Runner):
         if self.args.tsc_path:
             self.tsc_path = self.args.tsc_path
         else :
-            ts_dir = path.join(self.test_root, "TypeScript")
-            ts_branch = "v4.2.4"
-
-            if not path.isdir(ts_dir):
-                subprocess.run(
-                    f"git clone https://github.com/microsoft/TypeScript.git \
-                    {ts_dir} && cd {ts_dir} \
-                    && git checkout {ts_branch} > /dev/null 2>&1",
-                    shell=True,
-                    stdout=subprocess.DEVNULL,
-                )
-            else:
-                subprocess.run(
-                    f"cd {ts_dir} && git clean -f > /dev/null 2>&1",
-                    shell=True,
-                    stdout=subprocess.DEVNULL,
-                )
-            self.tsc_path = ts_dir
+            self.tsc_path = prepare_tsc_testcases(self.test_root)
 
         self.add_directory("conformance", [])
         self.add_directory("compiler", [])
@@ -1151,6 +1158,150 @@ class Base64Runner(Runner):
         return os.path.basename(src)
 
 
+class TypeExtractorRunner(Runner):
+    def __init__(self, args):
+        Runner.__init__(self, args, "TypeExtractor")
+
+        if self.args.tsc_path:
+            self.tsc_path = self.args.tsc_path
+        else :
+            self.tsc_path = prepare_tsc_testcases(self.test_root)
+
+        self.add_tsc_directory("conformance", [])
+        self.add_directory("testcases", [])
+        self.add_directory("testcases_with_assert", [])
+
+    def add_tsc_directory(self, directory, flags):
+        ts_suite_dir = path.join(self.tsc_path, 'tests/cases')
+
+        glob_expression = path.join(
+            ts_suite_dir, directory, "**/*.ts")
+        files = glob(glob_expression, recursive=True)
+        files = fnmatch.filter(files, ts_suite_dir + '**' + self.args.filter)
+
+        passed_references = open(path.join(self.test_root, 'type_extractor/testlist.txt'), 'r').read()
+
+        for f in files:
+            if path.relpath(f, self.tsc_path) in passed_references:
+                test = TypeExtractorTest(f, flags)
+                self.tests.append(test)
+
+    def add_directory(self, directory, flags):
+        ts_suite_dir = path.join(self.test_root, 'type_extractor')
+
+        glob_expression = path.join(
+            ts_suite_dir, directory, "**/*.ts")
+        files = glob(glob_expression, recursive=True)
+        files = fnmatch.filter(files, ts_suite_dir + '**' + self.args.filter)
+
+        for f in files:
+            if directory.endswith("testcases_with_assert"):
+                test = TypeExtractorWithAssertTest(f, flags)
+                self.tests.append(test)
+            else:
+                test = TypeExtractorTest(f, flags)
+                self.tests.append(test)
+
+    def test_path(self, src):
+        return src
+
+
+class TypeExtractorTest(Test):
+    def __init__(self, test_path, flags):
+        Test.__init__(self, test_path, flags)
+
+    def run(self, runner):
+        test_abc_name = ("%s.abc" % (path.splitext(self.path)[0])).replace("/", "_")
+        cmd = runner.cmd_prefix + [runner.es2panda,
+            '--extension=ts', '--module', '--dump-literal-buffer', '--opt-level=2', '--type-extractor']
+        cmd.extend(self.flags)
+        cmd.extend(["--output=" + test_abc_name])
+        cmd.append(self.path)
+
+        self.log_cmd(cmd)
+        process = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
+        output_str = self.output.split("======> literal array buffer <======")[1]
+
+        if os.path.isfile(test_abc_name):
+            os.remove(test_abc_name)
+
+        expected_path = "%s-expected.txt" % (path.splitext(self.path)[0])
+        if not os.path.isfile(expected_path):
+            expected_path = path.dirname(path.abspath(__file__)) + "/type_extractor/tsc_expect/%s" % \
+                expected_path.split("tests/cases/")[-1]
+
+        try:
+            with open(expected_path, 'r') as fp:
+                expected = fp.read()
+                expected_str = expected.split("======> literal array buffer <======")[1]
+
+            self.passed = expected_str == output_str and process.returncode in [
+                0, 1]
+        except Exception:
+            self.passed = False
+
+        if not self.passed:
+            self.error = err.decode("utf-8", errors="ignore")
+
+        return self
+
+
+class TypeExtractorWithAssertTest(Test):
+    def __init__(self, test_path, flags):
+        Test.__init__(self, test_path, flags)
+
+    def run(self, runner):
+        test_abc_name = ("%s.abc" % (path.splitext(self.path)[0])).replace("/", "_")
+        cmd = runner.cmd_prefix + [runner.es2panda,
+            '--extension=ts', '--module', '--merge-abc', '--opt-level=2', '--type-extractor']
+        cmd.extend(self.flags)
+        cmd.extend(["--output=" + test_abc_name])
+        cmd.append(self.path)
+
+        self.log_cmd(cmd)
+        process = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        if (err):
+            self.passed = False
+            self.error = err.decode("utf-8", errors="ignore")
+            return self
+
+        if (runner.ld_library_path == "" or runner.ld_library_path == ""):
+            if os.path.isfile(test_abc_name):
+                os.remove(test_abc_name)
+            self.passed = True
+            return self
+
+        ld_library_path = runner.ld_library_path
+        os.environ.setdefault("LD_LIBRARY_PATH", ld_library_path)
+        aot_abc_cmd = [runner.ark_aot_compiler]
+        aot_abc_cmd.extend(["--assert-types=true"])
+        aot_abc_cmd.extend(["--enable-type-lowering=false"])
+        aot_abc_cmd.extend([test_abc_name])
+        self.log_cmd(aot_abc_cmd)
+
+        process = subprocess.Popen(aot_abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        if err:
+            self.passed = False
+            self.error = err.decode("utf-8", errors="ignore")
+        else:
+            self.passed = True
+
+        if os.path.isfile(test_abc_name):
+            os.remove(test_abc_name)
+        if os.path.isfile("aot_file.an"):
+            os.remove("aot_file.an")
+        if os.path.isfile(".ai"):
+            os.remove(".ai")
+
+        return self
+
+
 def main():
     args = get_args()
 
@@ -1201,6 +1352,9 @@ def main():
 
     if args.base64:
         runners.append(Base64Runner(args))
+
+    if args.type_extractor:
+        runners.append(TypeExtractorRunner(args))
 
     failed_tests = 0
 

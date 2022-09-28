@@ -559,4 +559,5 @@ group("es2abc_tests") {
   deps += [ "./test:es2abc_parser_tests" ]
   deps += [ "./test:es2abc_parser_tsc_tests" ]
   deps += [ "./test:es2abc_patch_tests" ]
+  deps += [ "./test:es2abc_type_extractor_tests" ]
 }

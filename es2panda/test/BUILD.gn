@@ -111,3 +111,44 @@ action("es2abc_base64_tests") {
 
   outputs = [ "${es2abc_build_path}/keep_es2abc_base64_tests_run" ]
 }
+
+action("es2abc_type_extractor_tests") {
+  script = "${es2abc_root}/test/runner.py"
+
+  deps = es2abc_build_deps
+  deps += [ "${js_root}:ark_js_host_linux_tools_packages" ]
+
+  host_jsvm_target = "${js_root}/ecmascript/js_vm:ark_js_vm(${host_toolchain})"
+  root_out_dir = get_label_info(host_jsvm_target, "root_out_dir")
+  ark_js_runtime_dir = rebase_path("${root_out_dir}/arkcompiler/ets_runtime")
+
+  if (is_standard_system) {
+    icu_path = "thirdparty/icu"
+  } else {
+    icu_path = "global/i18n"
+  }
+  icu_dir = rebase_path("${root_out_dir}/${icu_path}")
+
+  llvm_lib_dir = rebase_path("//prebuilts/clang/ohos/linux-x86_64/llvm/lib/")
+
+  zlib_dir = rebase_path("${root_out_dir}/thirdparty/zlib")
+
+  ld_library_path =
+      "${ark_js_runtime_dir}:${icu_dir}:${llvm_lib_dir}:${zlib_dir}"
+
+  tsc_path = rebase_path("//third_party/typescript/")
+
+  args = [
+    "--no-progress",
+    "--js-runtime",
+    ark_js_runtime_dir,
+    "--LD_LIBRARY_PATH",
+    ld_library_path,
+    "--type-extractor",
+    "--tsc-path",
+    tsc_path,
+    rebase_path("${es2abc_build_path}"),
+  ]
+
+  outputs = [ "${es2abc_build_path}/keep_es2abc_type_extractor_tests_run" ]
+}

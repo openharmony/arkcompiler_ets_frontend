@@ -32,6 +32,8 @@ void Dumper::DumpLiterals(std::map<std::string, panda::pandasm::LiteralArray> co
             std::visit([](auto&& element) {
                 if constexpr (std::is_same_v<decltype(element), unsigned char &>) {
                     std::cout << "    val: " << unsigned(element) << std::endl;
+                } else if constexpr (std::is_same_v<decltype(element), unsigned int &>) {
+                    std::cout << "    val: " << signed(element) << std::endl;
                 } else {
                     std::cout << "    val: " << element << std::endl;
                 }
