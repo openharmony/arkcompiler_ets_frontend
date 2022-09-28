@@ -51,7 +51,7 @@ void ProtobufSnapshotGenerator::GenerateProgram(const std::string &inputName, pa
 
 void ProtobufSnapshotGenerator::UpdateCacheFile(
     const std::map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap,
-    bool &isDebug, const std::string &cacheFilePath)
+    const bool &isDebug, const std::string &cacheFilePath)
 {
     protoPanda::CompositeProgram protoCompositeProgram;
     CompositeProgram::Serialize(compositeProgramMap, isDebug, protoCompositeProgram);

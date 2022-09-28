@@ -257,7 +257,7 @@ public:
         return globalTypes_->GlobalErrorType();
     }
 
-    CheckerContext Context()
+    CheckerContext Context() const
     {
         return context_;
     }

@@ -998,7 +998,7 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
             auto *funcDecl = AllocNode<ir::FunctionDeclaration>(func);
             funcDecl->SetRange(func->Range());
 
-            binder::DeclarationFlags declflag = newStatus & ParserStatus::EXPORT_REACHED ?
+            binder::DeclarationFlags declflag = (newStatus & ParserStatus::EXPORT_REACHED) ?
                                                 binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
             Binder()->AddDecl<binder::FunctionDecl>(startLoc, declflag, Allocator(),
                                                     parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME, func);
@@ -1030,7 +1030,7 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
     auto *funcDecl = AllocNode<ir::FunctionDeclaration>(func);
     funcDecl->SetRange(func->Range());
 
-    binder::DeclarationFlags declflag = newStatus & ParserStatus::EXPORT_REACHED ?
+    binder::DeclarationFlags declflag = (newStatus & ParserStatus::EXPORT_REACHED) ?
                                         binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
     if (Extension() == ScriptExtension::TS) {
         const auto &bindings = Binder()->GetScope()->Bindings();
@@ -1871,7 +1871,7 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
 
     for (const auto *binding : bindings) {
         binder::Decl *decl = nullptr;
-        binder::DeclarationFlags declflag = flags & VariableParsingFlags::EXPORTED ?
+        binder::DeclarationFlags declflag = (flags & VariableParsingFlags::EXPORTED) ?
                                             binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
 
         if (flags & VariableParsingFlags::VAR) {

@@ -16,7 +16,7 @@
 
 namespace panda::es2panda::util {
 
-void Dumper::DumpLiterals(std::map<std::string, panda::pandasm::LiteralArray> &literalTable)
+void Dumper::DumpLiterals(std::map<std::string, panda::pandasm::LiteralArray> const &literalTable)
 {
     std::cout << "======> literal array buffer <======" << std::endl;
     for (auto it : literalTable) {

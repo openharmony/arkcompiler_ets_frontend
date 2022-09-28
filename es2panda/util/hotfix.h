@@ -56,7 +56,7 @@ public:
         }
 
     void Finalize(panda::pandasm::Program **prog);
-    bool IsScopeValidToPatchLexical(binder::VariableScope *scope);
+    bool IsScopeValidToPatchLexical(binder::VariableScope *scope) const;
     uint32_t GetSlotIdFromSymbolTable(const std::string &variableName);
     void AllocSlotfromPatchEnv(const std::string &variableName);
     uint32_t GetPatchLexicalIdx(const std::string &variableName);

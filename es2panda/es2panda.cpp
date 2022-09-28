@@ -184,7 +184,7 @@ int Compiler::CompileFiles(CompilerOptions &options,
     return failed ? 1 : 0;
 }
 
-panda::pandasm::Program *Compiler::CompileFile(CompilerOptions &options, SourceFile *src,
+panda::pandasm::Program *Compiler::CompileFile(const CompilerOptions &options, SourceFile *src,
                                                util::SymbolTable *symbolTable)
 {
     std::string buffer;

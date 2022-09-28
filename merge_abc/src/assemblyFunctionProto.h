@@ -38,14 +38,14 @@ class Parameter {
 public:
     static void Serialize(const panda::pandasm::Function::Parameter &param, protoPanda::Parameter &protoParam);
     static void Deserialize(const protoPanda::Parameter &protoParam, panda::pandasm::Function::Parameter &param,
-                            panda::ArenaAllocator *allocator_);
+                            panda::ArenaAllocator *allocator);
 };
 
 class Function {
 public:
     static void Serialize(const panda::pandasm::Function &function, protoPanda::Function &protoFunction);
     static void Deserialize(const protoPanda::Function &protoFunction, panda::pandasm::Function &function,
-                            panda::ArenaAllocator *allocator_);
+                            panda::ArenaAllocator *allocator);
 };
 } // panda::proto
 #endif

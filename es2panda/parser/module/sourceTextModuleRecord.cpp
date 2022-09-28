@@ -104,7 +104,7 @@ namespace panda::es2panda::parser {
         starExportEntries_.push_back(entry);
     }
 
-    bool SourceTextModuleRecord::HasDuplicateExport(util::StringView exportName)
+    bool SourceTextModuleRecord::HasDuplicateExport(util::StringView exportName) const
     {
         for (auto const &entryUnit : localExportEntries_) {
             const SourceTextModuleRecord::ExportEntry *e = entryUnit.second;

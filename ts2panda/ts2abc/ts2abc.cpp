@@ -1283,7 +1283,7 @@ static bool IsStartOrEndPosition(int idx, char *buff, const std::string &data)
     return false;
 }
 
-static bool HandleBuffer(int &ret, bool &isStartDollar, char *buff, std::string &data, panda::pandasm::Program &prog)
+static bool HandleBuffer(const int &ret, bool &isStartDollar, char *buff, std::string &data, panda::pandasm::Program &prog)
 {
     uint32_t startPos = 0;
     for (int idx = 0; idx < ret; idx++) {

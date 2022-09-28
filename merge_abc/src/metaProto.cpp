@@ -31,7 +31,7 @@ void RecordMetadata::Deserialize(const protoPanda::RecordMetadata &protoMeta,
     auto &protoAnnoMetadata = protoItemMetadata.father();
     AnnotationMetadata::Deserialize(protoAnnoMetadata, *meta, allocator);
 
-    auto &protoMetadata = protoAnnoMetadata.father();
+    const auto &protoMetadata = protoAnnoMetadata.father();
     Metadata::Deserialize(protoMetadata, *meta);
 }
 
@@ -52,7 +52,7 @@ void FunctionMetadata::Deserialize(const protoPanda::FunctionMetadata &protoMeta
     auto &protoAnnoMetadata = protoItemMetadata.father();
     AnnotationMetadata::Deserialize(protoAnnoMetadata, *meta, allocator);
 
-    auto &protoMetadata = protoAnnoMetadata.father();
+    const auto &protoMetadata = protoAnnoMetadata.father();
     Metadata::Deserialize(protoMetadata, *meta);
 }
 
@@ -77,7 +77,7 @@ void FieldMetadata::Deserialize(const protoPanda::FieldMetadata &protoMeta,
     ItemMetadata::Deserialize(protoItemMetadata, *meta);
     auto &protoAnnoMetadata = protoItemMetadata.father();
     AnnotationMetadata::Deserialize(protoAnnoMetadata, *meta, allocator);
-    auto &protoMetadata = protoAnnoMetadata.father();
+    const auto &protoMetadata = protoAnnoMetadata.father();
     Metadata::Deserialize(protoMetadata, *meta);
 
     auto &fieldType = Type::Deserialize(protoMeta.fieldtype(), allocator);
@@ -99,7 +99,7 @@ void ParamMetadata::Deserialize(const protoPanda::ParamMetadata &protoMeta,
                                 std::unique_ptr<panda::pandasm::ParamMetadata> &meta,
                                 panda::ArenaAllocator *allocator)
 {
-    auto &protoAnnoMetadata = protoMeta.father();
+    const auto &protoAnnoMetadata = protoMeta.father();
     AnnotationMetadata::Deserialize(protoAnnoMetadata, *meta, allocator);
 }
 

@@ -220,7 +220,7 @@ public:
 
     LiteralBuffer *NewLiteralBuffer();
     int32_t AddLiteralBuffer(LiteralBuffer *buf);
-    int32_t AddLexicalVarNamesForDebugInfo(ArenaMap<uint32_t, std::pair<util::StringView, int>> &lexicalMap);
+    int32_t AddLexicalVarNamesForDebugInfo(ArenaMap<uint32_t, std::pair<util::StringView, int>> &lexicalVars);
 
     void InitializeLexEnv(const ir::AstNode *node);
     void CopyFunctionArguments(const ir::AstNode *node);
@@ -269,7 +269,7 @@ public:
 
     void SetLabel(const ir::AstNode *node, Label *label);
     void Branch(const ir::AstNode *node, class Label *label);
-    bool CheckControlFlowChange();
+    bool CheckControlFlowChange() const;
     Label *ControlFlowChangeBreak(const ir::Identifier *label = nullptr);
     Label *ControlFlowChangeContinue(const ir::Identifier *label);
 

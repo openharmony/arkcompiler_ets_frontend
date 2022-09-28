@@ -325,7 +325,7 @@ private:
     ir::TSParameterProperty *CreateTsParameterProperty(ir::Expression *parameter, ir::ModifierFlags modifiers);
     ir::Expression *ParseFunctionParameter(bool isDeclare);
     void CreateTSVariableForProperty(ir::AstNode *node, const ir::Expression *key, binder::VariableFlags flags);
-    void CheckObjectTypeForDuplicatedProperties(ir::Expression *member, ArenaVector<ir::Expression *> &members);
+    void CheckObjectTypeForDuplicatedProperties(ir::Expression *member, ArenaVector<ir::Expression *> const &members);
 
     // ExpressionParser.Cpp
 
@@ -370,7 +370,7 @@ private:
     ir::MetaProperty *ParsePotentialNewTarget();
     void CheckInvalidDestructuring(const ir::AstNode *object) const;
     void ValidateParenthesizedExpression(ir::Expression *lhsExpression);
-    ir::Expression *ParseAssignmentExpression(ir::Expression *expression,
+    ir::Expression *ParseAssignmentExpression(ir::Expression *lhsExpression,
                                               ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::Expression *ParsePrimaryExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::NewExpression *ParseNewExpression();

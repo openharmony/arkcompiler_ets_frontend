@@ -22,13 +22,13 @@
 namespace panda::proto {
 class ProtobufSnapshotGenerator {
 public:
-    static void GenerateSnapshot(const panda::pandasm::Program &prog, const std::string &outputName);
+    static void GenerateSnapshot(const panda::pandasm::Program &program, const std::string &outputName);
     static void GenerateProgram(const std::string &inputName, panda::pandasm::Program &prog,
                                 panda::ArenaAllocator *allocator);
     static std::map<std::string, panda::es2panda::util::ProgramCache*> *GetCacheContext(
         const std::string &cacheFilePath, bool isDebug, panda::ArenaAllocator *allocator);
-    static void UpdateCacheFile(const std::map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgram,
-                                bool &isDebug, const std::string &cacheFilePath);
+    static void UpdateCacheFile(const std::map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap,
+                                const bool &isDebug, const std::string &cacheFilePath);
 };
 } // panda::proto
 #endif

@@ -39,7 +39,7 @@ class DynamicContext {
 public:
     NO_COPY_SEMANTIC(DynamicContext);
     NO_MOVE_SEMANTIC(DynamicContext);
-    ~DynamicContext();
+    virtual ~DynamicContext();
 
     void *operator new(size_t) = delete;
     void *operator new[](size_t) = delete;

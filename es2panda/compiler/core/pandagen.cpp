@@ -680,7 +680,7 @@ void PandaGen::Branch(const ir::AstNode *node, Label *label)
     sa_.Emit<Jmp>(node, label);
 }
 
-bool PandaGen::CheckControlFlowChange()
+bool PandaGen::CheckControlFlowChange() const
 {
     const auto *iter = dynamicContext_;
 
