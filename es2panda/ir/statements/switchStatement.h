@@ -49,7 +49,17 @@ public:
         return discriminant_;
     }
 
+    Expression *Discriminant()
+    {
+        return discriminant_;
+    }
+
     const ArenaVector<SwitchCaseStatement *> &Cases() const
+    {
+        return cases_;
+    }
+
+    ArenaVector<SwitchCaseStatement *> &Cases()
     {
         return cases_;
     }
