@@ -33,4 +33,6 @@ checker::Type *DebuggerStatement::Check([[maybe_unused]] checker::Checker *check
     return nullptr;
 }
 
+void DebuggerStatement::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}
+
 }  // namespace panda::es2panda::ir

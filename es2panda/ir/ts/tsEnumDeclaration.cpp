@@ -398,4 +398,13 @@ checker::Type *TSEnumDeclaration::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void TSEnumDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    key_ = std::get<ir::AstNode *>(cb(key_))->AsIdentifier();
+
+    for (auto iter = members_.begin(); iter != members_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsTSEnumMember();
+    }
+}
+
 }  // namespace panda::es2panda::ir

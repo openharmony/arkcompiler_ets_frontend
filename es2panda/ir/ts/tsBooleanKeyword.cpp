@@ -39,4 +39,6 @@ checker::Type *TSBooleanKeyword::GetType(checker::Checker *checker) const
     return checker->GlobalBooleanType();
 }
 
+void TSBooleanKeyword::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}
+
 }  // namespace panda::es2panda::ir

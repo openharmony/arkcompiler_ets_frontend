@@ -20,6 +20,8 @@
 #include <compiler/core/compilerImpl.h>
 #include <parser/parserImpl.h>
 #include <parser/program/program.h>
+#include <parser/transformer/transformer.h>
+#include <typescript/checker.h>
 #include <util/helpers.h>
 #include <util/hotfix.h>
 
@@ -38,6 +40,9 @@ Compiler::Compiler(ScriptExtension ext) : Compiler(ext, DEFAULT_THREAD_COUNT) {}
 Compiler::Compiler(ScriptExtension ext, size_t threadCount)
     : parser_(new parser::ParserImpl(ext)), compiler_(new compiler::CompilerImpl(threadCount))
 {
+    if (parser_->Extension() == ScriptExtension::TS) {
+        transformer_ = std::make_unique<parser::Transformer>(parser_->Allocator());
+    }
 }
 
 Compiler::~Compiler()
@@ -67,9 +72,25 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
 
     try {
         auto ast = parser_->Parse(fname, src, rname, kind);
+        ast.Binder()->SetProgram(&ast);
 
         if (options.dumpAst) {
             std::cout << ast.Dump() << std::endl;
+        }
+
+        if (ast.Extension() == ScriptExtension::TS && options.enableTypeCheck) {
+            ArenaAllocator localAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+            auto checker = std::make_unique<checker::Checker>(&localAllocator, ast.Binder());
+            checker->StartChecker();
+        }
+
+        if (options.parseOnly) {
+            return nullptr;
+        }
+
+        if (ast.Extension() == ScriptExtension::TS) {
+            transformer_->Transform(&ast);
+            ast.Binder()->IdentifierAnalysis(binder::ResolveBindingFlags::ALL);
         }
 
         std::string debugInfoSourceFile = options.debugInfoSourceFile.empty() ?

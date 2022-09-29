@@ -47,4 +47,17 @@ checker::Type *TSPrivateIdentifier::Check([[maybe_unused]] checker::Checker *che
     return nullptr;
 }
 
+void TSPrivateIdentifier::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    key_ = std::get<ir::AstNode *>(cb(key_))->AsExpression();
+
+    if (value_) {
+        value_ = std::get<ir::AstNode *>(cb(value_))->AsExpression();
+    }
+
+    if (typeAnnotation_) {
+        typeAnnotation_ = std::get<ir::AstNode *>(cb(typeAnnotation_))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

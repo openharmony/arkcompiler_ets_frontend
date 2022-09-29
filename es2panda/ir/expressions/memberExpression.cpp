@@ -147,4 +147,10 @@ checker::Type *MemberExpression::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void MemberExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    object_ = std::get<ir::AstNode *>(cb(object_))->AsExpression();
+    property_ = std::get<ir::AstNode *>(cb(property_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

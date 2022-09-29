@@ -379,4 +379,11 @@ checker::Type *ArrayExpression::CheckPattern(checker::Checker *checker) const
                                     false);
 }
 
+void ArrayExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    for (auto iter = elements_.begin(); iter != elements_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

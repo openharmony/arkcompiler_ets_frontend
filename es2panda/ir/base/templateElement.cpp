@@ -39,4 +39,6 @@ checker::Type *TemplateElement::Check([[maybe_unused]] checker::Checker *checker
     return nullptr;
 }
 
+void TemplateElement::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}
+
 }  // namespace panda::es2panda::ir

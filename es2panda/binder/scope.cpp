@@ -305,6 +305,12 @@ bool FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *currentVaria
         case DeclType::ENUM_LITERAL: {
             return AddTSBinding<LocalVariable>(allocator, currentVariable, newDecl, VariableFlags::ENUM_LITERAL);
         }
+        case DeclType::NAMESPACE: {
+            return AddTSBinding<NamespaceVariable>(allocator, newDecl, VariableFlags::NAMESPACE);
+        }
+        case DeclType::IMPORT_EQUALS: {
+            return AddTSBinding<ImportEqualsVariable>(allocator, newDecl, VariableFlags::IMPORT_EQUALS);
+        }
         case DeclType::INTERFACE: {
             return AddTSBinding<LocalVariable>(allocator, currentVariable, newDecl, VariableFlags::INTERFACE);
         }
@@ -330,6 +336,12 @@ bool GlobalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariabl
         }
         case DeclType::ENUM_LITERAL: {
             return AddTSBinding<LocalVariable>(allocator, currentVariable, newDecl, VariableFlags::ENUM_LITERAL);
+        }
+        case DeclType::NAMESPACE: {
+            return AddTSBinding<NamespaceVariable>(allocator, newDecl, VariableFlags::NAMESPACE);
+        }
+        case DeclType::IMPORT_EQUALS: {
+            return AddTSBinding<ImportEqualsVariable>(allocator, newDecl, VariableFlags::IMPORT_EQUALS);
         }
         case DeclType::INTERFACE: {
             return AddTSBinding<LocalVariable>(allocator, currentVariable, newDecl, VariableFlags::INTERFACE);
@@ -395,6 +407,12 @@ bool ModuleScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariabl
         }
         case DeclType::ENUM_LITERAL: {
             return AddTSBinding<LocalVariable>(allocator, currentVariable, newDecl, VariableFlags::ENUM_LITERAL);
+        }
+        case DeclType::NAMESPACE: {
+            return AddTSBinding<NamespaceVariable>(allocator, newDecl, VariableFlags::NAMESPACE);
+        }
+        case DeclType::IMPORT_EQUALS: {
+            return AddTSBinding<ImportEqualsVariable>(allocator, newDecl, VariableFlags::IMPORT_EQUALS);
         }
         case DeclType::INTERFACE: {
             return AddTSBinding<LocalVariable>(allocator, currentVariable, newDecl, VariableFlags::INTERFACE);

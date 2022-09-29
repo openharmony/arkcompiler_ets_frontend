@@ -139,7 +139,11 @@ Program ParserImpl::Parse(const std::string &fileName, const std::string &source
             UNREACHABLE();
         }
     }
-    Binder()->IdentifierAnalysis();
+    binder::ResolveBindingFlags bindFlags = binder::ResolveBindingFlags::ALL;
+    if (Extension() == ScriptExtension::TS) {
+        bindFlags = binder::ResolveBindingFlags::TS_BEFORE_TRANSFORM;
+    }
+    Binder()->IdentifierAnalysis(bindFlags);
     return std::move(program_);
 }
 

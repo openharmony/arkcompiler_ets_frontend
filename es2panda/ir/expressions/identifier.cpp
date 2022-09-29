@@ -99,4 +99,15 @@ checker::Type *Identifier::Check(checker::Checker *checker) const
     return checker->GetTypeOfVariable(Variable());
 }
 
+void Identifier::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    if (typeAnnotation_) {
+        typeAnnotation_ = std::get<ir::AstNode *>(cb(typeAnnotation_))->AsExpression();
+    }
+
+    for (auto iter = decorators_.begin(); iter != decorators_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsDecorator();
+    }
+}
+
 }  // namespace panda::es2panda::ir

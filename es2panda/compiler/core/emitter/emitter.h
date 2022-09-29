@@ -102,7 +102,7 @@ public:
     NO_COPY_SEMANTIC(Emitter);
     NO_MOVE_SEMANTIC(Emitter);
 
-    void AddFunction(FunctionEmitter *func);
+    void AddFunction(FunctionEmitter *func, CompilerContext *context);
     void AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerContext *context);
     static void DumpAsm(const panda::pandasm::Program *prog);
     panda::pandasm::Program *Finalize(bool dumpDebugInfo, util::Hotfix *hotfixHelper);

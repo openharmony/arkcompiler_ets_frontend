@@ -41,4 +41,9 @@ checker::Type *ImportExpression::Check([[maybe_unused]] checker::Checker *checke
     return nullptr;
 }
 
+void ImportExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    source_ = std::get<ir::AstNode *>(cb(source_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

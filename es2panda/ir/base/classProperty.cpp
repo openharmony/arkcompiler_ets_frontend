@@ -15,12 +15,15 @@
 
 #include "classProperty.h"
 
-#include <ir/astDump.h>
-#include <ir/base/decorator.h>
-#include <ir/expression.h>
-
 #include <cstdint>
 #include <string>
+
+#include "binder/binder.h"
+#include "ir/astDump.h"
+#include "ir/base/decorator.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/expression.h"
+#include "util/helpers.h"
 
 namespace panda::es2panda::ir {
 
@@ -63,6 +66,26 @@ void ClassProperty::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 checker::Type *ClassProperty::Check([[maybe_unused]] checker::Checker *checker) const
 {
     return nullptr;
+}
+
+void ClassProperty::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
+{
+    const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(this);
+    auto scopeCtx = binder::LexicalScope<binder::FunctionScope>::Enter(binder, ctor->Scope());
+
+    key_ = std::get<ir::AstNode *>(cb(key_))->AsExpression();
+
+    if (value_) {
+        value_ = std::get<ir::AstNode *>(cb(value_))->AsExpression();
+    }
+
+    if (typeAnnotation_) {
+        typeAnnotation_ = std::get<ir::AstNode *>(cb(typeAnnotation_))->AsExpression();
+    }
+
+    for (auto iter = decorators_.begin(); iter != decorators_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsDecorator();
+    }
 }
 
 }  // namespace panda::es2panda::ir

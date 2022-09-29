@@ -44,4 +44,13 @@ checker::Type *TSClassImplements::Check([[maybe_unused]] checker::Checker *check
     return nullptr;
 }
 
+void TSClassImplements::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    expression_ = std::get<ir::AstNode *>(cb(expression_))->AsExpression();
+
+    if (typeParameters_) {
+        typeParameters_ = std::get<ir::AstNode *>(cb(typeParameters_))->AsTSTypeParameterInstantiation();
+    }
+}
+
 }  // namespace panda::es2panda::ir

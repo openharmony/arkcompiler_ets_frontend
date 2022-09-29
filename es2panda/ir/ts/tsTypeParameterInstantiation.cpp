@@ -39,4 +39,11 @@ checker::Type *TSTypeParameterInstantiation::Check([[maybe_unused]] checker::Che
     return nullptr;
 }
 
+void TSTypeParameterInstantiation::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    for (auto iter = params_.begin(); iter != params_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

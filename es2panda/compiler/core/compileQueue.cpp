@@ -78,7 +78,7 @@ void CompileFunctionJob::Run()
     FunctionEmitter funcEmitter(&allocator, &pg);
     funcEmitter.Generate(context_->HotfixHelper());
 
-    context_->GetEmitter()->AddFunction(&funcEmitter);
+    context_->GetEmitter()->AddFunction(&funcEmitter, context_);
 
     if (dependant_) {
         dependant_->Signal();

@@ -45,4 +45,10 @@ checker::Type *TSParameterProperty::Check([[maybe_unused]] checker::Checker *che
 {
     return nullptr;
 }
+
+void TSParameterProperty::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    parameter_ = std::get<ir::AstNode *>(cb(parameter_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

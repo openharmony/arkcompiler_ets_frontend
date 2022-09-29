@@ -197,6 +197,7 @@ es2panda_src = [
   "parser/parserImpl.cpp",
   "parser/program/program.cpp",
   "parser/statementParser.cpp",
+  "parser/transformer/transformer.cpp",
   "typescript/checker.cpp",
   "typescript/core/binaryLikeExpression.cpp",
   "typescript/core/destructuringContext.cpp",

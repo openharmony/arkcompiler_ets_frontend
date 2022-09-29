@@ -48,4 +48,13 @@ checker::Type *TSTypePredicate::GetType([[maybe_unused]] checker::Checker *check
     return nullptr;
 }
 
+void TSTypePredicate::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    parameterName_ = std::get<ir::AstNode *>(cb(parameterName_))->AsExpression();
+
+    if (typeAnnotation_) {
+        typeAnnotation_ = std::get<ir::AstNode *>(cb(typeAnnotation_))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

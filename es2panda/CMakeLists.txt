@@ -243,6 +243,7 @@ set(ES2PANDA_LIB_SRC
   parser/parserImpl.cpp
   parser/program/program.cpp
   parser/statementParser.cpp
+  parser/transformer/transformer.cpp
   typescript/checker.cpp
   typescript/core/binaryLikeExpression.cpp
   typescript/core/destructuringContext.cpp

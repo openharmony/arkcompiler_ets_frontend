@@ -75,4 +75,14 @@ checker::Type *IfStatement::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void IfStatement::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    test_ = std::get<ir::AstNode *>(cb(test_))->AsExpression();
+    consequent_ = std::get<ir::AstNode *>(cb(consequent_))->AsStatement();
+
+    if (alternate_) {
+        alternate_ = std::get<ir::AstNode *>(cb(alternate_))->AsStatement();
+    }
+}
+
 }  // namespace panda::es2panda::ir

@@ -15,6 +15,7 @@
 
 #include "tsConstructorType.h"
 
+#include <binder/binder.h>
 #include <binder/scope.h>
 #include <typescript/checker.h>
 #include <typescript/types/signature.h>
@@ -64,6 +65,21 @@ checker::Type *TSConstructorType::Check(checker::Checker *checker) const
 checker::Type *TSConstructorType::GetType(checker::Checker *checker) const
 {
     return checker->CheckTypeCached(this);
+}
+
+void TSConstructorType::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
+{
+    auto scopeCtx = binder::LexicalScope<binder::Scope>::Enter(binder, scope_);
+
+    if (typeParams_) {
+        typeParams_ = std::get<ir::AstNode *>(cb(typeParams_))->AsTSTypeParameterDeclaration();
+    }
+
+    for (auto iter = params_.begin(); iter != params_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+
+    returnType_ = std::get<ir::AstNode *>(cb(returnType_))->AsExpression();
 }
 
 }  // namespace panda::es2panda::ir

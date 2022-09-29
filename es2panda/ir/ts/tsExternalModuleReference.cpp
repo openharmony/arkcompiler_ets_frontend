@@ -36,4 +36,9 @@ checker::Type *TSExternalModuleReference::Check([[maybe_unused]] checker::Checke
     return nullptr;
 }
 
+void TSExternalModuleReference::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    expr_ = std::get<ir::AstNode *>(cb(expr_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

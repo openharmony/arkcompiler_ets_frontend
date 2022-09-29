@@ -44,4 +44,11 @@ checker::Type *BreakStatement::Check([[maybe_unused]] checker::Checker *checker)
     return nullptr;
 }
 
+void BreakStatement::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    if (ident_) {
+        ident_ = std::get<ir::AstNode *>(cb(ident_))->AsIdentifier();
+    }
+}
+
 }  // namespace panda::es2panda::ir

@@ -169,4 +169,17 @@ checker::Type *CallExpression::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void CallExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    callee_ = std::get<ir::AstNode *>(cb(callee_))->AsExpression();
+
+    if (typeParams_) {
+        typeParams_ = std::get<ir::AstNode *>(cb(typeParams_))->AsTSTypeParameterInstantiation();
+    }
+
+    for (auto iter = arguments_.begin(); iter != arguments_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

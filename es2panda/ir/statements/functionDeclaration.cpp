@@ -57,4 +57,11 @@ checker::Type *FunctionDeclaration::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void FunctionDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    if (func_) {
+        func_ = std::get<ir::AstNode *>(cb(func_))->AsScriptFunction();
+    }
+}
+
 }  // namespace panda::es2panda::ir

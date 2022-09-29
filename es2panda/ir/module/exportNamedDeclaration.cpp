@@ -59,4 +59,19 @@ checker::Type *ExportNamedDeclaration::Check([[maybe_unused]] checker::Checker *
     return nullptr;
 }
 
+void ExportNamedDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    if (decl_) {
+        decl_ = std::get<ir::AstNode *>(cb(decl_))->AsStatement();
+    } else {
+        if (source_) {
+            source_ = std::get<ir::AstNode *>(cb(source_))->AsStringLiteral();
+        }
+        
+        for (auto iter = specifiers_.begin(); iter != specifiers_.end(); iter++) {
+            *iter = std::get<ir::AstNode *>(cb(*iter))->AsExportSpecifier();
+        }
+    }
+}
+
 }  // namespace panda::es2panda::ir

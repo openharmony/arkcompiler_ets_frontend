@@ -44,4 +44,10 @@ checker::Type *LabelledStatement::Check([[maybe_unused]] checker::Checker *check
     return nullptr;
 }
 
+void LabelledStatement::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    ident_ = std::get<ir::AstNode *>(cb(ident_))->AsIdentifier();
+    body_ = std::get<ir::AstNode *>(cb(body_))->AsStatement();
+}
+
 }  // namespace panda::es2panda::ir

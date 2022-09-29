@@ -78,6 +78,7 @@ public:
     void CompileObject(compiler::PandaGen *pg, compiler::VReg dest) const;
     compiler::Operand CompileKey(compiler::PandaGen *pg) const;
     checker::Type *Check(checker::Checker *checker) const override;
+    void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
 
 private:
     Expression *object_;

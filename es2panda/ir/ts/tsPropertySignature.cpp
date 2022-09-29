@@ -63,4 +63,13 @@ checker::Type *TSPropertySignature::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void TSPropertySignature::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    key_ = std::get<ir::AstNode *>(cb(key_))->AsExpression();
+
+    if (typeAnnotation_) {
+        typeAnnotation_ = std::get<ir::AstNode *>(cb(typeAnnotation_))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

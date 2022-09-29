@@ -39,4 +39,29 @@ checker::Type *TSModuleBlock::Check([[maybe_unused]] checker::Checker *checker) 
     return nullptr;
 }
 
+void TSModuleBlock::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    for (auto iter = statements_.begin(); iter != statements_.end();) {
+        auto newStatements = cb(*iter);
+        if (std::holds_alternative<ir::AstNode *>(newStatements)) {
+            auto statement = std::get<ir::AstNode *>(newStatements);
+            if (statement == *iter) {
+                iter++;
+            } else if (statement == nullptr) {
+                iter = statements_.erase(iter);
+            } else {
+                *iter = statement->AsStatement();
+                iter++;
+            }
+        } else {
+            auto statements = std::get<std::vector<ir::AstNode *>>(newStatements);
+            for (auto *it : statements) {
+                iter = statements_.insert(iter, it->AsStatement());
+                iter++;
+            }
+            iter = statements_.erase(iter);
+        }
+    }
+}
+
 }  // namespace panda::es2panda::ir

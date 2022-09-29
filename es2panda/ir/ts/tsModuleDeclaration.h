@@ -16,11 +16,8 @@
 #ifndef ES2PANDA_IR_TS_MODULE_DECLARATION_H
 #define ES2PANDA_IR_TS_MODULE_DECLARATION_H
 
+#include <binder/scope.h>
 #include <ir/statement.h>
-
-namespace panda::es2panda::binder {
-class LocalScope;
-}  // namespace panda::es2panda::binder
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -37,18 +34,19 @@ class Expression;
 
 class TSModuleDeclaration : public Statement {
 public:
-    explicit TSModuleDeclaration(binder::LocalScope *scope, Expression *name, Statement *body, bool declare,
-                                 bool global)
+    explicit TSModuleDeclaration(binder::TSModuleScope *scope, Expression *name, Statement *body, bool declare,
+                                 bool global, bool isInstantiated = true)
         : Statement(AstNodeType::TS_MODULE_DECLARATION),
           scope_(scope),
           name_(name),
           body_(body),
           declare_(declare),
-          global_(global)
+          global_(global),
+          isInstantiated_(isInstantiated)
     {
     }
 
-    binder::LocalScope *Scope() const
+    binder::TSModuleScope *Scope() const
     {
         return scope_;
     }
@@ -63,6 +61,11 @@ public:
         return body_;
     }
 
+    Statement *Body()
+    {
+        return body_;
+    }
+
     bool Declare() const
     {
         return declare_;
@@ -73,17 +76,24 @@ public:
         return global_;
     }
 
+    bool IsInstantiated() const
+    {
+        return isInstantiated_;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    void UpdateSelf(const NodeUpdater &cb, binder::Binder *binder) override;
 
 private:
-    binder::LocalScope *scope_;
+    binder::TSModuleScope *scope_;
     Expression *name_;
     Statement *body_;
     bool declare_;
     bool global_;
+    bool isInstantiated_;
 };
 }  // namespace panda::es2panda::ir
 

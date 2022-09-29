@@ -48,4 +48,12 @@ checker::Type *TSConditionalType::GetType([[maybe_unused]] checker::Checker *che
     return nullptr;
 }
 
+void TSConditionalType::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    checkType_ = std::get<ir::AstNode *>(cb(checkType_))->AsExpression();
+    extendsType_ = std::get<ir::AstNode *>(cb(extendsType_))->AsExpression();
+    trueType_ = std::get<ir::AstNode *>(cb(trueType_))->AsExpression();
+    falseType_ = std::get<ir::AstNode *>(cb(falseType_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

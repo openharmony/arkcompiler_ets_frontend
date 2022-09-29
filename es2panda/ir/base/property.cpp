@@ -135,4 +135,10 @@ checker::Type *Property::Check([[maybe_unused]] checker::Checker *checker) const
     return nullptr;
 }
 
+void Property::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    key_ = std::get<ir::AstNode *>(cb(key_))->AsExpression();
+    value_ = std::get<ir::AstNode *>(cb(value_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

@@ -42,4 +42,9 @@ checker::Type *ThrowStatement::Check([[maybe_unused]] checker::Checker *checker)
     return nullptr;
 }
 
+void ThrowStatement::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    argument_ = std::get<ir::AstNode *>(cb(argument_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

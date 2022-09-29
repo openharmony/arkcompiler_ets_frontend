@@ -49,4 +49,15 @@ checker::Type *TSTemplateLiteralType::GetType(checker::Checker *checker) const
     return nullptr;
 }
 
+void TSTemplateLiteralType::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    for (auto iter = references_.begin(); iter != references_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+
+    for (auto iter = quasis_.begin(); iter != quasis_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsTemplateElement();
+    }
+}
+
 }  // namespace panda::es2panda::ir

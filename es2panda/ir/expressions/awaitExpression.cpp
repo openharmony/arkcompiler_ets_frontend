@@ -53,4 +53,11 @@ checker::Type *AwaitExpression::Check(checker::Checker *checker) const
     return checker->GlobalAnyType();
 }
 
+void AwaitExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    if (argument_) {
+        argument_ = std::get<ir::AstNode *>(cb(argument_))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

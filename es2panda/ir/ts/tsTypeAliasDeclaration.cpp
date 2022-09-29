@@ -52,4 +52,15 @@ checker::Type *TSTypeAliasDeclaration::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void TSTypeAliasDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    id_ = std::get<ir::AstNode *>(cb(id_))->AsIdentifier();
+
+    if (typeParams_) {
+        typeParams_ = std::get<ir::AstNode *>(cb(typeParams_))->AsTSTypeParameterDeclaration();
+    }
+
+    typeAnnotation_ = std::get<ir::AstNode *>(cb(typeAnnotation_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

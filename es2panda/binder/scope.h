@@ -42,6 +42,101 @@ class Variable;
 
 using VariableMap = ArenaUnorderedMap<util::StringView, Variable *>;
 
+class TSBindings {
+public:
+    explicit TSBindings(ArenaAllocator *allocator) : allocator_(allocator) {}
+
+    template <TSBindingType type>
+    bool AddTSVariable(const util::StringView &name, Variable *variable)
+    {
+        static_assert(type < TSBindingType::COUNT);
+        size_t index = GetIndex(type);
+        if (tsBindings_[index] == nullptr) {
+            tsBindings_[index] = allocator_->New<VariableMap>(allocator_->Adapter());
+        }
+        return tsBindings_[index]->insert({name, variable}).second;
+    }
+
+    template <TSBindingType type>
+    Variable *FindTSVariable(const util::StringView &name) const
+    {
+        static_assert(type < TSBindingType::COUNT);
+        size_t index = GetIndex(type);
+        if (tsBindings_[index] == nullptr) {
+            return nullptr;
+        }
+        auto res = tsBindings_[index]->find(name);
+        if (res == tsBindings_[index]->end()) {
+            return nullptr;
+        }
+        return res->second;
+    }
+
+    bool InTSBindings(const util::StringView &name) const
+    {
+        for (size_t i = 0; i < GetIndex(TSBindingType::COUNT); i++) {
+            if (tsBindings_[i] && tsBindings_[i]->find(name) != tsBindings_[i]->end()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+private:
+    size_t GetIndex(TSBindingType type) const
+    {
+        return static_cast<size_t>(type);
+    }
+
+    ArenaAllocator *allocator_;
+    std::array<VariableMap *, static_cast<size_t>(TSBindingType::COUNT)> tsBindings_ {};
+};
+
+class ExportBindings {
+public:
+    explicit ExportBindings(ArenaAllocator *allocator)
+        : exportBindings_(allocator->Adapter()),
+          exportTSBindings_(allocator)
+    {
+    }
+
+    Variable *FindExportVariable(const util::StringView &name) const
+    {
+        auto res = exportBindings_.find(name);
+        if (res == exportBindings_.end()) {
+            return nullptr;
+        }
+        return res->second;
+    }
+
+    bool AddExportVariable(const util::StringView &name, Variable *var)
+    {
+        return exportBindings_.insert({name, var}).second;
+    }
+
+    bool InExportBindings(const util::StringView &name) const
+    {
+        auto res = FindExportVariable(name);
+        return res != nullptr || exportTSBindings_.InTSBindings(name);
+    }
+
+    template <TSBindingType type>
+    Variable *FindExportTSVariable(const util::StringView &name) const
+    {
+        return exportTSBindings_.FindTSVariable<type>(name);
+    }
+
+    template <TSBindingType type>
+    bool AddExportTSVariable(const util::StringView &name, Variable *var)
+    {
+        return exportTSBindings_.AddTSVariable<type>(name, var);
+    }
+
+private:
+    VariableMap exportBindings_;
+    TSBindings exportTSBindings_;
+};
+
 class ScopeFindResult {
 public:
     ScopeFindResult() = default;
@@ -216,9 +311,26 @@ public:
 
     bool HasVarDecl(const util::StringView &name) const;
 
+    template <TSBindingType type>
+    Variable *FindLocalTSVariable(const util::StringView &name) const
+    {
+        return tsBindings_.FindTSVariable<type>(name);
+    }
+
+    template <TSBindingType type>
+    void AddLocalTSVariable(const util::StringView &name, Variable *var)
+    {
+        tsBindings_.AddTSVariable<type>(name, var);
+    }
+
+    bool InLocalTSBindings(const util::StringView &name) const
+    {
+        return tsBindings_.InTSBindings(name);
+    }
+
 protected:
     explicit Scope(ArenaAllocator *allocator, Scope *parent)
-        : parent_(parent), decls_(allocator->Adapter()), bindings_(allocator->Adapter())
+        : parent_(parent), decls_(allocator->Adapter()), bindings_(allocator->Adapter()), tsBindings_(allocator)
     {
     }
 
@@ -237,9 +349,15 @@ protected:
     bool AddLocal(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                   [[maybe_unused]] ScriptExtension extension);
 
+    void SetParent(Scope *parent)
+    {
+        parent_ = parent;
+    }
+
     Scope *parent_ {};
     ArenaVector<Decl *> decls_;
     VariableMap bindings_;
+    TSBindings tsBindings_;
     const ir::AstNode *node_ {};
     const compiler::IRNode *startIns_ {};
     const compiler::IRNode *endIns_ {};
@@ -306,6 +424,9 @@ protected:
 
     template <typename T>
     bool AddTSBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl, VariableFlags flags);
+
+    template <typename T>
+    bool AddTSBinding(ArenaAllocator *allocator, Decl *newDecl, VariableFlags flags);
 
     template <typename T>
     bool AddLexical(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl);
@@ -423,6 +544,12 @@ public:
     const T *ParamScope() const
     {
         return paramScope_;
+    }
+
+    void AddBindsFromParam()
+    {
+        ASSERT(paramScope_);
+        this->bindings_.insert(paramScope_->Bindings().begin(), paramScope_->Bindings().end());
     }
 
 protected:
@@ -607,6 +734,68 @@ public:
                     [[maybe_unused]] ScriptExtension extension) override;
 };
 
+class TSModuleScope : public FunctionScope {
+public:
+    explicit TSModuleScope(ArenaAllocator *allocator, Scope *parent, ExportBindings *exportBindings)
+        : FunctionScope(allocator, nullptr), exportBindings_(exportBindings), variableNames_(allocator->Adapter())
+    {
+        paramScope_ = allocator->New<FunctionParamScope>(allocator, parent);
+        paramScope_->BindFunctionScope(this);
+        SetParent(paramScope_);
+    }
+
+    ScopeType Type() const override
+    {
+        return ScopeType::TSMODULE;
+    }
+
+    template <TSBindingType type>
+    Variable *FindExportTSVariable(const util::StringView &name) const
+    {
+        return exportBindings_->FindExportTSVariable<type>(name);
+    }
+
+    template <TSBindingType type>
+    bool AddExportTSVariable(const util::StringView &name, Variable *var)
+    {
+        return exportBindings_->AddExportTSVariable<type>(name, var);
+    }
+
+    Variable *FindExportVariable(const util::StringView &name) const
+    {
+        return exportBindings_->FindExportVariable(name);
+    }
+
+    bool AddExportVariable(const util::StringView &name, Variable *var)
+    {
+        return exportBindings_->AddExportVariable(name, var);
+    }
+
+    bool AddExportVariable(const util::StringView &name)
+    {
+        return exportBindings_->AddExportVariable(name, FindLocal(name));
+    }
+
+    bool InExportBindings(const util::StringView &name) const
+    {
+        return exportBindings_->InExportBindings(name);
+    }
+
+    void AddDeclarationName(const util::StringView &name)
+    {
+        variableNames_.insert(name);
+    }
+
+    bool HasVariableName(const util::StringView &name) const
+    {
+        return variableNames_.find(name) != variableNames_.end();
+    }
+
+private:
+    ExportBindings *exportBindings_;
+    ArenaSet<util::StringView> variableNames_;
+};
+
 inline VariableFlags VariableScope::DeclFlagToVariableFlag(DeclarationFlags declFlag)
 {
     VariableFlags varFlag = VariableFlags::NONE;
@@ -681,8 +870,36 @@ bool VariableScope::AddTSBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
                                  VariableFlags flags)
 {
     ASSERT(!currentVariable);
+    // TODO(xucheng): move the ts variables to tsBindings_
     bindings_.insert({newDecl->Name(), allocator->New<T>(newDecl, flags)});
     return true;
+}
+
+template <typename T>
+bool VariableScope::AddTSBinding(ArenaAllocator *allocator, Decl *newDecl, VariableFlags flags)
+{
+    switch (flags) {
+        case VariableFlags::NAMESPACE: {
+            return tsBindings_.AddTSVariable<TSBindingType::NAMESPACE>(
+                newDecl->Name(), allocator->New<T>(newDecl, flags));
+        }
+        case VariableFlags::ENUM_LITERAL: {
+            return tsBindings_.AddTSVariable<TSBindingType::ENUM>(
+                newDecl->Name(), allocator->New<T>(newDecl, flags));
+        }
+        case VariableFlags::INTERFACE: {
+            return tsBindings_.AddTSVariable<TSBindingType::INTERFACE>(
+                newDecl->Name(), allocator->New<T>(newDecl, flags));
+        }
+        case VariableFlags::IMPORT_EQUALS: {
+            return tsBindings_.AddTSVariable<TSBindingType::IMPORT_EQUALS>(
+                newDecl->Name(), allocator->New<T>(newDecl, flags));
+        }
+        default: {
+            break;
+        }
+    }
+    return false;
 }
 
 template <typename T>

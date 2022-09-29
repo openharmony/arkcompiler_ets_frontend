@@ -43,4 +43,15 @@ checker::Type *SwitchCaseStatement::Check([[maybe_unused]] checker::Checker *che
     return nullptr;
 }
 
+void SwitchCaseStatement::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    if (test_) {
+        test_ = std::get<ir::AstNode *>(cb(test_))->AsExpression();
+    }
+
+    for (auto iter = consequent_.begin(); iter != consequent_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsStatement();
+    }
+}
+
 }  // namespace panda::es2panda::ir

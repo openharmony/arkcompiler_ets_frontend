@@ -15,6 +15,7 @@
 
 #include "doWhileStatement.h"
 
+#include <binder/binder.h>
 #include <binder/scope.h>
 #include <compiler/base/condition.h>
 #include <compiler/core/labelTarget.h>
@@ -65,6 +66,15 @@ checker::Type *DoWhileStatement::Check(checker::Checker *checker) const
     body_->Check(checker);
 
     return nullptr;
+}
+
+void DoWhileStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
+{
+    {
+        auto loopScopeCtx = binder::LexicalScope<binder::LoopScope>::Enter(binder, scope_);
+        body_ = std::get<ir::AstNode *>(cb(body_))->AsStatement();
+    }
+    test_ = std::get<ir::AstNode *>(cb(test_))->AsExpression();
 }
 
 }  // namespace panda::es2panda::ir

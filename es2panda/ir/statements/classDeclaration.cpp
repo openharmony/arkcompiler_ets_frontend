@@ -55,4 +55,13 @@ checker::Type *ClassDeclaration::Check([[maybe_unused]] checker::Checker *checke
     return nullptr;
 }
 
+void ClassDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    def_ = std::get<ir::AstNode *>(cb(def_))->AsClassDefinition();
+
+    for (auto iter = decorators_.begin(); iter != decorators_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsDecorator();
+    }
+}
+
 }  // namespace panda::es2panda::ir

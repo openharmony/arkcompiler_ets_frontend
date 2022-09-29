@@ -43,4 +43,11 @@ checker::Type *TSIntersectionType::GetType([[maybe_unused]] checker::Checker *ch
     return nullptr;
 }
 
+void TSIntersectionType::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    for (auto iter = types_.begin(); iter != types_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

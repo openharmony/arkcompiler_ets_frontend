@@ -85,6 +85,7 @@ public:
     void Dump(ir::AstDumper *dumper) const override;
     void Compile(compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    void UpdateSelf(const NodeUpdater &cb, binder::Binder *binder) override;
 
 private:
     AstNode *left_;

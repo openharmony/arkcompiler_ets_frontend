@@ -15,6 +15,7 @@
 
 #include "catchClause.h"
 
+#include <binder/binder.h>
 #include <binder/scope.h>
 #include <compiler/core/pandagen.h>
 #include <compiler/base/lreference.h>
@@ -81,6 +82,17 @@ checker::Type *CatchClause::Check(checker::Checker *checker) const
     body_->Check(checker);
 
     return nullptr;
+}
+
+void CatchClause::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
+{
+    if (param_) {
+        auto paramScopeCtx = binder::LexicalScope<binder::CatchParamScope>::Enter(binder, scope_->ParamScope());
+        param_ = std::get<ir::AstNode *>(cb(param_))->AsExpression();
+    }
+
+    auto scopeCtx = binder::LexicalScope<binder::CatchScope>::Enter(binder, scope_);
+    body_ = std::get<ir::AstNode *>(cb(body_))->AsBlockStatement();
 }
 
 }  // namespace panda::es2panda::ir

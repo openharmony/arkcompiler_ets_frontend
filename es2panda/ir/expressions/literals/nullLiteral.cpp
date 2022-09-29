@@ -38,4 +38,6 @@ checker::Type *NullLiteral::Check(checker::Checker *checker) const
     return checker->GlobalNullType();
 }
 
+void NullLiteral::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}
+
 }  // namespace panda::es2panda::ir

@@ -15,6 +15,7 @@
 
 #include "blockStatement.h"
 
+#include <binder/binder.h>
 #include <binder/scope.h>
 #include <compiler/core/regScope.h>
 #include <typescript/checker.h>
@@ -52,6 +53,33 @@ checker::Type *BlockStatement::Check(checker::Checker *checker) const
     }
 
     return nullptr;
+}
+
+void BlockStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
+{
+    auto scopeCtx = binder::LexicalScope<binder::Scope>::Enter(binder, scope_);
+
+    for (auto iter = statements_.begin(); iter != statements_.end();) {
+        auto newStatements = cb(*iter);
+        if (std::holds_alternative<ir::AstNode *>(newStatements)) {
+            auto statement = std::get<ir::AstNode *>(newStatements);
+            if (statement == *iter) {
+                iter++;
+            } else if (statement == nullptr) {
+                iter = statements_.erase(iter);
+            } else {
+                *iter = statement->AsStatement();
+                iter++;
+            }
+        } else {
+            auto statements = std::get<std::vector<ir::AstNode *>>(newStatements);
+            for (auto *it : statements) {
+                iter = statements_.insert(iter, it->AsStatement());
+                iter++;
+            }
+            iter = statements_.erase(iter);
+        }
+    }
 }
 
 }  // namespace panda::es2panda::ir

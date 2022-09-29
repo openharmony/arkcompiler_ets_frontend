@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_COMPILER_SCOPES_VARIABLE_FLAGS_H
 #define ES2PANDA_COMPILER_SCOPES_VARIABLE_FLAGS_H
 
+#include <cstdlib>
 #include <util/enumbitops.h>
 
 namespace panda::es2panda::binder {
@@ -29,13 +30,14 @@ namespace panda::es2panda::binder {
     _(PARAM, ParameterDecl)              \
     /* TS */                             \
     _(TYPE_ALIAS, TypeAliasDecl)         \
-    _(NAMESPACE, NameSpaceDecl)          \
+    _(NAMESPACE, NamespaceDecl)          \
     _(INTERFACE, InterfaceDecl)          \
     _(ENUM_LITERAL, EnumLiteralDecl)     \
     _(TYPE_PARAMETER, TypeParameterDecl) \
     _(PROPERTY, PropertyDecl)            \
     _(METHOD, MethodDecl)                \
-    _(ENUM, EnumDecl)
+    _(ENUM, EnumDecl)                    \
+    _(IMPORT_EQUALS, ImportEqualsDecl)
 
 enum class DeclType {
     NONE,
@@ -55,7 +57,9 @@ enum class DeclType {
     _(LOOP_DECL, LoopDeclarationScope)    \
     _(FUNCTION, FunctionScope)            \
     _(GLOBAL, GlobalScope)                \
-    _(MODULE, ModuleScope)
+    _(MODULE, ModuleScope)                \
+    _(TSMODULE, TSModuleScope)
+
 
 enum class ScopeType {
 #define GEN_SCOPE_TYPES(type, class_name) type,
@@ -72,11 +76,20 @@ enum class ResolveBindingOptions {
 
 DEFINE_BITOPS(ResolveBindingOptions)
 
-#define VARIABLE_TYPES(_)     \
-    _(LOCAL, LocalVariable)   \
-    _(GLOBAL, GlobalVariable) \
-    _(MODULE, ModuleVariable) \
-    _(ENUM, EnumVariable)
+enum class ResolveBindingFlags {
+    ALL = 1U << 0U,
+    TS_BEFORE_TRANSFORM = 1U << 1U,
+};
+
+DEFINE_BITOPS(ResolveBindingFlags)
+
+#define VARIABLE_TYPES(_)                  \
+    _(LOCAL, LocalVariable)                \
+    _(GLOBAL, GlobalVariable)              \
+    _(MODULE, ModuleVariable)              \
+    _(ENUM, EnumVariable)                  \
+    _(NAMESPACE, NamespaceVariable)        \
+    _(IMPORT_EQUALS, ImportEqualsVariable)
 
 enum class VariableType {
 #define GEN_VARIABLE_TYPES(type, class_name) type,
@@ -111,6 +124,8 @@ enum class VariableFlags {
     REST_ARG = 1 << 14,
     NUMERIC_NAME = 1 << 15,
     TYPE = 1 << 16,
+    NAMESPACE = 1 << 17,
+    IMPORT_EQUALS = 1 << 18,
 
     INDEX_LIKE = COMPUTED_INDEX | INDEX_NAME,
 
@@ -149,6 +164,14 @@ enum class DeclarationFlags {
 };
 
 DEFINE_BITOPS(DeclarationFlags)
+
+enum class TSBindingType : size_t {
+    NAMESPACE = 0,
+    ENUM,
+    INTERFACE,
+    IMPORT_EQUALS,
+    COUNT,
+};
 
 }  // namespace panda::es2panda::binder
 

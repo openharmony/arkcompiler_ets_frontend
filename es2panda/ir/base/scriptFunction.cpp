@@ -15,6 +15,7 @@
 
 #include "scriptFunction.h"
 
+#include <binder/binder.h>
 #include <binder/scope.h>
 #include <ir/astDump.h>
 #include <ir/expression.h>
@@ -95,6 +96,33 @@ void ScriptFunction::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 checker::Type *ScriptFunction::Check([[maybe_unused]] checker::Checker *checker) const
 {
     return nullptr;
+}
+
+void ScriptFunction::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
+{
+    if (id_) {
+        id_ = std::get<ir::AstNode *>(cb(id_))->AsIdentifier();
+    }
+
+    auto paramScopeCtx = binder::LexicalScope<binder::FunctionParamScope>::Enter(binder, scope_->ParamScope());
+
+    if (typeParams_) {
+        typeParams_ = std::get<ir::AstNode *>(cb(typeParams_))->AsTSTypeParameterDeclaration();
+    }
+
+    for (auto iter = params_.begin(); iter != params_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+
+    if (returnTypeAnnotation_) {
+        returnTypeAnnotation_ = std::get<ir::AstNode *>(cb(returnTypeAnnotation_))->AsExpression();
+    }
+
+    auto scopeCtx = binder::LexicalScope<binder::FunctionScope>::Enter(binder, scope_);
+
+    if (body_) {
+        body_ = std::get<ir::AstNode *>(cb(body_));
+    }
 }
 
 }  // namespace panda::es2panda::ir

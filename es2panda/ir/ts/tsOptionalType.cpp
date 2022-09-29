@@ -50,4 +50,9 @@ checker::Type *TSOptionalType::GetType(checker::Checker *checker) const
     return type;
 }
 
+void TSOptionalType::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    type_ = std::get<ir::AstNode *>(cb(type_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

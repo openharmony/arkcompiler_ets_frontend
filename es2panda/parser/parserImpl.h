@@ -184,6 +184,11 @@ public:
 
     void AddHotfixHelper(util::Hotfix *hotfixHelper);
 
+    ArenaAllocator *Allocator() const
+    {
+        return program_.Allocator();
+    }
+
 private:
     bool IsStartOfMappedType() const;
     bool IsStartOfTsTypePredicate() const;
@@ -418,17 +423,19 @@ private:
     void AddExportStarEntryItem(const lexer::SourcePosition &startLoc, const ir::StringLiteral *source,
                                 const ir::Identifier *exported);
     void AddExportDefaultEntryItem(const ir::AstNode *declNode);
-    void AddExportLocalEntryItem(const ir::Statement *declNode);
+    void AddExportLocalEntryItem(const ir::Statement *declNode, bool isTsModule);
     parser::SourceTextModuleRecord *GetSourceTextModuleRecord();
 
     bool ParseDirective(ArenaVector<ir::Statement *> *statements);
     void ParseDirectivePrologue(ArenaVector<ir::Statement *> *statements);
     ArenaVector<ir::Statement *> ParseStatementList(StatementParsingFlags flags = StatementParsingFlags::ALLOW_LEXICAL);
     ir::Statement *ParseStatement(StatementParsingFlags flags = StatementParsingFlags::NONE);
-    ir::TSModuleDeclaration *ParseTsModuleDeclaration(bool isDeclare);
+    ir::TSModuleDeclaration *ParseTsModuleDeclaration(bool isDeclare, bool isExport = false);
     ir::TSModuleDeclaration *ParseTsAmbientExternalModuleDeclaration(const lexer::SourcePosition &startLoc,
                                                                      bool isDeclare);
-    ir::TSModuleDeclaration *ParseTsModuleOrNamespaceDelaration(const lexer::SourcePosition &startLoc, bool isDeclare);
+    ir::TSModuleDeclaration *ParseTsModuleOrNamespaceDelaration(const lexer::SourcePosition &startLoc,
+                                                                bool isDeclare,
+                                                                bool isExport);
 
     ir::TSImportEqualsDeclaration *ParseTsImportEqualsDeclaration(const lexer::SourcePosition &startLoc,
                                                                   bool isExport = false);
@@ -495,11 +502,6 @@ private:
                            std::to_string(namespaceExportCount_++);
         util::UString internalName(name, Allocator());
         return internalName.View();
-    }
-
-    ArenaAllocator *Allocator() const
-    {
-        return program_.Allocator();
     }
 
     binder::Binder *Binder()

@@ -16,7 +16,6 @@
 #include "function.h"
 
 #include <binder/binder.h>
-#include <util/helpers.h>
 #include <binder/scope.h>
 #include <binder/variable.h>
 #include <compiler/base/lreference.h>
@@ -27,6 +26,7 @@
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/identifier.h>
 #include <ir/statements/blockStatement.h>
+#include <util/helpers.h>
 
 namespace panda::es2panda::compiler {
 
@@ -185,7 +185,7 @@ static void CompileFunctionOrProgram(PandaGen *pg)
     } else {
         pg->FunctionInit(nullptr);
 
-        if (topScope->IsFunctionScope()) {
+        if (topScope->IsFunctionScope() || topScope->IsTSModuleScope()) {
             CompileFunction(pg);
         } else {
             ASSERT(topScope->IsGlobalScope() || topScope->IsModuleScope());

@@ -82,6 +82,7 @@ public:
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check(checker::Checker *checker) const override;
     checker::Type *InferType(checker::Checker *checker, binder::Variable *bindingVar) const;
+    void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
 
 private:
     binder::LocalScope *scope_;
