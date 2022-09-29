@@ -99,7 +99,6 @@ export class SwitchBase {
 }
 
 export function compileSwitchStatement(stmt: ts.SwitchStatement, compiler: Compiler) {
-    compiler.pushScope(stmt);
     let pandaGen = compiler.getPandaGen();
     let caseNums = stmt.caseBlock.clauses.length;
     let switchEndLabel = new Label();
@@ -107,6 +106,7 @@ export function compileSwitchStatement(stmt: ts.SwitchStatement, compiler: Compi
 
     let tagReg = pandaGen.getTemp();
     switchBuilder.compileTagOfSwitch(tagReg);
+    compiler.pushScope(stmt);
     let caseTargets = stmt.caseBlock.clauses;
     let defaultIndex = 0;
     let defaultCnt = 0;
