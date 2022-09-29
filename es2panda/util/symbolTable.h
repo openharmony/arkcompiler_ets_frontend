@@ -57,7 +57,7 @@ public:
 
 private:
     bool ReadSymbolTable(const std::string &symbolTable);
-    std::vector<std::string_view> GetStringItems(std::string_view input, const std::string &delimiter);
+    std::vector<std::string_view> GetStringItems(std::string_view input, const std::string &separator);
 
     std::mutex m_;
     std::string symbolTable_;

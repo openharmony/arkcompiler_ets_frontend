@@ -128,7 +128,7 @@ public:
     static constexpr std::string_view ANONY_NAMESPACE_NAME = "=ens";
 
 private:
-    bool HasDuplicateExport(util::StringView exportName);
+    bool HasDuplicateExport(util::StringView exportName) const;
     void ConvertLocalExportToIndirect(ImportEntry *importEntry, ExportEntry *exportEntry);
 
     ArenaAllocator *allocator_;

@@ -51,7 +51,7 @@ std::tuple<char32_t, char32_t> StringView::EncodeSurrogate(char32_t cp)
     return {cu1, cu2};
 }
 
-void StringView::Iterator::SkipCp()
+void StringView::Iterator::SkipCp() const
 {
     if (!HasNext()) {
         return;

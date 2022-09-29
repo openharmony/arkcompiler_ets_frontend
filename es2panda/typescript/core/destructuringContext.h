@@ -63,7 +63,7 @@ public:
 
     DEFAULT_COPY_SEMANTIC(DestructuringContext);
     DEFAULT_MOVE_SEMANTIC(DestructuringContext);
-    ~DestructuringContext() = default;
+    virtual ~DestructuringContext() = default;
 
     virtual void Start() = 0;
     virtual void ValidateInferedType() = 0;

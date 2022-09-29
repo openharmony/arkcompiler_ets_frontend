@@ -1411,7 +1411,7 @@ util::StringView GetTSPropertyName(ir::Expression *key)
     }
 }
 
-void ParserImpl::CheckObjectTypeForDuplicatedProperties(ir::Expression *member, ArenaVector<ir::Expression *> &members)
+void ParserImpl::CheckObjectTypeForDuplicatedProperties(ir::Expression *member, ArenaVector<ir::Expression *> const &members)
 {
     ir::Expression *key = nullptr;
 
@@ -3479,7 +3479,7 @@ bool ParserImpl::CurrentTokenIsModifier(char32_t nextCp) const
 void ParserImpl::ThrowParameterModifierError(ir::ModifierFlags status) const
 {
     ThrowSyntaxError(
-        {"'", status & ir::ModifierFlags::STATIC ? "static" : status & ir::ModifierFlags::ASYNC ? "async" : "declare",
+        {"'", (status & ir::ModifierFlags::STATIC) ? "static" : ((status & ir::ModifierFlags::ASYNC) ? "async" : "declare") ,
          "' modifier cannot appear on a parameter."},
         lexer_->GetToken().Start());
 }

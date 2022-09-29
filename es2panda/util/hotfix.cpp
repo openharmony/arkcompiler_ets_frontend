@@ -202,7 +202,7 @@ void Hotfix::CollectClassMemberFunctions(const std::string &className, int64_t b
     classMemberFunctions_.insert({className, classMemberFunctions});
 }
 
-bool Hotfix::IsScopeValidToPatchLexical(binder::VariableScope *scope)
+bool Hotfix::IsScopeValidToPatchLexical(binder::VariableScope *scope) const
 {
     if (!generatePatch_) {
         return false;

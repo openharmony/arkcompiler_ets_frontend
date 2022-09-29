@@ -170,12 +170,12 @@ public:
             return DecodeCP<false, true>(cpSize);
         }
 
-        inline void Forward(size_t offset)
+        inline void Forward(size_t offset) const
         {
             iter_ += offset;
         }
 
-        inline void Backward(size_t offset)
+        inline void Backward(size_t offset) const
         {
             iter_ -= offset;
         }
@@ -185,7 +185,7 @@ public:
             iter_ = sv_.begin() + offset;
         }
 
-        inline void Rewind(std::string_view::const_iterator pos)
+        inline void Rewind(std::string_view::const_iterator pos) const
         {
             iter_ = pos;
         }
@@ -200,7 +200,7 @@ public:
             return iter_ != sv_.end();
         }
 
-        void SkipCp();
+        void SkipCp() const;
 
     private:
         template <bool moveIter, bool setCpSize = false>
