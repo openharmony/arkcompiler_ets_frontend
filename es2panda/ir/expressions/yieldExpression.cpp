@@ -58,4 +58,11 @@ checker::Type *YieldExpression::Check(checker::Checker *checker) const
     return checker->GlobalAnyType();
 }
 
+void YieldExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    if (argument_) {
+        argument_ = std::get<ir::AstNode *>(cb(argument_))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

@@ -37,4 +37,9 @@ checker::Type *ImportNamespaceSpecifier::Check([[maybe_unused]] checker::Checker
     return nullptr;
 }
 
+void ImportNamespaceSpecifier::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    local_ = std::get<ir::AstNode *>(cb(local_))->AsIdentifier();
+}
+
 }  // namespace panda::es2panda::ir

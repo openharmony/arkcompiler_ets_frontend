@@ -42,4 +42,9 @@ checker::Type *TSInferType::GetType([[maybe_unused]] checker::Checker *checker) 
     return nullptr;
 }
 
+void TSInferType::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    typeParam_ = std::get<ir::AstNode *>(cb(typeParam_))->AsTSTypeParameter();
+}
+
 }  // namespace panda::es2panda::ir

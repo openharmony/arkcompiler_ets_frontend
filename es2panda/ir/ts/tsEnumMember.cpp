@@ -41,4 +41,13 @@ checker::Type *TSEnumMember::Check([[maybe_unused]] checker::Checker *checker) c
     return nullptr;
 }
 
+void TSEnumMember::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    key_ = std::get<ir::AstNode *>(cb(key_))->AsExpression();
+
+    if (init_) {
+        init_ = std::get<ir::AstNode *>(cb(init_))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

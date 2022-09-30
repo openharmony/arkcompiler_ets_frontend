@@ -42,4 +42,13 @@ checker::Type *ExportAllDeclaration::Check([[maybe_unused]] checker::Checker *ch
     return nullptr;
 }
 
+void ExportAllDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    source_ = std::get<ir::AstNode *>(cb(source_))->AsStringLiteral();
+
+    if (exported_) {
+        exported_ = std::get<ir::AstNode *>(cb(exported_))->AsIdentifier();
+    }
+}
+
 }  // namespace panda::es2panda::ir

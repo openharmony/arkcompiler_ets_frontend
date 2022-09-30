@@ -15,6 +15,7 @@
 
 #include "forUpdateStatement.h"
 
+#include <binder/binder.h>
 #include <binder/scope.h>
 #include <compiler/base/condition.h>
 #include <compiler/base/lreference.h>
@@ -107,6 +108,28 @@ checker::Type *ForUpdateStatement::Check(checker::Checker *checker) const
     body_->Check(checker);
 
     return nullptr;
+}
+
+void ForUpdateStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
+{
+    auto *loopScope = Scope();
+    auto declScopeCtx = binder::LexicalScope<binder::LoopDeclarationScope>::Enter(binder, loopScope->DeclScope());
+
+    if (init_) {
+        init_ = std::get<ir::AstNode *>(cb(init_));
+    }
+
+    if (test_) {
+        test_ = std::get<ir::AstNode *>(cb(test_))->AsExpression();
+    }
+
+    auto loopCtx = binder::LexicalScope<binder::LoopScope>::Enter(binder, loopScope);
+
+    if (update_) {
+        update_ = std::get<ir::AstNode *>(cb(update_))->AsExpression();
+    }
+
+    body_ = std::get<ir::AstNode *>(cb(body_))->AsStatement();
 }
 
 }  // namespace panda::es2panda::ir

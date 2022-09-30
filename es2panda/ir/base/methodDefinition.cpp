@@ -89,4 +89,18 @@ checker::Type *MethodDefinition::Check([[maybe_unused]] checker::Checker *checke
     return nullptr;
 }
 
+void MethodDefinition::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    key_ = std::get<ir::AstNode *>(cb(key_))->AsExpression();
+    value_ = std::get<ir::AstNode *>(cb(value_))->AsFunctionExpression();
+
+    for (auto iter = overloads_.begin(); iter != overloads_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsMethodDefinition();
+    }
+
+    for (auto iter = decorators_.begin(); iter != decorators_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsDecorator();
+    }
+}
+
 }  // namespace panda::es2panda::ir

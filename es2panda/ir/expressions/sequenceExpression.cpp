@@ -45,4 +45,11 @@ checker::Type *SequenceExpression::Check(checker::Checker *checker) const
     return checker->GlobalAnyType();
 }
 
+void SequenceExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    for (auto iter = sequence_.begin(); iter != sequence_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

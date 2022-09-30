@@ -55,4 +55,17 @@ checker::Type *TSImportType::GetType([[maybe_unused]] checker::Checker *checker)
     return nullptr;
 }
 
+void TSImportType::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    param_ = std::get<ir::AstNode *>(cb(param_))->AsExpression();
+
+    if (typeParams_) {
+        typeParams_ = std::get<ir::AstNode *>(cb(typeParams_))->AsTSTypeParameterInstantiation();
+    }
+
+    if (qualifier_) {
+        qualifier_ = std::get<ir::AstNode *>(cb(qualifier_))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

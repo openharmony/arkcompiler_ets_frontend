@@ -108,4 +108,10 @@ checker::Type *TSAsExpression::Check(checker::Checker *checker) const
     return targetType;
 }
 
+void TSAsExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    expression_ = std::get<ir::AstNode *>(cb(expression_))->AsExpression();
+    typeAnnotation_ = std::get<ir::AstNode *>(cb(typeAnnotation_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

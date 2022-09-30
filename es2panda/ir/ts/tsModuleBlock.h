@@ -18,10 +18,6 @@
 
 #include <ir/statement.h>
 
-namespace panda::es2panda::binder {
-class LocalScope;
-}  // namespace panda::es2panda::binder
-
 namespace panda::es2panda::compiler {
 class PandaGen;
 }  // namespace panda::es2panda::compiler
@@ -35,17 +31,17 @@ namespace panda::es2panda::ir {
 
 class TSModuleBlock : public Statement {
 public:
-    explicit TSModuleBlock(binder::LocalScope *scope, ArenaVector<Statement *> &&statements)
-        : Statement(AstNodeType::TS_MODULE_BLOCK), scope_(scope), statements_(std::move(statements))
+    explicit TSModuleBlock(ArenaVector<Statement *> &&statements)
+        : Statement(AstNodeType::TS_MODULE_BLOCK), statements_(std::move(statements))
     {
-    }
-
-    binder::LocalScope *Scope() const
-    {
-        return scope_;
     }
 
     const ArenaVector<Statement *> &Statements() const
+    {
+        return statements_;
+    }
+
+    ArenaVector<Statement *> &Statements()
     {
         return statements_;
     }
@@ -54,9 +50,9 @@ public:
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
 
 private:
-    binder::LocalScope *scope_;
     ArenaVector<Statement *> statements_;
 };
 }  // namespace panda::es2panda::ir

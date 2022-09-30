@@ -16,13 +16,14 @@
 #ifndef ES2PANDA_IR_ASTNODE_H
 #define ES2PANDA_IR_ASTNODE_H
 
+#include <functional>
+#include <macros.h>
+
+#include <binder/binder.h>
+#include <binder/scope.h>
 #include <ir/astNodeMapping.h>
 #include <lexer/token/sourceLocation.h>
 #include <util/enumbitops.h>
-#include <binder/scope.h>
-
-#include <functional>
-#include <macros.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -38,6 +39,9 @@ namespace panda::es2panda::ir {
 class AstNode;
 
 using NodeTraverser = std::function<void(AstNode *)>;
+
+using UpdateNodes = std::variant<AstNode *, std::vector<AstNode *>>;
+using NodeUpdater = std::function<UpdateNodes(AstNode *)>;
 
 enum class AstNodeType {
 #define DECLARE_NODE_TYPES(nodeType, className) nodeType,
@@ -258,6 +262,16 @@ public:
         parent_ = parent;
     }
 
+    const AstNode *Original() const
+    {
+        return original_;
+    }
+
+    void SetOriginal(const AstNode *original)
+    {
+        original_ = original;
+    }
+
     binder::Variable *Variable() const
     {
         return variable_;
@@ -272,6 +286,7 @@ public:
     virtual void Dump(ir::AstDumper *dumper) const = 0;
     virtual void Compile([[maybe_unused]] compiler::PandaGen *pg) const = 0;
     virtual checker::Type *Check([[maybe_unused]] checker::Checker *checker) const = 0;
+    virtual void UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) = 0;
 
 protected:
     void SetType(AstNodeType type)
@@ -283,6 +298,7 @@ protected:
     lexer::SourceRange range_ {};
     AstNodeType type_;
     binder::Variable *variable_ {nullptr};
+    const AstNode *original_ {nullptr};
 };
 
 }  // namespace panda::es2panda::ir

@@ -15,12 +15,13 @@
 
 #include "tsSignatureDeclaration.h"
 
-#include <typescript/checker.h>
+#include <binder/binder.h>
 #include <binder/scope.h>
 #include <ir/astDump.h>
 #include <ir/typeNode.h>
 #include <ir/ts/tsTypeParameter.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
+#include <typescript/checker.h>
 
 namespace panda::es2panda::ir {
 
@@ -92,6 +93,23 @@ checker::Type *TSSignatureDeclaration::Check(checker::Checker *checker) const
     checker->NodeCache().insert({this, placeholderObj});
 
     return placeholderObj;
+}
+
+void TSSignatureDeclaration::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
+{
+    auto scopeCtx = binder::LexicalScope<binder::Scope>::Enter(binder, scope_);
+
+    if (typeParams_) {
+        typeParams_ = std::get<ir::AstNode *>(cb(typeParams_))->AsTSTypeParameterDeclaration();
+    }
+
+    for (auto iter = params_.begin(); iter != params_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+
+    if (returnTypeAnnotation_) {
+        returnTypeAnnotation_ = std::get<ir::AstNode *>(cb(returnTypeAnnotation_))->AsExpression();
+    }
 }
 
 }  // namespace panda::es2panda::ir

@@ -128,6 +128,7 @@
     _(TS_INDEX_SIGNATURE, TSIndexSignature)                          \
     _(TS_TYPE_QUERY, TSTypeQuery)                                    \
     _(TS_AS_EXPRESSION, TSAsExpression)                              \
+    _(TS_CLASS_IMPLEMENTS, TSClassImplements)                        \
     _(TS_TYPE_ASSERTION, TSTypeAssertion)                            \
     _(TAGGED_TEMPLATE_EXPRESSION, TaggedTemplateExpression)          \
     _(TAGGED_LITERAL, TaggedLiteral)                                 \

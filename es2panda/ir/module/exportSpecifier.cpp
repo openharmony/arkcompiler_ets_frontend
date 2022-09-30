@@ -38,4 +38,10 @@ checker::Type *ExportSpecifier::Check([[maybe_unused]] checker::Checker *checker
     return nullptr;
 }
 
+void ExportSpecifier::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    local_ = std::get<ir::AstNode *>(cb(local_))->AsIdentifier();
+    exported_ = std::get<ir::AstNode *>(cb(exported_))->AsIdentifier();
+}
+
 }  // namespace panda::es2panda::ir

@@ -54,4 +54,6 @@ checker::Type *ThisExpression::Check(checker::Checker *checker) const
     return checker->GlobalAnyType();
 }
 
+void ThisExpression::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}
+
 }  // namespace panda::es2panda::ir

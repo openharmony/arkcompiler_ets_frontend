@@ -36,4 +36,7 @@ checker::Type *TaggedLiteral::Check([[maybe_unused]] checker::Checker *checker) 
 {
     UNREACHABLE();
 }
+
+void TaggedLiteral::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}
+
 }  // namespace panda::es2panda::ir

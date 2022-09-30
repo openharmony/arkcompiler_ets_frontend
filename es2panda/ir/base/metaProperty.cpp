@@ -63,4 +63,6 @@ checker::Type *MetaProperty::Check(checker::Checker *checker) const
     return checker->GlobalAnyType();
 }
 
+void MetaProperty::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}
+
 }  // namespace panda::es2panda::ir

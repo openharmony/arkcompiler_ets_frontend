@@ -55,4 +55,13 @@ checker::Type *TSMappedType::GetType([[maybe_unused]] checker::Checker *checker)
     return nullptr;
 }
 
+void TSMappedType::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    typeParameter_ = std::get<ir::AstNode *>(cb(typeParameter_))->AsTSTypeParameter();
+
+    if (typeAnnotation_) {
+        typeAnnotation_ = std::get<ir::AstNode *>(cb(typeAnnotation_))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

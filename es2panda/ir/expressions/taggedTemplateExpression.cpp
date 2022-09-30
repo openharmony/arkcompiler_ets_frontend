@@ -89,4 +89,14 @@ checker::Type *TaggedTemplateExpression::Check(checker::Checker *checker) const
     return checker->GlobalAnyType();
 }
 
+void TaggedTemplateExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    if (typeParams_) {
+        typeParams_ = std::get<ir::AstNode *>(cb(typeParams_))->AsTSTypeParameterInstantiation();
+    }
+
+    tag_ = std::get<ir::AstNode *>(cb(tag_))->AsExpression();
+    quasi_ = std::get<ir::AstNode *>(cb(quasi_))->AsTemplateLiteral();
+}
+
 }  // namespace panda::es2panda::ir

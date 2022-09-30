@@ -85,4 +85,15 @@ checker::Type *TemplateLiteral::Check(checker::Checker *checker) const
     return checker->GlobalAnyType();
 }
 
+void TemplateLiteral::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    for (auto iter = expressions_.begin(); iter != expressions_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+
+    for (auto iter = quasis_.begin(); iter != quasis_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsTemplateElement();
+    }
+}
+
 }  // namespace panda::es2panda::ir

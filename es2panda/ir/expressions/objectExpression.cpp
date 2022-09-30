@@ -743,4 +743,15 @@ checker::Type *ObjectExpression::Check(checker::Checker *checker) const
     return returnType;
 }
 
+void ObjectExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    for (auto iter = properties_.begin(); iter != properties_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+
+    if (typeAnnotation_) {
+        typeAnnotation_ = std::get<ir::AstNode *>(cb(typeAnnotation_))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

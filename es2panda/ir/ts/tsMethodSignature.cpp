@@ -16,6 +16,7 @@
 #include "tsMethodSignature.h"
 
 #include <typescript/checker.h>
+#include <binder/binder.h>
 #include <binder/scope.h>
 #include <ir/astDump.h>
 #include <ir/typeNode.h>
@@ -78,6 +79,25 @@ checker::Type *TSMethodSignature::Check(checker::Checker *checker) const
     callSignature->SetReturnType(returnTypeAnnotation_->AsTypeNode()->GetType(checker));
 
     return nullptr;
+}
+
+void TSMethodSignature::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
+{
+    auto scopeCtx = binder::LexicalScope<binder::Scope>::Enter(binder, scope_);
+
+    key_ = std::get<ir::AstNode *>(cb(key_))->AsExpression();
+
+    if (typeParams_) {
+        typeParams_ = std::get<ir::AstNode *>(cb(typeParams_))->AsTSTypeParameterDeclaration();
+    }
+
+    for (auto iter = params_.begin(); iter != params_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+
+    if (returnTypeAnnotation_) {
+        returnTypeAnnotation_ = std::get<ir::AstNode *>(cb(returnTypeAnnotation_))->AsExpression();
+    }
 }
 
 }  // namespace panda::es2panda::ir

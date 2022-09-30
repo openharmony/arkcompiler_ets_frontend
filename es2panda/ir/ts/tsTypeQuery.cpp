@@ -53,4 +53,9 @@ checker::Type *TSTypeQuery::GetType(checker::Checker *checker) const
     return type;
 }
 
+void TSTypeQuery::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    exprName_ = std::get<ir::AstNode *>(cb(exprName_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

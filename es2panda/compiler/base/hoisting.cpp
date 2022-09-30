@@ -69,7 +69,8 @@ static void HoistFunction(PandaGen *pg, binder::Variable *var, const binder::Fun
         return;
     }
 
-    ASSERT(scope->IsFunctionScope() || scope->IsCatchScope() || scope->IsLocalScope() || scope->IsModuleScope());
+    ASSERT(scope->IsFunctionScope() || scope->IsCatchScope() || scope->IsLocalScope() ||
+        scope->IsModuleScope() || scope->IsTSModuleScope());
     binder::ScopeFindResult result(decl->Name(), scope, 0, var);
 
     pg->DefineFunction(decl->Node(), scriptFunction, internalName);

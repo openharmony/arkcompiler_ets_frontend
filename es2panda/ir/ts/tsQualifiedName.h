@@ -41,6 +41,11 @@ public:
         return left_;
     }
 
+    Expression *Left()
+    {
+        return left_;
+    }
+
     const Identifier *Right() const
     {
         return right_;
@@ -55,6 +60,7 @@ public:
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check(checker::Checker *checker) const override;
+    void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
 
 private:
     Expression *left_;

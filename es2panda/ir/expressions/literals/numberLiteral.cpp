@@ -59,4 +59,6 @@ checker::Type *NumberLiteral::Check(checker::Checker *checker) const
     return newNumLiteralType;
 }
 
+void NumberLiteral::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}
+
 }  // namespace panda::es2panda::ir

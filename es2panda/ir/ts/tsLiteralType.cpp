@@ -51,4 +51,9 @@ checker::Type *TSLiteralType::GetType(checker::Checker *checker) const
     return type;
 }
 
+void TSLiteralType::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    literal_ = std::get<ir::AstNode *>(cb(literal_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

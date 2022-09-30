@@ -50,4 +50,17 @@ checker::Type *TSTypeParameter::Check([[maybe_unused]] checker::Checker *checker
     return nullptr;
 }
 
+void TSTypeParameter::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    name_ = std::get<ir::AstNode *>(cb(name_))->AsIdentifier();
+
+    if (constraint_) {
+        constraint_ = std::get<ir::AstNode *>(cb(constraint_))->AsIdentifier();
+    }
+
+    if (defaultType_) {
+        defaultType_ = std::get<ir::AstNode *>(cb(defaultType_))->AsIdentifier();
+    }
+}
+
 }  // namespace panda::es2panda::ir

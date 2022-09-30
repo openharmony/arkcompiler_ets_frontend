@@ -39,4 +39,6 @@ checker::Type *TSVoidKeyword::GetType(checker::Checker *checker) const
     return checker->GlobalVoidType();
 }
 
+void TSVoidKeyword::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}
+
 }  // namespace panda::es2panda::ir

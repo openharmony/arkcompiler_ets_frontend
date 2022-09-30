@@ -43,4 +43,11 @@ checker::Type *ContinueStatement::Check([[maybe_unused]] checker::Checker *check
     return nullptr;
 }
 
+void ContinueStatement::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    if (ident_) {
+        ident_ = std::get<ir::AstNode *>(cb(ident_))->AsIdentifier();
+    }
+}
+
 }  // namespace panda::es2panda::ir

@@ -43,4 +43,9 @@ checker::Type *TSArrayType::GetType(checker::Checker *checker) const
     return checker->Allocator()->New<checker::ArrayType>(elementType_->AsTypeNode()->GetType(checker));
 }
 
+void TSArrayType::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    elementType_ = std::get<ir::AstNode *>(cb(elementType_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

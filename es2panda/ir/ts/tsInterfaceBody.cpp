@@ -42,4 +42,11 @@ checker::Type *TSInterfaceBody::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void TSInterfaceBody::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    for (auto iter = body_.begin(); iter != body_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

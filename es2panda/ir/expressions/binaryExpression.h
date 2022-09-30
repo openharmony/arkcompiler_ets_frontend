@@ -79,6 +79,7 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void CompileLogical(compiler::PandaGen *pg) const;
     checker::Type *Check(checker::Checker *checker) const override;
+    void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
 
 private:
     Expression *left_;

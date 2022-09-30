@@ -170,4 +170,17 @@ checker::Type *TryStatement::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void TryStatement::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    block_ = std::get<ir::AstNode *>(cb(block_))->AsBlockStatement();
+
+    if (catchClause_) {
+        catchClause_ = std::get<ir::AstNode *>(cb(catchClause_))->AsCatchClause();
+    }
+
+    if (finalizer_) {
+        finalizer_ = std::get<ir::AstNode *>(cb(finalizer_))->AsBlockStatement();
+    }
+}
+
 }  // namespace panda::es2panda::ir

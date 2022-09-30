@@ -15,6 +15,7 @@
 
 #include "tsModuleDeclaration.h"
 
+#include <binder/binder.h>
 #include <binder/scope.h>
 #include <ir/astDump.h>
 #include <ir/expression.h>
@@ -44,6 +45,16 @@ void TSModuleDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 checker::Type *TSModuleDeclaration::Check([[maybe_unused]] checker::Checker *checker) const
 {
     return nullptr;
+}
+
+void TSModuleDeclaration::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
+{
+    name_ = std::get<ir::AstNode *>(cb(name_))->AsExpression();
+
+    if (body_) {
+        auto scopeCtx = binder::LexicalScope<binder::TSModuleScope>::Enter(binder, scope_);
+        body_ = std::get<ir::AstNode *>(cb(body_))->AsStatement();
+    }
 }
 
 }  // namespace panda::es2panda::ir

@@ -35,9 +35,12 @@ Program::Program(Program &&other)
       ast_(other.ast_),
       sourceCode_(other.sourceCode_),
       sourceFile_(other.sourceFile_),
+      recordName_(other.recordName_),
       kind_(other.kind_),
       extension_(other.extension_),
-      lineIndex_(other.lineIndex_)
+      lineIndex_(other.lineIndex_),
+      moduleRecord_(other.moduleRecord_),
+      hotfixHelper_(other.hotfixHelper_)
 {
     other.binder_ = nullptr;
     other.ast_ = nullptr;

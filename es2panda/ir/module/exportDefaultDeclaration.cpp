@@ -49,4 +49,9 @@ checker::Type *ExportDefaultDeclaration::Check([[maybe_unused]] checker::Checker
     return nullptr;
 }
 
+void ExportDefaultDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    decl_ = std::get<ir::AstNode *>(cb(decl_));
+}
+
 }  // namespace panda::es2panda::ir

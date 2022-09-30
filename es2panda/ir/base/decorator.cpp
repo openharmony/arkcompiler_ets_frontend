@@ -37,4 +37,9 @@ checker::Type *Decorator::Check([[maybe_unused]] checker::Checker *checker) cons
     return nullptr;
 }
 
+void Decorator::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    expr_ = std::get<ir::AstNode *>(cb(expr_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

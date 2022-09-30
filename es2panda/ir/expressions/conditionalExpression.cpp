@@ -61,4 +61,11 @@ checker::Type *ConditionalExpression::Check(checker::Checker *checker) const
     return checker->CreateUnionType({consequentType, alternateType});
 }
 
+void ConditionalExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    test_ = std::get<ir::AstNode *>(cb(test_))->AsExpression();
+    consequent_ = std::get<ir::AstNode *>(cb(consequent_))->AsExpression();
+    alternate_ = std::get<ir::AstNode *>(cb(alternate_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

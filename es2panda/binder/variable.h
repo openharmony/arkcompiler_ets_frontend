@@ -34,6 +34,7 @@ namespace panda::es2panda::binder {
 class Decl;
 class Scope;
 class VariableScope;
+class ExportBindings;
 
 #define DECLARE_CLASSES(type, className) class className;
 VARIABLE_TYPES(DECLARE_CLASSES)
@@ -238,6 +239,56 @@ public:
 private:
     EnumMemberResult value_ {false};
     bool backReference_ {};
+};
+
+class NamespaceVariable : public Variable {
+public:
+    explicit NamespaceVariable(Decl *decl, VariableFlags flags) : Variable(decl, flags) {}
+
+    VariableType Type() const override
+    {
+        return VariableType::NAMESPACE;
+    }
+
+    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
+
+    ExportBindings *GetExportBindings()
+    {
+        return exportBindings_;
+    }
+
+    void SetExportBindings(ExportBindings *exportBindings)
+    {
+        exportBindings_ = exportBindings;
+    }
+
+private:
+    ExportBindings *exportBindings_ {nullptr};
+};
+
+class ImportEqualsVariable : public Variable {
+public:
+    explicit ImportEqualsVariable(Decl *decl, VariableFlags flags) : Variable(decl, flags) {}
+
+    VariableType Type() const override
+    {
+        return VariableType::IMPORT_EQUALS;
+    }
+
+    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
+
+    Scope *GetScope()
+    {
+        return scope_;
+    }
+
+    void SetScope(Scope *scope)
+    {
+        scope_ = scope;
+    }
+
+private:
+    Scope *scope_ {nullptr};
 };
 
 }  // namespace panda::es2panda::binder

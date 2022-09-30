@@ -45,16 +45,6 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
         context.AddHotfixHelper(hotfixHelper_);
     }
 
-    if (program->Extension() == ScriptExtension::TS && options.enableTypeCheck) {
-        ArenaAllocator localAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
-        auto checker = std::make_unique<checker::Checker>(&localAllocator, context.Binder());
-        checker->StartChecker();
-    }
-
-    if (options.parseOnly) {
-        return nullptr;
-    }
-
     queue_ = new CompileFuncQueue(threadCount_, &context);
     queue_->Schedule();
 

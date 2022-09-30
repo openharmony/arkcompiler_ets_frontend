@@ -81,4 +81,13 @@ checker::Type *NewExpression::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void NewExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    callee_ = std::get<ir::AstNode *>(cb(callee_))->AsExpression();
+
+    for (auto iter = arguments_.begin(); iter != arguments_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

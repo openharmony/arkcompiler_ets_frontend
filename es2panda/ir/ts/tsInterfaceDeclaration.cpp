@@ -126,4 +126,19 @@ checker::Type *TSInterfaceDeclaration::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void TSInterfaceDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    id_ = std::get<ir::AstNode *>(cb(id_))->AsIdentifier();
+
+    if (typeParams_) {
+        typeParams_ = std::get<ir::AstNode *>(cb(typeParams_))->AsTSTypeParameterDeclaration();
+    }
+
+    for (auto iter = extends_.begin(); iter != extends_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsTSInterfaceHeritage();
+    }
+
+    body_ = std::get<ir::AstNode *>(cb(body_))->AsTSInterfaceBody();
+}
+
 }  // namespace panda::es2panda::ir

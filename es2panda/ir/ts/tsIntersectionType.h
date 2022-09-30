@@ -46,6 +46,7 @@ public:
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
     checker::Type *GetType([[maybe_unused]] checker::Checker *checker) const override;
+    void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
 
 private:
     ArenaVector<Expression *> types_;

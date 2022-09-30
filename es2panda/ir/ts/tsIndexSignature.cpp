@@ -71,4 +71,10 @@ checker::Type *TSIndexSignature::Check(checker::Checker *checker) const
     return placeholder;
 }
 
+void TSIndexSignature::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    param_ = std::get<ir::AstNode *>(cb(param_))->AsExpression();
+    typeAnnotation_ = std::get<ir::AstNode *>(cb(typeAnnotation_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

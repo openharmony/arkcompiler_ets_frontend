@@ -99,16 +99,21 @@ void Binder::AssignIndexToModuleVariable()
     program_->ModuleRecord()->AssignIndexToModuleVariable(topScope_->AsModuleScope());
 }
 
-void Binder::IdentifierAnalysis()
+void Binder::IdentifierAnalysis(ResolveBindingFlags flags)
 {
     ASSERT(program_->Ast());
     ASSERT(scope_ == topScope_);
 
-    BuildFunction(topScope_, MAIN_FUNC_NAME);
-    ResolveReferences(program_->Ast());
-    AddMandatoryParams();
-    if (topScope_->IsModuleScope()) {
-        AssignIndexToModuleVariable();
+    bindingFlags_ = flags;
+    if (bindingFlags_ & ResolveBindingFlags::TS_BEFORE_TRANSFORM) {
+        ResolveReferences(program_->Ast());
+    } else if (bindingFlags_ & ResolveBindingFlags::ALL) {
+        BuildFunction(topScope_, MAIN_FUNC_NAME);
+        ResolveReferences(program_->Ast());
+        AddMandatoryParams();
+        if (topScope_->IsModuleScope()) {
+            AssignIndexToModuleVariable();
+        }
     }
 }
 
@@ -229,12 +234,17 @@ void Binder::BuildFunction(FunctionScope *funcScope, util::StringView name)
 
 void Binder::BuildScriptFunction(Scope *outerScope, const ir::ScriptFunction *scriptFunc)
 {
+    if (bindingFlags_ & ResolveBindingFlags::TS_BEFORE_TRANSFORM) {
+        return;
+    }
+
     if (scriptFunc->IsArrow()) {
         VariableScope *outerVarScope = outerScope->EnclosingVariableScope();
         outerVarScope->AddFlag(VariableScopeFlags::INNER_ARROW);
     }
 
-    BuildFunction(scope_->AsFunctionScope(), util::Helpers::FunctionName(scriptFunc));
+    ASSERT(scope_->IsFunctionScope() || scope_->IsTSModuleScope());
+    BuildFunction(scope_->AsFunctionVariableScope(), util::Helpers::FunctionName(scriptFunc));
 }
 
 void Binder::BuildVarDeclaratorId(const ir::AstNode *parent, ir::AstNode *childNode)
@@ -571,11 +581,6 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             ResolveReferences(childNode);
             break;
         }
-        case ir::AstNodeType::TS_MODULE_BLOCK: {
-            auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsTSModuleBlock()->Scope());
-            ResolveReferences(childNode);
-            break;
-        }
         default: {
             ResolveReferences(childNode);
             break;
@@ -650,4 +655,25 @@ void Binder::AddMandatoryParams()
         }
     }
 }
+
+void Binder::AddDeclarationName(const util::StringView &name)
+{
+    if (extension_ != ScriptExtension::TS) {
+        return;
+    }
+    variableNames_.insert(name);
+    auto *scope = GetScope();
+    while (scope != nullptr) {
+        if (scope->IsTSModuleScope()) {
+            scope->AsTSModuleScope()->AddDeclarationName(name);
+        }
+        scope = scope->Parent();
+    }
+}
+
+bool Binder::HasVariableName(const util::StringView &name) const
+{
+    return variableNames_.find(name) != variableNames_.end();
+}
+
 }  // namespace panda::es2panda::binder

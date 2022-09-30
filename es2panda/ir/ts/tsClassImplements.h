@@ -34,7 +34,7 @@ class TSTypeParameterInstantiation;
 class TSClassImplements : public Expression {
 public:
     explicit TSClassImplements(Expression *expression, TSTypeParameterInstantiation *typeParameters)
-        : Expression(AstNodeType::TS_AS_EXPRESSION), expression_(expression), typeParameters_(typeParameters)
+        : Expression(AstNodeType::TS_CLASS_IMPLEMENTS), expression_(expression), typeParameters_(typeParameters)
     {
     }
 
@@ -52,6 +52,7 @@ public:
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
+    void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
 
 private:
     Expression *expression_;

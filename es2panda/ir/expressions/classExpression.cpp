@@ -40,4 +40,9 @@ checker::Type *ClassExpression::Check([[maybe_unused]] checker::Checker *checker
     return nullptr;
 }
 
+void ClassExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    def_ = std::get<ir::AstNode *>(cb(def_))->AsClassDefinition();
+}
+
 }  // namespace panda::es2panda::ir

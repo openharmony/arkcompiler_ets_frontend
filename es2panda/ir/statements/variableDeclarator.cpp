@@ -143,4 +143,13 @@ checker::Type *VariableDeclarator::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void VariableDeclarator::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    id_ = std::get<ir::AstNode *>(cb(id_))->AsExpression();
+
+    if (init_) {
+        init_ = std::get<ir::AstNode *>(cb(init_))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

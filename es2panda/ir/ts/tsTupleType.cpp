@@ -125,4 +125,11 @@ checker::Type *TSTupleType::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void TSTupleType::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    for (auto iter = elementTypes_.begin(); iter != elementTypes_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter))->AsExpression();
+    }
+}
+
 }  // namespace panda::es2panda::ir

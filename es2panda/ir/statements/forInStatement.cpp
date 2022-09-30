@@ -15,6 +15,7 @@
 
 #include "forInStatement.h"
 
+#include <binder/binder.h>
 #include <binder/scope.h>
 #include <compiler/base/lreference.h>
 #include <compiler/core/labelTarget.h>
@@ -76,6 +77,17 @@ void ForInStatement::Compile(compiler::PandaGen *pg) const
 checker::Type *ForInStatement::Check([[maybe_unused]] checker::Checker *checker) const
 {
     return nullptr;
+}
+
+void ForInStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
+{
+    auto *loopScope = Scope();
+    auto declScopeCtx = binder::LexicalScope<binder::LoopDeclarationScope>::Enter(binder, loopScope->DeclScope());
+    left_ = std::get<ir::AstNode *>(cb(left_));
+    right_ = std::get<ir::AstNode *>(cb(right_))->AsExpression();
+
+    auto loopCtx = binder::LexicalScope<binder::LoopScope>::Enter(binder, loopScope);
+    body_ = std::get<ir::AstNode *>(cb(body_))->AsStatement();
 }
 
 }  // namespace panda::es2panda::ir

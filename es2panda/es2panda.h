@@ -31,6 +31,7 @@ struct Program;
 namespace panda::es2panda {
 namespace parser {
 class ParserImpl;
+class Transformer;
 enum class ScriptKind;
 }  // namespace parser
 
@@ -195,6 +196,7 @@ public:
 private:
     parser::ParserImpl *parser_;
     compiler::CompilerImpl *compiler_;
+    std::unique_ptr<parser::Transformer> transformer_ {nullptr};
     Error error_;
 };
 }  // namespace panda::es2panda

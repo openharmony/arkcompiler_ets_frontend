@@ -77,4 +77,13 @@ checker::Type *TSTypeReference::GetType(checker::Checker *checker) const
     return type;
 }
 
+void TSTypeReference::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    if (typeParams_) {
+        typeParams_ = std::get<ir::AstNode *>(cb(typeParams_))->AsTSTypeParameterInstantiation();
+    }
+
+    typeName_ = std::get<ir::AstNode *>(cb(typeName_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

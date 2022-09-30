@@ -243,7 +243,7 @@ ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
     return ParseExpressionStatement(flags);
 }
 
-ir::TSModuleDeclaration *ParserImpl::ParseTsModuleDeclaration(bool isDeclare)
+ir::TSModuleDeclaration *ParserImpl::ParseTsModuleDeclaration(bool isDeclare, bool isExport)
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     context_.Status() |= ParserStatus::TS_MODULE;
@@ -262,7 +262,7 @@ ir::TSModuleDeclaration *ParserImpl::ParseTsModuleDeclaration(bool isDeclare)
         }
     }
 
-    return ParseTsModuleOrNamespaceDelaration(startLoc, isDeclare);
+    return ParseTsModuleOrNamespaceDelaration(startLoc, isDeclare, isExport);
 }
 
 ir::TSModuleDeclaration *ParserImpl::ParseTsAmbientExternalModuleDeclaration(const lexer::SourcePosition &startLoc,
@@ -288,7 +288,8 @@ ir::TSModuleDeclaration *ParserImpl::ParseTsAmbientExternalModuleDeclaration(con
 
     lexer_->NextToken();
 
-    auto localCtx = binder::LexicalScope<binder::LocalScope>(Binder());
+    binder::ExportBindings *exportBindings = Allocator()->New<binder::ExportBindings>(Allocator());
+    auto localCtx = binder::LexicalScope<binder::TSModuleScope>(Binder(), exportBindings);
 
     ir::Statement *body = nullptr;
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
@@ -307,15 +308,32 @@ ir::TSModuleDeclaration *ParserImpl::ParseTsAmbientExternalModuleDeclaration(con
 }
 
 ir::TSModuleDeclaration *ParserImpl::ParseTsModuleOrNamespaceDelaration(const lexer::SourcePosition &startLoc,
-                                                                        bool isDeclare)
+                                                                        bool isDeclare, bool isExport)
 {
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         ThrowSyntaxError("Identifier expected");
     }
 
-    auto *decl = Binder()->AddDecl<binder::VarDecl>(lexer_->GetToken().Start(), lexer_->GetToken().Ident());
+    auto name = lexer_->GetToken().Ident();
+    auto *parentScope = Binder()->GetScope();
+    binder::Variable *res = parentScope->FindLocalTSVariable<binder::TSBindingType::NAMESPACE>(name);
+    if (!res && isExport && parentScope->IsTSModuleScope()) {
+        res = parentScope->AsTSModuleScope()->FindExportTSVariable<binder::TSBindingType::NAMESPACE>(name);
+        if (res != nullptr) {
+            parentScope->AddLocalTSVariable<binder::TSBindingType::NAMESPACE>(name, res);
+        }
+    }
+    if (res == nullptr) {
+        Binder()->AddTsDecl<binder::NamespaceDecl>(lexer_->GetToken().Start(), Allocator(), name);
+        res = parentScope->FindLocalTSVariable<binder::TSBindingType::NAMESPACE>(name);
+        if (isExport && parentScope->IsTSModuleScope()) {
+            parentScope->AsTSModuleScope()->AddExportTSVariable<binder::TSBindingType::NAMESPACE>(name, res);
+        }
+        res->AsNamespaceVariable()->SetExportBindings(Allocator()->New<binder::ExportBindings>(Allocator()));
+    }
+    binder::ExportBindings *exportBindings = res->AsNamespaceVariable()->GetExportBindings();
 
-    auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+    auto *identNode = AllocNode<ir::Identifier>(name, Allocator());
     identNode->SetRange(lexer_->GetToken().Loc());
 
     lexer_->NextToken();
@@ -327,22 +345,41 @@ ir::TSModuleDeclaration *ParserImpl::ParseTsModuleOrNamespaceDelaration(const le
         context_.Status() |= ParserStatus::IN_AMBIENT_CONTEXT;
     }
 
-    auto localCtx = binder::LexicalScope<binder::LocalScope>(Binder());
+    auto localCtx = binder::LexicalScope<binder::TSModuleScope>(Binder(), exportBindings);
 
+    bool isInstantiated = false;
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
         lexer_->NextToken();
         lexer::SourcePosition moduleStart = lexer_->GetToken().Start();
-        body = ParseTsModuleOrNamespaceDelaration(moduleStart, false);
+        body = ParseTsModuleOrNamespaceDelaration(moduleStart, false, true);
+        isInstantiated = body->AsTSModuleDeclaration()->IsInstantiated();
     } else {
         body = ParseTsModuleBlock();
+        auto statements = body->AsTSModuleBlock()->Statements();
+        for (auto *it : statements) {
+            auto statement = it;
+            if (statement->IsExportNamedDeclaration()) {
+                statement = statement->AsExportNamedDeclaration()->Decl();
+            }
+            if (statement != nullptr &&
+                !statement->IsTSInterfaceDeclaration() && !statement->IsTSTypeAliasDeclaration() &&
+                (!statement->IsTSModuleDeclaration() || statement->AsTSModuleDeclaration()->IsInstantiated())) {
+                isInstantiated = true;
+                break;
+            }
+        }
+    }
+    if (isDeclare) {
+        isInstantiated = false;
     }
 
     context_.Status() = savedStatus;
 
-    auto *moduleDecl = AllocNode<ir::TSModuleDeclaration>(localCtx.GetScope(), identNode, body, isDeclare, false);
+    auto *moduleDecl = AllocNode<ir::TSModuleDeclaration>(localCtx.GetScope(), identNode, body,
+                                                          isDeclare, false, isInstantiated);
     moduleDecl->SetRange({startLoc, lexer_->GetToken().End()});
     localCtx.GetScope()->BindNode(moduleDecl);
-    decl->BindNode(moduleDecl);
+    res->Declaration()->AsNamespaceDecl()->Add(moduleDecl);
 
     return moduleDecl;
 }
@@ -369,6 +406,21 @@ ir::TSImportEqualsDeclaration *ParserImpl::ParseTsImportEqualsDeclaration(const 
         ThrowSyntaxError("identifier expected");
     }
 
+    if (lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_REQUIRE ||
+        lexer_->Lookahead() != LEX_CHAR_LEFT_PAREN) {
+        binder::DeclarationFlags declflag = binder::DeclarationFlags::NONE;
+        auto *decl = Binder()->AddDecl<binder::ImportEqualsDecl>(id->Start(), declflag, id->Name());
+        decl->BindNode(id);
+        auto *scope = Binder()->GetScope();
+        auto name = id->Name();
+        auto *var = scope->FindLocalTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name);
+        ASSERT(var != nullptr);
+        var->AsImportEqualsVariable()->SetScope(scope);
+        if (isExport && scope->IsTSModuleScope()) {
+            scope->AsTSModuleScope()->AddExportTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name, var);
+        }
+    }
+
     auto *importEqualsDecl = AllocNode<ir::TSImportEqualsDeclaration>(id, ParseModuleReference(), isExport);
     importEqualsDecl->SetRange({startLoc, lexer_->GetToken().End()});
 
@@ -379,7 +431,6 @@ ir::TSImportEqualsDeclaration *ParserImpl::ParseTsImportEqualsDeclaration(const 
 
 ir::TSModuleBlock *ParserImpl::ParseTsModuleBlock()
 {
-    auto localCtx = binder::LexicalScope<binder::LocalScope>(Binder());
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         ThrowSyntaxError("'{' expected.");
     }
@@ -392,9 +443,8 @@ ir::TSModuleBlock *ParserImpl::ParseTsModuleBlock()
         ThrowSyntaxError("Expected a '}'");
     }
 
-    auto *blockNode = AllocNode<ir::TSModuleBlock>(localCtx.GetScope(), std::move(statements));
+    auto *blockNode = AllocNode<ir::TSModuleBlock>(std::move(statements));
     blockNode->SetRange({startLoc, lexer_->GetToken().End()});
-    localCtx.GetScope()->BindNode(blockNode);
 
     lexer_->NextToken();
     return blockNode;
@@ -2097,20 +2147,30 @@ void ParserImpl::AddExportDefaultEntryItem(const ir::AstNode *declNode)
     }
 }
 
-void ParserImpl::AddExportLocalEntryItem(const ir::Statement *declNode)
+void ParserImpl::AddExportLocalEntryItem(const ir::Statement *declNode, bool isTsModule)
 {
     ASSERT(declNode != nullptr);
     auto moduleRecord = GetSourceTextModuleRecord();
-    ASSERT(moduleRecord != nullptr);
+    ASSERT(isTsModule || moduleRecord != nullptr);
+    binder::TSModuleScope *tsModuleScope = nullptr;
+    if (isTsModule) {
+        ASSERT(Binder()->GetScope()->IsTSModuleScope());
+        tsModuleScope = Binder()->GetScope()->AsTSModuleScope();
+    }
     if (declNode->IsVariableDeclaration()) {
         auto declarators = declNode->AsVariableDeclaration()->Declarators();
         for (auto *decl : declarators) {
             std::vector<const ir::Identifier *> bindings = util::Helpers::CollectBindingNames(decl->Id());
             for (const auto *binding : bindings) {
-                auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(
-                                                binding->Name(), binding->Name());
-                if (!moduleRecord->AddLocalExportEntry(entry)) {
-                    ThrowSyntaxError("Duplicate export name of '" + binding->Name().Mutf8() + "'", binding->Start());
+                if (isTsModule) {
+                    tsModuleScope->AddExportVariable(binding->Name());
+                } else {
+                    auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(
+                                                    binding->Name(), binding->Name());
+                    if (!moduleRecord->AddLocalExportEntry(entry)) {
+                        ThrowSyntaxError("Duplicate export name of '" + binding->Name().Mutf8()
+                                         + "'", binding->Start());
+                    }
                 }
             }
         }
@@ -2123,9 +2183,14 @@ void ParserImpl::AddExportLocalEntryItem(const ir::Statement *declNode)
             ThrowSyntaxError("A class or function declaration without the default modifier mush have a name.",
                              declNode->Start());
         }
-        auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(name->Name(), name->Name());
-        if (!moduleRecord->AddLocalExportEntry(entry)) {
-            ThrowSyntaxError("Duplicate export name of '" + name->Name().Mutf8() + "'", name->Start());
+        if (isTsModule) {
+            tsModuleScope->AddExportVariable(name->Name());
+        } else {
+            auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(name->Name(),
+                                                                                              name->Name());
+            if (!moduleRecord->AddLocalExportEntry(entry)) {
+                ThrowSyntaxError("Duplicate export name of '" + name->Name().Mutf8() + "'", name->Start());
+            }
         }
     }
 }
@@ -2279,6 +2344,7 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
     ir::Statement *decl = nullptr;
 
     bool isDeclare = false;
+    bool isTsModule = context_.IsTsModule();
 
     if (Extension() == ScriptExtension::TS && lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE) {
         CheckDeclare();
@@ -2290,7 +2356,8 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
         ThrowSyntaxError("Decorators are not valid here.", decorators.front()->Start());
     }
 
-    VariableParsingFlags flag = VariableParsingFlags::EXPORTED;
+    VariableParsingFlags flag = isTsModule ? VariableParsingFlags::NO_OPTS : VariableParsingFlags::EXPORTED;
+    ParserStatus status = isTsModule ? ParserStatus::NO_OPTS : ParserStatus::EXPORT_REACHED;
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::KEYW_VAR: {
             decl = ParseVariableDeclaration(flag | VariableParsingFlags::VAR, isDeclare);
@@ -2305,11 +2372,11 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
             break;
         }
         case lexer::TokenType::KEYW_FUNCTION: {
-            decl = ParseFunctionDeclaration(false, ParserStatus::EXPORT_REACHED, isDeclare);
+            decl = ParseFunctionDeclaration(false, status, isDeclare);
             break;
         }
         case lexer::TokenType::KEYW_CLASS: {
-            decl = ParseClassDeclaration(true, std::move(decorators), isDeclare, false, true);
+            decl = ParseClassDeclaration(true, std::move(decorators), isDeclare, false, !isTsModule);
             break;
         }
         case lexer::TokenType::LITERAL_IDENT: {
@@ -2338,7 +2405,7 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
                         if (isDeclare) {
                             context_.Status() |= ParserStatus::IN_AMBIENT_CONTEXT;
                         }
-                        decl = ParseTsModuleDeclaration(isDeclare);
+                        decl = ParseTsModuleDeclaration(isDeclare, true);
                         context_.Status() = savedStatus;
                         break;
                     }
@@ -2360,7 +2427,7 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
             }
 
             lexer_->NextToken();  // eat `async` keyword
-            decl = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION | ParserStatus::EXPORT_REACHED);
+            decl = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION | status);
         }
     }
 
@@ -2368,9 +2435,7 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
         ConsumeSemicolon(decl);
     }
 
-    if (Extension() != ScriptExtension::TS || !context_.IsTsModule()) {
-        AddExportLocalEntryItem(decl);
-    }
+    AddExportLocalEntryItem(decl, isTsModule);
 
     lexer::SourcePosition endLoc = decl->End();
     ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
@@ -2383,7 +2448,7 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
 ir::Statement *ParserImpl::ParseExportDeclaration(StatementParsingFlags flags,
                                                   ArenaVector<ir::Decorator *> &&decorators)
 {
-    if (Extension() == ScriptExtension::JS) {
+    if (Extension() == ScriptExtension::JS || !context_.IsTsModule()) {
         if (!(flags & StatementParsingFlags::GLOBAL)) {
             ThrowSyntaxError("'import' and 'export' may only appear at the top level");
         }
@@ -2564,6 +2629,17 @@ ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> 
         lexer_->NextToken();  // eat substitution
         if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
             ThrowSyntaxError("identifier expected");
+        }
+        if (lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_REQUIRE ||
+            lexer_->Lookahead() != LEX_CHAR_LEFT_PAREN) {
+            auto *decl = Binder()->AddDecl<binder::ImportEqualsDecl>(local->Start(),
+                                                                     binder::DeclarationFlags::NONE,
+                                                                     local->Name());
+            decl->BindNode(local);
+            auto *scope = Binder()->GetScope();
+            auto *var = scope->FindLocalTSVariable<binder::TSBindingType::IMPORT_EQUALS>(local->Name());
+            ASSERT(var != nullptr);
+            var->AsImportEqualsVariable()->SetScope(scope);
         }
 
         auto *importEqualsDecl = AllocNode<ir::TSImportEqualsDeclaration>(local, ParseModuleReference(), false);

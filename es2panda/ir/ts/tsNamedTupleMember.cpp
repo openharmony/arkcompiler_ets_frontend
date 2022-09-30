@@ -42,4 +42,10 @@ checker::Type *TSNamedTupleMember::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void TSNamedTupleMember::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    label_ = std::get<ir::AstNode *>(cb(label_))->AsExpression();
+    elementType_ = std::get<ir::AstNode *>(cb(elementType_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

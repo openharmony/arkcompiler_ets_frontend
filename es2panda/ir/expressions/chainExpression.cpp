@@ -50,4 +50,9 @@ checker::Type *ChainExpression::Check(checker::Checker *checker) const
     return expression_->Check(checker);
 }
 
+void ChainExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    expression_ = std::get<ir::AstNode *>(cb(expression_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

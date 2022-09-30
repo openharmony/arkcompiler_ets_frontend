@@ -41,4 +41,13 @@ checker::Type *ImportDeclaration::Check([[maybe_unused]] checker::Checker *check
     return nullptr;
 }
 
+void ImportDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    source_ = std::get<ir::AstNode *>(cb(source_))->AsStringLiteral();
+
+    for (auto iter = specifiers_.begin(); iter != specifiers_.end(); iter++) {
+        *iter = std::get<ir::AstNode *>(cb(*iter));
+    }
+}
+
 }  // namespace panda::es2panda::ir

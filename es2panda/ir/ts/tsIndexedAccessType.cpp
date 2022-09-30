@@ -75,4 +75,10 @@ checker::Type *TSIndexedAccessType::GetType(checker::Checker *checker) const
     return resolved;
 }
 
+void TSIndexedAccessType::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    objectType_ = std::get<ir::AstNode *>(cb(objectType_))->AsExpression();
+    indexType_ = std::get<ir::AstNode *>(cb(indexType_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

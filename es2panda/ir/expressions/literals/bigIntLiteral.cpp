@@ -46,4 +46,6 @@ checker::Type *BigIntLiteral::Check(checker::Checker *checker) const
     return newBigintLiteralType;
 }
 
+void BigIntLiteral::UpdateSelf([[maybe_unused]] const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) {}
+
 }  // namespace panda::es2panda::ir

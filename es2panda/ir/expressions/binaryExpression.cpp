@@ -157,4 +157,10 @@ checker::Type *BinaryExpression::Check(checker::Checker *checker) const
     return nullptr;
 }
 
+void BinaryExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    left_ = std::get<ir::AstNode *>(cb(left_))->AsExpression();
+    right_ = std::get<ir::AstNode *>(cb(right_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

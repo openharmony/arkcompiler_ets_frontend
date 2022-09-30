@@ -45,4 +45,9 @@ checker::Type *TSTypeOperator::GetType([[maybe_unused]] checker::Checker *checke
     return nullptr;
 }
 
+void TSTypeOperator::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    type_ = std::get<ir::AstNode *>(cb(type_))->AsExpression();
+}
+
 }  // namespace panda::es2panda::ir

@@ -86,6 +86,7 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     checker::Type *Check(checker::Checker *checker) const override;
     checker::Type *CheckPattern(checker::Checker *checker) const;
+    void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
 
 private:
     ArenaVector<Expression *> elements_;

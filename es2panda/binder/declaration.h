@@ -24,6 +24,7 @@ namespace panda::es2panda::ir {
 class AstNode;
 class ScriptFunction;
 class TSInterfaceDeclaration;
+class TSModuleDeclaration;
 class ImportDeclaration;
 }  // namespace panda::es2panda::ir
 
@@ -235,9 +236,12 @@ public:
     }
 };
 
-class NameSpaceDecl : public Decl {
+class NamespaceDecl : public MultiDecl<ir::TSModuleDeclaration> {
 public:
-    explicit NameSpaceDecl(util::StringView name) : Decl(name) {}
+    explicit NamespaceDecl(ArenaAllocator *allocator, util::StringView name)
+        : MultiDecl(allocator, name)
+    {
+    }
 
     DeclType Type() const override
     {
@@ -292,6 +296,16 @@ public:
     DeclType Type() const override
     {
         return DeclType::PARAM;
+    }
+};
+
+class ImportEqualsDecl : public Decl {
+public:
+    explicit ImportEqualsDecl(util::StringView name) : Decl(name) {}
+
+    DeclType Type() const override
+    {
+        return DeclType::IMPORT_EQUALS;
     }
 };
 

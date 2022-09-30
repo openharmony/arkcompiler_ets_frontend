@@ -70,4 +70,9 @@ checker::Type *ArrowFunctionExpression::Check(checker::Checker *checker) const
     return funcType;
 }
 
+void ArrowFunctionExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+{
+    func_ = std::get<ir::AstNode *>(cb(func_))->AsScriptFunction();
+}
+
 }  // namespace panda::es2panda::ir
