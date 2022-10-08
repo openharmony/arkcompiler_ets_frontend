@@ -42,15 +42,15 @@ describe("function tests in function.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 1], [2, 0]
+                [2, 2], [24, "_1"], [24, "_2"], [2, 0]
             ],
             [
-                [2, 3], [2, 0], [2, 0], [5, 'local'],
-                [2, 0], [2, 0]
+                [2, 3], [2, 0], [5, "local"],
+                [2, 0], [2, 0], [25, 0]
             ],
             [
-                [2, 3], [2, 0], [2, 0], [5, 'emptyFunc'],
-                [2, 0], [2, 0]
+                [2, 3], [2, 0], [5, "emptyFunc"],
+                [2, 0], [2, 0], [25, 3]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -74,15 +74,15 @@ describe("function tests in function.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 2], [2, 0]
+                [2, 2], [24, "_1"], [24, "_2"], [2, 0]
             ],
             [
-                [2, 3], [2, 0], [2, 0], [5, 'local'],
-                [2, 0], [2, 0]
+                [2, 3], [2, 0], [5, "multi_local"],
+                [2, 0], [2, 0], [25, 0]
             ],
             [
-                [2, 3], [2, 0], [2, 0], [5, 'emptyFunc'],
-                [2, 2], [2, 1], [2, 4], [2, 4]
+                [2, 3], [2, 0], [5, "emptyFunc"],
+                [2, 0], [2, 2], [25, 1], [25, 4], [25, 4]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -109,19 +109,19 @@ describe("function tests in function.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 3], [2, 0]
+                [2, 3], [24, "_1"], [24, "_2"], [24, "_3"], [2, 0]
             ],
             [
-                [2, 3],[2, 0],[2, 0],[5, 'twoFunctions'],
-                [2, 0],[2, 0]
+                [2, 3], [2, 0], [5, "twoFunctions"],
+                [2, 0], [2, 0], [25, 0]
             ],
             [
-                [2, 3],[2, 0],[2, 0],[5, 'foo'],
-                [2, 2],[2, 1],[2, 4],[2, 3]
+                [2, 3], [2, 0], [5, "foo"], [2, 0],
+                [2, 2], [25, 1], [25, 4], [25, 3]
             ],
             [
-                [2, 3],[2, 0],[2, 0],[5, 'bar'],
-                [2, 2],[2, 1],[2, 4],[2, 3]
+                [2, 3], [2, 0], [5, "bar"], [2, 0],
+                [2, 2], [25, 1], [25, 4], [25, 3]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -146,23 +146,23 @@ describe("function tests in function.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 4], [2, 0]
+                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
             ],
             [
-                [2, 3], [2, 0], [2, 0], [5, 'localClass'],
-                [2, 0], [2, 0]
+                [2, 3], [2, 0], [5, "localClass"],
+                [2, 0], [2, 0], [25, 0]
             ],
             [
-                [2, 3], [2, 0], [2, 0], [5, 'foo'],
-                [2, 2], [2, 1], [2, shift + 4], [2, 0]
-            ],
-            [
-
-                [2, 1], [2, 0], [2, 0], [2, 0],
+                [2, 1], [2, 0], [25, 0], [2, 0],
                 [2, 0], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 2], [2, shift + 3]
+
+                [2, 3], [2, 0], [5, "foo"], [2, 0],
+                [2, 2], [25, 1], [24, "_4"], [25, 0]
+            ],
+            [
+                [2, 2], [24, "_2"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -184,23 +184,23 @@ describe("function tests in function.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 4], [2, 0]
+                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
             ],
             [
-                [2, 3], [2, 0], [5, 'localClassRet'],
-                [2, 0], [2, 0], [2, 0]
+                [2, 3], [2, 0], [5, "localClassRet"],
+                [2, 0], [2, 0], [25, 0]
             ],
             [
 
-                [2, 1], [2, 0], [2, 0], [2, 0],
+                [2, 1], [2, 0], [25, 0], [2, 0],
                 [2, 0], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 3], [2, 0], [5, 'foo'],
-                [2, 0], [2, 0], [2, shift + 4]
+                [2, 3], [2, 0], [5, "foo"],
+                [2, 0], [2, 0], [24, "_4"]
             ],
             [
-                [2, 2], [2, shift + 2]
+                [2, 2], [24, "_2"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);

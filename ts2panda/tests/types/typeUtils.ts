@@ -122,11 +122,11 @@ export function compareLiteralBuffer(expected: Array<LiteralBuffer>, generated: 
             return false;
         }
         for (let i = 0; i < generatedLiterals.length; i++) {
-            if (expectedLiterals[i].getTag != generatedLiterals[i].getTag) {
+            if (expectedLiterals[i].getTag() != generatedLiterals[i].getTag()) {
                 printLiteralLog(expectedLiterals[i], generatedLiterals[i]);
                 return false;
             }
-            if (expectedLiterals[i].getValue != generatedLiterals[i].getValue) {
+            if (expectedLiterals[i].getValue() != generatedLiterals[i].getValue()) {
                 printLiteralLog(expectedLiterals[i], generatedLiterals[i]);
                 return false;
             }

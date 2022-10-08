@@ -47,25 +47,25 @@ describe("array tests in array.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 6], [2, 0]
+                [2, 6], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [24, "_5"], [24, "_6"], [2, 0]
             ],
             [
-                [2, 5], [2, 1]
+                [2, 5], [25, 1]
             ],
             [
-                [2, 5], [2, 2]
+                [2, 5], [25, 2]
             ],
             [
-                [2, 5], [2, 4]
+                [2, 5], [25, 4]
             ],
             [
-                [2, 5], [2, 5]
+                [2, 5], [25, 5]
             ],
             [
-                [2, 5], [2, 6]
+                [2, 5], [25, 6]
             ],
             [
-                [2, 5], [2, 7]
+                [2, 5], [25, 7]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -88,17 +88,17 @@ describe("array tests in array.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 3], [2, 0]
+                [2, 3], [24, "_1"], [24, "_2"], [24, "_3"], [2, 0]
             ],
             [
-                [2, 1], [2, 0], [2, 0], [2, 0],
+                [2, 1], [2, 0], [25, 0], [2, 0],
                 [2, 0], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 2], [2, 51]
+                [2, 2], [24, "_1"]
             ],
             [
-                [2, 5], [2, 52]
+                [2, 5], [24, "_2"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -131,25 +131,25 @@ describe("array tests in array.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 6], [2, 0]
+                [2, 6], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [24, "_5"], [24, "_6"], [2, 0]
             ],
             [
-                [2, 5], [2, 1]
+                [2, 5], [25, 1]
             ],
             [
-                [2, 5], [2, 2]
+                [2, 5], [25, 2]
             ],
             [
-                [2, 5], [2, 4]
+                [2, 5], [25, 4]
+            ],
+                [
+                [2, 5], [25, 5]
             ],
             [
-                [2, 5], [2, 5]
+                [2, 5], [25, 6]
             ],
             [
-                [2, 5], [2, 6]
-            ],
-            [
-                [2, 5], [2, 7]
+                [2, 5], [25, 7]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -173,17 +173,17 @@ describe("array tests in array.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 3], [2, 0]
+                [2, 3], [24, "_1"], [24, "_2"], [24, "_3"], [2, 0]
             ],
             [
-                [2, 1], [2, 0], [2, 0], [2, 0],
+                [2, 1], [2, 0], [25, 0], [2, 0],
                 [2, 0], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 2], [2, 51]
+                [2, 2], [24, "_1"]
             ],
             [
-                [2, 5], [2, 52]
+                [2, 5], [24, "_2"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -206,13 +206,13 @@ describe("array tests in array.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 2], [2, 0]
+                [2, 2], [24, "_1"], [24, "_2"], [2, 0]
             ],
             [
-                [2, 4], [2, 2], [2, 4], [2, 1],
+                [2, 4], [2, 2], [25, 4], [25, 1],
             ],
             [
-                [2, 5], [2, 51]
+                [2, 5], [24, "_1"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -234,14 +234,14 @@ describe("array tests in array.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 2], [2, 0]
+                [2, 2], [24, "_1"], [24, "_2"], [2, 0]
             ],
             [
-                [2, 6], [2, 2], [5, "element1"], [2, 1],
-                [5, "element2"], [2, 4],
+                [2, 6], [2, 2], [5, "element1"], [25, 1],
+                [5, "element2"], [25, 4]
             ],
             [
-                [2, 5], [2, 51]
+                [2, 5], [24, "_1"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);

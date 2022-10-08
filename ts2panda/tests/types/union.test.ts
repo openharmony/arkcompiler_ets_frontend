@@ -45,20 +45,20 @@ describe("union tests in union.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 4], [2, 0]
+                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
             ],
             [
-                [2, 4], [2, 2], [2, 1], [2, 2]
+                [2, 4], [2, 2], [25, 1], [25, 2]
             ],
             [
-                [2, 4], [2, 2], [2, 4], [2, 5]
+                [2, 4], [2, 2], [25, 4], [25, 5]
             ],
             [
-                [2, 4], [2, 2], [2, 7], [2, 6]
+                [2, 4], [2, 2], [25, 7], [25, 6]
             ],
             [
-                [2, 4], [2, 6], [2, 1], [2, 2],
-                [2, 4], [2, 5], [2, 7], [2, 6]
+                [2, 4], [2, 6], [25, 1], [25, 2],
+                [25, 4], [25, 5], [25, 7], [25, 6]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -81,20 +81,20 @@ describe("union tests in union.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 4], [2, 0]
+                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
             ],
             [
-                [2, 1], [2, 0], [2, 0], [2, 0],
+                [2, 1], [2, 0], [25, 0], [2, 0],
                 [2, 0], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 4], [2, 2], [2, shift + 3], [2, shift + 4]
+                [2, 4], [2, 2], [24, "_3"], [24, "_4"]
             ],
             [
-                [2, 2], [2, shift + 1]
+                [2, 2], [24, "_1"]
             ],
             [
-                [2, 5], [2, 1]
+                [2, 5], [25, 1]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -117,10 +117,10 @@ describe("union tests in union.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 1], [2, 0]
+                [2, 1], [24, "_1"], [2, 0]
             ],
             [
-                [2, 4], [2, 2], [2, 1], [2, 2]
+                [2, 4], [2, 2], [25, 1], [25, 2]
             ],
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -144,20 +144,20 @@ describe("union tests in union.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 4], [2, 0]
+                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
             ],
             [
-                [2, 1], [2, 0], [2, 0], [2, 0],
+                [2, 1], [2, 0], [25, 0], [2, 0],
                 [2, 0], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 4], [2, 2], [2, shift + 3], [2, shift + 4]
+                [2, 4], [2, 2], [24, "_3"], [24, "_4"]
             ],
             [
-                [2, 2], [2, shift + 1]
+                [2, 2], [24, "_1"]
             ],
             [
-                [2, 5], [2, 1]
+                [2, 5], [25, 1]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);

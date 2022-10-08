@@ -79,18 +79,18 @@ describe("primitives tests in primitives.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0],
                 [2, 1],
+                [24, "_1"],
                 [2, 0]
             ],
             [
                 [2, 3],
                 [2, 0],
+                [5, "numberFunc"],
                 [2, 0],
-                [5, 'numberFunc'],
                 [2, 1],
-                [2, 1],
-                [2, 3]
+                [25, 1],
+                [25, 3]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -174,21 +174,22 @@ describe("primitives tests in primitives.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 2], [2, 0]
+                [2, 2], [24, "_1"], [24, "_2"], [2, 0]
             ],
             [
-                [2, 1], [2, 0], [2, 0], [2, 0],
-                [2, 7], [5, 'num'], [2, 1], [2, 0],
-                [2, 0], [5, 'bool'], [2, 2], [2, 0], [2, 0],
-                [5, 'str'], [2, 4], [2, 0], [2, 0],
-                [5, 'sym'], [2, 5], [2, 0], [2, 0],
-                [5, 'nu'], [2, 6], [2, 0], [2, 0],
-                [5, 'und'], [2, 7], [2, 0], [2, 0],
-                [5, 'vd'], [2, 3], [2, 0], [2, 0],
+                [2, 1], [2, 0], [25, 0], [2, 0],
+                [2, 7], [5, "num"], [25, 1],
+                [2, 0], [2, 0], [5, "bool"],
+                [25, 2], [2, 0], [2, 0], [5, "str"],
+                [25, 4], [2, 0], [2, 0], [5, "sym"],
+                [25, 5], [2, 0], [2, 0], [5, "nu"],
+                [25, 6], [2, 0], [2, 0], [5, "und"],
+                [25, 7], [2, 0], [2, 0], [5, "vd"],
+                [25, 3], [2, 0], [2, 0],
                 [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 2], [2, shift + 1]
+                [2, 2], [24, "_1"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
