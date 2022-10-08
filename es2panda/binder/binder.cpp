@@ -38,8 +38,8 @@
 #include <ir/statements/forOfStatement.h>
 #include <ir/statements/forUpdateStatement.h>
 #include <ir/statements/ifStatement.h>
-#include <ir/statements/switchStatement.h>
 #include <ir/statements/switchCaseStatement.h>
+#include <ir/statements/switchStatement.h>
 #include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
 #include <ir/statements/whileStatement.h>
