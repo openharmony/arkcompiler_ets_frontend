@@ -209,9 +209,9 @@ const es2abcBase64Input = "--base64Input";
 const es2abcDebuggerEvaluateFlag = "--debugger-evaluate-expression";
 const es2abcBase64Output = "--base64Output";
 
-function callEs2pandaToolChain(ideIputStr: string) {
-    let commandLine = es2abcBinaryPath + es2abcBinaryName + " " + es2abcBase64Input + " \"" + ideIputStr + "\" " +
-                      es2abcDebuggerEvaluateFlag + " " + es2abcBase64Output;
+function callEs2pandaToolChain(ideInputStr: string) {
+    let commandLine = "\"" + es2abcBinaryPath + es2abcBinaryName + "\" " + es2abcBase64Input + " \"" + ideInputStr
+                      + "\" " + es2abcDebuggerEvaluateFlag + " " + es2abcBase64Output;
     var exec = require('child_process').exec;
     exec(`${commandLine}`, function(error, stdout) {
         if (error) {
@@ -223,18 +223,18 @@ function callEs2pandaToolChain(ideIputStr: string) {
 }
 
 function updateWatchJsFile() {
-    let ideIputStr = CmdOptions.getEvaluateExpression();
+    let ideInputStr = CmdOptions.getEvaluateExpression();
     if (CmdOptions.watchViaEs2pandaToolchain()) {
-        callEs2pandaToolChain(ideIputStr);
+        callEs2pandaToolChain(ideInputStr);
         return;
     }
-    if (!isBase64Str(ideIputStr)) {
+    if (!isBase64Str(ideInputStr)) {
         throw new Error("Passed expression string for evaluating is not base64 style.");
     }
     let watchAbcFileTimeOut = watchAbcFileDefaultTimeOut;
     if (CmdOptions.getWatchTimeOutValue() != 0) { watchAbcFileTimeOut = CmdOptions.getWatchTimeOutValue(); }
     let watchFilePrefix = CmdOptions.getWatchJsPath() + path.sep + watchFileName;
-    let originExpre = Buffer.from(ideIputStr, 'base64').toString();
+    let originExpre = Buffer.from(ideInputStr, 'base64').toString();
     let jsFileName = watchFilePrefix + ".js";
     let abcFileName = watchFilePrefix + ".abc";
     let errorMsgFileName = watchFilePrefix + ".err";
