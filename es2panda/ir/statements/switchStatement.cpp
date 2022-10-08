@@ -43,11 +43,12 @@ void SwitchStatement::Dump(ir::AstDumper *dumper) const
 
 void SwitchStatement::Compile(compiler::PandaGen *pg) const
 {
-    compiler::LocalRegScope lrs(pg, scope_);
     compiler::SwitchBuilder builder(pg, this);
     compiler::VReg tag = pg->AllocReg();
 
     builder.CompileTagOfSwitch(tag);
+
+    compiler::LocalRegScope lrs(pg, scope_);
     uint32_t defaultIndex = 0;
 
     for (size_t i = 0; i < cases_.size(); i++) {

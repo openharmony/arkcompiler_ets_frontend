@@ -27,12 +27,13 @@ import {
     Jmp,
     Jnez,
     Label,
+    Lda,
     Ldai,
     Sta,
     VReg,
     IRNode
 } from "../../src/irnodes";
-import { checkInstructions, compileMainSnippet } from "../utils/base";
+import { checkInstructions, compileMainSnippet, SnippetCompiler } from "../utils/base";
 import { creatAstFromSnippet } from "../utils/asthelper"
 import { PandaGen } from '../../src/pandagen';
 
@@ -208,6 +209,49 @@ describe("switchTest", function () {
             switchEndLabel,
             new Returnundefined()
         ];
+        expect(checkInstructions(insns, expected)).to.be.true;
+    });
+
+    it("discriminant's scope", function () {
+        let snippetCompiler = new SnippetCompiler();
+        snippetCompiler.compile(
+            `function test() {
+                let a = 0;
+                switch (a) {
+                    case 0:
+                        const a = 0;
+                        break;
+                }
+            }`);
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
+
+        let a = new VReg();
+        let discriminant_a = new VReg();
+        let body_a = new VReg();
+        let caseLabel_0 = new Label();
+        let switchEndLabel = new Label();
+        let expected = [
+            new Ldai(new Imm(0)),
+            new Sta(a),
+            // switch discriminant
+            new Lda(a),
+            new Sta(discriminant_a),
+            // switch body
+            new Ldai(new Imm(0)),
+            new Strictnoteq(new Imm(1), discriminant_a),
+            new Jeqz(caseLabel_0),
+            new Jmp(switchEndLabel),
+            // switch cases
+            caseLabel_0,
+            new Ldai(new Imm(0)),
+            new Sta(body_a),
+            new Jmp(switchEndLabel),
+            switchEndLabel,
+            new Returnundefined()
+        ];
+        let functionPg = snippetCompiler.getPandaGenByName("test");
+        let insns = functionPg!.getInsns();
+
         expect(checkInstructions(insns, expected)).to.be.true;
     });
 });
