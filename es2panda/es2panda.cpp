@@ -221,7 +221,6 @@ panda::pandasm::Program *Compiler::CompileFile(const CompilerOptions &options, S
             src->hash = GetHash32String(reinterpret_cast<const uint8_t *>(buffer.c_str()));
         }
     }
-    src->fileName = util::Helpers::BaseName(src->fileName);
 
     auto *program = Compile(*src, options, symbolTable);
     if (!program) {
@@ -232,7 +231,8 @@ panda::pandasm::Program *Compiler::CompileFile(const CompilerOptions &options, S
         }
 
         std::cerr << err.TypeString() << ": " << err.Message();
-        std::cerr << " [" << src->fileName << ":" << err.Line() << ":" << err.Col() << "]" << std::endl;
+        std::cerr << " [" << util::Helpers::BaseName(src->fileName) << ":"
+                  << err.Line() << ":" << err.Col() << "]" << std::endl;
         throw err;
     }
     return program;
