@@ -370,7 +370,7 @@ describe("WatchExpressions", function () {
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
-            new Createarraywithbuffer(new Imm(0), "1"),
+            new Createarraywithbuffer(new Imm(0), "_1"),
             new Sta(new VReg()),
             new Lda(new VReg()),
 
@@ -388,7 +388,7 @@ describe("WatchExpressions", function () {
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
-            new Createobjectwithbuffer(new Imm(0), "1"),
+            new Createobjectwithbuffer(new Imm(0), "_1"),
             new Sta(new VReg()),
             new Lda(new VReg()),
             new Sta(new VReg()),
@@ -946,7 +946,7 @@ describe("WatchExpressions", function () {
 
         let expected = [
             new Mov(new VReg(), new VReg()),
-            new Defineclasswithbuffer(new Imm(0), "#1#", "1", new Imm(0), new VReg()),
+            new Defineclasswithbuffer(new Imm(0), "#1#", "_1", new Imm(0), new VReg()),
             new Sta(new VReg()),
             new Lda(new VReg()),
             new Sta(new VReg()),

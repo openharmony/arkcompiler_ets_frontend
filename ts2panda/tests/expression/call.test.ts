@@ -21,7 +21,6 @@ import {
     Dynamicimport,
     Callarg0,
     Callarg1,
-    Callthisrange,
     Apply,
     Createarraywithbuffer,
     Createemptyarray,
@@ -114,7 +113,7 @@ describe("CallTest", function () {
         let arrayInstance = new VReg();
 
         let expected = [
-            new Createarraywithbuffer(new Imm(0), "0"),
+            new Createarraywithbuffer(new Imm(0), "_0"),
             new Sta(arrayInstance),
             new Lda(arrayInstance),
             new Stconsttoglobalrecord(new Imm(1), 'args'),

@@ -188,6 +188,8 @@ import { CatchTable } from "./statement/tryStatement";
 import { TypeRecorder } from "./typeRecorder";
 import { Variable } from "./variable";
 import * as jshelpers from "./jshelpers";
+import { CompilerDriver } from "./compilerDriver";
+import { getLiteralKey } from "./base/util";
 
 export enum FunctionKind {
     NONE = 0, // represent method for now
@@ -368,14 +370,25 @@ export class PandaGen {
         }
     }
 
+    static appendLiteralArrayBuffer(litBuf: LiteralBuffer): string {
+        let litId = getLiteralKey(CompilerDriver.srcNode, PandaGen.literalArrayBuffer.length);
+        litBuf.setKey(litId);
+        PandaGen.literalArrayBuffer.push(litBuf);
+        return litId;
+    }
+
     static appendTypeArrayBuffer(type: BaseType): number {
         let index = PandaGen.literalArrayBuffer.length;
-        PandaGen.literalArrayBuffer.push(type.transfer2LiteralBuffer());
+        let typeBuf = type.transfer2LiteralBuffer();
+        typeBuf.setKey(getLiteralKey(CompilerDriver.srcNode, index));
+        PandaGen.literalArrayBuffer.push(typeBuf);
         return index;
     }
 
     static setTypeArrayBuffer(type: BaseType, index: number) {
-        PandaGen.literalArrayBuffer[index] = type.transfer2LiteralBuffer();
+        let typeBuf = type.transfer2LiteralBuffer();
+        typeBuf.setKey(getLiteralKey(CompilerDriver.srcNode, index));
+        PandaGen.literalArrayBuffer[index] = typeBuf;
     }
 
     getFirstStmt() {
@@ -1186,8 +1199,8 @@ export class PandaGen {
         this.add(node, createEmptyObject());
     }
 
-    createObjectWithBuffer(node: ts.Node, idx: number) {
-        this.add(node, createObjectWithBuffer(idx));
+    createObjectWithBuffer(node: ts.Node, bufferId: string) {
+        this.add(node, createObjectWithBuffer(bufferId));
     }
 
     setObjectWithProto(node: ts.Node, proto: VReg, object: VReg) {
@@ -1214,8 +1227,8 @@ export class PandaGen {
         this.add(node, createEmptyArray());
     }
 
-    createArrayWithBuffer(node: ts.Node, idx: number) {
-        this.add(node, createArrayWithBuffer(idx));
+    createArrayWithBuffer(node: ts.Node, bufferId: string) {
+        this.add(node, createArrayWithBuffer(bufferId));
     }
 
     storeArraySpreadElement(node: ts.Node, array: VReg, index: VReg) {
@@ -1257,10 +1270,10 @@ export class PandaGen {
         this.add(node, dynamicImport());
     }
 
-    defineClassWithBuffer(node: ts.Node, name: string, idx: number, parameterLength: number, base: VReg) {
+    defineClassWithBuffer(node: ts.Node, name: string, litId: string, parameterLength: number, base: VReg) {
         this.add(
             node,
-            defineClassWithBuffer(name, idx, parameterLength, base)
+            defineClassWithBuffer(name, litId, parameterLength, base)
         )
     }
 

@@ -90,6 +90,11 @@ public:
         return recordName_.View();
     }
 
+    util::StringView FormatedRecordName() const
+    {
+        return formatedRecordName_.View();
+    }
+
     const lexer::LineIndex &GetLineIndex() const
     {
         return lineIndex_;
@@ -120,6 +125,8 @@ public:
     void SetRecordName(const std::string &recordName)
     {
         recordName_ = util::UString(recordName, Allocator());
+        std::string formatedRecordName = recordName + ".";
+        formatedRecordName_ = util::UString(formatedRecordName, Allocator());
     }
 
     void AddHotfixHelper(util::Hotfix *hotfixHelper)
@@ -142,6 +149,7 @@ private:
     util::UString sourceCode_ {};
     util::UString sourceFile_ {};
     util::UString recordName_ {};
+    util::UString formatedRecordName_ {};
     ScriptKind kind_ {};
     ScriptExtension extension_ {};
     lexer::LineIndex lineIndex_ {};

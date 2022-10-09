@@ -119,6 +119,7 @@ function main(fileNames: string[], options: ts.CompilerOptions) {
                         }
                         let outputBinName = getOutputBinName(node);
                         let compilerDriver = new CompilerDriver(outputBinName);
+                        CompilerDriver.srcNode = node;
                         setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(node, options));
                         compilerDriver.compile(node);
                         compilerDriver.showStatistics();

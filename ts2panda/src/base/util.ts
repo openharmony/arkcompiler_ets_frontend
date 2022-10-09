@@ -391,3 +391,11 @@ export function hasAbstractModifier(node: ts.Node): boolean {
 
 export const MAX_INT8 = 127;
 export const MAX_INT16 = 32767;
+
+export function getRecordName(node: ts.SourceFile): string {
+    return ""; // need to be fixed later
+}
+
+export function getLiteralKey(node: ts.SourceFile, idx:number): string {
+    return `${getRecordName(node)}_${idx}`;
+}

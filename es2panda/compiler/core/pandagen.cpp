@@ -1408,7 +1408,7 @@ void PandaGen::CreateEmptyObject(const ir::AstNode *node)
 void PandaGen::CreateObjectWithBuffer(const ir::AstNode *node, uint32_t idx)
 {
     ASSERT(util::Helpers::IsInteger<uint32_t>(idx));
-    std::string idxStr = std::string(context_->RecordName()) + std::to_string(idx);
+    std::string idxStr = std::string(context_->Binder()->Program()->RecordName()) + "_" + std::to_string(idx);
     util::UString litId(idxStr, allocator_);
     sa_.Emit<Createobjectwithbuffer>(node, 0, litId.View());
 }
@@ -1439,7 +1439,7 @@ void PandaGen::CreateEmptyArray(const ir::AstNode *node)
 void PandaGen::CreateArrayWithBuffer(const ir::AstNode *node, uint32_t idx)
 {
     ASSERT(util::Helpers::IsInteger<uint32_t>(idx));
-    std::string idxStr = std::string(context_->RecordName()) + std::to_string(idx);
+    std::string idxStr = std::string(context_->Binder()->Program()->RecordName()) + "_" + std::to_string(idx);
     util::UString litId(idxStr, allocator_);
     sa_.Emit<Createarraywithbuffer>(node, 0, litId.View());
 }
@@ -1601,7 +1601,7 @@ void PandaGen::CloseIterator(const ir::AstNode *node, VReg iter)
 void PandaGen::DefineClassWithBuffer(const ir::AstNode *node, const util::StringView &ctorId, int32_t litIdx, VReg base)
 {
     auto formalParamCnt = node->AsClassDefinition()->Ctor()->Function()->FormalParamsLength();
-    std::string idxStr = std::string(context_->RecordName()) + std::to_string(litIdx);
+    std::string idxStr = std::string(context_->Binder()->Program()->RecordName()) + "_" + std::to_string(litIdx);
     util::UString litId(idxStr, allocator_);
     ra_.Emit<Defineclasswithbuffer>(node, 0, ctorId, litId.View(), static_cast<int64_t>(formalParamCnt), base);
     strings_.insert(ctorId);
@@ -1824,7 +1824,7 @@ void PandaGen::NewLexEnv(const ir::AstNode *node, uint32_t num)
 
 void PandaGen::NewLexEnvWithScopeInfo(const ir::AstNode *node, uint32_t num, int32_t scopeInfoIdx)
 {
-    std::string idxStr = std::string(context_->RecordName()) + std::to_string(scopeInfoIdx);
+    std::string idxStr = std::string(context_->Binder()->Program()->RecordName()) + "_" + std::to_string(scopeInfoIdx);
     util::UString litId(idxStr, allocator_);
     num <= util::Helpers::MAX_INT8 ? sa_.Emit<Newlexenvwithname>(node, num, litId.View()) :
                                      sa_.Emit<WideNewlexenvwithname>(node, num, litId.View());

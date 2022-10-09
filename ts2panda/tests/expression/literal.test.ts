@@ -96,7 +96,7 @@ describe("LiteralTest", function () {
         let arrayInstance = new VReg();
 
         let expected = [
-            new Createarraywithbuffer(new Imm(0), "0"),
+            new Createarraywithbuffer(new Imm(0), "_0"),
             new Sta(arrayInstance),
             new Lda(arrayInstance),
             new Sttoglobalrecord(new Imm(1), 'arr'),
@@ -125,7 +125,7 @@ describe("LiteralTest", function () {
         let arrayInstance = new VReg();
 
         let expected = [
-            new Createarraywithbuffer(new Imm(0), "0"),
+            new Createarraywithbuffer(new Imm(0), "_0"),
             new Sta(arrayInstance),
             new Lda(arrayInstance),
             new Sttoglobalrecord(new Imm(1), 'arr'),
@@ -159,7 +159,7 @@ describe("LiteralTest", function () {
         let arrayInstance = new VReg();
 
         let expected = [
-            new Createarraywithbuffer(new Imm(0), "0"),
+            new Createarraywithbuffer(new Imm(0), "_0"),
             new Sta(arrayInstance),
             new Ldai(new Imm(3)),
             new Stownbyindex(new Imm(1), arrayInstance, new Imm(2)),
@@ -180,12 +180,12 @@ describe("LiteralTest", function () {
         let arrayInstance = new VReg();
 
         let expected = [
-            new Createarraywithbuffer(new Imm(0), "0"),
+            new Createarraywithbuffer(new Imm(0), "_0"),
             new Sta(arrayInstance),
             new Lda(arrayInstance),
             new Sttoglobalrecord(new Imm(1), 'arr1'),
 
-            new Createarraywithbuffer(new Imm(2), "1"),
+            new Createarraywithbuffer(new Imm(2), "_1"),
             new Sta(arrayInstance),
             new Ldai(new Imm(1)),
             new Sta(elemIdxReg),
@@ -224,7 +224,7 @@ describe("LiteralTest", function () {
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let objInstance = new VReg();
         let expected = [
-            new Createobjectwithbuffer(new Imm(0), "0"),
+            new Createobjectwithbuffer(new Imm(0), "_0"),
             new Sta(objInstance),
             new Lda(objInstance),
             new Sttoglobalrecord(new Imm(1), 'obj'),
@@ -240,7 +240,7 @@ describe("LiteralTest", function () {
         let lhs = new VReg();
 
         let expected = [
-            new Createobjectwithbuffer(new Imm(0), "0"),
+            new Createobjectwithbuffer(new Imm(0), "_0"),
             new Sta(objInstance),
             new Ldai(new Imm(1)),
             new Sta(lhs),
@@ -260,7 +260,7 @@ describe("LiteralTest", function () {
         let objInstance = new VReg();
 
         let expected = [
-            new Createobjectwithbuffer(new Imm(0), "0"),
+            new Createobjectwithbuffer(new Imm(0), "_0"),
             new Sta(objInstance),
             new Lda(objInstance),
             new Sttoglobalrecord(new Imm(1), 'obj'),
@@ -276,7 +276,7 @@ describe("LiteralTest", function () {
         let objInstance = new VReg();
 
         let expected = [
-            new Createobjectwithbuffer(new Imm(0), "0"),
+            new Createobjectwithbuffer(new Imm(0), "_0"),
             new Sta(objInstance),
             new Tryldglobalbyname(new Imm(1), 'a'),
             new Stownbyname(new Imm(2), "a", objInstance),

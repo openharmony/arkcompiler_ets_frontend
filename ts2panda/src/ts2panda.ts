@@ -54,6 +54,7 @@ import { ModuleScope } from "./scope";
 import { TypeRecorder } from "./typeRecorder";
 import { isGlobalDeclare } from "./strictMode";
 import { isFunctionLikeDeclaration } from "./syntaxCheckHelper";
+import { getLiteralKey } from "./base/util";
 
 const dollarSign: RegExp = /\$/g;
 
@@ -64,7 +65,8 @@ const JsonType = {
     "literal_arr": 3,
     "module": 4,
     "options": 5,
-    'type_info': 6
+    'type_info': 6,
+    'record_name': 7
 };
 export class Ts2Panda {
     static strings: Set<string> = new Set();
@@ -209,7 +211,22 @@ export class Ts2Panda {
         });
     }
 
+    static dumpRecordName(ts2abc: any, recordName: string) {
+        let recordNameObject = {
+            "t": JsonType.record_name,
+            "rn": recordName
+        }
+
+        let jsonRecordName = escapeUnicode(JSON.stringify(recordNameObject, null, 2));
+        jsonRecordName = "$" + jsonRecordName.replace(dollarSign, '#$') + "$";
+        if (CmdOptions.isEnableDebugLog()) {
+            Ts2Panda.jsonString += jsonRecordName;
+        }
+        ts2abc.stdio[3].write(jsonRecordName + '\n');
+    }
+
     static dumpCmdOptions(ts2abc: any): void {
+        let enableRecordType: boolean = CmdOptions.needRecordType() && CompilerDriver.isTsFile;
         let options = {
             "t": JsonType.options,
             "module_mode": CmdOptions.isModules(),
@@ -219,7 +236,8 @@ export class Ts2Panda {
             "opt_level": CmdOptions.getOptLevel(),
             "opt_log_level": CmdOptions.getOptLogLevel(),
             "display_typeinfo": CmdOptions.getDisplayTypeinfo(),
-            "is_dts_file": isGlobalDeclare()
+            "is_dts_file": isGlobalDeclare(),
+            "record_type": enableRecordType
         };
         let jsonOpt = JSON.stringify(options, null, 2);
         jsonOpt = "$" + jsonOpt.replace(dollarSign, '#$') + "$";
@@ -442,9 +460,9 @@ export class Ts2Panda {
 
     static dumpTypeInfoRecord(ts2abc: any, recordType: boolean): void {
         let enableTypeRecord = getRecordTypeFlag(recordType);
-        let typeSummaryIndex = 0;
+        let typeSummaryIndex = getLiteralKey(CompilerDriver.srcNode, 0);
         if (enableTypeRecord) {
-            typeSummaryIndex = TypeRecorder.getInstance().getTypeSummaryIndex();
+            typeSummaryIndex = getLiteralKey(CompilerDriver.srcNode, TypeRecorder.getInstance().getTypeSummaryIndex());
         }
         let typeInfo = {
             'tf': enableTypeRecord,

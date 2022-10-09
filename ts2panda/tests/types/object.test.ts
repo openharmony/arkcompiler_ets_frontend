@@ -42,7 +42,7 @@ describe("object tests in object.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 1], [2, 0]
+                [2, 1], [24, "_1"], [2, 0]
             ],
             [
                 [2, 6], [2, 2], [5, 'a'], [2, 1],
@@ -69,7 +69,7 @@ describe("object tests in object.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 0], [2, 4], [2, 0]
+                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
             ],
             [
                 [2, 1],[2, 0],[2, 0],[2, 0],
