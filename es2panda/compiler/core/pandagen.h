@@ -267,6 +267,7 @@ public:
     bool CheckControlFlowChange();
     Label *ControlFlowChangeBreak(const ir::Identifier *label = nullptr);
     Label *ControlFlowChangeContinue(const ir::Identifier *label);
+    void ControlFlowChangeReturn();
 
     void Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, class Label *ifFalse);
     void Unary(const ir::AstNode *node, lexer::TokenType op, VReg operand);
