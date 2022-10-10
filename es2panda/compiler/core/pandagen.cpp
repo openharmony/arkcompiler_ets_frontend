@@ -746,6 +746,15 @@ Label *PandaGen::ControlFlowChangeContinue(const ir::Identifier *label)
     return continueTarget;
 }
 
+void PandaGen::ControlFlowChangeReturn()
+{
+    auto *iter = dynamicContext_;
+    while (iter) {
+        iter->AbortContext(ControlFlowChange::BREAK, LabelTarget::RETURN_LABEL);
+        iter = iter->Prev();
+    }
+}
+
 void PandaGen::Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, Label *ifFalse)
 {
     switch (op) {

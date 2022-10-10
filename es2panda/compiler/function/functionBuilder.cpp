@@ -124,7 +124,7 @@ void FunctionBuilder::HandleCompletion(const ir::AstNode *node, VReg completionT
         pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, completionType, notRetLabel);
         if (!handleReturn_) {
             handleReturn_ = true;
-            pg_->ControlFlowChangeBreak();
+            pg_->ControlFlowChangeReturn();
             handleReturn_ = false;
         }
 
@@ -218,7 +218,7 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
     pg_->BranchIfNotUndefined(node, callMethod);
 
     // 1. If generatorKind is async, set received.[[Value]] to ? Await(received.[[Value]]).
-    pg_->ControlFlowChangeBreak();
+    pg_->ControlFlowChangeReturn();
     pg_->LoadAccumulator(node, receivedValue);
 
     if (GeneratorKind() == IteratorType::ASYNC) {
@@ -303,7 +303,7 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
 
     if (pg_->CheckControlFlowChange()) {
         pg_->StoreAccumulator(node, receivedValue);
-        pg_->ControlFlowChangeBreak();
+        pg_->ControlFlowChangeReturn();
         pg_->LoadAccumulator(node, receivedValue);
     }
 
