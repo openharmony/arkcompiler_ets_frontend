@@ -2225,6 +2225,10 @@ void ParserImpl::AddExportLocalEntryItem(const ir::Statement *declNode, bool isT
             ThrowSyntaxError("A class or function declaration without the default modifier mush have a name.",
                              declNode->Start());
         }
+        if (declNode->IsFunctionDeclaration() &&
+            declNode->AsFunctionDeclaration()->Function()->IsOverload()) {
+            return;
+        }
         if (isTsModule) {
             tsModuleScope->AddExportVariable(name->Name());
         } else {
@@ -2404,6 +2408,7 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
 
     VariableParsingFlags flag = isTsModule ? VariableParsingFlags::NO_OPTS : VariableParsingFlags::EXPORTED;
     ParserStatus status = isTsModule ? ParserStatus::NO_OPTS : ParserStatus::EXPORT_REACHED;
+
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::KEYW_VAR: {
             decl = ParseVariableDeclaration(flag | VariableParsingFlags::VAR, isDeclare);
