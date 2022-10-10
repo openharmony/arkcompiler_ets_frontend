@@ -13,6 +13,10 @@ ets_frontend组件是方舟运行时子系统的前端工具，结合ace-ets2bun
 
 更多信息请参考：[方舟运行时子系统](https://gitee.com/openharmony/docs/blob/master/zh-cn/readme/ARK-Runtime-Subsystem-zh.md)
 
+**ets_frontend组件架构图**
+
+![](/figures/zh-cn_image_ets_frontend_arch.png)
+
 ## 目录<a name="section161941989596"></a>
 
 ```
