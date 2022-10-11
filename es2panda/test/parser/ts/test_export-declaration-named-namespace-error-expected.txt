@@ -1,0 +1,1 @@
+SyntaxError: Export name '_func' is not defined. [test_export-declaration-named-namespace-error.ts:18:14]

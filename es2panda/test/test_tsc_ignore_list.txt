@@ -18,10 +18,7 @@ es2panda/test/TypeScript/tests/cases/compiler/elidedEmbeddedStatementsReplacedWi
 es2panda/test/TypeScript/tests/cases/compiler/emitBundleWithShebang1.ts
 es2panda/test/TypeScript/tests/cases/compiler/emitDecoratorMetadata_restArgs.ts
 es2panda/test/TypeScript/tests/cases/compiler/exportAsNamespace.d.ts
-es2panda/test/TypeScript/tests/cases/compiler/exportDeclarationsInAmbientNamespaces.ts
-es2panda/test/TypeScript/tests/cases/compiler/exportEqualsOfModule.ts
 es2panda/test/TypeScript/tests/cases/compiler/exportRedeclarationTypeAliases.ts
-es2panda/test/TypeScript/tests/cases/compiler/exportSpecifierAndExportedMemberDeclaration.ts
 es2panda/test/TypeScript/tests/cases/compiler/fileWithNextLine2.ts
 es2panda/test/TypeScript/tests/cases/compiler/genericRecursiveImplicitConstructorErrors2.ts
 es2panda/test/TypeScript/tests/cases/compiler/getterSetterNonAccessor.ts
@@ -29,6 +26,7 @@ es2panda/test/TypeScript/tests/cases/compiler/globalIsContextualKeyword.ts
 es2panda/test/TypeScript/tests/cases/compiler/implementsInClassExpression.ts
 es2panda/test/TypeScript/tests/cases/compiler/inferenceErasedSignatures.ts
 es2panda/test/TypeScript/tests/cases/compiler/isLiteral1.ts
+es2panda/test/TypeScript/tests/cases/compiler/noCircularDefinitionOnExportOfPrivateInMergedNamespace.ts
 es2panda/test/TypeScript/tests/cases/compiler/isLiteral2.ts
 es2panda/test/TypeScript/tests/cases/compiler/letAsIdentifier2.ts
 es2panda/test/TypeScript/tests/cases/compiler/letInVarDeclOfForIn_ES5.ts
@@ -50,7 +48,6 @@ es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringFo
 es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForArrayBindingPatternDefaultValues2.ts
 es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForObjectBindingPattern2.ts
 es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForObjectBindingPatternDefaultValues2.ts
-es2panda/test/TypeScript/tests/cases/compiler/systemNamespaceAliasEmit.ts
 es2panda/test/TypeScript/tests/cases/compiler/taggedTemplateStringWithSymbolExpression01.ts
 es2panda/test/TypeScript/tests/cases/compiler/unusedLocalsAndParametersOverloadSignatures.ts
 es2panda/test/TypeScript/tests/cases/compiler/withStatementInternalComments.ts

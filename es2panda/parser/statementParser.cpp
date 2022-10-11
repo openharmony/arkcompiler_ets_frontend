@@ -2095,6 +2095,11 @@ void ParserImpl::AddImportEntryItem(const ir::StringLiteral *source, const Arena
 void ParserImpl::AddExportNamedEntryItem(const ArenaVector<ir::ExportSpecifier *> &specifiers,
                                          const ir::StringLiteral *source)
 {
+    // The exported objects in the TSModuleScope do not need to be allocated index.
+    if (context_.IsTsModule()) {
+        ASSERT(Binder()->GetScope()->IsTSModuleScope());
+        return;
+    }
     auto moduleRecord = GetSourceTextModuleRecord();
     ASSERT(moduleRecord != nullptr);
     if (source) {
