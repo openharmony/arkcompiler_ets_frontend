@@ -1606,6 +1606,54 @@ ir::TSIntersectionType *ParserImpl::ParseTsIntersectionType(ir::Expression *type
     return intersectionType;
 }
 
+bool ParserImpl::IsTsFunctionType()
+{
+    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
+    const auto startPos = lexer_->Save();
+    lexer_->NextToken();  // eat '('
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS ||
+        lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
+        lexer_->Rewind(startPos);
+        return true;
+    }
+
+    try {
+        ParseModifiers();
+        if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
+            (Extension() == ScriptExtension::TS && lexer_->GetToken().Type() == lexer::TokenType::KEYW_THIS)) {
+            lexer_->NextToken();
+        } else if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET) {
+            ParseArrayExpression(ExpressionParseFlags::MUST_BE_PATTERN);
+        } else if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+            ParseObjectExpression(ExpressionParseFlags::MUST_BE_PATTERN | ExpressionParseFlags::OBJECT_PATTERN);
+        } else {
+            lexer_->Rewind(startPos);
+            return false;
+        }
+    } catch ([[maybe_unused]] const class Error &e) {
+        lexer_->Rewind(startPos);
+        return false;
+    }
+
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA ||
+        lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK ||
+        lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON ||
+        lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EQUAL) {
+        lexer_->Rewind(startPos);
+        return true;
+    }
+
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+        lexer_->NextToken();  // eat ')'
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_ARROW) {
+            lexer_->Rewind(startPos);
+            return true;
+        }
+    }
+    lexer_->Rewind(startPos);
+    return false;
+}
+
 ir::Expression *ParserImpl::ParseTsParenthesizedOrFunctionType(ir::Expression *typeAnnotation, bool throwError)
 {
     if (typeAnnotation) {
@@ -1635,24 +1683,15 @@ ir::Expression *ParserImpl::ParseTsParenthesizedOrFunctionType(ir::Expression *t
         return ParseTsFunctionType(typeStart, isConstructionType, throwError, abstractConstructor);
     }
 
-    const auto startPos = lexer_->Save();
+    if (IsTsFunctionType()) {
+        return ParseTsFunctionType(typeStart, false, throwError);
+    }
+
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer_->NextToken();  // eat '('
 
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::NO_OPTS;
     ir::Expression *type = ParseTsTypeAnnotation(&options);
-
-    if (!type) {
-        lexer_->Rewind(startPos);
-        return ParseTsFunctionType(typeStart, false, throwError);
-    }
-
-    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA ||
-        lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK ||
-        lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
-        lexer_->Rewind(startPos);
-        return ParseTsFunctionType(typeStart, false, throwError);
-    }
 
     if (throwError && lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         ThrowSyntaxError("')' expected");
@@ -1660,12 +1699,6 @@ ir::Expression *ParserImpl::ParseTsParenthesizedOrFunctionType(ir::Expression *t
 
     lexer::SourcePosition endLoc = lexer_->GetToken().End();
     lexer_->NextToken();  // eat ')'
-
-    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_ARROW) {
-        lexer_->Rewind(startPos);
-
-        return ParseTsFunctionType(typeStart, false, throwError);
-    }
 
     auto *result = AllocNode<ir::TSParenthesizedType>(type);
     result->SetRange({typeStart, endLoc});
