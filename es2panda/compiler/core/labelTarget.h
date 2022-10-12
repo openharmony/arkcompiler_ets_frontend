@@ -77,6 +77,7 @@ public:
 
     static constexpr std::string_view BREAK_LABEL = "#b";
     static constexpr std::string_view CONTINUE_LABEL = "#c";
+    static constexpr std::string_view RETURN_LABEL = "#r";
 
 private:
     util::StringView breakLabel_ {};
