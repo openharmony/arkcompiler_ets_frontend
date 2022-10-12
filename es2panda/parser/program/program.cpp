@@ -41,7 +41,8 @@ Program::Program(Program &&other)
       extension_(other.extension_),
       lineIndex_(other.lineIndex_),
       moduleRecord_(other.moduleRecord_),
-      hotfixHelper_(other.hotfixHelper_)
+      hotfixHelper_(other.hotfixHelper_),
+      isDtsFile_(other.isDtsFile_)
 {
     other.binder_ = nullptr;
     other.ast_ = nullptr;
@@ -57,6 +58,7 @@ Program &Program::operator=(Program &&other)
     kind_ = other.kind_;
     extension_ = other.extension_;
     lineIndex_ = other.lineIndex_;
+    isDtsFile_ = other.isDtsFile_;
 
     other.ast_ = nullptr;
 

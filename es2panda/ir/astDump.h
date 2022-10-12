@@ -146,6 +146,9 @@ public:
     };
 
     explicit AstDumper(const BlockStatement *program, util::StringView sourceCode);
+    explicit AstDumper(const ir::AstNode *node);
+
+    void SerializeNode(const ir::AstNode *node);
 
     void Add(std::initializer_list<Property> props);
     void Add(const AstDumper::Property &prop);
@@ -200,6 +203,7 @@ private:
     lexer::LineIndex index_;
     std::stringstream ss_;
     int32_t indent_;
+    bool dumpNodeOnly_ = false;
 };
 }  // namespace panda::es2panda::ir
 

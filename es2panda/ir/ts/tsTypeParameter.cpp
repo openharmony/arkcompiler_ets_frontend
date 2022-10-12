@@ -55,11 +55,11 @@ void TSTypeParameter::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder:
     name_ = std::get<ir::AstNode *>(cb(name_))->AsIdentifier();
 
     if (constraint_) {
-        constraint_ = std::get<ir::AstNode *>(cb(constraint_))->AsIdentifier();
+        constraint_ = std::get<ir::AstNode *>(cb(constraint_))->AsExpression();
     }
 
     if (defaultType_) {
-        defaultType_ = std::get<ir::AstNode *>(cb(defaultType_))->AsIdentifier();
+        defaultType_ = std::get<ir::AstNode *>(cb(defaultType_))->AsExpression();
     }
 }
 

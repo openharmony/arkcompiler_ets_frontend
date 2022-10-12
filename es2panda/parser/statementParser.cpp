@@ -2029,23 +2029,27 @@ void ParserImpl::AddImportEntryItem(const ir::StringLiteral *source, const Arena
             case ir::AstNodeType::IMPORT_DEFAULT_SPECIFIER: {
                 auto localName = it->AsImportDefaultSpecifier()->Local()->Name();
                 auto importName = parser::SourceTextModuleRecord::DEFAULT_EXTERNAL_NAME;
+                auto localId = it->AsImportDefaultSpecifier()->Local();
                 auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
-                                                localName, importName, moduleRequestIdx);
+                    localName, importName, moduleRequestIdx, localId, nullptr);
                 moduleRecord->AddImportEntry(entry);
                 break;
             }
             case ir::AstNodeType::IMPORT_NAMESPACE_SPECIFIER: {
                 auto localName = it->AsImportNamespaceSpecifier()->Local()->Name();
+                auto localId = it->AsImportNamespaceSpecifier()->Local();
                 auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
-                                                localName, moduleRequestIdx);
+                    localName, moduleRequestIdx, localId);
                 moduleRecord->AddStarImportEntry(entry);
                 break;
             }
             case ir::AstNodeType::IMPORT_SPECIFIER: {
                 auto localName = it->AsImportSpecifier()->Local()->Name();
                 auto importName = it->AsImportSpecifier()->Imported()->Name();
+                auto localId = it->AsImportSpecifier()->Local();
+                auto importId = it->AsImportSpecifier()->Imported();
                 auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
-                                                localName, importName, moduleRequestIdx);
+                    localName, importName, moduleRequestIdx, localId, importId);
                 moduleRecord->AddImportEntry(entry);
                 break;
             }
@@ -2068,8 +2072,10 @@ void ParserImpl::AddExportNamedEntryItem(const ArenaVector<ir::ExportSpecifier *
             auto exportSpecifier = it->AsExportSpecifier();
             auto importName = exportSpecifier->Local()->Name();
             auto exportName = exportSpecifier->Exported()->Name();
+            auto importId = exportSpecifier->Local();
+            auto exportId = exportSpecifier->Exported();
             auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(
-                                            exportName, importName, moduleRequestIdx);
+                exportName, importName, moduleRequestIdx, exportId, importId);
             if (!moduleRecord->AddIndirectExportEntry(entry)) {
                 ThrowSyntaxError("Duplicate export name of '" + exportName.Mutf8() + "'",
                                  exportSpecifier->Start());
@@ -2080,7 +2086,10 @@ void ParserImpl::AddExportNamedEntryItem(const ArenaVector<ir::ExportSpecifier *
             auto exportSpecifier = it->AsExportSpecifier();
             auto exportName = exportSpecifier->Exported()->Name();
             auto localName = exportSpecifier->Local()->Name();
-            auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(exportName, localName);
+            auto exportId = exportSpecifier->Exported();
+            auto localId = exportSpecifier->Local();
+            auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(
+                exportName, localName, exportId, localId);
             if (!moduleRecord->AddLocalExportEntry(entry)) {
                 ThrowSyntaxError("Duplicate export name of '" + exportName.Mutf8() + "'",
                                  exportSpecifier->Start());
@@ -2110,9 +2119,9 @@ void ParserImpl::AddExportStarEntryItem(const lexer::SourcePosition &startLoc, c
         decl->BindNode(exported);
 
         auto *importEntry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
-                                              namespaceExportInternalName, moduleRequestIdx);
+            namespaceExportInternalName, moduleRequestIdx, nullptr);
         auto *exportEntry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(
-                                              exported->Name(), namespaceExportInternalName);
+            exported->Name(), namespaceExportInternalName, exported, nullptr);
         moduleRecord->AddStarImportEntry(importEntry);
         if (!moduleRecord->AddLocalExportEntry(exportEntry)) {
             ThrowSyntaxError("Duplicate export name of '" + exported->Name().Mutf8() + "'", exported->Start());
@@ -2141,7 +2150,8 @@ void ParserImpl::AddExportDefaultEntryItem(const ir::AstNode *declNode)
     }
 
     ASSERT(!localName.Empty());
-    auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(exportName, localName);
+    auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(
+        exportName, localName, nullptr, nullptr);
     if (!moduleRecord->AddLocalExportEntry(entry)) {
         ThrowSyntaxError("Duplicate export name of '" + exportName.Mutf8() + "'", declNode->Start());
     }
@@ -2166,7 +2176,7 @@ void ParserImpl::AddExportLocalEntryItem(const ir::Statement *declNode, bool isT
                     tsModuleScope->AddExportVariable(binding->Name());
                 } else {
                     auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(
-                                                    binding->Name(), binding->Name());
+                        binding->Name(), binding->Name(), binding, binding);
                     if (!moduleRecord->AddLocalExportEntry(entry)) {
                         ThrowSyntaxError("Duplicate export name of '" + binding->Name().Mutf8()
                                          + "'", binding->Start());
@@ -2186,8 +2196,8 @@ void ParserImpl::AddExportLocalEntryItem(const ir::Statement *declNode, bool isT
         if (isTsModule) {
             tsModuleScope->AddExportVariable(name->Name());
         } else {
-            auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(name->Name(),
-                                                                                              name->Name());
+            auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ExportEntry>(
+                name->Name(), name->Name(), name, name);
             if (!moduleRecord->AddLocalExportEntry(entry)) {
                 ThrowSyntaxError("Duplicate export name of '" + name->Name().Mutf8() + "'", name->Start());
             }
@@ -2296,6 +2306,10 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
         lexer::Token localToken = lexer_->GetToken();
         auto *local = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
         local->SetRange(lexer_->GetToken().Loc());
+
+        if (Extension() == ScriptExtension::TS) {
+            local->SetReference();
+        }
 
         lexer_->NextToken();  // eat local name
 
@@ -2571,7 +2585,9 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
         specifier->SetRange({imported->Start(), local->End()});
         specifiers->push_back(specifier);
 
-        Binder()->AddDecl<binder::ConstDecl>(local->Start(), binder::DeclarationFlags::IMPORT, local->Name());
+        auto *decl = Binder()->AddDecl<binder::ConstDecl>(local->Start(), binder::DeclarationFlags::IMPORT,
+            local->Name());
+        decl->BindNode(specifier);
 
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
             lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);  // eat comma
@@ -2651,7 +2667,8 @@ ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> 
     specifier->SetRange(specifier->Local()->Range());
     specifiers->push_back(specifier);
 
-    Binder()->AddDecl<binder::ConstDecl>(local->Start(), binder::DeclarationFlags::IMPORT, local->Name());
+    auto *decl = Binder()->AddDecl<binder::ConstDecl>(local->Start(), binder::DeclarationFlags::IMPORT, local->Name());
+    decl->BindNode(specifier);
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
         lexer_->NextToken();  // eat comma

@@ -85,6 +85,7 @@ public:
           scope_(topScope_),
           rootNode_(scope->Node()),
           insns_(allocator_->Adapter()),
+          typedInsns_(allocator_->Adapter()),
           catchList_(allocator_->Adapter()),
           strings_(allocator_->Adapter()),
           buffStorage_(allocator_->Adapter()),
@@ -100,6 +101,11 @@ public:
     inline ArenaAllocator *Allocator() const
     {
         return allocator_;
+    }
+
+    inline CompilerContext *Context() const
+    {
+        return context_;
     }
 
     const ArenaSet<util::StringView> &Strings() const
@@ -135,6 +141,16 @@ public:
     const ArenaList<IRNode *> &Insns() const
     {
         return insns_;
+    }
+
+    ArenaMap<const IRNode *, int64_t> &TypedInsns()
+    {
+        return typedInsns_;
+    }
+
+    const ArenaMap<const IRNode *, int64_t> &TypedInsns() const
+    {
+        return typedInsns_;
     }
 
     VReg AllocReg()
@@ -235,6 +251,7 @@ public:
     void StConstToGlobalRecord(const ir::AstNode *node, const util::StringView &name);
 
     void StoreAccumulator(const ir::AstNode *node, VReg vreg);
+    void StoreAccumulatorWithType(const ir::AstNode *node, int64_t typeIndex, VReg vreg);
     void LoadAccFromArgs(const ir::AstNode *node);
     void LoadObjProperty(const ir::AstNode *node, VReg obj, const Operand &prop);
 
@@ -266,6 +283,7 @@ public:
     void LoadConst(const ir::AstNode *node, Constant id);
     void StoreConst(const ir::AstNode *node, VReg reg, Constant id);
     void MoveVreg(const ir::AstNode *node, VReg vd, VReg vs);
+    void MoveVregWithType(const ir::AstNode *node, int64_t typeIndex, VReg vd, VReg vs);
 
     void SetLabel(const ir::AstNode *node, Label *label);
     void Branch(const ir::AstNode *node, class Label *label);
@@ -452,6 +470,7 @@ private:
     binder::Scope *scope_;
     const ir::AstNode *rootNode_;
     ArenaList<IRNode *> insns_;
+    ArenaMap<const IRNode *, int64_t> typedInsns_;
     ArenaVector<CatchTable *> catchList_;
     ArenaSet<util::StringView> strings_;
     ArenaVector<LiteralBuffer *> buffStorage_;

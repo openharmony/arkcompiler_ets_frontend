@@ -196,7 +196,7 @@ ir::AstNode *Transformer::VisitTsImportEqualsDeclaration(ir::TSImportEqualsDecla
     if (node->IsExport()) {
         ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
         res = AllocNode<ir::ExportNamedDeclaration>(res, std::move(specifiers));
-        AddExportLocalEntryItem(name);
+        AddExportLocalEntryItem(name, node->Id());
     }
     return res;
 }
@@ -486,10 +486,10 @@ ir::Expression *Transformer::CreateTsModuleParam(util::StringView paramName, boo
     return id;
 }
 
-void Transformer::AddExportLocalEntryItem(util::StringView name)
+void Transformer::AddExportLocalEntryItem(util::StringView name, const ir::Identifier *identifier)
 {
     auto moduleRecord = GetSourceTextModuleRecord();
-    auto *entry = moduleRecord->NewEntry<SourceTextModuleRecord::ExportEntry>(name, name);
+    auto *entry = moduleRecord->NewEntry<SourceTextModuleRecord::ExportEntry>(name, name, identifier, identifier);
     [[maybe_unused]] bool res = moduleRecord->AddLocalExportEntry(entry);
     ASSERT(res);
 }
@@ -511,7 +511,7 @@ ir::UpdateNodes Transformer::VisitTsModuleDeclaration(ir::TSModuleDeclaration *n
         if (doExport) {
             ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
             res.push_back(AllocNode<ir::ExportNamedDeclaration>(var, std::move(specifiers)));
-            AddExportLocalEntryItem(name);
+            AddExportLocalEntryItem(name, node->Name()->AsIdentifier());
         } else {
             res.push_back(var);
         }

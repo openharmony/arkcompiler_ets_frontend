@@ -210,7 +210,7 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
     ident->SetVariable(res.variable);
 }
 
-void Binder::BuildFunction(FunctionScope *funcScope, util::StringView name)
+void Binder::BuildFunction(FunctionScope *funcScope, util::StringView name, const ir::ScriptFunction *func)
 {
     functionScopes_.push_back(funcScope);
 
@@ -226,6 +226,9 @@ void Binder::BuildFunction(FunctionScope *funcScope, util::StringView name)
     ss << std::string(program_->FormatedRecordName());
     uint32_t idx = functionNameIndex_++;
     ss << "#" << std::to_string(idx) << "#";
+    if (name == ANONYMOUS_FUNC_NAME && func != nullptr) {
+        anonymousFunctionNames_[func] = util::UString(ss.str(), Allocator()).View();
+    }
     if (funcNameWithoutDot && funcNameWithoutBackslash) {
         ss << name;
     }
@@ -245,7 +248,7 @@ void Binder::BuildScriptFunction(Scope *outerScope, const ir::ScriptFunction *sc
     }
 
     ASSERT(scope_->IsFunctionScope() || scope_->IsTSModuleScope());
-    BuildFunction(scope_->AsFunctionVariableScope(), util::Helpers::FunctionName(scriptFunc));
+    BuildFunction(scope_->AsFunctionVariableScope(), util::Helpers::FunctionName(scriptFunc), scriptFunc);
 }
 
 void Binder::BuildVarDeclaratorId(const ir::AstNode *parent, ir::AstNode *childNode)

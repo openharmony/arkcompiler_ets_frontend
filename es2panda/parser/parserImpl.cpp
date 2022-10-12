@@ -103,9 +103,20 @@ namespace panda::es2panda::parser {
 
 ParserImpl::ParserImpl(ScriptExtension extension) : program_(extension), context_(&program_) {}
 
+template <class T>
+bool IsSuffix(T const &filename, T const &suffix)
+{
+    return (filename.length() > suffix.length()) &&
+        (filename.rfind(suffix) == (filename.length() - suffix.length()));
+}
+
 std::unique_ptr<lexer::Lexer> ParserImpl::InitLexer(const std::string &fileName, const std::string &source)
 {
-    program_.SetSource(source, fileName);
+    bool isDtsFile = false;
+    if (Extension() == ScriptExtension::TS) {
+        isDtsFile = IsSuffix(fileName, std::string(".d.ts"));
+    }
+    program_.SetSource(source, fileName, isDtsFile);
     auto lexer = std::make_unique<lexer::Lexer>(&context_);
     lexer_ = lexer.get();
 

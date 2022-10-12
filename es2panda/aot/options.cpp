@@ -128,6 +128,10 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opEnableTypeCheck("enable-type-check", false, "Check the type in ts after parse");
     panda::PandArg<bool> opDumpAst("dump-ast", false, "Dump the parsed AST");
 
+    // type extractor
+    panda::PandArg<bool> opTypeExtractor("type-extractor", false, "Enable type extractor for typescript");
+    panda::PandArg<bool> opTypeDtsBuiltin("type-dts-builtin", false, "Enable builtin type extractor for .d.ts file");
+
     // compiler
     panda::PandArg<bool> opDumpAssembly("dump-assembly", false, "Dump pandasm");
     panda::PandArg<bool> opDebugInfo("debug-info", false, "Compile with debug info");
@@ -168,6 +172,8 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opDumpAst);
     argparser_->Add(&opParseOnly);
     argparser_->Add(&opEnableTypeCheck);
+    argparser_->Add(&opTypeExtractor);
+    argparser_->Add(&opTypeDtsBuiltin);
     argparser_->Add(&opDumpAssembly);
     argparser_->Add(&opDebugInfo);
     argparser_->Add(&opDumpDebugInfo);
@@ -251,12 +257,25 @@ bool Options::Parse(int argc, const char **argv)
         scriptKind_ = es2panda::parser::ScriptKind::SCRIPT;
     }
 
+    auto parseTypeExtractor = [&opTypeExtractor, &opTypeDtsBuiltin, this]() {
+        compilerOptions_.typeExtractor = opTypeExtractor.GetValue();
+        if (compilerOptions_.typeExtractor) {
+            compilerOptions_.typeDtsBuiltin = opTypeDtsBuiltin.GetValue();
+#ifndef NDEBUG
+            std::cout << "[LOG]TypeExtractor is enabled, type-dts-builtin: " <<
+                compilerOptions_.typeDtsBuiltin << std::endl;
+#endif
+        }
+    };
+
     std::string extension = inputExtension.GetValue();
     if (!extension.empty()) {
         if (extension == "js") {
             extension_ = es2panda::ScriptExtension::JS;
         } else if (extension == "ts") {
             extension_ = es2panda::ScriptExtension::TS;
+            // Type Extractor is only enabled for TypeScript
+            parseTypeExtractor();
         } else if (extension == "as") {
             extension_ = es2panda::ScriptExtension::AS;
         } else {

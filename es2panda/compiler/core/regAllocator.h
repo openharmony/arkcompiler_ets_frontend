@@ -92,6 +92,16 @@ public:
     {
         Add<T>(node, std::forward<Args>(args)...);
     }
+
+    template <typename T, typename... Args>
+    void EmitWithType(const ir::AstNode *node, int64_t typeIndex, Args &&... args)
+    {
+        auto *ins = Alloc<T>(node, std::forward<Args>(args)...);
+        Run(ins, typeIndex);
+    }
+
+private:
+    void Run(IRNode *ins, int64_t typeIndex);
 };
 
 class FrontAllocator : public AllocatorBase {
@@ -162,8 +172,16 @@ public:
         Run(ins);
     }
 
+    template <typename T, typename... Args>
+    void EmitWithType(const ir::AstNode *node, int64_t typeIndex, Args &&... args)
+    {
+        auto *ins = Alloc<T>(node, std::forward<Args>(args)...);
+        Run(ins, typeIndex);
+    }
+
 private:
     void Run(IRNode *ins);
+    void Run(IRNode *ins, int64_t typeIndex);
 };
 
 class RangeRegAllocator : public RegAllocatorBase {

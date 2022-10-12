@@ -16,15 +16,24 @@
 #include "compilerContext.h"
 
 #include <compiler/core/emitter/emitter.h>
+#include <typescript/extractor/typeRecorder.h>
 
 namespace panda::es2panda::compiler {
 
 CompilerContext::CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
-                                 bool isMergeAbc, std::string sourceFile, util::StringView recordName)
+                                 bool isMergeAbc, bool isTypeExtractorEnabled, std::string sourceFile,
+                                 util::StringView recordName)
     : binder_(binder), isDebug_(isDebug), isDebuggerEvaluateExpressionMode_(isDebuggerEvaluateExpressionMode),
-      isMergeAbc_(isMergeAbc), sourceFile_(sourceFile), emitter_(std::make_unique<class Emitter>(this)),
-      recordName_(recordName)
+      isMergeAbc_(isMergeAbc), isTypeExtractorEnabled_(isTypeExtractorEnabled), sourceFile_(sourceFile),
+      emitter_(std::make_unique<class Emitter>(this)), recordName_(recordName)
 {
+}
+
+void CompilerContext::SetTypeRecorder(extractor::TypeRecorder *recorder)
+{
+    ASSERT(emitter_ != nullptr);
+    emitter_->FillTypeLiteralBuffers(recorder);
+    recorder_ = recorder;
 }
 
 }  // namespace panda::es2panda::compiler

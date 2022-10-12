@@ -25,6 +25,7 @@ namespace panda::es2panda::parser {
             moduleRequests_.emplace_back(source);
         }
         auto insertedRes = moduleRequestsMap_.insert(std::make_pair(source, moduleRequestsSize));
+        moduleRequestsIdxMap_.insert(std::make_pair(insertedRes.first->second, source));
         return insertedRes.first->second;
     }
 

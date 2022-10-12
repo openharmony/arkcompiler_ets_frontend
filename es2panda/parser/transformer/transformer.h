@@ -66,7 +66,7 @@ private:
     util::StringView GetParamName(ir::TSModuleDeclaration *node, util::StringView name) const;
     binder::Scope *FindExportVariableInTsModuleScope(util::StringView name) const;
     binder::Variable *FindTSModuleVariable(const ir::Expression *node, binder::Scope *scope) const;
-    void AddExportLocalEntryItem(util::StringView name);
+    void AddExportLocalEntryItem(util::StringView name, const ir::Identifier *identifier);
     bool IsInstantiatedTSModule(const ir::Expression *node) const;
     void SetOriginalNode(ir::UpdateNodes res, ir::AstNode *originalNode) const;
 

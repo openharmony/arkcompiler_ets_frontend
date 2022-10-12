@@ -22,12 +22,17 @@ namespace panda::es2panda::binder {
 class ModuleScope;
 }
 
+namespace panda::es2panda::ir {
+class Identifier;
+}  // namespace panda::es2panda::ir
+
 namespace panda::es2panda::parser {
 class SourceTextModuleRecord {
 public:
     explicit SourceTextModuleRecord(ArenaAllocator *allocator)
         : allocator_(allocator),
           moduleRequestsMap_(allocator_->Adapter()),
+          moduleRequestsIdxMap_(allocator_->Adapter()),
           moduleRequests_(allocator_->Adapter()),
           localExportEntries_(allocator_->Adapter()),
           regularImportEntries_(allocator_->Adapter()),
@@ -45,11 +50,15 @@ public:
         int moduleRequestIdx_;
         util::StringView localName_;
         util::StringView importName_;
+        const ir::Identifier *localId_;
+        const ir::Identifier *importId_;
 
-        ImportEntry(const util::StringView localName, const util::StringView importName, int moduleRequestIdx)
-            : moduleRequestIdx_(moduleRequestIdx), localName_(localName), importName_(importName) {}
-        ImportEntry(const util::StringView localName, int moduleRequestIdx)
-            : moduleRequestIdx_(moduleRequestIdx), localName_(localName) {}
+        ImportEntry(const util::StringView localName, const util::StringView importName, int moduleRequestIdx,
+                    const ir::Identifier *localId, const ir::Identifier *importId)
+            : moduleRequestIdx_(moduleRequestIdx), localName_(localName), importName_(importName),
+              localId_(localId), importId_(importId) {}
+        ImportEntry(const util::StringView localName, int moduleRequestIdx, const ir::Identifier *localId)
+            : moduleRequestIdx_(moduleRequestIdx), localName_(localName), localId_(localId) {}
     };
 
     struct ExportEntry {
@@ -57,15 +66,19 @@ public:
         util::StringView exportName_;
         util::StringView localName_;
         util::StringView importName_;
+        const ir::Identifier *exportId_;
+        const ir::Identifier *localId_;
+        const ir::Identifier *importId_;
 
         explicit ExportEntry(int moduleRequest) : moduleRequestIdx_(moduleRequest) {}
-        ExportEntry(const util::StringView exportName, const util::StringView localName)
-            : moduleRequestIdx_(-1), exportName_(exportName), localName_(localName) {}
-        ExportEntry(const util::StringView exportName, const util::StringView importName, int moduleRequest)
-            : moduleRequestIdx_(moduleRequest), exportName_(exportName)
-        {
-            importName_ = importName;
-        }
+        ExportEntry(const util::StringView exportName, const util::StringView localName,
+                    const ir::Identifier *exportId, const ir::Identifier *localId)
+            : moduleRequestIdx_(-1), exportName_(exportName), localName_(localName),
+              exportId_(exportId), localId_(localId) {}
+        ExportEntry(const util::StringView exportName, const util::StringView importName, int moduleRequest,
+                    const ir::Identifier *exportId, const ir::Identifier *importId)
+            : moduleRequestIdx_(moduleRequest), exportName_(exportName), importName_(importName),
+              exportId_(exportId), importId_(importId) {}
     };
 
     template <typename T, typename... Args>
@@ -88,6 +101,7 @@ public:
 
     using ModuleRequestList = ArenaVector<util::StringView>;
     using ModuleRequestMap = ArenaMap<const util::StringView, uint32_t>;
+    using ModuleRequestIdxMap = ArenaMap<uint32_t, const util::StringView>;
     using LocalExportEntryMap = ArenaMultiMap<const util::StringView, ExportEntry *>;
     using RegularImportEntryMap = ArenaMap<const util::StringView, ImportEntry *>;
     using NamespaceImportEntryList = ArenaVector<ImportEntry *>;
@@ -96,6 +110,11 @@ public:
     const ArenaVector<util::StringView> &GetModuleRequests() const
     {
         return moduleRequests_;
+    }
+
+    const ModuleRequestIdxMap &GetModuleRequestIdxMap()  const
+    {
+        return moduleRequestsIdxMap_;
     }
 
     const LocalExportEntryMap &GetLocalExportEntries() const
@@ -133,6 +152,7 @@ private:
 
     ArenaAllocator *allocator_;
     ModuleRequestMap moduleRequestsMap_;
+    ModuleRequestIdxMap moduleRequestsIdxMap_;
     ModuleRequestList moduleRequests_;
     LocalExportEntryMap localExportEntries_;
     RegularImportEntryMap regularImportEntries_;

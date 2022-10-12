@@ -15,6 +15,7 @@
 
 #include "literal.h"
 
+#include <ir/expressions/literals/bigIntLiteral.h>
 #include <ir/expressions/literals/booleanLiteral.h>
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
@@ -56,6 +57,23 @@ uint16_t Literal::GetMethodAffiliate() const
 {
     ASSERT(IsTaggedLiteral());
     return AsTaggedLiteral()->MethodAffiliate();
+}
+
+std::optional<util::StringView> Literal::GetName() const
+{
+    if (IsStringLiteral()) {
+        return GetString();
+    }
+    if (IsNumberLiteral()) {
+        return AsNumberLiteral()->Str();
+    }
+    if (IsBigIntLiteral()) {
+        return AsBigIntLiteral()->Str();
+    }
+    if (IsTaggedLiteral()) {
+        return AsTaggedLiteral()->Str();
+    }
+    return std::nullopt;
 }
 
 }  // namespace panda::es2panda::ir

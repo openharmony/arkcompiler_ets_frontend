@@ -27,9 +27,14 @@ void Dumper::DumpLiterals(std::map<std::string, panda::pandasm::LiteralArray> co
             std::cout << "{" << std::endl;
             std::cout << "  index: " << count++ << std::endl;
             std::cout << "    tag: " <<
-                static_cast<std::underlying_type<panda::panda_file::LiteralTag>::type>(literal.tag_) << std::endl;
+                unsigned(static_cast<std::underlying_type<panda::panda_file::LiteralTag>::type>(literal.tag_)) <<
+                std::endl;
             std::visit([](auto&& element) {
-                std::cout << "    val: " << element << std::endl;
+                if constexpr (std::is_same_v<decltype(element), unsigned char &>) {
+                    std::cout << "    val: " << unsigned(element) << std::endl;
+                } else {
+                    std::cout << "    val: " << element << std::endl;
+                }
             }, literal.value_);
             std::cout << "}," << std::endl;
         }

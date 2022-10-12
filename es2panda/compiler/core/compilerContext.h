@@ -18,6 +18,9 @@
 
 #include <macros.h>
 #include <mem/arena_allocator.h>
+
+#include <binder/variable.h>
+#include <ir/astNode.h>
 #include <util/hotfix.h>
 #include <util/ustring.h>
 
@@ -28,6 +31,10 @@ namespace panda::es2panda::binder {
 class Binder;
 }  // namespace panda::es2panda::binder
 
+namespace panda::es2panda::extractor {
+class TypeRecorder;
+}  // namespace panda::es2panda::extractor
+
 namespace panda::es2panda::compiler {
 
 class DebugInfo;
@@ -36,7 +43,7 @@ class Emitter;
 class CompilerContext {
 public:
     CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
-                    bool isMergeAbc, std::string sourceFile, util::StringView recordName);
+                    bool isMergeAbc, bool isTypeExtractorEnabled, std::string sourceFile, util::StringView recordName);
     NO_COPY_SEMANTIC(CompilerContext);
     NO_MOVE_SEMANTIC(CompilerContext);
     ~CompilerContext() = default;
@@ -102,6 +109,18 @@ public:
         return recordName_;
     }
 
+    bool IsTypeExtractorEnabled() const
+    {
+        return isTypeExtractorEnabled_;
+    }
+
+    extractor::TypeRecorder *TypeRecorder() const
+    {
+        return recorder_;
+    }
+
+    void SetTypeRecorder(extractor::TypeRecorder *recorder);
+
 private:
     binder::Binder *binder_;
     int32_t literalBufferIdx_ {0};
@@ -109,6 +128,9 @@ private:
     bool isDebug_;
     bool isDebuggerEvaluateExpressionMode_;
     bool isMergeAbc_;
+    // For Type Extractor
+    bool isTypeExtractorEnabled_;
+    extractor::TypeRecorder *recorder_ {};
     std::string sourceFile_;
     std::unique_ptr<Emitter> emitter_;
     util::Hotfix *hotfixHelper_ {nullptr};

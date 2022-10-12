@@ -115,11 +115,12 @@ public:
         ast_ = ast;
     }
 
-    void SetSource(const std::string &sourceCode, const std::string &sourceFile)
+    void SetSource(const std::string &sourceCode, const std::string &sourceFile, bool isDtsFile)
     {
         sourceCode_ = util::UString(sourceCode, Allocator());
         sourceFile_ = util::UString(sourceFile, Allocator());
         lineIndex_ = lexer::LineIndex(SourceCode());
+        isDtsFile_ = isDtsFile;
     }
 
     void SetRecordName(const std::string &recordName)
@@ -139,6 +140,11 @@ public:
         return hotfixHelper_;
     }
 
+    bool IsDtsFile() const
+    {
+        return isDtsFile_;
+    }
+
     std::string Dump() const;
     void SetKind(ScriptKind kind);
 
@@ -155,6 +161,7 @@ private:
     lexer::LineIndex lineIndex_ {};
     SourceTextModuleRecord *moduleRecord_ {nullptr};
     util::Hotfix *hotfixHelper_ {nullptr};
+    bool isDtsFile_ {false};
 };
 
 }  // namespace panda::es2panda::parser

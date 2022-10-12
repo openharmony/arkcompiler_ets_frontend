@@ -15,6 +15,7 @@
 
 #include "compilerImpl.h"
 
+#include <binder/binder.h>
 #include <compiler/core/compileQueue.h>
 #include <compiler/core/compilerContext.h>
 #include <compiler/core/emitter/emitter.h>
@@ -39,10 +40,28 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
     const std::string &debugInfoSourceFile)
 {
     CompilerContext context(program->Binder(), options.isDebug, options.isDebuggerEvaluateExpressionMode,
-                            options.mergeAbc, debugInfoSourceFile, program->RecordName());
+                            options.mergeAbc, options.typeExtractor, debugInfoSourceFile, program->RecordName());
 
     if (hotfixHelper_ != nullptr) {
         context.AddHotfixHelper(hotfixHelper_);
+    }
+
+    ArenaAllocator localAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+
+    if (options.typeExtractor) {
+        ASSERT(program->Extension() == ScriptExtension::TS);
+
+        auto rootNode = context.Binder()->TopScope()->Node()->AsBlockStatement();
+        extractor_ = std::make_unique<extractor::TypeExtractor>(rootNode, program->IsDtsFile(),
+            options.typeDtsBuiltin, &localAllocator, &context);
+        extractor_->StartTypeExtractor(program);
+
+        context.SetTypeRecorder(extractor_->Recorder());
+    }
+
+    if (program->Extension() == ScriptExtension::TS) {
+        context.GetEmitter()->FillTypeInfoRecord(options.typeExtractor,
+            options.typeExtractor ? extractor_->Recorder()->GetTypeSummaryIndex() : 0);
     }
 
     queue_ = new CompileFuncQueue(threadCount_, &context);
