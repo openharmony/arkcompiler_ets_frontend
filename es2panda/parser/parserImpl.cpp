@@ -3396,10 +3396,10 @@ void ParserImpl::ValidateLvalueAssignmentTarget(ir::Expression *node)
 {
     switch (node->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
-            // Check the prevoius ident keyword type
-            if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_ARGUMENTS) {
+            // Check the prevoius ident name
+            if (node->AsIdentifier()->Name().Is("arguments")) {
                 ThrowSyntaxError("Assigning to 'arguments' in strict mode is invalid");
-            } else if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_EVAL) {
+            } else if (node->AsIdentifier()->Name().Is("eval")) {
                 ThrowSyntaxError("Assigning to 'eval' in strict mode is invalid");
             }
             break;

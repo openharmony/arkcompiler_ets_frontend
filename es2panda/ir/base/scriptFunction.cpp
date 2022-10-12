@@ -88,6 +88,7 @@ void ScriptFunction::Dump(ir::AstDumper *dumper) const
                  {"generator", IsGenerator()},
                  {"async", IsAsync()},
                  {"expression", ((flags_ & ir::ScriptFunctionFlags::EXPRESSION) != 0)},
+                 {"thisParam", AstDumper::Optional(thisParam_)},
                  {"params", params_},
                  {"returnType", AstDumper::Optional(returnTypeAnnotation_)},
                  {"typeParameters", AstDumper::Optional(typeParams_)},

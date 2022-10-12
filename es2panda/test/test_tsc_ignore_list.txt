@@ -16,7 +16,6 @@ es2panda/test/TypeScript/tests/cases/compiler/declareIdentifierAsBeginningOfStat
 es2panda/test/TypeScript/tests/cases/compiler/discriminantsAndPrimitives.ts
 es2panda/test/TypeScript/tests/cases/compiler/elidedEmbeddedStatementsReplacedWithSemicolon.ts
 es2panda/test/TypeScript/tests/cases/compiler/emitBundleWithShebang1.ts
-es2panda/test/TypeScript/tests/cases/compiler/emitDecoratorMetadata_restArgs.ts
 es2panda/test/TypeScript/tests/cases/compiler/exportAsNamespace.d.ts
 es2panda/test/TypeScript/tests/cases/compiler/exportDeclarationsInAmbientNamespaces.ts
 es2panda/test/TypeScript/tests/cases/compiler/exportEqualsOfModule.ts
