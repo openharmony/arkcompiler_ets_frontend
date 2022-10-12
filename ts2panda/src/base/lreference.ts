@@ -139,7 +139,12 @@ export class LReference {
             let name = jshelpers.getTextOfIdentifierOrLiteral(<ts.Identifier>realNode);
             let variable = compiler.getCurrentScope().find(name);
             if (!variable.v) {
-                variable.v = compiler.getCurrentScope().add(name, VarDeclarationKind.NONE);
+                // @ts-ignore
+                if (ts.isGeneratedIdentifier(realNode)) {
+                    variable.v = compiler.getCurrentScope().add(name, VarDeclarationKind.VAR);
+                } else {
+                    variable.v = compiler.getCurrentScope().add(name, VarDeclarationKind.NONE);
+                }
             }
 
             return new LReference(realNode, compiler, isDeclaration, ReferenceKind.LocalOrGlobal, variable);
