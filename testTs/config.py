@@ -33,7 +33,7 @@ SKIP_FILE_PATH = os.path.join("testTs", "skip_tests.json")
 CUR_FILE_DIR = os.path.dirname(__file__)
 IMPORT_FILE_PATH = os.path.join(CUR_FILE_DIR, "import_tests.json")
 CODE_ROOT = os.path.abspath(os.path.join(CUR_FILE_DIR, "../../.."))
-ARK_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/ark/ark"
+ARK_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/arkcompiler/ets_frontend"
 WORK_PATH = f'{CODE_ROOT}/arkcompiler/ets_frontend'
 
 DEFAULT_ARK_FRONTEND_TOOL = os.path.join(ARK_DIR, "build", "src", "index.js")

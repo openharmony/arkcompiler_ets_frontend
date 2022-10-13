@@ -8,7 +8,7 @@
     },
     "component": {
         "name": "ets_frontend",
-        "subsystem": "ark",
+        "subsystem": "arkcompiler",
         "syscap": [],
         "features": [],
         "adapted_system_type": [

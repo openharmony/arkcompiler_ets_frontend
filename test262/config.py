@@ -30,10 +30,10 @@ BASE_OUT_DIR = os.path.join("out", "test262")
 
 CUR_FILE_DIR = os.path.dirname(__file__)
 CODE_ROOT = os.path.abspath(os.path.join(CUR_FILE_DIR, "../../.."))
-ARK_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/ark/ark"
+ARK_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/arkcompiler/ets_frontend"
 ICUI_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/thirdparty/icu"
 LLVM_DIR = f"{CODE_ROOT}/prebuilts/clang/ohos/linux-x86_64/llvm/lib/"
-ARK_JS_RUNTIME_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/ark/ark_js_runtime"
+ARK_JS_RUNTIME_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/arkcompiler/ets_runtime"
 
 DEFAULT_MODE = 2
 
@@ -46,7 +46,7 @@ TEST_CI_DIR = os.path.join(DATA_DIR, "test_CI")
 
 DEFAULT_ARK_TOOL = os.path.join(ARK_JS_RUNTIME_DIR, "ark_js_vm")
 DEFAULT_ARK_AOT_TOOL = os.path.join(ARK_JS_RUNTIME_DIR, "ark_aot_compiler")
-DEFAULT_LIBS_DIR = f"{ARK_DIR}:{ICUI_DIR}:{LLVM_DIR}:{ARK_JS_RUNTIME_DIR}"
+DEFAULT_LIBS_DIR = f"{ICUI_DIR}:{LLVM_DIR}:{ARK_JS_RUNTIME_DIR}"
 
 DEFAULT_HOST_TYPE = "panda"
 DEFAULT_HOST_PATH = "python3"

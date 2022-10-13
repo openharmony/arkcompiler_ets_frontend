@@ -59,7 +59,7 @@ $ ./build.sh --product-name hispark_taurus_standard --build-target ets_frontend_
 convert JS to ARK bytecode via es2abc
 
 ```
-$ cd out/hispark_taurus/clang_x64/ark/ark/
+$ cd out/hispark_taurus/clang_x64/arkcompiler/ets_frontend/
 $ ./es2abc [options] file.js
 ```
 
@@ -214,7 +214,7 @@ Install `node` and `npm`
 convert JS to ARK bytecode
 
 ```
-$ cd out/hispark_taurus/clang_x64/ark/ark/build
+$ cd out/hispark_taurus/clang_x64/arkcompiler/ets_frontend/build
 $ npm install
 $ node --expose-gc src/index.js [options] file.js
 ```
@@ -436,7 +436,7 @@ If no parameter is specified for  **\[options\]**, an ARK binary file is generat
 </table>
 
 
-For more information, please see: [ARK-Runtime-Usage-Guide](https://gitee.com/openharmony/ark_js_runtime/blob/master/docs/ARK-Runtime-Usage-Guide.md).
+For more information, please see: [ARK-Runtime-Usage-Guide](https://gitee.com/openharmony/arkcompiler_ets_runtime/blob/master/docs/ARK-Runtime-Usage-Guide.md).
 
 ## Repositories Involved<a name="section1371113476307"></a>
 

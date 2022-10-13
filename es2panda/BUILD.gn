@@ -456,24 +456,25 @@ ohos_executable("es2panda") {
   }
 
   output_name = "es2abc"
-  install_enable = true
-  subsystem_name = "ark"
+  install_enable = false
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 if (is_linux) {
   ohos_copy("es2abc_build") {
     deps = [ ":es2panda" ]
-    sources = [ "${root_out_dir}/ark/ark/es2abc" ]
+    sources = [ "${root_out_dir}/arkcompiler/ets_frontend/es2abc" ]
     outputs = [ "${target_out_dir}/es2abc-tmp" ]
-    module_source_dir = "${root_out_dir}/ark/ark"
+    module_source_dir = "${root_out_dir}/arkcompiler/ets_frontend"
     module_install_name = "es2abc"
   }
 
   ohos_copy("es2abc_build_ets") {
     deps = [ ":es2panda" ]
-    sources = [ "${root_out_dir}/ark/ark/es2abc" ]
-    outputs = [ "${root_out_dir}/ark/ark/es2abc-ets" ]
-    module_source_dir = "${root_out_dir}/ark/ark"
+    sources = [ "${root_out_dir}/arkcompiler/ets_frontend/es2abc" ]
+    outputs = [ "${root_out_dir}/arkcompiler/ets_frontend/es2abc-ets" ]
+    module_source_dir = "${root_out_dir}/arkcompiler/ets_frontend"
     module_install_name = "es2abc"
   }
 }
@@ -481,17 +482,17 @@ if (is_linux) {
 if (is_mingw) {
   ohos_copy("es2abc_build_win") {
     deps = [ ":es2panda" ]
-    sources = [ "${root_out_dir}/ark/ark/es2abc.exe" ]
+    sources = [ "${root_out_dir}/arkcompiler/ets_frontend/es2abc.exe" ]
     outputs = [ "${target_out_dir}/es2abc-tmp" ]
-    module_source_dir = "${root_out_dir}/ark/ark"
+    module_source_dir = "${root_out_dir}/arkcompiler/ets_frontend"
     module_install_name = "es2abc.exe"
   }
 
   ohos_copy("es2abc_build_win_ets") {
     deps = [ ":es2panda" ]
-    sources = [ "${root_out_dir}/ark/ark/es2abc.exe" ]
-    outputs = [ "${root_out_dir}/ark/ark/es2abc-win-ets" ]
-    module_source_dir = "${root_out_dir}/ark/ark"
+    sources = [ "${root_out_dir}/arkcompiler/ets_frontend/es2abc.exe" ]
+    outputs = [ "${root_out_dir}/arkcompiler/ets_frontend/es2abc-win-ets" ]
+    module_source_dir = "${root_out_dir}/arkcompiler/ets_frontend"
     module_install_name = "es2abc.exe"
   }
 }
@@ -499,17 +500,17 @@ if (is_mingw) {
 if (is_mac) {
   ohos_copy("es2abc_build_mac") {
     deps = [ ":es2panda" ]
-    sources = [ "${root_out_dir}/ark/ark/es2abc" ]
+    sources = [ "${root_out_dir}/arkcompiler/ets_frontend/es2abc" ]
     outputs = [ "${target_out_dir}/es2abc-tmp" ]
-    module_source_dir = "${root_out_dir}/ark/ark"
+    module_source_dir = "${root_out_dir}/arkcompiler/ets_frontend"
     module_install_name = "es2abc"
   }
 
   ohos_copy("es2abc_build_mac_ets") {
     deps = [ ":es2panda" ]
-    sources = [ "${root_out_dir}/ark/ark/es2abc" ]
-    outputs = [ "${root_out_dir}/ark/ark/es2abc-mac-ets" ]
-    module_source_dir = "${root_out_dir}/ark/ark"
+    sources = [ "${root_out_dir}/arkcompiler/ets_frontend/es2abc" ]
+    outputs = [ "${root_out_dir}/arkcompiler/ets_frontend/es2abc-mac-ets" ]
+    module_source_dir = "${root_out_dir}/arkcompiler/ets_frontend"
     module_install_name = "es2abc"
   }
 }
@@ -521,7 +522,7 @@ ohos_copy("build_es2abc_for_hap") {
   es2abc_target_out_dir =
       get_label_info(":es2panda_build($host_toolchain)", "target_out_dir")
 
-  sources = [ "${es2abc_root_out_dir}/ark/ark/es2abc" ]
+  sources = [ "${es2abc_root_out_dir}/arkcompiler/ets_frontend/es2abc" ]
   outputs = [ "${es2abc_target_out_dir}/build/bin/es2abc" ]
 }
 
