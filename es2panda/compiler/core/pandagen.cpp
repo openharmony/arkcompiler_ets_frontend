@@ -1042,7 +1042,7 @@ void PandaGen::EmitAwait(const ir::AstNode *node)
 
 void PandaGen::CallThis(const ir::AstNode *node, VReg startReg, size_t argCount)
 {
-    rra_.Emit<EcmaCallithisrangedyn>(node, startReg, argCount + 2, static_cast<int64_t>(argCount), startReg);
+    rra_.Emit<EcmaCallithisrangedyn>(node, startReg, argCount + 1, static_cast<int64_t>(argCount), startReg);
 }
 
 void PandaGen::Call(const ir::AstNode *node, VReg startReg, size_t argCount)
