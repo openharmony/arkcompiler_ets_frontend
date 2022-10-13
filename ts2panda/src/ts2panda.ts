@@ -178,7 +178,7 @@ export class Ts2Panda {
         let literalArrays = PandaGen.getLiteralArrayBuffer();
         let countType: LiteralBuffer = literalArrays[0];
         let jsonTypeString: string = ""
-        let typeCount = countType.getLiteral(1)?.getValue();
+        let typeCount = countType.getLiteral(0)?.getValue();
         if (typeCount) {
             for (let i = 0; i < typeCount; i++) {
                 jsonTypeString += escapeUnicode(JSON.stringify(literalArrays[1+i], null, 2));
