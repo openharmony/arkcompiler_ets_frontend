@@ -250,14 +250,6 @@ ir::TSTypeReference *ParserImpl::ParseTsConstExpression()
 
     lexer_->NextToken();
 
-    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA &&
-        lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SEMI_COLON &&
-        lexer_->GetToken().Type() != lexer::TokenType::EOS &&
-        lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET &&
-        !(lexer_->GetToken().Flags() & lexer::TokenFlags::NEW_LINE)) {
-        ThrowSyntaxError("Unexpected token.");
-    }
-
     return typeReference;
 }
 
