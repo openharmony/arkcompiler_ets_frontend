@@ -564,7 +564,9 @@ ir::Expression *ParserImpl::ParseCoverParenthesizedExpressionAndArrowParameterLi
         ir::Expression *returnTypeAnnotation = nullptr;
         if (Extension() == ScriptExtension::TS && lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
             lexer_->NextToken();  // eat ':'
+            options |= TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
             returnTypeAnnotation = ParseTsTypeAnnotation(&options);
+            options &= ~TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
         }
 
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
@@ -580,7 +582,9 @@ ir::Expression *ParserImpl::ParseCoverParenthesizedExpressionAndArrowParameterLi
         ir::Expression *returnTypeAnnotation = nullptr;
         if (Extension() == ScriptExtension::TS && lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
             lexer_->NextToken();  // eat ':'
+            options |= TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
             returnTypeAnnotation = ParseTsTypeAnnotation(&options);
+            options &= ~TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
         }
 
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
@@ -615,8 +619,10 @@ ir::Expression *ParserImpl::ParseCoverParenthesizedExpressionAndArrowParameterLi
 
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
             lexer_->NextToken();  // eat ':'
-            options = ~TypeAnnotationParsingOptions::THROW_ERROR;
+            options &= ~TypeAnnotationParsingOptions::THROW_ERROR;
+            options |= TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
             returnTypeAnnotation = ParseTsTypeAnnotation(&options);
+            options &= ~TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
         }
 
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {

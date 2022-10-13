@@ -64,6 +64,16 @@ public:
         return id_;
     }
 
+    bool Definite() const
+    {
+        return definite_;
+    }
+
+    void SetDefinite(bool definite)
+    {
+        definite_ = definite;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile(compiler::PandaGen *pg) const override;
@@ -73,6 +83,8 @@ public:
 private:
     Expression *id_;
     Expression *init_;
+    // TODO(xucheng): don't use now, it will be used in type checker later
+    bool definite_;
 };
 
 }  // namespace panda::es2panda::ir

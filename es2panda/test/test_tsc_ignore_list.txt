@@ -8,7 +8,6 @@ es2panda/test/TypeScript/tests/cases/compiler/constructorOverloads5.ts
 es2panda/test/TypeScript/tests/cases/compiler/continueTarget3.ts
 es2panda/test/TypeScript/tests/cases/compiler/controlFlowCaching.ts
 es2panda/test/TypeScript/tests/cases/compiler/declarationEmitDestructuringOptionalBindingParametersInOverloads.ts
-es2panda/test/TypeScript/tests/cases/compiler/discriminantsAndPrimitives.ts
 es2panda/test/TypeScript/tests/cases/compiler/elidedEmbeddedStatementsReplacedWithSemicolon.ts
 es2panda/test/TypeScript/tests/cases/compiler/emitBundleWithShebang1.ts
 es2panda/test/TypeScript/tests/cases/compiler/exportAsNamespace.d.ts
@@ -37,7 +36,6 @@ es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringFo
 es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForArrayBindingPatternDefaultValues2.ts
 es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForObjectBindingPattern2.ts
 es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForObjectBindingPatternDefaultValues2.ts
-es2panda/test/TypeScript/tests/cases/compiler/taggedTemplateStringWithSymbolExpression01.ts
 es2panda/test/TypeScript/tests/cases/compiler/withStatementInternalComments.ts
 es2panda/test/TypeScript/tests/cases/conformance/async/es2017/asyncAwait_es2017.ts
 es2panda/test/TypeScript/tests/cases/conformance/classes/members/privateNames/privateNameComputedPropertyName1.ts
@@ -78,9 +76,7 @@ es2panda/test/TypeScript/tests/cases/conformance/es6/unicodeExtendedEscapes/unic
 es2panda/test/TypeScript/tests/cases/conformance/es6/unicodeExtendedEscapes/unicodeExtendedEscapesInRegularExpressions19_ES6.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/yieldExpressions/generatorTypeCheck38.ts
 es2panda/test/TypeScript/tests/cases/conformance/expressions/elementAccess/letIdentifierInElementAccess01.ts
-es2panda/test/TypeScript/tests/cases/conformance/expressions/nullishCoalescingOperator/nullishCoalescingOperator_es2020.ts
 es2panda/test/TypeScript/tests/cases/conformance/expressions/propertyAccess/propertyAccessNumericLiterals.ts
-es2panda/test/TypeScript/tests/cases/conformance/expressions/typeGuards/typeGuardFunctionOfFormThis.ts
 es2panda/test/TypeScript/tests/cases/conformance/functions/functionWithUseStrictAndSimpleParameterList.ts
 es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclarations/asiPreventsParsingAsInterface01.ts
 es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclarations/asiPreventsParsingAsInterface03.ts
