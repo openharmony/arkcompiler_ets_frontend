@@ -865,9 +865,6 @@ ir::BlockStatement *ParserImpl::ParseBlockStatement()
 ir::BreakStatement *ParserImpl::ParseBreakStatement()
 {
     bool allowBreak = (context_.Status() & (ParserStatus::IN_ITERATION | ParserStatus::IN_SWITCH));
-    if (Extension() == ScriptExtension::TS && (context_.Status() & ParserStatus::FUNCTION) && !allowBreak) {
-        ThrowSyntaxError("Jump target cannot cross function boundary");
-    }
 
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer_->NextToken();
@@ -875,11 +872,15 @@ ir::BreakStatement *ParserImpl::ParseBreakStatement()
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON ||
         lexer_->GetToken().Type() == lexer::TokenType::EOS || lexer_->GetToken().NewLine() ||
         lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-        if (!allowBreak) {
-            if (Extension() == ScriptExtension::JS) {
-                ThrowSyntaxError("Illegal break statement");
-            }
-            if (Extension() == ScriptExtension::TS) {
+
+        if (!allowBreak && Extension() == ScriptExtension::JS) {
+            ThrowSyntaxError("Illegal break statement");
+        }
+
+        if (!allowBreak && Extension() == ScriptExtension::TS) {
+            if (context_.Status() & ParserStatus::FUNCTION) {
+                ThrowSyntaxError("Jump target cannot cross function boundary");
+            } else {
                 ThrowSyntaxError(
                     "A 'break' statement can only be used within an "
                     "enclosing iteration or switch statement");

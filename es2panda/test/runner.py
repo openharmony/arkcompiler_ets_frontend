@@ -25,6 +25,7 @@ import re
 import subprocess
 import sys
 import test262util
+import pandas as pd
 
 
 def is_directory(parser, arg):
@@ -436,16 +437,34 @@ class Runner:
         self.tests = results
         pool.join()
 
+    def deal_error(self, test):
+        path_str = test.path
+        err_col = {}
+        if test.error:
+            err_str = test.error.split('[')[0]
+            err_col = {"path" : [path_str], "status": ["fail"], "error" : [test.error], "type" : [err_str]}
+        else:
+            err_col = {"path" : [path_str], "status": ["fail"], "error" : ["Segmentation fault"],
+                        "type" : ["Segmentation fault"]}
+        return err_col
+
     def summarize(self):
         print("")
         fail_list = []
+        success_list = []
 
         for test in self.tests:
             assert(test.passed is not None)
             if not test.passed:
                 fail_list.append(test)
+            else:
+                success_list.append(test)
 
         if len(fail_list):
+            test_list = pd.DataFrame(columns=["path", "status", "error", "type"])
+            for test in success_list:
+                suc_col = {"path" : [test.path], "status": ["success"], "error" : ["success"], "type" : ["success"]}
+                test_list = pd.concat([test_list, pd.DataFrame(suc_col)])
             print("Failed tests:")
             for test in fail_list:
                 print(self.test_path(test.path))
@@ -455,7 +474,13 @@ class Runner:
                     print("error:")
                     print(test.error)
                     print("\n")
+                    err_col = self.deal_error(test)
+                    test_list = pd.concat([test_list, pd.DataFrame(err_col)])
 
+            if self.args.error:
+                test_list.to_csv('test_statistics.csv', index=False)
+                test_list["type"].value_counts().to_csv('type_statistics.csv', index_label="error")
+                print("Type statistics:\n", test_list["type"].value_counts())
             print("")
 
         print("Summary(%s):" % self.name)

@@ -12,7 +12,6 @@ es2panda/test/TypeScript/tests/cases/compiler/computedPropertiesTransformedInOth
 es2panda/test/TypeScript/tests/cases/compiler/constructorOverloads5.ts
 es2panda/test/TypeScript/tests/cases/compiler/continueTarget3.ts
 es2panda/test/TypeScript/tests/cases/compiler/controlFlowCaching.ts
-es2panda/test/TypeScript/tests/cases/compiler/controlFlowManyCallExpressionStatementsPerf.ts
 es2panda/test/TypeScript/tests/cases/compiler/declarationEmitDestructuringOptionalBindingParametersInOverloads.ts
 es2panda/test/TypeScript/tests/cases/compiler/declareIdentifierAsBeginningOfStatementExpression01.ts
 es2panda/test/TypeScript/tests/cases/compiler/discriminantsAndPrimitives.ts
@@ -57,9 +56,6 @@ es2panda/test/TypeScript/tests/cases/compiler/taggedTemplateStringWithSymbolExpr
 es2panda/test/TypeScript/tests/cases/compiler/unusedLocalsAndParametersOverloadSignatures.ts
 es2panda/test/TypeScript/tests/cases/compiler/withStatementInternalComments.ts
 es2panda/test/TypeScript/tests/cases/conformance/async/es2017/asyncAwait_es2017.ts
-es2panda/test/TypeScript/tests/cases/conformance/async/es5/asyncAwait_es5.ts
-es2panda/test/TypeScript/tests/cases/conformance/async/es6/asyncAwait_es6.ts
-es2panda/test/TypeScript/tests/cases/conformance/async/es6/asyncWithVarShadowing_es6.ts
 es2panda/test/TypeScript/tests/cases/conformance/classes/members/privateNames/privateNameComputedPropertyName1.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/arrowFunction/emitArrowFunctionWhenUsingArguments03_ES6.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/arrowFunction/emitArrowFunctionWhenUsingArguments04_ES6.ts
