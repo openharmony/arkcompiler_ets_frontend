@@ -489,6 +489,9 @@ export class ClassInstType extends BaseType {
         this.typeIndex = this.getIndexFromTypeArrayBuffer(this);
         this.shiftedTypeIndex = this.typeIndex + literalBufferIndexShift;
         this.typeRecorder.setClass2InstanceMap(this.shiftedReferredClassIndex, this.shiftedTypeIndex);
+        if (this.shiftedReferredClassIndex > BuiltinType._HEAD) {
+            this.typeRecorder.addUserDefinedTypeSet(this.shiftedTypeIndex);
+        }
     }
 
     transfer2LiteralBuffer(): LiteralBuffer {
@@ -925,12 +928,11 @@ export class BuiltinContainerType extends BaseType {
 
     constructor(builtinContainerSignature: object) {
         super();
-        this.typeIndex = this.getIndexFromTypeArrayBuffer(new PlaceHolderType());
-        this.shiftedTypeIndex = this.typeIndex + literalBufferIndexShift;
         this.builtinTypeIndex = builtinContainerSignature['typeIndex'];
         this.containerArray = builtinContainerSignature['typeArgIdxs'];
+        this.typeIndex = this.getIndexFromTypeArrayBuffer(this);
+        this.shiftedTypeIndex = this.typeIndex + literalBufferIndexShift;
         this.setBuiltinContainer2InstanceMap(builtinContainerSignature, this.shiftedTypeIndex);
-        this.setTypeArrayBuffer(this, this.typeIndex);
     }
 
     setBuiltinContainer2InstanceMap(builtinContainerSignature: object, index: number) {
@@ -938,15 +940,15 @@ export class BuiltinContainerType extends BaseType {
     }
 
     transfer2LiteralBuffer(): LiteralBuffer {
-        let UnionTypeBuf = new LiteralBuffer();
-        let UnionTypeLiterals: Array<Literal> = new Array<Literal>();
-        UnionTypeLiterals.push(new Literal(LiteralTag.INTEGER, L2Type.BUILTINCONTAINER));
-        this.transferType2Literal(this.builtinTypeIndex, UnionTypeLiterals);
-        UnionTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.containerArray.length));
+        let BuiltinContainerBuf = new LiteralBuffer();
+        let BuiltinContainerLiterals: Array<Literal> = new Array<Literal>();
+        BuiltinContainerLiterals.push(new Literal(LiteralTag.INTEGER, L2Type.BUILTINCONTAINER));
+        this.transferType2Literal(this.builtinTypeIndex, BuiltinContainerLiterals);
+        BuiltinContainerLiterals.push(new Literal(LiteralTag.INTEGER, this.containerArray.length));
         for (let type of this.containerArray) {
-            this.transferType2Literal(type, UnionTypeLiterals);
+            BuiltinContainerLiterals.push(new Literal(LiteralTag.INTEGER, type));
         }
-        UnionTypeBuf.addLiterals(...UnionTypeLiterals);
-        return UnionTypeBuf;
+        BuiltinContainerBuf.addLiterals(...BuiltinContainerLiterals);
+        return BuiltinContainerBuf;
     }
 }
