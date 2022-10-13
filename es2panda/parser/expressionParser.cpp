@@ -181,25 +181,10 @@ ir::Expression *ParserImpl::ParseExpression(ExpressionParseFlags flags)
         return assignmentExpression;
     }
 
-    switch (lexer_->GetToken().Type()) {
-        case lexer::TokenType::LITERAL_IDENT: {
-            if (Extension() == ScriptExtension::TS && lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
-                lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_AS &&
-                !(flags & ExpressionParseFlags::EXP_DISALLOW_AS)) {
-                return ParseTsAsExpression(assignmentExpression, flags);
-            }
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_COMMA: {
-            if (flags & ExpressionParseFlags::ACCEPT_COMMA) {
-                return ParseSequenceExpression(assignmentExpression, (flags & ExpressionParseFlags::ACCEPT_REST),
-                                               flags & ExpressionParseFlags::ALLOW_TS_PARAM_TOKEN);
-            }
-            break;
-        }
-        default: {
-            break;
-        }
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA &&
+        (flags & ExpressionParseFlags::ACCEPT_COMMA)) {
+        return ParseSequenceExpression(assignmentExpression, (flags & ExpressionParseFlags::ACCEPT_REST),
+                                       flags & ExpressionParseFlags::ALLOW_TS_PARAM_TOKEN);
     }
 
     return assignmentExpression;
@@ -806,6 +791,14 @@ ir::Expression *ParserImpl::ParseAssignmentExpression(ir::Expression *lhsExpress
 
             binaryAssignmentExpression->SetRange({lhsExpression->Start(), assignmentExpression->End()});
             return binaryAssignmentExpression;
+        }
+        case lexer::TokenType::LITERAL_IDENT: {
+            if (Extension() == ScriptExtension::TS && lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_AS &&
+                !(flags & ExpressionParseFlags::EXP_DISALLOW_AS) && !lexer_->GetToken().NewLine()) {
+                ir::Expression *asExpression = ParseTsAsExpression(lhsExpression, flags);
+                return ParseAssignmentExpression(asExpression);
+            }
+            break;
         }
         default:
             break;
