@@ -336,7 +336,7 @@ private:
 
     ir::Expression *ParseExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::ArrowFunctionExpression *ParseTsGenericArrowFunction();
-    ir::TSTypeAssertion *ParseTsTypeAssertion();
+    ir::TSTypeAssertion *ParseTsTypeAssertion(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::TSAsExpression *ParseTsAsExpression(ir::Expression *expr, ExpressionParseFlags flags);
     ir::Expression *ParseArrayExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::YieldExpression *ParseYieldExpression();
