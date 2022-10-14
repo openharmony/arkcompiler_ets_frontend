@@ -73,8 +73,8 @@ if (!defined(ark_independent_build)) {
   ohos_static_library("jsoncpp_static") {
     deps = [ ":jsoncpp_set_static" ]
     use_exceptions = true
-    subsystem_name = "ark"
-    part_name = "ark_frontend_tool"
+    part_name = "ets_frontend"
+    subsystem_name = "arkcompiler"
   }
 
   ohos_executable("ts2abc") {
@@ -135,8 +135,9 @@ if (!defined(ark_independent_build)) {
     }
 
     output_name = "js2abc"
-    install_enable = true
-    subsystem_name = "ark"
+    install_enable = false
+    part_name = "ets_frontend"
+    subsystem_name = "arkcompiler"
   }
 } else {
   ark_static_library("jsoncpp_static") {

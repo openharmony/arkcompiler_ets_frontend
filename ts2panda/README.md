@@ -14,9 +14,9 @@ The whole converter could be splited into several phases.
 The whole ARK project needs to be built before running cases.
 #### dump panda binary
 ```
-node --expose-gc ../../out/release/clang_x64/ark/ark/build/src/index.js <your/path/to/case_jsFile> <--> <--output> <output-filename>
+node --expose-gc ../../out/release/clang_x64/arkcompiler/ets_frontend/build/src/index.js <your/path/to/case_jsFile> <--> <--output> <output-filename>
 ```
 #### dump panda assembly
 ```
-node --expose-gc ../../out/release/clang_x64/ark/ark/build/src/index.js <your/path/to/case_jsFile> --dump-assembly
+node --expose-gc ../../out/release/clang_x64/arkcompiler/ets_frontend/build/src/index.js <your/path/to/case_jsFile> --dump-assembly
 ```

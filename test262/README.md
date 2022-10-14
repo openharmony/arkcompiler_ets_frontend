@@ -113,7 +113,7 @@ zgy@lfgphicprd23154:/home/share/OpenHarmony2.0_20210604/ark/ts2abc$ python3 -B t
 
 Wait a moment..........
 
-07-30 16:56:03.857383 D:>>>       command: npm install | dir: /home/share/OpenHarmony2.0_20210604/out/ohos-arm-release/clang_x64/ark/ark/build/src/..
+07-30 16:56:03.857383 D:>>>       command: npm install | dir: /home/share/OpenHarmony2.0_20210604/out/ohos-arm-release/clang_x64/arkcompiler/ets_frontend/build/src/..
 npm WARN ts2panda@1.0.0 No description
 npm WARN ts2panda@1.0.0 No repository field.
 npm WARN ts2panda@1.0.0 No license field.
@@ -145,7 +145,7 @@ Test command:
         test262/harness/bin/run.js
         --hostType=panda
         --hostPath=python3
-        --hostArgs='-B test262/run_sunspider.py --ark-tool=/home/share/OpenHarmony2.0_20210604/out/ohos-arm-release/clang_x64/ark/ark/ark_js_vm --ark-frontend-tool=/home/share/OpenHarmony2.0_20210604/out/ohos-arm-release/clang_x64/ark/ark/build/src/index.js --libs-dir=/home/share/OpenHarmony2.0_20210604/out/ohos-arm-release/clang_x64/ark/ark:/home/share/OpenHarmony2.0_20210604/out/ohos-arm-release/clang_x64/global/i18n_standard:/home/share/OpenHarmony2.0_20210604/prebuilts/clang/ohos/linux-x86_64/llvm/lib/ --ark-frontend=ts2panda '
+        --hostArgs='-B test262/run_sunspider.py --ark-tool=/home/share/OpenHarmony2.0_20210604/out/ohos-arm-release/clang_x64/arkcompiler/ets_runtime/ark_js_vm --ark-frontend-tool=/home/share/OpenHarmony2.0_20210604/out/ohos-arm-release/clang_x64/arkcompiler/ets_frontend/build/src/index.js --libs-dir=/home/share/OpenHarmony2.0_20210604/out/ohos-arm-release/clang_x64/arkcompiler/ets_runtime:/home/share/OpenHarmony2.0_20210604/out/ohos-arm-release/clang_x64/global/i18n_standard:/home/share/OpenHarmony2.0_20210604/prebuilts/clang/ohos/linux-x86_64/llvm/lib/ --ark-frontend=ts2panda '
         --threads=15
         --mode=only strict mode
         --timeout=60000

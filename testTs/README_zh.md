@@ -6,7 +6,7 @@
 
 ### 环境准备
 1.在鸿蒙系统代码根目录下编译ts2abc仓。先删除out目录，然后执行./build.sh --product-name hispark_taurus_standard --build-target ark_ts2abc命令进行编译。<br>
-2.进入out文件中的工具build目录 cd out/hispark_taurus/clang_x64/ark/ark/build，使用npm install命令进行环境搭建<br>
+2.进入out文件中的工具build目录 cd out/hispark_taurus/clang_x64/arkcompiler/ets_frontend/build，使用npm install命令进行环境搭建<br>
 3.搭建完环境，进入到鸿蒙系统ark/ts2abc目录下<br>
 
 

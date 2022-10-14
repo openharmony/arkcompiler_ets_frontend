@@ -212,24 +212,25 @@ ohos_executable("merge_abc") {
   }
 
   output_name = "merge_abc"
-  install_enable = true
-  subsystem_name = "ark"
+  install_enable = false
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 if (is_linux) {
   ohos_copy("merge_abc_build") {
     deps = [ ":merge_abc" ]
-    sources = [ "${root_out_dir}/ark/ark/merge_abc" ]
+    sources = [ "${root_out_dir}/arkcompiler/ets_frontend/merge_abc" ]
     outputs = [ "${target_out_dir}/merge_abc-tmp" ]
-    module_source_dir = "${root_out_dir}/ark/ark"
+    module_source_dir = "${root_out_dir}/arkcompiler/ets_frontend"
     module_install_name = "merge_abc"
   }
 
   ohos_copy("merge_abc_build_ets") {
     deps = [ ":merge_abc" ]
-    sources = [ "${root_out_dir}/ark/ark/merge_abc" ]
-    outputs = [ "${root_out_dir}/ark/ark/merge_abc-ets" ]
-    module_source_dir = "${root_out_dir}/ark/ark"
+    sources = [ "${root_out_dir}/arkcompiler/ets_frontend/merge_abc" ]
+    outputs = [ "${root_out_dir}/arkcompiler/ets_frontend/merge_abc-ets" ]
+    module_source_dir = "${root_out_dir}/arkcompiler/ets_frontend"
     module_install_name = "merge_abc"
   }
 }
@@ -237,17 +238,17 @@ if (is_linux) {
 if (is_mingw) {
   ohos_copy("merge_abc_build_win") {
     deps = [ ":merge_abc" ]
-    sources = [ "${root_out_dir}/ark/ark/merge_abc.exe" ]
+    sources = [ "${root_out_dir}/arkcompiler/ets_frontend/merge_abc.exe" ]
     outputs = [ "${target_out_dir}/merge_abc-tmp" ]
-    module_source_dir = "${root_out_dir}/ark/ark"
+    module_source_dir = "${root_out_dir}/arkcompiler/ets_frontend"
     module_install_name = "merge_abc.exe"
   }
 
   ohos_copy("merge_abc_build_win_ets") {
     deps = [ ":merge_abc" ]
-    sources = [ "${root_out_dir}/ark/ark/merge_abc.exe" ]
-    outputs = [ "${root_out_dir}/ark/ark/merge_abc-win-ets" ]
-    module_source_dir = "${root_out_dir}/ark/ark"
+    sources = [ "${root_out_dir}/arkcompiler/ets_frontend/merge_abc.exe" ]
+    outputs = [ "${root_out_dir}/arkcompiler/ets_frontend/merge_abc-win-ets" ]
+    module_source_dir = "${root_out_dir}/arkcompiler/ets_frontend"
     module_install_name = "merge_abc.exe"
   }
 }
@@ -255,17 +256,17 @@ if (is_mingw) {
 if (is_mac) {
   ohos_copy("merge_abc_build_mac") {
     deps = [ ":merge_abc" ]
-    sources = [ "${root_out_dir}/ark/ark/merge_abc" ]
+    sources = [ "${root_out_dir}/arkcompiler/ets_frontend/merge_abc" ]
     outputs = [ "${target_out_dir}/merge_abc-tmp" ]
-    module_source_dir = "${root_out_dir}/ark/ark"
+    module_source_dir = "${root_out_dir}/arkcompiler/ets_frontend"
     module_install_name = "merge_abc"
   }
 
   ohos_copy("merge_abc_build_mac_ets") {
     deps = [ ":merge_abc" ]
-    sources = [ "${root_out_dir}/ark/ark/merge_abc" ]
-    outputs = [ "${root_out_dir}/ark/ark/merge_abc-mac-ets" ]
-    module_source_dir = "${root_out_dir}/ark/ark"
+    sources = [ "${root_out_dir}/arkcompiler/ets_frontend/merge_abc" ]
+    outputs = [ "${root_out_dir}/arkcompiler/ets_frontend/merge_abc-mac-ets" ]
+    module_source_dir = "${root_out_dir}/arkcompiler/ets_frontend"
     module_install_name = "merge_abc"
   }
 }

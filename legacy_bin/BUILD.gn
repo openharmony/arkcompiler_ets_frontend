@@ -16,121 +16,145 @@ import("//build/ohos.gni")
 # for js-loader
 ohos_prebuilt_executable("js_js2abc_api8_linux") {
   source = "./api8/bin/linux/js2abc"
-  subsystem_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_executable("js_js2abc_api8_win") {
   source = "./api8/bin/win/js2abc.exe"
-  subsystem_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_executable("js_js2abc_api8_mac") {
   source = "./api8/bin/mac/js2abc"
-  subsystem_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("js_ts2abc_api8_linux") {
   source = "./api8/src/index.js"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("js_ts2abc_api8_win") {
   source = "./api8/src/index.js"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("js_ts2abc_api8_mac") {
   source = "./api8/src/index.js"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("js_package_api8_linux") {
   source = "./api8/package.json"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("js_package_api8_win") {
   source = "./api8/package.json"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("js_package_api8_mac") {
   source = "./api8/package.json"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("js_package-lock_api8_linux") {
   source = "./api8/package-lock.json"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("js_package-lock_api8_win") {
   source = "./api8/package-lock.json"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("js_package-lock_api8_mac") {
   source = "./api8/package-lock.json"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 # for ets-loader
 ohos_prebuilt_executable("ets_js2abc_api8_linux") {
   source = "./api8/bin/linux/js2abc"
-  subsystem_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_executable("ets_js2abc_api8_win") {
   source = "./api8/bin/win/js2abc.exe"
-  subsystem_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_executable("ets_js2abc_api8_mac") {
   source = "./api8/bin/mac/js2abc"
-  subsystem_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("ets_ts2abc_api8_linux") {
   source = "./api8/src/index.js"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("ets_ts2abc_api8_win") {
   source = "./api8/src/index.js"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("ets_ts2abc_api8_mac") {
   source = "./api8/src/index.js"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("ets_package_api8_linux") {
   source = "./api8/package.json"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("ets_package_api8_win") {
   source = "./api8/package.json"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("ets_package_api8_mac") {
   source = "./api8/package.json"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("ets_package-lock_api8_linux") {
   source = "./api8/package-lock.json"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("ets_package-lock_api8_win") {
   source = "./api8/package-lock.json"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_prebuilt_etc("ets_package-lock_api8_mac") {
   source = "./api8/package-lock.json"
-  part_name = "ark"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }

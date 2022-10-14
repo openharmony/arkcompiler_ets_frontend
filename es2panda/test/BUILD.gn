@@ -51,7 +51,7 @@ action("es2abc_compiler_tests") {
 
   host_jsvm_target = "${js_root}/ecmascript/js_vm:ark_js_vm(${host_toolchain})"
   root_out_dir = get_label_info(host_jsvm_target, "root_out_dir")
-  ark_js_runtime_dir = rebase_path("${root_out_dir}/ark/ark_js_runtime")
+  ark_js_runtime_dir = rebase_path("${root_out_dir}/arkcompiler/ets_runtime")
 
   if (is_standard_system) {
     icu_path = "thirdparty/icu"
