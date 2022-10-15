@@ -410,7 +410,7 @@ export function getOutputBinName(node: ts.SourceFile) {
 export function getRecordName(node: ts.SourceFile): string {
     let recordName = CmdOptions.getRecordName();
 
-    if (recordName == "") {
+    if (recordName == "" && CmdOptions.isMergeAbc()) {
         let outputBinName = getOutputBinName(node);
         recordName = path.basename(outputBinName, path.extname(outputBinName));
     }

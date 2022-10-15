@@ -48,6 +48,8 @@ def parse_args():
                         help='enable builtin types recognition for .d.ts files')
     parser.add_argument("--functionSourceCode", action='store_true',
                         help='compile abc with function sourcecode info')
+    parser.add_argument("--merge-abc", action='store_true',
+                        help='Compile as merge abc')
     arguments = parser.parse_args()
     return arguments
 
@@ -100,6 +102,8 @@ def gen_abc_info(input_arguments):
         cmd.insert(7, '-b')
     if input_arguments.functionSourceCode:
         cmd.insert(8, '--function-sourcecode')
+    if input_arguments.merge_abc:
+        cmd.insert(9, '--merge-abc')
     run_command(cmd, path)
 
 

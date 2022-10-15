@@ -141,9 +141,15 @@ export function checkInstructions(actual: IRNode[], expected: IRNode[], checkFn?
     return true;
 }
 
-export function compileAllSnippet(snippet: string, passes?: Pass[], literalBufferArray?: Array<LiteralBuffer>): PandaGen[] {
+export function compileAllSnippet(snippet: string, passes?: Pass[], literalBufferArray?: Array<LiteralBuffer>,
+                                  isWatchEvaluateExpressionMode?: boolean): PandaGen[] {
     let sourceFile = creatAstFromSnippet(snippet);
     jshelpers.bindSourceFile(sourceFile, {});
+    CmdOptions.parseUserCmd([""]);
+    if (isWatchEvaluateExpressionMode) {
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
+    }
+    CmdOptions.setMergeAbc(true);
     CmdOptions.isWatchEvaluateExpressionMode() ? setGlobalStrict(true)
                             : setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(sourceFile, compileOptions));
     let compilerDriver = new CompilerDriver('UnitTest', 'UnitTest');
@@ -157,8 +163,9 @@ export function compileAllSnippet(snippet: string, passes?: Pass[], literalBuffe
     return compilerDriver.getCompilationUnits();
 }
 
-export function compileMainSnippet(snippet: string, pandaGen?: PandaGen, scope?: Scope, passes?: Pass[], compileFunc?: boolean): IRNode[] {
-    let compileUnits = compileAllSnippet(snippet, passes);
+export function compileMainSnippet(snippet: string, pandaGen?: PandaGen, scope?: Scope, passes?: Pass[],
+                                   compileFunc?: boolean, isWatchEvaluateExpressionMode?: boolean): IRNode[] {
+    let compileUnits = compileAllSnippet(snippet, passes, undefined, isWatchEvaluateExpressionMode);
 
     if (compileUnits.length != 1 && !compileFunc) {
         throw new Error("Error: please use compileMainSnippet1 for multi function compile");
@@ -176,6 +183,8 @@ export function compileMainSnippet(snippet: string, pandaGen?: PandaGen, scope?:
 
 export function compileAfterSnippet(snippet: string, name:string, isCommonJs: boolean = false) {
     let compileUnits = null;
+    CmdOptions.parseUserCmd([""]);
+    CmdOptions.setMergeAbc(true);
     ts.transpileModule(
         snippet,
         {

@@ -186,8 +186,10 @@ export class CompilerDriver {
             listenErrorEvent(ts2abcProc);
 
             try {
-                // must keep [dumpRecord] at first
-                Ts2Panda.dumpRecord(ts2abcProc, this.recordName);
+                if (CmdOptions.isMergeAbc()) {
+                    // must keep [dumpRecord] at first
+                    Ts2Panda.dumpRecord(ts2abcProc, this.recordName);
+                }
                 Ts2Panda.dumpCmdOptions(ts2abcProc);
 
                 for (let i = 0; i < this.pendingCompilationUnits.length; i++) {
@@ -360,6 +362,14 @@ export class CompilerDriver {
         return idx;
     }
 
+    getFormatedRecordName() {
+        let formatedRecordName: string = '';
+        if (CmdOptions.isMergeAbc()) {
+            formatedRecordName = this.recordName + '.';
+        }
+        return formatedRecordName;
+    }
+
     /**
      * Internal name is used to indentify a function in panda file
      * Runtime uses this name to bind code and a Function object
@@ -377,13 +387,13 @@ export class CompilerDriver {
             if (name == '') {
                 if ((ts.isFunctionDeclaration(node) && hasExportKeywordModifier(node) && hasDefaultKeywordModifier(node))
                     || ts.isExportAssignment(findOuterNodeOfParenthesis(node))) {
-                    return `${this.recordName}.default`;
+                    return `${this.getFormatedRecordName()}default`;
                 }
-                return `${this.recordName}.#${this.getFuncId(funcNode)}#`;
+                return `${this.getFormatedRecordName()}#${this.getFuncId(funcNode)}#`;
             }
 
             if (name == "func_main_0") {
-                return `${this.recordName}.#${this.getFuncId(funcNode)}#${name}`;
+                return `${this.getFormatedRecordName()}#${this.getFuncId(funcNode)}#${name}`;
             }
 
             let funcNameMap = recorder.getFuncNameMap();
@@ -400,7 +410,7 @@ export class CompilerDriver {
                 name = `#${this.getFuncId(funcNode)}#`
             }
         }
-        return `${this.recordName}.${name}`;
+        return `${this.getFormatedRecordName()}${name}`;
     }
 
     getInternalNameForCtor(node: ts.ClassLikeDeclaration, ctor: ts.ConstructorDeclaration) {
@@ -409,7 +419,7 @@ export class CompilerDriver {
         if (name.lastIndexOf(".") != -1) {
             name = `#${this.getFuncId(ctor)}#`
         }
-        return `${this.recordName}.${name}`;
+        return `${this.getFormatedRecordName()}${name}`;
     }
 
     writeBinaryFile(pandaGen: PandaGen) {

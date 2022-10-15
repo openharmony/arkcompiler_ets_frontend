@@ -240,8 +240,9 @@ class ArkProgram():
             cmd_args = [frontend_tool, dependency, '--outputProto',
                         proto_bin_file, '--module', '--merge-abc']
         else:
+            # for testing no-record-name abc
             cmd_args = [frontend_tool, dependency, '--output', output_abc,
-                        '--module', '--merge-abc']
+                        '--module']
         proc = subprocess.Popen(cmd_args)
         proc.wait()
 
@@ -296,7 +297,7 @@ class ArkProgram():
         self.abc_file = out_file
         mod_opt_index = 0
         cmd_args = []
-        dependency_cmd_args= []
+        dependency_cmd_args = []
         frontend_tool = self.ark_frontend_binary
         merge_abc_mode = self.merge_abc_mode
         dependencies = []
@@ -316,8 +317,9 @@ class ArkProgram():
                 cmd_args = ['node', '--expose-gc', frontend_tool, js_file,
                             '--output-proto', '--merge-abc']
             else:
+                # for testing no-record-name abc
                 cmd_args = ['node', '--expose-gc', frontend_tool,
-                            js_file, '-o', out_file, '--merge-abc']
+                            js_file, '-o', out_file]
             if file_name in self.module_list:
                 cmd_args.insert(mod_opt_index, "-m")
                 self.module = True
@@ -329,11 +331,11 @@ class ArkProgram():
                             str(self.es2abc_thread_count), '--outputProto',
                             proto_bin_file, js_file, '--merge-abc']
             else:
-                # '--merge-abc' should be removed when record-name is set as default in es2panda
+                # for testing no-record-name abc
                 cmd_args = [frontend_tool, '--opt-level=' + str(self.opt_level),
                             '--function-threads=' +
                             str(self.es2abc_thread_count), '--output',
-                            out_file, js_file, '--merge-abc']
+                            out_file, js_file]
             if file_name in self.module_list:
                 cmd_args.insert(mod_opt_index, "--module")
                 self.module = True
