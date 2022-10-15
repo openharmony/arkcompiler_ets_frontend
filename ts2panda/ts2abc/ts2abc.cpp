@@ -37,6 +37,7 @@ namespace panda::ts2abc {
 // pandasm definitions
 constexpr const auto LANG_EXT = panda::pandasm::extensions::Language::ECMASCRIPT;
 const std::string WHOLE_LINE;
+bool g_isMergeAbc = false;
 bool g_debugModeEnabled = false;
 bool g_debugLogEnabled = false;
 int g_optLevel = 0;
@@ -178,8 +179,12 @@ static std::string GetLiteralId(int64_t index)
     return g_recordName + "_" + std::to_string(index);
 }
 
-static bool IsFuncMain0(std::string funcName) {
-    std::string expectedName = g_recordName + ".func_main_0";
+static bool IsFuncMain0(std::string funcName)
+{
+    std::string expectedName = "func_main_0";
+    if (g_isMergeAbc) {
+        expectedName = g_recordName + "." + expectedName;
+    }
     return funcName == expectedName;
 }
 
@@ -855,6 +860,28 @@ static void GenerateESTypeAnnotationRecord(panda::pandasm::Program &prog)
     prog.record_table.emplace(tsTypeAnnotationRecord.name, std::move(tsTypeAnnotationRecord));
 }
 
+static void GenerateESModuleRecord(panda::pandasm::Program &prog)
+{
+    auto ecmaModuleRecord = panda::pandasm::Record("_ESModuleRecord", LANG_EXT);
+    ecmaModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
+    prog.record_table.emplace(ecmaModuleRecord.name, std::move(ecmaModuleRecord));
+}
+
+static void GenerateCommonJsRecord(panda::pandasm::Program &prog, bool isCommonJs)
+{
+    // when multi-abc file get merged, field should be inserted in abc's own record
+    auto commonjsRecord = panda::pandasm::Record("_CommonJsRecord", LANG_EXT);
+    commonjsRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
+    auto isCommonJsField = panda::pandasm::Field(LANG_EXT);
+    isCommonJsField.name = "isCommonJs";
+    isCommonJsField.type = panda::pandasm::Type("u8", 0);
+    isCommonJsField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(
+        static_cast<uint8_t>(isCommonJs)));
+    commonjsRecord.field_list.emplace_back(std::move(isCommonJsField));
+
+    prog.record_table.emplace(commonjsRecord.name, std::move(commonjsRecord));
+}
+
 static void SetCommonjsField(panda::pandasm::Program &prog, bool isCommonjs)
 {
     auto iter = prog.record_table.find(g_recordName);
@@ -871,11 +898,13 @@ static void SetCommonjsField(panda::pandasm::Program &prog, bool isCommonjs)
 
 static void AddModuleRecord(panda::pandasm::Program &prog, const std::string &moduleName)
 {
-    auto iter = prog.record_table.find(g_recordName);
+    std::string moduleRecordName = g_isMergeAbc ? g_recordName : "_ESModuleRecord";
+    std::string fieldName = g_isMergeAbc ? "moduleRecordIdx" : moduleName;
+    auto iter = prog.record_table.find(moduleRecordName);
     if (iter != prog.record_table.end()) {
         auto &rec = iter->second;
         auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
-        moduleIdxField.name = "moduleRecordIdx";
+        moduleIdxField.name = fieldName;
         moduleIdxField.type = panda::pandasm::Type("u32", 0);
         std::string moduleId = GetLiteralId(g_newLiteralArrayIndex);
         moduleIdxField.metadata->SetValue(
@@ -905,11 +934,35 @@ int ParseJson(const std::string &data, Json::Value &rootValue)
     return RETURN_SUCCESS;
 }
 
-static void SetCommonJsModuleMode(const Json::Value &rootValue, panda::pandasm::Program &prog)
+static void ParseMergeAbcMode(const Json::Value &rootValue)
+{
+    Logd("---------------parse is_merge_abc----------------");
+    if (rootValue.isMember("merge_abc") && rootValue["merge_abc"].isBool()) {
+        g_isMergeAbc = rootValue["merge_abc"].asBool();
+    }
+}
+
+static void ParseModuleMode(const Json::Value &rootValue, panda::pandasm::Program &prog)
+{
+    Logd("----------------parse module_mode-----------------");
+    if (rootValue.isMember("module_mode") && rootValue["module_mode"].isBool()) {
+        if (rootValue["module_mode"].asBool() && !g_isMergeAbc) {
+            GenerateESModuleRecord(prog);
+        }
+    }
+}
+
+static void ParseCommonJsModuleMode(const Json::Value &rootValue, panda::pandasm::Program &prog)
 {
     Logd("------------parse commonjs_module_mode-------------");
     if (rootValue.isMember("commonjs_module") && rootValue["commonjs_module"].isBool()) {
-        SetCommonjsField(prog, rootValue["commonjs_module"].asBool());
+        if (g_isMergeAbc) {
+            SetCommonjsField(prog, rootValue["commonjs_module"].asBool());
+        } else {
+            if (rootValue["commonjs_module"].asBool()) {
+                GenerateCommonJsRecord(prog, true);
+            }
+        }
     }
 }
 
@@ -997,7 +1050,9 @@ static void ParseOptions(const Json::Value &rootValue, panda::pandasm::Program &
 {
     GenerateESCallTypeAnnotationRecord(prog);
     GenerateESTypeAnnotationRecord(prog);
-    SetCommonJsModuleMode(rootValue, prog);
+    ParseMergeAbcMode(rootValue);
+    ParseModuleMode(rootValue, prog);
+    ParseCommonJsModuleMode(rootValue, prog);
     ParseLogEnable(rootValue);
     ParseDebugMode(rootValue);
     ParseOptLevel(rootValue);
@@ -1170,20 +1225,41 @@ static void ParseSingleModule(const Json::Value &rootValue, panda::pandasm::Prog
 
 static void ParseSingleTypeInfo(const Json::Value &rootValue, panda::pandasm::Program &prog)
 {
-    auto iter = prog.record_table.find(g_recordName);
-    if (iter != prog.record_table.end()) {
-        auto &rec = iter->second;
+    auto typeInfoRecord = rootValue["ti"];
+    auto typeFlag = typeInfoRecord["tf"].asBool();
+    auto typeSummaryIndex = typeInfoRecord["tsi"].asString();
 
-        auto typeInfoRecord = rootValue["ti"];
-        auto typeFlag = typeInfoRecord["tf"].asBool();
-        auto typeSummaryIndex = typeInfoRecord["tsi"].asString();
+    if (g_isMergeAbc) {
+        auto iter = prog.record_table.find(g_recordName);
+        if (iter != prog.record_table.end()) {
+            auto &rec = iter->second;
+
+            auto typeFlagField = panda::pandasm::Field(LANG_EXT);
+            typeFlagField.name = "typeFlag";
+            typeFlagField.type = panda::pandasm::Type("u8", 0);
+            typeFlagField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(
+            static_cast<uint8_t>(typeFlag)));
+            rec.field_list.emplace_back(std::move(typeFlagField));
+
+            if (g_enableTypeinfo) {
+                auto typeSummaryIndexField = panda::pandasm::Field(LANG_EXT);
+                typeSummaryIndexField.name = "typeSummaryOffset";
+                typeSummaryIndexField.type = panda::pandasm::Type("u32", 0);
+                typeSummaryIndexField.metadata->SetValue(
+                    panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(typeSummaryIndex));
+                rec.field_list.emplace_back(std::move(typeSummaryIndexField));
+            }
+        }
+    } else {
+        auto ecmaTypeInfoRecord = panda::pandasm::Record("_ESTypeInfoRecord", LANG_EXT);
+        ecmaTypeInfoRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
 
         auto typeFlagField = panda::pandasm::Field(LANG_EXT);
         typeFlagField.name = "typeFlag";
         typeFlagField.type = panda::pandasm::Type("u8", 0);
         typeFlagField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(
         static_cast<uint8_t>(typeFlag)));
-        rec.field_list.emplace_back(std::move(typeFlagField));
+        ecmaTypeInfoRecord.field_list.emplace_back(std::move(typeFlagField));
 
         if (g_enableTypeinfo) {
             auto typeSummaryIndexField = panda::pandasm::Field(LANG_EXT);
@@ -1191,8 +1267,10 @@ static void ParseSingleTypeInfo(const Json::Value &rootValue, panda::pandasm::Pr
             typeSummaryIndexField.type = panda::pandasm::Type("u32", 0);
             typeSummaryIndexField.metadata->SetValue(
                 panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(typeSummaryIndex));
-            rec.field_list.emplace_back(std::move(typeSummaryIndexField));
+            ecmaTypeInfoRecord.field_list.emplace_back(std::move(typeSummaryIndexField));
         }
+
+        prog.record_table.emplace(ecmaTypeInfoRecord.name, std::move(ecmaTypeInfoRecord));
     }
 }
 

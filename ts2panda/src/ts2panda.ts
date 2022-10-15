@@ -216,6 +216,7 @@ export class Ts2Panda {
         let enableRecordType: boolean = CmdOptions.needRecordType() && CompilerDriver.isTsFile;
         let options = {
             "t": JsonType.options,
+            "merge_abc": CmdOptions.isMergeAbc(),
             "module_mode": CmdOptions.isModules(),
             "commonjs_module": CmdOptions.isCommonJs(),
             "debug_mode": CmdOptions.isDebugMode(),

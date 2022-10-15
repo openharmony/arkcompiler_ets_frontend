@@ -70,11 +70,9 @@ import { checkInstructions, compileMainSnippet, compileAllSnippet } from "../uti
 
 describe("WatchExpressions", function () {
     it("watch NumericLiteral", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a=-123.212
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -98,11 +96,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch StringLiteral", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         y = 'He is called \'Johnny\''
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -131,11 +127,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch RegularExpressionLiteral", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a = /abc/
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -155,11 +149,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch Identifier", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         _awef
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -178,11 +170,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch TrueKeyword", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         b === true
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let isTrueLabel = new Label();
@@ -212,11 +202,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch FalseKeyword", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         b === false
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let ifFalseLabel = new Label(); //lable0
@@ -247,11 +235,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch CallExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         BigInt(10.2)
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -275,11 +261,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch NullKeyword", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         b === null
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let isTrueLabel = new Label();
@@ -309,11 +293,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch ThisKeyword", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         this
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -332,13 +314,11 @@ describe("WatchExpressions", function () {
     });
 
     it("watch MetaProperty", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let pandaGens = compileAllSnippet(`
         function (){
             b = new.target;
         }
-        `);
+        `, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -362,11 +342,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch ArrayLiteralExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         [1,2]
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -380,11 +358,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch ObjectLiteralExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a = {key:1,value:1}
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -406,11 +382,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch PropertyAccessExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a.b
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -432,11 +406,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch ElementAccessExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a[0]
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -458,11 +430,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch NewExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         new Function()
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -483,11 +453,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch ParenthesizedExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         (a,b,c)
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -524,11 +492,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch FunctionExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let pandaGens = compileAllSnippet(`
         a = function () {}
-        `);
+        `, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -552,11 +518,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch DeleteExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         delete[abc]
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -580,11 +544,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch TypeOfExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         typeof(a)
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -604,11 +566,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch VoidExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         void doSomething()
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -631,13 +591,10 @@ describe("WatchExpressions", function () {
     });
 
     it("watch AwaitExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let pandaGens = compileAllSnippet(
             `async function a(){
                 await abc;
-            }`
-        );
+            }`, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let beginLabel = new Label();
@@ -689,11 +646,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch PrefixUnaryExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         --a
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -723,11 +678,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch PostfixUnaryExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a--
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -759,11 +712,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch BinaryExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a+b
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -792,11 +743,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch ConditionalExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let insns = compileMainSnippet(`
         a?4:2
-        `);
+        `, undefined, undefined, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let ifTrueLabel = new Label();
@@ -825,12 +774,10 @@ describe("WatchExpressions", function () {
     });
 
     it("watch YieldExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let pandaGens = compileAllSnippet(`
         function* func(){
             yield a;
-        }`);
+        }`, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let startLabel = new Label();
@@ -904,11 +851,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch ArrowFunction", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let pandaGens = compileAllSnippet(`
         a => b.length
-        `);
+        `, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
@@ -937,11 +882,9 @@ describe("WatchExpressions", function () {
     });
 
     it("watch ClassExpression", function () {
-        CmdOptions.parseUserCmd([""]);
-        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
         let pandaGens = compileAllSnippet(`
         a = new class{};
-        `);
+        `, undefined, undefined, true);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
         let expected = [
