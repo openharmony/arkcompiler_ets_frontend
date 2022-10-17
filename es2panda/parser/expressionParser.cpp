@@ -379,7 +379,8 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(ArrowF
     }
 
     funcNode = AllocNode<ir::ScriptFunction>(functionScope, std::move(desc->params), typeParamDecl, body,
-                                             returnTypeAnnotation, arrowFunctionContext->Flags(), false);
+                                             returnTypeAnnotation, arrowFunctionContext->Flags(), false,
+                                             Extension() == ScriptExtension::TS);
     funcNode->SetRange({desc->startLoc, endLoc});
     functionScope->BindNode(funcNode);
     desc->paramScope->BindNode(funcNode);
