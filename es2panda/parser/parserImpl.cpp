@@ -831,7 +831,7 @@ ir::Expression *ParserImpl::ParseTsTupleElement(ir::TSTupleKind *kind, bool *see
             lexer_->NextToken();  // eat '?'
             isOptional = true;
             *seenOptional = true;
-        } else if (*seenOptional) {
+        } else if (*seenOptional && !isRestType) {
             ThrowSyntaxError("A required element cannot follow an optional element");
         }
 
@@ -864,6 +864,10 @@ ir::Expression *ParserImpl::ParseTsTupleElement(ir::TSTupleKind *kind, bool *see
             element = AllocNode<ir::TSOptionalType>(std::move(element));
             element->SetRange({elementStartPos, lexer_->GetToken().End()});
             lexer_->NextToken();  // eat '?'
+            isOptional = true;
+            *seenOptional = true;
+        } else if (*seenOptional && !isRestType) {
+            ThrowSyntaxError("A required element cannot follow an optional element");
         }
     }
     return element;
@@ -2400,7 +2404,7 @@ void ParserImpl::CheckClassPrivateIdentifier(ClassElmentDescriptor *desc)
         return;
     }
 
-    if (desc->modifiers != ir::ModifierFlags::NONE) {
+    if (desc->modifiers & ~ir::ModifierFlags::READONLY) {
         ThrowSyntaxError("Unexpected modifier on private identifier");
     }
 
