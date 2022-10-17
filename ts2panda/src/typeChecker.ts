@@ -36,6 +36,8 @@ import { TypeRecorder } from "./typeRecorder";
 export class TypeChecker {
     private static instance: TypeChecker;
     private compiledTypeChecker: any = null;
+    // After ets runtime adapt to parse BuiltinContainerType, set the flag as true.
+    private needRecordBuiltinContainer: boolean = false;
     private constructor() { }
 
     public static getInstance(): TypeChecker {
@@ -252,7 +254,7 @@ export class TypeChecker {
                 let typeIdentifierName = jshelpers.getTextOfIdentifierOrLiteral(typeIdentifier);
                 if (BuiltinType[typeIdentifierName]) {
                     let declNode = this.getDeclNodeForInitializer(typeIdentifier);
-                    if (declNode && ts.isClassLike(declNode)) {
+                    if (declNode && (ts.isClassLike(declNode) || declNode.kind == ts.SyntaxKind.InterfaceDeclaration)) {
                         return this.getBuiltinTypeIndex(<ts.TypeReferenceNode>typeNode, typeIdentifierName);
                     } else {
                         return BuiltinType[typeIdentifierName];
@@ -293,7 +295,7 @@ export class TypeChecker {
 
     getBuiltinTypeIndex(node: ts.NewExpression | ts.TypeReferenceNode, name: string) {
         let typeArguments = node.typeArguments;
-        if (typeArguments) {
+        if (typeArguments && this.needRecordBuiltinContainer) {
             let typeArgIdxs = new Array<number>();
             for(let typeArg of typeArguments) {
                 let typeArgIdx = this.getOrCreateRecordForTypeNode(typeArg);

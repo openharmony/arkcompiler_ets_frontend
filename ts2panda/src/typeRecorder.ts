@@ -295,6 +295,8 @@ export class TypeRecorder {
         console.log(this.getTypeSet());
         console.log("class instance Map:");
         console.log(this.class2InstanceMap);
+        console.log("builtinContainer instance Map:");
+        console.log(this.builtinContainer2InstanceMap);
         console.log("exportedType:");
         console.log(this.printExportMap(this.getExportedType()));
         console.log("AnoymousRedirect:");
