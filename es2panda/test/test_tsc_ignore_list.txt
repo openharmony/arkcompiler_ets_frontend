@@ -98,7 +98,6 @@ es2panda/test/TypeScript/tests/cases/conformance/expressions/elementAccess/letId
 es2panda/test/TypeScript/tests/cases/conformance/expressions/nullishCoalescingOperator/nullishCoalescingOperator_es2020.ts
 es2panda/test/TypeScript/tests/cases/conformance/expressions/propertyAccess/propertyAccessNumericLiterals.ts
 es2panda/test/TypeScript/tests/cases/conformance/expressions/typeGuards/typeGuardFunctionOfFormThis.ts
-es2panda/test/TypeScript/tests/cases/conformance/expressions/typeGuards/typePredicateASI.ts
 es2panda/test/TypeScript/tests/cases/conformance/functions/functionWithUseStrictAndSimpleParameterList.ts
 es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclarations/asiPreventsParsingAsInterface01.ts
 es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclarations/asiPreventsParsingAsInterface03.ts

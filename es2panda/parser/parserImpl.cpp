@@ -338,7 +338,7 @@ bool ParserImpl::IsStartOfTsTypePredicate() const
 
     lexer_->NextToken();
 
-    bool result = lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_IS;
+    bool result = !lexer_->GetToken().NewLine() && (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_IS);
     lexer_->Rewind(pos);
     return result;
 }
