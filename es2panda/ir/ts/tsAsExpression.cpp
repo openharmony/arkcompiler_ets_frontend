@@ -36,7 +36,10 @@ void TSAsExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSAsExpression"}, {"expression", expression_}, {"typeAnnotation", typeAnnotation_}});
 }
 
-void TSAsExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSAsExpression::Compile(compiler::PandaGen *pg) const
+{
+    expression_->Compile(pg);
+}
 
 static bool IsValidConstAssertionArgument(checker::Checker *checker, const ir::AstNode *arg)
 {
