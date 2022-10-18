@@ -46,7 +46,17 @@ public:
         return param_;
     }
 
+    Expression *Param()
+    {
+        return param_;
+    }
+
     const Expression *TypeAnnotation() const
+    {
+        return typeAnnotation_;
+    }
+
+    Expression *TypeAnnotation()
     {
         return typeAnnotation_;
     }

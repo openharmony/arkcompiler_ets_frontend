@@ -127,6 +127,9 @@ public:
 
     bool HasVariableName(const util::StringView &name) const;
 
+    std::vector<Variable *> FindIdentifierTSVariables(const ir::Identifier *identifier, Scope *scope,
+        ScopeFindResult &res);
+
     static constexpr std::string_view FUNCTION_ARGUMENTS = "arguments";
     static constexpr std::string_view MANDATORY_PARAM_FUNC = "4funcObj";
     static constexpr std::string_view MANDATORY_PARAM_NEW_TARGET = "4newTarget";

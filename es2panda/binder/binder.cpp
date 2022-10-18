@@ -42,6 +42,7 @@
 #include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
 #include <ir/statements/whileStatement.h>
+#include <ir/ts/tsClassImplements.h>
 #include <ir/ts/tsConstructorType.h>
 #include <ir/ts/tsEnumDeclaration.h>
 #include <ir/ts/tsFunctionType.h>
@@ -206,14 +207,19 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
         InstantiateArguments();
     }
 
-    ScopeFindResult res = scope_->Find(ident->Name(), bindingOptions_);
+    ScopeFindResult res;
+    if (bindingFlags_ & ResolveBindingFlags::TS_BEFORE_TRANSFORM) {
+        ident->SetTSVariables(FindIdentifierTSVariables(ident, scope_, res));
+    } else {
+        res = scope_->Find(ident->Name(), bindingOptions_);
+    }
 
     if (res.level != 0) {
         ASSERT(res.variable);
         res.variable->SetLexical(res.scope, program_->HotfixHelper());
     }
 
-    if (!res.variable) {
+    if (res.variable == nullptr) {
         return;
     }
 
@@ -395,6 +401,10 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
 
     if (classDef->Super()) {
         ResolveReference(classDef, classDef->Super());
+    }
+
+    for (auto *impl : classDef->Implements()) {
+        ResolveReference(classDef, impl);
     }
 
     if (classDef->Ident()) {
@@ -711,6 +721,46 @@ void Binder::AddDeclarationName(const util::StringView &name, DeclType type)
 bool Binder::HasVariableName(const util::StringView &name) const
 {
     return variableNames_.find(name) != variableNames_.end();
+}
+
+std::vector<Variable *> Binder::FindIdentifierTSVariables(const ir::Identifier *identifier, Scope *scope,
+    ScopeFindResult &res)
+{
+    const auto &name = identifier->Name();
+    std::vector<binder::Variable *> findRes;
+
+    auto currentScope = scope;
+    while (currentScope != nullptr) {
+        // Find ts variables
+        auto fn = [&findRes](Variable *variable) {
+            if (variable != nullptr) {
+                findRes.emplace_back(variable);
+            }
+        };
+
+        fn(currentScope->FindLocalTSVariable<binder::TSBindingType::NAMESPACE>(name));
+        fn(currentScope->FindLocalTSVariable<binder::TSBindingType::ENUMLITERAL>(name));
+        fn(currentScope->FindLocalTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name));
+        if (currentScope->IsTSModuleScope()) {
+            fn(currentScope->AsTSModuleScope()->FindExportTSVariable<binder::TSBindingType::NAMESPACE>(name));
+            fn(currentScope->AsTSModuleScope()->FindExportTSVariable<binder::TSBindingType::ENUMLITERAL>(name));
+            fn(currentScope->AsTSModuleScope()->FindExportTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name));
+        }
+
+        // Find js variable
+        if (currentScope->FindLocal(name, bindingOptions_) != nullptr) {
+            res = scope->Find(name, bindingOptions_);
+            break;
+        }
+
+        if (!findRes.empty()) {
+            break;
+        }
+
+        currentScope = currentScope->Parent();
+    }
+
+    return findRes;
 }
 
 }  // namespace panda::es2panda::binder

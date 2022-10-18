@@ -26,6 +26,7 @@
 #include <ir/base/classProperty.h>
 #include <ir/base/methodDefinition.h>
 #include <ir/base/scriptFunction.h>
+#include <ir/expressions/arrowFunctionExpression.h>
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/functionExpression.h>
 #include <ir/expressions/identifier.h>
@@ -35,6 +36,9 @@
 #include <ir/statements/functionDeclaration.h>
 #include <ir/ts/tsArrayType.h>
 #include <ir/ts/tsClassImplements.h>
+#include <ir/ts/tsConstructorType.h>
+#include <ir/ts/tsFunctionType.h>
+#include <ir/ts/tsIndexSignature.h>
 #include <ir/ts/tsInterfaceBody.h>
 #include <ir/ts/tsInterfaceDeclaration.h>
 #include <ir/ts/tsInterfaceHeritage.h>
@@ -42,7 +46,10 @@
 #include <ir/ts/tsParameterProperty.h>
 #include <ir/ts/tsPrivateIdentifier.h>
 #include <ir/ts/tsPropertySignature.h>
+#include <ir/ts/tsSignatureDeclaration.h>
 #include <ir/ts/tsTypeLiteral.h>
+#include <ir/ts/tsTypeParameter.h>
+#include <ir/ts/tsTypeParameterDeclaration.h>
 #include <ir/ts/tsUnionType.h>
 
 namespace panda::es2panda::extractor {
@@ -210,14 +217,17 @@ enum UserType : uint8_t {
     OBJECT,
     EXTERNAL,
     INTERFACE,
-    BUILTININST
+    BUILTININST,
+    GENERICINST,
+    INDEXSIG
 };
 
 enum Modifier : uint8_t {
     NONSTATIC = 0,
     STATIC = 1 << 2,
     ASYNC = 1 << 3,
-    GENERATOR = 1 << 4
+    GENERATOR = 1 << 4,
+    ACCESSOR = 1 << 5
 };
 
 enum ModifierAB : uint8_t {
@@ -297,6 +307,15 @@ protected:
         }
         return ss.str();
     }
+
+    void CalculateParamTypes(ArenaMap<util::StringView, int64_t> &paramTypes,
+        const ir::TSTypeParameterDeclaration *typeParams)
+    {
+        int64_t index = 0;
+        for (const auto &t : typeParams->Params()) {
+            paramTypes[t->Name()->Name()] = (--index);
+        }
+    }
 };
 
 class TypeCounter : public BaseType {
@@ -344,16 +363,66 @@ private:
     int64_t typeIndexPlaceHolder_ = PrimitiveType::ANY;
 };
 
-// For { MethodDefinition / FunctionDeclaration / FunctionExpression } -> ScriptFunction / TSMethodSignature
+class IndexSigType : public BaseType {
+public:
+    explicit IndexSigType(TypeExtractor *extractor, int64_t typeIndexRefShift,
+        const ArenaMap<int64_t, int64_t> *indexSignatures)
+        : BaseType(extractor), typeIndexRefShift_(typeIndexRefShift)
+    {
+        typeIndex_ = recorder_->AddLiteralBuffer(buffer_);
+        typeIndexShift_ = typeIndex_ + recorder_->GetUserTypeIndexShift();
+        recorder_->SetIndexSig(typeIndexRefShift_, typeIndexShift_);
+        recorder_->AddUserType(typeIndexShift_);
+
+        FillLiteralBuffer(indexSignatures);
+    }
+    ~IndexSigType() = default;
+    NO_COPY_SEMANTIC(IndexSigType);
+    NO_MOVE_SEMANTIC(IndexSigType);
+
+    int64_t GetTypeIndexShift() const
+    {
+        return typeIndexShift_;
+    }
+
+private:
+    int64_t typeIndexRefShift_ = PrimitiveType::ANY;
+    int64_t typeIndex_ = PrimitiveType::ANY;
+    int64_t typeIndexShift_ = PrimitiveType::ANY;
+
+    void FillLiteralBuffer(const ArenaMap<int64_t, int64_t> *indexSignatures)
+    {
+        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(UserType::INDEXSIG));
+        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(typeIndexRefShift_));
+
+        ASSERT(indexSignatures != nullptr);
+        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(indexSignatures->size()));
+        std::for_each(indexSignatures->begin(), indexSignatures->end(), [this](const auto &t) {
+            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t.first));
+            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t.second));
+        });
+    }
+};
+
+// 8 types of AstNode to create FunctionType
+// For { MethodDefinition / FunctionDeclaration / FunctionExpression / ArrowFunctionExpression }
+// which contains ScriptFunction
+// For { TSMethodSignature / TSSignatureDeclaration / TSFunctionType / TSConstructorType }
+// which only contains Signature
 class FunctionType : public BaseType {
 public:
     explicit FunctionType(TypeExtractor *extractor, const ir::AstNode *node, const util::StringView &name)
         : BaseType(extractor), paramsTypeIndex_(recorder_->Allocator()->Adapter())
     {
-        CalculateIndex(name, typeIndex_, typeIndexShift_, !(node->IsTSMethodSignature()));
         name_ = name;
 
         auto fn = [this](const auto *func) {
+            typeIndexShift_ = recorder_->GetNodeTypeIndex(func);
+            if (typeIndexShift_ != PrimitiveType::ANY) {
+                return;
+            }
+
+            CalculateIndex(name_, typeIndex_, typeIndexShift_, !(func->IsTSMethodSignature()));
             recorder_->SetNodeTypeIndex(func, typeIndexShift_);
             recorder_->AddUserType(typeIndexShift_);
             if constexpr (std::is_same_v<decltype(func), const ir::ScriptFunction *>) {
@@ -366,6 +435,7 @@ public:
             FillReturn(func);
             FillLiteralBuffer();
         };
+
         if (node->IsMethodDefinition()) {
             auto methodDef = node->AsMethodDefinition();
             auto modifiers = methodDef->Modifiers();
@@ -378,13 +448,20 @@ public:
             if (methodDef->IsStatic()) {
                 modifier_ += Modifier::STATIC;
             }
-            fn(node->AsMethodDefinition()->Function());
+            if (methodDef->IsAccessor()) {
+                modifier_ += Modifier::ACCESSOR;
+            }
+            fn(methodDef->Function());
         } else if (node->IsFunctionDeclaration()) {
             fn(node->AsFunctionDeclaration()->Function());
         } else if (node->IsFunctionExpression()) {
             fn(node->AsFunctionExpression()->Function());
+        } else if (node->IsArrowFunctionExpression()) {
+            fn(node->AsArrowFunctionExpression()->Function());
         } else if (node->IsTSMethodSignature()) {
             fn(node->AsTSMethodSignature());
+        } else if (node->IsTSSignatureDeclaration() || node->IsTSFunctionType() || node->IsTSConstructorType()) {
+            HandleFuncNodeWithoutName(node);
         }
     }
     ~FunctionType() = default;
@@ -410,6 +487,33 @@ private:
     int64_t typeIndexReturn_ = PrimitiveType::ANY;
     int64_t typeIndex_ = PrimitiveType::ANY;
     int64_t typeIndexShift_ = PrimitiveType::ANY;
+
+    void HandleFuncNodeWithoutName(const ir::AstNode *node)
+    {
+        ir::AstDumper dumper(node);
+        auto functionStr = dumper.Str();
+        typeIndexShift_ = recorder_->GetFunctionType(functionStr);
+        if (typeIndexShift_ != PrimitiveType::ANY) {
+            return;
+        }
+
+        typeIndex_ = recorder_->AddLiteralBuffer(buffer_);
+        typeIndexShift_ = typeIndex_ + recorder_->GetUserTypeIndexShift();
+        recorder_->SetFunctionType(functionStr, typeIndexShift_);
+        recorder_->AddUserType(typeIndexShift_);
+
+        if (node->IsTSSignatureDeclaration()) {
+            FillParameters(node->AsTSSignatureDeclaration());
+            FillReturn(node->AsTSSignatureDeclaration());
+        } else if (node->IsTSFunctionType()) {
+            FillParameters(node->AsTSFunctionType());
+            FillReturn(node->AsTSFunctionType());
+        } else {
+            FillParameters(node->AsTSConstructorType());
+            FillReturn(node->AsTSConstructorType());
+        }
+        FillLiteralBuffer();
+    }
 
     void FillModifier(const ir::ScriptFunction *scriptFunc)
     {
@@ -475,31 +579,46 @@ private:
     }
 };
 
-// For { ClassDeclaration / ClassExpression } -> ClassDefinition
+// 2 types of AstNode to create ClassType
+// For { ClassDeclaration / ClassExpression }
+// which contains ClassDefinition
 class ClassType : public BaseType {
 public:
     explicit ClassType(TypeExtractor *extractor, const ir::ClassDefinition *classDef, const util::StringView &name)
         : BaseType(extractor),
           implementsHeritages_(recorder_->Allocator()->Adapter()),
+          paramTypes_(recorder_->Allocator()->Adapter()),
           staticFields_(recorder_->Allocator()->Adapter()),
           staticMethods_(recorder_->Allocator()->Adapter()),
           fields_(recorder_->Allocator()->Adapter()),
-          methods_(recorder_->Allocator()->Adapter())
+          methods_(recorder_->Allocator()->Adapter()),
+          indexSignatures_(recorder_->Allocator()->Adapter())
     {
+        typeIndexShift_ = recorder_->GetNodeTypeIndex(classDef);
+        if (typeIndexShift_ != PrimitiveType::ANY) {
+            return;
+        }
+
+        if (classDef->TypeParams() != nullptr) {
+            CalculateParamTypes(paramTypes_, classDef->TypeParams());
+        }
+
         CalculateIndex(name, typeIndex_, typeIndexShift_, true);
         recorder_->SetNodeTypeIndex(classDef, typeIndexShift_);
         recorder_->AddUserType(typeIndexShift_);
 
+        GenericParamTypeBindScope scope(extractor, &paramTypes_);
         FillModifier(classDef);
         FillHeritages(classDef);
         FillFieldsandMethods(classDef);
+        FillIndexSignatures(classDef);
         FillLiteralBuffer();
     }
     ~ClassType() = default;
     NO_COPY_SEMANTIC(ClassType);
     NO_MOVE_SEMANTIC(ClassType);
 
-    int64_t GetTypeIndexShift()
+    int64_t GetTypeIndexShift() const
     {
         return typeIndexShift_;
     }
@@ -508,12 +627,14 @@ private:
     ModifierAB modifierAB_ = ModifierAB::NONABSTRACT;
     int64_t extendsHeritage_ = PrimitiveType::ANY;
     ArenaVector<int64_t> implementsHeritages_;
+    ArenaMap<util::StringView, int64_t> paramTypes_;
     // 3 field infos, typeIndex / accessFlag / modifier
     ArenaMap<util::StringView, std::array<int64_t, 3>> staticFields_;
     ArenaMap<util::StringView, int64_t> staticMethods_;
     // 3 field infos, typeIndex / accessFlag / modifier
     ArenaMap<util::StringView, std::array<int64_t, 3>> fields_;
     ArenaMap<util::StringView, int64_t> methods_;
+    ArenaMap<int64_t, int64_t> indexSignatures_;
     int64_t typeIndex_ = PrimitiveType::ANY;
     int64_t typeIndexShift_ = PrimitiveType::ANY;
 
@@ -629,6 +750,21 @@ private:
         }
     }
 
+    void FillIndexSignatures(const ir::ClassDefinition *classDef)
+    {
+        for (const auto &t : classDef->IndexSignatures()) {
+            auto key = t->Param()->AsIdentifier()->TypeAnnotation();
+            indexSignatures_[extractor_->GetTypeIndexFromAnnotation(key)] =
+                extractor_->GetTypeIndexFromAnnotation(t->TypeAnnotation());
+        }
+        if (indexSignatures_.size() > 0U) {
+            // Update current type to IndexSignture Type
+            IndexSigType indexSigType(extractor_, typeIndexShift_, &indexSignatures_);
+            typeIndexShift_ = indexSigType.GetTypeIndexShift();
+            recorder_->SetNodeTypeIndex(classDef, typeIndexShift_);
+        }
+    }
+
     void FillFieldsLiteralBuffer(bool isStatic)
     {
         // 3 field infos, typeIndex / accessFlag / modifier
@@ -723,31 +859,45 @@ public:
                            const util::StringView &name)
         : BaseType(extractor),
           heritages_(recorder_->Allocator()->Adapter()),
+          paramTypes_(recorder_->Allocator()->Adapter()),
           fields_(recorder_->Allocator()->Adapter()),
-          methods_(recorder_->Allocator()->Adapter())
+          methods_(recorder_->Allocator()->Adapter()),
+          indexSignatures_(recorder_->Allocator()->Adapter())
     {
+        typeIndexShift_ = recorder_->GetNodeTypeIndex(interfaceDef);
+        if (typeIndexShift_ != PrimitiveType::ANY) {
+            return;
+        }
+
+        if (interfaceDef->TypeParams() != nullptr) {
+            CalculateParamTypes(paramTypes_, interfaceDef->TypeParams());
+        }
+
         CalculateIndex(name, typeIndex_, typeIndexShift_, true);
         recorder_->SetNodeTypeIndex(interfaceDef, typeIndexShift_);
         recorder_->AddUserType(typeIndexShift_);
 
+        GenericParamTypeBindScope scope(extractor, &paramTypes_);
         FillHeritages(interfaceDef);
-        FillFieldsandMethods(interfaceDef);
+        FillMembers(interfaceDef);
         FillLiteralBuffer();
     }
     ~InterfaceType() = default;
     NO_COPY_SEMANTIC(InterfaceType);
     NO_MOVE_SEMANTIC(InterfaceType);
 
-    int64_t GetTypeIndexShift()
+    int64_t GetTypeIndexShift() const
     {
         return typeIndexShift_;
     }
 
 private:
     ArenaVector<int64_t> heritages_;
+    ArenaMap<util::StringView, int64_t> paramTypes_;
     // 3 field infos, typeIndex / accessFlag / modifier
     ArenaMap<util::StringView, std::array<int64_t, 3>> fields_;
-    ArenaMap<util::StringView, int64_t> methods_;
+    ArenaVector<int64_t> methods_;
+    ArenaMap<int64_t, int64_t> indexSignatures_;
     int64_t typeIndex_ = PrimitiveType::ANY;
     int64_t typeIndexShift_ = PrimitiveType::ANY;
 
@@ -755,7 +905,8 @@ private:
     {
         for (const auto &t : interfaceDef->Extends()) {
             if (t != nullptr) {
-                heritages_.emplace_back(extractor_->GetTypeIndexFromInitializer(t));
+                // TSTypeReference
+                heritages_.emplace_back(extractor_->GetTypeIndexFromAnnotation(t->Expr()));
             }
         }
     }
@@ -790,26 +941,49 @@ private:
         if (std::holds_alternative<util::StringView>(res)) {
             auto name = std::get<util::StringView>(res);
             FunctionType functionType(extractor_, method, name);
-            methods_[name] = recorder_->GetNodeTypeIndex(method);
+            methods_.emplace_back(recorder_->GetNodeTypeIndex(method));
         } else {
             auto identifier = std::get<const ir::Identifier *>(res);
             if (identifier != nullptr) {
                 auto name = identifier->Name();
                 FunctionType functionType(extractor_, method, name);
                 recorder_->SetIdentifierTypeIndex(identifier, functionType.GetTypeIndexShift());
-                methods_[name] = recorder_->GetNodeTypeIndex(method);
+                methods_.emplace_back(recorder_->GetNodeTypeIndex(method));
             }
         }
     }
 
-    void FillFieldsandMethods(const ir::TSInterfaceDeclaration *interfaceDef)
+    void FillMethod(const ir::TSSignatureDeclaration *method)
+    {
+        FunctionType functionType(extractor_, method, "");
+        methods_.emplace_back(recorder_->GetNodeTypeIndex(method));
+    }
+
+    void FillIndexSignature(const ir::TSIndexSignature *indexSignature)
+    {
+        auto key = indexSignature->Param()->AsIdentifier()->TypeAnnotation();
+        indexSignatures_[extractor_->GetTypeIndexFromAnnotation(key)] =
+            extractor_->GetTypeIndexFromAnnotation(indexSignature->TypeAnnotation());
+    }
+
+    void FillMembers(const ir::TSInterfaceDeclaration *interfaceDef)
     {
         for (const auto &t : interfaceDef->Body()->Body()) {
             if (t->IsTSPropertySignature()) {
                 FillField(t->AsTSPropertySignature());
             } else if (t->IsTSMethodSignature()) {
                 FillMethod(t->AsTSMethodSignature());
+            } else if (t->IsTSSignatureDeclaration()) {
+                FillMethod(t->AsTSSignatureDeclaration());
+            } else if (t->IsTSIndexSignature()) {
+                FillIndexSignature(t->AsTSIndexSignature());
             }
+        }
+        if (indexSignatures_.size() > 0U) {
+            // Update current type to IndexSignture Type
+            IndexSigType indexSigType(extractor_, typeIndexShift_, &indexSignatures_);
+            typeIndexShift_ = indexSigType.GetTypeIndexShift();
+            recorder_->SetNodeTypeIndex(interfaceDef, typeIndexShift_);
         }
     }
 
@@ -828,8 +1002,7 @@ private:
     {
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(methods_.size()));
         std::for_each(methods_.begin(), methods_.end(), [this](const auto &t) {
-            buffer_->Add(recorder_->Allocator()->New<ir::StringLiteral>(t.first));
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t.second));
+            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t));
         });
     }
 
@@ -864,7 +1037,7 @@ public:
     NO_COPY_SEMANTIC(ExternalType);
     NO_MOVE_SEMANTIC(ExternalType);
 
-    int64_t GetTypeIndexShift()
+    int64_t GetTypeIndexShift() const
     {
         return typeIndexShift_;
     }
@@ -904,7 +1077,7 @@ public:
     NO_COPY_SEMANTIC(UnionType);
     NO_MOVE_SEMANTIC(UnionType);
 
-    int64_t GetTypeIndexShift()
+    int64_t GetTypeIndexShift() const
     {
         return typeIndexShift_;
     }
@@ -952,7 +1125,7 @@ public:
     NO_COPY_SEMANTIC(ArrayType);
     NO_MOVE_SEMANTIC(ArrayType);
 
-    int64_t GetTypeIndexShift()
+    int64_t GetTypeIndexShift() const
     {
         return typeIndexShift_;
     }
@@ -972,7 +1145,10 @@ private:
 class ObjectType : public BaseType {
 public:
     explicit ObjectType(TypeExtractor *extractor, const ir::TSTypeLiteral *literalDef)
-        : BaseType(extractor), properties_(recorder_->Allocator()->Adapter())
+        : BaseType(extractor),
+          properties_(recorder_->Allocator()->Adapter()),
+          methods_(recorder_->Allocator()->Adapter()),
+          indexSignatures_(recorder_->Allocator()->Adapter())
     {
         std::string objectStr = "object";
         if (literalDef != nullptr) {
@@ -989,7 +1165,7 @@ public:
         recorder_->AddUserType(typeIndexShift_);
 
         if (literalDef != nullptr) {
-            FillMembers(literalDef);
+            FillMembers(literalDef, objectStr);
         }
         FillLiteralBuffer();
     }
@@ -997,17 +1173,50 @@ public:
     NO_COPY_SEMANTIC(ObjectType);
     NO_MOVE_SEMANTIC(ObjectType);
 
-    int64_t GetTypeIndexShift()
+    int64_t GetTypeIndexShift() const
     {
         return typeIndexShift_;
     }
 
 private:
     ArenaMap<util::StringView, int64_t> properties_;
+    ArenaVector<int64_t> methods_;
+    ArenaMap<int64_t, int64_t> indexSignatures_;
     int64_t typeIndex_ = PrimitiveType::ANY;
     int64_t typeIndexShift_ = PrimitiveType::ANY;
 
-    void FillMembers(const ir::TSTypeLiteral *literalDef)
+    void FillMethod(const ir::TSMethodSignature *method)
+    {
+        auto res = CalculateName(method->Key());
+        if (std::holds_alternative<util::StringView>(res)) {
+            auto name = std::get<util::StringView>(res);
+            FunctionType functionType(extractor_, method, name);
+            methods_.emplace_back(recorder_->GetNodeTypeIndex(method));
+        } else {
+            auto identifier = std::get<const ir::Identifier *>(res);
+            if (identifier != nullptr) {
+                auto name = identifier->Name();
+                FunctionType functionType(extractor_, method, name);
+                recorder_->SetIdentifierTypeIndex(identifier, functionType.GetTypeIndexShift());
+                methods_.emplace_back(recorder_->GetNodeTypeIndex(method));
+            }
+        }
+    }
+
+    void FillMethod(const ir::TSSignatureDeclaration *method)
+    {
+        FunctionType functionType(extractor_, method, "");
+        methods_.emplace_back(recorder_->GetNodeTypeIndex(method));
+    }
+
+    void FillIndexSignature(const ir::TSIndexSignature *indexSignature)
+    {
+        auto key = indexSignature->Param()->AsIdentifier()->TypeAnnotation();
+        indexSignatures_[extractor_->GetTypeIndexFromAnnotation(key)] =
+            extractor_->GetTypeIndexFromAnnotation(indexSignature->TypeAnnotation());
+    }
+
+    void FillMembers(const ir::TSTypeLiteral *literalDef, const std::string &objectStr)
     {
         auto fn = [this](const auto *property, int64_t typeIndex) {
             auto res = CalculateName(property->Key());
@@ -1028,10 +1237,19 @@ private:
                 int64_t typeIndex = extractor_->GetTypeIndexFromAnnotation(property->TypeAnnotation());
                 fn(property, typeIndex);
             } else if (t->IsTSMethodSignature()) {
-                auto property = t->AsTSMethodSignature();
-                int64_t typeIndex = extractor_->GetTypeIndexFromAnnotation(property->ReturnTypeAnnotation());
-                fn(property, typeIndex);
+                FillMethod(t->AsTSMethodSignature());
+            } else if (t->IsTSSignatureDeclaration()) {
+                FillMethod(t->AsTSSignatureDeclaration());
+            } else if (t->IsTSIndexSignature()) {
+                FillIndexSignature(t->AsTSIndexSignature());
             }
+        }
+
+        if (indexSignatures_.size() > 0U) {
+            // Update current type to IndexSignture Type
+            IndexSigType indexSigType(extractor_, typeIndexShift_, &indexSignatures_);
+            typeIndexShift_ = indexSigType.GetTypeIndexShift();
+            recorder_->SetObjectType(objectStr, typeIndexShift_);
         }
     }
 
@@ -1042,6 +1260,10 @@ private:
         std::for_each(properties_.begin(), properties_.end(), [this](const auto &t) {
             buffer_->Add(recorder_->Allocator()->New<ir::StringLiteral>(t.first));
             buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t.second));
+        });
+        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(methods_.size()));
+        std::for_each(methods_.begin(), methods_.end(), [this](const auto &t) {
+            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t));
         });
     }
 };
@@ -1064,7 +1286,7 @@ public:
     NO_COPY_SEMANTIC(BuiltinInstType);
     NO_MOVE_SEMANTIC(BuiltinInstType);
 
-    int64_t GetTypeIndexShift()
+    int64_t GetTypeIndexShift() const
     {
         return typeIndexShift_;
     }
@@ -1086,6 +1308,53 @@ private:
     {
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(UserType::BUILTININST));
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(typeIndexBuiltin_));
+        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(paramTypes_.size()));
+        std::for_each(paramTypes_.begin(), paramTypes_.end(), [this](const auto &t) {
+            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t));
+        });
+    }
+};
+
+class GenericInstType : public BaseType {
+public:
+    explicit GenericInstType(TypeExtractor *extractor, const std::vector<int64_t> &allTypes)
+        : BaseType(extractor), paramTypes_(recorder_->Allocator()->Adapter())
+    {
+        typeIndexGeneric_ = allTypes[0];
+        typeIndex_ = recorder_->AddLiteralBuffer(buffer_);
+        typeIndexShift_ = typeIndex_ + recorder_->GetUserTypeIndexShift();
+        recorder_->SetGenericInst(allTypes, typeIndexShift_);
+        recorder_->AddUserType(typeIndexShift_);
+
+        FillTypes(allTypes);
+        FillLiteralBuffer();
+    }
+    ~GenericInstType() = default;
+    NO_COPY_SEMANTIC(GenericInstType);
+    NO_MOVE_SEMANTIC(GenericInstType);
+
+    int64_t GetTypeIndexShift() const
+    {
+        return typeIndexShift_;
+    }
+
+private:
+    ArenaVector<int64_t> paramTypes_;
+    int64_t typeIndexGeneric_ = PrimitiveType::ANY;
+    int64_t typeIndex_ = PrimitiveType::ANY;
+    int64_t typeIndexShift_ = PrimitiveType::ANY;
+
+    void FillTypes(const std::vector<int64_t> &allTypes)
+    {
+        for (size_t t = 1; t < allTypes.size(); t++) {
+            paramTypes_.emplace_back(allTypes[t]);
+        }
+    }
+
+    void FillLiteralBuffer()
+    {
+        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(UserType::GENERICINST));
+        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(typeIndexGeneric_));
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(paramTypes_.size()));
         std::for_each(paramTypes_.begin(), paramTypes_.end(), [this](const auto &t) {
             buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t));

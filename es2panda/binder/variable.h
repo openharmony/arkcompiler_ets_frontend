@@ -282,6 +282,11 @@ public:
         return exportBindings_;
     }
 
+    const ExportBindings *GetExportBindings() const
+    {
+        return exportBindings_;
+    }
+
     void SetExportBindings(ExportBindings *exportBindings)
     {
         exportBindings_ = exportBindings;

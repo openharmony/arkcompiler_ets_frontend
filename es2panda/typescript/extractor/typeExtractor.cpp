@@ -20,12 +20,18 @@
 #include <ir/expressions/classExpression.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/expressions/newExpression.h>
+#include <ir/module/exportNamedDeclaration.h>
 #include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
+#include <ir/ts/tsAsExpression.h>
 #include <ir/ts/tsClassImplements.h>
+#include <ir/ts/tsImportEqualsDeclaration.h>
+#include <ir/ts/tsLiteralType.h>
+#include <ir/ts/tsModuleDeclaration.h>
 #include <ir/ts/tsParenthesizedType.h>
 #include <ir/ts/tsQualifiedName.h>
 #include <ir/ts/tsTypeAliasDeclaration.h>
+#include <ir/ts/tsTypeAssertion.h>
 #include <ir/ts/tsTypeParameterInstantiation.h>
 #include <ir/ts/tsTypeReference.h>
 #include <parser/module/sourceTextModuleRecord.h>
@@ -65,6 +71,10 @@ TypeExtractor::TypeExtractor(const ir::BlockStatement *rootNode, bool typeDtsExt
         std::bind(&TypeExtractor::GetTypeIndexFromClassDefinition, this, std::placeholders::_1, std::placeholders::_2);
     getterMap_[ir::AstNodeType::TS_INTERFACE_DECLARATION] =
         std::bind(&TypeExtractor::GetTypeIndexFromInterfaceNode, this, std::placeholders::_1, std::placeholders::_2);
+    getterMap_[ir::AstNodeType::FUNCTION_EXPRESSION] =
+        std::bind(&TypeExtractor::GetTypeIndexFromFunctionNode, this, std::placeholders::_1, std::placeholders::_2);
+    getterMap_[ir::AstNodeType::ARROW_FUNCTION_EXPRESSION] =
+        std::bind(&TypeExtractor::GetTypeIndexFromFunctionNode, this, std::placeholders::_1, std::placeholders::_2);
     getterMap_[ir::AstNodeType::IMPORT_NAMESPACE_SPECIFIER] =
         std::bind(&TypeExtractor::GetTypeIndexFromImportNode, this, std::placeholders::_1, std::placeholders::_2);
     getterMap_[ir::AstNodeType::IMPORT_SPECIFIER] =
@@ -73,8 +83,14 @@ TypeExtractor::TypeExtractor(const ir::BlockStatement *rootNode, bool typeDtsExt
         std::bind(&TypeExtractor::GetTypeIndexFromImportNode, this, std::placeholders::_1, std::placeholders::_2);
     getterMap_[ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION] =
         std::bind(&TypeExtractor::GetTypeIndexFromTypeAliasNode, this, std::placeholders::_1, std::placeholders::_2);
+    getterMap_[ir::AstNodeType::TS_AS_EXPRESSION] =
+        std::bind(&TypeExtractor::GetTypeIndexFromAsNode, this, std::placeholders::_1, std::placeholders::_2);
+    getterMap_[ir::AstNodeType::TS_TYPE_ASSERTION] =
+        std::bind(&TypeExtractor::GetTypeIndexFromAssertionNode, this, std::placeholders::_1, std::placeholders::_2);
     getterMap_[ir::AstNodeType::MEMBER_EXPRESSION] =
         std::bind(&TypeExtractor::GetTypeIndexFromMemberNode, this, std::placeholders::_1, std::placeholders::_2);
+    getterMap_[ir::AstNodeType::TS_QUALIFIED_NAME] =
+        std::bind(&TypeExtractor::GetTypeIndexFromTSQualifiedNode, this, std::placeholders::_1, std::placeholders::_2);
 
     handlerMap_[ir::AstNodeType::VARIABLE_DECLARATION] =
         std::bind(&TypeExtractor::HandleVariableDeclaration, this, std::placeholders::_1);
@@ -219,19 +235,6 @@ const ir::Identifier *TypeExtractor::GetIdentifierFromExpression(const ir::Expre
     switch (expression->Type()) {
         case ir::AstNodeType::IDENTIFIER:
             return expression->AsIdentifier();
-        case ir::AstNodeType::TS_QUALIFIED_NAME:  // : A.B
-            // TODO(extractor): consider property type suppport
-            return expression->AsTSQualifiedName()->Right();
-        case ir::AstNodeType::TS_CLASS_IMPLEMENTS: {
-            auto expr = expression->AsTSClassImplements()->Expr();
-            if (expr->IsIdentifier()) {
-                return expr->AsIdentifier();
-            } else if (expr->IsTSQualifiedName()) {
-                // TODO(extractor): consider property type suppport
-                return expr->AsTSQualifiedName()->Right();
-            }
-            return nullptr;
-        }
         case ir::AstNodeType::REST_ELEMENT: {
             auto argument = expression->AsRestElement()->Argument();
             if (argument->IsIdentifier()) {
@@ -246,16 +249,6 @@ const ir::Identifier *TypeExtractor::GetIdentifierFromExpression(const ir::Expre
             }
             return nullptr;
         }
-        case ir::AstNodeType::TS_INTERFACE_HERITAGE: {
-            auto expr = expression->AsTSInterfaceHeritage()->Expr();
-            if (expr->IsIdentifier()) {
-                return expr->AsIdentifier();
-            } else if (expr->IsTSQualifiedName()) {
-                // TODO(extractor): consider property type suppport
-                return expr->AsTSQualifiedName()->Right();
-            }
-            return nullptr;
-        }
         default:
             return nullptr;
     }
@@ -264,18 +257,34 @@ const ir::Identifier *TypeExtractor::GetIdentifierFromExpression(const ir::Expre
 const ir::AstNode *TypeExtractor::GetDeclNodeFromIdentifier(const ir::Identifier *identifier,
     const ir::Identifier **variable)
 {
-    if (identifier == nullptr || identifier->Variable() == nullptr ||
-        identifier->Variable()->Declaration() == nullptr) {
+    if (identifier == nullptr) {
         return nullptr;
     }
 
-    auto res = identifier->Variable()->Declaration()->Node();
-    if (res != nullptr) {
-        // Return reference identifier if it contains variable binding to decl node
+    std::vector<binder::Variable *> variables;
+    variables.reserve(identifier->TSVariables().size() + 1U);
+    variables.emplace_back(identifier->Variable());
+    for (const auto &v : identifier->TSVariables()) {
+        variables.emplace_back(v);
+    }
+
+    for (const auto &v : variables) {
+        if (v != nullptr && v->Declaration() != nullptr && v->Declaration()->Node() == nullptr) {
+            continue;
+        }
+
+        auto res = v->Declaration()->Node();
+        // Save reference identifier if it contains variable binding to decl node
+        // TODO(extractor): consider js&ts decl node merging, for example
+        // class A { a : string = "aaa" }
+        // interface A { b : number }
+        // let a : A = new A()
+        // console.log(a.b)
         *variable = identifier;
         TLOG(res->Type(), identifier);
+        return res;
     }
-    return res;
+    return nullptr;
 }
 
 const ir::AstNode *TypeExtractor::GetDeclNodeFromInitializer(const ir::Expression *initializer,
@@ -293,8 +302,21 @@ const ir::AstNode *TypeExtractor::GetDeclNodeFromInitializer(const ir::Expressio
             }
             break;
         }
+        case ir::AstNodeType::TS_CLASS_IMPLEMENTS: {  // class a implements A {}
+            auto expr = initializer->AsTSClassImplements()->Expr();
+            if (expr->IsIdentifier()) {
+                return GetDeclNodeFromIdentifier(expr->AsIdentifier(), variable);
+            }
+            ASSERT(expr->IsTSQualifiedName());
+            return expr->AsTSQualifiedName();
+        }
         case ir::AstNodeType::CLASS_EXPRESSION:  // let a = class A {}
-        case ir::AstNodeType::MEMBER_EXPRESSION:  // let a = ns.A / let a : ns.A
+        case ir::AstNodeType::FUNCTION_EXPRESSION:  // let a = function func () {}
+        case ir::AstNodeType::ARROW_FUNCTION_EXPRESSION:  // let a = () => {}
+        case ir::AstNodeType::MEMBER_EXPRESSION:  // let a = ns.A
+        case ir::AstNodeType::TS_QUALIFIED_NAME:  // let a : ns.A
+        case ir::AstNodeType::TS_AS_EXPRESSION:  // let a = x as number
+        case ir::AstNodeType::TS_TYPE_ASSERTION:  // let a = <number>x
             return initializer;
         default:
             break;
@@ -336,20 +358,18 @@ int64_t TypeExtractor::GetTypeIndexFromClassExpression(const ir::AstNode *node, 
 
 int64_t TypeExtractor::GetTypeIndexFromClassDefinition(const ir::AstNode *node, bool isNewInstance)
 {
-    auto typeIndex = recorder_->GetNodeTypeIndex(node);
-    if (typeIndex == PrimitiveType::ANY) {
-        auto fn = [&node, &typeIndex, this](const util::StringView &name) {
-            ClassType classType(this, node->AsClassDefinition(), name);
-            typeIndex = classType.GetTypeIndexShift();
-        };
+    int64_t typeIndex = PrimitiveType::ANY;
+    auto fn = [&node, &typeIndex, this](const util::StringView &name) {
+        ClassType classType(this, node->AsClassDefinition(), name);
+        typeIndex = classType.GetTypeIndexShift();
+    };
 
-        auto identifier = node->AsClassDefinition()->Ident();
-        if (identifier != nullptr) {
-            fn(identifier->Name());
-            recorder_->SetIdentifierTypeIndex(identifier, typeIndex);
-        } else {
-            fn(std::move(DEFAULT_NAME));
-        }
+    auto identifier = node->AsClassDefinition()->Ident();
+    if (identifier != nullptr) {
+        fn(identifier->Name());
+        recorder_->SetIdentifierTypeIndex(identifier, typeIndex);
+    } else {
+        fn(std::move(DEFAULT_NAME));
     }
 
     if (isNewInstance) {
@@ -362,24 +382,46 @@ int64_t TypeExtractor::GetTypeIndexFromClassDefinition(const ir::AstNode *node, 
 
 int64_t TypeExtractor::GetTypeIndexFromInterfaceNode(const ir::AstNode *node, bool isNewInstance)
 {
-    auto typeIndex = recorder_->GetNodeTypeIndex(node);
-    if (typeIndex == PrimitiveType::ANY) {
-        auto fn = [&node, &typeIndex, this](const util::StringView &name) {
-            InterfaceType interfaceType(this, node->AsTSInterfaceDeclaration(), name);
-            typeIndex = interfaceType.GetTypeIndexShift();
-        };
+    int64_t typeIndex = PrimitiveType::ANY;
+    auto fn = [&node, &typeIndex, this](const util::StringView &name) {
+        InterfaceType interfaceType(this, node->AsTSInterfaceDeclaration(), name);
+        typeIndex = interfaceType.GetTypeIndexShift();
+    };
 
-        auto identifier = node->AsTSInterfaceDeclaration()->Id();
-        if (identifier != nullptr) {
-            fn(identifier->Name());
-            recorder_->SetIdentifierTypeIndex(identifier, typeIndex);
-        } else {
-            fn(std::move(DEFAULT_NAME));
-        }
+    auto identifier = node->AsTSInterfaceDeclaration()->Id();
+    if (identifier != nullptr) {
+        fn(identifier->Name());
+        recorder_->SetIdentifierTypeIndex(identifier, typeIndex);
+    } else {
+        fn(std::move(DEFAULT_NAME));
     }
 
     if (isNewInstance) {
         typeIndex = GetTypeIndexFromClassInst(typeIndex);
+    }
+
+    TLOG(node->Type(), typeIndex);
+    return typeIndex;
+}
+
+int64_t TypeExtractor::GetTypeIndexFromFunctionNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance)
+{
+    int64_t typeIndex = PrimitiveType::ANY;
+    auto fn = [&node, &typeIndex, this](const util::StringView &name) {
+        FunctionType functionType(this, node, name);
+        typeIndex = functionType.GetTypeIndexShift();
+    };
+
+    if (node->IsFunctionExpression()) {
+        auto identifier = node->AsFunctionExpression()->Function()->Id();
+        if (identifier != nullptr) {
+            fn(identifier->Name());
+            recorder_->SetIdentifierTypeIndex(identifier, typeIndex);
+        } else {
+            fn("");
+        }
+    } else {
+        fn("");
     }
 
     TLOG(node->Type(), typeIndex);
@@ -400,6 +442,20 @@ int64_t TypeExtractor::GetTypeIndexFromTypeAliasNode(const ir::AstNode *node, [[
     return typeIndex;
 }
 
+int64_t TypeExtractor::GetTypeIndexFromAsNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance)
+{
+    auto typeIndex = GetTypeIndexFromAnnotation(node->AsTSAsExpression()->TypeAnnotation());
+    TLOG(node->Type(), typeIndex);
+    return typeIndex;
+}
+
+int64_t TypeExtractor::GetTypeIndexFromAssertionNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance)
+{
+    auto typeIndex = GetTypeIndexFromAnnotation(node->AsTSTypeAssertion()->TypeAnnotation());
+    TLOG(node->Type(), typeIndex);
+    return typeIndex;
+}
+
 int64_t TypeExtractor::GetTypeIndexFromMemberNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance)
 {
     int64_t typeIndex = PrimitiveType::ANY;
@@ -410,6 +466,45 @@ int64_t TypeExtractor::GetTypeIndexFromMemberNode(const ir::AstNode *node, [[may
         if (redirectPath != "") {
             ExternalType externalType(this, property->AsIdentifier()->Name(), util::StringView(redirectPath));
             typeIndex = externalType.GetTypeIndexShift();
+        }
+    }
+    TLOG(node->Type(), typeIndex);
+    return typeIndex;
+}
+
+int64_t TypeExtractor::GetTypeIndexFromTSQualifiedNode(const ir::AstNode *node, bool isNewInstance)
+{
+    ArenaDeque<const ir::Identifier *> identifiers(recorder_->Allocator()->Adapter());
+    const ir::Expression *head = node->AsTSQualifiedName();
+    while (head->IsTSQualifiedName()) {
+        identifiers.emplace_front(head->AsTSQualifiedName()->Right());
+        head = head->AsTSQualifiedName()->Left();
+    }
+
+    ASSERT(head->IsIdentifier());
+    ArenaVector<const binder::Variable *> variables(recorder_->Allocator()->Adapter());
+    for (const auto &v : head->AsIdentifier()->TSVariables()) {
+        GetVariablesFromTSQualifiedNodes(v, identifiers, variables);
+    }
+
+    int64_t typeIndex = PrimitiveType::ANY;
+    for (const auto &v : variables) {
+        if (v->Declaration() != nullptr && v->Declaration()->Node() != nullptr) {
+            typeIndex = GetTypeIndexFromDeclNode(v->Declaration()->Node(), isNewInstance);
+            if (typeIndex != PrimitiveType::ANY) {
+                break;
+            }
+        }
+    }
+    if (typeIndex == PrimitiveType::ANY) {
+        auto left = node->AsTSQualifiedName()->Left();
+        auto right = node->AsTSQualifiedName()->Right();
+        if (left->IsIdentifier()) {
+            auto redirectPath = recorder_->GetNamespacePath(std::string(left->AsIdentifier()->Name()));
+            if (redirectPath != "") {
+                ExternalType externalType(this, right->Name(), util::StringView(redirectPath));
+                typeIndex = externalType.GetTypeIndexShift();
+            }
         }
     }
     TLOG(node->Type(), typeIndex);
@@ -432,6 +527,8 @@ int64_t TypeExtractor::GetTypeIndexFromAnnotation(const ir::Expression *typeAnno
         case ir::AstNodeType::TS_NULL_KEYWORD:
         case ir::AstNodeType::TS_UNDEFINED_KEYWORD:
             return PRIMITIVE_TYPE_MAP.at(typeAnnotation->AsTypeNode()->Type());
+        case ir::AstNodeType::TS_LITERAL_TYPE:
+            return GetTypeIndexFromTSLiteralType(typeAnnotation->AsTSLiteralType());
         case ir::AstNodeType::TS_NEVER_KEYWORD:
         case ir::AstNodeType::TS_UNKNOWN_KEYWORD:
             return PrimitiveType::ANY;
@@ -443,12 +540,18 @@ int64_t TypeExtractor::GetTypeIndexFromAnnotation(const ir::Expression *typeAnno
             UnionType unionType(this, typeAnnotation->AsTSUnionType());
             return unionType.GetTypeIndexShift();
         }
-        case ir::AstNodeType::TS_PARENT_TYPE: { // (UnionType)
+        case ir::AstNodeType::TS_PARENT_TYPE: { // (UnionType) / (FunctionType)
             auto type = typeAnnotation->AsTSParenthesizedType()->Type();
             ASSERT(type != nullptr);
             if (type->IsTSUnionType()) {
                 UnionType unionType(this, type->AsTSUnionType());
                 return unionType.GetTypeIndexShift();
+            } else if (type->IsTSFunctionType()) {
+                FunctionType functionType(this, type->AsTSFunctionType(), "");
+                return functionType.GetTypeIndexShift();
+            } else if (type->IsTSConstructorType()) {
+                FunctionType functionType(this, type->AsTSConstructorType(), "");
+                return functionType.GetTypeIndexShift();
             }
             return PrimitiveType::ANY;
         }
@@ -460,15 +563,20 @@ int64_t TypeExtractor::GetTypeIndexFromAnnotation(const ir::Expression *typeAnno
             ObjectType objectType(this, nullptr);  // let a : object
             return objectType.GetTypeIndexShift();
         }
+        case ir::AstNodeType::TS_FUNCTION_TYPE: {  // FunctionType, let a : () => {}
+            FunctionType functionType(this, typeAnnotation->AsTSFunctionType(), "");
+            return functionType.GetTypeIndexShift();
+        }
+        case ir::AstNodeType::TS_CONSTRUCTOR_TYPE: {  // FunctionType, let a : new () => {}
+            FunctionType functionType(this, typeAnnotation->AsTSConstructorType(), "");
+            return functionType.GetTypeIndexShift();
+        }
         case ir::AstNodeType::TS_BIGINT_KEYWORD:
         case ir::AstNodeType::TS_CONDITIONAL_TYPE:
-        case ir::AstNodeType::TS_CONSTRUCTOR_TYPE:
-        case ir::AstNodeType::TS_FUNCTION_TYPE:
         case ir::AstNodeType::TS_IMPORT_TYPE:
         case ir::AstNodeType::TS_INDEXED_ACCESS_TYPE:
         case ir::AstNodeType::TS_INTERSECTION_TYPE:
         case ir::AstNodeType::TS_INFER_TYPE:
-        case ir::AstNodeType::TS_LITERAL_TYPE:
         case ir::AstNodeType::TS_MAPPED_TYPE:
         case ir::AstNodeType::TS_OPTIONAL_TYPE:
         case ir::AstNodeType::TS_REST_TYPE:
@@ -515,7 +623,12 @@ int64_t TypeExtractor::GetTypeIndexFromInitializer(const ir::Expression *initial
     // Identifier here is a reference identifier binding to decl node which also contains variable
     auto declNode = GetDeclNodeFromInitializer(initializer, &identifier);
     if (declNode != nullptr) {
-        typeIndex = GetTypeIndexFromDeclNode(declNode, initializer->IsNewExpression());
+        if (initializer->IsNewExpression() && initializer->AsNewExpression()->TypeParams() != nullptr) {
+            typeIndex = GetTypeIndexFromGenericInst(GetTypeIndexFromDeclNode(declNode, false),
+                initializer->AsNewExpression()->TypeParams());
+        } else {
+            typeIndex = GetTypeIndexFromDeclNode(declNode, initializer->IsNewExpression());
+        }
         recorder_->SetIdentifierTypeIndex(identifier, recorder_->GetClassType(typeIndex));
     }
     TLOG(initializer->Type(), typeIndex);
@@ -646,10 +759,19 @@ int64_t TypeExtractor::GetTypeIndexFromTypeReference(const ir::TSTypeReference *
     auto typeName = typeReference->TypeName();
     ASSERT(typeName != nullptr);
     if (typeName->IsIdentifier()) {
-        // Special case for Builtin
-        auto typeIndexBuiltin = GetTypeIndexFromBuiltin(typeName->AsIdentifier()->Name(), typeReference->TypeParams());
+        const auto &name = typeName->AsIdentifier()->Name();
+        // First, consider if the type identify is Builtin Type
+        auto typeIndexBuiltin = GetTypeIndexFromBuiltin(name, typeReference->TypeParams());
         if (typeIndexBuiltin != PrimitiveType::ANY) {
             return typeIndexBuiltin;
+        }
+        // Second, consider if the type identify is Generic Type
+        auto genericParamTypeMap = GetGenericParamTypeMap();
+        if (genericParamTypeMap != nullptr) {
+            auto t = genericParamTypeMap->find(name);
+            if (t != genericParamTypeMap->end()) {
+                return t->second;
+            }
         }
     }
 
@@ -658,11 +780,33 @@ int64_t TypeExtractor::GetTypeIndexFromTypeReference(const ir::TSTypeReference *
     // Identifier here is a reference identifier binding to decl node which also contains variable
     auto declNode = GetDeclNodeFromInitializer(typeName, &identifier);
     if (declNode != nullptr) {
-        auto typeIndex = GetTypeIndexFromDeclNode(declNode, true);
+        int64_t typeIndex = PrimitiveType::ANY;
+        if (typeReference->TypeParams() != nullptr) {
+            typeIndex = GetTypeIndexFromGenericInst(GetTypeIndexFromDeclNode(declNode, false),
+                typeReference->TypeParams());
+        } else {
+            typeIndex = GetTypeIndexFromDeclNode(declNode, true);
+        }
         recorder_->SetIdentifierTypeIndex(identifier, recorder_->GetClassType(typeIndex));
         return typeIndex;
     }
     return PrimitiveType::ANY;
+}
+
+int64_t TypeExtractor::GetTypeIndexFromTSLiteralType(const ir::TSLiteralType *tsLiteralType)
+{
+    switch (tsLiteralType->Literal()->Type()) {
+        case ir::AstNodeType::NUMBER_LITERAL:
+            return PrimitiveType::NUMBER;
+        case ir::AstNodeType::BOOLEAN_LITERAL:
+            return PrimitiveType::BOOLEAN;
+        case ir::AstNodeType::STRING_LITERAL:
+            return PrimitiveType::STRING;
+        case ir::AstNodeType::NULL_LITERAL:
+            return PrimitiveType::NUL;
+        default:
+            return PrimitiveType::ANY;
+    }
 }
 
 int64_t TypeExtractor::GetTypeIndexFromBuiltin(const util::StringView &name,
@@ -681,7 +825,7 @@ int64_t TypeExtractor::GetTypeIndexFromBuiltin(const util::StringView &name,
 int64_t TypeExtractor::GetTypeIndexFromBuiltinInst(int64_t typeIndexBuiltin,
                                                    const ir::TSTypeParameterInstantiation *node)
 {
-    std::vector<int64_t> allTypes = { typeIndexBuiltin };
+    std::vector<int64_t> allTypes = {typeIndexBuiltin};
     for (const auto &t : node->Params()) {
         allTypes.emplace_back(GetTypeIndexFromAnnotation(t));
     }
@@ -693,6 +837,23 @@ int64_t TypeExtractor::GetTypeIndexFromBuiltinInst(int64_t typeIndexBuiltin,
     // New instance for builtin generic type
     BuiltinInstType builtinInstType(this, allTypes);
     return GetTypeIndexFromClassInst(builtinInstType.GetTypeIndexShift());
+}
+
+int64_t TypeExtractor::GetTypeIndexFromGenericInst(int64_t typeIndexGeneric,
+                                                   const ir::TSTypeParameterInstantiation *node)
+{
+    std::vector<int64_t> allTypes = {typeIndexGeneric};
+    for (const auto &t : node->Params()) {
+        allTypes.emplace_back(GetTypeIndexFromAnnotation(t));
+    }
+    auto typeIndex = recorder_->GetGenericInst(allTypes);
+    if (typeIndex != PrimitiveType::ANY) {
+        return typeIndex;
+    }
+
+    // New instance for generic type
+    GenericInstType genericInstType(this, allTypes);
+    return GetTypeIndexFromClassInst(genericInstType.GetTypeIndexShift());
 }
 
 bool TypeExtractor::IsExportNode(const ir::AstNode *node) const
@@ -725,6 +886,71 @@ bool TypeExtractor::IsDeclareNode(const ir::AstNode *node) const
             break;
     }
     return false;
+}
+
+void TypeExtractor::GetVariablesFromTSQualifiedNodes(const binder::Variable *variable,
+    ArenaDeque<const ir::Identifier *> &identifiers, ArenaVector<const binder::Variable *> &variables) const
+{
+    ASSERT(variable != nullptr);
+
+    if (identifiers.empty()) {
+        variables.emplace_back(variable);
+        return;
+    }
+    switch (variable->Type()) {
+        case binder::VariableType::ENUMLITERAL: {
+            auto name = identifiers.front()->Name();
+            identifiers.pop_front();
+            auto findRes = variable->AsEnumLiteralVariable()->FindEnumMemberVariable(name);
+            if (findRes != nullptr) {
+                GetVariablesFromTSQualifiedNodes(findRes, identifiers, variables);
+            }
+            break;
+        }
+        case binder::VariableType::NAMESPACE: {
+            auto exportBindings = variable->AsNamespaceVariable()->GetExportBindings();
+            if (exportBindings != nullptr) {
+                ArenaVector<binder::Variable *> findRes(recorder_->Allocator()->Adapter());
+                auto fn = [&findRes](binder::Variable *variable) {
+                    if (variable != nullptr) {
+                        findRes.emplace_back(variable);
+                    }
+                };
+
+                auto name = identifiers.front()->Name();
+                if (identifiers.size() == 1U) {
+                    fn(exportBindings->FindExportVariable(name));
+                } else {
+                    fn(exportBindings->FindExportTSVariable<binder::TSBindingType::NAMESPACE>(name));
+                }
+                fn(exportBindings->FindExportTSVariable<binder::TSBindingType::ENUMLITERAL>(name));
+                fn(exportBindings->FindExportTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name));
+
+                identifiers.pop_front();
+                for (const auto &v : findRes) {
+                    GetVariablesFromTSQualifiedNodes(v, identifiers, variables);
+                }
+            }
+            break;
+        }
+        case binder::VariableType::IMPORT_EQUALS: {
+            auto ref = variable->Declaration()->Node()->Parent()->AsTSImportEqualsDeclaration()->ModuleReference();
+            while (ref->IsTSQualifiedName()) {
+                identifiers.emplace_front(ref->AsTSQualifiedName()->Right());
+                ref = ref->AsTSQualifiedName()->Left();
+            }
+
+            ASSERT(ref->IsIdentifier());
+            for (const auto &v : ref->AsIdentifier()->TSVariables()) {
+                if (v->Name() == ref->AsIdentifier()->Name()) {
+                    GetVariablesFromTSQualifiedNodes(v, identifiers, variables);
+                }
+            }
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 // static

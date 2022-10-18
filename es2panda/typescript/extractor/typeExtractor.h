@@ -45,6 +45,16 @@ public:
     int64_t GetTypeIndexFromIdentifier(const ir::Identifier *identifier);
     int64_t GetTypeIndexFromInitializer(const ir::Expression *initializer);
 
+    void SetGenericParamTypeMap(const ArenaMap<util::StringView, int64_t> *genericParamTypeMap)
+    {
+        genericParamTypeMap_ = genericParamTypeMap;
+    }
+
+    const ArenaMap<util::StringView, int64_t> *GetGenericParamTypeMap() const
+    {
+        return genericParamTypeMap_;
+    }
+
     static int64_t GetBuiltinTypeIndex(util::StringView name);
 
 private:
@@ -54,6 +64,7 @@ private:
     std::unique_ptr<TypeRecorder> recorder_;
     std::unordered_map<ir::AstNodeType, Getter> getterMap_;
     std::unordered_map<ir::AstNodeType, Handler> handlerMap_;
+    const ArenaMap<util::StringView, int64_t> *genericParamTypeMap_;
 
     void ExtractNodesType(const ir::AstNode *parent);
     void ExtractNodeType(const ir::AstNode *parent, const ir::AstNode *childNode);
@@ -68,9 +79,13 @@ private:
     int64_t GetTypeIndexFromClassExpression(const ir::AstNode *node, bool isNewInstance);
     int64_t GetTypeIndexFromClassDefinition(const ir::AstNode *node, bool isNewInstance);
     int64_t GetTypeIndexFromInterfaceNode(const ir::AstNode *node, bool isNewInstance);
+    int64_t GetTypeIndexFromFunctionNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
     int64_t GetTypeIndexFromImportNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
     int64_t GetTypeIndexFromTypeAliasNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
+    int64_t GetTypeIndexFromAsNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
+    int64_t GetTypeIndexFromAssertionNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
     int64_t GetTypeIndexFromMemberNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
+    int64_t GetTypeIndexFromTSQualifiedNode(const ir::AstNode *node, bool isNewInstance);
 
     void HandleVariableDeclaration(const ir::AstNode *node);
     void HandleFunctionDeclaration(const ir::AstNode *node);
@@ -81,14 +96,41 @@ private:
     // Helpers
     int64_t GetTypeIndexFromClassInst(int64_t typeIndex);
     int64_t GetTypeIndexFromTypeReference(const ir::TSTypeReference *typeReference);
+    int64_t GetTypeIndexFromTSLiteralType(const ir::TSLiteralType *tsLiteralType);
 
-    // Builtin Helpers
+    // Builtin and Generic Helpers
     int64_t GetTypeIndexFromBuiltin(const util::StringView &name, const ir::TSTypeParameterInstantiation *node);
     int64_t GetTypeIndexFromBuiltinInst(int64_t typeIndexBuiltin, const ir::TSTypeParameterInstantiation *node);
+    int64_t GetTypeIndexFromGenericInst(int64_t typeIndexGeneric, const ir::TSTypeParameterInstantiation *node);
 
     // Other Helpers
     bool IsExportNode(const ir::AstNode *node) const;
     bool IsDeclareNode(const ir::AstNode *node) const;
+    void GetVariablesFromTSQualifiedNodes(const binder::Variable *variable,
+        ArenaDeque<const ir::Identifier *> &identifiers, ArenaVector<const binder::Variable *> &variables) const;
+};
+
+class GenericParamTypeBindScope {
+public:
+    GenericParamTypeBindScope() = delete;
+
+    explicit GenericParamTypeBindScope(TypeExtractor *extractor,
+        const ArenaMap<util::StringView, int64_t> *genericParamTypeMap) : extractor_(extractor)
+    {
+        ASSERT(extractor_ != nullptr);
+        extractor_->SetGenericParamTypeMap(genericParamTypeMap);
+    }
+
+    ~GenericParamTypeBindScope()
+    {
+        extractor_->SetGenericParamTypeMap(nullptr);
+    }
+
+    NO_COPY_SEMANTIC(GenericParamTypeBindScope);
+    NO_MOVE_SEMANTIC(GenericParamTypeBindScope);
+
+private:
+    TypeExtractor *extractor_;
 };
 
 }  // namespace panda::es2panda::extractor

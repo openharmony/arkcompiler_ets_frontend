@@ -174,6 +174,26 @@ void TypeRecorder::SetBuiltinInst(const std::vector<int64_t> &allTypes, int64_t 
     builtinInst_[allTypes] = instIndex;
 }
 
+int64_t TypeRecorder::GetGenericInst(const std::vector<int64_t> &allTypes) const
+{
+    return FindValue(genericInst_, allTypes, PRIMITIVETYPE_ANY);
+}
+
+void TypeRecorder::SetGenericInst(const std::vector<int64_t> &allTypes, int64_t instIndex)
+{
+    genericInst_[allTypes] = instIndex;
+}
+
+int64_t TypeRecorder::GetIndexSig(int64_t refIndex) const
+{
+    return FindValue(indexSig_, refIndex, PRIMITIVETYPE_ANY);
+}
+
+void TypeRecorder::SetIndexSig(int64_t refIndex, int64_t indexSigIndex)
+{
+    indexSig_[refIndex] = indexSigIndex;
+}
+
 int64_t TypeRecorder::GetClassInst(int64_t classIndex) const
 {
     return FindValue(classInst_, classIndex, PRIMITIVETYPE_ANY);
@@ -230,6 +250,16 @@ int64_t TypeRecorder::GetObjectType(const std::string &objectStr) const
 void TypeRecorder::SetObjectType(const std::string &objectStr, int64_t objectIndex)
 {
     objectType_[objectStr] = objectIndex;
+}
+
+int64_t TypeRecorder::GetFunctionType(const std::string &functionStr) const
+{
+    return FindValue(functionType_, functionStr, PRIMITIVETYPE_ANY);
+}
+
+void TypeRecorder::SetFunctionType(const std::string &functionStr, int64_t functionIndex)
+{
+    functionType_[functionStr] = functionIndex;
 }
 
 int64_t TypeRecorder::GetExportType(const std::string &exportStr) const
@@ -306,7 +336,14 @@ ALWAYS_INLINE void TypeRecorder::Dump(const parser::Program *program) const
         for (const auto &p : t.first) {
             std::cout << p << " ";
         }
-        std::cout << t.second << std::endl;
+        std::cout << ": " << t.second << std::endl;
+    }
+    std::cout << "---------- genericInst_ ----------" << std::endl;
+    for (const auto &t : genericInst_) {
+        for (const auto &p : t.first) {
+            std::cout << p << " ";
+        }
+        std::cout << ": " << t.second << std::endl;
     }
 
     auto fn = [](const auto &map) {
@@ -314,6 +351,9 @@ ALWAYS_INLINE void TypeRecorder::Dump(const parser::Program *program) const
             std::cout << t.first << " : " << t.second << std::endl;
         }
     };
+    std::cout << "---------- indexSig_ ----------" << std::endl;
+    std::cout << "---- ref ---- | ---- indexSig ----" << std::endl;
+    fn(indexSig_);
     std::cout << "---------- classInst_ ----------" << std::endl;
     std::cout << "---- class ---- | ---- inst ----" << std::endl;
     fn(classInst_);
@@ -326,6 +366,8 @@ ALWAYS_INLINE void TypeRecorder::Dump(const parser::Program *program) const
     fn(unionType_);
     std::cout << "---------- objectType_ ----------" << std::endl;
     fn(objectType_);
+    std::cout << "---------- functionType_ ----------" << std::endl;
+    fn(functionType_);
     std::cout << "---------- exportType_ ----------" << std::endl;
     fn(exportType_);
     std::cout << "---------- declareType_ ----------" << std::endl;
