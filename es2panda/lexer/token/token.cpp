@@ -15,6 +15,8 @@
 
 #include "token.h"
 
+#include "letters.h"
+
 namespace panda::es2panda::lexer {
 
 bool Token::IsAccessability() const
@@ -132,9 +134,10 @@ bool Token::IsPunctuatorToken(TokenType type)
     return (type >= TokenType::PUNCTUATOR_NULLISH_COALESCING && type <= TokenType::PUNCTUATOR_ARROW);
 }
 
-bool Token::IsTsParamToken(TokenType type)
+bool Token::IsTsParamToken(TokenType type, char32_t nextChar)
 {
-    return (type == TokenType::PUNCTUATOR_COLON || type == TokenType::PUNCTUATOR_QUESTION_MARK);
+    return (type == TokenType::PUNCTUATOR_COLON || (type == TokenType::PUNCTUATOR_QUESTION_MARK &&
+        (nextChar == LEX_CHAR_COMMA || nextChar == LEX_CHAR_COLON || nextChar == LEX_CHAR_RIGHT_PAREN)));
 }
 
 const char *TokenToString(TokenType type)
