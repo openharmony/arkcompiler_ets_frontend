@@ -516,15 +516,28 @@ if (is_mac) {
   }
 }
 
-ohos_copy("build_es2abc_for_hap") {
-  deps = [ ":es2panda(${host_toolchain})" ]
-  es2abc_root_out_dir =
-      get_label_info(":es2panda_build($host_toolchain)", "root_out_dir")
-  es2abc_target_out_dir =
-      get_label_info(":es2panda_build($host_toolchain)", "target_out_dir")
+if (is_linux) {
+  ohos_copy("build_es2abc_for_hap") {
+    deps = [ ":es2panda(${host_toolchain})" ]
+    es2abc_root_out_dir =
+        get_label_info(":es2panda_build($host_toolchain)", "root_out_dir")
+    es2abc_target_out_dir =
+        get_label_info(":es2panda_build($host_toolchain)", "target_out_dir")
 
-  sources = [ "${es2abc_root_out_dir}/arkcompiler/ets_frontend/es2abc" ]
-  outputs = [ "${es2abc_target_out_dir}/build/bin/es2abc" ]
+    sources = [ "${es2abc_root_out_dir}/arkcompiler/ets_frontend/es2abc" ]
+    outputs = [ "${es2abc_target_out_dir}/build/bin/es2abc" ]
+  }
+} else if (is_mac) {
+  ohos_copy("build_es2abc_for_hap") {
+    deps = [ ":es2panda(${host_toolchain})" ]
+    es2abc_root_out_dir =
+        get_label_info(":es2panda_build($host_toolchain)", "root_out_dir")
+    es2abc_target_out_dir =
+        get_label_info(":es2panda_build($host_toolchain)", "target_out_dir")
+
+    sources = [ "${es2abc_root_out_dir}/arkcompiler/ets_frontend/es2abc" ]
+    outputs = [ "${es2abc_target_out_dir}/build-mac/bin/es2abc" ]
+  }
 }
 
 group("es2panda_build") {
