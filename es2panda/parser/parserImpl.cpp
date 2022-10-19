@@ -926,7 +926,7 @@ ir::Expression *ParserImpl::ParseTsQualifiedReference(ir::Expression *typeName)
     lexer::SourcePosition startLoc = typeName->Start();
 
     do {
-        lexer_->NextToken();  // eat '.'
+        lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);  // eat '.'
 
         if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
             ThrowSyntaxError("Identifier expected");
