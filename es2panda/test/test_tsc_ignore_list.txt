@@ -56,8 +56,6 @@ es2panda/test/TypeScript/tests/cases/conformance/es6/functionDeclarations/Functi
 es2panda/test/TypeScript/tests/cases/conformance/es6/functionDeclarations/FunctionDeclaration2_es6.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/functionDeclarations/FunctionDeclaration4_es6.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/modules/defaultExportWithOverloads01.ts
-es2panda/test/TypeScript/tests/cases/conformance/es6/templates/taggedTemplateStringsWithTypedTags.ts
-es2panda/test/TypeScript/tests/cases/conformance/es6/templates/taggedTemplateStringsWithTypedTagsES6.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/templates/templateStringControlCharacterEscapes01.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/templates/templateStringControlCharacterEscapes01_ES6.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/unicodeExtendedEscapes/unicodeExtendedEscapesInRegularExpressions07_ES5.ts
