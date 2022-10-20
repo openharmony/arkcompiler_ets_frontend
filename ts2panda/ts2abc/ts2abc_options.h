@@ -41,7 +41,6 @@ namespace panda::ts2abc {
             parser->Add(&compile_by_pipe_arg_);
             parser->Add(&compile_npm_entries_);
             parser->Add(&compiler_output_proto_);
-            parser->Add(&output_proto_name_);
             parser->EnableTail();
             parser->PushBackTail(&Tail_Arg1_arg_);
             parser->PushBackTail(&Tail_Arg2_arg_);
@@ -182,21 +181,6 @@ namespace panda::ts2abc {
             return compiler_output_proto_.WasSet();
         }
 
-        std::string GetCompilerOutputProto() const
-        {
-            return output_proto_name_.GetValue();
-        }
-
-        void SetCompilerOutputProto(std::string value)
-        {
-            output_proto_name_.SetValue(value);
-        }
-
-        bool WasSetCompilerOutputProto() const
-        {
-            return output_proto_name_.WasSet();
-        }
-
         std::string GetTailArg1() const
         {
             return Tail_Arg1_arg_.GetValue();
@@ -259,8 +243,6 @@ namespace panda::ts2abc {
                 R"(Compile npm entries info into an abc file)"};
         panda::PandArg<bool> compiler_output_proto_{ "output-proto", false,
                 R"(Output protoBin file)"};
-        panda::PandArg<std::string> output_proto_name_{ "proto-name", "",
-                R"(Specify the output name for serializd protobuf file (.protoBin))"};
         panda::PandArg<std::string> Tail_Arg1_arg_{ "ARG_1", "",
                 R"(Path to input(json file) or path to output(ark bytecode)"
                   " when 'compile-by-pipe' enabled)"};
