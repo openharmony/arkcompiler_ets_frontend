@@ -226,7 +226,6 @@ export class Ts2Panda {
             "display_typeinfo": CmdOptions.getDisplayTypeinfo(),
             "is_dts_file": isGlobalDeclare(),
             "output-proto": CmdOptions.isOutputproto(),
-            "proto-name": CmdOptions.getProtoName(),
             "record_type": enableRecordType
         };
         let jsonOpt = JSON.stringify(options, null, 2);

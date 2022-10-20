@@ -53,7 +53,6 @@ const ts2pandaOptions = [
     { name: 'generate-tmp-file', type: Boolean, defaultValue: false, description: "whether to generate intermediate temporary files"},
     { name: 'record-name', type: String, defaultValue: "", description: "specify the record name, this option can only be used when [merge-abc] is enabled." },
     { name: 'output-proto', type: Boolean, defaultValue: false, description: "Output protoBin file. Default: false" },
-    { name: 'proto-name', type: String, defaultValue: "", description: "specify the output name for serializd protobuf file (.protoBin)" },
     { name: 'merge-abc', type: Boolean, defaultValue: false, description: "Compile as merge abc" },
 ]
 
@@ -343,13 +342,6 @@ export class CmdOptions {
             return false;
         }
         return this.options["output-proto"];
-    }
-
-    static getProtoName(): string {
-        if (!this.options) {
-            return "";
-        }
-        return this.options["proto-name"];
     }
 
     static isMergeAbc(): boolean {

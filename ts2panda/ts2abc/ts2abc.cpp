@@ -1030,9 +1030,6 @@ static void ParseCompilerOutputProto(const Json::Value &rootValue)
     if (rootValue.isMember("output-proto") && rootValue["output-proto"].isBool()) {
         g_isOutputProto = rootValue["output-proto"].asBool();
     }
-    if (rootValue.isMember("proto-name") && rootValue["proto-name"].isString()) {
-        g_compilerOutputProto = rootValue["proto-name"].asString();
-    }
 }
 
 static void ReplaceAllDistinct(std::string &str, const std::string &oldValue, const std::string &newValue)
@@ -1250,28 +1247,28 @@ static void ParseSingleTypeInfo(const Json::Value &rootValue, panda::pandasm::Pr
                 rec.field_list.emplace_back(std::move(typeSummaryIndexField));
             }
         }
-    } else {
-        auto ecmaTypeInfoRecord = panda::pandasm::Record("_ESTypeInfoRecord", LANG_EXT);
-        ecmaTypeInfoRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
-
-        auto typeFlagField = panda::pandasm::Field(LANG_EXT);
-        typeFlagField.name = "typeFlag";
-        typeFlagField.type = panda::pandasm::Type("u8", 0);
-        typeFlagField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(
-        static_cast<uint8_t>(typeFlag)));
-        ecmaTypeInfoRecord.field_list.emplace_back(std::move(typeFlagField));
-
-        if (g_enableTypeinfo) {
-            auto typeSummaryIndexField = panda::pandasm::Field(LANG_EXT);
-            typeSummaryIndexField.name = "typeSummaryOffset";
-            typeSummaryIndexField.type = panda::pandasm::Type("u32", 0);
-            typeSummaryIndexField.metadata->SetValue(
-                panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(typeSummaryIndex));
-            ecmaTypeInfoRecord.field_list.emplace_back(std::move(typeSummaryIndexField));
-        }
-
-        prog.record_table.emplace(ecmaTypeInfoRecord.name, std::move(ecmaTypeInfoRecord));
+        return;
     }
+    auto ecmaTypeInfoRecord = panda::pandasm::Record("_ESTypeInfoRecord", LANG_EXT);
+    ecmaTypeInfoRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
+
+    auto typeFlagField = panda::pandasm::Field(LANG_EXT);
+    typeFlagField.name = "typeFlag";
+    typeFlagField.type = panda::pandasm::Type("u8", 0);
+    typeFlagField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(
+    static_cast<uint8_t>(typeFlag)));
+    ecmaTypeInfoRecord.field_list.emplace_back(std::move(typeFlagField));
+
+    if (g_enableTypeinfo) {
+        auto typeSummaryIndexField = panda::pandasm::Field(LANG_EXT);
+        typeSummaryIndexField.name = "typeSummaryOffset";
+        typeSummaryIndexField.type = panda::pandasm::Type("u32", 0);
+        typeSummaryIndexField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(typeSummaryIndex));
+        ecmaTypeInfoRecord.field_list.emplace_back(std::move(typeSummaryIndexField));
+    }
+
+    prog.record_table.emplace(ecmaTypeInfoRecord.name, std::move(ecmaTypeInfoRecord));
 }
 
 static int ParseSmallPieceJson(const std::string &subJson, panda::pandasm::Program &prog)
@@ -1471,14 +1468,8 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
 
     Logd("parsing done, calling pandasm\n");
 
-    if (options.GetCompilerOutputProto().size() > 0) {
-        g_compilerOutputProto = options.GetCompilerOutputProto();
-    }
-
-    std::string compilerOutputProto = g_compilerOutputProto;
-
-    if (compilerOutputProto.size() == 0 && g_isOutputProto) {
-        compilerOutputProto = output.substr(0, output.find_last_of(".") + 1).append(PROTO_BIN_SUFFIX);
+    if (g_isOutputProto) {
+        g_compilerOutputProto = output.substr(0, output.find_last_of(".") + 1).append(PROTO_BIN_SUFFIX);
     }
 
 #ifdef ENABLE_BYTECODE_OPT
@@ -1506,8 +1497,8 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
 
         panda::bytecodeopt::OptimizeBytecode(&prog, mapsp, output.c_str(), true);
 
-        if (compilerOutputProto.size() > 0) {
-            panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, compilerOutputProto);
+        if (g_compilerOutputProto.size() > 0) {
+            panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, g_compilerOutputProto);
             return true;
         }
 
@@ -1518,8 +1509,8 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
         return true;
     }
 #endif
-    if (compilerOutputProto.size() > 0) {
-        panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, compilerOutputProto);
+    if (g_compilerOutputProto.size() > 0) {
+        panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, g_compilerOutputProto);
         return true;
     }
 
