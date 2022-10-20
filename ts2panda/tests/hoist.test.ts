@@ -86,7 +86,7 @@ describe("HoistTest", function () {
 
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new Definefunc(new Imm(0), "a", new Imm(0)),
+            new Definefunc(new Imm(0), "UnitTest.a", new Imm(0)),
             new Stglobalvar(new Imm(1), "a"),
             new Returnundefined()
         ]
@@ -101,7 +101,7 @@ describe("HoistTest", function () {
 
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new Definefunc(new Imm(0), "#2#a", new Imm(0)),
+            new Definefunc(new Imm(0), "UnitTest.#2#a", new Imm(0)),
             new Stglobalvar(new Imm(1), "a"),
             new Returnundefined()
         ]
@@ -117,7 +117,7 @@ describe("HoistTest", function () {
 
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
-            new Definefunc(new Imm(0), "a", new Imm(0)),
+            new Definefunc(new Imm(0), "UnitTest.a", new Imm(0)),
             new Stglobalvar(new Imm(1), "a"),
             new Ldai(new Imm(1)),
             new Stglobalvar(new Imm(2), "a"),
@@ -132,7 +132,7 @@ describe("HoistTest", function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`function a() {var a = 1;}`);
         IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`function a() {var a = 1;}`), 0, undefined);
-        let funcPg = snippetCompiler.getPandaGenByName("a");
+        let funcPg = snippetCompiler.getPandaGenByName("UnitTest.a");
         let insns = funcPg!.getInsns();
 
         let a = new VReg();
@@ -152,11 +152,11 @@ describe("HoistTest", function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`function a() {function b() {}};`);
         IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`function a() {function b() {}};`), 0, undefined);
-        let funcPg = snippetCompiler.getPandaGenByName("a");
+        let funcPg = snippetCompiler.getPandaGenByName("UnitTest.a");
         let insns = funcPg!.getInsns();
         let a = new VReg();
         let expected = [
-            new Definefunc(new Imm(0), "b", new Imm(0)),
+            new Definefunc(new Imm(0), "UnitTest.b", new Imm(0)),
             new Sta(a),
 
             new Returnundefined()
@@ -170,7 +170,7 @@ describe("HoistTest", function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`a = 1;
                                  let a;`);
-        let funcPg = snippetCompiler.getPandaGenByName("func_main_0");
+        let funcPg = snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let insns = funcPg!.getInsns();
         let idReg = new VReg();
         let expected = [
@@ -189,7 +189,7 @@ describe("HoistTest", function () {
                                  a = 1;
                                  let a;
                                  }`);
-        let funcPg = snippetCompiler.getPandaGenByName("b");
+        let funcPg = snippetCompiler.getPandaGenByName("UnitTest.b");
         let insns = funcPg!.getInsns();
         let idReg = new VReg();
 
@@ -209,7 +209,7 @@ describe("HoistTest", function () {
                                     a = 1;
                                     let a;
                                  }`);
-        let funcPg = snippetCompiler.getPandaGenByName("func_main_0");
+        let funcPg = snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let insns = funcPg!.getInsns();
         let idReg = new VReg();
 

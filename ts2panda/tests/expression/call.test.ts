@@ -17,6 +17,7 @@ import {
     expect
 } from 'chai';
 import 'mocha';
+import { CmdOptions } from '../../src/cmdOptions';
 import {
     Dynamicimport,
     Callarg0,
@@ -102,6 +103,7 @@ describe("CallTest", function () {
     });
 
     it("spread element call of a global standalone function", function () {
+        CmdOptions.parseUserCmd([""]);
         let insns = compileMainSnippet(`
        const args = [1, 2];
        myFunction(...args);
@@ -113,7 +115,7 @@ describe("CallTest", function () {
         let arrayInstance = new VReg();
 
         let expected = [
-            new Createarraywithbuffer(new Imm(0), "_0"),
+            new Createarraywithbuffer(new Imm(0), "snippet_1"),
             new Sta(arrayInstance),
             new Lda(arrayInstance),
             new Stconsttoglobalrecord(new Imm(1), 'args'),

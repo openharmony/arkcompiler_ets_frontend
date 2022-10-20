@@ -141,12 +141,19 @@ export function checkInstructions(actual: IRNode[], expected: IRNode[], checkFn?
     return true;
 }
 
-export function compileAllSnippet(snippet: string, passes?: Pass[], literalBufferArray?: Array<LiteralBuffer>): PandaGen[] {
+export function compileAllSnippet(snippet: string, passes?: Pass[], literalBufferArray?: Array<LiteralBuffer>,
+                                  isWatchEvaluateExpressionMode?: boolean): PandaGen[] {
     let sourceFile = creatAstFromSnippet(snippet);
     jshelpers.bindSourceFile(sourceFile, {});
+    CmdOptions.parseUserCmd([""]);
+    if (isWatchEvaluateExpressionMode) {
+        CmdOptions.setWatchEvaluateExpressionArgs(['','']);
+    }
+    CmdOptions.setMergeAbc(true);
     CmdOptions.isWatchEvaluateExpressionMode() ? setGlobalStrict(true)
                             : setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(sourceFile, compileOptions));
-    let compilerDriver = new CompilerDriver('UnitTest');
+    let compilerDriver = new CompilerDriver('UnitTest', 'UnitTest');
+    CompilerDriver.srcNode = sourceFile;
 
     if (!passes) {
         passes = [];
@@ -156,8 +163,9 @@ export function compileAllSnippet(snippet: string, passes?: Pass[], literalBuffe
     return compilerDriver.getCompilationUnits();
 }
 
-export function compileMainSnippet(snippet: string, pandaGen?: PandaGen, scope?: Scope, passes?: Pass[], compileFunc?: boolean): IRNode[] {
-    let compileUnits = compileAllSnippet(snippet, passes);
+export function compileMainSnippet(snippet: string, pandaGen?: PandaGen, scope?: Scope, passes?: Pass[],
+                                   compileFunc?: boolean, isWatchEvaluateExpressionMode?: boolean): IRNode[] {
+    let compileUnits = compileAllSnippet(snippet, passes, undefined, isWatchEvaluateExpressionMode);
 
     if (compileUnits.length != 1 && !compileFunc) {
         throw new Error("Error: please use compileMainSnippet1 for multi function compile");
@@ -166,7 +174,7 @@ export function compileMainSnippet(snippet: string, pandaGen?: PandaGen, scope?:
     // only return main function
     if (compileFunc) {
         compileUnits.filter((pg) => {
-            return (pg.internalName == "func_main_0");
+            return (pg.internalName == "UnitTest.func_main_0");
         })
     }
 
@@ -175,6 +183,8 @@ export function compileMainSnippet(snippet: string, pandaGen?: PandaGen, scope?:
 
 export function compileAfterSnippet(snippet: string, name:string, isCommonJs: boolean = false) {
     let compileUnits = null;
+    CmdOptions.parseUserCmd([""]);
+    CmdOptions.setMergeAbc(true);
     ts.transpileModule(
         snippet,
         {
@@ -191,7 +201,8 @@ export function compileAfterSnippet(snippet: string, name:string, isCommonJs: bo
                         }
                         jshelpers.bindSourceFile(sourceFile, {});
                         setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(sourceFile, compileOptions));
-                        let compilerDriver = new CompilerDriver('UnitTest');
+                        let compilerDriver = new CompilerDriver('UnitTest', 'UnitTest');
+                        CompilerDriver.srcNode = sourceFile;
                         compilerDriver.setCustomPasses([]);
                         compilerDriver.compileUnitTest(sourceFile, []);
                         compileUnits = compilerDriver.getCompilationUnits();
@@ -228,7 +239,7 @@ export class SnippetCompiler {
     }
 
     getGlobalInsns(): IRNode[] {
-        let root = this.getPandaGenByName("func_main_0");
+        let root = this.getPandaGenByName("UnitTest.func_main_0");
         if (root) {
             return root.getInsns();
         } else {
@@ -237,7 +248,7 @@ export class SnippetCompiler {
     }
 
     getGlobalScope(): Scope | undefined {
-        let globalPandaGen = this.getPandaGenByName("func_main_0");
+        let globalPandaGen = this.getPandaGenByName("UnitTest.func_main_0");
 
         return globalPandaGen ? globalPandaGen.getScope()!.getNearestVariableScope() : undefined;
     }

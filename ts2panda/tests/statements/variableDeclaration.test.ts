@@ -165,7 +165,7 @@ describe("VariableDeclarationTest", function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("function a() {var i;}");
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
-        let funcPg = snippetCompiler.getPandaGenByName("a");
+        let funcPg = snippetCompiler.getPandaGenByName("UnitTest.a");
         let functionScope = <FunctionScope>funcPg!.getScope();
         let insns = funcPg!.getInsns();
         let expected = [
@@ -184,7 +184,7 @@ describe("VariableDeclarationTest", function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("function a() {let i;}");
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
-        let funcPg = snippetCompiler.getPandaGenByName("a");
+        let funcPg = snippetCompiler.getPandaGenByName("UnitTest.a");
         let functionScope = <FunctionScope>funcPg!.getScope();
         let insns = funcPg!.getInsns();
         let expected = [
@@ -201,7 +201,7 @@ describe("VariableDeclarationTest", function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("function a() {const i = 5;}");
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
-        let funcPg = snippetCompiler.getPandaGenByName("a");
+        let funcPg = snippetCompiler.getPandaGenByName("UnitTest.a");
         let functionScope = <FunctionScope>funcPg!.getScope();
         let insns = funcPg!.getInsns();
         let expected = [
@@ -217,7 +217,7 @@ describe("VariableDeclarationTest", function () {
     it('let i in a local scope', function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("{let i;}");
-        let funcPg = snippetCompiler.getPandaGenByName("func_main_0");
+        let funcPg = snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let localScope = funcPg!.getScope();
         let insns = funcPg!.getInsns();
 

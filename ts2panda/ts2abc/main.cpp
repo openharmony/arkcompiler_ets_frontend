@@ -49,6 +49,30 @@ int Preprocess(const panda::ts2abc::Options &options, const panda::PandArgParser
     return panda::ts2abc::RETURN_SUCCESS;
 }
 
+bool HandleNpmEntries(const panda::ts2abc::Options &options, const panda::PandArgParser &argParser,
+                      const std::string &usage)
+{
+    std::string input = options.GetTailArg1();
+    std::string output = options.GetTailArg2();
+    if (options.GetCompileByPipeArg() || input.empty() || output.empty()) {
+        if (options.GetCompileByPipeArg()) {
+            std::cerr << "[compile-npm-entries] and [compile-by-pipe] can not be used simultaneously" << std::endl;
+        } else {
+            std::cerr << "Incorrect args number" << std::endl;
+        }
+        std::cerr << "Usage example: js2abc --compile-npm-entries npm_entries.txt npm_entries.abc"<< std::endl;
+        std::cerr << usage << std::endl;
+        std::cerr << argParser.GetHelpString();
+        return false;
+    }
+
+    if (!panda::ts2abc::CompileNpmEntries(input, output)) {
+        return false;
+    }
+
+    return true;
+}
+
 int main(int argc, const char *argv[])
 {
     panda::PandArgParser argParser;
@@ -75,6 +99,14 @@ int main(int argc, const char *argv[])
         std::cout << version << std::endl;
         return panda::ts2abc::RETURN_SUCCESS;
     }
+
+    if (options.GetCompileNpmEntries()) {
+        if (!HandleNpmEntries(options, argParser, usage)) {
+            return panda::ts2abc::RETURN_FAILED;
+        }
+        return panda::ts2abc::RETURN_SUCCESS;
+    }
+
 
     if ((options.GetOptLevelArg() < static_cast<int>(panda::ts2abc::OptLevel::O_LEVEL0)) ||
         (options.GetOptLevelArg() > static_cast<int>(panda::ts2abc::OptLevel::O_LEVEL2))) {

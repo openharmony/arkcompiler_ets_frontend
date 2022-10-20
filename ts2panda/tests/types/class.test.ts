@@ -30,7 +30,7 @@ describe("class tests in class.test.ts", function () {
     it("test class with no parameter in block", function () {
         let fileNames = 'tests/types/class/class_constr_no_para.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -43,13 +43,13 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 3], [24, "_1"], [24, "_2"], [24, "_3"], [2, 0]
+                [2, 3], [24, "snippet_1"], [24, "snippet_2"], [24, "snippet_3"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [25, 0], [2, 0],
                 [2, 1], [5, "num"], [25, 1], [2, 0],
                 [2, 0], [2, 1], [5, "constructor"],
-                [24, "_2"], [2, 0], [2, 0]
+                [24, "snippet_2"], [2, 0], [2, 0]
             ],
             [
                 [2, 3], [2, 0],
@@ -57,7 +57,7 @@ describe("class tests in class.test.ts", function () {
                 [2, 0], [25, 0]
             ],
             [
-                [2, 2], [24, "_1"]
+                [2, 2], [24, "snippet_1"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -67,7 +67,7 @@ describe("class tests in class.test.ts", function () {
     it("test class with parameter in block", function () {
         let fileNames = 'tests/types/class/class_constr_para.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -80,20 +80,20 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 3], [24, "_1"], [24, "_2"], [24, "_3"], [2, 0]
+                [2, 3], [24, "snippet_1"], [24, "snippet_2"], [24, "snippet_3"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [25, 0], [2, 0],
                 [2, 1], [5, "num"], [25, 1], [2, 0],
                 [2, 0], [2, 1], [5, "constructor"],
-                [24, "_2"], [2, 0], [2, 0]
+                [24, "snippet_2"], [2, 0], [2, 0]
             ],
             [
                 [2, 3], [2, 0], [5, "constructor"],
                 [2, 0], [2, 1], [25, 1], [25, 0]
             ],
             [
-                [2, 2], [24, "_1"]
+                [2, 2], [24, "snippet_1"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -103,7 +103,7 @@ describe("class tests in class.test.ts", function () {
     it("test class fields type", function () {
         let fileNames = 'tests/types/class/class_fields.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -116,7 +116,7 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 2], [24, "_1"], [24, "_2"], [2, 0]
+                [2, 2], [24, "snippet_1"], [24, "snippet_2"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [25, 0], [2, 0],
@@ -128,7 +128,7 @@ describe("class tests in class.test.ts", function () {
                 [2, 0], [2, 1], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 2], [24, "_1"]
+                [2, 2], [24, "snippet_1"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -138,7 +138,7 @@ describe("class tests in class.test.ts", function () {
     it("test class methods type", function () {
         let fileNames = 'tests/types/class/class_methods.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -151,14 +151,14 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
+                [2, 4], [24, "snippet_1"], [24, "snippet_2"], [24, "snippet_3"], [24, "snippet_4"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [25, 0], [2, 0],
                 [2, 1], [5, "val"], [25, 1],
                 [2, 0], [2, 0], [2, 2],
-                [5, "setVal"], [24, "_2"],
-                [5, "getValStr"], [24, "_3"],
+                [5, "setVal"], [24, "snippet_2"],
+                [5, "getValStr"], [24, "snippet_3"],
                 [2, 0], [2, 0],
             ],
             [
@@ -170,7 +170,7 @@ describe("class tests in class.test.ts", function () {
                 [2, 0], [2, 0], [25, 4]
             ],
             [
-                [2, 2], [24, "_1"]
+                [2, 2], [24, "snippet_1"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -180,7 +180,7 @@ describe("class tests in class.test.ts", function () {
     it("test class static fields type", function () {
         let fileNames = 'tests/types/class/class_static_fields.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -193,7 +193,7 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 2], [24, "_1"], [24, "_2"], [2, 0]
+                [2, 2], [24, "snippet_1"], [24, "snippet_2"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [25, 0], [2, 0],
@@ -205,7 +205,7 @@ describe("class tests in class.test.ts", function () {
                 [25, 4], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 2], [24, "_1"]
+                [2, 2], [24, "snippet_1"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -215,7 +215,7 @@ describe("class tests in class.test.ts", function () {
     it("test class static methods type", function () {
         let fileNames = 'tests/types/class/class_static_methods.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -229,15 +229,15 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
+                [2, 4], [24, "snippet_1"], [24, "snippet_2"], [24, "snippet_3"], [24, "snippet_4"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [25, 0], [2, 0],
                 [2, 1], [5, "val"], [25, 1],
                 [2, 0], [2, 0], [2, 1], [5, "setVal"],
-                [24, "_2"], [2, 1], [5, "str"],
+                [24, "snippet_2"], [2, 1], [5, "str"],
                 [25, 4], [2, 0], [2, 0], [2, 1],
-                [5, "getStr"], [24, "_3"]
+                [5, "getStr"], [24, "snippet_3"]
             ],
             [
                 [2, 3], [2, 0], [5, "setVal"],
@@ -248,7 +248,7 @@ describe("class tests in class.test.ts", function () {
                 [2, 0], [2, 0], [25, 4]
             ],
             [
-                [2, 2], [24, "_1"]
+                [2, 2], [24, "snippet_1"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -258,7 +258,7 @@ describe("class tests in class.test.ts", function () {
     it("test abstract class type", function () {
         let fileNames = 'tests/types/class/class_abstract.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -272,11 +272,11 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 5], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [24, "_5"], [2, 0]
+                [2, 5], [24, "snippet_1"], [24, "snippet_2"], [24, "snippet_3"], [24, "snippet_4"], [24, "snippet_5"], [2, 0]
             ],
             [
                 [2, 1], [2, 1], [25, 0], [2, 0],
-                [2, 0], [2, 1], [5, "eat"], [24, "_2"],
+                [2, 0], [2, 1], [5, "eat"], [24, "snippet_2"],
                 [2, 0], [2, 0]
             ],
             [
@@ -284,16 +284,16 @@ describe("class tests in class.test.ts", function () {
                 [2, 0], [2, 0], [25, 0]
             ],
             [
-                [2, 1], [2, 0], [24, "_1"],
+                [2, 1], [2, 0], [24, "snippet_1"],
                 [2, 0], [2, 0], [2, 1], [5, "constructor"],
-                [24, "_4"], [2, 0], [2, 0]
+                [24, "snippet_4"], [2, 0], [2, 0]
             ],
             [
                 [2, 3], [2, 0], [5, "constructor"],
                 [2, 0], [2, 0], [25, 0]
             ],
             [
-                [2, 2], [24, "_3"]
+                [2, 2], [24, "snippet_3"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -303,7 +303,7 @@ describe("class tests in class.test.ts", function () {
     it("test class implements type", function () {
         let fileNames = 'tests/types/class/class_implements.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -318,7 +318,7 @@ describe("class tests in class.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
+                [2, 4], [24, "snippet_1"], [24, "snippet_2"], [24, "snippet_3"], [24, "snippet_4"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [25, 0], [2, 0],
@@ -330,11 +330,11 @@ describe("class tests in class.test.ts", function () {
             ],
             [
                 [2, 1], [2, 0], [25, 0], [2, 2],
-                [24, "_1"], [24, "_2"], [2, 0], [2, 0],
+                [24, "snippet_1"], [24, "snippet_2"], [2, 0], [2, 0],
                 [2, 0], [2, 0]
             ],
             [
-                [2, 2], [24, "_3"]
+                [2, 2], [24, "snippet_3"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);

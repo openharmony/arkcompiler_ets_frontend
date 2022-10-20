@@ -458,11 +458,11 @@ export class Recorder {
         return exportStmt;
     }
 
-    private getNormalizeModuleSpecifier(moduleSpecifier: ts.Expression): string {
+    private getModuleSpecifier(moduleSpecifier: ts.Expression): string {
         if (!ts.isStringLiteral(moduleSpecifier)) {
             throw new Error("moduleSpecifier must be a stringLiteral");
         }
-        return path.normalize(jshelpers.getTextOfIdentifierOrLiteral(moduleSpecifier));
+        return jshelpers.getTextOfIdentifierOrLiteral(moduleSpecifier);
     }
 
     private recordEcmaNamedBindings(namedBindings: ts.NamedImportBindings, scope: ModuleScope, moduleRequest: string) {
@@ -506,7 +506,7 @@ export class Recorder {
             return;
         }
 
-        let moduleRequest: string = this.getNormalizeModuleSpecifier(node.moduleSpecifier);
+        let moduleRequest: string = this.getModuleSpecifier(node.moduleSpecifier);
 
         if (node.importClause) {
             let importClause: ts.ImportClause = node.importClause;
@@ -519,7 +519,7 @@ export class Recorder {
 
     private recordEcmaExportDecl(node: ts.ExportDeclaration, scope: ModuleScope) {
         if (node.moduleSpecifier) {
-            let moduleRequest: string = this.getNormalizeModuleSpecifier(node.moduleSpecifier);
+            let moduleRequest: string = this.getModuleSpecifier(node.moduleSpecifier);
 
             if (node.exportClause) {
                 let namedBindings: ts.NamedExportBindings = node.exportClause;

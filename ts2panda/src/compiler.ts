@@ -164,7 +164,6 @@ export class Compiler {
             this.compileSourceFileOrBlock(<ts.SourceFile>this.rootNode);
         } else {
             this.compileFunctionLikeDeclaration(<ts.FunctionLikeDeclaration>this.rootNode);
-            this.callOpt();
         }
     }
 
@@ -178,57 +177,6 @@ export class Compiler {
 
     getCurrentEnv() {
         return this.envUnion[this.envUnion.length - 1];
-    }
-
-    private callOpt() {
-        if (CmdOptions.isDebugMode()) {
-            return;
-        }
-        let CallMap: Map<String, number> = new Map([
-            ["this", 1],
-            ["4newTarget", 2],
-            ["0newTarget", 2],
-            ["argumentsOrRestargs", 4],
-            ["4funcObj", 8]
-        ]);
-        let callType = 0;
-        let scope = this.pandaGen.getScope();
-
-        if (scope instanceof FunctionScope) {
-            let tempLocals: VReg[] = [];
-            let tempNames: Set<String> = new Set();
-            let count = 0;
-            // 4funcObj/newTarget/this
-            for (let i = 0; i < 3; i++) {
-                if (scope.getCallOpt().has(scope.getParameters()[i].getName())) {
-                    tempLocals.push(this.pandaGen.getLocals()[i]);
-                    callType += CallMap.get(scope.getParameters()[i].getName()) ?? 0;
-                } else {
-                    tempNames.add(scope.getParameters()[i].getName());
-                    count++;
-                }
-            }
-            // actual parameters
-            for (let i = 3; i < this.pandaGen.getLocals().length; i++) {
-                tempLocals.push(this.pandaGen.getLocals()[i]);
-            }
-            let name2variable = scope.getName2variable();
-            // @ts-ignore
-            name2variable.forEach((value, key) => {
-                if (tempNames.has(key)) {
-                    name2variable.delete(key)
-                }
-            })
-
-            this.pandaGen.setLocals(tempLocals);
-            this.pandaGen.setParametersCount(this.pandaGen.getParametersCount() - count);
-
-            if (scope.getArgumentsOrRestargs()) {
-                callType += CallMap.get("argumentsOrRestargs") ?? 0;
-            }
-
-            this.pandaGen.setCallType(callType);
-        }
     }
 
     private storeFuncObj2LexEnvIfNeeded() {
@@ -288,9 +236,6 @@ export class Compiler {
                                      pandaGen.getVregForVariable(<Variable>variableInfo.v));
         } else {
             if (v && v.isLexVar) {
-                if ((arg === "this" || arg === "4newTarget") && variableInfo.scope instanceof FunctionScope) {
-                    variableInfo.scope.setCallOpt(arg);
-                }
                 if (arg === "arguments" && variableInfo.scope instanceof FunctionScope) {
                     variableInfo.scope.setArgumentsOrRestargs();
                 }
@@ -1062,8 +1007,6 @@ export class Compiler {
 
         let { scope, level, v } = this.scope.find("this");
 
-        this.setCallOpt(scope, "this")
-
         if (!v) {
             throw new Error("\"this\" not found");
         }
@@ -1467,8 +1410,6 @@ export class Compiler {
         let level = thisInfo.level;
         let v = <Variable>thisInfo.v;
 
-        this.setCallOpt(scope, "this")
-
         if (scope && level >= 0) {
             let needSetLexVar: boolean = false;
             while (curScope != scope) {
@@ -1497,8 +1438,6 @@ export class Compiler {
         let pandaGen = this.pandaGen;
         let thisInfo = this.getCurrentScope().find("this");
 
-        this.setCallOpt(thisInfo.scope, "this")
-
         if (thisInfo.v!.isLexVar) {
             let slot = (<Variable>thisInfo.v).idxLex;
             let value = pandaGen.getTemp();
@@ -1507,12 +1446,6 @@ export class Compiler {
             pandaGen.freeTemps(value);
         } else {
             pandaGen.storeAccumulator(node, pandaGen.getVregForVariable(<Variable>thisInfo.v))
-        }
-    }
-
-    setCallOpt(scope: Scope | undefined, callOptStr: String) {
-        if (scope instanceof FunctionScope) {
-            scope.setCallOpt(callOptStr);
         }
     }
 

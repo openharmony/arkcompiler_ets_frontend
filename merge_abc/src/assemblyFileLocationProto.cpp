@@ -21,14 +21,16 @@ void FileLocation::Serialize(const panda::pandasm::FileLocation &location, proto
     protoLocation.set_wholeline(location.whole_line);
     protoLocation.set_boundleft(location.bound_left);
     protoLocation.set_boundright(location.bound_right);
+    protoLocation.set_linenumber(location.line_number);
     protoLocation.set_isdefined(location.is_defined);
 }
 
-void FileLocation::Deserialize(const protoPanda::FileLocation &protoLocation, panda::pandasm::FileLocation &location)
+void FileLocation::Deserialize(const protoPanda::FileLocation &protoLocation,
+                               std::optional<panda::pandasm::FileLocation> &location)
 {
-    location.whole_line = protoLocation.wholeline();
-    location.bound_left = protoLocation.boundleft();
-    location.bound_right = protoLocation.boundright();
-    location.is_defined = protoLocation.isdefined();
+    std::string wholeLine = protoLocation.wholeline();
+    panda::pandasm::FileLocation fileLocation(wholeLine, protoLocation.boundleft(), protoLocation.boundright(),
+                                              protoLocation.linenumber(), protoLocation.isdefined());
+    location = fileLocation;
 }
 } // panda::proto

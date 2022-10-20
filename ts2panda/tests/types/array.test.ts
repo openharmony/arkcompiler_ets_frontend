@@ -30,7 +30,7 @@ describe("array tests in array.test.ts", function() {
     it("test array with primitives", function() {
         let fileNames = 'tests/types/array/array_primitives.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -47,7 +47,7 @@ describe("array tests in array.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 6], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [24, "_5"], [24, "_6"], [2, 0]
+                [2, 6], [24, "snippet_1"], [24, "snippet_2"], [24, "snippet_3"], [24, "snippet_4"], [24, "snippet_5"], [24, "snippet_6"], [2, 0]
             ],
             [
                 [2, 5], [25, 1]
@@ -75,7 +75,7 @@ describe("array tests in array.test.ts", function() {
     it("test array with class", function() {
         let fileNames = 'tests/types/array/array_class.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -88,17 +88,17 @@ describe("array tests in array.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 3], [24, "_1"], [24, "_2"], [24, "_3"], [2, 0]
+                [2, 3], [24, "snippet_1"], [24, "snippet_2"], [24, "snippet_3"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [25, 0], [2, 0],
                 [2, 0], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 2], [24, "_1"]
+                [2, 2], [24, "snippet_1"]
             ],
             [
-                [2, 5], [24, "_2"]
+                [2, 5], [24, "snippet_2"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -108,7 +108,7 @@ describe("array tests in array.test.ts", function() {
     it("test array with multi same primitive", function() {
         let fileNames = 'tests/types/array/array_multi_same_primi.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -131,7 +131,7 @@ describe("array tests in array.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 6], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [24, "_5"], [24, "_6"], [2, 0]
+                [2, 6], [24, "snippet_1"], [24, "snippet_2"], [24, "snippet_3"], [24, "snippet_4"], [24, "snippet_5"], [24, "snippet_6"], [2, 0]
             ],
             [
                 [2, 5], [25, 1]
@@ -159,7 +159,7 @@ describe("array tests in array.test.ts", function() {
     it("test array with multi same class", function() {
         let fileNames = 'tests/types/array/array_multi_same_class.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -173,17 +173,17 @@ describe("array tests in array.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 3], [24, "_1"], [24, "_2"], [24, "_3"], [2, 0]
+                [2, 3], [24, "snippet_1"], [24, "snippet_2"], [24, "snippet_3"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [25, 0], [2, 0],
                 [2, 0], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 2], [24, "_1"]
+                [2, 2], [24, "snippet_1"]
             ],
             [
-                [2, 5], [24, "_2"]
+                [2, 5], [24, "snippet_2"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -193,7 +193,7 @@ describe("array tests in array.test.ts", function() {
     it("test array with union", function() {
         let fileNames = 'tests/types/array/array_union.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -206,13 +206,13 @@ describe("array tests in array.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 2], [24, "_1"], [24, "_2"], [2, 0]
+                [2, 2], [24, "snippet_1"], [24, "snippet_2"], [2, 0]
             ],
             [
                 [2, 4], [2, 2], [25, 4], [25, 1],
             ],
             [
-                [2, 5], [24, "_1"]
+                [2, 5], [24, "snippet_1"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);
@@ -222,7 +222,7 @@ describe("array tests in array.test.ts", function() {
     it("test array with object", function() {
         let fileNames = 'tests/types/array/array_object.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -234,14 +234,14 @@ describe("array tests in array.test.ts", function() {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 2], [24, "_1"], [24, "_2"], [2, 0]
+                [2, 2], [24, "snippet_1"], [24, "snippet_2"], [2, 0]
             ],
             [
                 [2, 6], [2, 2], [5, "element1"], [25, 1],
                 [5, "element2"], [25, 4]
             ],
             [
-                [2, 5], [24, "_1"]
+                [2, 5], [24, "snippet_1"]
             ]
         ]
         let buff = createLiteralBufferArray(expectedBuffValues);

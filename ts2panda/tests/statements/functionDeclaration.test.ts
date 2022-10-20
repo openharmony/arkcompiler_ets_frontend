@@ -46,9 +46,10 @@ describe("FunctionDeclarationTest", function () {
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile("function foo() {}");
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
+        let funcInternalName = "UnitTest.foo";
         let funcName = "foo";
         let expected = [
-            new Definefunc(new Imm(0), funcName, new Imm(0)),
+            new Definefunc(new Imm(0), funcInternalName, new Imm(0)),
             new Stglobalvar(new Imm(1), funcName),
             new Returnundefined()
         ];
@@ -68,7 +69,7 @@ describe("FunctionDeclarationTest", function () {
       `);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let expected = [
-            new Definefunc(new Imm(0), "#2#foo", new Imm(0)),
+            new Definefunc(new Imm(0), "UnitTest.#2#foo", new Imm(0)),
             new Stglobalvar(new Imm(1), "foo"),
             new Returnundefined()
         ];
@@ -86,12 +87,12 @@ describe("FunctionDeclarationTest", function () {
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let funcReg = new VReg();
         let expected = [
-            new Definefunc(new Imm(0), "foo", new Imm(0)),
+            new Definefunc(new Imm(0), "UnitTest.foo", new Imm(0)),
             new Sta(funcReg),
 
             new Returnundefined()
         ];
-        let functionPg = snippetCompiler.getPandaGenByName("out");
+        let functionPg = snippetCompiler.getPandaGenByName("UnitTest.out");
         let insns = functionPg!.getInsns();
         let functionScope = functionPg!.getScope();
 
@@ -109,7 +110,7 @@ describe("FunctionDeclarationTest", function () {
         let insns = snippetCompiler.getGlobalInsns();
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let expected = [
-            new Definefunc(new Imm(0), "foo", new Imm(0)),
+            new Definefunc(new Imm(0), "UnitTest.foo", new Imm(0)),
             new Sttoglobalrecord(new Imm(1), "foo"),
             new Returnundefined()
         ];
@@ -124,7 +125,7 @@ describe("FunctionDeclarationTest", function () {
 
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
         let expected_main = [
-            new Definefunc(new Imm(0), "test", new Imm(1)),
+            new Definefunc(new Imm(0), "UnitTest.test", new Imm(1)),
             new Stglobalvar(new Imm(1), "test"),
             new Returnundefined()
         ];
@@ -142,10 +143,10 @@ describe("FunctionDeclarationTest", function () {
         ];
 
         compilerunit.forEach(element => {
-            if (element.internalName == "func_main_0") {
+            if (element.internalName == "UnitTest.func_main_0") {
                 let insns = element.getInsns();
                 expect(checkInstructions(insns, expected_main)).to.be.true;
-            } else if (element.internalName == "test") {
+            } else if (element.internalName == "UnitTest.test") {
                 let insns = element.getInsns();
                 expect(checkInstructions(insns, expected_func)).to.be.true;
                 let parameterLength = element.getParameterLength();
@@ -168,7 +169,7 @@ describe("FunctionDeclarationTest", function () {
             new Returnundefined(),
         ];
 
-        let functionPg = snippetCompiler.getPandaGenByName("test");
+        let functionPg = snippetCompiler.getPandaGenByName("UnitTest.test");
         let insns = functionPg!.getInsns();
 
         expect(checkInstructions(insns, expected_func)).to.be.true;

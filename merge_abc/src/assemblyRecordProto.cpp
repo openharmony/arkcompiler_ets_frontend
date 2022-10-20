@@ -56,7 +56,7 @@ void Record::Deserialize(const protoPanda::Record &protoRecord, panda::pandasm::
     record.source_file = protoRecord.sourcefile();
     if (protoRecord.has_filelocation()) {
         const auto &protoLocation = protoRecord.filelocation();
-        FileLocation::Deserialize(protoLocation, record.file_location.value());
+        FileLocation::Deserialize(protoLocation, record.file_location);
     }
 }
 } // panda::proto
