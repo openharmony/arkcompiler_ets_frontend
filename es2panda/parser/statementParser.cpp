@@ -1199,7 +1199,24 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
         lexer_->NextToken();
     }
 
+    CheckOptionalBindingPatternParameter(func);
+
     return funcDecl;
+}
+
+void ParserImpl::CheckOptionalBindingPatternParameter(ir::ScriptFunction *func) const
+{
+    if (func->Declare() || func->IsOverload()) {
+        return;
+    }
+    for (auto *it : func->Params()) {
+        if ((it->IsObjectPattern() && it->AsObjectPattern()->Optional()) ||
+            (it->IsArrayPattern() && it->AsArrayPattern()->Optional())) {
+            ThrowSyntaxError(
+                "A binding pattern parameter cannot be optional in an "
+                "implementation signature", it->Start());
+        }
+    }
 }
 
 ir::Statement *ParserImpl::ParseExpressionStatement(StatementParsingFlags flags)

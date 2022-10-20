@@ -1701,12 +1701,6 @@ void ParserImpl::ParsePotentialTsFunctionParameter(ExpressionParseFlags flags, i
             ThrowSyntaxError("A rest parameter cannot be optional");
         }
 
-        if (!isDeclare && (returnNode->IsArrayPattern() || returnNode->IsObjectPattern())) {
-            ThrowSyntaxError(
-                "A binding pattern parameter cannot be optional in an "
-                "implementation signature");
-        }
-
         ASSERT(returnNode->IsIdentifier() || returnNode->IsObjectPattern() || returnNode->IsArrayPattern());
         if (returnNode->IsIdentifier()) {
             returnNode->AsIdentifier()->SetOptional(true);
