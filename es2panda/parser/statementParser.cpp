@@ -2233,7 +2233,8 @@ void ParserImpl::AddExportStarEntryItem(const lexer::SourcePosition &startLoc, c
 void ParserImpl::AddExportDefaultEntryItem(const ir::AstNode *declNode)
 {
     ASSERT(declNode != nullptr);
-    if (declNode->IsTSInterfaceDeclaration()) {
+    if (declNode->IsTSInterfaceDeclaration() ||
+        (declNode->IsFunctionDeclaration() && declNode->AsFunctionDeclaration()->Function()->IsOverload())) {
         return;
     }
 
