@@ -94,7 +94,6 @@ export abstract class Scope {
     // for debuginfo
     protected startInsIdx: number | undefined;
     protected endInsIdx: number | undefined;
-    private callOpt: Set<String> = new Set();
     private isArgumentsOrRestargs: boolean = false;
 
     constructor() { }
@@ -257,26 +256,6 @@ export abstract class Scope {
 
     getDecls() {
         return this.decls;
-    }
-
-    public getCallOpt() {
-        return this.callOpt;
-    }
-
-    public setCallOpt(key: String) {
-        if (this instanceof FunctionScope) {
-            this.callOpt.add(key);
-        } else {
-            let parent = this.parent;
-            while (parent != undefined) {
-                if (parent instanceof FunctionScope) {
-                    parent.callOpt.add(key);
-                    break;
-                } else {
-                    parent = parent.parent;
-                }
-            }
-        }
     }
 
     public setArgumentsOrRestargs() {
