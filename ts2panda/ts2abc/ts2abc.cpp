@@ -177,6 +177,11 @@ static std::string GetLiteralId(int64_t index)
     return g_recordName + "_" + std::to_string(index);
 }
 
+static bool IsFuncMain0(std::string funcName) {
+    std::string expectedName = g_recordName + ".func_main_0";
+    return funcName == expectedName;
+}
+
 static std::string ParseUnicodeEscapeString(const std::string &data)
 {
     const int unicodeEscapeSymbolLen = 2;
@@ -591,34 +596,6 @@ static void ParseFunctionCatchTables(const Json::Value &function, panda::pandasm
     }
 }
 
-static void ParseFunctionCallType(const Json::Value &function, panda::pandasm::Function &pandaFunc)
-{
-    if (g_debugModeEnabled) {
-        return;
-    }
-
-    std::string funcName = "";
-    if (function.isMember("n") && function["n"].isString()) {
-        funcName = function["n"].asString();
-    }
-    if (funcName == "func_main_0") {
-        return;
-    }
-
-    uint32_t callType = 0;
-    if (function.isMember("ct") && function["ct"].isInt()) {
-        callType = function["ct"].asUInt();
-    }
-    panda::pandasm::AnnotationData callTypeAnnotation("_ESCallTypeAnnotation");
-    std::string annotationName = "callType";
-    panda::pandasm::AnnotationElement callTypeAnnotationElement(
-        annotationName, std::make_unique<panda::pandasm::ScalarValue>(
-        panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(callType)));
-    callTypeAnnotation.AddElement(std::move(callTypeAnnotationElement));
-    const_cast<std::vector<panda::pandasm::AnnotationData>&>(
-        pandaFunc.metadata->GetAnnotations()).push_back(std::move(callTypeAnnotation));
-}
-
 static std::vector<std::pair<int32_t, uint32_t>> GetInstTypeMap(const Json::Value &function,
                                                                 panda::pandasm::Function &pandaFunc)
 {
@@ -778,7 +755,7 @@ static void ParseFunctionExportedType(const Json::Value &function, panda::pandas
     std::string funcName = "";
     if (function.isMember("n") && function["n"].isString()) {
         funcName = function["n"].asString();
-        if (funcName != "func_main_0") {
+        if (!IsFuncMain0(funcName)) {
             return;
         }
     }
@@ -805,7 +782,7 @@ static void ParseFunctionDeclaredType(const Json::Value &function, panda::pandas
     std::string funcName = "";
     if (function.isMember("n") && function["n"].isString()) {
         funcName = function["n"].asString();
-        if (funcName != "func_main_0") {
+        if (!IsFuncMain0(funcName)) {
             return;
         }
     }
@@ -857,7 +834,7 @@ static panda::pandasm::Function ParseFunction(const Json::Value &function, panda
     ParseFunctionKind(function, pandaFunc);
     ParseFunctionIcSize(function, pandaFunc);
 
-    if (g_isDtsFile && pandaFunc.name != "func_main_0") {
+    if (g_isDtsFile && !IsFuncMain0(pandaFunc.name)) {
         pandaFunc.metadata->SetAttribute("external");
     }
 
@@ -1190,29 +1167,30 @@ static void ParseSingleModule(const Json::Value &rootValue, panda::pandasm::Prog
 
 static void ParseSingleTypeInfo(const Json::Value &rootValue, panda::pandasm::Program &prog)
 {
-    auto typeInfoRecord = rootValue["ti"];
-    auto typeFlag = typeInfoRecord["tf"].asBool();
-    auto typeSummaryIndex = typeInfoRecord["tsi"].asString();
-    auto ecmaTypeInfoRecord = panda::pandasm::Record("_ESTypeInfoRecord", LANG_EXT);
-    ecmaTypeInfoRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
+    auto iter = prog.record_table.find(g_recordName);
+    if (iter != prog.record_table.end()) {
+        auto &rec = iter->second;
 
-    auto typeFlagField = panda::pandasm::Field(LANG_EXT);
-    typeFlagField.name = "typeFlag";
-    typeFlagField.type = panda::pandasm::Type("u8", 0);
-    typeFlagField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(
-    static_cast<uint8_t>(typeFlag)));
-    ecmaTypeInfoRecord.field_list.emplace_back(std::move(typeFlagField));
+        auto typeInfoRecord = rootValue["ti"];
+        auto typeFlag = typeInfoRecord["tf"].asBool();
+        auto typeSummaryIndex = typeInfoRecord["tsi"].asUInt();
 
-    if (g_enableTypeinfo) {
-        auto typeSummaryIndexField = panda::pandasm::Field(LANG_EXT);
-        typeSummaryIndexField.name = "typeSummaryOffset";
-        typeSummaryIndexField.type = panda::pandasm::Type("u32", 0);
-        typeSummaryIndexField.metadata->SetValue(
-            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(typeSummaryIndex));
-        ecmaTypeInfoRecord.field_list.emplace_back(std::move(typeSummaryIndexField));
+        auto typeFlagField = panda::pandasm::Field(LANG_EXT);
+        typeFlagField.name = "typeFlag";
+        typeFlagField.type = panda::pandasm::Type("u8", 0);
+        typeFlagField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(
+        static_cast<uint8_t>(typeFlag)));
+        rec.field_list.emplace_back(std::move(typeFlagField));
+
+        if (g_enableTypeinfo) {
+            auto typeSummaryIndexField = panda::pandasm::Field(LANG_EXT);
+            typeSummaryIndexField.name = "typeSummaryOffset";
+            typeSummaryIndexField.type = panda::pandasm::Type("u32", 0);
+            typeSummaryIndexField.metadata->SetValue(
+                panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(typeSummaryIndex));
+            rec.field_list.emplace_back(std::move(typeSummaryIndexField));
+        }
     }
-
-    prog.record_table.emplace(ecmaTypeInfoRecord.name, std::move(ecmaTypeInfoRecord));
 }
 
 static int ParseSmallPieceJson(const std::string &subJson, panda::pandasm::Program &prog)
