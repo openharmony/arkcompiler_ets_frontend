@@ -78,6 +78,11 @@ void RegAllocatorBase::Restore(IRNode *ins)
     Add<MovDyn>(ins->Node(), spillReg, origin);
 }
 
+void RegAllocatorBase::ClearSpillMap()
+{
+    spillMap_.clear();
+}
+
 // RegAllocator
 
 void RegAllocator::Run(IRNode *ins)
@@ -111,7 +116,7 @@ void RegAllocator::Run(IRNode *ins)
         Restore(ins);
     }
 
-    spillMap_.clear();
+    ClearSpillMap();
 }
 
 // RangeRegAllocator
@@ -159,6 +164,8 @@ void RangeRegAllocator::Run(IRNode *ins, VReg rangeStart, size_t argCount)
     while (spillIndex_ != 0) {
         Restore(ins);
     }
+
+    ClearSpillMap();
 }
 
 }  // namespace panda::es2panda::compiler
