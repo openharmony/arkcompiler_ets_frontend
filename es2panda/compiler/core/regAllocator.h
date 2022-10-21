@@ -151,6 +151,7 @@ protected:
 
     VReg Spill(IRNode *ins, VReg reg);
     void Restore(IRNode *ins);
+    void ClearSpillMap();
 
     VReg spillIndex_ {0};
     VReg regEnd_ {0};
