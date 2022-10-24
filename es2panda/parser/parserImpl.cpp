@@ -804,7 +804,15 @@ bool ParserImpl::IsTSNamedTupleMember()
     return isNamedMember;
 }
 
-ir::Expression *ParserImpl::ParseTsTupleElement(ir::TSTupleKind *kind, bool *seenOptional)
+void ParserImpl::HandleRestType(ir::AstNodeType elementType, bool *hasRestType)
+{
+    if (elementType ==  ir::AstNodeType::TS_ARRAY_TYPE && *hasRestType) {
+        ThrowSyntaxError("A rest element cannot follow another rest element");
+    }
+    *hasRestType = true;
+}
+
+ir::Expression *ParserImpl::ParseTsTupleElement(ir::TSTupleKind *kind, bool *seenOptional, bool *hasRestType)
 {
     lexer::SourcePosition startPos = lexer_->GetToken().Start();
     ir::Expression *element = nullptr;
@@ -843,6 +851,10 @@ ir::Expression *ParserImpl::ParseTsTupleElement(ir::TSTupleKind *kind, bool *see
         auto *elementType = ParseTsTypeAnnotation(&options);
         ASSERT(elementType != nullptr);
 
+        if (elementType && isRestType) {
+            HandleRestType(elementType->Type(), hasRestType);
+        }
+
         element = AllocNode<ir::TSNamedTupleMember>(elementIdent, elementType, isOptional, isRestType);
         element->SetRange({startPos, elementType->End()});
     } else {
@@ -854,6 +866,7 @@ ir::Expression *ParserImpl::ParseTsTupleElement(ir::TSTupleKind *kind, bool *see
         element = ParseTsTypeAnnotation(&options);
         ASSERT(element != nullptr);
         if (element && isRestType) {
+            HandleRestType(element->Type(), hasRestType);
             lexer::SourcePosition endPos = element->End();
             element = AllocNode<ir::TSRestType>(std::move(element));
             element->SetRange({startPos, endPos});
@@ -880,11 +893,12 @@ ir::TSTupleType *ParserImpl::ParseTsTupleType()
     ArenaVector<ir::Expression *> elements(Allocator()->Adapter());
     ir::TSTupleKind kind = ir::TSTupleKind::NONE;
     bool seenOptional = false;
+    bool hasRestType = false;
 
     lexer_->NextToken();  // eat '['
 
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
-        ir::Expression *element = ParseTsTupleElement(&kind, &seenOptional);
+        ir::Expression *element = ParseTsTupleElement(&kind, &seenOptional, &hasRestType);
 
         elements.push_back(element);
 

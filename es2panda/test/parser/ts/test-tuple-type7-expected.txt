@@ -1,0 +1,1 @@
+SyntaxError: A rest element cannot follow another rest element [test-tuple-type7.ts:17:78]
