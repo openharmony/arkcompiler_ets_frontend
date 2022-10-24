@@ -13,7 +13,6 @@
 
 import("//arkcompiler/ets_frontend/ets_frontend_config.gni")
 import("//arkcompiler/runtime_core/ark_config.gni")
-import("//build/ohos.gni")
 
 es2panda_src = [
   "es2panda.cpp",
@@ -395,7 +394,7 @@ ohos_static_library("es2panda_lib") {
     "$ark_root/libpandabase:libarkbase_frontend_static",
     "$ark_root/libpandafile:libarkfile_frontend_static",
     "$ark_root/libziparchive:libarkziparchive_frontend_static",
-    "//third_party/icu/icu4c:static_icuuc",
+    "$ark_third_party_root/icu/icu4c:static_icuuc",
   ]
 
   if (enable_bytecode_optimizer) {

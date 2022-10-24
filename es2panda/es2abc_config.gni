@@ -12,15 +12,8 @@
 # limitations under the License.
 
 import("//arkcompiler/ets_frontend/ets_frontend_config.gni")
-if (defined(ark_independent_build)) {
-  import("$build_root/ark.gni")
-  es2abc_root = "//ets_frontend/es2panda"
-} else {
-  import("//build/ohos.gni")
-  build_root = "//build"
-  es2abc_root = "//arkcompiler/ets_frontend/es2panda"
-}
 
+es2abc_root = "//arkcompiler/ets_frontend/es2panda"
 es2abc_build_path = ""
 es2abc_build_deps = ""
 es2abc_out_root = ""
