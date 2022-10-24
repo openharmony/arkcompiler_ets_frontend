@@ -1310,6 +1310,8 @@ void Lexer::NextToken(LexerNextTokenFlags flags)
     auto cp = Iterator().Peek();
     Iterator().Forward(1);
 
+    GetToken().keywordType_ = TokenType::EOS;
+
     switch (cp) {
         case LEX_CHAR_EXCLAMATION: {
             ScanExclamationPunctuator();
