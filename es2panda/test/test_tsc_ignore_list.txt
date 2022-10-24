@@ -52,7 +52,6 @@ es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringFo
 es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForObjectBindingPatternDefaultValues2.ts
 es2panda/test/TypeScript/tests/cases/compiler/systemNamespaceAliasEmit.ts
 es2panda/test/TypeScript/tests/cases/compiler/taggedTemplateStringWithSymbolExpression01.ts
-es2panda/test/TypeScript/tests/cases/compiler/unusedLocalsAndParametersOverloadSignatures.ts
 es2panda/test/TypeScript/tests/cases/compiler/withStatementInternalComments.ts
 es2panda/test/TypeScript/tests/cases/conformance/async/es2017/asyncAwait_es2017.ts
 es2panda/test/TypeScript/tests/cases/conformance/classes/members/privateNames/privateNameComputedPropertyName1.ts
