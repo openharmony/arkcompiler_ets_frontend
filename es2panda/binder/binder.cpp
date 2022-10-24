@@ -127,10 +127,25 @@ void Binder::ValidateExportDecl(const ir::ExportNamedDeclaration *exportDecl)
     ASSERT(topScope_->IsModuleScope());
     for (auto *it : exportDecl->Specifiers()) {
         auto localName = it->AsExportSpecifier()->Local()->Name();
-        if (topScope_->FindLocal(localName) == nullptr) {
+        if (scope_->IsTSModuleScope()) {
+            if (scope_->FindLocal(localName, ResolveBindingOptions::ALL) == nullptr &&
+                !scope_->InLocalTSBindings(localName) &&
+                !scope_->AsTSModuleScope()->InExportBindings(localName)) {
+                ThrowUndeclaredExport(it->AsExportSpecifier()->Local()->Start(), localName);
+            }
+            continue;
+        }
+        ASSERT(topScope_ == scope_);
+        if (scope_->FindLocal(localName) == nullptr) {
+            // The declaration of ts cannot correspond to the variables of ts before transform,
+            // After the transform, they are all js variables. So it can return directly here.
+            if (scope_->InLocalTSBindings(localName) ||
+                scope_->FindLocal(localName, ResolveBindingOptions::INTERFACES)) {
+                continue;
+            }
             ThrowUndeclaredExport(it->AsExportSpecifier()->Local()->Start(), localName);
         }
-        topScope_->AsModuleScope()->ConvertLocalVariableToModuleVariable(Allocator(), localName);
+        scope_->AsModuleScope()->ConvertLocalVariableToModuleVariable(Allocator(), localName);
     }
 }
 
