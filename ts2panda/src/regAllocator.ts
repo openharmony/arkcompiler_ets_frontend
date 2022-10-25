@@ -16,7 +16,7 @@
 import {
     getRangeStartVregPos, isRangeInst
 } from "./base/util";
-import { CacheList } from "./base/vregisterCache";
+import { CacheList, VregisterCache } from "./base/vregisterCache";
 import { DebugInfo } from "./debuginfo";
 import {
     Format,
@@ -28,21 +28,14 @@ import {
 } from "./irnodes";
 import { PandaGen } from "./pandagen";
 
-const MAX_VREGA = 16;
-const MAX_VREGB = 256;
 const MAX_VREGC = 65536;
-
-interface VRegWithFlag {
-    vreg: VReg;
-    flag: boolean; // indicate whether it is used as a temporary register for spill
-}
 
 class RegAllocator {
     private newInsns: IRNode[] = [];
     private spills: VReg[] = [];
+    private spillId: number = 0;
     private vRegsId: number = 0;
-    private usedVreg: VRegWithFlag[] = [];
-    private tmpVreg: VRegWithFlag[] = [];
+    private needAdjust: boolean = false;
 
     constructor() {
         this.vRegsId = 0;
@@ -51,42 +44,14 @@ class RegAllocator {
     allocIndexForVreg(vreg: VReg) {
         let num = this.getFreeVreg();
         vreg.num = num;
-        this.usedVreg[num] = {vreg: vreg, flag: false};
     }
 
-    findTmpVreg(level: number): VReg {
-        let iterCnts = Math.min(MAX_VREGB, this.usedVreg.length);
-        for (let i = 0; i < iterCnts; ++i) {
-            let value = this.usedVreg[i];
-            if (value === undefined || value.flag) {
-                continue;
-            }
-            if (level === MAX_VREGA && value.vreg.num >= MAX_VREGA) {
-                throw new Error("no available tmp vReg from A");
-            }
-            value.flag = true;
-            this.tmpVreg.push(value);
-            return value.vreg;
-        }
-        throw new Error("no available tmp vReg from B");
+    getSpill(): VReg {
+        return this.spills[this.spillId++];
     }
 
-    clearVregFlags(): void {
-        for (let v of this.tmpVreg) {
-            v.flag = false;
-        }
-        this.tmpVreg = [];
-    }
-    allocSpill(): VReg {
-        if (this.spills.length > 0) {
-            return this.spills.pop()!;
-        }
-        let v = new VReg();
-        this.allocIndexForVreg(v);
-        return v;
-    }
-    freeSpill(v: VReg): void {
-        this.spills.push(v);
+    freeSpill(): void {
+        this.spillId = 0;
     }
 
     getFreeVreg(): number {
@@ -112,48 +77,26 @@ class RegAllocator {
         return num;
     }
 
-    markVregNotAvailableAsTmp(vreg: VReg): void {
-        let num = vreg.num;
-        this.usedVreg[num].flag = true;
-        this.tmpVreg.push(this.usedVreg[num]);
-    }
-
     doRealAdjustment(operands: OperandType[], format: Format, index: number, irNodes: IRNode[]) {
         let head: IRNode[] = [];
         let tail: IRNode[] = [];
-        let spills: VReg[] = [];
 
-        // mark all vreg used in the current insn as not valid for tmp register
-        for (let i = 0; i < operands.length; ++i) {
-            if (operands[i] instanceof VReg) {
-                this.markVregNotAvailableAsTmp(<VReg>operands[i]);
-            }
-        }
         for (let j = 0; j < operands.length; ++j) {
             if (operands[j] instanceof VReg) {
                 let vOrigin = <VReg>operands[j];
                 if (vOrigin.num >= (1 << format[j][1])) {
-                    let spill = this.allocSpill();
-                    spills.push(spill);
-                    let vTmp;
-                    try {
-                        vTmp = this.findTmpVreg(1 << format[j][1]);
-                    } catch {
-                        throw Error("no available tmp vReg");
-                    }
-                    head.push(new MovDyn(spill, vTmp));
-                    operands[j] = vTmp;
+                    let spill = this.getSpill();
+                    operands[j] = spill;
                     if (format[j][0] == OperandKind.SrcVReg) {
-                        head.push(new MovDyn(vTmp, vOrigin));
+                        head.push(new MovDyn(spill, vOrigin));
                     } else if (format[j][0] == OperandKind.DstVReg) {
-                        tail.push(new MovDyn(vOrigin, vTmp))
+                        tail.push(new MovDyn(vOrigin, spill))
                     } else if (format[j][0] == OperandKind.SrcDstVReg) {
-                        head.push(new MovDyn(vTmp, vOrigin));
-                        tail.push(new MovDyn(vOrigin, vTmp))
+                        head.push(new MovDyn(spill, vOrigin));
+                        tail.push(new MovDyn(vOrigin, spill))
                     } else {
                         // here we do nothing
                     }
-                    tail.push(new MovDyn(vTmp, spill));
                 }
             }
         }
@@ -163,11 +106,7 @@ class RegAllocator {
         DebugInfo.copyDebugInfo(irNodes[index], tail);
 
         this.newInsns.push(...head, irNodes[index], ...tail);
-
-        for (let j = spills.length - 1; j >= 0; --j) {
-            this.freeSpill(spills[j]);
-        }
-        this.clearVregFlags();
+        this.freeSpill();
     }
 
     checkDynRangeInstruction(irNodes: IRNode[], index: number): boolean {
@@ -179,10 +118,8 @@ class RegAllocator {
           1. "CalliDynRange 4, v255" is a valid insn, there is no need for all 4 registers numbers to be less than 255,
           it is also similar for NewobjDyn
           2. we do not need to mark any register to be invalid for tmp register, since no other register is used in calli.dyn.range
-          3. if v.num is bigger than 255, it means all register less than 255 has been already used, they should have been pushed
-          into usedVreg
         */
-        if ((<VReg>operands[1]).num >= level) {
+        if ((<VReg>operands[rangeRegOffset]).num >= level) {
             // needs to be adjusted.
             return false;
         }
@@ -208,37 +145,23 @@ class RegAllocator {
 
     adjustDynRangeInstruction(irNodes: IRNode[], index: number) {
         let head: IRNode[] = [];
-        let tail: IRNode[] = [];
-        let spills: VReg[] = [];
         let operands = irNodes[index].operands;
 
         /* exclude operands that are not require consecutive */
         let rangeRegOffset = getRangeStartVregPos(irNodes[index]);
         let regNums = operands.length - getRangeStartVregPos(irNodes[index]);
 
-        let level = 1 << (irNodes[index].getFormats())[0][rangeRegOffset][1];
-        let tmp = this.findTmpVreg(level);
-
         for (let i = 0; i < regNums; i++) {
-            let spill = this.allocSpill();
-            spills.push(spill);
-
-            /* We need to make sure that the register input in the .range instruction is continuous(small to big). */
-            head.push(new MovDyn(spill, this.usedVreg[tmp.num + i].vreg));
-            head.push(new MovDyn(this.usedVreg[tmp.num + i].vreg, <VReg>operands[i + rangeRegOffset]));
-            operands[i + rangeRegOffset] = this.usedVreg[tmp.num + i].vreg;
-            tail.push(new MovDyn(this.usedVreg[tmp.num + i].vreg, spill));
+            let spill = this.getSpill();
+            head.push(new MovDyn(spill, <VReg>operands[i + rangeRegOffset]));
+            operands[i + rangeRegOffset] = spill;
         }
 
         // for debuginfo
         DebugInfo.copyDebugInfo(irNodes[index], head);
-        DebugInfo.copyDebugInfo(irNodes[index], tail);
 
-        this.newInsns.push(...head, irNodes[index], ...tail);
-        for (let i = spills.length - 1; i >= 0; --i) {
-            this.freeSpill(spills[i]);
-        }
-        this.clearVregFlags();
+        this.newInsns.push(...head, irNodes[index]);
+        this.freeSpill();
     }
 
     adjustInstructionsIfNeeded(irNodes: IRNode[]): void {
@@ -275,13 +198,7 @@ class RegAllocator {
         return this.vRegsId;
     }
 
-    run(pandaGen: PandaGen): void {
-        let irNodes = pandaGen.getInsns();
-        let locals = pandaGen.getLocals();
-        let temps = pandaGen.getTemps();
-        let cache = pandaGen.getVregisterCache();
-        let parametersCount = pandaGen.getParametersCount();
-        // don't mess up allocation order
+    allocIndexForVregs(locals: VReg[], temps: VReg[], cache: VregisterCache): void {
         for (let i = 0; i < locals.length; ++i) {
             this.allocIndexForVreg(locals[i]);
         }
@@ -293,6 +210,60 @@ class RegAllocator {
             if (cacheItem.isNeeded()) {
                 this.allocIndexForVreg(cacheItem.getCache());
             }
+        }
+    }
+
+    allocSpillPool(irNodes: IRNode[]): void {
+        let spillCount: number = 0;
+        for (let i = 0; i < irNodes.length; ++i) {
+            let operands = irNodes[i].operands;
+            let formats = irNodes[i].getFormats();
+            if (isRangeInst(irNodes[i])) {
+                let rangeRegOffset = getRangeStartVregPos(irNodes[i]);
+                spillCount = Math.max(spillCount, operands.length - rangeRegOffset);
+
+                let level = 1 << (irNodes[i].getFormats())[0][rangeRegOffset][1];
+                if ((<VReg>operands[rangeRegOffset]).num >= level) {
+                    this.needAdjust = true;
+                }
+                continue;
+            }
+
+            let min = operands.length;
+            spillCount = Math.max(spillCount, min);
+            for (let j = 0; j < formats.length; ++j) {
+                let num = this.getNumOfInvalidVregs(operands, formats[j]);
+                if (num < min) {
+                    min = num;
+                }
+            }
+            if (min > 0) {
+                this.needAdjust = true;
+            }
+        }
+
+        if (this.needAdjust) {
+            this.vRegsId = 0;
+            while (spillCount--) {
+                let spill = new VReg();
+                this.allocIndexForVreg(spill);
+                this.spills.push(spill);
+            }
+        }
+    }
+
+    run(pandaGen: PandaGen): void {
+        let irNodes = pandaGen.getInsns();
+        let locals = pandaGen.getLocals();
+        let temps = pandaGen.getTemps();
+        let cache = pandaGen.getVregisterCache();
+        let parametersCount = pandaGen.getParametersCount();
+
+        this.allocIndexForVregs(locals, temps, cache);
+        this.allocSpillPool(irNodes);
+        if (this.needAdjust) {
+            // assign index to Vregs again
+            this.allocIndexForVregs(locals, temps, cache);
         }
         this.adjustInstructionsIfNeeded(irNodes);
         for (let i = 0; i < parametersCount; ++i) {
