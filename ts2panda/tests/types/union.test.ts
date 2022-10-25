@@ -30,7 +30,7 @@ describe("union tests in union.test.ts", function () {
     it("test union with primitives", function () {
         let fileNames = 'tests/types/union/union_primitives.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -45,7 +45,7 @@ describe("union tests in union.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
+                [2, 4], [24, "snippet_1"], [24, "snippet_2"], [24, "snippet_3"], [24, "snippet_4"], [2, 0]
             ],
             [
                 [2, 4], [2, 2], [25, 1], [25, 2]
@@ -68,7 +68,7 @@ describe("union tests in union.test.ts", function () {
     it("test union with user defined type", function () {
         let fileNames = 'tests/types/union/union_userDefinedType.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -81,17 +81,17 @@ describe("union tests in union.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
+                [2, 4], [24, "snippet_1"], [24, "snippet_2"], [24, "snippet_3"], [24, "snippet_4"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [25, 0], [2, 0],
                 [2, 0], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 4], [2, 2], [24, "_3"], [24, "_4"]
+                [2, 4], [2, 2], [24, "snippet_3"], [24, "snippet_4"]
             ],
             [
-                [2, 2], [24, "_1"]
+                [2, 2], [24, "snippet_1"]
             ],
             [
                 [2, 5], [25, 1]
@@ -104,7 +104,7 @@ describe("union tests in union.test.ts", function () {
     it("test union with multi same primitives", function () {
         let fileNames = 'tests/types/union/union_multi_same_primi.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -117,7 +117,7 @@ describe("union tests in union.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 1], [24, "_1"], [2, 0]
+                [2, 1], [24, "snippet_1"], [2, 0]
             ],
             [
                 [2, 4], [2, 2], [25, 1], [25, 2]
@@ -130,7 +130,7 @@ describe("union tests in union.test.ts", function () {
     it("test union with multi same user defined type", function () {
         let fileNames = 'tests/types/union/union_multi_userDefinedType.ts';
         let result = compileTsWithType(fileNames);
-        let functionPg = result.snippetCompiler.getPandaGenByName("func_main_0");
+        let functionPg = result.snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
@@ -144,17 +144,17 @@ describe("union tests in union.test.ts", function () {
         // check liberalBuffer
         let expectedBuffValues = [
             [
-                [2, 4], [24, "_1"], [24, "_2"], [24, "_3"], [24, "_4"], [2, 0]
+                [2, 4], [24, "snippet_1"], [24, "snippet_2"], [24, "snippet_3"], [24, "snippet_4"], [2, 0]
             ],
             [
                 [2, 1], [2, 0], [25, 0], [2, 0],
                 [2, 0], [2, 0], [2, 0], [2, 0]
             ],
             [
-                [2, 4], [2, 2], [24, "_3"], [24, "_4"]
+                [2, 4], [2, 2], [24, "snippet_3"], [24, "snippet_4"]
             ],
             [
-                [2, 2], [24, "_1"]
+                [2, 2], [24, "snippet_1"]
             ],
             [
                 [2, 5], [25, 1]

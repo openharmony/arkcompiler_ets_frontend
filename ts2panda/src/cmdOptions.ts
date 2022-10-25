@@ -51,6 +51,9 @@ const ts2pandaOptions = [
     { name: 'expression-watch-toolchain', type: String, defaultValue: "es2panda", description: "Specify the tool chain used to transform the expression" },
     { name: 'source-file', type: String, defaultValue: "", description: "specify the file path info recorded in generated abc" },
     { name: 'generate-tmp-file', type: Boolean, defaultValue: false, description: "whether to generate intermediate temporary files"},
+    { name: 'record-name', type: String, defaultValue: "", description: "specify the record name, this option can only be used when [merge-abc] is enabled." },
+    { name: 'output-proto', type: Boolean, defaultValue: false, description: "Output protoBin file. Default: false" },
+    { name: 'merge-abc', type: Boolean, defaultValue: false, description: "Compile as merge abc" },
 ]
 
 
@@ -209,6 +212,25 @@ export class CmdOptions {
         return outputFile;
     }
 
+    static setMergeAbc(mergeAbcMode: Boolean): void {
+        if (!this.options) {
+            return;
+        }
+        this.options["merge-abc"] = mergeAbcMode;
+    }
+
+    static getRecordName(): string {
+        if (!this.options) {
+            return "";
+        }
+
+        if (!this.options["merge-abc"]) {
+            return "";
+        }
+
+        return this.options["record-name"];
+    }
+
     static getTimeOut(): Number {
         if (!this.options) {
             return 0;
@@ -313,6 +335,20 @@ export class CmdOptions {
             return false;
         }
         return this.options["generate-tmp-file"];
+    }
+
+    static isOutputproto(): boolean {
+        if (!this.options) {
+            return false;
+        }
+        return this.options["output-proto"];
+    }
+
+    static isMergeAbc(): boolean {
+        if (!this.options) {
+            return false;
+        }
+        return this.options["merge-abc"]
     }
 
     // @ts-ignore

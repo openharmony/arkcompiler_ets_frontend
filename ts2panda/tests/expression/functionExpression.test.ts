@@ -71,7 +71,7 @@ describe("compileFunctionExpression", function () {
 
         let checkCount = 0;
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "test") {
+            if (pg.internalName == "UnitTest.test") {
                 expect(checkInstructions(pg.getInsns(), expected_func), "check func insns").to.be.true;
                 checkCount++;
             }
@@ -89,15 +89,15 @@ describe("compileFunctionExpression", function () {
 
         let checkCount = 0;
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "a") {
+            if (pg.internalName == "UnitTest.a") {
                 checkCount++;
             }
 
-            if (pg.internalName == "func_main_0") {
+            if (pg.internalName == "UnitTest.func_main_0") {
 
                 pg.getInsns().forEach((insns) => {
                     if (insns instanceof Definefunc) {
-                        expect(insns.operands[1]).to.equal('a');
+                        expect(insns.operands[1]).to.equal('UnitTest.a');
                         checkCount++;
                     }
                 });
@@ -117,15 +117,15 @@ describe("compileFunctionExpression", function () {
 
         let checkCount = 0;
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "a") {
+            if (pg.internalName == "UnitTest.a") {
                 checkCount++;
             }
 
-            if (pg.internalName == "func_main_0") {
+            if (pg.internalName == "UnitTest.func_main_0") {
 
                 pg.getInsns().forEach((insns) => {
                     if (insns instanceof Definefunc) {
-                        expect(insns.operands[1]).to.equal('a');
+                        expect(insns.operands[1]).to.equal('UnitTest.a');
                         checkCount++;
                     }
                 });
@@ -146,15 +146,15 @@ describe("compileFunctionExpression", function () {
         let checkCount = 0;
 
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "a") {
+            if (pg.internalName == "UnitTest.a") {
                 checkCount++;
             }
 
-            if (pg.internalName == "func_main_0") {
+            if (pg.internalName == "UnitTest.func_main_0") {
 
                 pg.getInsns().forEach((insns) => {
                     if (insns instanceof Definefunc) {
-                        expect(insns.operands[1]).to.equal('a');
+                        expect(insns.operands[1]).to.equal('UnitTest.a');
                         checkCount++;
                     }
                 });
@@ -183,16 +183,16 @@ describe("compileFunctionExpression", function () {
         ];
 
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "p") {
+            if (pg.internalName == "UnitTest.p") {
                 expect(checkInstructions(pg.getInsns(), expected_func), "check arrow func insns").to.be.true;
                 checkCount++;
             }
 
-            if (pg.internalName == "func_main_0") {
+            if (pg.internalName == "UnitTest.func_main_0") {
 
                 pg.getInsns().forEach((insns) => {
                     if (insns instanceof Definefunc) {
-                        expect(insns.operands[1]).to.equal('p');
+                        expect(insns.operands[1]).to.equal('UnitTest.p');
                         checkCount++;
                     }
                 });
@@ -289,15 +289,15 @@ describe("compileFunctionExpression", function () {
         let checkCount = 0;
 
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "a") {
+            if (pg.internalName == "UnitTest.a") {
                 expect(checkInstructions(pg.getInsns(), expected_func), "check generator func insns").to.be.true;
                 checkCount++;
             }
 
-            if (pg.internalName == "func_main_0") {
+            if (pg.internalName == "UnitTest.func_main_0") {
                 pg.getInsns().forEach((insns) => {
                     if (insns instanceof Definefunc) {
-                        expect(insns.operands[1]).to.equal('a');
+                        expect(insns.operands[1]).to.equal('UnitTest.a');
                         checkCount++;
                     }
                 });
@@ -352,15 +352,15 @@ describe("compileFunctionExpression", function () {
         let checkCount = 0;
 
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "a") {
+            if (pg.internalName == "UnitTest.a") {
                 expect(checkInstructions(pg.getInsns(), expected_func), "check async func insns").to.be.true;
                 checkCount++;
             }
 
-            if (pg.internalName == "func_main_0") {
+            if (pg.internalName == "UnitTest.func_main_0") {
                 pg.getInsns().forEach((insns) => {
                     if (insns instanceof Definefunc) {
-                        expect(insns.operands[1]).to.equal('a');
+                        expect(insns.operands[1]).to.equal('UnitTest.a');
                         checkCount++;
                     }
                 });

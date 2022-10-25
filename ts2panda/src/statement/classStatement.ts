@@ -364,9 +364,6 @@ export function compileSuperCall(compiler: Compiler, node: ts.CallExpression, ar
     let curScope = <Scope>compiler.getCurrentScope();
     let { scope, level, v } = curScope.find("this");
 
-    compiler.setCallOpt(scope, "this");
-    compiler.setCallOpt(scope, "4newTarget");
-
     if (scope && level >= 0) {
         let tmpScope = curScope;
         let needSetLexVar: boolean = false;
@@ -380,9 +377,6 @@ export function compileSuperCall(compiler: Compiler, node: ts.CallExpression, ar
 
         if (needSetLexVar) {
             scope.setLexVar(<Variable>v, curScope);
-        }
-        if (needSetLexVar && curScope instanceof FunctionScope) {
-            curScope.setCallOpt("0newTarget");
         }
     }
 

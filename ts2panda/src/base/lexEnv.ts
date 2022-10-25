@@ -28,14 +28,14 @@ import { CacheList, getVregisterCache } from "./vregisterCache";
 function createLexEnv(pandaGen: PandaGen, scope: VariableScope): IRNode[] {
     let lexEnvVars = scope.getNumLexEnv();
     let insns: IRNode[] = [];
-    let scopeInfoIdx: number | undefined = undefined;
+    let scopeInfoId: string | undefined = undefined;
     let lexVarInfo = scope.getLexVarInfo();
     if (CmdOptions.isDebugMode()) {
-        scopeInfoIdx = pandaGen.appendScopeInfo(lexVarInfo);
+        scopeInfoId = pandaGen.appendScopeInfo(lexVarInfo);
     }
 
     insns.push(
-        newLexicalEnv(lexEnvVars, scopeInfoIdx),
+        newLexicalEnv(lexEnvVars, scopeInfoId),
         storeAccumulator(getVregisterCache(pandaGen, CacheList.LexEnv))
     );
 

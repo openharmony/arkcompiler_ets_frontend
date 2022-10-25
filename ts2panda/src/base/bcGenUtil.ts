@@ -177,14 +177,13 @@ export function throwDeleteSuperProperty() {
     return new ThrowDeletesuperproperty();
 }
 
-export function newLexicalEnv(numVars: number, scopeInfoIdx: number | undefined) {
-    if (scopeInfoIdx == undefined) {
+export function newLexicalEnv(numVars: number, scopeInfoId: string | undefined) {
+    if (scopeInfoId == undefined) {
         return numVars <= MAX_INT8 ? new Newlexenv(new Imm(numVars)) :
                                      new WideNewlexenv(new Imm(numVars));
     }
-    let litId: string = scopeInfoIdx.toString()
-    return numVars <= MAX_INT8 ? new Newlexenvwithname(new Imm(numVars), litId) :
-                                 new WideNewlexenvwithname(new Imm(numVars), litId);
+    return numVars <= MAX_INT8 ? new Newlexenvwithname(new Imm(numVars), scopeInfoId) :
+                                 new WideNewlexenvwithname(new Imm(numVars), scopeInfoId);
 }
 
 export function popLexicalEnv() {

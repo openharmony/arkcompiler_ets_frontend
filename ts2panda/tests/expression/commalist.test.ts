@@ -17,6 +17,7 @@ import {
     expect
 } from 'chai';
 import 'mocha';
+import { CmdOptions } from '../../src/cmdOptions';
 import {
     Returnundefined,
     Stglobalvar,
@@ -37,6 +38,7 @@ import { PandaGen } from '../../src/pandagen';
 
 describe("CommaListExpression", function () {
     it("computedPropertyName", function () {
+        CmdOptions.parseUserCmd([""]);
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compileAfter(" \
         class Test { \
@@ -72,7 +74,7 @@ describe("CommaListExpression", function () {
         let insns = snippetCompiler.getGlobalInsns();
         let expected = [
             new Mov(new VReg(), new VReg()),
-            new Defineclasswithbuffer(new Imm(0), "#1#Test", "_0", new Imm(0), new VReg()),
+            new Defineclasswithbuffer(new Imm(0), "UnitTest.#1#Test", "test_1", new Imm(0), new VReg()),
             new Sta(new VReg()),
             new Lda(new VReg()),
             new Sttoglobalrecord(new Imm(1), "Test"),

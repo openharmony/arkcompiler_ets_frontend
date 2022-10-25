@@ -21,10 +21,19 @@ import { CompilerDriver } from "./compilerDriver";
 import * as diag from "./diagnostic";
 import * as jshelpers from "./jshelpers";
 import { LOGE } from "./log";
-import { setGlobalDeclare, setGlobalStrict } from "./strictMode";
+import {
+    setGlobalDeclare,
+    setGlobalStrict
+} from "./strictMode";
 import { TypeChecker } from "./typeChecker";
-import { setPos, isBase64Str, transformCommonjsModule } from "./base/util";
-import { IGNORE_ERROR_CODE } from './ignoreSyntaxError'
+import { IGNORE_ERROR_CODE } from './ignoreSyntaxError';
+import {
+    setPos,
+    isBase64Str,
+    transformCommonjsModule,
+    getRecordName,
+    getOutputBinName
+} from "./base/util";
 
 function checkIsGlobalDeclaration(sourceFile: ts.SourceFile) {
     for (let statement of sourceFile.statements) {
@@ -45,7 +54,8 @@ function checkIsGlobalDeclaration(sourceFile: ts.SourceFile) {
 
 function generateDTs(node: ts.SourceFile, options: ts.CompilerOptions) {
     let outputBinName = getOutputBinName(node);
-    let compilerDriver = new CompilerDriver(outputBinName);
+    let compilerDriver = new CompilerDriver(outputBinName, getRecordName(node));
+    CompilerDriver.srcNode = node;
     setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(node, options));
     compilerDriver.compile(node);
     compilerDriver.showStatistics();
@@ -90,7 +100,7 @@ function main(fileNames: string[], options: ts.CompilerOptions) {
                 (ctx: ts.TransformationContext) => {
                     return (node: ts.SourceFile) => {
                         let outputBinName = getOutputBinName(node);
-                        let compilerDriver = new CompilerDriver(outputBinName);
+                        let compilerDriver = new CompilerDriver(outputBinName, getRecordName(node));
                         compilerDriver.compileForSyntaxCheck(node);
                         return node;
                     }
@@ -118,7 +128,7 @@ function main(fileNames: string[], options: ts.CompilerOptions) {
                             node = transformCommonjsModule(node);
                         }
                         let outputBinName = getOutputBinName(node);
-                        let compilerDriver = new CompilerDriver(outputBinName);
+                        let compilerDriver = new CompilerDriver(outputBinName, getRecordName(node));
                         CompilerDriver.srcNode = node;
                         setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(node, options));
                         compilerDriver.compile(node);
@@ -141,21 +151,6 @@ function main(fileNames: string[], options: ts.CompilerOptions) {
         }
         diag.printDiagnostic(diagnostic);
     });
-}
-
-function getOutputBinName(node: ts.SourceFile) {
-    let outputBinName = CmdOptions.getOutputBinName();
-    let fileName = node.fileName.substring(0, node.fileName.lastIndexOf('.'));
-    let inputFileName = CmdOptions.getInputFileName();
-    if (/^win/.test(require('os').platform())) {
-        var inputFileTmps = inputFileName.split(path.sep);
-        inputFileName = path.posix.join(...inputFileTmps);
-    }
-
-    if (fileName != inputFileName) {
-        outputBinName = fileName + ".abc";
-    }
-    return outputBinName;
 }
 
 function getDtsFiles(libDir: string): string[] {
@@ -203,12 +198,14 @@ function specifyCustomLib(customLib) {
 const stopWatchingStr = "####";
 const watchAbcFileDefaultTimeOut = 10;
 const watchFileName = "watch_expressions";
+const watchOutputFileName = "Base64Output";
 // this path is only available in sdk
 const es2abcBinaryPath = path["join"](__dirname, "..", "bin", path.sep);
 const es2abcBinaryName = /^win/.test(require('os').platform()) ? "es2abc.exe" : "es2abc";
 const es2abcBase64Input = "--base64Input";
 const es2abcDebuggerEvaluateFlag = "--debugger-evaluate-expression";
 const es2abcBase64Output = "--base64Output";
+// need to specify the record name as 'Base64Output' in es2abc's commandline; cancel the opMergeAbc option
 
 function callEs2pandaToolChain(ideInputStr: string) {
     let commandLine = "\"" + es2abcBinaryPath + es2abcBinaryName + "\" " + es2abcBase64Input + " \"" + ideInputStr
@@ -306,7 +303,7 @@ function compileWatchExpression(jsFileName: string, errorMsgFileName: string, op
                     return (node: ts.SourceFile) => {
                         if (path.basename(node.fileName) == fileName) { node = sourceFile; }
                         let outputBinName = getOutputBinName(node);
-                        let compilerDriver = new CompilerDriver(outputBinName);
+                        let compilerDriver = new CompilerDriver(outputBinName, watchOutputFileName);
                         compilerDriver.compileForSyntaxCheck(node);
                         return node;
                     }
@@ -331,7 +328,8 @@ function compileWatchExpression(jsFileName: string, errorMsgFileName: string, op
                             node = ts.factory.updateSourceFile(node, newStatements);
                         }
                         let outputBinName = getOutputBinName(node);
-                        let compilerDriver = new CompilerDriver(outputBinName);
+                        let compilerDriver = new CompilerDriver(outputBinName, watchOutputFileName);
+                        CompilerDriver.srcNode = node;
                         setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(node, options));
                         compilerDriver.compile(node);
                         return node;
@@ -347,10 +345,11 @@ function launchWatchEvaluateDeamon(parsed: ts.ParsedCommandLine | undefined) {
         console.log("startWatchingSuccess supportTimeout");
         return;
     }
-    let deamonFilePrefix = CmdOptions.getEvaluateDeamonPath() + path.sep + watchFileName;
-    let jsFileName = deamonFilePrefix + ".js";
-    let abcFileName = deamonFilePrefix + ".abc";
-    let errorMsgFileName = deamonFilePrefix + ".err";
+    let deamonJSFilePrefix = CmdOptions.getEvaluateDeamonPath() + path.sep + watchFileName;
+    let deamonABCFilePrefix = CmdOptions.getEvaluateDeamonPath() + path.sep + watchOutputFileName;
+    let jsFileName = deamonJSFilePrefix + ".js";
+    let abcFileName = deamonABCFilePrefix + ".abc";
+    let errorMsgFileName = deamonJSFilePrefix + ".err";
 
     if (fs.existsSync(jsFileName)) {
         console.log("watchFileServer has been initialized supportTimeout");

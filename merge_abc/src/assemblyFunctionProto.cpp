@@ -161,7 +161,7 @@ void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pan
     SourceLocation::Deserialize(protoFunction.bodylocation(), function.body_location);
 
     if (protoFunction.has_filelocation()) {
-        FileLocation::Deserialize(protoFunction.filelocation(), function.file_location.value());
+        FileLocation::Deserialize(protoFunction.filelocation(), function.file_location);
     }
     function.SetFunctionKind(static_cast<panda::panda_file::FunctionKind>(protoFunction.function_kind()));
 }

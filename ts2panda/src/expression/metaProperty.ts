@@ -23,8 +23,6 @@ export function compileMetaProperty(expr: ts.MetaProperty, compiler: Compiler) {
     if (id == "target") {
         let { scope, level, v } = curScope.find("4newTarget");
 
-        compiler.setCallOpt(scope, "4newTarget");
-
         if (!v) {
             throw new Error("fail to access new.target");
         } else {

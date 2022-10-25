@@ -9,7 +9,7 @@ Handle types for function: setName
 Handle types for function: setId
 (instruction order, type): (-2, 111), (-1, 105), 
 Handle types for function: dump
-(instruction order, type): (-2, 111), (-1, 107), (14, 4), 
+(instruction order, type): (-2, 111), (-1, 107), (16, 4), 
 Handle types for function: stest
 (instruction order, type): (-2, 101), (-1, 108), 
 Handle types for function: test
@@ -17,6 +17,6 @@ Handle types for function: test
 Handle types for function: testwiththis
 (instruction order, type): (-2, 111), (-1, 110), 
 Handle types for function: add
-(instruction order, type): (-1, 112), (7, 1), 
+(instruction order, type): (-1, 112), (9, 1), 
 Handle types for function: func_main_0
 (instruction order, type): 

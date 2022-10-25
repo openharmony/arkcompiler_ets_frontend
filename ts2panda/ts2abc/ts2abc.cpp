@@ -37,6 +37,7 @@ namespace panda::ts2abc {
 // pandasm definitions
 constexpr const auto LANG_EXT = panda::pandasm::extensions::Language::ECMASCRIPT;
 const std::string WHOLE_LINE;
+bool g_isMergeAbc = false;
 bool g_debugModeEnabled = false;
 bool g_debugLogEnabled = false;
 int g_optLevel = 0;
@@ -52,6 +53,8 @@ std::string g_compilerOutputProto = "";
 std::string g_recordName = "";
 constexpr uint32_t LITERALBUFFERINDEXOFFSET = 100;
 uint32_t MAX_UINT8 = static_cast<uint32_t>(std::numeric_limits<uint8_t>::max());
+bool g_isOutputProto = false;
+static constexpr const char* PROTO_BIN_SUFFIX = "protoBin";
 
 constexpr std::size_t BOUND_LEFT = 0;
 constexpr std::size_t BOUND_RIGHT = 0;
@@ -69,7 +72,6 @@ std::unordered_map<int, panda::pandasm::Opcode> g_opcodeMap = {
 static panda::pandasm::Record MakeRecordDefinition(const std::string &name)
 {
     auto record = panda::pandasm::Record(name, LANG_EXT);
-
     return record;
 }
 
@@ -175,6 +177,15 @@ static std::string ConvertUtf8ToMUtf8(const std::string &data)
 static std::string GetLiteralId(int64_t index)
 {
     return g_recordName + "_" + std::to_string(index);
+}
+
+static bool IsFuncMain0(std::string funcName)
+{
+    std::string expectedName = "func_main_0";
+    if (g_isMergeAbc) {
+        expectedName = g_recordName + "." + expectedName;
+    }
+    return funcName == expectedName;
 }
 
 static std::string ParseUnicodeEscapeString(const std::string &data)
@@ -591,34 +602,6 @@ static void ParseFunctionCatchTables(const Json::Value &function, panda::pandasm
     }
 }
 
-static void ParseFunctionCallType(const Json::Value &function, panda::pandasm::Function &pandaFunc)
-{
-    if (g_debugModeEnabled) {
-        return;
-    }
-
-    std::string funcName = "";
-    if (function.isMember("n") && function["n"].isString()) {
-        funcName = function["n"].asString();
-    }
-    if (funcName == "func_main_0") {
-        return;
-    }
-
-    uint32_t callType = 0;
-    if (function.isMember("ct") && function["ct"].isInt()) {
-        callType = function["ct"].asUInt();
-    }
-    panda::pandasm::AnnotationData callTypeAnnotation("_ESCallTypeAnnotation");
-    std::string annotationName = "callType";
-    panda::pandasm::AnnotationElement callTypeAnnotationElement(
-        annotationName, std::make_unique<panda::pandasm::ScalarValue>(
-        panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U32>(callType)));
-    callTypeAnnotation.AddElement(std::move(callTypeAnnotationElement));
-    const_cast<std::vector<panda::pandasm::AnnotationData>&>(
-        pandaFunc.metadata->GetAnnotations()).push_back(std::move(callTypeAnnotation));
-}
-
 static std::vector<std::pair<int32_t, uint32_t>> GetInstTypeMap(const Json::Value &function,
                                                                 panda::pandasm::Function &pandaFunc)
 {
@@ -778,7 +761,7 @@ static void ParseFunctionExportedType(const Json::Value &function, panda::pandas
     std::string funcName = "";
     if (function.isMember("n") && function["n"].isString()) {
         funcName = function["n"].asString();
-        if (funcName != "func_main_0") {
+        if (!IsFuncMain0(funcName)) {
             return;
         }
     }
@@ -805,7 +788,7 @@ static void ParseFunctionDeclaredType(const Json::Value &function, panda::pandas
     std::string funcName = "";
     if (function.isMember("n") && function["n"].isString()) {
         funcName = function["n"].asString();
-        if (funcName != "func_main_0") {
+        if (!IsFuncMain0(funcName)) {
             return;
         }
     }
@@ -849,15 +832,13 @@ static panda::pandasm::Function ParseFunction(const Json::Value &function, panda
     ParseSourceFileInfo(function, pandaFunc);
     ParseFunctionLabels(function, pandaFunc);
     ParseFunctionCatchTables(function, pandaFunc);
-    // parsing call opt type
-    ParseFunctionCallType(function, pandaFunc);
     ParseFunctionTypeInfo(function, pandaFunc, prog);
     ParseFunctionExportedType(function, pandaFunc, prog);
     ParseFunctionDeclaredType(function, pandaFunc, prog);
     ParseFunctionKind(function, pandaFunc);
     ParseFunctionIcSize(function, pandaFunc);
 
-    if (g_isDtsFile && pandaFunc.name != "func_main_0") {
+    if (g_isDtsFile && !IsFuncMain0(pandaFunc.name)) {
         pandaFunc.metadata->SetAttribute("external");
     }
 
@@ -879,6 +860,13 @@ static void GenerateESTypeAnnotationRecord(panda::pandasm::Program &prog)
     prog.record_table.emplace(tsTypeAnnotationRecord.name, std::move(tsTypeAnnotationRecord));
 }
 
+static void GenerateESModuleRecord(panda::pandasm::Program &prog)
+{
+    auto ecmaModuleRecord = panda::pandasm::Record("_ESModuleRecord", LANG_EXT);
+    ecmaModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
+    prog.record_table.emplace(ecmaModuleRecord.name, std::move(ecmaModuleRecord));
+}
+
 static void GenerateCommonJsRecord(panda::pandasm::Program &prog, bool isCommonJs)
 {
     // when multi-abc file get merged, field should be inserted in abc's own record
@@ -894,20 +882,29 @@ static void GenerateCommonJsRecord(panda::pandasm::Program &prog, bool isCommonJ
     prog.record_table.emplace(commonjsRecord.name, std::move(commonjsRecord));
 }
 
-static void GenerateESModuleRecord(panda::pandasm::Program &prog)
+static void SetCommonjsField(panda::pandasm::Program &prog, bool isCommonjs)
 {
-    auto ecmaModuleRecord = panda::pandasm::Record("_ESModuleRecord", LANG_EXT);
-    ecmaModuleRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
-    prog.record_table.emplace(ecmaModuleRecord.name, std::move(ecmaModuleRecord));
+    auto iter = prog.record_table.find(g_recordName);
+    if (iter != prog.record_table.end()) {
+        auto &rec = iter->second;
+        auto isCommonJsField = panda::pandasm::Field(LANG_EXT);
+        isCommonJsField.name = "isCommonjs";
+        isCommonJsField.type = panda::pandasm::Type("u8", 0);
+        isCommonJsField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(isCommonjs)));
+        rec.field_list.emplace_back(std::move(isCommonJsField));
+    }
 }
 
 static void AddModuleRecord(panda::pandasm::Program &prog, const std::string &moduleName)
 {
-    auto iter = prog.record_table.find("_ESModuleRecord");
+    std::string moduleRecordName = g_isMergeAbc ? g_recordName : "_ESModuleRecord";
+    std::string fieldName = g_isMergeAbc ? "moduleRecordIdx" : moduleName;
+    auto iter = prog.record_table.find(moduleRecordName);
     if (iter != prog.record_table.end()) {
         auto &rec = iter->second;
         auto moduleIdxField = panda::pandasm::Field(LANG_EXT);
-        moduleIdxField.name = moduleName;
+        moduleIdxField.name = fieldName;
         moduleIdxField.type = panda::pandasm::Type("u32", 0);
         std::string moduleId = GetLiteralId(g_newLiteralArrayIndex);
         moduleIdxField.metadata->SetValue(
@@ -937,11 +934,19 @@ int ParseJson(const std::string &data, Json::Value &rootValue)
     return RETURN_SUCCESS;
 }
 
+static void ParseMergeAbcMode(const Json::Value &rootValue)
+{
+    Logd("---------------parse is_merge_abc----------------");
+    if (rootValue.isMember("merge_abc") && rootValue["merge_abc"].isBool()) {
+        g_isMergeAbc = rootValue["merge_abc"].asBool();
+    }
+}
+
 static void ParseModuleMode(const Json::Value &rootValue, panda::pandasm::Program &prog)
 {
     Logd("----------------parse module_mode-----------------");
     if (rootValue.isMember("module_mode") && rootValue["module_mode"].isBool()) {
-        if (rootValue["module_mode"].asBool()) {
+        if (rootValue["module_mode"].asBool() && !g_isMergeAbc) {
             GenerateESModuleRecord(prog);
         }
     }
@@ -951,8 +956,12 @@ static void ParseCommonJsModuleMode(const Json::Value &rootValue, panda::pandasm
 {
     Logd("------------parse commonjs_module_mode-------------");
     if (rootValue.isMember("commonjs_module") && rootValue["commonjs_module"].isBool()) {
-        if (rootValue["commonjs_module"].asBool()) {
-            GenerateCommonJsRecord(prog, true);
+        if (g_isMergeAbc) {
+            SetCommonjsField(prog, rootValue["commonjs_module"].asBool());
+        } else {
+            if (rootValue["commonjs_module"].asBool()) {
+                GenerateCommonJsRecord(prog, true);
+            }
         }
     }
 }
@@ -1018,10 +1027,11 @@ static void ParseEnableTypeInfo(const Json::Value &rootValue)
 static void ParseCompilerOutputProto(const Json::Value &rootValue)
 {
     Logd("-----------------parse compiler output proto-----------------");
-    if (rootValue.isMember("output-proto") && rootValue["output-proto"].isString()) {
-        g_compilerOutputProto = rootValue["output-proto"].asString();
+    if (rootValue.isMember("output-proto") && rootValue["output-proto"].isBool()) {
+        g_isOutputProto = rootValue["output-proto"].asBool();
     }
 }
+
 static void ReplaceAllDistinct(std::string &str, const std::string &oldValue, const std::string &newValue)
 {
     for (std::string::size_type pos(0); pos != std::string::npos; pos += newValue.length()) {
@@ -1037,6 +1047,7 @@ static void ParseOptions(const Json::Value &rootValue, panda::pandasm::Program &
 {
     GenerateESCallTypeAnnotationRecord(prog);
     GenerateESTypeAnnotationRecord(prog);
+    ParseMergeAbcMode(rootValue);
     ParseModuleMode(rootValue, prog);
     ParseCommonJsModuleMode(rootValue, prog);
     ParseLogEnable(rootValue);
@@ -1055,9 +1066,10 @@ static void ParseSingleFunc(const Json::Value &rootValue, panda::pandasm::Progra
     prog.function_table.emplace(function.name.c_str(), std::move(function));
 }
 
-static void ParseSingleRec(const Json::Value &rootValue, panda::pandasm::Program &prog)
+static void ParseRec(const Json::Value &rootValue, panda::pandasm::Program &prog)
 {
     auto record = ParseRecord(rootValue["rb"]);
+    g_recordName = record.name;
     prog.record_table.emplace(record.name.c_str(), std::move(record));
 }
 
@@ -1213,6 +1225,30 @@ static void ParseSingleTypeInfo(const Json::Value &rootValue, panda::pandasm::Pr
     auto typeInfoRecord = rootValue["ti"];
     auto typeFlag = typeInfoRecord["tf"].asBool();
     auto typeSummaryIndex = typeInfoRecord["tsi"].asString();
+
+    if (g_isMergeAbc) {
+        auto iter = prog.record_table.find(g_recordName);
+        if (iter != prog.record_table.end()) {
+            auto &rec = iter->second;
+
+            auto typeFlagField = panda::pandasm::Field(LANG_EXT);
+            typeFlagField.name = "typeFlag";
+            typeFlagField.type = panda::pandasm::Type("u8", 0);
+            typeFlagField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(
+            static_cast<uint8_t>(typeFlag)));
+            rec.field_list.emplace_back(std::move(typeFlagField));
+
+            if (g_enableTypeinfo) {
+                auto typeSummaryIndexField = panda::pandasm::Field(LANG_EXT);
+                typeSummaryIndexField.name = "typeSummaryOffset";
+                typeSummaryIndexField.type = panda::pandasm::Type("u32", 0);
+                typeSummaryIndexField.metadata->SetValue(
+                    panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::LITERALARRAY>(typeSummaryIndex));
+                rec.field_list.emplace_back(std::move(typeSummaryIndexField));
+            }
+        }
+        return;
+    }
     auto ecmaTypeInfoRecord = panda::pandasm::Record("_ESTypeInfoRecord", LANG_EXT);
     ecmaTypeInfoRecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
 
@@ -1255,7 +1291,7 @@ static int ParseSmallPieceJson(const std::string &subJson, panda::pandasm::Progr
         }
         case static_cast<int>(JsonType::RECORD): {
             if (rootValue.isMember("rb") && rootValue["rb"].isObject()) {
-                ParseSingleRec(rootValue, prog);
+                ParseRec(rootValue, prog);
             }
             break;
         }
@@ -1432,9 +1468,8 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
 
     Logd("parsing done, calling pandasm\n");
 
-    std::string compilerOutputProto = g_compilerOutputProto;
-    if (options.GetCompilerOutputProto().size() > 0) {
-        compilerOutputProto = options.GetCompilerOutputProto();
+    if (g_isOutputProto) {
+        g_compilerOutputProto = output.substr(0, output.find_last_of(".") + 1).append(PROTO_BIN_SUFFIX);
     }
 
 #ifdef ENABLE_BYTECODE_OPT
@@ -1462,8 +1497,8 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
 
         panda::bytecodeopt::OptimizeBytecode(&prog, mapsp, output.c_str(), true);
 
-        if (compilerOutputProto.size() > 0) {
-            panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, compilerOutputProto);
+        if (g_compilerOutputProto.size() > 0) {
+            panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, g_compilerOutputProto);
             return true;
         }
 
@@ -1474,8 +1509,8 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
         return true;
     }
 #endif
-    if (compilerOutputProto.size() > 0) {
-        panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, compilerOutputProto);
+    if (g_compilerOutputProto.size() > 0) {
+        panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, g_compilerOutputProto);
         return true;
     }
 
@@ -1485,6 +1520,52 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
     }
 
     Logd("Successfully generated: %s\n", output.c_str());
+    return true;
+}
+
+bool CompileNpmEntries(const std::string &input, const std::string &output)
+{
+    auto inputAbs = panda::os::file::File::GetAbsolutePath(input);
+    if (!inputAbs) {
+        std::cerr << "Input file does not exist" << std::endl;
+        return false;
+    }
+    auto fpath = inputAbs.Value();
+    if (panda::os::file::File::IsRegularFile(fpath) == false) {
+        std::cerr << "Input must be either a regular file or a directory" << std::endl;
+        return false;
+    }
+
+    std::stringstream ss;
+    std::ifstream inputStream(input);
+    if (inputStream.fail()) {
+        std::cerr << "Failed to read file to buffer: " << input << std::endl;
+        return false;
+    }
+    ss << inputStream.rdbuf();
+
+    panda::pandasm::Program prog = panda::pandasm::Program();
+    prog.lang = LANG_EXT;
+
+    std::string line;
+    while (getline(ss, line)) {
+        std::size_t pos = line.find(":");
+        std::string recordName = line.substr(0, pos);
+        std::string field = line.substr(pos + 1);
+
+        auto langExt = LANG_EXT;
+        auto entryNameField = panda::pandasm::Field(langExt);
+        entryNameField.name = field;
+        entryNameField.type = panda::pandasm::Type("u8", 0);
+        entryNameField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(
+            static_cast<bool>(0)));
+
+        panda::pandasm::Record entryRecord = panda::pandasm::Record(recordName, langExt);
+        entryRecord.field_list.emplace_back(std::move(entryNameField));
+        prog.record_table.emplace(recordName, std::move(entryRecord));
+    }
+
+    panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, output);
     return true;
 }
 
