@@ -11,12 +11,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if (defined(ark_independent_build)) {
-  ets_frontend_root = "//ets_frontend"
-} else {
-  build_root = "//build"
-  ets_frontend_root = "//arkcompiler/ets_frontend"
+if (!defined(ark_standalone_build)) {
+  ark_standalone_build = false
 }
+
+if (!ark_standalone_build) {
+  build_root = "//build"
+  ark_third_party_root = "//third_party"
+  import("$build_root/ohos.gni")
+} else {
+  ark_third_party_root = "//arkcompiler/toolchain/build/third_party_gn"
+  import("$build_root/ark.gni")
+}
+
+ets_frontend_root = "//arkcompiler/ets_frontend"
 
 toolchain_linux = "$build_root/toolchain/linux:clang_x64"
 if (host_cpu == "arm64") {
