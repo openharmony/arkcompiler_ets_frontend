@@ -21,7 +21,7 @@ import { LOGE } from "./log";
 import * as path from "path";
 import { execute } from "./base/util";
 
-const ts2pandaOptions = [
+export const ts2pandaOptions = [
     { name: 'commonjs', alias: 'c', type: Boolean, defaultValue: false, description: "compile as commonJs module." },
     { name: 'modules', alias: 'm', type: Boolean, defaultValue: false, description: "compile as module." },
     { name: 'debug-log', alias: 'l', type: Boolean, defaultValue: false, description: "show info debug log and generate the json file." },
@@ -54,6 +54,7 @@ const ts2pandaOptions = [
     { name: 'record-name', type: String, defaultValue: "", description: "specify the record name, this option can only be used when [merge-abc] is enabled." },
     { name: 'output-proto', type: Boolean, defaultValue: false, description: "Output protoBin file. Default: false" },
     { name: 'merge-abc', type: Boolean, defaultValue: false, description: "Compile as merge abc" },
+    { name: 'input-file', type: String, defaultValue: "", description: "A file containing a list of source files to be compiled. Each line of this file should be constructed in such format: fileName;recordName;moduleType;sourceFile" },
 ]
 
 
@@ -143,6 +144,17 @@ export class CmdOptions {
             return false;
         }
         return true;
+    }
+
+    static isCompileFilesList(): boolean {
+        if (!this.options) {
+            return false;
+        }
+        return this.options["input-file"].length != 0;
+    }
+
+    static getCompileFilesList(): string {
+        return this.options["input-file"];
     }
 
     static isCommonJs(): boolean {

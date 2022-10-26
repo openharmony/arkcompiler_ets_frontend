@@ -58,6 +58,7 @@ import { isFunctionLikeDeclaration } from "./syntaxCheckHelper";
 import { getLiteralKey } from "./base/util";
 
 const dollarSign: RegExp = /\$/g;
+const starSign: RegExp = /\*/g;
 
 const JsonType = {
     "function": 0,
@@ -67,7 +68,8 @@ const JsonType = {
     "module": 4,
     "options": 5,
     'type_info': 6,
-    'record_name': 7
+    'record_name': 7,
+    'output_filename': 8
 };
 export class Ts2Panda {
     static strings: Set<string> = new Set();
@@ -169,6 +171,7 @@ export class Ts2Panda {
 
         let jsonStrUnicode = escapeUnicode(JSON.stringify(strObject, null, 2));
         jsonStrUnicode = "$" + jsonStrUnicode.replace(dollarSign, '#$') + "$";
+        jsonStrUnicode = jsonStrUnicode.replace(starSign, '#*');
         if (CmdOptions.isEnableDebugLog()) {
             Ts2Panda.jsonString += jsonStrUnicode;
         }
@@ -205,6 +208,7 @@ export class Ts2Panda {
             }
             let jsonLiteralArrUnicode = escapeUnicode(JSON.stringify(literalArrayObject, null, 2));
             jsonLiteralArrUnicode = "$" + jsonLiteralArrUnicode.replace(dollarSign, '#$') + "$";
+            jsonLiteralArrUnicode = jsonLiteralArrUnicode.replace(starSign, '#*');
             if (CmdOptions.isEnableDebugLog()) {
                 Ts2Panda.jsonString += jsonLiteralArrUnicode;
             }
@@ -226,10 +230,12 @@ export class Ts2Panda {
             "display_typeinfo": CmdOptions.getDisplayTypeinfo(),
             "is_dts_file": isGlobalDeclare(),
             "output-proto": CmdOptions.isOutputproto(),
-            "record_type": enableRecordType
+            "record_type": enableRecordType,
+            "input-file": CmdOptions.getCompileFilesList()
         };
         let jsonOpt = JSON.stringify(options, null, 2);
         jsonOpt = "$" + jsonOpt.replace(dollarSign, '#$') + "$";
+        jsonOpt = jsonOpt.replace(starSign, '#*');
         if (CmdOptions.isEnableDebugLog()) {
             Ts2Panda.jsonString += jsonOpt;
         }
@@ -243,6 +249,7 @@ export class Ts2Panda {
         }
         let jsonRecord = escapeUnicode(JSON.stringify(record, null, 2));
         jsonRecord = "$" + jsonRecord.replace(dollarSign, '#$') + "$";
+        jsonRecord = jsonRecord.replace(starSign, '#*');
         if (CmdOptions.isEnableDebugLog()) {
             Ts2Panda.jsonString += jsonRecord;
         }
@@ -439,6 +446,7 @@ export class Ts2Panda {
         }
         let jsonFuncUnicode = escapeUnicode(JSON.stringify(funcObject, null, 2));
         jsonFuncUnicode = "$" + jsonFuncUnicode.replace(dollarSign, '#$') + "$";
+        jsonFuncUnicode = jsonFuncUnicode.replace(starSign, '#*');
         if (CmdOptions.isEnableDebugLog()) {
             Ts2Panda.jsonString += jsonFuncUnicode;
         }
@@ -453,6 +461,7 @@ export class Ts2Panda {
             };
             let jsonModuleUnicode = escapeUnicode(JSON.stringify(moduleObject, null, 2));
             jsonModuleUnicode = "$" + jsonModuleUnicode.replace(dollarSign, '#$') + "$";
+            jsonModuleUnicode = jsonModuleUnicode.replace(starSign, '#*');
             if (CmdOptions.isEnableDebugLog()) {
                 Ts2Panda.jsonString += jsonModuleUnicode;
             }
@@ -474,12 +483,30 @@ export class Ts2Panda {
             't': JsonType.type_info,
             'ti': typeInfo
         };
-        let jsonModuleUnicode = escapeUnicode(JSON.stringify(typeInfoObject, null, 2));
-        jsonModuleUnicode = "$" + jsonModuleUnicode.replace(dollarSign, '#$') + "$";
+        let jsonTypeInfoUnicode = escapeUnicode(JSON.stringify(typeInfoObject, null, 2));
+        jsonTypeInfoUnicode = "$" + jsonTypeInfoUnicode.replace(dollarSign, '#$') + "$";
+        jsonTypeInfoUnicode = jsonTypeInfoUnicode.replace(starSign, '#*');
         if (CmdOptions.isEnableDebugLog()) {
-            Ts2Panda.jsonString += jsonModuleUnicode;
+            Ts2Panda.jsonString += jsonTypeInfoUnicode;
         }
-        ts2abc.stdio[3].write(jsonModuleUnicode + '\n');
+        ts2abc.stdio[3].write(jsonTypeInfoUnicode + '\n');
+    }
+
+    static dumpOutputFileName(ts2abc: any, outputFileName: string): void {
+        let outputFileNameObject = {
+            "t": JsonType.output_filename,
+            "ofn": outputFileName
+        }
+
+        let jsonOutputFileNameUnicode = escapeUnicode(JSON.stringify(outputFileNameObject, null, 2));
+        jsonOutputFileNameUnicode = "$" + jsonOutputFileNameUnicode.replace(dollarSign, '#$') + "$";
+        jsonOutputFileNameUnicode = jsonOutputFileNameUnicode.replace(starSign, '#*');
+        if (CmdOptions.isEnableDebugLog()) {
+            Ts2Panda.jsonString += jsonOutputFileNameUnicode;
+        }
+        ts2abc.stdio[3].write(jsonOutputFileNameUnicode + '\n');
+        // seperator between program
+        ts2abc.stdio[3].write("*" + '\n');
     }
 
     static clearDumpData() {
