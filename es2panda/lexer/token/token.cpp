@@ -92,6 +92,27 @@ bool Token::IsReservedTypeName() const
     }
 }
 
+bool Token::IsJsStrictReservedWord() const
+{
+    switch (keywordType_)
+    {
+        case TokenType::KEYW_ARGUMENTS:
+        case TokenType::KEYW_EVAL:
+        case TokenType::KEYW_STATIC:
+        case TokenType::KEYW_PRIVATE:
+        case TokenType::KEYW_PROTECTED:
+        case TokenType::KEYW_PUBLIC:
+        case TokenType::KEYW_IMPLEMENTS:
+        case TokenType::KEYW_INTERFACE:
+        case TokenType::KEYW_PACKAGE:
+        case TokenType::KEYW_LET:
+        case TokenType::KEYW_YIELD:
+            return true;
+        default:
+            return false;
+    }
+}
+
 bool Token::IsBinaryToken(TokenType type)
 {
     return (type >= TokenType::PUNCTUATOR_NULLISH_COALESCING && type <= TokenType::PUNCTUATOR_EXPONENTIATION);
