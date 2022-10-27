@@ -407,6 +407,7 @@ private:
     ir::ExportNamedDeclaration *ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc,
                                                             ArenaVector<ir::Decorator *> &&decorators);
     ir::Identifier *ParseNamedExport(const lexer::Token &exportedToken);
+    void CheckStrictReservedWord() const;
 
     // StatementParser.Cpp
 
