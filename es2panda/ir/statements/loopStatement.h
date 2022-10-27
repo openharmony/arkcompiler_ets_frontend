@@ -63,6 +63,8 @@ public:
 protected:
     explicit LoopStatement(AstNodeType type, binder::LoopScope *scope) : Statement(type), scope_(scope) {}
 
+    Statement *UpdateChildStatement(const NodeUpdater &cb, const binder::Binder *binder, Statement *statement) const;
+
     binder::LoopScope *scope_;
 };
 }  // namespace panda::es2panda::ir

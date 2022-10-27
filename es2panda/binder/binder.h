@@ -200,6 +200,7 @@ private:
 
     // TypeScript specific functions
     void BuildTSSignatureDeclarationBaseParams(const ir::AstNode *typeNode);
+    void BuildTSSignatureDeclarationBaseParamsWithParent(const ir::AstNode *parent, ir::AstNode *typeNode);
 
     parser::Program *program_ {};
     FunctionScope *topScope_ {};

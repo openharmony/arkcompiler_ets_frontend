@@ -89,6 +89,21 @@ public:
         return typeParams_;
     }
 
+    TSTypeParameterDeclaration *TypeParams()
+    {
+        return typeParams_;
+    }
+
+    const Expression *ThisParams() const
+    {
+        return thisParam_;
+    }
+
+    Expression *ThisParams()
+    {
+        return thisParam_;
+    }
+
     const AstNode *Body() const
     {
         return body_;

@@ -60,12 +60,12 @@ void ScriptFunction::Iterate(const NodeTraverser &cb) const
         cb(id_);
     }
 
-    if (thisParam_) {
-        cb(thisParam_);
-    }
-
     if (typeParams_) {
         cb(typeParams_);
+    }
+
+    if (thisParam_) {
+        cb(thisParam_);
     }
 
     for (auto *it : params_) {
@@ -111,12 +111,12 @@ void ScriptFunction::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 
     auto paramScopeCtx = binder::LexicalScope<binder::FunctionParamScope>::Enter(binder, scope_->ParamScope());
 
-    if (thisParam_) {
-        thisParam_ = std::get<ir::AstNode *>(cb(thisParam_))->AsExpression();
-    }
-
     if (typeParams_) {
         typeParams_ = std::get<ir::AstNode *>(cb(typeParams_))->AsTSTypeParameterDeclaration();
+    }
+
+    if (thisParam_) {
+        thisParam_ = std::get<ir::AstNode *>(cb(thisParam_))->AsExpression();
     }
 
     for (auto iter = params_.begin(); iter != params_.end(); iter++) {

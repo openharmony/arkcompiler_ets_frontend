@@ -1557,19 +1557,7 @@ ir::IfStatement *ParserImpl::ParseIfStatement()
     }
 
     lexer_->NextToken();
-
-    ir::Statement *consequent = nullptr;
-    binder::Scope *consequentScope = nullptr;
-    {
-        auto consequentCtx = binder::LexicalScope<binder::LocalScope>(Binder());
-        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-            consequent = ParseBlockStatement(consequentCtx.GetScope());
-            lexer_->NextToken();
-        } else {
-            consequent = ParseStatement(StatementParsingFlags::IF_ELSE);
-        }
-        consequentScope = consequentCtx.GetScope();
-    }
+    ir::Statement *consequent = ParseStatement(StatementParsingFlags::IF_ELSE);
 
     if (Extension() == ScriptExtension::TS && consequent->IsEmptyStatement()) {
         ThrowSyntaxError("The body of an if statement cannot be the empty statement");
@@ -1577,23 +1565,14 @@ ir::IfStatement *ParserImpl::ParseIfStatement()
 
     endLoc = consequent->End();
     ir::Statement *alternate = nullptr;
-    binder::Scope *alternateScope = nullptr;
 
     if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_ELSE) {
         lexer_->NextToken();  // eat ELSE keyword
-        auto alternateCtx = binder::LexicalScope<binder::LocalScope>(Binder());
-        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-            alternate = ParseBlockStatement(alternateCtx.GetScope());
-            lexer_->NextToken();
-        } else {
-            alternate = ParseStatement(StatementParsingFlags::IF_ELSE);
-        }
+        alternate = ParseStatement(StatementParsingFlags::IF_ELSE);
         endLoc = alternate->End();
-        alternateScope = alternateCtx.GetScope();
     }
 
-    auto *ifStatement = AllocNode<ir::IfStatement>(test, consequent, consequentScope,
-                                                   alternate, alternateScope);
+    auto *ifStatement = AllocNode<ir::IfStatement>(test, consequent, alternate);
     ifStatement->SetRange({startLoc, endLoc});
     return ifStatement;
 }

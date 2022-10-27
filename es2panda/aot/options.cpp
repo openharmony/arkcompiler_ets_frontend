@@ -136,6 +136,9 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opParseOnly("parse-only", false, "Parse the input only");
     panda::PandArg<bool> opEnableTypeCheck("enable-type-check", false, "Check the type in ts after parse");
     panda::PandArg<bool> opDumpAst("dump-ast", false, "Dump the parsed AST");
+    panda::PandArg<bool> opDumpTransformedAst("dump-transformed-ast", false, "Dump the parsed AST after transform");
+    panda::PandArg<bool> opCheckTransformedAstStructure("check-transformed-ast-structure", false,
+                                                        "Check the AST structure after transform");
 
     // type extractor
     panda::PandArg<bool> opTypeExtractor("type-extractor", false, "Enable type extractor for typescript");
@@ -180,6 +183,8 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opModule);
     argparser_->Add(&opCommonjs);
     argparser_->Add(&opDumpAst);
+    argparser_->Add(&opDumpTransformedAst);
+    argparser_->Add(&opCheckTransformedAstStructure);
     argparser_->Add(&opParseOnly);
     argparser_->Add(&opEnableTypeCheck);
     argparser_->Add(&opTypeExtractor);
@@ -369,6 +374,8 @@ bool Options::Parse(int argc, const char **argv)
 
     compilerOptions_.dumpAsm = opDumpAssembly.GetValue();
     compilerOptions_.dumpAst = opDumpAst.GetValue();
+    compilerOptions_.dumpTransformedAst = opDumpTransformedAst.GetValue();
+    compilerOptions_.checkTransformedAstStructure = opCheckTransformedAstStructure.GetValue();
     compilerOptions_.dumpDebugInfo = opDumpDebugInfo.GetValue();
     compilerOptions_.isDebug = opDebugInfo.GetValue();
     compilerOptions_.parseOnly = opParseOnly.GetValue();

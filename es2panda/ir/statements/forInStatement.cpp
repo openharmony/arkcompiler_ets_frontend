@@ -87,7 +87,7 @@ void ForInStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
     right_ = std::get<ir::AstNode *>(cb(right_))->AsExpression();
 
     auto loopCtx = binder::LexicalScope<binder::LoopScope>::Enter(binder, loopScope);
-    body_ = std::get<ir::AstNode *>(cb(body_))->AsStatement();
+    body_ = UpdateChildStatement(cb, binder, body_);
 }
 
 }  // namespace panda::es2panda::ir
