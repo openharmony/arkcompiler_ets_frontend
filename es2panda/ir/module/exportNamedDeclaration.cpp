@@ -42,7 +42,8 @@ void ExportNamedDeclaration::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ExportNamedDeclaration"},
                  {"declaration", AstDumper::Nullable(decl_)},
                  {"source", AstDumper::Nullable(source_)},
-                 {"specifiers", specifiers_}});
+                 {"specifiers", specifiers_},
+                 {"isType", AstDumper::Optional(IsType())}});
 }
 
 void ExportNamedDeclaration::Compile(compiler::PandaGen *pg) const
