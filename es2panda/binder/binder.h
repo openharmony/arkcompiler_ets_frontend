@@ -128,9 +128,9 @@ public:
     bool HasVariableName(const util::StringView &name) const;
 
     static constexpr std::string_view FUNCTION_ARGUMENTS = "arguments";
-    static constexpr std::string_view MANDATORY_PARAM_FUNC = "=f";
-    static constexpr std::string_view MANDATORY_PARAM_NEW_TARGET = "=nt";
-    static constexpr std::string_view MANDATORY_PARAM_THIS = "=t";
+    static constexpr std::string_view MANDATORY_PARAM_FUNC = "4funcObj";
+    static constexpr std::string_view MANDATORY_PARAM_NEW_TARGET = "4newTarget";
+    static constexpr std::string_view MANDATORY_PARAM_THIS = "this";
 
     static constexpr std::string_view CJS_MANDATORY_PARAM_EXPORTS = "exports";
     static constexpr std::string_view CJS_MANDATORY_PARAM_REQUIRE = "require";
@@ -142,9 +142,9 @@ public:
     static constexpr uint32_t MANDATORY_PARAMS_NUMBER = 3;
     static constexpr uint32_t CJS_MANDATORY_PARAMS_NUMBER = 8;
 
-    static constexpr std::string_view LEXICAL_MANDATORY_PARAM_FUNC = "!f";
-    static constexpr std::string_view LEXICAL_MANDATORY_PARAM_NEW_TARGET = "!nt";
-    static constexpr std::string_view LEXICAL_MANDATORY_PARAM_THIS = "!t";
+    static constexpr std::string_view LEXICAL_MANDATORY_PARAM_FUNC = "0funcObj";
+    static constexpr std::string_view LEXICAL_MANDATORY_PARAM_NEW_TARGET = "0newTarget";
+    static constexpr std::string_view LEXICAL_MANDATORY_PARAM_THIS = "0this";
 
     static constexpr std::string_view MAIN_FUNC_NAME = "func_main_0";
     static constexpr std::string_view ANONYMOUS_FUNC_NAME = "";
