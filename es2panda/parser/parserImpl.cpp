@@ -3450,4 +3450,17 @@ void ParserImpl::AddHotfixHelper(util::Hotfix *hotfixHelper)
     program_.AddHotfixHelper(hotfixHelper);
 }
 
+void ParserImpl::CheckStrictReservedWord() const
+{
+    if (Extension() == ScriptExtension::JS) {
+        if (lexer_->GetToken().IsJsStrictReservedWord()) {
+            ThrowSyntaxError("Unexpected reserved word in strict mode.");
+        }
+    } else {
+        if (lexer_->GetToken().KeywordType() >= lexer::TokenType::KEYW_ARGUMENTS) {
+            ThrowSyntaxError("Unexpected reserved word in strict mode.");
+        }
+    }
+}
+
 }  // namespace panda::es2panda::parser
