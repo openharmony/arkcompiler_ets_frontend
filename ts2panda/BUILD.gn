@@ -13,8 +13,6 @@
 
 import("//arkcompiler/ets_frontend/ts2panda/ts2abc_config.gni")
 import("//arkcompiler/runtime_core/ark_config.gni")
-import("//build/config/clang/clang.gni")
-import("//build/ohos.gni")
 
 src_dir = target_out_dir + "/src"
 src_dir_full_path = rebase_path("${ts2abc_root}/src")
