@@ -82,7 +82,7 @@ export class AssemblyDumper {
         for (let i = 0; i < parametersCount; ++i) {
             let node = irNodes[i];
             this.output += "\t";
-            this.output += node.getMnemonic() + " v" + (<VReg>node.operands[0]).num + ", a" + ((<VReg>node.operands[0]).num) + "\n";
+            this.output += node.getMnemonic() + " v" + (<VReg>node.operands[0]).num + ", a" + i + "\n";
         }
 
         for (let i = parametersCount; i < irNodes.length; ++i) {
