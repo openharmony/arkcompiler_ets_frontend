@@ -165,7 +165,12 @@ ir::Expression *ParserImpl::ParseExpression(ExpressionParseFlags flags)
         const auto startPos = lexer_->Save();
 
         // TODO(rsipka): ParseTsGenericArrowFunction and ParseTsTypeAssertion might be in a common function
-        ir::Expression *expr = ParseTsGenericArrowFunction();
+        ir::Expression *expr = nullptr;
+        try {
+            expr = ParseTsGenericArrowFunction();
+        } catch ([[maybe_unused]] const class Error &e) {
+            expr = nullptr;
+        }
         if (expr != nullptr) {
             return expr;
         }

@@ -244,6 +244,7 @@ private:
     ir::TSUnionType *ParseTsUnionType(ir::Expression *type, bool restrictExtends);
     ir::Expression *ParseTsParenthesizedOrFunctionType(ir::Expression *typeAnnotation, bool throwError);
     ir::TSArrayType *ParseTsArrayType(ir::Expression *elementType);
+    bool IsTsFunctionType();
     ir::Expression *ParseTsFunctionType(lexer::SourcePosition startLoc, bool isConstructionType, bool throwError,
                                         bool abstractConstructor = false);
     ir::TSTypeParameter *ParseTsMappedTypeParameter();
