@@ -1,0 +1,1 @@
+SyntaxError: Primary expression expected [test-as-expression5.ts:17:20]

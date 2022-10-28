@@ -83,14 +83,11 @@
 
 namespace panda::es2panda::parser {
 
-void ParserImpl::CheckDeclare()
+bool ParserImpl::CheckDeclare()
 {
     ASSERT(lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE);
 
-    if (context_.Status() & ParserStatus::IN_AMBIENT_CONTEXT) {
-        ThrowSyntaxError("A 'declare' modifier cannot be used in an already ambient context.");
-    }
-
+    const auto startPos = lexer_->Save();
     lexer_->NextToken();  // eat 'declare'
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::KEYW_VAR:
@@ -114,9 +111,17 @@ void ParserImpl::CheckDeclare()
             [[fallthrough]];
         }
         default: {
-            ThrowSyntaxError("Unexpected token.");
+            lexer_->Rewind(startPos);
+            return false;
         }
     }
+
+    if (context_.Status() & ParserStatus::IN_AMBIENT_CONTEXT) {
+        lexer_->Rewind(startPos);
+        ThrowSyntaxError("A 'declare' modifier cannot be used in an already ambient context.");
+    }
+
+    return true;
 }
 
 bool ParserImpl::IsLabelFollowedByIterationStatement()
@@ -149,8 +154,7 @@ ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
 
     if (Extension() == ScriptExtension::TS) {
         if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE) {
-            CheckDeclare();
-            isDeclare = true;
+            isDeclare = CheckDeclare();
         }
 
         if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_ABSTRACT) {
@@ -2402,8 +2406,7 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
     bool isTsModule = context_.IsTsModule();
 
     if (Extension() == ScriptExtension::TS && lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE) {
-        CheckDeclare();
-        isDeclare = true;
+        isDeclare = CheckDeclare();
     }
 
     if (!decorators.empty() && lexer_->GetToken().Type() != lexer::TokenType::KEYW_CLASS &&

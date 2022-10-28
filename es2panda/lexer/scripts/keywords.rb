@@ -47,7 +47,7 @@ keywords = [
     # keywords start with 'd'
     {
         "debugger" => ["TokenType::KEYW_DEBUGGER", "TokenType::KEYW_DEBUGGER"],
-        "declare" => ["TokenType::KEYW_DECLARE", "TokenType::KEYW_DECLARE"],
+        "declare" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_DECLARE"],
         "default" => ["TokenType::KEYW_DEFAULT", "TokenType::KEYW_DEFAULT"],
         "delete" => ["TokenType::KEYW_DELETE", "TokenType::KEYW_DELETE"],
         "do" => ["TokenType::KEYW_DO", "TokenType::KEYW_DO"],

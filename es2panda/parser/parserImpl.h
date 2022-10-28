@@ -421,7 +421,7 @@ private:
     void CheckFunctionDeclaration(StatementParsingFlags flags);
 
     void CheckLabelledFunction(const ir::Statement *node);
-    void CheckDeclare();
+    bool CheckDeclare();
 
     bool IsLabelFollowedByIterationStatement();
 

@@ -522,7 +522,8 @@ ir::TSTypeAssertion *ParserImpl::ParseTsTypeAssertion(ExpressionParseFlags flags
     lexer::SourcePosition start = lexer_->GetToken().Start();
     lexer_->NextToken();  // eat '<'
 
-    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+    TypeAnnotationParsingOptions options =
+        TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::ALLOW_CONST;
     ir::Expression *typeAnnotation = ParseTsTypeAnnotation(&options);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
