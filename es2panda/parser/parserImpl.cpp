@@ -2271,7 +2271,8 @@ ir::MethodDefinition *ParserImpl::ParseClassMethod(ClassElmentDescriptor *desc,
         ThrowSyntaxError("Generators are not allowed in an ambient context.");
     }
 
-    ir::ScriptFunction *func = ParseFunction(desc->newStatus, isDeclare);
+    ArenaVector<ir::ParamDecorators> paramDecorators(Allocator()->Adapter());
+    ir::ScriptFunction *func = ParseFunction(desc->newStatus, isDeclare, &paramDecorators);
     if (func->Body() != nullptr) {
         lexer_->NextToken();
     }
@@ -2295,7 +2296,8 @@ ir::MethodDefinition *ParserImpl::ParseClassMethod(ClassElmentDescriptor *desc,
     *propEnd = func->End();
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
     auto *method = AllocNode<ir::MethodDefinition>(desc->methodKind, propName, funcExpr, desc->modifiers, Allocator(),
-                                                   std::move(decorators), desc->isComputed);
+                                                   std::move(decorators), std::move(paramDecorators),
+                                                   desc->isComputed);
     method->SetRange(funcExpr->Range());
     return method;
 }
@@ -2571,9 +2573,10 @@ ir::MethodDefinition *ParserImpl::CreateImplicitConstructor(bool hasSuperClass, 
     auto *key = AllocNode<ir::Identifier>("constructor", Allocator());
 
     ArenaVector<ir::Decorator *> decorators(Allocator()->Adapter());
-
+    ArenaVector<ir::ParamDecorators> paramDecorators(Allocator()->Adapter());
     auto *ctor = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, key, funcExpr,
-                                                 ir::ModifierFlags::NONE, Allocator(), std::move(decorators), false);
+                                                 ir::ModifierFlags::NONE, Allocator(), std::move(decorators),
+                                                 std::move(paramDecorators), false);
 
     return ctor;
 }
@@ -2972,7 +2975,8 @@ void ParserImpl::ValidateFunctionParam(const ArenaVector<ir::Expression *> &para
     }
 }
 
-ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams(bool isDeclare)
+ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams(bool isDeclare,
+                                                              ArenaVector<ir::ParamDecorators> *paramDecorators)
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
     lexer_->NextToken();
@@ -2980,7 +2984,15 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams(bool isDeclare)
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     bool seenOptional = false;
 
+    size_t index = 0;
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+        if (context_.Status() & ParserStatus::IN_METHOD_DEFINITION) {
+            auto decorators = ParseDecorators();
+            if (!decorators.empty()) {
+                paramDecorators->push_back({index, std::move(decorators)});
+            }
+        }
+
         ir::Expression *parameter = ParseFunctionParameter(isDeclare);
         ValidateFunctionParam(params, parameter, &seenOptional);
 
@@ -2994,6 +3006,8 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams(bool isDeclare)
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
             lexer_->NextToken();
         }
+
+        index++;
     }
 
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
@@ -3183,7 +3197,9 @@ ir::TSTypeParameterInstantiation *ParserImpl::ParseTsTypeParameterInstantiation(
     return typeParamInst;
 }
 
-ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus, bool isDeclare)
+ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus,
+                                              bool isDeclare,
+                                              ArenaVector<ir::ParamDecorators> *paramDecorators)
 {
     FunctionContext functionContext(this, newStatus | ParserStatus::FUNCTION | ParserStatus::ALLOW_NEW_TARGET);
 
@@ -3205,7 +3221,7 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus, bool isDec
         context_.Status() |= ParserStatus::DISALLOW_AWAIT;
     }
 
-    ArenaVector<ir::Expression *> params = ParseFunctionParams(isDeclare);
+    ArenaVector<ir::Expression *> params = ParseFunctionParams(isDeclare, paramDecorators);
 
     ir::Expression *returnTypeAnnotation = nullptr;
 

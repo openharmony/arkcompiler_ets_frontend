@@ -1729,11 +1729,6 @@ void ParserImpl::ParsePotentialTsFunctionParameter(ExpressionParseFlags flags, i
 ir::Expression *ParserImpl::ParsePatternElement(ExpressionParseFlags flags, bool allowDefault, bool isDeclare)
 {
     ir::Expression *returnNode = nullptr;
-    ArenaVector<ir::Decorator *> decorators(Allocator()->Adapter());
-
-    if (context_.Status() & ParserStatus::IN_METHOD_DEFINITION) {
-        decorators = ParseDecorators();
-    }
 
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
@@ -1754,15 +1749,9 @@ ir::Expression *ParserImpl::ParsePatternElement(ExpressionParseFlags flags, bool
             break;
         }
         case lexer::TokenType::LITERAL_IDENT: {
-            returnNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), std::move(decorators));
+            returnNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
             returnNode->AsIdentifier()->SetReference();
-
-            if (returnNode->AsIdentifier()->Decorators().empty()) {
-                returnNode->SetRange(lexer_->GetToken().Loc());
-            } else {
-                returnNode->SetRange(
-                    {returnNode->AsIdentifier()->Decorators().front()->Start(), lexer_->GetToken().End()});
-            }
+            returnNode->SetRange(lexer_->GetToken().Loc());
             lexer_->NextToken();
             break;
         }

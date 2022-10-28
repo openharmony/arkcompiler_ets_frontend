@@ -41,6 +41,11 @@ public:
         return key_;
     }
 
+    Expression *Key()
+    {
+        return key_;
+    }
+
     const Expression *Value() const
     {
         return value_;

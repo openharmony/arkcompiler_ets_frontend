@@ -139,6 +139,11 @@ public:
         return (flags_ & ir::ScriptFunctionFlags::METHOD) != 0;
     }
 
+    bool FunctionBodyIsExpression() const
+    {
+        return (flags_ & ir::ScriptFunctionFlags::EXPRESSION) != 0;
+    }
+
     bool Declare() const
     {
         return declare_;

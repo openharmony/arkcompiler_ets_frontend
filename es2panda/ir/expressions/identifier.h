@@ -78,6 +78,11 @@ public:
         return name_;
     }
 
+    void SetName(util::StringView name)
+    {
+        name_ = name;
+    }
+
     const ArenaVector<Decorator *> &Decorators() const
     {
         return decorators_;
@@ -132,6 +137,7 @@ private:
     util::StringView name_;
     Expression *typeAnnotation_ {};
     IdentifierFlags flags_ {IdentifierFlags::NONE};
+    // TODO(xucheng): remove the decorators in identifier
     ArenaVector<Decorator *> decorators_;
 };
 

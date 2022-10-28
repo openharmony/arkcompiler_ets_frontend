@@ -30,6 +30,11 @@ const ScriptFunction *MethodDefinition::Function() const
     return value_->Function();
 }
 
+ScriptFunction *MethodDefinition::Function()
+{
+    return value_->Function();
+}
+
 void MethodDefinition::Iterate(const NodeTraverser &cb) const
 {
     cb(key_);

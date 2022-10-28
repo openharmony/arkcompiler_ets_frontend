@@ -39,6 +39,11 @@ public:
         return expr_;
     }
 
+    Expression *Expr()
+    {
+        return expr_;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;

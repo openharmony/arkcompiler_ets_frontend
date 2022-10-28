@@ -39,7 +39,10 @@ void TSParameterProperty::Dump(ir::AstDumper *dumper) const
          {"parameter", parameter_}});
 }
 
-void TSParameterProperty::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSParameterProperty::Compile(compiler::PandaGen *pg) const
+{
+    parameter_->Compile(pg);
+}
 
 checker::Type *TSParameterProperty::Check([[maybe_unused]] checker::Checker *checker) const
 {

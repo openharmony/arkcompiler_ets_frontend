@@ -34,11 +34,16 @@ class FunctionExpression;
 
 enum class MethodDefinitionKind { CONSTRUCTOR, METHOD, GET, SET };
 
+struct ParamDecorators {
+    size_t paramIndex;
+    ArenaVector<Decorator *> decorators;
+};
+
 class MethodDefinition : public Statement {
 public:
     explicit MethodDefinition(MethodDefinitionKind kind, Expression *key, FunctionExpression *value,
                               ModifierFlags modifiers, ArenaAllocator *allocator, ArenaVector<Decorator *> &&decorators,
-                              bool isComputed)
+                              ArenaVector<ParamDecorators> &&paramDecorators, bool isComputed)
         : Statement(AstNodeType::METHOD_DEFINITION),
           kind_(kind),
           key_(key),
@@ -46,6 +51,7 @@ public:
           modifiers_(modifiers),
           overloads_(allocator->Adapter()),
           decorators_(std::move(decorators)),
+          paramDecorators_(std::move(paramDecorators)),
           isComputed_(isComputed)
     {
     }
@@ -63,6 +69,16 @@ public:
     const Expression *Key() const
     {
         return key_;
+    }
+
+    Expression *Key()
+    {
+        return key_;
+    }
+
+    void SetKey(Expression *key)
+    {
+        key_ = key;
     }
 
     const FunctionExpression *Value() const
@@ -100,6 +116,21 @@ public:
         return decorators_;
     }
 
+    const ArenaVector<ParamDecorators> &GetParamDecorators() const
+    {
+        return paramDecorators_;
+    }
+
+    bool HasParamDecorators() const
+    {
+        return !paramDecorators_.empty();
+    }
+
+    bool HasDecorators() const
+    {
+        return !decorators_.empty();
+    }
+
     void SetOverloads(ArenaVector<MethodDefinition *> &&overloads)
     {
         overloads_ = std::move(overloads);
@@ -111,6 +142,8 @@ public:
     }
 
     const ScriptFunction *Function() const;
+
+    ScriptFunction *Function();
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -125,6 +158,7 @@ private:
     ModifierFlags modifiers_;
     ArenaVector<MethodDefinition *> overloads_;
     ArenaVector<Decorator *> decorators_;
+    ArenaVector<ParamDecorators> paramDecorators_;
     bool isComputed_;
 };
 

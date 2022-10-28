@@ -41,10 +41,21 @@ public:
         return def_;
     }
 
+    ClassDefinition *Definition()
+    {
+        return def_;
+    }
+
     const ArenaVector<Decorator *> &Decorators() const
     {
         return decorators_;
     }
+
+    bool HasDecorators() const
+    {
+        return !decorators_.empty();
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile(compiler::PandaGen *pg) const override;

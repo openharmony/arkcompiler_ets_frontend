@@ -39,6 +39,11 @@ public:
         return src_;
     }
 
+    util::StringView Str()
+    {
+        return src_;
+    }
+
     LiteralTag Tag() const override
     {
         return LiteralTag::NULL_VALUE;
