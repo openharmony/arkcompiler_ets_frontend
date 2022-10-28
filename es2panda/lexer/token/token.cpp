@@ -94,8 +94,7 @@ bool Token::IsReservedTypeName() const
 
 bool Token::IsJsStrictReservedWord() const
 {
-    switch (keywordType_)
-    {
+    switch (keywordType_) {
         case TokenType::KEYW_ARGUMENTS:
         case TokenType::KEYW_EVAL:
         case TokenType::KEYW_STATIC:
