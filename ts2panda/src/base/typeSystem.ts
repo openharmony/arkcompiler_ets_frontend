@@ -129,9 +129,9 @@ export enum ModifierAbstract {
 }
 
 export enum Modifier {
-    STATIC = 4,
-    ASYNC = 8,
-    ASTERISK = 16
+    STATIC = 1 << 2,
+    ASYNC = 1 << 3,
+    ASTERISK = 1 << 4
 }
 
 export enum ModifierReadonly {
@@ -143,6 +143,11 @@ export enum AccessFlag {
     PUBLIC,
     PRIVATE,
     PROTECTED
+}
+
+export enum GetOrSetAccessorFlag {
+    FALSE = 0,  // Not GetAccessor and SetAccessor
+    TRUE = 1 << 5  // GetAccessor or SetAccessor
 }
 
 type ClassMemberFunction = ts.MethodDeclaration | ts.ConstructorDeclaration |
@@ -515,12 +520,16 @@ export class FunctionType extends BaseType {
     returnType: number = PrimitiveType.ANY;
     typeIndex: number;
     shiftedTypeIndex: number;
+    getOrSetAccessorFlag: GetOrSetAccessorFlag = GetOrSetAccessorFlag.FALSE;
 
     constructor(funcNode: ts.FunctionLikeDeclaration | ts.MethodSignature, builtinTypeIdx: number = undefined) {
         super();
         let res = this.calculateIndex(builtinTypeIdx);
         this.typeIndex = res.typeIndex;
         this.shiftedTypeIndex = res.shiftedTypeIndex;
+        if (funcNode.kind == ts.SyntaxKind.GetAccessor || funcNode.kind == ts.SyntaxKind.SetAccessor) {
+            this.getOrSetAccessorFlag = GetOrSetAccessorFlag.TRUE;
+        }
 
         // record type before its initialization, so its index can be recorded
         // in case there's recursive reference of this type
@@ -600,7 +609,7 @@ export class FunctionType extends BaseType {
         let funcTypeBuf = new LiteralBuffer();
         let funcTypeLiterals: Array<Literal> = new Array<Literal>();
         funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, L2Type.FUNCTION));
-        funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.accessFlag + this.modifiers));
+        funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, this.accessFlag + this.modifiers + this.getOrSetAccessorFlag));
         funcTypeLiterals.push(new Literal(LiteralTag.STRING, this.name));
         if (this.containThisParam) {
             funcTypeLiterals.push(new Literal(LiteralTag.INTEGER, 1)); // marker for having 'this' param
