@@ -40,7 +40,10 @@ void VariableDeclarator::Iterate(const NodeTraverser &cb) const
 
 void VariableDeclarator::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "VariableDeclarator"}, {"id", id_}, {"init", AstDumper::Nullable(init_)}});
+    dumper->Add({{"type", "VariableDeclarator"},
+                 {"id", id_},
+                 {"definite", AstDumper::Optional(definite_)},
+                 {"init", AstDumper::Nullable(init_)}});
 }
 
 void VariableDeclarator::Compile(compiler::PandaGen *pg) const

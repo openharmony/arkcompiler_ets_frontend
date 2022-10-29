@@ -1925,7 +1925,12 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
         }
     }
 
+    bool isDefinite = false;
     if (Extension() == ScriptExtension::TS) {
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
+            lexer_->NextToken();  // eat '!'
+            isDefinite = true;
+        }
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
             lexer_->NextToken();  // eat ':'
             TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
@@ -1952,6 +1957,8 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
         declarator = AllocNode<ir::VariableDeclarator>(init);
         declarator->SetRange({startLoc, endLoc});
     }
+
+    declarator->SetDefinite(isDefinite);
 
     std::vector<const ir::Identifier *> bindings = util::Helpers::CollectBindingNames(init);
 
