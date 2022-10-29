@@ -6,7 +6,6 @@
       "expression": {
         "type": "Identifier",
         "name": "a",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 22,

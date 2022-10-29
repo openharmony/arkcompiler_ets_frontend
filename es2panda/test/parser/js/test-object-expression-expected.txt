@@ -9,7 +9,6 @@
           "id": {
             "type": "Identifier",
             "name": "a",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -32,7 +31,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "get",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 18,
@@ -47,7 +45,6 @@
                 "value": {
                   "type": "Identifier",
                   "name": "get",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 18,
@@ -79,7 +76,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "get",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 19,
@@ -156,7 +152,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "set",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 20,
@@ -202,7 +197,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "a",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 21,
@@ -324,7 +318,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "b",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 23,
@@ -398,7 +391,6 @@
                 "argument": {
                   "type": "Identifier",
                   "name": "a",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 24,
@@ -505,7 +497,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "a",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 26,
@@ -529,7 +520,6 @@
                       {
                         "type": "Identifier",
                         "name": "a",
-                        "decorators": [],
                         "loc": {
                           "start": {
                             "line": 26,
@@ -598,7 +588,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "true",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 27,
@@ -644,7 +633,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "implements",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 28,
@@ -690,7 +678,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "a",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 29,
@@ -714,7 +701,6 @@
                       {
                         "type": "Identifier",
                         "name": "b",
-                        "decorators": [],
                         "loc": {
                           "start": {
                             "line": 29,
@@ -750,7 +736,6 @@
                             "property": {
                               "type": "Identifier",
                               "name": "a",
-                              "decorators": [],
                               "loc": {
                                 "start": {
                                   "line": 29,
@@ -840,7 +825,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "f",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 30,

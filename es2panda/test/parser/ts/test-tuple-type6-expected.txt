@@ -6,7 +6,6 @@
       "id": {
         "type": "Identifier",
         "name": "WithOptAndRest",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 17,
@@ -39,7 +38,6 @@
             "label": {
               "type": "Identifier",
               "name": "first",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 17,
@@ -80,7 +78,6 @@
             "label": {
               "type": "Identifier",
               "name": "second",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 17,
@@ -135,7 +132,6 @@
             "label": {
               "type": "Identifier",
               "name": "rest",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 17,

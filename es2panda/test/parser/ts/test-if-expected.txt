@@ -22,7 +22,6 @@
         "id": {
           "type": "Identifier",
           "name": "A",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 18,
@@ -68,7 +67,6 @@
           "id": {
             "type": "Identifier",
             "name": "B",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 20,
@@ -98,7 +96,6 @@
           "id": {
             "type": "Identifier",
             "name": "C",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 22,

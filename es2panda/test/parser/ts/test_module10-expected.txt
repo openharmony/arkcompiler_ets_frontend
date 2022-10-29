@@ -38,7 +38,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
@@ -93,7 +92,6 @@
       "id": {
         "type": "Identifier",
         "name": "global",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 19,
@@ -123,7 +121,6 @@
       "expression": {
         "type": "Identifier",
         "name": "a",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 20,

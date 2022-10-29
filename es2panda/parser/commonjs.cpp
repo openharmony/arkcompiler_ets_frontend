@@ -37,7 +37,7 @@ static std::vector<std::string_view> cjsMandatoryParams = {binder::Binder::CJS_M
 void ParserImpl::AddCommonjsParams(ArenaVector<ir::Expression *> &params)
 {
     for (auto paramName : cjsMandatoryParams) {
-        ir::Expression *param = AllocNode<ir::Identifier>(paramName, Allocator());
+        ir::Expression *param = AllocNode<ir::Identifier>(paramName);
         param->AsIdentifier()->SetReference();
         Binder()->AddParamDecl(param);
         params.push_back(param);
@@ -47,7 +47,7 @@ void ParserImpl::AddCommonjsParams(ArenaVector<ir::Expression *> &params)
 void ParserImpl::AddCommonjsArgs(ArenaVector<ir::Expression *> &args)
 {
     for (auto argName : cjsMandatoryParams) {
-        ir::Expression *arg = AllocNode<ir::Identifier>(argName, Allocator());
+        ir::Expression *arg = AllocNode<ir::Identifier>(argName);
         arg->AsIdentifier()->SetReference();
         args.push_back(arg);
     }

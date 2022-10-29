@@ -22,7 +22,6 @@
       "id": {
         "type": "Identifier",
         "name": "global",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 18,

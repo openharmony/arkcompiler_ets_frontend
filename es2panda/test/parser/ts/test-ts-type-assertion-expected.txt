@@ -20,7 +20,6 @@
       "id": {
         "type": "Identifier",
         "name": "C",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 17,
@@ -65,7 +64,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
@@ -110,7 +108,6 @@
           "id": {
             "type": "Identifier",
             "name": "bar",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 19,
@@ -140,7 +137,6 @@
             "expression": {
               "type": "Identifier",
               "name": "foo",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 19,
@@ -195,7 +191,6 @@
           "id": {
             "type": "Identifier",
             "name": "goo",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 20,
@@ -214,7 +209,6 @@
               "typeName": {
                 "type": "Identifier",
                 "name": "C",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 20,
@@ -240,7 +234,6 @@
             "expression": {
               "type": "Identifier",
               "name": "foo",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 20,

@@ -241,7 +241,7 @@ bool ParserImpl::CurrentIsBasicType()
 
 ir::TSTypeReference *ParserImpl::ParseTsConstExpression()
 {
-    auto *identRef = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+    auto *identRef = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
     identRef->SetReference();
     identRef->SetRange(lexer_->GetToken().Loc());
 
@@ -600,7 +600,7 @@ ir::TSImportType *ParserImpl::ParseTsImportType(const lexer::SourcePosition &sta
             ThrowSyntaxError("Identifier expected");
         }
 
-        qualifier = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+        qualifier = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
         qualifier->SetRange(lexer_->GetToken().Loc());
 
         lexer_->NextToken();
@@ -834,7 +834,7 @@ ir::Expression *ParserImpl::ParseTsTupleElement(ir::TSTupleKind *kind, bool *see
         }
         *kind = ir::TSTupleKind::NAMED;
 
-        auto *elementIdent = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+        auto *elementIdent = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
         elementIdent->SetRange(lexer_->GetToken().Loc());
         lexer_->NextToken();  // eat identifier
 
@@ -935,7 +935,7 @@ ir::Expression *ParserImpl::ParseTsQualifiedReference(ir::Expression *typeName)
             ThrowSyntaxError("Identifier expected");
         }
 
-        auto *propName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+        auto *propName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
         propName->SetRange(lexer_->GetToken().Loc());
 
         typeName = AllocNode<ir::TSQualifiedName>(typeName, propName);
@@ -993,7 +993,7 @@ ir::Expression *ParserImpl::ParseTsTypeReferenceOrQuery(bool parseQuery)
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
            lexer_->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS);
 
-    ir::Expression *typeName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+    ir::Expression *typeName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
     typeName->SetRange(lexer_->GetToken().Loc());
     typeName->AsIdentifier()->SetReference();
 
@@ -1048,7 +1048,7 @@ ir::TSTypeParameter *ParserImpl::ParseTsMappedTypeParameter()
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
 
-    auto *paramName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+    auto *paramName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
     paramName->SetRange({lexer_->GetToken().Start(), lexer_->GetToken().End()});
 
     lexer_->NextToken();
@@ -1165,7 +1165,7 @@ ir::TSTypePredicate *ParserImpl::ParseTsTypePredicate()
 
     ir::Expression *parameterName = nullptr;
     if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
-        parameterName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+        parameterName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
     } else {
         parameterName = AllocNode<ir::TSThisType>();
     }
@@ -1205,7 +1205,7 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceKey(bool *computed, boo
     if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
         (lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_NEW ||
          (lexer_->Lookahead() != LEX_CHAR_LEFT_PAREN && lexer_->Lookahead() != LEX_CHAR_LESS_THAN))) {
-        key = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+        key = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
         key->SetRange(lexer_->GetToken().Loc());
         lexer_->NextToken();
     } else if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_NUMBER) {
@@ -1227,7 +1227,7 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceKey(bool *computed, boo
 
         if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT && lexer_->Lookahead() == LEX_CHAR_COLON) {
             *isIndexSignature = true;
-            key = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+            key = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
             key->SetRange(lexer_->GetToken().Loc());
 
             lexer_->NextToken();  // eat param
@@ -2133,7 +2133,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDe
         case lexer::TokenType::LITERAL_IDENT: {
             ValidateClassKey(desc, isDeclare);
 
-            propName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+            propName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
             propName->SetRange(lexer_->GetToken().Loc());
             break;
         }
@@ -2165,7 +2165,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDe
                 lexer_->Lookahead() == LEX_CHAR_COLON) {
                 desc->isIndexSignature = true;
 
-                propName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+                propName = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
                 propName->SetRange(lexer_->GetToken().Loc());
 
                 lexer_->NextToken();  // eat param
@@ -2594,13 +2594,13 @@ ir::MethodDefinition *ParserImpl::CreateImplicitConstructor(bool hasSuperClass, 
     if (hasSuperClass) {
         util::StringView argsStr = "args";
         params.push_back(AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT,
-                                                      AllocNode<ir::Identifier>(argsStr, Allocator())));
+                                                      AllocNode<ir::Identifier>(argsStr)));
         paramScope->AddParamDecl(Allocator(), params.back());
 
         ArenaVector<ir::Expression *> callArgs(Allocator()->Adapter());
         auto *superExpr = AllocNode<ir::SuperExpression>();
         callArgs.push_back(AllocNode<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT,
-                                                        AllocNode<ir::Identifier>(argsStr, Allocator())));
+                                                        AllocNode<ir::Identifier>(argsStr)));
 
         auto *callExpr = AllocNode<ir::CallExpression>(superExpr, std::move(callArgs), nullptr, false);
         statements.push_back(AllocNode<ir::ExpressionStatement>(callExpr));
@@ -2616,7 +2616,7 @@ ir::MethodDefinition *ParserImpl::CreateImplicitConstructor(bool hasSuperClass, 
     paramScope->BindFunctionScope(scope);
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
-    auto *key = AllocNode<ir::Identifier>("constructor", Allocator());
+    auto *key = AllocNode<ir::Identifier>("constructor");
 
     ArenaVector<ir::Decorator *> decorators(Allocator()->Adapter());
     ArenaVector<ir::ParamDecorators> paramDecorators(Allocator()->Adapter());
@@ -2703,7 +2703,7 @@ ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition()
 
     Binder()->AddDecl<binder::ConstDecl>(lexer_->GetToken().Start(), identStr);
 
-    auto *identNode = AllocNode<ir::Identifier>(identStr, Allocator());
+    auto *identNode = AllocNode<ir::Identifier>(identStr);
     identNode->SetRange(lexer_->GetToken().Loc());
 
     lexer_->NextToken();
@@ -2765,7 +2765,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
                 ThrowSyntaxError("Identifier expected");
             }
 
-            ir::Expression *expr = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+            ir::Expression *expr = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
             expr->SetRange(lexer_->GetToken().Loc());
 
             lexer_->NextToken();
@@ -2887,7 +2887,7 @@ ir::TSEnumDeclaration *ParserImpl::ParseEnumMembers(ir::Identifier *key, const l
         binder::EnumDecl *decl {};
 
         if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
-            memberKey = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+            memberKey = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
             decl = Binder()->AddDecl<binder::EnumDecl>(keyStartLoc, lexer_->GetToken().Ident());
             memberKey->SetRange(lexer_->GetToken().Loc());
             lexer_->NextToken();
@@ -2958,7 +2958,7 @@ ir::TSEnumDeclaration *ParserImpl::ParseEnumDeclaration(bool isExport, bool isDe
     }
     binder::VariableMap *enumMemberBindings = res->AsEnumLiteralVariable()->GetEnumMembers();
 
-    auto *key = AllocNode<ir::Identifier>(ident, Allocator());
+    auto *key = AllocNode<ir::Identifier>(ident);
     key->SetRange(lexer_->GetToken().Loc());
     key->SetReference();
     lexer_->NextToken();
@@ -3097,7 +3097,7 @@ ir::TSTypeParameter *ParserImpl::ParseTsTypeParameter(bool throwError, bool addB
         ThrowSyntaxError("Invalid type parameter name");
     }
 
-    auto *paramIdent = AllocNode<ir::Identifier>(ident, Allocator());
+    auto *paramIdent = AllocNode<ir::Identifier>(ident);
 
     if (addBinding) {
         Binder()->AddDecl<binder::LetDecl>(lexer_->GetToken().Start(), ident);

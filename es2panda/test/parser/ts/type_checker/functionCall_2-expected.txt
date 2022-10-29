@@ -8,7 +8,6 @@
         "id": {
           "type": "Identifier",
           "name": "func1",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 17,
@@ -40,7 +39,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -109,7 +107,6 @@
         "id": {
           "type": "Identifier",
           "name": "func2",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 21,
@@ -141,7 +138,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 21,
@@ -238,7 +234,6 @@
         "callee": {
           "type": "Identifier",
           "name": "func1",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 24,
@@ -256,7 +251,6 @@
             "callee": {
               "type": "Identifier",
               "name": "func2",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 24,

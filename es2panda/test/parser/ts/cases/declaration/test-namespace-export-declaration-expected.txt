@@ -10,7 +10,6 @@
           "id": {
             "type": "Identifier",
             "name": "isPrime",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 16,
@@ -42,7 +41,6 @@
                   }
                 }
               },
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 16,
@@ -108,7 +106,6 @@
       "id": {
         "type": "Identifier",
         "name": "mathLib",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 17,

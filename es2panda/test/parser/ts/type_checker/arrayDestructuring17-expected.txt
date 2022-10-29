@@ -8,7 +8,6 @@
         "id": {
           "type": "Identifier",
           "name": "a",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 17,
@@ -40,7 +39,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -68,7 +66,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -226,7 +223,6 @@
               {
                 "type": "Identifier",
                 "name": "b",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 21,
@@ -241,7 +237,6 @@
               {
                 "type": "Identifier",
                 "name": "c",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 21,
@@ -256,7 +251,6 @@
               {
                 "type": "Identifier",
                 "name": "d",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 21,
@@ -285,7 +279,6 @@
             "callee": {
               "type": "Identifier",
               "name": "a",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 21,

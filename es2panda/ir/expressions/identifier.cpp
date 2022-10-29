@@ -34,10 +34,6 @@ void Identifier::Iterate(const NodeTraverser &cb) const
     if (typeAnnotation_) {
         cb(typeAnnotation_);
     }
-
-    for (auto *it : decorators_) {
-        cb(it);
-    }
 }
 
 void Identifier::Dump(ir::AstDumper *dumper) const
@@ -45,8 +41,7 @@ void Identifier::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "Identifier"},
                  {"name", name_},
                  {"typeAnnotation", AstDumper::Optional(typeAnnotation_)},
-                 {"optional", AstDumper::Optional(IsOptional())},
-                 {"decorators", decorators_}});
+                 {"optional", AstDumper::Optional(IsOptional())}});
 }
 
 void Identifier::Compile(compiler::PandaGen *pg) const
@@ -103,10 +98,6 @@ void Identifier::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Bind
 {
     if (typeAnnotation_) {
         typeAnnotation_ = std::get<ir::AstNode *>(cb(typeAnnotation_))->AsExpression();
-    }
-
-    for (auto iter = decorators_.begin(); iter != decorators_.end(); iter++) {
-        *iter = std::get<ir::AstNode *>(cb(*iter))->AsDecorator();
     }
 }
 

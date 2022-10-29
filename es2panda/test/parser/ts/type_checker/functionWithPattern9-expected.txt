@@ -8,7 +8,6 @@
         "id": {
           "type": "Identifier",
           "name": "foo",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 17,
@@ -32,7 +31,6 @@
                 "left": {
                   "type": "Identifier",
                   "name": "a",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 17,
@@ -80,7 +78,6 @@
                     "key": {
                       "type": "Identifier",
                       "name": "b",
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 17,
@@ -102,7 +99,6 @@
                             "left": {
                               "type": "Identifier",
                               "name": "c",
-                              "decorators": [],
                               "loc": {
                                 "start": {
                                   "line": 17,
@@ -142,7 +138,6 @@
                           {
                             "type": "Identifier",
                             "name": "d",
-                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 17,
@@ -269,7 +264,6 @@
                     "key": {
                       "type": "Identifier",
                       "name": "t",
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 17,
@@ -286,7 +280,6 @@
                       "left": {
                         "type": "Identifier",
                         "name": "t",
-                        "decorators": [],
                         "loc": {
                           "start": {
                             "line": 17,
@@ -309,7 +302,6 @@
                             "key": {
                               "type": "Identifier",
                               "name": "a",
-                              "decorators": [],
                               "loc": {
                                 "start": {
                                   "line": 17,
@@ -355,7 +347,6 @@
                             "key": {
                               "type": "Identifier",
                               "name": "b",
-                              "decorators": [],
                               "loc": {
                                 "start": {
                                   "line": 17,
@@ -378,7 +369,6 @@
                                   "key": {
                                     "type": "Identifier",
                                     "name": "a",
-                                    "decorators": [],
                                     "loc": {
                                       "start": {
                                         "line": 17,
@@ -424,7 +414,6 @@
                                   "key": {
                                     "type": "Identifier",
                                     "name": "b",
-                                    "decorators": [],
                                     "loc": {
                                       "start": {
                                         "line": 17,
@@ -556,7 +545,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "r",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 17,
@@ -581,7 +569,6 @@
                             {
                               "type": "Identifier",
                               "name": "r",
-                              "decorators": [],
                               "loc": {
                                 "start": {
                                   "line": 17,
@@ -598,7 +585,6 @@
                               "left": {
                                 "type": "Identifier",
                                 "name": "z",
-                                "decorators": [],
                                 "loc": {
                                   "start": {
                                     "line": 17,
@@ -836,7 +822,6 @@
         "callee": {
           "type": "Identifier",
           "name": "foo",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 21,
@@ -877,7 +862,6 @@
                     "key": {
                       "type": "Identifier",
                       "name": "b",
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 21,

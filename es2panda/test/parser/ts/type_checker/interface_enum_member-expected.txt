@@ -6,7 +6,6 @@
       "id": {
         "type": "Identifier",
         "name": "A",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 17,
@@ -24,7 +23,6 @@
           "id": {
             "type": "Identifier",
             "name": "a",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
@@ -73,7 +71,6 @@
             "key": {
               "type": "Identifier",
               "name": "a",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 22,
@@ -92,7 +89,6 @@
                 "left": {
                   "type": "Identifier",
                   "name": "A",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 22,
@@ -107,7 +103,6 @@
                 "right": {
                   "type": "Identifier",
                   "name": "a",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 22,
@@ -167,7 +162,6 @@
       "id": {
         "type": "Identifier",
         "name": "B",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 21,

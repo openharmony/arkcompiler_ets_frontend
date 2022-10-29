@@ -20,7 +20,6 @@
                   "key": {
                     "type": "Identifier",
                     "name": "b",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 17,
@@ -43,7 +42,6 @@
                         "key": {
                           "type": "Identifier",
                           "name": "c",
-                          "decorators": [],
                           "loc": {
                             "start": {
                               "line": 17,
@@ -114,7 +112,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -163,7 +160,6 @@
             "object": {
               "type": "Identifier",
               "name": "a",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 18,
@@ -178,7 +174,6 @@
             "property": {
               "type": "Identifier",
               "name": "b",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 18,
@@ -206,7 +201,6 @@
           "property": {
             "type": "Identifier",
             "name": "c",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,

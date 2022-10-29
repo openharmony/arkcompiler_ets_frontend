@@ -13,7 +13,6 @@
             "key": {
               "type": "Identifier",
               "name": "func",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 18,
@@ -42,7 +41,6 @@
                     }
                   }
                 },
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 18,
@@ -70,7 +68,6 @@
                     }
                   }
                 },
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 18,
@@ -114,7 +111,6 @@
             "key": {
               "type": "Identifier",
               "name": "is",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 19,
@@ -166,7 +162,6 @@
       "id": {
         "type": "Identifier",
         "name": "I",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 17,

@@ -9,7 +9,6 @@
           "id": {
             "type": "Identifier",
             "name": "a",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -32,7 +31,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "foo",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 17,
@@ -55,7 +53,6 @@
                       "key": {
                         "type": "Identifier",
                         "name": "bar",
-                        "decorators": [],
                         "loc": {
                           "start": {
                             "line": 17,
@@ -78,7 +75,6 @@
                             "key": {
                               "type": "Identifier",
                               "name": "baz",
-                              "decorators": [],
                               "loc": {
                                 "start": {
                                   "line": 17,
@@ -221,7 +217,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
@@ -266,7 +261,6 @@
         "left": {
           "type": "Identifier",
           "name": "b",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 19,
@@ -289,7 +283,6 @@
                 "object": {
                   "type": "Identifier",
                   "name": "a",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 19,
@@ -304,7 +297,6 @@
                 "property": {
                   "type": "Identifier",
                   "name": "foo",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 19,
@@ -332,7 +324,6 @@
               "property": {
                 "type": "Identifier",
                 "name": "bar",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 19,

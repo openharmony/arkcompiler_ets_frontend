@@ -22,7 +22,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -66,7 +65,6 @@
         "expression": {
           "type": "Identifier",
           "name": "a",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 18,
@@ -83,7 +81,6 @@
           "typeName": {
             "type": "Identifier",
             "name": "const",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,

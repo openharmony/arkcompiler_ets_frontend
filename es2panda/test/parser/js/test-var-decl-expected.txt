@@ -9,7 +9,6 @@
           "id": {
             "type": "Identifier",
             "name": "a",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -54,7 +53,6 @@
           "id": {
             "type": "Identifier",
             "name": "b",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
@@ -99,7 +97,6 @@
           "id": {
             "type": "Identifier",
             "name": "c",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 19,
@@ -157,7 +154,6 @@
           "id": {
             "type": "Identifier",
             "name": "d1",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 21,
@@ -186,7 +182,6 @@
           "id": {
             "type": "Identifier",
             "name": "d2",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 21,
@@ -215,7 +210,6 @@
           "id": {
             "type": "Identifier",
             "name": "d3",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 22,
@@ -257,7 +251,6 @@
       "expression": {
         "type": "Identifier",
         "name": "d4",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 23,
@@ -288,7 +281,6 @@
           "id": {
             "type": "Identifier",
             "name": "e1",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 25,
@@ -330,7 +322,6 @@
           "id": {
             "type": "Identifier",
             "name": "e2",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 25,
@@ -375,7 +366,6 @@
           "id": {
             "type": "Identifier",
             "name": "f1",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 27,
@@ -404,7 +394,6 @@
           "id": {
             "type": "Identifier",
             "name": "f2",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 29,

@@ -14,7 +14,6 @@
             "key": {
               "type": "Identifier",
               "name": "a",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 18,
@@ -42,7 +41,6 @@
                         "key": {
                           "type": "Identifier",
                           "name": "bar",
-                          "decorators": [],
                           "loc": {
                             "start": {
                               "line": 18,
@@ -101,7 +99,6 @@
                         "key": {
                           "type": "Identifier",
                           "name": "bar",
-                          "decorators": [],
                           "loc": {
                             "start": {
                               "line": 18,
@@ -198,7 +195,6 @@
       "id": {
         "type": "Identifier",
         "name": "a",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 17,
@@ -235,7 +231,6 @@
             "key": {
               "type": "Identifier",
               "name": "foo",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 21,
@@ -254,7 +249,6 @@
                 "typeName": {
                   "type": "Identifier",
                   "name": "a",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 21,
@@ -314,7 +308,6 @@
       "id": {
         "type": "Identifier",
         "name": "b",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 20,
@@ -351,7 +344,6 @@
             "key": {
               "type": "Identifier",
               "name": "bar",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 24,
@@ -368,7 +360,6 @@
               "typeName": {
                 "type": "Identifier",
                 "name": "b",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 24,
@@ -417,7 +408,6 @@
       "id": {
         "type": "Identifier",
         "name": "c",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 23,
@@ -454,7 +444,6 @@
               "typeName": {
                 "type": "Identifier",
                 "name": "c",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 26,
@@ -477,7 +466,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 26,
@@ -532,7 +520,6 @@
                   "object": {
                     "type": "Identifier",
                     "name": "a5",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 27,
@@ -547,7 +534,6 @@
                   "property": {
                     "type": "Identifier",
                     "name": "bar",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 27,
@@ -575,7 +561,6 @@
                 "property": {
                   "type": "Identifier",
                   "name": "foo",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 27,
@@ -630,7 +615,6 @@
             "property": {
               "type": "Identifier",
               "name": "a",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 27,
@@ -658,7 +642,6 @@
           "property": {
             "type": "Identifier",
             "name": "bar",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 27,

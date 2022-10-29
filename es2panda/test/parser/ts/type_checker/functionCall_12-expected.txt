@@ -31,7 +31,6 @@
                           }
                         }
                       },
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 17,
@@ -59,7 +58,6 @@
                           }
                         }
                       },
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 17,
@@ -115,7 +113,6 @@
                           }
                         }
                       },
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 17,
@@ -144,7 +141,6 @@
                         }
                       },
                       "optional": true,
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 17,
@@ -193,7 +189,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -251,7 +246,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
@@ -268,7 +262,6 @@
             "callee": {
               "type": "Identifier",
               "name": "func",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 18,

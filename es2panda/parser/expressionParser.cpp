@@ -976,7 +976,7 @@ ir::Expression *ParserImpl::ParsePrimaryExpression(ExpressionParseFlags flags)
             return ParseImportExpression();
         }
         case lexer::TokenType::LITERAL_IDENT: {
-            auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+            auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
             identNode->SetReference();
             identNode->SetRange(lexer_->GetToken().Loc());
 
@@ -1327,7 +1327,7 @@ ir::Expression *ParserImpl::ParseOptionalChain(ir::Expression *leftSideExpr)
     ir::Expression *returnExpression = nullptr;
 
     if (tokenType == lexer::TokenType::LITERAL_IDENT) {
-        auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+        auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
         identNode->SetReference();
         identNode->SetRange(lexer_->GetToken().Loc());
 
@@ -1540,7 +1540,7 @@ ir::Expression *ParserImpl::ParsePostPrimaryExpression(ir::Expression *primaryEx
                     ThrowSyntaxError("Expected an identifier");
                 }
 
-                auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+                auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
                 identNode->SetRange(lexer_->GetToken().Loc());
 
                 ir::Expression *property = nullptr;
@@ -1762,7 +1762,7 @@ ir::Expression *ParserImpl::ParsePatternElement(ExpressionParseFlags flags, bool
             break;
         }
         case lexer::TokenType::LITERAL_IDENT: {
-            returnNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+            returnNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
             returnNode->AsIdentifier()->SetReference();
             returnNode->SetRange(lexer_->GetToken().Loc());
             lexer_->NextToken();
@@ -1886,10 +1886,10 @@ ir::Property *ParserImpl::ParseShorthandProperty(const lexer::LexerPosition *sta
 
     const util::StringView &ident = lexer_->GetToken().Ident();
 
-    auto *key = AllocNode<ir::Identifier>(ident, Allocator());
+    auto *key = AllocNode<ir::Identifier>(ident);
     key->SetRange(lexer_->GetToken().Loc());
 
-    ir::Expression *value = AllocNode<ir::Identifier>(ident, Allocator());
+    ir::Expression *value = AllocNode<ir::Identifier>(ident);
     value->AsIdentifier()->SetReference();
     value->SetRange(lexer_->GetToken().Loc());
 
@@ -1981,7 +1981,7 @@ ir::Expression *ParserImpl::ParsePropertyKey(ExpressionParseFlags flags)
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::LITERAL_IDENT: {
             const util::StringView &ident = lexer_->GetToken().Ident();
-            key = AllocNode<ir::Identifier>(ident, Allocator());
+            key = AllocNode<ir::Identifier>(ident);
             key->SetRange(lexer_->GetToken().Loc());
             break;
         }
@@ -2348,7 +2348,7 @@ ir::FunctionExpression *ParserImpl::ParseFunctionExpression(ParserStatus newStat
 
             CheckStrictReservedWord();
 
-            ident = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+            ident = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
             ident->SetRange(lexer_->GetToken().Loc());
             lexer_->NextToken();
         }
