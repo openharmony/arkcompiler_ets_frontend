@@ -19,19 +19,22 @@ import * as ts from "typescript";
 import {
     Callrange,
     Returnundefined,
-    Sttoglobalrecord,
-    Tryldglobalbyname,
     Imm,
     IRNode,
+    Jmp,
+    Label,
     Ldai,
     Lda,
+    Ldglobalvar,
+    Mov,
     Sta,
+    Throw,
     VReg
 } from "../src/irnodes";
 import { PandaGen } from "../src/pandagen";
 import { CacheExpander } from "../src/pass/cacheExpander";
 import { RegAlloc } from "../src/regAllocator";
-import { basicChecker, checkInstructions, compileAllSnippet } from "./utils/base";
+import { basicChecker, checkInstructions, compileAllSnippet, SnippetCompiler } from "./utils/base";
 import { creatAstFromSnippet } from "./utils/asthelper";
 
 function checkRegisterNumber(left: IRNode, right: IRNode): boolean {
@@ -55,32 +58,46 @@ function checkRegisterNumber(left: IRNode, right: IRNode): boolean {
     return true;
 }
 describe("RegAllocator", function () {
-    it("make spill for Src register", function () {
-        let string: string = "";
+    it("make spill for Dst register & Src register", function () {
+        let string = "function test() {";
         for (let i = 0; i < 256; ++i) {
             string += "let a" + i + " = " + i + ";";
         }
-        string += "a255;";
+        string += "a255;}";
 
-        let pgs = compileAllSnippet(string, [new CacheExpander(), new RegAlloc()]);
-        let insns = pgs[0].getInsns();
+        let snippetCompiler = new SnippetCompiler();
+        snippetCompiler.compile(string, [new CacheExpander(), new RegAlloc()]);
+        let insns = snippetCompiler.getPandaGenByName("UnitTest.test").getInsns();
+
         IRNode.pg = new PandaGen("", creatAstFromSnippet(""), 0, undefined);
-        IRNode.pg.updateIcSize(252);
+        IRNode.pg.updateIcSize(0);
+
+        let v = [];
+        for (let i = 0; i < 260; ++i) {
+            v[i] = new VReg();
+            v[i].num = i;
+        }
 
         let expected: IRNode[] = [
             new Ldai(new Imm(252)),
-            new Sttoglobalrecord(new Imm(0), 'a252'),
+            new Sta(v[0]),
+            new Mov(v[256], v[0]),
             new Ldai(new Imm(253)),
-            new Sttoglobalrecord(new Imm(1), 'a253'),
+            new Sta(v[0]),
+            new Mov(v[257], v[0]),
             new Ldai(new Imm(254)),
-            new Sttoglobalrecord(new Imm(2), 'a254'),
+            new Sta(v[0]),
+            new Mov(v[258], v[0]),
             new Ldai(new Imm(255)),
-            new Sttoglobalrecord(new Imm(3), 'a255'),
-            new Tryldglobalbyname(new Imm(4), 'a255'),
+            new Sta(v[0]),
+            new Mov(v[259], v[0]),
+            // load a255
+            new Mov(v[0], v[259]),
+            new Lda(v[0]),
             new Returnundefined()
         ]
 
-        expect(checkInstructions(insns.slice(insns.length - 10), expected, checkRegisterNumber)).to.be.true;
+        expect(checkInstructions(insns.slice(insns.length - 15), expected, checkRegisterNumber)).to.be.true;
     });
 
     it("make spill for SrcDst register", function () {
@@ -95,41 +112,113 @@ describe("RegAllocator", function () {
            but in case later 16 might be changed to 8, then spill operation will be needed in some cases. this testcase is designed
            for 8bits constraints.
         */
-        let string = "";
+        let string = "function test() {";
         for (let i = 0; i < 256; ++i) {
             string += "let a" + i + " = " + i + ";";
         }
-        string += "call(a252, a253, a254, a255);";
-        let pgs = compileAllSnippet(string, [new CacheExpander(), new RegAlloc()]);
-        let insns = pgs[0].getInsns();
+        string += "test(a252, a253, a254, a255);}";
+
+        let snippetCompiler = new SnippetCompiler();
+        snippetCompiler.compile(string, [new CacheExpander(), new RegAlloc()]);
+        let insns = snippetCompiler.getPandaGenByName("UnitTest.test").getInsns();
+
         IRNode.pg = new PandaGen("", creatAstFromSnippet(""), 0, undefined);
-        IRNode.pg.updateIcSize(252);
+        IRNode.pg.updateIcSize(0);
         let v = [];
-        for (let i = 0; i < 8; ++i) {
+        for (let i = 0; i < 268; ++i) {
             v[i] = new VReg();
             v[i].num = i;
         }
         let expected = [
             new Ldai(new Imm(252)),
-            new Sttoglobalrecord(new Imm(252), 'a252'),
+            new Sta(v[0]),
+            new Mov(v[259], v[0]),
             new Ldai(new Imm(253)),
-            new Sttoglobalrecord(new Imm(253), 'a253'),
+            new Sta(v[0]),
+            new Mov(v[260], v[0]),
             new Ldai(new Imm(254)),
-            new Sttoglobalrecord(new Imm(254), 'a254'),
+            new Sta(v[0]),
+            new Mov(v[261], v[0]),
             new Ldai(new Imm(255)),
-            new Sttoglobalrecord(new Imm(256), 'a255'),
-            new Tryldglobalbyname(new Imm(257), 'call'),
-            new Sta(v[3]),
-            new Tryldglobalbyname(new Imm(258), 'a252'),
-            new Sta(v[4]),
-            new Tryldglobalbyname(new Imm(259), 'a253'),
-            new Sta(v[5]),
-            new Tryldglobalbyname(new Imm(260), 'a254'),
-            new Sta(v[6]),
-            new Tryldglobalbyname(new Imm(261), 'a255'),
-            new Sta(v[7]),
-            new Lda(v[3]),
-            new Callrange(new Imm(255), new Imm(4), [v[4], v[5], v[6], v[7]]),
+            new Sta(v[0]),
+            new Mov(v[262], v[0]),
+            new Ldglobalvar(new Imm(0), "test"),
+            new Sta(v[0]),
+            new Mov(v[263], v[0]),
+            // call test with [a252, a253, a254, a255]
+            new Mov(v[0], v[259]),
+            new Lda(v[0]),
+            new Sta(v[0]),
+            new Mov(v[264], v[0]),
+            new Mov(v[0], v[260]),
+            new Lda(v[0]),
+            new Sta(v[0]),
+            new Mov(v[265], v[0]),
+            new Mov(v[0], v[261]),
+            new Lda(v[0]),
+            new Sta(v[0]),
+            new Mov(v[266], v[0]),
+            new Mov(v[0], v[262]),
+            new Lda(v[0]),
+            new Sta(v[0]),
+            new Mov(v[267], v[0]),
+            new Mov(v[0], v[263]),
+            new Lda(v[0]),
+            new Mov(v[0], v[264]),
+            new Mov(v[1], v[265]),
+            new Mov(v[2], v[266]),
+            new Mov(v[3], v[267]),
+            new Callrange(new Imm(1), new Imm(4), [v[0], v[1], v[2], v[3]]),
+            new Returnundefined(),
+        ];
+
+        expect(checkInstructions(insns.slice(insns.length - 39), expected, checkRegisterNumber)).to.be.true;
+    });
+
+    it("make spill for control-flow change", function () {
+        let string = "function test() {";
+        for (let i = 0; i < 256; ++i) {
+            string += "let a" + i + " = " + i + ";";
+        }
+        string += `try { throw a0; } catch { a0 }};`;
+
+        let snippetCompiler = new SnippetCompiler();
+        snippetCompiler.compile(string, [new CacheExpander(), new RegAlloc()]);
+        let insns = snippetCompiler.getPandaGenByName("UnitTest.test").getInsns();
+
+        IRNode.pg = new PandaGen("", creatAstFromSnippet(""), 0, undefined);
+        IRNode.pg.updateIcSize(0);
+        let v = [];
+        for (let i = 0; i < 261; ++i) {
+            v[i] = new VReg();
+            v[i].num = i;
+        }
+        let tryBeginLabel = new Label();
+        let tryEndLabel = new Label();
+        let catchBeginLabel = new Label();
+        let catchEndLabel = new Label();
+
+        let expected = [
+            new Ldai(new Imm(252)),
+            new Sta(v[0]),
+            new Mov(v[256], v[0]),
+            new Ldai(new Imm(253)),
+            new Sta(v[0]),
+            new Mov(v[257], v[0]),
+            new Ldai(new Imm(254)),
+            new Sta(v[0]),
+            new Mov(v[258], v[0]),
+            new Ldai(new Imm(255)),
+            new Sta(v[0]),
+            new Mov(v[259], v[0]),
+            tryBeginLabel,
+            new Lda(v[4]),
+            new Throw(),
+            tryEndLabel,
+            new Jmp(catchEndLabel),
+            catchBeginLabel,
+            new Lda(v[4]),
+            catchEndLabel,
             new Returnundefined(),
         ];
 
