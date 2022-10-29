@@ -2567,9 +2567,7 @@ bool ParserImpl::IsMethodDefinitionsAreSame(const ir::MethodDefinition *property
 ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition()
 {
     lexer::TokenType keywType = lexer_->GetToken().KeywordType();
-    if (keywType >= lexer::TokenType::KEYW_STATIC) {
-        ThrowSyntaxError("Unexpected reserved word");
-    }
+    CheckStrictReservedWord();
 
     if (keywType == lexer::TokenType::KEYW_AWAIT && context_.IsModule()) {
         ThrowSyntaxError("Unexpected reserved word");
