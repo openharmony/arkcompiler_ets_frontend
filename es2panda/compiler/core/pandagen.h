@@ -281,6 +281,7 @@ public:
     void BranchIfNotTrue(const ir::AstNode *node, class Label *target);
     void BranchIfFalse(const ir::AstNode *node, class Label *target);
     void BranchIfNotFalse(const ir::AstNode *node, class Label *target);
+    void BranchIfStrictNull(const ir::AstNode *node, class Label *target);
 
     void EmitThrow(const ir::AstNode *node);
     void EmitRethrow(const ir::AstNode *node);

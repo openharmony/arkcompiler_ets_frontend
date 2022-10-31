@@ -961,6 +961,16 @@ void PandaGen::BranchIfFalse(const ir::AstNode *node, Label *target)
     sa_.Emit<Jnez>(node, target);
 }
 
+void PandaGen::BranchIfStrictNull(const ir::AstNode *node, class Label *target)
+{
+    RegScope rs(this);
+    VReg tmp = AllocReg();
+    StoreAccumulator(node, tmp);
+    LoadConst(node, Constant::JS_NULL);
+    ra_.Emit<EcmaStricteqdyn>(node, tmp);
+    sa_.Emit<Jnez>(node, target);
+}
+
 void PandaGen::EmitThrow(const ir::AstNode *node)
 {
     sa_.Emit<EcmaThrowdyn>(node);
