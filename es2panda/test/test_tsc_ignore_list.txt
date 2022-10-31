@@ -15,7 +15,6 @@ es2panda/test/TypeScript/tests/cases/compiler/exportRedeclarationTypeAliases.ts
 es2panda/test/TypeScript/tests/cases/compiler/fileWithNextLine2.ts
 es2panda/test/TypeScript/tests/cases/compiler/genericRecursiveImplicitConstructorErrors2.ts
 es2panda/test/TypeScript/tests/cases/compiler/globalIsContextualKeyword.ts
-es2panda/test/TypeScript/tests/cases/compiler/implementsInClassExpression.ts
 es2panda/test/TypeScript/tests/cases/compiler/inferenceErasedSignatures.ts
 es2panda/test/TypeScript/tests/cases/compiler/isLiteral1.ts
 es2panda/test/TypeScript/tests/cases/compiler/noCircularDefinitionOnExportOfPrivateInMergedNamespace.ts

@@ -2703,7 +2703,8 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
 
     auto classCtx = binder::LexicalScope<binder::LocalScope>(Binder());
 
-    if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
+    if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT && (Extension() != ScriptExtension::TS ||
+        lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_IMPLEMENTS)) {
         identNode = SetIdentNodeInClassDefinition();
     } else if (isDeclaration && idRequired) {
         ThrowSyntaxError("Unexpected token, expected an identifier.");
