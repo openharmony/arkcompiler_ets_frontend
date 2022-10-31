@@ -43,13 +43,9 @@ void BinaryExpression::CompileLogical(compiler::PandaGen *pg) const
     compiler::RegScope rs(pg);
     compiler::VReg lhs = pg->AllocReg();
 
-    if (operator_ == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING) {
-        // TODO(parser): Nullish Coalesce
-        compiler::PandaGen::Unimplemented();
-    }
-
     ASSERT(operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_AND ||
-           operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
+           operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_OR ||
+           operator_ == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING);
     auto *skipRight = pg->AllocLabel();
     auto *endLabel = pg->AllocLabel();
 
@@ -59,9 +55,17 @@ void BinaryExpression::CompileLogical(compiler::PandaGen *pg) const
 
     if (operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
         pg->BranchIfFalse(this, skipRight);
-    } else {
-        ASSERT(operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
+    } else if (operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_OR) {
         pg->BranchIfTrue(this, skipRight);
+    } else {
+        ASSERT(operator_ == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING);
+        auto *nullish = pg->AllocLabel();
+        // if lhs === null
+        pg->BranchIfStrictNull(this, nullish);
+        pg->LoadAccumulator(this, lhs);
+        // if lhs === undefined
+        pg->BranchIfStrictNotUndefined(this, skipRight);
+        pg->SetLabel(this, nullish);
     }
 
     // left is true/false(and/or) then right -> acc
