@@ -11,13 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if (!defined(ark_independent_build)) {
-  import("//arkcompiler/runtime_core/ark_config.gni")
-  import("//build/ohos.gni")
-} else {
-  import("//runtime_core/ark_config.gni")
-  import("$build_root/ark.gni")
-}
+import("//arkcompiler/runtime_core/ark_config.gni")
 
 jsoncpp_root = "$ark_third_party_root/jsoncpp"
 
@@ -57,9 +51,9 @@ config("flag_config") {
 
 source_set("jsoncpp_set_static") {
   sources = [
-    "$ark_third_party_root/jsoncpp/src/lib_json/json_reader.cpp",
-    "$ark_third_party_root/jsoncpp/src/lib_json/json_value.cpp",
-    "$ark_third_party_root/jsoncpp/src/lib_json/json_writer.cpp",
+    "//third_party/jsoncpp/src/lib_json/json_reader.cpp",
+    "//third_party/jsoncpp/src/lib_json/json_value.cpp",
+    "//third_party/jsoncpp/src/lib_json/json_writer.cpp",
   ]
   public_configs = [ "$jsoncpp_root:jsoncpp_config" ]
   public_configs += [ ":flag_config" ]
@@ -69,7 +63,7 @@ source_set("jsoncpp_set_static") {
   ]
 }
 
-if (!defined(ark_independent_build)) {
+if (!ark_standalone_build) {
   ohos_static_library("jsoncpp_static") {
     deps = [ ":jsoncpp_set_static" ]
     use_exceptions = true
@@ -138,9 +132,5 @@ if (!defined(ark_independent_build)) {
     install_enable = false
     part_name = "ets_frontend"
     subsystem_name = "arkcompiler"
-  }
-} else {
-  ark_static_library("jsoncpp_static") {
-    deps = [ ":jsoncpp_set_static" ]
   }
 }
