@@ -6,7 +6,6 @@ es2panda/test/TypeScript/tests/cases/compiler/collisionArgumentsInterfaceMembers
 es2panda/test/TypeScript/tests/cases/compiler/computedPropertiesTransformedInOtherwiseNonTSClasses.ts
 es2panda/test/TypeScript/tests/cases/compiler/constructorOverloads5.ts
 es2panda/test/TypeScript/tests/cases/compiler/continueTarget3.ts
-es2panda/test/TypeScript/tests/cases/compiler/controlFlowCaching.ts
 es2panda/test/TypeScript/tests/cases/compiler/declarationEmitDestructuringOptionalBindingParametersInOverloads.ts
 es2panda/test/TypeScript/tests/cases/compiler/elidedEmbeddedStatementsReplacedWithSemicolon.ts
 es2panda/test/TypeScript/tests/cases/compiler/emitBundleWithShebang1.ts
@@ -81,7 +80,6 @@ es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclaration
 es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclarations/asiPreventsParsingAsInterface03.ts
 es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclarations/asiPreventsParsingAsInterface04.ts
 es2panda/test/TypeScript/tests/cases/conformance/internalModules/moduleDeclarations/asiPreventsParsingAsNamespace04.ts
-es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/ArrowFunctionExpressions/parserArrowFunctionExpression6.ts
 es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/RegressionTests/parser579071.ts
 es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/Statements/ContinueStatements/parser_continueTarget3.ts
 es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/parserUnicodeWhitespaceCharacter1.ts
@@ -89,7 +87,6 @@ es2panda/test/TypeScript/tests/cases/conformance/scanner/ecmascript3/scannerES3N
 es2panda/test/TypeScript/tests/cases/conformance/types/keyof/keyofAndIndexedAccess.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/members/objectTypeWithStringNamedNumericProperty.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/specifyingTypes/typeQueries/typeQueryWithReservedWords.ts
-es2panda/test/TypeScript/tests/cases/conformance/types/stringLiteral/stringLiteralTypesAndParenthesizedExpressions01.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/tuple/named/namedTupleMembers.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/typeParameters/typeArgumentLists/constraintSatisfactionWithEmptyObject.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/uniqueSymbol/uniqueSymbols.ts

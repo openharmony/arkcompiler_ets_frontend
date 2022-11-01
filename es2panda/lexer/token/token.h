@@ -122,7 +122,7 @@ public:
     static bool IsBinaryLvalueToken(TokenType type);
     static bool IsUpdateToken(TokenType type);
     static bool IsPunctuatorToken(TokenType type);
-    static bool IsTsParamToken(TokenType type);
+    static bool IsTsParamToken(TokenType type, char32_t nextChar);
 
 private:
     friend class KeywordsUtil;

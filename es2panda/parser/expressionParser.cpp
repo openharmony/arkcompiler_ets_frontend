@@ -256,7 +256,7 @@ ir::Expression *ParserImpl::ParseArrayExpression(ExpressionParseFlags flags)
     }
 
     if (Extension() == ScriptExtension::TS && (flags & ExpressionParseFlags::ALLOW_TS_PARAM_TOKEN) &&
-        lexer::Token::IsTsParamToken(lexer_->GetToken().Type())) {
+        lexer::Token::IsTsParamToken(lexer_->GetToken().Type(), lexer_->Lookahead())) {
         context_.Status() |= ParserStatus::FUNCTION_PARAM;
         ParsePotentialTsFunctionParameter(ExpressionParseFlags::NO_OPTS, arrayExpressionNode);
     }
@@ -551,7 +551,8 @@ ir::Expression *ParserImpl::ParseCoverParenthesizedExpressionAndArrowParameterLi
         restElement->SetGrouped();
         restElement->SetStart(start);
 
-        if (Extension() == ScriptExtension::TS && lexer::Token::IsTsParamToken(lexer_->GetToken().Type())) {
+        if (Extension() == ScriptExtension::TS &&
+            lexer::Token::IsTsParamToken(lexer_->GetToken().Type(), lexer_->Lookahead())) {
             ParsePotentialTsFunctionParameter(ExpressionParseFlags::IN_REST, restElement);
         }
 
@@ -982,7 +983,7 @@ ir::Expression *ParserImpl::ParsePrimaryExpression(ExpressionParseFlags flags)
             lexer_->NextToken();
 
             if (Extension() == ScriptExtension::TS && (flags & ExpressionParseFlags::ALLOW_TS_PARAM_TOKEN) &&
-                lexer::Token::IsTsParamToken(lexer_->GetToken().Type())) {
+                lexer::Token::IsTsParamToken(lexer_->GetToken().Type(), lexer_->Lookahead())) {
                 context_.Status() |= ParserStatus::FUNCTION_PARAM;
                 ParsePotentialTsFunctionParameter(ExpressionParseFlags::NO_OPTS, identNode);
             }
@@ -2158,7 +2159,7 @@ ir::ObjectExpression *ParserImpl::ParseObjectExpression(ExpressionParseFlags fla
     }
 
     if (Extension() == ScriptExtension::TS && (flags & ExpressionParseFlags::ALLOW_TS_PARAM_TOKEN) &&
-        lexer::Token::IsTsParamToken(lexer_->GetToken().Type())) {
+        lexer::Token::IsTsParamToken(lexer_->GetToken().Type(), lexer_->Lookahead())) {
         context_.Status() |= ParserStatus::FUNCTION_PARAM;
         ParsePotentialTsFunctionParameter(ExpressionParseFlags::NO_OPTS, objectExpression);
     }
