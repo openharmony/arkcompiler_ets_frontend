@@ -28,15 +28,15 @@ namespace panda::es2panda::compiler {
 
 class PandaGen;
 
-class AllocatorBase {
+class RegAllocator {
 public:
-    explicit AllocatorBase(PandaGen *pg)
+    explicit RegAllocator(PandaGen *pg)
         : pg_(pg), sourceLocationFlag_(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION)
     {
     }
-    NO_COPY_SEMANTIC(AllocatorBase);
-    NO_MOVE_SEMANTIC(AllocatorBase);
-    ~AllocatorBase() = default;
+    NO_COPY_SEMANTIC(RegAllocator);
+    NO_MOVE_SEMANTIC(RegAllocator);
+    ~RegAllocator() = default;
 
     void SetSourceLocationFlag(lexer::SourceLocationFlag flag)
     {
@@ -48,38 +48,10 @@ public:
         return sourceLocationFlag_;
     }
 
-protected:
-    void PushBack(IRNode *ins);
     ArenaAllocator *Allocator() const;
-
-    template <typename T, typename... Args>
-    T *Alloc(const ir::AstNode *node, Args &&... args)
-    {
-        ir::AstNode *invalidNode = nullptr;
-        bool isInvalid = GetSourceLocationFlag() == lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION;
-        auto *ret = Allocator()->New<T>(isInvalid ? invalidNode : node, std::forward<Args>(args)...);
-        UpdateIcSlot(ret);
-        return ret;
-    }
-
-    void UpdateIcSlot(IRNode *node);
-
-    template <typename T, typename... Args>
-    void Add(const ir::AstNode *node, Args &&... args)
-    {
-        return PushBack(Alloc<T>(node, std::forward<Args>(args)...));
-    }
-
-    PandaGen *pg_;
-    lexer::SourceLocationFlag sourceLocationFlag_; // for instructions that need to be set with invalid debuginfo
-};
-
-class SimpleAllocator : public AllocatorBase {
-public:
-    explicit SimpleAllocator(PandaGen *pg) : AllocatorBase(pg) {};
-    NO_COPY_SEMANTIC(SimpleAllocator);
-    NO_MOVE_SEMANTIC(SimpleAllocator);
-    ~SimpleAllocator() = default;
+    uint16_t GetSpillRegsCount() const;
+    
+    void AdjustInsRegWhenHasSpill();
 
     Label *AllocLabel(std::string &&id);
     void AddLabel(Label *label)
@@ -90,7 +62,8 @@ public:
     template <typename T, typename... Args>
     void Emit(const ir::AstNode *node, Args &&... args)
     {
-        Add<T>(node, std::forward<Args>(args)...);
+        auto *ins = Alloc<T>(node, std::forward<Args>(args)...);
+        Run(ins);
     }
 
     template <typename T, typename... Args>
@@ -100,36 +73,26 @@ public:
         Run(ins, typeIndex);
     }
 
-private:
-    void Run(IRNode *ins, int64_t typeIndex);
-};
-
-class FrontAllocator : public AllocatorBase {
-public:
-    explicit FrontAllocator(PandaGen *pg);
-    NO_COPY_SEMANTIC(FrontAllocator);
-    NO_MOVE_SEMANTIC(FrontAllocator);
-    ~FrontAllocator();
+    template <typename T, typename... Args>
+    void EmitRange(const ir::AstNode *node, size_t argCount, Args &&... args)
+    {
+        auto *ins = Alloc<T>(node, std::forward<Args>(args)...);
+        Run(ins, argCount);
+    }
 
 private:
-    ArenaList<IRNode *> insn_;
-};
-
-class RegAllocatorBase : public AllocatorBase {
-public:
-    explicit RegAllocatorBase(PandaGen *pg) : AllocatorBase(pg) {}
-    NO_COPY_SEMANTIC(RegAllocatorBase);
-    NO_MOVE_SEMANTIC(RegAllocatorBase);
-    ~RegAllocatorBase() = default;
-
-protected:
-    inline bool CheckRegIndices(IRNode *ins, const Span<VReg *> &registers)
+    bool CheckRegIndices(IRNode *ins, const Span<VReg *> &registers,
+                         std::vector<OperandKind> *regsKind = nullptr)
     {
         Formats formats = ins->GetFormats();
         limit_ = 0;
 
         for (const auto &format : formats) {
             for (const auto &formatItem : format.GetFormatItem()) {
+                if (regsKind && formatItem.IsVReg()) {
+                    regsKind->push_back(formatItem.Kind());
+                }
+
                 if (formatItem.IsVReg()) {
                     limit_ = 1 << formatItem.Bitwidth();
                     break;
@@ -149,58 +112,55 @@ protected:
         return *reg < limit_;
     }
 
-    VReg Spill(IRNode *ins, VReg reg);
-    void Restore(IRNode *ins);
-    void ClearSpillMap();
-
-    VReg spillIndex_ {0};
-    VReg regEnd_ {0};
-    size_t limit_ {0};
-    std::unordered_map<VReg, VReg> spillMap_ {};
-};
-
-class RegAllocator : public RegAllocatorBase {
-public:
-    explicit RegAllocator(PandaGen *pg) : RegAllocatorBase(pg) {}
-    NO_COPY_SEMANTIC(RegAllocator);
-    NO_MOVE_SEMANTIC(RegAllocator);
-    ~RegAllocator() = default;
-
-    template <typename T, typename... Args>
-    void Emit(const ir::AstNode *node, Args &&... args)
+    inline void FreeSpill()
     {
-        auto *ins = Alloc<T>(node, std::forward<Args>(args)...);
-        Run(ins);
+        spillIndex_ = 0;
     }
 
-    template <typename T, typename... Args>
-    void EmitWithType(const ir::AstNode *node, int64_t typeIndex, Args &&... args)
-    {
-        auto *ins = Alloc<T>(node, std::forward<Args>(args)...);
-        Run(ins, typeIndex);
-    }
-
-private:
+    void PushBack(IRNode *ins);
+    void UpdateIcSlot(IRNode *node);
     void Run(IRNode *ins);
+    void Run(IRNode *ins, size_t argCount);
     void Run(IRNode *ins, int64_t typeIndex);
-};
-
-class RangeRegAllocator : public RegAllocatorBase {
-public:
-    explicit RangeRegAllocator(PandaGen *pg) : RegAllocatorBase(pg) {}
-    NO_COPY_SEMANTIC(RangeRegAllocator);
-    NO_MOVE_SEMANTIC(RangeRegAllocator);
-    ~RangeRegAllocator() = default;
+    void AdjustInsSpill(Span<VReg *> &registers, IRNode *ins, ArenaList<IRNode *> &newInsns,
+                        std::vector<OperandKind> &regsKind);
+    void AdjustRangeInsSpill(Span<VReg *> &registers, IRNode *ins, ArenaList<IRNode *> &newInsns);
 
     template <typename T, typename... Args>
-    void Emit(const ir::AstNode *node, VReg rangeStart, size_t argCount, Args &&... args)
+    T *Alloc(const ir::AstNode *node, Args &&... args)
     {
-        auto *ins = Alloc<T>(node, std::forward<Args>(args)...);
-        Run(ins, rangeStart, argCount);
+        ir::AstNode *invalidNode = nullptr;
+        bool isInvalid = GetSourceLocationFlag() == lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION;
+        auto *ret = Allocator()->New<T>(isInvalid ? invalidNode : node, std::forward<Args>(args)...);
+        UpdateIcSlot(ret);
+        return ret;
     }
 
+    template <typename T, typename... Args>
+    void Add(ArenaList<IRNode *> &insns, const ir::AstNode *node, Args &&... args)
+    {
+        insns.push_back(Alloc<T>(node, std::forward<Args>(args)...));
+    }
+
+    PandaGen *pg_;
+    lexer::SourceLocationFlag sourceLocationFlag_; // for instructions that need to be set with invalid debuginfo
+    size_t limit_ {0};
+    uint16_t spillRegs_ {0};
+    VReg spillIndex_ {0};
+    bool hasSpill_ {false};
+    std::vector<std::pair<VReg, VReg>> dstRegSpills_ {};
+};
+
+class FrontAllocator {
+public:
+    explicit FrontAllocator(PandaGen *pg);
+    NO_COPY_SEMANTIC(FrontAllocator);
+    NO_MOVE_SEMANTIC(FrontAllocator);
+    ~FrontAllocator();
+
 private:
-    void Run(IRNode *ins, VReg rangeStart, size_t argCount);
+    PandaGen *pg_;
+    ArenaList<IRNode *> insn_;
 };
 }  // namespace panda::es2panda::compiler
 

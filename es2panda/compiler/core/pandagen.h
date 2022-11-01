@@ -89,9 +89,7 @@ public:
           catchList_(allocator_->Adapter()),
           strings_(allocator_->Adapter()),
           buffStorage_(allocator_->Adapter()),
-          sa_(this),
-          ra_(this),
-          rra_(this)
+          ra_(this)
     {
     }
     ~PandaGen() = default;
@@ -141,6 +139,11 @@ public:
     const ArenaList<IRNode *> &Insns() const
     {
         return insns_;
+    }
+
+    void SetInsns(ArenaList<IRNode *> newInsns)
+    {
+        insns_ = newInsns;
     }
 
     ArenaMap<const IRNode *, int64_t> &TypedInsns()
@@ -205,9 +208,12 @@ public:
 
     void SetSourceLocationFlag(lexer::SourceLocationFlag flag)
     {
-        sa_.SetSourceLocationFlag(flag);
         ra_.SetSourceLocationFlag(flag);
-        rra_.SetSourceLocationFlag(flag);
+    }
+
+    void AdjustSpillInsns()
+    {
+        ra_.AdjustInsRegWhenHasSpill();
     }
 
     panda::panda_file::FunctionKind GetFunctionKind() const
@@ -480,9 +486,7 @@ private:
     DynamicContext *dynamicContext_ {};
     OptionalChain *optionalChain_ {};
     InlineCache ic_;
-    SimpleAllocator sa_;
     RegAllocator ra_;
-    RangeRegAllocator rra_;
     IcSizeType currentSlot_ {0};
 
     uint32_t usedRegs_ {0};
