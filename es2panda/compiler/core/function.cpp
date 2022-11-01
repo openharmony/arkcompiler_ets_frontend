@@ -199,6 +199,7 @@ static void CompileFunctionOrProgram(PandaGen *pg)
 void Function::Compile(PandaGen *pg)
 {
     CompileFunctionOrProgram(pg);
+    pg->AdjustSpillInsns();
     pg->SetFunctionKind();
     pg->SetSourceLocationFlag(lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION);
     pg->CopyFunctionArguments(pg->RootNode());
