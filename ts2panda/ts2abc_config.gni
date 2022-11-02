@@ -12,15 +12,7 @@
 # limitations under the License.
 
 import("//arkcompiler/ets_frontend/ets_frontend_config.gni")
-if (!ark_standalone_build) {
-  import("//build/ohos.gni")
-  import("//build/test.gni")
-  build_root = "//build"
-  ts2abc_root = "//arkcompiler/ets_frontend/ts2panda"
-} else {
-  import("$build_root/ark.gni")
-  ts2abc_root = "//arkcompiler/ets_frontend/ts2panda"
-}
+ts2abc_root = "//arkcompiler/ets_frontend/ts2panda"
 
 declare_args() {
   nodejs_dir = ""

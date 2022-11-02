@@ -12,8 +12,6 @@
 # limitations under the License.
 
 import("//arkcompiler/ets_frontend/ts2panda/ts2abc_config.gni")
-import("//build/config/clang/clang.gni")
-import("//build/ohos.gni")
 
 action("ts2abc_ts_type_system_test") {
   script = "${ts2abc_root}/../testTs/run_testTs.py"
