@@ -1949,7 +1949,8 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
             ThrowSyntaxError("Missing initializer in const declaration");
         }
 
-        if (!(flags & VariableParsingFlags::IN_FOR) && (init->IsArrayPattern() || init->IsObjectPattern())) {
+        if (!isDeclare && !(flags & VariableParsingFlags::IN_FOR) &&
+            (init->IsArrayPattern() || init->IsObjectPattern())) {
             ThrowSyntaxError("Missing initializer in destructuring declaration");
         }
 

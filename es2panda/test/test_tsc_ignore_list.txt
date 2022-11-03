@@ -36,7 +36,6 @@ es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringFo
 es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForObjectBindingPatternDefaultValues2.ts
 es2panda/test/TypeScript/tests/cases/compiler/withStatementInternalComments.ts
 es2panda/test/TypeScript/tests/cases/conformance/async/es2017/asyncAwait_es2017.ts
-es2panda/test/TypeScript/tests/cases/conformance/classes/members/privateNames/privateNameComputedPropertyName1.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/arrowFunction/emitArrowFunctionWhenUsingArguments03_ES6.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/arrowFunction/emitArrowFunctionWhenUsingArguments04_ES6.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/arrowFunction/emitArrowFunctionWhenUsingArguments05_ES6.ts
@@ -51,7 +50,6 @@ es2panda/test/TypeScript/tests/cases/conformance/es6/arrowFunction/emitArrowFunc
 es2panda/test/TypeScript/tests/cases/conformance/es6/arrowFunction/emitArrowFunctionWhenUsingArguments15_ES6.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/arrowFunction/emitArrowFunctionWhenUsingArguments16_ES6.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/arrowFunction/emitArrowFunctionWhenUsingArguments17_ES6.ts
-es2panda/test/TypeScript/tests/cases/conformance/es6/destructuring/declarationInAmbientContext.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/for-ofStatements/for-of53.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/for-ofStatements/for-of56.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/functionDeclarations/FunctionDeclaration11_es6.ts
@@ -87,7 +85,6 @@ es2panda/test/TypeScript/tests/cases/conformance/scanner/ecmascript3/scannerES3N
 es2panda/test/TypeScript/tests/cases/conformance/types/keyof/keyofAndIndexedAccess.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/members/objectTypeWithStringNamedNumericProperty.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/specifyingTypes/typeQueries/typeQueryWithReservedWords.ts
-es2panda/test/TypeScript/tests/cases/conformance/types/tuple/named/namedTupleMembers.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/typeParameters/typeArgumentLists/constraintSatisfactionWithEmptyObject.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/uniqueSymbol/uniqueSymbols.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/uniqueSymbol/uniqueSymbolsDeclarations.ts

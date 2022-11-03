@@ -1,0 +1,209 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "TSTypeAliasDeclaration",
+      "id": {
+        "type": "Identifier",
+        "name": "WithOptAndRest",
+        "decorators": [],
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 6
+          },
+          "end": {
+            "line": 17,
+            "column": 20
+          }
+        }
+      },
+      "typeAnnotation": {
+        "type": "TSTupleType",
+        "elementTypes": [
+          {
+            "type": "TSNamedTupleMember",
+            "elementType": {
+              "type": "TSNumberKeyword",
+              "loc": {
+                "start": {
+                  "line": 17,
+                  "column": 31
+                },
+                "end": {
+                  "line": 17,
+                  "column": 37
+                }
+              }
+            },
+            "label": {
+              "type": "Identifier",
+              "name": "first",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 17,
+                  "column": 24
+                },
+                "end": {
+                  "line": 17,
+                  "column": 29
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 17,
+                "column": 24
+              },
+              "end": {
+                "line": 17,
+                "column": 37
+              }
+            }
+          },
+          {
+            "type": "TSNamedTupleMember",
+            "elementType": {
+              "type": "TSNumberKeyword",
+              "loc": {
+                "start": {
+                  "line": 17,
+                  "column": 48
+                },
+                "end": {
+                  "line": 17,
+                  "column": 54
+                }
+              }
+            },
+            "label": {
+              "type": "Identifier",
+              "name": "second",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 17,
+                  "column": 39
+                },
+                "end": {
+                  "line": 17,
+                  "column": 45
+                }
+              }
+            },
+            "optional": true,
+            "loc": {
+              "start": {
+                "line": 17,
+                "column": 39
+              },
+              "end": {
+                "line": 17,
+                "column": 54
+              }
+            }
+          },
+          {
+            "type": "TSNamedTupleMember",
+            "elementType": {
+              "type": "TSArrayType",
+              "elementType": {
+                "type": "TSStringKeyword",
+                "loc": {
+                  "start": {
+                    "line": 17,
+                    "column": 65
+                  },
+                  "end": {
+                    "line": 17,
+                    "column": 71
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 17,
+                  "column": 65
+                },
+                "end": {
+                  "line": 17,
+                  "column": 73
+                }
+              }
+            },
+            "label": {
+              "type": "Identifier",
+              "name": "rest",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 17,
+                  "column": 59
+                },
+                "end": {
+                  "line": 17,
+                  "column": 63
+                }
+              }
+            },
+            "rest": true,
+            "loc": {
+              "start": {
+                "line": 17,
+                "column": 56
+              },
+              "end": {
+                "line": 17,
+                "column": 73
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 23
+          },
+          "end": {
+            "line": 17,
+            "column": 74
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 17,
+          "column": 1
+        },
+        "end": {
+          "line": 17,
+          "column": 75
+        }
+      }
+    },
+    {
+      "type": "EmptyStatement",
+      "loc": {
+        "start": {
+          "line": 17,
+          "column": 74
+        },
+        "end": {
+          "line": 17,
+          "column": 75
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1
+    },
+    "end": {
+      "line": 17,
+      "column": 75
+    }
+  }
+}
