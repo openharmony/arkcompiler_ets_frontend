@@ -32,6 +32,11 @@ struct TsModuleInfo {
     binder::Scope *scope;
 };
 
+struct TsEnumInfo {
+    util::StringView name;
+    binder::Scope *scope;
+};
+
 using PrivatePropertyMap = std::unordered_map<util::StringView, util::StringView>;
 using ComputedPropertyMap = std::unordered_map<ir::Statement *, util::StringView>;
 
@@ -66,6 +71,7 @@ public:
     explicit Transformer(panda::ArenaAllocator *allocator)
         : program_(nullptr),
           tsModuleList_(allocator->Adapter()),
+          tsEnumList_(allocator->Adapter()),
           classList_(allocator->Adapter())
     {
     }
@@ -136,18 +142,58 @@ private:
     util::StringView CreateUniqueName(const std::string &head, size_t *index = nullptr) const;
 
     util::StringView GetNameFromModuleDeclaration(ir::TSModuleDeclaration *node) const;
-    util::StringView GetParamName(ir::TSModuleDeclaration *node, util::StringView name) const;
+    util::StringView GetParamName(ir::AstNode *node, util::StringView name) const;
     ir::Expression *GetClassMemberName(ir::Expression *key, bool isComputed, ir::Statement *node);
     binder::Scope *FindExportVariableInTsModuleScope(util::StringView name) const;
     binder::Variable *FindTSModuleVariable(const ir::Expression *node, binder::Scope *scope) const;
     util::StringView FindPrivatePropertyBindName(util::StringView name);
     void AddExportLocalEntryItem(util::StringView name, const ir::Identifier *identifier);
-    bool IsInstantiatedTSModule(const ir::Expression *node) const;
+    bool IsInstantiatedTSModule(const ir::Expression *node, binder::Scope *scope) const;
     void SetOriginalNode(ir::UpdateNodes res, ir::AstNode *originalNode) const;
+
+    ir::UpdateNodes VisitTsEnumDeclaration(ir::TSEnumDeclaration *node, bool isExport = false);
+    ir::AstNode *CreateVariableDeclarationForTSEnumOrTSModule(util::StringView name, ir::AstNode *node, bool isExport);
+    util::StringView GetNameFromTsEnumDeclaration(const ir::TSEnumDeclaration *node) const;
+    ir::CallExpression *CreateCallExpressionForTsEnum(ir::TSEnumDeclaration *node, util::StringView name,
+                                                      bool isExport);
+    ir::ExpressionStatement *CreateTsEnumMember(ir::TSEnumMember *node, ir::TSEnumMember *preNode,
+                                                util::StringView enumLiteralName);
+    ir::ExpressionStatement *CreateTsEnumMemberWithStringInit(ir::TSEnumMember *node,
+                                                              util::StringView enumLiteralName,
+                                                              util::StringView enumMemberName);
+    ir::ExpressionStatement *CreateTsEnumMemberWithNumberInit(ir::TSEnumMember *node,
+                                                              util::StringView enumLiteralName,
+                                                              util::StringView enumMemberName);
+    ir::ExpressionStatement *CreateTsEnumMemberWithoutInit(ir::TSEnumMember *node,
+                                                           ir::TSEnumMember *preNode,
+                                                           util::StringView enumLiteralName,
+                                                           util::StringView enumMemberName);
+    ArenaVector<ir::Expression *> CreateCallExpressionArguments(util::StringView name, bool isExport);
+    bool IsStringInitForEnumMember(const ir::Expression *expr, binder::Scope *scope) const;
+    bool IsStringForMemberExpression(const ir::MemberExpression *memberExpr, binder::Scope *scope) const;
+    bool IsInstantiatedNamespaceVariable(binder::Variable *var) const;
+    ArenaVector<binder::Variable *> FindFrontIdentifierTSVariables(const ir::Identifier *ident,
+                                                                   binder::Scope *scope) const;
+    void FindLocalTSVariables(binder::Scope *scope, const util::StringView name,
+                              const std::vector<binder::TSBindingType> &types,
+                              ArenaVector<binder::Variable *> &findRes) const;
+    void FindExportTSVariables(binder::Scope *scope, const util::StringView name,
+                               const std::vector<binder::TSBindingType> &types,
+                               ArenaVector<binder::Variable *> &findRes) const;
+    bool VerifyMemberExpressionDeque(binder::Variable *currVar, ArenaDeque<const ir::Expression *> members) const;
+    util::StringView GetNameForMemberExpressionItem(const ir::Expression *node) const;
+    util::StringView GetNameFromEnumMember(const ir::TSEnumMember *node) const;
+    binder::Scope *FindEnumMemberScope(const util::StringView name) const;
+    ir::MemberExpression *CreateMemberExpressionFromIdentifier(binder::Scope *scope, ir::Identifier *node);
 
     bool IsTsModule() const
     {
         return (tsModuleList_.size() != 0);
+    }
+
+    bool IsTsEnum() const
+    {
+        return (tsEnumList_.size() != 0);
     }
 
     template <typename T, typename... Args>
@@ -183,6 +229,16 @@ private:
     util::StringView FindTSModuleNameByScope(binder::Scope *scope) const
     {
         for (auto it : tsModuleList_) {
+            if (it.scope == scope) {
+                return it.name;
+            }
+        }
+        UNREACHABLE();
+    }
+
+    util::StringView FindTSEnumNameByScope(binder::Scope *scope) const
+    {
+        for (auto it : tsEnumList_) {
             if (it.scope == scope) {
                 return it.name;
             }
@@ -235,6 +291,7 @@ private:
 
     Program *program_;
     ArenaVector<TsModuleInfo> tsModuleList_;
+    ArenaVector<TsEnumInfo> tsEnumList_;
     ArenaVector<ClassInfo> classList_;
     std::unordered_map<util::StringView, binder::Scope *> tempVarDeclStatements_ {};
 };

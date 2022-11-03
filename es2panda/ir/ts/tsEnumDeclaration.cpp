@@ -261,15 +261,15 @@ void AddEnumValueDeclaration(checker::Checker *checker, double number, binder::E
 
     util::StringView memberStr = util::Helpers::ToStringView(checker->Allocator(), number);
 
-    binder::LocalScope *enumScope = checker->Scope()->AsLocalScope();
-    binder::Variable *res = enumScope->FindLocal(memberStr);
+    binder::TSEnumScope *enumScope = checker->Scope()->AsTSEnumScope();
+    binder::Variable *res = enumScope->FindEnumMemberVariable(memberStr);
     binder::EnumVariable *enumVar = nullptr;
 
     if (!res) {
         auto *decl = checker->Allocator()->New<binder::EnumDecl>(memberStr);
         decl->BindNode(variable->Declaration()->Node());
         enumScope->AddDecl(checker->Allocator(), decl, ScriptExtension::TS);
-        res = enumScope->FindLocal(memberStr);
+        res = enumScope->FindEnumMemberVariable(memberStr);
         ASSERT(res && res->IsEnumVariable());
         enumVar = res->AsEnumVariable();
         enumVar->AsEnumVariable()->SetBackReference();
@@ -360,7 +360,7 @@ checker::Type *TSEnumDeclaration::InferType(checker::Checker *checker, bool isCo
 {
     double value = -1.0;
 
-    binder::LocalScope *enumScope = checker->Scope()->AsLocalScope();
+    binder::TSEnumScope *enumScope = checker->Scope()->AsTSEnumScope();
 
     bool initNext = false;
     bool isLiteralEnum = false;
@@ -369,7 +369,7 @@ checker::Type *TSEnumDeclaration::InferType(checker::Checker *checker, bool isCo
 
     for (size_t i = 0; i < localsSize; i++) {
         const util::StringView &currentName = enumScope->Decls()[i]->Name();
-        binder::Variable *currentVar = enumScope->FindLocal(currentName);
+        binder::Variable *currentVar = enumScope->FindEnumMemberVariable(currentName);
         ASSERT(currentVar && currentVar->IsEnumVariable());
         InferEnumVariableType(checker, currentVar->AsEnumVariable(), &value, &initNext, &isLiteralEnum, isConst,
                               computedExpr);
@@ -386,7 +386,10 @@ checker::Type *TSEnumDeclaration::InferType(checker::Checker *checker, bool isCo
 checker::Type *TSEnumDeclaration::Check(checker::Checker *checker) const
 {
     binder::Variable *enumVar = key_->Variable();
-    ASSERT(enumVar);
+    // TODO: enumLiteral Identifier binds enumLiteral Variable.
+    if (enumVar == nullptr) {
+        return nullptr;
+    }
 
     if (!enumVar->TsType()) {
         checker::ScopeContext scopeCtx(checker, scope_);

@@ -51,6 +51,11 @@ public:
         return object_;
     }
 
+    Expression *Object()
+    {
+        return object_;
+    }
+
     const Expression *Property() const
     {
         return property_;

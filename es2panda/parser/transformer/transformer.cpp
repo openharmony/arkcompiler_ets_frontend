@@ -17,11 +17,13 @@
 
 #include <util/ustring.h>
 
+#include "binder/scope.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/decorator.h"
 #include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
+#include "ir/base/templateElement.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/binaryExpression.h"
 #include "ir/expressions/callExpression.h"
@@ -34,8 +36,10 @@
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/objectExpression.h"
 #include "ir/expressions/sequenceExpression.h"
+#include "ir/expressions/templateLiteral.h"
 #include "ir/expressions/thisExpression.h"
 #include "ir/module/exportNamedDeclaration.h"
+#include "ir/module/exportSpecifier.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/classDeclaration.h"
 #include "ir/statements/emptyStatement.h"
@@ -43,6 +47,8 @@
 #include "ir/statements/functionDeclaration.h"
 #include "ir/statements/variableDeclaration.h"
 #include "ir/statements/variableDeclarator.h"
+#include "ir/ts/tsEnumDeclaration.h"
+#include "ir/ts/tsEnumMember.h"
 #include "ir/ts/tsImportEqualsDeclaration.h"
 #include "ir/ts/tsModuleBlock.h"
 #include "ir/ts/tsModuleDeclaration.h"
@@ -183,19 +189,22 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
     switch (childNode->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
             auto *ident = childNode->AsIdentifier();
-            if (!ident->IsReference() || !IsTsModule()) {
+            if (!ident->IsReference() || (!IsTsModule() && !IsTsEnum())) {
                 return VisitTSNodes(childNode);
             }
 
             auto name = ident->Name();
-            auto scope = FindExportVariableInTsModuleScope(name);
-            if (scope) {
-                auto moduleName = FindTSModuleNameByScope(scope);
-                auto *id = CreateReferenceIdentifier(moduleName);
-                auto *res = AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(name, Allocator()),
-                    ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
-                SetOriginalNode(res, childNode);
-                return res;
+            if (IsTsEnum()) {
+                auto scope = FindEnumMemberScope(name);
+                if (scope) {
+                    return CreateMemberExpressionFromIdentifier(scope, ident);
+                }
+            }
+            if (IsTsModule()) {
+                auto scope = FindExportVariableInTsModuleScope(name);
+                if (scope) {
+                    return CreateMemberExpressionFromIdentifier(scope, ident);
+                }
             }
 
             return VisitTSNodes(childNode);
@@ -206,6 +215,15 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
                 return childNode;
             }
             auto res = VisitTsModuleDeclaration(node);
+            SetOriginalNode(res, childNode);
+            return res;
+        }
+        case ir::AstNodeType::TS_ENUM_DECLARATION: {
+            auto *node = childNode->AsTSEnumDeclaration();
+            if (node->IsDeclare()) {
+                return childNode;
+            }
+            auto res = VisitTsEnumDeclaration(node);
             SetOriginalNode(res, childNode);
             return res;
         }
@@ -222,6 +240,15 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
                     return childNode;
                 }
                 auto res = VisitTsModuleDeclaration(tsModuleDeclaration, true);
+                SetOriginalNode(res, childNode);
+                return res;
+            }
+
+            if (decl->IsTSEnumDeclaration()) {
+                if (decl->AsTSEnumDeclaration()->IsDeclare()) {
+                    return childNode;
+                }
+                auto res = VisitTsEnumDeclaration(decl->AsTSEnumDeclaration(), true);
                 SetOriginalNode(res, childNode);
                 return res;
             }
@@ -848,7 +875,7 @@ std::vector<ir::AstNode *> Transformer::CreateClassDecorators(ir::ClassDeclarati
 ir::AstNode *Transformer::VisitTsImportEqualsDeclaration(ir::TSImportEqualsDeclaration *node)
 {
     auto *express = node->ModuleReference();
-    if (!IsInstantiatedTSModule(express)) {
+    if (!IsInstantiatedTSModule(express, Scope())) {
         return node;
     }
     auto name = node->Id()->Name();
@@ -875,9 +902,9 @@ ir::AstNode *Transformer::VisitTsImportEqualsDeclaration(ir::TSImportEqualsDecla
     return res;
 }
 
-bool Transformer::IsInstantiatedTSModule(const ir::Expression *node) const
+bool Transformer::IsInstantiatedTSModule(const ir::Expression *node, binder::Scope *scope) const
 {
-    auto *var = FindTSModuleVariable(node, Scope());
+    auto *var = FindTSModuleVariable(node, scope);
     if (var == nullptr) {
         return true;
     }
@@ -1058,12 +1085,21 @@ ir::VariableDeclaration *Transformer::CreateVariableDeclarationWithIdentify(util
     return declaration;
 }
 
-util::StringView Transformer::GetParamName(ir::TSModuleDeclaration *node, util::StringView name) const
+util::StringView Transformer::GetParamName(ir::AstNode *node, util::StringView name) const
 {
-    auto scope = node->Scope();
-    if (!scope->HasVariableName(name)) {
-        return name;
+    if (node->IsTSModuleDeclaration()) {
+        auto scope = node->AsTSModuleDeclaration()->Scope();
+        if (scope && !scope->HasVariableName(name)) {
+            return name;
+        }
     }
+    if (node->IsTSEnumDeclaration()) {
+        auto scope = node->AsTSEnumDeclaration()->Scope();
+        if (scope && !scope->HasDeclarationName(name)) {
+            return name;
+        }
+    }
+
     auto uniqueName = CreateUniqueName(std::string(name) + std::string(INDEX_DIVISION));
     return uniqueName;
 }
@@ -1115,25 +1151,7 @@ ir::CallExpression *Transformer::CreateCallExpressionForTsModule(ir::TSModuleDec
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(funcNode);
 
-    ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
-    ArenaVector<ir::Expression *> properties(Allocator()->Adapter());
-    auto *objectExpression = AllocNode<ir::ObjectExpression>(ir::AstNodeType::OBJECT_EXPRESSION,
-                                                             std::move(properties),
-                                                             false);
-    auto assignExpr = AllocNode<ir::AssignmentExpression>(CreateTsModuleParam(name, isExport),
-                                                          objectExpression,
-                                                          lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-    auto argument = AllocNode<ir::BinaryExpression>(CreateTsModuleParam(name, isExport),
-                                                    assignExpr,
-                                                    lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
-    if (isExport) {
-        auto *id = CreateReferenceIdentifier(name);
-        arguments.push_back(AllocNode<ir::AssignmentExpression>(id, argument,
-            lexer::TokenType::PUNCTUATOR_SUBSTITUTION));
-    } else {
-        arguments.push_back(argument);
-    }
-
+    ArenaVector<ir::Expression *> arguments = CreateCallExpressionArguments(name, isExport);
     auto *callExpr = AllocNode<ir::CallExpression>(funcExpr, std::move(arguments), nullptr, false);
 
     return callExpr;
@@ -1168,19 +1186,7 @@ ir::UpdateNodes Transformer::VisitTsModuleDeclaration(ir::TSModuleDeclaration *n
 
     auto findRes = Scope()->FindLocal(name, binder::ResolveBindingOptions::ALL);
     if (findRes == nullptr) {
-        bool doExport = isExport && !IsTsModule();
-        auto flag = VariableParsingFlags::VAR;
-        if (IsTsModule()) {
-            flag = VariableParsingFlags::LET;
-        }
-        auto *var = CreateVariableDeclarationWithIdentify(name, flag, node, doExport);
-        if (doExport) {
-            ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
-            res.push_back(AllocNode<ir::ExportNamedDeclaration>(var, std::move(specifiers)));
-            AddExportLocalEntryItem(name, node->Name()->AsIdentifier());
-        } else {
-            res.push_back(var);
-        }
+        res.push_back(CreateVariableDeclarationForTSEnumOrTSModule(name, node, isExport));
     }
 
     auto *callExpr = CreateCallExpressionForTsModule(node, name, isExport && IsTsModule());
@@ -1195,6 +1201,605 @@ ir::Identifier *Transformer::CreateReferenceIdentifier(util::StringView name)
     auto *node = AllocNode<ir::Identifier>(name, Allocator());
     node->AsIdentifier()->SetReference();
     return node;
+}
+
+ir::UpdateNodes Transformer::VisitTsEnumDeclaration(ir::TSEnumDeclaration *node, bool isExport)
+{
+    std::vector<ir::AstNode *> res;
+
+    util::StringView name = GetNameFromTsEnumDeclaration(node);
+
+    auto findRes = Scope()->FindLocal(name);  // Find if the variable with the same name is already defined
+    if (findRes == nullptr) {
+        res.push_back(CreateVariableDeclarationForTSEnumOrTSModule(name, node, isExport));
+    }
+
+    auto *callExpr = CreateCallExpressionForTsEnum(node, name, isExport && IsTsModule());
+    auto *exprStatementNode = AllocNode<ir::ExpressionStatement>(callExpr);
+    res.push_back(exprStatementNode);
+
+    return res;
+}
+
+ir::AstNode *Transformer::CreateVariableDeclarationForTSEnumOrTSModule(util::StringView name,
+                                                                       ir::AstNode *node, bool isExport)
+{
+    auto flag = Scope()->Parent() == nullptr ? VariableParsingFlags::VAR : VariableParsingFlags::LET;
+    auto *variableDeclaration = CreateVariableDeclarationWithIdentify(name, flag, node, isExport);
+    bool doExport = isExport && !IsTsModule();
+    if (doExport) {  // export var
+        ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
+        auto *exportDeclaration = AllocNode<ir::ExportNamedDeclaration>(variableDeclaration, std::move(specifiers));
+        auto *ident = node->IsTSEnumDeclaration() ?
+            node->AsTSEnumDeclaration()->Key()->AsIdentifier() : node->AsTSModuleDeclaration()->Name()->AsIdentifier();
+        AddExportLocalEntryItem(name, ident);
+        return exportDeclaration;
+    }
+    return variableDeclaration;
+}
+
+util::StringView Transformer::GetNameFromTsEnumDeclaration(const ir::TSEnumDeclaration *node) const
+{
+    auto *name = node->AsTSEnumDeclaration()->Key();
+    return name->AsIdentifier()->Name();
+}
+
+ir::CallExpression *Transformer::CreateCallExpressionForTsEnum(ir::TSEnumDeclaration *node, util::StringView name,
+                                                               bool isExport)
+{
+    ir::ScriptFunction *funcNode = nullptr;
+
+    binder::FunctionScope *funcScope = node->Scope();
+    binder::FunctionParamScope *funcParamScope = funcScope->ParamScope();
+    util::StringView paramName = GetParamName(node, name);  // modify the name of the function param
+    {
+        auto paramScopeCtx = binder::LexicalScope<binder::FunctionParamScope>::Enter(Binder(), funcParamScope);
+        // create function param
+        ArenaVector<ir::Expression *> params(Allocator()->Adapter());
+        auto *parameter = CreateReferenceIdentifier(paramName);
+        Binder()->AddParamDecl(parameter);
+        params.push_back(parameter);
+        // create function body
+        ir::BlockStatement *blockNode = nullptr;
+        {
+            auto scopeCtx = binder::LexicalScope<binder::FunctionScope>::Enter(Binder(), funcScope);
+            tsEnumList_.push_back({paramName, funcScope});
+
+            ArenaVector<ir::TSEnumMember *> members = node->Members();
+            ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
+            ir::TSEnumMember *preTsEnumMember = nullptr;
+            for (auto member : members) {
+                auto *currTsEnumMember = member->AsTSEnumMember();
+                auto statement = CreateTsEnumMember(currTsEnumMember, preTsEnumMember, paramName);
+                preTsEnumMember = currTsEnumMember;
+                statements.push_back(statement);
+            }
+
+            blockNode = AllocNode<ir::BlockStatement>(funcScope, std::move(statements));
+            tsEnumList_.pop_back();
+            funcScope->AddBindsFromParam();
+        }
+        funcNode = AllocNode<ir::ScriptFunction>(funcScope, std::move(params), nullptr, blockNode, nullptr,
+            ir::ScriptFunctionFlags::NONE, false, Extension() == ScriptExtension::TS);
+
+        funcScope->BindNode(funcNode);
+        funcParamScope->BindNode(funcNode);
+    }
+    auto *funcExpr = AllocNode<ir::FunctionExpression>(funcNode);
+
+    ArenaVector<ir::Expression *> arguments = CreateCallExpressionArguments(name, isExport);
+    auto *callExpr = AllocNode<ir::CallExpression>(funcExpr, std::move(arguments), nullptr, false);
+
+    return callExpr;
+}
+
+ArenaVector<ir::Expression *> Transformer::CreateCallExpressionArguments(util::StringView name, bool isExport)
+{
+    ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
+    ArenaVector<ir::Expression *> properties(Allocator()->Adapter());
+    auto *objectExpression = AllocNode<ir::ObjectExpression>(ir::AstNodeType::OBJECT_EXPRESSION,
+                                                             std::move(properties),
+                                                             false);
+    auto assignExpr = AllocNode<ir::AssignmentExpression>(CreateTsModuleParam(name, isExport),
+                                                          objectExpression,
+                                                          lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    auto argument = AllocNode<ir::BinaryExpression>(CreateTsModuleParam(name, isExport),
+                                                    assignExpr,
+                                                    lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
+    if (isExport) {
+        auto *id = CreateReferenceIdentifier(name);
+        arguments.push_back(AllocNode<ir::AssignmentExpression>(id, argument,
+            lexer::TokenType::PUNCTUATOR_SUBSTITUTION));
+    } else {
+        arguments.push_back(argument);
+    }
+
+    return arguments;
+}
+
+ir::ExpressionStatement *Transformer::CreateTsEnumMember(ir::TSEnumMember *node, ir::TSEnumMember *preNode,
+                                                         util::StringView enumLiteralName)
+{
+    util::StringView enumMemberName = GetNameFromEnumMember(node);
+    binder::Variable *enumVar = Scope()->AsTSEnumScope()->FindEnumMemberVariable(enumMemberName);
+    ASSERT(enumVar);
+    if (node->Init() != nullptr) {
+        bool isStringInit = enumVar->AsEnumVariable()->StringInit();
+        if (!enumVar->AsEnumVariable()->IsVisited()) {
+            isStringInit = IsStringInitForEnumMember(node->Init(), Scope());
+            if (isStringInit) {
+                enumVar->AsEnumVariable()->SetStringInit();
+            }
+            enumVar->AsEnumVariable()->SetVisited();
+        }
+        return isStringInit ? CreateTsEnumMemberWithStringInit(node, enumLiteralName, enumMemberName) :
+                              CreateTsEnumMemberWithNumberInit(node, enumLiteralName, enumMemberName);
+    }
+
+    enumVar->AsEnumVariable()->SetVisited();
+    return CreateTsEnumMemberWithoutInit(node, preNode, enumLiteralName, enumMemberName);
+}
+
+ir::ExpressionStatement *Transformer::CreateTsEnumMemberWithStringInit(ir::TSEnumMember *node,
+                                                                       util::StringView enumLiteralName,
+                                                                       util::StringView enumMemberName)
+{
+    // transform to the shape like E["a"] = "str";
+    auto *object = CreateReferenceIdentifier(enumLiteralName);
+    auto *property = AllocNode<ir::StringLiteral>(enumMemberName);
+    auto *left = AllocNode<ir::MemberExpression>(object, property,
+                                                 ir::MemberExpression::MemberExpressionKind::ELEMENT_ACCESS,
+                                                 true, false);
+    auto *right = std::get<ir::AstNode *>(VisitTSNode(node->Init()))->AsExpression();
+
+    auto *assignExpr = AllocNode<ir::AssignmentExpression>(left, right, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    auto *exprStatementNode = AllocNode<ir::ExpressionStatement>(assignExpr);
+
+    return exprStatementNode;
+}
+
+ir::ExpressionStatement *Transformer::CreateTsEnumMemberWithNumberInit(ir::TSEnumMember *node,
+                                                                       util::StringView enumLiteralName,
+                                                                       util::StringView enumMemberName)
+{
+    // transform to the shape like E[E["a"] = init] = "a";
+    auto *innerObject = CreateReferenceIdentifier(enumLiteralName);
+    auto *innerProperty = AllocNode<ir::StringLiteral>(enumMemberName);
+    auto *innerLeft = AllocNode<ir::MemberExpression>(innerObject, innerProperty,
+                                                      ir::MemberExpression::MemberExpressionKind::ELEMENT_ACCESS,
+                                                      true, false);
+    auto *innerRight = std::get<ir::AstNode *>(VisitTSNode(node->Init()))->AsExpression();
+
+    auto *object = CreateReferenceIdentifier(enumLiteralName);
+    auto *property = AllocNode<ir::AssignmentExpression>(innerLeft, innerRight,
+                                                         lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    auto *left = AllocNode<ir::MemberExpression>(object, property,
+                                                 ir::MemberExpression::MemberExpressionKind::ELEMENT_ACCESS,
+                                                 true, false);
+
+    auto *right = AllocNode<ir::StringLiteral>(enumMemberName);
+
+    auto *assignExpr = AllocNode<ir::AssignmentExpression>(left, right, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    auto *exprStatementNode = AllocNode<ir::ExpressionStatement>(assignExpr);
+
+    return exprStatementNode;
+}
+
+ir::ExpressionStatement *Transformer::CreateTsEnumMemberWithoutInit(ir::TSEnumMember *node,
+                                                                    ir::TSEnumMember *preNode,
+                                                                    util::StringView enumLiteralName,
+                                                                    util::StringView enumMemberName)
+{
+    // transform to the shape like E[E["a"] = value] = "a";
+    auto *innerObject = CreateReferenceIdentifier(enumLiteralName);
+    auto *innerProperty = AllocNode<ir::StringLiteral>(enumMemberName);
+    auto *innerLeft = AllocNode<ir::MemberExpression>(innerObject, innerProperty,
+                                                      ir::MemberExpression::MemberExpressionKind::ELEMENT_ACCESS,
+                                                      true, false);
+
+    ir::AssignmentExpression *property = nullptr;
+    if (preNode == nullptr) {  // first enumMember, value = 0
+        auto *innerRight = AllocNode<ir::NumberLiteral>(0);
+        property = AllocNode<ir::AssignmentExpression>(innerLeft, innerRight,
+                                                       lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    } else {  // not first enumMember, value = E.prenode + 1
+        auto *innerRightObject = CreateReferenceIdentifier(enumLiteralName);
+        auto *innerPropertyForMemberExpr = AllocNode<ir::Identifier>(GetNameFromEnumMember(preNode), Allocator());
+        auto *innerMemberExpr = AllocNode<ir::MemberExpression>(innerRightObject, innerPropertyForMemberExpr,
+            ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        auto *innerRight = AllocNode<ir::BinaryExpression>(innerMemberExpr, AllocNode<ir::NumberLiteral>(1),
+                                                           lexer::TokenType::PUNCTUATOR_PLUS);
+        property = AllocNode<ir::AssignmentExpression>(innerLeft, innerRight,
+                                                       lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    }
+    auto *object = CreateReferenceIdentifier(enumLiteralName);
+    auto *left = AllocNode<ir::MemberExpression>(object, property,
+                                                 ir::MemberExpression::MemberExpressionKind::ELEMENT_ACCESS,
+                                                 true, false);
+
+    auto *right = AllocNode<ir::StringLiteral>(enumMemberName);
+
+    auto *assignExpr = AllocNode<ir::AssignmentExpression>(left, right, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    auto *exprStatementNode = AllocNode<ir::ExpressionStatement>(assignExpr);
+
+    return exprStatementNode;
+}
+
+bool Transformer::IsStringInitForEnumMember(const ir::Expression *expr, binder::Scope *scope) const
+{
+    if (expr == nullptr) {
+        return false;
+    }
+
+    // The string enumMember is either initialized with a string literal, or with another string enumMember.
+    switch (expr->Type()) {
+        case ir::AstNodeType::STRING_LITERAL:
+        case ir::AstNodeType::TEMPLATE_LITERAL: {
+            // TemplateLiteral in Enum must be a string literal.
+            return true;
+        }
+        case ir::AstNodeType::IDENTIFIER: {
+            // Return true if this identifier is a string enumMember of the current Enum.
+            util::StringView identName = expr->AsIdentifier()->Name();
+            ASSERT(scope && scope->IsTSEnumScope());
+            binder::Variable *v = scope->AsTSEnumScope()->FindEnumMemberVariable(identName);
+            if (v == nullptr) {
+                return false;
+            }
+            if (!v->AsEnumVariable()->IsVisited()) {  // visit the quoted item
+                auto *initExpr = v->AsEnumVariable()->Declaration()->Node()->AsTSEnumMember()->Init();
+                if (IsStringInitForEnumMember(initExpr, scope)) {
+                    v->AsEnumVariable()->SetStringInit();
+                }
+                v->AsEnumVariable()->SetVisited();
+            }
+            if (v->AsEnumVariable()->IsVisited() && v->AsEnumVariable()->StringInit()) {
+                return true;
+            }
+
+            return false;
+        }
+        case ir::AstNodeType::MEMBER_EXPRESSION: {
+            return IsStringForMemberExpression(expr->AsMemberExpression(), scope);
+        }
+        case ir::AstNodeType::BINARY_EXPRESSION: {
+            auto *left = expr->AsBinaryExpression()->Left();
+            auto *right = expr->AsBinaryExpression()->Right();
+            if (expr->AsBinaryExpression()->OperatorType() == lexer::TokenType::PUNCTUATOR_PLUS &&
+                IsStringInitForEnumMember(right, scope) && IsStringInitForEnumMember(left, scope)) {
+                return true;
+            }
+            return false;
+        }
+        default:
+            return false;
+    }
+
+    return false;
+}
+
+bool Transformer::IsStringForMemberExpression(const ir::MemberExpression *memberExpr, binder::Scope *scope) const
+{
+    // Return true only if memberExpression is a string enumMember.
+    const ir::Expression *expr = memberExpr;
+    ArenaDeque<const ir::Expression *> members(Allocator()->Adapter());
+    while (expr->IsMemberExpression()) {
+        if (expr->AsMemberExpression()->Property()->IsIdentifier() ||
+            expr->AsMemberExpression()->Property()->IsStringLiteral() ||
+            expr->AsMemberExpression()->Property()->IsTemplateLiteral()) {
+            members.push_front(expr->AsMemberExpression()->Property());
+            expr = expr->AsMemberExpression()->Object();
+        } else {
+            return false;
+        }
+    }
+    if (!expr->IsIdentifier()) {
+        return false;
+    }
+    members.push_front(expr->AsIdentifier());
+
+    // Find front Ident TSVariables
+    ArenaVector<binder::Variable *> findRes = FindFrontIdentifierTSVariables(members.front()->AsIdentifier(), scope);
+    members.pop_front();
+
+    for (auto currVar : findRes) {
+        if (VerifyMemberExpressionDeque(currVar, members)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+ArenaVector<binder::Variable *> Transformer::FindFrontIdentifierTSVariables(const ir::Identifier *ident,
+                                                                            binder::Scope *scope) const
+{
+    util::StringView name = ident->Name();
+    binder::Variable *v = nullptr;
+    ArenaVector<binder::Variable *> findRes(Allocator()->Adapter());
+    while (scope != nullptr) {
+        // find enumMemberBindings_
+        if (scope->IsTSEnumScope()) {
+            v = scope->AsTSEnumScope()->FindEnumMemberVariable(name);
+            if (v != nullptr) {
+                break;
+            }
+        }
+
+        const std::vector<binder::TSBindingType> types = {binder::TSBindingType::NAMESPACE,
+                                                          binder::TSBindingType::ENUMLITERAL,
+                                                          binder::TSBindingType::IMPORT_EQUALS};
+        // find tsBindings_
+        FindLocalTSVariables(scope, name, types, findRes);
+        // find exportTSBindings_
+        if (scope->IsTSModuleScope()) {
+            FindExportTSVariables(scope, name, types, findRes);
+        }
+
+        if (!findRes.empty()) {
+            break;
+        }
+
+        // find js variable
+        v = scope->FindLocal(name);
+        if (v != nullptr) {
+            if (scope->IsTSModuleScope() || scope->IsTSEnumScope()) {  // v may be converted from ts variable
+                v = scope->Parent()->FindLocal(name);
+                if (v == nullptr) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        if (scope->IsTSModuleScope()) {
+            v = scope->AsTSModuleScope()->FindExportVariable(name);
+            if (v != nullptr) {
+                break;
+            }
+        }
+
+        if (scope->IsTSModuleScope() || scope->IsTSEnumScope()) {
+            scope = scope->Parent();
+        }
+        scope = scope->Parent();
+    }
+
+    return findRes;
+}
+
+bool Transformer::IsInstantiatedNamespaceVariable(binder::Variable *var) const
+{
+    ASSERT(var->IsNamespaceVariable());
+    auto *decl = var->AsNamespaceVariable()->Declaration();
+    ASSERT(decl->IsNamespaceDecl());
+    ArenaVector<ir::TSModuleDeclaration *> nodes = decl->AsNamespaceDecl()->Decls();
+    for (ir::TSModuleDeclaration *node : nodes) {
+        if (node->IsInstantiated()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void Transformer::FindLocalTSVariables(binder::Scope *scope, const util::StringView name,
+                                       const std::vector<binder::TSBindingType> &types,
+                                       ArenaVector<binder::Variable *> &findRes) const
+{
+    for (binder::TSBindingType type : types) {
+        binder::Variable *v = nullptr;
+        switch (type) {
+            case binder::TSBindingType::NAMESPACE: {
+                v = scope->FindLocalTSVariable<binder::TSBindingType::NAMESPACE>(name);
+                if (v != nullptr && !IsInstantiatedNamespaceVariable(v)) {
+                    v = nullptr;
+                }
+                break;
+            }
+            case binder::TSBindingType::ENUMLITERAL: {
+                v = scope->FindLocalTSVariable<binder::TSBindingType::ENUMLITERAL>(name);
+                break;
+            }
+            case binder::TSBindingType::IMPORT_EQUALS: {
+                v = scope->FindLocalTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name);
+                if (v != nullptr &&
+                    !IsInstantiatedTSModule(v->AsImportEqualsVariable()->Declaration()->Node()->
+                    Parent()->AsTSImportEqualsDeclaration()->ModuleReference(), scope)) {
+                    v = nullptr;
+                }
+                break;
+            }
+            default:
+                continue;
+        }
+        if (v != nullptr) {
+            findRes.push_back(v);
+        }
+    }
+}
+
+void Transformer::FindExportTSVariables(binder::Scope *scope, const util::StringView name,
+                                        const std::vector<binder::TSBindingType> &types,
+                                        ArenaVector<binder::Variable *> &findRes) const
+{
+    for (binder::TSBindingType type : types) {
+        binder::Variable *v = nullptr;
+        switch (type) {
+            case binder::TSBindingType::NAMESPACE: {
+                v = scope->AsTSModuleScope()->FindExportTSVariable<binder::TSBindingType::NAMESPACE>(name);
+                if (v != nullptr && !IsInstantiatedNamespaceVariable(v)) {
+                    v = nullptr;
+                }
+                break;
+            }
+            case binder::TSBindingType::ENUMLITERAL: {
+                v = scope->AsTSModuleScope()->FindExportTSVariable<binder::TSBindingType::ENUMLITERAL>(name);
+                break;
+            }
+            case binder::TSBindingType::IMPORT_EQUALS: {
+                v = scope->AsTSModuleScope()->FindExportTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name);
+                if (v != nullptr &&
+                    !IsInstantiatedTSModule(v->AsImportEqualsVariable()->Declaration()->Node()->
+                    Parent()->AsTSImportEqualsDeclaration()->ModuleReference(), scope)) {
+                    v = nullptr;
+                }
+                break;
+            }
+            default:
+                continue;
+        }
+        if (v != nullptr) {
+            findRes.push_back(v);
+        }
+    }
+}
+
+bool Transformer::VerifyMemberExpressionDeque(binder::Variable *currVar,
+                                              ArenaDeque<const ir::Expression *> members) const
+{
+    ASSERT(!members.empty());
+    switch (currVar->Flags()) {
+        case binder::VariableFlags::ENUM_LITERAL: {
+            // the recursion ends.
+            util::StringView enumMemberName = GetNameForMemberExpressionItem(members.front());
+            members.pop_front();
+            if (!members.empty()) {
+                return false;
+            }
+            binder::Variable *enumMemberVar = currVar->AsEnumLiteralVariable()->FindEnumMemberVariable(enumMemberName);
+            if (enumMemberVar == nullptr) {
+                return false;
+            }
+            if (!enumMemberVar->AsEnumVariable()->IsVisited()) {  // visit the quoted item
+                auto *scope = enumMemberVar->AsEnumVariable()->Declaration()->
+                              Node()->Parent()->AsTSEnumDeclaration()->Scope();
+                auto *initExpr = enumMemberVar->AsEnumVariable()->Declaration()->Node()->AsTSEnumMember()->Init();
+                if (IsStringInitForEnumMember(initExpr, scope)) {
+                    enumMemberVar->AsEnumVariable()->SetStringInit();
+                }
+                enumMemberVar->AsEnumVariable()->SetVisited();
+            }
+            if (enumMemberVar->AsEnumVariable()->IsVisited() && enumMemberVar->AsEnumVariable()->StringInit()) {
+                return true;
+            }
+
+            return false;
+        }
+        case binder::VariableFlags::NAMESPACE: {
+            auto *exportTSBindings = currVar->AsNamespaceVariable()->GetExportBindings();
+            if (exportTSBindings != nullptr) {
+                ArenaVector<binder::Variable *> findRes(Allocator()->Adapter());
+                util::StringView name = GetNameForMemberExpressionItem(members.front());
+                binder::Variable *v = exportTSBindings->FindExportTSVariable<binder::TSBindingType::NAMESPACE>(name);
+                if (v != nullptr && IsInstantiatedNamespaceVariable(v)) {
+                    findRes.push_back(v);
+                }
+                v = exportTSBindings->FindExportTSVariable<binder::TSBindingType::ENUMLITERAL>(name);
+                if (v != nullptr) {
+                    findRes.push_back(v);
+                }
+                v = exportTSBindings->FindExportTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name);
+                if (v != nullptr) {
+                    findRes.push_back(v);
+                }
+                members.pop_front();
+
+                for (auto itemVar : findRes) {
+                    if (VerifyMemberExpressionDeque(itemVar, members)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            return false;
+        }
+        case binder::VariableFlags::IMPORT_EQUALS: {
+            // Replace import_equal
+            auto *node = currVar->Declaration()->Node()->Parent()->AsTSImportEqualsDeclaration()->ModuleReference();
+            while (node->IsTSQualifiedName()) {
+                members.push_front(node->AsTSQualifiedName()->Right()->AsIdentifier());
+                node = node->AsTSQualifiedName()->Left();
+            }
+            members.push_front(node->AsIdentifier());
+
+            ArenaVector<binder::Variable *> findRes = FindFrontIdentifierTSVariables(
+                members.front()->AsIdentifier(), currVar->AsImportEqualsVariable()->GetScope());
+            members.pop_front();
+
+            for (auto itemVar : findRes) {
+                if (VerifyMemberExpressionDeque(itemVar, members)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        default:
+            return false;
+    }
+
+    return false;
+}
+
+util::StringView Transformer::GetNameForMemberExpressionItem(const ir::Expression *node) const
+{
+    util::StringView name {};
+    if (node->IsIdentifier()) {
+        name = node->AsIdentifier()->Name();
+    } else if (node->IsStringLiteral()) {
+        name = node->AsStringLiteral()->Str();
+    } else if (node->IsTemplateLiteral()) {
+        name = node->AsTemplateLiteral()->Quasis().front()->Raw();
+    }
+    return name;
+}
+
+util::StringView Transformer::GetNameFromEnumMember(const ir::TSEnumMember *node) const
+{
+    util::StringView name {};
+    if (node->Key()->IsIdentifier()) {
+        name = node->Key()->AsIdentifier()->Name();
+    } else if (node->Key()->IsStringLiteral()) {
+        name = node->Key()->AsStringLiteral()->Str();
+    }
+    return name;
+}
+
+binder::Scope *Transformer::FindEnumMemberScope(const util::StringView name) const
+{
+    // Transform is required only if ident is an enumMember.
+    auto scope = Scope();
+    while (scope != nullptr) {
+        if (scope->InLocalTSBindings(name)) {
+            return nullptr;
+        }
+        if (scope->IsTSModuleScope() && scope->AsTSModuleScope()->InExportBindings(name)) {
+            return nullptr;
+        }
+        if (scope->IsTSEnumScope() && scope->AsTSEnumScope()->FindEnumMemberVariable(name)) {
+            return scope;
+        }
+        if (scope->FindLocal(name)) {
+            return nullptr;
+        }
+
+        if (scope->IsTSModuleScope() || scope->IsTSEnumScope()) {
+            scope = scope->Parent();
+        }
+        scope = scope->Parent();
+    }
+
+    return nullptr;
+}
+
+ir::MemberExpression *Transformer::CreateMemberExpressionFromIdentifier(binder::Scope *scope, ir::Identifier *node)
+{
+    auto identName = node->Name();
+    auto moduleName = scope->IsTSEnumScope() ? FindTSEnumNameByScope(scope) : FindTSModuleNameByScope(scope);
+    auto *id = CreateReferenceIdentifier(moduleName);
+    auto *res = AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(identName, Allocator()),
+                                                ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS,
+                                                false, false);
+    SetOriginalNode(res, node);
+    return res;
 }
 
 }  // namespace panda::es2panda::parser

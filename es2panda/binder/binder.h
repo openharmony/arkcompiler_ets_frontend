@@ -123,7 +123,7 @@ public:
         return anonymousFunctionNames_;
     }
 
-    void AddDeclarationName(const util::StringView &name);
+    void AddDeclarationName(const util::StringView &name, DeclType type = DeclType::NONE);
 
     bool HasVariableName(const util::StringView &name) const;
 
@@ -272,7 +272,7 @@ T *Binder::AddDecl(const lexer::SourcePosition &pos, Args &&... args)
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
 
     if (scope_->AddDecl(Allocator(), decl, program_->Extension())) {
-        AddDeclarationName(decl->Name());
+        AddDeclarationName(decl->Name(), decl->Type());
         return decl;
     }
 
@@ -286,7 +286,7 @@ T *Binder::AddDecl(const lexer::SourcePosition &pos, DeclarationFlags flag, Args
     decl->AddFlag(flag);
 
     if (scope_->AddDecl(Allocator(), decl, program_->Extension())) {
-        AddDeclarationName(decl->Name());
+        AddDeclarationName(decl->Name(), decl->Type());
         return decl;
     }
 

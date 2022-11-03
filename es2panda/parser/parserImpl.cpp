@@ -2855,7 +2855,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
 }
 
 ir::TSEnumDeclaration *ParserImpl::ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart,
-                                                    bool isConst)
+                                                    bool isExport, bool isDeclare, bool isConst)
 {
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         ThrowSyntaxError("'{' expected");
@@ -2875,8 +2875,8 @@ ir::TSEnumDeclaration *ParserImpl::ParseEnumMembers(ir::Identifier *key, const l
             memberKey->SetRange(lexer_->GetToken().Loc());
             lexer_->NextToken();
         } else if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_STRING) {
-            decl = Binder()->AddDecl<binder::EnumDecl>(keyStartLoc, lexer_->GetToken().String());
             memberKey = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());
+            decl = Binder()->AddDecl<binder::EnumDecl>(keyStartLoc, lexer_->GetToken().String());
             memberKey->SetRange(lexer_->GetToken().Loc());
             lexer_->NextToken();
         } else {
@@ -2902,8 +2902,8 @@ ir::TSEnumDeclaration *ParserImpl::ParseEnumMembers(ir::Identifier *key, const l
         }
     }
 
-    auto *enumDeclaration =
-        AllocNode<ir::TSEnumDeclaration>(Binder()->GetScope()->AsLocalScope(), key, std::move(members), isConst);
+    auto *enumDeclaration = AllocNode<ir::TSEnumDeclaration>(
+        Binder()->GetScope()->AsTSEnumScope(), key, std::move(members), isExport, isDeclare, isConst);
     enumDeclaration->SetRange({enumStart, lexer_->GetToken().End()});
     Binder()->GetScope()->BindNode(enumDeclaration);
     lexer_->NextToken();  // eat '}'
@@ -2911,7 +2911,7 @@ ir::TSEnumDeclaration *ParserImpl::ParseEnumMembers(ir::Identifier *key, const l
     return enumDeclaration;
 }
 
-ir::TSEnumDeclaration *ParserImpl::ParseEnumDeclaration(bool isConst)
+ir::TSEnumDeclaration *ParserImpl::ParseEnumDeclaration(bool isExport, bool isDeclare, bool isConst)
 {
     ASSERT(lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_ENUM);
     lexer::SourcePosition enumStart = lexer_->GetToken().Start();
@@ -2922,33 +2922,40 @@ ir::TSEnumDeclaration *ParserImpl::ParseEnumDeclaration(bool isConst)
     }
 
     const util::StringView &ident = lexer_->GetToken().Ident();
-    binder::TSBinding tsBinding(Allocator(), ident);
+    auto *currentScope = Binder()->GetScope();
+    binder::Variable *res = currentScope->FindLocalTSVariable<binder::TSBindingType::ENUMLITERAL>(ident);
+    if (res == nullptr && isExport && currentScope->IsTSModuleScope()) {
+        res = currentScope->AsTSModuleScope()->FindExportTSVariable<binder::TSBindingType::ENUMLITERAL>(ident);
+        if (res != nullptr) {
+            currentScope->AddLocalTSVariable<binder::TSBindingType::ENUMLITERAL>(ident, res);
+        }
+    }
+    if (res == nullptr) {
+        Binder()->AddTsDecl<binder::EnumLiteralDecl>(lexer_->GetToken().Start(), Allocator(),
+                                                     ident, isExport, isDeclare, isConst);
+        res = currentScope->FindLocalTSVariable<binder::TSBindingType::ENUMLITERAL>(ident);
+        if (isExport && currentScope->IsTSModuleScope()) {
+            currentScope->AsTSModuleScope()->AddExportTSVariable<binder::TSBindingType::ENUMLITERAL>(ident, res);
+        }
+        res->AsEnumLiteralVariable()->SetEnumMembers(Allocator()->New<binder::VariableMap>(Allocator()->Adapter()));
+    }
+    binder::VariableMap *enumMemberBindings = res->AsEnumLiteralVariable()->GetEnumMembers();
 
     auto *key = AllocNode<ir::Identifier>(ident, Allocator());
     key->SetRange(lexer_->GetToken().Loc());
     key->SetReference();
     lexer_->NextToken();
 
-    const auto &bindings = Binder()->GetScope()->Bindings();
-    auto res = bindings.find(tsBinding.View());
-    binder::EnumLiteralDecl *decl {};
-
-    if (res == bindings.end()) {
-        decl = Binder()->AddTsDecl<binder::EnumLiteralDecl>(lexer_->GetToken().Start(), tsBinding.View(), isConst);
-        binder::LexicalScope enumCtx = binder::LexicalScope<binder::LocalScope>(Binder());
-        decl->AsEnumLiteralDecl()->BindScope(enumCtx.GetScope());
-        return ParseEnumMembers(key, enumStart, isConst);
-    }
-
-    if (!res->second->Declaration()->IsEnumLiteralDecl() ||
-        (isConst ^ res->second->Declaration()->AsEnumLiteralDecl()->IsConst())) {
+    if (!res->Declaration()->IsEnumLiteralDecl() ||
+        (isConst ^ res->Declaration()->AsEnumLiteralDecl()->IsConst())) {
         Binder()->ThrowRedeclaration(lexer_->GetToken().Start(), ident);
     }
 
-    decl = res->second->Declaration()->AsEnumLiteralDecl();
-
-    auto scopeCtx = binder::LexicalScope<binder::LocalScope>::Enter(Binder(), decl->Scope());
-    return ParseEnumMembers(key, enumStart, isConst);
+    auto enumCtx = binder::LexicalScope<binder::TSEnumScope>(Binder(), enumMemberBindings);
+    auto *enumDeclaration = ParseEnumMembers(key, enumStart, isExport, isDeclare, isConst);
+    res->Declaration()->AsEnumLiteralDecl()->Add(enumDeclaration);
+    
+    return enumDeclaration;
 }
 
 void ParserImpl::ValidateFunctionParam(const ArenaVector<ir::Expression *> &params, const ir::Expression *parameter,

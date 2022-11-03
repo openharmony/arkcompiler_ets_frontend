@@ -52,6 +52,11 @@ public:
         return right_;
     }
 
+    Expression *Right()
+    {
+        return right_;
+    }
+
     lexer::TokenType OperatorType() const
     {
         return operator_;

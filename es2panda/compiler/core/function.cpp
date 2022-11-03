@@ -193,7 +193,7 @@ static void CompileFunctionOrProgram(PandaGen *pg)
     } else {
         pg->FunctionInit(nullptr);
 
-        if (topScope->IsFunctionScope() || topScope->IsTSModuleScope()) {
+        if (topScope->IsFunctionScope() || topScope->IsTSModuleScope() || topScope->IsTSEnumScope()) {
             CompileFunction(pg);
         } else {
             ASSERT(topScope->IsGlobalScope() || topScope->IsModuleScope());
