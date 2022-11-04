@@ -37,6 +37,7 @@
 #include <ir/statements/forUpdateStatement.h>
 #include <ir/statements/ifStatement.h>
 #include <ir/statements/switchStatement.h>
+#include <ir/statements/switchCaseStatement.h>
 #include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
 #include <ir/statements/whileStatement.h>
@@ -386,9 +387,13 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             break;
         }
         case ir::AstNodeType::SWITCH_STATEMENT: {
-            auto scopeCtx = LexicalScope<LocalScope>::Enter(this, childNode->AsSwitchStatement()->Scope());
+            auto *switchStatement = childNode->AsSwitchStatement();
+            ResolveReference(switchStatement, switchStatement->Discriminant());
 
-            ResolveReferences(childNode);
+            auto scopeCtx = LexicalScope<LocalScope>::Enter(this, childNode->AsSwitchStatement()->Scope());
+            for (auto *it : switchStatement->Cases()) {
+                ResolveReference(switchStatement, it);
+            }
             break;
         }
         case ir::AstNodeType::DO_WHILE_STATEMENT: {
