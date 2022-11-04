@@ -141,9 +141,9 @@ public:
         return insns_;
     }
 
-    void SetInsns(ArenaList<IRNode *> newInsns)
+    void SetInsns(ArenaList<IRNode *> &newInsns)
     {
-        insns_ = newInsns;
+        insns_.assign(newInsns.begin(), newInsns.end());
     }
 
     ArenaMap<const IRNode *, int64_t> &TypedInsns()
@@ -158,6 +158,9 @@ public:
 
     VReg AllocReg()
     {
+        if (usedRegs_ > UINT16_MAX) {
+            throw Error(ErrorType::GENERIC, "Can't alloc new reg because all regs ran out");
+        }
         return usedRegs_++;
     }
 
