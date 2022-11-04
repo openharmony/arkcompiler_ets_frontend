@@ -36,7 +36,7 @@ void ThisExpression::Compile(compiler::PandaGen *pg) const
 
     ASSERT(res.variable && res.variable->IsLocalVariable());
     if (pg->isDebuggerEvaluateExpressionMode()) {
-        pg->LoadObjByNameViaDebugger(this, "this", true);
+        pg->LoadObjByNameViaDebugger(this, binder::Binder::MANDATORY_PARAM_THIS, true);
     } else {
         pg->LoadAccFromLexEnv(this, res);
     }
