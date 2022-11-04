@@ -109,6 +109,10 @@ void RegAllocator::AdjustInsRegWhenHasSpill()
         return;
     }
 
+    if ((spillRegs_ + pg_->TotalRegsNum()) > UINT16_MAX) {
+        throw Error(ErrorType::GENERIC, "Can't adjust spill insns when regs run out");
+    }
+
     ArenaList<IRNode *> newInsns(Allocator()->Adapter());
     auto &insns = pg_->Insns();
     for (auto it = insns.begin(); it != insns.end(); ++it) {
@@ -160,7 +164,8 @@ void RegAllocator::AdjustInsSpill(Span<VReg *> &registers, IRNode *ins, ArenaLis
         VReg spillReg = spillIndex_;
         if (regsKind[idx] == OperandKind::SRC_VREG || regsKind[idx] == OperandKind::SRC_DST_VREG) {
             Add<Mov>(newInsns, ins->Node(), spillReg, originReg);
-        } else {
+        }
+        if (regsKind[idx] == OperandKind::DST_VREG || regsKind[idx] == OperandKind::SRC_DST_VREG) {
             dstRegSpills_.push_back(std::make_pair(originReg, spillReg));
         }
         *reg = spillIndex_++;
