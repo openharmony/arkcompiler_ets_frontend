@@ -15,6 +15,7 @@
 
 import * as ts from "typescript";
 import * as jshelpers from "./jshelpers";
+import { MandatoryArguments } from "./variable";
 
 export function isOctalNumber(num: string): boolean {
     if (!num || num.length < 2) {
@@ -70,7 +71,7 @@ export function isIncludeOctalEscapeSequence(text: string): boolean {
 }
 
 export function isEvalOrArgumentsIdentifier(node: ts.Node): boolean {
-    return ts.isIdentifier(node) && (node.escapedText === "eval" || node.escapedText === "arguments");
+    return ts.isIdentifier(node) && (node.escapedText === "eval" || node.escapedText === MandatoryArguments);
 }
 
 export function isLeftHandSideExpressionKind(kind: ts.SyntaxKind) {
