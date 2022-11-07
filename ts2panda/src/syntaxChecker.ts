@@ -22,7 +22,7 @@ import {
 import { hasExportKeywordModifier } from "./base/util";
 import { findInnerExprOfParenthesis } from "./expression/parenthesizedExpression";
 import * as jshelpers from "./jshelpers";
-import { getContainingFunction, getContainingFunctionDeclaration, getSourceFileOfNode } from "./jshelpers";
+import { getContainingFunctionDeclaration, getSourceFileOfNode } from "./jshelpers";
 import { LOGE } from "./log";
 import { Recorder } from "./recorder";
 import {
@@ -53,6 +53,7 @@ import {
     visibilityToString,
     isInBlockScope
 } from "./syntaxCheckHelper";
+import { MandatoryArguments } from "./variable";
 
 //*************************************Part 1: Implement early check of declarations*******************************//
 export function checkDuplicateDeclaration(recorder: Recorder) {
@@ -1338,7 +1339,7 @@ function checkDestructuringAssignmentLhs(lhs: ts.Expression) {
             if (ts.isIdentifier(target)) {
                 let name = jshelpers.getTextOfIdentifierOrLiteral(target);
 
-                if (name == "arguments" || name == "eval") {
+                if (name == MandatoryArguments || name == "eval") {
                     throw new DiagnosticError(target, DiagnosticCode.Property_destructuring_pattern_expected, file);
                 }
                 continue;
@@ -1401,7 +1402,7 @@ function checkDestructuringAssignmentLhs(lhs: ts.Expression) {
             if (ts.isShorthandPropertyAssignment(element)) {
                 let name = jshelpers.getTextOfIdentifierOrLiteral(element.name);
 
-                if (name == "arguments" || name == "eval") {
+                if (name == MandatoryArguments || name == "eval") {
                     throw new DiagnosticError(element, DiagnosticCode.Property_destructuring_pattern_expected, file);
                 }
 

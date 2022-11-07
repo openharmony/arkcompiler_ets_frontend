@@ -49,7 +49,7 @@ import { TypeRecorder } from "./typeRecorder";
 import { LiteralBuffer } from "./base/literal";
 import { findOuterNodeOfParenthesis } from "./expression/parenthesizedExpression";
 import { IRNode } from "./irnodes";
-import { getRecordName } from "./base/util";
+import { LexicalBinder } from "./lexicalBinder";
 
 export class PendingCompilationUnit {
     constructor(
@@ -179,6 +179,8 @@ export class CompilerDriver {
         }
 
         let recorder = this.compilePrologue(node, true, false);
+        let lexBinder = new LexicalBinder(node, recorder);
+        lexBinder.resolve();
 
         // initiate ts2abc
         if (!CmdOptions.isAssemblyMode()) {
@@ -278,6 +280,8 @@ export class CompilerDriver {
     compileUnitTest(node: ts.SourceFile, literalBufferArray?: Array<LiteralBuffer>): void {
         CompilerDriver.isTsFile = CompilerDriver.isTypeScriptSourceFile(node);
         let recorder = this.compilePrologue(node, true, true);
+        let lexBinder = new LexicalBinder(node, recorder);
+        lexBinder.resolve();
 
         for (let i = 0; i < this.pendingCompilationUnits.length; i++) {
             let unit: PendingCompilationUnit = this.pendingCompilationUnits[i];

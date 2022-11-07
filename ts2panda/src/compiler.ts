@@ -107,14 +107,17 @@ import {
     transformTryCatchFinally,
     TryBuilder,
     TryBuilderBase,
-    TryStatement,
-    updateCatchTables
+    TryStatement
 } from "./statement/tryStatement";
 import { isStrictMode } from "./strictMode";
 import { isAssignmentOperator } from "./syntaxCheckHelper";
 import {
     GlobalVariable,
     LocalVariable,
+    MandatoryArguments,
+    MandatoryFuncObj,
+    MandatoryNewTarget,
+    MandatoryThis,
     ModuleVariable,
     VarDeclarationKind,
     Variable
@@ -189,7 +192,8 @@ export class Compiler {
             let funcName = jshelpers.getTextOfIdentifierOrLiteral((<ts.FunctionLikeDeclaration>rootNode).name);
             let v = functionScope.find(funcName);
             if (v.scope == functionScope) {
-                this.pandaGen.loadAccumulator(NodeKind.FirstNodeOfFunction, getVregisterCache(this.pandaGen, CacheList.FUNC));
+                this.pandaGen.loadAccumulator(NodeKind.FirstNodeOfFunction,
+                                              getVregisterCache(this.pandaGen, CacheList.FUNC));
                 this.pandaGen.storeAccToLexEnv(NodeKind.FirstNodeOfFunction, v.scope, v.level, v.v, true);
             }
         }
@@ -197,53 +201,32 @@ export class Compiler {
 
     private compileLexicalBindingForArrowFunction() {
         let rootNode = this.rootNode;
+        if (ts.isArrowFunction(rootNode)) {
+            return;
+        }
 
-        if (!ts.isArrowFunction(rootNode)) {
-            let childVariableScopes: Array<VariableScope> = (<VariableScope>this.scope).getChildVariableScope();
-            let hasAFChild = false;
+        this.storeMandatoryArgToLexEnv(MandatoryFuncObj);
+        this.storeMandatoryArgToLexEnv(MandatoryNewTarget);
+        this.storeMandatoryArgToLexEnv(MandatoryThis);
 
-            childVariableScopes.forEach(scope => {
-                let funcNode: ts.Node = <ts.Node>scope.getBindingNode();
-
-                if (ts.isArrowFunction(funcNode)) {
-                    hasAFChild = true;
-                }
-            });
-            if (!hasAFChild) {
-                return ;
-            }
-            this.storeSpecialArg2LexEnv("4newTarget");
-            this.storeSpecialArg2LexEnv("arguments");
-
-            if (ts.isConstructorDeclaration(rootNode) && rootNode.parent.heritageClauses) {
-                this.storeSpecialArg2LexEnv("4funcObj");
-                return;
-            }
-
-            this.storeSpecialArg2LexEnv("this");
+        let rootScope: VariableScope = <VariableScope>this.recorder.getScopeOfNode(rootNode);
+        if (rootScope.getUseArgs()) {
+            this.storeMandatoryArgToLexEnv(MandatoryArguments);
         }
     }
 
-    private storeSpecialArg2LexEnv(arg: string) {
-        let variableInfo = this.scope.find(arg);
-        let v = variableInfo.v;
-        let pandaGen = this.pandaGen;
-
-        if (CmdOptions.isDebugMode()) {
-            variableInfo.scope!.setLexVar(v!, this.scope);
-            pandaGen.storeLexicalVar(this.rootNode, variableInfo.level,
-                                     (<Variable>variableInfo.v).idxLex,
-                                     pandaGen.getVregForVariable(<Variable>variableInfo.v));
-        } else {
-            if (v && v.isLexVar) {
-                if (arg === "arguments" && variableInfo.scope instanceof FunctionScope) {
-                    variableInfo.scope.setArgumentsOrRestargs();
-                }
-                let vreg = "4funcObj" === arg ? getVregisterCache(pandaGen, CacheList.FUNC) :
-                                                pandaGen.getVregForVariable(<Variable>variableInfo.v);
-                pandaGen.storeLexicalVar(this.rootNode, variableInfo.level, v.idxLex, vreg);
-            }
+    private storeMandatoryArgToLexEnv(arg: string) {
+        let v = this.scope.findLocal(arg);
+        if (!v) {
+            throw new Error("Mandatory Arguments should be found locally");
         }
+        if (!v.lexical()) {
+            return;
+        }
+
+        let vreg = arg == MandatoryFuncObj ? getVregisterCache(this.pandaGen, CacheList.FUNC) :
+                                       this.pandaGen.getVregForVariable(v);
+        this.pandaGen.storeLexicalVar(this.rootNode, 0, v.lexIndex(), vreg);
     }
 
     private compileSourceFileOrBlock(body: ts.SourceFile | ts.Block) {
@@ -1005,33 +988,23 @@ export class Compiler {
 
         checkValidUseSuperBeforeSuper(this, node);
 
-        let { scope, level, v } = this.scope.find("this");
+        let { scope, level, v } = this.scope.find(MandatoryThis);
 
         if (!v) {
             throw new Error("\"this\" not found");
         }
 
         if (v instanceof LocalVariable) {
-            if (scope && level >= 0) {
-                let curScope = this.scope;
-                let needSetLexVar: boolean = false;
-                while (curScope != scope) {
-                    if (curScope instanceof VariableScope) {
-                        needSetLexVar = true;
-                        break;
-                    }
-                    curScope = <Scope>curScope.getParent();
-                }
-
-                if (needSetLexVar) {
-                    scope.setLexVar(v, this.scope);
-                }
+            if (CmdOptions.isWatchEvaluateExpressionMode()) {
+                pandaGen.loadByNameViaDebugger(node, MandatoryThis, CacheList.True);
+                return;
             }
-            CmdOptions.isWatchEvaluateExpressionMode() ? pandaGen.loadByNameViaDebugger(node, "this", CacheList.True)
-                                                       : pandaGen.loadAccFromLexEnv(node, scope!, level, v);
-        } else {
-            throw new Error("\"this\" must be a local variable");
+
+            pandaGen.loadAccFromLexEnv(node, scope!, level, v);
+            return;
         }
+
+        throw new Error("\"this\" must be a local variable");
     }
 
     private compileFunctionExpression(expr: ts.FunctionExpression) {
@@ -1404,26 +1377,9 @@ export class Compiler {
 
     getThis(node: ts.Node, res: VReg) {
         let pandaGen = this.pandaGen;
-        let curScope = <Scope>this.getCurrentScope();
-        let thisInfo = this.getCurrentScope().find("this");
-        let scope = <Scope>thisInfo.scope;
+        let thisInfo = this.getCurrentScope().find(MandatoryThis);
         let level = thisInfo.level;
         let v = <Variable>thisInfo.v;
-
-        if (scope && level >= 0) {
-            let needSetLexVar: boolean = false;
-            while (curScope != scope) {
-                if (curScope instanceof VariableScope) {
-                    needSetLexVar = true;
-                    break;
-                }
-                curScope = <Scope>curScope.getParent();
-            }
-
-            if (needSetLexVar) {
-                scope.setLexVar(v, curScope);
-            }
-        }
 
         if (v.isLexVar) {
             let slot = v.idxLex;
@@ -1436,7 +1392,7 @@ export class Compiler {
 
     setThis(node: ts.Node) {
         let pandaGen = this.pandaGen;
-        let thisInfo = this.getCurrentScope().find("this");
+        let thisInfo = this.getCurrentScope().find(MandatoryThis);
 
         if (thisInfo.v!.isLexVar) {
             let slot = (<Variable>thisInfo.v).idxLex;
@@ -1490,22 +1446,6 @@ export class Compiler {
                 return;
             }
 
-            if (variable.scope && variable.level >= 0) { // inner most function will load outer env instead of new a lex env
-                let scope = this.scope;
-                let needSetLexVar: boolean = false;
-                while (scope != variable.scope) {
-                    if (scope instanceof VariableScope) {
-                        needSetLexVar = true;
-                        break;
-                    }
-                    scope = <Scope>scope.getParent();
-                }
-
-                if (needSetLexVar) {
-                    variable.scope.setLexVar(variable.v, this.scope);
-                }
-            }
-            // storeAcc must after setLexVar, because next statement will emit bc intermediately
             this.pandaGen.storeAccToLexEnv(node, variable.scope!, variable.level, variable.v, isDeclaration);
         } else if (variable.v instanceof GlobalVariable) {
             if (variable.v.isNone() && isStrictMode(node)) {
@@ -1554,22 +1494,6 @@ export class Compiler {
                 if (variable.scope instanceof GlobalScope) {
                     this.pandaGen.tryLoadGlobalByName(node, variable.v.getName());
                     return;
-                }
-            }
-
-            if (variable.scope && variable.level >= 0) { // leaf function will load outer env instead of new a lex env
-                let scope = this.scope;
-                let needSetLexVar: boolean = false;
-                while (scope != variable.scope) {
-                    if (scope instanceof VariableScope) {
-                        needSetLexVar = true;
-                        break;
-                    }
-                    scope = <Scope>scope.getParent();
-                }
-
-                if (needSetLexVar) {
-                    variable.scope.setLexVar((<LocalVariable>variable.v), this.scope);
                 }
             }
 

@@ -53,8 +53,7 @@ import {
 import { checkSyntaxError } from "./syntaxChecker";
 import { isGlobalIdentifier, isFunctionLikeDeclaration } from "./syntaxCheckHelper";
 import { TypeChecker } from "./typeChecker";
-import { VarDeclarationKind } from "./variable";
-import path from "path";
+import { MandatoryArguments, VarDeclarationKind } from "./variable";
 
 export class Recorder {
     node: ts.Node;
@@ -329,7 +328,7 @@ export class Recorder {
             }
         }
 
-        if (name == "arguments") {
+        if (name == MandatoryArguments) {
             let varialbeScope = scope.getNearestVariableScope();
             varialbeScope?.setUseArgs(true);
         }

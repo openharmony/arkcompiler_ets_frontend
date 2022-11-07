@@ -186,7 +186,7 @@ import {
 } from "./scope";
 import { CatchTable } from "./statement/tryStatement";
 import { TypeRecorder } from "./typeRecorder";
-import { Variable } from "./variable";
+import { MandatoryArguments, Variable } from "./variable";
 import * as jshelpers from "./jshelpers";
 import { CompilerDriver } from "./compilerDriver";
 import { getLiteralKey } from "./base/util";
@@ -509,7 +509,7 @@ export class PandaGen {
 
     loadAccFromArgs(node: ts.Node) {
         if ((<VariableScope>this.scope).getUseArgs()) {
-            let v = this.scope!.findLocal("arguments");
+            let v = this.scope!.findLocal(MandatoryArguments);
             if (this.scope instanceof FunctionScope) {
                 this.scope.setArgumentsOrRestargs();
             }
