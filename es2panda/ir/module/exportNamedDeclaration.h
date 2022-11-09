@@ -34,11 +34,12 @@ class ExportSpecifier;
 
 class ExportNamedDeclaration : public Statement {
 public:
-    explicit ExportNamedDeclaration(StringLiteral *source, ArenaVector<ExportSpecifier *> &&specifiers)
+    explicit ExportNamedDeclaration(StringLiteral *source, ArenaVector<ExportSpecifier *> &&specifiers, bool isType)
         : Statement(AstNodeType::EXPORT_NAMED_DECLARATION),
           source_(source),
           decl_(nullptr),
-          specifiers_(std::move(specifiers))
+          specifiers_(std::move(specifiers)),
+          isType_(isType)
     {
     }
 
@@ -46,7 +47,8 @@ public:
         : Statement(AstNodeType::EXPORT_NAMED_DECLARATION),
           source_(nullptr),
           decl_(decl),
-          specifiers_(std::move(specifiers))
+          specifiers_(std::move(specifiers)),
+          isType_(false)
     {
     }
 
@@ -70,6 +72,11 @@ public:
         return specifiers_;
     }
 
+    bool IsType() const
+    {
+        return isType_;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile(compiler::PandaGen *pg) const override;
@@ -80,6 +87,7 @@ private:
     StringLiteral *source_;
     Statement *decl_;
     ArenaVector<ExportSpecifier *> specifiers_;
+    bool isType_;
 };
 
 }  // namespace panda::es2panda::ir

@@ -121,7 +121,7 @@ void Binder::IdentifierAnalysis(ResolveBindingFlags flags)
 
 void Binder::ValidateExportDecl(const ir::ExportNamedDeclaration *exportDecl)
 {
-    if (exportDecl->Source() != nullptr || exportDecl->Decl() != nullptr) {
+    if (exportDecl->Source() != nullptr || exportDecl->Decl() != nullptr || exportDecl->IsType()) {
         return;
     }
 

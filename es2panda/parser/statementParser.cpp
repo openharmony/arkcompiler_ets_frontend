@@ -2345,7 +2345,8 @@ ir::ExportAllDeclaration *ParserImpl::ParseExportAllDeclaration(const lexer::Sou
     return exportDeclaration;
 }
 
-ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::SourcePosition &startLoc)
+ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::SourcePosition &startLoc,
+                                                                   bool isType)
 {
     lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);  // eat `{` character
 
@@ -2396,9 +2397,11 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
     }
 
     // record ExportEntry
-    AddExportNamedEntryItem(specifiers, source);
+    if (!isType) {
+        AddExportNamedEntryItem(specifiers, source);
+    }
 
-    auto *exportDeclaration = AllocNode<ir::ExportNamedDeclaration>(source, std::move(specifiers));
+    auto *exportDeclaration = AllocNode<ir::ExportNamedDeclaration>(source, std::move(specifiers), isType);
     exportDeclaration->SetRange({startLoc, endPos});
     ConsumeSemicolon(exportDeclaration);
 
@@ -2528,6 +2531,19 @@ ir::Statement *ParserImpl::ParseExportDeclaration(StatementParsingFlags flags,
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer_->NextToken();  // eat `export` keyword
 
+    // won't set `isType` for type alias
+    bool isType = false;
+    if (Extension() == ScriptExtension::TS &&
+        lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE) {
+        const auto savedPos = lexer_->Save();
+        lexer_->NextToken();  // eat type
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+            isType = true;
+        } else {
+            lexer_->Rewind(savedPos);
+        }
+    }
+
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::KEYW_DEFAULT: { // export default Id
             return ParseExportDefaultDeclaration(startLoc, std::move(decorators));
@@ -2536,7 +2552,7 @@ ir::Statement *ParserImpl::ParseExportDeclaration(StatementParsingFlags flags,
             return ParseExportAllDeclaration(startLoc);
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_BRACE: { // export { ... } ...
-            return ParseExportNamedSpecifiers(startLoc);
+            return ParseExportNamedSpecifiers(startLoc, isType);
         }
         case lexer::TokenType::KEYW_IMPORT: {
             return ParseTsImportEqualsDeclaration(startLoc, true);
@@ -2802,6 +2818,21 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer_->NextToken();  // eat import
 
+    bool isType = false;
+    if (Extension() == ScriptExtension::TS &&
+        lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE) {
+        const auto savedPos = lexer_->Save();
+        lexer_->NextToken();  // eat type
+        if ((lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
+            lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM) ||
+            lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE ||
+            lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
+            isType = true;
+        } else {
+            lexer_->Rewind(savedPos);
+        }
+    }
+
     ArenaVector<ir::AstNode *> specifiers(Allocator()->Adapter());
 
     ir::StringLiteral *source = nullptr;
@@ -2823,7 +2854,7 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
     }
 
     lexer::SourcePosition endLoc = source->End();
-    auto *importDeclaration = AllocNode<ir::ImportDeclaration>(source, std::move(specifiers));
+    auto *importDeclaration = AllocNode<ir::ImportDeclaration>(source, std::move(specifiers), isType);
     importDeclaration->SetRange({startLoc, endLoc});
 
     ConsumeSemicolon(importDeclaration);

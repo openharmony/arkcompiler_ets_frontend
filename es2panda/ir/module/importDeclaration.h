@@ -34,8 +34,11 @@ class StringLiteral;
 
 class ImportDeclaration : public Statement {
 public:
-    explicit ImportDeclaration(StringLiteral *source, ArenaVector<AstNode *> &&specifiers)
-        : Statement(AstNodeType::IMPORT_DECLARATION), source_(source), specifiers_(std::move(specifiers))
+    explicit ImportDeclaration(StringLiteral *source, ArenaVector<AstNode *> &&specifiers, bool isType)
+        : Statement(AstNodeType::IMPORT_DECLARATION),
+          source_(source),
+          specifiers_(std::move(specifiers)),
+          isType_(isType)
     {
     }
 
@@ -49,6 +52,11 @@ public:
         return specifiers_;
     }
 
+    bool IsType() const
+    {
+        return isType_;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
@@ -58,6 +66,7 @@ public:
 private:
     StringLiteral *source_;
     ArenaVector<AstNode *> specifiers_;
+    bool isType_;
 };
 
 }  // namespace panda::es2panda::ir

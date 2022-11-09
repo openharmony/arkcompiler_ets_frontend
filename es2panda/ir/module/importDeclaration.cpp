@@ -31,7 +31,10 @@ void ImportDeclaration::Iterate(const NodeTraverser &cb) const
 
 void ImportDeclaration::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ImportDeclaration"}, {"source", source_}, {"specifiers", specifiers_}});
+    dumper->Add({{"type", "ImportDeclaration"},
+                 {"source", source_},
+                 {"specifiers", specifiers_},
+                 {"isType", AstDumper::Optional(IsType())}});
 }
 
 void ImportDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}

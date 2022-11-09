@@ -410,7 +410,7 @@ private:
                                                                 ArenaVector<ir::Decorator *> decorators,
                                                                 bool isExportEquals = false);
     ir::ExportAllDeclaration *ParseExportAllDeclaration(const lexer::SourcePosition &startLoc);
-    ir::ExportNamedDeclaration *ParseExportNamedSpecifiers(const lexer::SourcePosition &startLoc);
+    ir::ExportNamedDeclaration *ParseExportNamedSpecifiers(const lexer::SourcePosition &startLoc, bool isType);
     ir::ExportNamedDeclaration *ParseNamedExportDeclaration(const lexer::SourcePosition &startLoc,
                                                             ArenaVector<ir::Decorator *> &&decorators);
     ir::Identifier *ParseNamedExport(const lexer::Token &exportedToken);
