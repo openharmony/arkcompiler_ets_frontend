@@ -123,6 +123,16 @@ public:
     virtual void Transform(panda::pandasm::Ins *ins) const = 0;
     virtual ICSlot SetIcSlot(IcSizeType currentSlot) = 0;
 
+    virtual bool IsRangeInst() const
+    {
+        return false;
+    }
+
+    virtual int64_t RangeRegsCount()
+    {
+        return 0;
+    }
+
 private:
     const ir::AstNode *node_;
 };

@@ -78,7 +78,19 @@ private:
 %   return mnemonic.map{|el| el == '64' ? 'Wide' : el.capitalize}.join()
 % end
 %
-% def is_VReg (name)
+% def is_Range(insn)
+%   if insn.mnemonic == "callrange" or insn.mnemonic == "wide.callrange" or
+%       insn.mnemonic == "callthisrange" or insn.mnemonic == "wide.callthisrange" or
+%       insn.mnemonic == "newobjrange" or insn.mnemonic == "wide.newobjrange" or
+%       insn.mnemonic == "createobjectwithexcludedkeys" or insn.mnemonic == "wide.createobjectwithexcludedkeys" or
+%       insn.mnemonic == "supercallthisrange" or insn.mnemonic == "wide.supercallthisrange" or
+%       insn.mnemonic == "supercallarrowrange" or insn.mnemonic == "wide.supercallarrowrange"
+%      return true
+%   end
+%   return false
+% end
+%
+% def is_VReg(name)
 %     if name ==  :v
 %        return true
 %     end
@@ -168,6 +180,7 @@ private:
 % insn = group.first
 % node_kind = get_node_kind(mnemonic)
 % class_name = insn2node(insn)
+% is_range_op = is_Range(insn)
 % base_class = "IRNode"
 % ops_list,ctor_arg_list,op_map = get_ctor_args(insn)
 % ctor_args = "const ir::AstNode* node" + (ctor_arg_list.length == 0 ? "" : ", ") + ctor_arg_list.map {|arg| "#{arg}"}.join(", ")
@@ -273,6 +286,31 @@ public:
 %   end
 % end
     }
+
+% if is_range_op
+    bool IsRangeInst() const override
+    {
+        return true;
+    }
+
+    int64_t RangeRegsCount() override
+    {
+%   if insn.mnemonic == "createobjectwithexcludedkeys" or insn.mnemonic.start_with? "wide."
+%       if insn.mnemonic == "wide.callthisrange" or insn.mnemonic == "createobjectwithexcludedkeys" or
+%           insn.mnemonic == "wide.createobjectwithexcludedkeys"
+        return <%= op_map['imm'][0] %> + 1;
+%       else
+        return <%= op_map['imm'][0] %>;
+%       end
+%   else
+%       if insn.mnemonic == "callthisrange"
+        return <%= op_map['imm'][1] %> + 1;
+%       else
+        return <%= op_map['imm'][1] %>;
+%       end
+%   end
+    }
+% end
 
 % if ops_list.length != 0
 private:

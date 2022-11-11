@@ -89,9 +89,7 @@ public:
           catchList_(allocator_->Adapter()),
           strings_(allocator_->Adapter()),
           buffStorage_(allocator_->Adapter()),
-          sa_(this),
-          ra_(this),
-          rra_(this)
+          ra_(this)
     {
     }
     ~PandaGen() = default;
@@ -143,6 +141,11 @@ public:
         return insns_;
     }
 
+    void SetInsns(ArenaList<IRNode *> &newInsns)
+    {
+        insns_.assign(newInsns.begin(), newInsns.end());
+    }
+
     ArenaMap<const IRNode *, int64_t> &TypedInsns()
     {
         return typedInsns_;
@@ -155,6 +158,9 @@ public:
 
     VReg AllocReg()
     {
+        if (usedRegs_ > UINT16_MAX) {
+            throw Error(ErrorType::GENERIC, "Can't alloc new reg because all regs ran out");
+        }
         return usedRegs_++;
     }
 
@@ -205,9 +211,12 @@ public:
 
     void SetSourceLocationFlag(lexer::SourceLocationFlag flag)
     {
-        sa_.SetSourceLocationFlag(flag);
         ra_.SetSourceLocationFlag(flag);
-        rra_.SetSourceLocationFlag(flag);
+    }
+
+    void AdjustSpillInsns()
+    {
+        ra_.AdjustInsRegWhenHasSpill();
     }
 
     panda::panda_file::FunctionKind GetFunctionKind() const
@@ -480,9 +489,7 @@ private:
     DynamicContext *dynamicContext_ {};
     OptionalChain *optionalChain_ {};
     InlineCache ic_;
-    SimpleAllocator sa_;
     RegAllocator ra_;
-    RangeRegAllocator rra_;
     IcSizeType currentSlot_ {0};
 
     uint32_t usedRegs_ {0};
