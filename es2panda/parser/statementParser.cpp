@@ -89,6 +89,10 @@ bool ParserImpl::CheckDeclare()
 
     const auto startPos = lexer_->Save();
     lexer_->NextToken();  // eat 'declare'
+    if (lexer_->GetToken().NewLine()) {
+        lexer_->Rewind(startPos);
+        return false;
+    }
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::KEYW_VAR:
         case lexer::TokenType::KEYW_LET:
@@ -147,6 +151,47 @@ bool ParserImpl::IsLabelFollowedByIterationStatement()
     }
     return false;
 }
+
+bool ParserImpl::IsTsDeclarationStatement() const
+{
+    const auto startPos = lexer_->Save();
+    bool isTsDeclarationStatement = false;
+
+    auto keywordType = lexer_->GetToken().KeywordType();
+    lexer_->NextToken();
+    switch (keywordType) {
+        case lexer::TokenType::KEYW_MODULE:
+        case lexer::TokenType::KEYW_NAMESPACE: {
+            isTsDeclarationStatement = !lexer_->GetToken().NewLine() &&
+                (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
+                lexer_->GetToken().Type() == lexer::TokenType::LITERAL_STRING);
+            break;
+        }
+        case lexer::TokenType::KEYW_GLOBAL: {
+            isTsDeclarationStatement = lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
+                lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE ||
+                lexer_->GetToken().Type() == lexer::TokenType::KEYW_EXPORT;
+            break;
+        }
+        case lexer::TokenType::KEYW_INTERFACE:
+        case lexer::TokenType::KEYW_TYPE: {
+            isTsDeclarationStatement = !lexer_->GetToken().NewLine() &&
+                lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT;
+            break;
+        }
+        case lexer::TokenType::KEYW_ENUM: {
+            isTsDeclarationStatement = true;
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+
+    lexer_->Rewind(startPos);
+    return isTsDeclarationStatement;
+}
+
 ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
 {
     bool isDeclare = false;
@@ -158,17 +203,20 @@ ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
         }
 
         if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_ABSTRACT) {
+            const auto startPos = lexer_->Save();
             lexer_->NextToken();  // eat abstract keyword
 
             if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_CLASS) {
-                ThrowSyntaxError("abstract modifier can only appear on a class, method, or property declaration.");
+                lexer_->Rewind(startPos);
+            } else {
+                return ParseClassStatement(flags, isDeclare, std::move(decorators), true);
             }
-            return ParseClassStatement(flags, isDeclare, std::move(decorators), true);
         }
 
-        if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_GLOBAL ||
-            lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_MODULE ||
-            lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_NAMESPACE) {
+        if ((lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_GLOBAL ||
+             lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_MODULE ||
+             lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_NAMESPACE) &&
+             IsTsDeclarationStatement()) {
             auto savedStatus = context_.Status();
             if (isDeclare) {
                 context_.Status() |= ParserStatus::IN_AMBIENT_CONTEXT;
@@ -304,7 +352,7 @@ ir::TSModuleDeclaration *ParserImpl::ParseTsAmbientExternalModuleDeclaration(con
         body = ParseTsModuleBlock();
     } else if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
         lexer_->NextToken();
-    } else {
+    } else if (!lexer_->GetToken().NewLine()) {
         ThrowSyntaxError("';' expected");
     }
 
@@ -572,7 +620,7 @@ ir::Statement *ParserImpl::ParsePotentialExpressionStatement(StatementParsingFla
         return ParseLabelledStatement(pos);
     }
 
-    if (Extension() == ScriptExtension::TS) {
+    if (Extension() == ScriptExtension::TS && IsTsDeclarationStatement()) {
         switch (lexer_->GetToken().KeywordType()) {
             case lexer::TokenType::KEYW_ENUM: {
                 return ParseEnumDeclaration(false, isDeclare, false);

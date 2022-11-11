@@ -26,7 +26,6 @@ es2panda/test/TypeScript/tests/cases/compiler/letInVarDeclOfForOf_ES6.ts
 es2panda/test/TypeScript/tests/cases/compiler/mutuallyRecursiveInterfaceDeclaration.ts
 es2panda/test/TypeScript/tests/cases/compiler/overloadedConstructorFixesInferencesAppropriately.ts
 es2panda/test/TypeScript/tests/cases/compiler/parameterInitializerBeforeDestructuringEmit.ts
-es2panda/test/TypeScript/tests/cases/compiler/parseEntityNameWithReservedWord.ts
 es2panda/test/TypeScript/tests/cases/compiler/shebang.ts
 es2panda/test/TypeScript/tests/cases/compiler/sigantureIsSubTypeIfTheyAreIdentical.ts
 es2panda/test/TypeScript/tests/cases/compiler/sourceMap-LineBreaks.ts
@@ -77,14 +76,12 @@ es2panda/test/TypeScript/tests/cases/conformance/functions/functionWithUseStrict
 es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclarations/asiPreventsParsingAsInterface01.ts
 es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclarations/asiPreventsParsingAsInterface03.ts
 es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclarations/asiPreventsParsingAsInterface04.ts
-es2panda/test/TypeScript/tests/cases/conformance/internalModules/moduleDeclarations/asiPreventsParsingAsNamespace04.ts
 es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/RegressionTests/parser579071.ts
 es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/Statements/ContinueStatements/parser_continueTarget3.ts
 es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/parserUnicodeWhitespaceCharacter1.ts
 es2panda/test/TypeScript/tests/cases/conformance/scanner/ecmascript3/scannerES3NumericLiteral2.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/keyof/keyofAndIndexedAccess.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/members/objectTypeWithStringNamedNumericProperty.ts
-es2panda/test/TypeScript/tests/cases/conformance/types/specifyingTypes/typeQueries/typeQueryWithReservedWords.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/typeParameters/typeArgumentLists/constraintSatisfactionWithEmptyObject.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/uniqueSymbol/uniqueSymbols.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/uniqueSymbol/uniqueSymbolsDeclarations.ts

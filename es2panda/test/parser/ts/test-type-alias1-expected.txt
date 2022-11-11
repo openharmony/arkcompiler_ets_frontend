@@ -1,1 +1,1 @@
-SyntaxError: Identifier expected [test-type-alias1.ts:17:6]
+SyntaxError: Unexpected token [test-type-alias1.ts:17:6]
