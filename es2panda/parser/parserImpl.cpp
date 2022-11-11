@@ -476,6 +476,9 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
             if (typeAnnotation) {
+                if (lexer_->GetToken().NewLine()) {
+                    break;
+                }
                 if (lexer_->Lookahead() == LEX_CHAR_RIGHT_SQUARE) {
                     return ParseTsArrayType(typeAnnotation);
                 }
