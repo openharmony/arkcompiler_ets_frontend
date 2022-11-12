@@ -7,7 +7,6 @@
         "id": {
           "type": "Identifier",
           "name": "A",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 16,
@@ -27,7 +26,6 @@
               "name": {
                 "type": "Identifier",
                 "name": "T",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 16,
@@ -69,7 +67,6 @@
           "key": {
             "type": "Identifier",
             "name": "constructor",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 1,
@@ -181,7 +178,6 @@
               "typeName": {
                 "type": "Identifier",
                 "name": "A",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 19,
@@ -207,7 +203,6 @@
                           "name": {
                             "type": "Identifier",
                             "name": "T",
-                            "decorators": [],
                             "loc": {
                               "start": {
                                 "line": 19,
@@ -290,7 +285,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 19,
@@ -307,7 +301,6 @@
             "callee": {
               "type": "Identifier",
               "name": "A",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 19,
@@ -333,7 +326,6 @@
                         "name": {
                           "type": "Identifier",
                           "name": "T",
-                          "decorators": [],
                           "loc": {
                             "start": {
                               "line": 19,

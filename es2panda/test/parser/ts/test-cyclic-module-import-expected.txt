@@ -25,7 +25,6 @@
             "id": {
               "type": "Identifier",
               "name": "TargetModule",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 19,
@@ -82,7 +81,6 @@
               "id": {
                 "type": "Identifier",
                 "name": "ModuleSub",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 20,
@@ -101,7 +99,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "constructor",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 24,
@@ -167,7 +164,6 @@
                   "key": {
                     "type": "Identifier",
                     "name": "StaticVar",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 21,
@@ -215,7 +211,6 @@
                   "key": {
                     "type": "Identifier",
                     "name": "InsVar",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 22,
@@ -263,7 +258,6 @@
                   "key": {
                     "type": "Identifier",
                     "name": "main",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 23,
@@ -286,7 +280,6 @@
                     "typeName": {
                       "type": "Identifier",
                       "name": "TargetModule",
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 23,
@@ -351,7 +344,6 @@
             "declaration": {
               "type": "Identifier",
               "name": "ModuleSub",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 26,
@@ -423,7 +415,6 @@
             "id": {
               "type": "Identifier",
               "name": "ModuleSub",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 30,
@@ -480,7 +471,6 @@
               "id": {
                 "type": "Identifier",
                 "name": "TargetModule",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 31,
@@ -499,7 +489,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "constructor",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 33,
@@ -565,7 +554,6 @@
                   "key": {
                     "type": "Identifier",
                     "name": "moduleSub",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 32,
@@ -588,7 +576,6 @@
                     "typeName": {
                       "type": "Identifier",
                       "name": "ModuleSub",
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 32,
@@ -653,7 +640,6 @@
             "declaration": {
               "type": "Identifier",
               "name": "TargetModule",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 35,

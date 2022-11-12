@@ -24,7 +24,6 @@
                   }
                 }
               },
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 17,
@@ -79,7 +78,6 @@
                   }
                 }
               },
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 18,
@@ -131,7 +129,6 @@
       "id": {
         "type": "Identifier",
         "name": "foo",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 17,
@@ -168,7 +165,6 @@
               "typeName": {
                 "type": "Identifier",
                 "name": "foo",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 20,
@@ -191,7 +187,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 20,
@@ -238,7 +233,6 @@
           "object": {
             "type": "Identifier",
             "name": "a",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 21,

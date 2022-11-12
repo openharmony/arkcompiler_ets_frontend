@@ -8,7 +8,6 @@
         "id": {
           "type": "Identifier",
           "name": "func",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 17,
@@ -55,7 +54,6 @@
                   }
                 }
               },
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 17,
@@ -150,7 +148,6 @@
         "callee": {
           "type": "Identifier",
           "name": "func",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 21,

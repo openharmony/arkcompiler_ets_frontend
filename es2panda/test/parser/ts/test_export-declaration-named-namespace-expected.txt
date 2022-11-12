@@ -6,7 +6,6 @@
       "id": {
         "type": "Identifier",
         "name": "ns",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 17,
@@ -28,7 +27,6 @@
               "id": {
                 "type": "Identifier",
                 "name": "_func",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 18,
@@ -52,7 +50,6 @@
                     "typeName": {
                       "type": "Identifier",
                       "name": "Function",
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 18,
@@ -75,7 +72,6 @@
                       }
                     }
                   },
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 18,
@@ -118,7 +114,6 @@
                         }
                       }
                     },
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 18,
@@ -187,7 +182,6 @@
                 "local": {
                   "type": "Identifier",
                   "name": "_func",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 19,
@@ -202,7 +196,6 @@
                 "exported": {
                   "type": "Identifier",
                   "name": "try",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 19,
@@ -271,7 +264,6 @@
           "object": {
             "type": "Identifier",
             "name": "ns",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 22,
@@ -286,7 +278,6 @@
           "property": {
             "type": "Identifier",
             "name": "try",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 22,
@@ -386,7 +377,6 @@
       "id": {
         "type": "Identifier",
         "name": "ns1",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 24,
@@ -406,7 +396,6 @@
             "id": {
               "type": "Identifier",
               "name": "a",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 25,
@@ -441,7 +430,6 @@
                 "local": {
                   "type": "Identifier",
                   "name": "a",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 26,
@@ -456,7 +444,6 @@
                 "exported": {
                   "type": "Identifier",
                   "name": "enum1",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 26,
@@ -521,7 +508,6 @@
       "id": {
         "type": "Identifier",
         "name": "nullns",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 29,
@@ -570,7 +556,6 @@
           "local": {
             "type": "Identifier",
             "name": "nullns",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 32,
@@ -585,7 +570,6 @@
           "exported": {
             "type": "Identifier",
             "name": "foo",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 32,
@@ -625,7 +609,6 @@
       "id": {
         "type": "Identifier",
         "name": "ns2",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 34,
@@ -650,7 +633,6 @@
                   "id": {
                     "type": "Identifier",
                     "name": "a",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 35,
@@ -730,7 +712,6 @@
       "id": {
         "type": "Identifier",
         "name": "ns2",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 38,
@@ -755,7 +736,6 @@
                 "local": {
                   "type": "Identifier",
                   "name": "a",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 39,
@@ -770,7 +750,6 @@
                 "exported": {
                   "type": "Identifier",
                   "name": "b",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 39,

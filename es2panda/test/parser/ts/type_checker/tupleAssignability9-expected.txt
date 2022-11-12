@@ -50,7 +50,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -94,7 +93,6 @@
         "id": {
           "type": "Identifier",
           "name": "b",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 19,
@@ -252,7 +250,6 @@
         "left": {
           "type": "Identifier",
           "name": "a",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 23,
@@ -269,7 +266,6 @@
           "callee": {
             "type": "Identifier",
             "name": "b",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 23,

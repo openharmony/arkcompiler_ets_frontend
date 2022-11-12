@@ -9,7 +9,6 @@
           "id": {
             "type": "Identifier",
             "name": "declare",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -51,7 +50,6 @@
           "id": {
             "type": "Identifier",
             "name": "namespace",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -93,7 +91,6 @@
           "id": {
             "type": "Identifier",
             "name": "ns",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -151,7 +148,6 @@
         "left": {
           "type": "Identifier",
           "name": "declare",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 18,
@@ -208,7 +204,6 @@
         "argument": {
           "type": "Identifier",
           "name": "declare",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 19,
@@ -247,7 +242,6 @@
       "expression": {
         "type": "Identifier",
         "name": "declare",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 21,
@@ -275,7 +269,6 @@
       "expression": {
         "type": "Identifier",
         "name": "namespace",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 22,
@@ -303,7 +296,6 @@
       "expression": {
         "type": "Identifier",
         "name": "ns",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 23,
@@ -345,7 +337,6 @@
       "id": {
         "type": "Identifier",
         "name": "declare",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 26,

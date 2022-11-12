@@ -329,7 +329,7 @@ ir::TSModuleDeclaration *ParserImpl::ParseTsAmbientExternalModuleDeclaration(con
 
     if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_GLOBAL) {
         isGlobal = true;
-        name = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+        name = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
     } else {
         ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_STRING);
 
@@ -389,7 +389,7 @@ ir::TSModuleDeclaration *ParserImpl::ParseTsModuleOrNamespaceDelaration(const le
     }
     binder::ExportBindings *exportBindings = res->AsNamespaceVariable()->GetExportBindings();
 
-    auto *identNode = AllocNode<ir::Identifier>(name, Allocator());
+    auto *identNode = AllocNode<ir::Identifier>(name);
     identNode->SetRange(lexer_->GetToken().Loc());
 
     lexer_->NextToken();
@@ -449,7 +449,7 @@ ir::TSImportEqualsDeclaration *ParserImpl::ParseTsImportEqualsDeclaration(const 
         ThrowSyntaxError("Unexpected token");
     }
 
-    auto *id = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+    auto *id = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
     id->SetRange(lexer_->GetToken().Loc());
     lexer_->NextToken();  // eat id name
 
@@ -500,7 +500,7 @@ ir::TSNamespaceExportDeclaration *ParserImpl::ParseTsNamespaceExportDeclaration(
         ThrowSyntaxError("identifier expected");
     }
 
-    auto *id = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+    auto *id = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
     id->SetRange(lexer_->GetToken().Loc());
     lexer_->NextToken();  // eat identifier
 
@@ -694,7 +694,7 @@ ir::TSTypeAliasDeclaration *ParserImpl::ParseTsTypeAliasDeclaration(bool isDecla
     binder::TSBinding tsBinding(Allocator(), ident);
     auto *decl = Binder()->AddTsDecl<binder::TypeAliasDecl>(lexer_->GetToken().Start(), tsBinding.View());
 
-    auto *id = AllocNode<ir::Identifier>(ident, Allocator());
+    auto *id = AllocNode<ir::Identifier>(ident);
     id->SetRange(lexer_->GetToken().Loc());
     lexer_->NextToken();
 
@@ -752,7 +752,7 @@ ir::TSInterfaceDeclaration *ParserImpl::ParseTsInterfaceDeclaration()
         decl = res->second->Declaration()->AsInterfaceDecl();
     }
 
-    auto *id = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+    auto *id = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
     id->SetRange(lexer_->GetToken().Loc());
     id->SetReference();
     lexer_->NextToken();
@@ -774,7 +774,7 @@ ir::TSInterfaceDeclaration *ParserImpl::ParseTsInterfaceDeclaration()
 
             const lexer::SourcePosition &heritageStart = lexer_->GetToken().Start();
             lexer::SourcePosition heritageEnd = lexer_->GetToken().End();
-            ir::Expression *expr = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+            ir::Expression *expr = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
             expr->AsIdentifier()->SetReference();
             expr->SetRange(lexer_->GetToken().Loc());
 
@@ -989,7 +989,7 @@ ir::BreakStatement *ParserImpl::ParseBreakStatement()
         ThrowSyntaxError("Undefined label");
     }
 
-    auto *identNode = AllocNode<ir::Identifier>(label, Allocator());
+    auto *identNode = AllocNode<ir::Identifier>(label);
     identNode->SetRange(lexer_->GetToken().Loc());
 
     auto *breakStatement = AllocNode<ir::BreakStatement>(identNode);
@@ -1050,7 +1050,7 @@ ir::ContinueStatement *ParserImpl::ParseContinueStatement()
         ThrowSyntaxError("Undefined label");
     }
 
-    auto *identNode = AllocNode<ir::Identifier>(label, Allocator());
+    auto *identNode = AllocNode<ir::Identifier>(label);
     identNode->SetRange(lexer_->GetToken().Loc());
 
     auto *continueStatement = AllocNode<ir::ContinueStatement>(identNode);
@@ -1149,7 +1149,7 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
 
     util::StringView ident = lexer_->GetToken().Ident();
 
-    auto *identNode = AllocNode<ir::Identifier>(ident, Allocator());
+    auto *identNode = AllocNode<ir::Identifier>(ident);
     identNode->SetRange(lexer_->GetToken().Loc());
     lexer_->NextToken();
 
@@ -1596,7 +1596,7 @@ ir::LabelledStatement *ParserImpl::ParseLabelledStatement(const lexer::LexerPosi
         context_.Status() |= ParserStatus::DISALLOW_CONTINUE;
     }
 
-    auto *identNode = AllocNode<ir::Identifier>(actualLabel, Allocator());
+    auto *identNode = AllocNode<ir::Identifier>(actualLabel);
     identNode->SetRange(pos.token.Loc());
 
     lexer_->NextToken();
@@ -1779,7 +1779,7 @@ ir::Expression *ParserImpl::ParseCatchParam()
             }
         }
 
-        param = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+        param = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
         param->SetRange(lexer_->GetToken().Loc());
 
         lexer_->NextToken();
@@ -1967,7 +1967,7 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
             }
 
             const util::StringView &identStr = lexer_->GetToken().Ident();
-            init = AllocNode<ir::Identifier>(identStr, Allocator());
+            init = AllocNode<ir::Identifier>(identStr);
             init->SetRange(lexer_->GetToken().Loc());
 
             if (Extension() == ScriptExtension::TS) {
@@ -2379,7 +2379,7 @@ ir::Identifier *ParserImpl::ParseNamedExport(const lexer::Token &exportedToken)
 
     const util::StringView &exportedString = exportedToken.Ident();
 
-    auto *exported = AllocNode<ir::Identifier>(exportedString, Allocator());
+    auto *exported = AllocNode<ir::Identifier>(exportedString);
     exported->SetRange(exportedToken.Loc());
 
     return exported;
@@ -2424,7 +2424,7 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
         }
 
         lexer::Token localToken = lexer_->GetToken();
-        auto *local = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+        auto *local = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
         local->SetRange(lexer_->GetToken().Loc());
 
         if (Extension() == ScriptExtension::TS) {
@@ -2693,7 +2693,7 @@ ir::Identifier *ParserImpl::ParseNamedImport(const lexer::Token &importedToken)
         }
     }
 
-    auto *local = AllocNode<ir::Identifier>(importedToken.Ident(), Allocator());
+    auto *local = AllocNode<ir::Identifier>(importedToken.Ident());
     local->SetRange(importedToken.Loc());
 
     return local;
@@ -2709,7 +2709,7 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
         }
 
         lexer::Token importedToken = lexer_->GetToken();
-        auto *imported = AllocNode<ir::Identifier>(importedToken.Ident(), Allocator());
+        auto *imported = AllocNode<ir::Identifier>(importedToken.Ident());
         ir::Identifier *local = nullptr;
         imported->SetRange(lexer_->GetToken().Loc());
 
@@ -2766,7 +2766,7 @@ ir::Expression *ParserImpl::ParseModuleReference()
         result->SetRange({start, lexer_->GetToken().End()});
         lexer_->NextToken();  // eat ')'
     } else {
-        result = AllocNode<ir::Identifier>(lexer_->GetToken().Ident(), Allocator());
+        result = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
         result->SetRange(lexer_->GetToken().Loc());
         lexer_->NextToken();
 

@@ -7,7 +7,6 @@
         "id": {
           "type": "Identifier",
           "name": "C",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 17,
@@ -26,7 +25,6 @@
           "key": {
             "type": "Identifier",
             "name": "constructor",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 1,
@@ -106,7 +104,6 @@
             "key": {
               "type": "Identifier",
               "name": "method",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 18,
@@ -146,7 +143,6 @@
                       }
                     }
                   },
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 18,
@@ -190,7 +186,6 @@
                           }
                         }
                       },
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 18,
@@ -268,7 +263,6 @@
             "key": {
               "type": "Identifier",
               "name": "method1",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 19,
@@ -295,7 +289,6 @@
                 "thisParam": {
                   "type": "Identifier",
                   "name": "this",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 19,
@@ -339,7 +332,6 @@
                           }
                         }
                       },
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 19,
@@ -417,7 +409,6 @@
             "key": {
               "type": "Identifier",
               "name": "method2",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 20,
@@ -473,7 +464,6 @@
                           }
                         }
                       },
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 20,

@@ -50,7 +50,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -175,7 +174,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
@@ -241,7 +239,6 @@
                   "label": {
                     "type": "Identifier",
                     "name": "a",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 19,
@@ -295,7 +292,6 @@
                   "label": {
                     "type": "Identifier",
                     "name": "b",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 19,
@@ -337,7 +333,6 @@
                   "label": {
                     "type": "Identifier",
                     "name": "c",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 19,
@@ -372,7 +367,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 19,
@@ -471,7 +465,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 20,
@@ -537,7 +530,6 @@
                   "label": {
                     "type": "Identifier",
                     "name": "a",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 21,
@@ -578,7 +570,6 @@
                   "label": {
                     "type": "Identifier",
                     "name": "b",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 21,
@@ -614,7 +605,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 21,
@@ -657,7 +647,6 @@
         "id": {
           "type": "Identifier",
           "name": "ForTupleTest",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 23,
@@ -676,7 +665,6 @@
           "key": {
             "type": "Identifier",
             "name": "constructor",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 1,
@@ -791,7 +779,6 @@
                   "typeName": {
                     "type": "Identifier",
                     "name": "ForTupleTest",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 25,
@@ -821,7 +808,6 @@
                     "typeName": {
                       "type": "Identifier",
                       "name": "ForTupleTest",
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 25,
@@ -867,7 +853,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 25,
@@ -933,7 +918,6 @@
                   "label": {
                     "type": "Identifier",
                     "name": "a",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 26,
@@ -963,7 +947,6 @@
                     "typeName": {
                       "type": "Identifier",
                       "name": "ForTupleTest",
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 26,
@@ -989,7 +972,6 @@
                   "label": {
                     "type": "Identifier",
                     "name": "b",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 26,
@@ -1025,7 +1007,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 26,
@@ -1095,7 +1076,6 @@
                       "typeName": {
                         "type": "Identifier",
                         "name": "ForTupleTest",
-                        "decorators": [],
                         "loc": {
                           "start": {
                             "line": 27,
@@ -1165,7 +1145,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 27,
@@ -1231,7 +1210,6 @@
                   "label": {
                     "type": "Identifier",
                     "name": "a",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 28,
@@ -1263,7 +1241,6 @@
                       "typeName": {
                         "type": "Identifier",
                         "name": "C",
-                        "decorators": [],
                         "loc": {
                           "start": {
                             "line": 28,
@@ -1300,7 +1277,6 @@
                   "label": {
                     "type": "Identifier",
                     "name": "b",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 28,
@@ -1342,7 +1318,6 @@
                   "label": {
                     "type": "Identifier",
                     "name": "c",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 28,
@@ -1377,7 +1352,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 28,
@@ -1419,7 +1393,6 @@
       "id": {
         "type": "Identifier",
         "name": "StringsForTupleTest",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 30,
@@ -1488,7 +1461,6 @@
       "id": {
         "type": "Identifier",
         "name": "NumbersForTupleTest",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 31,
@@ -1557,7 +1529,6 @@
       "id": {
         "type": "Identifier",
         "name": "x10",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 32,
@@ -1579,7 +1550,6 @@
               "typeName": {
                 "type": "Identifier",
                 "name": "StringsForTupleTest",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 32,
@@ -1620,7 +1590,6 @@
               "typeName": {
                 "type": "Identifier",
                 "name": "NumbersForTupleTest",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 32,

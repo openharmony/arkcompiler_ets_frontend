@@ -9,7 +9,6 @@
           "id": {
             "type": "Identifier",
             "name": "o",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -32,7 +31,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "a",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 18,
@@ -114,7 +112,6 @@
           "id": {
             "type": "Identifier",
             "name": "a",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 21,
@@ -136,7 +133,6 @@
                   "argument": {
                     "type": "Identifier",
                     "name": "o",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 21,
@@ -176,7 +172,6 @@
               "typeName": {
                 "type": "Identifier",
                 "name": "const",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 21,
@@ -244,7 +239,6 @@
           "object": {
             "type": "Identifier",
             "name": "a",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 22,
@@ -259,7 +253,6 @@
           "property": {
             "type": "Identifier",
             "name": "a",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 22,

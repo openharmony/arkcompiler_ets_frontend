@@ -36,7 +36,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -53,7 +52,6 @@
             "callee": {
               "type": "Identifier",
               "name": "Symbol",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 17,
@@ -108,7 +106,6 @@
         "id": {
           "type": "Identifier",
           "name": "SymbolClass",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 18,
@@ -127,7 +124,6 @@
           "key": {
             "type": "Identifier",
             "name": "constructor",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 1,
@@ -207,7 +203,6 @@
             "key": {
               "type": "Identifier",
               "name": "a",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 19,
@@ -268,7 +263,6 @@
             "key": {
               "type": "Identifier",
               "name": "s2",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 20,

@@ -6,7 +6,6 @@
       "id": {
         "type": "Identifier",
         "name": "axis1",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 17,
@@ -116,7 +115,6 @@
       "id": {
         "type": "Identifier",
         "name": "axis2",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 18,
@@ -226,7 +224,6 @@
       "id": {
         "type": "Identifier",
         "name": "num",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 19,
@@ -336,7 +333,6 @@
       "id": {
         "type": "Identifier",
         "name": "node",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 20,
@@ -359,7 +355,6 @@
                 "typeName": {
                   "type": "Identifier",
                   "name": "axis1",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 20,
@@ -387,7 +382,6 @@
                 "typeName": {
                   "type": "Identifier",
                   "name": "axis2",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 20,
@@ -427,7 +421,6 @@
             "typeName": {
               "type": "Identifier",
               "name": "num",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 20,

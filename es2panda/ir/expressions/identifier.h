@@ -45,21 +45,15 @@ DEFINE_BITOPS(IdentifierFlags)
 
 class Identifier : public Expression {
 public:
-    explicit Identifier(util::StringView name, ArenaAllocator *allocator)
-        : Expression(AstNodeType::IDENTIFIER), name_(name), decorators_(allocator->Adapter())
+    explicit Identifier(util::StringView name)
+        : Expression(AstNodeType::IDENTIFIER), name_(name)
     {
     }
 
-    explicit Identifier(util::StringView name, ArenaVector<Decorator *> &&decorators)
-        : Expression(AstNodeType::IDENTIFIER), name_(name), decorators_(std::move(decorators))
-    {
-    }
-
-    explicit Identifier(util::StringView name, Expression *typeAnnotation, ArenaAllocator *allocator)
+    explicit Identifier(util::StringView name, Expression *typeAnnotation)
         : Expression(AstNodeType::IDENTIFIER),
           name_(name),
-          typeAnnotation_(typeAnnotation),
-          decorators_(allocator->Adapter())
+          typeAnnotation_(typeAnnotation)
     {
     }
 
@@ -81,11 +75,6 @@ public:
     void SetName(util::StringView name)
     {
         name_ = name;
-    }
-
-    const ArenaVector<Decorator *> &Decorators() const
-    {
-        return decorators_;
     }
 
     bool IsOptional() const
@@ -137,8 +126,6 @@ private:
     util::StringView name_;
     Expression *typeAnnotation_ {};
     IdentifierFlags flags_ {IdentifierFlags::NONE};
-    // TODO(xucheng): remove the decorators in identifier
-    ArenaVector<Decorator *> decorators_;
 };
 
 }  // namespace panda::es2panda::ir

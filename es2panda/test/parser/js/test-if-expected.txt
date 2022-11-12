@@ -40,7 +40,6 @@
           "left": {
             "type": "Identifier",
             "name": "alma",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
@@ -124,7 +123,6 @@
           "left": {
             "type": "Identifier",
             "name": "fa",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 20,
@@ -208,7 +206,6 @@
           "left": {
             "type": "Identifier",
             "name": "alma",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 22,
@@ -264,7 +261,6 @@
           "left": {
             "type": "Identifier",
             "name": "fa",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 22,
@@ -347,7 +343,6 @@
           "left": {
             "type": "Identifier",
             "name": "alma",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 25,
@@ -403,7 +398,6 @@
           "left": {
             "type": "Identifier",
             "name": "fa",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 26,
@@ -489,7 +483,6 @@
               "left": {
                 "type": "Identifier",
                 "name": "alma",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 28,
@@ -557,7 +550,6 @@
           "left": {
             "type": "Identifier",
             "name": "fa",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 28,
@@ -779,7 +771,6 @@
               "left": {
                 "type": "Identifier",
                 "name": "alma",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 34,

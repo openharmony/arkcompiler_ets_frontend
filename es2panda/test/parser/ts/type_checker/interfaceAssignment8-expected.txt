@@ -24,7 +24,6 @@
                   }
                 }
               },
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 18,
@@ -76,7 +75,6 @@
       "id": {
         "type": "Identifier",
         "name": "A",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 17,
@@ -123,7 +121,6 @@
                   }
                 }
               },
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 22,
@@ -175,7 +172,6 @@
       "id": {
         "type": "Identifier",
         "name": "B",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 21,
@@ -212,7 +208,6 @@
               "typeName": {
                 "type": "Identifier",
                 "name": "A",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 25,
@@ -235,7 +230,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 25,
@@ -285,7 +279,6 @@
               "typeName": {
                 "type": "Identifier",
                 "name": "B",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 26,
@@ -308,7 +301,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 26,
@@ -353,7 +345,6 @@
         "left": {
           "type": "Identifier",
           "name": "a",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 28,
@@ -368,7 +359,6 @@
         "right": {
           "type": "Identifier",
           "name": "b",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 28,

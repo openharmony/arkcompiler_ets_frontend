@@ -8,7 +8,6 @@
         "id": {
           "type": "Identifier",
           "name": "function1",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 17,
@@ -68,7 +67,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -86,7 +84,6 @@
           "parameterName": {
             "type": "Identifier",
             "name": "asserts",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -109,7 +106,6 @@
                 "key": {
                   "type": "Identifier",
                   "name": "return",
-                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 17,

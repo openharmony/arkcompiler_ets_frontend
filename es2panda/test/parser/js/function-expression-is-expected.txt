@@ -36,7 +36,6 @@
           "id": {
             "type": "Identifier",
             "name": "foo",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 3,
@@ -55,7 +54,6 @@
               "id": {
                 "type": "Identifier",
                 "name": "is",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 3,

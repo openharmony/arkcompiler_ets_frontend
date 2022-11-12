@@ -6,7 +6,6 @@
       "id": {
         "type": "Identifier",
         "name": "weather",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 17,
@@ -74,7 +73,6 @@
       "id": {
         "type": "Identifier",
         "name": "report",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 18,
@@ -94,7 +92,6 @@
             "typeName": {
               "type": "Identifier",
               "name": "weather",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 18,

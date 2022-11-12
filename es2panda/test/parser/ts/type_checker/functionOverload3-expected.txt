@@ -8,7 +8,6 @@
         "id": {
           "type": "Identifier",
           "name": "foo",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 17,
@@ -40,7 +39,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -69,7 +67,6 @@
               }
             },
             "optional": true,
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -124,7 +121,6 @@
         "id": {
           "type": "Identifier",
           "name": "foo",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 18,
@@ -184,7 +180,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
@@ -212,7 +207,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
@@ -240,7 +234,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
@@ -295,7 +288,6 @@
         "id": {
           "type": "Identifier",
           "name": "foo",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 19,
@@ -355,7 +347,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 19,
@@ -384,7 +375,6 @@
               }
             },
             "optional": true,
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 19,
@@ -413,7 +403,6 @@
               }
             },
             "optional": true,
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 19,

@@ -8,7 +8,6 @@
         "id": {
           "type": "Identifier",
           "name": "f14",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 17,
@@ -32,7 +31,6 @@
               "label": {
                 "type": "Identifier",
                 "name": "block",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 18,
@@ -92,7 +90,6 @@
                     "label": {
                       "type": "Identifier",
                       "name": "block",
-                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 20,

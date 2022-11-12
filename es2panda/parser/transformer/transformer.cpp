@@ -520,7 +520,7 @@ void Transformer::VisitTSParameterProperty(ir::ClassDefinition *node)
             name = left->AsIdentifier()->Name();
         }
         auto left = AllocNode<ir::MemberExpression>(AllocNode<ir::ThisExpression>(),
-            AllocNode<ir::Identifier>(name, Allocator()),
+            AllocNode<ir::Identifier>(name),
             ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
         auto right = CreateReferenceIdentifier(name);
         auto assignment = AllocNode<ir::AssignmentExpression>(left, right,
@@ -787,7 +787,7 @@ ir::Expression *Transformer::CreateDecoratorTarget(util::StringView className, b
 ir::MemberExpression *Transformer::CreateClassPrototype(util::StringView className)
 {
     auto *cls = CreateReferenceIdentifier(className);
-    return AllocNode<ir::MemberExpression>(cls, AllocNode<ir::Identifier>(CLASS_PROTOTYPE, Allocator()),
+    return AllocNode<ir::MemberExpression>(cls, AllocNode<ir::Identifier>(CLASS_PROTOTYPE),
         ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
 }
 
@@ -796,8 +796,8 @@ ir::CallExpression *Transformer::CreateDefinePropertyCall(ir::Expression *target
                                                           ir::Expression *value)
 {
     auto *id = CreateReferenceIdentifier(OBJECT_VAR_NAME);
-    auto *caller = AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(FUNC_NAME_OF_DEFINE_PROPERTY,
-        Allocator()), ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+    auto *caller = AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(FUNC_NAME_OF_DEFINE_PROPERTY),
+        ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
     arguments.push_back(target);
     arguments.push_back(key);
@@ -809,7 +809,7 @@ ir::CallExpression *Transformer::CreateGetOwnPropertyDescriptorCall(ir::Expressi
 {
     auto *id = CreateReferenceIdentifier(OBJECT_VAR_NAME);
     auto *caller = AllocNode<ir::MemberExpression>(id,
-        AllocNode<ir::Identifier>(FUNC_NAME_OF_GET_OWN_PROPERTY_DESCRIPTOR, Allocator()),
+        AllocNode<ir::Identifier>(FUNC_NAME_OF_GET_OWN_PROPERTY_DESCRIPTOR),
         ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
     arguments.push_back(target);
@@ -821,7 +821,7 @@ ir::Expression *Transformer::GetClassMemberName(ir::Expression *key, bool isComp
 {
     if (isComputed) {
         auto name = GetComputedPropertyBinding(node);
-        return AllocNode<ir::Identifier>(name, Allocator());
+        return AllocNode<ir::Identifier>(name);
     }
     if (key->IsIdentifier()) {
         return AllocNode<ir::StringLiteral>(key->AsIdentifier()->Name());
@@ -882,7 +882,7 @@ ir::AstNode *Transformer::VisitTsImportEqualsDeclaration(ir::TSImportEqualsDecla
     if (IsTsModule() && node->IsExport()) {
         auto moduleName = GetCurrentTSModuleName();
         auto *id = CreateReferenceIdentifier(moduleName);
-        auto *left = AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(name, Allocator()),
+        auto *left = AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(name),
             ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
         ir::Expression *right = CreateMemberExpressionFromQualified(express);
         auto *assignExpr = AllocNode<ir::AssignmentExpression>(left, right,
@@ -999,7 +999,7 @@ ir::Expression *Transformer::CreateMemberExpressionFromQualified(ir::Expression 
     if (node->IsTSQualifiedName()) {
         auto *tsQualifiedName = node->AsTSQualifiedName();
         auto *left = CreateMemberExpressionFromQualified(tsQualifiedName->Left());
-        auto *right = AllocNode<ir::Identifier>(tsQualifiedName->Right()->Name(), Allocator());
+        auto *right = AllocNode<ir::Identifier>(tsQualifiedName->Right()->Name());
         return AllocNode<ir::MemberExpression>(left, right,
             ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     }
@@ -1030,7 +1030,7 @@ ir::ExpressionStatement *Transformer::CreateTsModuleAssignment(util::StringView 
 {
     auto moduleName = GetCurrentTSModuleName();
     auto *id = CreateReferenceIdentifier(moduleName);
-    auto *left = AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(name, Allocator()),
+    auto *left = AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(name),
         ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     auto *right = CreateReferenceIdentifier(name);
     auto *assignExpr = AllocNode<ir::AssignmentExpression>(left, right, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
@@ -1162,7 +1162,7 @@ ir::Expression *Transformer::CreateTsModuleParam(util::StringView paramName, boo
     if (isExport) {
         auto moduleName = GetCurrentTSModuleName();
         auto *id = CreateReferenceIdentifier(moduleName);
-        return AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(paramName, Allocator()),
+        return AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(paramName),
             ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
     }
 
@@ -1198,7 +1198,7 @@ ir::UpdateNodes Transformer::VisitTsModuleDeclaration(ir::TSModuleDeclaration *n
 
 ir::Identifier *Transformer::CreateReferenceIdentifier(util::StringView name)
 {
-    auto *node = AllocNode<ir::Identifier>(name, Allocator());
+    auto *node = AllocNode<ir::Identifier>(name);
     node->AsIdentifier()->SetReference();
     return node;
 }
@@ -1404,7 +1404,7 @@ ir::ExpressionStatement *Transformer::CreateTsEnumMemberWithoutInit(ir::TSEnumMe
                                                        lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     } else {  // not first enumMember, value = E.prenode + 1
         auto *innerRightObject = CreateReferenceIdentifier(enumLiteralName);
-        auto *innerPropertyForMemberExpr = AllocNode<ir::Identifier>(GetNameFromEnumMember(preNode), Allocator());
+        auto *innerPropertyForMemberExpr = AllocNode<ir::Identifier>(GetNameFromEnumMember(preNode));
         auto *innerMemberExpr = AllocNode<ir::MemberExpression>(innerRightObject, innerPropertyForMemberExpr,
             ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
         auto *innerRight = AllocNode<ir::BinaryExpression>(innerMemberExpr, AllocNode<ir::NumberLiteral>(1),
@@ -1795,7 +1795,7 @@ ir::MemberExpression *Transformer::CreateMemberExpressionFromIdentifier(binder::
     auto identName = node->Name();
     auto moduleName = scope->IsTSEnumScope() ? FindTSEnumNameByScope(scope) : FindTSModuleNameByScope(scope);
     auto *id = CreateReferenceIdentifier(moduleName);
-    auto *res = AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(identName, Allocator()),
+    auto *res = AllocNode<ir::MemberExpression>(id, AllocNode<ir::Identifier>(identName),
                                                 ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS,
                                                 false, false);
     SetOriginalNode(res, node);

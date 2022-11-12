@@ -14,7 +14,6 @@
             "key": {
               "type": "Identifier",
               "name": "a",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 18,
@@ -65,7 +64,6 @@
       "id": {
         "type": "Identifier",
         "name": "z",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 17,
@@ -113,7 +111,6 @@
                     }
                   }
                 },
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 22,
@@ -141,7 +138,6 @@
                     }
                   }
                 },
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 22,
@@ -193,7 +189,6 @@
       "id": {
         "type": "Identifier",
         "name": "b",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 21,
@@ -241,7 +236,6 @@
                     }
                   }
                 },
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 26,
@@ -269,7 +263,6 @@
                     }
                   }
                 },
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 26,
@@ -321,7 +314,6 @@
       "id": {
         "type": "Identifier",
         "name": "c",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 25,
@@ -341,7 +333,6 @@
             "typeName": {
               "type": "Identifier",
               "name": "z",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 25,
@@ -382,7 +373,6 @@
             "typeName": {
               "type": "Identifier",
               "name": "b",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 25,
@@ -441,7 +431,6 @@
             "key": {
               "type": "Identifier",
               "name": "a",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 30,
@@ -496,7 +485,6 @@
                     }
                   }
                 },
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 31,
@@ -524,7 +512,6 @@
                     }
                   }
                 },
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 31,
@@ -576,7 +563,6 @@
       "id": {
         "type": "Identifier",
         "name": "d",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 29,
@@ -613,7 +599,6 @@
               "typeName": {
                 "type": "Identifier",
                 "name": "d",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 34,
@@ -636,7 +621,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 34,
@@ -686,7 +670,6 @@
               "typeName": {
                 "type": "Identifier",
                 "name": "c",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 35,
@@ -709,7 +692,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 35,

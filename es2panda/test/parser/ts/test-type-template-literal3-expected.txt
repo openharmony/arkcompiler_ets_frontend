@@ -6,7 +6,6 @@
       "id": {
         "type": "Identifier",
         "name": "upperWord",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 16,
@@ -26,7 +25,6 @@
             "typeName": {
               "type": "Identifier",
               "name": "Uppercase",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 16,
@@ -46,7 +44,6 @@
                   "typeName": {
                     "type": "Identifier",
                     "name": "Str",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 16,
@@ -148,7 +145,6 @@
             "name": {
               "type": "Identifier",
               "name": "Str",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 16,
@@ -225,7 +221,6 @@
       "id": {
         "type": "Identifier",
         "name": "lowerWord",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 17,
@@ -245,7 +240,6 @@
             "typeName": {
               "type": "Identifier",
               "name": "Lowercase",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 17,
@@ -265,7 +259,6 @@
                   "typeName": {
                     "type": "Identifier",
                     "name": "Str",
-                    "decorators": [],
                     "loc": {
                       "start": {
                         "line": 17,
@@ -367,7 +360,6 @@
             "name": {
               "type": "Identifier",
               "name": "Str",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 17,
@@ -444,7 +436,6 @@
       "id": {
         "type": "Identifier",
         "name": "upperArk",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 18,
@@ -461,7 +452,6 @@
         "typeName": {
           "type": "Identifier",
           "name": "upperWord",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 18,
@@ -555,7 +545,6 @@
       "id": {
         "type": "Identifier",
         "name": "lowerArk",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 19,
@@ -572,7 +561,6 @@
         "typeName": {
           "type": "Identifier",
           "name": "lowerWord",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 19,

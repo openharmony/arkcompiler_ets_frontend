@@ -23,7 +23,6 @@
           "local": {
             "type": "Identifier",
             "name": "a",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -38,7 +37,6 @@
           "imported": {
             "type": "Identifier",
             "name": "a",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 17,
@@ -96,7 +94,6 @@
           "local": {
             "type": "Identifier",
             "name": "b",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
@@ -154,7 +151,6 @@
           "local": {
             "type": "Identifier",
             "name": "c",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 19,
@@ -212,7 +208,6 @@
           "local": {
             "type": "Identifier",
             "name": "type",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 20,

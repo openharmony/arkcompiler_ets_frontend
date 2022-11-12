@@ -14,7 +14,6 @@
             "key": {
               "type": "Identifier",
               "name": "foo",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 17,
@@ -58,7 +57,6 @@
             "key": {
               "type": "Identifier",
               "name": "bar",
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 18,
@@ -109,7 +107,6 @@
       "id": {
         "type": "Identifier",
         "name": "a",
-        "decorators": [],
         "loc": {
           "start": {
             "line": 16,
@@ -146,7 +143,6 @@
               "typeName": {
                 "type": "Identifier",
                 "name": "a",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 20,
@@ -169,7 +165,6 @@
                 }
               }
             },
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 20,
@@ -216,7 +211,6 @@
           "object": {
             "type": "Identifier",
             "name": "b",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 21,
@@ -231,7 +225,6 @@
           "property": {
             "type": "Identifier",
             "name": "foo",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 21,
@@ -302,7 +295,6 @@
           "object": {
             "type": "Identifier",
             "name": "b",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 22,
@@ -317,7 +309,6 @@
           "property": {
             "type": "Identifier",
             "name": "bar",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 22,
@@ -388,7 +379,6 @@
           "object": {
             "type": "Identifier",
             "name": "b",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 23,
@@ -403,7 +393,6 @@
           "property": {
             "type": "Identifier",
             "name": "foobar",
-            "decorators": [],
             "loc": {
               "start": {
                 "line": 23,
