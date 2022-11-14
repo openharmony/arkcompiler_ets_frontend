@@ -510,12 +510,12 @@ void Transformer::VisitTSParameterProperty(ir::ClassDefinition *node)
         }
         auto *parameter = it->AsTSParameterProperty()->Parameter();
         util::StringView name;
-        // TSParameterPropert only can be identifier or assignment expression
+        // TSParameterPropert only can be identifier or assignment pattern
         if (parameter->IsIdentifier()) {
             name = parameter->AsIdentifier()->Name();
         } else {
-            ASSERT(parameter->IsAssignmentExpression());
-            auto *left = parameter->AsAssignmentExpression()->Left();
+            ASSERT(parameter->IsAssignmentPattern());
+            auto *left = parameter->AsAssignmentPattern()->Left();
             ASSERT(left->IsIdentifier());
             name = left->AsIdentifier()->Name();
         }
