@@ -43,7 +43,7 @@ void TemplateLiteral::Compile(compiler::PandaGen *pg) const
     auto quasisIt = quasis_.begin();
     auto expressionIt = expressions_.begin();
 
-    pg->LoadAccumulatorString(this, (*quasisIt)->Raw());
+    pg->LoadAccumulatorString(this, (*quasisIt)->Cooked());
 
     quasisIt++;
 
@@ -58,7 +58,7 @@ void TemplateLiteral::Compile(compiler::PandaGen *pg) const
 
         if (isQuais) {
             pg->StoreAccumulator(*quasisIt, lhs);
-            pg->LoadAccumulatorString(this, (*quasisIt)->Raw());
+            pg->LoadAccumulatorString(this, (*quasisIt)->Cooked());
 
             node = *quasisIt;
             quasisIt++;
