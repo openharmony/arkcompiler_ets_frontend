@@ -92,8 +92,10 @@ export class CompilerDriver {
         }
     }
 
-    initiateTs2abcChildProcess() {
-        this.ts2abcProcess = initiateTs2abc([this.fileName]);
+    initiateTs2abcChildProcess(args: Array<string>) {
+        this.ts2abcProcess = initiateTs2abc(args);
+        listenChildExit(this.getTs2abcProcess());
+        listenErrorEvent(this.getTs2abcProcess());
     }
 
     getTs2abcProcess(): any {
@@ -163,7 +165,7 @@ export class CompilerDriver {
         checkDuplicateDeclaration(recorder);
     }
 
-    compile(node: ts.SourceFile): void {
+    compile(node: ts.SourceFile, ts2abcProcess?: any | undefined): void {
         CompilerDriver.isTsFile = CompilerDriver.isTypeScriptSourceFile(node);
         if (CmdOptions.showASTStatistics()) {
             let statics: number[] = new Array(ts.SyntaxKind.Count).fill(0);
@@ -180,10 +182,12 @@ export class CompilerDriver {
 
         // initiate ts2abc
         if (!CmdOptions.isAssemblyMode()) {
-            this.initiateTs2abcChildProcess();
+            if (ts2abcProcess) {
+                this.ts2abcProcess = ts2abcProcess;
+            } else {
+                this.initiateTs2abcChildProcess([this.fileName]);
+            }
             let ts2abcProc = this.getTs2abcProcess();
-            listenChildExit(ts2abcProc);
-            listenErrorEvent(ts2abcProc);
 
             try {
                 if (CmdOptions.isMergeAbc()) {
@@ -200,9 +204,14 @@ export class CompilerDriver {
                 Ts2Panda.dumpStringsArray(ts2abcProc);
                 Ts2Panda.dumpConstantPool(ts2abcProc);
                 Ts2Panda.dumpModuleRecords(ts2abcProc);
-                Ts2Panda.dumpTypeInfoRecord(ts2abcProc, true)
+                Ts2Panda.dumpTypeInfoRecord(ts2abcProc, true);
 
-                terminateWritePipe(ts2abcProc);
+                if (ts2abcProcess) {
+                    Ts2Panda.dumpOutputFileName(ts2abcProc, this.fileName);
+                } else {
+                    terminateWritePipe(ts2abcProc);
+                }
+
                 if (CmdOptions.isEnableDebugLog()) {
                     let jsonFileName = this.fileName.substring(0, this.fileName.lastIndexOf(".")).concat(".json");
                     writeFileSync(jsonFileName, Ts2Panda.jsonString);
