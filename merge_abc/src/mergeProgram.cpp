@@ -107,7 +107,7 @@ bool MergeProgram::AppendProtoFiles(const std::string &filePath, const std::stri
         }
         protoFiles.insert(protoFiles.end(), directoryFiles.begin(), directoryFiles.end());
     } else {
-        std::cerr << "Input must be either a regular file or directory" << std::endl;
+        std::cerr << "The input path: " << fPath << " must be either a regular file or directory." << std::endl;
         return false;
     }
 

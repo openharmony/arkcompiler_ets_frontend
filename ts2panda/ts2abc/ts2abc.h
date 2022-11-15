@@ -37,7 +37,8 @@ enum class JsonType {
     MODULE,
     OPTIONS,
     TYPEINFO,
-    RECORDNAME
+    RECORDNAME,
+    OUTPUTFILENAME
 };
 
 constexpr int RETURN_SUCCESS = 0;
@@ -51,6 +52,7 @@ enum class OptLevel {
 
 bool HandleJsonFile(const std::string &input, std::string &data);
 bool GenerateProgram(const std::string &data, const std::string &output, panda::ts2abc::Options options);
+bool GenerateProgramsFromPipe(panda::ts2abc::Options options);
 bool CompileNpmEntries(const std::string &input, const std::string &output);
 bool GetDebugLog();
 void ParseLogEnable(const Json::Value &rootValue);
