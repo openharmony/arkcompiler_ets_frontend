@@ -1,4 +1,5 @@
 test262/data/
 test262/eshost/
 test262/harness/
+test262/__pycache__/
 out/
