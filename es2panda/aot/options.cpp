@@ -66,17 +66,19 @@ bool Options::CollectInputFilesFromFileList(const std::string &input)
         return false;
     }
 
-    constexpr size_t ITEM_COUNT = 4;
+    constexpr size_t ITEM_COUNT_MERGE = 4;  // item list: [filePath; recordName; moduleKind; sourceFile]
+    constexpr size_t ITEM_COUNT_NOT_MERGE = 5;  // item list: [filePath; recordName; moduleKind; sourceFile; outputfile]
     while (std::getline(ifs, line)) {
         const std::string seperator = ";";
         std::vector<std::string> itemList = GetStringItems(line, seperator);
-        if (itemList.size() != ITEM_COUNT) {
+        if ((compilerOptions_.mergeAbc && itemList.size() != ITEM_COUNT_MERGE) ||
+            (!compilerOptions_.mergeAbc && itemList.size() != ITEM_COUNT_NOT_MERGE)) {
             std::cerr << "Failed to parse input file" << std::endl;
             return false;
         }
-        // itemList: [filePath, recordName, moduleKind, sourceFile]
+
         std::string fileName = itemList[0];
-        std::string recordName = itemList[1];
+        std::string recordName = compilerOptions_.mergeAbc ? itemList[1] : "";
         parser::ScriptKind scriptKind;
         if (itemList[2] == "script") {
             scriptKind = parser::ScriptKind::SCRIPT;
@@ -89,6 +91,9 @@ bool Options::CollectInputFilesFromFileList(const std::string &input)
         es2panda::SourceFile src(fileName, recordName, scriptKind);
         src.sourcefile = itemList[3];
         sourceFiles_.push_back(src);
+        if (!compilerOptions_.mergeAbc) {
+            outputFiles_.insert({fileName, itemList[4]});
+        }
     }
     return true;
 }
@@ -307,6 +312,7 @@ bool Options::Parse(int argc, const char **argv)
             recordName_ = compilerOutput_.empty() ? "Base64Output" :
                 RemoveExtension(util::Helpers::BaseName(compilerOutput_));
         }
+        compilerOptions_.mergeAbc = opMergeAbc.GetValue();
     }
 
     if (!inputIsEmpty) {
