@@ -25,7 +25,6 @@ import re
 import subprocess
 import sys
 import test262util
-import pandas as pd
 
 
 def is_directory(parser, arg):
@@ -464,10 +463,13 @@ class Runner:
                 success_list.append(test)
 
         if len(fail_list):
-            test_list = pd.DataFrame(columns=["path", "status", "error", "type"])
+            if self.args.error:
+                import pandas as pd
+                test_list = pd.DataFrame(columns=["path", "status", "error", "type"])
             for test in success_list:
                 suc_col = {"path" : [test.path], "status": ["success"], "error" : ["success"], "type" : ["success"]}
-                test_list = pd.concat([test_list, pd.DataFrame(suc_col)])
+                if self.args.error:
+                    test_list = pd.concat([test_list, pd.DataFrame(suc_col)])
             print("Failed tests:")
             for test in fail_list:
                 print(self.test_path(test.path))
