@@ -71,6 +71,19 @@ template("es2abc_gen_abc") {
       rebase_path("${es2abc_build_path}"),
     ]
 
+    if (defined(invoker.dump_symbol_table)) {
+      args += [
+        "--dump-symbol-table",
+        invoker.dump_symbol_table,
+      ]
+    }
+    if (defined(invoker.input_symbol_table)) {
+      args += [
+        "--input-symbol-table",
+        invoker.input_symbol_table,
+      ]
+    }
+
     if (defined(invoker.extra_args)) {
       args += invoker.extra_args
     }

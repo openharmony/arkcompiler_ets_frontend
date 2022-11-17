@@ -40,6 +40,12 @@ def parse_args():
                         help='whether is commonjs')
     parser.add_argument("--merge-abc", action='store_true',
                         help='whether is merge abc')
+    parser.add_argument("--generate-patch", action='store_false',
+                        help='generate patch abc')
+    parser.add_argument("--dump-symbol-table",
+                        help='dump symbol table of base abc')
+    parser.add_argument("--input-symbol-table",
+                        help='input symbol table for patch abc')
     arguments = parser.parse_args()
     return arguments
 
@@ -58,6 +64,10 @@ def gen_abc_info(input_arguments):
            '--output', input_arguments.dst_file,
            input_arguments.src_js]
 
+    if input_arguments.dump_symbol_table:
+        cmd += ['--dump-symbol-table', input_arguments.dump_symbol_table]
+    if input_arguments.input_symbol_table:
+        cmd += ['--input-symbol-table', input_arguments.input_symbol_table]
     if input_arguments.debug:
         src_index = cmd.index(input_arguments.src_js)
         cmd.insert(src_index, '--debug-info')
@@ -70,6 +80,9 @@ def gen_abc_info(input_arguments):
     if input_arguments.merge_abc:
         src_index = cmd.index(input_arguments.src_js)
         cmd.insert(src_index, '--merge-abc')
+    if input_arguments.generate_patch:
+        src_index = cmd.index(input_arguments.src_js)
+        cmd.insert(src_index, '--generate-patch')
         # insert d.ts option to cmd later
     run_command(cmd, path)
 
