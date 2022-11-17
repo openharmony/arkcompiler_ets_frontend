@@ -8,7 +8,6 @@
         "id": {
           "type": "Identifier",
           "name": "foo",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 17,
@@ -30,7 +29,6 @@
               {
                 "type": "Identifier",
                 "name": "x",
-                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 17,
@@ -126,7 +124,6 @@
         "id": {
           "type": "Identifier",
           "name": "foo",
-          "decorators": [],
           "loc": {
             "start": {
               "line": 18,
@@ -173,7 +170,6 @@
                   }
                 }
               },
-              "decorators": [],
               "loc": {
                 "start": {
                   "line": 18,
