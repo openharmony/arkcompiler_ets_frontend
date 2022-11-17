@@ -51,6 +51,8 @@ static constexpr const char* TSTYPE_ANNO_RECORD_NAME = "_ESTypeAnnotation";
 static constexpr const char* TSTYPE_ANNO_ELEMENT_NAME = "_TypeOfInstruction";
 std::string g_compilerOutputProto = "";
 std::string g_recordName = "";
+std::string g_outputFileName = "";
+bool g_isStartDollar = true;
 constexpr uint32_t LITERALBUFFERINDEXOFFSET = 100;
 uint32_t MAX_UINT8 = static_cast<uint32_t>(std::numeric_limits<uint8_t>::max());
 bool g_isOutputProto = false;
@@ -1329,6 +1331,12 @@ static int ParseSmallPieceJson(const std::string &subJson, panda::pandasm::Progr
             }
             break;
         }
+        case static_cast<int>(JsonType::OUTPUTFILENAME): {
+            if (rootValue.isMember("ofn") && rootValue["ofn"].isString()) {
+                g_outputFileName = rootValue["ofn"].asString();
+            }
+            break;
+        }
         default: {
             std::cerr << "Unreachable json type: " << type << std::endl;
             return RETURN_FAILED;
@@ -1345,23 +1353,23 @@ static bool ParseData(const std::string &data, panda::pandasm::Program &prog)
     }
 
     size_t pos = 0;
-    bool isStartDollar = true;
 
     for (size_t idx = 0; idx < data.size(); idx++) {
-        if (data[idx] == '$' && (idx ==0 || data[idx - 1] != '#')) {
-            if (isStartDollar) {
+        if (data[idx] == '$' && (idx == 0 || data[idx - 1] != '#')) {
+            if (g_isStartDollar) {
                 pos = idx + 1;
-                isStartDollar = false;
+                g_isStartDollar = false;
                 continue;
             }
 
             std::string subJson = data.substr(pos, idx - pos);
             ReplaceAllDistinct(subJson, "#$", "$");
+            ReplaceAllDistinct(subJson, "#*", "*");
             if (ParseSmallPieceJson(subJson, prog)) {
                 std::cerr << "fail to parse stringify json" << std::endl;
                 return false;
             }
-            isStartDollar = true;
+            g_isStartDollar = true;
         }
     }
 
@@ -1385,89 +1393,8 @@ static bool IsStartOrEndPosition(int idx, char *buff, const std::string &data)
     return false;
 }
 
-static bool HandleBuffer(const int &ret, bool &isStartDollar, char *buff, std::string &data, panda::pandasm::Program &prog)
+static bool EmitProgram(const std::string &output, int optLevel, std::string optLogLevel, panda::pandasm::Program &prog)
 {
-    uint32_t startPos = 0;
-    for (int idx = 0; idx < ret; idx++) {
-        if (IsStartOrEndPosition(idx, buff, data)) {
-            if (isStartDollar) {
-                startPos = idx + 1;
-                isStartDollar = false;
-                continue;
-            }
-
-            std::string substr(buff + startPos, buff + idx);
-            data += substr;
-            ReplaceAllDistinct(data, "#$", "$");
-            if (ParseSmallPieceJson(data, prog)) {
-                std::cerr << "fail to parse stringify json" << std::endl;
-                return false;
-            }
-            isStartDollar = true;
-            // clear data after parsing
-            data.clear();
-        }
-    }
-
-    if (!isStartDollar) {
-        std::string substr(buff + startPos, buff + ret);
-        data += substr;
-    }
-
-    return true;
-}
-
-static bool ReadFromPipe(panda::pandasm::Program &prog)
-{
-    std::string data;
-    bool isStartDollar = true;
-    const size_t bufSize = 4096;
-    // the parent process open a pipe to this child process with fd of 3
-    const size_t fd = 3;
-
-    char buff[bufSize + 1];
-    int ret = 0;
-
-    while ((ret = read(fd, buff, bufSize)) != 0) {
-        if (ret < 0) {
-            std::cerr << "Read pipe error" << std::endl;
-            return false;
-        }
-        buff[ret] = '\0';
-
-        if (!HandleBuffer(ret, isStartDollar, buff, data, prog)) {
-            std::cerr << "fail to handle buffer" << std::endl;
-            return false;
-        }
-    }
-
-    Logd("finish parsing from pipe");
-    return true;
-}
-
-bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string &output,
-                     panda::ts2abc::Options options)
-{
-    bool isParsingFromPipe = options.GetCompileByPipeArg();
-    int optLevel = options.GetOptLevelArg();
-    std::string optLogLevel = options.GetOptLogLevelArg();
-    panda::pandasm::Program prog = panda::pandasm::Program();
-    prog.lang = panda::pandasm::extensions::Language::ECMASCRIPT;
-
-    if (isParsingFromPipe) {
-        if (!ReadFromPipe(prog)) {
-            std::cerr << "fail to parse Pipe!" << std::endl;
-            return false;
-        }
-    } else {
-        if (!ParseData(data, prog)) {
-            std::cerr << "fail to parse Data!" << std::endl;
-            return false;
-        }
-    }
-
-    Logd("parsing done, calling pandasm\n");
-
     if (g_isOutputProto) {
         g_compilerOutputProto = output.substr(0, output.find_last_of(".") + 1).append(PROTO_BIN_SUFFIX);
     }
@@ -1523,6 +1450,131 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string
     return true;
 }
 
+static bool EmitAndRestoreProgram(panda::pandasm::Program &prog, panda::ts2abc::Options options)
+{
+    if (!EmitProgram(g_outputFileName, options.GetOptLevelArg(), options.GetOptLogLevelArg(), prog)) {
+        std::cerr << "fail to emit porgram " << g_outputFileName << " in HandleBuffer" << std::endl;
+        return false;
+    }
+    prog = panda::pandasm::Program();
+    prog.lang = panda::pandasm::extensions::Language::ECMASCRIPT;
+    return true;
+}
+
+static bool HandleBuffer(const int &ret, char *buff, std::string &data, panda::pandasm::Program &prog,
+                         panda::ts2abc::Options options)
+{
+    uint32_t startPos = 0;
+    if (options.IsMultiProgramsPipe() && ((buff[0] == '*' && data.back() != '#') ||
+                                          (buff[0] == '\n' && buff[1] == '*'))) {
+        if (!EmitAndRestoreProgram(prog, options)) {
+            std::cerr << "fail to emit and restore program" << std::endl;
+            return false;
+        }
+    }
+
+    for (int idx = 0; idx < ret; idx++) {
+        if (IsStartOrEndPosition(idx, buff, data)) {
+            if (g_isStartDollar) {
+                startPos = idx + 1;
+                g_isStartDollar = false;
+                continue;
+            }
+
+            std::string substr(buff + startPos, buff + idx);
+            data += substr;
+            ReplaceAllDistinct(data, "#$", "$");
+            ReplaceAllDistinct(data, "#*", "*");
+            if (ParseSmallPieceJson(data, prog)) {
+                std::cerr << "fail to parse stringify json" << std::endl;
+                return false;
+            }
+            g_isStartDollar = true;
+            // clear data after parsing
+            data.clear();
+            // idx: $, then idx + 1:'\n', so comparing buff[idx + 2] with '*'
+            if (options.IsMultiProgramsPipe() && idx < ret - 2 && buff[idx + 2] == '*' &&
+                !EmitAndRestoreProgram(prog, options)) {
+                std::cerr << "fail to emit and restore program" << std::endl;
+                return false;
+            }
+        }
+    }
+
+    if (!g_isStartDollar) {
+        std::string substr(buff + startPos, buff + ret);
+        data += substr;
+    }
+
+    return true;
+}
+
+static bool ReadFromPipe(panda::pandasm::Program &prog, panda::ts2abc::Options options)
+{
+    std::string data;
+    const size_t bufSize = 4096;
+    // the parent process open a pipe to this child process with fd of 3
+    const size_t fd = 3;
+
+    char buff[bufSize + 1];
+    int ret = 0;
+
+    while ((ret = read(fd, buff, bufSize)) != 0) {
+        if (ret < 0) {
+            std::cerr << "Read pipe error" << std::endl;
+            return false;
+        }
+        buff[ret] = '\0';
+
+        if (!HandleBuffer(ret, buff, data, prog, options)) {
+            std::cerr << "fail to handle buffer" << std::endl;
+            return false;
+        }
+    }
+
+    Logd("finish parsing from pipe");
+    return true;
+}
+
+bool GenerateProgramsFromPipe(panda::ts2abc::Options options)
+{
+    panda::pandasm::Program prog = panda::pandasm::Program();
+    prog.lang = panda::pandasm::extensions::Language::ECMASCRIPT;
+
+    if (!ReadFromPipe(prog, options)) {
+        std::cerr << "fail to parse programs from Pipe!" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool GenerateProgram([[maybe_unused]] const std::string &data, const std::string &output,
+                     panda::ts2abc::Options options)
+{
+    bool isParsingFromPipe = options.GetCompileByPipeArg();
+    int optLevel = options.GetOptLevelArg();
+    std::string optLogLevel = options.GetOptLogLevelArg();
+    panda::pandasm::Program prog = panda::pandasm::Program();
+    prog.lang = panda::pandasm::extensions::Language::ECMASCRIPT;
+
+    if (isParsingFromPipe) {
+        if (!ReadFromPipe(prog, options)) {
+            std::cerr << "fail to parse Pipe!" << std::endl;
+            return false;
+        }
+    } else {
+        if (!ParseData(data, prog)) {
+            std::cerr << "fail to parse Data!" << std::endl;
+            return false;
+        }
+    }
+
+    Logd("parsing done, calling pandasm\n");
+
+    return EmitProgram(output, optLevel, optLogLevel, prog);
+}
+
 bool CompileNpmEntries(const std::string &input, const std::string &output)
 {
     auto inputAbs = panda::os::file::File::GetAbsolutePath(input);
@@ -1532,7 +1584,7 @@ bool CompileNpmEntries(const std::string &input, const std::string &output)
     }
     auto fpath = inputAbs.Value();
     if (panda::os::file::File::IsRegularFile(fpath) == false) {
-        std::cerr << "Input must be either a regular file or a directory" << std::endl;
+        std::cerr << "Input: " << fpath << " must be either a regular file or a directory" << std::endl;
         return false;
     }
 

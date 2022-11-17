@@ -86,7 +86,7 @@ int main(int argc, const char *argv[])
         return panda::ts2abc::RETURN_FAILED;
     }
 
-    std::string usage = "Usage: ts2abc [OPTIONS]... [ARGS]...";
+    std::string usage = "Usage: js2abc [OPTIONS]... [ARGS]...";
     if (options.GetHelpArg()) {
         std::cout << usage << std::endl;
         std::cout << argParser.GetHelpString();
@@ -116,9 +116,18 @@ int main(int argc, const char *argv[])
         return panda::ts2abc::RETURN_FAILED;
     }
 
+    std::string optLogLevel(options.GetOptLogLevelArg());
+
+    if (options.IsMultiProgramsPipe()) {
+        if (!panda::ts2abc::GenerateProgramsFromPipe(options)) {
+            std::cerr << "call GenerateProgramsFromPipe fail" << std::endl;
+            return panda::ts2abc::RETURN_FAILED;
+        }
+        return panda::ts2abc::RETURN_SUCCESS;
+    }
+
     std::string output;
     std::string data = "";
-    std::string optLogLevel(options.GetOptLogLevelArg());
 
     if (Preprocess(options, argParser, output, data, usage) == panda::ts2abc::RETURN_FAILED) {
         return panda::ts2abc::RETURN_FAILED;
