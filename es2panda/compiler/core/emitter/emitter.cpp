@@ -295,6 +295,7 @@ Emitter::Emitter(const CompilerContext *context)
     if (context->IsMergeAbc()) {
         auto recordName = context->Binder()->Program()->FormatedRecordName().Mutf8();
         rec_ = new panda::pandasm::Record(recordName.substr(0, recordName.find_last_of('.')), LANG_EXT);
+        SetPkgNameField(context->PkgName());
         SetCommonjsField(context->Binder()->Program()->Kind() == parser::ScriptKind::COMMONJS);
     } else {
         rec_ = nullptr;
@@ -307,6 +308,16 @@ Emitter::Emitter(const CompilerContext *context)
 Emitter::~Emitter()
 {
     delete prog_;
+}
+
+void Emitter::SetPkgNameField(std::string pkgName)
+{
+    auto pkgNameField = panda::pandasm::Field(LANG_EXT);
+    pkgNameField.name = "pkgName@" + pkgName;
+    pkgNameField.type = panda::pandasm::Type("u8", 0);
+    pkgNameField.metadata->SetValue(
+        panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(0)));
+    rec_->field_list.emplace_back(std::move(pkgNameField));
 }
 
 void Emitter::GenTypeInfoRecord() const
