@@ -164,7 +164,9 @@ static void CompileFunction(PandaGen *pg)
         pg->StoreAccToLexEnv(pg->RootNode(), funcParamScope->Find(funcParamScope->NameVar()->Name()), true);
     }
 
+    pg->SetSourceLocationFlag(lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION);
     pg->FunctionEnter();
+    pg->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
     CompileFunctionParameterDeclaration(pg, decl);
     const ir::AstNode *body = decl->Body();
 
