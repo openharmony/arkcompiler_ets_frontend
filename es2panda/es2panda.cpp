@@ -59,6 +59,7 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     std::string src(input.source);
     std::string rname(input.recordName);
     std::string sourcefile(input.sourcefile);
+    std::string pkgName(input.pkgName);
     parser::ScriptKind kind(input.scriptKind);
 
     bool needDumpSymbolFile = !options.hotfixOptions.dumpSymbolTable.empty();
@@ -95,7 +96,7 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
 
         std::string debugInfoSourceFile = options.debugInfoSourceFile.empty() ?
                                           sourcefile : options.debugInfoSourceFile;
-        auto *prog = compiler_->Compile(&ast, options, debugInfoSourceFile);
+        auto *prog = compiler_->Compile(&ast, options, debugInfoSourceFile, pkgName);
 
         if (hotfixHelper) {
             delete hotfixHelper;
