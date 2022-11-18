@@ -1,13 +1,13 @@
-From ed6584a8304882dc14a25cbd1f27f70961658147 Mon Sep 17 00:00:00 2001
-Date: Thu, 15 Jul 2021 09:34:47 +0800
-Subject: [PATCH] fix test
+From 5a251716800252529f80e72a06eb5c84fab6e553 Mon Sep 17 00:00:00 2001
+Date: Thu, 17 Nov 2022 15:20:06 +0800
+Subject: [PATCH] Fix_eshost
 
 ---
  lib/Agent.js        |  1 +
- lib/ConsoleAgent.js | 29 ++++++++++-----
+ lib/ConsoleAgent.js | 35 +++++++++---------
  lib/agents/panda.js | 88 +++++++++++++++++++++++++++++++++++++++++++++
  runtimes/panda.js   | 44 +++++++++++++++++++++++
- 4 files changed, 154 insertions(+), 8 deletions(-)
+ 4 files changed, 151 insertions(+), 17 deletions(-)
  create mode 100644 lib/agents/panda.js
  create mode 100644 runtimes/panda.js
 
@@ -24,7 +24,7 @@ index edcdf0e..7e655c5 100644
      if (typeof this.args === 'string') {
        this.args = this.args.includes(' ') ?
 diff --git a/lib/ConsoleAgent.js b/lib/ConsoleAgent.js
-index 947c1db..dc14ded 100644
+index 947c1db..cc194c8 100644
 --- a/lib/ConsoleAgent.js
 +++ b/lib/ConsoleAgent.js
 @@ -19,7 +19,7 @@ const {
@@ -42,12 +42,12 @@ index 947c1db..dc14ded 100644
 
 +  genTempFileName(code){
 +    let file = code.file;
-+    let scenario = code.scenario === 'strict mode' ? 'strict' : code.scenario;
++    let scenario = code.scenario === 'strict mode' ? '' : code.scenario;
 +    let tmps = file.split(this.test262Dir);
 +    let tempfile = path.join(this.out,tmps[1]);
 +    tempfile = tempfile.substring(0,tempfile.indexOf('.js'));
 +    tempfile = path.normalize(
-+      `${tempfile}-${scenario}.js`
++      `${tempfile}${scenario}.js`
 +    );
 +    return tempfile;
 +  }
@@ -57,12 +57,12 @@ index 947c1db..dc14ded 100644
 -    let temppath = this[tpSym];
 +
 +    let tempfile = this.genTempFileName(code);
-+    //let tempfile = path.join(this.out, generateTempFileName(code.file));
-+    let temppath = this.out;
-
++    let tempfilebase = path.basename(tempfile);
++    let deptemppath = tempfile.substring(0,tempfile.indexOf(tempfilebase));
+ 
      let isExpectingRawSource = false;
      let hasDependencies = false;
-@@ -57,10 +71,10 @@ class ConsoleAgent extends Agent {
+@@ -57,11 +71,6 @@ class ConsoleAgent extends Agent {
      const sources = [];
      const dependencies = [];
 
@@ -70,20 +70,40 @@ index 947c1db..dc14ded 100644
 -      tempfile = tempfile.replace(temppath, this.out);
 -      temppath = this.out;
 -    }
-+    // if (this.out) {
-+    //   tempfile = tempfile.replace(temppath, this.out);
-+    //   temppath = this.out;
-+    // }
-
+-
      // When evalScript is called with a test262-stream test record:
      if (typeof code === 'object' && code.contents) {
-@@ -161,7 +175,6 @@ class ConsoleAgent extends Agent {
+       let {attrs, contents, file} = code;
+@@ -84,13 +93,6 @@ class ConsoleAgent extends Agent {
+         hasDependencies = false;
+       }
+ 
+-      if (options.module || attrs.flags.module ||
+-          hasModuleSpecifier(contents)) {
+-        // When testing module or dynamic import code that imports itself,
+-        // we must copy the test file with its actual name.
+-        tempfile = path.join(temppath, sourcebase);
+-      }
+-
+       // The test record in "code" is no longer needed and
+       // all further operations expect the "code" argument to be
+       // a string, make that true for back-compat.
+@@ -123,7 +125,7 @@ class ConsoleAgent extends Agent {
+       // 3. Push the dependency and source into the sources to be written.
+       //
+       dependencies.forEach(file => {
+-        let absname = path.join(temppath, file);
++        let absname = path.join(deptemppath, file);
+         let depsource = rawSource.get(path.basename(file));
+ 
+         // Sometimes a test file might want to import itself,
+@@ -161,7 +163,6 @@ class ConsoleAgent extends Agent {
        sources.forEach(({0: file}) => fs.unlink(file, () => { /* ignore */ }));
 
        const result = this.normalizeResult({ stderr, stdout });
 -
        result.error = this.parseError(result.stderr);
-
+ 
        return result;
 diff --git a/lib/agents/panda.js b/lib/agents/panda.js
 new file mode 100644
@@ -230,4 +250,6 @@ index 0000000..0acbd09
 +  this.global[name] = value;
 +};
 +$262.source = $SOURCE;
---
+-- 
+2.25.1
+
