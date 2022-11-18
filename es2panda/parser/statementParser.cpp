@@ -2512,7 +2512,7 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
             break;
         }
         case lexer::TokenType::KEYW_CLASS: {
-            decl = ParseClassDeclaration(true, std::move(decorators), isDeclare, false, !isTsModule);
+            decl = ParseClassDeclaration(true, std::move(decorators), isDeclare || IsDtsFile(), false, !isTsModule);
             break;
         }
         case lexer::TokenType::LITERAL_IDENT: {

@@ -91,6 +91,11 @@ public:
         return isComputed_;
     }
 
+    bool IsAbstract() const
+    {
+        return (modifiers_ & ModifierFlags::ABSTRACT) != 0;
+    }
+
     bool IsStatic() const
     {
         return (modifiers_ & ModifierFlags::STATIC) != 0;

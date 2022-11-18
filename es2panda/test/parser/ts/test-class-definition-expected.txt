@@ -2118,6 +2118,7 @@
               }
             },
             "kind": "method",
+            "abstract": true,
             "static": false,
             "optional": false,
             "computed": false,

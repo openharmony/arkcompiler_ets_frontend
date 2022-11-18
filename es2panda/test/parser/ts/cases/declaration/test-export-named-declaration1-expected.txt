@@ -1,0 +1,1 @@
+SyntaxError: Top-level declarations in .d.ts files must start with either a 'declare' or 'export' modifier. [test-export-named-declaration1.d.ts:18:1]

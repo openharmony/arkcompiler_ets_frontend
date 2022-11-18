@@ -12,11 +12,11 @@
             "name": "isPrime",
             "loc": {
               "start": {
-                "line": 16,
+                "line": 17,
                 "column": 17
               },
               "end": {
-                "line": 16,
+                "line": 17,
                 "column": 24
               }
             }
@@ -32,22 +32,22 @@
                 "type": "TSNumberKeyword",
                 "loc": {
                   "start": {
-                    "line": 16,
+                    "line": 17,
                     "column": 28
                   },
                   "end": {
-                    "line": 16,
+                    "line": 17,
                     "column": 34
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 16,
+                  "line": 17,
                   "column": 25
                 },
                 "end": {
-                  "line": 16,
+                  "line": 17,
                   "column": 26
                 }
               }
@@ -57,33 +57,33 @@
             "type": "TSBooleanKeyword",
             "loc": {
               "start": {
-                "line": 16,
+                "line": 17,
                 "column": 37
               },
               "end": {
-                "line": 16,
+                "line": 17,
                 "column": 44
               }
             }
           },
           "loc": {
             "start": {
-              "line": 16,
+              "line": 17,
               "column": 8
             },
             "end": {
-              "line": 16,
+              "line": 17,
               "column": 45
             }
           }
         },
         "loc": {
           "start": {
-            "line": 16,
+            "line": 17,
             "column": 8
           },
           "end": {
-            "line": 16,
+            "line": 17,
             "column": 45
           }
         }
@@ -92,11 +92,11 @@
       "specifiers": [],
       "loc": {
         "start": {
-          "line": 16,
+          "line": 17,
           "column": 1
         },
         "end": {
-          "line": 16,
+          "line": 17,
           "column": 45
         }
       }
@@ -108,22 +108,22 @@
         "name": "mathLib",
         "loc": {
           "start": {
-            "line": 17,
+            "line": 18,
             "column": 21
           },
           "end": {
-            "line": 17,
+            "line": 18,
             "column": 28
           }
         }
       },
       "loc": {
         "start": {
-          "line": 17,
+          "line": 18,
           "column": 1
         },
         "end": {
-          "line": 17,
+          "line": 18,
           "column": 29
         }
       }
@@ -135,7 +135,7 @@
       "column": 1
     },
     "end": {
-      "line": 17,
+      "line": 18,
       "column": 29
     }
   }

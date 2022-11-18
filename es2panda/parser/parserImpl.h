@@ -228,6 +228,7 @@ private:
     void AddCommonjsParams(ArenaVector<ir::Expression *> &params);
     void AddCommonjsArgs(ArenaVector<ir::Expression *> &args);
     void ParseProgram(ScriptKind kind);
+    bool CheckTopStatementsForRequiredDeclare(const ArenaVector<ir::Statement *> &statements);
     static ExpressionParseFlags CarryExpressionParserFlag(ExpressionParseFlags origin, ExpressionParseFlags carry);
     static ExpressionParseFlags CarryPatternFlags(ExpressionParseFlags flags);
     bool CurrentIsBasicType();

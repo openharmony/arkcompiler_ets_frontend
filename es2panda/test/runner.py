@@ -148,7 +148,9 @@ class Test:
         self.reproduce += "\n" + ' '.join(cmd)
 
     def get_path_to_expected(self):
-        return "%s-expected.txt" % (path.splitext(self.path)[0])
+        if self.path.find(".d.ts") == -1:
+            return "%s-expected.txt" % (path.splitext(self.path)[0])
+        return "%s-expected.txt" % (self.path[:self.path.find(".d.ts")])
 
     def run(self, runner):
         cmd = runner.cmd_prefix + [runner.es2panda, "--dump-ast"]
@@ -869,6 +871,7 @@ def main():
         runner = CompilerRunner(args)
         runner.add_directory("compiler/js", "js", [])
         runner.add_directory("compiler/ts", "ts", ["--extension=ts"])
+        runner.add_directory("compiler/dts", "d.ts", ["--module", "--extension=ts"])
 
         runners.append(runner)
 

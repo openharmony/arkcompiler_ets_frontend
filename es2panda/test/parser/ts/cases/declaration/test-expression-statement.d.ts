@@ -14,5 +14,4 @@
  */
 
 
-export function isPrime(x: number): boolean;
-export as namespace mathLib;
+print(1)
