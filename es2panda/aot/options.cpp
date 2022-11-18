@@ -66,7 +66,7 @@ bool Options::CollectInputFilesFromFileList(const std::string &input)
         return false;
     }
 
-    constexpr size_t ITEM_COUNT_MERGE = 4;  // item list: [filePath; recordName; moduleKind; sourceFile]
+    constexpr size_t ITEM_COUNT_MERGE = 5;  // item list: [filePath; recordName; moduleKind; sourceFile, pkgName]
     constexpr size_t ITEM_COUNT_NOT_MERGE = 5;  // item list: [filePath; recordName; moduleKind; sourceFile; outputfile]
     while (std::getline(ifs, line)) {
         const std::string seperator = ";";
@@ -90,6 +90,10 @@ bool Options::CollectInputFilesFromFileList(const std::string &input)
 
         es2panda::SourceFile src(fileName, recordName, scriptKind);
         src.sourcefile = itemList[3];
+        if (compilerOptions_.mergeAbc) {
+            src.pkgName = itemList[4];
+        }
+
         sourceFiles_.push_back(src);
         if (!compilerOptions_.mergeAbc) {
             outputFiles_.insert({fileName, itemList[4]});

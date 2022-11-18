@@ -56,6 +56,7 @@ struct SourceFile {
     std::string_view source {};
     parser::ScriptKind scriptKind {};
     std::string sourcefile {};
+    std::string pkgName {};
     uint32_t hash {0};
 };
 
