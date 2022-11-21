@@ -429,6 +429,9 @@ protected:
                      [[maybe_unused]] ScriptExtension extension);
 
     template <typename T>
+    bool AddClass(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl);
+
+    template <typename T>
     bool AddTSBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl, VariableFlags flags);
 
     template <typename T>
@@ -900,6 +903,13 @@ bool VariableScope::AddFunction(ArenaAllocator *allocator, Variable *currentVari
         return true;
     }
 
+    auto decl = currentVariable->Declaration();
+    if (decl->IsClassDecl() && decl->AsClassDecl()->IsDeclare()) {
+        newDecl->AsFunctionDecl()->SetDeclClass(decl->AsClassDecl());
+        bindings_[newDecl->Name()] = allocator->New<T>(newDecl, flags);
+        return true;
+    }
+
     if (extension != ScriptExtension::JS) {
         return false;
     }
@@ -916,6 +926,27 @@ bool VariableScope::AddFunction(ArenaAllocator *allocator, Variable *currentVari
     }
 
     return true;
+}
+
+template <typename T>
+bool VariableScope::AddClass(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl)
+{
+    ASSERT(newDecl->IsClassDecl());
+
+    VariableFlags flags = DeclFlagToVariableFlag(newDecl->Flags());
+
+    if (!currentVariable) {
+        bindings_.insert({newDecl->Name(), allocator->New<T>(newDecl, flags)});
+        return true;
+    }
+
+    auto decl = currentVariable->Declaration();
+    if (newDecl->AsClassDecl()->IsDeclare() && decl->IsFunctionDecl()) {
+        decl->AsFunctionDecl()->SetDeclClass(newDecl->AsClassDecl());
+        return true;
+    }
+
+    return false;
 }
 
 template <typename T>
