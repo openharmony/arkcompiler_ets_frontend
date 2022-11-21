@@ -33,9 +33,13 @@ action("es2abc_parser_tsc_tests") {
 
   deps = es2abc_build_deps
 
+  tsc_path = rebase_path("//third_party/typescript/")
+
   args = [
     "--no-progress",
     "--tsc",
+    "--tsc-path",
+    tsc_path,
     rebase_path("${es2abc_build_path}"),
   ]
 
