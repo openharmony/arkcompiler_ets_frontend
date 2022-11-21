@@ -48,7 +48,13 @@ import {
     Scope,
     VariableScope
 } from "../scope";
-import { LocalVariable, ModuleVariable, Variable } from "../variable";
+import {
+    LocalVariable,
+    MandatoryFuncObj,
+    MandatoryThis,
+    ModuleVariable,
+    Variable
+} from "../variable";
 
 export function compileClassDeclaration(compiler: Compiler, stmt: ts.ClassLikeDeclaration) {
     compiler.pushScope(stmt);
@@ -360,26 +366,6 @@ export function compileConstructor(compiler: Compiler, node: ts.ConstructorDecla
 export function compileSuperCall(compiler: Compiler, node: ts.CallExpression, args: VReg[], hasSpread: boolean) {
     let pandaGen = compiler.getPandaGen();
 
-    // make sure "this" is stored in lexical env if needed
-    let curScope = <Scope>compiler.getCurrentScope();
-    let { scope, level, v } = curScope.find("this");
-
-    if (scope && level >= 0) {
-        let tmpScope = curScope;
-        let needSetLexVar: boolean = false;
-        while (tmpScope != scope) {
-            if (tmpScope instanceof VariableScope) {
-                needSetLexVar = true;
-            }
-
-            tmpScope = <Scope>tmpScope.getParent();
-        }
-
-        if (needSetLexVar) {
-            scope.setLexVar(<Variable>v, curScope);
-        }
-    }
-
     if (hasSpread) {
         let argArray = pandaGen.getTemp();
         createArrayFromElements(node, compiler, <ts.NodeArray<ts.Expression>>node.arguments, argArray);
@@ -411,29 +397,26 @@ function loadCtorObj(node: ts.CallExpression, compiler: Compiler) {
         return;
     }
 
-    // TODO the design needs to be reconsidered
-    // let nearestFuncScope = <FunctionScope>recorder.getScopeOfNode(nearestFunc);
-    // if (!nearestFuncScope) {
-    //     return;
-    // }
-
     if (ts.isConstructorDeclaration(nearestFunc)) {
         pandaGen.loadAccumulator(node, getVregisterCache(pandaGen, CacheList.FUNC));
     } else {
-        let outerFunc = jshelpers.getContainingFunctionDeclaration(nearestFunc);
-        let outerFuncScope = <FunctionScope>recorder.getScopeOfNode(outerFunc!);
-        outerFuncScope.pendingCreateEnv();
-        let level = 1;
-        while (!ts.isConstructorDeclaration(outerFunc!)) {
-            outerFunc = jshelpers.getContainingFunctionDeclaration(outerFunc!);
-            outerFuncScope.pendingCreateEnv();
-            level++;
+        let curFuncScope = <FunctionScope>recorder.getScopeOfNode(nearestFunc);
+        let level = curFuncScope.need2CreateLexEnv() ? 0 : -1;
+
+        while (curFuncScope) {
+            if (curFuncScope.need2CreateLexEnv()) {
+                level += 1;
+            }
+
+            if (ts.isConstructorDeclaration(curFuncScope.getBindingNode())) {
+                break;
+            }
+
+            curFuncScope = <FunctionScope>curFuncScope.getParentVariableScope();
         }
 
-        let funcObj = <Variable>outerFuncScope.findLocal("4funcObj");
-        outerFuncScope.setLexVar(funcObj, outerFuncScope);
-        let slot = funcObj.idxLex;
-        pandaGen.loadLexicalVar(node, level, slot);
+        let funcObj = <Variable>curFuncScope.findLocal(MandatoryFuncObj);
+        pandaGen.loadLexicalVar(node, level, funcObj.lexIndex());
     }
 
 }

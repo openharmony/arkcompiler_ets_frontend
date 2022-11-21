@@ -33,7 +33,7 @@ export function compileCallExpression(expr: ts.CallExpression, compiler: Compile
         return;
     }
 
-    if ((expr.expression.kind == ts.SyntaxKind.CallExpression) || (expr.expression.kind == ts.SyntaxKind.NewExpression)) {
+    if (ts.isCallExpression(expr.expression) || ts.isNewExpression(expr.expression)) {
         let processed = compiler.compileFunctionReturnThis(<ts.NewExpression | ts.CallExpression>expr.expression);
         if (processed) {
             return;

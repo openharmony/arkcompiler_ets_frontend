@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+import { MandatoryNewTarget } from "../variable";
 import * as ts from "typescript";
 import { Compiler } from "../compiler";
 import * as jshelpers from "../jshelpers";
@@ -21,7 +22,7 @@ export function compileMetaProperty(expr: ts.MetaProperty, compiler: Compiler) {
     let curScope = compiler.getCurrentScope();
     let id = jshelpers.getTextOfIdentifierOrLiteral(expr.name);
     if (id == "target") {
-        let { scope, level, v } = curScope.find("4newTarget");
+        let { scope, level, v } = curScope.find(MandatoryNewTarget);
 
         if (!v) {
             throw new Error("fail to access new.target");

@@ -83,7 +83,7 @@ describe("ScopeTest", function () {
         expect(variable instanceof GlobalVariable).to.be.true;
         let { scope: sp, level: lv, v: outVariable } = scope.find("x");
         expect(outVariable === variable).to.be.true;
-        expect(lv).to.be.equal(1);
+        expect(lv).to.be.equal(0);
         expect(sp).to.be.equal(globalScope);
     });
 
@@ -228,39 +228,23 @@ describe("ScopeTest", function () {
         let func32Scope = new FunctionScope(func21Scope);
         let func4Scope = new FunctionScope(func31Scope);
 
-        func1Scope.pendingCreateEnv();
-        func21Scope.pendingCreateEnv();
+        aV.setLexVar(func1Scope);
+        p2.setLexVar(func1Scope);
         let aFindEntry = func32Scope.find("a");
-        aFindEntry.scope!.setLexVar(aFindEntry.v!, func32Scope);
         expect(aFindEntry.v, "check a variable").to.be.equal(aV);
-        expect(aFindEntry.level, "check level").to.be.equal(2);
+        expect(aFindEntry.level, "check level").to.be.equal(0);
         expect(aFindEntry.scope).to.be.equal(func1Scope);
 
         let p2FindEntry = func22Scope.find("p2");
-        p2FindEntry.scope!.setLexVar(p2FindEntry.v!, func22Scope);
         expect(p2FindEntry.v, "check p0 parameter").to.be.equal(p2);
-        expect(p2FindEntry.level, "check level").to.be.equal(1);
+        expect(p2FindEntry.level, "check level").to.be.equal(0);
         expect(p2FindEntry.scope).to.be.equal(func1Scope);
 
-        // check global
-        // expect(globalScope.hasLexEnv(), "gloal has lexenv").to.be.false;
-        // check func1
-        // expect(func1Scope.hasLexEnv(), "func1 haslexenv").to.be.true;
         expect(func1Scope.getNumLexEnv(), "func1 status").to.be.equal(2);
-        // check fun21
-        // expect(func21Scope.hasLexEnv(), "func21 has lexenv").to.be.true;
         expect(func21Scope.getNumLexEnv(), "func21 status").to.be.equal(0);
-        // check fun22
-        // expect(func22Scope.hasLexEnv(), "func22 has lexenv").to.be.true;
         expect(func22Scope.getNumLexEnv(), "func22 status").to.be.equal(0);
-        // check fun31
-        // expect(func31Scope.hasLexEnv(), "func31 has lexenv").to.be.false;
         expect(func31Scope.getNumLexEnv(), "func31 status").to.be.equal(0);
-        // check fun32
-        // expect(func32Scope.hasLexEnv(), "func32 has lexenv").to.be.true;
         expect(func32Scope.getNumLexEnv(), "func32 status").to.be.equal(0);
-        // check fun4
-        // expect(func4Scope.hasLexEnv(), "func4 has lexenv").to.be.false;
         expect(func4Scope.getNumLexEnv(), "func4 status").to.be.equal(0);
     });
 })
