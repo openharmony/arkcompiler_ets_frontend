@@ -421,3 +421,92 @@ export function getRecordName(node: ts.SourceFile): string {
 export function getLiteralKey(node: ts.SourceFile, idx:number): string {
     return `${getRecordName(node)}_${idx}`;
 }
+
+/**
+ * Gets the node from which a name should be generated, from tsc logic
+ */
+function getNodeForGeneratedName(
+    // @ts-ignore
+    name: ts.GeneratedIdentifier) {
+    const autoGenerateId = name.autoGenerateId;
+    let node = name as ts.Node;
+    // @ts-ignore
+    let original = node.original;
+    while (original) {
+        node = original;
+
+        // if "node" is a different generated name (having a different "autoGenerateId"), use it and stop traversing.
+        if (ts.isIdentifier(node)
+            // @ts-ignore
+            && !!(node.autoGenerateFlags! & ts.GeneratedIdentifierFlags.Node)
+            // @ts-ignore
+            && node.autoGenerateId !== autoGenerateId) {
+            break;
+        }
+        // @ts-ignore
+        original = node.original;
+    }
+
+    // otherwise, return the original node for the source;
+    return node;
+}
+
+let uniqueNameIndex = 0;
+let nodeIdNameMap = new Map<number, string>();
+let tempAndLoopVariablesNameMap = new Map<number, string>();
+
+function generateUniqueName(): string {
+    if (uniqueNameIndex < 26) {  // #a ~ #z
+        return "#" + String.fromCharCode(97 /* a */ + uniqueNameIndex++);
+    }
+    return "#" + (uniqueNameIndex++ - 26);
+}
+
+function generateNameCached(node: ts.Node): string {
+    // @ts-ignore
+    const nodeId = ts.getNodeId(node);
+    if (nodeIdNameMap.get(nodeId)) {
+        return nodeIdNameMap.get(nodeId);
+    }
+    let generatedName = generateUniqueName();
+    nodeIdNameMap.set(nodeId, generatedName);
+    return generatedName;
+}
+
+function generateNameForTempAndLoopVariable(autoGenerateId: number): string {
+    if (tempAndLoopVariablesNameMap.get(autoGenerateId)) {
+        return tempAndLoopVariablesNameMap.get(autoGenerateId);
+    }
+    let generatedName = generateUniqueName();
+    tempAndLoopVariablesNameMap.set(autoGenerateId, generatedName);
+    return generatedName;
+}
+
+export function makeNameForGeneratedNode(node: ts.Node) {
+    node.forEachChild(childNode => {
+        switch (childNode.kind) {
+            case ts.SyntaxKind.Identifier: {
+                // @ts-ignore
+                if (ts.isGeneratedIdentifier(childNode) && (<ts.Identifier>childNode).escapedText == "") {
+                    // Node names generate unique names based on their original node and are cached based on that node's id.
+                    // @ts-ignore
+                    if ((childNode.autoGenerateFlags & ts.GeneratedIdentifierFlags.KindMask) ===
+                        // @ts-ignore
+                        ts.GeneratedIdentifierFlags.Node) {
+                        let originalNode = getNodeForGeneratedName(childNode);
+                        // @ts-ignore
+                        (<ts.Identifier>childNode).escapedText = generateNameCached(originalNode);
+                    } else {
+                        // Auto, Loop, and Unique names are cached based on their unique autoGenerateId.
+                        // @ts-ignore
+                        const autoGenerateId = childNode.autoGenerateId!;
+                        // @ts-ignore
+                        (<ts.Identifier>childNode).escapedText = generateNameForTempAndLoopVariable(autoGenerateId);
+                    }
+                }
+                break;
+            }
+        }
+        makeNameForGeneratedNode(childNode);
+    });
+}
