@@ -53,7 +53,8 @@ import {
 import {
     GlobalVariable,
     LocalVariable,
-    VarDeclarationKind
+    VarDeclarationKind,
+    Variable
 } from "../src/variable";
 import { creatAstFromSnippet } from "./utils/asthelper";
 import {
@@ -471,20 +472,17 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
 
     it("test lexenv capture in function", function () {
         let source: string = `
-      var a = 1;
-      function outer(a, b) {
-        return function () {
-          a++;
-          return a + b;
-        }
-      }
-      var fun = outer(a, 5);
-      a = 3;
-      func();
-    `;
-
-        let insnsStoreLexVar_outer_1 = MicroStoreLexVar(0, 0);
-        let insnsStoreLexVar_outer_2 = MicroStoreLexVar(0, 1);
+            var a = 1;
+            function outer(a, b) {
+                return function () {
+                a++;
+                return a + b;
+                }
+            }
+            var fun = outer(a, 5);
+            a = 3;
+            func();
+        `;
 
         IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`class C {}; export {C}`), 0, undefined);
         let expect_outer: IRNode[] = [
@@ -509,21 +507,19 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
 
         IRNode.pg = new PandaGen("foo", creatAstFromSnippet(`class C {}; export {C}`), 0, undefined);
         let expect_anonymous = [
-            new Newlexenv(new Imm(0)),
-            new Sta(new VReg()),
-            new Ldlexvar(new Imm(1), new Imm(0)),
+            new Ldlexvar(new Imm(0), new Imm(0)),
             new Sta(new VReg()),
             new Lda(new VReg()),
             new Inc(new Imm(0)),
             new Sta(new VReg()),
             new Lda(new VReg()),
-            new Stlexvar(new Imm(1), new Imm(0)),
+            new Stlexvar(new Imm(0), new Imm(0)),
             new Lda(new VReg()),
             new Lda(new VReg()),
             new Tonumeric(new Imm(1)), // this is redundant load varialbe
-            new Ldlexvar(new Imm(1), new Imm(0)),
+            new Ldlexvar(new Imm(0), new Imm(0)),
             new Sta(new VReg),
-            new Ldlexvar(new Imm(1), new Imm(1)),
+            new Ldlexvar(new Imm(0), new Imm(1)),
             new Add2(new Imm(2), new VReg()),
             // returnStatement
             new Sta(new VReg()),
@@ -539,18 +535,17 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
         let outerPg = snippetCompiler.getPandaGenByName("UnitTest.outer");
         let outerScope = outerPg!.getScope();
         let outerA = outerScope!.findLocal("a");
+        let outerB = outerScope!.findLocal("b");
         expect(outerA instanceof LocalVariable, "a in outer is local variable").to.be.true;
-        // expect((<FunctionScope>outerScope).hasLexEnv(), "outer scope need to create lex env").to.be.true;
+        expect(outerB instanceof LocalVariable, "b in outer is local variable").to.be.true;
         expect((<FunctionScope>outerScope).getNumLexEnv(), "number of lexvar at outer scope").to.be.equal(2);
         let anonymousPg = snippetCompiler.getPandaGenByName("UnitTest.#1#");
         let anonymousScope = anonymousPg!.getScope();
         let anonymousA = anonymousScope!.findLocal("a");
         let searchRlt = anonymousScope!.find("a");
-        expect(searchRlt!.level).to.be.equal(1);
+        expect(searchRlt!.level).to.be.equal(0);
         expect(searchRlt!.scope, "a is defined in outerscope").to.be.deep.equal(outerScope);
         expect(anonymousA, "no a in anonymous function").to.be.undefined;
-        // expect((<FunctionScope>anonymousScope).hasLexEnv(), "anonymous scope had lex env").to.be.true;
-        expect((<FunctionScope>anonymousScope).getNumLexEnv()).to.be.equal(0);
         let globalPg = snippetCompiler.getPandaGenByName("UnitTest.func_main_0");
         let globalScope = globalPg!.getScope();
         let globalA = globalScope!.findLocal("a");

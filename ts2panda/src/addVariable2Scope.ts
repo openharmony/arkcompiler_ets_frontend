@@ -33,6 +33,10 @@ import {
 import { isGlobalIdentifier } from "./syntaxCheckHelper";
 import { TypeRecorder } from "./typeRecorder";
 import {
+    MandatoryArguments,
+    MandatoryFuncObj,
+    MandatoryNewTarget,
+    MandatoryThis,
     VarDeclarationKind,
     Variable
 } from "./variable";
@@ -61,15 +65,15 @@ function setTypeIndex(node: ts.Node, v: Variable | undefined, isClassOrFunction:
 
 function addInnerArgs(node: ts.Node, scope: VariableScope, enableTypeRecord: boolean): void {
     // the first argument for js function is func_obj
-    scope.addParameter("4funcObj", VarDeclarationKind.CONST, -1);
+    scope.addParameter(MandatoryFuncObj, VarDeclarationKind.CONST, -1);
     // the second argument for newTarget
 
     if (node.kind == ts.SyntaxKind.ArrowFunction) {
         scope.addParameter("0newTarget", VarDeclarationKind.CONST, -1);
         scope.addParameter("0this", VarDeclarationKind.CONST, 0);
     } else {
-        scope.addParameter("4newTarget", VarDeclarationKind.CONST, -1);
-        scope.addParameter("this", VarDeclarationKind.CONST, 0);
+        scope.addParameter(MandatoryNewTarget, VarDeclarationKind.CONST, -1);
+        scope.addParameter(MandatoryThis, VarDeclarationKind.CONST, 0);
     }
 
     if (CmdOptions.isCommonJs() && node.kind === ts.SyntaxKind.SourceFile) {
@@ -88,12 +92,12 @@ function addInnerArgs(node: ts.Node, scope: VariableScope, enableTypeRecord: boo
     if (scope.getUseArgs() || CmdOptions.isDebugMode()) {
         if (ts.isArrowFunction(node)) {
             let parentVariableScope = <VariableScope>scope.getParentVariableScope();
-            parentVariableScope.add("arguments", VarDeclarationKind.CONST, InitStatus.INITIALIZED);
+            parentVariableScope.add(MandatoryArguments, VarDeclarationKind.CONST, InitStatus.INITIALIZED);
             parentVariableScope.setUseArgs(true);
             scope.setUseArgs(false);
         } else if (scope.getUseArgs()){
-            if (!scope.findLocal("arguments")) {
-                scope.add("arguments", VarDeclarationKind.CONST, InitStatus.INITIALIZED);
+            if (!scope.findLocal(MandatoryArguments)) {
+                scope.add(MandatoryArguments, VarDeclarationKind.CONST, InitStatus.INITIALIZED);
             }
         }
     }

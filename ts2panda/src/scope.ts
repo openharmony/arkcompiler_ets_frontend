@@ -15,14 +15,16 @@
 
 import * as ts from "typescript";
 import { SourceTextModuleRecord } from "./ecmaModule";
-import { LOGD, LOGE } from "./log";
+import { LOGD } from "./log";
 import {
     GlobalVariable,
     LocalVariable,
+    MandatoryFuncObj,
     ModuleVariable,
     VarDeclarationKind,
     Variable
 } from "./variable";
+
 
 export enum InitStatus {
     INITIALIZED, UNINITIALIZED
@@ -194,7 +196,7 @@ export abstract class Scope {
         while (curScope) {
             let resolve = null;
             let tmpLevel = curLevel; // to store current level, not impact by ++
-            if (curScope instanceof VariableScope || (curScope instanceof LoopScope && curScope.need2CreateLexEnv())) {
+            if (curScope.isLexicalScope() && (<VariableScope | LoopScope>curScope).need2CreateLexEnv()) {
                 curLevel++;
             }
             resolve = curScope.findLocal(name);
@@ -226,7 +228,31 @@ export abstract class Scope {
         return declPos;
     }
 
-    abstract setLexVar(v: Variable, srcScope: Scope): void;
+    resolveDeclPos(name: string) {
+        let crossFunc: boolean = false;
+        let curScope: Scope | undefined = this;
+        let enclosingVariableScope: VariableScope = this.getNearestVariableScope();
+
+        while (curScope) {
+            if (curScope == enclosingVariableScope.parent) {
+                crossFunc = true;
+            }
+
+            let result = curScope.findLocal(name);
+            if (result) {
+                if (!crossFunc) {
+                    return {isLexical: false, scope: curScope, defLexicalScope: undefined, v: result};
+                }
+
+                let enclosingDefLexicalScope = curScope.getNearestLexicalScope();
+                return {isLexical: true, scope: curScope, defLexicalScope: enclosingDefLexicalScope, v: result};
+            }
+
+            curScope = curScope.parent;
+        }
+
+        return {isLexical: false, scope: undefined, defLexicalScope: undefined, v: undefined};
+    }
 
     setDecls(decl: Decl) {
         this.decls.push(decl);
@@ -265,6 +291,11 @@ export abstract class Scope {
     public getArgumentsOrRestargs() {
         return this.isArgumentsOrRestargs;
     }
+
+    isLexicalScope() {
+        let scope = this;
+        return ((scope instanceof VariableScope) || (scope instanceof LoopScope));
+    }
 }
 
 export abstract class VariableScope extends Scope {
@@ -279,6 +310,10 @@ export abstract class VariableScope extends Scope {
 
     getLexVarInfo() {
         return this.lexVarInfo;
+    }
+
+    addLexVarInfo(name: string, slot: number) {
+        this.lexVarInfo.set(name, slot);
     }
 
     getBindingNode() {
@@ -312,7 +347,7 @@ export abstract class VariableScope extends Scope {
     }
 
     addFuncName(funcName: string) {
-        let funcObj = this.name2variable.get('4funcObj');
+        let funcObj = this.name2variable.get(MandatoryFuncObj);
         this.name2variable.set(funcName, funcObj!);
     }
 
@@ -341,30 +376,23 @@ export abstract class VariableScope extends Scope {
         return this.startLexIdx++;
     }
 
-    setLexVar(v: Variable, refScope: Scope) {
-        if (!v.isLexVar) {
-            let slot = v.setLexVar(this);
-            this.lexVarInfo.set(v.getName(), slot);
-        }
-
-        LOGD(this.debugTag, "VariableScope.setLexVar(" + v.idxLex + ")");
-        // set all chain to create env
-        let scope: Scope | undefined = refScope;
-        while (scope && scope != this) {
-            if (scope instanceof VariableScope || (scope instanceof LoopScope && scope.need2CreateLexEnv())) {
-                scope.pendingCreateEnv();
-            }
-
-            scope = scope.getParent();
-        }
-    }
-
     setUseArgs(value: boolean) {
         this.useArgs = value;
     }
 
     getUseArgs(): boolean {
         return this.useArgs;
+    }
+
+    hasAfChild(): boolean {
+        let childVariableScopes = this.getChildVariableScope();
+        for (let child of childVariableScopes) {
+            if (ts.isArrowFunction(child.getBindingNode())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 
@@ -489,12 +517,6 @@ export class LocalScope extends Scope {
         this.parent = parent
     }
 
-    setLexVar(v: Variable, srcScope: Scope) {
-        let lexicalScope = <VariableScope | LoopScope>this.getNearestLexicalScope();
-        lexicalScope.setLexVar(v, srcScope);
-    }
-
-
     add(decl: Decl | string, declKind: VarDeclarationKind, status?: InitStatus): Variable | undefined {
         let name = decl instanceof Decl ? decl.name : decl;
         let v: Variable | undefined;
@@ -528,25 +550,12 @@ export class LoopScope extends LocalScope {
         super(parent);
     }
 
-    setLexVar(v: Variable, refScope: Scope) {
-        if (!v.isLexVar) {
-            let idxLex = v.setLexVar(this);
-            this.lexVarInfo.set(v.getName(), idxLex);
-        }
-
-        LOGD(this.debugTag, "LoopScope.setLexVar(" + v.idxLex + ")");
-        let scope: Scope | undefined = refScope;
-        while (scope && scope != this) {
-            if (scope instanceof VariableScope || (scope instanceof LoopScope && scope.need2CreateLexEnv())) {
-                scope.pendingCreateEnv();
-            }
-
-            scope = scope.getParent();
-        }
-    }
-
     getLexVarInfo() {
         return this.lexVarInfo;
+    }
+
+    addLexVarInfo(name: string, slot: number) {
+        this.lexVarInfo.set(name, slot);
     }
 
     need2CreateLexEnv(): boolean {

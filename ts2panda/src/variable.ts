@@ -74,15 +74,27 @@ export abstract class Variable {
     }
 
     setLexVar(scope: VariableScope | LoopScope) {
+        if (this.lexical()) {
+            return;
+        }
         this.idxLex = scope.getLexVarIdx()
         scope.pendingCreateEnv();
         this.isLexVar = true;
+        scope.addLexVarInfo(this.name, this.idxLex);
         return this.idxLex;
     }
 
     clearLexVar() {
         this.isLexVar = false;
         this.idxLex = 0;
+    }
+
+    lexical(): boolean {
+        return this.isLexVar;
+    }
+
+    lexIndex() {
+        return this.idxLex;
     }
 
     isLet(): boolean {
@@ -173,4 +185,18 @@ export class GlobalVariable extends Variable {
     constructor(declKind: VarDeclarationKind, name: string) {
         super(declKind, name);
     }
+}
+
+export const MandatoryFuncObj = "4funcObj";
+export const MandatoryNewTarget = "4newTarget";
+export const MandatoryThis = "this";
+export const MandatoryArguments = "arguments";
+
+export function isMandatoryParam(name: string) {
+    if (name == MandatoryFuncObj || name == MandatoryArguments ||
+        name == MandatoryNewTarget || name == MandatoryThis) {
+        return true;
+    }
+
+    return false;
 }
