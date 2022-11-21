@@ -61,8 +61,9 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
     }
 
     if (program->Extension() == ScriptExtension::TS) {
-        context.GetEmitter()->FillTypeInfoRecord(options.typeExtractor,
-            options.typeExtractor ? extractor_->Recorder()->GetTypeSummaryIndex() : 0);
+        context.GetEmitter()->FillTypeInfoRecord(&context, options.typeExtractor,
+            options.typeExtractor ? extractor_->Recorder()->GetTypeSummaryIndex() : 0,
+            std::string(program->RecordName()));
     }
 
     queue_ = new CompileFuncQueue(threadCount_, &context);

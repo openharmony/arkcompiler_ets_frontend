@@ -156,6 +156,16 @@ public:
         return typedInsns_;
     }
 
+    std::pair<int64_t, int64_t> &TypedFunc()
+    {
+        return typedFunc_;
+    }
+
+    const std::pair<int64_t, int64_t> &TypedFunc() const
+    {
+        return typedFunc_;
+    }
+
     VReg AllocReg()
     {
         if (usedRegs_ > UINT16_MAX) {
@@ -293,7 +303,6 @@ public:
     void LoadConst(const ir::AstNode *node, Constant id);
     void StoreConst(const ir::AstNode *node, VReg reg, Constant id);
     void MoveVreg(const ir::AstNode *node, VReg vd, VReg vs);
-    void MoveVregWithType(const ir::AstNode *node, int64_t typeIndex, VReg vd, VReg vs);
 
     void SetLabel(const ir::AstNode *node, Label *label);
     void Branch(const ir::AstNode *node, class Label *label);
@@ -417,7 +426,7 @@ public:
     void LoadLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot);
     void LoadLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot, const util::StringView &name);
     void StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot);
-    void StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot, const util::StringView &name);
+    void StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot, const binder::LocalVariable *local);
     void StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot, VReg value);
     void StoreLexicalEnv(const ir::AstNode *node);
 
@@ -484,6 +493,7 @@ private:
     const ir::AstNode *rootNode_;
     ArenaList<IRNode *> insns_;
     ArenaMap<const IRNode *, int64_t> typedInsns_;
+    std::pair<int64_t, int64_t> typedFunc_ {};
     ArenaVector<CatchTable *> catchList_;
     ArenaSet<util::StringView> strings_;
     ArenaVector<LiteralBuffer *> buffStorage_;

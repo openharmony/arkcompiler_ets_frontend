@@ -44,6 +44,7 @@ public:
     int64_t GetTypeIndexFromAnnotation(const ir::Expression *typeAnnotation);
     int64_t GetTypeIndexFromIdentifier(const ir::Identifier *identifier);
     int64_t GetTypeIndexFromInitializer(const ir::Expression *initializer);
+    int64_t GetTypeIndexFromClassInst(int64_t typeIndex);
 
     void SetGenericParamTypeMap(const ArenaMap<util::StringView, int64_t> *genericParamTypeMap)
     {
@@ -64,7 +65,7 @@ private:
     std::unique_ptr<TypeRecorder> recorder_;
     std::unordered_map<ir::AstNodeType, Getter> getterMap_;
     std::unordered_map<ir::AstNodeType, Handler> handlerMap_;
-    const ArenaMap<util::StringView, int64_t> *genericParamTypeMap_;
+    const ArenaMap<util::StringView, int64_t> *genericParamTypeMap_ {nullptr};
 
     void ExtractNodesType(const ir::AstNode *parent);
     void ExtractNodeType(const ir::AstNode *parent, const ir::AstNode *childNode);
@@ -94,7 +95,6 @@ private:
     void HandleTypeAliasDeclaration(const ir::AstNode *node);
 
     // Helpers
-    int64_t GetTypeIndexFromClassInst(int64_t typeIndex);
     int64_t GetTypeIndexFromTypeReference(const ir::TSTypeReference *typeReference);
     int64_t GetTypeIndexFromTSLiteralType(const ir::TSLiteralType *tsLiteralType);
 

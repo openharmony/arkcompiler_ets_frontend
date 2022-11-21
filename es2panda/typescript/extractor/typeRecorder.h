@@ -51,9 +51,10 @@ public:
     compiler::LiteralBuffer *GetLiteralBuffer(int64_t index) const;
     void SetLiteralBuffer(int64_t index, compiler::LiteralBuffer *buffer);
 
+    util::StringView GetRecordName() const;
     util::StringView GetAnonymousFunctionNames(const ir::ScriptFunction *func) const;
 
-    int64_t CalculateUserType() const;
+    const std::set<int64_t> &GetUserType() const;
     void AddUserType(int64_t index);
 
     int64_t GetTypeSummaryIndex() const;

@@ -478,4 +478,10 @@ ostream &operator<<(ostream &os, const panda::es2panda::util::StringView &us);
 
 }  // namespace std
 
+#ifndef NDEBUG
+#define DCOUT std::cout
+#else
+#define DCOUT false && std::cout
+#endif  // NDEBUG
+
 #endif

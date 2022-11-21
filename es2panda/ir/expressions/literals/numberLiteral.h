@@ -72,6 +72,26 @@ private:
     util::StringView str_;
 };
 
+class UserTypeIndexLiteral : public NumberLiteral {
+public:
+    explicit UserTypeIndexLiteral(double num, util::StringView str) : NumberLiteral(num, str) {}
+
+    LiteralTag Tag() const override
+    {
+        return LiteralTag::LITERALARRAY;
+    }
+};
+
+class BuiltinTypeIndexLiteral : public NumberLiteral {
+public:
+    explicit BuiltinTypeIndexLiteral(double num) : NumberLiteral(num) {}
+
+    LiteralTag Tag() const override
+    {
+        return LiteralTag::BUILTINTYPEINDEX;
+    }
+};
+
 }  // namespace panda::es2panda::ir
 
 #endif /* NUMBER_LITERAL_H */

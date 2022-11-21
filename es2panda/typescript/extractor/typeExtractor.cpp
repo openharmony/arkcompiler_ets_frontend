@@ -269,7 +269,7 @@ const ir::AstNode *TypeExtractor::GetDeclNodeFromIdentifier(const ir::Identifier
     }
 
     for (const auto &v : variables) {
-        if (v != nullptr && v->Declaration() != nullptr && v->Declaration()->Node() == nullptr) {
+        if (v == nullptr || v->Declaration() == nullptr || v->Declaration()->Node() == nullptr) {
             continue;
         }
 

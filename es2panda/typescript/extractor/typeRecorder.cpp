@@ -90,6 +90,11 @@ void TypeRecorder::SetLiteralBuffer(int64_t index, compiler::LiteralBuffer *buff
     buffer->SetIndex(index);
 }
 
+util::StringView TypeRecorder::GetRecordName() const
+{
+    return context_->Binder()->Program()->RecordName();
+}
+
 util::StringView TypeRecorder::GetAnonymousFunctionNames(const ir::ScriptFunction *func) const
 {
     const auto &m = context_->Binder()->AnonymousFunctionNames();
@@ -97,9 +102,9 @@ util::StringView TypeRecorder::GetAnonymousFunctionNames(const ir::ScriptFunctio
     return (res != m.end()) ? std::move(res->second) : std::move(DEFAULT_NAME);
 }
 
-int64_t TypeRecorder::CalculateUserType() const
+const std::set<int64_t> &TypeRecorder::GetUserType() const
 {
-    return userType_.size();
+    return userType_;
 }
 
 void TypeRecorder::AddUserType(int64_t index)
