@@ -80,37 +80,61 @@ static void DumpPandaFileSizeStatistic(std::map<std::string, size_t> &stat)
     std::cout << "total: " << totalSize << std::endl;
 }
 
-static bool GenerateProgram(std::vector<panda::pandasm::Program *> &progs,
-    std::unique_ptr<panda::es2panda::aot::Options> &options)
+static bool GenerateMultiProgram(const std::unordered_map<panda::pandasm::Program*, std::string> &programs,
+    const std::unique_ptr<panda::es2panda::aot::Options> &options)
+{
+    if (options->CompilerOptions().mergeAbc) {
+        std::vector<panda::pandasm::Program*> progs;
+        for (auto &prog: programs) {
+            progs.push_back(prog.first);
+        }
+
+        auto output = programs.begin()->second;
+        if (!panda::pandasm::AsmEmitter::EmitPrograms(output, progs, true)) {
+            std::cerr << "Failed to emit merged program, error: " <<
+                panda::pandasm::AsmEmitter::GetLastError() << std::endl;
+                return false;
+        }
+    } else {
+        for (auto &prog: programs) {
+            if (!panda::pandasm::AsmEmitter::Emit(prog.second, *(prog.first), nullptr, nullptr, true)) {
+                std::cout << "Failed to emit single program, error: " <<
+                    panda::pandasm::AsmEmitter::GetLastError() << std::endl;
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+static bool GenerateProgram(const std::unordered_map<panda::pandasm::Program*, std::string> &programs,
+    const std::unique_ptr<panda::es2panda::aot::Options> &options)
 {
     int optLevel = options->OptLevel();
     bool dumpSize = options->SizeStat();
-    const std::string output = options->CompilerOutput();
     const es2panda::CompilerOptions compilerOptions = options->CompilerOptions();
     if (compilerOptions.dumpAsm || compilerOptions.dumpLiteralBuffer) {
-        for (auto *prog : progs) {
+        for (auto &prog : programs) {
             if (compilerOptions.dumpAsm) {
-                es2panda::Compiler::DumpAsm(prog);
+                es2panda::Compiler::DumpAsm(prog.first);
             }
 
             if (compilerOptions.dumpLiteralBuffer) {
-                panda::es2panda::util::Dumper::DumpLiterals(prog->literalarray_table);
+                panda::es2panda::util::Dumper::DumpLiterals(prog.first->literalarray_table);
             }
         }
     }
 
-    if (progs.size() > 1) {
-        if (!panda::pandasm::AsmEmitter::EmitPrograms(output, progs, true)) {
-            std::cerr << "Failed to emit merged program " << std::endl;
-            return false;
-        }
+    if (programs.size() > 1) {
+        return GenerateMultiProgram(programs, options);
     } else {
-        auto *prog = progs[0];
+        auto *prog = programs.begin()->first;
         std::map<std::string, size_t> stat;
         std::map<std::string, size_t> *statp = optLevel != 0 ? &stat : nullptr;
         panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps {};
         panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp = optLevel != 0 ? &maps : nullptr;
 
+        auto output = programs.begin()->second;
         if (output.empty()) {
             GenerateBase64Output(prog, mapsp);
             return true;
@@ -128,6 +152,30 @@ static bool GenerateProgram(std::vector<panda::pandasm::Program *> &progs,
         if (dumpSize && optLevel != 0) {
             DumpPandaFileSizeStatistic(stat);
         }
+    }
+
+    return true;
+}
+
+static bool GenerateAbcFiles(const std::map<std::string, panda::es2panda::util::ProgramCache*> &programsInfo,
+    const std::unique_ptr<panda::es2panda::aot::Options> &options, size_t expectedProgsCount)
+{
+    std::unordered_map<panda::pandasm::Program*, std::string> programs;
+    for (auto &info : programsInfo) {
+        auto outputFileName = options->OutputFiles().empty() ? options->CompilerOutput() :
+            options->OutputFiles().at(info.first);
+        programs.insert({info.second->program, outputFileName});
+    }
+
+    if (programs.size() != expectedProgsCount) {
+        std::cerr << "the size of programs is expected to be " << expectedProgsCount
+                  << ", but is " << programs.size() << std::endl;
+        return false;
+    }
+
+    if (!GenerateProgram(programs, options)) {
+        std::cerr << "GenerateProgram Failed!" << std::endl;
+        return false;
     }
 
     return true;
@@ -175,19 +223,7 @@ int Run(int argc, const char **argv)
             options->CacheFile());
     }
 
-    std::vector<panda::pandasm::Program*> programs;
-    programs.reserve(programsInfo.size());
-    for (auto &it : programsInfo) {
-        programs.emplace_back(it.second->program);
-    }
-    if (programs.size() != expectedProgsCount) {
-        std::cerr << "the size of programs is expected to be " << expectedProgsCount
-                  << ", but is " << programs.size() << std::endl;
-        return 1;
-    }
-
-    if (!GenerateProgram(programs, options)) {
-        std::cerr << "GenerateProgram Failed!" << std::endl;
+    if (!GenerateAbcFiles(programsInfo, options, expectedProgsCount)) {
         return 1;
     }
 
