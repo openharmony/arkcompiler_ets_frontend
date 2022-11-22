@@ -309,13 +309,17 @@ export class DebugInfo {
                 (<DebugInsStartPlaceHolder> insns[i]).getScope().setScopeStartInsIdx(i);
                 // delete ins placeholder
                 insns.splice(i, 1);
-                i--;
+                if (i > 0) {
+                    i--;
+                }
             }
             if (insns[i] instanceof DebugInsEndPlaceHolder) {
-                (<DebugInsEndPlaceHolder> insns[i]).getScope().setScopeEndInsIdx(i);
+                (<DebugInsEndPlaceHolder> insns[i]).getScope().setScopeEndInsIdx(i > 0 ? i - 1 : 0);
                 // delete ins placeholder
                 insns.splice(i, 1);
-                i--;
+                if (i > 0) {
+                    i--;
+                }
             }
         }
 
