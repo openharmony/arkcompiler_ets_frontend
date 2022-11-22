@@ -132,6 +132,11 @@ public:
         return npmModuleEntryList_;
     }
 
+    const std::unordered_map<std::string, std::string> &OutputFiles() const
+    {
+        return outputFiles_;
+    }
+
     bool CollectInputFilesFromFileList(const std::string &input);
     bool CollectInputFilesFromFileDirectory(const std::string &input, const std::string &extension);
 
@@ -154,6 +159,7 @@ private:
     std::string cacheFile_;
     std::string npmModuleEntryList_;
     std::vector<es2panda::SourceFile> sourceFiles_;
+    std::unordered_map<std::string, std::string> outputFiles_;
 };
 }  // namespace panda::es2panda::aot
 
