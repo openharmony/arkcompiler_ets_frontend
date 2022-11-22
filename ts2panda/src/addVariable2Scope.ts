@@ -14,6 +14,7 @@
  */
 
 import * as ts from "typescript";
+import { PrimitiveType } from "./base/typeSystem";
 import { isBindingPattern } from "./base/util";
 import { CmdOptions } from "./cmdOptions";
 import * as jshelpers from "./jshelpers";
@@ -44,6 +45,9 @@ import {
 function setVariableOrParameterType(node: ts.Node, v: Variable | undefined) {
     if (v) {
         let typeIndex = TypeRecorder.getInstance().tryGetVariable2Type(ts.getOriginalNode(node));
+        if (typeIndex === PrimitiveType.ANY) {
+            typeIndex = TypeRecorder.getInstance().tryGetTypeIndex(ts.getOriginalNode(node));
+        }
         v.setTypeIndex(typeIndex);
     }
 }

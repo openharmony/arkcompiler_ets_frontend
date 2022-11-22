@@ -19,4 +19,4 @@ Handle types for function: testwiththis
 Handle types for function: add
 (instruction order, type): (-1, 112), (9, 1), 
 Handle types for function: func_main_0
-(instruction order, type): 
+(instruction order, type): (10, 112), (95, 101), 

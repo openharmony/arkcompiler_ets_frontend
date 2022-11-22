@@ -128,11 +128,12 @@ export function compileClassDeclaration(compiler: Compiler, stmt: ts.ClassLikeDe
     if (hasExportKeywordModifier(stmt)) {
         if (stmt.name) {
             let className = jshelpers.getTextOfIdentifierOrLiteral(stmt.name);
-            let v = pandaGen.getScope().findLocal(className);
-            (<ModuleVariable>v).initialize();
-            pandaGen.storeModuleVariable(stmt, (<ModuleVariable>v).getIndex());
+            let v: ModuleVariable = <ModuleVariable>(pandaGen.getScope().findLocal(className));
+            v.initialize();
+            pandaGen.storeModuleVariable(stmt, v);
         } else if (hasDefaultKeywordModifier(stmt)) {
-            pandaGen.storeModuleVariable(stmt, (<ModuleVariable>pandaGen.getScope().findLocal("*default*")).getIndex());
+            let defaultV: ModuleVariable = <ModuleVariable>(pandaGen.getScope().findLocal("*default*"));
+            pandaGen.storeModuleVariable(stmt, defaultV);
         } else {
             // throw SyntaxError in Recorder
         }
@@ -145,7 +146,8 @@ export function compileClassDeclaration(compiler: Compiler, stmt: ts.ClassLikeDe
                 let classInfo = classScope.find(className);
                 (<LocalVariable | ModuleVariable>classInfo.v).initialize();
                 if (classInfo.v instanceof ModuleVariable) {
-                    pandaGen.storeModuleVariable(stmt, (<ModuleVariable>pandaGen.getScope().findLocal(className)).getIndex());
+                    let v: ModuleVariable = <ModuleVariable>(pandaGen.getScope().findLocal(className));
+                    pandaGen.storeModuleVariable(stmt, v);
                 } else {
                     pandaGen.storeAccToLexEnv(stmt, classInfo.scope!, classInfo.level, classInfo.v!, true);
                 }
