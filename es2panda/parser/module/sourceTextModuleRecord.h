@@ -149,6 +149,7 @@ public:
 private:
     bool HasDuplicateExport(util::StringView exportName) const;
     void ConvertLocalExportToIndirect(ImportEntry *importEntry, ExportEntry *exportEntry);
+    void CheckAndAssignIndex(binder::ModuleScope *moduleScope, util::StringView name, uint32_t *inde) const;
 
     ArenaAllocator *allocator_;
     ModuleRequestMap moduleRequestsMap_;

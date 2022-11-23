@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_STATEMENT_IF_STATEMENT_H
 #define ES2PANDA_IR_STATEMENT_IF_STATEMENT_H
 
-#include <ir/statement.h>
+#include "ir/statement.h"
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -33,8 +33,14 @@ class Expression;
 
 class IfStatement : public Statement {
 public:
-    explicit IfStatement(Expression *test, Statement *consequent, Statement *alternate)
-        : Statement(AstNodeType::IF_STATEMENT), test_(test), consequent_(consequent), alternate_(alternate)
+    explicit IfStatement(Expression *test, Statement *consequent, binder::Scope *consequentScope,
+                         Statement *alternate, binder::Scope *alternateScope)
+        : Statement(AstNodeType::IF_STATEMENT),
+          test_(test),
+          consequent_(consequent),
+          consequentScope_(consequentScope),
+          alternate_(alternate),
+          alternateScope_(alternateScope)
     {
     }
 
@@ -56,12 +62,19 @@ public:
     void Dump(ir::AstDumper *dumper) const override;
     void Compile(compiler::PandaGen *pg) const override;
     checker::Type *Check(checker::Checker *checker) const override;
-    void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
+    void UpdateSelf(const NodeUpdater &cb, binder::Binder *binder) override;
 
 protected:
+    Statement *UpdateIfStatementChildStatement(const NodeUpdater &cb,
+                                               const binder::Binder *binder,
+                                               Statement *statement,
+                                               binder::Scope *scope) const;
+
     Expression *test_;
     Statement *consequent_;
+    binder::Scope *consequentScope_;
     Statement *alternate_;
+    binder::Scope *alternateScope_;
 };
 
 }  // namespace panda::es2panda::ir

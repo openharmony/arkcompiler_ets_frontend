@@ -169,14 +169,22 @@ namespace panda::es2panda::parser {
         for (auto it = localExportEntries_.begin(); it != localExportEntries_.end();
              it = localExportEntries_.upper_bound(it->first))
         {
-            moduleScope->AssignIndexToModuleVariable(it->first, index);
-            index++;
+            CheckAndAssignIndex(moduleScope, it->first, &index);
         }
 
         index = 0;
         for (const auto &elem : regularImportEntries_) {
-            moduleScope->AssignIndexToModuleVariable(elem.first, index);
-            index++;
+            CheckAndAssignIndex(moduleScope, elem.first, &index);
+        }
+    }
+
+    void SourceTextModuleRecord::CheckAndAssignIndex(binder::ModuleScope *moduleScope,
+                                                     util::StringView name,
+                                                     uint32_t *index) const
+    {
+        if (moduleScope->FindLocal(name) != nullptr) {
+            moduleScope->AssignIndexToModuleVariable(name, *index);
+            (*index)++;
         }
     }
 } // namespace panda::es2panda::parser

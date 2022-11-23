@@ -15,11 +15,12 @@
 
 #include "ifStatement.h"
 
-#include <compiler/base/condition.h>
-#include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
-#include <ir/astDump.h>
-#include <ir/expression.h>
+#include "compiler/base/condition.h"
+#include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/statements/blockStatement.h"
+#include "ir/expression.h"
+#include "typescript/checker.h"
 
 namespace panda::es2panda::ir {
 
@@ -75,14 +76,33 @@ checker::Type *IfStatement::Check(checker::Checker *checker) const
     return nullptr;
 }
 
-void IfStatement::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
+void IfStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 {
     test_ = std::get<ir::AstNode *>(cb(test_))->AsExpression();
-    consequent_ = std::get<ir::AstNode *>(cb(consequent_))->AsStatement();
+    consequent_ = UpdateIfStatementChildStatement(cb, binder, consequent_, consequentScope_);
 
     if (alternate_) {
-        alternate_ = std::get<ir::AstNode *>(cb(alternate_))->AsStatement();
+        alternate_ = UpdateIfStatementChildStatement(cb, binder, alternate_, alternateScope_);
     }
+}
+
+Statement *IfStatement::UpdateIfStatementChildStatement(const NodeUpdater &cb,
+                                                        const binder::Binder *binder,
+                                                        Statement *statement,
+                                                        binder::Scope *scope) const
+{
+    auto newStatement = cb(statement);
+    if (std::holds_alternative<ir::AstNode *>(newStatement)) {
+        return std::get<ir::AstNode *>(newStatement)->AsStatement();
+    }
+
+    ASSERT(std::holds_alternative<std::vector<ir::AstNode *>>(newStatement));
+    ArenaVector<ir::Statement *> statements(binder->Allocator()->Adapter());
+    auto newStatements = std::get<std::vector<ir::AstNode *>>(newStatement);
+    for (auto *it : newStatements) {
+        statements.push_back(it->AsStatement());
+    }
+    return binder->Allocator()->New<ir::BlockStatement>(scope, std::move(statements));
 }
 
 }  // namespace panda::es2panda::ir
