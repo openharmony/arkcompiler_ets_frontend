@@ -114,7 +114,9 @@ LReference LReference::CreateLRef(PandaGen *pg, const ir::AstNode *node, bool is
             return LReference::CreateLRef(pg, node->AsVariableDeclarator()->Id(), true);
         }
         case ir::AstNodeType::ARRAY_PATTERN:
-        case ir::AstNodeType::OBJECT_PATTERN: {
+        case ir::AstNodeType::OBJECT_PATTERN:
+        case ir::AstNodeType::ARRAY_EXPRESSION:
+        case ir::AstNodeType::OBJECT_EXPRESSION: {
             return {node, pg, isDeclaration, ReferenceKind::DESTRUCTURING, {}};
         }
         case ir::AstNodeType::ASSIGNMENT_PATTERN: {
