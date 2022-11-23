@@ -294,7 +294,8 @@ def test_instype(args):
     fail_list = []
     for file in files:
         abc_file = os.path.abspath(os.path.join(outpath, '%s.abc' % os.path.splitext(os.path.basename(file))[0]))
-        cmd = ['node', '--expose-gc', ark_frontend_tool, os.path.abspath(file), '--display-typeinfo', '-o', abc_file];
+        cmd = ['node', '--expose-gc', ark_frontend_tool, os.path.abspath(file),
+               '--modules', '--display-typeinfo', '-o', abc_file];
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         try:
             out, err = process.communicate(timeout=10)

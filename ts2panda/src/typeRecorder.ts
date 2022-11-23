@@ -190,7 +190,7 @@ export class TypeRecorder {
             moduleStmt.getBindingNodeMap().forEach((localNode, externalNode) => {
                 let exportedName = jshelpers.getTextOfIdentifierOrLiteral(externalNode);
                 let nodeType = TypeChecker.getInstance().getTypeAtLocation(localNode);
-                let typeNode = nodeType.getSymbol()?.valueDeclaration;
+                let typeNode = nodeType?.getSymbol()?.valueDeclaration;
                 if (typeNode) {
                     this.addNonReExportedType(exportedName, typeNode!, localNode);
                 }
