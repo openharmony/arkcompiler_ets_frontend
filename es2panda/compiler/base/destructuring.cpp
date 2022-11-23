@@ -99,9 +99,11 @@ static void GenArray(PandaGen *pg, const ir::ArrayExpression *array)
         const ir::Expression *init = nullptr;
         const ir::Expression *target = element;
 
-        if (element->IsAssignmentPattern()) {
-            target = element->AsAssignmentPattern()->Left();
-            init = element->AsAssignmentPattern()->Right();
+        if (element->IsAssignmentPattern() || element->IsAssignmentExpression()) {
+            auto *assignment = element->IsAssignmentPattern() ? element->AsAssignmentPattern() :
+                                                                element->AsAssignmentExpression();
+            target = assignment->Left();
+            init = assignment->Right();
         }
 
         LReference lref = LReference::CreateLRef(pg, target, array->IsDeclaration());
@@ -157,9 +159,11 @@ static void GenObjectProperty(PandaGen *pg, const ir::ObjectExpression *object,
     const ir::Expression *key = propExpr->Key();
     const ir::Expression *target = propExpr->Value();
 
-    if (target->IsAssignmentPattern()) {
-        init = target->AsAssignmentPattern()->Right();
-        target = target->AsAssignmentPattern()->Left();
+    if (target->IsAssignmentPattern() || target->IsAssignmentExpression()) {
+        auto *assignment = target->IsAssignmentPattern() ? target->AsAssignmentPattern() :
+                                                           target->AsAssignmentExpression();
+        init = assignment->Right();
+        target = assignment->Left();
     }
 
     // compile key
@@ -249,10 +253,14 @@ void Destructuring::Compile(PandaGen *pg, const ir::Expression *pattern)
     VReg rhs = pg->AllocReg();
     pg->StoreAccumulator(pattern, rhs);
 
-    if (pattern->IsArrayPattern()) {
-        GenArray(pg, pattern->AsArrayPattern());
+    if (pattern->IsArrayPattern() || pattern->IsArrayExpression()) {
+        auto *arrExpr = pattern->IsArrayPattern() ? pattern->AsArrayPattern() :
+                        pattern->AsArrayExpression();
+        GenArray(pg, arrExpr);
     } else {
-        GenObject(pg, pattern->AsObjectPattern(), rhs);
+        auto *objExpr = pattern->IsObjectPattern() ? pattern->AsObjectPattern() :
+                        pattern->AsObjectExpression();
+        GenObject(pg, objExpr, rhs);
     }
 
     pg->LoadAccumulator(pattern, rhs);
