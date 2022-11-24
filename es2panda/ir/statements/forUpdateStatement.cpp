@@ -54,7 +54,9 @@ void ForUpdateStatement::Dump(ir::AstDumper *dumper) const
 
 void ForUpdateStatement::Compile(compiler::PandaGen *pg) const
 {
-    compiler::LocalRegScope declRegScope(pg, scope_->DeclScope()->InitScope());
+    compiler::LocalRegScope loopRegScope(pg, scope_);
+    compiler::LabelTarget labelTarget(pg);
+    compiler::LoopEnvScope envScope(pg, labelTarget, scope_);
 
     if (init_) {
         ASSERT(init_->IsVariableDeclaration() || init_->IsExpression());
@@ -62,22 +64,16 @@ void ForUpdateStatement::Compile(compiler::PandaGen *pg) const
     }
 
     auto *startLabel = pg->AllocLabel();
-    compiler::LabelTarget labelTarget(pg);
-
-    compiler::LoopEnvScope declEnvScope(pg, scope_->DeclScope());
-    compiler::LoopEnvScope envScope(pg, labelTarget, scope_);
     pg->SetLabel(this, startLabel);
 
     {
-        compiler::LocalRegScope regScope(pg, scope_);
-
         if (test_) {
             compiler::Condition::Compile(pg, test_, labelTarget.BreakTarget());
         }
 
         body_->Compile(pg);
         pg->SetLabel(this, labelTarget.ContinueTarget());
-        envScope.CopyPetIterationCtx();
+        envScope.CopyPerIterationCtx();
     }
 
     if (update_) {
@@ -113,7 +109,7 @@ checker::Type *ForUpdateStatement::Check(checker::Checker *checker) const
 void ForUpdateStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 {
     auto *loopScope = Scope();
-    auto declScopeCtx = binder::LexicalScope<binder::LoopDeclarationScope>::Enter(binder, loopScope->DeclScope());
+    auto loopCtx = binder::LexicalScope<binder::LoopScope>::Enter(binder, loopScope);
 
     if (init_) {
         init_ = std::get<ir::AstNode *>(cb(init_));
@@ -122,8 +118,6 @@ void ForUpdateStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binde
     if (test_) {
         test_ = std::get<ir::AstNode *>(cb(test_))->AsExpression();
     }
-
-    auto loopCtx = binder::LexicalScope<binder::LoopScope>::Enter(binder, loopScope);
 
     if (update_) {
         update_ = std::get<ir::AstNode *>(cb(update_))->AsExpression();

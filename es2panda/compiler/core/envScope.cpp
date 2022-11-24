@@ -46,30 +46,18 @@ EnvScope::~EnvScope()
     pg_->envScope_ = prev_;
 }
 
-void LoopEnvScope::CopyBindings(PandaGen *pg, binder::VariableScope *scope, binder::VariableFlags flag)
+void LoopEnvScope::InitLoopContext(PandaGen *pg, binder::VariableScope *scope)
 {
     if (!HasEnv()) {
         return;
     }
 
     Initialize(pg);
-
-    pg_->NewLexicalEnv(scope_->Node(), scope->LexicalSlots(), scope_);
-
     ASSERT(scope->NeedLexEnv());
-
-    for (const auto &[_, variable] : scope_->Bindings()) {
-        (void)_;
-        if (!variable->HasFlag(flag)) {
-            continue;
-        }
-
-        pg->LoadLexicalVar(scope_->Node(), 1, variable->AsLocalVariable()->LexIdx());
-        pg->StoreLexicalVar(scope_->Parent()->Node(), 0, variable->AsLocalVariable()->LexIdx());
-    }
+    pg_->NewLexicalEnv(scope_->Node(), scope->LexicalSlots(), scope_);
 }
 
-void LoopEnvScope::CopyPetIterationCtx()
+void LoopEnvScope::CopyPerIterationCtx()
 {
     if (!HasEnv()) {
         return;

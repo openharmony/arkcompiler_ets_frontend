@@ -113,6 +113,8 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
         iter = iter->Parent();
     }
 
+    bool lexical = false;
+
     while (iter != nullptr) {
         Variable *v = iter->FindLocal(name, options);
 
@@ -120,8 +122,14 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
             return {name, const_cast<Scope *>(iter), level, lexLevel, v, crossConcurrent};
         }
 
+        if (iter->IsFunctionVariableScope() && !lexical) {
+            lexical = true;
+        }
+
         if (iter->IsVariableScope()) {
-            level++;
+            if (lexical) {
+                level++;
+            }
 
             if (iter->IsFunctionScope() && !crossConcurrent) {
                 crossConcurrent = iter->Node()->AsScriptFunction()->IsConcurrent() ? true : false;
@@ -434,52 +442,17 @@ bool LocalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariable
     return AddLocal(allocator, currentVariable, newDecl, extension);
 }
 
-void LoopDeclarationScope::ConvertToVariableScope(ArenaAllocator *allocator)
+void LoopScope::InitVariable()
 {
-    if (NeedLexEnv()) {
-        return;
-    }
-
-    for (auto &[name, var] : bindings_) {
-        if (!var->LexicalBound() || !var->Declaration()->IsLetOrConstOrClassDecl()) {
+    for (const auto &[name, var] : bindings_) {
+        if (!var->Declaration()->IsLetOrConstOrClassDecl()) {
             continue;
         }
 
-        slotIndex_++;
-        loopType_ = ScopeType::LOOP_DECL;
-        auto *copiedVar = var->AsLocalVariable()->Copy(allocator, var->Declaration());
-        copiedVar->AddFlag(VariableFlags::INITIALIZED | VariableFlags::PER_ITERATION);
-        var->AddFlag(VariableFlags::LOOP_DECL);
-        loopScope_->Bindings().insert({name, copiedVar});
-    }
-
-    if (loopType_ == ScopeType::LOOP_DECL) {
-        slotIndex_ = std::max(slotIndex_, parent_->EnclosingVariableScope()->LexicalSlots());
-        initScope_ = allocator->New<LocalScope>(allocator, parent_);
-        initScope_->BindNode(node_);
-        initScope_->Bindings() = bindings_;
-    }
-}
-
-void LoopScope::ConvertToVariableScope(ArenaAllocator *allocator)
-{
-    declScope_->ConvertToVariableScope(allocator);
-
-    if (loopType_ != ScopeType::LOCAL) {
-        return;
-    }
-
-    for (const auto &[_, var] : bindings_) {
-        (void)_;
-        if (var->LexicalBound() && var->Declaration()->IsLetDecl()) {
-            ASSERT(declScope_->NeedLexEnv());
-            loopType_ = ScopeType::LOOP;
-            break;
+        var->AddFlag(VariableFlags::INITIALIZED);
+        if (var->LexicalBound()) {
+            var->AddFlag(VariableFlags::PER_ITERATION);
         }
-    }
-
-    if (loopType_ == ScopeType::LOOP) {
-        slotIndex_ = std::max(slotIndex_, declScope_->LexicalSlots());
     }
 }
 
