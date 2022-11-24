@@ -84,13 +84,13 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
             checker->StartChecker();
         }
 
-        if (options.parseOnly) {
-            return nullptr;
-        }
-
         if (ast.Extension() == ScriptExtension::TS) {
             transformer_->Transform(&ast);
             ast.Binder()->IdentifierAnalysis(binder::ResolveBindingFlags::ALL);
+        }
+
+        if (options.parseOnly) {
+            return nullptr;
         }
 
         std::string debugInfoSourceFile = options.debugInfoSourceFile.empty() ?

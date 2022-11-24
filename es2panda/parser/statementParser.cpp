@@ -2016,6 +2016,10 @@ ir::WhileStatement *ParserImpl::ParseWhileStatement()
 
 void ParserImpl::AddImportEntryItem(const ir::StringLiteral *source, const ArenaVector<ir::AstNode *> *specifiers)
 {
+    if (context_.IsTsModule()) {
+        return;
+    }
+
     ASSERT(source != nullptr);
     auto *moduleRecord = GetSourceTextModuleRecord();
     ASSERT(moduleRecord != nullptr);
@@ -2136,6 +2140,10 @@ void ParserImpl::AddExportStarEntryItem(const lexer::SourcePosition &startLoc, c
 
 void ParserImpl::AddExportDefaultEntryItem(const ir::AstNode *declNode)
 {
+    if (context_.IsTsModule()) {
+        return;
+    }
+
     ASSERT(declNode != nullptr);
     if (declNode->IsTSInterfaceDeclaration()) {
         return;
