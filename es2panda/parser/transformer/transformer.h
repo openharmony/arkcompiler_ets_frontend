@@ -186,6 +186,9 @@ private:
     binder::Scope *FindEnumMemberScope(const util::StringView name) const;
     ir::MemberExpression *CreateMemberExpressionFromIdentifier(binder::Scope *scope, ir::Identifier *node);
 
+    template <typename T>
+    ir::UpdateNodes VisitExportClassDeclaration(T *node);
+
     bool IsTsModule() const
     {
         return (tsModuleList_.size() != 0);

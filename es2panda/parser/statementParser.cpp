@@ -1552,7 +1552,15 @@ ir::IfStatement *ParserImpl::ParseIfStatement()
     }
 
     lexer_->NextToken();
-    ir::Statement *consequent = ParseStatement(StatementParsingFlags::IF_ELSE);
+
+    ir::Statement *consequent = nullptr;
+    auto consequentCtx = binder::LexicalScope<binder::LocalScope>(Binder());
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+        consequent = ParseBlockStatement(consequentCtx.GetScope());
+        lexer_->NextToken();
+    } else {
+        consequent = ParseStatement(StatementParsingFlags::IF_ELSE);
+    }
 
     if (Extension() == ScriptExtension::TS && consequent->IsEmptyStatement()) {
         ThrowSyntaxError("The body of an if statement cannot be the empty statement");
@@ -1560,14 +1568,23 @@ ir::IfStatement *ParserImpl::ParseIfStatement()
 
     endLoc = consequent->End();
     ir::Statement *alternate = nullptr;
+    binder::Scope *alternateScope = nullptr;
 
     if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_ELSE) {
         lexer_->NextToken();  // eat ELSE keyword
-        alternate = ParseStatement(StatementParsingFlags::IF_ELSE);
+        auto alternateCtx = binder::LexicalScope<binder::LocalScope>(Binder());
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+            alternate = ParseBlockStatement(alternateCtx.GetScope());
+            lexer_->NextToken();
+        } else {
+            alternate = ParseStatement(StatementParsingFlags::IF_ELSE);
+        }
         endLoc = alternate->End();
+        alternateScope = alternateCtx.GetScope();
     }
 
-    auto *ifStatement = AllocNode<ir::IfStatement>(test, consequent, alternate);
+    auto *ifStatement = AllocNode<ir::IfStatement>(test, consequent, consequentCtx.GetScope(),
+                                                   alternate, alternateScope);
     ifStatement->SetRange({startLoc, endLoc});
     return ifStatement;
 }
@@ -2124,6 +2141,10 @@ ir::WhileStatement *ParserImpl::ParseWhileStatement()
 
 void ParserImpl::AddImportEntryItem(const ir::StringLiteral *source, const ArenaVector<ir::AstNode *> *specifiers)
 {
+    if (context_.IsTsModule()) {
+        return;
+    }
+
     ASSERT(source != nullptr);
     auto *moduleRecord = GetSourceTextModuleRecord();
     ASSERT(moduleRecord != nullptr);
@@ -2249,6 +2270,10 @@ void ParserImpl::AddExportStarEntryItem(const lexer::SourcePosition &startLoc, c
 
 void ParserImpl::AddExportDefaultEntryItem(const ir::AstNode *declNode)
 {
+    if (context_.IsTsModule()) {
+        return;
+    }
+
     ASSERT(declNode != nullptr);
     if (declNode->IsTSInterfaceDeclaration() ||
         (declNode->IsFunctionDeclaration() && declNode->AsFunctionDeclaration()->Function()->IsOverload())) {

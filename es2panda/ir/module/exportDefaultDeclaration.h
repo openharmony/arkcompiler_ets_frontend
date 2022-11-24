@@ -41,6 +41,16 @@ public:
         return decl_;
     }
 
+    AstNode *Decl()
+    {
+        return decl_;
+    }
+
+    void SetDecl(AstNode *decl)
+    {
+        decl_ = decl;
+    }
+
     bool IsExportEquals() const
     {
         return exportEquals_;

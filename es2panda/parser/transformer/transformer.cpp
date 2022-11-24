@@ -38,6 +38,7 @@
 #include "ir/expressions/sequenceExpression.h"
 #include "ir/expressions/templateLiteral.h"
 #include "ir/expressions/thisExpression.h"
+#include "ir/module/exportDefaultDeclaration.h"
 #include "ir/module/exportNamedDeclaration.h"
 #include "ir/module/exportSpecifier.h"
 #include "ir/statements/blockStatement.h"
@@ -253,13 +254,25 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
                 return res;
             }
 
-            if (!IsTsModule()) {
-                return VisitTSNodes(childNode);
+            if (IsTsModule()) {
+                auto res = VisitExportNamedVariable(decl);
+                SetOriginalNode(res, node);
+                return res;
             }
 
-            auto res = VisitExportNamedVariable(decl);
-            SetOriginalNode(res, childNode);
-            return res;
+            if (decl->IsClassDeclaration()) {
+                return VisitExportClassDeclaration<ir::ExportNamedDeclaration>(node);
+            }
+
+            return VisitTSNodes(node);
+        }
+        case ir::AstNodeType::EXPORT_DEFAULT_DECLARATION: {
+            auto *node = childNode->AsExportDefaultDeclaration();
+            auto *decl = node->Decl();
+            if (!decl || !decl->IsClassDeclaration()) {
+                return VisitTSNodes(childNode);
+            }
+            return VisitExportClassDeclaration<ir::ExportDefaultDeclaration>(node);
         }
         case ir::AstNodeType::TS_IMPORT_EQUALS_DECLARATION: {
             auto *node = childNode->AsTSImportEqualsDeclaration();
@@ -306,6 +319,33 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
         default: {
             return VisitTSNodes(childNode);
         }
+    }
+}
+
+template <typename T>
+ir::UpdateNodes Transformer::VisitExportClassDeclaration(T *node)
+{
+    auto *decl = node->Decl();
+    auto newDecl = VisitTSNode(decl);
+    if (std::holds_alternative<ir::AstNode *>(newDecl)) {
+        auto statement = std::get<ir::AstNode *>(newDecl);
+        ASSERT(statement->IsClassDeclaration());
+        node->SetDecl(statement->AsClassDeclaration());
+        return node;
+    } else {
+        auto statements = std::get<std::vector<ir::AstNode *>>(newDecl);
+        std::vector<ir::AstNode *> res;
+        auto firstStatement = statements.front();
+        statements.erase(statements.begin());
+        if (firstStatement->IsVariableDeclaration()) {
+            node->SetDecl(firstStatement->AsVariableDeclaration());
+        } else {
+            ASSERT(firstStatement->IsClassDeclaration());
+            node->SetDecl(firstStatement->AsClassDeclaration());
+        }
+        res.push_back(node);
+        res.insert(res.end(), statements.begin(), statements.end());
+        return res;
     }
 }
 
@@ -776,9 +816,9 @@ std::vector<ir::AstNode *> Transformer::CreateMethodDecorators(util::StringView 
     return res;
 }
 
-ir::Expression *Transformer::CreateDecoratorTarget(util::StringView className, bool targetCtor)
+ir::Expression *Transformer::CreateDecoratorTarget(util::StringView className, bool isStatic)
 {
-    if (targetCtor) {
+    if (isStatic) {
         return CreateReferenceIdentifier(className);
     }
     return CreateClassPrototype(className);

@@ -62,6 +62,11 @@ public:
         return decl_;
     }
 
+    void SetDecl(Statement *decl)
+    {
+        decl_ = decl;
+    }
+
     const StringLiteral *Source() const
     {
         return source_;
