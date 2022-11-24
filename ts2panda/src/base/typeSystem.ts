@@ -400,8 +400,8 @@ export class ClassType extends BaseType {
 
         // Then, get the typeIndex and fill in the methods array
         let typeIndex = this.tryGetTypeIndex(member);
-        let funcModifier = funcType.getModifier();
-        if (funcModifier) {
+        let isStatic = funcType.hasModifier(Modifier.STATIC);
+        if (isStatic) {
             this.staticMethods.set(funcType.getFunctionName(), typeIndex!);
         } else {
             this.methods.set(funcType.getFunctionName(), typeIndex!);
@@ -603,6 +603,10 @@ export class FunctionType extends BaseType {
 
     getModifier() {
         return this.modifiers;
+    }
+
+    hasModifier(modifier: Modifier) {
+        return (this.modifiers & modifier) ? true : false;
     }
 
     transfer2LiteralBuffer(): LiteralBuffer {
