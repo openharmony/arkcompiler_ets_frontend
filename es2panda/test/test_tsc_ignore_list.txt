@@ -5,7 +5,6 @@ es2panda/test/TypeScript/tests/cases/compiler/collisionArgumentsInType.ts
 es2panda/test/TypeScript/tests/cases/compiler/collisionArgumentsInterfaceMembers.ts
 es2panda/test/TypeScript/tests/cases/compiler/computedPropertiesTransformedInOtherwiseNonTSClasses.ts
 es2panda/test/TypeScript/tests/cases/compiler/constructorOverloads5.ts
-es2panda/test/TypeScript/tests/cases/compiler/continueTarget3.ts
 es2panda/test/TypeScript/tests/cases/compiler/elidedEmbeddedStatementsReplacedWithSemicolon.ts
 es2panda/test/TypeScript/tests/cases/compiler/emitBundleWithShebang1.ts
 es2panda/test/TypeScript/tests/cases/compiler/exportAsNamespace.d.ts
@@ -73,7 +72,6 @@ es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclaration
 es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclarations/asiPreventsParsingAsInterface03.ts
 es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclarations/asiPreventsParsingAsInterface04.ts
 es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/RegressionTests/parser579071.ts
-es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/Statements/ContinueStatements/parser_continueTarget3.ts
 es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/parserUnicodeWhitespaceCharacter1.ts
 es2panda/test/TypeScript/tests/cases/conformance/scanner/ecmascript3/scannerES3NumericLiteral2.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/keyof/keyofAndIndexedAccess.ts
