@@ -40,7 +40,7 @@ def parse_args():
                         help='whether is commonjs')
     parser.add_argument("--merge-abc", action='store_true',
                         help='whether is merge abc')
-    parser.add_argument("--generate-patch", action='store_false',
+    parser.add_argument("--generate-patch", action='store_true',
                         help='generate patch abc')
     parser.add_argument("--dump-symbol-table",
                         help='dump symbol table of base abc')
