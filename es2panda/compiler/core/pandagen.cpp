@@ -210,8 +210,6 @@ void PandaGen::InitializeLexEnv(const ir::AstNode *node)
 void PandaGen::CopyFunctionArguments(const ir::AstNode *node)
 {
     FrontAllocator fa(this);
-    auto spillRegsCount = ra_.GetSpillRegsCount();
-    totalRegs_ += spillRegsCount;
     VReg targetReg = totalRegs_;
 
     for (const auto *param : topScope_->ParamScope()->Params()) {
@@ -223,11 +221,11 @@ void PandaGen::CopyFunctionArguments(const ir::AstNode *node)
             auto typeIndex = context_->TypeRecorder()->GetVariableTypeIndex(param);
             if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
                 // Simply encode type index for params
-                MoveVregWithType(node, -(typeIndex + 1), param->Vreg() + spillRegsCount, targetReg++);
+                MoveVregWithType(node, -(typeIndex + 1), param->Vreg(), targetReg++);
                 continue;
             }
         }
-        MoveVreg(node, param->Vreg() + spillRegsCount, targetReg++);
+        MoveVreg(node, param->Vreg(), targetReg++);
     }
 }
 

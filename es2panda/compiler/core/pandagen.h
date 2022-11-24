@@ -217,6 +217,7 @@ public:
     void AdjustSpillInsns()
     {
         ra_.AdjustInsRegWhenHasSpill();
+        totalRegs_ += ra_.GetSpillRegsCount();
     }
 
     panda::panda_file::FunctionKind GetFunctionKind() const
