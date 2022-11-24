@@ -71,19 +71,13 @@ public:
     explicit LoopEnvScope(PandaGen *pg, binder::LoopScope *scope, LabelTarget target)
         : scope_(NeedEnv(scope) ? scope : nullptr), regScope_(pg, scope), lexEnvCtx_(this, pg, target)
     {
-        CopyBindings(pg, scope, binder::VariableFlags::PER_ITERATION);
+        InitLoopContext(pg, scope);
     }
 
     explicit LoopEnvScope(PandaGen *pg, LabelTarget target, binder::LoopScope *scope)
         : scope_(NeedEnv(scope) ? scope : nullptr), regScope_(pg), lexEnvCtx_(this, pg, target)
     {
-        CopyBindings(pg, scope, binder::VariableFlags::PER_ITERATION);
-    }
-
-    explicit LoopEnvScope(PandaGen *pg, binder::LoopDeclarationScope *scope)
-        : scope_(NeedEnv(scope) ? scope : nullptr), regScope_(pg), lexEnvCtx_(this, pg, {})
-    {
-        CopyBindings(pg, scope, binder::VariableFlags::LOOP_DECL);
+        InitLoopContext(pg, scope);
     }
 
     binder::VariableScope *Scope() const
@@ -97,7 +91,7 @@ public:
         return scope_ != nullptr;
     }
 
-    void CopyPetIterationCtx();
+    void CopyPerIterationCtx();
 
 private:
     static bool NeedEnv(binder::VariableScope *scope)
@@ -106,6 +100,8 @@ private:
     }
 
     void CopyBindings(PandaGen *pg, binder::VariableScope *scope, binder::VariableFlags flag);
+
+    void InitLoopContext(PandaGen *pg, binder::VariableScope *scope);
 
     binder::VariableScope *scope_ {};
     LocalRegScope regScope_;

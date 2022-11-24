@@ -41,9 +41,17 @@ void ForOfStatement::Dump(ir::AstDumper *dumper) const
 
 void ForOfStatement::Compile(compiler::PandaGen *pg) const
 {
-    compiler::LocalRegScope declRegScope(pg, scope_->DeclScope()->InitScope());
+    compiler::LocalRegScope regScope(pg, scope_);
 
-    right_->Compile(pg);
+    if (scope_->NeedLexEnv()) {
+        pg->NewLexEnv(this, scope_->LexicalSlots());
+    }
+
+    right_->Compile(pg); // if poplexenv next, acc will not be affected, no need to store the value to a vreg
+
+    if (scope_->NeedLexEnv()) {
+        pg->PopLexEnv(this);
+    }
 
     compiler::LabelTarget labelTarget(pg);
     auto iterator_type = isAwait_ ? compiler::IteratorType::ASYNC : compiler::IteratorType::SYNC;
@@ -60,14 +68,12 @@ void ForOfStatement::Compile(compiler::PandaGen *pg) const
     pg->StoreAccumulator(this, value);
 
     auto lref = compiler::LReference::CreateLRef(pg, left_, false);
-
     {
         compiler::IteratorContext forOfCtx(pg, iterator, labelTarget);
+        compiler::LoopEnvScope envScope(pg, scope_, {});
         pg->LoadAccumulator(this, value);
         lref.SetValue();
 
-        compiler::LoopEnvScope declEnvScope(pg, scope_->DeclScope());
-        compiler::LoopEnvScope envScope(pg, scope_, {});
         body_->Compile(pg);
     }
 
@@ -83,11 +89,10 @@ checker::Type *ForOfStatement::Check([[maybe_unused]] checker::Checker *checker)
 void ForOfStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 {
     auto *loopScope = Scope();
-    auto declScopeCtx = binder::LexicalScope<binder::LoopDeclarationScope>::Enter(binder, loopScope->DeclScope());
+    auto loopCtx = binder::LexicalScope<binder::LoopScope>::Enter(binder, loopScope);
     left_ = std::get<ir::AstNode *>(cb(left_));
     right_ = std::get<ir::AstNode *>(cb(right_))->AsExpression();
 
-    auto loopCtx = binder::LexicalScope<binder::LoopScope>::Enter(binder, loopScope);
     body_ = std::get<ir::AstNode *>(cb(body_))->AsStatement();
 }
 

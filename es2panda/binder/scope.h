@@ -636,62 +636,18 @@ public:
                     [[maybe_unused]] ScriptExtension extension) override;
 };
 
-class LoopScope;
-
-class LoopDeclarationScope : public VariableScope {
-public:
-    explicit LoopDeclarationScope(ArenaAllocator *allocator, Scope *parent) : VariableScope(allocator, parent) {}
-
-    ScopeType Type() const override
-    {
-        return loopType_;
-    }
-
-    bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
-                    [[maybe_unused]] ScriptExtension extension) override
-    {
-        return AddLocal(allocator, currentVariable, newDecl, extension);
-    }
-
-    Scope *InitScope()
-    {
-        if (NeedLexEnv()) {
-            return initScope_;
-        }
-
-        return this;
-    }
-
-    void ConvertToVariableScope(ArenaAllocator *allocator);
-
-private:
-    friend class LoopScope;
-    LoopScope *loopScope_ {};
-    LocalScope *initScope_ {};
-    ScopeType loopType_ {ScopeType::LOCAL};
-};
-
 class LoopScope : public VariableScope {
 public:
     explicit LoopScope(ArenaAllocator *allocator, Scope *parent) : VariableScope(allocator, parent) {}
 
-    LoopDeclarationScope *DeclScope()
-    {
-        return declScope_;
-    }
-
-    void BindDecls(LoopDeclarationScope *declScope)
-    {
-        declScope_ = declScope;
-        declScope_->loopScope_ = this;
-    }
-
     ScopeType Type() const override
     {
         return loopType_;
     }
 
-    void ConvertToVariableScope(ArenaAllocator *allocator);
+    void ConvertToVariableScope([[maybe_unused]] ArenaAllocator *allocator);
+
+    void InitVariable();
 
     bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                     [[maybe_unused]] ScriptExtension extension) override
@@ -700,8 +656,7 @@ public:
     }
 
 protected:
-    LoopDeclarationScope *declScope_ {};
-    ScopeType loopType_ {ScopeType::LOCAL};
+    ScopeType loopType_ {ScopeType::LOOP};
 };
 
 class GlobalScope : public FunctionScope {
