@@ -57,10 +57,10 @@ export function hoistVar(decl: VarDecl, scope: Scope, pandaGen: PandaGen) {
         pandaGen.loadAccumulator(decl.node, getVregisterCache(pandaGen, CacheList.undefined));
         pandaGen.storeGlobalVar(decl.node, name);
     } else if (scope instanceof FunctionScope || scope instanceof ModuleScope) {
-        let v = scope.findLocal(name)!;
+        let v: ModuleVariable = <ModuleVariable>(scope.findLocal(name)!);
         pandaGen.loadAccumulator(NodeKind.FirstNodeOfFunction, getVregisterCache(pandaGen, CacheList.undefined));
         if (decl.isModule !== ModuleVarKind.NOT) {
-            pandaGen.storeModuleVariable(NodeKind.FirstNodeOfFunction, (<ModuleVariable>v).getIndex());
+            pandaGen.storeModuleVariable(NodeKind.FirstNodeOfFunction, v);
         } else {
             pandaGen.storeAccToLexEnv(NodeKind.FirstNodeOfFunction, scope, 0, v, true);
         }
@@ -78,10 +78,10 @@ export function hoistFunction(decl: FuncDecl, scope: Scope, pandaGen: PandaGen, 
         pandaGen.defineFunction(NodeKind.FirstNodeOfFunction, <ts.FunctionDeclaration>decl.node, internalName);
         pandaGen.storeGlobalVar(NodeKind.FirstNodeOfFunction, funcName);
     } else if ((scope instanceof FunctionScope) || (scope instanceof LocalScope) || (scope instanceof ModuleScope)) {
-        let v = scope.findLocal(funcName)!;
+        let v: ModuleVariable = <ModuleVariable>(scope.findLocal(funcName)!);
         pandaGen.defineFunction(NodeKind.FirstNodeOfFunction, <ts.FunctionDeclaration>decl.node, internalName);
         if (decl.isModule !== ModuleVarKind.NOT) {
-            pandaGen.storeModuleVariable(NodeKind.FirstNodeOfFunction, (<ModuleVariable>v).getIndex());
+            pandaGen.storeModuleVariable(NodeKind.FirstNodeOfFunction, v);
         } else {
             pandaGen.storeAccToLexEnv(NodeKind.FirstNodeOfFunction, scope, 0, v, true);
         }

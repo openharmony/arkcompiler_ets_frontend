@@ -739,8 +739,8 @@ export class Compiler {
 
     private compileExportAssignment(stmt: ts.ExportAssignment) {
         this.compileExpression(stmt.expression);
-        this.pandaGen.storeModuleVariable(
-            stmt, (<ModuleVariable>this.pandaGen.getScope().findLocal("*default*")).getIndex());
+        let defaultV: ModuleVariable = <ModuleVariable>(this.pandaGen.getScope().findLocal("*default*"));
+        this.pandaGen.storeModuleVariable(stmt, defaultV);
     }
 
     compileCondition(expr: ts.Expression, ifFalseLabel: Label) {
@@ -1473,7 +1473,7 @@ export class Compiler {
                 let holeReg = this.pandaGen.getTemp();
                 let nameReg = this.pandaGen.getTemp();
                 this.pandaGen.storeAccumulator(node, valueReg);
-                this.pandaGen.loadModuleVariable(node, variable.v.getIndex(), true);
+                this.pandaGen.loadModuleVariable(node, variable.v, true);
                 this.pandaGen.storeAccumulator(node, holeReg);
                 this.pandaGen.loadAccumulatorString(node, variable.v.getName());
                 this.pandaGen.storeAccumulator(node, nameReg);
@@ -1482,7 +1482,7 @@ export class Compiler {
                 this.pandaGen.freeTemps(valueReg, holeReg, nameReg);
             }
 
-            this.pandaGen.storeModuleVariable(node, variable.v.getIndex());
+            this.pandaGen.storeModuleVariable(node, variable.v);
         } else {
             throw new Error("invalid lhsRef to store");
         }
@@ -1514,7 +1514,7 @@ export class Compiler {
             }
         } else if (variable.v instanceof ModuleVariable) {
             let isLocal: boolean = variable.v.isExportVar() ? true : false;
-            this.pandaGen.loadModuleVariable(node, variable.v.getIndex(), isLocal);
+            this.pandaGen.loadModuleVariable(node, variable.v, isLocal);
             if ((variable.v.isLetOrConst() || variable.v.isClass()) && !variable.v.isInitialized()) {
                 let valueReg = this.pandaGen.getTemp();
                 let nameReg = this.pandaGen.getTemp();

@@ -186,7 +186,11 @@ import {
 } from "./scope";
 import { CatchTable } from "./statement/tryStatement";
 import { TypeRecorder } from "./typeRecorder";
-import { MandatoryArguments, Variable } from "./variable";
+import {
+    MandatoryArguments,
+    ModuleVariable,
+    Variable
+} from "./variable";
 import * as jshelpers from "./jshelpers";
 import { CompilerDriver } from "./compilerDriver";
 import { getLiteralKey } from "./base/util";
@@ -1249,16 +1253,28 @@ export class PandaGen {
         )
     }
 
-    loadModuleVariable(node: ts.Node, index: number, isLocal: boolean) {
+    loadModuleVariable(node: ts.Node, v: ModuleVariable, isLocal: boolean) {
+        let index: number = v.getIndex();
+        let typeIndex: number = v.getTypeIndex();
+        // For local module variable, we bind type with storeModuleVariable instruction
+        // instead of loadLocalModuleVariable instruction to avoid duplicate recording when load multi times.
+        // For external module variable, we can only bind type with loadExternalModuleVariable instruction
+        // because there is no storeModuleVariable instruction of the corrsponding variable in the same file.
         if (isLocal) {
             this.add(node, loadLocalModuleVariable(index));
         } else {
-            this.add(node, loadExternalModuleVariable(index));
+            let ldModuleVarInst: IRNode = loadExternalModuleVariable(index);
+            this.setInstType(ldModuleVarInst, typeIndex);
+            this.add(node, ldModuleVarInst);
         }
     }
 
-    storeModuleVariable(node: ts.Node | NodeKind, index: number) {
-        this.add(node, storeModuleVariable(index));
+    storeModuleVariable(node: ts.Node | NodeKind, v: ModuleVariable) {
+        let index: number = v.getIndex();
+        let typeIndex: number = v.getTypeIndex();
+        let stModuleVarInst: IRNode = storeModuleVariable(index);
+        this.setInstType(stModuleVarInst, typeIndex);
+        this.add(node, stModuleVarInst);
     }
 
     getModuleNamespace(node: ts.Node, moduleRequestIdx: number) {
