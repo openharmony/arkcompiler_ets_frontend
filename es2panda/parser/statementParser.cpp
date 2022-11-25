@@ -1554,12 +1554,16 @@ ir::IfStatement *ParserImpl::ParseIfStatement()
     lexer_->NextToken();
 
     ir::Statement *consequent = nullptr;
-    auto consequentCtx = binder::LexicalScope<binder::LocalScope>(Binder());
-    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        consequent = ParseBlockStatement(consequentCtx.GetScope());
-        lexer_->NextToken();
-    } else {
-        consequent = ParseStatement(StatementParsingFlags::IF_ELSE);
+    binder::Scope *consequentScope = nullptr;
+    {
+        auto consequentCtx = binder::LexicalScope<binder::LocalScope>(Binder());
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+            consequent = ParseBlockStatement(consequentCtx.GetScope());
+            lexer_->NextToken();
+        } else {
+            consequent = ParseStatement(StatementParsingFlags::IF_ELSE);
+        }
+        consequentScope = consequentCtx.GetScope();
     }
 
     if (Extension() == ScriptExtension::TS && consequent->IsEmptyStatement()) {
@@ -1583,7 +1587,7 @@ ir::IfStatement *ParserImpl::ParseIfStatement()
         alternateScope = alternateCtx.GetScope();
     }
 
-    auto *ifStatement = AllocNode<ir::IfStatement>(test, consequent, consequentCtx.GetScope(),
+    auto *ifStatement = AllocNode<ir::IfStatement>(test, consequent, consequentScope,
                                                    alternate, alternateScope);
     ifStatement->SetRange({startLoc, endLoc});
     return ifStatement;
