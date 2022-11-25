@@ -177,8 +177,8 @@ bool KeywordsUtil::IsIdentifierStart(char32_t cp)
     if (cp < LEX_ASCII_MAX_BITS) {
         return (ASCII_FLAGS[cp] & AsciiFlags::ID_START) != 0;
     }
-
-    auto uchar = static_cast<UChar>(cp);
+    // Unicode {xxxxx} may consist of 4 bytes information and cannot be forcibly converted to 2 bytes
+    auto uchar = static_cast<UChar32>(cp);
     return u_hasBinaryProperty(uchar, UCHAR_ID_START);
 }
 
@@ -188,8 +188,11 @@ bool KeywordsUtil::IsIdentifierPart(char32_t cp)
         return (ASCII_FLAGS[cp] & AsciiFlags::ID_CONTINUE) != 0;
     }
 
-    // u_isIDPart or Other_ID_Continue characters or ZWJ/ZWNJ.
-    auto uchar = static_cast<UChar>(cp);
+    /**
+     * u_isIDPart or Other_ID_Continue characters or ZWJ/ZWNJ.
+     * Unicode {xxxxx} may consist of 4 bytes information and cannot be forcibly converted to 2 bytes
+     */
+    auto uchar = static_cast<UChar32>(cp);
     return (u_hasBinaryProperty(uchar, UCHAR_ID_CONTINUE) || cp == LEX_CHAR_ZWNJ || cp == LEX_CHAR_ZWJ);
 }
 
