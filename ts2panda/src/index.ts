@@ -487,7 +487,7 @@ namespace Compiler {
             strictNullChecks: false,
             skipLibCheck: true,
             alwaysStrict: true,
-            importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Preserve
+            importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Remove
         };
     }
 }
