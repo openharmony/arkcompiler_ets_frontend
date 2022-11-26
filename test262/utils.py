@@ -165,6 +165,7 @@ def search_dependency(file, directory):
         for f in files:
             if f == file:
                 return os.path.join(root, f)
+    return "FILE_NOT_FOUND"
 
 
 def collect_module_dependencies(file, directory, traversedDependencies):
@@ -175,12 +176,15 @@ def collect_module_dependencies(file, directory, traversedDependencies):
         module_import_list = re.findall(r'(import|from)(?:\s*)\(?(\'(\.\/.*)\'|"(\.\/.*)")\)?', content)
 
         for result in list(set(module_import_list)):
-            specifier = result[2] if len(result[2]) != 0 else result[3]
-            if re.search(r'\S+_FIXTURE.js$', specifier):
-                dependency = search_dependency(specifier.lstrip('./'), directory)
+            specifier = (result[2] if len(result[2]) != 0 else result[3]).lstrip('./')
+            if os.path.basename(file) is not specifier:
+                dependency = search_dependency(specifier, directory)
+                if dependency == "FILE_NOT_FOUND":
+                    continue
+
                 if dependency not in traversedDependencies:
                     dependencies.extend(collect_module_dependencies(dependency, directory,
-                                                                   list(set(traversedDependencies))))
+                                                                    list(set(traversedDependencies))))
                 dependencies.append(dependency)
 
     return dependencies
