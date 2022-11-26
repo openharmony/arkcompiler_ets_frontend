@@ -85,17 +85,16 @@ private:
                          std::vector<OperandKind> *regsKind = nullptr)
     {
         Formats formats = ins->GetFormats();
-        limit_ = 0;
 
         for (const auto &format : formats) {
+            limit_ = 0;
             for (const auto &formatItem : format.GetFormatItem()) {
                 if (regsKind && formatItem.IsVReg()) {
                     regsKind->push_back(formatItem.Kind());
                 }
 
-                if (formatItem.IsVReg()) {
+                if (formatItem.IsVReg() && limit_ == 0) {
                     limit_ = 1 << formatItem.Bitwidth();
-                    break;
                 }
             }
 
