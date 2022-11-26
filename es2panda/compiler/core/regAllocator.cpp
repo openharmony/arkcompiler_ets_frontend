@@ -21,34 +21,10 @@
 
 namespace panda::es2panda::compiler {
 
-// AllocatorBase
-
-void AllocatorBase::PushBack(IRNode *ins)
-{
-    pg_->Insns().push_back(ins);
-}
-
-ArenaAllocator *AllocatorBase::Allocator() const
-{
-    return pg_->Allocator();
-}
-
-void AllocatorBase::UpdateIcSlot(IRNode *node)
-{
-    auto inc = node->SetIcSlot(pg_->GetCurrentSlot());
-    pg_->IncreaseCurrentSlot(inc);
-}
-
-void SimpleAllocator::Run(IRNode *ins, int64_t typeIndex)
-{
-    PushBack(ins);
-    pg_->TypedInsns()[ins] = typeIndex;
-}
-
 // FrontAllocator
 
 FrontAllocator::FrontAllocator(PandaGen *pg)
-    : AllocatorBase(pg), insn_(std::move(pg_->Insns()), pg_->Allocator()->Adapter())
+    : pg_(pg), insn_(std::move(pg_->Insns()), pg_->Allocator()->Adapter())
 {
 }
 
@@ -57,77 +33,33 @@ FrontAllocator::~FrontAllocator()
     pg_->Insns().splice(pg_->Insns().end(), std::move(insn_));
 }
 
-// SimpleAllocator
-Label *SimpleAllocator::AllocLabel(std::string &&id)
+// RegAllocator
+
+void RegAllocator::PushBack(IRNode *ins)
+{
+    pg_->Insns().push_back(ins);
+}
+
+ArenaAllocator *RegAllocator::Allocator() const
+{
+    return pg_->Allocator();
+}
+
+uint16_t RegAllocator::GetSpillRegsCount() const
+{
+    return spillRegs_;
+}
+
+void RegAllocator::UpdateIcSlot(IRNode *node)
+{
+    auto inc = node->SetIcSlot(pg_->GetCurrentSlot());
+    pg_->IncreaseCurrentSlot(inc);
+}
+
+Label *RegAllocator::AllocLabel(std::string &&id)
 {
     const auto *lastInsNode = pg_->Insns().empty() ? FIRST_NODE_OF_FUNCTION : pg_->Insns().back()->Node();
     return Alloc<Label>(lastInsNode, std::move(id));
-}
-
-// RegAllocatorBase
-
-VReg RegAllocatorBase::Spill(IRNode *ins, VReg reg)
-{
-    VReg spillReg = pg_->AllocReg();
-    VReg origin = spillIndex_++;
-    spillMap_.emplace(origin, reg);
-
-    Add<Mov>(ins->Node(), spillReg, origin);
-    Add<Mov>(ins->Node(), origin, reg);
-
-    return origin;
-}
-
-void RegAllocatorBase::Restore(IRNode *ins)
-{
-    spillIndex_--;
-    VReg spillReg = spillIndex_;
-    VReg origin = regEnd_ + spillIndex_;
-    VReg actualReg = spillMap_[spillReg];
-
-    Add<Mov>(ins->Node(), actualReg, spillReg);
-    Add<Mov>(ins->Node(), spillReg, origin);
-}
-
-void RegAllocatorBase::ClearSpillMap()
-{
-    spillMap_.clear();
-}
-
-// RegAllocator
-
-void RegAllocator::Run(IRNode *ins)
-{
-    ASSERT(spillIndex_ == 0);
-    std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
-    auto regCnt = ins->Registers(&regs);
-    auto registers = Span<VReg *>(regs.data(), regs.data() + regCnt);
-
-    if (CheckRegIndices(ins, registers)) {
-        PushBack(ins);
-        return;
-    }
-
-    RegScope regScope(pg_);
-
-    regEnd_ = pg_->NextReg();
-
-    for (auto *reg : registers) {
-        if (IsRegisterCorrect(reg)) {
-            continue;
-        }
-
-        const auto actualReg = *reg;
-        *reg = Spill(ins, actualReg);
-    }
-
-    PushBack(ins);
-
-    while (spillIndex_ != 0) {
-        Restore(ins);
-    }
-
-    ClearSpillMap();
 }
 
 void RegAllocator::Run(IRNode *ins, int64_t typeIndex)
@@ -136,53 +68,145 @@ void RegAllocator::Run(IRNode *ins, int64_t typeIndex)
     pg_->TypedInsns()[ins] = typeIndex;
 }
 
-// RangeRegAllocator
-
-void RangeRegAllocator::Run(IRNode *ins, VReg rangeStart, size_t argCount)
+void RegAllocator::Run(IRNode *ins)
 {
-    ASSERT(spillIndex_ == 0);
-    const auto rangeEnd = rangeStart + argCount;
-
     std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
     auto regCnt = ins->Registers(&regs);
+
+    if (regCnt == 0) {
+        return PushBack(ins);
+    }
+
     auto registers = Span<VReg *>(regs.data(), regs.data() + regCnt);
+    spillRegs_ = std::max(spillRegs_, static_cast<uint16_t>(regCnt));
 
-    if (CheckRegIndices(ins, registers)) {
-        PushBack(ins);
-        return;
-    }
-
-    RegScope regScope(pg_);
-
-    regEnd_ = pg_->NextReg();
-
-    auto *iter = registers.begin();
-    auto *iterEnd = iter + registers.size() - 1;
-
-    while (iter != iterEnd) {
-        VReg *reg = *iter;
-
-        const auto actualReg = *reg;
-        *reg = Spill(ins, actualReg);
-        iter++;
-    }
-
-    VReg *regStartReg = *iter;
-    VReg reg = rangeStart++;
-    *regStartReg = Spill(ins, reg);
-
-    while (rangeStart != rangeEnd) {
-        reg = rangeStart++;
-        Spill(ins, reg);
+    if (!CheckRegIndices(ins, registers)) {
+        hasSpill_ = true;
     }
 
     PushBack(ins);
+}
 
-    while (spillIndex_ != 0) {
-        Restore(ins);
+void RegAllocator::Run(IRNode *ins, size_t argCount)
+{
+    std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
+    auto regCnt = ins->Registers(&regs);
+    ASSERT(regCnt != 0);
+    auto registers = Span<VReg *>(regs.data(), regs.data() + regCnt);
+    spillRegs_ = std::max(spillRegs_, static_cast<uint16_t>(argCount + regCnt - 1));
+
+    if (!CheckRegIndices(ins, registers)) {
+        hasSpill_ = true;
     }
 
-    ClearSpillMap();
+    PushBack(ins);
+}
+
+void RegAllocator::AdjustInsRegWhenHasSpill()
+{
+    if (!hasSpill_) {
+        spillRegs_ = 0;
+        return;
+    }
+
+    if ((spillRegs_ + pg_->TotalRegsNum()) > UINT16_MAX) {
+        throw Error(ErrorType::GENERIC, "Can't adjust spill insns when regs run out");
+    }
+
+    ArenaList<IRNode *> newInsns(Allocator()->Adapter());
+    auto &insns = pg_->Insns();
+    for (auto it = insns.begin(); it != insns.end(); ++it) {
+        IRNode *ins = *it;
+        std::vector<OperandKind> regsKind;
+        std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
+        auto regCnt = ins->Registers(&regs);
+
+        if (regCnt == 0) {
+            newInsns.push_back(ins);
+            continue;
+        }
+
+        auto registers = Span<VReg *>(regs.data(), regs.data() + regCnt);
+        for (auto *reg : registers) {
+            *reg = *reg + spillRegs_;
+        }
+
+        if (CheckRegIndices(ins, registers, &regsKind)) {
+            // current ins has no spill, continue iterating
+            newInsns.push_back(ins);
+            continue;
+        }
+
+        // current ins has spill
+        if (ins->IsRangeInst()) {
+            AdjustRangeInsSpill(registers, ins, newInsns);
+            continue;
+        }
+
+        AdjustInsSpill(registers, ins, newInsns, regsKind);
+    }
+    pg_->SetInsns(newInsns);
+}
+
+void RegAllocator::AdjustInsSpill(Span<VReg *> &registers, IRNode *ins, ArenaList<IRNode *> &newInsns,
+                                  std::vector<OperandKind> &regsKind)
+{
+    ASSERT(spillIndex_ == 0);
+    ASSERT(!regsKind.empty());
+    int idx = 0;
+    for (auto *reg : registers) {
+        if (IsRegisterCorrect(reg)) {
+            idx++;
+            continue;
+        }
+
+        const auto originReg = *reg;
+        VReg spillReg = spillIndex_;
+        if (regsKind[idx] == OperandKind::SRC_VREG || regsKind[idx] == OperandKind::SRC_DST_VREG) {
+            Add<Mov>(newInsns, ins->Node(), spillReg, originReg);
+        }
+        if (regsKind[idx] == OperandKind::DST_VREG || regsKind[idx] == OperandKind::SRC_DST_VREG) {
+            dstRegSpills_.push_back(std::make_pair(originReg, spillReg));
+        }
+        *reg = spillIndex_++;
+        idx++;
+    }
+
+    newInsns.push_back(ins);
+
+    for (auto spillPair : dstRegSpills_) {
+        Add<Mov>(newInsns, ins->Node(), spillPair.first, spillPair.second);
+    }
+
+    FreeSpill();
+    dstRegSpills_.clear();
+}
+
+void RegAllocator::AdjustRangeInsSpill(Span<VReg *> &registers, IRNode *ins, ArenaList<IRNode *> &newInsns)
+{
+    ASSERT(spillIndex_ == 0);
+    ASSERT(ins->IsRangeInst());
+    auto rangeRegCount = ins->RangeRegsCount();
+    auto *iter = registers.begin();
+    auto *rangeStartIter = iter + registers.size() - 1;
+    
+    while (iter != rangeStartIter) {
+        VReg *reg = *iter;
+        Add<Mov>(newInsns, ins->Node(), spillIndex_, *reg);
+        *reg = spillIndex_++;
+        iter++;
+    }
+
+    VReg *rangeStartReg = *rangeStartIter;
+    auto originReg = *rangeStartReg;
+    *rangeStartReg = spillIndex_;
+
+    while (rangeRegCount--) {
+        Add<Mov>(newInsns, ins->Node(), spillIndex_++, originReg++);
+    }
+
+    newInsns.push_back(ins);
+    FreeSpill();
 }
 
 }  // namespace panda::es2panda::compiler

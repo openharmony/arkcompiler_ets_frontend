@@ -204,6 +204,7 @@ void Function::Compile(PandaGen *pg)
     pg->CopyFunctionArguments(pg->RootNode());
     pg->InitializeLexEnv(pg->RootNode());
     pg->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
+    pg->AdjustSpillInsns();
     pg->SortCatchTables();
 }
 
