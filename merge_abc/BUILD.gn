@@ -186,26 +186,13 @@ ohos_executable("merge_abc") {
     }
 
     defines = [ "PANDA_TARGET_LINUX" ]
-
-    # for statically linking pthread
-    ldflags += [
-      "-Wl,--whole-archive",
-      "-lrt",
-      "-lpthread",
-      "-Wl,--no-whole-archive",
-    ]
   } else if (is_mac) {
     defines = [ "PANDA_TARGET_MACOS" ]
   } else if (is_mingw) {
     defines = [ "PANDA_TARGET_WINDOWS" ]
   }
 
-  if (!is_mac) {
-    static_link = true
-  }
-
   if (!use_musl) {
-    static_link = false
     ldflags += [ "-lc++" ]
   }
 
