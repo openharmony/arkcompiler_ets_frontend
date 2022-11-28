@@ -94,7 +94,7 @@ bool LexEnvContext::HasTryCatch() const
 void LexEnvContext::AbortContext([[maybe_unused]] ControlFlowChange cfc,
                                  [[maybe_unused]] const util::StringView &targetLabel)
 {
-    if (cfc == ControlFlowChange::CONTINUE || !envScope_->HasEnv()) {
+    if (!envScope_->HasEnv()) {
         return;
     }
 
