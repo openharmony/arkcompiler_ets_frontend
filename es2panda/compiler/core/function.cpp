@@ -73,9 +73,13 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
         VReg paramReg = binder::Binder::MANDATORY_PARAMS_NUMBER + index++;
         ASSERT(paramVar->LexicalBound() || paramVar->AsLocalVariable()->Vreg() == paramReg);
 
+        // parameter has default value
         if (param->IsAssignmentPattern()) {
             RegScope rs(pg);
-            ref.GetValue();
+
+            ref.Kind() == ReferenceKind::DESTRUCTURING ?
+                pg->LoadAccumulator(func, paramReg) : ref.GetValue();
+
             auto *nonDefaultLabel = pg->AllocLabel();
 
             if (ref.Kind() == ReferenceKind::DESTRUCTURING) {
