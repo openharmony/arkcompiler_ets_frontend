@@ -44,7 +44,7 @@ public:
     NO_MOVE_SEMANTIC(CompilerImpl);
 
     panda::pandasm::Program *Compile(parser::Program *program, const es2panda::CompilerOptions &options,
-                                     const std::string &debugInfoSourceFile);
+                                     const std::string &debugInfoSourceFile, const std::string &pkgName);
     static void DumpAsm(const panda::pandasm::Program *prog);
 
     void AddHotfixHelper(util::Hotfix *hotfixHelper)
