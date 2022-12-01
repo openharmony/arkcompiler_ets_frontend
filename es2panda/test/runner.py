@@ -22,6 +22,7 @@ import fnmatch
 import multiprocessing
 import os
 import re
+import shutil
 import subprocess
 import sys
 import test262util
@@ -783,12 +784,19 @@ class CompilerRunner(Runner):
         Runner.__init__(self, args, "Compiler")
 
     def add_directory(self, directory, extension, flags):
-        glob_expression = path.join(
-            self.test_root, directory, "**/*.%s" % (extension))
-        files = glob(glob_expression, recursive=True)
-        files = fnmatch.filter(files, self.test_root + '**' + self.args.filter)
-
-        self.tests += list(map(lambda f: CompilerTest(f, flags), files))
+        if directory.endswith("projects"):
+            projects_path = path.join(self.test_root, directory)
+            for project in os.listdir(projects_path):
+                glob_expression = path.join(projects_path, project, "**/*.%s" % (extension))
+                files = glob(glob_expression, recursive=True)
+                files = fnmatch.filter(files, self.test_root + '**' + self.args.filter)
+                self.tests.append(CompilerProjectTest(projects_path, project, files, flags))
+        else:
+            glob_expression = path.join(
+                self.test_root, directory, "**/*.%s" % (extension))
+            files = glob(glob_expression, recursive=True)
+            files = fnmatch.filter(files, self.test_root + '**' + self.args.filter)
+            self.tests += list(map(lambda f: CompilerTest(f, flags), files))
 
     def test_path(self, src):
         return src
@@ -836,6 +844,86 @@ class CompilerTest(Test):
 
         os.remove(test_abc_path)
 
+        return self
+
+
+class CompilerProjectTest(Test):
+    def __init__(self, projects_path, project, test_paths, flags):
+        Test.__init__(self, "", flags)
+        self.projects_path = projects_path
+        self.project = project
+        self.test_paths = test_paths
+
+    def remove_project(self, runner):
+        project_path = runner.build_dir + "/" + self.project
+        if path.exists(project_path):
+            shutil.rmtree(project_path)
+
+    def get_file_absolute_path_and_name(self, runner):
+        sub_path = self.path[len(self.projects_path):]
+        file_relative_path = path.split(sub_path)[0]
+        file_name = path.split(sub_path)[1]
+        file_absolute_path = runner.build_dir + "/" + file_relative_path
+        return [file_absolute_path, file_name]
+
+    def run(self, runner):
+        # Compile all ts source files in the project to abc files.
+        for test_path in self.test_paths:
+            self.path = test_path
+            [file_absolute_path, file_name] = self.get_file_absolute_path_and_name(runner)
+            if not path.exists(file_absolute_path):
+                os.makedirs(file_absolute_path)
+
+            test_abc_name = ("%s.abc" % (path.splitext(file_name)[0]))
+            test_abc_path = path.join(file_absolute_path, test_abc_name)
+            es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
+            es2abc_cmd.extend(self.flags)
+            es2abc_cmd.extend(["--output=" + test_abc_path])
+            es2abc_cmd.append(self.path)
+            self.log_cmd(es2abc_cmd)
+
+            process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err = process.communicate()
+            if err:
+                self.passed = False
+                self.error = err.decode("utf-8", errors="ignore")
+                self.remove_project(runner)
+                return self
+
+        # Run test files that need to be executed in the project.
+        for test_path in self.test_paths:
+            self.path = test_path
+            if self.path.endswith("-exec.ts"):
+                [file_absolute_path, file_name] = self.get_file_absolute_path_and_name(runner)
+
+                test_abc_name = ("%s.abc" % (path.splitext(file_name)[0]))
+                test_abc_path = path.join(file_absolute_path, test_abc_name)
+
+                ld_library_path = runner.ld_library_path
+                os.environ.setdefault("LD_LIBRARY_PATH", ld_library_path)
+                run_abc_cmd = [runner.ark_js_vm]
+                run_abc_cmd.extend([test_abc_path])
+                self.log_cmd(run_abc_cmd)
+
+                process = subprocess.Popen(run_abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                out, err = process.communicate()
+                self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
+                expected_path = self.get_path_to_expected()
+                try:
+                    with open(expected_path, 'r') as fp:
+                        expected = fp.read()
+                    self.passed = expected == self.output and process.returncode in [0, 1]
+                except Exception:
+                    self.passed = False
+
+                if not self.passed:
+                    self.error = err.decode("utf-8", errors="ignore")
+                    self.remove_project(runner)
+                    return self
+
+            self.passed = True
+
+        self.remove_project(runner)
         return self
 
 
@@ -927,7 +1015,8 @@ def main():
     if args.compiler:
         runner = CompilerRunner(args)
         runner.add_directory("compiler/js", "js", [])
-        runner.add_directory("compiler/ts", "ts", ["--extension=ts"])
+        runner.add_directory("compiler/ts/cases", "ts", ["--extension=ts"])
+        runner.add_directory("compiler/ts/projects", "ts", ["--module", "--extension=ts"])
         runner.add_directory("compiler/dts", "d.ts", ["--module", "--extension=ts"])
 
         runners.append(runner)
