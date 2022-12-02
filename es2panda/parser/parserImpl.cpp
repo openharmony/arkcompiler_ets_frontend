@@ -45,9 +45,11 @@
 #include <ir/module/exportNamedDeclaration.h>
 #include <ir/module/exportSpecifier.h>
 #include <ir/statements/blockStatement.h>
+#include <ir/statements/classDeclaration.h>
 #include <ir/statements/emptyStatement.h>
 #include <ir/statements/expressionStatement.h>
 #include <ir/statements/functionDeclaration.h>
+#include <ir/statements/variableDeclaration.h>
 #include <ir/ts/tsAnyKeyword.h>
 #include <ir/ts/tsArrayType.h>
 #include <ir/ts/tsBigintKeyword.h>
@@ -66,6 +68,7 @@
 #include <ir/ts/tsLiteralType.h>
 #include <ir/ts/tsMappedType.h>
 #include <ir/ts/tsMethodSignature.h>
+#include <ir/ts/tsModuleDeclaration.h>
 #include <ir/ts/tsNamedTupleMember.h>
 #include <ir/ts/tsNeverKeyword.h>
 #include <ir/ts/tsNullKeyword.h>
@@ -169,12 +172,68 @@ void ParserImpl::ParseProgram(ScriptKind kind)
     lexer_->NextToken();
 
     auto statements = ParseStatementList(StatementParsingFlags::STMT_GLOBAL_LEXICAL);
+    if (IsDtsFile() && !CheckTopStatementsForRequiredDeclare(statements)) {
+        ThrowSyntaxError(
+            "Top-level declarations in .d.ts files must start with either a 'declare' or 'export' modifier.");
+    }
 
     auto *blockStmt = AllocNode<ir::BlockStatement>(Binder()->GetScope(), std::move(statements));
     Binder()->GetScope()->BindNode(blockStmt);
     blockStmt->SetRange({startLoc, lexer_->GetToken().End()});
 
     program_.SetAst(blockStmt);
+}
+
+bool ParserImpl::CheckTopStatementsForRequiredDeclare(const ArenaVector<ir::Statement *> &statements)
+{
+    for (auto *statement : statements) {
+        switch (statement->Type()) {
+            case ir::AstNodeType::TS_INTERFACE_DECLARATION:
+            case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION:
+            case ir::AstNodeType::IMPORT_DECLARATION:
+            case ir::AstNodeType::TS_IMPORT_EQUALS_DECLARATION:
+            case ir::AstNodeType::EXPORT_ALL_DECLARATION:
+            case ir::AstNodeType::EXPORT_DEFAULT_DECLARATION:
+            case ir::AstNodeType::EXPORT_NAMED_DECLARATION:
+            case ir::AstNodeType::TS_NAMESPACE_EXPORT_DECLARATION:
+                continue;
+            case ir::AstNodeType::CLASS_DECLARATION: {
+                if (!statement->AsClassDeclaration()->Definition()->Declare()) {
+                    return false;
+                }
+                break;
+            }
+            case ir::AstNodeType::FUNCTION_DECLARATION: {
+                if (!statement->AsFunctionDeclaration()->Function()->Declare() &&
+                    !statement->AsFunctionDeclaration()->Function()->IsOverload()) {
+                    return false;
+                }
+                break;
+            }
+            case ir::AstNodeType::VARIABLE_DECLARATION: {
+                if (!statement->AsVariableDeclaration()->Declare()) {
+                    return false;
+                }
+                break;
+            }
+            case ir::AstNodeType::TS_MODULE_DECLARATION: {
+                if (!statement->AsTSModuleDeclaration()->Declare()) {
+                    return false;
+                }
+                break;
+            }
+            case ir::AstNodeType::TS_ENUM_DECLARATION: {
+                if (!statement->AsTSEnumDeclaration()->IsDeclare()) {
+                    return false;
+                }
+                break;
+            }
+            default:
+                ThrowSyntaxError("Statements are not allowed in ambient contexts.");
+                UNREACHABLE();
+        }
+    }
+    return true;
 }
 
 /*

@@ -155,6 +155,11 @@ int32_t ClassDefinition::CreateClassStaticProperties(compiler::PandaGen *pg, uti
             break;
         }
 
+        if (prop->IsAbstract()) {
+            compiled.Set(i);
+            continue;
+        }
+
         util::StringView name = util::Helpers::LiteralToPropName(prop->Key());
         compiler::LiteralBuffer *literalBuf = prop->IsStatic() ? &staticBuf : buf;
         auto &nameMap = prop->IsStatic() ? staticPropNameMap : propNameMap;

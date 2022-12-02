@@ -14,5 +14,15 @@
  */
 
 
-export function isPrime(x: number): boolean;
-export as namespace mathLib;
+abstract class A {
+    abstract test() : number;
+}
+
+class B extends A {
+    test() : number {
+        return 1;
+    }
+}
+
+var b : A = new B();
+print(b.test());

@@ -1,0 +1,1 @@
+SyntaxError: Statements are not allowed in ambient contexts. [test-expression-statement.d.ts:18:1]

@@ -79,6 +79,7 @@ void MethodDefinition::Dump(ir::AstDumper *dumper) const
                  {"key", key_},
                  {"kind", kind},
                  {"accessibility", AstDumper::Optional(AstDumper::ModifierToString(modifiers_))},
+                 {"abstract", AstDumper::Optional((modifiers_ & ModifierFlags::ABSTRACT) != 0)},
                  {"static", (modifiers_ & ModifierFlags::STATIC) != 0},
                  {"optional", (modifiers_ & ModifierFlags::OPTIONAL) != 0},
                  {"computed", isComputed_},
