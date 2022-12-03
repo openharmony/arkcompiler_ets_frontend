@@ -245,7 +245,8 @@ export class Ts2Panda {
     static dumpRecord(ts2abc: any, recordName: string): void {
         let record = {
             "t": JsonType.record,
-            "rb": new Record(recordName)
+            "rb": new Record(recordName),
+            "pn": CmdOptions.getPackageName()
         }
         let jsonRecord = escapeUnicode(JSON.stringify(record, null, 2));
         jsonRecord = "$" + jsonRecord.replace(dollarSign, '#$') + "$";
