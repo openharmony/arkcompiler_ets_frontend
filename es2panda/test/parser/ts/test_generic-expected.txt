@@ -1396,19 +1396,6 @@
       }
     },
     {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 27,
-          "column": 162
-        },
-        "end": {
-          "line": 27,
-          "column": 163
-        }
-      }
-    },
-    {
       "type": "TSInterfaceDeclaration",
       "body": {
         "type": "TSInterfaceBody",
@@ -6048,19 +6035,6 @@
       }
     },
     {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 68,
-          "column": 57
-        },
-        "end": {
-          "line": 68,
-          "column": 58
-        }
-      }
-    },
-    {
       "type": "TSTypeAliasDeclaration",
       "id": {
         "type": "Identifier",
@@ -6373,19 +6347,6 @@
         "start": {
           "line": 69,
           "column": 1
-        },
-        "end": {
-          "line": 69,
-          "column": 62
-        }
-      }
-    },
-    {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 69,
-          "column": 61
         },
         "end": {
           "line": 69,

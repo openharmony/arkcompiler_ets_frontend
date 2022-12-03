@@ -42,19 +42,6 @@
       }
     },
     {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 17,
-          "column": 16
-        },
-        "end": {
-          "line": 17,
-          "column": 17
-        }
-      }
-    },
-    {
       "type": "TSTypeAliasDeclaration",
       "id": {
         "type": "Identifier",
@@ -87,19 +74,6 @@
         "start": {
           "line": 18,
           "column": 1
-        },
-        "end": {
-          "line": 18,
-          "column": 17
-        }
-      }
-    },
-    {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 18,
-          "column": 16
         },
         "end": {
           "line": 18,
@@ -148,19 +122,6 @@
       }
     },
     {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 19,
-          "column": 16
-        },
-        "end": {
-          "line": 19,
-          "column": 17
-        }
-      }
-    },
-    {
       "type": "TSTypeAliasDeclaration",
       "id": {
         "type": "Identifier",
@@ -193,19 +154,6 @@
         "start": {
           "line": 20,
           "column": 1
-        },
-        "end": {
-          "line": 20,
-          "column": 17
-        }
-      }
-    },
-    {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 20,
-          "column": 16
         },
         "end": {
           "line": 20,
@@ -254,19 +202,6 @@
       }
     },
     {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 21,
-          "column": 16
-        },
-        "end": {
-          "line": 21,
-          "column": 17
-        }
-      }
-    },
-    {
       "type": "TSTypeAliasDeclaration",
       "id": {
         "type": "Identifier",
@@ -299,19 +234,6 @@
         "start": {
           "line": 22,
           "column": 1
-        },
-        "end": {
-          "line": 22,
-          "column": 17
-        }
-      }
-    },
-    {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 22,
-          "column": 16
         },
         "end": {
           "line": 22,
@@ -548,19 +470,6 @@
         "start": {
           "line": 24,
           "column": 1
-        },
-        "end": {
-          "line": 24,
-          "column": 36
-        }
-      }
-    },
-    {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 24,
-          "column": 35
         },
         "end": {
           "line": 24,
@@ -1177,19 +1086,6 @@
       }
     },
     {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 26,
-          "column": 43
-        },
-        "end": {
-          "line": 26,
-          "column": 44
-        }
-      }
-    },
-    {
       "type": "TSTypeAliasDeclaration",
       "id": {
         "type": "Identifier",
@@ -1360,19 +1256,6 @@
         "start": {
           "line": 27,
           "column": 1
-        },
-        "end": {
-          "line": 27,
-          "column": 30
-        }
-      }
-    },
-    {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 27,
-          "column": 29
         },
         "end": {
           "line": 27,
@@ -1663,19 +1546,6 @@
         "start": {
           "line": 28,
           "column": 1
-        },
-        "end": {
-          "line": 28,
-          "column": 40
-        }
-      }
-    },
-    {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 28,
-          "column": 39
         },
         "end": {
           "line": 28,

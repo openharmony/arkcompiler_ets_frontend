@@ -4092,19 +4092,6 @@
       }
     },
     {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 64,
-          "column": 36
-        },
-        "end": {
-          "line": 64,
-          "column": 37
-        }
-      }
-    },
-    {
       "type": "FunctionDeclaration",
       "function": {
         "type": "ScriptFunction",

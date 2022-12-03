@@ -715,6 +715,7 @@ ir::TSTypeAliasDeclaration *ParserImpl::ParseTsTypeAliasDeclaration(bool isDecla
     auto *typeAliasDecl = AllocNode<ir::TSTypeAliasDeclaration>(id, typeParamDecl, typeAnnotation, isDeclare);
     typeAliasDecl->SetRange({typeStart, lexer_->GetToken().End()});
     decl->BindNode(typeAliasDecl);
+    ConsumeSemicolon(typeAliasDecl);
 
     return typeAliasDecl;
 }

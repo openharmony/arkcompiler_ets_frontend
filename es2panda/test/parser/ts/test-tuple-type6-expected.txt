@@ -177,19 +177,6 @@
           "column": 75
         }
       }
-    },
-    {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 17,
-          "column": 74
-        },
-        "end": {
-          "line": 17,
-          "column": 75
-        }
-      }
     }
   ],
   "loc": {

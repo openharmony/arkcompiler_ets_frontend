@@ -212,19 +212,6 @@
       }
     },
     {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 17,
-          "column": 71
-        },
-        "end": {
-          "line": 17,
-          "column": 72
-        }
-      }
-    },
-    {
       "type": "VariableDeclaration",
       "declarations": [
         {
