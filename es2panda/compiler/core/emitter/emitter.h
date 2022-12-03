@@ -116,6 +116,7 @@ public:
 
 private:
     void SetCommonjsField(bool isCommonjs);
+    void SetPkgNameField(std::string pkgName);
     void GenCommonjsRecord() const;
     void GenTypeInfoRecord() const;
     void GenESTypeAnnotationRecord() const;
