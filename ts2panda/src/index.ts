@@ -114,6 +114,8 @@ function main(fileNames: string[], options: ts.CompilerOptions, cmdArgsSet?: Map
                                 return node;
                             }
                             let originProcessArgs = process.argv.slice(0);
+                            // insert specifiedCmdArgs's elements ahead the process.argv's element
+                            // whose index is 2 (count from 0)
                             Array.prototype.splice.apply(process.argv, specifiedCmdArgs);
                             //@ts-ignore
                             CmdOptions.options = commandLineArgs(ts2pandaOptions, { partial: true });
@@ -203,8 +205,9 @@ function transformSourcefilesList(parsed: ts.ParsedCommandLine | undefined) {
 
     for (let i = 0; i < sourceFileInfoArray.length; i++) {
         let sourceFileInfo = sourceFileInfoArray[i].split(";");
-        if (sourceFileInfo.length != 4) {
-            throw new Error("Input info for each file need \"fileName;recordName;moduleType;sourceFile\" style.");
+        if (sourceFileInfo.length != 5) {
+            throw new Error(
+                "Input info for each file need \"fileName;recordName;moduleType;sourceFile;packageName\" style.");
         }
 
         let inputFileName = sourceFileInfo[0];
@@ -221,6 +224,9 @@ function transformSourcefilesList(parsed: ts.ParsedCommandLine | undefined) {
                 throw new Error("The third info should be \"esm\" or \"commonjs\".");
         }
         specifiedCmdArgs.push.apply(specifiedCmdArgs, ["--source-file", sourceFileInfo[3]]);
+        specifiedCmdArgs.push.apply(specifiedCmdArgs, ["--package-name", sourceFileInfo[4]]);
+        // insert two elements 2 and 0 at the beginning of the specifiedCmdArgs array,
+        // useful for Array.prototype.splice.apply
         specifiedCmdArgs.unshift(2, 0);
         cmdArgsSet.set(inputFileName, specifiedCmdArgs);
     }
