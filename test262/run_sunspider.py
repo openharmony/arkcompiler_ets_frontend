@@ -226,31 +226,31 @@ class ArkProgram():
 
         self.arch_root = self.args.ark_arch_root
 
-    def check_compile_mod_for_dynamicImport(self, dependency):
+    def check_compile_mod(self, dependency):
         with open(dependency, 'r', encoding='utf-8') as f:
             context_file = f.read()
-            script_mode_list = re.findall(r'(import)\(((.)|(\'(\.\/.*))\'|"(\.\/.*)")\)',
-                                             context_file)
-            module_mode_list = re.findall(r'(export)|(import)(?:\s+)',
-                                             context_file)
-            compile_as_module = True
-        for script_mode in list(set(script_mode_list)):
-            if len(script_mode[1]) != 0:
-                compile_as_module = False
+            module_pattern = '((?:export|import)\s+(?:{[\s\S]+}|\*))|'
+            module_pattern += '(export\s+(?:let|const|var|function|class|default))|'
+            module_pattern += '(import\s+[\'\"].+[\'\"])'
+            module_mode_list = re.findall(module_pattern, context_file)
+
         for module_mode in list(set(module_mode_list)):
-            if len(module_mode[0]) != 0:
-                compile_as_module = True
+            if len(module_mode[0]) != 0 or len(module_mode[1]) != 0 or \
+                len(module_mode[2]) != 0:
+                return True
+        if "flags: [module]" in context_file or "/language/module-code/" in self.js_file:
+            return True
 
-        return compile_as_module
+        return False
 
-    def gen_dependency_abc(self, dependency):
+    def gen_dependency_proto(self, dependency):
         cmd_args = []
         output_file = os.path.splitext(dependency.replace(DATA_DIR, BASE_OUT_DIR))[0]
         output_abc = f"{output_file}.abc"
         frontend_tool = self.ark_frontend_binary
         merge_abc_binary = self.args.merge_abc_binary
         merge_abc_mode = self.merge_abc_mode
-        compile_as_module = self.check_compile_mod_for_dynamicImport(dependency)
+        compile_as_module = self.check_compile_mod(dependency)
 
         if self.ark_frontend == ARK_FRONTEND_LIST[0]:
             if merge_abc_mode != "0":
@@ -279,11 +279,13 @@ class ArkProgram():
 
     def gen_apart_abc(self, dependencies):
         merge_abc_binary = self.args.merge_abc_binary
+        retcode = 0
         for dependency in list(set(dependencies)):
             cmd_args = []
             output_file = os.path.splitext(dependency.replace(DATA_DIR, BASE_OUT_DIR))[0]
             output_abc = os.path.basename(f"{output_file}.abc")
             file_dir = os.path.split(self.js_file)[0]
+            is_apart_abc_existed = os.path.exists(file_dir + "/" + output_abc)
             dependency_file_prefix = os.path.basename(dependency)[:-3]
             dependency_bin_file = file_dir + "/" + \
                                     ".".join([dependency_file_prefix,
@@ -291,10 +293,11 @@ class ArkProgram():
             cmd_args = [merge_abc_binary, '--input', dependency_bin_file,
                         '--suffix', PROTO_BIN_SUFFIX, '--outputFilePath',
                         file_dir, '--output', output_abc]
-            retcode = exec_command(cmd_args)
+            if not is_apart_abc_existed:
+                retcode = exec_command(cmd_args)
         return retcode
 
-    def gen_merged_abc(self, dependencies, file_name_pre, proto_bin_file, retcode):
+    def gen_merged_abc(self, dependencies, file_name_pre, proto_bin_file):
         merge_abc_binary = self.args.merge_abc_binary
         file_dir = os.path.split(self.js_file)[0]
         proto_abc_file = ".".join([os.path.splitext(os.path.basename(self.js_file))[0], "abc"])
@@ -327,14 +330,14 @@ class ArkProgram():
                         '--suffix', PROTO_BIN_SUFFIX, '--outputFilePath',
                         file_dir, '--output', proto_abc_file]
             self.abc_file = f'{file_name_pre}.abc'
-            retcode = exec_command(cmd_args)
+            return exec_command(cmd_args)
         elif os.path.exists(proto_bin_file):
             cmd_args = [merge_abc_binary, '--input', proto_bin_file,
                         '--suffix', PROTO_BIN_SUFFIX, '--outputFilePath',
                         file_dir, '--output', proto_abc_file]
             self.abc_file = f'{file_name_pre}.abc'
-            retcode = exec_command(cmd_args)
-        return retcode
+            return exec_command(cmd_args)
+        return 0
 
     def gen_abc(self):
         js_file = self.js_file
@@ -342,26 +345,34 @@ class ArkProgram():
         file_name = os.path.basename(js_file)
         file_dir = os.path.split(js_file)[0]
         out_file = f"{file_name_pre}.abc"
+        out_proto = f"{file_name_pre}.proto"
         proto_bin_file = file_name_pre + "." + PROTO_BIN_SUFFIX
         self.abc_file = out_file
         mod_opt_index = 0
-        compile_as_module = True
+        compile_as_module = False
         cmd_args = []
         dependency_cmd_args = []
         frontend_tool = self.ark_frontend_binary
         merge_abc_mode = self.merge_abc_mode
         dependencies = []
         merge_abc_binary = self.args.merge_abc_binary
+        retcode = 0
 
         # pre-generate the dependencies' abc when ark_frontend is [es2panda]
         if (file_name in self.module_list or file_name in self.dynamicImport_list):
             search_dir = os.path.dirname(js_file.replace(BASE_OUT_DIR, DATA_DIR))
             dependencies = collect_module_dependencies(js_file, search_dir, [])
-            compile_as_module = self.check_compile_mod_for_dynamicImport(js_file)
-            if ((self.ark_frontend == ARK_FRONTEND_LIST[0] and "dynamic-import" in js_file) or \
-                (self.ark_frontend == ARK_FRONTEND_LIST[1])):
-                for dependency in list(set(dependencies)):
-                    self.gen_dependency_abc(dependency)
+            compile_as_module = self.check_compile_mod(js_file)
+            if (self.ark_frontend == ARK_FRONTEND_LIST[1]):
+                if list(set(dependencies)):
+                    for dependency in list(set(dependencies)):
+                        dependency_file = os.path.basename(dependency)
+                        dependency_name = os.path.splitext(dependency_file)[0]
+                        out_dependency_pre = file_dir + "/" + dependency_name
+                        out_dependency_proto = f"{out_dependency_pre}.protoBin"
+                        is_dependency_proto_existed = os.path.exists(out_dependency_proto)
+                        if not is_dependency_proto_existed:
+                            self.gen_dependency_proto(dependency)
 
         if self.ark_frontend == ARK_FRONTEND_LIST[0]:
             mod_opt_index = 3
@@ -372,8 +383,7 @@ class ArkProgram():
                 # for testing no-record-name abc
                 cmd_args = ['node', '--expose-gc', frontend_tool, js_file,
                             '-o', out_file]
-            if (file_name in self.module_list or file_name in self.dynamicImport_list) \
-                and compile_as_module:
+            if compile_as_module:
                 cmd_args.insert(mod_opt_index, "-m")
                 self.module = True
         elif self.ark_frontend == ARK_FRONTEND_LIST[1]:
@@ -389,8 +399,7 @@ class ArkProgram():
                             '--function-threads=' +
                             str(self.es2abc_thread_count), '--output',
                             out_file, js_file]
-            if (file_name in self.module_list or file_name in self.dynamicImport_list) \
-                and compile_as_module:
+            if compile_as_module:
                 cmd_args.insert(mod_opt_index, "--module")
                 self.module = True
         # get abc file list from import statement
@@ -407,27 +416,29 @@ class ArkProgram():
                         if self.abc_file.find(abc_file) < 0:
                             self.abc_file += f':{abc_file}'
 
-        retcode = exec_command(cmd_args)
-        self.abc_cmd = cmd_args
+        if not os.path.exists(out_proto):
+            retcode = exec_command(cmd_args)
+            if retcode == 1:
+                return retcode
+            self.abc_cmd = cmd_args
 
         if self.ark_frontend == ARK_FRONTEND_LIST[1]:
-            if "dynamic-import" in js_file:
+            if ("dynamic-import" in js_file and not os.path.exists(out_file)):
                 file_dir = os.path.split(self.js_file)[0]
                 proto_abc_file = ".".join([os.path.splitext(os.path.basename(self.js_file))[0], "abc"])
                 cmd_args = [merge_abc_binary, '--input', proto_bin_file,
                             '--suffix', PROTO_BIN_SUFFIX, '--outputFilePath',
                             file_dir, '--output', proto_abc_file]
                 retcode = exec_command(cmd_args)
+                if retcode == 1:
+                    return retcode
                 self.abc_cmd = cmd_args
 
-        if len(dependencies) == 0 and "dynamic-import" in js_file:
-            return retcode
-
         if merge_abc_mode != "0":
-            if "dynamic-import" in js_file and file_name not in self.module_list:
+            if "dynamic-import" in js_file:
                 return self.gen_apart_abc(dependencies)
             else:
-                return self.gen_merged_abc(dependencies, file_name_pre, proto_bin_file, retcode)
+                return self.gen_merged_abc(dependencies, file_name_pre, proto_bin_file)
 
         return retcode
 
@@ -495,7 +506,7 @@ class ArkProgram():
         elif platform.system() == "Linux" :
             os.environ["LD_LIBRARY_PATH"] = self.libs_dir
         else :
-            sys.exit(f" test262 on {platform.system()} not supported");
+            sys.exit(f" test262 on {platform.system()} not supported")
         file_name_pre = os.path.splitext(self.js_file)[0]
         cmd_args = []
         if self.arch == ARK_ARCH_LIST[1]:

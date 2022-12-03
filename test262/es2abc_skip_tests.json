@@ -245,5 +245,14 @@
             "language/expressions/dynamic-import/catch/nested-async-arrow-function-return-await-specifier-tostring-abrupt-rejects.js",
             "language/expressions/dynamic-import/catch/nested-async-arrow-function-await-specifier-tostring-abrupt-rejects.js"
         ]
+    },
+    {
+        "reason" : "Test262Error: it returns the same namespace are the same Expected SameValue",
+        "files": [
+            "language/expressions/dynamic-import/reuse-namespace-object-from-script.js",
+            "language/expressions/dynamic-import/namespace/await-ns-delete-non-exported-strict.js",
+            "language/expressions/dynamic-import/namespace/default-property-not-set-own.js",
+            "language/expressions/dynamic-import/namespace/promise-then-ns-delete-non-exported-strict.js"
+        ]
     }
 ]
