@@ -32,7 +32,7 @@ class MemManager {
 public:
     explicit MemManager()
     {
-        constexpr auto COMPILER_SIZE = 512_MB;
+        constexpr auto COMPILER_SIZE = 2048_MB;
 
         MemConfig::Initialize(0, 0, COMPILER_SIZE, 0);
         PoolManager::Initialize(PoolType::MMAP);
