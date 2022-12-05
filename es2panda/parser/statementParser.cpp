@@ -2448,6 +2448,11 @@ ir::ExportAllDeclaration *ParserImpl::ParseExportAllDeclaration(const lexer::Sou
 ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::SourcePosition &startLoc,
                                                                    bool isType)
 {
+    if (Extension() == ScriptExtension::TS && context_.IsTsModule() &&
+        !(context_.Status() & ParserStatus::IN_AMBIENT_CONTEXT)) {
+        ThrowSyntaxError("Export declarations are not permitted in a namespace.");
+    }
+
     lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);  // eat `{` character
 
     ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
