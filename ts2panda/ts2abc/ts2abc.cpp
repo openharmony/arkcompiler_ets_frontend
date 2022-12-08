@@ -1075,6 +1075,21 @@ static void ParseRec(const Json::Value &rootValue, panda::pandasm::Program &prog
     prog.record_table.emplace(record.name.c_str(), std::move(record));
 }
 
+static void SetPackageName(const std::string &packageName, panda::pandasm::Program &prog)
+{
+    auto iter = prog.record_table.find(g_recordName);
+    if (iter != prog.record_table.end()) {
+        auto &rec = iter->second;
+        auto pkgNameField = panda::pandasm::Field(LANG_EXT);
+        pkgNameField.name = "pkgName@" + packageName;
+        pkgNameField.type = panda::pandasm::Type("u8", 0);
+        pkgNameField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(0)));
+
+        rec.field_list.emplace_back(std::move(pkgNameField));
+    }
+}
+
 static void ParseSingleStr(const Json::Value &rootValue, panda::pandasm::Program &prog)
 {
     auto strArr = rootValue["s"];
@@ -1294,6 +1309,10 @@ static int ParseSmallPieceJson(const std::string &subJson, panda::pandasm::Progr
         case static_cast<int>(JsonType::RECORD): {
             if (rootValue.isMember("rb") && rootValue["rb"].isObject()) {
                 ParseRec(rootValue, prog);
+            }
+            if (rootValue.isMember("pn") && rootValue["pn"].isString()) {
+                std::string packageName = rootValue["pn"].asString();
+                SetPackageName(packageName, prog);
             }
             break;
         }
