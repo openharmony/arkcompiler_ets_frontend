@@ -230,7 +230,7 @@ void FunctionEmitter::GenSourceFileDebugInfo()
     }
 
     if (pg_->RootNode()->IsProgram()) {
-        func_->source_code = SourceCode().EscapeSymbol<util::StringView::Mutf8Encode>();
+        func_->source_code = SourceCode().Mutf8();
     }
 }
 
