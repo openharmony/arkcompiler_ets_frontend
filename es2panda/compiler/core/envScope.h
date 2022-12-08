@@ -99,8 +99,6 @@ private:
         return scope->IsVariableScope() && scope->AsVariableScope()->NeedLexEnv();
     }
 
-    void CopyBindings(PandaGen *pg, binder::VariableScope *scope, binder::VariableFlags flag);
-
     void InitLoopContext(PandaGen *pg, binder::VariableScope *scope);
 
     binder::VariableScope *scope_ {};

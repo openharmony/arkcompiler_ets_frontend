@@ -650,8 +650,6 @@ public:
         return loopType_;
     }
 
-    void ConvertToVariableScope([[maybe_unused]] ArenaAllocator *allocator);
-
     void InitVariable();
 
     bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
