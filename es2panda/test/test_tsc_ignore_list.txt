@@ -7,8 +7,6 @@ es2panda/test/TypeScript/tests/cases/compiler/computedPropertiesTransformedInOth
 es2panda/test/TypeScript/tests/cases/compiler/constructorOverloads5.ts
 es2panda/test/TypeScript/tests/cases/compiler/elidedEmbeddedStatementsReplacedWithSemicolon.ts
 es2panda/test/TypeScript/tests/cases/compiler/emitBundleWithShebang1.ts
-es2panda/test/TypeScript/tests/cases/compiler/exportAsNamespace.d.ts
-es2panda/test/TypeScript/tests/cases/compiler/exportRedeclarationTypeAliases.ts
 es2panda/test/TypeScript/tests/cases/compiler/fileWithNextLine2.ts
 es2panda/test/TypeScript/tests/cases/compiler/genericRecursiveImplicitConstructorErrors2.ts
 es2panda/test/TypeScript/tests/cases/compiler/globalIsContextualKeyword.ts
@@ -21,8 +19,6 @@ es2panda/test/TypeScript/tests/cases/compiler/letInVarDeclOfForIn_ES5.ts
 es2panda/test/TypeScript/tests/cases/compiler/letInVarDeclOfForIn_ES6.ts
 es2panda/test/TypeScript/tests/cases/compiler/letInVarDeclOfForOf_ES5.ts
 es2panda/test/TypeScript/tests/cases/compiler/letInVarDeclOfForOf_ES6.ts
-es2panda/test/TypeScript/tests/cases/compiler/mutuallyRecursiveInterfaceDeclaration.ts
-es2panda/test/TypeScript/tests/cases/compiler/overloadedConstructorFixesInferencesAppropriately.ts
 es2panda/test/TypeScript/tests/cases/compiler/parameterInitializerBeforeDestructuringEmit.ts
 es2panda/test/TypeScript/tests/cases/compiler/shebang.ts
 es2panda/test/TypeScript/tests/cases/compiler/sigantureIsSubTypeIfTheyAreIdentical.ts
@@ -32,7 +28,6 @@ es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringFo
 es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForObjectBindingPattern2.ts
 es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForObjectBindingPatternDefaultValues2.ts
 es2panda/test/TypeScript/tests/cases/compiler/withStatementInternalComments.ts
-es2panda/test/TypeScript/tests/cases/conformance/async/es2017/asyncAwait_es2017.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/arrowFunction/emitArrowFunctionWhenUsingArguments03_ES6.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/arrowFunction/emitArrowFunctionWhenUsingArguments04_ES6.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/arrowFunction/emitArrowFunctionWhenUsingArguments05_ES6.ts
@@ -76,6 +71,5 @@ es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/parserUnicod
 es2panda/test/TypeScript/tests/cases/conformance/scanner/ecmascript3/scannerES3NumericLiteral2.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/keyof/keyofAndIndexedAccess.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/members/objectTypeWithStringNamedNumericProperty.ts
-es2panda/test/TypeScript/tests/cases/conformance/types/typeParameters/typeArgumentLists/constraintSatisfactionWithEmptyObject.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/uniqueSymbol/uniqueSymbols.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/uniqueSymbol/uniqueSymbolsDeclarations.ts
