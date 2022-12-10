@@ -1045,7 +1045,7 @@ ir::ContinueStatement *ParserImpl::ParseContinueStatement()
     const auto &label = lexer_->GetToken().Ident();
     const ParserContext *labelCtx = context_.FindLabel(label);
 
-    if (!labelCtx || !(labelCtx->Status() & ParserStatus::IN_ITERATION) ||
+    if (!labelCtx || !(labelCtx->Status() & (ParserStatus::IN_ITERATION | ParserStatus::IN_LABELED)) ||
        (labelCtx->Status() & ParserStatus::DISALLOW_CONTINUE)) {
         ThrowSyntaxError("Undefined label");
     }
