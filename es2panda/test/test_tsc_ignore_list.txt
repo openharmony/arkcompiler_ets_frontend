@@ -23,10 +23,6 @@ es2panda/test/TypeScript/tests/cases/compiler/parameterInitializerBeforeDestruct
 es2panda/test/TypeScript/tests/cases/compiler/shebang.ts
 es2panda/test/TypeScript/tests/cases/compiler/sigantureIsSubTypeIfTheyAreIdentical.ts
 es2panda/test/TypeScript/tests/cases/compiler/sourceMap-LineBreaks.ts
-es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForArrayBindingPattern2.ts
-es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForArrayBindingPatternDefaultValues2.ts
-es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForObjectBindingPattern2.ts
-es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForObjectBindingPatternDefaultValues2.ts
 es2panda/test/TypeScript/tests/cases/compiler/withStatementInternalComments.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/arrowFunction/emitArrowFunctionWhenUsingArguments03_ES6.ts
 es2panda/test/TypeScript/tests/cases/conformance/es6/arrowFunction/emitArrowFunctionWhenUsingArguments04_ES6.ts
