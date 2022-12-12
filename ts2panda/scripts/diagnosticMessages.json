@@ -551,7 +551,7 @@
     "Getter must not have any formal parameters": {
         "category": "Error",
         "code": 19006
-    }, 
+    },
     "Class declaration not allowed in statement position": {
         "category": "Error",
         "code": 19007

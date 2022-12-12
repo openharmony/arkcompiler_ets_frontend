@@ -43,7 +43,7 @@ class Emitter;
 class CompilerContext {
 public:
     CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
-                    bool isMergeAbc, bool isTypeExtractorEnabled, std::string sourceFile,
+                    bool isMergeAbc, bool isTypeExtractorEnabled, bool isJsonInputFile, std::string sourceFile,
                     std::string pkgName, util::StringView recordName);
     NO_COPY_SEMANTIC(CompilerContext);
     NO_MOVE_SEMANTIC(CompilerContext);
@@ -110,7 +110,7 @@ public:
         return hotfixHelper_;
     }
 
-    util::StringView &RecordName()
+    const util::StringView &RecordName() const
     {
         return recordName_;
     }
@@ -127,6 +127,11 @@ public:
 
     void SetTypeRecorder(extractor::TypeRecorder *recorder);
 
+    bool IsJsonInputFile() const
+    {
+        return isJsonInputFile_;
+    }
+
 private:
     binder::Binder *binder_;
     int32_t literalBufferIdx_ {0};
@@ -136,12 +141,14 @@ private:
     bool isMergeAbc_;
     // For Type Extractor
     bool isTypeExtractorEnabled_;
+    // true when input file is json file
+    bool isJsonInputFile_;
     extractor::TypeRecorder *recorder_ {};
     std::string sourceFile_;
     std::string pkgName_;
+    util::StringView recordName_;
     std::unique_ptr<Emitter> emitter_;
     util::Hotfix *hotfixHelper_ {nullptr};
-    util::StringView recordName_;
 };
 
 }  // namespace panda::es2panda::compiler
