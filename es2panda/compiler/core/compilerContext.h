@@ -43,7 +43,8 @@ class Emitter;
 class CompilerContext {
 public:
     CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
-                    bool isMergeAbc, bool isTypeExtractorEnabled, std::string sourceFile, util::StringView recordName);
+                    bool isMergeAbc, bool isTypeExtractorEnabled, std::string sourceFile,
+                    std::string pkgName, util::StringView recordName);
     NO_COPY_SEMANTIC(CompilerContext);
     NO_MOVE_SEMANTIC(CompilerContext);
     ~CompilerContext() = default;
@@ -94,6 +95,11 @@ public:
         return sourceFile_;
     }
 
+    std::string PkgName() const
+    {
+        return pkgName_;
+    }
+
     void AddHotfixHelper(util::Hotfix *hotfixHelper)
     {
         hotfixHelper_ = hotfixHelper;
@@ -132,6 +138,7 @@ private:
     bool isTypeExtractorEnabled_;
     extractor::TypeRecorder *recorder_ {};
     std::string sourceFile_;
+    std::string pkgName_;
     std::unique_ptr<Emitter> emitter_;
     util::Hotfix *hotfixHelper_ {nullptr};
     util::StringView recordName_;

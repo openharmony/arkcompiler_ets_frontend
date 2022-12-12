@@ -52,6 +52,7 @@ export const ts2pandaOptions = [
     { name: 'source-file', type: String, defaultValue: "", description: "specify the file path info recorded in generated abc" },
     { name: 'generate-tmp-file', type: Boolean, defaultValue: false, description: "whether to generate intermediate temporary files"},
     { name: 'record-name', type: String, defaultValue: "", description: "specify the record name, this option can only be used when [merge-abc] is enabled." },
+    { name: 'package-name', type: String, defaultValue: "", description: "specify the package that the compiling file belongs to." },
     { name: 'output-proto', type: Boolean, defaultValue: false, description: "Output protoBin file. Default: false" },
     { name: 'merge-abc', type: Boolean, defaultValue: false, description: "Compile as merge abc" },
     { name: 'input-file', type: String, defaultValue: "", description: "A file containing a list of source files to be compiled. Each line of this file should be constructed in such format: fileName;recordName;moduleType;sourceFile" },
@@ -232,11 +233,7 @@ export class CmdOptions {
     }
 
     static getRecordName(): string {
-        if (!this.options) {
-            return "";
-        }
-
-        if (!this.options["merge-abc"]) {
+        if (!this.options || !this.options["merge-abc"]) {
             return "";
         }
 
@@ -340,6 +337,14 @@ export class CmdOptions {
 
     static getSourceFile(): string {
         return this.options["source-file"];
+    }
+
+    static getPackageName(): string {
+        if (!this.options || !this.options["merge-abc"]) {
+            return "";
+        }
+
+        return this.options["package-name"];
     }
 
     static needGenerateTmpFile(): boolean {
