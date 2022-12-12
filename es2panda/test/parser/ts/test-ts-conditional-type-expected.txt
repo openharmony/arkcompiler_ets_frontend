@@ -500,19 +500,6 @@
       }
     },
     {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 18,
-          "column": 200
-        },
-        "end": {
-          "line": 18,
-          "column": 201
-        }
-      }
-    },
-    {
       "type": "VariableDeclaration",
       "declarations": [
         {
@@ -1704,19 +1691,6 @@
         "start": {
           "line": 25,
           "column": 1
-        },
-        "end": {
-          "line": 31,
-          "column": 9
-        }
-      }
-    },
-    {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 31,
-          "column": 8
         },
         "end": {
           "line": 31,

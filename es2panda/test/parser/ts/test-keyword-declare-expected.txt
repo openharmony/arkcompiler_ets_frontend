@@ -408,19 +408,6 @@
       }
     },
     {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 27,
-          "column": 29
-        },
-        "end": {
-          "line": 27,
-          "column": 30
-        }
-      }
-    },
-    {
       "type": "TSTypeAliasDeclaration",
       "id": {
         "type": "Identifier",
@@ -482,19 +469,6 @@
         "start": {
           "line": 28,
           "column": 9
-        },
-        "end": {
-          "line": 28,
-          "column": 38
-        }
-      }
-    },
-    {
-      "type": "EmptyStatement",
-      "loc": {
-        "start": {
-          "line": 28,
-          "column": 37
         },
         "end": {
           "line": 28,
