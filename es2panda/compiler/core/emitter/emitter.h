@@ -113,6 +113,7 @@ public:
                                   const LiteralBuffer *buff);
     static void DumpAsm(const panda::pandasm::Program *prog);
     panda::pandasm::Program *Finalize(bool dumpDebugInfo, util::Hotfix *hotfixHelper);
+    void GenJsonContentRecord(const CompilerContext *context);
 
 private:
     void SetCommonjsField(bool isCommonjs);

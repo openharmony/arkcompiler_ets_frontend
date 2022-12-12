@@ -21,11 +21,12 @@
 namespace panda::es2panda::compiler {
 
 CompilerContext::CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
-                                 bool isMergeAbc, bool isTypeExtractorEnabled, std::string sourceFile,
-                                 std::string pkgName, util::StringView recordName)
+                                 bool isMergeAbc, bool isTypeExtractorEnabled, bool isJsonInputFile,
+                                 std::string sourceFile, std::string pkgName, util::StringView recordName)
     : binder_(binder), isDebug_(isDebug), isDebuggerEvaluateExpressionMode_(isDebuggerEvaluateExpressionMode),
-      isMergeAbc_(isMergeAbc), isTypeExtractorEnabled_(isTypeExtractorEnabled), sourceFile_(sourceFile),
-      pkgName_(pkgName), emitter_(std::make_unique<class Emitter>(this)), recordName_(recordName)
+      isMergeAbc_(isMergeAbc), isTypeExtractorEnabled_(isTypeExtractorEnabled), isJsonInputFile_(isJsonInputFile),
+      sourceFile_(sourceFile), pkgName_(pkgName), recordName_(recordName),
+      emitter_(std::make_unique<class Emitter>(this))
 {
 }
 

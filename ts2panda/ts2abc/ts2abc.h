@@ -38,7 +38,8 @@ enum class JsonType {
     OPTIONS,
     TYPEINFO,
     RECORDNAME,
-    OUTPUTFILENAME
+    OUTPUTFILENAME,
+    INPUTJSONFILECONTENT
 };
 
 constexpr int RETURN_SUCCESS = 0;

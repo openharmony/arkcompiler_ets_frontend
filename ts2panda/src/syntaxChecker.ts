@@ -152,7 +152,7 @@ function hasDuplicateEntryInScope(decl1: Decl, decl2: Decl, scope: Scope) {
      *     var a;
      *     function a() {};
      * }
-     * 
+     *
      * eg2.
      * if (true) {
      *     function a() {};

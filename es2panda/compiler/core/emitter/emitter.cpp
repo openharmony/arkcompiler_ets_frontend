@@ -287,6 +287,11 @@ Emitter::Emitter(const CompilerContext *context)
     prog_ = new panda::pandasm::Program();
     prog_->lang = LANG_EXT;
 
+    if (context->IsJsonInputFile()) {
+        GenJsonContentRecord(context);
+        return;
+    }
+
     // For Type Extractor
     // Global record to show type extractor is enabled or not
     GenTypeInfoRecord();
@@ -333,6 +338,17 @@ void Emitter::GenESTypeAnnotationRecord() const
     typeAnnotationRecord.metadata->SetAttribute("external");
     typeAnnotationRecord.metadata->SetAccessFlags(panda::ACC_ANNOTATION);
     prog_->record_table.emplace(typeAnnotationRecord.name, std::move(typeAnnotationRecord));
+}
+
+void Emitter::GenJsonContentRecord(const CompilerContext *context)
+{
+    rec_ = new panda::pandasm::Record(std::string(context->RecordName()), panda::panda_file::SourceLang::ECMASCRIPT);
+    auto jsonContentField = panda::pandasm::Field(panda::panda_file::SourceLang::ECMASCRIPT);
+    jsonContentField.name = "jsonFileContent";
+    jsonContentField.type = panda::pandasm::Type("u32", 0);
+    jsonContentField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::STRING>(
+        static_cast<std::string_view>(context->SourceFile())));
+    rec_->field_list.emplace_back(std::move(jsonContentField));
 }
 
 void Emitter::AddFunction(FunctionEmitter *func, CompilerContext *context)

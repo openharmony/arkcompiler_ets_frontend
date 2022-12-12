@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { writeFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import * as ts from "typescript";
 import { addVariableToScope } from "./addVariable2Scope";
 import { AssemblyDumper } from "./assemblyDumper";
@@ -237,6 +237,13 @@ export class CompilerDriver {
         }
 
         PandaGen.clearLiteralArrayBuffer();
+    }
+
+    dumpInputJsonFileContent(ts2abcProc: any, jsonFileName: string, recordName: string): void {
+        Ts2Panda.dumpRecord(ts2abcProc, recordName);
+        Ts2Panda.dumpCmdOptions(ts2abcProc);
+        Ts2Panda.dumpInputJsonFileContent(ts2abcProc, readFileSync(jsonFileName).toString());
+        Ts2Panda.dumpOutputFileName(ts2abcProc, jsonFileName.substring(0, jsonFileName.lastIndexOf(".")).concat(".abc"));
     }
 
     private compileImpl(node: ts.SourceFile | ts.FunctionLikeDeclaration, scope: Scope,
