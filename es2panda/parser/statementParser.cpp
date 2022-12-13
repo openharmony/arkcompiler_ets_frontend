@@ -962,7 +962,7 @@ ir::ContinueStatement *ParserImpl::ParseContinueStatement()
     const auto &label = lexer_->GetToken().Ident();
     const ParserContext *labelCtx = context_.FindLabel(label);
 
-    if (!labelCtx || !(labelCtx->Status() & ParserStatus::IN_ITERATION) ||
+    if (!labelCtx || !(labelCtx->Status() & (ParserStatus::IN_ITERATION | ParserStatus::IN_LABELED)) ||
        (labelCtx->Status() & ParserStatus::DISALLOW_CONTINUE)) {
         ThrowSyntaxError("Undefined label");
     }
@@ -1256,7 +1256,8 @@ std::tuple<ForStatementKind, ir::AstNode *, ir::Expression *, ir::Expression *> 
         ThrowSyntaxError("Unexpected token");
     }
 
-    ir::Expression *expr = ParseAssignmentExpression(leftNode);
+    exprFlags &= ExpressionParseFlags::POTENTIALLY_IN_PATTERN;
+    ir::Expression *expr = ParseAssignmentExpression(leftNode, exprFlags);
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
         initNode = ParseSequenceExpression(expr);
@@ -1402,6 +1403,9 @@ ir::Statement *ParserImpl::ParseForStatement()
         std::tie(rightNode, updateNode) = ParseForUpdate(isAwait);
     } else if (leftNode) {
         // initNode was parsed as LHS
+        if (leftNode->IsArrayExpression() || leftNode->IsObjectExpression()) {
+            exprFlags |= ExpressionParseFlags::POTENTIALLY_IN_PATTERN;
+        }
         std::tie(forKind, initNode, rightNode, updateNode) = ParseForInOf(leftNode, exprFlags, isAwait);
     } else if (initNode) {
         // initNode was parsed as VariableDeclaration and declaration size = 1
