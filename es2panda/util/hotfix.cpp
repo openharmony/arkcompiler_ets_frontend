@@ -29,7 +29,6 @@ namespace panda::es2panda::util {
 
 constexpr std::string_view ANONYMOUS_OR_DUPLICATE_FUNCTION_SPECIFIER = "#";
 const std::string EXTERNAL_ATTRIBUTE = "external";
-const uint32_t PATCH_ENV_VREG = 0;  // reuse first param vreg
 const panda::panda_file::SourceLang SRC_LANG = panda::panda_file::SourceLang::ECMASCRIPT;
 
 void Hotfix::ProcessFunction(const compiler::PandaGen *pg, panda::pandasm::Function *func,
@@ -75,14 +74,15 @@ void Hotfix::ValidateModuleInfo(const std::string &recordName,
 {
     auto it = originModuleInfo_->find(recordName);
     if (it == originModuleInfo_->end()) {
-        std::cerr << "Found new import/export expression in " << recordName << ", not supported!" << std::endl;
+        std::cerr << "[Patch] Found new import/export expression in " << recordName << ", not supported!" << std::endl;
         patchError_ = true;
         return;
     }
 
     auto hash = std::hash<std::string>{}(ConvertLiteralToString(moduleBuffer));
     if (std::to_string(hash) != it->second) {
-        std::cerr << "Found import/export expression changed in " << recordName << ", not supported!" << std::endl;
+        std::cerr << "[Patch] Found import/export expression changed in " << recordName << ", not supported!" <<
+            std::endl;
         patchError_ = true;
         return;
     }
@@ -91,6 +91,13 @@ void Hotfix::ValidateModuleInfo(const std::string &recordName,
 bool Hotfix::IsAnonymousOrDuplicateNameFunction(const std::string &funcName)
 {
     return funcName.find(ANONYMOUS_OR_DUPLICATE_FUNCTION_SPECIFIER) != std::string::npos;
+}
+
+int64_t Hotfix::GetLiteralIdxFromStringId(const std::string &stringId)
+{
+    auto recordPrefix = recordName_ + "_";
+    auto idxStr = stringId.substr(recordPrefix.size());
+    return std::atoi(idxStr.c_str());
 }
 
 std::vector<std::pair<std::string, size_t>> Hotfix::GenerateFunctionAndClassHash(panda::pandasm::Function *func,
@@ -113,10 +120,10 @@ std::vector<std::pair<std::string, size_t>> Hotfix::GenerateFunctionAndClassHash
         ss << (ins.set_label ? "" : "\t") << ins.ToString("", true, func->GetTotalRegs()) << " ";
         if (ins.opcode == panda::pandasm::Opcode::CREATEARRAYWITHBUFFER ||
             ins.opcode == panda::pandasm::Opcode::CREATEOBJECTWITHBUFFER) {
-            int64_t bufferIdx = std::get<int64_t>(ins.imms[0]);
+            int64_t bufferIdx = GetLiteralIdxFromStringId(ins.ids[0]);
             ss << ExpandLiteral(bufferIdx, literalBuffers) << " ";
         } else if (ins.opcode == panda::pandasm::Opcode::DEFINECLASSWITHBUFFER) {
-            int64_t bufferIdx = std::get<int64_t>(ins.imms[0]);
+            int64_t bufferIdx = GetLiteralIdxFromStringId(ins.ids[1]);
             std::string literalStr = ExpandLiteral(bufferIdx, literalBuffers);
             auto classHash = std::hash<std::string>{}(literalStr);
             hashList.push_back(std::pair<std::string, size_t>(ins.ids[0], classHash));
@@ -269,11 +276,6 @@ void Hotfix::HandleModifiedClasses(panda::pandasm::Program *prog)
     for (auto &cls: classMemberFunctions_) {
         for (auto &func: cls.second) {
             if (!prog->function_table.at(func).metadata->IsForeign()) {
-                if (func == cls.first) {
-                    std::cerr << "Found class: " << cls.first << " constructor modified, not supported!" << std::endl;
-                    patchError_ = true;
-                    return;
-                }
                 modifiedClassNames_.insert(cls.first);
                 break;
             }
@@ -306,12 +308,6 @@ void Hotfix::AddHeadAndTailInsForPatchFuncMain0(std::vector<panda::pandasm::Ins>
     auto newFuncNum = long(ins.size() / 2);  // each new function has 2 ins: define and store
     newLexenv.imms.emplace_back(newFuncNum);
 
-    panda::pandasm::Ins stLexenv;
-    stLexenv.opcode = pandasm::Opcode::STA;
-    stLexenv.regs.reserve(1);
-    stLexenv.regs.emplace_back(PATCH_ENV_VREG);
-
-    ins.insert(ins.begin(), stLexenv);
     ins.insert(ins.begin(), newLexenv);
     ins.push_back(returnUndefine);
 }
@@ -334,7 +330,6 @@ void Hotfix::CreateFunctionPatchMain0AndMain1(panda::pandasm::Function &patchFun
         if (IsFunctionOrClassDefineIns(funcDefineIns_[i])) {
             auto &name = funcDefineIns_[i].ids[0];
             if (newFuncNames_.count(name)) {
-                funcDefineIns_[i].regs[0] = PATCH_ENV_VREG;
                 patchMain0DefineIns.push_back(funcDefineIns_[i]);
                 patchMain0DefineIns.push_back(funcDefineIns_[i + 1]);
                 continue;
@@ -350,6 +345,9 @@ void Hotfix::CreateFunctionPatchMain0AndMain1(panda::pandasm::Function &patchFun
 
     patchFuncMain0.ins = patchMain0DefineIns;
     patchFuncMain1.ins = patchMain1DefineIns;
+
+    patchFuncMain0.return_type = panda::pandasm::Type("any", 0);
+    patchFuncMain1.return_type = panda::pandasm::Type("any", 0);
 }
 
 void Hotfix::Finalize(panda::pandasm::Program **prog)
@@ -362,7 +360,7 @@ void Hotfix::Finalize(panda::pandasm::Program **prog)
 
     if (patchError_) {
         *prog = nullptr;
-        std::cerr << "Found unsupported change in file, will not generate patch!" << std::endl;
+        std::cerr << "[Patch] Found unsupported change in file, will not generate patch!" << std::endl;
         return;
     }
 
@@ -381,7 +379,7 @@ bool Hotfix::CompareLexenv(const std::string &funcName, const compiler::PandaGen
     auto &lexenv = bytecodeInfo.lexenv;
     if (funcName != funcMain0_) {
         if (lexenv.size() != lexicalVarNameAndTypes.size()) {
-            std::cerr << "Found lexenv size changed, not supported!" << std::endl;
+            std::cerr << "[Patch] Found lexenv size changed, not supported!" << std::endl;
             patchError_ = true;
             return false;
         }
@@ -389,14 +387,14 @@ bool Hotfix::CompareLexenv(const std::string &funcName, const compiler::PandaGen
             auto varName = std::string(variable.second.first);
             auto lexenvIter = lexenv.find(varName);
             if (lexenvIter == lexenv.end()) {
-                std::cerr << "Found new lex env added, not supported!" << std::endl;
+                std::cerr << "[Patch] Found new lex env added, not supported!" << std::endl;
                 patchError_ = true;
                 return false;
             }
 
             auto &lexInfo = lexenvIter->second;
             if (variable.first != lexInfo.first || variable.second.second != lexInfo.second) {
-                std::cerr << "Found new lex env changed(slot or type), not supported!" << std::endl;
+                std::cerr << "[Patch] Found new lex env changed(slot or type), not supported!" << std::endl;
                 patchError_ = true;
                 return false;
             }
@@ -414,7 +412,7 @@ bool Hotfix::CompareClassHash(std::vector<std::pair<std::string, size_t>> &hashL
         auto classIter = classInfo.find(className);
         if (classIter != classInfo.end()) {
             if (classIter->second != std::to_string(hashList[i].second)) {
-                std::cerr << "Found class " << hashList[i].first << " changed, not supported!" << std::endl;
+                std::cerr << "[Patch] Found class " << hashList[i].first << " changed, not supported!" << std::endl;
                 patchError_ = true;
                 return false;
             }
@@ -430,7 +428,7 @@ void Hotfix::HandleFunction(const compiler::PandaGen *pg, panda::pandasm::Functi
     auto originFunction = originFunctionInfo_->find(funcName);
     if (originFunction == originFunctionInfo_->end()) {
         if (IsAnonymousOrDuplicateNameFunction(funcName)) {
-            std::cerr << "Found new anonymous or duplicate name function " << funcName
+            std::cerr << "[Patch] Found new anonymous or duplicate name function " << funcName
                       << " not supported!" << std::endl;
             patchError_ = true;
             return;

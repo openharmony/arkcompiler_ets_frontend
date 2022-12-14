@@ -50,9 +50,9 @@ public:
         classMemberFunctions_(allocator_.Adapter()) {
             originFunctionInfo_ = symbolTable_->GetOriginFunctionInfo();
             originModuleInfo_ = symbolTable_->GetOriginModuleInfo();
-            patchMain0_ = recordName_ + "patch_main_0";
-            patchMain1_ = recordName_ + "patch_main_1";
-            funcMain0_ = recordName_ + "func_main_0";
+            patchMain0_ = recordName_ + ".patch_main_0";
+            patchMain1_ = recordName_ + ".patch_main_1";
+            funcMain0_ = recordName_ + ".func_main_0";
         }
 
     void Finalize(panda::pandasm::Program **prog);
@@ -87,6 +87,7 @@ private:
     void CollectClassMemberFunctions(const std::string &className, int64_t bufferIdx, LiteralBuffers &literalBuffers);
     std::vector<std::string> GetLiteralMethods(int64_t bufferIdx, LiteralBuffers &literalBuffers);
     void HandleModifiedClasses(panda::pandasm::Program *prog);
+    int64_t GetLiteralIdxFromStringId(const std::string &stringId);
 
     std::mutex m_;
     uint32_t topScopeIdx_ {0};
