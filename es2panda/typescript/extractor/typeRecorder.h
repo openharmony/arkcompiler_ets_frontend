@@ -73,6 +73,12 @@ public:
     int64_t GetBuiltinInst(const std::vector<int64_t> &allTypes) const;
     void SetBuiltinInst(const std::vector<int64_t> &allTypes, int64_t instIndex);
 
+    int64_t GetGenericInst(const std::vector<int64_t> &allTypes) const;
+    void SetGenericInst(const std::vector<int64_t> &allTypes, int64_t instIndex);
+
+    int64_t GetIndexSig(int64_t refIndex) const;
+    void SetIndexSig(int64_t refIndex, int64_t indexSigIndex);
+
     int64_t GetClassInst(int64_t classIndex) const;
     void SetClassInst(int64_t classIndex, int64_t instIndex);
 
@@ -87,6 +93,9 @@ public:
 
     int64_t GetObjectType(const std::string &objectStr) const;
     void SetObjectType(const std::string &objectStr, int64_t objectIndex);
+
+    int64_t GetFunctionType(const std::string &functionStr) const;
+    void SetFunctionType(const std::string &functionStr, int64_t functionIndex);
 
     int64_t GetExportType(const std::string &exportStr) const;
     void SetExportType(const std::string &exportStr, int64_t exportIndex);
@@ -118,11 +127,14 @@ private:
     std::unordered_map<const ir::AstNode *, int64_t> nodeTypeIndex_ {};
     std::unordered_map<const binder::Variable *, int64_t> variableTypeIndex_ {};
     std::map<std::vector<int64_t>, int64_t> builtinInst_ {};
+    std::map<std::vector<int64_t>, int64_t> genericInst_ {};
+    std::unordered_map<int64_t, int64_t> indexSig_ {};
     std::unordered_map<int64_t, int64_t> classInst_ {};
     std::unordered_map<int64_t, int64_t> classType_ {};
     std::unordered_map<int64_t, int64_t> arrayType_ {};
     std::unordered_map<std::string, int64_t> unionType_ {};
     std::unordered_map<std::string, int64_t> objectType_ {};
+    std::unordered_map<std::string, int64_t> functionType_ {};
     // Export symbols
     std::unordered_map<std::string, int64_t> exportType_ {};
     std::unordered_map<std::string, int64_t> declareType_ {};

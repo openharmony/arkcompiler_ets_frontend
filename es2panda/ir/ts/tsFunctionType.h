@@ -62,7 +62,7 @@ public:
         return params_;
     }
 
-    const Expression *ReturnType() const
+    const Expression *ReturnTypeAnnotation() const
     {
         return returnType_;
     }

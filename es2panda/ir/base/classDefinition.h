@@ -111,6 +111,16 @@ public:
         return body_;
     }
 
+    TSTypeParameterDeclaration *TypeParams()
+    {
+        return typeParams_;
+    }
+
+    const TSTypeParameterDeclaration *TypeParams() const
+    {
+        return typeParams_;
+    }
+
     ArenaVector<TSClassImplements *> &Implements()
     {
         return implements_;
@@ -119,6 +129,16 @@ public:
     const ArenaVector<TSClassImplements *> &Implements() const
     {
         return implements_;
+    }
+
+    ArenaVector<TSIndexSignature *> &IndexSignatures()
+    {
+        return indexSignatures_;
+    }
+
+    const ArenaVector<TSIndexSignature *> &IndexSignatures() const
+    {
+        return indexSignatures_;
     }
 
     MethodDefinition *Ctor()

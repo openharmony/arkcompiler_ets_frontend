@@ -101,6 +101,16 @@ public:
         flags_ |= IdentifierFlags::REFERENCE;
     }
 
+    const std::vector<binder::Variable *> &TSVariables() const
+    {
+        return tsVariables_;
+    }
+
+    void SetTSVariables(const std::vector<binder::Variable *> &tsVariables)
+    {
+        tsVariables_ = tsVariables;
+    }
+
     bool IsTdz() const
     {
         return (flags_ & IdentifierFlags::TDZ) != 0;
@@ -126,6 +136,7 @@ private:
     util::StringView name_;
     Expression *typeAnnotation_ {};
     IdentifierFlags flags_ {IdentifierFlags::NONE};
+    std::vector<binder::Variable *> tsVariables_;
 };
 
 }  // namespace panda::es2panda::ir

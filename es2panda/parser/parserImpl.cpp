@@ -2826,6 +2826,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
 
             ir::Expression *expr = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
             expr->SetRange(lexer_->GetToken().Loc());
+            expr->AsIdentifier()->SetReference();
 
             lexer_->NextToken();
 
