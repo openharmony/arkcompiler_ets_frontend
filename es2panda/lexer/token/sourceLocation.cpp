@@ -45,9 +45,14 @@ LineIndex::LineIndex(const util::StringView &source) noexcept
     auto iter = util::StringView::Iterator(source);
     entrys_.emplace_back(0);
 
+    bool nextEntry = false;
     while (true) {
         switch (iter.Next()) {
             case util::StringView::Iterator::INVALID_CP: {
+                if (!nextEntry) {
+                    // Add the last entry if the ending character is not LEX_CHAR_LF / LEX_CHAR_PS / LEX_CHAR_LS
+                    entrys_.emplace_back(iter.Index());
+                }
                 return;
             }
             case LEX_CHAR_CR: {
@@ -61,10 +66,12 @@ LineIndex::LineIndex(const util::StringView &source) noexcept
             case LEX_CHAR_PS:
             case LEX_CHAR_LS: {
                 entrys_.emplace_back(iter.Index());
+                nextEntry = true;
                 break;
             }
             default: {
                 entrys_.back().AddCol(iter.Index());
+                nextEntry = false;
             }
         }
     }
@@ -75,6 +82,7 @@ SourceLocation LineIndex::GetLocation(SourcePosition pos) noexcept
     size_t line = pos.line;
 
     size_t col = 0;
+    ASSERT(pos.line < entrys_.size());
     const auto &entry = entrys_[pos.line];
     size_t diff = pos.index - entry.lineStart;
 
