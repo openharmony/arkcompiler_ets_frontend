@@ -149,19 +149,16 @@ export class SourceTextModuleRecord {
     makeIndirectExportsExplicit() {
         // @ts-ignore
         this.localExportEntries.forEach((entries: Array<Entry>, localName: string) => {
-            for (let idx = 0; idx < entries.length;) {
-                let importEntry: Entry | undefined = this.regularImportEntries.get(entries[idx].localName!);
-                // get an indirect export entry
-                if (importEntry) {
-                    entries[idx].importName = importEntry.importName;
-                    entries[idx].moduleRequest = importEntry.moduleRequest;
-                    entries[idx].localName = undefined;
-
-                    this.indirectExportEntries.push(entries[idx]);
-                    entries.splice(idx, 1);
-                } else {
-                    idx += 1;
-                }
+            let importEntry: Entry | undefined = this.regularImportEntries.get(localName);
+            if (importEntry) {
+                // get indirect export entries
+                entries.forEach(e => {
+                    e.importName = importEntry.importName;
+                    e.moduleRequest = importEntry.moduleRequest;
+                    e.localName = undefined;
+                    this.indirectExportEntries.push(e);
+                });
+                this.localExportEntries.delete(localName);
             }
         });
     }
