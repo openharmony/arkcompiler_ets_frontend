@@ -80,9 +80,12 @@ SKIP_LIST_FILE = os.path.join("test262", "skip_tests.json")
 ES2ABC_SKIP_LIST_FILE = os.path.join("test262", "es2abc_skip_tests.json")
 TS2ABC_SKIP_LIST_FILE = os.path.join("test262", "ts2abc_skip_tests.json")
 INTL_SKIP_LIST_FILE = os.path.join("test262", "intl_skip_tests.json")
+TS2ABC_SKIP_FORCE_GC_LIST_FILE = os.path.join("test262", "force_gc_skip_tests.json")
 SKIP_LIST_FILES = [SKIP_LIST_FILE, INTL_SKIP_LIST_FILE]
 ALL_SKIP_TESTS = []
 INTL_SKIP_TESTS = []
+SKIP_FORCE_GC_LIST_FILES = []
+FORCE_GC_SKIP_TESTS = []
 
 ARK_FRONTEND_LIST = [
     "ts2panda",
