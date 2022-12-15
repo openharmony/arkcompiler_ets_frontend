@@ -19,6 +19,7 @@ import {
 import 'mocha';
 import { checkInstructions, SnippetCompiler } from "./utils/base";
 import {
+    Createobjectwithbuffer,
     Defineclasswithbuffer,
     Returnundefined,
     Stmodulevar,
@@ -30,7 +31,9 @@ import {
     Sta,
     VReg,
     IRNode,
-    Ldexternalmodulevar
+    Ldexternalmodulevar,
+    Ldlocalmodulevar,
+    Stobjbyname
 } from "../src/irnodes";
 import { CmdOptions } from '../src/cmdOptions';
 import { creatAstFromSnippet } from "./utils/asthelper";
@@ -39,7 +42,7 @@ import { PandaGen } from '../src/pandagen';
 
 describe("ExportDeclaration", function () {
 
-    it("exportClassTest ", function() {
+    it("exportClassTest", function() {
         CmdOptions.isModules = () => {return true};
         CmdOptions.parseUserCmd([""]);
         let snippetCompiler = new SnippetCompiler();
@@ -59,7 +62,7 @@ describe("ExportDeclaration", function () {
         expect(checkInstructions(funcMainInsns, expected)).to.be.true;
     });
 
-    it("Re-exportImportVarTest ", function() {
+    it("Re-exportImportVarTest", function() {
         CmdOptions.isModules = () => {return true};
         let snippetCompiler = new SnippetCompiler();
         snippetCompiler.compile(`import a from 'test.js'; let v = a; export {a};`);
@@ -77,6 +80,47 @@ describe("ExportDeclaration", function () {
             new Lda(a),
             new Sta(v),
             new Returnundefined(),
+        ];
+        expect(checkInstructions(funcMainInsns, expected)).to.be.true;
+    });
+
+    it("Re-exportImportVaribaleIndexTest", function() {
+        CmdOptions.isModules = () => {return true};
+        let snippetCompiler = new SnippetCompiler();
+        snippetCompiler.compile(
+        `import { Graphics } from 'module1';
+        import { graphicsAssembler as graphics } from 'module2';
+        export { earcut } from 'module3';
+        const graphicsAssemblerManager = {
+            getAssembler(sprite) {
+                return graphics;
+            },
+        };
+        Graphics.Assembler = graphicsAssemblerManager;
+        export { graphics, graphicsAssemblerManager as graphicsAssembler, };`);
+        CmdOptions.isModules = () => {return false};
+        IRNode.pg = new PandaGen("test", creatAstFromSnippet(""), 0, undefined);
+        let funcMainInsns = snippetCompiler.getGlobalInsns();
+        let graphicsAssemblerManager = new VReg();
+        let Graphics = new VReg();
+        let v = new VReg();
+        let name = new VReg();
+        let expected = [
+            new Createobjectwithbuffer(new Imm(0), "snippet_1"),
+            new Sta(graphicsAssemblerManager),
+            new Lda(graphicsAssemblerManager),
+            new Stmodulevar(new Imm(0)),
+            new Ldexternalmodulevar(new Imm(0)),
+            new Sta(Graphics),
+            new LdaStr("Graphics"),
+            new Sta(name),
+            new ThrowUndefinedifhole(Graphics, name),
+            new Lda(Graphics),
+            new Sta(v),
+            new Mov(graphicsAssemblerManager, v),
+            new Ldlocalmodulevar(new Imm(0)),
+            new Stobjbyname(new Imm(1), "Assembler", graphicsAssemblerManager),
+            new Returnundefined()
         ];
         expect(checkInstructions(funcMainInsns, expected)).to.be.true;
     });
