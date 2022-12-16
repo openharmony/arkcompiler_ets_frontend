@@ -84,7 +84,7 @@ import {
     ThrowIfsupernotcorrectcall,
     ThrowPatternnoncoercible,
     ThrowNotexists,
-    ThrowUndefinedifhole,
+    ThrowUndefinedifholewithname,
     Tryldglobalbyname,
     Trystglobalbyname,
     Fldai,
@@ -165,8 +165,8 @@ export function throwConstAssignment(name: VReg) {
     return new ThrowConstassignment(name);
 }
 
-export function throwUndefinedIfHole(hole: VReg, name: VReg) {
-    return new ThrowUndefinedifhole(hole, name);
+export function throwUndefinedIfHole(name: string) {
+    return new ThrowUndefinedifholewithname(name);
 }
 
 export function throwThrowNotExists() {

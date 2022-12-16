@@ -9,4 +9,4 @@ Handle types for function: minus
 Handle types for function: func_main_0
 (instruction order, type): (8, 101), (10, 1), (12, 103), (14, 104), (16, 1), (18, 1), (20, 1), (22, 4), (27, 102), (59, 105), 
 Handle types for function: func_main_0
-(instruction order, type): (5, 101), (12, 105), (27, 107), (34, 102), (41, 103), (51, 104), (61, 106), (69, 106), 
+(instruction order, type): (5, 101), (8, 105), (19, 107), (22, 102), (25, 103), (31, 104), (37, 106), (41, 106), 
