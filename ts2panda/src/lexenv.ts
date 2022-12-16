@@ -84,11 +84,8 @@ export class VariableAccessLoad extends VariableAccessBase {
 
         // check TDZ first
         if (!(<LocalVariable>v).isInitialized()) {
-            let holeReg = pandaGen.getTemp();
             insns.push(loadAccumulator(getVregisterCache(pandaGen, CacheList.HOLE)));
-            insns.push(storeAccumulator(holeReg));
-            checkTDZ(pandaGen, holeReg, v.getName(), insns);
-            pandaGen.freeTemps(holeReg);
+            insns.push(throwUndefinedIfHole(v.getName()));
             return insns;
         }
         insns.push(loadAccumulator(bindVreg));
@@ -105,12 +102,7 @@ export class VariableAccessLoad extends VariableAccessBase {
 
         // check TDZ
         if (v.isLetOrConst() || v.isClass()) {
-            let tempReg = pandaGen.getTemp();
-
-            insns.push(storeAccumulator(tempReg));
-            checkTDZ(pandaGen, tempReg, v.getName(), insns);
-            insns.push(loadAccumulator(tempReg));
-            pandaGen.freeTemps(tempReg);
+            insns.push(throwUndefinedIfHole(v.getName()));
         }
 
         return insns;
@@ -142,15 +134,12 @@ export class VariableAcessStore extends VariableAccessBase {
         if (!this.isDeclaration) {
             // check TDZ first
             if (!v.isInitialized()) {
-                let nameReg = pandaGen.getTemp();
                 let tempReg = pandaGen.getTemp();
-                let holeReg = pandaGen.getTemp();
                 insns.push(storeAccumulator(tempReg));
                 insns.push(loadAccumulator(getVregisterCache(pandaGen, CacheList.HOLE)));
-                insns.push(storeAccumulator(holeReg));
-                checkTDZ(pandaGen, holeReg, v.getName(), insns);
+                insns.push(throwUndefinedIfHole(v.getName()));
                 insns.push(loadAccumulator(tempReg));
-                pandaGen.freeTemps(nameReg, tempReg, holeReg);
+                pandaGen.freeTemps(tempReg);
             }
 
             // check const assignment
@@ -175,19 +164,16 @@ export class VariableAcessStore extends VariableAccessBase {
         let slot = v.idxLex;
         if (v.isLetOrConst() || v.isClass()) {
             if (!this.isDeclaration) {
-                let holeReg = pandaGen.getTemp();
                 /**
                  * check TDZ first
                  * If acc == hole -> throw reference error
                  * else -> execute the next insn
                 */
                 insns.push(loadLexicalVar(this.level, slot));
-                insns.push(storeAccumulator(holeReg));
-                checkTDZ(pandaGen, holeReg, v.getName(), insns);
+                insns.push(throwUndefinedIfHole(v.getName()))
 
                 // const assignment check need to be down after TDZ check
                 checkConstAssignment(pandaGen, v, insns, this.node);
-                pandaGen.freeTemps(holeReg);
             }
         }
 
@@ -199,14 +185,6 @@ export class VariableAcessStore extends VariableAccessBase {
 
         return insns;
     }
-}
-
-function checkTDZ(pg: PandaGen, holeReg: VReg, name: string, expansion: IRNode[]) {
-    let nameReg = pg.getTemp();
-    expansion.push(loadAccumulatorString(name));
-    expansion.push(storeAccumulator(nameReg));
-    expansion.push(throwUndefinedIfHole(holeReg, nameReg));
-    pg.freeTemps(nameReg);
 }
 
 function checkConstAssignment(pg: PandaGen, v: Variable, expansion: IRNode[], node: ts.Node | NodeKind) {

@@ -1470,16 +1470,11 @@ export class Compiler {
 
             if ((variable.v.isLet() || variable.v.isClass()) && !variable.v.isInitialized()) {
                 let valueReg = this.pandaGen.getTemp();
-                let holeReg = this.pandaGen.getTemp();
-                let nameReg = this.pandaGen.getTemp();
                 this.pandaGen.storeAccumulator(node, valueReg);
                 this.pandaGen.loadModuleVariable(node, variable.v, true);
-                this.pandaGen.storeAccumulator(node, holeReg);
-                this.pandaGen.loadAccumulatorString(node, variable.v.getName());
-                this.pandaGen.storeAccumulator(node, nameReg);
-                this.pandaGen.throwUndefinedIfHole(node, holeReg, nameReg);
+                this.pandaGen.throwUndefinedIfHole(node, variable.v.getName());
                 this.pandaGen.loadAccumulator(node, valueReg);
-                this.pandaGen.freeTemps(valueReg, holeReg, nameReg);
+                this.pandaGen.freeTemps(valueReg);
             }
 
             this.pandaGen.storeModuleVariable(node, variable.v);
@@ -1516,14 +1511,7 @@ export class Compiler {
             let isLocal: boolean = variable.v.isExportVar() ? true : false;
             this.pandaGen.loadModuleVariable(node, variable.v, isLocal);
             if ((variable.v.isLetOrConst() || variable.v.isClass()) && !variable.v.isInitialized()) {
-                let valueReg = this.pandaGen.getTemp();
-                let nameReg = this.pandaGen.getTemp();
-                this.pandaGen.storeAccumulator(node, valueReg);
-                this.pandaGen.loadAccumulatorString(node, variable.v.getName());
-                this.pandaGen.storeAccumulator(node, nameReg);
-                this.pandaGen.throwUndefinedIfHole(node, valueReg, nameReg);
-                this.pandaGen.loadAccumulator(node, valueReg);
-                this.pandaGen.freeTemps(valueReg, nameReg);
+                this.pandaGen.throwUndefinedIfHole(node, variable.v.getName());
             }
         } else {
             // Handle the variables from lexical scope

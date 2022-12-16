@@ -830,10 +830,10 @@ export class PandaGen {
         this.add(node, creatDebugger());
     }
 
-    throwUndefinedIfHole(node: ts.Node, hole: VReg, name: VReg) {
+    throwUndefinedIfHole(node: ts.Node, name: string) {
         this.add(
             node,
-            throwUndefinedIfHole(hole, name)
+            throwUndefinedIfHole(name)
         )
     }
 

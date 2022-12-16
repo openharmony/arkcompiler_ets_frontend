@@ -23,7 +23,7 @@ import {
     Defineclasswithbuffer,
     Returnundefined,
     Stmodulevar,
-    ThrowUndefinedifhole,
+    ThrowUndefinedifholewithname,
     Imm,
     Lda,
     LdaStr,
@@ -68,16 +68,10 @@ describe("ExportDeclaration", function () {
         snippetCompiler.compile(`import a from 'test.js'; let v = a; export {a};`);
         CmdOptions.isModules = () => {return false};
         let funcMainInsns = snippetCompiler.getGlobalInsns();
-        let a = new VReg();
         let v = new VReg();
-        let name = new VReg();
         let expected = [
             new Ldexternalmodulevar(new Imm(0)),
-            new Sta(a),
-            new LdaStr("a"),
-            new Sta(name),
-            new ThrowUndefinedifhole(a, name),
-            new Lda(a),
+            new ThrowUndefinedifholewithname("a"),
             new Sta(v),
             new Returnundefined(),
         ];
@@ -102,20 +96,14 @@ describe("ExportDeclaration", function () {
         IRNode.pg = new PandaGen("test", creatAstFromSnippet(""), 0, undefined);
         let funcMainInsns = snippetCompiler.getGlobalInsns();
         let graphicsAssemblerManager = new VReg();
-        let Graphics = new VReg();
         let v = new VReg();
-        let name = new VReg();
         let expected = [
             new Createobjectwithbuffer(new Imm(0), "snippet_1"),
             new Sta(graphicsAssemblerManager),
             new Lda(graphicsAssemblerManager),
             new Stmodulevar(new Imm(0)),
             new Ldexternalmodulevar(new Imm(0)),
-            new Sta(Graphics),
-            new LdaStr("Graphics"),
-            new Sta(name),
-            new ThrowUndefinedifhole(Graphics, name),
-            new Lda(Graphics),
+            new ThrowUndefinedifholewithname("Graphics"),
             new Sta(v),
             new Mov(graphicsAssemblerManager, v),
             new Ldlocalmodulevar(new Imm(0)),
