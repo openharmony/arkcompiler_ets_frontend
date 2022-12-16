@@ -36,6 +36,7 @@
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/objectExpression.h"
 #include "ir/expressions/sequenceExpression.h"
+#include "ir/expressions/superExpression.h"
 #include "ir/expressions/templateLiteral.h"
 #include "ir/expressions/thisExpression.h"
 #include "ir/module/exportDefaultDeclaration.h"
@@ -134,19 +135,13 @@ void Transformer::PushVariablesToNearestStatements(ir::BlockStatement *ast)
         auto *scope = it.second;
         if (scope == nullptr) {
             auto scopeCtx = binder::LexicalScope<binder::Scope>::Enter(Binder(), ast->Scope());
-            ast->AddStatementInFront(CreateVariableDeclarationWithIdentify(it.first, VariableParsingFlags::VAR,
+            ast->AddStatementAtPos(0, CreateVariableDeclarationWithIdentify(it.first, VariableParsingFlags::VAR,
                 nullptr, false));
-        } else if (scope->IsFunctionScope()) {
+        } else if (scope->IsFunctionScope() || scope->IsTSModuleScope()) {
             auto *body = scope->Node()->AsScriptFunction()->Body();
             ASSERT(body->IsBlockStatement());
             auto scopeCtx = binder::LexicalScope<binder::Scope>::Enter(Binder(), scope);
-            body->AsBlockStatement()->AddStatementInFront(CreateVariableDeclarationWithIdentify(it.first,
-                VariableParsingFlags::VAR, nullptr, false));
-        } else if (scope->IsTSModuleScope()) {
-            auto *body = scope->Node()->AsTSModuleDeclaration()->Body();
-            ASSERT(body->IsTSModuleBlock());
-            auto scopeCtx = binder::LexicalScope<binder::Scope>::Enter(Binder(), scope);
-            body->AsTSModuleBlock()->AddStatementInFront(CreateVariableDeclarationWithIdentify(it.first,
+            body->AsBlockStatement()->AddStatementAtPos(0, CreateVariableDeclarationWithIdentify(it.first,
                 VariableParsingFlags::VAR, nullptr, false));
         }
     }
@@ -160,7 +155,7 @@ binder::Scope *Transformer::FindExportVariableInTsModuleScope(util::StringView n
         binder::Variable *v = currentScope->FindLocal(name, binder::ResolveBindingOptions::ALL);
         bool isTSModuleScope = currentScope->IsTSModuleScope();
         if (v != nullptr) {
-            if (!v->HasFlag(binder::VariableFlags::VAR)) {
+            if (!v->Declaration()->IsVarDecl() && !v->Declaration()->IsLetDecl() && !v->Declaration()->IsConstDecl()) {
                 break;
             }
             if (isTSModuleScope && currentScope->AsTSModuleScope()->FindExportVariable(name)) {
@@ -304,7 +299,6 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
             auto *node = childNode->AsClassDefinition();
             VisitPrivateProperty(node);
             VisitComputedProperty(node);
-            VisitTSParameterProperty(node);
             auto res = VisitTSNodes(childNode);
             SetOriginalNode(res, childNode);
             return res;
@@ -402,9 +396,13 @@ ir::UpdateNodes Transformer::VisitClassExpression(ir::ClassExpression *node)
      *           ##var_1.a = 1,
      *           ##var_1)
      */
+    auto instanceComputedProperty = VisitInstanceProperty(node->Definition());
+
+    VisitTSParameterProperty(node->Definition());
+
     auto varName = CreateNewVariable(false);
     auto staticProperty = VisitStaticProperty(node->Definition(), varName);
-    if (staticProperty.empty()) {
+    if (instanceComputedProperty.empty() && staticProperty.empty()) {
         return node;
     }
     AddVariableToNearestStatements(varName);
@@ -413,9 +411,14 @@ ir::UpdateNodes Transformer::VisitClassExpression(ir::ClassExpression *node)
         node->AsExpression(), lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     ArenaVector<ir::Expression *> sequence(Allocator()->Adapter());
     sequence.push_back(assignment);
+
+    for (auto *it : instanceComputedProperty) {
+        sequence.push_back(it->GetExpression());
+    }
     for (auto *it : staticProperty) {
         sequence.push_back(it->GetExpression());
     }
+
     sequence.push_back(CreateReferenceIdentifier(varName));
     return AllocNode<ir::SequenceExpression>(std::move(sequence));
 }
@@ -430,21 +433,24 @@ void Transformer::VisitComputedProperty(ir::ClassDefinition *node)
      *    @f
      *    [a](){}
      *    static [b] = 1
+     *    [c] = 1
      *  }
      *
      *  To:
      *  var ##var_1;
      *  var ##var_2;
+     *  var ##var_3;
      *  class C {
      *    @f
      *    [##var_1 = a](){}
      *    static [##var_2 = b] = 1
+     *    [##var_3 = c] = 1
      *  }
      */
     for (auto *it : node->Body()) {
         if (it->IsClassProperty()) {
             auto *classProperty = it->AsClassProperty();
-            if (!classProperty->IsComputed() || (!classProperty->HasDecorators() && !classProperty->IsStatic())) {
+            if (!classProperty->IsComputed()) {
                 continue;
             }
             auto *key = classProperty->Key();
@@ -522,6 +528,53 @@ util::StringView Transformer::CreatePrivatePropertyBindName(util::StringView nam
     return uniqueName;
 }
 
+std::vector<ir::ExpressionStatement *> Transformer::VisitInstanceProperty(ir::ClassDefinition *node)
+{
+    /*
+     *  Move class InstanceProperty to constructor.
+     *  Transform:
+     *  class C {
+     *    "prop" = 1;
+     *  }
+     *
+     *  To:
+     *  class C {
+     *    constructor () {
+     *      this["prop"] = 1;
+     *    }
+     *  }
+     */
+    std::vector<ir::ClassProperty *> addToCtor;
+    // Non-null computed properties need to be added outside the class. It is a subset of addToCtor.
+    std::vector<ir::ExpressionStatement *> computedProps;
+    for (auto *it : node->Body()) {
+        if (it->IsClassProperty() && !it->AsClassProperty()->IsStatic() && it->AsClassProperty()->Value() != nullptr) {
+            addToCtor.push_back(it->AsClassProperty());
+        }
+    }
+    if (addToCtor.empty()) {
+        return {};
+    }
+
+    ir::BlockStatement *blockStat = node->Ctor()->Function()->Body()->AsBlockStatement();
+    size_t insertPos = (node->Super() == nullptr) ? 0 : 1;
+    for (auto *it : addToCtor) {
+        if (it->IsComputed()) {
+            computedProps.push_back(AllocNode<ir::ExpressionStatement>(it->Key()));
+        }
+        auto *member = GetClassMemberName(it->Key(), it->IsComputed(), it);
+        auto *left = AllocNode<ir::MemberExpression>(AllocNode<ir::ThisExpression>(), member,
+                                                     ir::MemberExpression::MemberExpressionKind::ELEMENT_ACCESS,
+                                                     true, false);
+        auto assignment = AllocNode<ir::AssignmentExpression>(left, it->Value(),
+                                                              lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+
+        blockStat->AddStatementAtPos(insertPos, AllocNode<ir::ExpressionStatement>(assignment));
+        insertPos++;
+    }
+    return computedProps;
+}
+
 void Transformer::VisitTSParameterProperty(ir::ClassDefinition *node)
 {
     /*
@@ -544,6 +597,7 @@ void Transformer::VisitTSParameterProperty(ir::ClassDefinition *node)
         return;
     }
     auto blockStatement = body->AsBlockStatement();
+    size_t insertPos = (node->Super() == nullptr) ? 0 : 1;
     for (auto *it : func->Params()) {
         if (!it->IsTSParameterProperty()) {
             continue;
@@ -565,7 +619,8 @@ void Transformer::VisitTSParameterProperty(ir::ClassDefinition *node)
         auto right = CreateReferenceIdentifier(name);
         auto assignment = AllocNode<ir::AssignmentExpression>(left, right,
             lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-        blockStatement->AddStatementInFront(AllocNode<ir::ExpressionStatement>(assignment));
+        blockStatement->AddStatementAtPos(insertPos, AllocNode<ir::ExpressionStatement>(assignment));
+        insertPos++;
     }
 }
 
@@ -611,7 +666,7 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitStaticProperty(ir::Clas
         }
         auto *member = GetClassMemberName(classProperty->Key(), classProperty->IsComputed(), classProperty);
         auto left = AllocNode<ir::MemberExpression>(CreateReferenceIdentifier(name), member,
-            ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, classProperty->IsComputed(), false);
+            ir::MemberExpression::MemberExpressionKind::ELEMENT_ACCESS, true, false);
         auto assignment = AllocNode<ir::AssignmentExpression>(left, right, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
         res.push_back(AllocNode<ir::ExpressionStatement>(assignment));
     }
@@ -632,6 +687,14 @@ ir::UpdateNodes Transformer::VisitClassDeclaration(ir::ClassDeclaration *node)
     } else {
         res.push_back(node);
     }
+
+    auto instanceComputedProperty = VisitInstanceProperty(node->Definition());
+    // instanceComputedProperty has been transformed by VisitComputedPerporty before, here is an assignmentExpression.
+    if (!instanceComputedProperty.empty()) {
+        res.insert(res.end(), instanceComputedProperty.begin(), instanceComputedProperty.end());
+    }
+
+    VisitTSParameterProperty(node->Definition());
 
     auto staticProperty = VisitStaticProperty(node->Definition(), name);
     if (!staticProperty.empty()) {
@@ -1024,7 +1087,14 @@ std::vector<ir::AstNode *> Transformer::VisitExportNamedVariable(ir::Statement *
             }
         }
     } else if (decl->IsFunctionDeclaration() || decl->IsClassDeclaration()) {
-        res.push_back(VisitTSNodes(decl));
+        auto newDecl = VisitTSNode(decl);
+        if (std::holds_alternative<ir::AstNode *>(newDecl)) {
+            res.push_back(std::get<ir::AstNode *>(newDecl));
+        } else {
+            auto statements = std::get<std::vector<ir::AstNode *>>(newDecl);
+            res.insert(res.end(), statements.begin(), statements.end());
+        }
+
         auto name = decl->IsFunctionDeclaration() ?
             decl->AsFunctionDeclaration()->Function()->Id() :
             decl->AsClassDeclaration()->Definition()->Ident();

@@ -89,9 +89,10 @@ void BlockStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
     }
 }
 
-void BlockStatement::AddStatementInFront(Statement *statement)
+void BlockStatement::AddStatementAtPos(size_t insertPos, Statement *statement)
 {
-    statements_.insert(statements_.begin(), statement);
+    ASSERT(insertPos <= statements_.size());
+    statements_.insert(statements_.begin() + insertPos, statement);
 }
 
 }  // namespace panda::es2panda::ir

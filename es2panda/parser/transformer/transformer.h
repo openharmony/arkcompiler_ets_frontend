@@ -105,6 +105,7 @@ private:
     ir::UpdateNodes VisitClassDeclaration(ir::ClassDeclaration *node);
     ir::UpdateNodes VisitClassExpression(ir::ClassExpression *node);
     void VisitTSParameterProperty(ir::ClassDefinition *node);
+    std::vector<ir::ExpressionStatement *> VisitInstanceProperty(ir::ClassDefinition *node);
     std::vector<ir::ExpressionStatement *> VisitStaticProperty(ir::ClassDefinition *node,
                                                                util::StringView name);
     void VisitPrivateProperty(ir::ClassDefinition *node);
