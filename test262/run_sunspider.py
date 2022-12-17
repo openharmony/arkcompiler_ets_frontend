@@ -21,6 +21,7 @@ Description: Use ark to execute js files
 import argparse
 import os
 import platform
+import json
 import sys
 import signal
 import re
@@ -242,6 +243,15 @@ class ArkProgram():
             return True
 
         return False
+
+    def get_all_skip_force_gc_tests(self):
+        SKIP_FORCE_GC_LIST_FILES.append(TS2ABC_SKIP_FORCE_GC_LIST_FILE)
+
+        for file in SKIP_FORCE_GC_LIST_FILES:
+            with open(file) as jsonfile:
+                json_data = json.load(jsonfile)
+                for key in json_data:
+                    FORCE_GC_SKIP_TESTS.extend(key["files"])
 
     def gen_dependency_proto(self, dependency):
         cmd_args = []
@@ -466,6 +476,7 @@ class ArkProgram():
             print_command(cmd_args)
 
     def execute_aot(self):
+        unForceGc = False
         os.environ["LD_LIBRARY_PATH"] = self.libs_dir
         file_name_pre = os.path.splitext(self.js_file)[0]
         cmd_args = []
@@ -486,7 +497,12 @@ class ArkProgram():
                         f'--aot-file={file_name_pre}',
                         f'{file_name_pre}.abc']
         elif self.arch == ARK_ARCH_LIST[0]:
-            cmd_args = [self.ark_tool, ICU_PATH,
+            if file_name_pre in FORCE_GC_SKIP_TESTS:
+                unForceGc = True
+            asm_arg1 = "--enable-force-gc=true"
+            if unForceGc:
+                asm_arg1 = "--enable-force-gc=false"
+            cmd_args = [self.ark_tool, ICU_PATH, asm_arg1,
                         f'--aot-file={file_name_pre}',
                         f'{file_name_pre}.abc']
 
@@ -498,6 +514,7 @@ class ArkProgram():
         return retcode
 
     def execute(self):
+        unForceGc = False
         if platform.system() == "Windows" :
             #add env path for cmd/powershell execute
             libs_dir = self.libs_dir.replace(":", ";")
@@ -524,7 +541,12 @@ class ArkProgram():
                         ICU_PATH,
                         f'{file_name_pre}.abc']
         elif self.arch == ARK_ARCH_LIST[0]:
-            cmd_args = [self.ark_tool, ICU_PATH,
+            if file_name_pre in FORCE_GC_SKIP_TESTS:
+                unForceGc = True
+            asm_arg1 = "--enable-force-gc=true"
+            if unForceGc:
+                asm_arg1 = "--enable-force-gc=false"
+            cmd_args = [self.ark_tool, ICU_PATH, asm_arg1,
                         f'{file_name_pre}.abc']
 
         record_name = os.path.splitext(os.path.split(self.js_file)[1])[0]
@@ -542,6 +564,7 @@ class ArkProgram():
 
     def execute_ark(self):
         self.proce_parameters()
+        self.get_all_skip_force_gc_tests()
         if not self.is_legal_frontend():
             return
         if self.gen_abc():
