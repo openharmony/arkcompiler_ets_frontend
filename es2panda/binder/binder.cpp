@@ -50,6 +50,7 @@
 #include <ir/ts/tsModuleBlock.h>
 #include <ir/ts/tsModuleDeclaration.h>
 #include <ir/ts/tsSignatureDeclaration.h>
+#include <util/concurrent.h>
 #include <util/helpers.h>
 
 namespace panda::es2panda::binder {
@@ -216,6 +217,7 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
 
     if (res.level != 0) {
         ASSERT(res.variable);
+        util::Concurrent::CheckUsingMutableLexicalVar(Program()->GetLineIndex(), ident, res);
         res.variable->SetLexical(res.scope, program_->HotfixHelper());
     }
 
@@ -495,6 +497,7 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
         }
         case ir::AstNodeType::SCRIPT_FUNCTION: {
             auto *scriptFunc = childNode->AsScriptFunction();
+            util::Concurrent::SetConcurrent(const_cast<ir::ScriptFunction *>(scriptFunc), Program()->GetLineIndex());
             auto *funcScope = scriptFunc->Scope();
 
             auto *outerScope = scope_;

@@ -28,6 +28,7 @@
 #include <ir/statements/blockStatement.h>
 #include <ir/ts/tsParameterProperty.h>
 #include <util/helpers.h>
+#include <util/concurrent.h>
 
 namespace panda::es2panda::compiler {
 
@@ -171,8 +172,8 @@ static void CompileFunction(PandaGen *pg)
     pg->SetSourceLocationFlag(lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION);
     pg->FunctionEnter();
     pg->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
-    CompileFunctionParameterDeclaration(pg, decl);
     const ir::AstNode *body = decl->Body();
+    CompileFunctionParameterDeclaration(pg, decl);
 
     if (body->IsExpression()) {
         body->Compile(pg);
@@ -186,6 +187,8 @@ static void CompileFunction(PandaGen *pg)
 
 static void CompileFunctionOrProgram(PandaGen *pg)
 {
+    util::Concurrent::StoreEnvForConcurrent(pg, pg->RootNode());
+
     FunctionRegScope lrs(pg);
     const auto *topScope = pg->TopScope();
 

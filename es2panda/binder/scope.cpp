@@ -26,7 +26,9 @@
 #include <ir/module/exportNamedDeclaration.h>
 #include <ir/module/exportSpecifier.h>
 #include <ir/module/importDeclaration.h>
+#include <ir/base/scriptFunction.h>
 #include <macros.h>
+#include <util/concurrent.h>
 #include <util/ustring.h>
 
 #include <algorithm>
@@ -91,12 +93,13 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
     uint32_t level = 0;
     uint32_t lexLevel = 0;
     const auto *iter = this;
+    bool crossConcurrent = false;
 
     if (iter->IsFunctionParamScope()) {
         Variable *v = iter->FindLocal(name, options);
 
         if (v != nullptr) {
-            return {name, const_cast<Scope *>(iter), level, lexLevel, v};
+            return {name, const_cast<Scope *>(iter), level, lexLevel, v, crossConcurrent};
         }
 
         level++;
@@ -114,11 +117,15 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
         Variable *v = iter->FindLocal(name, options);
 
         if (v != nullptr) {
-            return {name, const_cast<Scope *>(iter), level, lexLevel, v};
+            return {name, const_cast<Scope *>(iter), level, lexLevel, v, crossConcurrent};
         }
 
         if (iter->IsVariableScope()) {
             level++;
+
+            if (iter->IsFunctionScope()) {
+                crossConcurrent = iter->Node()->AsScriptFunction()->IsConcurrent() ? true : false;
+            }
 
             if (iter->AsVariableScope()->NeedLexEnv()) {
                 lexLevel++;
@@ -128,7 +135,7 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
         iter = iter->Parent();
     }
 
-    return {name, nullptr, 0, 0, nullptr};
+    return {name, nullptr, 0, 0, nullptr, crossConcurrent};
 }
 
 Decl *Scope::FindDecl(const util::StringView &name) const
