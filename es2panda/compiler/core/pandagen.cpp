@@ -16,6 +16,7 @@
 #include "pandagen.h"
 
 #include <binder/binder.h>
+#include <util/concurrent.h>
 #include <util/helpers.h>
 #include <util/hotfix.h>
 #include <binder/scope.h>
@@ -56,6 +57,11 @@ void PandaGen::SetFunctionKind()
     }
 
     auto *func = rootNode_->AsScriptFunction();
+    if (func->IsConcurrent()) {
+        funcKind_ = panda::panda_file::FunctionKind::CONCURRENT_FUNCTION;
+        return;
+    }
+
     if (func->IsMethod()) {
         return;
     }

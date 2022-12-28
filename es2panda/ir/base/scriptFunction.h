@@ -167,6 +167,16 @@ public:
         return scope_;
     }
 
+    bool IsConcurrent() const
+    {
+        return (flags_ & ir::ScriptFunctionFlags::CONCURRENT) != 0;
+    }
+
+    bool CanBeConcurrent() const
+    {
+        return !(IsGenerator() || IsAsync() || IsArrow() || IsConstructor() || IsMethod());
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;

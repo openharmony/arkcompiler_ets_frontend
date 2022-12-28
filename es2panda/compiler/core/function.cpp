@@ -26,6 +26,7 @@
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/identifier.h>
 #include <ir/statements/blockStatement.h>
+#include <ir/ts/tsParameterProperty.h>
 #include <util/helpers.h>
 
 namespace panda::es2panda::compiler {
@@ -163,8 +164,8 @@ static void CompileFunction(PandaGen *pg)
     pg->SetSourceLocationFlag(lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION);
     pg->FunctionEnter();
     pg->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
-    CompileFunctionParameterDeclaration(pg, decl);
     const ir::AstNode *body = decl->Body();
+    CompileFunctionParameterDeclaration(pg, decl);
 
     if (body->IsExpression()) {
         body->Compile(pg);

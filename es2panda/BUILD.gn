@@ -246,6 +246,7 @@ es2panda_src = [
   "typescript/types/voidType.cpp",
   "util/base64.cpp",
   "util/bitset.cpp",
+  "util/concurrent.cpp",
   "util/dumper.cpp",
   "util/helpers.cpp",
   "util/hotfix.cpp",
