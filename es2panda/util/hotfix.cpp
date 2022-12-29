@@ -261,6 +261,11 @@ bool IsFunctionOrClassDefineIns(panda::pandasm::Ins &ins)
     return false;
 }
 
+bool IsStPatchVarIns(panda::pandasm::Ins &ins)
+{
+    return ins.opcode == panda::pandasm::Opcode::WIDE_STPATCHVAR;
+}
+
 void Hotfix::CollectFuncDefineIns(panda::pandasm::Function *func)
 {
     for (size_t i = 0; i < func->ins.size(); ++i) {
@@ -329,7 +334,7 @@ void Hotfix::CreateFunctionPatchMain0AndMain1(panda::pandasm::Function &patchFun
     for (size_t i = 0; i < funcDefineIns_.size(); ++i) {
         if (IsFunctionOrClassDefineIns(funcDefineIns_[i])) {
             auto &name = funcDefineIns_[i].ids[0];
-            if (newFuncNames_.count(name)) {
+            if (newFuncNames_.count(name) && IsStPatchVarIns(funcDefineIns_[i + 1])) {
                 patchMain0DefineIns.push_back(funcDefineIns_[i]);
                 patchMain0DefineIns.push_back(funcDefineIns_[i + 1]);
                 continue;
