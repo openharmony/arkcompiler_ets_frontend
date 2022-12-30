@@ -64,11 +64,12 @@ function generateDTs(node: ts.SourceFile, options: ts.CompilerOptions) {
     compilerDriver.showStatistics();
 }
 
-function main(fileNames: string[], options: ts.CompilerOptions, cmdArgsSet?: Map<string, string[]>) {
+function main(fileNames: string[], options: ts.CompilerOptions, inputJsonFiles?: string[], cmdArgsSet?: Map<string, string[]>) {
     const host = ts.createCompilerHost(options);
     if (!CmdOptions.needGenerateTmpFile()) {
         host.writeFile = () => {};
     }
+
     let program = ts.createProgram(fileNames, options, host);
     let typeChecker = TypeChecker.getInstance();
     typeChecker.setTypeChecker(program.getTypeChecker());
@@ -92,11 +93,8 @@ function main(fileNames: string[], options: ts.CompilerOptions, cmdArgsSet?: Map
         return;
     }
 
-    let initCompilerDriver;
-    if (CmdOptions.isCompileFilesList()) {
-        initCompilerDriver = new CompilerDriver("", "");
-        initCompilerDriver.initiateTs2abcChildProcess(["--multi-programs-pipe"]);
-    }
+    let initCompilerDriver = new CompilerDriver("", "");
+    let initTs2abcProcessState = false;
 
     let emitResult = program.emit(
         undefined,
@@ -133,6 +131,10 @@ function main(fileNames: string[], options: ts.CompilerOptions, cmdArgsSet?: Map
                 (ctx: ts.TransformationContext) => {
                     return (node: ts.SourceFile) => {
                         if (CmdOptions.isCompileFilesList()) {
+                            if (!initTs2abcProcessState) {
+                                initCompilerDriver.initiateTs2abcChildProcess(["--multi-programs-pipe"]);
+                                initTs2abcProcessState = true;
+                            }
                             let specifiedCmdArgs = cmdArgsSet.get(node.fileName);
                             if (specifiedCmdArgs == undefined) {
                                 return node;
@@ -174,6 +176,18 @@ function main(fileNames: string[], options: ts.CompilerOptions, cmdArgsSet?: Map
     );
 
     if (CmdOptions.isCompileFilesList()) {
+        if (!initTs2abcProcessState) {
+            initCompilerDriver.initiateTs2abcChildProcess(["--multi-programs-pipe"]);
+        }
+        for (let i = 0; i < inputJsonFiles.length; i++) {
+            let jsonFileName = inputJsonFiles[i];
+            let originProcessArgs = process.argv.slice(0);
+            Array.prototype.splice.apply(process.argv, cmdArgsSet.get(jsonFileName));
+            //@ts-ignore
+            CmdOptions.options = commandLineArgs(ts2pandaOptions, { partial: true });
+            process.argv = originProcessArgs.slice(0);
+            initCompilerDriver.dumpInputJsonFileContent(initCompilerDriver.getTs2abcProcess(), jsonFileName, CmdOptions.getRecordName());
+        }
         terminateWritePipe(initCompilerDriver.getTs2abcProcess());
     }
 
@@ -201,6 +215,7 @@ function transformSourcefilesList(parsed: ts.ParsedCommandLine | undefined) {
     if (sourceFileInfoArray.length == 0) return;
 
     let files: string[] = parsed.fileNames;
+    let inputJsonFiles: string[] = [];
     let cmdArgsSet = new Map();
 
     for (let i = 0; i < sourceFileInfoArray.length; i++) {
@@ -211,7 +226,13 @@ function transformSourcefilesList(parsed: ts.ParsedCommandLine | undefined) {
         }
 
         let inputFileName = sourceFileInfo[0];
-        files.unshift(inputFileName);
+        let inputFileSuffix = inputFileName.substring(inputFileName.lastIndexOf(".") + 1);
+        if (inputFileSuffix == "json") {
+            inputJsonFiles.push(inputFileName);
+        } else {
+            files.unshift(inputFileName);
+        }
+
         let specifiedCmdArgs = ["--record-name", sourceFileInfo[1]];
         switch (sourceFileInfo[2]) {
             case "esm":
@@ -220,8 +241,10 @@ function transformSourcefilesList(parsed: ts.ParsedCommandLine | undefined) {
             case "commonjs":
                 specifiedCmdArgs.push.apply(specifiedCmdArgs, ["-c"]);
                 break;
+            case "na":
+                break;
             default:
-                throw new Error("The third info should be \"esm\" or \"commonjs\".");
+                throw new Error("The third info should be \"esm\", \"commonjs\" or \"na\".");
         }
         specifiedCmdArgs.push.apply(specifiedCmdArgs, ["--source-file", sourceFileInfo[3]]);
         specifiedCmdArgs.push.apply(specifiedCmdArgs, ["--package-name", sourceFileInfo[4]]);
@@ -231,7 +254,7 @@ function transformSourcefilesList(parsed: ts.ParsedCommandLine | undefined) {
         cmdArgsSet.set(inputFileName, specifiedCmdArgs);
     }
 
-    main(files, parsed.options, cmdArgsSet);
+    main(files, parsed.options, inputJsonFiles, cmdArgsSet);
 }
 
 function getDtsFiles(libDir: string): string[] {

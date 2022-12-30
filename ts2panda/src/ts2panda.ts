@@ -69,7 +69,8 @@ const JsonType = {
     "options": 5,
     'type_info': 6,
     'record_name': 7,
-    'output_filename': 8
+    'output_filename': 8,
+    'input_json_file_content': 9
 };
 export class Ts2Panda {
     static strings: Set<string> = new Set();
@@ -491,6 +492,21 @@ export class Ts2Panda {
             Ts2Panda.jsonString += jsonTypeInfoUnicode;
         }
         ts2abc.stdio[3].write(jsonTypeInfoUnicode + '\n');
+    }
+
+    static dumpInputJsonFileContent(ts2abc: any, inputJsonFileContent: string): void {
+        let inputJsonFileContentObject = {
+            "t": JsonType.input_json_file_content,
+            "ijfc": inputJsonFileContent
+        }
+
+        let jsonInputJsonFileContentUnicode = escapeUnicode(JSON.stringify(inputJsonFileContentObject, null, 2));
+        jsonInputJsonFileContentUnicode = "$" + jsonInputJsonFileContentUnicode.replace(dollarSign, '#$') + "$";
+        jsonInputJsonFileContentUnicode = jsonInputJsonFileContentUnicode.replace(starSign, '#*');
+        if (CmdOptions.isEnableDebugLog()) {
+            Ts2Panda.jsonString += jsonInputJsonFileContentUnicode;
+        }
+        ts2abc.stdio[3].write(jsonInputJsonFileContentUnicode + '\n');
     }
 
     static dumpOutputFileName(ts2abc: any, outputFileName: string): void {
