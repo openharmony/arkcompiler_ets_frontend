@@ -87,7 +87,8 @@ enum class ScriptFunctionFlags {
     EXPRESSION = 1 << 3,
     OVERLOAD = 1 << 4,
     CONSTRUCTOR = 1 << 5,
-    METHOD = 1 << 6
+    METHOD = 1 << 6,
+    CONCURRENT = 1 << 7
 };
 
 DEFINE_BITOPS(ScriptFunctionFlags)

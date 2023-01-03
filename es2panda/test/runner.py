@@ -852,6 +852,7 @@ def main():
 
     if args.regression:
         runner = RegressionRunner(args)
+        runner.add_directory("parser/concurrent", "js", ["--module"])
         runner.add_directory("parser/js", "js", ["--parse-only"])
         runner.add_directory("parser/ts", "ts",
                              ["--parse-only", "--module", "--extension=ts"])
