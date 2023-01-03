@@ -27,8 +27,8 @@
 #include <ir/expressions/identifier.h>
 #include <ir/statements/blockStatement.h>
 #include <ir/ts/tsParameterProperty.h>
-#include <util/helpers.h>
 #include <util/concurrent.h>
+#include <util/helpers.h>
 
 namespace panda::es2panda::compiler {
 

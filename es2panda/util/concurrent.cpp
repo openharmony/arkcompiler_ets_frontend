@@ -18,9 +18,9 @@
 #include <binder/scope.h>
 #include <compiler/core/compilerContext.h>
 #include <compiler/core/pandagen.h>
-#include <ir/expressions/literals/stringLiteral.h>
 #include <ir/astNode.h>
 #include <ir/base/scriptFunction.h>
+#include <ir/expressions/literals/stringLiteral.h>
 #include <ir/statements/blockStatement.h>
 #include <ir/statements/expressionStatement.h>
 #include <lexer/token/sourceLocation.h>
@@ -69,12 +69,12 @@ void Concurrent::SetConcurrent(ir::ScriptFunction *func, const lexer::LineIndex 
 
     // concurrent function should only be function declaration
     if (!func->CanBeConcurrent()) {
-        ThrowIncorrectUsing(lineIndex, stmt, ConcurrentInvalidFlag::NOT_ORDINARY_FUNCTION);
+        ThrowInvalidConcurrentFunction(lineIndex, stmt, ConcurrentInvalidFlag::NOT_ORDINARY_FUNCTION);
     }
 
     // concurrent function should be defined in top-level scope
     if (!func->Parent()->Parent()->IsProgram()) {
-        ThrowIncorrectUsing(lineIndex, stmt, ConcurrentInvalidFlag::NOT_TOP_LEVEL);
+        ThrowInvalidConcurrentFunction(lineIndex, stmt, ConcurrentInvalidFlag::NOT_TOP_LEVEL);
     }
 
     func->AddFlag(ir::ScriptFunctionFlags::CONCURRENT);
@@ -89,7 +89,7 @@ void Concurrent::SetConcurrent(ir::ScriptFunction *func, const lexer::LineIndex 
     }
 }
 
-void Concurrent::ThrowIncorrectUsing(const lexer::LineIndex &lineIndex, const ir::AstNode *expr,
+void Concurrent::ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *expr,
                                      ConcurrentInvalidFlag errFlag)
 {
     auto line = expr->Range().start.line;
@@ -106,8 +106,8 @@ void Concurrent::ThrowIncorrectUsing(const lexer::LineIndex &lineIndex, const ir
             break;
         }
         case ConcurrentInvalidFlag::USING_MUTABLE_VARIABLE: {
-            throw Error {ErrorType::GENERIC, "Concurrent function should only use const lexical variable", line,
-                         column};
+            throw Error {ErrorType::GENERIC, "Concurrent function should only use import variable or local variable",
+                         line, column};
             break;
         }
         default:
@@ -127,7 +127,7 @@ void Concurrent::StoreEnvForConcurrent(compiler::PandaGen *pg, const ir::AstNode
     }
 }
 
-void Concurrent::CheckUsingMutableLexicalVar(const lexer::LineIndex &lineIndex, const ir::AstNode *node,
+void Concurrent::VerifyConstLexicalVarForConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *node,
                                              const binder::ScopeFindResult &result)
 {
     if (!result.crossConcurrent) {
@@ -135,7 +135,7 @@ void Concurrent::CheckUsingMutableLexicalVar(const lexer::LineIndex &lineIndex, 
     }
 
     if (!result.variable->Declaration()->IsConstDecl()) {
-        ThrowIncorrectUsing(lineIndex, node, ConcurrentInvalidFlag::USING_MUTABLE_VARIABLE);
+        ThrowInvalidConcurrentFunction(lineIndex, node, ConcurrentInvalidFlag::USING_MUTABLE_VARIABLE);
     }
 }
 
