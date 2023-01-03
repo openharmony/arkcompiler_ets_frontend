@@ -51,17 +51,17 @@ namespace panda::es2panda::compiler {
 
 void PandaGen::SetFunctionKind()
 {
-    // make sure concurrent info will not be overwritten
-    if (funcKind_ == panda::panda_file::FunctionKind::CONCURRENT_FUNCTION) {
-        return;
-    }
-
     if (rootNode_->IsProgram()) {
         funcKind_ = panda::panda_file::FunctionKind::FUNCTION;
         return;
     }
 
     auto *func = rootNode_->AsScriptFunction();
+    if (func->IsConcurrent()) {
+        funcKind_ = panda::panda_file::FunctionKind::CONCURRENT_FUNCTION;
+        return;
+    }
+
     if (func->IsMethod()) {
         return;
     }
@@ -1814,7 +1814,7 @@ void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t
 
 void PandaGen::StoreLexicalEnv(const ir::AstNode *node)
 {
-    ra_.Emit<DeprecatedStlexenv>(node); // modify later
+    ra_.Emit<DeprecatedStlexenv>(node);
 }
 
 void PandaGen::ThrowIfSuperNotCorrectCall(const ir::AstNode *node, int64_t num)

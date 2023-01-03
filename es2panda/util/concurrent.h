@@ -49,10 +49,10 @@ public:
     Concurrent() = delete;
 
     static void SetConcurrent(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex);
-    static void ThrowIncorrectUsing(const lexer::LineIndex &lineIndex, const ir::AstNode *expr,
+    static void ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *expr,
                                     ConcurrentInvalidFlag errFlag);
     static void StoreEnvForConcurrent(compiler::PandaGen *pg, const ir::AstNode *node);
-    static void CheckUsingMutableLexicalVar(const lexer::LineIndex &lineIndex, const ir::AstNode *node,
+    static void VerifyConstLexicalVarForConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *node,
                                             const binder::ScopeFindResult &result);
 
     static constexpr std::string_view USE_CONCURRENT = "use concurrent";
