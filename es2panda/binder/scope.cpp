@@ -21,12 +21,12 @@
 #include <binder/variable.h>
 #include <binder/variableFlags.h>
 #include <ir/astNode.h>
+#include <ir/base/scriptFunction.h>
 #include <ir/expressions/identifier.h>
 #include <ir/module/exportAllDeclaration.h>
 #include <ir/module/exportNamedDeclaration.h>
 #include <ir/module/exportSpecifier.h>
 #include <ir/module/importDeclaration.h>
-#include <ir/base/scriptFunction.h>
 #include <macros.h>
 #include <util/concurrent.h>
 #include <util/ustring.h>
