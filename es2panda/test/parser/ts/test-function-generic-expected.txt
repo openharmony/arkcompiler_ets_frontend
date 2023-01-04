@@ -1,0 +1,1 @@
+SyntaxError: Identifier expected. [test-function-generic.ts:21:13]
