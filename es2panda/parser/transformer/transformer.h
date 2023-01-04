@@ -115,7 +115,7 @@ private:
                                                                    ir::Expression *init = nullptr,
                                                                    bool needBinding = true);
     ir::CallExpression *CreateCallExpressionForTsModule(ir::TSModuleDeclaration *node,
-                                                        util::StringView paramName,
+                                                        util::StringView name,
                                                         bool isExport = false);
     ir::Expression *CreateTsModuleParam(util::StringView paramName, bool isExport);
     ir::ExpressionStatement *CreateTsModuleAssignment(util::StringView name);

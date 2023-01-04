@@ -866,7 +866,7 @@ bool ParserImpl::IsTSNamedTupleMember()
     return isNamedMember;
 }
 
-void ParserImpl::HandleRestType(ir::AstNodeType elementType, bool *hasRestType)
+void ParserImpl::HandleRestType(ir::AstNodeType elementType, bool *hasRestType) const
 {
     if (elementType ==  ir::AstNodeType::TS_ARRAY_TYPE && *hasRestType) {
         ThrowSyntaxError("A rest element cannot follow another rest element");
@@ -878,7 +878,6 @@ ir::Expression *ParserImpl::ParseTsTupleElement(ir::TSTupleKind *kind, bool *see
 {
     lexer::SourcePosition startPos = lexer_->GetToken().Start();
     ir::Expression *element = nullptr;
-    bool isOptional = false;
     bool isRestType = false;
     TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
 
@@ -897,6 +896,7 @@ ir::Expression *ParserImpl::ParseTsTupleElement(ir::TSTupleKind *kind, bool *see
         elementIdent->SetRange(lexer_->GetToken().Loc());
         lexer_->NextToken();  // eat identifier
 
+        bool isOptional = false;
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
             lexer_->NextToken();  // eat '?'
             isOptional = true;
@@ -939,7 +939,6 @@ ir::Expression *ParserImpl::ParseTsTupleElement(ir::TSTupleKind *kind, bool *see
             element = AllocNode<ir::TSOptionalType>(std::move(element));
             element->SetRange({elementStartPos, lexer_->GetToken().End()});
             lexer_->NextToken();  // eat '?'
-            isOptional = true;
             *seenOptional = true;
         } else if (*seenOptional && !isRestType) {
             ThrowSyntaxError("A required element cannot follow an optional element");
@@ -3101,6 +3100,7 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams(bool isDeclare,
         if (context_.Status() & ParserStatus::IN_METHOD_DEFINITION) {
             auto decorators = ParseDecorators();
             if (!decorators.empty()) {
+                ASSERT(paramDecorators != nullptr);
                 paramDecorators->push_back({index, std::move(decorators)});
             }
         }
@@ -3520,7 +3520,7 @@ ir::Expression *ParserImpl::ParseFunctionParameter(bool isDeclare)
     return functionParameter;
 }
 
-void ParserImpl::ValidateLvalueAssignmentTarget(ir::Expression *node)
+void ParserImpl::ValidateLvalueAssignmentTarget(ir::Expression *node) const
 {
     switch (node->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
