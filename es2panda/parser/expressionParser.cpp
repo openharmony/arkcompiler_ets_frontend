@@ -666,11 +666,19 @@ void ParserImpl::CheckInvalidDestructuring(const ir::AstNode *object) const
 void ParserImpl::ValidateParenthesizedExpression(ir::Expression *lhsExpression)
 {
     switch (lhsExpression->Type()) {
-        case ir::AstNodeType::IDENTIFIER:
+        case ir::AstNodeType::IDENTIFIER: {
+            if (lhsExpression->AsIdentifier()->TypeAnnotation() != nullptr) {
+                ThrowSyntaxError("'=>' expected.");
+            }
+            break;
+        }
         case ir::AstNodeType::MEMBER_EXPRESSION: {
             break;
         }
         case ir::AstNodeType::ARRAY_EXPRESSION: {
+            if (lhsExpression->AsArrayExpression()->TypeAnnotation() != nullptr) {
+                ThrowSyntaxError("'=>' expected.");
+            }
             auto info = lhsExpression->AsArrayExpression()->ValidateExpression();
             if (info.Fail()) {
                 ThrowSyntaxError(info.msg.Utf8(), info.pos);
@@ -678,6 +686,9 @@ void ParserImpl::ValidateParenthesizedExpression(ir::Expression *lhsExpression)
             break;
         }
         case ir::AstNodeType::OBJECT_EXPRESSION: {
+            if (lhsExpression->AsObjectExpression()->TypeAnnotation() != nullptr) {
+                ThrowSyntaxError("'=>' expected.");
+            }
             auto info = lhsExpression->AsObjectExpression()->ValidateExpression();
             if (info.Fail()) {
                 ThrowSyntaxError(info.msg.Utf8(), info.pos);
@@ -1059,13 +1070,13 @@ ir::Expression *ParserImpl::ParsePrimaryExpression(ExpressionParseFlags flags)
             return regexpNode;
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
-            return ParseArrayExpression(CarryPatternFlags(flags));
+            return ParseArrayExpression(CarryAllowTsParamAndPatternFlags(flags));
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
             return ParseCoverParenthesizedExpressionAndArrowParameterList();
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_BRACE: {
-            return ParseObjectExpression(CarryPatternFlags(flags));
+            return ParseObjectExpression(CarryAllowTsParamAndPatternFlags(flags));
         }
         case lexer::TokenType::KEYW_FUNCTION: {
             return ParseFunctionExpression();

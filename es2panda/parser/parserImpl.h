@@ -238,6 +238,7 @@ private:
     bool CheckTopStatementsForRequiredDeclare(const ArenaVector<ir::Statement *> &statements);
     static ExpressionParseFlags CarryExpressionParserFlag(ExpressionParseFlags origin, ExpressionParseFlags carry);
     static ExpressionParseFlags CarryPatternFlags(ExpressionParseFlags flags);
+    static ExpressionParseFlags CarryAllowTsParamAndPatternFlags(ExpressionParseFlags flags);
     bool CurrentIsBasicType();
     bool CurrentLiteralIsBasicType();
     static bool CheckTypeNameIsReserved(const util::StringView &paramName);

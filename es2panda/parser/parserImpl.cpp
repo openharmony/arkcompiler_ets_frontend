@@ -252,6 +252,13 @@ ExpressionParseFlags ParserImpl::CarryPatternFlags(ExpressionParseFlags flags)
                                                 ExpressionParseFlags::OBJECT_PATTERN);
 }
 
+ExpressionParseFlags ParserImpl::CarryAllowTsParamAndPatternFlags(ExpressionParseFlags flags)
+{
+    return CarryExpressionParserFlag(flags, ExpressionParseFlags::ALLOW_TS_PARAM_TOKEN |
+                                            ExpressionParseFlags::POTENTIALLY_IN_PATTERN |
+                                            ExpressionParseFlags::OBJECT_PATTERN);
+}
+
 bool ParserImpl::CurrentLiteralIsBasicType()
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
