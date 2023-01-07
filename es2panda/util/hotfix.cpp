@@ -59,6 +59,19 @@ void Hotfix::ProcessModule(const std::string &recordName,
     }
 }
 
+void Hotfix::ProcessJsonContentRecord(const std::string &recordName, const std::string &jsonFileContent)
+{
+    if (generateSymbolFile_) {
+        DumpJsonContentRecInfo(recordName, jsonFileContent);
+        return;
+    }
+
+    if (generatePatch_) {
+        ValidateJsonContentRecInfo(recordName, jsonFileContent);
+        return;
+    }
+}
+
 void Hotfix::DumpModuleInfo(const std::string &recordName,
     std::vector<panda::pandasm::LiteralArray::Literal> &moduleBuffer)
 {
@@ -83,6 +96,34 @@ void Hotfix::ValidateModuleInfo(const std::string &recordName,
     if (std::to_string(hash) != it->second) {
         std::cerr << "[Patch] Found import/export expression changed in " << recordName << ", not supported!" <<
             std::endl;
+        patchError_ = true;
+        return;
+    }
+}
+
+void Hotfix::DumpJsonContentRecInfo(const std::string &recordName, const std::string &jsonFileContent)
+{
+    std::stringstream ss;
+    ss << recordName << SymbolTable::SECOND_LEVEL_SEPERATOR;
+    auto hash = std::hash<std::string>{}(jsonFileContent);
+    ss << hash << std::endl;
+    symbolTable_->WriteSymbolTable(ss.str());
+}
+
+void Hotfix::ValidateJsonContentRecInfo(const std::string &recordName, const std::string &jsonFileContent)
+{
+    auto it = originModuleInfo_->find(recordName);
+    if (it == originModuleInfo_->end()) {
+        std::cerr << "[Patch] Found new import/require json file expression in " << recordName
+                  << ", not supported!" << std::endl;
+        patchError_ = true;
+        return;
+    }
+
+    auto hash = std::hash<std::string>{}(jsonFileContent);
+    if (std::to_string(hash) != it->second) {
+        std::cerr << "[Patch] Found imported/required json file content changed in " << recordName
+                  << ", not supported!" << std::endl;
         patchError_ = true;
         return;
     }

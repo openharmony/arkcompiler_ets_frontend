@@ -52,10 +52,10 @@ Compiler::~Compiler()
     delete compiler_;
 }
 
-panda::pandasm::Program *createJsonContentProgram(std::string src, std::string rname)
+panda::pandasm::Program *CreateJsonContentProgram(std::string src, std::string rname, util::Hotfix *hotfixHelper)
 {
     panda::es2panda::compiler::CompilerContext context(nullptr, false, false, false, false, true,
-                                                       src, "", util::StringView(rname));
+                                                       src, "", util::StringView(rname), hotfixHelper);
     return context.GetEmitter()->Finalize(false, nullptr);
 }
 
@@ -70,9 +70,6 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     std::string pkgName(input.pkgName);
     parser::ScriptKind kind(input.scriptKind);
 
-    if (fname.substr(fname.find_last_of(".") + 1) == "json") {
-        return createJsonContentProgram(src, rname);
-    }
 
     bool needDumpSymbolFile = !options.hotfixOptions.dumpSymbolTable.empty();
     bool needGeneratePatch = options.hotfixOptions.generatePatch && !options.hotfixOptions.symbolTable.empty();
@@ -81,6 +78,10 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
         hotfixHelper = new util::Hotfix(needDumpSymbolFile, needGeneratePatch, input.recordName, symbolTable);
         parser_->AddHotfixHelper(hotfixHelper);
         compiler_->AddHotfixHelper(hotfixHelper);
+    }
+
+    if (fname.substr(fname.find_last_of(".") + 1) == "json") {
+        return CreateJsonContentProgram(src, rname, hotfixHelper);
     }
 
     try {
