@@ -1,0 +1,1 @@
+SyntaxError: Export declarations are not permitted in a namespace. [test-export-declaration5.ts:19:12]

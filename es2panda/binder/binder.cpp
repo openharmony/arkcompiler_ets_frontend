@@ -131,12 +131,19 @@ void Binder::ValidateExportDecl(const ir::ExportNamedDeclaration *exportDecl)
     for (auto *it : exportDecl->Specifiers()) {
         auto localName = it->AsExportSpecifier()->Local()->Name();
         if (scope_->IsTSModuleScope()) {
-            if (scope_->FindLocal(localName, ResolveBindingOptions::ALL) == nullptr &&
-                !scope_->InLocalTSBindings(localName) &&
-                !scope_->AsTSModuleScope()->InExportBindings(localName)) {
-                ThrowUndeclaredExport(it->AsExportSpecifier()->Local()->Start(), localName);
+            auto currentScope = scope_;
+            while (currentScope != nullptr) {
+                if (currentScope->FindLocal(localName, ResolveBindingOptions::ALL) != nullptr ||
+                    (currentScope->IsTSModuleScope() && (currentScope->InLocalTSBindings(localName) ||
+                    currentScope->AsTSModuleScope()->InExportBindings(localName)))) {
+                    break;
+                }
+                currentScope = currentScope->Parent();
             }
-            continue;
+            if (currentScope != nullptr) {
+                continue;
+            }
+            ThrowUndeclaredExport(it->AsExportSpecifier()->Local()->Start(), localName);
         }
         ASSERT(topScope_ == scope_);
         if (scope_->FindLocal(localName) == nullptr) {
