@@ -34,6 +34,7 @@
 #include <es2panda.h>
 #include <gen/isa.h>
 #include <ir/base/classDefinition.h>
+#include <ir/base/methodDefinition.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/base/spreadElement.h>
 #include <ir/expressions/callExpression.h>
@@ -223,15 +224,28 @@ void PandaGen::CopyFunctionArguments(const ir::AstNode *node)
             StoreLexicalVar(node, 0, param->LexIdx(), targetReg++);
             continue;
         }
-        if (context_->IsTypeExtractorEnabled()) {
-            auto typeIndex = context_->TypeRecorder()->GetVariableTypeIndex(param);
-            if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
-                // Simply encode type index for params
-                MoveVregWithType(node, -(typeIndex + 1), param->Vreg(), targetReg++);
-                continue;
+        MoveVreg(node, param->Vreg(), targetReg++);
+    }
+
+    auto fn = [this](const ir::AstNode *node) {
+        // For function type, node here is ScriptFunction or BlockStatement
+        if (node->IsScriptFunction()) {
+            typedFunc_.first = context_->TypeRecorder()->GetNodeTypeIndex(node);
+        }
+        // For method 'this' type, node's parent should be FunctionExpression
+        if (node->Parent() != nullptr && node->Parent()->Parent() != nullptr) {
+            auto method = node->Parent()->Parent();
+            if (method->IsMethodDefinition()) {
+                auto typeIndex = context_->TypeRecorder()->GetNodeTypeIndex(method->Parent());
+                if (!method->AsMethodDefinition()->IsStatic()) {
+                    typeIndex = context_->TypeRecorder()->GetClassInst(typeIndex);
+                }
+                typedFunc_.second = typeIndex;
             }
         }
-        MoveVreg(node, param->Vreg(), targetReg++);
+    };
+    if (context_->IsTypeExtractorEnabled()) {
+        fn(node);
     }
 }
 
@@ -693,11 +707,6 @@ void PandaGen::LoadConst(const ir::AstNode *node, Constant id)
 void PandaGen::MoveVreg(const ir::AstNode *node, VReg vd, VReg vs)
 {
     ra_.Emit<Mov>(node, vd, vs);
-}
-
-void PandaGen::MoveVregWithType(const ir::AstNode *node, int64_t typeIndex, VReg vd, VReg vs)
-{
-    ra_.EmitWithType<Mov>(node, typeIndex, vd, vs);
 }
 
 void PandaGen::SetLabel([[maybe_unused]] const ir::AstNode *node, Label *label)
@@ -1799,15 +1808,35 @@ void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t
     ra_.Emit<Stlexvar>(node, level, slot);
 }
 
-void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot, const util::StringView &name)
+void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t slot,
+    const binder::LocalVariable *local)
 {
     if (context_->HotfixHelper() && context_->HotfixHelper()->IsPatchVar(slot)) {
-        uint32_t patchSlot = context_->HotfixHelper()->GetPatchLexicalIdx(std::string(name));
+        uint32_t patchSlot = context_->HotfixHelper()->GetPatchLexicalIdx(std::string(local->Name()));
         ra_.Emit<WideStpatchvar>(node, patchSlot);
         return;
     }
     RegScope rs(this);
     VReg value = AllocReg();
+    if (context_->IsTypeExtractorEnabled()) {
+        auto typeIndex = context_->TypeRecorder()->GetVariableTypeIndex(local);
+        if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
+            StoreAccumulatorWithType(node, typeIndex, value);
+            DCOUT << "[LOG]Lexical vreg in variable has type index: " << local->Name() << "@" <<
+                local << " | " << typeIndex << std::endl;
+            StoreLexicalVar(node, level, slot, value);
+            return;
+        }
+        typeIndex = context_->TypeRecorder()->GetNodeTypeIndex(node);
+        if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
+            StoreAccumulatorWithType(node, typeIndex, value);
+            DCOUT << "[LOG]Lexical vreg in declnode has type index: " << local->Name() << "@" <<
+                local << " | " << typeIndex << std::endl;
+            StoreLexicalVar(node, level, slot, value);
+            return;
+        }
+        DCOUT << "[WARNING]Lexical vreg lose type index: " << local->Name() << "@" << local << std::endl;
+    }
     StoreAccumulator(node, value);
     StoreLexicalVar(node, level, slot, value);
 }

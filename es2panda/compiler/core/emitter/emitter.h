@@ -107,12 +107,14 @@ public:
 
     void AddFunction(FunctionEmitter *func, CompilerContext *context);
     void AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerContext *context);
-    void FillTypeInfoRecord(bool typeFlag, int64_t typeSummaryIndex) const;
+    void FillTypeInfoRecord(CompilerContext *context, bool typeFlag, int64_t typeSummaryIndex,
+        const std::string &recordName) const;
     void FillTypeLiteralBuffers(const extractor::TypeRecorder *recorder) const;
     static void GenBufferLiterals(ArenaVector<std::pair<int32_t, std::vector<Literal>>> &literalBuffers,
                                   const LiteralBuffer *buff);
     static void DumpAsm(const panda::pandasm::Program *prog);
     panda::pandasm::Program *Finalize(bool dumpDebugInfo, util::Hotfix *hotfixHelper);
+    panda::pandasm::Program *GetProgram() const;
     void GenJsonContentRecord(const CompilerContext *context);
 
 private:

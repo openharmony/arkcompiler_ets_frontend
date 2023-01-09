@@ -294,7 +294,9 @@ Emitter::Emitter(const CompilerContext *context)
 
     // For Type Extractor
     // Global record to show type extractor is enabled or not
-    GenTypeInfoRecord();
+    if (!context->IsMergeAbc()) {
+        GenTypeInfoRecord();
+    }
     GenESTypeAnnotationRecord();
 
     if (context->IsMergeAbc()) {
@@ -409,9 +411,14 @@ void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerCon
     prog_->literalarray_table.emplace(static_cast<std::string_view>(moduleLiteral), std::move(literalArrayInstance));
 }
 
-void Emitter::FillTypeInfoRecord(bool typeFlag, int64_t typeSummaryIndex) const
+void Emitter::FillTypeInfoRecord(CompilerContext *context, bool typeFlag, int64_t typeSummaryIndex,
+    const std::string &recordName) const
 {
-    TypeExtractorEmitter::GenTypeInfoRecord(prog_, typeFlag, typeSummaryIndex);
+    if (!context->IsMergeAbc()) {
+        TypeExtractorEmitter::GenTypeInfoRecord(prog_, typeFlag, typeSummaryIndex, recordName);
+    } else {
+        TypeExtractorEmitter::GenTypeInfoRecordForMergeABC(prog_, typeFlag, typeSummaryIndex, recordName);
+    }
 }
 
 void Emitter::FillTypeLiteralBuffers(const extractor::TypeRecorder *recorder) const
@@ -478,6 +485,16 @@ void Emitter::GenBufferLiterals(ArenaVector<std::pair<int32_t, std::vector<Liter
             case ir::LiteralTag::LITERALBUFFERINDEX: {
                 valueLit.tag_ = panda::panda_file::LiteralTag::LITERALBUFFERINDEX;
                 valueLit.value_ = literal->GetInt();
+                break;
+            }
+            case ir::LiteralTag::LITERALARRAY: {
+                valueLit.tag_ = panda::panda_file::LiteralTag::LITERALARRAY;
+                valueLit.value_ = literal->GetString().Mutf8();
+                break;
+            }
+            case ir::LiteralTag::BUILTINTYPEINDEX: {
+                valueLit.tag_ = panda::panda_file::LiteralTag::BUILTINTYPEINDEX;
+                valueLit.value_ = static_cast<uint8_t>(literal->GetInt());
                 break;
             }
             // TODO: support ir::LiteralTag::ASYNC_GENERATOR_METHOD
@@ -554,4 +571,10 @@ panda::pandasm::Program *Emitter::Finalize(bool dumpDebugInfo, util::Hotfix *hot
     prog_ = nullptr;
     return prog;
 }
+
+panda::pandasm::Program *Emitter::GetProgram() const
+{
+    return prog_;
+}
+
 }  // namespace panda::es2panda::compiler

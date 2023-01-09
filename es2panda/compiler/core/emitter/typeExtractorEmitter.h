@@ -33,27 +33,31 @@ public:
     NO_COPY_SEMANTIC(TypeExtractorEmitter);
     NO_MOVE_SEMANTIC(TypeExtractorEmitter);
 
-    static void GenTypeInfoRecord(panda::pandasm::Program *prog, bool typeFlag, int64_t typeSummaryIndex);
+    static void GenTypeInfoRecord(panda::pandasm::Program *prog, bool typeFlag, int64_t typeSummaryIndex,
+        const std::string &recordName);
+    static void GenTypeInfoRecordForMergeABC(panda::pandasm::Program *prog, bool typeFlag, int64_t typeSummaryIndex,
+        const std::string &recordName);
     static void GenTypeLiteralBuffers(panda::pandasm::Program *prog, const extractor::TypeRecorder *recorder);
+
+    static int32_t literalId_;
 
     static constexpr const char *TYPE_INFO_RECORD = "_ESTypeInfoRecord";
     static constexpr const char *TYPE_ANNOTATION = "_ESTypeAnnotation";
     static constexpr const char *TYPE_INSTRUCTION = "_TypeOfInstruction";
 
     static constexpr const char *TYPE_FLAG = "typeFlag";
-    static constexpr const char *TYPE_SUMMARY = "typeSummaryIndex";
-    static constexpr const char *EXPORTED_SYMBOLS = "exportedSymbols";
+    static constexpr const char *TYPE_SUMMARY = "typeSummaryOffset";
     static constexpr const char *EXPORTED_SYMBOL_TYPES = "exportedSymbolTypes";
-    static constexpr const char *DECLARED_SYMBOLS = "declaredSymbols";
     static constexpr const char *DECLARED_SYMBOL_TYPES = "declaredSymbolTypes";
 
 private:
     const PandaGen *pg_;
     panda::pandasm::Function *func_;
 
-    void GenFunctionTypeInfo() const;
-    void GenExportTypeInfo() const;
-    void GenDeclareTypeInfo() const;
+    bool IsFuncMain0(const std::string &funcName, bool isMergeAbc) const;
+    void GenFunctionTypeInfo(panda::pandasm::Program *prog) const;
+    void GenExportTypeInfo(panda::pandasm::Program *prog) const;
+    void GenDeclareTypeInfo(panda::pandasm::Program *prog) const;
 };
 
 }  // namespace panda::es2panda::compiler

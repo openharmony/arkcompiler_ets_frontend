@@ -271,10 +271,8 @@ bool Options::Parse(int argc, const char **argv)
         compilerOptions_.typeExtractor = opTypeExtractor.GetValue();
         if (compilerOptions_.typeExtractor) {
             compilerOptions_.typeDtsBuiltin = opTypeDtsBuiltin.GetValue();
-#ifndef NDEBUG
-            std::cout << "[LOG]TypeExtractor is enabled, type-dts-builtin: " <<
+            DCOUT << "[LOG]TypeExtractor is enabled, type-dts-builtin: " <<
                 compilerOptions_.typeDtsBuiltin << std::endl;
-#endif
         }
     };
 

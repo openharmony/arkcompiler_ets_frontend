@@ -26,123 +26,200 @@ using AnnotationData = panda::pandasm::AnnotationData;
 using AnnotationElement = panda::pandasm::AnnotationElement;
 using ArrayValue = panda::pandasm::ArrayValue;
 using Field = panda::pandasm::Field;
+using Record = panda::pandasm::Record;
 using ScalarValue = panda::pandasm::ScalarValue;
-using ValueType = panda::pandasm::Value::Type;
 using Type = panda::pandasm::Type;
+using ValueType = panda::pandasm::Value::Type;
+
+int32_t TypeExtractorEmitter::literalId_ = -1;
 
 TypeExtractorEmitter::TypeExtractorEmitter(const PandaGen *pg, panda::pandasm::Function *func) : pg_(pg), func_(func)
 {
-    GenFunctionTypeInfo();
-    if (func->name == binder::Binder::MAIN_FUNC_NAME) {
+    auto prog = pg_->Context()->GetEmitter()->GetProgram();
+    GenFunctionTypeInfo(prog);
+    if (IsFuncMain0(func->name, pg_->Context()->IsMergeAbc())) {
         if (pg_->Context()->TypeRecorder()->ExportType().size() > 0U) {
-            GenExportTypeInfo();
+            GenExportTypeInfo(prog);
         }
         if (pg_->Context()->TypeRecorder()->DeclareType().size() > 0U) {
-            GenDeclareTypeInfo();
+            GenDeclareTypeInfo(prog);
         }
     }
 }
 
-void TypeExtractorEmitter::GenFunctionTypeInfo() const
+bool TypeExtractorEmitter::IsFuncMain0(const std::string &funcName, bool isMergeAbc) const
 {
-    std::vector<ScalarValue> typedInsns;
-    typedInsns.reserve(pg_->TypedInsns().size());
+    std::string expectedName(binder::Binder::MAIN_FUNC_NAME);
+    if (isMergeAbc) {
+        expectedName = std::string(pg_->Context()->RecordName()) + "." + expectedName;
+    }
+    return funcName == expectedName;
+}
+
+static void GenTypeInfo(const extractor::TypeRecorder *recorder, int64_t typeIndex, std::vector<Literal> &typeInfo)
+{
+    Literal typeTag;
+    Literal typeValue;
+    typeTag.tag_ = panda::panda_file::LiteralTag::TAGVALUE;
+    if (typeIndex >= recorder->GetUserTypeIndexShift()) {
+        typeTag.value_ = static_cast<uint8_t>(panda::panda_file::LiteralTag::LITERALARRAY);
+        typeValue.tag_ = panda::panda_file::LiteralTag::LITERALARRAY;
+        typeValue.value_ = std::string(recorder->GetRecordName()) + "_" +
+            std::to_string(typeIndex - recorder->GetUserTypeIndexShift());
+    } else {
+        typeTag.value_ = static_cast<uint8_t>(panda::panda_file::LiteralTag::BUILTINTYPEINDEX);
+        typeValue.tag_ = panda::panda_file::LiteralTag::BUILTINTYPEINDEX;
+        typeValue.value_ = static_cast<uint8_t>(typeIndex);
+    }
+    typeInfo.emplace_back(typeTag);
+    typeInfo.emplace_back(typeValue);
+}
+
+static void GenInsnTypeInfo(const extractor::TypeRecorder *recorder, uint32_t orderIndex, int64_t typeIndex,
+    std::vector<Literal> &typedInsns)
+{
+    Literal insnOrderTag;
+    Literal insnOrderValue;
+    insnOrderTag.tag_ = panda::panda_file::LiteralTag::TAGVALUE;
+    insnOrderTag.value_ = static_cast<uint8_t>(panda::panda_file::LiteralTag::INTEGER);
+    insnOrderValue.tag_ = panda::panda_file::LiteralTag::INTEGER;
+    insnOrderValue.value_ = static_cast<uint32_t>(orderIndex);
+    typedInsns.emplace_back(insnOrderTag);
+    typedInsns.emplace_back(insnOrderValue);
+
+    GenTypeInfo(recorder, typeIndex, typedInsns);
+}
+
+void TypeExtractorEmitter::GenFunctionTypeInfo(panda::pandasm::Program *prog) const
+{
+    auto recorder = pg_->Context()->TypeRecorder();
+    std::vector<Literal> typedInsns;
+    typedInsns.reserve(pg_->TypedInsns().size() * 4U);  // Expand to 4 pieces of information
     size_t index = 0U;
     for (const auto *ins : pg_->Insns()) {
         auto t = pg_->TypedInsns().find(ins);
         if (t != pg_->TypedInsns().end()) {
-            const auto &insn = func_->ins[index];
             int64_t typeIndex = t->second;
-            int32_t orderIndex = index;
-            if (typeIndex < extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
-                // Decode type and order index for params
-                typeIndex = -(typeIndex + 1);
-                orderIndex = static_cast<int32_t>(func_->regs_num) - static_cast<int32_t>(insn.regs[1]) - 1;
-            }
+            uint32_t orderIndex = index;
             if (typeIndex > extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
-                ScalarValue insnOrder(ScalarValue::Create<ValueType::I32>(orderIndex));
-                typedInsns.emplace_back(std::move(insnOrder));
-                ScalarValue insnType(ScalarValue::Create<ValueType::I32>(typeIndex));
-                typedInsns.emplace_back(std::move(insnType));
-#ifndef NDEBUG
-                std::cout << "[LOG]" << func_->name << ": " << insn.ToString("", true, func_->regs_num) << " | "
-                    << orderIndex << " | " << typeIndex << std::endl;
-#endif
+                GenInsnTypeInfo(recorder, orderIndex, typeIndex, typedInsns);
+                DCOUT << "[LOG]" << func_->name << ": " << func_->ins[index].ToString("", true, func_->regs_num) <<
+                    " | " << orderIndex << " | " << typeIndex << std::endl;
             }
         }
         index++;
     }
 
+    if (pg_->TypedFunc().first > extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
+        // -1 for function type
+        GenInsnTypeInfo(recorder, static_cast<uint32_t>(-1), pg_->TypedFunc().first, typedInsns);
+        DCOUT << "[LOG]" << func_->name << ": -1 | " << pg_->TypedFunc().first << std::endl;
+    }
+    if (pg_->TypedFunc().second > extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
+        // -2 for method 'this' type
+        GenInsnTypeInfo(recorder, static_cast<uint32_t>(-2), pg_->TypedFunc().second, typedInsns);
+        DCOUT << "[LOG]" << func_->name << ": -2 | " << pg_->TypedFunc().second << std::endl;
+    }
+
+    std::string literalId = std::string(recorder->GetRecordName()) + "_" +
+        std::to_string(literalId_--);
+    auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(typedInsns));
+    prog->literalarray_table.emplace(literalId, std::move(literalArrayInstance));
+
     AnnotationData funcTypeAnnotation(TypeExtractorEmitter::TYPE_ANNOTATION);
     AnnotationElement funcTypeAnnotationElement(TypeExtractorEmitter::TYPE_INSTRUCTION,
-        std::make_unique<ArrayValue>(ArrayValue(ValueType::U32, typedInsns)));
+        std::make_unique<ScalarValue>(ScalarValue::Create<ValueType::LITERALARRAY>(literalId)));
     funcTypeAnnotation.AddElement(std::move(funcTypeAnnotationElement));
     func_->metadata->AddAnnotations({ funcTypeAnnotation });
 }
 
-template <bool isExport, typename M, typename F>
-static void GenTypeInfo(const M &map, F &funcTypeAnnotation)
+template <bool isExport, typename M>
+static void GenImportOrDeclareTypeInfo(panda::pandasm::Program *prog, const extractor::TypeRecorder *recorder,
+    const M &map, AnnotationData &funcTypeAnnotation)
 {
-    std::string symbolStr;
     std::string symbolTypeStr;
     if constexpr (isExport) {
-        symbolStr = TypeExtractorEmitter::EXPORTED_SYMBOLS;
         symbolTypeStr = TypeExtractorEmitter::EXPORTED_SYMBOL_TYPES;
     } else {
-        symbolStr = TypeExtractorEmitter::DECLARED_SYMBOLS;
         symbolTypeStr = TypeExtractorEmitter::DECLARED_SYMBOL_TYPES;
     }
 
-    std::vector<ScalarValue> symbolElements;
-    std::vector<ScalarValue> symbolTypeElements;
+    std::vector<Literal> typedSymbols;
+    typedSymbols.reserve(map.size() * 4U);  // Expand to 4 pieces of information
     for (const auto &t : map) {
-        ScalarValue symbol(ScalarValue::Create<ValueType::STRING>(t.first));
-        symbolElements.emplace_back(std::move(symbol));
-        ScalarValue symbolType(ScalarValue::Create<ValueType::U32>(t.second));
-        symbolTypeElements.emplace_back(std::move(symbolType));
+        Literal symbolTag;
+        Literal symbolValue;
+        symbolTag.tag_ = panda::panda_file::LiteralTag::TAGVALUE;
+        symbolTag.value_ = static_cast<uint8_t>(panda::panda_file::LiteralTag::STRING);
+        symbolValue.tag_ = panda::panda_file::LiteralTag::STRING;
+        symbolValue.value_ = t.first;
+        typedSymbols.emplace_back(symbolTag);
+        typedSymbols.emplace_back(symbolValue);
+
+        GenTypeInfo(recorder, t.second, typedSymbols);
     }
 
-    AnnotationElement funcSymbolsElements(symbolStr,
-        std::make_unique<ArrayValue>(ArrayValue(ValueType::STRING, symbolElements)));
-    AnnotationElement funcSymbolTypeElement(symbolTypeStr,
-        std::make_unique<ArrayValue>(ArrayValue(ValueType::U32, symbolTypeElements)));
+    std::string literalId = std::string(recorder->GetRecordName()) + "_" +
+        std::to_string(TypeExtractorEmitter::literalId_--);
+    auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(typedSymbols));
+    prog->literalarray_table.emplace(literalId, std::move(literalArrayInstance));
 
-    funcTypeAnnotation.AddElement(std::move(funcSymbolsElements));
+    AnnotationElement funcSymbolTypeElement(symbolTypeStr,
+        std::make_unique<ScalarValue>(ScalarValue::Create<ValueType::LITERALARRAY>(literalId)));
     funcTypeAnnotation.AddElement(std::move(funcSymbolTypeElement));
 }
 
-void TypeExtractorEmitter::GenExportTypeInfo() const
+void TypeExtractorEmitter::GenExportTypeInfo(panda::pandasm::Program *prog) const
 {
     AnnotationData funcTypeAnnotation(TypeExtractorEmitter::TYPE_ANNOTATION);
-    GenTypeInfo<true>(pg_->Context()->TypeRecorder()->ExportType(), funcTypeAnnotation);
+    GenImportOrDeclareTypeInfo<true>(prog, pg_->Context()->TypeRecorder(),
+        pg_->Context()->TypeRecorder()->ExportType(), funcTypeAnnotation);
     func_->metadata->AddAnnotations({ funcTypeAnnotation });
 }
 
-void TypeExtractorEmitter::GenDeclareTypeInfo() const
+void TypeExtractorEmitter::GenDeclareTypeInfo(panda::pandasm::Program *prog) const
 {
     AnnotationData funcTypeAnnotation(TypeExtractorEmitter::TYPE_ANNOTATION);
-    GenTypeInfo<false>(pg_->Context()->TypeRecorder()->DeclareType(), funcTypeAnnotation);
+    GenImportOrDeclareTypeInfo<false>(prog, pg_->Context()->TypeRecorder(),
+        pg_->Context()->TypeRecorder()->DeclareType(), funcTypeAnnotation);
     func_->metadata->AddAnnotations({ funcTypeAnnotation });
 }
 
-// static
-void TypeExtractorEmitter::GenTypeInfoRecord(panda::pandasm::Program *prog, bool typeFlag, int64_t typeSummaryIndex)
+static void GenTypeSummaryInfo(bool typeFlag, int64_t typeSummaryIndex, const std::string &recordName, Record &record)
 {
     constexpr const auto LANG_EXT = panda::pandasm::extensions::Language::ECMASCRIPT;
-    auto &typeInfoRecord = prog->record_table.find(TypeExtractorEmitter::TYPE_INFO_RECORD)->second;
 
     auto typeFlagField = Field(LANG_EXT);
     typeFlagField.name = TypeExtractorEmitter::TYPE_FLAG;
     typeFlagField.type = Type("u8", 0);
     typeFlagField.metadata->SetValue(ScalarValue::Create<ValueType::U8>(static_cast<uint8_t>(typeFlag)));
-    typeInfoRecord.field_list.emplace_back(std::move(typeFlagField));
+    record.field_list.emplace_back(std::move(typeFlagField));
 
-    auto typeSummaryIndexField = Field(LANG_EXT);
-    typeSummaryIndexField.name = TypeExtractorEmitter::TYPE_SUMMARY;
-    typeSummaryIndexField.type = Type("u32", 0);
-    typeSummaryIndexField.metadata->SetValue(ScalarValue::Create<ValueType::U32>(
-        static_cast<uint32_t>(typeSummaryIndex)));
-    typeInfoRecord.field_list.emplace_back(std::move(typeSummaryIndexField));
+    if (typeFlag) {
+        auto typeSummaryIndexField = Field(LANG_EXT);
+        typeSummaryIndexField.name = TypeExtractorEmitter::TYPE_SUMMARY;
+        typeSummaryIndexField.type = Type("u32", 0);
+        typeSummaryIndexField.metadata->SetValue(ScalarValue::Create<ValueType::LITERALARRAY>(
+            "" + recordName + "_" + std::to_string(typeSummaryIndex)));
+        record.field_list.emplace_back(std::move(typeSummaryIndexField));
+    }
+}
+
+// static
+void TypeExtractorEmitter::GenTypeInfoRecord(panda::pandasm::Program *prog, bool typeFlag,
+    int64_t typeSummaryIndex, const std::string &recordName)
+{
+    auto iter = prog->record_table.find(TypeExtractorEmitter::TYPE_INFO_RECORD);
+    ASSERT(iter != prog->record_table.end());
+    GenTypeSummaryInfo(typeFlag, typeSummaryIndex, recordName, iter->second);
+}
+
+void TypeExtractorEmitter::GenTypeInfoRecordForMergeABC(panda::pandasm::Program *prog, bool typeFlag,
+    int64_t typeSummaryIndex, const std::string &recordName)
+{
+    auto iter = prog->record_table.find(recordName);
+    ASSERT(iter != prog->record_table.end());
+    GenTypeSummaryInfo(typeFlag, typeSummaryIndex, recordName, iter->second);
 }
 
 void TypeExtractorEmitter::GenTypeLiteralBuffers(panda::pandasm::Program *prog,
@@ -154,8 +231,9 @@ void TypeExtractorEmitter::GenTypeLiteralBuffers(panda::pandasm::Program *prog,
     }
 
     for (auto &[idx, buf] : literalBuffers) {
+        std::string literalId = std::string(recorder->GetRecordName()) + "_" + std::to_string(idx);
         auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(buf));
-        prog->literalarray_table.emplace(std::to_string(idx), std::move(literalArrayInstance));
+        prog->literalarray_table.emplace(literalId, std::move(literalArrayInstance));
     }
 }
 

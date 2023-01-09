@@ -261,6 +261,20 @@ protected:
     TypeRecorder *recorder_;
     compiler::LiteralBuffer *buffer_;
 
+    void FillTypeIndexLiteralBuffer(int64_t typeIndex)
+    {
+        if (typeIndex >= recorder_->GetUserTypeIndexShift()) {
+            std::stringstream ss;
+            ss << std::string(recorder_->GetRecordName()) << "_" << (typeIndex - recorder_->GetUserTypeIndexShift());
+            buffer_->Add(recorder_->Allocator()->New<ir::UserTypeIndexLiteral>(typeIndex,
+                util::UString(ss.str(), recorder_->Allocator()).View()));
+        } else if (typeIndex >= PrimitiveType::ANY) {
+            buffer_->Add(recorder_->Allocator()->New<ir::BuiltinTypeIndexLiteral>(typeIndex));
+        } else {
+            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(typeIndex));
+        }
+    }
+
     void CalculateIndex(const util::StringView &name, int64_t &typeIndex, int64_t &typeIndexShift, bool forBuiltin)
     {
         if (forBuiltin && extractor_->GetTypeDtsBuiltin()) {
@@ -343,14 +357,16 @@ public:
 
     void FillLiteralBuffer()
     {
-        int64_t userTypeNumber = recorder_->CalculateUserType();
-        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(UserType::COUNTER));
+        const auto &userType = recorder_->GetUserType();
         if (extractor_->GetTypeDtsExtractor()) {
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(userTypeNumber +
+            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(userType.size() +
                 TypeRecorder::USERTYPEINDEXHEAD - BuiltinType::BT_HEAD));
         } else {
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(userTypeNumber));
+            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(userType.size()));
         }
+        std::for_each(userType.begin(), userType.end(), [this](const auto &t) {
+            FillTypeIndexLiteralBuffer(t);
+        });
         const auto &anonymousReExport = recorder_->GetAnonymousReExport();
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(anonymousReExport.size()));
         std::for_each(anonymousReExport.begin(), anonymousReExport.end(), [this](const auto &t) {
@@ -393,13 +409,13 @@ private:
     void FillLiteralBuffer(const ArenaMap<int64_t, int64_t> *indexSignatures)
     {
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(UserType::INDEXSIG));
-        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(typeIndexRefShift_));
+        FillTypeIndexLiteralBuffer(typeIndexRefShift_);
 
         ASSERT(indexSignatures != nullptr);
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(indexSignatures->size()));
         std::for_each(indexSignatures->begin(), indexSignatures->end(), [this](const auto &t) {
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t.first));
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t.second));
+            FillTypeIndexLiteralBuffer(t.first);
+            FillTypeIndexLiteralBuffer(t.second);
         });
     }
 };
@@ -563,19 +579,19 @@ private:
         buffer_->Add(recorder_->Allocator()->New<ir::StringLiteral>(name_));
         if (containThis_) {
             buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(1));
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(paramsTypeIndex_.at(0)));
+            FillTypeIndexLiteralBuffer(paramsTypeIndex_.at(0));
             buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(paramsTypeIndex_.size() - 1));
             for (size_t i = 1; i < paramsTypeIndex_.size(); i++) {
-                buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(paramsTypeIndex_.at(i)));
+                FillTypeIndexLiteralBuffer(paramsTypeIndex_.at(i));
             }
         } else {
             buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(0));
             buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(paramsTypeIndex_.size()));
             for (size_t i = 0; i < paramsTypeIndex_.size(); i++) {
-                buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(paramsTypeIndex_.at(i)));
+                FillTypeIndexLiteralBuffer(paramsTypeIndex_.at(i));
             }
         }
-        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(typeIndexReturn_));
+        FillTypeIndexLiteralBuffer(typeIndexReturn_);
     }
 };
 
@@ -637,6 +653,9 @@ private:
     ArenaMap<int64_t, int64_t> indexSignatures_;
     int64_t typeIndex_ = PrimitiveType::ANY;
     int64_t typeIndexShift_ = PrimitiveType::ANY;
+
+    size_t fieldsWithInitNum_ = 0U;
+    size_t methodsWithBodyNum_ = 0U;
 
     void FillModifier(const ir::ClassDefinition *classDef)
     {
@@ -702,6 +721,10 @@ private:
                 fn(identifier->Name());
             }
         }
+
+        if (field->Value() != nullptr) {
+            fieldsWithInitNum_++;
+        }
     }
 
     void FillMethod(const ir::MethodDefinition *method)
@@ -728,6 +751,10 @@ private:
                 fn(functionType, name);
             }
         }
+
+        if (method->Function()->Body() != nullptr) {
+            methodsWithBodyNum_++;
+        }
     }
 
     void FillFieldsandMethods(const ir::ClassDefinition *classDef)
@@ -747,6 +774,11 @@ private:
             } else if (t->IsMethodDefinition()) {
                 FillMethod(t->AsMethodDefinition());
             }
+        }
+
+        // Create class instance type stands for 'this'
+        if (!classDef->Abstract() && (fieldsWithInitNum_ > 0U || methodsWithBodyNum_ > 0U)) {
+            (void)extractor_->GetTypeIndexFromClassInst(typeIndexShift_);
         }
     }
 
@@ -772,7 +804,7 @@ private:
             buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(map.size()));
             std::for_each(map.begin(), map.end(), [this](const auto &t) {
                 buffer_->Add(recorder_->Allocator()->New<ir::StringLiteral>(t.first));
-                buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t.second[0]));  // 0. typeIndex
+                FillTypeIndexLiteralBuffer(t.second[0]);  // 0. typeIndex
                 buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t.second[1]));  // 1. accessFlag
                 buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t.second[2]));  // 2. modifier
             });
@@ -791,7 +823,7 @@ private:
             buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(map.size()));
             std::for_each(map.begin(), map.end(), [this](const auto &t) {
                 buffer_->Add(recorder_->Allocator()->New<ir::StringLiteral>(t.first));
-                buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t.second));
+                FillTypeIndexLiteralBuffer(t.second);
             });
         };
 
@@ -806,10 +838,10 @@ private:
     {
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(UserType::CLASS));
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(modifierAB_));
-        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(extendsHeritage_));
+        FillTypeIndexLiteralBuffer(extendsHeritage_);
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(implementsHeritages_.size()));
         std::for_each(implementsHeritages_.begin(), implementsHeritages_.end(), [this](const auto &t) {
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t));
+            FillTypeIndexLiteralBuffer(t);
         });
 
         FillFieldsLiteralBuffer(false);
@@ -849,7 +881,7 @@ private:
     void FillLiteralBuffer()
     {
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(UserType::CLASSINST));
-        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(typeIndexRefShift_));
+        FillTypeIndexLiteralBuffer(typeIndexRefShift_);
     }
 };
 
@@ -992,7 +1024,7 @@ private:
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(fields_.size()));
         std::for_each(fields_.begin(), fields_.end(), [this](const auto &t) {
             buffer_->Add(recorder_->Allocator()->New<ir::StringLiteral>(t.first));
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t.second[0]));  // 0. typeIndex
+            FillTypeIndexLiteralBuffer(t.second[0]);  // 0. typeIndex
             buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t.second[1]));  // 1. accessFlag
             buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t.second[2]));  // 2. modifier
         });
@@ -1002,7 +1034,7 @@ private:
     {
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(methods_.size()));
         std::for_each(methods_.begin(), methods_.end(), [this](const auto &t) {
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t));
+            FillTypeIndexLiteralBuffer(t);
         });
     }
 
@@ -1011,7 +1043,7 @@ private:
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(UserType::INTERFACE));
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(heritages_.size()));
         std::for_each(heritages_.begin(), heritages_.end(), [this](const auto &t) {
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t));
+            FillTypeIndexLiteralBuffer(t);
         });
 
         FillFieldsLiteralBuffer();
@@ -1025,7 +1057,7 @@ public:
                           const util::StringView &redirectPath) : BaseType(extractor)
     {
         std::stringstream ss;
-        ss << "#" + std::string(importName) + "#" + std::string(redirectPath);
+        ss << "#" << std::string(importName) << "#" << std::string(redirectPath);
         redirectPath_ = util::UString(ss.str(), recorder_->Allocator()).View();
         typeIndex_ = recorder_->AddLiteralBuffer(buffer_);
         typeIndexShift_ = typeIndex_ + recorder_->GetUserTypeIndexShift();
@@ -1099,7 +1131,7 @@ private:
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(UserType::UNION));
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(unionTypes_.size()));
         std::for_each(unionTypes_.begin(), unionTypes_.end(), [this](const auto &t) {
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t));
+            FillTypeIndexLiteralBuffer(t);
         });
     }
 };
@@ -1138,7 +1170,7 @@ private:
     void FillLiteralBuffer()
     {
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(UserType::ARRAY));
-        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(typeIndexRefShift_));
+        FillTypeIndexLiteralBuffer(typeIndexRefShift_);
     }
 };
 
@@ -1259,11 +1291,11 @@ private:
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(properties_.size()));
         std::for_each(properties_.begin(), properties_.end(), [this](const auto &t) {
             buffer_->Add(recorder_->Allocator()->New<ir::StringLiteral>(t.first));
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t.second));
+            FillTypeIndexLiteralBuffer(t.second);
         });
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(methods_.size()));
         std::for_each(methods_.begin(), methods_.end(), [this](const auto &t) {
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t));
+            FillTypeIndexLiteralBuffer(t);
         });
     }
 };
@@ -1307,10 +1339,10 @@ private:
     void FillLiteralBuffer()
     {
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(UserType::BUILTININST));
-        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(typeIndexBuiltin_));
+        FillTypeIndexLiteralBuffer(typeIndexBuiltin_);
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(paramTypes_.size()));
         std::for_each(paramTypes_.begin(), paramTypes_.end(), [this](const auto &t) {
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t));
+            FillTypeIndexLiteralBuffer(t);
         });
     }
 };
@@ -1354,10 +1386,10 @@ private:
     void FillLiteralBuffer()
     {
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(UserType::GENERICINST));
-        buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(typeIndexGeneric_));
+        FillTypeIndexLiteralBuffer(typeIndexGeneric_);
         buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(paramTypes_.size()));
         std::for_each(paramTypes_.begin(), paramTypes_.end(), [this](const auto &t) {
-            buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(t));
+            FillTypeIndexLiteralBuffer(t);
         });
     }
 };

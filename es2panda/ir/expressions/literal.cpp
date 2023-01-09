@@ -43,8 +43,11 @@ double Literal::GetDouble() const
 
 const util::StringView &Literal::GetString() const
 {
-    ASSERT(IsStringLiteral());
-    return AsStringLiteral()->Str();
+    if (IsStringLiteral()) {
+        return AsStringLiteral()->Str();
+    }
+    ASSERT(IsNumberLiteral());
+    return AsNumberLiteral()->Str();
 }
 
 const util::StringView &Literal::GetMethod() const
@@ -62,7 +65,7 @@ uint16_t Literal::GetMethodAffiliate() const
 std::optional<util::StringView> Literal::GetName() const
 {
     if (IsStringLiteral()) {
-        return GetString();
+        return AsStringLiteral()->Str();
     }
     if (IsNumberLiteral()) {
         return AsNumberLiteral()->Str();
