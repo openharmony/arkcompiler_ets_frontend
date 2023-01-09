@@ -69,6 +69,8 @@ struct HotfixOptions {
 struct CompilerOptions {
     bool isDebug {false};
     bool dumpAst {false};
+    bool dumpTransformedAst {false};
+    bool checkTransformedAstStructure {false};
     bool dumpAsm {false};
     bool dumpDebugInfo {false};
     bool parseOnly {false};

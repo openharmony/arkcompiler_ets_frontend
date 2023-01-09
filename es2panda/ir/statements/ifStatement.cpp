@@ -79,17 +79,16 @@ checker::Type *IfStatement::Check(checker::Checker *checker) const
 void IfStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 {
     test_ = std::get<ir::AstNode *>(cb(test_))->AsExpression();
-    consequent_ = UpdateIfStatementChildStatement(cb, binder, consequent_, consequentScope_);
+    consequent_ = UpdateIfStatementChildStatement(cb, binder, consequent_);
 
     if (alternate_) {
-        alternate_ = UpdateIfStatementChildStatement(cb, binder, alternate_, alternateScope_);
+        alternate_ = UpdateIfStatementChildStatement(cb, binder, alternate_);
     }
 }
 
 Statement *IfStatement::UpdateIfStatementChildStatement(const NodeUpdater &cb,
                                                         const binder::Binder *binder,
-                                                        Statement *statement,
-                                                        binder::Scope *scope) const
+                                                        Statement *statement) const
 {
     auto newStatement = cb(statement);
     if (std::holds_alternative<ir::AstNode *>(newStatement)) {
@@ -102,7 +101,7 @@ Statement *IfStatement::UpdateIfStatementChildStatement(const NodeUpdater &cb,
     for (auto *it : newStatements) {
         statements.push_back(it->AsStatement());
     }
-    return binder->Allocator()->New<ir::BlockStatement>(scope, std::move(statements));
+    return binder->Allocator()->New<ir::BlockStatement>(nullptr, std::move(statements));
 }
 
 }  // namespace panda::es2panda::ir

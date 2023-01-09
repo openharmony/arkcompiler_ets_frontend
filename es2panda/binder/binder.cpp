@@ -15,43 +15,46 @@
 
 #include "binder.h"
 
-#include <binder/scope.h>
-#include <binder/tsBinding.h>
-#include <es2panda.h>
-#include <ir/astNode.h>
-#include <ir/base/catchClause.h>
-#include <ir/base/classDefinition.h>
-#include <ir/base/methodDefinition.h>
-#include <ir/base/property.h>
-#include <ir/base/scriptFunction.h>
-#include <ir/base/spreadElement.h>
-#include <ir/expressions/arrayExpression.h>
-#include <ir/expressions/assignmentExpression.h>
-#include <ir/expressions/identifier.h>
-#include <ir/expressions/objectExpression.h>
-#include <ir/module/exportNamedDeclaration.h>
-#include <ir/module/exportSpecifier.h>
-#include <ir/statements/blockStatement.h>
-#include <ir/statements/doWhileStatement.h>
-#include <ir/statements/forInStatement.h>
-#include <ir/statements/forOfStatement.h>
-#include <ir/statements/forUpdateStatement.h>
-#include <ir/statements/ifStatement.h>
-#include <ir/statements/switchCaseStatement.h>
-#include <ir/statements/switchStatement.h>
-#include <ir/statements/variableDeclaration.h>
-#include <ir/statements/variableDeclarator.h>
-#include <ir/statements/whileStatement.h>
-#include <ir/ts/tsClassImplements.h>
-#include <ir/ts/tsConstructorType.h>
-#include <ir/ts/tsEnumDeclaration.h>
-#include <ir/ts/tsFunctionType.h>
-#include <ir/ts/tsMethodSignature.h>
-#include <ir/ts/tsModuleBlock.h>
-#include <ir/ts/tsModuleDeclaration.h>
-#include <ir/ts/tsSignatureDeclaration.h>
-#include <util/concurrent.h>
-#include <util/helpers.h>
+#include "binder/scope.h"
+#include "binder/tsBinding.h"
+#include "es2panda.h"
+#include "ir/astNode.h"
+#include "ir/base/catchClause.h"
+#include "ir/base/classDefinition.h"
+#include "ir/base/methodDefinition.h"
+#include "ir/base/property.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/base/spreadElement.h"
+#include "ir/expressions/arrayExpression.h"
+#include "ir/expressions/assignmentExpression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/objectExpression.h"
+#include "ir/module/exportNamedDeclaration.h"
+#include "ir/module/exportSpecifier.h"
+#include "ir/statements/blockStatement.h"
+#include "ir/statements/doWhileStatement.h"
+#include "ir/statements/forInStatement.h"
+#include "ir/statements/forOfStatement.h"
+#include "ir/statements/forUpdateStatement.h"
+#include "ir/statements/ifStatement.h"
+#include "ir/statements/switchCaseStatement.h"
+#include "ir/statements/switchStatement.h"
+#include "ir/statements/variableDeclaration.h"
+#include "ir/statements/variableDeclarator.h"
+#include "ir/statements/whileStatement.h"
+#include "ir/ts/tsClassImplements.h"
+#include "ir/ts/tsConstructorType.h"
+#include "ir/ts/tsEnumDeclaration.h"
+#include "ir/ts/tsFunctionType.h"
+#include "ir/ts/tsIndexSignature.h"
+#include "ir/ts/tsMethodSignature.h"
+#include "ir/ts/tsModuleBlock.h"
+#include "ir/ts/tsModuleDeclaration.h"
+#include "ir/ts/tsSignatureDeclaration.h"
+#include "ir/ts/tsTypeParameterDeclaration.h"
+#include "ir/ts/tsTypeParameterInstantiation.h"
+#include "util/concurrent.h"
+#include "util/helpers.h"
 
 namespace panda::es2panda::binder {
 void Binder::InitTopScope()
@@ -299,7 +302,7 @@ void Binder::BuildVarDeclaratorId(const ir::AstNode *parent, ir::AstNode *childN
 
             if (Program()->Extension() == ScriptExtension::TS) {
                 ident->SetVariable(variable);
-                BuildTSSignatureDeclarationBaseParams(ident->TypeAnnotation());
+                BuildTSSignatureDeclarationBaseParamsWithParent(ident, ident->TypeAnnotation());
             }
 
             variable->AddFlag(VariableFlags::INITIALIZED);
@@ -312,7 +315,7 @@ void Binder::BuildVarDeclaratorId(const ir::AstNode *parent, ir::AstNode *childN
                 BuildVarDeclaratorId(childNode, prop);
             }
 
-            BuildTSSignatureDeclarationBaseParams(objPattern->TypeAnnotation());
+            BuildTSSignatureDeclarationBaseParamsWithParent(objPattern, objPattern->TypeAnnotation());
             break;
         }
         case ir::AstNodeType::ARRAY_PATTERN: {
@@ -322,7 +325,7 @@ void Binder::BuildVarDeclaratorId(const ir::AstNode *parent, ir::AstNode *childN
                 BuildVarDeclaratorId(childNode, element);
             }
 
-            BuildTSSignatureDeclarationBaseParams(arrayPattern->TypeAnnotation());
+            BuildTSSignatureDeclarationBaseParamsWithParent(arrayPattern, arrayPattern->TypeAnnotation());
             break;
         }
         case ir::AstNodeType::ASSIGNMENT_PATTERN: {
@@ -344,11 +347,18 @@ void Binder::BuildVarDeclaratorId(const ir::AstNode *parent, ir::AstNode *childN
     }
 }
 
-void Binder::BuildTSSignatureDeclarationBaseParams(const ir::AstNode *typeNode)
+void Binder::BuildTSSignatureDeclarationBaseParamsWithParent(const ir::AstNode *parent, ir::AstNode *typeNode)
 {
     if (!typeNode) {
         return;
     }
+    typeNode->SetParent(parent);
+    BuildTSSignatureDeclarationBaseParams(typeNode);
+}
+
+void Binder::BuildTSSignatureDeclarationBaseParams(const ir::AstNode *typeNode)
+{
+    ASSERT(typeNode != nullptr);
 
     Scope *scope = nullptr;
 
@@ -408,12 +418,20 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
 
     auto scopeCtx = LexicalScope<LocalScope>::Enter(this, classDef->Scope());
 
+    if (classDef->TypeParams()) {
+        ResolveReference(classDef, classDef->TypeParams());
+    }
+
     if (classDef->Super()) {
         ResolveReference(classDef, classDef->Super());
     }
 
-    for (auto *impl : classDef->Implements()) {
-        ResolveReference(classDef, impl);
+    if (classDef->SuperTypeParams()) {
+        ResolveReference(classDef, classDef->SuperTypeParams());
+    }
+
+    for (auto *iter : classDef->Implements()) {
+        ResolveReference(classDef, iter);
     }
 
     if (classDef->Ident()) {
@@ -421,12 +439,18 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
 
         ASSERT(res.variable && res.variable->Declaration()->IsConstDecl());
         res.variable->AddFlag(VariableFlags::INITIALIZED);
+
+        classDef->Ident()->SetParent(classDef);
     }
 
     ResolveReference(classDef, classDef->Ctor());
 
     for (auto *stmt : classDef->Body()) {
         ResolveReference(classDef, stmt);
+    }
+
+    for (auto *iter : classDef->IndexSignatures()) {
+        ResolveReference(classDef, iter);
     }
 }
 
@@ -509,8 +533,21 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
 
             auto *outerScope = scope_;
 
+            if (scriptFunc->Id() != nullptr) {
+                scriptFunc->Id()->SetParent(scriptFunc);
+            }
+
             {
                 auto paramScopeCtx = LexicalScope<FunctionParamScope>::Enter(this, funcScope->ParamScope());
+
+                if (Program()->Extension() == ScriptExtension::TS) {
+                    if (scriptFunc->TypeParams() != nullptr) {
+                        ResolveReference(scriptFunc, scriptFunc->TypeParams());
+                    }
+                    if (scriptFunc->ThisParams() != nullptr) {
+                        ResolveReference(scriptFunc, scriptFunc->ThisParams());
+                    }
+                }
 
                 for (auto *param : scriptFunc->Params()) {
                     ResolveReference(scriptFunc, param);
@@ -552,7 +589,10 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             break;
         }
         case ir::AstNodeType::BLOCK_STATEMENT: {
-            auto scopeCtx = LexicalScope<Scope>::Enter(this, childNode->AsBlockStatement()->Scope());
+            auto scope = childNode->AsBlockStatement()->Scope();
+            auto scopeCtx = scope != nullptr ?
+                LexicalScope<Scope>::Enter(this, scope) :
+                LexicalScope<Scope>::Enter(this, GetScope());
 
             ResolveReferences(childNode);
             break;

@@ -1842,4 +1842,37 @@ ir::MemberExpression *Transformer::CreateMemberExpressionFromIdentifier(binder::
     return res;
 }
 
+void Transformer::CheckTransformedAstStructure(const Program *program) const
+{
+    bool passed = true;
+    CheckTransformedAstNodes(program->Ast(), &passed);
+    if (passed) {
+        std::cout << "Transformed AST structure check passed." << std::endl;
+    }
+}
+
+void Transformer::CheckTransformedAstNodes(const ir::AstNode *parent, bool *passed) const
+{
+    parent->Iterate([this, parent, passed](auto *childNode) { CheckTransformedAstNode(parent, childNode, passed); });
+}
+
+void Transformer::CheckTransformedAstNode(const ir::AstNode *parent, ir::AstNode *childNode, bool *passed) const
+{
+    if (!(*passed)) {
+        return;
+    }
+    if (childNode->IsClassProperty() && childNode->AsClassProperty()->IsStatic()) {
+        return;
+    }
+    if (childNode->IsDecorator()) {
+        return;
+    }
+    if (childNode->Parent() != parent) {
+        std::cout << "Illegal ast structure after transforme." << std::endl;
+        *passed = false;
+        return;
+    }
+    CheckTransformedAstNodes(childNode, passed);
+}
+
 }  // namespace panda::es2panda::parser

@@ -79,6 +79,7 @@ public:
     ~Transformer() = default;
 
     void Transform(Program *program);
+    void CheckTransformedAstStructure(const Program *program) const;
 
 private:
     static constexpr std::string_view PRIVATE_PROPERTY_SIGN = "#";
@@ -104,7 +105,8 @@ private:
     ir::UpdateNodes VisitClassDeclaration(ir::ClassDeclaration *node);
     ir::UpdateNodes VisitClassExpression(ir::ClassExpression *node);
     void VisitTSParameterProperty(ir::ClassDefinition *node);
-    std::vector<ir::ExpressionStatement *> VisitStaticProperty(ir::ClassDefinition *node, util::StringView name);
+    std::vector<ir::ExpressionStatement *> VisitStaticProperty(ir::ClassDefinition *node,
+                                                               util::StringView name);
     void VisitPrivateProperty(ir::ClassDefinition *node);
     void VisitComputedProperty(ir::ClassDefinition *node);
 
@@ -185,6 +187,9 @@ private:
     util::StringView GetNameFromEnumMember(const ir::TSEnumMember *node) const;
     binder::Scope *FindEnumMemberScope(const util::StringView name) const;
     ir::MemberExpression *CreateMemberExpressionFromIdentifier(binder::Scope *scope, ir::Identifier *node);
+
+    void CheckTransformedAstNodes(const ir::AstNode *parent, bool *passed) const;
+    void CheckTransformedAstNode(const ir::AstNode *parent, ir::AstNode *childNode, bool *passed) const;
 
     template <typename T>
     ir::UpdateNodes VisitExportClassDeclaration(T *node);

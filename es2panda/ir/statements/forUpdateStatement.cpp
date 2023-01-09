@@ -129,7 +129,7 @@ void ForUpdateStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binde
         update_ = std::get<ir::AstNode *>(cb(update_))->AsExpression();
     }
 
-    body_ = std::get<ir::AstNode *>(cb(body_))->AsStatement();
+    body_ = UpdateChildStatement(cb, binder, body_);
 }
 
 }  // namespace panda::es2panda::ir

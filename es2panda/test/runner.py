@@ -153,7 +153,7 @@ class Test:
         return "%s-expected.txt" % (self.path[:self.path.find(".d.ts")])
 
     def run(self, runner):
-        cmd = runner.cmd_prefix + [runner.es2panda, "--dump-ast"]
+        cmd = runner.cmd_prefix + [runner.es2panda]
         cmd.extend(self.flags)
         cmd.append(self.path)
 
@@ -163,7 +163,7 @@ class Test:
         out, err = process.communicate()
         self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
 
-        expected_path = self.get_path_to_expected();
+        expected_path = self.get_path_to_expected()
         try:
             with open(expected_path, 'r') as fp:
                 expected = fp.read()
@@ -845,6 +845,54 @@ class TSDeclarationTest(Test):
         return "%s-expected.txt" % file_name
 
 
+class TransformerRunner(Runner):
+    def __init__(self, args):
+        Runner.__init__(self, args, "Transformer")
+
+    def add_directory(self, directory, extension, flags):
+        glob_expression = path.join(
+            self.test_root, directory, "**/*.%s" % (extension))
+        files = glob(glob_expression, recursive=True)
+        files = fnmatch.filter(files, self.test_root + '**' + self.args.filter)
+
+        self.tests += list(map(lambda f: TransformerTest(f, flags), files))
+
+    def test_path(self, src):
+        return src
+
+
+class TransformerTest(Test):
+    def __init__(self, test_path, flags):
+        Test.__init__(self, test_path, flags)
+
+    def get_path_to_expected(self):
+        return "%s-transformed-expected.txt" % (path.splitext(self.path)[0])
+
+    def run(self, runner):
+        cmd = runner.cmd_prefix + [runner.es2panda]
+        cmd.extend(self.flags)
+        cmd.append(self.path)
+
+        self.log_cmd(cmd)
+        process = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
+
+        expected_path = self.get_path_to_expected()
+        try:
+            with open(expected_path, 'r') as fp:
+                expected = fp.read()
+            self.passed = expected == self.output and process.returncode in [0, 1]
+        except Exception:
+            self.passed = False
+
+        if not self.passed:
+            self.error = err.decode("utf-8", errors="ignore")
+
+        return self
+
+
 def main():
     args = get_args()
 
@@ -852,15 +900,23 @@ def main():
 
     if args.regression:
         runner = RegressionRunner(args)
-        runner.add_directory("parser/concurrent", "js", ["--module"])
-        runner.add_directory("parser/js", "js", ["--parse-only"])
+        runner.add_directory("parser/concurrent", "js", ["--module", "--dump-ast"])
+        runner.add_directory("parser/js", "js", ["--parse-only", "--dump-ast"])
         runner.add_directory("parser/ts", "ts",
-                             ["--parse-only", "--module", "--extension=ts"])
+                             ["--parse-only", "--module", "--extension=ts", "--dump-ast"])
         runner.add_directory("parser/ts/type_checker", "ts",
-                             ["--parse-only", "--enable-type-check", "--module", "--extension=ts"])
+                             ["--parse-only", "--enable-type-check", "--module", "--extension=ts", "--dump-ast"])
         runner.add_directory("parser/ts/cases/declaration", "d.ts",
-                             ["--parse-only", "--module", "--extension=ts"], TSDeclarationTest)
+                             ["--parse-only", "--module", "--extension=ts", "--dump-ast"], TSDeclarationTest)
+
         runners.append(runner)
+
+        transformer_runner = TransformerRunner(args)
+        transformer_runner.add_directory("parser/ts/transformed_cases", "ts",
+                                         ["--parse-only", "--module", "--extension=ts", "--dump-transformed-ast",
+                                          "--check-transformed-ast-structure"])
+
+        runners.append(transformer_runner)
 
     if args.test262:
         runners.append(Test262Runner(args))

@@ -47,6 +47,12 @@ void MethodDefinition::Iterate(const NodeTraverser &cb) const
     for (auto *it : decorators_) {
         cb(it);
     }
+
+    for (auto param : paramDecorators_) {
+        for (auto *it : param.decorators) {
+            cb(it);
+        }
+    }
 }
 
 void MethodDefinition::Dump(ir::AstDumper *dumper) const
@@ -106,6 +112,12 @@ void MethodDefinition::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder
 
     for (auto iter = decorators_.begin(); iter != decorators_.end(); iter++) {
         *iter = std::get<ir::AstNode *>(cb(*iter))->AsDecorator();
+    }
+
+    for (auto param : paramDecorators_) {
+        for (auto iter = param.decorators.begin(); iter != param.decorators.end(); iter++) {
+            *iter = std::get<ir::AstNode *>(cb(*iter))->AsDecorator();
+        }
     }
 }
 

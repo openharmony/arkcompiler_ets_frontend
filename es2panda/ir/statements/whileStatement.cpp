@@ -72,7 +72,7 @@ void WhileStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
     test_ = std::get<ir::AstNode *>(cb(test_))->AsExpression();
 
     auto loopScopeCtx = binder::LexicalScope<binder::LoopScope>::Enter(binder, scope_);
-    body_ = std::get<ir::AstNode *>(cb(body_))->AsStatement();
+    body_ = UpdateChildStatement(cb, binder, body_);
 }
 
 }  // namespace panda::es2panda::ir

@@ -37,16 +37,22 @@ void BlockStatement::Dump(ir::AstDumper *dumper) const
 
 void BlockStatement::Compile(compiler::PandaGen *pg) const
 {
-    compiler::LocalRegScope lrs(pg, scope_);
+    if (scope_ != nullptr) {
+        compiler::LocalRegScope lrs(pg, scope_);
 
-    for (const auto *it : statements_) {
-        it->Compile(pg);
+        for (const auto *it : statements_) {
+            it->Compile(pg);
+        }
+    } else {
+        for (const auto *it : statements_) {
+            it->Compile(pg);
+        }
     }
 }
 
 checker::Type *BlockStatement::Check(checker::Checker *checker) const
 {
-    checker::ScopeContext scopeCtx(checker, scope_);
+    auto scopeCtx = checker::ScopeContext(checker, scope_ != nullptr ? scope_ : checker->Scope());
 
     for (const auto *it : statements_) {
         it->Check(checker);
@@ -57,7 +63,8 @@ checker::Type *BlockStatement::Check(checker::Checker *checker) const
 
 void BlockStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 {
-    auto scopeCtx = binder::LexicalScope<binder::Scope>::Enter(binder, scope_);
+    auto scopeCtx = binder::LexicalScope<binder::Scope>::Enter(binder,
+        scope_ != nullptr ? scope_ : binder->GetScope());
 
     for (auto iter = statements_.begin(); iter != statements_.end();) {
         auto newStatements = cb(*iter);

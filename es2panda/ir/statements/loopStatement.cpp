@@ -15,7 +15,26 @@
 
 #include "loopStatement.h"
 
-#include <binder/scope.h>
+#include "ir/statements/blockStatement.h"
 
 namespace panda::es2panda::ir {
+
+Statement *LoopStatement::UpdateChildStatement(const NodeUpdater &cb,
+                                               const binder::Binder *binder,
+                                               Statement *statement) const
+{
+    auto newStatement = cb(statement);
+    if (std::holds_alternative<ir::AstNode *>(newStatement)) {
+        return std::get<ir::AstNode *>(newStatement)->AsStatement();
+    }
+
+    ASSERT(std::holds_alternative<std::vector<ir::AstNode *>>(newStatement));
+    ArenaVector<ir::Statement *> statements(binder->Allocator()->Adapter());
+    auto newStatements = std::get<std::vector<ir::AstNode *>>(newStatement);
+    for (auto *it : newStatements) {
+        statements.push_back(it->AsStatement());
+    }
+    return binder->Allocator()->New<ir::BlockStatement>(nullptr, std::move(statements));
+}
+
 }  // namespace panda::es2panda::ir

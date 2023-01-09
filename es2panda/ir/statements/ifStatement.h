@@ -33,14 +33,11 @@ class Expression;
 
 class IfStatement : public Statement {
 public:
-    explicit IfStatement(Expression *test, Statement *consequent, binder::Scope *consequentScope,
-                         Statement *alternate, binder::Scope *alternateScope)
+    explicit IfStatement(Expression *test, Statement *consequent, Statement *alternate)
         : Statement(AstNodeType::IF_STATEMENT),
           test_(test),
           consequent_(consequent),
-          consequentScope_(consequentScope),
-          alternate_(alternate),
-          alternateScope_(alternateScope)
+          alternate_(alternate)
     {
     }
 
@@ -67,14 +64,11 @@ public:
 protected:
     Statement *UpdateIfStatementChildStatement(const NodeUpdater &cb,
                                                const binder::Binder *binder,
-                                               Statement *statement,
-                                               binder::Scope *scope) const;
+                                               Statement *statement) const;
 
     Expression *test_;
     Statement *consequent_;
-    binder::Scope *consequentScope_;
     Statement *alternate_;
-    binder::Scope *alternateScope_;
 };
 
 }  // namespace panda::es2panda::ir

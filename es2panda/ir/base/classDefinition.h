@@ -76,6 +76,11 @@ public:
         return ident_;
     }
 
+    Identifier *Ident()
+    {
+        return ident_;
+    }
+
     Expression *Super()
     {
         return superClass_;
@@ -145,6 +150,16 @@ public:
     {
         ASSERT(ctor_ != nullptr);
         return ctor_;
+    }
+
+    const TSTypeParameterInstantiation *SuperTypeParams() const
+    {
+        return superTypeParams_;
+    }
+
+    TSTypeParameterInstantiation *SuperTypeParams()
+    {
+        return superTypeParams_;
     }
 
     const FunctionExpression *Ctor() const;
