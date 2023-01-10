@@ -14,8 +14,9 @@
  */
 
 "use strict";
-{
-    function a() {
-        "use concurrent";
-    }
+export let a = 1;
+
+function b() {
+    "use concurrent";
+    return a;
 }

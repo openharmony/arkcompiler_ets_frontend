@@ -1,2 +1,0 @@
-Error: Concurrent function should only be defined in top-level scope [use-concurrent-only-in-top-scope-2.js:19:8]
-the size of programs is expected to be 1, but is 0

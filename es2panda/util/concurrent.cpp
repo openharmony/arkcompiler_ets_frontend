@@ -72,21 +72,7 @@ void Concurrent::SetConcurrent(ir::ScriptFunction *func, const lexer::LineIndex 
         ThrowInvalidConcurrentFunction(lineIndex, stmt, ConcurrentInvalidFlag::NOT_ORDINARY_FUNCTION);
     }
 
-    // concurrent function should be defined in top-level scope
-    if (!func->Parent()->Parent()->IsProgram()) {
-        ThrowInvalidConcurrentFunction(lineIndex, stmt, ConcurrentInvalidFlag::NOT_TOP_LEVEL);
-    }
-
     func->AddFlag(ir::ScriptFunctionFlags::CONCURRENT);
-    auto *funcScope = func->Scope()->Parent();
-    while (funcScope) {
-        if (funcScope->IsGlobalScope() || funcScope->IsModuleScope()) {
-            (static_cast<binder::FunctionScope *>(funcScope))->UseConcurrent();
-            break;
-        }
-
-        funcScope = funcScope->Parent();
-    }
 }
 
 void Concurrent::ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *expr,
@@ -95,17 +81,12 @@ void Concurrent::ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineInde
     auto line = expr->Range().start.line;
     auto column = (const_cast<lexer::LineIndex &>(lineIndex)).GetLocation(expr->Range().start).col - 1;
     switch (errFlag) {
-        case ConcurrentInvalidFlag::NOT_TOP_LEVEL: {
-            throw Error {ErrorType::GENERIC, "Concurrent function should only be defined in top-level scope", line,
-                         column};
-            break;
-        }
         case ConcurrentInvalidFlag::NOT_ORDINARY_FUNCTION: {
             throw Error {ErrorType::GENERIC, "Concurrent function should only be function declaration", line,
                          column};
             break;
         }
-        case ConcurrentInvalidFlag::USING_MUTABLE_VARIABLE: {
+        case ConcurrentInvalidFlag::NOT_IMPORT_VARIABLE: {
             throw Error {ErrorType::GENERIC, "Concurrent function should only use import variable or local variable",
                          line, column};
             break;
@@ -115,28 +96,18 @@ void Concurrent::ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineInde
     }
 }
 
-void Concurrent::StoreEnvForConcurrent(compiler::PandaGen *pg, const ir::AstNode *node)
-{
-    // Store env for concurrent should only be implemented in Top-Level scope
-    if (!pg->TopScope()->IsGlobalScope() && !pg->TopScope()->IsModuleScope()) {
-        return;
-    }
-
-    if (pg->TopScope()->HasConcurrent()) {
-        pg->StoreLexicalEnv(node);
-    }
-}
-
-void Concurrent::VerifyConstLexicalVarForConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *node,
+void Concurrent::VerifyImportVarForConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *node,
                                              const binder::ScopeFindResult &result)
 {
     if (!result.crossConcurrent) {
         return;
     }
 
-    if (!result.variable->Declaration()->IsConstDecl()) {
-        ThrowInvalidConcurrentFunction(lineIndex, node, ConcurrentInvalidFlag::USING_MUTABLE_VARIABLE);
+    if (result.variable->IsModuleVariable() && result.variable->Declaration()->IsImportDecl()) {
+        return;
     }
+
+    ThrowInvalidConcurrentFunction(lineIndex, node, ConcurrentInvalidFlag::NOT_IMPORT_VARIABLE);
 }
 
 } // namespace panda::es2panda::util
