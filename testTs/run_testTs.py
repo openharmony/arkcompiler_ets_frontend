@@ -53,7 +53,7 @@ def skip(filepath, flag=False):
         skip_test = json.loads(sk_content)
         skip_test_list = skip_test['error.txt'] + skip_test['no2015'] + skip_test['tsc_error'] + \
             skip_test['import_skip'] + \
-            skip_test['code_rule'] + skip_test['no_case']
+            skip_test['code_rule'] + skip_test['no_case'] + skip_test['not_supported_by_4.2.3']
         if os.path.isfile(filepath):
             if filepath.endswith('.ts'):
                 if filepath not in skip_test_list:
