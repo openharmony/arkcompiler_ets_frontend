@@ -40,7 +40,7 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
     const std::string &debugInfoSourceFile, const std::string &pkgName)
 {
     CompilerContext context(program->Binder(), options.isDebug, options.isDebuggerEvaluateExpressionMode,
-                            options.mergeAbc, options.typeExtractor, debugInfoSourceFile, pkgName,
+                            options.mergeAbc, options.typeExtractor, false, debugInfoSourceFile, pkgName,
                             program->RecordName());
 
     if (hotfixHelper_ != nullptr) {

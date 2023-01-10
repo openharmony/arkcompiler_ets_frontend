@@ -1090,6 +1090,21 @@ static void SetPackageName(const std::string &packageName, panda::pandasm::Progr
     }
 }
 
+static void ParseInputJsonFileContent(const Json::Value &rootValue, panda::pandasm::Program &prog)
+{
+    auto iter = prog.record_table.find(g_recordName);
+    if (iter != prog.record_table.end()) {
+        auto &rec = iter->second;
+
+        auto inputJsonFileContentField = panda::pandasm::Field(LANG_EXT);
+        inputJsonFileContentField.name = "jsonFileContent";
+        inputJsonFileContentField.type = panda::pandasm::Type("u32", 0);
+        inputJsonFileContentField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::STRING>(
+            static_cast<std::string_view>(rootValue["ijfc"].asString())));
+        rec.field_list.emplace_back(std::move(inputJsonFileContentField));
+    }
+}
+
 static void ParseSingleStr(const Json::Value &rootValue, panda::pandasm::Program &prog)
 {
     auto strArr = rootValue["s"];
@@ -1353,6 +1368,12 @@ static int ParseSmallPieceJson(const std::string &subJson, panda::pandasm::Progr
         case static_cast<int>(JsonType::OUTPUTFILENAME): {
             if (rootValue.isMember("ofn") && rootValue["ofn"].isString()) {
                 g_outputFileName = rootValue["ofn"].asString();
+            }
+            break;
+        }
+        case static_cast<int>(JsonType::INPUTJSONFILECONTENT): {
+            if (rootValue.isMember("ijfc") && rootValue["ijfc"].isString()) {
+                ParseInputJsonFileContent(rootValue, prog);
             }
             break;
         }

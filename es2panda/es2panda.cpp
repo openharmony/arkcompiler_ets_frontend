@@ -18,6 +18,7 @@
 #include <compiler/core/compileQueue.h>
 #include <compiler/core/compilerContext.h>
 #include <compiler/core/compilerImpl.h>
+#include <compiler/core/emitter/emitter.h>
 #include <parser/parserImpl.h>
 #include <parser/program/program.h>
 #include <parser/transformer/transformer.h>
@@ -51,6 +52,13 @@ Compiler::~Compiler()
     delete compiler_;
 }
 
+panda::pandasm::Program *createJsonContentProgram(std::string src, std::string rname)
+{
+    panda::es2panda::compiler::CompilerContext context(nullptr, false, false, false, false, true,
+                                                       src, "", util::StringView(rname));
+    return context.GetEmitter()->Finalize(false, nullptr);
+}
+
 panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const CompilerOptions &options,
     util::SymbolTable *symbolTable)
 {
@@ -61,6 +69,10 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     std::string sourcefile(input.sourcefile);
     std::string pkgName(input.pkgName);
     parser::ScriptKind kind(input.scriptKind);
+
+    if (fname.substr(fname.find_last_of(".") + 1) == "json") {
+        return createJsonContentProgram(src, rname);
+    }
 
     bool needDumpSymbolFile = !options.hotfixOptions.dumpSymbolTable.empty();
     bool needGeneratePatch = options.hotfixOptions.generatePatch && !options.hotfixOptions.symbolTable.empty();

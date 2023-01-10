@@ -55,7 +55,7 @@ export const ts2pandaOptions = [
     { name: 'package-name', type: String, defaultValue: "", description: "specify the package that the compiling file belongs to." },
     { name: 'output-proto', type: Boolean, defaultValue: false, description: "Output protoBin file. Default: false" },
     { name: 'merge-abc', type: Boolean, defaultValue: false, description: "Compile as merge abc" },
-    { name: 'input-file', type: String, defaultValue: "", description: "A file containing a list of source files to be compiled. Each line of this file should be constructed in such format: fileName;recordName;moduleType;sourceFile" },
+    { name: 'input-file', type: String, defaultValue: "", description: "A file containing a list of source files to be compiled. Each line of this file should be constructed in such format: fileName;recordName;moduleType;sourceFile;packageName" },
 ]
 
 
