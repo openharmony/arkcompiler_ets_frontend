@@ -49,7 +49,7 @@ public:
     NO_COPY_SEMANTIC(Variable);
     NO_MOVE_SEMANTIC(Variable);
 
-    VariableType virtual Type() const = 0;
+    virtual VariableType Type() const = 0;
 
 #define DECLARE_CHECKS_CASTS(variableType, className)     \
     bool Is##className() const                            \

@@ -1099,7 +1099,8 @@ static void ParseInputJsonFileContent(const Json::Value &rootValue, panda::panda
         auto inputJsonFileContentField = panda::pandasm::Field(LANG_EXT);
         inputJsonFileContentField.name = "jsonFileContent";
         inputJsonFileContentField.type = panda::pandasm::Type("u32", 0);
-        inputJsonFileContentField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::STRING>(
+        inputJsonFileContentField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::STRING>(
             static_cast<std::string_view>(rootValue["ijfc"].asString())));
         rec.field_list.emplace_back(std::move(inputJsonFileContentField));
     }
@@ -1490,7 +1491,7 @@ static bool EmitProgram(const std::string &output, int optLevel, std::string opt
     return true;
 }
 
-static bool EmitAndRestoreProgram(panda::pandasm::Program &prog, panda::ts2abc::Options options)
+static bool EmitAndRestoreProgram(panda::pandasm::Program &prog, const panda::ts2abc::Options &options)
 {
     if (!EmitProgram(g_outputFileName, options.GetOptLevelArg(), options.GetOptLogLevelArg(), prog)) {
         std::cerr << "fail to emit porgram " << g_outputFileName << " in HandleBuffer" << std::endl;
@@ -1502,7 +1503,7 @@ static bool EmitAndRestoreProgram(panda::pandasm::Program &prog, panda::ts2abc::
 }
 
 static bool HandleBuffer(const int &ret, char *buff, std::string &data, panda::pandasm::Program &prog,
-                         panda::ts2abc::Options options)
+                         const panda::ts2abc::Options &options)
 {
     uint32_t startPos = 0;
     if (options.IsMultiProgramsPipe() && ((buff[0] == '*' && data.back() != '#') ||
@@ -1576,7 +1577,7 @@ static bool ReadFromPipe(panda::pandasm::Program &prog, panda::ts2abc::Options o
     return true;
 }
 
-bool GenerateProgramsFromPipe(panda::ts2abc::Options options)
+bool GenerateProgramsFromPipe(const panda::ts2abc::Options &options)
 {
     panda::pandasm::Program prog = panda::pandasm::Program();
     prog.lang = panda::pandasm::extensions::Language::ECMASCRIPT;

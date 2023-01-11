@@ -261,7 +261,7 @@ private:
     ir::Expression *ParseTsQualifiedReference(ir::Expression *typeName);
     ir::Expression *ParseTsTypeReferenceOrQuery(bool parseQuery = false);
     bool IsTSNamedTupleMember();
-    void HandleRestType(ir::AstNodeType elementType, bool *hasRestType);
+    void HandleRestType(ir::AstNodeType elementType, bool *hasRestType) const;
     ir::Expression *ParseTsTupleElement(ir::TSTupleKind *kind, bool *seenOptional, bool *hasRestType);
     ir::TSTupleType *ParseTsTupleType();
     ir::TSImportType *ParseTsImportType(const lexer::SourcePosition &startLoc, bool isTypeof = false);
@@ -404,7 +404,7 @@ private:
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers);
     ir::AstNode *ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers);
     void ValidateAssignmentTarget(ExpressionParseFlags flags, ir::Expression *node);
-    void ValidateLvalueAssignmentTarget(ir::Expression *node);
+    void ValidateLvalueAssignmentTarget(ir::Expression *node) const;
     void ValidateArrowParameterBindings(const ir::Expression *node);
 
     ir::ExportDefaultDeclaration *ParseExportDefaultDeclaration(const lexer::SourcePosition &startLoc,

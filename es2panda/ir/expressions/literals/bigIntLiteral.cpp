@@ -30,7 +30,7 @@ void BigIntLiteral::Dump(ir::AstDumper *dumper) const
 
 void BigIntLiteral::Compile(compiler::PandaGen *pg) const
 {
-    util::StringView bigIntValue = src_.Substr(0, src_.Length()-1);
+    util::StringView bigIntValue = src_.Substr(0, src_.Length() - 1);
     pg->LoadAccumulatorBigInt(this, bigIntValue);
 }
 

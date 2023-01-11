@@ -18,6 +18,7 @@
 
 #include <macros.h>
 #include <mem/arena_allocator.h>
+#include <util/hotfix.h>
 #include <util/programCache.h>
 #include <util/symbolTable.h>
 
@@ -199,6 +200,9 @@ public:
     }
 
 private:
+    util::Hotfix *InitHotfixHelper(const SourceFile &input, const CompilerOptions &options, util::SymbolTable *symbolTable);
+    static void CleanHotfixHelper(const util::Hotfix *hotfixHelper);
+    
     parser::ParserImpl *parser_;
     compiler::CompilerImpl *compiler_;
     std::unique_ptr<parser::Transformer> transformer_ {nullptr};

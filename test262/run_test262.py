@@ -318,8 +318,8 @@ class TestPrepare():
 
         for file_name in file_names:
             with open(file_name, 'r', encoding='utf-8') as file:
-                content = file.read()
-                if esid in content:
+                file_content = file.read()
+                if esid in file_content:
                     files.append(file_name.split(origin_dir)[1])
         return files
 

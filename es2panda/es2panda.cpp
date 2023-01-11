@@ -24,7 +24,6 @@
 #include <parser/transformer/transformer.h>
 #include <typescript/checker.h>
 #include <util/helpers.h>
-#include <util/hotfix.h>
 
 #include <libpandabase/utils/hash.h>
 
@@ -74,14 +73,7 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
         return createJsonContentProgram(src, rname);
     }
 
-    bool needDumpSymbolFile = !options.hotfixOptions.dumpSymbolTable.empty();
-    bool needGeneratePatch = options.hotfixOptions.generatePatch && !options.hotfixOptions.symbolTable.empty();
-    util::Hotfix *hotfixHelper = nullptr;
-    if (symbolTable && (needDumpSymbolFile || needGeneratePatch)) {
-        hotfixHelper = new util::Hotfix(needDumpSymbolFile, needGeneratePatch, input.recordName, symbolTable);
-        parser_->AddHotfixHelper(hotfixHelper);
-        compiler_->AddHotfixHelper(hotfixHelper);
-    }
+    auto *hotfixHelper = InitHotfixHelper(input, options, symbolTable);
 
     try {
         auto ast = parser_->Parse(fname, src, rname, kind);
@@ -116,19 +108,34 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
                                           sourcefile : options.debugInfoSourceFile;
         auto *prog = compiler_->Compile(&ast, options, debugInfoSourceFile, pkgName);
 
-        if (hotfixHelper) {
-            delete hotfixHelper;
-            hotfixHelper = nullptr;
-        }
+        CleanHotfixHelper(hotfixHelper);
         return prog;
     } catch (const class Error &e) {
         error_ = e;
 
-        if (hotfixHelper) {
-            delete hotfixHelper;
-            hotfixHelper = nullptr;
-        }
+        CleanHotfixHelper(hotfixHelper);
         return nullptr;
+    }
+}
+
+util::Hotfix *Compiler::InitHotfixHelper(const SourceFile &input, const CompilerOptions &options, util::SymbolTable *symbolTable)
+{
+    bool needDumpSymbolFile = !options.hotfixOptions.dumpSymbolTable.empty();
+    bool needGeneratePatch = options.hotfixOptions.generatePatch && !options.hotfixOptions.symbolTable.empty();
+    util::Hotfix *hotfixHelper = nullptr;
+    if (symbolTable && (needDumpSymbolFile || needGeneratePatch)) {
+        hotfixHelper = new util::Hotfix(needDumpSymbolFile, needGeneratePatch, input.recordName, symbolTable);
+        parser_->AddHotfixHelper(hotfixHelper);
+        compiler_->AddHotfixHelper(hotfixHelper);
+    }
+    return hotfixHelper;
+}
+
+void Compiler::CleanHotfixHelper(const util::Hotfix *hotfixHelper)
+{
+    if (hotfixHelper) {
+        delete hotfixHelper;
+        hotfixHelper = nullptr;
     }
 }
 

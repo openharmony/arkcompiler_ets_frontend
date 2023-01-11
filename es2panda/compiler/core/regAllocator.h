@@ -121,8 +121,8 @@ private:
     void Run(IRNode *ins);
     void Run(IRNode *ins, size_t argCount);
     void Run(IRNode *ins, int64_t typeIndex);
-    void AdjustInsSpill(Span<VReg *> &registers, IRNode *ins, ArenaList<IRNode *> &newInsns,
-                        std::vector<OperandKind> &regsKind);
+    void AdjustInsSpill(const Span<VReg *> &registers, IRNode *ins, ArenaList<IRNode *> &newInsns,
+                        const std::vector<OperandKind> &regsKind);
     void AdjustRangeInsSpill(Span<VReg *> &registers, IRNode *ins, ArenaList<IRNode *> &newInsns);
 
     template <typename T, typename... Args>

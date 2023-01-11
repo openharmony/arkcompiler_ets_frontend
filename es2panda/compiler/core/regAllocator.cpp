@@ -148,8 +148,8 @@ void RegAllocator::AdjustInsRegWhenHasSpill()
     pg_->SetInsns(newInsns);
 }
 
-void RegAllocator::AdjustInsSpill(Span<VReg *> &registers, IRNode *ins, ArenaList<IRNode *> &newInsns,
-                                  std::vector<OperandKind> &regsKind)
+void RegAllocator::AdjustInsSpill(const Span<VReg *> &registers, IRNode *ins, ArenaList<IRNode *> &newInsns,
+                                  const std::vector<OperandKind> &regsKind)
 {
     ASSERT(spillIndex_ == 0);
     ASSERT(!regsKind.empty());
