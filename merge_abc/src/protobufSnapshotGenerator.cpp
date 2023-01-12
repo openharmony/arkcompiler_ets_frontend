@@ -86,7 +86,7 @@ std::map<std::string, panda::es2panda::util::ProgramCache*> *ProtobufSnapshotGen
     std::fstream input;
     GetFileStream(cacheFilePath, std::ios::in | std::ios::binary, input);
     if (!input) {
-        std::cerr << "Cache file: " << cacheFilePath << " doesn't exist" << std::endl;
+        std::cout << "Cache file: " << cacheFilePath << " doesn't exist" << std::endl;
         return nullptr;
     }
     protoPanda::CompositeProgram protoCompositeProgram;
