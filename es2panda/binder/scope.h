@@ -592,23 +592,12 @@ public:
         return internalName_;
     }
 
-    void UseConcurrent()
-    {
-        hasConcurrent_ = true;
-    }
-
-    bool HasConcurrent() const
-    {
-        return hasConcurrent_;
-    }
-
     bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                     [[maybe_unused]] ScriptExtension extension) override;
 
 private:
     util::StringView name_ {};
     util::StringView internalName_ {};
-    bool hasConcurrent_ {false};
 };
 
 class LocalScope : public Scope {

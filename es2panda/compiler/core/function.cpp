@@ -27,7 +27,6 @@
 #include <ir/expressions/identifier.h>
 #include <ir/statements/blockStatement.h>
 #include <ir/ts/tsParameterProperty.h>
-#include <util/concurrent.h>
 #include <util/helpers.h>
 
 namespace panda::es2panda::compiler {
@@ -187,8 +186,6 @@ static void CompileFunction(PandaGen *pg)
 
 static void CompileFunctionOrProgram(PandaGen *pg)
 {
-    util::Concurrent::StoreEnvForConcurrent(pg, pg->RootNode());
-
     FunctionRegScope lrs(pg);
     const auto *topScope = pg->TopScope();
 

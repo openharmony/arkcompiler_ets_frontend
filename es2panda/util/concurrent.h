@@ -39,9 +39,8 @@ class LineIndex;
 namespace panda::es2panda::util {
 
 enum class ConcurrentInvalidFlag {
-    NOT_TOP_LEVEL = 1,
-    NOT_ORDINARY_FUNCTION = 2,
-    USING_MUTABLE_VARIABLE = 3
+    NOT_ORDINARY_FUNCTION = 1,
+    NOT_IMPORT_VARIABLE = 2
 };
 
 class Concurrent {
@@ -51,8 +50,7 @@ public:
     static void SetConcurrent(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex);
     static void ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *expr,
                                     ConcurrentInvalidFlag errFlag);
-    static void StoreEnvForConcurrent(compiler::PandaGen *pg, const ir::AstNode *node);
-    static void VerifyConstLexicalVarForConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *node,
+    static void VerifyImportVarForConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *node,
                                             const binder::ScopeFindResult &result);
 
     static constexpr std::string_view USE_CONCURRENT = "use concurrent";

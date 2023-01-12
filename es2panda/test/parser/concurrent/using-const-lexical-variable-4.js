@@ -14,9 +14,9 @@
  */
 
 "use strict";
+const a = 1;
 
-function a() {
-    function b() {
-        "use concurrent";
-    }
+function b() {
+    "use concurrent";
+    return a;
 }

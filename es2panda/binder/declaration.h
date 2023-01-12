@@ -100,6 +100,11 @@ public:
         return (flags_ & flag) != 0;
     }
 
+    bool IsImportDecl() const
+    {
+        return HasFlag(DeclarationFlags::IMPORT);
+    }
+
     bool IsImportOrExportDecl() const
     {
         return HasFlag(DeclarationFlags::IMPORT | DeclarationFlags::EXPORT);

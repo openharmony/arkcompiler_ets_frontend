@@ -1841,11 +1841,6 @@ void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t
     StoreLexicalVar(node, level, slot, value);
 }
 
-void PandaGen::StoreLexicalEnv(const ir::AstNode *node)
-{
-    ra_.Emit<DeprecatedStlexenv>(node);
-}
-
 void PandaGen::ThrowIfSuperNotCorrectCall(const ir::AstNode *node, int64_t num)
 {
     ra_.Emit<ThrowIfsupernotcorrectcall>(node, num);
