@@ -63,6 +63,7 @@ public:
     bool IsPatchVar(uint32_t slot);
     void ProcessFunction(const compiler::PandaGen *pg, panda::pandasm::Function *func, LiteralBuffers &literalBuffers);
     void ProcessModule(const std::string &recordName, std::vector<panda::pandasm::LiteralArray::Literal> &moduleBuffer);
+    void ProcessJsonContentRecord(const std::string &recordName, const std::string &jsonFileContent);
 
 private:
     void DumpFunctionInfo(const compiler::PandaGen *pg, panda::pandasm::Function *func, LiteralBuffers &literalBuffers);
@@ -72,6 +73,8 @@ private:
     void DumpModuleInfo(const std::string &recordName, std::vector<panda::pandasm::LiteralArray::Literal> &moduleBuffer);
     void ValidateModuleInfo(const std::string &recordName,
         std::vector<panda::pandasm::LiteralArray::Literal> &moduleBuffer);
+    void DumpJsonContentRecInfo(const std::string &recordName, const std::string &jsonFileContent);
+    void ValidateJsonContentRecInfo(const std::string &recordName, const std::string &jsonFileContent);
 
     std::string ExpandLiteral(int64_t bufferIdx, LiteralBuffers &literalBuffers);
     std::string ConvertLiteralToString(std::vector<panda::pandasm::LiteralArray::Literal> &literalBuffer);
