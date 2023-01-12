@@ -123,7 +123,7 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
         if (iter->IsVariableScope()) {
             level++;
 
-            if (iter->IsFunctionScope()) {
+            if (iter->IsFunctionScope() && !crossConcurrent) {
                 crossConcurrent = iter->Node()->AsScriptFunction()->IsConcurrent() ? true : false;
             }
 
