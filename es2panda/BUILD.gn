@@ -376,6 +376,9 @@ action_foreach("gen_isa_headers") {
 ohos_static_library("es2panda_lib") {
   sources = es2panda_src
   use_exceptions = true
+  if (is_mac && current_cpu == "arm64") {
+    use_rtti = true
+  }
 
   configs = [ ":es2abc_config_common" ]
 
@@ -411,6 +414,10 @@ ohos_static_library("es2panda_lib") {
 
 ohos_executable("es2panda") {
   use_exceptions = true
+  if (is_mac && current_cpu == "arm64") {
+    use_rtti = true
+  }
+
   sources = [
     "aot/main.cpp",
     "aot/options.cpp",
