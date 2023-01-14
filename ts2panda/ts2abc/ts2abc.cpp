@@ -1099,7 +1099,8 @@ static void ParseInputJsonFileContent(const Json::Value &rootValue, panda::panda
         auto inputJsonFileContentField = panda::pandasm::Field(LANG_EXT);
         inputJsonFileContentField.name = "jsonFileContent";
         inputJsonFileContentField.type = panda::pandasm::Type("u32", 0);
-        inputJsonFileContentField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::STRING>(
+        inputJsonFileContentField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::STRING>(
             static_cast<std::string_view>(rootValue["ijfc"].asString())));
         rec.field_list.emplace_back(std::move(inputJsonFileContentField));
     }
