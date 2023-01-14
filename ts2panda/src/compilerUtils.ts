@@ -296,8 +296,6 @@ function compileObjectDestructuring(obj: ts.ObjectBindingOrAssignmentPattern, pa
             break;
         }
 
-        // excludedProp.push(properties[i]);
-
         let loadedValue: VReg = pandaGen.getTemp();
         let key: ts.Expression | ts.ComputedPropertyName;
         let target: ts.Node = element;
@@ -360,12 +358,12 @@ function compileObjectDestructuring(obj: ts.ObjectBindingOrAssignmentPattern, pa
 
         // load obj property from rhs, return undefined if no corresponding property exists
         pandaGen.loadObjProperty(element, value, properties[i]);
-        pandaGen.storeAccumulator(element, loadedValue);
 
         let getDefaultLabel = new Label();
         let storeLabel = new Label();
 
         if (hasInit) {
+            pandaGen.storeAccumulator(element, loadedValue);
             pandaGen.condition(
                 element,
                 ts.SyntaxKind.ExclamationEqualsEqualsToken,
@@ -396,12 +394,9 @@ function emitRestProperty(restProperty: ts.BindingElement | ts.SpreadAssignment,
     let isDeclaration = ts.isBindingElement(restProperty) ? true : false;
     let target = isDeclaration ? (<ts.BindingElement>restProperty).name : (<ts.SpreadAssignment>restProperty).expression;
     let lRef = LReference.generateLReference(compiler, target, true);
-    let undefinedReg = pandaGen.getTemp();
 
     if (excludedProp.length == 0) {
-        pandaGen.loadAccumulator(restProperty, getVregisterCache(pandaGen, CacheList.undefined));
-        pandaGen.storeAccumulator(restProperty, undefinedReg);
-        excludedProp.push(undefinedReg);
+        excludedProp = [getVregisterCache(pandaGen, CacheList.undefined)];
     }
 
     // Create a Object with the information of excluded properties
@@ -421,7 +416,7 @@ function emitRestProperty(restProperty: ts.BindingElement | ts.SpreadAssignment,
     pandaGen.createObjectWithExcludedKeys(restProperty, obj, <Array<VReg>>excludedProp);
 
     lRef.setValue();
-    pandaGen.freeTemps(undefinedReg, ...namedPropRegs);
+    pandaGen.freeTemps(...namedPropRegs);
 }
 
 function isRestElement(node: ts.BindingElement) {
