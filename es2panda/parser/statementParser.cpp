@@ -2930,7 +2930,9 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
             return astNode->AsTSImportEqualsDeclaration();
         }
         source = ParseFromClause(true);
-        AddImportEntryItem(source, &specifiers);
+        if (!isType) {
+            AddImportEntryItem(source, &specifiers);
+        }
     } else {
         // import 'source'
         source = ParseFromClause(false);
