@@ -151,7 +151,6 @@ static void GenObjectProperty(PandaGen *pg, const ir::ObjectExpression *object,
                               const ir::Expression *element, VReg value)
 {
     RegScope propScope(pg);
-    VReg loadedValue = pg->AllocReg();
 
     const ir::Property *propExpr = element->AsProperty();
 
@@ -166,20 +165,19 @@ static void GenObjectProperty(PandaGen *pg, const ir::ObjectExpression *object,
         target = assignment->Left();
     }
 
-    // compile key
-    if (key->IsIdentifier()) {
-        pg->LoadAccumulatorString(key, key->AsIdentifier()->Name());
-    } else {
-        key->Compile(pg);
-    }
-
     LReference lref = LReference::CreateLRef(pg, target, object->IsDeclaration());
 
     // load obj property from rhs, return undefined if no corresponding property exists
-    pg->LoadObjByValue(element, value);
-    pg->StoreAccumulator(element, loadedValue);
+    if (key->IsIdentifier()) {
+        pg->LoadObjByName(element, value, key->AsIdentifier()->Name());
+    } else {
+        key->Compile(pg);
+        pg->LoadObjByValue(element, value);
+    }
 
     if (init != nullptr) {
+        VReg loadedValue = pg->AllocReg();
+        pg->StoreAccumulator(element, loadedValue);
         auto *getDefault = pg->AllocLabel();
         auto *store = pg->AllocLabel();
 
@@ -212,6 +210,15 @@ static void GenObjectWithRest(PandaGen *pg, const ir::ObjectExpression *object, 
             lref.SetValue();
             break;
         }
+
+        VReg propName = pg->AllocReg();
+        const ir::Expression *key = element->AsProperty()->Key();
+        if (key->IsIdentifier()) {
+            pg->LoadAccumulatorString(key, key->AsIdentifier()->Name());
+        } else {
+            key->Compile(pg);
+        }
+        pg->StoreAccumulator(element, propName);
 
         GenObjectProperty(pg, object, element, rhs);
     }
