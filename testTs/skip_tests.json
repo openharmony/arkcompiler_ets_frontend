@@ -5048,5 +5048,14 @@
         "./testTs/test/enums/enumConstantMemberWithStringEmitDeclaration.ts",
         "./testTs/test/constEnums/constEnum1.ts",
         "./testTs/test/constEnums/constEnum4.ts"
+    ],
+    "not_supported_by_4.2.3": [
+        "./testTs/test/classes/classStaticBlock/classStaticBlock1.ts",
+        "./testTs/test/classes/classStaticBlock/classStaticBlock10.ts",
+        "./testTs/test/classes/classStaticBlock/classStaticBlock21.ts",
+        "./testTs/test/types/specifyingTypes/typeQueries/typeofThisWithImplicitThis.ts",
+        "./testTs/test/override/override12.ts",
+        "./testTs/test/override/override17.ts",
+        "./testTs/test/parser/ecmascript5/IndexMemberDeclarations/parserIndexMemberDeclaration6.ts"
     ]
 }

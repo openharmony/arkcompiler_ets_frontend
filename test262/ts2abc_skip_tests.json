@@ -490,5 +490,11 @@
             "language/expressions/dynamic-import/namespace/default-property-not-set-own.js",
             "language/expressions/dynamic-import/namespace/promise-then-ns-delete-non-exported-strict.js"
         ]
+    },
+    {
+        "reason" : "the 'struct' is treated as reserved word in ohos-typescript",
+        "files": [
+            "language/reserved-words/unreserved-words.js"
+        ]
     }
 ]
