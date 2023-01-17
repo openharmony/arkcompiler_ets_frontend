@@ -752,7 +752,7 @@ void Binder::AddDeclarationName(const util::StringView &name, DeclType type)
         return;
     }
     variableNames_.insert(name);
-    
+
     if (type == DeclType::ENUM) {
         return;
     }

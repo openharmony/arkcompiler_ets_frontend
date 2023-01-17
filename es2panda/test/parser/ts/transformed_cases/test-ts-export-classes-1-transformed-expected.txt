@@ -104,20 +104,6 @@
                   }
                 }
               },
-              "value": {
-                "type": "NumberLiteral",
-                "value": 1,
-                "loc": {
-                  "start": {
-                    "line": 17,
-                    "column": 32
-                  },
-                  "end": {
-                    "line": 17,
-                    "column": 33
-                  }
-                }
-              },
               "static": true,
               "readonly": false,
               "declare": false,
