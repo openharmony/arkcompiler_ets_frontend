@@ -200,7 +200,8 @@ public:
     }
 
 private:
-    util::Hotfix *InitHotfixHelper(const SourceFile &input, const CompilerOptions &options, util::SymbolTable *symbolTable);
+    util::Hotfix *InitHotfixHelper(const SourceFile &input, const CompilerOptions &options,
+                                   util::SymbolTable *symbolTable);
     static void CleanHotfixHelper(const util::Hotfix *hotfixHelper);
     
     parser::ParserImpl *parser_;

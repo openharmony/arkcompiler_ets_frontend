@@ -69,7 +69,6 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     std::string pkgName(input.pkgName);
     parser::ScriptKind kind(input.scriptKind);
 
-
     auto *hotfixHelper = InitHotfixHelper(input, options, symbolTable);
 
     if (fname.substr(fname.find_last_of(".") + 1) == "json") {
@@ -119,7 +118,8 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     }
 }
 
-util::Hotfix *Compiler::InitHotfixHelper(const SourceFile &input, const CompilerOptions &options, util::SymbolTable *symbolTable)
+util::Hotfix *Compiler::InitHotfixHelper(const SourceFile &input, const CompilerOptions &options,
+                                         util::SymbolTable *symbolTable)
 {
     bool needDumpSymbolFile = !options.hotfixOptions.dumpSymbolTable.empty();
     bool needGeneratePatch = options.hotfixOptions.generatePatch && !options.hotfixOptions.symbolTable.empty();
