@@ -393,7 +393,7 @@ class Runner:
         self.failed = 0
         self.passed = 0
         self.es2panda = path.join(args.build_dir, 'es2abc')
-        self.test_abc = path.join(args.build_dir, 'runner_test.abc')
+        self.build_dir = args.build_dir
         self.cmd_prefix = []
         self.ark_js_vm = ""
         self.ld_library_path = ""
@@ -794,9 +794,11 @@ class CompilerTest(Test):
         Test.__init__(self, test_path, flags)
 
     def run(self, runner):
+        test_abc_name = ("%s.abc" % (path.splitext(self.path)[0])).replace("/", "_")
+        test_abc_path = path.join(runner.build_dir, test_abc_name)
         es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
         es2abc_cmd.extend(self.flags)
-        es2abc_cmd.extend(["--output=" + runner.test_abc])
+        es2abc_cmd.extend(["--output=" + test_abc_path])
         es2abc_cmd.append(self.path)
         self.log_cmd(es2abc_cmd)
 
@@ -810,7 +812,7 @@ class CompilerTest(Test):
         ld_library_path = runner.ld_library_path
         os.environ.setdefault("LD_LIBRARY_PATH", ld_library_path)
         run_abc_cmd = [runner.ark_js_vm]
-        run_abc_cmd.extend([runner.test_abc])
+        run_abc_cmd.extend([test_abc_path])
         self.log_cmd(run_abc_cmd)
 
         process = subprocess.Popen(run_abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -827,7 +829,7 @@ class CompilerTest(Test):
         if not self.passed:
             self.error = err.decode("utf-8", errors="ignore")
 
-        os.remove(runner.test_abc)
+        os.remove(test_abc_path)
 
         return self
 

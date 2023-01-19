@@ -9,6 +9,7 @@
           "id": {
             "type": "Identifier",
             "name": "a",
+            "decorators": [],
             "loc": {
               "start": {
                 "line": 1,
@@ -63,6 +64,7 @@
       "label": {
         "type": "Identifier",
         "name": "target1",
+        "decorators": [],
         "loc": {
           "start": {
             "line": 2,
@@ -79,6 +81,7 @@
         "label": {
           "type": "Identifier",
           "name": "target2",
+          "decorators": [],
           "loc": {
             "start": {
               "line": 3,
@@ -99,6 +102,7 @@
             "argument": {
               "type": "Identifier",
               "name": "a",
+              "decorators": [],
               "loc": {
                 "start": {
                   "line": 4,
@@ -129,6 +133,7 @@
                 "label": {
                   "type": "Identifier",
                   "name": "target1",
+                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 5,
