@@ -48,7 +48,10 @@ import { Ts2Panda } from "./ts2panda";
 import { TypeRecorder } from "./typeRecorder";
 import { LiteralBuffer } from "./base/literal";
 import { findOuterNodeOfParenthesis } from "./expression/parenthesizedExpression";
-import { IRNode } from "./irnodes";
+import {
+    Label,
+    IRNode
+} from "./irnodes";
 import { LexicalBinder } from "./lexicalBinder";
 
 export class PendingCompilationUnit {
@@ -177,6 +180,7 @@ export class CompilerDriver {
                 }
             });
         }
+        Label.resetGlobalId();
 
         let recorder = this.compilePrologue(node, true, false);
         let lexBinder = new LexicalBinder(node, recorder);
