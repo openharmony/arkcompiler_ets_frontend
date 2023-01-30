@@ -1499,6 +1499,7 @@ static bool EmitAndRestoreProgram(panda::pandasm::Program &prog, const panda::ts
     }
     prog = panda::pandasm::Program();
     prog.lang = panda::pandasm::extensions::Language::ECMASCRIPT;
+    g_newLiteralArrayIndex = -1;
     return true;
 }
 
