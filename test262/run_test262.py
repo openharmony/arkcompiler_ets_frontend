@@ -133,10 +133,23 @@ def excuting_npm_install(args):
     ts2abc_build_dir = os.path.join(os.path.dirname(
         os.path.realpath(ark_frontend_binary)), "..")
 
-    if os.path.exists(os.path.join(ts2abc_build_dir, "package.json")):
-        npm_install(ts2abc_build_dir)
-    elif os.path.exists(os.path.join(ts2abc_build_dir, "..", "package.json")):
-        npm_install(os.path.join(ts2abc_build_dir, ".."))
+    if not os.path.exists(os.path.join(ts2abc_build_dir, "package.json")) and \
+        not os.path.exists(os.path.join(ts2abc_build_dir, "..", "package.json")):
+        return
+
+    if os.path.exists(os.path.join(ts2abc_build_dir, "..", "package.json")) and \
+        not os.path.exists(os.path.join(ts2abc_build_dir, "package.json")):
+        ts2abc_build_dir = os.path.join(ts2abc_build_dir, "..")
+    # copy deps/ohos-typescript
+    deps_dir = os.path.join(ts2abc_build_dir, "deps")
+    mkdir(deps_dir)
+    if platform.system() == "Windows" :
+        proc = subprocess.Popen("cp %s %s" % (OHOS_TYPESCRIPT_TGZ_PATH, os.path.join(deps_dir, OHOS_TYPESCRIPT)))
+        proc.wait()
+    else :
+        subprocess.getstatusoutput("cp %s %s" % (OHOS_TYPESCRIPT_TGZ_PATH, os.path.join(deps_dir, OHOS_TYPESCRIPT)))
+
+    npm_install(ts2abc_build_dir)
 
 
 def init(args):

@@ -177,5 +177,11 @@
             "language/expressions/optional-chaining/update-expression-postfix.js",
             "language/expressions/optional-chaining/update-expression-prefix.js"
         ]
+    },
+    {
+        "reason" : "the 'struct' is treated as reserved word in ohos-typescript",
+        "files": [
+            "language/reserved-words/unreserved-words.js"
+        ]
     }
 ]
