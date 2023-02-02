@@ -339,7 +339,7 @@ export class VReg {
   private typeIndex: number | undefined;
   private variableName: string | undefined;
   num: number = -1;
-  
+
   toString(): string {
       return "V" + this.num;
   }
@@ -384,6 +384,10 @@ export class Label extends IRNode {
   constructor() {
     super(IRNodeKind.LABEL, []);
     this.id = Label.global_id++;
+  }
+
+  static resetGlobalId() {
+    Label.global_id = 0;
   }
 
   toString(): string {
