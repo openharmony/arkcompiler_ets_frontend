@@ -132,6 +132,8 @@ bool ParserImpl::IsLabelFollowedByIterationStatement()
                 lexer_->NextToken();
                 return IsLabelFollowedByIterationStatement();
             }
+
+            [[fallthrough]];
         }
         default:
             return false;

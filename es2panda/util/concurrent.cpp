@@ -97,7 +97,7 @@ void Concurrent::ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineInde
 }
 
 void Concurrent::VerifyImportVarForConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *node,
-                                             const binder::ScopeFindResult &result)
+                                                      const binder::ScopeFindResult &result)
 {
     if (!result.crossConcurrent) {
         return;

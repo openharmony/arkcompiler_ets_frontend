@@ -222,7 +222,7 @@ class Test262Test(Test):
             cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=runner.cmd_env)
 
         try:
-            out, err = process.communicate(runner.args.es2panda_timeout)
+            output_res, err = process.communicate(runner.args.es2panda_timeout)
         except subprocess.TimeoutExpired:
             process.kill()
             self.passed = False
@@ -230,7 +230,7 @@ class Test262Test(Test):
             self.error = self.fail_kind.name
             return self
 
-        out = out.decode("utf-8", errors="ignore")
+        out = output_res.decode("utf-8", errors="ignore")
         err = err.decode("utf-8", errors="ignore")
         self.passed, need_exec = runner.util.validate_parse_result(
             process.returncode, err, desc, out)
@@ -742,8 +742,6 @@ class TSCRunner(Runner):
         files = glob(glob_expression, recursive=True)
         files = fnmatch.filter(files, ts_suite_dir + '**' + self.args.filter)
 
-        failed_references = open(path.join(self.test_root, 'test_tsc_ignore_list.txt'), 'r').read()
-
         for f in files:
             test_name = path.basename(f.split(".ts")[0])
             negative_references = path.join(
@@ -763,9 +761,10 @@ class TSCRunner(Runner):
             if is_negative or "filename" in test.options:
                 continue
 
-            if self.args.skip:
-                if path.relpath(f, self.tsc_path) in failed_references:
-                    continue
+            with open(path.join(self.test_root, 'test_tsc_ignore_list.txt'), 'r') as failed_references:
+                if self.args.skip:
+                    if path.relpath(f, self.tsc_path) in failed_references.read():
+                        continue
 
             self.tests.append(test)
 
