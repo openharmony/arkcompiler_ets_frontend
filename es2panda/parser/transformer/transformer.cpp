@@ -18,6 +18,7 @@
 #include <util/ustring.h>
 
 #include "binder/scope.h"
+#include "ir/base/catchClause.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/decorator.h"
@@ -30,9 +31,9 @@
 #include "ir/expressions/classExpression.h"
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/identifier.h"
-#include "ir/expressions/literals/stringLiteral.h"
-#include "ir/expressions/literals/numberLiteral.h"
 #include "ir/expressions/literals/bigIntLiteral.h"
+#include "ir/expressions/literals/numberLiteral.h"
+#include "ir/expressions/literals/stringLiteral.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/objectExpression.h"
 #include "ir/expressions/sequenceExpression.h"
@@ -44,19 +45,31 @@
 #include "ir/module/exportSpecifier.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/classDeclaration.h"
+#include "ir/statements/doWhileStatement.h"
 #include "ir/statements/emptyStatement.h"
 #include "ir/statements/expressionStatement.h"
+#include "ir/statements/forInStatement.h"
+#include "ir/statements/forOfStatement.h"
+#include "ir/statements/forUpdateStatement.h"
 #include "ir/statements/functionDeclaration.h"
+#include "ir/statements/switchStatement.h"
 #include "ir/statements/variableDeclaration.h"
 #include "ir/statements/variableDeclarator.h"
+#include "ir/statements/whileStatement.h"
+#include "ir/ts/tsConstructorType.h"
 #include "ir/ts/tsEnumDeclaration.h"
 #include "ir/ts/tsEnumMember.h"
+#include "ir/ts/tsFunctionType.h"
 #include "ir/ts/tsImportEqualsDeclaration.h"
+#include "ir/ts/tsInterfaceDeclaration.h"
+#include "ir/ts/tsMethodSignature.h"
 #include "ir/ts/tsModuleBlock.h"
 #include "ir/ts/tsModuleDeclaration.h"
 #include "ir/ts/tsParameterProperty.h"
 #include "ir/ts/tsPrivateIdentifier.h"
 #include "ir/ts/tsQualifiedName.h"
+#include "ir/ts/tsSignatureDeclaration.h"
+#include "ir/ts/tsTypeParameterDeclaration.h"
 #include "util/helpers.h"
 
 namespace panda::es2panda::parser {
@@ -558,6 +571,8 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitInstanceProperty(ir::Cl
         return {};
     }
 
+    auto ctorScopeCtx = binder::LexicalScope<binder::FunctionScope>::Enter(Binder(), node->Ctor()->Function()->Scope());
+
     ir::BlockStatement *blockStat = node->Ctor()->Function()->Body()->AsBlockStatement();
     size_t insertPos = (node->Super() == nullptr) ? 0 : 1;
     for (auto *it : addToCtor) {
@@ -571,6 +586,7 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitInstanceProperty(ir::Cl
         auto assignment = AllocNode<ir::AssignmentExpression>(left, it->Value(),
                                                               lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
+        ResetParentScopeForAstNode(assignment);
         blockStat->AddStatementAtPos(insertPos, AllocNode<ir::ExpressionStatement>(assignment));
         insertPos++;
     }
@@ -1955,6 +1971,129 @@ void Transformer::RemoveOriginNodeValueForClassPerporty(const ir::ClassDefinitio
     for (auto *it : node->Body()) {
         if (it->IsClassProperty()) {
             it->AsClassProperty()->RemoveValue();
+        }
+    }
+}
+
+void Transformer::ResetParentScopeForAstNodes(const ir::AstNode *parent) const
+{
+    parent->Iterate([this](auto *childNode) { ResetParentScopeForAstNode(childNode); });
+}
+
+void Transformer::ResetParentScopeForAstNode(ir::AstNode *childNode) const
+{
+    switch (childNode->Type()) {
+        case ir::AstNodeType::SCRIPT_FUNCTION: {
+            auto scope = childNode->AsScriptFunction()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::CATCH_CLAUSE: {
+            auto scope = childNode->AsCatchClause()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::CLASS_DEFINITION: {
+            auto scope = childNode->AsClassDefinition()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::BLOCK_STATEMENT: {
+            auto scope = childNode->AsBlockStatement()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::DO_WHILE_STATEMENT: {
+            auto scope = childNode->AsDoWhileStatement()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::WHILE_STATEMENT: {
+            auto scope = childNode->AsWhileStatement()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::FOR_IN_STATEMENT: {
+            auto scope = childNode->AsForInStatement()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::FOR_OF_STATEMENT: {
+            auto scope = childNode->AsForOfStatement()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::FOR_UPDATE_STATEMENT: {
+            auto scope = childNode->AsForUpdateStatement()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::SWITCH_STATEMENT: {
+            auto scope = childNode->AsSwitchStatement()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::TS_ENUM_DECLARATION: {
+            auto scope = childNode->AsTSEnumDeclaration()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::TS_INTERFACE_DECLARATION: {
+            auto scope = childNode->AsTSInterfaceDeclaration()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::TS_METHOD_SIGNATURE: {
+            auto scope = childNode->AsTSMethodSignature()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::TS_MODULE_DECLARATION: {
+            auto scope = childNode->AsTSModuleDeclaration()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::TS_SIGNATURE_DECLARATION: {
+            auto scope = childNode->AsTSSignatureDeclaration()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::TS_TYPE_PARAMETER_DECLARATION: {
+            auto scope = childNode->AsTSTypeParameterDeclaration()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::TS_CONSTRUCTOR_TYPE: {
+            auto scope = childNode->AsTSConstructorType()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        case ir::AstNodeType::TS_FUNCTION_TYPE: {
+            auto scope = childNode->AsTSFunctionType()->Scope();
+            ASSERT(scope != nullptr);
+            scope->SetParent(Scope());
+            break;
+        }
+        default: {
+            ResetParentScopeForAstNodes(childNode);
+            break;
         }
     }
 }

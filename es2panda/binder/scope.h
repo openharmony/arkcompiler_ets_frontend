@@ -234,6 +234,11 @@ public:
         return parent_;
     }
 
+    void SetParent(Scope *parent)
+    {
+        parent_ = parent;
+    }
+
     const compiler::IRNode *ScopeStart() const
     {
         return startIns_;
@@ -354,11 +359,6 @@ protected:
 
     bool AddLocal(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                   [[maybe_unused]] ScriptExtension extension);
-
-    void SetParent(Scope *parent)
-    {
-        parent_ = parent;
-    }
 
     Scope *parent_ {};
     ArenaVector<Decl *> decls_;
