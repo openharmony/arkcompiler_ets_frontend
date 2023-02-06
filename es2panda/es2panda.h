@@ -65,6 +65,7 @@ struct HotfixOptions {
     std::string dumpSymbolTable {};
     std::string symbolTable {};
     bool generatePatch {false};
+    bool hotReload {false};
 };
 
 struct CompilerOptions {
@@ -203,7 +204,7 @@ private:
     util::Hotfix *InitHotfixHelper(const SourceFile &input, const CompilerOptions &options,
                                    util::SymbolTable *symbolTable);
     static void CleanHotfixHelper(const util::Hotfix *hotfixHelper);
-    
+
     parser::ParserImpl *parser_;
     compiler::CompilerImpl *compiler_;
     std::unique_ptr<parser::Transformer> transformer_ {nullptr};
