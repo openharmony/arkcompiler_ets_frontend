@@ -56,7 +56,6 @@ void RegExpLiteral::Compile(compiler::PandaGen *pg) const
 
 checker::Type *RegExpLiteral::Check(checker::Checker *checker) const
 {
-    // TODO(aszilagyi);
     return checker->GlobalAnyType();
 }
 

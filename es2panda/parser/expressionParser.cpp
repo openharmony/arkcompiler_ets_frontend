@@ -616,7 +616,6 @@ ir::Expression *ParserImpl::ParseCoverParenthesizedExpressionAndArrowParameterLi
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
             lexer_->Rewind(startPos);
             return expr;
-            // ThrowSyntaxError("'=>' expected.");
         }
 
         return ParseArrowFunctionExpression(expr, nullptr, returnTypeAnnotation, false);

@@ -128,7 +128,7 @@ def exec_command(cmd_args, timeout=DEFAULT_TIMEOUT):
         code_format = 'gbk'
 
     try:
-        (msg, errs) = proc.communicate(timeout=timeout)
+        (output_res, errs) = proc.communicate(timeout=timeout)
         ret_code = proc.poll()
 
         if errs.decode(code_format, 'ignore') != '':
@@ -141,7 +141,7 @@ def exec_command(cmd_args, timeout=DEFAULT_TIMEOUT):
             msg += f"error: {str(errs.decode(code_format,'ignore'))}"
         else:
             code = 0
-            msg = str(msg.decode(code_format, 'ignore'))
+            msg = str(output_res.decode(code_format, 'ignore'))
 
     except subprocess.TimeoutExpired:
         proc.kill()
