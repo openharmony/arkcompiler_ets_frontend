@@ -29,15 +29,13 @@ import {
     Stglobalvar,
     Sttoglobalrecord,
     Stlexvar,
-    ThrowConstassignment,
-    ThrowUndefinedifhole,
+    ThrowUndefinedifholewithname,
     Tonumeric,
     Trystglobalbyname,
     Imm,
     IRNode,
     Lda,
     Ldai,
-    LdaStr,
     Return,
     Sta,
     VReg
@@ -54,7 +52,6 @@ import {
     GlobalVariable,
     LocalVariable,
     VarDeclarationKind,
-    Variable
 } from "../src/variable";
 import { creatAstFromSnippet } from "./utils/asthelper";
 import {
@@ -62,43 +59,6 @@ import {
     compileAllSnippet,
     SnippetCompiler
 } from "./utils/base";
-
-
-
-function MicroStoreLexVar(level: number, slot: number, kind?: VarDeclarationKind, name?: string): IRNode[] {
-    let insns = [];
-
-    if (kind && name) {
-        insns.push(new Ldlexvar(new Imm(level), new Imm(slot)));
-        insns.push(new Sta(new VReg()));
-        insns.push(new LdaStr(name));
-        insns.push(new Sta(new VReg()));
-        insns.push(new ThrowUndefinedifhole(new VReg(), new VReg()));
-        if (kind == VarDeclarationKind.CONST) {
-            insns.push(new ThrowConstassignment(new VReg()));
-        }
-    }
-    insns.push(new Lda(new VReg()));
-    insns.push(new Stlexvar(new Imm(level), new Imm(slot)));
-    insns.push(new Lda(new VReg()));
-
-    return insns;
-}
-
-function MicroLoadLexVar(level: number, slot: number, kind?: VarDeclarationKind, name?: string): IRNode[] {
-    let insns = [];
-
-    insns.push(new Ldlexvar(new Imm(level), new Imm(slot)));
-    if (kind && name) {
-        insns.push(new Sta(new VReg()));
-        insns.push(new LdaStr(name));
-        insns.push(new Sta(new VReg()));
-        insns.push(new ThrowUndefinedifhole(new VReg(), new VReg()));
-        insns.push(new Lda(new VReg()));
-    }
-
-    return insns;
-}
 
 describe("lexenv-compile-testcase in lexenv.test.ts", function () {
 
@@ -311,15 +271,9 @@ describe("lexenv-compile-testcase in lexenv.test.ts", function () {
         pass.run(pandaGen);
 
         let outInsns = pandaGen.getInsns();
-        let tempReg = new VReg();
-        let nameReg = new VReg();
         let expected = [
             new Ldlexvar(new Imm(0), new Imm(0)),
-            new Sta(tempReg),
-            new LdaStr("var1"),
-            new Sta(nameReg),
-            new ThrowUndefinedifhole(new VReg(), nameReg),
-            new Lda(tempReg)
+            new ThrowUndefinedifholewithname("var1"),
         ];
         expect(checkInstructions(outInsns, expected)).to.be.true;
     });
