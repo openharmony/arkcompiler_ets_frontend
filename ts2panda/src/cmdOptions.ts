@@ -56,6 +56,7 @@ export const ts2pandaOptions = [
     { name: 'output-proto', type: Boolean, defaultValue: false, description: "Output protoBin file. Default: false" },
     { name: 'merge-abc', type: Boolean, defaultValue: false, description: "Compile as merge abc" },
     { name: 'input-file', type: String, defaultValue: "", description: "A file containing a list of source files to be compiled. Each line of this file should be constructed in such format: fileName;recordName;moduleType;sourceFile;packageName" },
+    { name: 'oh-modules', type: Boolean, defaultValue: false, description: "Set oh-modules as typescript compiler's package manager type. Default: false" }
 ]
 
 
@@ -366,6 +367,13 @@ export class CmdOptions {
             return false;
         }
         return this.options["merge-abc"]
+    }
+
+    static isOhModules(): boolean {
+        if (!this.options) {
+            return false;
+        }
+        return this.options["oh-modules"]
     }
 
     // @ts-ignore
