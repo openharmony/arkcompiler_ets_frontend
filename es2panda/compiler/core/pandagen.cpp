@@ -1819,14 +1819,7 @@ void PandaGen::ThrowIfSuperNotCorrectCall(const ir::AstNode *node, int64_t num)
 
 void PandaGen::ThrowUndefinedIfHole(const ir::AstNode *node, const util::StringView &name)
 {
-    RegScope rs(this);
-    VReg holeReg = AllocReg();
-    StoreAccumulator(node, holeReg);
-    LoadAccumulatorString(node, name);
-    VReg nameReg = AllocReg();
-    StoreAccumulator(node, nameReg);
-    ra_.Emit<ThrowUndefinedifhole>(node, holeReg, nameReg);
-    LoadAccumulator(node, holeReg);
+    ra_.Emit<ThrowUndefinedifholewithname>(node, name);
     strings_.insert(name);
 }
 
