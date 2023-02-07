@@ -487,7 +487,7 @@ LexerTemplateString Lexer::ScanTemplateString()
                     Iterator().Backward(1);
                 }
 
-                if (nextCp == LEX_CHAR_BACK_TICK || nextCp == LEX_CHAR_BACKSLASH) {
+                if (nextCp == LEX_CHAR_BACK_TICK || nextCp == LEX_CHAR_BACKSLASH || nextCp == LEX_CHAR_DOLLAR_SIGN) {
                     templateStr.str.Append(cp);
                     templateStr.str.Append(nextCp);
                     Iterator().Forward(1);

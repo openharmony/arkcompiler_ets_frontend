@@ -680,7 +680,7 @@ void RegExpParser::ParseUnicodePropertyEscape()
         }
 
         char32_t ch = Next();
-        if (ch == LEX_CHAR_LEFT_BRACE) {
+        if (ch == LEX_CHAR_RIGHT_BRACE) {
             break;
         }
 
