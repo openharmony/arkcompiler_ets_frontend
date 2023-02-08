@@ -27,20 +27,22 @@ import { getObjAndProp } from "./memberAccessExpression";
 export function compileCallExpression(expr: ts.CallExpression, compiler: Compiler, inTailPos?: boolean) {
     let pandaGen = compiler.getPandaGen();
 
-    if (expr.expression.kind == ts.SyntaxKind.ImportKeyword) {
+    let innerExpression = ts.skipPartiallyEmittedExpressions(expr.expression);
+
+    if (innerExpression.kind == ts.SyntaxKind.ImportKeyword) {
         compiler.compileExpression(expr.arguments[0]);
         pandaGen.dynamicImportCall(expr);
         return;
     }
 
-    if (ts.isCallExpression(expr.expression) || ts.isNewExpression(expr.expression)) {
-        let processed = compiler.compileFunctionReturnThis(<ts.NewExpression | ts.CallExpression>expr.expression);
+    if (ts.isCallExpression(innerExpression) || ts.isNewExpression(innerExpression)) {
+        let processed = compiler.compileFunctionReturnThis(<ts.NewExpression | ts.CallExpression>innerExpression);
         if (processed) {
             return;
         }
     }
 
-    if (expr.expression.kind == ts.SyntaxKind.SuperKeyword) {
+    if (innerExpression.kind == ts.SyntaxKind.SuperKeyword) {
         let args: VReg[] = [];
         let hasSpread = emitCallArguments(compiler, expr, args);
         compileSuperCall(compiler, expr, args, hasSpread);
@@ -48,7 +50,7 @@ export function compileCallExpression(expr: ts.CallExpression, compiler: Compile
         return;
     }
 
-    let { arguments: args, passThis: passThis } = getHiddenParameters(expr.expression, compiler);
+    let { arguments: args, passThis: passThis } = getHiddenParameters(innerExpression, compiler);
 
     // compile arguments of function call
     emitCall(expr, args, passThis, compiler);
