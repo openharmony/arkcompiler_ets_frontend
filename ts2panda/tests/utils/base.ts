@@ -32,7 +32,11 @@ import { setGlobalStrict } from "../../src/strictMode";
 import { creatAstFromSnippet } from "./asthelper";
 import { LiteralBuffer } from "../../src/base/literal";
 import { CmdOptions } from "../../src/cmdOptions";
-import { transformCommonjsModule } from "../../src/base/util";
+import {
+    transformCommonjsModule,
+    makeNameForGeneratedNode,
+    resetUniqueNameIndex
+} from "../../src/base/util";
 
 const compileOptions = {
     outDir: "../tmp/build",
@@ -189,13 +193,16 @@ export function compileAfterSnippet(snippet: string, name:string, isCommonJs: bo
         snippet,
         {
         compilerOptions : {
-            "target": ts.ScriptTarget.ES2015
+            "target": ts.ScriptTarget.ES2015,
+            "experimentalDecorators": true
         },
         fileName : name,
         transformers : {
             after : [
                 (ctx: ts.TransformationContext) => {
                     return (sourceFile: ts.SourceFile) => {
+                        resetUniqueNameIndex();
+                        makeNameForGeneratedNode(sourceFile);
                         if (isCommonJs) {
                             sourceFile = transformCommonjsModule(sourceFile);
                         }

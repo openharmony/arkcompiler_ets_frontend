@@ -473,13 +473,26 @@ function generateNameCached(node: ts.Node): string {
     return generatedName;
 }
 
-function generateNameForTempAndLoopVariable(autoGenerateId: number): string {
+function generateNameForTempAndLoopVariable(node: ts.Node): string {
+    // Auto, Loop and Unique names are generated and cached based on their unique autoGenerateId.
+    // @ts-ignore
+    const autoGenerateId = node.autoGenerateId!;
     if (tempAndLoopVariablesNameMap.get(autoGenerateId)) {
         return tempAndLoopVariablesNameMap.get(autoGenerateId);
     }
     let generatedName = generateUniqueName();
+    // @ts-ignore
+    if ((node.autoGenerateFlags & ts.GeneratedIdentifierFlags.KindMask) == ts.GeneratedIdentifierFlags.Unique) {
+        // Unique names are generated and cached based on their unique autoGenerateId and original idText.
+        // @ts-ignore
+        generatedName = (<ts.Identifier>node).escapedText + generatedName;
+    }
     tempAndLoopVariablesNameMap.set(autoGenerateId, generatedName);
     return generatedName;
+}
+
+export function resetUniqueNameIndex() {
+    uniqueNameIndex = 0;
 }
 
 export function makeNameForGeneratedNode(node: ts.Node) {
@@ -487,7 +500,7 @@ export function makeNameForGeneratedNode(node: ts.Node) {
         switch (childNode.kind) {
             case ts.SyntaxKind.Identifier: {
                 // @ts-ignore
-                if (ts.isGeneratedIdentifier(childNode) && (<ts.Identifier>childNode).escapedText == "") {
+                if (ts.isGeneratedIdentifier(childNode)) {
                     // Node names generate unique names based on their original node and are cached based on that node's id.
                     // @ts-ignore
                     if ((childNode.autoGenerateFlags & ts.GeneratedIdentifierFlags.KindMask) ===
@@ -497,11 +510,8 @@ export function makeNameForGeneratedNode(node: ts.Node) {
                         // @ts-ignore
                         (<ts.Identifier>childNode).escapedText = generateNameCached(originalNode);
                     } else {
-                        // Auto, Loop, and Unique names are cached based on their unique autoGenerateId.
                         // @ts-ignore
-                        const autoGenerateId = childNode.autoGenerateId!;
-                        // @ts-ignore
-                        (<ts.Identifier>childNode).escapedText = generateNameForTempAndLoopVariable(autoGenerateId);
+                        (<ts.Identifier>childNode).escapedText = generateNameForTempAndLoopVariable(childNode);
                     }
                 }
                 break;
