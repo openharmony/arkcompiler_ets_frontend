@@ -45,7 +45,7 @@ do
     esac
 done
 
-if [ ! -d ${OUTDIR} ]; then
+if [ ! -d "${OUTDIR}" ]; then
     mkdir -p ${OUTDIR}
 fi
 echo "${GENERATOR} --template ${TEMPLATE} --data ${DATA} --output ${OUTDIR}/${OUTPUT} --require ${REQUIRE}"

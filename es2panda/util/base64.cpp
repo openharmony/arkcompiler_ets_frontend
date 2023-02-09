@@ -77,7 +77,10 @@ std::string Base64Decode(const std::string &base64String)
         decodedStrLen -= std::string("=").length();
     }
     std::string decodedRes = std::string(decodedStrLen, '\0');
-    int firstChar, secondChar, thirdChar, fourthChar = 0;
+    int firstChar = 0;
+    int secondChar = 0;
+    int thirdChar = 0;
+    int fourthChar = 0;
     for (size_t i = 0, j = 0; i < strLen - 2; i += TRANSFORMED_CHAR_NUM, j += TO_TRANSFORM_CHAR_NUM) {
         firstChar = decodeTable[static_cast<unsigned char>(base64String[i])];
         secondChar = decodeTable[static_cast<unsigned char>(base64String[i + 1])];
