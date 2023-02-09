@@ -797,7 +797,7 @@ class CompilerTest(Test):
         test_abc_path = path.join(runner.build_dir, test_abc_name)
         es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
         es2abc_cmd.extend(self.flags)
-        es2abc_cmd.extend(["--output=" + test_abc_path])
+        es2abc_cmd.extend(['%s%s' % ("--output=", test_abc_path)])
         es2abc_cmd.append(self.path)
         self.log_cmd(es2abc_cmd)
 
