@@ -1271,6 +1271,13 @@ void PandaGen::SuperCallSpread(const ir::AstNode *node, VReg vs)
     ra_.Emit<Supercallspread>(node, 0, vs);
 }
 
+void PandaGen::NotifyConcurrentResult(const ir::AstNode *node)
+{
+    if (IsConcurrent()) {
+        ra_.Emit<CallruntimeNotifyconcurrentresult>(node);
+    }
+}
+
 void PandaGen::NewObject(const ir::AstNode *node, VReg startReg, size_t argCount)
 {
     if (argCount <= util::Helpers::MAX_INT8) {
