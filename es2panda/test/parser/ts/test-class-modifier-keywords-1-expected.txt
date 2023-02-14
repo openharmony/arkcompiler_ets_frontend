@@ -1,0 +1,1 @@
+SyntaxError: 'declare' modifier already seen. [test-class-modifier-keywords-1.ts:17:18]

@@ -206,6 +206,14 @@ ir::Statement *ParserImpl::ParseStatement(StatementParsingFlags flags)
             const auto startPos = lexer_->Save();
             lexer_->NextToken();  // eat abstract keyword
 
+            if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE) {
+                if (isDeclare) {
+                    ThrowSyntaxError("'declare' modifier already seen.");
+                }
+                lexer_->NextToken();
+                isDeclare = true;
+            }
+
             if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_CLASS) {
                 lexer_->Rewind(startPos);
             } else {
@@ -2361,6 +2369,13 @@ ir::ExportDefaultDeclaration *ParserImpl::ParseExportDefaultDeclaration(const le
     } else if (Extension() == ScriptExtension::TS &&
                lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_INTERFACE) {
         declNode = ParseTsInterfaceDeclaration();
+    } else if (Extension() == ScriptExtension::TS &&
+               lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_ABSTRACT) {
+        lexer_->NextToken();
+        if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_CLASS) {
+            ThrowSyntaxError("Unexpected token, expected 'class'.");
+        }
+        declNode = ParseClassDeclaration(false, std::move(decorators), false, true, true);
     } else {
         declNode = ParseExpression();
         Binder()->AddDecl<binder::LetDecl>(declNode->Start(), binder::DeclarationFlags::EXPORT,
@@ -2561,6 +2576,24 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
                         }
                         decl = ParseTsModuleDeclaration(isDeclare, true);
                         context_.Status() = savedStatus;
+                        break;
+                    }
+                    case lexer::TokenType::KEYW_ABSTRACT: {
+                        lexer_->NextToken();  // eat abstract keyword
+
+                        if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE) {
+                            if (isDeclare) {
+                                ThrowSyntaxError("'declare' modifier already seen.");
+                            }
+                            lexer_->NextToken();
+                            isDeclare = true;
+                        }
+
+                        if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_CLASS) {
+                            ThrowSyntaxError("Unexpected token, expected 'class'.");
+                        }
+                        decl = ParseClassDeclaration(true, std::move(decorators),
+                                                     isDeclare || IsDtsFile(), true, !isTsModule);
                         break;
                     }
                     default: {
