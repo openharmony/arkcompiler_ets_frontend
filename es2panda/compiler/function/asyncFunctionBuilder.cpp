@@ -24,6 +24,7 @@ namespace panda::es2panda::compiler {
 void AsyncFunctionBuilder::DirectReturn(const ir::AstNode *node) const
 {
     pg_->AsyncFunctionResolve(node, funcObj_); // retVal is in acc
+    pg_->NotifyConcurrentResult(node);
     pg_->EmitReturn(node);
 }
 
@@ -50,6 +51,7 @@ void AsyncFunctionBuilder::CleanUp(const ir::ScriptFunction *node) const
     VReg exception = pg_->AllocReg();
     pg_->StoreAccumulator(node, exception);
     pg_->AsyncFunctionReject(node, funcObj_);
+    pg_->NotifyConcurrentResult(node);
     pg_->EmitReturn(node);
     pg_->SetLabel(node, labelSet.CatchEnd());
 }

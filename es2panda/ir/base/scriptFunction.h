@@ -174,7 +174,7 @@ public:
 
     bool CanBeConcurrent() const
     {
-        return !(IsGenerator() || IsAsync() || IsArrow() || IsConstructor() || IsMethod());
+        return !(IsGenerator() || IsArrow() || IsConstructor() || IsMethod());
     }
 
     void Iterate(const NodeTraverser &cb) const override;

@@ -75,6 +75,9 @@ import { PandaGen } from "./pandagen"
 % end
 %
 % def is_Call(insn)
+%   if insn.mnemonic.start_with? "callruntime"
+%      return false
+%   end
 %   if insn.mnemonic.start_with? "call"
 %      return true
 %   end
