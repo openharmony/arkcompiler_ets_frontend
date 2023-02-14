@@ -458,7 +458,7 @@ export class TypeChecker {
                 let exportedName = "default";
                 let expressionType = this.getTypeAtLocation(expression);
                 if (expressionType) {
-                    let typeNode = expressionType.getSymbol().valueDeclaration;
+                    let typeNode = expressionType.getSymbol()?.valueDeclaration;
                     TypeRecorder.getInstance().addNonReExportedType(exportedName, typeNode, expression);
                 }
                 break;

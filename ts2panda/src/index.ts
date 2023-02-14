@@ -516,7 +516,9 @@ namespace Compiler {
             strictNullChecks: false,
             skipLibCheck: true,
             alwaysStrict: true,
-            importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Remove
+            importsNotUsedAsValues: ts.ImportsNotUsedAsValues.Remove,
+            experimentalDecorators: true,
+            preserveConstEnums: true
         };
     }
 }
