@@ -24,6 +24,8 @@
 #include <ir/expressions/memberExpression.h>
 #include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
+#include <ir/ts/tsAsExpression.h>
+#include <ir/ts/tsTypeAssertion.h>
 
 namespace panda::es2panda::compiler {
 
@@ -131,6 +133,12 @@ LReference LReference::CreateLRef(PandaGen *pg, const ir::AstNode *node, bool is
             binder::ScopeFindResult res = pg->Scope()->Find(name);
 
             return {node, pg, isDeclaration, ReferenceKind::VAR_OR_GLOBAL, res};
+        }
+        case ir::AstNodeType::TS_AS_EXPRESSION: {
+            return LReference::CreateLRef(pg, node->AsTSAsExpression()->Expr(), isDeclaration);
+        }
+        case ir::AstNodeType::TS_TYPE_ASSERTION: {
+            return LReference::CreateLRef(pg, node->AsTSTypeAssertion()->GetExpression(), isDeclaration);
         }
         default: {
             UNREACHABLE();

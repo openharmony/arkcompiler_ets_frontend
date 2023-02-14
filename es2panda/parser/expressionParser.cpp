@@ -1626,6 +1626,15 @@ ir::Expression *ParserImpl::ParsePostPrimaryExpression(ir::Expression *primaryEx
 
 void ParserImpl::ValidateUpdateExpression(ir::Expression *returnExpression, bool isChainExpression)
 {
+    if (returnExpression->IsTSAsExpression()) {
+        ValidateUpdateExpression(returnExpression->AsTSAsExpression()->Expr(), isChainExpression);
+        return;
+    }
+    if (returnExpression->IsTSTypeAssertion()) {
+        ValidateUpdateExpression(returnExpression->AsTSTypeAssertion()->GetExpression(), isChainExpression);
+        return;
+    }
+
     if ((!returnExpression->IsMemberExpression() && !returnExpression->IsIdentifier() &&
          !returnExpression->IsTSNonNullExpression()) ||
         isChainExpression) {
@@ -2221,19 +2230,7 @@ ir::Expression *ParserImpl::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFl
     ir::Expression *argument = ParseUnaryOrPrefixUpdateExpression();
 
     if (lexer::Token::IsUpdateToken(operatorType)) {
-        if (!argument->IsIdentifier() && !argument->IsMemberExpression() && !argument->IsTSNonNullExpression()) {
-            ThrowSyntaxError("Invalid left-hand side in prefix operation");
-        }
-
-        if (argument->IsIdentifier()) {
-            const util::StringView &argumentStr = argument->AsIdentifier()->Name();
-
-            if (argumentStr.Is("eval")) {
-                ThrowSyntaxError("Assigning to 'eval' in strict mode is invalid");
-            } else if (argumentStr.Is("arguments")) {
-                ThrowSyntaxError("Assigning to 'arguments' in strict mode is invalid");
-            }
-        }
+        ValidateUpdateExpression(argument, false);
     }
 
     if (operatorType == lexer::TokenType::KEYW_DELETE && argument->IsIdentifier()) {

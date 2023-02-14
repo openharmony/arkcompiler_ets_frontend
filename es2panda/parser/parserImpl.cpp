@@ -52,6 +52,7 @@
 #include <ir/statements/variableDeclaration.h>
 #include <ir/ts/tsAnyKeyword.h>
 #include <ir/ts/tsArrayType.h>
+#include <ir/ts/tsAsExpression.h>
 #include <ir/ts/tsBigintKeyword.h>
 #include <ir/ts/tsBooleanKeyword.h>
 #include <ir/ts/tsClassImplements.h>
@@ -87,6 +88,7 @@
 #include <ir/ts/tsTemplateLiteralType.h>
 #include <ir/ts/tsThisType.h>
 #include <ir/ts/tsTupleType.h>
+#include <ir/ts/tsTypeAssertion.h>
 #include <ir/ts/tsTypeLiteral.h>
 #include <ir/ts/tsTypeOperator.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
@@ -3544,6 +3546,14 @@ void ParserImpl::ValidateLvalueAssignmentTarget(ir::Expression *node) const
             break;
         }
         case ir::AstNodeType::MEMBER_EXPRESSION: {
+            break;
+        }
+        case ir::AstNodeType::TS_AS_EXPRESSION: {
+            ValidateLvalueAssignmentTarget(node->AsTSAsExpression()->Expr());
+            break;
+        }
+        case ir::AstNodeType::TS_TYPE_ASSERTION: {
+            ValidateLvalueAssignmentTarget(node->AsTSTypeAssertion()->GetExpression());
             break;
         }
         default: {
