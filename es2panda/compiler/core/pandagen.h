@@ -235,6 +235,11 @@ public:
         return funcKind_;
     }
 
+    bool IsConcurrent() const
+    {
+        return funcKind_ == panda::panda_file::FunctionKind::CONCURRENT_FUNCTION;
+    }
+
     void SetFunctionKind();
 
     bool IsDebug() const;
@@ -348,6 +353,7 @@ public:
     void CallSpread(const ir::AstNode *node, VReg func, VReg thisReg, VReg args);
     void SuperCall(const ir::AstNode *node, VReg startReg, size_t argCount);
     void SuperCallSpread(const ir::AstNode *node, VReg vs);
+    void NotifyConcurrentResult(const ir::AstNode *node);
 
     void NewObject(const ir::AstNode *node, VReg startReg, size_t argCount);
     void DefineFunction(const ir::AstNode *node, const ir::ScriptFunction *realNode, const util::StringView &name);

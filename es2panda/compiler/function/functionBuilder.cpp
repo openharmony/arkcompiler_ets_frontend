@@ -36,6 +36,7 @@ IteratorType FunctionBuilder::GeneratorKind() const
 
 void FunctionBuilder::DirectReturn(const ir::AstNode *node) const
 {
+    pg_->NotifyConcurrentResult(node);
     pg_->EmitReturn(node);
 }
 
@@ -45,15 +46,19 @@ void FunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
 
     if (!rootNode->IsScriptFunction() || !rootNode->AsScriptFunction()->IsConstructor()) {
         if (pg_->isDebuggerEvaluateExpressionMode()) {
+            pg_->NotifyConcurrentResult(node);
             pg_->EmitReturn(node);
             return;
         }
+        pg_->LoadConst(node, Constant::JS_UNDEFINED);
+        pg_->NotifyConcurrentResult(node);
         pg_->EmitReturnUndefined(node);
         return;
     }
 
     pg_->GetThis(rootNode);
     pg_->ThrowIfSuperNotCorrectCall(rootNode, 0);
+    pg_->NotifyConcurrentResult(node);
     pg_->EmitReturn(node);
 }
 
