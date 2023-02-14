@@ -2538,7 +2538,8 @@ ArenaVector<ir::Decorator *> ParserImpl::ParseDecorators()
         (context_.Status() & ParserStatus::IN_CLASS_BODY) == 0 &&
         lexer_->GetToken().Type() != lexer::TokenType::KEYW_EXPORT &&
         !(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
-          lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE)) {
+          (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_DECLARE ||
+           lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_ABSTRACT))) {
         ThrowSyntaxError("Decorators are not valid here.", decorators.front()->Start());
     }
 

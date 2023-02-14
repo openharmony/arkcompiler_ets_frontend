@@ -281,6 +281,9 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
         }
         case ir::AstNodeType::CLASS_DECLARATION: {
             auto *node = childNode->AsClassDeclaration();
+            if (node->Definition()->Declare()) {
+                return node;
+            }
             DuringClass duringClass(&classList_, node->Definition()->GetName());
             node = VisitTSNodes(node)->AsClassDeclaration();
             auto res = VisitClassDeclaration(node);
