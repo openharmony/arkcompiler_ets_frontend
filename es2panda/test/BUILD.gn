@@ -65,7 +65,10 @@ action("es2abc_compiler_tests") {
 
   llvm_lib_dir = rebase_path("//prebuilts/clang/ohos/linux-x86_64/llvm/lib/")
 
-  ld_library_path = "${ark_js_runtime_dir}:${icu_dir}:${llvm_lib_dir}"
+  zlib_dir = rebase_path("${root_out_dir}/thirdparty/zlib")
+
+  ld_library_path =
+      "${ark_js_runtime_dir}:${icu_dir}:${llvm_lib_dir}:${zlib_dir}"
 
   args = [
     "--no-progress",
