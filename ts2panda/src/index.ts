@@ -532,6 +532,9 @@ function run(args: string[], options?: ts.CompilerOptions): void {
             parsed.options = options;
         }
     }
+    if (CmdOptions.isOhModules()) {
+        parsed.options["packageManagerType"] = "ohpm";
+    }
     try {
         if (CmdOptions.isWatchEvaluateDeamonMode()) {
             launchWatchEvaluateDeamon(parsed);
