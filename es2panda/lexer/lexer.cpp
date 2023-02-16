@@ -1233,6 +1233,18 @@ void Lexer::SkipWhiteSpaces()
         auto cp = Iterator().Peek();
 
         switch (cp) {
+            case LEX_CHAR_HASH_MARK: {
+                Iterator().Forward(1);
+                cp = Iterator().Peek();
+                if (cp == LEX_CHAR_EXCLAMATION) {
+                    Iterator().Forward(1);
+                    SkipSingleLineComment();
+                    continue;
+                }
+
+                Iterator().Backward(1);
+                return;
+            }
             case LEX_CHAR_CR: {
                 Iterator().Forward(1);
 
@@ -1286,6 +1298,8 @@ void Lexer::SkipWhiteSpaces()
                         [[fallthrough]];
                     }
                     case LEX_CHAR_NBSP:
+                    case LEX_CHAR_NLINE:
+                    case LEX_CHAR_IGSP:
                     case LEX_CHAR_ZWNBSP: {
                         Iterator().Forward(cpSize);
                         continue;
