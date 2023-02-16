@@ -90,14 +90,16 @@ static bool GenerateMultiProgram(const std::unordered_map<panda::pandasm::Progra
         }
 
         auto output = programs.begin()->second;
-        if (!panda::pandasm::AsmEmitter::EmitPrograms(output, progs, true)) {
+        if (!panda::pandasm::AsmEmitter::EmitPrograms(panda::os::file::File::GetExtendedFilePath(output), progs,
+            true)) {
             std::cerr << "Failed to emit merged program, error: " <<
                 panda::pandasm::AsmEmitter::GetLastError() << std::endl;
                 return false;
         }
     } else {
         for (auto &prog: programs) {
-            if (!panda::pandasm::AsmEmitter::Emit(prog.second, *(prog.first), nullptr, nullptr, true)) {
+            if (!panda::pandasm::AsmEmitter::Emit(panda::os::file::File::GetExtendedFilePath(prog.second),
+                *(prog.first), nullptr, nullptr, true)) {
                 std::cout << "Failed to emit single program, error: " <<
                     panda::pandasm::AsmEmitter::GetLastError() << std::endl;
                 return false;

@@ -132,7 +132,7 @@ bool MergeProgram::CollectProtoFiles(std::string &input, const std::string &prot
         return false;
     }
     if (isList) {
-        std::ifstream in(inputAbs.Value());
+        std::ifstream in(panda::os::file::File::GetExtendedFilePath(inputAbs.Value()));
         std::string line;
         constexpr const char CARRIAGE = '\r';
         while (getline(in, line)) {

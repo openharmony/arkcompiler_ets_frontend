@@ -60,7 +60,7 @@ bool Options::CollectInputFilesFromFileList(const std::string &input)
 {
     std::ifstream ifs;
     std::string line;
-    ifs.open(input.c_str());
+    ifs.open(panda::os::file::File::GetExtendedFilePath(input));
     if (!ifs.is_open()) {
         std::cerr << "Failed to open source list: " << input << std::endl;
         return false;
