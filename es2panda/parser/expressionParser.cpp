@@ -624,6 +624,11 @@ ir::Expression *ParserImpl::ParseCoverParenthesizedExpressionAndArrowParameterLi
             options |= TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
             returnTypeAnnotation = ParseTsTypeAnnotation(&options);
             options &= ~TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
+
+            if (returnTypeAnnotation == nullptr) {
+                lexer_->Rewind(startPos);
+                return expr;
+            }
         }
 
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {

@@ -455,7 +455,7 @@ ir::Expression *ParserImpl::ParseTsThisTypeOrTsTypePredicate(ir::Expression *typ
     return ParseTsThisType(throwError);
 }
 
-ir::Expression *ParserImpl::ParseTsTemplateLiteralType()
+ir::Expression *ParserImpl::ParseTsTemplateLiteralType(bool throwError)
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BACK_TICK);
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
@@ -494,7 +494,10 @@ ir::Expression *ParserImpl::ParseTsTemplateLiteralType()
         }
 
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-            ThrowSyntaxError("Unexpected token, expected '}'.");
+            if (throwError) {
+                ThrowSyntaxError("Unexpected token, expected '}'.");
+            }
+            return nullptr;
         }
 
         references.push_back(reference);
@@ -615,7 +618,7 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
                                                     *options & TypeAnnotationParsingOptions::THROW_ERROR);
         }
         case lexer::TokenType::PUNCTUATOR_BACK_TICK: {
-            return ParseTsTemplateLiteralType();
+            return ParseTsTemplateLiteralType(*options & TypeAnnotationParsingOptions::THROW_ERROR);
         }
         default: {
             break;
@@ -1078,7 +1081,7 @@ ir::Expression *ParserImpl::ParseTsTypeReferenceOrQuery(TypeAnnotationParsingOpt
             ThrowSyntaxError("Unexpected token.");
         }
 
-        typeParamInst = ParseTsTypeParameterInstantiation();
+        typeParamInst = ParseTsTypeParameterInstantiation(options & TypeAnnotationParsingOptions::THROW_ERROR);
     }
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET &&
