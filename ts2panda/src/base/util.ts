@@ -345,28 +345,36 @@ export function transformCommonjsModule(sourceFile: ts.SourceFile) {
     Transform the commonjs module's AST by wrap the sourceCode.
      (function (exports, require, module, __filename, __dirname) {
         [SourceCode]
-     })(exports, require, module, __filename, __dirname);
+     }).apply(exports, [exports, require, module, __filename, __dirname]);
     */
     let newStatements = [ts.factory.createExpressionStatement(ts.factory.createCallExpression(
-        ts.factory.createParenthesizedExpression(ts.factory.createFunctionExpression(
-            undefined, undefined, undefined, undefined,
-            [
-                ts.factory.createParameterDeclaration(undefined, undefined, undefined, ts.factory.createIdentifier("exports"), undefined, undefined, undefined),
-                ts.factory.createParameterDeclaration(undefined, undefined, undefined, ts.factory.createIdentifier("require"), undefined, undefined, undefined),
-                ts.factory.createParameterDeclaration(undefined, undefined, undefined, ts.factory.createIdentifier("module"), undefined, undefined, undefined),
-                ts.factory.createParameterDeclaration(undefined, undefined, undefined, ts.factory.createIdentifier("__filename"), undefined, undefined, undefined),
-                ts.factory.createParameterDeclaration(undefined, undefined, undefined, ts.factory.createIdentifier("__dirname"), undefined, undefined, undefined)
-            ],
-            undefined,
-            ts.factory.createBlock(sourceFile.statements)
-        )),
+        ts.factory.createPropertyAccessExpression(
+            ts.factory.createParenthesizedExpression(ts.factory.createFunctionExpression(
+                undefined, undefined, undefined, undefined,
+                [
+                    ts.factory.createParameterDeclaration(undefined, undefined, undefined, ts.factory.createIdentifier("exports"), undefined, undefined, undefined),
+                    ts.factory.createParameterDeclaration(undefined, undefined, undefined, ts.factory.createIdentifier("require"), undefined, undefined, undefined),
+                    ts.factory.createParameterDeclaration(undefined, undefined, undefined, ts.factory.createIdentifier("module"), undefined, undefined, undefined),
+                    ts.factory.createParameterDeclaration(undefined, undefined, undefined, ts.factory.createIdentifier("__filename"), undefined, undefined, undefined),
+                    ts.factory.createParameterDeclaration(undefined, undefined, undefined, ts.factory.createIdentifier("__dirname"), undefined, undefined, undefined)
+                ],
+                undefined,
+                ts.factory.createBlock(sourceFile.statements)
+            )),
+            ts.factory.createIdentifier("apply")
+        ),
         undefined,
         [
             ts.factory.createIdentifier("exports"),
-            ts.factory.createIdentifier("require"),
-            ts.factory.createIdentifier("module"),
-            ts.factory.createIdentifier("__filename"),
-            ts.factory.createIdentifier("__dirname")
+            ts.factory.createArrayLiteralExpression(
+                [
+                    ts.factory.createIdentifier("exports"),
+                    ts.factory.createIdentifier("require"),
+                    ts.factory.createIdentifier("module"),
+                    ts.factory.createIdentifier("__filename"),
+                    ts.factory.createIdentifier("__dirname")
+                ]
+            )
         ]
     ))];
 
