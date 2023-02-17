@@ -21,7 +21,10 @@ import commandLineArgs from "command-line-args";
 import { CompilerDriver } from "./compilerDriver";
 import * as diag from "./diagnostic";
 import * as jshelpers from "./jshelpers";
-import { LOGE } from "./log";
+import {
+    LOGE,
+    printAstRecursively
+} from "./log";
 import {
     setGlobalDeclare,
     setGlobalStrict
@@ -35,7 +38,8 @@ import {
     getRecordName,
     getOutputBinName,
     terminateWritePipe,
-    makeNameForGeneratedNode
+    makeNameForGeneratedNode,
+    resetUniqueNameIndex
 } from "./base/util";
 
 function checkIsGlobalDeclaration(sourceFile: ts.SourceFile) {
@@ -140,7 +144,10 @@ function main(fileNames: string[], options: ts.CompilerOptions, inputJsonFiles?:
                                 return node;
                             }
                         }
+                        resetUniqueNameIndex();
                         makeNameForGeneratedNode(node);
+                        printAstRecursively(node, 0, node);
+
                         if (ts.getEmitHelpers(node)) {
                             let newStatements = [];
                             ts.getEmitHelpers(node)?.forEach(
@@ -417,6 +424,7 @@ function compileWatchExpression(jsFileName: string, errorMsgFileName: string, op
                 // @ts-ignore
                 (ctx: ts.TransformationContext) => {
                     return (node: ts.SourceFile) => {
+                        resetUniqueNameIndex();
                         makeNameForGeneratedNode(node);
                         if (ts.getEmitHelpers(node)) {
                             let newStatements = [];

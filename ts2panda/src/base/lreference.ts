@@ -20,7 +20,6 @@ import { compileDestructuring } from "../compilerUtils";
 import { DiagnosticCode, DiagnosticError } from "../diagnostic";
 import { getObjAndProp } from "../expression/memberAccessExpression";
 import { findInnerExprOfParenthesis } from "../expression/parenthesizedExpression";
-import { findInnerExprOfPartiallyEmittedExpr } from "../expression/partiallyEmittedExpression";
 import { VReg } from "../irnodes";
 import * as jshelpers from "../jshelpers";
 import { Scope } from "../scope";
@@ -132,9 +131,7 @@ export class LReference {
 
         let realNode: ts.Node = node;
 
-        if (ts.isPartiallyEmittedExpression(node)) {
-            realNode = findInnerExprOfPartiallyEmittedExpr(node);
-        }
+        realNode = ts.skipPartiallyEmittedExpressions(node);
 
         if (ts.isParenthesizedExpression(realNode)) {
             realNode = findInnerExprOfParenthesis(realNode);

@@ -14,6 +14,7 @@
  */
 
 // singleton to print debug logs
+import * as ts from "typescript";
 import { CmdOptions } from "./cmdOptions";
 
 export function LOGD(tag: any, ...args: any[]) {
@@ -31,5 +32,21 @@ export function LOGE(tag: any, ...args: any[]) {
         console.error(tag + ": " + args);
     } else {
         console.error(args);
+    }
+}
+
+export function printAstRecursively(node: ts.Node, indentLevel: number, sourceFile: ts.SourceFile) {
+    if (CmdOptions.isEnableDebugLog()) {
+        const indentation = "-".repeat(indentLevel);
+        let nodeContent = ts.SyntaxKind[node.kind] + ": ";
+        if (node.kind == ts.SyntaxKind.Identifier) {
+            // @ts-ignore
+            nodeContent += (<ts.Identifier>node).escapedText;
+        }
+        console.log(`${indentation}${nodeContent}`);
+
+        node.forEachChild(child =>
+            printAstRecursively(child, indentLevel + 1, sourceFile)
+        );
     }
 }
