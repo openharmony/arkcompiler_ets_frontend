@@ -16,9 +16,11 @@
 #include <binder/binder.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/expression.h>
+#include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/callExpression.h>
 #include <ir/expressions/functionExpression.h>
 #include <ir/expressions/identifier.h>
+#include <ir/expressions/memberExpression.h>
 #include <ir/statements/expressionStatement.h>
 #include <ir/statements/blockStatement.h>
 
@@ -46,11 +48,19 @@ void ParserImpl::AddCommonjsParams(ArenaVector<ir::Expression *> &params)
 
 void ParserImpl::AddCommonjsArgs(ArenaVector<ir::Expression *> &args)
 {
+    ir::Expression *thisValue = AllocNode<ir::Identifier>(binder::Binder::CJS_MANDATORY_PARAM_EXPORTS);
+    thisValue->AsIdentifier()->SetReference();
+    args.push_back(thisValue);
+
+    ArenaVector<ir::Expression *> elements(Allocator()->Adapter());
     for (auto argName : cjsMandatoryParams) {
         ir::Expression *arg = AllocNode<ir::Identifier>(argName, Allocator());
         arg->AsIdentifier()->SetReference();
-        args.push_back(arg);
+        elements.push_back(arg);
     }
+    ir::ArrayExpression *cjsArgsArray =
+        AllocNode<ir::ArrayExpression>(ir::AstNodeType::ARRAY_EXPRESSION, std::move(elements), false);
+    args.push_back(cjsArgsArray);
 }
 
 void ParserImpl::ParseCommonjs()
@@ -84,7 +94,12 @@ void ParserImpl::ParseCommonjs()
     // create CallExpression
     ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
     AddCommonjsArgs(arguments);
-    auto *callExpr = AllocNode<ir::CallExpression>(funcExpr, std::move(arguments), nullptr, false);
+
+    auto *apply = AllocNode<ir::Identifier>("apply");
+    auto *funcApply = AllocNode<ir::MemberExpression>(
+        funcExpr, apply, ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+
+    auto *callExpr = AllocNode<ir::CallExpression>(funcApply, std::move(arguments), nullptr, false);
     // create ExpressionStatement
     auto *exprStatementNode = AllocNode<ir::ExpressionStatement>(callExpr);
 

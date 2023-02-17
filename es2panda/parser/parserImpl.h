@@ -220,7 +220,7 @@ private:
      * Transform the commonjs's AST by wrapping the sourceCode
      * e.g. (function (exports, require, module, __filename, __dirname) {
      *          [Origin_SourceCode]
-     *      })(exports, require, module, __filename, __dirname);
+     *      }).apply(exports, [exports, require, module, __filename, __dirname]);
      */
     void ParseCommonjs();
     void AddCommonjsParams(ArenaVector<ir::Expression *> &params);
