@@ -15,15 +15,12 @@ es2panda/test/TypeScript/tests/cases/compiler/declarationEmitDestructuringOption
 es2panda/test/TypeScript/tests/cases/compiler/declareIdentifierAsBeginningOfStatementExpression01.ts
 es2panda/test/TypeScript/tests/cases/compiler/discriminantsAndPrimitives.ts
 es2panda/test/TypeScript/tests/cases/compiler/elidedEmbeddedStatementsReplacedWithSemicolon.ts
-es2panda/test/TypeScript/tests/cases/compiler/emitBundleWithShebang1.ts
 es2panda/test/TypeScript/tests/cases/compiler/emitDecoratorMetadata_restArgs.ts
 es2panda/test/TypeScript/tests/cases/compiler/exportAsNamespace.d.ts
 es2panda/test/TypeScript/tests/cases/compiler/exportDeclarationsInAmbientNamespaces.ts
 es2panda/test/TypeScript/tests/cases/compiler/exportEqualsOfModule.ts
 es2panda/test/TypeScript/tests/cases/compiler/exportRedeclarationTypeAliases.ts
 es2panda/test/TypeScript/tests/cases/compiler/exportSpecifierAndExportedMemberDeclaration.ts
-es2panda/test/TypeScript/tests/cases/compiler/fileWithNextLine2.ts
-es2panda/test/TypeScript/tests/cases/compiler/genericRecursiveImplicitConstructorErrors2.ts
 es2panda/test/TypeScript/tests/cases/compiler/getterSetterNonAccessor.ts
 es2panda/test/TypeScript/tests/cases/compiler/globalIsContextualKeyword.ts
 es2panda/test/TypeScript/tests/cases/compiler/implementsInClassExpression.ts
@@ -42,9 +39,7 @@ es2panda/test/TypeScript/tests/cases/compiler/overloadedConstructorFixesInferenc
 es2panda/test/TypeScript/tests/cases/compiler/parameterInitializerBeforeDestructuringEmit.ts
 es2panda/test/TypeScript/tests/cases/compiler/parseArrowFunctionWithFunctionReturnType.ts
 es2panda/test/TypeScript/tests/cases/compiler/parseEntityNameWithReservedWord.ts
-es2panda/test/TypeScript/tests/cases/compiler/shebang.ts
 es2panda/test/TypeScript/tests/cases/compiler/sigantureIsSubTypeIfTheyAreIdentical.ts
-es2panda/test/TypeScript/tests/cases/compiler/sourceMap-LineBreaks.ts
 es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDecorators.ts
 es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForArrayBindingPattern2.ts
 es2panda/test/TypeScript/tests/cases/compiler/sourceMapValidationDestructuringForArrayBindingPatternDefaultValues2.ts
@@ -105,7 +100,6 @@ es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclaration
 es2panda/test/TypeScript/tests/cases/conformance/internalModules/moduleDeclarations/asiPreventsParsingAsNamespace04.ts
 es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/ArrowFunctionExpressions/parserArrowFunctionExpression6.ts
 es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/RegressionTests/parser579071.ts
-es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/parserUnicodeWhitespaceCharacter1.ts
 es2panda/test/TypeScript/tests/cases/conformance/scanner/ecmascript3/scannerES3NumericLiteral2.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/keyof/keyofAndIndexedAccess.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/literal/literalTypesAndDestructuring.ts

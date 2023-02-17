@@ -89,11 +89,13 @@ namespace panda::es2panda::lexer {
 #define LEX_CHAR_SP 0x20           /* space */
 #define LEX_CHAR_NBSP 0xA0         /* no-break space */
 #define LEX_CHAR_ZWNBSP 0xFEFF     /* zero width no-break space */
+#define LEX_CHAR_IGSP 0x3000       /* ideographic space */
 #define LEX_CHAR_MVS 0x180e        /* MONGOLIAN VOWEL SEPARATOR (U+180E) */
 #define LEX_CHAR_DOUBLE_QUOTE 0x22 /* " */
 #define LEX_CHAR_DOLLAR_SIGN 0x24  /* $ */
 #define LEX_CHAR_SINGLE_QUOTE 0x27 /* ' */
 #define LEX_CHAR_DOT 0x2E          /* . */
+#define LEX_CHAR_NLINE 0x85        /* nextline */
 
 #define LEX_CHAR_0 0x30 /* 0 */
 #define LEX_CHAR_1 0x31 /* 1 */
