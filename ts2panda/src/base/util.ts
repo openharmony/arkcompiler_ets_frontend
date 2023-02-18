@@ -342,14 +342,20 @@ export function isBase64Str(input: string): boolean {
 
 export function transformCommonjsModule(sourceFile: ts.SourceFile) {
     /*
-    Transform the commonjs module's AST by wrap the sourceCode.
-     (function (exports, require, module, __filename, __dirname) {
-        [SourceCode]
-     }).apply(exports, [exports, require, module, __filename, __dirname]);
-    */
+     * Transform the commonjs module's AST by wrap the sourceCode & use Reflect.apply to invoke this wrapper with [this]
+     * pointing to [exports] object
+     *
+     * Reflect.apply(function (exports, require, module, __filename, __dirname) {
+     *   [SourceCode]
+     * }, exports, [exports, require, module, __filename, __dirname]);
+     */
     let newStatements = [ts.factory.createExpressionStatement(ts.factory.createCallExpression(
         ts.factory.createPropertyAccessExpression(
-            ts.factory.createParenthesizedExpression(ts.factory.createFunctionExpression(
+            ts.factory.createIdentifier("Reflect"), ts.factory.createIdentifier("apply")
+        ),
+        undefined,
+        [
+            ts.factory.createFunctionExpression(
                 undefined, undefined, undefined, undefined,
                 [
                     ts.factory.createParameterDeclaration(undefined, undefined, undefined, ts.factory.createIdentifier("exports"), undefined, undefined, undefined),
@@ -360,11 +366,7 @@ export function transformCommonjsModule(sourceFile: ts.SourceFile) {
                 ],
                 undefined,
                 ts.factory.createBlock(sourceFile.statements)
-            )),
-            ts.factory.createIdentifier("apply")
-        ),
-        undefined,
-        [
+            ),
             ts.factory.createIdentifier("exports"),
             ts.factory.createArrayLiteralExpression(
                 [

@@ -995,6 +995,7 @@ def main():
                              ["--parse-only", "--enable-type-check", "--module", "--extension=ts", "--dump-ast"])
         runner.add_directory("parser/ts/cases/declaration", "d.ts",
                              ["--parse-only", "--module", "--extension=ts", "--dump-ast"], TSDeclarationTest)
+        runner.add_directory("parser/commonjs", "js", ["--commonjs", "--parse-only", "--dump-ast"])
 
         runners.append(runner)
 
@@ -1017,6 +1018,7 @@ def main():
         runner.add_directory("compiler/ts/cases", "ts", ["--extension=ts"])
         runner.add_directory("compiler/ts/projects", "ts", ["--module", "--extension=ts"])
         runner.add_directory("compiler/dts", "d.ts", ["--module", "--extension=ts"])
+        runner.add_directory("compiler/commonjs", "js", ["--commonjs"])
 
         runners.append(runner)
 
