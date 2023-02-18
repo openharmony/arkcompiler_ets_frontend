@@ -276,12 +276,14 @@ function compileObjectDestructuring(obj: ts.ObjectBindingOrAssignmentPattern, pa
     }
 
     // create before to store the properties
-    let properties: Array<VReg> = new Array<VReg>();
-    let excludedProp: Array<VReg> = new Array<VReg>();
+    let propertiesReg: Array<VReg> = new Array<VReg>();
+    let properties: Array<VReg | string> = new Array<VReg | string>();
+    let excludedProp: Array<VReg | string> = new Array<VReg | string>();
 
     for (let i = 0; i < elementsLength; i++) {
         let tmp = pandaGen.getTemp();
         properties.push(tmp);
+        propertiesReg.push(tmp);
     }
 
     for (let i = 0; i < elementsLength; i++) {
@@ -293,8 +295,6 @@ function compileObjectDestructuring(obj: ts.ObjectBindingOrAssignmentPattern, pa
             emitRestProperty(<ts.BindingElement | ts.SpreadAssignment>element, excludedProp, value, pandaGen, compiler);
             break;
         }
-
-        excludedProp.push(properties[i]);
 
         let loadedValue: VReg = pandaGen.getTemp();
         let key: ts.Expression | ts.ComputedPropertyName;
@@ -342,29 +342,28 @@ function compileObjectDestructuring(obj: ts.ObjectBindingOrAssignmentPattern, pa
         }
 
         // compile key 
-        if (ts.isComputedPropertyName(key)) {
-            compiler.compileExpression(key.expression);
+        if (ts.isIdentifier(key)) {
+            let keyName: string = jshelpers.getTextOfIdentifierOrLiteral(key);
+            properties[i] = keyName;
         } else {
-            if (ts.isIdentifier(key)) {
-                let keyName = jshelpers.getTextOfIdentifierOrLiteral(key);
-                pandaGen.loadAccumulatorString(key, keyName);
-            } else {
-                compiler.compileExpression(key);
-            }
+            ts.isComputedPropertyName(key) ? compiler.compileExpression(key.expression) :
+                                             compiler.compileExpression(key);
+            pandaGen.storeAccumulator(key, <VReg>properties[i]);
         }
-        pandaGen.storeAccumulator(key, properties[i]);
+
+        excludedProp.push(properties[i]);
 
         // create left reference
         let lRef = LReference.generateLReference(compiler, target, isDeclaration);
 
         // load obj property from rhs, return undefined if no corresponding property exists
         pandaGen.loadObjProperty(element, value, properties[i]);
-        pandaGen.storeAccumulator(element, loadedValue);
 
         let getDefaultLabel = new Label();
         let storeLabel = new Label();
 
         if (hasInit) {
+            pandaGen.storeAccumulator(element, loadedValue);
             pandaGen.condition(
                 element,
                 ts.SyntaxKind.ExclamationEqualsEqualsToken,
@@ -387,27 +386,37 @@ function compileObjectDestructuring(obj: ts.ObjectBindingOrAssignmentPattern, pa
         pandaGen.freeTemps(loadedValue);
     }
 
-    pandaGen.freeTemps(value, ...properties);
+    pandaGen.freeTemps(value, ...propertiesReg);
 }
 
-function emitRestProperty(restProperty: ts.BindingElement | ts.SpreadAssignment, excludedProp: Array<VReg>,
+function emitRestProperty(restProperty: ts.BindingElement | ts.SpreadAssignment, excludedProp: Array<VReg | string>,
                           obj: VReg, pandaGen: PandaGen, compiler: Compiler) {
     let isDeclaration = ts.isBindingElement(restProperty) ? true : false;
     let target = isDeclaration ? (<ts.BindingElement>restProperty).name : (<ts.SpreadAssignment>restProperty).expression;
     let lRef = LReference.generateLReference(compiler, target, true);
-    let undefinedReg = pandaGen.getTemp();
 
     if (excludedProp.length == 0) {
-        pandaGen.loadAccumulator(restProperty, getVregisterCache(pandaGen, CacheList.undefined));
-        pandaGen.storeAccumulator(restProperty, undefinedReg);
-        excludedProp.push(undefinedReg);
+        excludedProp = [getVregisterCache(pandaGen, CacheList.undefined)];
     }
 
     // Create a Object with the information of excluded properties
-    pandaGen.createObjectWithExcludedKeys(restProperty, obj, excludedProp);
+    let namedPropRegs: Array<VReg> = new Array<VReg>();
+    for (let i = 0; i < excludedProp.length; i++) {
+        let prop: VReg | string = excludedProp[i];
+        if (prop instanceof VReg) {
+            continue;
+        }
+
+        let propReg: VReg = pandaGen.getTemp();
+        namedPropRegs.push(propReg);
+        pandaGen.loadAccumulatorString(restProperty, prop);
+        pandaGen.storeAccumulator(restProperty, propReg);
+        excludedProp[i] = propReg;
+    }
+    pandaGen.createObjectWithExcludedKeys(restProperty, obj, <Array<VReg>>excludedProp);
 
     lRef.setValue();
-    pandaGen.freeTemps(undefinedReg);
+    pandaGen.freeTemps(...namedPropRegs);
 }
 
 function isRestElement(node: ts.BindingElement) {
