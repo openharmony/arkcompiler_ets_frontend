@@ -846,6 +846,7 @@ def main():
                              ["--parse-only", "--module", "--extension=ts"])
         runner.add_directory("parser/ts/type_checker", "ts",
                              ["--parse-only", "--enable-type-check", "--module", "--extension=ts"])
+        runner.add_directory("parser/commonjs", "js", ["--commonjs", "--parse-only", "--dump-ast"])
 
         runners.append(runner)
 
@@ -859,6 +860,7 @@ def main():
         runner = CompilerRunner(args)
         runner.add_directory("compiler/js", "js", [])
         runner.add_directory("compiler/ts", "ts", ["--extension=ts"])
+        runner.add_directory("compiler/commonjs", "js", ["--commonjs"])
 
         runners.append(runner)
 
