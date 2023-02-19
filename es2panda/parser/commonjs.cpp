@@ -16,9 +16,11 @@
 #include <binder/binder.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/expression.h>
+#include <ir/expressions/arrayExpression.h>
 #include <ir/expressions/callExpression.h>
 #include <ir/expressions/functionExpression.h>
 #include <ir/expressions/identifier.h>
+#include <ir/expressions/memberExpression.h>
 #include <ir/statements/expressionStatement.h>
 #include <ir/statements/blockStatement.h>
 
@@ -44,19 +46,31 @@ void ParserImpl::AddCommonjsParams(ArenaVector<ir::Expression *> &params)
     }
 }
 
-void ParserImpl::AddCommonjsArgs(ArenaVector<ir::Expression *> &args)
+void ParserImpl::AddReflectApplyArgs(ArenaVector<ir::Expression *> &args, ir::FunctionExpression *wrapper)
 {
+    ASSERT(wrapper != nullptr);
+    // wrapper
+    args.push_back(wrapper);
+    // thisValue
+    ir::Expression *thisValue = AllocNode<ir::Identifier>(binder::Binder::CJS_MANDATORY_PARAM_EXPORTS);
+    thisValue->AsIdentifier()->SetReference();
+    args.push_back(thisValue);
+    // wrapper's arguments
+    ArenaVector<ir::Expression *> elements(Allocator()->Adapter());
     for (auto argName : cjsMandatoryParams) {
         ir::Expression *arg = AllocNode<ir::Identifier>(argName);
         arg->AsIdentifier()->SetReference();
-        args.push_back(arg);
+        elements.push_back(arg);
     }
+    ir::ArrayExpression *wrapperArgsArray =
+        AllocNode<ir::ArrayExpression>(ir::AstNodeType::ARRAY_EXPRESSION, std::move(elements), false);
+    args.push_back(wrapperArgsArray);
 }
 
 void ParserImpl::ParseCommonjs()
 {
     // create FunctionExpression as callee
-    ir::FunctionExpression *funcExpr = nullptr;
+    ir::FunctionExpression *wrapper = nullptr;
     {
         FunctionContext functionContext(this, ParserStatus::FUNCTION | ParserStatus::ALLOW_NEW_TARGET);
         FunctionParameterContext funcParamContext(&context_, Binder());
@@ -78,13 +92,19 @@ void ParserImpl::ParseCommonjs()
         functionScope->BindNode(funcNode);
         funcParamScope->BindNode(funcNode);
 
-        funcExpr = AllocNode<ir::FunctionExpression>(funcNode);
+        wrapper = AllocNode<ir::FunctionExpression>(funcNode);
     }
 
     // create CallExpression
     ArenaVector<ir::Expression *> arguments(Allocator()->Adapter());
-    AddCommonjsArgs(arguments);
-    auto *callExpr = AllocNode<ir::CallExpression>(funcExpr, std::move(arguments), nullptr, false);
+    AddReflectApplyArgs(arguments, wrapper);
+
+    auto *apply = AllocNode<ir::Identifier>("apply");
+    auto *reflect = AllocNode<ir::Identifier>("Reflect");
+    auto *reflectApply = AllocNode<ir::MemberExpression>(reflect, apply,
+        ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+
+    auto *callExpr = AllocNode<ir::CallExpression>(reflectApply, std::move(arguments), nullptr, false);
     // create ExpressionStatement
     auto *exprStatementNode = AllocNode<ir::ExpressionStatement>(callExpr);
 
