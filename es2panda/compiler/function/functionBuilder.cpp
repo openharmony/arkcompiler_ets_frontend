@@ -62,12 +62,24 @@ void FunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
     pg_->EmitReturn(node);
 }
 
-void FunctionBuilder::AsyncYield(const ir::AstNode *node, VReg completionType, VReg completionValue) const
+void FunctionBuilder::ExplicitReturn(const ir::AstNode *node) const
+{
+    DirectReturn(node);
+}
+
+void FunctionBuilder::AsyncYield(const ir::AstNode *node, VReg value, VReg completionType, VReg completionValue) const
 {
     ASSERT(BuilderKind() == BuilderType::ASYNC_GENERATOR);
-
+    RegScope rs(pg_);
+    VReg done = pg_->AllocReg();
+    // 27.6.3.8.6 Set generator.[[AsyncGeneratorState]] to suspendedYield.
     pg_->GeneratorYield(node, funcObj_);
-    pg_->SuspendAsyncGenerator(node, funcObj_);
+    /** 27.6.3.8.7 Remove genContext from the execution context stack and restore the execution context that
+     *  is at the top of the execution context stack as the running execution context.
+     *  27.6.3.8.9 Return ! AsyncGeneratorResolve(generator, value, false).
+     */
+    pg_->StoreConst(node, done, Constant::JS_FALSE);
+    pg_->AsyncGeneratorResolve(node, funcObj_, value, done);
 
     resumeGenerator(node, completionType, completionValue);
 }
@@ -173,6 +185,7 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
     VReg receivedType = pg_->AllocReg();
     VReg nextMethod = pg_->AllocReg();
     VReg exitReturn = pg_->AllocReg();
+    VReg iterValue = pg_->AllocReg();
 
     pg_->StoreConst(node, receivedValue, Constant::JS_UNDEFINED);
     pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::NEXT));
@@ -269,7 +282,8 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
         // 5. Set value to ? Await(value).
         Await(node);
         // 6. Set generator.[[AsyncGeneratorState]] to suspendedYield.
-        AsyncYield(node, receivedType, receivedValue);
+        pg_->StoreAccumulator(node, iterValue);
+        AsyncYield(node, iterValue, receivedType, receivedValue);
 
         // a. If resumptionValue.[[Type]] is not return
         pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::RETURN));
@@ -289,7 +303,6 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
         // vii. Else, set received to GeneratorYield(innerResult).
         // 8. Else, set received to GeneratorYield(innerResult).
         // x. Else, set received to GeneratorYield(innerReturnResult).
-        pg_->GeneratorYield(node, funcObj_);
         SuspendResumeExecution(node, receivedType, receivedValue);
     }
 

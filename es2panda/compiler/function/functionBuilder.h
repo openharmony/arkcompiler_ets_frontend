@@ -54,6 +54,7 @@ public:
 
     virtual void DirectReturn(const ir::AstNode *node) const;
     virtual void ImplicitReturn(const ir::AstNode *node) const;
+    virtual void ExplicitReturn(const ir::AstNode *node) const;
 
     virtual void Await(const ir::AstNode *node);
     virtual void YieldStar(const ir::AstNode *node);
@@ -72,7 +73,7 @@ protected:
     virtual IteratorType GeneratorKind() const;
 
     void SuspendResumeExecution(const ir::AstNode *node, VReg completionType, VReg completionValue) const;
-    void AsyncYield(const ir::AstNode *node, VReg completionType, VReg completionValue) const;
+    void AsyncYield(const ir::AstNode *node, VReg value, VReg completionType, VReg completionValue) const;
 
     VReg FunctionReg(const ir::ScriptFunction *node) const;
     void HandleCompletion(const ir::AstNode *node, VReg completionType, VReg completionValue);

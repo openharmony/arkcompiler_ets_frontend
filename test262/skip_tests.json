@@ -677,7 +677,8 @@
             "built-ins/Function/internals/Construct/base-ctor-revoked-proxy-realm.js",
             "built-ins/Function/internals/Call/class-ctor-realm.js",
             "built-ins/Proxy/get-fn-realm-recursive.js",
-            "language/expressions/optional-chaining/eval-optional-call.js"
+            "language/expressions/optional-chaining/eval-optional-call.js",
+            "language/expressions/async-generator/eval-body-proto-realm.js"
         ]
     },
     {
@@ -1592,42 +1593,12 @@
         ]
     },
     {
-        "reason": "asyncgenerator constructor not yet supported",
-        "files": [
-            "built-ins/AsyncGeneratorFunction/invoked-as-constructor-no-arguments.js",
-            "built-ins/AsyncGeneratorFunction/has-instance.js",
-            "built-ins/AsyncGeneratorFunction/invoked-as-function-no-arguments.js",
-            "built-ins/AsyncGeneratorFunction/instance-construct-throws.js",
-            "built-ins/AsyncGeneratorFunction/invoked-as-function-single-argument.js",
-            "built-ins/AsyncGeneratorFunction/instance-length.js",
-            "built-ins/AsyncGeneratorFunction/is-a-constructor.js",
-            "built-ins/AsyncGeneratorFunction/instance-prototype.js",
-            "built-ins/AsyncGeneratorFunction/proto-from-ctor-realm.js",
-            "built-ins/AsyncGeneratorFunction/proto-from-ctor-realm-prototype.js",
-            "built-ins/AsyncGeneratorFunction/instance-yield-expr-in-param.js",
-            "built-ins/AsyncGeneratorFunction/instance-name.js",
-            "built-ins/AsyncGeneratorFunction/instance-await-expr-in-param.js",
-            "built-ins/AsyncGeneratorFunction/invoked-as-function-multiple-arguments.js"
-        ]
-    },
-    {
         "reason": "Some special use cases have not yet been implemented",
         "files": [
-            "built-ins/AsyncGeneratorPrototype/constructor.js",
-            "built-ins/AsyncGeneratorPrototype/throw/this-val-not-async-generator.js",
-            "built-ins/AsyncGeneratorPrototype/throw/throw-suspendedYield-try-finally.js",
-            "built-ins/AsyncGeneratorPrototype/throw/request-queue-order-state-executing.js",
-            "built-ins/AsyncGeneratorPrototype/throw/this-val-not-object.js",
-            "built-ins/AsyncGeneratorPrototype/next/this-val-not-async-generator.js",
-            "built-ins/AsyncGeneratorPrototype/next/request-queue-order-state-executing.js",
-            "built-ins/AsyncGeneratorPrototype/next/this-val-not-object.js",
-            "built-ins/AsyncGeneratorPrototype/return/return-suspendedYield-try-finally-throw.js",
-            "built-ins/AsyncGeneratorPrototype/return/this-val-not-async-generator.js",
-            "built-ins/AsyncGeneratorPrototype/return/return-suspendedYield-try-finally-return.js",
-            "built-ins/AsyncGeneratorPrototype/return/request-queue-order-state-executing.js",
-            "built-ins/AsyncGeneratorPrototype/return/this-val-not-object.js",
-            "built-ins/AsyncGeneratorPrototype/return/return-suspendedYield-try-finally.js",
-            "language/expressions/optional-chaining/iteration-statement-for-await-of.js"
+            "language/expressions/optional-chaining/iteration-statement-for-await-of.js",
+            "language/expressions/async-generator/named-yield-star-next-then-returns-abrupt.js",
+            "language/expressions/async-generator/yield-star-next-then-returns-abrupt.js",
+            "language/statements/async-generator/yield-star-next-then-returns-abrupt.js"
         ]
     }
 ]

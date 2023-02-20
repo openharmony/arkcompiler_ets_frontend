@@ -35,6 +35,7 @@ public:
 
     void DirectReturn(const ir::AstNode *node) const override;
     void ImplicitReturn(const ir::AstNode *node) const override;
+    void ExplicitReturn(const ir::AstNode *node) const override;
 
 protected:
     BuilderType BuilderKind() const override
