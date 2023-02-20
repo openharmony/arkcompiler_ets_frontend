@@ -103,6 +103,11 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
                 pg->BranchIfStrictNotUndefined(func, nonDefaultLabel);
 
                 param->AsAssignmentPattern()->Right()->Compile(pg);
+                VReg init = pg->AllocReg();
+                pg->StoreAccumulator(func, init);
+                ref.GetValue();
+                pg->ThrowParameterDfltInitSelf(func, paramVar->Name(), init);
+                pg->LoadAccumulator(func, init);
                 ref.SetValue();
                 pg->SetLabel(func, nonDefaultLabel);
             }
@@ -171,12 +176,16 @@ static void CompileFunction(PandaGen *pg)
     pg->SetSourceLocationFlag(lexer::SourceLocationFlag::INVALID_SOURCE_LOCATION);
     pg->FunctionEnter();
     pg->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
+
+    if (pg->IsAsyncFunction()) {
+        CompileFunctionParameterDeclaration(pg, decl);
+    }
+
     const ir::AstNode *body = decl->Body();
-    CompileFunctionParameterDeclaration(pg, decl);
 
     if (body->IsExpression()) {
         body->Compile(pg);
-        pg->DirectReturn(decl);
+        pg->ExplicitReturn(decl);
     } else {
         CompileSourceBlock(pg, body->AsBlockStatement());
     }
@@ -192,6 +201,10 @@ static void CompileFunctionOrProgram(PandaGen *pg)
     if (pg->FunctionHasFinalizer()) {
         ASSERT(topScope->IsFunctionScope());
 
+        if (!pg->IsAsyncFunction()) {
+            CompileFunctionParameterDeclaration(pg, pg->RootNode()->AsScriptFunction());
+        }
+
         TryContext tryCtx(pg);
         pg->FunctionInit(tryCtx.GetCatchTable());
 
@@ -200,6 +213,7 @@ static void CompileFunctionOrProgram(PandaGen *pg)
         pg->FunctionInit(nullptr);
 
         if (topScope->IsFunctionScope() || topScope->IsTSModuleScope() || topScope->IsTSEnumScope()) {
+            CompileFunctionParameterDeclaration(pg, pg->RootNode()->AsScriptFunction());
             CompileFunction(pg);
         } else {
             ASSERT(topScope->IsGlobalScope() || topScope->IsModuleScope());

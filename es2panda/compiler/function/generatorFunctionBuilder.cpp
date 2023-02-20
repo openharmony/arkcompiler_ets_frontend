@@ -40,7 +40,6 @@ void GeneratorFunctionBuilder::CleanUp(const ir::ScriptFunction *node) const
 
     pg_->SetLabel(node, labelSet.TryEnd());
     pg_->SetLabel(node, labelSet.CatchBegin());
-    pg_->GeneratorComplete(node, funcObj_);
     pg_->EmitThrow(node);
     pg_->SetLabel(node, labelSet.CatchEnd());
 }
@@ -53,6 +52,11 @@ void GeneratorFunctionBuilder::DirectReturn(const ir::AstNode *node) const
 void GeneratorFunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
 {
     pg_->LoadConst(node, Constant::JS_UNDEFINED);
+    DirectReturn(node);
+}
+
+void GeneratorFunctionBuilder::ExplicitReturn(const ir::AstNode *node) const
+{
     DirectReturn(node);
 }
 

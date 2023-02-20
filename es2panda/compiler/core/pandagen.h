@@ -255,6 +255,7 @@ public:
     Label *AllocLabel();
 
     bool FunctionHasFinalizer() const;
+    bool IsAsyncFunction() const;
     void FunctionInit(CatchTable* catchTable);
     void FunctionEnter();
     void FunctionExit();
@@ -330,6 +331,7 @@ public:
     void IsTrue(const ir::AstNode *node);
 
     void BranchIfUndefined(const ir::AstNode *node, class Label *target);
+    void BranchIfStrictUndefined(const ir::AstNode *node, class Label *target);
     void BranchIfStrictNotUndefined(const ir::AstNode *node, class Label *target);
     void BranchIfNotUndefined(const ir::AstNode *node, class Label *target);
     void BranchIfHole(const ir::AstNode *node, class Label *target);
@@ -345,6 +347,7 @@ public:
     void EmitReturnUndefined(const ir::AstNode *node);
     void ValidateClassDirectReturn(const ir::AstNode *node);
     void DirectReturn(const ir::AstNode *node);
+    void ExplicitReturn(const ir::AstNode *node);
     void ImplicitReturn(const ir::AstNode *node);
     void EmitAwait(const ir::AstNode *node);
 
@@ -438,6 +441,7 @@ public:
     void ThrowIfSuperNotCorrectCall(const ir::AstNode *node, int64_t num);
     void ThrowUndefinedIfHole(const ir::AstNode *node, const util::StringView &name);
     void ThrowConstAssignment(const ir::AstNode *node, const util::StringView &name);
+    void ThrowParameterDfltInitSelf(const ir::AstNode *node, const util::StringView &name, VReg init);
 
     uint32_t TryDepth() const;
     CatchTable *CreateCatchTable();
