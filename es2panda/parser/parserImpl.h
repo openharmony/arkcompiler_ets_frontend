@@ -216,15 +216,18 @@ private:
     [[nodiscard]] std::unique_ptr<lexer::Lexer> InitLexer(const std::string &fileName, const std::string &source);
     void ParseScript();
     void ParseModule();
+
     /*
-     * Transform the commonjs's AST by wrapping the sourceCode
-     * e.g. (function (exports, require, module, __filename, __dirname) {
-     *          [Origin_SourceCode]
-     *      })(exports, require, module, __filename, __dirname);
+     * Transform the commonjs module's AST by wrap the sourceCode & use Reflect.apply to invoke this wrapper with [this]
+     * pointing to [exports] object
+     *
+     * Reflect.apply(function (exports, require, module, __filename, __dirname) {
+     *   [SourceCode]
+     * }, exports, [exports, require, module, __filename, __dirname]);
      */
     void ParseCommonjs();
     void AddCommonjsParams(ArenaVector<ir::Expression *> &params);
-    void AddCommonjsArgs(ArenaVector<ir::Expression *> &args);
+    void AddReflectApplyArgs(ArenaVector<ir::Expression *> &args, ir::FunctionExpression *wrapper);
     void ParseProgram(ScriptKind kind);
     static ExpressionParseFlags CarryExpressionParserFlag(ExpressionParseFlags origin, ExpressionParseFlags carry);
     static ExpressionParseFlags CarryPatternFlags(ExpressionParseFlags flags);
