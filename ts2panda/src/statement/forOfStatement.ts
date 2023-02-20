@@ -68,7 +68,7 @@ export function compileForOfStatement(stmt: ts.ForOfStatement, compiler: Compile
     let loopEnv = pandaGen.getTemp();
 
     // for now Async is not handled.
-    let type: IteratorType = IteratorType.Normal;
+    let type: IteratorType = stmt.awaitModifier ? IteratorType.Async : IteratorType.Normal;
 
     if (needCreateLoopEnv) {
         pandaGen.createLexEnv(stmt, loopScope);
@@ -119,8 +119,7 @@ export function getIteratorRecord(pandagen: PandaGen, node: ts.Node, nextMethod:
 
 function getIterator(pandagen: PandaGen, node: ts.Node, type: IteratorType) {
     if (type == IteratorType.Async) {
-        // support Async Iterator in the future
-        throw new Error("Async Iterator haven't been supported");
+        pandagen.getAsyncIterator(node);
     } else {
         pandagen.getIterator(node);
     }

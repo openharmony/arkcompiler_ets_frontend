@@ -13,9 +13,8 @@
  * limitations under the License.
  */
 
-import { loadAccumulator } from "src/base/bcGenUtil";
-import * as ts from "typescript";
 import { CacheList, getVregisterCache } from "../base/vregisterCache";
+import * as ts from "typescript";
 import { NodeKind } from "../debuginfo";
 import {
     Label,
@@ -23,60 +22,60 @@ import {
 } from "../irnodes";
 import { PandaGen } from "../pandagen";
 import { CatchTable, LabelPair } from "../statement/tryStatement";
+import { FunctionBuilder, FunctionBuilderType } from "./functionBuilder";
 
-enum ResumeMode { Return = 0, Throw, Next };
+enum ResumeMode {
+    Return,
+    Throw,
+    Next
+};
 
 /**
  * async function foo() {
  *     await 'promise obj';
  * }
  */
-export class AsyncFunctionBuilder {
-    private pandaGen: PandaGen;
-    private beginLabel: Label;
-    private endLabel: Label;
-    private asyncObj: VReg;
-    private retVal: VReg;
-
+export class AsyncFunctionBuilder extends FunctionBuilder {
     constructor(pandaGen: PandaGen) {
-        this.pandaGen = pandaGen;
+        super(pandaGen);
+        this.funcObj = pandaGen.getTemp();
+        this.resumeVal = pandaGen.getTemp();
         this.beginLabel = new Label();
         this.endLabel = new Label();
-        this.asyncObj = pandaGen.getTemp();
-        this.retVal = pandaGen.getTemp();
     }
 
     prepare(node: ts.Node): void {
-        let pandaGen = this.pandaGen;
+        let pandaGen = this.pg;
 
         pandaGen.asyncFunctionEnter(NodeKind.Invalid);
-        pandaGen.storeAccumulator(NodeKind.Invalid, this.asyncObj);
+        pandaGen.storeAccumulator(NodeKind.Invalid, this.funcObj);
 
         pandaGen.label(node, this.beginLabel);
     }
 
-    await(node: ts.Node, value: VReg): void {
-        let pandaGen = this.pandaGen;
-        let promise = this.pandaGen.getTemp();
-
-        pandaGen.loadAccumulator(node, value);
-        pandaGen.asyncFunctionAwaitUncaught(node, this.asyncObj);
-
-        pandaGen.suspendGenerator(node, this.asyncObj);
-
-        pandaGen.freeTemps(promise);
-
-        pandaGen.resumeGenerator(node, this.asyncObj);
-        pandaGen.storeAccumulator(node, this.retVal);
-
+    await(node: ts.Node): void {
+        // value is in acc
+        this.functionAwait(node);
         this.handleMode(node);
     }
 
+    explicitReturn(node: ts.Node | NodeKind, empty ? : boolean): void {
+        // value is in acc
+        this.pg.asyncFunctionResolve(node, this.funcObj);
+        this.pg.return(node);
+    }
+
+    implicitReturn(node: ts.Node | NodeKind): void {
+        this.pg.loadAccumulator(node, getVregisterCache(this.pg, CacheList.undefined));
+        this.pg.asyncFunctionResolve(node, this.funcObj);
+        this.pg.return(node);
+    }
+
     private handleMode(node: ts.Node) {
-        let pandaGen = this.pandaGen;
+        let pandaGen = this.pg;
         let modeType = pandaGen.getTemp();
 
-        pandaGen.getResumeMode(node, this.asyncObj);
+        pandaGen.getResumeMode(node, this.funcObj);
         pandaGen.storeAccumulator(node, modeType);
 
         // .reject
@@ -86,33 +85,37 @@ export class AsyncFunctionBuilder {
 
         // jump to normal code
         pandaGen.condition(node, ts.SyntaxKind.EqualsEqualsToken, modeType, notThrowLabel);
-        pandaGen.loadAccumulator(node, this.retVal);
+        pandaGen.loadAccumulator(node, this.resumeVal);
         pandaGen.throw(node);
 
         pandaGen.freeTemps(modeType);
 
         // .resolve
         pandaGen.label(node, notThrowLabel);
-        pandaGen.loadAccumulator(node, this.retVal);
+        pandaGen.loadAccumulator(node, this.resumeVal);
     }
 
     resolve(node: ts.Node | NodeKind, value: VReg) {
-        let pandaGen = this.pandaGen;
+        let pandaGen = this.pg;
         pandaGen.loadAccumulator(node, value);
-        pandaGen.asyncFunctionResolve(node, this.asyncObj);
+        pandaGen.asyncFunctionResolve(node, this.funcObj);
     }
 
     cleanUp(node: ts.Node): void {
-        let pandaGen = this.pandaGen;
+        let pandaGen = this.pg;
 
         pandaGen.label(node, this.endLabel);
 
         // exception is in acc
-        pandaGen.asyncFunctionReject(NodeKind.Invalid, this.asyncObj);
+        pandaGen.asyncFunctionReject(NodeKind.Invalid, this.funcObj);
         pandaGen.return(NodeKind.Invalid);
 
-        pandaGen.freeTemps(this.asyncObj, this.retVal);
+        pandaGen.freeTemps(this.funcObj, this.resumeVal);
 
         new CatchTable(pandaGen, this.endLabel, new LabelPair(this.beginLabel, this.endLabel));
+    }
+
+    builderType(): FunctionBuilderType {
+        return FunctionBuilderType.ASYNC;
     }
 }
