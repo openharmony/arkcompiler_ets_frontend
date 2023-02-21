@@ -39,7 +39,7 @@ void Hotfix::ProcessFunction(const compiler::PandaGen *pg, panda::pandasm::Funct
         return;
     }
 
-    if (generatePatch_) {
+    if (generatePatch_ || hotReload_) {
         HandleFunction(pg, func, literalBuffers);
         return;
     }
@@ -53,7 +53,7 @@ void Hotfix::ProcessModule(const std::string &recordName,
         return;
     }
 
-    if (generatePatch_) {
+    if (generatePatch_ || hotReload_) {
         ValidateModuleInfo(recordName, moduleBuffer);
         return;
     }
@@ -66,7 +66,7 @@ void Hotfix::ProcessJsonContentRecord(const std::string &recordName, const std::
         return;
     }
 
-    if (generatePatch_) {
+    if (generatePatch_ || hotReload_) {
         ValidateJsonContentRecInfo(recordName, jsonFileContent);
         return;
     }
@@ -252,7 +252,7 @@ void Hotfix::CollectClassMemberFunctions(const std::string &className, int64_t b
 
 bool Hotfix::IsScopeValidToPatchLexical(binder::VariableScope *scope) const
 {
-    if (!generatePatch_) {
+    if (!generatePatch_ && !hotReload_) {
         return false;
     }
 
@@ -398,7 +398,7 @@ void Hotfix::CreateFunctionPatchMain0AndMain1(panda::pandasm::Function &patchFun
 
 void Hotfix::Finalize(panda::pandasm::Program **prog)
 {
-    if (!generatePatch_) {
+    if (!generatePatch_ && !hotReload_) {
         return;
     }
 
@@ -407,6 +407,10 @@ void Hotfix::Finalize(panda::pandasm::Program **prog)
     if (patchError_) {
         *prog = nullptr;
         std::cerr << "[Patch] Found unsupported change in file, will not generate patch!" << std::endl;
+        return;
+    }
+
+    if (hotReload_) {
         return;
     }
 
@@ -433,14 +437,16 @@ bool Hotfix::CompareLexenv(const std::string &funcName, const compiler::PandaGen
             auto varName = std::string(variable.second.first);
             auto lexenvIter = lexenv.find(varName);
             if (lexenvIter == lexenv.end()) {
-                std::cerr << "[Patch] Found new lex env added, not supported!" << std::endl;
+                std::cerr << "[Patch] Found new lex env added in function " << funcName << ", not supported!"
+                    << std::endl;
                 patchError_ = true;
                 return false;
             }
 
             auto &lexInfo = lexenvIter->second;
             if (variable.first != lexInfo.first || variable.second.second != lexInfo.second) {
-                std::cerr << "[Patch] Found new lex env changed(slot or type), not supported!" << std::endl;
+                std::cerr << "[Patch] Found new lex env changed(slot or type) in function " << funcName
+                    << ", not supported!" << std::endl;
                 patchError_ = true;
                 return false;
             }
@@ -491,6 +497,10 @@ void Hotfix::HandleFunction(const compiler::PandaGen *pg, panda::pandasm::Functi
 
     auto hashList = GenerateFunctionAndClassHash(func, literalBuffers);
     if (!CompareClassHash(hashList, bytecodeInfo)) {
+        return;
+    }
+
+    if (hotReload_) {
         return;
     }
 
