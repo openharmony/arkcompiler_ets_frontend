@@ -65,6 +65,7 @@ struct HotfixOptions {
     std::string dumpSymbolTable {};
     std::string symbolTable {};
     bool generatePatch {false};
+    bool hotReload {false};
 };
 
 struct CompilerOptions {

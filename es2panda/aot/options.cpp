@@ -164,10 +164,11 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<std::string> opNpmModuleEntryList("npm-module-entry-list", "", "entry list file for module compile");
     panda::PandArg<bool> opMergeAbc("merge-abc", false, "Compile as merge abc");
 
-    // hotfix
+    // hotfix && hotreload
     panda::PandArg<std::string> opDumpSymbolTable("dump-symbol-table", "", "dump symbol table to file");
     panda::PandArg<std::string> opInputSymbolTable("input-symbol-table", "", "input symbol table file");
     panda::PandArg<bool> opGeneratePatch("generate-patch", false, "generate patch abc");
+    panda::PandArg<bool> opHotReload("hot-reload", false, "compile as hot-reload mode");
 
     // version
     panda::PandArg<bool> bcVersion("bc-version", false, "Print ark bytecode version");
@@ -209,6 +210,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opDumpSymbolTable);
     argparser_->Add(&opInputSymbolTable);
     argparser_->Add(&opGeneratePatch);
+    argparser_->Add(&opHotReload);
 
     argparser_->Add(&bcVersion);
     argparser_->Add(&bcMinVersion);
@@ -388,6 +390,7 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.hotfixOptions.dumpSymbolTable = opDumpSymbolTable.GetValue();
     compilerOptions_.hotfixOptions.symbolTable = opInputSymbolTable.GetValue();
     compilerOptions_.hotfixOptions.generatePatch = opGeneratePatch.GetValue();
+    compilerOptions_.hotfixOptions.hotReload = opHotReload.GetValue();
 
     return true;
 }

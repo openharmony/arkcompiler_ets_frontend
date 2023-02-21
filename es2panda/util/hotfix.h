@@ -38,8 +38,10 @@ class Hotfix {
     using LiteralBuffers = ArenaVector<std::pair<int32_t, std::vector<panda::pandasm::LiteralArray::Literal>>>;
 
 public:
-    Hotfix(bool generateSymbolFile, bool generatePatch, const std::string &recordName, util::SymbolTable *symbolTable)
-        : generateSymbolFile_(generateSymbolFile), generatePatch_(generatePatch), recordName_(recordName),
+    Hotfix(bool generateSymbolFile, bool generatePatch, bool hotReload, const std::string &recordName,
+        util::SymbolTable *symbolTable)
+        : generateSymbolFile_(generateSymbolFile), generatePatch_(generatePatch), hotReload_(hotReload),
+        recordName_(recordName),
         symbolTable_(symbolTable),
         allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
         topScopeLexEnvs_(allocator_.Adapter()),
@@ -97,6 +99,7 @@ private:
     bool patchError_ {false};
     bool generateSymbolFile_ {false};
     bool generatePatch_ {false};
+    bool hotReload_ {false};
     std::string recordName_;
     std::string funcMain0_;
     std::string patchMain0_;  // stores newly added function define ins, runtime will execute

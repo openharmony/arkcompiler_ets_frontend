@@ -117,9 +117,11 @@ util::Hotfix *Compiler::InitHotfixHelper(const SourceFile &input, const Compiler
 {
     bool needDumpSymbolFile = !options.hotfixOptions.dumpSymbolTable.empty();
     bool needGeneratePatch = options.hotfixOptions.generatePatch && !options.hotfixOptions.symbolTable.empty();
+    bool isHotReload = options.hotfixOptions.hotReload;
     util::Hotfix *hotfixHelper = nullptr;
-    if (symbolTable && (needDumpSymbolFile || needGeneratePatch)) {
-        hotfixHelper = new util::Hotfix(needDumpSymbolFile, needGeneratePatch, input.recordName, symbolTable);
+    if (symbolTable && (needDumpSymbolFile || needGeneratePatch || isHotReload)) {
+        hotfixHelper = new util::Hotfix(needDumpSymbolFile, needGeneratePatch, isHotReload,
+                                        input.recordName, symbolTable);
         parser_->AddHotfixHelper(hotfixHelper);
         compiler_->AddHotfixHelper(hotfixHelper);
     }
