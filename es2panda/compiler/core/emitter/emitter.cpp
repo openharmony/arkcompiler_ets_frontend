@@ -349,6 +349,9 @@ void Emitter::GenJsonContentRecord(const CompilerContext *context)
     jsonContentField.metadata->SetValue(panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::STRING>(
         static_cast<std::string_view>(context->SourceFile())));
     rec_->field_list.emplace_back(std::move(jsonContentField));
+    if (context->HotfixHelper()) {
+        context->HotfixHelper()->ProcessJsonContentRecord(rec_->name, context->SourceFile());
+    }
 }
 
 void Emitter::AddFunction(FunctionEmitter *func, CompilerContext *context)

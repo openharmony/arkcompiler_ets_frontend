@@ -51,10 +51,10 @@ Compiler::~Compiler()
     delete compiler_;
 }
 
-panda::pandasm::Program *CreateJsonContentProgram(std::string src, std::string rname)
+panda::pandasm::Program *CreateJsonContentProgram(std::string src, std::string rname, util::Hotfix *hotfixHelper)
 {
     panda::es2panda::compiler::CompilerContext context(nullptr, false, false, false, false, true,
-                                                       src, "", util::StringView(rname));
+                                                       src, "", util::StringView(rname), hotfixHelper);
     return context.GetEmitter()->Finalize(false, nullptr);
 }
 
@@ -69,11 +69,11 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     std::string pkgName(input.pkgName);
     parser::ScriptKind kind(input.scriptKind);
 
-    if (fname.substr(fname.find_last_of(".") + 1) == "json") {
-        return CreateJsonContentProgram(src, rname);
-    }
-
     auto *hotfixHelper = InitHotfixHelper(input, options, symbolTable);
+
+    if (fname.substr(fname.find_last_of(".") + 1) == "json") {
+        return CreateJsonContentProgram(src, rname, hotfixHelper);
+    }
 
     try {
         auto ast = parser_->Parse(fname, src, rname, kind);

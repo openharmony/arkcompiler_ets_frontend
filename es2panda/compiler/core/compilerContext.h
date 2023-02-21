@@ -44,7 +44,7 @@ class CompilerContext {
 public:
     CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
                     bool isMergeAbc, bool isTypeExtractorEnabled, bool isJsonInputFile, std::string sourceFile,
-                    std::string pkgName, util::StringView recordName);
+                    std::string pkgName, util::StringView recordName, util::Hotfix *hotfixHelper);
     NO_COPY_SEMANTIC(CompilerContext);
     NO_MOVE_SEMANTIC(CompilerContext);
     ~CompilerContext() = default;
@@ -100,12 +100,7 @@ public:
         return pkgName_;
     }
 
-    void AddHotfixHelper(util::Hotfix *hotfixHelper)
-    {
-        hotfixHelper_ = hotfixHelper;
-    }
-
-    util::Hotfix *HotfixHelper()
+    util::Hotfix *HotfixHelper() const
     {
         return hotfixHelper_;
     }
@@ -147,8 +142,8 @@ private:
     std::string sourceFile_;
     std::string pkgName_;
     util::StringView recordName_;
-    std::unique_ptr<Emitter> emitter_;
     util::Hotfix *hotfixHelper_ {nullptr};
+    std::unique_ptr<Emitter> emitter_;
 };
 
 }  // namespace panda::es2panda::compiler

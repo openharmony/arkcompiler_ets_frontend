@@ -41,11 +41,7 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
 {
     CompilerContext context(program->Binder(), options.isDebug, options.isDebuggerEvaluateExpressionMode,
                             options.mergeAbc, options.typeExtractor, false, debugInfoSourceFile, pkgName,
-                            program->RecordName());
-
-    if (hotfixHelper_ != nullptr) {
-        context.AddHotfixHelper(hotfixHelper_);
-    }
+                            program->RecordName(), hotfixHelper_);
 
     ArenaAllocator localAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
 
