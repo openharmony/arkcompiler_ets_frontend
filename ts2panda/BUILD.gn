@@ -53,6 +53,78 @@ ohos_copy("config_files") {
   module_install_name = ""
 }
 
+ohos_copy("ts2abc_deps") {
+  sources =
+      [ "//third_party/typescript/build_package/ohos-typescript-4.2.3-r2.tgz" ]
+
+  outputs = [ target_out_dir + "/$target_name/{{source_file_part}}" ]
+  module_source_dir = target_out_dir + "/$target_name"
+  module_install_name = ""
+  license_file = "//third_party/typescript/LICENSE"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_copy("ts2abc_deps_ets") {
+  sources =
+      [ "//third_party/typescript/build_package/ohos-typescript-4.2.3-r2.tgz" ]
+
+  outputs = [ target_out_dir + "/$target_name/{{source_file_part}}" ]
+  module_source_dir = target_out_dir + "/$target_name"
+  module_install_name = ""
+  license_file = "//third_party/typescript/LICENSE"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_copy("ts2abc_deps_win") {
+  sources =
+      [ "//third_party/typescript/build_package/ohos-typescript-4.2.3-r2.tgz" ]
+
+  outputs = [ target_out_dir + "/$target_name/{{source_file_part}}" ]
+  module_source_dir = target_out_dir + "/$target_name"
+  module_install_name = ""
+  license_file = "//third_party/typescript/LICENSE"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_copy("ts2abc_deps_win_ets") {
+  sources =
+      [ "//third_party/typescript/build_package/ohos-typescript-4.2.3-r2.tgz" ]
+
+  outputs = [ target_out_dir + "/$target_name/{{source_file_part}}" ]
+  module_source_dir = target_out_dir + "/$target_name"
+  module_install_name = ""
+  license_file = "//third_party/typescript/LICENSE"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_copy("ts2abc_deps_mac") {
+  sources =
+      [ "//third_party/typescript/build_package/ohos-typescript-4.2.3-r2.tgz" ]
+
+  outputs = [ target_out_dir + "/$target_name/{{source_file_part}}" ]
+  module_source_dir = target_out_dir + "/$target_name"
+  module_install_name = ""
+  license_file = "//third_party/typescript/LICENSE"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_copy("ts2abc_deps_mac_ets") {
+  sources =
+      [ "//third_party/typescript/build_package/ohos-typescript-4.2.3-r2.tgz" ]
+
+  outputs = [ target_out_dir + "/$target_name/{{source_file_part}}" ]
+  module_source_dir = target_out_dir + "/$target_name"
+  module_install_name = ""
+  license_file = "//third_party/typescript/LICENSE"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
 action("ts2abc_diagnostic_ts") {
   visibility = [ ":*" ]
   script = "scripts/gen_diagnostic.rb"
