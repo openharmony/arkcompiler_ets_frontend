@@ -1439,6 +1439,7 @@ static bool EmitProgram(const std::string &output, int optLevel, std::string opt
     if (g_isOutputProto) {
         g_compilerOutputProto = output.substr(0, output.find_last_of(".") + 1).append(PROTO_BIN_SUFFIX);
     }
+    std::string convertedFilePath = panda::os::file::File::GetExtendedFilePath(output);
 
 #ifdef ENABLE_BYTECODE_OPT
     if (g_optLevel != static_cast<int>(OptLevel::O_LEVEL0) || optLevel != static_cast<int>(OptLevel::O_LEVEL0)) {
@@ -1458,19 +1459,19 @@ static bool EmitProgram(const std::string &output, int optLevel, std::string opt
         panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps {};
         panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps* mapsp = &maps;
 
-        if (!panda::pandasm::AsmEmitter::Emit(output.c_str(), prog, statp, mapsp, emitDebugInfo)) {
+        if (!panda::pandasm::AsmEmitter::Emit(convertedFilePath, prog, statp, mapsp, emitDebugInfo)) {
             std::cerr << "Failed to emit binary data: " << panda::pandasm::AsmEmitter::GetLastError() << std::endl;
             return false;
         }
 
-        panda::bytecodeopt::OptimizeBytecode(&prog, mapsp, output.c_str(), true);
+        panda::bytecodeopt::OptimizeBytecode(&prog, mapsp, convertedFilePath, true);
 
         if (g_compilerOutputProto.size() > 0) {
             panda::proto::ProtobufSnapshotGenerator::GenerateSnapshot(prog, g_compilerOutputProto);
             return true;
         }
 
-        if (!panda::pandasm::AsmEmitter::Emit(output.c_str(), prog, statp, mapsp, emitDebugInfo)) {
+        if (!panda::pandasm::AsmEmitter::Emit(convertedFilePath, prog, statp, mapsp, emitDebugInfo)) {
             std::cerr << "Failed to emit binary data: " << panda::pandasm::AsmEmitter::GetLastError() << std::endl;
             return false;
         }
@@ -1482,7 +1483,7 @@ static bool EmitProgram(const std::string &output, int optLevel, std::string opt
         return true;
     }
 
-    if (!panda::pandasm::AsmEmitter::Emit(output.c_str(), prog, nullptr)) {
+    if (!panda::pandasm::AsmEmitter::Emit(convertedFilePath, prog, nullptr)) {
         std::cerr << "Failed to emit binary data: " << panda::pandasm::AsmEmitter::GetLastError() << std::endl;
         return false;
     }
@@ -1631,7 +1632,7 @@ bool CompileNpmEntries(const std::string &input, const std::string &output)
     }
 
     std::stringstream ss;
-    std::ifstream inputStream(input);
+    std::ifstream inputStream(panda::os::file::File::GetExtendedFilePath(input));
     if (inputStream.fail()) {
         std::cerr << "Failed to read file to buffer: " << input << std::endl;
         return false;
@@ -1677,7 +1678,7 @@ bool HandleJsonFile(const std::string &input, std::string &data)
     }
 
     std::ifstream file;
-    file.open(fpath);
+    file.open(panda::os::file::File::GetExtendedFilePath(fpath));
     if (file.fail()) {
         std::cerr << "failed to open:" << fpath << std::endl;
         return false;
