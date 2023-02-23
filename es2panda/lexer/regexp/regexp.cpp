@@ -456,16 +456,20 @@ void RegExpParser::ParseAtomEscape()
 
     switch (cp) {
         case LEX_CHAR_LOWERCASE_X: {
-            ParseHexEscape();
+            if (Unicode()) {
+                ParseHexEscape();
+            }
             break;
         }
         case LEX_CHAR_LOWERCASE_U: {
-            ParseUnicodeEscape();
+            if (Unicode()) {
+                ParseUnicodeEscape();
+            }
             break;
         }
         case LEX_CHAR_LOWERCASE_K: {
             ParseNamedBackreference();
-            return;
+            break;
         }
         /* ControlEscape */
         case LEX_CHAR_LOWERCASE_F:
@@ -480,12 +484,12 @@ void RegExpParser::ParseAtomEscape()
         case LEX_CHAR_UPPERCASE_S:
         case LEX_CHAR_LOWERCASE_W:
         case LEX_CHAR_UPPERCASE_W: {
-            return;
+            break;
         }
         case LEX_CHAR_LOWERCASE_P:
         case LEX_CHAR_UPPERCASE_P: {
             ParseUnicodePropertyEscape();
-            return;
+            break;
         }
         case LEX_CHAR_LOWERCASE_C: {
             cp = Peek();
@@ -495,7 +499,7 @@ void RegExpParser::ParseAtomEscape()
             }
 
             Next();
-            return;
+            break;
         }
         default: {
             /* IdentityEscape */
@@ -583,6 +587,7 @@ uint32_t RegExpParser::ParseLegacyOctalEscape()
 
 uint32_t RegExpParser::ParseHexEscape()
 {
+    // two hexadecimal digits after x in the regular expression
     char32_t digit = Next();
     if (!IsHexDigit(digit)) {
         ThrowError("Invalid hex escape");
@@ -814,13 +819,13 @@ bool RegExpParser::ParsePatternCharacter()
 
 static bool IsIdStart(uint32_t cp)
 {
-    auto uchar = static_cast<UChar>(cp);
+    auto uchar = static_cast<UChar32>(cp);
     return u_isIDStart(uchar) != 0 || cp == LEX_CHAR_DOLLAR_SIGN || cp == LEX_CHAR_UNDERSCORE;
 }
 
 static bool IsIdCont(uint32_t cp)
 {
-    auto uchar = static_cast<UChar>(cp);
+    auto uchar = static_cast<UChar32>(cp);
     return u_isIDPart(uchar) != 0 || cp == LEX_CHAR_DOLLAR_SIGN || cp == LEX_CHAR_ZWNJ || cp == LEX_CHAR_ZWJ;
 }
 

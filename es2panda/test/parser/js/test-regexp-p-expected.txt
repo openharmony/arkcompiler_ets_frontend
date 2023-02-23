@@ -9,6 +9,7 @@
         "left": {
           "type": "Identifier",
           "name": "RegularExpressionLiteral",
+          "decorators": [],
           "loc": {
             "start": {
               "line": 16,

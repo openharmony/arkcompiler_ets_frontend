@@ -183,5 +183,24 @@
         "files": [
             "language/reserved-words/unreserved-words.js"
         ]
+    },
+    {
+        "reason" : "Unsupport regExp and unicode syntax",
+        "files": [
+            "annexB/language/comments/single-line-html-close-unicode-separators.js",
+            "annexB/built-ins/RegExp/incomplete_hex_unicode_escape.js",
+            "annexB/built-ins/RegExp/named-groups/non-unicode-malformed-lookbehind.js",
+            "annexB/built-ins/RegExp/named-groups/non-unicode-malformed.js",
+            "language/identifiers/part-unicode-13.0.0-escaped.js",
+            "language/identifiers/part-unicode-13.0.0.js",
+            "language/identifiers/start-unicode-13.0.0.js",
+            "language/identifiers/start-unicode-13.0.0-escaped.js",
+            "built-ins/RegExp/prototype/flags/coercion-unicode.js",
+            "built-ins/RegExp/match-indices/indices-array-unicode-property-names.js",
+            "built-ins/RegExp/match-indices/indices-array-non-unicode-match.js",
+            "built-ins/RegExp/match-indices/indices-array-unicode-match.js",
+            "built-ins/JSON/stringify/value-string-escape-unicode.js",
+            "built-ins/Function/prototype/toString/unicode.js"
+        ]
     }
 ]

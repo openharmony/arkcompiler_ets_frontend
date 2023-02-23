@@ -6,6 +6,7 @@
       "label": {
         "type": "Identifier",
         "name": "iflnlf",
+        "decorators": [],
         "loc": {
           "start": {
             "line": 16,
@@ -25,6 +26,7 @@
           "left": {
             "type": "Identifier",
             "name": "string",
+            "decorators": [],
             "loc": {
               "start": {
                 "line": 16,
@@ -94,6 +96,7 @@ if(
               "property": {
                 "type": "Identifier",
                 "name": "trim",
+                "decorators": [],
                 "loc": {
                   "start": {
                     "line": 25,
