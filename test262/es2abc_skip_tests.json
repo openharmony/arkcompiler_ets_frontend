@@ -254,5 +254,30 @@
             "language/expressions/dynamic-import/namespace/default-property-not-set-own.js",
             "language/expressions/dynamic-import/namespace/promise-then-ns-delete-non-exported-strict.js"
         ]
+    },
+    {
+        "reason" : "Unsupported single-line-html-close Comment",
+        "files": [
+            "annexB/language/comments/single-line-html-close-unicode-separators.js"
+        ]
+    },
+    {
+        "reason" : "Unsupported RegExp",
+        "files": [
+            "annexB/built-ins/RegExp/incomplete_hex_unicode_escape.js",
+            "annexB/built-ins/RegExp/named-groups/non-unicode-malformed-lookbehind.js",
+            "annexB/built-ins/RegExp/named-groups/non-unicode-malformed.js",
+            "built-ins/RegExp/prototype/flags/coercion-unicode.js",
+            "built-ins/RegExp/match-indices/indices-array-unicode-property-names.js",
+            "built-ins/RegExp/match-indices/indices-array-non-unicode-match.js",
+            "built-ins/RegExp/match-indices/indices-array-unicode-match.js",
+            "built-ins/JSON/stringify/value-string-escape-unicode.js"
+        ]
+    },
+    {
+        "reason" : "Unsupported SourceCode",
+        "files": [
+            "built-ins/Function/prototype/toString/unicode.js"
+        ]
     }
 ]
