@@ -75,5 +75,6 @@ message Function {
     SourceLocation bodyLocation = 15;
     optional FileLocation fileLocation = 16;
     uint32 function_kind = 17;
+    uint64 slotsNum = 18;
 }
 
