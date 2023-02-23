@@ -1105,6 +1105,7 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, std::string outpu
             return false;
         }
     }
+    std::string convertedFilePath = panda::os::file::File::GetExtendedFilePath(output);
 
     Logd("parsing done, calling pandasm\n");
 
@@ -1122,12 +1123,12 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, std::string outpu
         panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps {};
         panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps* mapsp = &maps;
 
-        if (!panda::pandasm::AsmEmitter::Emit(output.c_str(), prog, statp, mapsp, emitDebugInfo)) {
+        if (!panda::pandasm::AsmEmitter::Emit(convertedFilePath, prog, statp, mapsp, emitDebugInfo)) {
             std::cerr << "Failed to emit binary data: " << panda::pandasm::AsmEmitter::GetLastError() << std::endl;
             return false;
         }
-        panda::bytecodeopt::OptimizeBytecode(&prog, mapsp, output.c_str(), true);
-        if (!panda::pandasm::AsmEmitter::Emit(output.c_str(), prog, statp, mapsp, emitDebugInfo)) {
+        panda::bytecodeopt::OptimizeBytecode(&prog, mapsp, convertedFilePath, true);
+        if (!panda::pandasm::AsmEmitter::Emit(convertedFilePath, prog, statp, mapsp, emitDebugInfo)) {
             std::cerr << "Failed to emit binary data: " << panda::pandasm::AsmEmitter::GetLastError() << std::endl;
             return false;
         }
@@ -1135,7 +1136,7 @@ bool GenerateProgram([[maybe_unused]] const std::string &data, std::string outpu
     }
 #endif
 
-    if (!panda::pandasm::AsmEmitter::Emit(output.c_str(), prog, nullptr)) {
+    if (!panda::pandasm::AsmEmitter::Emit(convertedFilePath, prog, nullptr)) {
         std::cerr << "Failed to emit binary data: " << panda::pandasm::AsmEmitter::GetLastError() << std::endl;
         return false;
     }
@@ -1158,7 +1159,7 @@ bool HandleJsonFile(const std::string &input, std::string &data)
     }
 
     std::ifstream file;
-    file.open(fpath);
+    file.open(panda::os::file::File::GetExtendedFilePath(fpath));
     if (file.fail()) {
         std::cerr << "failed to open:" << fpath << std::endl;
         return false;
