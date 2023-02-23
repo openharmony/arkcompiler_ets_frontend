@@ -479,16 +479,6 @@ LexerTemplateString Lexer::ScanTemplateString()
                 Iterator().Forward(1);
 
                 char32_t nextCp = Iterator().Peek();
-                if (IsOctalDigit(nextCp)) {
-                    Iterator().Forward(1);
-
-                    if (Iterator().Peek() != LEX_CHAR_BACK_TICK) {
-                        ThrowError("Octal escape sequences are not allowed in template strings");
-                    }
-
-                    Iterator().Backward(1);
-                }
-
                 if (nextCp == LEX_CHAR_BACK_TICK || nextCp == LEX_CHAR_BACKSLASH || nextCp == LEX_CHAR_DOLLAR_SIGN) {
                     templateStr.str.Append(cp);
                     templateStr.str.Append(nextCp);
@@ -596,11 +586,16 @@ void Lexer::ScanStringUnicodePart(util::UString *str)
         case LEX_CHAR_0: {
             Iterator().Forward(1);
             bool isDecimal = IsDecimalDigit(Iterator().Peek());
+            bool isOctal = IsOctalDigit(Iterator().Peek());
             Iterator().Backward(1);
 
             if (!isDecimal) {
                 cp = LEX_CHAR_NULL;
                 break;
+            }
+
+            if (isOctal) {
+                ThrowError("Octal escape sequences are not allowed in strict mode");
             }
 
             [[fallthrough]];
@@ -1101,8 +1096,11 @@ RegExpFlags Lexer::ScanRegExpFlags()
                 flag = RegExpFlags::STICKY;
                 break;
             }
-            default: {
+            case LEX_CHAR_SP: {
                 return resultFlags;
+            }
+            default: {
+                ThrowError("Invalid RegExp flag");
             }
         }
 

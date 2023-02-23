@@ -80,7 +80,7 @@ namespace panda::es2panda::lexer {
 #define LEX_CHAR_UPPERCASE_W 0X57 /* W */
 #define LEX_CHAR_UPPERCASE_X 0x58 /* X */
 #define LEX_CHAR_UPPERCASE_Y 0x59 /* Y */
-#define LEX_CHAR_UPPERCASE_Z 0x5A /* X */
+#define LEX_CHAR_UPPERCASE_Z 0x5A /* Z */
 
 #define LEX_CHAR_BS 0x08           /* backspace */
 #define LEX_CHAR_TAB 0x09          /* character tabulation */
