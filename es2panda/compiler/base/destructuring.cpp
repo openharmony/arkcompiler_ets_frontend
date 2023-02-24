@@ -112,7 +112,7 @@ static void GenArray(PandaGen *pg, const ir::ArrayExpression *array)
         if (init) {
             auto *assingValue = pg->AllocLabel();
             auto *defaultInit = pg->AllocLabel();
-            pg->BranchIfUndefined(element, defaultInit);
+            pg->BranchIfStrictUndefined(element, defaultInit);
             pg->LoadAccumulator(element, iterator.Result());
             pg->Branch(element, assingValue);
 
@@ -181,7 +181,7 @@ static void GenObjectProperty(PandaGen *pg, const ir::ObjectExpression *object,
         auto *getDefault = pg->AllocLabel();
         auto *store = pg->AllocLabel();
 
-        pg->BranchIfUndefined(element, getDefault);
+        pg->BranchIfStrictUndefined(element, getDefault);
         pg->LoadAccumulator(element, loadedValue);
         pg->Branch(element, store);
 

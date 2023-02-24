@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-import { Scope } from "src/scope";
 import * as ts from "typescript";
+import { CmdOptions } from "../cmdOptions";
+import { NodeKind } from "../debuginfo";
 import { CacheList, getVregisterCache } from "../base/vregisterCache";
 import { Compiler, ControlFlowChange } from "../compiler";
 import {
@@ -22,8 +23,8 @@ import {
     VReg
 } from "../irnodes";
 import { PandaGen } from "../pandagen";
-import { Recorder } from "../recorder";
 import { IteratorRecord, IteratorType, getIteratorRecord } from "../statement/forOfStatement";
+import { FunctionBuilder } from "./functionBuilder";
 
 enum ResumeMode { Return = 0, Throw, Next };
 
@@ -32,51 +33,56 @@ enum ResumeMode { Return = 0, Throw, Next };
  *     yield 'a'
  * }
 */
-export class GeneratorFunctionBuilder {
-    private pandaGen: PandaGen;
+export class GeneratorFunctionBuilder extends FunctionBuilder {
     private compiler: Compiler;
-    private genObj: VReg;
-    private retVal: VReg;
 
     constructor(pandaGen: PandaGen, compiler: Compiler) {
-        this.pandaGen = pandaGen;
+        super(pandaGen);
+        this.funcObj = pandaGen.getTemp();
+        this.resumeVal = pandaGen.getTemp();
         this.compiler = compiler;
-        this.genObj = pandaGen.getTemp();
-        this.retVal = pandaGen.getTemp();
     }
 
-    prepare(node: ts.Node, recorder: Recorder) {
-        let pandaGen = this.pandaGen;
-        // @ts-ignore
-        let scope = <Scope>recorder.getScopeOfNode(node);
+    prepare(node: ts.Node) {
+        let pandaGen = this.pg;
 
         // backend handle funcobj, frontend set undefined
         pandaGen.createGeneratorObj(node, getVregisterCache(pandaGen, CacheList.FUNC));
-        pandaGen.storeAccumulator(node, this.genObj);
+        pandaGen.storeAccumulator(node, this.funcObj);
         pandaGen.loadAccumulator(node, getVregisterCache(pandaGen, CacheList.undefined));
-        pandaGen.suspendGenerator(node, this.genObj);
-        pandaGen.resumeGenerator(node, this.genObj);
-        pandaGen.storeAccumulator(node, this.retVal);
+        pandaGen.suspendGenerator(node, this.funcObj);
+        pandaGen.resumeGenerator(node, this.funcObj);
+        pandaGen.storeAccumulator(node, this.resumeVal);
 
         this.handleMode(node);
     }
 
-    yield(node: ts.Node, value: VReg) {
-        let pandaGen = this.pandaGen;
+    explicitReturn(node: ts.Node | NodeKind, empty ? : boolean) {
+        this.pg.return(node);
+    }
 
+    implicitReturn(node: ts.Node | NodeKind) {
+        CmdOptions.isWatchEvaluateExpressionMode() ? this.pg.return(NodeKind.Invalid) : this.pg.returnUndefined(node);
+    }
+
+    yield(node: ts.Node) {
+        let pandaGen = this.pg;
         let iterRslt = pandaGen.getTemp();
-        pandaGen.Createiterresultobj(node, value, getVregisterCache(pandaGen, CacheList.False));
-        pandaGen.suspendGenerator(node, this.genObj);
-        pandaGen.freeTemps(iterRslt);
+        let value = pandaGen.getTemp();
 
-        pandaGen.resumeGenerator(node, this.genObj);
-        pandaGen.storeAccumulator(node, this.retVal);
+        pandaGen.storeAccumulator(node, value);
+        pandaGen.Createiterresultobj(node, value, getVregisterCache(pandaGen, CacheList.False));
+        pandaGen.suspendGenerator(node, this.funcObj);
+        pandaGen.freeTemps(iterRslt, value);
+
+        pandaGen.resumeGenerator(node, this.funcObj);
+        pandaGen.storeAccumulator(node, this.resumeVal);
 
         this.handleMode(node);
     }
 
     yieldStar(expr: ts.YieldExpression) {
-        let pandaGen = this.pandaGen;
+        let pandaGen = this.pg;
         let method = pandaGen.getTemp();
         let object = pandaGen.getTemp();
 
@@ -171,17 +177,17 @@ export class GeneratorFunctionBuilder {
 
         // iteratorCompletion
         pandaGen.label(expr, iteratorCompletionLabel);
-        pandaGen.storeAccumulator(expr, this.retVal);
-        pandaGen.throwIfNotObject(expr, this.retVal);
+        pandaGen.storeAccumulator(expr, this.resumeVal);
+        pandaGen.throwIfNotObject(expr, this.resumeVal);
 
-        pandaGen.loadObjProperty(expr, this.retVal, "done");
+        pandaGen.loadObjProperty(expr, this.resumeVal, "done");
         pandaGen.jumpIfTrue(expr, exitLabel_value);
 
-        pandaGen.loadAccumulator(expr, this.retVal);
-        pandaGen.suspendGenerator(expr, this.genObj);
-        pandaGen.resumeGenerator(expr, this.genObj);
+        pandaGen.loadAccumulator(expr, this.resumeVal);
+        pandaGen.suspendGenerator(expr, this.funcObj);
+        pandaGen.resumeGenerator(expr, this.funcObj);
         pandaGen.storeAccumulator(expr, receivedValue);
-        pandaGen.getResumeMode(expr, this.genObj);
+        pandaGen.getResumeMode(expr, this.funcObj);
         pandaGen.storeAccumulator(expr, modeType);
         pandaGen.branch(expr, loopStartLabel);
 
@@ -191,7 +197,7 @@ export class GeneratorFunctionBuilder {
         let outputLabel = new Label();
 
         pandaGen.label(expr, exitLabel_value);
-        pandaGen.loadObjProperty(expr, this.retVal, "value");
+        pandaGen.loadObjProperty(expr, this.resumeVal, "value");
         let outputResult = pandaGen.getTemp();
         pandaGen.storeAccumulator(expr, outputResult);
         pandaGen.loadAccumulatorInt(expr, ResumeMode.Return);
@@ -212,11 +218,11 @@ export class GeneratorFunctionBuilder {
     }
 
     private handleMode(node: ts.Node) {
-        let pandaGen = this.pandaGen;
+        let pandaGen = this.pg;
 
         let modeType = pandaGen.getTemp();
 
-        pandaGen.getResumeMode(node, this.genObj);
+        pandaGen.getResumeMode(node, this.funcObj);
         pandaGen.storeAccumulator(node, modeType);
 
         // .return(value)
@@ -233,7 +239,7 @@ export class GeneratorFunctionBuilder {
             undefined
         );
 
-        pandaGen.loadAccumulator(node, this.retVal);
+        pandaGen.loadAccumulator(node, this.resumeVal);
         pandaGen.return(node);
 
         // .throw(value)
@@ -244,17 +250,17 @@ export class GeneratorFunctionBuilder {
         let notThrowLabel = new Label();
 
         pandaGen.condition(node, ts.SyntaxKind.EqualsEqualsToken, modeType, notThrowLabel);
-        pandaGen.loadAccumulator(node, this.retVal);
+        pandaGen.loadAccumulator(node, this.resumeVal);
         pandaGen.throw(node);
 
         pandaGen.freeTemps(modeType);
 
         // .next(value)
         pandaGen.label(node, notThrowLabel);
-        pandaGen.loadAccumulator(node, this.retVal);
+        pandaGen.loadAccumulator(node, this.resumeVal);
     }
 
     cleanUp() {
-        this.pandaGen.freeTemps(this.genObj, this.retVal);
+        this.pg.freeTemps(this.funcObj, this.resumeVal);
     }
 }

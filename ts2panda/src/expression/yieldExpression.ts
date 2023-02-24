@@ -32,16 +32,11 @@ function genYieldExpr(compiler: Compiler, expr: ts.YieldExpression) {
     let pandaGen = compiler.getPandaGen();
     let funcBuilder = <GeneratorFunctionBuilder | AsyncGeneratorFunctionBuilder> compiler.getFuncBuilder();
     if (expr.expression) {
-        let retValue = pandaGen.getTemp();
-
         compiler.compileExpression(expr.expression);
-        pandaGen.storeAccumulator(expr, retValue);
-
-        funcBuilder.yield(expr, retValue);
-
-        pandaGen.freeTemps(retValue);
+        funcBuilder.yield(expr);
     } else {
-        funcBuilder.yield(expr, getVregisterCache(pandaGen, CacheList.undefined));
+        pandaGen.loadAccumulator(expr, getVregisterCache(pandaGen, CacheList.undefined));
+        funcBuilder.yield(expr);
     }
 }
 

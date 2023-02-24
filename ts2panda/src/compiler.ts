@@ -59,7 +59,7 @@ import { getTemplateObject } from "./expression/templateExpression";
 import { compileYieldExpression } from "./expression/yieldExpression";
 import { AsyncFunctionBuilder } from "./function/asyncFunctionBuilder";
 import { AsyncGeneratorFunctionBuilder } from "./function/asyncGeneratorFunctionBuilder";
-import { FunctionBuilder, FunctionBuilderType } from "./function/functionBuilder";
+import { FunctionBuilder } from "./function/functionBuilder";
 import { GeneratorFunctionBuilder } from "./function/generatorFunctionBuilder";
 
 import {
@@ -133,7 +133,7 @@ export class Compiler {
     private pandaGen: PandaGen;
     private scope: Scope;
     private compilerDriver: CompilerDriver;
-    private funcBuilder: FunctionBuilderType;
+    private funcBuilder: FunctionBuilder;
     private recorder: Recorder;
     private envUnion: Array<VReg> = new Array<VReg>();
 
@@ -142,7 +142,7 @@ export class Compiler {
         this.pandaGen = pandaGen;
         this.compilerDriver = compilerDriver;
         this.recorder = recorder;
-        this.funcBuilder = new FunctionBuilder();
+        this.funcBuilder = new FunctionBuilder(pandaGen);
 
         // At the beginning of function compile, alloc pandagen.local for 4funcObj/newTarget/this/parameters, because of
         // maybe no one used this parameter, will get undefined for RA
@@ -230,7 +230,6 @@ export class Compiler {
     }
 
     private compileSourceFileOrBlock(body: ts.SourceFile | ts.Block) {
-        let pandaGen = this.pandaGen;
         let statements = body.statements;
         let unreachableFlag = false;
 
@@ -253,13 +252,7 @@ export class Compiler {
             return ;
         }
         // exit GlobalScopefunction or Function Block return
-        if (this.funcBuilder instanceof AsyncFunctionBuilder || this.funcBuilder instanceof AsyncGeneratorFunctionBuilder) {
-            this.funcBuilder.resolve(NodeKind.Invalid, getVregisterCache(pandaGen, CacheList.undefined));
-            pandaGen.return(NodeKind.Invalid);
-        } else {
-            CmdOptions.isWatchEvaluateExpressionMode() ?
-                pandaGen.return(NodeKind.Invalid) : pandaGen.returnUndefined(NodeKind.Invalid);
-        }
+        this.funcBuilder.implicitReturn(NodeKind.Invalid);
     }
 
     private compileFunctionBody(kind: number, body: ts.ConciseBody): void {
@@ -336,7 +329,7 @@ export class Compiler {
         }
     }
 
-    private createFuncBuilder(decl: ts.FunctionLikeDeclaration): FunctionBuilderType {
+    private createFuncBuilder(decl: ts.FunctionLikeDeclaration): FunctionBuilder {
         let pandaGen = this.pandaGen;
 
         if (decl.modifiers) {
@@ -356,7 +349,7 @@ export class Compiler {
             return new GeneratorFunctionBuilder(pandaGen, this);
         }
 
-        return new FunctionBuilder();
+        return new FunctionBuilder(pandaGen);
     }
 
     private compileFunctionLikeDeclaration(decl: ts.FunctionLikeDeclaration): void {
@@ -379,7 +372,7 @@ export class Compiler {
         }
 
         this.funcBuilder = this.createFuncBuilder(decl);
-        this.funcBuilder.prepare(decl, this.recorder);
+        this.funcBuilder.prepare(decl);
         if (decl.body) {
             this.compileFunctionBody(decl.kind, decl.body);
         }
@@ -1095,16 +1088,11 @@ export class Compiler {
         }
 
         if (expr.expression) {
-            let retValue = pandaGen.getTemp();
-
             this.compileExpression(expr.expression);
-            pandaGen.storeAccumulator(expr, retValue);
-
-            this.funcBuilder.await(expr, retValue);
-
-            pandaGen.freeTemps(retValue);
+            this.funcBuilder.await(expr);
         } else {
-            this.funcBuilder.await(expr, getVregisterCache(pandaGen, CacheList.undefined));
+            pandaGen.loadAccumulator(expr, getVregisterCache(pandaGen, CacheList.undefined));
+            this.funcBuilder.await(expr);
         }
     }
 
