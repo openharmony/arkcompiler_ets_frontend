@@ -194,6 +194,12 @@ bool PandaGen::FunctionHasFinalizer() const
     return func->IsAsync() || func->IsGenerator();
 }
 
+bool PandaGen::IsAsyncFunction() const
+{
+    const ir::ScriptFunction *func = rootNode_->AsScriptFunction();
+    return func->IsAsync() && !func->IsGenerator();
+}
+
 void PandaGen::FunctionEnter()
 {
     builder_->Prepare(rootNode_->AsScriptFunction());
@@ -1039,6 +1045,16 @@ void PandaGen::BranchIfUndefined(const ir::AstNode *node, Label *target)
     ra_.Emit<Jnez>(node, target);
 }
 
+void PandaGen::BranchIfStrictUndefined(const ir::AstNode *node, class Label *target)
+{
+    RegScope rs(this);
+    VReg tmp = AllocReg();
+    StoreAccumulator(node, tmp);
+    LoadConst(node, Constant::JS_UNDEFINED);
+    StrictEqual(node, tmp);
+    ra_.Emit<Jnez>(node, target);
+}
+
 void PandaGen::BranchIfNotUndefined(const ir::AstNode *node, Label *target)
 {
     RegScope rs(this);
@@ -1133,6 +1149,11 @@ void PandaGen::ImplicitReturn(const ir::AstNode *node)
 void PandaGen::DirectReturn(const ir::AstNode *node)
 {
     builder_->DirectReturn(node);
+}
+
+void PandaGen::ExplicitReturn(const ir::AstNode *node)
+{
+    builder_->ExplicitReturn(node);
 }
 
 void PandaGen::ValidateClassDirectReturn(const ir::AstNode *node)
@@ -1379,18 +1400,14 @@ void PandaGen::SuspendAsyncGenerator(const ir::AstNode *node, VReg asyncGenObj)
 
 void PandaGen::GeneratorYield(const ir::AstNode *node, VReg genObj)
 {
-    /*
-     *  TODO: set generator yield
-     *  ra_.Emit<EcmaSetgeneratorstate>(node, genObj, static_cast<int32_t>(GeneratorState::SUSPENDED_YIELD));
-     */
+    LoadAccumulator(node, genObj);
+    ra_.Emit<Setgeneratorstate>(node, static_cast<int32_t>(GeneratorState::SUSPENDED_YIELD));
 }
 
 void PandaGen::GeneratorComplete(const ir::AstNode *node, VReg genObj)
 {
-    /*
-     *  TODO: set generator complete
-     *  ra_.Emit<EcmaSetgeneratorstate>(node, genObj, static_cast<int32_t>(GeneratorState::COMPLETED));
-     */
+    LoadAccumulator(node, genObj);
+    ra_.Emit<Setgeneratorstate>(node, static_cast<int32_t>(GeneratorState::COMPLETED));
 }
 
 void PandaGen::ResumeGenerator(const ir::AstNode *node, VReg genObj)
@@ -1618,10 +1635,7 @@ void PandaGen::GetIterator(const ir::AstNode *node)
 
 void PandaGen::GetAsyncIterator(const ir::AstNode *node)
 {
-    /*
-     *  TODO: async iterator
-     *  ra_.Emit<EcmaGetasynciterator>(node);
-     */
+    ra_.Emit<Getasynciterator>(node, 0);
 }
 
 void PandaGen::CreateObjectWithExcludedKeys(const ir::AstNode *node, VReg obj, VReg argStart, size_t argCount)
@@ -1838,6 +1852,17 @@ void PandaGen::ThrowConstAssignment(const ir::AstNode *node, const util::StringV
     StoreAccumulator(node, nameReg);
     ra_.Emit<ThrowConstassignment>(node, nameReg);
     strings_.insert(name);
+}
+
+void PandaGen::ThrowParameterDfltInitSelf(const ir::AstNode *node, const util::StringView &name, VReg init)
+{
+    RegScope rs(this);
+    auto *notItSelf = AllocLabel();
+    Condition(node, lexer::TokenType::PUNCTUATOR_STRICT_EQUAL, init, notItSelf);
+    LoadConst(node, Constant::JS_HOLE);
+    ThrowUndefinedIfHole(node, name);
+
+    SetLabel(node, notItSelf);
 }
 
 void PandaGen::PopLexEnv(const ir::AstNode *node)

@@ -138,6 +138,7 @@ import {
     Div2,
     Eq,
     Exp,
+    Getasynciterator,
     Getresumemode,
     Gettemplateobject,
     Getunmappedargs,
@@ -156,6 +157,7 @@ import {
     Noteq,
     Or2,
     Resumegenerator,
+    Setgeneratorstate,
     Shl2,
     Shr2,
     Stricteq,
@@ -194,6 +196,7 @@ import {
 import * as jshelpers from "./jshelpers";
 import { CompilerDriver } from "./compilerDriver";
 import { getLiteralKey } from "./base/util";
+import { AsyncGeneratorState } from "./function/asyncGeneratorFunctionBuilder";
 
 export enum FunctionKind {
     NONE = 0, // represent method for now
@@ -511,6 +514,22 @@ export class PandaGen {
         this.add(node, storeAccumulator(vreg));
     }
 
+    generatorYield(node: ts.Node, genObj: VReg) {
+        this.add(
+            node,
+            loadAccumulator(genObj),
+            new Setgeneratorstate(new Imm(AsyncGeneratorState.SUSPENDYIELD))
+        )
+    }
+
+    generatorComplete(node: ts.Node | NodeKind, genObj: VReg) {
+        this.add(
+            node,
+            loadAccumulator(genObj),
+            new Setgeneratorstate(new Imm(AsyncGeneratorState.COMPLETED))
+        )
+    }
+
     loadAccFromArgs(node: ts.Node) {
         if ((<VariableScope>this.scope).getUseArgs()) {
             let v = this.scope!.findLocal(MandatoryArguments);
@@ -794,6 +813,16 @@ export class PandaGen {
 
     branch(node: ts.Node | NodeKind, target: Label) {
         this.add(node, jumpTarget(target));
+    }
+
+    branchIfNotUndefined(node: ts.Node, target: Label) {
+        // the compared value is in acc
+        this.condition(node, ts.SyntaxKind.EqualsEqualsToken, getVregisterCache(this, CacheList.undefined), target);
+    }
+
+    branchIfUndefined(node: ts.Node, target: Label) {
+        // the compared value is in acc
+        this.condition(node, ts.SyntaxKind.ExclamationEqualsToken, getVregisterCache(this, CacheList.undefined), target)
     }
 
     isTrue(node: ts.Node) {
@@ -1138,7 +1167,7 @@ export class PandaGen {
         this.add(node, new Createiterresultobj(value, done));
     }
 
-    Asyncgeneratorresolve(node: ts.Node | NodeKind, genObj: VReg, value: VReg, done: VReg) {
+    asyncgeneratorresolve(node: ts.Node | NodeKind, genObj: VReg, value: VReg, done: VReg) {
         this.add(node, new Asyncgeneratorresolve(genObj, value, done));
     }
 
@@ -1146,18 +1175,18 @@ export class PandaGen {
         this.add(node, new Asyncgeneratorreject(genObj));
     }
 
-    suspendGenerator(node: ts.Node, genObj: VReg) {
+    suspendGenerator(node: ts.Node | NodeKind, genObj: VReg) {
         this.add(node, new Suspendgenerator(genObj)); // promise obj is in acc
     }
 
-    resumeGenerator(node: ts.Node, genObj: VReg) {
+    resumeGenerator(node: ts.Node | NodeKind, genObj: VReg) {
         this.add(
             node,
             loadAccumulator(genObj),
             new Resumegenerator());
     }
 
-    getResumeMode(node: ts.Node, genObj: VReg) {
+    getResumeMode(node: ts.Node | NodeKind, genObj: VReg) {
         this.add(
             node,
             loadAccumulator(genObj),
@@ -1168,7 +1197,7 @@ export class PandaGen {
         this.add(node, new Asyncfunctionenter());
     }
 
-    asyncFunctionAwaitUncaught(node: ts.Node, asynFuncObj: VReg) {
+    asyncFunctionAwaitUncaught(node: ts.Node | NodeKind, asynFuncObj: VReg) {
         this.add(node, new Asyncfunctionawaituncaught(asynFuncObj)); // received value is in acc
     }
 
@@ -1313,6 +1342,13 @@ export class PandaGen {
         );
     }
 
+    getAsyncIterator(node: ts.Node) {
+        this.add(
+            node,
+            new Getasynciterator(new Imm(0))
+        )
+    }
+
     closeIterator(node: ts.Node, iter: VReg) {
         this.add(
             node,
@@ -1434,6 +1470,11 @@ export class PandaGen {
         this.add(
             node,
             loadAccumulatorBigInt(str));
+    }
+
+    storeConst(node: ts.Node | NodeKind, dst: VReg, value: CacheList) {
+        this.loadAccumulator(node, getVregisterCache(this, value));
+        this.storeAccumulator(node, dst);
     }
 
     private binaryRelation(node: ts.Node, op: BinaryOperator, lhs: VReg) {

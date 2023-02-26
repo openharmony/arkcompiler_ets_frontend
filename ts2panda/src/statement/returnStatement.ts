@@ -107,10 +107,12 @@ function compileReturnInDerivedCtor(stmt: ts.ReturnStatement, returnValue: VReg,
 function compileNormalReturn(stmt: ts.ReturnStatement, returnValue: VReg, compiler: Compiler) {
     let expr = stmt.expression;
     let pandaGen = compiler.getPandaGen();
+    let empty : boolean = false;
 
     if (expr) {
         compiler.compileExpression(expr);
     } else {
+        empty = true;
         pandaGen.loadAccumulator(stmt, getVregisterCache(pandaGen, CacheList.undefined));
     }
     pandaGen.storeAccumulator(stmt, returnValue);
@@ -122,16 +124,7 @@ function compileNormalReturn(stmt: ts.ReturnStatement, returnValue: VReg, compil
     );
 
     pandaGen.loadAccumulator(stmt, returnValue);
-    let funcBuilder = compiler.getFuncBuilder();
-    if (funcBuilder instanceof AsyncFunctionBuilder || funcBuilder instanceof AsyncGeneratorFunctionBuilder) {
-        let resovledVal = pandaGen.getTemp();
-
-        pandaGen.storeAccumulator(stmt, resovledVal);
-        funcBuilder.resolve(stmt, resovledVal);
-        pandaGen.freeTemps(resovledVal);
-    }
-
-    pandaGen.return(stmt);
+    compiler.getFuncBuilder().explicitReturn(stmt, empty);
 }
 
 function isReturnInDerivedCtor(stmt: ts.ReturnStatement) {

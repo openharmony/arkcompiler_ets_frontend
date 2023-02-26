@@ -323,8 +323,6 @@ describe("compileFunctionExpression", function () {
             new Sta(new VReg()),
             beginLabel,
             new Ldai(new Imm(1)),
-            new Sta(new VReg()),
-            new Lda(new VReg()),
             new Asyncfunctionawaituncaught(new VReg()),
             new Suspendgenerator(new VReg()),
             new Lda(new VReg()),
@@ -353,6 +351,9 @@ describe("compileFunctionExpression", function () {
 
         pandaGens.forEach((pg) => {
             if (pg.internalName == "UnitTest.a") {
+                pg.getInsns().forEach(ins => {
+                    console.log(ins.toString());
+                })
                 expect(checkInstructions(pg.getInsns(), expected_func), "check async func insns").to.be.true;
                 checkCount++;
             }

@@ -25,8 +25,9 @@ import {
     CacheList,
     getVregisterCache
 } from "../base/vregisterCache";
-import { IteratorRecord } from "./forOfStatement";
+import { IteratorRecord, IteratorType } from "./forOfStatement";
 import * as jshelpers from "../jshelpers";
+import { AsyncGeneratorFunctionBuilder } from "src/function/asyncGeneratorFunctionBuilder";
 
 // adjust the try...catch...finally into nested try(try...catch) finally
 export function transformTryCatchFinally(tryStmt: ts.TryStatement, recorder: Recorder): ts.TryStatement {
@@ -327,6 +328,9 @@ export class TryBuilderWithForOf extends TryBuilderBase {
         pandaGen.storeAccumulator(this.stmt, this.iterator.getNextMethod());
         pandaGen.condition(this.stmt, ts.SyntaxKind.ExclamationEqualsEqualsToken, getVregisterCache(pandaGen, CacheList.undefined), noReturn);
         pandaGen.call(this.stmt, [this.iterator.getNextMethod(), this.iterator.getObject()], true);
+        if (this.iterator.getType() == IteratorType.Async) {
+            (<AsyncGeneratorFunctionBuilder>(this.compiler.getFuncBuilder())).await(this.stmt);
+        }
 
         pandaGen.label(this.stmt, noReturn);
         pandaGen.loadAccumulator(this.stmt, exceptionVreg);
@@ -354,9 +358,10 @@ export class TryBuilderWithForOf extends TryBuilderBase {
 
     private compileIteratorNext(stmt: ts.ForOfStatement, pandagen: PandaGen, iterator: IteratorRecord, resultObj: VReg) {
         pandagen.call(stmt, [iterator.getNextMethod(), iterator.getObject()], true);
+        if (iterator.getType() == IteratorType.Async) {
+            (<AsyncGeneratorFunctionBuilder>(this.compiler.getFuncBuilder())).await(this.stmt);
+        }
         pandagen.storeAccumulator(stmt, resultObj);
-
-        // Support Async Await further
         pandagen.throwIfNotObject(stmt, resultObj);
     }
 }
