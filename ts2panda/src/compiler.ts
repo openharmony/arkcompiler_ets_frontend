@@ -457,6 +457,7 @@ export class Compiler {
             case ts.SyntaxKind.EndOfDeclarationMarker:
             case ts.SyntaxKind.ModuleDeclaration:
             case ts.SyntaxKind.TypeAliasDeclaration:
+            case ts.SyntaxKind.MergeDeclarationMarker:
                 break;
             default:
                 throw new Error("Statement " + this.getNodeName(stmt) + " is unimplemented");
