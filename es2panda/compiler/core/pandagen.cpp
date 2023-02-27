@@ -988,11 +988,6 @@ void PandaGen::Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
             ra_.Emit<Instanceof>(node, 0, lhs);
             break;
         }
-        case lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING:
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_NULLISH_EQUAL: {
-            Unimplemented();
-            break;
-        }
         default: {
             UNREACHABLE();
         }
