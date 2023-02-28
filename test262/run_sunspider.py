@@ -369,7 +369,10 @@ class ArkProgram():
 
         # pre-generate the dependencies' abc when ark_frontend is [es2panda]
         if (file_name in self.module_list or file_name in self.dynamicImport_list):
-            search_dir = os.path.dirname(js_file.replace(BASE_OUT_DIR, DATA_DIR))
+            if ("dynamic-import" in js_file):
+                search_dir = os.path.dirname(js_file)
+            else:
+                search_dir = os.path.dirname(js_file.replace(BASE_OUT_DIR, DATA_DIR))
             dependencies = collect_module_dependencies(js_file, search_dir, [])
             compile_as_module = self.check_compile_mode(js_file)
             if (self.ark_frontend == ARK_FRONTEND_LIST[1]):
