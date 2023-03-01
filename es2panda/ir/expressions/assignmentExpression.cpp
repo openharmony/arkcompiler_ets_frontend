@@ -114,8 +114,35 @@ void AssignmentExpression::Compile(compiler::PandaGen *pg) const
     compiler::LReference lref = compiler::LReference::CreateLRef(pg, left_, false);
 
     if (operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_AND_EQUAL ||
-        operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_OR_EQUAL) {
-        pg->Unimplemented();
+        operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_OR_EQUAL ||
+        operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_NULLISH_EQUAL) {
+        auto *skipRight = pg->AllocLabel();
+        auto *endLabel = pg->AllocLabel();
+        compiler::VReg lhsReg = pg->AllocReg();
+
+        lref.GetValue();
+        pg->StoreAccumulator(left_, lhsReg);
+        if (operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_AND_EQUAL) {
+            pg->BranchIfFalse(left_, skipRight);
+        } else if (operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_OR_EQUAL) {
+            pg->BranchIfTrue(left_, skipRight);
+        } else {
+            ASSERT(operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_NULLISH_EQUAL);
+            auto *nullish = pg->AllocLabel();
+            pg->BranchIfStrictNull(left_, nullish);
+            pg->LoadAccumulator(left_, lhsReg);
+            pg->BranchIfStrictNotUndefined(this, skipRight);
+            pg->SetLabel(left_, nullish);
+        }
+        // left = right
+        right_->Compile(pg);
+        lref.SetValue();
+        pg->Branch(this, endLabel);
+        // skip right part
+        pg->SetLabel(this, skipRight);
+        pg->LoadAccumulator(this, lhsReg);
+        pg->SetLabel(this, endLabel);
+        return;
     } else if (operator_ != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
         compiler::VReg lhsReg = pg->AllocReg();
 
