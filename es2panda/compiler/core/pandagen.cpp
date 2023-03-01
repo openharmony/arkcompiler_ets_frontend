@@ -1849,17 +1849,6 @@ void PandaGen::ThrowConstAssignment(const ir::AstNode *node, const util::StringV
     strings_.insert(name);
 }
 
-void PandaGen::ThrowParameterDfltInitSelf(const ir::AstNode *node, const util::StringView &name, VReg init)
-{
-    RegScope rs(this);
-    auto *notItSelf = AllocLabel();
-    Condition(node, lexer::TokenType::PUNCTUATOR_STRICT_EQUAL, init, notItSelf);
-    LoadConst(node, Constant::JS_HOLE);
-    ThrowUndefinedIfHole(node, name);
-
-    SetLabel(node, notItSelf);
-}
-
 void PandaGen::PopLexEnv(const ir::AstNode *node)
 {
     ra_.Emit<Poplexenv>(node);

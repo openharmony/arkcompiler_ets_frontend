@@ -162,5 +162,16 @@
             "language/statements/for-await-of/ticks-with-async-iter-resolved-promise-and-constructor-lookup-two.js",
             "language/statements/for-await-of/async-from-sync-iterator-continuation-abrupt-completion-get-constructor.js"
         ]
+    },
+    {
+        "reason" : "parameter with default initialization of itself",
+        "files" : [
+            "language/expressions/async-generator/dflt-params-ref-later.js",
+            "language/expressions/async-generator/named-dflt-params-ref-self.js",
+            "language/expressions/async-generator/named-dflt-params-ref-later.js",
+            "language/expressions/async-generator/dflt-params-ref-self.js",
+            "language/statements/async-generator/dflt-params-ref-later.js",
+            "language/statements/async-generator/dflt-params-ref-self.js"
+        ]
     }
 ]
