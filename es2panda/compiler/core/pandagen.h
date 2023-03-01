@@ -441,7 +441,6 @@ public:
     void ThrowIfSuperNotCorrectCall(const ir::AstNode *node, int64_t num);
     void ThrowUndefinedIfHole(const ir::AstNode *node, const util::StringView &name);
     void ThrowConstAssignment(const ir::AstNode *node, const util::StringView &name);
-    void ThrowParameterDfltInitSelf(const ir::AstNode *node, const util::StringView &name, VReg init);
 
     uint32_t TryDepth() const;
     CatchTable *CreateCatchTable();

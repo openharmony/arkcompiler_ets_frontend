@@ -103,11 +103,6 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
                 pg->BranchIfStrictNotUndefined(func, nonDefaultLabel);
 
                 param->AsAssignmentPattern()->Right()->Compile(pg);
-                VReg init = pg->AllocReg();
-                pg->StoreAccumulator(func, init);
-                ref.GetValue();
-                pg->ThrowParameterDfltInitSelf(func, paramVar->Name(), init);
-                pg->LoadAccumulator(func, init);
                 ref.SetValue();
                 pg->SetLabel(func, nonDefaultLabel);
             }
