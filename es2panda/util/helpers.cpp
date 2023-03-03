@@ -450,12 +450,14 @@ bool Helpers::OptimizeProgram(panda::pandasm::Program * prog, es2panda::Compiler
                                     panda::Logger::Component::COMPILER;
     panda::Logger::InitializeStdLogging(panda::Logger::Level::ERROR, COMPONENT_MASK);
 
-    if (!panda::pandasm::AsmEmitter::Emit(options->output, *prog, statp, mapsp, true)) {
+    if (!panda::pandasm::AsmEmitter::Emit(panda::os::file::File::GetExtendedFilePath(options->output), *prog, statp,
+        mapsp, true)) {
         return false;
     }
 
     panda::bytecodeopt::options.SetOptLevel(options->optLevel);
-    panda::bytecodeopt::OptimizeBytecode(prog, mapsp, options->output, true, true);
+    panda::bytecodeopt::OptimizeBytecode(prog, mapsp, panda::os::file::File::GetExtendedFilePath(options->output), true,
+        true);
 #endif
     return true;
 }
