@@ -80,7 +80,8 @@ int Run(int argc, const char **argv)
 
     std::string outputFileName = outputFilePath.append(panda::os::file::File::GetPathDelim()).
         append(options->outputFileName());
-    if (!panda::pandasm::AsmEmitter::EmitPrograms(outputFileName, programs, true)) {
+    if (!panda::pandasm::AsmEmitter::EmitPrograms(panda::os::file::File::GetExtendedFilePath(outputFileName), programs,
+        true)) {
         return 1;
     }
 
