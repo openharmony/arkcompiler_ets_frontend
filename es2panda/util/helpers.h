@@ -30,6 +30,7 @@ class ClassDefinition;
 class ClassProperty;
 class Identifier;
 class AstNode;
+class ObjectExpression;
 }  // namespace panda::es2panda::ir
 
 namespace panda::es2panda {
@@ -76,6 +77,8 @@ public:
     static util::StringView FunctionName(const ir::ScriptFunction *func);
     static std::tuple<util::StringView, bool> ParamName(ArenaAllocator *allocator, const ir::AstNode *param,
                                                         uint32_t index);
+    static bool IsChild(const ir::AstNode *parent, const ir::AstNode *child);
+    static bool IsObjectPropertyValue(const ir::ObjectExpression *object, const ir::AstNode *ident);
 
     static bool OptimizeProgram(panda::pandasm::Program *prog, es2panda::CompilerOptions *options);
     template <typename T>
