@@ -96,6 +96,70 @@ void Binder::ThrowUndeclaredExport(const lexer::SourcePosition &pos, const util:
     throw Error(ErrorType::SYNTAX, ss.str(), loc.line, loc.col);
 }
 
+void Binder::ThrowInvalidDstrTarget(const lexer::SourcePosition &pos, const util::StringView &name)
+{
+    lexer::LineIndex index(program_->SourceCode());
+    lexer::SourceLocation loc = index.GetLocation(pos);
+
+    std::stringstream ss;
+    ss << "Invalid destructuring assignment target: " << name;
+    throw Error(ErrorType::SYNTAX, ss.str(), loc.line, loc.col);
+}
+
+void Binder::CheckMandatoryArguments(const ir::Identifier *ident)
+{
+    const auto *iter = static_cast<const ir::AstNode *>(ident);
+    bool isPatternMember = false;
+    while (iter) {
+        if (iter->IsArrayExpression() || iter->IsArrayPattern()) {
+            isPatternMember = true;
+            break;
+        }
+
+        if (iter->IsObjectExpression() || iter->IsObjectPattern()) {
+            isPatternMember = util::Helpers::IsObjectPropertyValue(iter->AsObjectExpression(), ident);
+            break;
+        }
+        iter = iter->Parent();
+    }
+
+    if (!isPatternMember) {
+        return;
+    }
+
+    auto *patternNode = iter;
+
+    while (iter) {
+        if (iter->IsAssignmentExpression() || iter->IsVariableDeclarator() || iter->IsForInStatement() ||
+            iter->IsForOfStatement()) {
+            break;
+        }
+
+        iter = iter->Parent();
+    }
+
+    if (!iter) {
+        return;
+    }
+
+    const ir::AstNode *potentialParent = iter;
+
+    if (iter->IsAssignmentExpression()) {
+        potentialParent = iter->AsAssignmentExpression()->Left();
+    } else if (iter->IsVariableDeclarator()) {
+        potentialParent = iter->AsVariableDeclarator()->Id();
+    } else {
+        potentialParent = iter->IsForInStatement() ? iter->AsForInStatement()->Left() :
+                                                     iter->AsForOfStatement()->Left();
+    }
+
+    if (!util::Helpers::IsChild(potentialParent, patternNode)) {
+        return;
+    }
+
+    ThrowInvalidDstrTarget(ident->Start(), ident->Name());
+}
+
 void Binder::AssignIndexToModuleVariable()
 {
     ASSERT(program_->ModuleRecord());
@@ -262,6 +326,9 @@ void Binder::BuildVarDeclaratorId(const ir::AstNode *parent, ir::AstNode *childN
         case ir::AstNodeType::IDENTIFIER: {
             auto *ident = childNode->AsIdentifier();
             const auto &name = ident->Name();
+            if (name.Is(FUNCTION_ARGUMENTS)) {
+                CheckMandatoryArguments(ident);
+            }
 
             if (util::Helpers::IsGlobalIdentifier(name)) {
                 break;
@@ -455,6 +522,10 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
     switch (childNode->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
             auto *ident = childNode->AsIdentifier();
+
+            if (ident->Name().Is(FUNCTION_ARGUMENTS)) {
+                CheckMandatoryArguments(ident);
+            }
 
             if (ident->IsReference()) {
                 LookupIdentReference(ident);
