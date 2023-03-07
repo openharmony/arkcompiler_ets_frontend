@@ -13,6 +13,7 @@
 
 import("//arkcompiler/ets_frontend/ets_frontend_config.gni")
 ts2abc_root = "//arkcompiler/ets_frontend/ts2panda"
+merge_abc_root = "//arkcompiler/ets_frontend/merge_abc"
 
 declare_args() {
   nodejs_dir = ""
@@ -21,6 +22,9 @@ declare_args() {
 
   ts2abc_build_deps = ""
   ts2abc_build_path = ""
+
+  merge_abc_deps = ""
+  merge_abc_path = ""
 }
 
 node_modules = "//prebuilts/build-tools/common/ts2abc/node_modules"
@@ -50,6 +54,10 @@ if (host_toolchain == toolchain_mac) {
                      "root_out_dir") +
       "/obj/arkcompiler/ets_frontend/ts2panda/build"
   node_path = "${nodejs_dir}/node-v12.18.4-linux-x64/bin/"
+  merge_abc_deps = [ "$merge_abc_root:merge_abc(${toolchain_linux})" ]
+  merge_abc_path =
+      get_label_info("$merge_abc_root:merge_abc($toolchain_linux)",
+                     "root_out_dir") + "/arkcompiler/ets_frontend/merge_abc"
 }
 
 # Generate js plugin.
@@ -140,6 +148,18 @@ template("ts2abc_gen_abc") {
 
     if (defined(invoker.extra_args)) {
       args += invoker.extra_args
+    }
+
+    if (defined(invoker.run_multi_file_tests) && invoker.run_multi_file_tests) {
+      assert(defined(invoker.src_ts), "src_ts is required!")
+      deps += merge_abc_deps
+      args += [
+        "--merge-abc-path",
+        rebase_path("${merge_abc_path}"),
+        "--src-ts",
+        invoker.src_ts,
+        "--run-multi-file-tests",
+      ]
     }
 
     if (defined(invoker.in_puts)) {

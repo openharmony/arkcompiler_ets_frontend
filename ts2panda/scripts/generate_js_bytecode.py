@@ -49,7 +49,15 @@ def parse_args():
     parser.add_argument("--functionSourceCode", action='store_true',
                         help='compile abc with function sourcecode info')
     parser.add_argument("--merge-abc", action='store_true',
-                        help='Compile as merge abc')
+                        help='compile as merge abc')
+    parser.add_argument("--output-proto", action='store_true',
+                        help='output protoBin file')
+    parser.add_argument("--run-multi-file-tests", action='store_true',
+                        help='run multi-file tests')
+    parser.add_argument("--merge-abc-path",
+                        help='path to merge_abc binary tool')
+    parser.add_argument("--src-ts",
+                        help='ts source files')
     arguments = parser.parse_args()
     return arguments
 
@@ -68,6 +76,27 @@ def run_command(cmd, execution_path):
     proc.wait()
 
 
+def copy_ts_files(input_arguments, path):
+    (output_path, name) = os.path.split(input_arguments.src_js)
+    remove_cmd = ['rm', '-rf', output_path]
+    run_command(remove_cmd, path)
+
+    copy_cmd = ['cp', '-r', input_arguments.src_ts, output_path]
+    run_command(copy_cmd, path)
+
+
+def merge_abc(input_arguments, path):
+    (output_path, abc_file) = os.path.split(input_arguments.dst_file)
+    merge_abc_cmd = [input_arguments.merge_abc_path,
+                     "--input",
+                     output_path,
+                     "--output",
+                     abc_file,
+                     "--outputFilePath",
+                     output_path]
+    run_command(merge_abc_cmd, path)
+
+
 def gen_abc_info(input_arguments):
 
     set_env(input_arguments)
@@ -82,6 +111,9 @@ def gen_abc_info(input_arguments):
         else:
             cmd = ['npm', 'install']
             run_command(cmd, path)
+
+    if input_arguments.run_multi_file_tests:
+        copy_ts_files(input_arguments, path)
 
     cmd = [os.path.join(input_arguments.node, "node"),
            '--expose-gc',
@@ -104,8 +136,12 @@ def gen_abc_info(input_arguments):
         cmd.insert(8, '--function-sourcecode')
     if input_arguments.merge_abc:
         cmd.insert(9, '--merge-abc')
+    if input_arguments.output_proto:
+        cmd.insert(10, '--output-proto')
     run_command(cmd, path)
 
+    if input_arguments.run_multi_file_tests:
+        merge_abc(input_arguments, path)
 
 if __name__ == '__main__':
     gen_abc_info(parse_args())
