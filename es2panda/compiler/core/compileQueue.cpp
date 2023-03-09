@@ -24,46 +24,13 @@
 #include <es2panda.h>
 #include <mem/arena_allocator.h>
 #include <mem/pool_manager.h>
+#include <protobufSnapshotGenerator.h>
 #include <util/dumper.h>
 #include <util/helpers.h>
-
-#include <fstream>
-#include <iostream>
-#include <dirent.h>
-
-#include <chrono>
-
-#include <assembly-literals.h>
-#include <es2panda.h>
-#include <mem/arena_allocator.h>
-#include <mem/pool_manager.h>
-#include <util/dumper.h>
-
-#include <fstream>
-#include <iostream>
-#include <dirent.h>
-
-#include <chrono>
 
 namespace panda::es2panda::compiler {
 
 std::mutex CompileFileJob::global_m_;
-
-void CompileJob::DependsOn(CompileJob *job)
-{
-    job->dependant_ = this;
-    dependencies_++;
-}
-
-void CompileJob::Signal()
-{
-    {
-        std::lock_guard<std::mutex> lock(m_);
-        dependencies_--;
-    }
-
-    cond_.notify_one();
-}
 
 void CompileFunctionJob::Run()
 {
@@ -102,14 +69,30 @@ void CompileModuleRecordJob::Run()
 
 void CompileFileJob::Run()
 {
-    es2panda::Compiler compiler(options_->extension, options_->functionThreadCount);
-
-    auto *prog = compiler.CompileFile(*options_, src_, symbolTable_);
-
-    if (prog == nullptr) {
+    std::stringstream ss;
+    if (!util::Helpers::ReadFileToBuffer(src_->fileName, ss)) {
         return;
     }
+    std::string buffer = ss.str();
+    src_->source = buffer;
 
+    auto cacheFileIter = options_->cacheFiles.find(src_->fileName);
+    if (cacheFileIter != options_->cacheFiles.end()) {
+        src_->hash = GetHash32String(reinterpret_cast<const uint8_t *>(buffer.c_str()));
+
+        ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+        auto *cacheProgramInfo = proto::ProtobufSnapshotGenerator::GetCacheContext(cacheFileIter->second, &allocator);
+
+        if (cacheProgramInfo != nullptr && cacheProgramInfo->hashCode == src_->hash) {
+            std::unique_lock<std::mutex> lock(global_m_);
+            auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(cacheProgramInfo->program));
+            progsInfo_.insert({src_->fileName, cache});
+            return;
+        }
+    }
+
+    es2panda::Compiler compiler(options_->extension, options_->functionThreadCount);
+    auto *prog = compiler.CompileFile(*options_, src_, symbolTable_);
     if (prog == nullptr) {
         return;
     }
@@ -120,91 +103,8 @@ void CompileFileJob::Run()
 
     {
         std::unique_lock<std::mutex> lock(global_m_);
-        auto *cache = allocator_->New<util::ProgramCache>(src_->hash, prog);
+        auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(*prog), true);
         progsInfo_.insert({src_->fileName, cache});
-    }
-}
-
-CompileQueue::CompileQueue(size_t threadCount)
-{
-    threads_.reserve(threadCount);
-
-    for (size_t i = 0; i < threadCount; i++) {
-        threads_.push_back(os::thread::ThreadStart(Worker, this));
-    }
-}
-
-CompileQueue::~CompileQueue()
-{
-    void *retval = nullptr;
-
-    std::unique_lock<std::mutex> lock(m_);
-    terminate_ = true;
-    lock.unlock();
-    jobsAvailable_.notify_all();
-
-    for (const auto handle_id : threads_) {
-        os::thread::ThreadJoin(handle_id, &retval);
-    }
-}
-
-void CompileQueue::Worker(CompileQueue *queue)
-{
-    while (true) {
-        std::unique_lock<std::mutex> lock(queue->m_);
-        queue->jobsAvailable_.wait(lock, [queue]() { return queue->terminate_ || queue->jobsCount_ != 0; });
-
-        if (queue->terminate_) {
-            return;
-        }
-
-        lock.unlock();
-
-        queue->Consume();
-        queue->jobsFinished_.notify_one();
-    }
-}
-
-void CompileQueue::Consume()
-{
-    std::unique_lock<std::mutex> lock(m_);
-    activeWorkers_++;
-
-    while (jobsCount_ > 0) {
-        --jobsCount_;
-        auto &job = *(jobs_[jobsCount_]);
-
-        lock.unlock();
-
-        try {
-            job.Run();
-        } catch (const Error &e) {
-            lock.lock();
-            errors_.push_back(e);
-            lock.unlock();
-        }
-
-        lock.lock();
-    }
-
-    activeWorkers_--;
-}
-
-void CompileQueue::Wait()
-{
-    std::unique_lock<std::mutex> lock(m_);
-    jobsFinished_.wait(lock, [this]() { return activeWorkers_ == 0 && jobsCount_ == 0; });
-    for (auto it = jobs_.begin(); it != jobs_.end(); it++) {
-        if (*it != nullptr) {
-            delete *it;
-            *it =nullptr;
-        }
-    }
-    jobs_.clear();
-
-    if (!errors_.empty()) {
-        // NOLINTNEXTLINE
-        throw errors_.front();
     }
 }
 

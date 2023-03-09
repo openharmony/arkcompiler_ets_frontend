@@ -81,6 +81,7 @@ public:
     static bool OptimizeProgram(panda::pandasm::Program *prog, es2panda::CompilerOptions *options);
     template <typename T>
     static T BaseName(T const &path, T const &delims = std::string(panda::os::file::File::GetPathDelim()));
+    static bool ReadFileToBuffer(const std::string &file, std::stringstream &ss);
 
     static const uint32_t INVALID_INDEX = 4294967295L;
     static const uint32_t MAX_INT32 = 2147483647;

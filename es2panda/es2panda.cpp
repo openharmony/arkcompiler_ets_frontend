@@ -25,10 +25,7 @@
 #include <typescript/checker.h>
 #include <util/helpers.h>
 
-#include <libpandabase/utils/hash.h>
-
 #include <iostream>
-#include <thread>
 
 namespace panda::es2panda {
 // Compiler
@@ -141,59 +138,8 @@ void Compiler::DumpAsm(const panda::pandasm::Program *prog)
     compiler::CompilerImpl::DumpAsm(prog);
 }
 
-static bool ReadFileToBuffer(const std::string &file, std::stringstream &ss)
-{
-    std::ifstream inputStream(panda::os::file::File::GetExtendedFilePath(file), std::ios::binary);
-    if (inputStream.fail()) {
-        std::cerr << "Failed to read file to buffer: " << file << std::endl;
-        return false;
-    }
-    ss << inputStream.rdbuf();
-    return true;
-}
-
-void Compiler::SelectCompileFile(CompilerOptions &options,
-    std::map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
-    std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
-    panda::ArenaAllocator *allocator)
-{
-    if (cacheProgs == nullptr) {
-        return;
-    }
-
-    auto fullList = options.sourceFiles;
-    std::vector<SourceFile> inputList;
-
-    for (auto &input: fullList) {
-        if (input.fileName.empty()) {
-            // base64 source
-            inputList.push_back(input);
-            continue;
-        }
-
-        std::stringstream ss;
-        if (!ReadFileToBuffer(input.fileName, ss)) {
-            continue;
-        }
-
-        uint32_t hash = GetHash32String(reinterpret_cast<const uint8_t *>(ss.str().c_str()));
-
-        auto it = cacheProgs->find(input.fileName);
-        if (it != cacheProgs->end() && hash == it->second->hashCode) {
-            auto *cache = allocator->New<util::ProgramCache>(it->second->hashCode, it->second->program);
-            progsInfo.insert({input.fileName, cache});
-        } else {
-            input.hash = hash;
-            inputList.push_back(input);
-        }
-    }
-    options.sourceFiles = inputList;
-}
-
 int Compiler::CompileFiles(CompilerOptions &options,
-    std::map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
-    std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
-    panda::ArenaAllocator *allocator)
+    std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo, panda::ArenaAllocator *allocator)
 {
     util::SymbolTable *symbolTable = nullptr;
     if (!options.hotfixOptions.symbolTable.empty() || !options.hotfixOptions.dumpSymbolTable.empty()) {
@@ -203,8 +149,6 @@ int Compiler::CompileFiles(CompilerOptions &options,
             return 1;
         }
     }
-
-    SelectCompileFile(options, cacheProgs, progsInfo, allocator);
 
     bool failed = false;
     auto queue = new compiler::CompileFileQueue(options.fileThreadCount, &options, progsInfo, symbolTable, allocator);
@@ -231,18 +175,8 @@ int Compiler::CompileFiles(CompilerOptions &options,
 panda::pandasm::Program *Compiler::CompileFile(const CompilerOptions &options, SourceFile *src,
                                                util::SymbolTable *symbolTable)
 {
-    std::string buffer;
     if (src->source.empty()) {
-        std::stringstream ss;
-        if (!ReadFileToBuffer(src->fileName, ss)) {
-            return nullptr;
-        }
-        buffer = ss.str();
-        src->source = buffer;
-
-        if (src->hash == 0) {
-            src->hash = GetHash32String(reinterpret_cast<const uint8_t *>(buffer.c_str()));
-        }
+        return nullptr;
     }
 
     auto *program = Compile(*src, options, symbolTable);
