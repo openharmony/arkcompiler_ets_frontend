@@ -17,7 +17,8 @@
 #define MERGE_ABC_POROBUFSNAPSHOTGENERATOR_H
 
 #include "assemblyProgramProto.h"
-#include "compositeProgramProto.h"
+#include "compositeProgram.pb.h"
+#include "es2panda.h"
 
 namespace panda::proto {
 class ProtobufSnapshotGenerator {
@@ -25,10 +26,10 @@ public:
     static void GenerateSnapshot(const panda::pandasm::Program &program, const std::string &outputName);
     static void GenerateProgram(const std::string &inputName, panda::pandasm::Program &prog,
                                 panda::ArenaAllocator *allocator);
-    static std::map<std::string, panda::es2panda::util::ProgramCache*> *GetCacheContext(
-        const std::string &cacheFilePath, bool isDebug, panda::ArenaAllocator *allocator);
-    static void UpdateCacheFile(const std::map<std::string, panda::es2panda::util::ProgramCache*> &compositeProgramMap,
-                                const bool &isDebug, const std::string &cacheFilePath);
+    static panda::es2panda::util::ProgramCache *GetCacheContext(const std::string &cacheFilePath,
+        panda::ArenaAllocator *allocator);
+    static void UpdateCacheFile(const panda::es2panda::util::ProgramCache *programCache,
+        const std::string &cacheFilePath);
 };
 } // panda::proto
 #endif

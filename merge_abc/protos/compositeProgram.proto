@@ -19,12 +19,6 @@ package protoPanda;
 import "assemblyProgram.proto";
 
 message ProgramCache {
-    bytes fileName = 1;
-    uint32 hashCode = 2;
-    Program program = 3;
-}
-
-message CompositeProgram {
-    repeated ProgramCache ProgramCache = 1;
-    bool isDebug = 2;
+    uint32 hashCode = 1;
+    Program program = 2;
 }

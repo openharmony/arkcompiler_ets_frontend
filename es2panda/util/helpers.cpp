@@ -43,6 +43,8 @@
 #include <assembly-emitter.h>
 #endif
 
+#include <fstream>
+
 namespace panda::es2panda::util {
 
 // Helpers
@@ -449,6 +451,17 @@ bool Helpers::OptimizeProgram(panda::pandasm::Program * prog, es2panda::Compiler
     panda::bytecodeopt::OptimizeBytecode(prog, mapsp, panda::os::file::File::GetExtendedFilePath(options->output), true,
         true);
 #endif
+    return true;
+}
+
+bool Helpers::ReadFileToBuffer(const std::string &file, std::stringstream &ss)
+{
+    std::ifstream inputStream(panda::os::file::File::GetExtendedFilePath(file), std::ios::binary);
+    if (inputStream.fail()) {
+        std::cerr << "Failed to read file to buffer: " << file << std::endl;
+        return false;
+    }
+    ss << inputStream.rdbuf();
     return true;
 }
 
