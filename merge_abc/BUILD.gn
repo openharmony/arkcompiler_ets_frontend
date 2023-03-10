@@ -135,7 +135,9 @@ ohos_source_set("assembly_proto_static") {
 
   deps = [
     ":arkcompiler_generate_proto",
+    "$ark_root/assembler:libarkassembler_frontend_static",
     "$ark_root/libpandabase:libarkbase_frontend_static",
+    "$ark_root/libpandafile:libarkfile_frontend_static",
     "$ark_third_party_root/protobuf:protobuf_lite_static",
     "$ark_third_party_root/protobuf:protobuf_static",
   ]
@@ -171,9 +173,6 @@ ohos_executable("merge_abc") {
 
   deps = [
     ":panda_assembly_proto_static",
-    "$ark_root/assembler:libarkassembler_frontend_static",
-    "$ark_root/libpandabase:libarkbase_frontend_static",
-    "$ark_root/libpandafile:libarkfile_frontend_static",
     "$ark_root/libziparchive:libarkziparchive_frontend_static",
     "$ark_third_party_root/icu/icu4c:static_icuuc",
   ]
