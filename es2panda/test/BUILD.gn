@@ -82,3 +82,16 @@ action("es2abc_compiler_tests") {
 
   outputs = [ "${es2abc_build_path}/keep_es2abc_compiler_tests_run" ]
 }
+
+action("es2abc_hotfix_tests") {
+  script = "${es2abc_root}/test/runner.py"
+
+  deps = es2abc_build_deps
+
+  args = [
+    "--hotfix",
+    rebase_path("${es2abc_build_path}"),
+  ]
+
+  outputs = [ "${es2abc_build_path}/keep_es2abc_hotfix_tests_run" ]
+}
