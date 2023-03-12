@@ -121,6 +121,10 @@ void TypeExtractorEmitter::GenFunctionTypeInfo(panda::pandasm::Program *prog) co
         DCOUT << "[LOG]" << func_->name << ": -2 | " << pg_->TypedFunc().second << std::endl;
     }
 
+    if (typedInsns.empty()) {
+        return;
+    }
+
     std::string literalId = std::string(recorder->GetRecordName()) + "_" +
         std::to_string(literalId_--);
     auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(typedInsns));

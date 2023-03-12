@@ -41,7 +41,7 @@ public:
     TypeRecorder *Recorder() const;
 
     const ir::Identifier *GetIdentifierFromExpression(const ir::Expression *expression);
-    int64_t GetTypeIndexFromAnnotation(const ir::Expression *typeAnnotation);
+    int64_t GetTypeIndexFromAnnotation(const ir::Expression *typeAnnotation, bool isNewInstance = true);
     int64_t GetTypeIndexFromIdentifier(const ir::Identifier *identifier);
     int64_t GetTypeIndexFromInitializer(const ir::Expression *initializer);
     int64_t GetTypeIndexFromClassInst(int64_t typeIndex);
@@ -79,7 +79,7 @@ private:
     int64_t GetTypeIndexFromIdentifierNode(const ir::AstNode *node, bool isNewInstance);
     int64_t GetTypeIndexFromClassExpression(const ir::AstNode *node, bool isNewInstance);
     int64_t GetTypeIndexFromClassDefinition(const ir::AstNode *node, bool isNewInstance);
-    int64_t GetTypeIndexFromInterfaceNode(const ir::AstNode *node, bool isNewInstance);
+    int64_t GetTypeIndexFromInterfaceNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
     int64_t GetTypeIndexFromFunctionNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
     int64_t GetTypeIndexFromImportNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
     int64_t GetTypeIndexFromTypeAliasNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
@@ -95,7 +95,7 @@ private:
     void HandleTypeAliasDeclaration(const ir::AstNode *node);
 
     // Helpers
-    int64_t GetTypeIndexFromTypeReference(const ir::TSTypeReference *typeReference);
+    int64_t GetTypeIndexFromTypeReference(const ir::TSTypeReference *typeReference, bool isNewInstance);
     int64_t GetTypeIndexFromTSLiteralType(const ir::TSLiteralType *tsLiteralType);
 
     // Builtin and Generic Helpers

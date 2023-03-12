@@ -380,7 +380,7 @@ int64_t TypeExtractor::GetTypeIndexFromClassDefinition(const ir::AstNode *node, 
     return typeIndex;
 }
 
-int64_t TypeExtractor::GetTypeIndexFromInterfaceNode(const ir::AstNode *node, bool isNewInstance)
+int64_t TypeExtractor::GetTypeIndexFromInterfaceNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance)
 {
     int64_t typeIndex = PrimitiveType::ANY;
     auto fn = [&node, &typeIndex, this](const util::StringView &name) {
@@ -394,10 +394,6 @@ int64_t TypeExtractor::GetTypeIndexFromInterfaceNode(const ir::AstNode *node, bo
         recorder_->SetIdentifierTypeIndex(identifier, typeIndex);
     } else {
         fn(std::move(DEFAULT_NAME));
-    }
-
-    if (isNewInstance) {
-        typeIndex = GetTypeIndexFromClassInst(typeIndex);
     }
 
     TLOG(node->Type(), typeIndex);
@@ -511,7 +507,7 @@ int64_t TypeExtractor::GetTypeIndexFromTSQualifiedNode(const ir::AstNode *node, 
     return typeIndex;
 }
 
-int64_t TypeExtractor::GetTypeIndexFromAnnotation(const ir::Expression *typeAnnotation)
+int64_t TypeExtractor::GetTypeIndexFromAnnotation(const ir::Expression *typeAnnotation, bool isNewInstance)
 {
     if (typeAnnotation == nullptr) {
         return PrimitiveType::ANY;
@@ -588,7 +584,7 @@ int64_t TypeExtractor::GetTypeIndexFromAnnotation(const ir::Expression *typeAnno
         case ir::AstNodeType::TS_TYPE_QUERY:
             return PrimitiveType::ANY;
         case ir::AstNodeType::TS_TYPE_REFERENCE: {  // let a : A
-            return GetTypeIndexFromTypeReference(typeAnnotation->AsTSTypeReference());
+            return GetTypeIndexFromTypeReference(typeAnnotation->AsTSTypeReference(), isNewInstance);
         }
         default:
             UNREACHABLE();
@@ -754,7 +750,7 @@ int64_t TypeExtractor::GetTypeIndexFromClassInst(int64_t typeIndex)
     return typeIndexTmp;
 }
 
-int64_t TypeExtractor::GetTypeIndexFromTypeReference(const ir::TSTypeReference *typeReference)
+int64_t TypeExtractor::GetTypeIndexFromTypeReference(const ir::TSTypeReference *typeReference, bool isNewInstance)
 {
     auto typeName = typeReference->TypeName();
     ASSERT(typeName != nullptr);
@@ -785,7 +781,7 @@ int64_t TypeExtractor::GetTypeIndexFromTypeReference(const ir::TSTypeReference *
             typeIndex = GetTypeIndexFromGenericInst(GetTypeIndexFromDeclNode(declNode, false),
                 typeReference->TypeParams());
         } else {
-            typeIndex = GetTypeIndexFromDeclNode(declNode, true);
+            typeIndex = GetTypeIndexFromDeclNode(declNode, isNewInstance);
         }
         recorder_->SetIdentifierTypeIndex(identifier, recorder_->GetClassType(typeIndex));
         return typeIndex;
