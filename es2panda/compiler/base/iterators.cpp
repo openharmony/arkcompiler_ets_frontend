@@ -24,7 +24,8 @@ namespace panda::es2panda::compiler {
 // Iterator
 
 Iterator::Iterator(PandaGen *pg, const ir::AstNode *node, IteratorType type)
-    : pg_(pg), node_(node), method_(pg->AllocReg()), iterator_(pg->AllocReg()), nextResult_(pg->AllocReg()), type_(type)
+    : pg_(pg), node_(node), closed_(pg->AllocReg()), method_(pg->AllocReg()), iterator_(pg->AllocReg()),
+      nextResult_(pg->AllocReg()), type_(type)
 {
     if (type_ == IteratorType::ASYNC) {
         pg_->GetAsyncIterator(node);
@@ -35,6 +36,7 @@ Iterator::Iterator(PandaGen *pg, const ir::AstNode *node, IteratorType type)
     pg_->StoreAccumulator(node, iterator_);
     pg_->LoadObjByName(node_, iterator_, "next");
     pg_->StoreAccumulator(node_, method_);
+    pg_->StoreConst(node_, closed_, Constant::JS_FALSE);
 }
 
 void Iterator::GetMethod(util::StringView name) const
@@ -84,6 +86,11 @@ void Iterator::Close(bool abruptCompletion) const
     Label *noReturn = pg_->AllocLabel();
 
     pg_->StoreAccumulator(node_, completion);
+    pg_->LoadAccumulator(node_, closed_);
+    pg_->BranchIfTrue(node_, noReturn);
+
+    pg_->StoreConst(node_, closed_, Constant::JS_TRUE);
+
     pg_->StoreConst(node_, innerException, Constant::JS_HOLE);
 
     TryContext tryCtx(pg_);

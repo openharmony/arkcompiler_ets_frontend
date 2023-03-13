@@ -132,6 +132,50 @@ void IteratorContext::AbortContext([[maybe_unused]] ControlFlowChange cfc,
     iterator_.Close(false);
 }
 
+DestructuringIteratorContext::DestructuringIteratorContext(PandaGen *pg, const DestructuringIterator &iterator)
+    : DynamicContext(pg, {}), iterator_(iterator), catchTable_(pg->CreateCatchTable())
+{
+    const auto &labelSet = catchTable_->LabelSet();
+    pg_->SetLabel(iterator_.Node(), labelSet.TryBegin());
+}
+
+DestructuringIteratorContext::~DestructuringIteratorContext()
+{
+    const auto &labelSet = catchTable_->LabelSet();
+    const auto *node = iterator_.Node();
+
+    pg_->SetLabel(node, labelSet.TryEnd());
+
+    // Normal completion
+    pg_->LoadAccumulator(node, iterator_.Done());
+    pg_->BranchIfTrue(node, labelSet.CatchEnd());
+    iterator_.Close(false);
+
+    pg_->Branch(node, labelSet.CatchEnd());
+
+    Label *end = pg_->AllocLabel();
+    pg_->SetLabel(node, labelSet.CatchBegin());
+    pg_->StoreAccumulator(node, iterator_.Result());
+    pg_->LoadAccumulator(node, iterator_.Done());
+
+    pg_->BranchIfTrue(node, end);
+    pg_->LoadAccumulator(node, iterator_.Result());
+    iterator_.Close(true);
+    pg_->SetLabel(node, end);
+    pg_->LoadAccumulator(node, iterator_.Result());
+    pg_->EmitThrow(node);
+    pg_->SetLabel(node, labelSet.CatchEnd());
+}
+
+void DestructuringIteratorContext::AbortContext(ControlFlowChange cfc, const util::StringView &targetLabel)
+{
+    if (cfc == ControlFlowChange::CONTINUE && target_.ContinueLabel() == targetLabel) {
+        return;
+    }
+
+    iterator_.Close(false);
+}
+
 void TryContext::InitFinalizer()
 {
     ASSERT(tryStmt_);

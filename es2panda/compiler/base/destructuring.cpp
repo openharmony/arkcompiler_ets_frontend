@@ -78,9 +78,7 @@ static void GenArray(PandaGen *pg, const ir::ArrayExpression *array)
         return;
     }
 
-    TryContext tryCtx(pg);
-    const auto &labelSet = tryCtx.LabelSet();
-    pg->SetLabel(array, labelSet.TryBegin());
+    DestructuringIteratorContext dstrCtx(pg, iterator);
 
     for (const auto *element : array->Elements()) {
         RegScope ers(pg);
@@ -123,28 +121,6 @@ static void GenArray(PandaGen *pg, const ir::ArrayExpression *array)
 
         lref.SetValue();
     }
-
-    pg->SetLabel(array, labelSet.TryEnd());
-
-    // Normal completion
-    pg->LoadAccumulator(array, iterator.Done());
-    pg->BranchIfTrue(array, labelSet.CatchEnd());
-    iterator.Close(false);
-
-    pg->Branch(array, labelSet.CatchEnd());
-
-    Label *end = pg->AllocLabel();
-    pg->SetLabel(array, labelSet.CatchBegin());
-    pg->StoreAccumulator(array, iterator.Result());
-    pg->LoadAccumulator(array, iterator.Done());
-
-    pg->BranchIfTrue(array, end);
-    pg->LoadAccumulator(array, iterator.Result());
-    iterator.Close(true);
-    pg->SetLabel(array, end);
-    pg->LoadAccumulator(array, iterator.Result());
-    pg->EmitThrow(array);
-    pg->SetLabel(array, labelSet.CatchEnd());
 }
 
 static void GenObjectProperty(PandaGen *pg, const ir::ObjectExpression *object,
@@ -200,6 +176,17 @@ static void GenObjectWithRest(PandaGen *pg, const ir::ObjectExpression *object, 
     const auto &properties = object->Properties();
 
     RegScope rs(pg);
+
+    if (properties.size() == 1) {
+        auto *element = properties[0];
+        ASSERT(element->IsRestElement());
+        VReg defaultProp = pg->AllocReg();
+        LReference lref = LReference::CreateLRef(pg, element, object->IsDeclaration());
+        pg->CreateObjectWithExcludedKeys(element, rhs, defaultProp, 0);
+        lref.SetValue();
+        return;
+    }
+
     VReg propStart = pg->NextReg();
 
     for (const auto *element : properties) {

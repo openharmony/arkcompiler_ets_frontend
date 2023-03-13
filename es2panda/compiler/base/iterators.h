@@ -67,6 +67,7 @@ public:
 protected:
     PandaGen *pg_;
     const ir::AstNode *node_;
+    VReg closed_;
     // These 3 regs must be allocated continuously
     VReg method_;
     VReg iterator_;
