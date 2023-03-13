@@ -2270,11 +2270,10 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDe
             propName = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
 
             if (Extension() == ScriptExtension::TS) {
+                // TODO(songqi): Determine whether MemberExpression is a symbol during type check.
                 desc->invalidComputedProperty =
                     !propName->IsNumberLiteral() && !propName->IsStringLiteral() &&
-                    !(propName->IsMemberExpression() && propName->AsMemberExpression()->Object()->IsIdentifier() &&
-                      propName->AsMemberExpression()->Object()->AsIdentifier()->Name().Is("Symbol")) &&
-                    !propName->IsIdentifier();
+                    !propName->IsMemberExpression() && !propName->IsIdentifier();
             }
 
             if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {

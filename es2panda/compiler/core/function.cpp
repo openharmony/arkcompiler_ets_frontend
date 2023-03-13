@@ -157,7 +157,7 @@ static void CompileFunction(PandaGen *pg)
     const auto *decl = pg->RootNode()->AsScriptFunction();
 
     // TODO(szilagyia): move after super call
-    if (decl->IsConstructor()) {
+    if (decl->IsConstructor() && pg->Binder()->Program()->Extension() != ScriptExtension::TS) {
         CompileInstanceFields(pg, decl);
     }
 

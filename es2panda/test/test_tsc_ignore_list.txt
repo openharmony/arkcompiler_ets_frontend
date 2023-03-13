@@ -3,7 +3,6 @@ es2panda/test/TypeScript/tests/cases/compiler/bom-utf16be.ts
 es2panda/test/TypeScript/tests/cases/compiler/classFunctionMerging.ts
 es2panda/test/TypeScript/tests/cases/compiler/collisionArgumentsInType.ts
 es2panda/test/TypeScript/tests/cases/compiler/collisionArgumentsInterfaceMembers.ts
-es2panda/test/TypeScript/tests/cases/compiler/computedPropertiesTransformedInOtherwiseNonTSClasses.ts
 es2panda/test/TypeScript/tests/cases/compiler/constructorOverloads5.ts
 es2panda/test/TypeScript/tests/cases/compiler/elidedEmbeddedStatementsReplacedWithSemicolon.ts
 es2panda/test/TypeScript/tests/cases/compiler/globalIsContextualKeyword.ts
@@ -48,5 +47,3 @@ es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/RegressionTe
 es2panda/test/TypeScript/tests/cases/conformance/scanner/ecmascript3/scannerES3NumericLiteral2.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/keyof/keyofAndIndexedAccess.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/members/objectTypeWithStringNamedNumericProperty.ts
-es2panda/test/TypeScript/tests/cases/conformance/types/uniqueSymbol/uniqueSymbols.ts
-es2panda/test/TypeScript/tests/cases/conformance/types/uniqueSymbol/uniqueSymbolsDeclarations.ts

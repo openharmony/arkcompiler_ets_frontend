@@ -50,7 +50,7 @@ public:
         return statements_;
     }
 
-    void AddStatementInFront(Statement *statement);
+    void AddStatementAtPos(size_t insertPos, Statement *statement);
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
