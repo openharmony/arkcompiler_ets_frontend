@@ -72,9 +72,10 @@ bool SymbolTable::ReadSymbolTable(const std::string &symbolTable)
                 info.classHash.insert(std::pair<std::string, std::string>(classItems[i], classItems[i + 1]));
             }
             for (size_t i = 0; i < lexItems.size(); i = i + 3) {
-                std::pair<int, int> slotAndType(std::atoi(std::string(lexItems[i + 1]).c_str()),
-                    std::atoi(std::string(lexItems[i + 2]).c_str()));
-                info.lexenv.insert(std::pair<std::string, std::pair<int, int>>(lexItems[i], slotAndType));
+                auto name = std::string(lexItems[i]);
+                auto slot = std::atoi(std::string(lexItems[i + 1]).c_str());
+                auto type = std::atoi(std::string(lexItems[i + 2]).c_str());
+                info.lexenv.insert({slot, std::pair<std::string, int>(name, type)});
             }
 
             originFunctionInfo_.insert(std::pair<std::string, OriginFunctionInfo>(info.funcInternalName, info));
