@@ -23,6 +23,7 @@ import datetime
 import collections
 import json
 import os
+import shutil
 import sys
 import subprocess
 from multiprocessing import Pool
@@ -143,11 +144,8 @@ def excuting_npm_install(args):
     # copy deps/ohos-typescript
     deps_dir = os.path.join(ts2abc_build_dir, "deps")
     mkdir(deps_dir)
-    if platform.system() == "Windows" :
-        proc = subprocess.Popen("cp %s %s" % (OHOS_TYPESCRIPT_TGZ_PATH, os.path.join(deps_dir, OHOS_TYPESCRIPT)))
-        proc.wait()
-    else :
-        subprocess.getstatusoutput("cp %s %s" % (OHOS_TYPESCRIPT_TGZ_PATH, os.path.join(deps_dir, OHOS_TYPESCRIPT)))
+
+    shutil.copyfile(OHOS_TYPESCRIPT_TGZ_PATH, os.path.join(deps_dir, OHOS_TYPESCRIPT))
 
     npm_install(ts2abc_build_dir)
 
@@ -312,11 +310,9 @@ class TestPrepare():
             dstdir = os.path.join(TEST_ES2021_DIR, file)
         elif self.args.ci_build:
             dstdir = os.path.join(TEST_CI_DIR, file)
-        if platform.system() == "Windows" :
-            proc = subprocess.Popen("cp %s %s" % (srcdir, dstdir))
-            proc.wait()
-        else :
-            subprocess.getstatusoutput("cp %s %s" % (srcdir, dstdir))
+
+        if os.path.isfile(srcdir):
+            shutil.copyfile(srcdir, dstdir)
 
 
     def collect_tests(self):
@@ -389,11 +385,7 @@ class TestPrepare():
             path = os.path.join(test_dir, path)
             mkdir(path)
 
-        pool = Pool(DEFAULT_THREADS)
-        for it in files:
-            pool.apply(self.copyfile, (it, ALL_SKIP_TESTS))
-        pool.close()
-        pool.join()
+            self.copyfile(file, ALL_SKIP_TESTS)
 
     def prepare_test262_test(self):
         src_dir = TEST_FULL_DIR
