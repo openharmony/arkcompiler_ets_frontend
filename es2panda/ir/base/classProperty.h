@@ -71,6 +71,11 @@ public:
         return value_;
     }
 
+    void RemoveValue()
+    {
+        value_ = nullptr;
+    }
+
     const Expression *TypeAnnotation() const
     {
         return typeAnnotation_;

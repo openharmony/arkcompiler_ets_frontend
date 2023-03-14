@@ -192,6 +192,8 @@ private:
     void CheckTransformedAstNodes(const ir::AstNode *parent, bool *passed) const;
     void CheckTransformedAstNode(const ir::AstNode *parent, ir::AstNode *childNode, bool *passed) const;
 
+    void RemoveOriginNodeValueForClassPerporty(const ir::ClassDefinition *node);
+
     template <typename T>
     ir::UpdateNodes VisitExportClassDeclaration(T *node);
 

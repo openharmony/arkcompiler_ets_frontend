@@ -285,6 +285,7 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
             node = VisitTSNodes(node)->AsClassDeclaration();
             auto res = VisitClassDeclaration(node);
             SetOriginalNode(res, childNode);
+            RemoveOriginNodeValueForClassPerporty(node->Definition());
             return res;
         }
         case ir::AstNodeType::CLASS_EXPRESSION: {
@@ -293,6 +294,7 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
             node = VisitTSNodes(node)->AsClassExpression();
             auto res = VisitClassExpression(node);
             SetOriginalNode(res, childNode);
+            RemoveOriginNodeValueForClassPerporty(node->Definition());
             return res;
         }
         case ir::AstNodeType::CLASS_DEFINITION: {
@@ -1943,6 +1945,18 @@ void Transformer::CheckTransformedAstNode(const ir::AstNode *parent, ir::AstNode
         return;
     }
     CheckTransformedAstNodes(childNode, passed);
+}
+
+void Transformer::RemoveOriginNodeValueForClassPerporty(const ir::ClassDefinition *node)
+{
+    // In the transformer, after classPerporty is moved to Constructor, the original node will not be deleted.
+    // When classPerporty value is a function, two mandatory parameters will be added in the binder of this function.
+    // The original classPerporty value is deleted here, and the key is reserved for type extraction.
+    for (auto *it : node->Body()) {
+        if (it->IsClassProperty()) {
+            it->AsClassProperty()->RemoveValue();
+        }
+    }
 }
 
 }  // namespace panda::es2panda::parser
