@@ -123,7 +123,7 @@ LReference LReference::CreateLRef(PandaGen *pg, const ir::AstNode *node, bool is
             return LReference::CreateLRef(pg, node->AsAssignmentPattern()->Left(), true);
         }
         case ir::AstNodeType::REST_ELEMENT: {
-            return LReference::CreateLRef(pg, node->AsRestElement()->Argument(), true);
+            return LReference::CreateLRef(pg, node->AsRestElement()->Argument(), isDeclaration);
         }
         case ir::AstNodeType::EXPORT_DEFAULT_DECLARATION: {
             // export default [anonymous class decl]

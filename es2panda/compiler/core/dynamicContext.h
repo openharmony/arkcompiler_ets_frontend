@@ -151,6 +151,35 @@ private:
     CatchTable *catchTable_;
 };
 
+class DestructuringIteratorContext : public DynamicContext {
+public:
+    explicit DestructuringIteratorContext(PandaGen *pg, const DestructuringIterator &iterator);
+    NO_COPY_SEMANTIC(DestructuringIteratorContext);
+    NO_MOVE_SEMANTIC(DestructuringIteratorContext);
+    ~DestructuringIteratorContext() override;
+
+    DynamicContextType Type() const override
+    {
+        return DynamicContextType::ITERATOR;
+    }
+
+    const DestructuringIterator &GetIterator() const
+    {
+        return iterator_;
+    }
+
+    bool HasTryCatch() const override
+    {
+        return true;
+    }
+
+    void AbortContext(ControlFlowChange cfc, const util::StringView &targetLabel) override;
+
+private:
+    const DestructuringIterator &iterator_;
+    CatchTable *catchTable_;
+};
+
 class TryContext : public DynamicContext {
 public:
     explicit TryContext(PandaGen *pg, const ir::TryStatement *tryStmt, bool hasFinalizer = true)

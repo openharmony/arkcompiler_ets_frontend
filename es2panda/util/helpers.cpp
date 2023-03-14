@@ -413,6 +413,30 @@ std::tuple<util::StringView, bool> Helpers::ParamName(ArenaAllocator *allocator,
     return {Helpers::ToStringView(allocator, index), true};
 }
 
+bool Helpers::IsChild(const ir::AstNode *parent, const ir::AstNode *child)
+{
+    while (child) {
+        if (child == parent) {
+            return true;
+        }
+
+        child = child->Parent();
+    }
+
+    return false;
+}
+
+bool Helpers::IsObjectPropertyValue(const ir::ObjectExpression *object, const ir::AstNode *ident)
+{
+    for (const auto *prop : object->Properties()) {
+        if (prop->AsProperty()->Value() == ident) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool Helpers::OptimizeProgram(panda::pandasm::Program * prog, es2panda::CompilerOptions *options)
 {
     std::map<std::string, size_t> stat;
