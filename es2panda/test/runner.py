@@ -133,6 +133,8 @@ def get_args():
         help='the path of tsc')
     parser.add_argument('--hotfix', dest='hotfix', action='store_true', default=False,
         help='run hotfix tests')
+    parser.add_argument('--hotreload', dest='hotreload', action='store_true', default=False,
+        help='run hotreload tests')
 
     return parser.parse_args()
 
@@ -982,9 +984,10 @@ class TransformerTest(Test):
         return self
 
 
-class HotfixTest(Test):
-    def __init__(self, test_path):
+class PatchTest(Test):
+    def __init__(self, test_path, mode_arg):
         Test.__init__(self, test_path, "")
+        self.mode = mode_arg
 
     def run(self, runner):
         symbol_table_file = 'base.map'
@@ -999,11 +1002,16 @@ class HotfixTest(Test):
         gen_base_cmd.extend([os.path.join(self.path, origin_input_file)])
         self.log_cmd(gen_base_cmd)
 
-        gen_patch_cmd = runner.cmd_prefix + [runner.es2panda, '--module', '--generate-patch']
-        gen_patch_cmd.extend(['--input-symbol-table', os.path.join(self.path, symbol_table_file)])
-        gen_patch_cmd.extend(['--output', os.path.join(self.path, modified_output_abc)])
-        gen_patch_cmd.extend([os.path.join(self.path, modified_input_file)])
-        self.log_cmd(gen_patch_cmd)
+        if self.mode == 'hotfix':
+            mode_arg = "--generate-patch"
+        elif self.mode == 'hotreload':
+            mode_arg = "--hot-reload"
+
+        patch_test_cmd = runner.cmd_prefix + [runner.es2panda, '--module', mode_arg]
+        patch_test_cmd.extend(['--input-symbol-table', os.path.join(self.path, symbol_table_file)])
+        patch_test_cmd.extend(['--output', os.path.join(self.path, modified_output_abc)])
+        patch_test_cmd.extend([os.path.join(self.path, modified_input_file)])
+        self.log_cmd(patch_test_cmd)
 
         process_base = subprocess.Popen(gen_base_cmd, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
@@ -1013,7 +1021,7 @@ class HotfixTest(Test):
             self.error = stderr_base.decode("utf-8", errors="ignore")
             return self
 
-        process_patch = subprocess.Popen(gen_patch_cmd, stdout=subprocess.PIPE,
+        process_patch = subprocess.Popen(patch_test_cmd, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
         stdout_patch, stderr_patch = process_patch.communicate(timeout=runner.args.es2panda_timeout)
         if stderr_patch:
@@ -1024,7 +1032,7 @@ class HotfixTest(Test):
         expected_path = os.path.join(self.path, 'expected.txt')
         try:
             with open(expected_path, 'r') as fp:
-                expected = ''.join(fp.readlines()[13:])  # ignore license description lines
+                expected = (''.join((fp.readlines()[12:]))).lstrip()  # ignore license description lines and skip leading blank lines
             self.passed = expected == self.output
         except Exception:
             self.passed = False
@@ -1036,12 +1044,10 @@ class HotfixTest(Test):
         return self
 
 
-class HotfixRunner(Runner):
-    def __init__(self, args):
-        Runner.__init__(self, args, "Hotfix")
+class PatchRunner(Runner):
+    def __init__(self, args, name):
+        Runner.__init__(self, args, name)
         self.preserve_files = args.error
-        self.test_directory = path.join(self.test_root, "hotfix", "hotfix-throwerror")
-        self.add_directory()
 
     def __del__(self):
         if not self.preserve_files:
@@ -1050,7 +1056,6 @@ class HotfixRunner(Runner):
     def add_directory(self):
         glob_expression = path.join(self.test_directory, "*")
         self.tests_in_dirs = glob(glob_expression, recursive=False)
-        self.tests += list(map(lambda t: HotfixTest(t), self.tests_in_dirs))
 
     def clear_directory(self):
         for test in self.tests_in_dirs:
@@ -1061,6 +1066,22 @@ class HotfixRunner(Runner):
 
     def test_path(self, src):
         return os.path.basename(src)
+
+
+class HotfixRunner(PatchRunner):
+    def __init__(self, args):
+        PatchRunner.__init__(self, args, "Hotfix")
+        self.test_directory = path.join(self.test_root, "hotfix", "hotfix-throwerror")
+        self.add_directory()
+        self.tests += list(map(lambda t: PatchTest(t, "hotfix"), self.tests_in_dirs))
+
+
+class HotreloadRunner(PatchRunner):
+    def __init__(self, args):
+        PatchRunner.__init__(self, args, "Hotreload")
+        self.test_directory = path.join(self.test_root, "hotreload")
+        self.add_directory()
+        self.tests += list(map(lambda t: PatchTest(t, "hotreload"), self.tests_in_dirs))
 
 
 def main():
@@ -1107,6 +1128,9 @@ def main():
 
     if args.hotfix:
         runners.append(HotfixRunner(args))
+
+    if args.hotreload:
+        runners.append(HotreloadRunner(args))
 
     failed_tests = 0
 

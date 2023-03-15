@@ -481,6 +481,10 @@ void Hotfix::HandleFunction(const compiler::PandaGen *pg, panda::pandasm::Functi
     std::string funcName = func->name;
     auto originFunction = originFunctionInfo_->find(funcName);
     if (originFunction == originFunctionInfo_->end()) {
+        // Support adding anonymous funtion in hotreload mode.
+        if (hotReload_) {
+            return;
+        }
         if (IsAnonymousOrDuplicateNameFunction(funcName)) {
             std::cerr << "[Patch] Found new anonymous or duplicate name function " << funcName
                       << " not supported!" << std::endl;
