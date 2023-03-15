@@ -130,6 +130,8 @@ def get_args():
     parser.add_argument(
         '--tsc-path', dest='tsc_path', default=None, type=lambda arg: is_directory(parser, arg),
         help='the path of tsc')
+    parser.add_argument('--hotfix', dest='hotfix', action='store_true', default=False,
+        help='run hotfix tests')
 
     return parser.parse_args()
 
@@ -443,7 +445,7 @@ class Runner:
         path_str = test.path
         err_col = {}
         if test.error:
-            err_str = test.error.split('[')[0]
+            err_str = test.error.split('[')[0] if "hotfix" not in test.path else " hotfix throw error failed"
             err_col = {"path" : [path_str], "status": ["fail"], "error" : [test.error], "type" : [err_str]}
         else:
             err_col = {"path" : [path_str], "status": ["fail"], "error" : ["Segmentation fault"],
@@ -833,6 +835,87 @@ class CompilerTest(Test):
         return self
 
 
+class HotfixTest(Test):
+    def __init__(self, test_path):
+        Test.__init__(self, test_path, "")
+
+    def run(self, runner):
+        symbol_table_file = 'base.map'
+        origin_input_file = 'base.js'
+        origin_output_abc = 'base.abc'
+        modified_input_file = 'base_mod.js'
+        modified_output_abc = 'patch.abc'
+
+        gen_base_cmd = runner.cmd_prefix + [runner.es2panda, '--module']
+        gen_base_cmd.extend(['--dump-symbol-table', os.path.join(self.path, symbol_table_file)])
+        gen_base_cmd.extend(['--output', os.path.join(self.path, origin_output_abc)])
+        gen_base_cmd.extend([os.path.join(self.path, origin_input_file)])
+        self.log_cmd(gen_base_cmd)
+
+        gen_patch_cmd = runner.cmd_prefix + [runner.es2panda, '--module', '--generate-patch']
+        gen_patch_cmd.extend(['--input-symbol-table', os.path.join(self.path, symbol_table_file)])
+        gen_patch_cmd.extend(['--output', os.path.join(self.path, modified_output_abc)])
+        gen_patch_cmd.extend([os.path.join(self.path, modified_input_file)])
+        self.log_cmd(gen_patch_cmd)
+
+        process_base = subprocess.Popen(gen_base_cmd, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+        stdout_base, stderr_base = process_base.communicate(timeout=runner.args.es2panda_timeout)
+        if stderr_base:
+            self.passed = False
+            self.error = stderr_base.decode("utf-8", errors="ignore")
+            return self
+
+        process_patch = subprocess.Popen(gen_patch_cmd, stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+        stdout_patch, stderr_patch = process_patch.communicate(timeout=runner.args.es2panda_timeout)
+        if stderr_patch:
+            self.passed = False
+            self.error = stderr_patch.decode("utf-8", errors="ignore")
+
+        self.output = stdout_patch.decode("utf-8", errors="ignore") + stderr_patch.decode("utf-8", errors="ignore")
+        expected_path = os.path.join(self.path, 'expected.txt')
+        try:
+            with open(expected_path, 'r') as fp:
+                expected = ''.join(fp.readlines()[13:])  # ignore license description lines
+            self.passed = expected == self.output
+        except Exception:
+            self.passed = False
+
+        if not self.passed:
+            self.error = "expected output:" + os.linesep + expected + os.linesep + "actual output:" + os.linesep +\
+                self.output
+
+        return self
+
+
+class HotfixRunner(Runner):
+    def __init__(self, args):
+        Runner.__init__(self, args, "Hotfix")
+        self.preserve_files = args.error
+        self.test_directory = path.join(self.test_root, "hotfix", "hotfix-throwerror")
+        self.add_directory()
+
+    def __del__(self):
+        if not self.preserve_files:
+            self.clear_directory()
+
+    def add_directory(self):
+        glob_expression = path.join(self.test_directory, "*")
+        self.tests_in_dirs = glob(glob_expression, recursive=False)
+        self.tests += list(map(lambda t: HotfixTest(t), self.tests_in_dirs))
+
+    def clear_directory(self):
+        for test in self.tests_in_dirs:
+            files_in_dir = os.listdir(test)
+            filtered_files = [file for file in files_in_dir if file.endswith(".map") or file.endswith(".abc")]
+            for file in filtered_files:
+                os.remove(os.path.join(test, file))
+
+    def test_path(self, src):
+        return os.path.basename(src)
+
+
 def main():
     args = get_args()
 
@@ -863,6 +946,9 @@ def main():
         runner.add_directory("compiler/commonjs", "js", ["--commonjs"])
 
         runners.append(runner)
+
+    if args.hotfix:
+        runners.append(HotfixRunner(args))
 
     failed_tests = 0
 
