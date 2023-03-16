@@ -514,9 +514,10 @@ public:
     bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                     [[maybe_unused]] ScriptExtension extension) override;
 
-    void RemoveThisParam()
+    void RemoveThisParam(const std::string_view &thisParam)
     {
         params_.erase(params_.begin());
+        bindings_.erase(thisParam);
     }
 
     friend class FunctionScope;

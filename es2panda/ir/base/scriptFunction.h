@@ -59,7 +59,8 @@ public:
             if (firstParam->IsIdentifier() && firstParam->AsIdentifier()->Name().Is(THIS_PARAM)) {
                 thisParam_ = firstParam;
                 params_.erase(params_.begin());
-                scope_->ParamScope()->RemoveThisParam();
+                scope_->ParamScope()->RemoveThisParam(THIS_PARAM);
+                scope_->Bindings().erase(THIS_PARAM);
             }
         }
     }
