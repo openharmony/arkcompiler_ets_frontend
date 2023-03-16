@@ -92,6 +92,7 @@ struct CompilerOptions {
     HotfixOptions hotfixOptions;
     bool bcVersion {false};
     bool bcMinVersion {false};
+    std::unordered_map<std::string, std::string> cacheFiles;
 };
 
 enum class ErrorType {
@@ -177,14 +178,7 @@ public:
     panda::pandasm::Program *CompileFile(const CompilerOptions &options, SourceFile *src, util::SymbolTable *symbolTable);
 
     static int CompileFiles(CompilerOptions &options,
-        std::map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
-        std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
-        panda::ArenaAllocator *allocator);
-
-    static void SelectCompileFile(CompilerOptions &options,
-        std::map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
-        std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
-        panda::ArenaAllocator *allocator);
+        std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo, panda::ArenaAllocator *allocator);
 
     inline panda::pandasm::Program *Compile(const SourceFile &input)
     {

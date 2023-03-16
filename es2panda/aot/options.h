@@ -122,11 +122,6 @@ public:
         return compilerProtoOutput_;
     }
 
-    const std::string &CacheFile() const
-    {
-        return cacheFile_;
-    }
-
     const std::string &NpmModuleEntryList() const
     {
         return npmModuleEntryList_;
@@ -139,6 +134,7 @@ public:
 
     bool CollectInputFilesFromFileList(const std::string &input);
     bool CollectInputFilesFromFileDirectory(const std::string &input, const std::string &extension);
+    void ParseCacheFileOption(const std::string &cacheInput);
 
 private:
     es2panda::ScriptExtension extension_ {es2panda::ScriptExtension::JS};
@@ -156,7 +152,6 @@ private:
     int optLevel_ {0};
     int functionThreadCount_ {0};
     int fileThreadCount_ {0};
-    std::string cacheFile_;
     std::string npmModuleEntryList_;
     std::vector<es2panda::SourceFile> sourceFiles_;
     std::unordered_map<std::string, std::string> outputFiles_;

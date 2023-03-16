@@ -30,6 +30,8 @@
 #include <utility>
 
 namespace panda::es2panda::aot {
+constexpr char PROCESS_AS_LIST_MARK = '@';
+const std::string LIST_ITEM_SEPERATOR = ";";
 
 template <class T>
 T RemoveExtension(T const &filename)
@@ -56,6 +58,7 @@ static std::vector<std::string> GetStringItems(std::string &input, const std::st
     return items;
 }
 
+// Options
 bool Options::CollectInputFilesFromFileList(const std::string &input)
 {
     std::ifstream ifs;
@@ -69,8 +72,7 @@ bool Options::CollectInputFilesFromFileList(const std::string &input)
     constexpr size_t ITEM_COUNT_MERGE = 5;  // item list: [filePath; recordName; moduleKind; sourceFile, pkgName]
     constexpr size_t ITEM_COUNT_NOT_MERGE = 5;  // item list: [filePath; recordName; moduleKind; sourceFile; outputfile]
     while (std::getline(ifs, line)) {
-        const std::string seperator = ";";
-        std::vector<std::string> itemList = GetStringItems(line, seperator);
+        std::vector<std::string> itemList = GetStringItems(line, LIST_ITEM_SEPERATOR);
         if ((compilerOptions_.mergeAbc && itemList.size() != ITEM_COUNT_MERGE) ||
             (!compilerOptions_.mergeAbc && itemList.size() != ITEM_COUNT_NOT_MERGE)) {
             std::cerr << "Failed to parse input file" << std::endl;
@@ -116,7 +118,31 @@ bool Options::CollectInputFilesFromFileDirectory(const std::string &input, const
     return true;
 }
 
-// Options
+void Options::ParseCacheFileOption(const std::string &cacheInput)
+{
+    if (cacheInput[0] != PROCESS_AS_LIST_MARK) {
+        compilerOptions_.cacheFiles.insert({sourceFile_, cacheInput});
+        return;
+    }
+
+    std::ifstream ifs;
+    std::string line;
+    ifs.open(panda::os::file::File::GetExtendedFilePath(cacheInput.substr(1)));
+    if (!ifs.is_open()) {
+        std::cerr << "Failed to open cache file list: " << cacheInput << std::endl;
+        return;
+    }
+
+    constexpr int cacheListItemCount = 2;
+    while (std::getline(ifs, line)) {
+        std::vector<std::string> itemList = GetStringItems(line, LIST_ITEM_SEPERATOR);
+        if (itemList.size() != cacheListItemCount) {
+            continue;
+        }
+        compilerOptions_.cacheFiles.insert({itemList[0], itemList[1]});
+    }
+}
+
 Options::Options() : argparser_(new panda::PandArgParser()) {}
 
 Options::~Options()
@@ -302,7 +328,7 @@ bool Options::Parse(int argc, const char **argv)
     bool isInputFileList = false;
     if (!inputIsEmpty) {
         std::string rawInput = inputFile.GetValue();
-        isInputFileList = rawInput[0] == '@';
+        isInputFileList = rawInput[0] == PROCESS_AS_LIST_MARK;
         std::string input = isInputFileList ? rawInput.substr(1) : rawInput;
         sourceFile_ = input;
     }
@@ -362,7 +388,10 @@ bool Options::Parse(int argc, const char **argv)
     functionThreadCount_ = opFunctionThreadCount.GetValue();
     fileThreadCount_ = opFileThreadCount.GetValue();
     npmModuleEntryList_ = opNpmModuleEntryList.GetValue();
-    cacheFile_ = opCacheFile.GetValue();
+
+    if (!opCacheFile.GetValue().empty()) {
+        ParseCacheFileOption(opCacheFile.GetValue());
+    }
 
     if (opParseOnly.GetValue()) {
         options_ |= OptionFlags::PARSE_ONLY;

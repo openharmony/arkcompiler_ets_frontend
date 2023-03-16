@@ -20,6 +20,7 @@
 #include <macros.h>
 #include <os/thread.h>
 #include <util/symbolTable.h>
+#include <util/workerQueue.h>
 
 #include <condition_variable>
 #include <mutex>
@@ -32,25 +33,7 @@ namespace panda::es2panda::compiler {
 
 class CompilerContext;
 
-class CompileJob {
-public:
-    explicit CompileJob() {};
-    NO_COPY_SEMANTIC(CompileJob);
-    NO_MOVE_SEMANTIC(CompileJob);
-    virtual ~CompileJob() = default;
-
-    virtual void Run() = 0;
-    void DependsOn(CompileJob *job);
-    void Signal();
-
-protected:
-    std::mutex m_;
-    std::condition_variable cond_;
-    CompileJob *dependant_ {};
-    size_t dependencies_ {0};
-};
-
-class CompileFunctionJob : public CompileJob {
+class CompileFunctionJob : public util::WorkerJob {
 public:
     explicit CompileFunctionJob(CompilerContext *context) : context_(context) {};
     NO_COPY_SEMANTIC(CompileFunctionJob);
@@ -74,7 +57,7 @@ private:
     binder::FunctionScope *scope_ {};
 };
 
-class CompileModuleRecordJob : public CompileJob {
+class CompileModuleRecordJob : public util::WorkerJob {
 public:
     explicit CompileModuleRecordJob(CompilerContext *context) : context_(context) {};
     NO_COPY_SEMANTIC(CompileModuleRecordJob);
@@ -87,7 +70,7 @@ private:
     CompilerContext *context_ {};
 };
 
-class CompileFileJob : public CompileJob {
+class CompileFileJob : public util::WorkerJob {
 public:
     explicit CompileFileJob(es2panda::SourceFile *src, es2panda::CompilerOptions *options,
                             std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
@@ -108,35 +91,10 @@ private:
     panda::ArenaAllocator *allocator_;
 };
 
-class CompileQueue {
-public:
-    explicit CompileQueue(size_t threadCount);
-    NO_COPY_SEMANTIC(CompileQueue);
-    NO_MOVE_SEMANTIC(CompileQueue);
-    virtual ~CompileQueue();
-
-    virtual void Schedule() = 0;
-    void Consume();
-    void Wait();
-
-protected:
-    static void Worker(CompileQueue *queue);
-
-    std::vector<os::thread::native_handle_type> threads_;
-    std::vector<Error> errors_;
-    std::mutex m_;
-    std::condition_variable jobsAvailable_;
-    std::condition_variable jobsFinished_;
-    std::vector<CompileJob *> jobs_ {};
-    size_t jobsCount_ {0};
-    size_t activeWorkers_ {0};
-    bool terminate_ {false};
-};
-
-class CompileFuncQueue : public CompileQueue {
+class CompileFuncQueue : public util::WorkerQueue {
 public:
     explicit CompileFuncQueue(size_t threadCount, CompilerContext *context)
-        : CompileQueue(threadCount), context_(context) {}
+        : util::WorkerQueue(threadCount), context_(context) {}
 
     NO_COPY_SEMANTIC(CompileFuncQueue);
     NO_MOVE_SEMANTIC(CompileFuncQueue);
@@ -148,12 +106,12 @@ private:
     CompilerContext *context_;
 };
 
-class CompileFileQueue : public CompileQueue {
+class CompileFileQueue : public util::WorkerQueue {
 public:
     explicit CompileFileQueue(size_t threadCount, es2panda::CompilerOptions *options,
                               std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
                               util::SymbolTable *symbolTable, panda::ArenaAllocator *allocator)
-        : CompileQueue(threadCount), options_(options), progsInfo_(progsInfo),
+        : util::WorkerQueue(threadCount), options_(options), progsInfo_(progsInfo),
         symbolTable_(symbolTable), allocator_(allocator) {}
 
     NO_COPY_SEMANTIC(CompileFileQueue);

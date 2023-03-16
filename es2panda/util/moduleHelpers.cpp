@@ -15,28 +15,29 @@
 
 #include "moduleHelpers.h"
 
+#include <util/helpers.h>
 #include <libpandabase/utils/hash.h>
+#include <protobufSnapshotGenerator.h>
 
 namespace panda::es2panda::util {
 void ModuleHelpers::CompileNpmModuleEntryList(const std::string &entriesInfo,
-    std::map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
-    std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+    panda::es2panda::CompilerOptions &options, std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
     panda::ArenaAllocator *allocator)
 {
     std::stringstream ss;
-    std::ifstream inputStream(panda::os::file::File::GetExtendedFilePath(entriesInfo));
-    if (inputStream.fail()) {
-        std::cerr << "Failed to read file to buffer: " << entriesInfo << std::endl;
+    if (!util::Helpers::ReadFileToBuffer(entriesInfo, ss)) {
         return;
     }
-    ss << inputStream.rdbuf();
 
-    uint32_t hash = GetHash32String(reinterpret_cast<const uint8_t *>(ss.str().c_str()));
+    uint32_t hash = 0;
+    auto cacheFileIter = options.cacheFiles.find(entriesInfo);
+    if (cacheFileIter != options.cacheFiles.end()) {
+        hash = GetHash32String(reinterpret_cast<const uint8_t *>(ss.str().c_str()));
 
-    if (cacheProgs != nullptr) {
-        auto it = cacheProgs->find(entriesInfo);
-        if (it != cacheProgs->end() && hash == it->second->hashCode) {
-            auto *cache = allocator->New<util::ProgramCache>(it->second->hashCode, it->second->program);
+        auto cacheProgramInfo = panda::proto::ProtobufSnapshotGenerator::GetCacheContext(cacheFileIter->second,
+            allocator);
+        if (cacheProgramInfo != nullptr && cacheProgramInfo->hashCode == hash) {
+            auto *cache = allocator->New<util::ProgramCache>(hash, std::move(cacheProgramInfo->program));
             progsInfo.insert({entriesInfo, cache});
             return;
         }
@@ -61,7 +62,7 @@ void ModuleHelpers::CompileNpmModuleEntryList(const std::string &entriesInfo,
         prog->record_table.emplace(recordName, std::move(*entryRecord));
     }
 
-    auto *cache = allocator->New<util::ProgramCache>(hash, prog);
+    auto *cache = allocator->New<util::ProgramCache>(hash, std::move(*prog), true);
     progsInfo.insert({entriesInfo, cache});
 }
 }  // namespace panda::es2panda::util
