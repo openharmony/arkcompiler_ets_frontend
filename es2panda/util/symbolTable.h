@@ -30,7 +30,7 @@ public:
         std::string funcName;
         std::string funcInternalName;
         std::string funcHash;
-        ArenaMap<std::string, std::pair<uint32_t, int>> lexenv;  // lexenv: <name, <slot, type>>
+        ArenaMap<uint32_t, std::pair<std::string, int>> lexenv;  // lexenv: <slot, <name, type>>
         ArenaMap<std::string, std::string> classHash;
 
         explicit OriginFunctionInfo(ArenaAllocator *allocator) : lexenv(allocator->Adapter()),

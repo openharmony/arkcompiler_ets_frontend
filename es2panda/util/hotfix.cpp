@@ -278,9 +278,10 @@ uint32_t Hotfix::GetSlotIdFromSymbolTable(const std::string &variableName)
 {
     auto functionIter = originFunctionInfo_->find(funcMain0_);
     if (functionIter != originFunctionInfo_->end()) {
-        auto lexenvIter = functionIter->second.lexenv.find(variableName);
-        if (lexenvIter != functionIter->second.lexenv.end()) {
-            return lexenvIter->second.first;
+        for (const auto &lexenv : functionIter->second.lexenv) {
+            if (lexenv.second.first == variableName) {
+                return lexenv.first;
+            }
         }
     }
     return UINT32_MAX;
@@ -429,24 +430,25 @@ bool Hotfix::CompareLexenv(const std::string &funcName, const compiler::PandaGen
     auto &lexenv = bytecodeInfo.lexenv;
     if (funcName != funcMain0_) {
         if (lexenv.size() != lexicalVarNameAndTypes.size()) {
-            std::cerr << "[Patch] Found lexenv size changed, not supported!" << std::endl;
+            std::cerr << "[Patch] Found lexical variable added or removed in " << funcName << ", not supported!"
+                << std::endl;
             patchError_ = true;
             return false;
         }
         for (auto &variable: lexicalVarNameAndTypes) {
-            auto varName = std::string(variable.second.first);
-            auto lexenvIter = lexenv.find(varName);
+            auto varSlot = variable.first;
+            auto lexenvIter = lexenv.find(varSlot);
             if (lexenvIter == lexenv.end()) {
-                std::cerr << "[Patch] Found new lex env added in function " << funcName << ", not supported!"
+                std::cerr << "[Patch] Found new lexical variable added in function " << funcName << ", not supported!"
                     << std::endl;
                 patchError_ = true;
                 return false;
             }
 
             auto &lexInfo = lexenvIter->second;
-            if (variable.first != lexInfo.first || variable.second.second != lexInfo.second) {
-                std::cerr << "[Patch] Found new lex env changed(slot or type) in function " << funcName
-                    << ", not supported!" << std::endl;
+            if (std::string(variable.second.first) != lexInfo.first || variable.second.second != lexInfo.second) {
+                std::cerr << "[Patch] Found lexical variable changed in function " << funcName << ", not supported!"
+                    << std::endl;
                 patchError_ = true;
                 return false;
             }
