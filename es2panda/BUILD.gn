@@ -439,14 +439,12 @@ ohos_executable("es2panda") {
   ldflags = []
   if (is_linux) {
     if (build_public_version) {
-      ldflags += [ "-static-libstdc++" ]
+      ldflags += [ "-Wl,-Bstatic" ]
+      ldflags += [ "-lstdc++" ]
+      ldflags += [ "-Wl,-Bdynamic" ]
     } else {
       libs = [ libcpp_static_lib ]
     }
-  }
-
-  if (!use_musl) {
-    ldflags += [ "-lc++" ]
   }
 
   output_name = "es2abc"
