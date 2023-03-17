@@ -388,7 +388,7 @@ ir::TSModuleDeclaration *ParserImpl::ParseTsModuleOrNamespaceDelaration(const le
         }
     }
     if (res == nullptr) {
-        Binder()->AddTsDecl<binder::NamespaceDecl>(lexer_->GetToken().Start(), Allocator(), name);
+        Binder()->AddTsDecl<binder::NamespaceDecl>(lexer_->GetToken().Start(), isDeclare, Allocator(), name);
         res = parentScope->FindLocalTSVariable<binder::TSBindingType::NAMESPACE>(name);
         if (isExport && parentScope->IsTSModuleScope()) {
             parentScope->AsTSModuleScope()->AddExportTSVariable<binder::TSBindingType::NAMESPACE>(name, res);
@@ -473,7 +473,7 @@ ir::TSImportEqualsDeclaration *ParserImpl::ParseTsImportEqualsDeclaration(const 
     if (lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_REQUIRE ||
         lexer_->Lookahead() != LEX_CHAR_LEFT_PAREN) {
         binder::DeclarationFlags declflag = binder::DeclarationFlags::NONE;
-        auto *decl = Binder()->AddDecl<binder::ImportEqualsDecl>(id->Start(), declflag, id->Name());
+        auto *decl = Binder()->AddDecl<binder::ImportEqualsDecl>(id->Start(), declflag, false, id->Name());
         decl->BindNode(id);
         auto *scope = Binder()->GetScope();
         auto name = id->Name();
@@ -637,7 +637,7 @@ ir::Statement *ParserImpl::ParsePotentialExpressionStatement(StatementParsingFla
                 return ParseTsTypeAliasDeclaration(isDeclare);
             }
             case lexer::TokenType::KEYW_INTERFACE: {
-                return ParseTsInterfaceDeclaration();
+                return ParseTsInterfaceDeclaration(isDeclare);
             }
             default:
                 break;
@@ -671,7 +671,7 @@ ir::ClassDeclaration *ParserImpl::ParseClassDeclaration(bool idRequired, ArenaVe
     ASSERT(!className.Empty());
 
     binder::DeclarationFlags flag = isExported ? binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
-    auto *decl = Binder()->AddDecl<binder::ClassDecl>(location, flag, className, classDefinition->Declare());
+    auto *decl = Binder()->AddDecl<binder::ClassDecl>(location, flag, classDefinition->Declare(), className);
 
     decl->BindNode(classDefinition);
 
@@ -700,7 +700,7 @@ ir::TSTypeAliasDeclaration *ParserImpl::ParseTsTypeAliasDeclaration(bool isDecla
 
     const util::StringView &ident = lexer_->GetToken().Ident();
     binder::TSBinding tsBinding(Allocator(), ident);
-    auto *decl = Binder()->AddTsDecl<binder::TypeAliasDecl>(lexer_->GetToken().Start(), tsBinding.View());
+    auto *decl = Binder()->AddTsDecl<binder::TypeAliasDecl>(lexer_->GetToken().Start(), isDeclare, tsBinding.View());
 
     auto *id = AllocNode<ir::Identifier>(ident);
     id->SetRange(lexer_->GetToken().Loc());
@@ -728,7 +728,7 @@ ir::TSTypeAliasDeclaration *ParserImpl::ParseTsTypeAliasDeclaration(bool isDecla
     return typeAliasDecl;
 }
 
-ir::TSInterfaceDeclaration *ParserImpl::ParseTsInterfaceDeclaration()
+ir::TSInterfaceDeclaration *ParserImpl::ParseTsInterfaceDeclaration(bool isDeclare)
 {
     ASSERT(lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_INTERFACE);
     context_.Status() |= ParserStatus::ALLOW_THIS_TYPE;
@@ -754,7 +754,8 @@ ir::TSInterfaceDeclaration *ParserImpl::ParseTsInterfaceDeclaration()
     binder::InterfaceDecl *decl {};
 
     if (res == bindings.end()) {
-        decl = Binder()->AddTsDecl<binder::InterfaceDecl>(lexer_->GetToken().Start(), Allocator(), tsBinding.View());
+        decl = Binder()->AddTsDecl<binder::InterfaceDecl>(lexer_->GetToken().Start(), isDeclare,
+                                                          Allocator(), tsBinding.View());
     } else if (!res->second->Declaration()->IsInterfaceDecl()) {
         Binder()->ThrowRedeclaration(lexer_->GetToken().Start(), ident);
     } else {
@@ -1143,7 +1144,7 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool canBeAnonymou
 
             binder::DeclarationFlags declflag = (newStatus & ParserStatus::EXPORT_REACHED) ?
                                                 binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
-            Binder()->AddDecl<binder::FunctionDecl>(startLoc, declflag, Allocator(),
+            Binder()->AddDecl<binder::FunctionDecl>(startLoc, declflag, isDeclare, Allocator(),
                                                     parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME, func);
 
             return funcDecl;
@@ -1199,7 +1200,8 @@ void ParserImpl::AddFunctionToBinder(ir::ScriptFunction *func, ParserStatus newS
 
         if (res == bindings.end() ||
             (currentDecl->IsClassDecl() && currentDecl->AsClassDecl()->IsDeclare())) {
-            decl = Binder()->AddDecl<binder::FunctionDecl>(identNode->Start(), declflag, Allocator(), ident, func);
+            decl = Binder()->AddDecl<binder::FunctionDecl>(identNode->Start(), declflag, func->Declare(),
+                                                           Allocator(), ident, func);
         } else {
             if (!currentDecl->IsFunctionDecl()) {
                 Binder()->ThrowRedeclaration(startLoc, currentDecl->Name());
@@ -1217,7 +1219,8 @@ void ParserImpl::AddFunctionToBinder(ir::ScriptFunction *func, ParserStatus newS
 
         decl->Add(func);
     } else {
-        Binder()->AddDecl<binder::FunctionDecl>(identNode->Start(), declflag, Allocator(), ident, func);
+        Binder()->AddDecl<binder::FunctionDecl>(identNode->Start(), declflag, func->Declare(),
+                                                Allocator(), ident, func);
     }
 }
 
@@ -2051,11 +2054,11 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
                                             binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
 
         if (flags & VariableParsingFlags::VAR) {
-            decl = Binder()->AddDecl<binder::VarDecl>(startLoc, declflag, binding->Name());
+            decl = Binder()->AddDecl<binder::VarDecl>(startLoc, declflag, isDeclare, binding->Name());
         } else if (flags & VariableParsingFlags::LET) {
-            decl = Binder()->AddDecl<binder::LetDecl>(startLoc, declflag, binding->Name());
+            decl = Binder()->AddDecl<binder::LetDecl>(startLoc, declflag, isDeclare, binding->Name());
         } else {
-            decl = Binder()->AddDecl<binder::ConstDecl>(startLoc, declflag, binding->Name());
+            decl = Binder()->AddDecl<binder::ConstDecl>(startLoc, declflag, isDeclare, binding->Name());
         }
 
         decl->BindNode(init);
@@ -2250,7 +2253,7 @@ void ParserImpl::AddExportStarEntryItem(const lexer::SourcePosition &startLoc, c
          */
         auto namespaceExportInternalName = GetNamespaceExportInternalName();
         auto *decl = Binder()->AddDecl<binder::ConstDecl>(startLoc, binder::DeclarationFlags::EXPORT,
-                                                          namespaceExportInternalName);
+                                                          false, namespaceExportInternalName);
         decl->BindNode(exported);
 
         auto *importEntry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
@@ -2372,7 +2375,7 @@ ir::ExportDefaultDeclaration *ParserImpl::ParseExportDefaultDeclaration(const le
         declNode = ParseFunctionDeclaration(false, ParserStatus::ASYNC_FUNCTION | ParserStatus::EXPORT_REACHED);
     } else if (Extension() == ScriptExtension::TS &&
                lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_INTERFACE) {
-        declNode = ParseTsInterfaceDeclaration();
+        declNode = ParseTsInterfaceDeclaration(false);
     } else if (Extension() == ScriptExtension::TS &&
                lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_ABSTRACT) {
         lexer_->NextToken();
@@ -2383,7 +2386,7 @@ ir::ExportDefaultDeclaration *ParserImpl::ParseExportDefaultDeclaration(const le
     } else {
         declNode = ParseExpression();
         Binder()->AddDecl<binder::LetDecl>(declNode->Start(), binder::DeclarationFlags::EXPORT,
-                                           parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME);
+                                           false, parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME);
         eatSemicolon = true;
     }
 
@@ -2566,7 +2569,7 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
                         break;
                     }
                     case lexer::TokenType::KEYW_INTERFACE: {
-                        decl = ParseTsInterfaceDeclaration();
+                        decl = ParseTsInterfaceDeclaration(isDeclare);
                         break;
                     }
                     case lexer::TokenType::KEYW_TYPE: {
@@ -2726,7 +2729,7 @@ void ParserImpl::ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers)
     specifiers->push_back(specifier);
 
     auto *decl = Binder()->AddDecl<binder::ConstDecl>(namespaceStart, binder::DeclarationFlags::NAMESPACE_IMPORT,
-                                                      local->Name());
+                                                      false, local->Name());
     decl->BindNode(specifier);
 
     lexer_->NextToken();  // eat local name
@@ -2785,7 +2788,7 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
         specifiers->push_back(specifier);
 
         auto *decl = Binder()->AddDecl<binder::ConstDecl>(local->Start(), binder::DeclarationFlags::IMPORT,
-            local->Name());
+                                                          false, local->Name());
         decl->BindNode(specifier);
 
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
@@ -2847,9 +2850,8 @@ ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> 
         }
         if (lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_REQUIRE ||
             lexer_->Lookahead() != LEX_CHAR_LEFT_PAREN) {
-            auto *decl = Binder()->AddDecl<binder::ImportEqualsDecl>(local->Start(),
-                                                                     binder::DeclarationFlags::NONE,
-                                                                     local->Name());
+            auto *decl = Binder()->AddDecl<binder::ImportEqualsDecl>(local->Start(), binder::DeclarationFlags::NONE,
+                                                                     false, local->Name());
             decl->BindNode(local);
             auto *scope = Binder()->GetScope();
             auto *var = scope->FindLocalTSVariable<binder::TSBindingType::IMPORT_EQUALS>(local->Name());
@@ -2866,7 +2868,8 @@ ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> 
     specifier->SetRange(specifier->Local()->Range());
     specifiers->push_back(specifier);
 
-    auto *decl = Binder()->AddDecl<binder::ConstDecl>(local->Start(), binder::DeclarationFlags::IMPORT, local->Name());
+    auto *decl = Binder()->AddDecl<binder::ConstDecl>(local->Start(), binder::DeclarationFlags::IMPORT,
+                                                      false, local->Name());
     decl->BindNode(specifier);
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {

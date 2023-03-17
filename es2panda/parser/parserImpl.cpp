@@ -2765,7 +2765,7 @@ bool ParserImpl::IsMethodDefinitionsAreSame(const ir::MethodDefinition *property
     return IsPropertyKeysAreSame(property->Key(), overload->Key());
 }
 
-ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition()
+ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition(bool isDeclare)
 {
     lexer::TokenType keywType = lexer_->GetToken().KeywordType();
     CheckStrictReservedWord();
@@ -2776,7 +2776,7 @@ ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition()
 
     const util::StringView &identStr = lexer_->GetToken().Ident();
 
-    Binder()->AddDecl<binder::ConstDecl>(lexer_->GetToken().Start(), identStr);
+    Binder()->AddDecl<binder::ConstDecl>(lexer_->GetToken().Start(), isDeclare, identStr);
 
     auto *identNode = AllocNode<ir::Identifier>(identStr);
     identNode->SetRange(lexer_->GetToken().Loc());
@@ -2799,7 +2799,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
 
     if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT && (Extension() != ScriptExtension::TS ||
         lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_IMPLEMENTS)) {
-        identNode = SetIdentNodeInClassDefinition();
+        identNode = SetIdentNodeInClassDefinition(isDeclare);
     } else if (isDeclaration && idRequired) {
         ThrowSyntaxError("Unexpected token, expected an identifier.");
     }
@@ -2964,12 +2964,12 @@ ir::TSEnumDeclaration *ParserImpl::ParseEnumMembers(ir::Identifier *key, const l
 
         if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
             memberKey = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
-            decl = Binder()->AddDecl<binder::EnumDecl>(keyStartLoc, lexer_->GetToken().Ident());
+            decl = Binder()->AddDecl<binder::EnumDecl>(keyStartLoc, isDeclare, lexer_->GetToken().Ident());
             memberKey->SetRange(lexer_->GetToken().Loc());
             lexer_->NextToken();
         } else if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_STRING) {
             memberKey = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());
-            decl = Binder()->AddDecl<binder::EnumDecl>(keyStartLoc, lexer_->GetToken().String());
+            decl = Binder()->AddDecl<binder::EnumDecl>(keyStartLoc, isDeclare, lexer_->GetToken().String());
             memberKey->SetRange(lexer_->GetToken().Loc());
             lexer_->NextToken();
         } else {
@@ -3024,8 +3024,8 @@ ir::TSEnumDeclaration *ParserImpl::ParseEnumDeclaration(bool isExport, bool isDe
         }
     }
     if (res == nullptr) {
-        Binder()->AddTsDecl<binder::EnumLiteralDecl>(lexer_->GetToken().Start(), Allocator(),
-                                                     ident, isExport, isDeclare, isConst);
+        Binder()->AddTsDecl<binder::EnumLiteralDecl>(lexer_->GetToken().Start(), isDeclare,
+                                                     Allocator(), ident, isExport, isConst);
         res = currentScope->FindLocalTSVariable<binder::TSBindingType::ENUMLITERAL>(ident);
         if (isExport && currentScope->IsTSModuleScope()) {
             currentScope->AsTSModuleScope()->AddExportTSVariable<binder::TSBindingType::ENUMLITERAL>(ident, res);
@@ -3177,7 +3177,7 @@ ir::TSTypeParameter *ParserImpl::ParseTsTypeParameter(bool throwError, bool addB
     auto *paramIdent = AllocNode<ir::Identifier>(ident);
 
     if (addBinding) {
-        Binder()->AddDecl<binder::LetDecl>(lexer_->GetToken().Start(), ident);
+        Binder()->AddDecl<binder::LetDecl>(lexer_->GetToken().Start(), false, ident);
     }
 
     paramIdent->SetRange({lexer_->GetToken().Start(), lexer_->GetToken().End()});

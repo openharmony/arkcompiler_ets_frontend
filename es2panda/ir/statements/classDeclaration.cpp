@@ -44,6 +44,9 @@ void ClassDeclaration::Compile(compiler::PandaGen *pg) const
     // [ClassDeclaration] without [Identifier] must have parent node
     // of [ExportDefaultDeclaration] during compiling phase. So we use
     // the parent node to create a lreference with boundName of [*default*].
+    if (def_->Declare()) {
+        return;
+    }
     const auto *node = def_->Ident() ? def_->Ident() : this->Parent();
     auto lref = compiler::LReference::CreateLRef(pg, node, true);
     def_->Compile(pg);

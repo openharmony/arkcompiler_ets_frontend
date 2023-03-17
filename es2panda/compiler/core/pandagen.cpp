@@ -302,7 +302,7 @@ void PandaGen::LoadVar(const ir::Identifier *node, const binder::ScopeFindResult
 {
     auto *var = result.variable;
 
-    if (!var) {
+    if (!var || var->Declaration()->IsDeclare()) {
         TryLoadGlobalByName(node, result.name);
         return;
     }

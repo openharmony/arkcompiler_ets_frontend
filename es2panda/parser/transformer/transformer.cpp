@@ -1204,11 +1204,11 @@ ir::VariableDeclaration *Transformer::CreateVariableDeclarationWithIdentify(util
             binder::DeclarationFlags::EXPORT :
             binder::DeclarationFlags::NONE;
         if (flags & VariableParsingFlags::VAR) {
-            decl = Binder()->AddDecl<binder::VarDecl>(startPos, declflag, name);
+            decl = Binder()->AddDecl<binder::VarDecl>(startPos, declflag, false, name);
         } else if (flags & VariableParsingFlags::LET) {
-            decl = Binder()->AddDecl<binder::LetDecl>(startPos, declflag, name);
+            decl = Binder()->AddDecl<binder::LetDecl>(startPos, declflag, false, name);
         } else {
-            decl = Binder()->AddDecl<binder::ConstDecl>(startPos, declflag, name);
+            decl = Binder()->AddDecl<binder::ConstDecl>(startPos, declflag, false, name);
         }
         decl->BindNode(declaration);
     }

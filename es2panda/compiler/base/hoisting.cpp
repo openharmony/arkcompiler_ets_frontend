@@ -15,10 +15,11 @@
 
 #include "hoisting.h"
 
-#include <ir/base/scriptFunction.h>
 #include <binder/binder.h>
 #include <binder/scope.h>
 #include <compiler/core/pandagen.h>
+#include <ir/base/scriptFunction.h>
+#include <ir/statements/variableDeclaration.h>
 #include <parser/module/sourceTextModuleRecord.h>
 
 namespace panda::es2panda::compiler {
@@ -37,8 +38,11 @@ static void StoreModuleVarOrLocalVar(PandaGen *pg, binder::ScopeFindResult &resu
 
 static void HoistVar(PandaGen *pg, binder::Variable *var, const binder::VarDecl *decl)
 {
-    auto *scope = pg->Scope();
+    if (decl->IsDeclare()) {
+        return;
+    }
 
+    auto *scope = pg->Scope();
     if (scope->IsGlobalScope()) {
         pg->LoadConst(decl->Node(), Constant::JS_UNDEFINED);
         pg->StoreGlobalVar(decl->Node(), decl->Name());
@@ -59,10 +63,12 @@ static void HoistVar(PandaGen *pg, binder::Variable *var, const binder::VarDecl 
 static void HoistFunction(PandaGen *pg, binder::Variable *var, const binder::FunctionDecl *decl)
 {
     const ir::ScriptFunction *scriptFunction = decl->Node()->AsScriptFunction();
-    auto *scope = pg->Scope();
+    if (scriptFunction->Declare()) {
+        return;
+    }
 
     const auto &internalName = scriptFunction->Scope()->InternalName();
-
+    auto *scope = pg->Scope();
     if (scope->IsGlobalScope()) {
         pg->DefineFunction(decl->Node(), scriptFunction, internalName);
         pg->StoreGlobalVar(decl->Node(), var->Declaration()->Name());
