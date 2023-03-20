@@ -134,6 +134,8 @@ def get_args():
         help='run hotfix tests')
     parser.add_argument('--hotreload', dest='hotreload', action='store_true', default=False,
         help='run hotreload tests')
+    parser.add_argument('--base64', dest='base64', action='store_true', default=False,
+        help='run base64 tests')
 
     return parser.parse_args()
 
@@ -937,6 +939,66 @@ class HotreloadRunner(PatchRunner):
         self.tests += list(map(lambda t: PatchTest(t, "hotreload"), self.tests_in_dirs))
 
 
+class Base64Test(Test):
+    def __init__(self, test_path, input_type):
+        Test.__init__(self, test_path, "")
+        self.input_type = input_type
+
+    def run(self, runner):
+        cmd = runner.cmd_prefix + [runner.es2panda, "--base64Output"]
+        if self.input_type == "file":
+            cmd.extend([os.path.join(self.path, "input.js")])
+        elif self.input_type == "string":
+            input_file = os.path.join(self.path, "input.txt")
+            try:
+                with open(input_file, 'r') as fp:
+                    base64_input = (''.join((fp.readlines()[12:]))).lstrip()  # ignore license description lines
+                    cmd.extend(["--base64Input", base64_input])
+            except Exception:
+                self.passed = False
+        else:
+            self.error = "Unsupported base64 input type"
+            self.passed = False
+            return self
+
+        self.log_cmd(cmd)
+
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate(timeout=runner.args.es2panda_timeout)
+        if stderr:
+            self.passed = False
+            self.error = stderr.decode("utf-8", errors="ignore")
+            return self
+
+        self.output = stdout.decode("utf-8", errors="ignore")
+
+        expected_path = os.path.join(self.path, 'expected.txt')
+        try:
+            with open(expected_path, 'r') as fp:
+                expected = (''.join((fp.readlines()[12:]))).lstrip()
+            self.passed = expected == self.output
+        except Exception:
+            self.passed = False
+
+        if not self.passed:
+            self.error = "expected output:" + os.linesep + expected + os.linesep + "actual output:" + os.linesep +\
+                self.output
+
+        return self
+
+
+class Base64Runner(Runner):
+    def __init__(self, args):
+        Runner.__init__(self, args, "Base64")
+        self.test_directory = path.join(self.test_root, "base64")
+        self.add_test()
+
+    def add_test(self):
+        self.tests = []
+        self.tests.append(Base64Test(os.path.join(self.test_directory, "inputFile"), "file"))
+        self.tests.append(Base64Test(os.path.join(self.test_directory, "inputString"), "string"))
+
+
 def main():
     args = get_args()
 
@@ -973,6 +1035,9 @@ def main():
 
     if args.hotreload:
         runners.append(HotreloadRunner(args))
+
+    if args.base64:
+        runners.append(Base64Runner(args))
 
     failed_tests = 0
 

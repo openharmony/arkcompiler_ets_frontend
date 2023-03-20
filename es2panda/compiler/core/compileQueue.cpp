@@ -70,24 +70,30 @@ void CompileModuleRecordJob::Run()
 void CompileFileJob::Run()
 {
     std::stringstream ss;
-    if (!util::Helpers::ReadFileToBuffer(src_->fileName, ss)) {
-        return;
-    }
-    std::string buffer = ss.str();
-    src_->source = buffer;
-
-    auto cacheFileIter = options_->cacheFiles.find(src_->fileName);
-    if (cacheFileIter != options_->cacheFiles.end()) {
-        src_->hash = GetHash32String(reinterpret_cast<const uint8_t *>(buffer.c_str()));
-
-        ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
-        auto *cacheProgramInfo = proto::ProtobufSnapshotGenerator::GetCacheContext(cacheFileIter->second, &allocator);
-
-        if (cacheProgramInfo != nullptr && cacheProgramInfo->hashCode == src_->hash) {
-            std::unique_lock<std::mutex> lock(global_m_);
-            auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(cacheProgramInfo->program));
-            progsInfo_.insert({src_->fileName, cache});
+    std::string buffer;
+    if (!src_->fileName.empty()) {
+        if (!util::Helpers::ReadFileToBuffer(src_->fileName, ss)) {
             return;
+        }
+        buffer = ss.str();
+        src_->source = buffer;
+    }
+
+    if (!src_->fileName.empty()) {
+        auto cacheFileIter = options_->cacheFiles.find(src_->fileName);
+        if (cacheFileIter != options_->cacheFiles.end()) {
+            src_->hash = GetHash32String(reinterpret_cast<const uint8_t *>(buffer.c_str()));
+
+            ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+            auto *cacheProgramInfo = proto::ProtobufSnapshotGenerator::GetCacheContext(cacheFileIter->second,
+                &allocator);
+
+            if (cacheProgramInfo != nullptr && cacheProgramInfo->hashCode == src_->hash) {
+                std::unique_lock<std::mutex> lock(global_m_);
+                auto *cache = allocator_->New<util::ProgramCache>(src_->hash, std::move(cacheProgramInfo->program));
+                progsInfo_.insert({src_->fileName, cache});
+                return;
+            }
         }
     }
 
