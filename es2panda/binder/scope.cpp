@@ -301,6 +301,9 @@ bool FunctionScope::AddBinding(ArenaAllocator *allocator, Variable *currentVaria
         case DeclType::FUNC: {
             return AddFunction<LocalVariable>(allocator, currentVariable, newDecl, extension);
         }
+        case DeclType::CLASS: {
+            return AddClass<LocalVariable>(allocator, currentVariable, newDecl);
+        }
         case DeclType::ENUM_LITERAL: {
             return AddTSBinding<EnumLiteralVariable>(allocator, newDecl, VariableFlags::ENUM_LITERAL);
         }
@@ -335,6 +338,9 @@ bool GlobalScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariabl
         }
         case DeclType::FUNC: {
             return AddFunction<GlobalVariable>(allocator, currentVariable, newDecl, extension);
+        }
+        case DeclType::CLASS: {
+            return AddClass<LocalVariable>(allocator, currentVariable, newDecl);
         }
         case DeclType::ENUM_LITERAL: {
             return AddTSBinding<EnumLiteralVariable>(allocator, newDecl, VariableFlags::ENUM_LITERAL);
@@ -397,11 +403,19 @@ bool ModuleScope::AddBinding(ArenaAllocator *allocator, Variable *currentVariabl
         }
         case DeclType::FUNC: {
             if (currentVariable) {
-                return false;
+                auto decl = currentVariable->Declaration();
+                if (!decl->IsClassDecl() || !decl->AsClassDecl()->IsDeclare()) {
+                    return false;
+                }
             }
             return newDecl->IsImportOrExportDecl() ?
                    AddFunction<ModuleVariable>(allocator, currentVariable, newDecl, extension) :
                    AddFunction<LocalVariable>(allocator, currentVariable, newDecl, extension);
+        }
+        case DeclType::CLASS: {
+            return newDecl->IsImportOrExportDecl() ?
+                   AddClass<ModuleVariable>(allocator, currentVariable, newDecl) :
+                   AddClass<LocalVariable>(allocator, currentVariable, newDecl);
         }
         case DeclType::ENUM_LITERAL: {
             return AddTSBinding<EnumLiteralVariable>(allocator, newDecl, VariableFlags::ENUM_LITERAL);

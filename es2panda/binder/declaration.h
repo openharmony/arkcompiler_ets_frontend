@@ -193,20 +193,6 @@ public:
     }
 };
 
-class FunctionDecl : public MultiDecl<ir::ScriptFunction> {
-public:
-    explicit FunctionDecl(ArenaAllocator *allocator, util::StringView name, const ir::AstNode *node)
-        : MultiDecl(allocator, name)
-    {
-        node_ = node;
-    }
-
-    DeclType Type() const override
-    {
-        return DeclType::FUNC;
-    }
-};
-
 class TypeParameterDecl : public Decl {
 public:
     explicit TypeParameterDecl(util::StringView name, const ir::AstNode *node);
@@ -302,12 +288,47 @@ public:
 
 class ClassDecl : public Decl {
 public:
-    explicit ClassDecl(util::StringView name) : Decl(name) {}
+    explicit ClassDecl(util::StringView name, bool declare) : Decl(name), declare_(declare) {}
 
     DeclType Type() const override
     {
         return DeclType::CLASS;
     }
+
+    bool IsDeclare() const
+    {
+        return declare_;
+    }
+
+private:
+    bool declare_;
+};
+
+class FunctionDecl : public MultiDecl<ir::ScriptFunction> {
+public:
+    explicit FunctionDecl(ArenaAllocator *allocator, util::StringView name, const ir::AstNode *node)
+        : MultiDecl(allocator, name)
+    {
+        node_ = node;
+    }
+
+    DeclType Type() const override
+    {
+        return DeclType::FUNC;
+    }
+
+    void SetDeclClass(ClassDecl *declClass)
+    {
+        declClass_ = declClass;
+    }
+
+    ClassDecl *GetDeclClass()
+    {
+        return declClass_;
+    }
+
+private:
+    ClassDecl *declClass_ {nullptr};
 };
 
 class ParameterDecl : public Decl {

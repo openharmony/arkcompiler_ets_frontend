@@ -1,9 +1,6 @@
-es2panda/test/TypeScript/tests/cases/compiler/ambientClassOverloadForFunction.ts
 es2panda/test/TypeScript/tests/cases/compiler/bom-utf16be.ts
-es2panda/test/TypeScript/tests/cases/compiler/classFunctionMerging.ts
 es2panda/test/TypeScript/tests/cases/compiler/collisionArgumentsInType.ts
 es2panda/test/TypeScript/tests/cases/compiler/collisionArgumentsInterfaceMembers.ts
-es2panda/test/TypeScript/tests/cases/compiler/constructorOverloads5.ts
 es2panda/test/TypeScript/tests/cases/compiler/elidedEmbeddedStatementsReplacedWithSemicolon.ts
 es2panda/test/TypeScript/tests/cases/compiler/globalIsContextualKeyword.ts
 es2panda/test/TypeScript/tests/cases/compiler/inferenceErasedSignatures.ts

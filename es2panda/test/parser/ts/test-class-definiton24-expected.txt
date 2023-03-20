@@ -1,0 +1,561 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "TSModuleDeclaration",
+      "id": {
+        "type": "Identifier",
+        "name": "ns",
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 19
+          },
+          "end": {
+            "line": 17,
+            "column": 21
+          }
+        }
+      },
+      "body": {
+        "type": "TSModuleBlock",
+        "body": [
+          {
+            "type": "ClassDeclaration",
+            "definition": {
+              "id": {
+                "type": "Identifier",
+                "name": "C1",
+                "loc": {
+                  "start": {
+                    "line": 18,
+                    "column": 11
+                  },
+                  "end": {
+                    "line": 18,
+                    "column": 13
+                  }
+                }
+              },
+              "superClass": null,
+              "implements": [],
+              "constructor": {
+                "type": "MethodDefinition",
+                "key": {
+                  "type": "Identifier",
+                  "name": "constructor",
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "kind": "constructor",
+                "static": false,
+                "optional": false,
+                "computed": false,
+                "value": {
+                  "type": "FunctionExpression",
+                  "function": {
+                    "type": "ScriptFunction",
+                    "id": null,
+                    "generator": false,
+                    "async": false,
+                    "expression": false,
+                    "params": [],
+                    "declare": true,
+                    "loc": {
+                      "start": {
+                        "line": 1,
+                        "column": 1
+                      },
+                      "end": {
+                        "line": 1,
+                        "column": 1
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "overloads": [],
+                "decorators": [],
+                "loc": {
+                  "start": {
+                    "line": 18,
+                    "column": 5
+                  },
+                  "end": {
+                    "line": 18,
+                    "column": 16
+                  }
+                }
+              },
+              "body": [],
+              "indexSignatures": [],
+              "loc": {
+                "start": {
+                  "line": 18,
+                  "column": 14
+                },
+                "end": {
+                  "line": 18,
+                  "column": 16
+                }
+              }
+            },
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 18,
+                "column": 5
+              },
+              "end": {
+                "line": 18,
+                "column": 16
+              }
+            }
+          },
+          {
+            "type": "TSDeclareFunction",
+            "function": {
+              "type": "ScriptFunction",
+              "id": {
+                "type": "Identifier",
+                "name": "C1",
+                "loc": {
+                  "start": {
+                    "line": 19,
+                    "column": 14
+                  },
+                  "end": {
+                    "line": 19,
+                    "column": 16
+                  }
+                }
+              },
+              "generator": false,
+              "async": false,
+              "expression": false,
+              "params": [],
+              "returnType": {
+                "type": "TSTypeReference",
+                "typeName": {
+                  "type": "Identifier",
+                  "name": "C1",
+                  "loc": {
+                    "start": {
+                      "line": 19,
+                      "column": 21
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 23
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 19,
+                    "column": 21
+                  },
+                  "end": {
+                    "line": 19,
+                    "column": 23
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 5
+                },
+                "end": {
+                  "line": 20,
+                  "column": 13
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 19,
+                "column": 5
+              },
+              "end": {
+                "line": 20,
+                "column": 13
+              }
+            }
+          },
+          {
+            "type": "TSDeclareFunction",
+            "function": {
+              "type": "ScriptFunction",
+              "id": {
+                "type": "Identifier",
+                "name": "C1",
+                "loc": {
+                  "start": {
+                    "line": 20,
+                    "column": 14
+                  },
+                  "end": {
+                    "line": 20,
+                    "column": 16
+                  }
+                }
+              },
+              "generator": false,
+              "async": false,
+              "expression": false,
+              "params": [],
+              "returnType": {
+                "type": "TSTypeReference",
+                "typeName": {
+                  "type": "Identifier",
+                  "name": "C1",
+                  "loc": {
+                    "start": {
+                      "line": 20,
+                      "column": 21
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 23
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 20,
+                    "column": 21
+                  },
+                  "end": {
+                    "line": 20,
+                    "column": 23
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 20,
+                  "column": 5
+                },
+                "end": {
+                  "line": 22,
+                  "column": 13
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 20,
+                "column": 5
+              },
+              "end": {
+                "line": 22,
+                "column": 13
+              }
+            }
+          },
+          {
+            "type": "TSDeclareFunction",
+            "function": {
+              "type": "ScriptFunction",
+              "id": {
+                "type": "Identifier",
+                "name": "C2",
+                "loc": {
+                  "start": {
+                    "line": 22,
+                    "column": 14
+                  },
+                  "end": {
+                    "line": 22,
+                    "column": 16
+                  }
+                }
+              },
+              "generator": false,
+              "async": false,
+              "expression": false,
+              "params": [],
+              "returnType": {
+                "type": "TSTypeReference",
+                "typeName": {
+                  "type": "Identifier",
+                  "name": "C2",
+                  "loc": {
+                    "start": {
+                      "line": 22,
+                      "column": 21
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 23
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 22,
+                    "column": 21
+                  },
+                  "end": {
+                    "line": 22,
+                    "column": 23
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 22,
+                  "column": 5
+                },
+                "end": {
+                  "line": 23,
+                  "column": 13
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 22,
+                "column": 5
+              },
+              "end": {
+                "line": 23,
+                "column": 13
+              }
+            }
+          },
+          {
+            "type": "TSDeclareFunction",
+            "function": {
+              "type": "ScriptFunction",
+              "id": {
+                "type": "Identifier",
+                "name": "C2",
+                "loc": {
+                  "start": {
+                    "line": 23,
+                    "column": 14
+                  },
+                  "end": {
+                    "line": 23,
+                    "column": 16
+                  }
+                }
+              },
+              "generator": false,
+              "async": false,
+              "expression": false,
+              "params": [],
+              "returnType": {
+                "type": "TSTypeReference",
+                "typeName": {
+                  "type": "Identifier",
+                  "name": "C2",
+                  "loc": {
+                    "start": {
+                      "line": 23,
+                      "column": 21
+                    },
+                    "end": {
+                      "line": 23,
+                      "column": 23
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 23,
+                    "column": 21
+                  },
+                  "end": {
+                    "line": 23,
+                    "column": 23
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 23,
+                  "column": 5
+                },
+                "end": {
+                  "line": 24,
+                  "column": 10
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 23,
+                "column": 5
+              },
+              "end": {
+                "line": 24,
+                "column": 10
+              }
+            }
+          },
+          {
+            "type": "ClassDeclaration",
+            "definition": {
+              "id": {
+                "type": "Identifier",
+                "name": "C2",
+                "loc": {
+                  "start": {
+                    "line": 24,
+                    "column": 11
+                  },
+                  "end": {
+                    "line": 24,
+                    "column": 13
+                  }
+                }
+              },
+              "superClass": null,
+              "implements": [],
+              "constructor": {
+                "type": "MethodDefinition",
+                "key": {
+                  "type": "Identifier",
+                  "name": "constructor",
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "kind": "constructor",
+                "static": false,
+                "optional": false,
+                "computed": false,
+                "value": {
+                  "type": "FunctionExpression",
+                  "function": {
+                    "type": "ScriptFunction",
+                    "id": null,
+                    "generator": false,
+                    "async": false,
+                    "expression": false,
+                    "params": [],
+                    "declare": true,
+                    "loc": {
+                      "start": {
+                        "line": 1,
+                        "column": 1
+                      },
+                      "end": {
+                        "line": 1,
+                        "column": 1
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "overloads": [],
+                "decorators": [],
+                "loc": {
+                  "start": {
+                    "line": 24,
+                    "column": 5
+                  },
+                  "end": {
+                    "line": 24,
+                    "column": 16
+                  }
+                }
+              },
+              "body": [],
+              "indexSignatures": [],
+              "loc": {
+                "start": {
+                  "line": 24,
+                  "column": 14
+                },
+                "end": {
+                  "line": 24,
+                  "column": 16
+                }
+              }
+            },
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 24,
+                "column": 5
+              },
+              "end": {
+                "line": 24,
+                "column": 16
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 22
+          },
+          "end": {
+            "line": 25,
+            "column": 2
+          }
+        }
+      },
+      "declare": true,
+      "global": false,
+      "loc": {
+        "start": {
+          "line": 17,
+          "column": 9
+        },
+        "end": {
+          "line": 26,
+          "column": 1
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1
+    },
+    "end": {
+      "line": 26,
+      "column": 1
+    }
+  }
+}

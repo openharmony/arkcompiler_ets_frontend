@@ -479,7 +479,9 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
         ASSERT(!className.Empty());
         ScopeFindResult res = scope_->Find(className);
 
-        ASSERT(res.variable && res.variable->Declaration()->IsClassDecl());
+        ASSERT(res.variable && (res.variable->Declaration()->IsClassDecl() ||
+               (res.variable->Declaration()->IsFunctionDecl() &&
+               res.variable->Declaration()->AsFunctionDecl()->GetDeclClass() != nullptr)));
         res.variable->AddFlag(VariableFlags::INITIALIZED);
     }
 

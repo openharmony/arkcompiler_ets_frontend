@@ -472,6 +472,7 @@ private:
     ir::FunctionDeclaration *ParseFunctionDeclaration(bool canBeAnonymous = false,
                                                       ParserStatus newStatus = ParserStatus::NO_OPTS,
                                                       bool isDeclare = false);
+    void AddFunctionToBinder(ir::ScriptFunction *func, ParserStatus newStatus);
     void CheckOptionalBindingPatternParameter(ir::ScriptFunction *func) const;
     ir::Statement *ParseExportDeclaration(StatementParsingFlags flags, ArenaVector<ir::Decorator *> &&decorators);
     std::tuple<ForStatementKind, ir::AstNode *, ir::Expression *, ir::Expression *> ParseForInOf(
