@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token, expected 'class'. [test-class-modifier-keywords-3.ts:17:25]
