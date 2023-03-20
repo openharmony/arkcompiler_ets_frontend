@@ -2528,7 +2528,9 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
     }
 
     if (!decorators.empty() && lexer_->GetToken().Type() != lexer::TokenType::KEYW_CLASS &&
-        (context_.Status() & ParserStatus::IN_CLASS_BODY) == 0) {
+        (context_.Status() & ParserStatus::IN_CLASS_BODY) == 0 &&
+        !(lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
+          (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_ABSTRACT))) {
         ThrowSyntaxError("Decorators are not valid here.", decorators.front()->Start());
     }
 
