@@ -144,6 +144,7 @@ void TypeRecorder::SetNodeTypeIndex(const ir::AstNode *node, int64_t index)
     }
 
     nodeTypeIndex_[node] = index;
+    ASSERT(GetNodeTypeIndex(node) == index);
 }
 
 int64_t TypeRecorder::GetVariableTypeIndex(const binder::Variable *variable) const
@@ -158,6 +159,7 @@ void TypeRecorder::SetVariableTypeIndex(const binder::Variable *variable, int64_
     }
 
     variableTypeIndex_[variable] = index;
+    ASSERT(GetVariableTypeIndex(variable) == index);
 }
 
 void TypeRecorder::SetIdentifierTypeIndex(const ir::Identifier *identifier, int64_t index)
@@ -177,6 +179,7 @@ int64_t TypeRecorder::GetBuiltinInst(const std::vector<int64_t> &allTypes) const
 void TypeRecorder::SetBuiltinInst(const std::vector<int64_t> &allTypes, int64_t instIndex)
 {
     builtinInst_[allTypes] = instIndex;
+    ASSERT(GetBuiltinInst(allTypes) == instIndex);
 }
 
 int64_t TypeRecorder::GetGenericInst(const std::vector<int64_t> &allTypes) const
@@ -187,6 +190,7 @@ int64_t TypeRecorder::GetGenericInst(const std::vector<int64_t> &allTypes) const
 void TypeRecorder::SetGenericInst(const std::vector<int64_t> &allTypes, int64_t instIndex)
 {
     genericInst_[allTypes] = instIndex;
+    ASSERT(GetGenericInst(allTypes) == instIndex);
 }
 
 int64_t TypeRecorder::GetIndexSig(int64_t refIndex) const
@@ -197,6 +201,7 @@ int64_t TypeRecorder::GetIndexSig(int64_t refIndex) const
 void TypeRecorder::SetIndexSig(int64_t refIndex, int64_t indexSigIndex)
 {
     indexSig_[refIndex] = indexSigIndex;
+    ASSERT(GetIndexSig(refIndex) == indexSigIndex);
 }
 
 int64_t TypeRecorder::GetClassInst(int64_t classIndex) const
@@ -210,6 +215,7 @@ void TypeRecorder::SetClassInst(int64_t classIndex, int64_t instIndex)
         return;
     }
     classInst_[classIndex] = instIndex;
+    ASSERT(GetClassInst(classIndex) == instIndex);
 }
 
 int64_t TypeRecorder::GetClassType(int64_t instIndex) const
@@ -225,6 +231,7 @@ void TypeRecorder::SetClassType(int64_t instIndex, int64_t classIndex)
         return;
     }
     classType_[instIndex] = classIndex;
+    ASSERT(GetClassType(instIndex) == classIndex);
 }
 
 int64_t TypeRecorder::GetArrayType(int64_t contentIndex) const
@@ -235,6 +242,7 @@ int64_t TypeRecorder::GetArrayType(int64_t contentIndex) const
 void TypeRecorder::SetArrayType(int64_t contentIndex, int64_t arrayIndex)
 {
     arrayType_[contentIndex] = arrayIndex;
+    ASSERT(GetArrayType(contentIndex) == arrayIndex);
 }
 
 int64_t TypeRecorder::GetUnionType(const std::string &unionStr) const
@@ -245,6 +253,7 @@ int64_t TypeRecorder::GetUnionType(const std::string &unionStr) const
 void TypeRecorder::SetUnionType(const std::string &unionStr, int64_t unionIndex)
 {
     unionType_[unionStr] = unionIndex;
+    ASSERT(GetUnionType(unionStr) == unionIndex);
 }
 
 int64_t TypeRecorder::GetObjectType(const std::string &objectStr) const
@@ -255,6 +264,7 @@ int64_t TypeRecorder::GetObjectType(const std::string &objectStr) const
 void TypeRecorder::SetObjectType(const std::string &objectStr, int64_t objectIndex)
 {
     objectType_[objectStr] = objectIndex;
+    ASSERT(GetObjectType(objectStr) == objectIndex);
 }
 
 int64_t TypeRecorder::GetFunctionType(const std::string &functionStr) const
@@ -265,6 +275,7 @@ int64_t TypeRecorder::GetFunctionType(const std::string &functionStr) const
 void TypeRecorder::SetFunctionType(const std::string &functionStr, int64_t functionIndex)
 {
     functionType_[functionStr] = functionIndex;
+    ASSERT(GetFunctionType(functionStr) == functionIndex);
 }
 
 int64_t TypeRecorder::GetExportType(const std::string &exportStr) const
@@ -275,6 +286,7 @@ int64_t TypeRecorder::GetExportType(const std::string &exportStr) const
 void TypeRecorder::SetExportType(const std::string &exportStr, int64_t exportIndex)
 {
     exportType_[exportStr] = exportIndex;
+    ASSERT(GetExportType(exportStr) == exportIndex);
 }
 
 int64_t TypeRecorder::GetDeclareType(const std::string &declareStr) const
@@ -285,6 +297,7 @@ int64_t TypeRecorder::GetDeclareType(const std::string &declareStr) const
 void TypeRecorder::SetDeclareType(const std::string &declareStr, int64_t declareIndex)
 {
     declareType_[declareStr] = declareIndex;
+    ASSERT(GetDeclareType(declareStr) == declareIndex);
 }
 
 int64_t TypeRecorder::GetNamespaceType(const std::string &namespaceStr) const
@@ -295,6 +308,7 @@ int64_t TypeRecorder::GetNamespaceType(const std::string &namespaceStr) const
 void TypeRecorder::SetNamespaceType(const std::string &namespaceStr, int64_t namespaceIndex)
 {
     namespaceType_[namespaceStr] = namespaceIndex;
+    ASSERT(GetNamespaceType(namespaceStr) == namespaceIndex);
 }
 
 std::string TypeRecorder::GetNamespacePath(const std::string &namespaceStr) const
@@ -305,6 +319,7 @@ std::string TypeRecorder::GetNamespacePath(const std::string &namespaceStr) cons
 void TypeRecorder::SetNamespacePath(const std::string &namespaceStr, const std::string &filePath)
 {
     namespacePath_[namespaceStr] = filePath;
+    ASSERT(GetNamespacePath(namespaceStr) == filePath);
 }
 
 const std::set<util::StringView> &TypeRecorder::GetAnonymousReExport() const

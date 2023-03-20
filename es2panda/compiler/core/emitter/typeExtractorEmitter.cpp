@@ -95,16 +95,23 @@ void TypeExtractorEmitter::GenFunctionTypeInfo(panda::pandasm::Program *prog) co
     auto recorder = pg_->Context()->TypeRecorder();
     std::vector<Literal> typedInsns;
     typedInsns.reserve(pg_->TypedInsns().size() * 4U);  // Expand to 4 pieces of information
-    size_t index = 0U;
+    uint32_t index = 0;
+    uint32_t remove = 0;
     for (const auto *ins : pg_->Insns()) {
+        if (func_->ins[index].opcode == panda::pandasm::Opcode::INVALID) {
+            remove++;
+            index++;
+            continue;
+        }
         auto t = pg_->TypedInsns().find(ins);
         if (t != pg_->TypedInsns().end()) {
             int64_t typeIndex = t->second;
             uint32_t orderIndex = index;
             if (typeIndex > extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
-                GenInsnTypeInfo(recorder, orderIndex, typeIndex, typedInsns);
-                DCOUT << "[LOG]" << func_->name << ": " << func_->ins[index].ToString("", true, func_->regs_num) <<
-                    " | " << orderIndex << " | " << typeIndex << std::endl;
+                uint32_t realOrderIndex = orderIndex - remove;
+                GenInsnTypeInfo(recorder, realOrderIndex, typeIndex, typedInsns);
+                DCOUT << "[LOG] " << func_->name << ": " << func_->ins[index].ToString("", true, func_->regs_num) <<
+                    " | " << realOrderIndex << " | " << typeIndex << std::endl;
             }
         }
         index++;
