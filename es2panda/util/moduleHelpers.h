@@ -17,16 +17,15 @@
 #define ES2PANDA_UTIL_MODULE_HELPERS_H
 
 #include <assembly-program.h>
+#include <es2panda.h>
 #include <mem/arena_allocator.h>
 #include <util/programCache.h>
 
 namespace panda::es2panda::util {
 class ModuleHelpers {
 public:
-    static void CompileNpmModuleEntryList(const std::string &entriesInfo,
-        std::map<std::string, panda::es2panda::util::ProgramCache*> *cacheProgs,
-        std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
-        panda::ArenaAllocator *allocator);
+    static void CompileNpmModuleEntryList(const std::string &entriesInfo, panda::es2panda::CompilerOptions &options,
+        std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo, panda::ArenaAllocator *allocator);
 };
 } // panda::es2panda::util
 

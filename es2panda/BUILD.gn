@@ -253,6 +253,7 @@ es2panda_src = [
   "util/moduleHelpers.cpp",
   "util/symbolTable.cpp",
   "util/ustring.cpp",
+  "util/workerQueue.cpp",
 ]
 
 config("es2abc_config_src") {
@@ -381,7 +382,10 @@ ohos_static_library("es2panda_lib") {
     use_rtti = true
   }
 
-  configs = [ ":es2abc_config_common" ]
+  configs = [
+    ":es2abc_config_common",
+    "../merge_abc:panda_assembly_proto_public_config",
+  ]
 
   include_dirs = [
     "${target_out_dir}",
@@ -398,6 +402,7 @@ ohos_static_library("es2panda_lib") {
     "$ark_root/libpandafile:libarkfile_frontend_static",
     "$ark_root/libziparchive:libarkziparchive_frontend_static",
     "$ark_third_party_root/icu/icu4c:static_icuuc",
+    "../merge_abc:panda_assembly_proto_static",
   ]
 
   if (enable_bytecode_optimizer) {
@@ -420,6 +425,7 @@ ohos_executable("es2panda") {
   }
 
   sources = [
+    "aot/emitFiles.cpp",
     "aot/main.cpp",
     "aot/options.cpp",
   ]

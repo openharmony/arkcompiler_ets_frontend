@@ -17,13 +17,20 @@
 #define ES2PANDA_UTIL_PROGRAM_CACHE_H
 
 #include <assembly-program.h>
+#include <assemblyProgramProto.h>
 
 namespace panda::es2panda::util {
 struct ProgramCache {
     uint32_t hashCode;
-    panda::pandasm::Program* program;
+    panda::pandasm::Program program;
+    bool needUpdateCache { false };
 
-    ProgramCache(uint32_t hashCode, panda::pandasm::Program* program) : hashCode(hashCode), program(program)
+    ProgramCache(uint32_t hashCode, panda::pandasm::Program program) : hashCode(hashCode), program(std::move(program))
+    {
+    }
+
+    ProgramCache(uint32_t hashCode, panda::pandasm::Program program, bool needUpdateCache)
+        : hashCode(hashCode), program(std::move(program)), needUpdateCache(needUpdateCache)
     {
     }
 };
