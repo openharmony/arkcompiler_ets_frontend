@@ -45,6 +45,11 @@ public:
         return expression_;
     }
 
+    Expression *Expr()
+    {
+        return expression_;
+    }
+
     const Expression *TypeAnnotation() const
     {
         return typeAnnotation_;
