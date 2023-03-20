@@ -46,8 +46,7 @@ void WhileStatement::Compile(compiler::PandaGen *pg) const
     compiler::Condition::Compile(pg, test_, labelTarget.BreakTarget());
 
     {
-        compiler::LocalRegScope regScope(pg, scope_);
-        compiler::LabelContext labelCtx(pg, labelTarget);
+        compiler::LoopEnvScope envScope(pg, labelTarget, scope_);
         body_->Compile(pg);
     }
 

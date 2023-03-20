@@ -99,6 +99,10 @@ void LexEnvContext::AbortContext([[maybe_unused]] ControlFlowChange cfc,
     }
 
     const auto *node = envScope_->Scope()->Node();
+    if (node->IsForUpdateStatement()) {
+        return;
+    }
+
     pg_->PopLexEnv(node);
 }
 
