@@ -976,5 +976,11 @@
             "language/statements/for-await-of/ticks-with-sync-iter-resolved-promise-and-constructor-lookup.js",
             "language/statements/for-await-of/ticks-with-async-iter-resolved-promise-and-constructor-lookup-two.js"
         ]
+    },
+    {
+        "reason" : "Shield module-code case: TSC's option importsNotUsedAsValues set as Remove",
+        "files": [
+            "language/module-code/instn-star-err-not-found.js"
+        ]
     }
 ]
