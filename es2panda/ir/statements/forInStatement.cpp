@@ -41,9 +41,11 @@ void ForInStatement::Dump(ir::AstDumper *dumper) const
 
 void ForInStatement::Compile(compiler::PandaGen *pg) const
 {
-    compiler::LabelTarget labelTarget(pg);
+    if (scope_->NeedLexEnv()) {
+        pg->NewLexEnv(this, scope_->LexicalSlots());
+    }
 
-    compiler::RegScope rs(pg);
+    compiler::LocalRegScope loopRegScope(pg, scope_);
     compiler::VReg iter = pg->AllocReg();
     compiler::VReg propName = pg->AllocReg();
 
@@ -52,6 +54,12 @@ void ForInStatement::Compile(compiler::PandaGen *pg) const
     pg->GetPropIterator(this);
     pg->StoreAccumulator(this, iter);
 
+    if (scope_->NeedLexEnv()) {
+        pg->PopLexEnv(this);
+    }
+
+    compiler::LabelTarget labelTarget(pg);
+    // loop start
     pg->SetLabel(this, labelTarget.ContinueTarget());
 
     // get next prop of enumerator
@@ -59,14 +67,11 @@ void ForInStatement::Compile(compiler::PandaGen *pg) const
     pg->StoreAccumulator(this, propName);
     pg->BranchIfUndefined(this, labelTarget.BreakTarget());
 
-    compiler::LocalRegScope declRegScope(pg, scope_->DeclScope()->InitScope());
     auto lref = compiler::LReference::CreateLRef(pg, left_, false);
-    pg->LoadAccumulator(this, propName);
-    lref.SetValue();
-
     {
-        compiler::LoopEnvScope declEnvScope(pg, scope_->DeclScope());
         compiler::LoopEnvScope envScope(pg, scope_, labelTarget);
+        pg->LoadAccumulator(this, propName);
+        lref.SetValue();
         body_->Compile(pg);
     }
 
@@ -82,11 +87,10 @@ checker::Type *ForInStatement::Check([[maybe_unused]] checker::Checker *checker)
 void ForInStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 {
     auto *loopScope = Scope();
-    auto declScopeCtx = binder::LexicalScope<binder::LoopDeclarationScope>::Enter(binder, loopScope->DeclScope());
+    auto loopCtx = binder::LexicalScope<binder::LoopScope>::Enter(binder, loopScope);
     left_ = std::get<ir::AstNode *>(cb(left_));
     right_ = std::get<ir::AstNode *>(cb(right_))->AsExpression();
 
-    auto loopCtx = binder::LexicalScope<binder::LoopScope>::Enter(binder, loopScope);
     body_ = std::get<ir::AstNode *>(cb(body_))->AsStatement();
 }
 

@@ -54,7 +54,6 @@ enum class DeclType {
     _(LOCAL, LocalScope)                  \
     /* Variable Scopes */                 \
     _(LOOP, LoopScope)                    \
-    _(LOOP_DECL, LoopDeclarationScope)    \
     _(FUNCTION, FunctionScope)            \
     _(GLOBAL, GlobalScope)                \
     _(MODULE, ModuleScope)                \
