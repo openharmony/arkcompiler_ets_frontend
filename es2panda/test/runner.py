@@ -1094,7 +1094,9 @@ class Base64Test(Test):
     def run(self, runner):
         cmd = runner.cmd_prefix + [runner.es2panda, "--base64Output"]
         if self.input_type == "file":
-            cmd.extend([os.path.join(self.path, "input.js")])
+            input_file_name = 'input.js'
+            cmd.extend(['--source-file', input_file_name])
+            cmd.extend([os.path.join(self.path, input_file_name)])
         elif self.input_type == "string":
             input_file = os.path.join(self.path, "input.txt")
             try:
@@ -1144,6 +1146,9 @@ class Base64Runner(Runner):
         self.tests = []
         self.tests.append(Base64Test(os.path.join(self.test_directory, "inputFile"), "file"))
         self.tests.append(Base64Test(os.path.join(self.test_directory, "inputString"), "string"))
+
+    def test_path(self, src):
+        return os.path.basename(src)
 
 
 def main():
