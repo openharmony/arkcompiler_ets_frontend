@@ -28,7 +28,7 @@ void EmitFileQueue::Schedule()
 
     // generate abcs
     if (mergeAbc_) {
-        auto emitMergedAbcJob = new EmitMergedAbcJob(options_->CompilerOutput(), progsInfo_, isDebug_);
+        auto emitMergedAbcJob = new EmitMergedAbcJob(options_->CompilerOutput(), progsInfo_);
         jobs_.push_back(emitMergedAbcJob);
         jobsCount_++;
     } else {
@@ -36,7 +36,7 @@ void EmitFileQueue::Schedule()
             try {
                 auto outputFileName = options_->OutputFiles().empty() ? options_->CompilerOutput() :
                     options_->OutputFiles().at(info.first);
-                auto emitSingleAbcJob = new EmitSingleAbcJob(outputFileName, &(info.second->program), statp_, isDebug_);
+                auto emitSingleAbcJob = new EmitSingleAbcJob(outputFileName, &(info.second->program), statp_);
                 jobs_.push_back(emitSingleAbcJob);
                 jobsCount_++;
             } catch (std::exception &error) {
@@ -65,7 +65,7 @@ void EmitFileQueue::Schedule()
 void EmitSingleAbcJob::Run()
 {
     if (!panda::pandasm::AsmEmitter::Emit(panda::os::file::File::GetExtendedFilePath(outputFileName_), *prog_, statp_,
-        nullptr, isDebug_)) {
+        nullptr, true)) {
         throw Error(ErrorType::GENERIC, "Failed to emit " + outputFileName_ + ", error: " +
             panda::pandasm::AsmEmitter::GetLastError());
     }
@@ -79,7 +79,7 @@ void EmitMergedAbcJob::Run()
         progs.push_back(&(info.second->program));
     }
     if (!panda::pandasm::AsmEmitter::EmitPrograms(panda::os::file::File::GetExtendedFilePath(outputFileName_), progs,
-        isDebug_)) {
+        true)) {
         throw Error(ErrorType::GENERIC, "Failed to emit " + outputFileName_ + ", error: " +
             panda::pandasm::AsmEmitter::GetLastError());
     }
