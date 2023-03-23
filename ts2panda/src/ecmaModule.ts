@@ -66,10 +66,10 @@ export class SourceTextModuleRecord {
         return index;
     }
 
-    // import x from 'test.js';
-    // import {x} from 'test.js';
-    // import {x as y} from 'test.js';
-    // import defaultExport from 'test.js'
+    // Targetcase 1: import x from 'test.js';
+    // Targetcase 2: import {x} from 'test.js';
+    // Targetcase 3: import {x as y} from 'test.js';
+    // Targetcase 4: import defaultExport from 'test.js'
     addImportEntry(node: ts.Node, importName: string, localName: string, moduleRequest: string) {
         let importEntry: Entry = new Entry(node, undefined, localName, importName, this.addModuleRequest(moduleRequest));
         // We don't care if there's already an entry for this local name, as in that
@@ -77,24 +77,24 @@ export class SourceTextModuleRecord {
         this.regularImportEntries.set(localName, importEntry);
     }
 
-    // import 'test.js'
-    // import {} from 'test.js'
-    // export {} from 'test.js'
+    // Targetcase 1: import 'test.js'
+    // Targetcase 2: import {} from 'test.js'
+    // Targetcase 3: export {} from 'test.js'
     addEmptyImportEntry(moduleRequest: string) {
         this.addModuleRequest(moduleRequest);
     }
 
-    // import * as x from 'test.js';
+    // Targetcase 1: import * as x from 'test.js';
     addStarImportEntry(node: ts.Node, localName: string, moduleRequest: string) {
         let starImportEntry: Entry = new Entry(node, undefined, localName, undefined, this.addModuleRequest(moduleRequest));
         this.namespaceImportEntries.push(starImportEntry);
     }
 
-    // export {x};
-    // export {x as y};
-    // export VariableStatement
-    // export Declaration
-    // export default ...
+    // Targetcase 1: export {x};
+    // Targetcase 2: export {x as y};
+    // Targetcase 3: export VariableStatement
+    // Targetcase 4: export Declaration
+    // Targetcase 5: export default ...
     addLocalExportEntry(node: ts.Node, exportName: string, localName: string) {
         let localExportEntry: Entry = new Entry(node, exportName, localName, undefined);
         if (this.localExportEntries.has(localName)) {
@@ -104,15 +104,15 @@ export class SourceTextModuleRecord {
         }
     }
 
-    // export {x} from 'test.js';
-    // export {x as y} from 'test.js';
-    // import { x } from 'test.js'; export { x }
+    // Targetcase 1: export {x} from 'test.js';
+    // Targetcase 2: export {x as y} from 'test.js';
+    // Targetcase 3: import { x } from 'test.js'; export { x }
     addIndirectExportEntry(node: ts.Node, importName: string, exportName: string, moduleRequest: string) {
         let indirectExportEntry: Entry = new Entry(node, exportName, undefined, importName, this.addModuleRequest(moduleRequest));
         this.indirectExportEntries.push(indirectExportEntry);
     }
 
-    // export * from 'test.js';
+    // Targetcase 1: export * from 'test.js';
     addStarExportEntry(node: ts.Node, moduleRequest: string) {
         let starExportEntry: Entry = new Entry(node, undefined, undefined, undefined, this.addModuleRequest(moduleRequest));
         this.starExportEntries.push(starExportEntry);

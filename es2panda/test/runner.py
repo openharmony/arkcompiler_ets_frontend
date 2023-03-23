@@ -1034,7 +1034,8 @@ class PatchTest(Test):
         expected_path = os.path.join(self.path, 'expected.txt')
         try:
             with open(expected_path, 'r') as fp:
-                expected = (''.join((fp.readlines()[12:]))).lstrip()  # ignore license description lines and skip leading blank lines
+                # ignore license description lines and skip leading blank lines
+                expected = (''.join((fp.readlines()[12:]))).lstrip()
             self.passed = expected == self.output
         except Exception:
             self.passed = False
