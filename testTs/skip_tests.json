@@ -2624,7 +2624,6 @@
         "./testTs/test/node/allowJs/nodeModulesAllowJs1.ts",
         "./testTs/test/node/allowJs/nodeModulesAllowJsPackagePatternExportsTrailers.ts",
         "./testTs/test/classes/mixinAbstractClassesReturnTypeInference.ts",
-        "./testTs/test/classes/mixinAbstractClasses.ts",
         "./testTs/test/classes/classExpressions/classWithStaticFieldInParameterBindingPattern.3.ts",
         "./testTs/test/classes/classExpressions/classWithStaticFieldInParameterInitializer.3.ts",
         "./testTs/test/classes/classExpressions/extendClassExpressionFromModule.ts",
