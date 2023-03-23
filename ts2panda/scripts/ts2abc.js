@@ -40,13 +40,33 @@ if (isWin) {
     js2abc = path.join(arkDir, 'build', 'bin', 'js2abc');
 }
 
+function callJs2abc(args) {
+    let proc = spawn(`${js2abc}`, args);
+
+    proc.stderr.on('data', (data) => {
+        throw Error(`${data}`).message;
+    });
+
+    proc.stdout.on('data', (data) => {
+        process.stdout.write(`${data}`);
+    });
+}
+
 let args = process.argv.splice(2);
-let proc = spawn(`${js2abc}`, args);
+// keep bc-version to be compatible with old IDE versions
+if (args.length == 1 && args[0] == "--bc-version") {
+    callJs2abc(args);
+    return;
+}
 
-proc.stderr.on('data', (data) => {
-    throw Error(`${data}`).message;
-});
-
-proc.stdout.on('data', (data) => {
-    process.stdout.write(`${data}`);
-});
+// hard-coded for now, will be modified later
+if (args[0] == "--target-api-version") {
+    if (args[1] == "8") {
+        process.stdout.write("0.0.0.2");
+    } else if (args[1] == "9") {
+        process.stdout.write("9.0.0.0");
+    } else {
+        args = ["--bc-version"];
+        callJs2abc(args);
+    }
+}
