@@ -123,15 +123,16 @@ export enum L2Type {
 }
 
 
-export enum ModifierAbstract {
+export enum ClassModifierAbstract {
     NONABSTRACT,
     ABSTRACT
 }
 
-export enum Modifier {
+export enum MethodModifier {
     STATIC = 1 << 2,
     ASYNC = 1 << 3,
-    ASTERISK = 1 << 4
+    ASTERISK = 1 << 4,
+    ABSTRACT = 1 << 6  // The fifth bit is held by GetOrSetAccessorFlag
 }
 
 export enum ModifierReadonly {
@@ -270,7 +271,7 @@ export class TypeSummary extends BaseType {
 }
 
 export class ClassType extends BaseType {
-    modifier: number = ModifierAbstract.NONABSTRACT; // 0 -> unabstract, 1 -> abstract;
+    modifier: number = ClassModifierAbstract.NONABSTRACT; // 0 -> unabstract, 1 -> abstract;
     extendsHeritage: number = PrimitiveType.ANY;
     implementsHeritages: Array<number> = new Array<number>();
     // fileds Array: [typeIndex] [public -> 0, private -> 1, protected -> 2] [readonly -> 1]
@@ -312,7 +313,7 @@ export class ClassType extends BaseType {
             for (let modifier of node.modifiers) {
                 switch (modifier.kind) {
                     case ts.SyntaxKind.AbstractKeyword: {
-                        this.modifier = ModifierAbstract.ABSTRACT;
+                        this.modifier = ClassModifierAbstract.ABSTRACT;
                         break;
                     }
                     default: {
@@ -400,7 +401,7 @@ export class ClassType extends BaseType {
 
         // Then, get the typeIndex and fill in the methods array
         let typeIndex = this.tryGetTypeIndex(member);
-        let isStatic = funcType.hasModifier(Modifier.STATIC);
+        let isStatic = funcType.hasModifier(MethodModifier.STATIC);
         if (isStatic) {
             this.staticMethods.set(funcType.getFunctionName(), typeIndex!);
         } else {
@@ -563,11 +564,15 @@ export class FunctionType extends BaseType {
                         break;
                     }
                     case ts.SyntaxKind.StaticKeyword: {
-                        this.modifiers = Modifier.STATIC;
+                        this.modifiers = MethodModifier.STATIC;
                         break;
                     }
                     case ts.SyntaxKind.AsyncKeyword: {
-                        this.modifiers += Modifier.ASYNC;
+                        this.modifiers += MethodModifier.ASYNC;
+                        break;
+                    }
+                    case ts.SyntaxKind.AbstractKeyword: {
+                        this.modifiers += MethodModifier.ABSTRACT;
                         break;
                     }
                     default:
@@ -577,7 +582,7 @@ export class FunctionType extends BaseType {
         }
 
         if (!ts.isMethodSignature(node) && node.asteriskToken) {
-            this.modifiers += Modifier.ASTERISK;
+            this.modifiers += MethodModifier.ASTERISK;
         }
     }
 
@@ -605,7 +610,7 @@ export class FunctionType extends BaseType {
         return this.modifiers;
     }
 
-    hasModifier(modifier: Modifier) {
+    hasModifier(modifier: MethodModifier) {
         return (this.modifiers & modifier) ? true : false;
     }
 
