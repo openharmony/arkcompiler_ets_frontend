@@ -1373,7 +1373,7 @@ def main():
         runner.add_directory("compiler/ts/cases", "ts", ["--extension=ts"])
         runner.add_directory("compiler/ts/projects", "ts", ["--module", "--extension=ts"])
         runner.add_directory("compiler/ts/projects", "ts", ["--module", "--extension=ts", "--merge-abc"])
-        runner.add_directory("compiler/dts", "d.ts", ["--module", "--extension=ts"])
+        runner.add_directory("compiler/dts", "d.ts", ["--module", "--extension=ts", "--opt-level=0"])
         runner.add_directory("compiler/commonjs", "js", ["--commonjs"])
 
         runners.append(runner)
