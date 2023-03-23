@@ -77,9 +77,7 @@ void CompileFileJob::Run()
         }
         buffer = ss.str();
         src_->source = buffer;
-    }
 
-    if (!src_->fileName.empty()) {
         auto cacheFileIter = options_->cacheFiles.find(src_->fileName);
         if (cacheFileIter != options_->cacheFiles.end()) {
             src_->hash = GetHash32String(reinterpret_cast<const uint8_t *>(buffer.c_str()));

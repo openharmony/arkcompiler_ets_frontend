@@ -122,6 +122,8 @@ static void DumpProgramInfos(const std::map<std::string, panda::es2panda::util::
 static bool GenerateProgram(const std::map<std::string, panda::es2panda::util::ProgramCache*> &programsInfo,
     const std::unique_ptr<panda::es2panda::aot::Options> &options)
 {
+    DumpProgramInfos(programsInfo, options);
+
     if (programsInfo.size() == 1) {
         auto *prog = &(programsInfo.begin()->second->program);
         if (options->OutputFiles().empty() && options->CompilerOutput().empty()) {
@@ -146,8 +148,6 @@ static bool GenerateProgram(const std::map<std::string, panda::es2panda::util::P
     if (dumpSize) {
         DumpPandaFileSizeStatistic(stat);
     }
-
-    DumpProgramInfos(programsInfo, options);
 
     return true;
 }
