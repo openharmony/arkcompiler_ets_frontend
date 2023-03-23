@@ -25,8 +25,8 @@ namespace panda::es2panda::aot {
 class EmitSingleAbcJob : public util::WorkerJob {
 public:
     explicit EmitSingleAbcJob(const std::string &outputFileName, panda::pandasm::Program *prog,
-                              std::map<std::string, size_t> *statp, bool isDebug)
-        : outputFileName_(outputFileName), prog_(prog), statp_(statp), isDebug_(isDebug) {};
+                              std::map<std::string, size_t> *statp)
+        : outputFileName_(outputFileName), prog_(prog), statp_(statp) {};
     NO_COPY_SEMANTIC(EmitSingleAbcJob);
     NO_MOVE_SEMANTIC(EmitSingleAbcJob);
     ~EmitSingleAbcJob() override = default;
@@ -36,15 +36,13 @@ private:
     std::string outputFileName_;
     panda::pandasm::Program *prog_;
     std::map<std::string, size_t> *statp_;
-    bool isDebug_;
 };
 
 class EmitMergedAbcJob : public util::WorkerJob {
 public:
     explicit EmitMergedAbcJob(const std::string &outputFileName,
-                              const std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
-                              bool isDebug)
-        : outputFileName_(outputFileName), progsInfo_(progsInfo), isDebug_(isDebug) {};
+                              const std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo)
+        : outputFileName_(outputFileName), progsInfo_(progsInfo) {};
     NO_COPY_SEMANTIC(EmitMergedAbcJob);
     NO_MOVE_SEMANTIC(EmitMergedAbcJob);
     ~EmitMergedAbcJob() override = default;
@@ -53,7 +51,6 @@ public:
 private:
     std::string outputFileName_;
     const std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
-    bool isDebug_;
 };
 
 class EmitCacheJob : public util::WorkerJob {
@@ -78,7 +75,6 @@ public:
         : WorkerQueue(options->CompilerOptions().fileThreadCount), options_(options), statp_(statp),
         progsInfo_(progsInfo) {
             mergeAbc_ = options_->CompilerOptions().mergeAbc;
-            isDebug_ = options_->CompilerOptions().isDebug;
         }
 
     NO_COPY_SEMANTIC(EmitFileQueue);
@@ -92,7 +88,6 @@ private:
     std::map<std::string, size_t> *statp_;
     const std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
     bool mergeAbc_ { false };
-    bool isDebug_ { true };
 };
 }  // namespace panda::es2panda::aot
 
