@@ -56,18 +56,26 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
         context.SetTypeRecorder(extractor_->Recorder());
     }
 
-    if (program->Extension() == ScriptExtension::TS) {
-        context.GetEmitter()->FillTypeInfoRecord(&context, options.typeExtractor,
-            options.typeExtractor ? extractor_->Recorder()->GetTypeSummaryIndex() : 0,
-            std::string(program->RecordName()));
-    }
-
     queue_ = new CompileFuncQueue(threadCount_, &context);
     queue_->Schedule();
 
     /* Main thread can also be used instead of idling */
     queue_->Consume();
     queue_->Wait();
+
+    // For Type Extractor
+    // Global record to show type extractor is enabled or not
+    if (!context.IsMergeAbc()) {
+        context.GetEmitter()->GenTypeInfoRecord();
+    } else {
+        context.GetEmitter()->GenRecordNameInfo();
+    }
+
+    if (program->Extension() == ScriptExtension::TS) {
+        context.GetEmitter()->FillTypeInfoRecord(&context, options.typeExtractor,
+            options.typeExtractor ? extractor_->Recorder()->GetTypeSummaryIndex() : 0,
+            std::string(program->RecordName()));
+    }
 
     return context.GetEmitter()->Finalize(options.dumpDebugInfo, hotfixHelper_);
 }

@@ -292,11 +292,6 @@ Emitter::Emitter(const CompilerContext *context)
         return;
     }
 
-    // For Type Extractor
-    // Global record to show type extractor is enabled or not
-    if (!context->IsMergeAbc()) {
-        GenTypeInfoRecord();
-    }
     GenESTypeAnnotationRecord();
 
     if (context->IsMergeAbc()) {
@@ -325,6 +320,13 @@ void Emitter::SetPkgNameField(std::string pkgName)
     pkgNameField.metadata->SetValue(
         panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(0)));
     rec_->field_list.emplace_back(std::move(pkgNameField));
+}
+
+void Emitter::GenRecordNameInfo() const
+{
+    if (rec_) {
+        prog_->record_table.emplace(rec_->name, std::move(*rec_));
+    }
 }
 
 void Emitter::GenTypeInfoRecord() const
@@ -561,7 +563,6 @@ panda::pandasm::Program *Emitter::Finalize(bool dumpDebugInfo, util::Hotfix *hot
     }
 
     if (rec_) {
-        prog_->record_table.emplace(rec_->name, std::move(*rec_));
         delete rec_;
         rec_ = nullptr;
     }

@@ -871,8 +871,7 @@ class CompilerProjectTest(Test):
         file_absolute_path = runner.build_dir + "/" + file_relative_path
         return [file_absolute_path, file_name]
 
-    def run(self, runner):
-        # Compile all ts source files in the project to abc files.
+    def gen_single_abc(self, runner):
         for test_path in self.test_paths:
             self.path = test_path
             [file_absolute_path, file_name] = self.get_file_absolute_path_and_name(runner)
@@ -895,18 +894,51 @@ class CompilerProjectTest(Test):
                 self.remove_project(runner)
                 return self
 
+    def gen_merged_abc(self, runner):
+        for test_path in self.test_paths:
+            self.path = test_path
+            if (self.path.endswith("-exec.ts")):
+                exec_file_path = self.path
+                [file_absolute_path, file_name] = self.get_file_absolute_path_and_name(runner)
+                if not path.exists(file_absolute_path):
+                    os.makedirs(file_absolute_path)
+                test_abc_name = ("%s.abc" % (path.splitext(file_name)[0]))
+                output_abc_name = path.join(file_absolute_path, test_abc_name)
+        es2abc_cmd = runner.cmd_prefix + [runner.es2panda]
+        es2abc_cmd.extend(self.flags)
+        es2abc_cmd.extend(['%s%s' % ("--output=", output_abc_name)])
+        es2abc_cmd.append('@' + os.path.join(os.path.dirname(exec_file_path), "filesInfo.txt"))
+        self.log_cmd(es2abc_cmd)
+        process = subprocess.Popen(es2abc_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate()
+        if err:
+            self.passed = False
+            self.error = err.decode("utf-8", errors="ignore")
+            self.remove_project(runner)
+            return self
+
+    def run(self, runner):
+        # Compile all ts source files in the project to abc files.
+        if ("--merge-abc" in self.flags):
+            self.gen_merged_abc(runner)
+        else:
+            self.gen_single_abc(runner)
+
         # Run test files that need to be executed in the project.
         for test_path in self.test_paths:
             self.path = test_path
             if self.path.endswith("-exec.ts"):
                 [file_absolute_path, file_name] = self.get_file_absolute_path_and_name(runner)
 
-                test_abc_name = ("%s.abc" % (path.splitext(file_name)[0]))
+                entry_point_name = path.splitext(file_name)[0]
+                test_abc_name = ("%s.abc" % entry_point_name)
                 test_abc_path = path.join(file_absolute_path, test_abc_name)
 
                 ld_library_path = runner.ld_library_path
                 os.environ.setdefault("LD_LIBRARY_PATH", ld_library_path)
                 run_abc_cmd = [runner.ark_js_vm]
+                if ("--merge-abc" in self.flags):
+                    run_abc_cmd.extend(["--entry-point", entry_point_name])
                 run_abc_cmd.extend([test_abc_path])
                 self.log_cmd(run_abc_cmd)
 
@@ -1188,6 +1220,7 @@ def main():
         runner.add_directory("compiler/js", "js", [])
         runner.add_directory("compiler/ts/cases", "ts", ["--extension=ts"])
         runner.add_directory("compiler/ts/projects", "ts", ["--module", "--extension=ts"])
+        runner.add_directory("compiler/ts/projects", "ts", ["--module", "--extension=ts", "--merge-abc"])
         runner.add_directory("compiler/dts", "d.ts", ["--module", "--extension=ts"])
         runner.add_directory("compiler/commonjs", "js", ["--commonjs"])
 

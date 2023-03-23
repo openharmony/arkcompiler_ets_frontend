@@ -52,6 +52,7 @@ panda::pandasm::Program *CreateJsonContentProgram(std::string src, std::string r
 {
     panda::es2panda::compiler::CompilerContext context(nullptr, false, false, false, false, true,
                                                        src, "", util::StringView(rname), hotfixHelper);
+    context.GetEmitter()->GenRecordNameInfo();
     return context.GetEmitter()->Finalize(false, nullptr);
 }
 
