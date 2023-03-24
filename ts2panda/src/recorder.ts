@@ -523,15 +523,15 @@ export class Recorder {
             if (node.exportClause) {
                 let namedBindings: ts.NamedExportBindings = node.exportClause;
                 if (ts.isNamespaceExport(namedBindings)) {
-                    // export * as m from "mod";
-                    // `export namespace` is not the ECMA2018's feature
+                    // Targetcase 1: export * as m from "mod";
+                    // Targetcase 2: `export namespace` is not the ECMA2018's feature
                 } else if (ts.isNamedExports(namedBindings)) {
                     if (namedBindings.elements.length == 0) {
                         // export {} from "mod";
                         scope.module().addEmptyImportEntry(moduleRequest);
                     }
-                    // export {x} from "mod";
-                    // export {v as x} from "mod";
+                    // Targetcase 1: export {x} from "mod";
+                    // Targetcase 2: export {v as x} from "mod";
                     namedBindings.elements.forEach((element: any) => {
                         let exportName: string = jshelpers.getTextOfIdentifierOrLiteral(element.name);
                         let importName: string = element.propertyName ? jshelpers.getTextOfIdentifierOrLiteral(element.propertyName) : exportName;
@@ -543,8 +543,8 @@ export class Recorder {
                 scope.module().addStarExportEntry(node, moduleRequest);
             }
         } else if (node.exportClause && ts.isNamedExports(node.exportClause)) {
-            // export {x};
-            // export {v as x};
+            // Targetcase 1: export {x};
+            // Targetcase 1: export {v as x};
             node.exportClause.elements.forEach((element: any) => {
                 let exportName: string = jshelpers.getTextOfIdentifierOrLiteral(element.name);
                 let localName: string = element.propertyName ? jshelpers.getTextOfIdentifierOrLiteral(element.propertyName) : exportName;

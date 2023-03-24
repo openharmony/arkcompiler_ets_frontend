@@ -134,13 +134,6 @@ export class Iterator {
         pg.branchIfUndefined(this.node, noReturn);
         this.callNext(res);
 
-        // if (this.kind == IteratorType.Async) {
-        //     if (!this.funcBuilder) {
-        //         throw new Error("function builder are not supposed to be undefined");
-        //     }
-
-        //     (<AsyncGeneratorFunctionBuilder>this.funcBuilder).await(this.node);
-        // }
         (<AsyncGeneratorFunctionBuilder>this.funcBuilder).await(this.node);
         pg.storeAccumulator(this.node, res);
 

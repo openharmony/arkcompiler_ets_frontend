@@ -208,7 +208,6 @@ export class AsyncGeneratorFunctionBuilder extends FunctionBuilder {
         // i. Let innerResult be ? Call(iteratorRecord.[[NextMethod]], iteratorRecord.[[Iterator]], « received.[[Value]] »).
         // 1. Let innerResult be ? Call(throw, iterator, « received.[[Value]] »).
         // iv. Let innerReturnResult be ? Call(return, iterator, « received.[[Value]] »).
-        // pg.moveVreg(node, nextResult, this.resumeVal);
         iter.callMethodwithValue(this.resumeVal);
 
         this.await(node);
