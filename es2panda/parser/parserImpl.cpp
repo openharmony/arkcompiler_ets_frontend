@@ -2444,7 +2444,11 @@ ir::Statement *ParserImpl::ParseClassProperty(ClassElmentDescriptor *desc,
         if (isDeclare) {
             ThrowSyntaxError("Initializers are not allowed in ambient contexts.");
         }
+        // TODO(songqi):static classProperty's value can use super keyword in TypeScript4.4.
+        // Currently only Parser is supported, Compiler support requires Transformer.
+        context_.Status() |= ParserStatus::ALLOW_SUPER;
         value = ParseExpression();
+        context_.Status() &= ~ParserStatus::ALLOW_SUPER;
         propEnd = value->End();
     }
 
