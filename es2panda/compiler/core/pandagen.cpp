@@ -16,9 +16,6 @@
 #include "pandagen.h"
 
 #include <binder/binder.h>
-#include <util/concurrent.h>
-#include <util/helpers.h>
-#include <util/hotfix.h>
 #include <binder/scope.h>
 #include <binder/variable.h>
 #include <compiler/base/catchTable.h>
@@ -45,6 +42,9 @@
 #include <ir/expressions/newExpression.h>
 #include <ir/statement.h>
 #include <typescript/extractor/typeExtractor.h>
+#include <util/concurrent.h>
+#include <util/helpers.h>
+#include <util/hotfix.h>
 
 namespace panda::es2panda::compiler {
 
@@ -1835,20 +1835,20 @@ void PandaGen::StoreLexicalVar(const ir::AstNode *node, uint32_t level, uint32_t
     RegScope rs(this);
     VReg value = AllocReg();
     if (context_->IsTypeExtractorEnabled()) {
-        auto typeIndex = context_->TypeRecorder()->GetVariableTypeIndex(local);
-        if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
-            StoreAccumulatorWithType(node, typeIndex, value);
-            DCOUT << "[LOG]Lexical vreg in variable has type index: " << local->Name() << "@" <<
-                local << " | " << typeIndex << std::endl;
-            StoreLexicalVar(node, level, slot, value);
+        auto fn = [&node, &level, &slot, &local, &value, this](auto typeIndex, const auto &tag) {
+            if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
+                StoreAccumulatorWithType(node, typeIndex, value);
+                DCOUT << "[LOG]Lexical vreg in " << tag << " has type index: " << local->Name() <<
+                    "@" << local << " | " << typeIndex << std::endl;
+                StoreLexicalVar(node, level, slot, value);
+                return true;
+            }
+            return false;
+        };
+        if (fn(context_->TypeRecorder()->GetVariableTypeIndex(local), "variable")) {
             return;
         }
-        typeIndex = context_->TypeRecorder()->GetNodeTypeIndex(node);
-        if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
-            StoreAccumulatorWithType(node, typeIndex, value);
-            DCOUT << "[LOG]Lexical vreg in declnode has type index: " << local->Name() << "@" <<
-                local << " | " << typeIndex << std::endl;
-            StoreLexicalVar(node, level, slot, value);
+        if (fn(context_->TypeRecorder()->GetNodeTypeIndex(node), "declnode")) {
             return;
         }
         DCOUT << "[WARNING]Lexical vreg lose type index: " << local->Name() << "@" << local << std::endl;
