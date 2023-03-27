@@ -109,7 +109,9 @@ const std::set<int64_t> &TypeRecorder::GetUserType() const
 
 void TypeRecorder::AddUserType(int64_t index)
 {
-    userType_.insert(index);
+    if (index > TypeRecorder::USERTYPEINDEXHEAD) {
+        userType_.insert(index);
+    }
 }
 
 int64_t TypeRecorder::GetTypeSummaryIndex() const
