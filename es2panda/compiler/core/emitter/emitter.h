@@ -116,12 +116,13 @@ public:
     panda::pandasm::Program *Finalize(bool dumpDebugInfo, util::Hotfix *hotfixHelper);
     panda::pandasm::Program *GetProgram() const;
     void GenJsonContentRecord(const CompilerContext *context);
+    void GenRecordNameInfo() const;
+    void GenTypeInfoRecord() const;
 
 private:
     void SetCommonjsField(bool isCommonjs);
     void SetPkgNameField(std::string pkgName);
     void GenCommonjsRecord() const;
-    void GenTypeInfoRecord() const;
     void GenESTypeAnnotationRecord() const;
 
     std::mutex m_;

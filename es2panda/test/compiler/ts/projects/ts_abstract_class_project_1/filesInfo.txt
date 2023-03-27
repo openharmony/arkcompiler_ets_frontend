@@ -1,0 +1,2 @@
+test/compiler/ts/projects/ts_abstract_class_project_1/ts-test-export-abstract-class.ts;ts-test-export-abstract-class;esm;test/compiler/ts/projects/ts_abstract_class_project_1/ts-test-export-abstract-class.ts;ts-test-export-abstract-class
+test/compiler/ts/projects/ts_abstract_class_project_1/ts-test-import-abstract-class-exec.ts;ts-test-import-abstract-class-exec;esm;test/compiler/ts/projects/ts_abstract_class_project_1/ts-test-import-abstract-class-exec.ts;ts-test-import-abstract-class-exec

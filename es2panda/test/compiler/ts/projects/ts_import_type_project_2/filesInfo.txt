@@ -1,0 +1,2 @@
+test/compiler/ts/projects/ts_import_type_project_2/test-ts-export-type.ts;test-ts-export-type;esm;test/compiler/ts/projects/ts_import_type_project_2/test-ts-export-type.ts;test-ts-export-type
+test/compiler/ts/projects/ts_import_type_project_2/test-ts-import-type-exec.ts;test-ts-import-type-exec;esm;test/compiler/ts/projects/ts_import_type_project_2/test-ts-import-type-exec.ts;test-ts-import-type-exec
