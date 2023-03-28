@@ -48,8 +48,12 @@ void VariableDeclarator::Dump(ir::AstDumper *dumper) const
 
 void VariableDeclarator::Compile(compiler::PandaGen *pg) const
 {
-    compiler::LReference lref = compiler::LReference::CreateLRef(pg, id_, true);
     const ir::VariableDeclaration *decl = parent_->AsVariableDeclaration();
+    if (decl->Declare()) {
+        return;
+    }
+
+    compiler::LReference lref = compiler::LReference::CreateLRef(pg, id_, true);
 
     if (init_) {
         init_->Compile(pg);

@@ -67,13 +67,13 @@ public:
     void IdentifierAnalysis(ResolveBindingFlags flags = ResolveBindingFlags::ALL);
 
     template <typename T, typename... Args>
-    T *AddDecl(const lexer::SourcePosition &pos, Args &&... args);
+    T *AddDecl(const lexer::SourcePosition &pos, bool isDeclare, Args &&... args);
 
     template <typename T, typename... Args>
-    T *AddDecl(const lexer::SourcePosition &pos, DeclarationFlags flag, Args &&... args);
+    T *AddDecl(const lexer::SourcePosition &pos, DeclarationFlags flag, bool isDeclare, Args &&... args);
 
     template <typename T, typename... Args>
-    T *AddTsDecl(const lexer::SourcePosition &pos, Args &&... args);
+    T *AddTsDecl(const lexer::SourcePosition &pos, bool isDeclare, Args &&... args);
 
     ParameterDecl *AddParamDecl(const ir::AstNode *param);
 
@@ -261,9 +261,10 @@ private:
 };
 
 template <typename T, typename... Args>
-T *Binder::AddTsDecl(const lexer::SourcePosition &pos, Args &&... args)
+T *Binder::AddTsDecl(const lexer::SourcePosition &pos, bool isDeclare, Args &&... args)
 {
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
+    decl->SetDeclare(isDeclare);
 
     if (scope_->AddTsDecl(Allocator(), decl, program_->Extension())) {
         AddDeclarationName(decl->Name());
@@ -274,9 +275,10 @@ T *Binder::AddTsDecl(const lexer::SourcePosition &pos, Args &&... args)
 }
 
 template <typename T, typename... Args>
-T *Binder::AddDecl(const lexer::SourcePosition &pos, Args &&... args)
+T *Binder::AddDecl(const lexer::SourcePosition &pos, bool isDeclare, Args &&... args)
 {
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
+    decl->SetDeclare(isDeclare);
 
     if (scope_->AddDecl(Allocator(), decl, program_->Extension())) {
         AddDeclarationName(decl->Name(), decl->Type());
@@ -287,10 +289,11 @@ T *Binder::AddDecl(const lexer::SourcePosition &pos, Args &&... args)
 }
 
 template <typename T, typename... Args>
-T *Binder::AddDecl(const lexer::SourcePosition &pos, DeclarationFlags flag, Args &&... args)
+T *Binder::AddDecl(const lexer::SourcePosition &pos, DeclarationFlags flag, bool isDeclare, Args &&... args)
 {
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
     decl->AddFlag(flag);
+    decl->SetDeclare(isDeclare);
 
     if (scope_->AddDecl(Allocator(), decl, program_->Extension())) {
         AddDeclarationName(decl->Name(), decl->Type());

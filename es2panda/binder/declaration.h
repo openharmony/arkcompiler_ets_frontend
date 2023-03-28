@@ -110,12 +110,23 @@ public:
         return HasFlag(DeclarationFlags::IMPORT | DeclarationFlags::EXPORT);
     }
 
+    void SetDeclare(bool isDeclare)
+    {
+        isDeclare_ = isDeclare;
+    }
+
+    bool IsDeclare() const
+    {
+        return isDeclare_;
+    }
+
 protected:
     explicit Decl(util::StringView name) : name_(name) {}
 
     util::StringView name_;
     DeclarationFlags flags_ {};
     const ir::AstNode *node_ {};
+    bool isDeclare_ {false};
 };
 
 template <typename T>
@@ -142,10 +153,9 @@ private:
 
 class EnumLiteralDecl : public MultiDecl<ir::TSEnumDeclaration> {
 public:
-    explicit EnumLiteralDecl(ArenaAllocator *allocator, util::StringView name,
-        bool isExport, bool isDeclare, bool isConst) : MultiDecl(allocator, name),
-        isExport_(isExport), isDeclare_(isDeclare), isConst_(isConst) {}
-    
+    explicit EnumLiteralDecl(ArenaAllocator *allocator, util::StringView name, bool isExport, bool isConst)
+        : MultiDecl(allocator, name), isExport_(isExport), isConst_(isConst) {}
+
     DeclType Type() const override
     {
         return DeclType::ENUM_LITERAL;
@@ -154,11 +164,6 @@ public:
     bool IsExport() const
     {
         return isExport_;
-    }
-
-    bool IsDeclare() const
-    {
-        return isDeclare_;
     }
 
     bool IsConst() const
@@ -179,7 +184,6 @@ public:
 private:
     TSEnumScope *scope_ {nullptr};
     bool isExport_ {};
-    bool isDeclare_ {};
     bool isConst_ {};
 };
 
@@ -288,20 +292,12 @@ public:
 
 class ClassDecl : public Decl {
 public:
-    explicit ClassDecl(util::StringView name, bool declare) : Decl(name), declare_(declare) {}
+    explicit ClassDecl(util::StringView name) : Decl(name) {}
 
     DeclType Type() const override
     {
         return DeclType::CLASS;
     }
-
-    bool IsDeclare() const
-    {
-        return declare_;
-    }
-
-private:
-    bool declare_;
 };
 
 class FunctionDecl : public MultiDecl<ir::ScriptFunction> {

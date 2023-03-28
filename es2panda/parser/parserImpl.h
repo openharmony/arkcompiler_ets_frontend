@@ -309,7 +309,7 @@ private:
     ir::MethodDefinition *CheckClassMethodOverload(ir::Statement *property, ir::MethodDefinition **ctor, bool isDeclare,
                                                    lexer::SourcePosition errorInfo, ir::MethodDefinition *lastOverload,
                                                    bool implExists, bool isAbstract = false);
-    ir::Identifier *SetIdentNodeInClassDefinition();
+    ir::Identifier *SetIdentNodeInClassDefinition(bool isDeclare);
     ir::ClassDefinition *ParseClassDefinition(bool isDeclaration, bool idRequired = true, bool isDeclare = false,
                                               bool isAbstract = false);
 
@@ -496,7 +496,7 @@ private:
     ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart,
                                             bool isExport, bool isDeclare, bool isConst);
     ir::TSEnumDeclaration *ParseEnumDeclaration(bool isExport = false, bool isDeclare = false, bool isConst = false);
-    ir::TSInterfaceDeclaration *ParseTsInterfaceDeclaration();
+    ir::TSInterfaceDeclaration *ParseTsInterfaceDeclaration(bool isDeclare);
     ir::SwitchCaseStatement *ParseSwitchCaseStatement(bool *seenDefault);
     ir::SwitchStatement *ParseSwitchStatement();
     ir::ThrowStatement *ParseThrowStatement();
