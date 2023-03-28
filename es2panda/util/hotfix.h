@@ -82,6 +82,7 @@ private:
     std::string ConvertLiteralToString(std::vector<panda::pandasm::LiteralArray::Literal> &literalBuffer);
     void CollectFuncDefineIns(panda::pandasm::Function *func);
     void AddHeadAndTailInsForPatchFuncMain0(std::vector<panda::pandasm::Ins> &ins);
+    void AddTailInsForPatchFuncMain1(std::vector<panda::pandasm::Ins> &ins);
     void CreateFunctionPatchMain0AndMain1(panda::pandasm::Function &patchFuncMain0,
         panda::pandasm::Function &patchFuncMain1);
     bool IsAnonymousOrDuplicateNameFunction(const std::string &funcName);
