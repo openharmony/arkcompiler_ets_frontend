@@ -174,7 +174,8 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opDumpAssembly("dump-assembly", false, "Dump pandasm");
     panda::PandArg<bool> opDebugInfo("debug-info", false, "Compile with debug info");
     panda::PandArg<bool> opDumpDebugInfo("dump-debug-info", false, "Dump debug info");
-    panda::PandArg<int> opOptLevel("opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)");
+    panda::PandArg<int> opOptLevel("opt-level", 2,
+        "Compiler optimization level (options: 0 | 1 | 2). In debug and base64Input mode, optimizer is disabled");
     panda::PandArg<int> opFunctionThreadCount("function-threads", 0, "Number of worker threads to compile function");
     panda::PandArg<int> opFileThreadCount("file-threads", 0, "Number of worker threads to compile file");
     panda::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
@@ -417,7 +418,8 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.fileThreadCount = fileThreadCount_;
     compilerOptions_.output = compilerOutput_;
     compilerOptions_.debugInfoSourceFile = sourceFile.GetValue();
-    compilerOptions_.optLevel = opOptLevel.GetValue();
+    compilerOptions_.optLevel = (compilerOptions_.isDebug || !base64Input.GetValue().empty() ||
+        base64Output.GetValue()) ? 0 : opOptLevel.GetValue();
     compilerOptions_.sourceFiles = sourceFiles_;
     compilerOptions_.mergeAbc = opMergeAbc.GetValue();
 

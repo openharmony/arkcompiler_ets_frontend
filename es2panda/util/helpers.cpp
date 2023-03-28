@@ -43,6 +43,12 @@
 #include <assembly-emitter.h>
 #endif
 
+#ifdef PANDA_TARGET_WINDOWS
+#include <windows.h>
+#undef ERROR
+#else
+#include <unistd.h>
+#endif
 #include <fstream>
 
 namespace panda::es2panda::util {
@@ -453,7 +459,7 @@ bool Helpers::IsObjectPropertyValue(const ir::ObjectExpression *object, const ir
     return false;
 }
 
-bool Helpers::OptimizeProgram(panda::pandasm::Program * prog, es2panda::CompilerOptions *options)
+void Helpers::OptimizeProgram(panda::pandasm::Program *prog,  const std::string &inputFile)
 {
     std::map<std::string, size_t> stat;
     std::map<std::string, size_t> *statp = &stat;
@@ -466,16 +472,20 @@ bool Helpers::OptimizeProgram(panda::pandasm::Program * prog, es2panda::Compiler
                                     panda::Logger::Component::COMPILER;
     panda::Logger::InitializeStdLogging(panda::Logger::Level::ERROR, COMPONENT_MASK);
 
-    if (!panda::pandasm::AsmEmitter::Emit(panda::os::file::File::GetExtendedFilePath(options->output), *prog, statp,
-        mapsp, true)) {
-        return false;
+    std::string pid;
+#ifdef PANDA_TARGET_WINDOWS
+    pid = std::to_string(GetCurrentProcessId());
+#else
+    pid = std::to_string(getpid());
+#endif
+    const std::string outputSuffix = ".unopt.abc";
+    std::string tempOutput = panda::os::file::File::GetExtendedFilePath(inputFile + pid + outputSuffix);
+    if (panda::pandasm::AsmEmitter::Emit(tempOutput, *prog, statp, mapsp, true)) {
+        panda::bytecodeopt::OptimizeBytecode(prog, mapsp, tempOutput, true, true);
     }
 
-    panda::bytecodeopt::options.SetOptLevel(options->optLevel);
-    panda::bytecodeopt::OptimizeBytecode(prog, mapsp, panda::os::file::File::GetExtendedFilePath(options->output), true,
-        true);
+    std::remove(tempOutput.c_str());
 #endif
-    return true;
 }
 
 bool Helpers::ReadFileToBuffer(const std::string &file, std::stringstream &ss)
