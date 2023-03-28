@@ -161,6 +161,11 @@ int32_t ClassDefinition::CreateClassStaticProperties(compiler::PandaGen *pg, uti
             continue;
         }
 
+        if (prop->IsOptional() && prop->Value()->Function()->IsOverload()) {
+            compiled.Set(i);
+            continue;
+        }
+
         util::StringView name = util::Helpers::LiteralToPropName(prop->Key());
         compiler::LiteralBuffer *literalBuf = prop->IsStatic() ? &staticBuf : buf;
         auto &nameMap = prop->IsStatic() ? staticPropNameMap : propNameMap;
@@ -237,6 +242,10 @@ void ClassDefinition::CompileMissingProperties(compiler::PandaGen *pg, const uti
         }
 
         const ir::MethodDefinition *prop = properties[i]->AsMethodDefinition();
+        if (prop->IsOptional() && prop->Value()->Function()->IsOverload()) {
+            continue;
+        }
+
         compiler::VReg dest = prop->IsStatic() ? classReg : protoReg;
         compiler::RegScope rs(pg);
 
