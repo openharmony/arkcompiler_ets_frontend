@@ -474,7 +474,14 @@ bool Hotfix::CompareClassHash(std::vector<std::pair<std::string, size_t>> &hashL
         auto classIter = classInfo.find(className);
         if (classIter != classInfo.end()) {
             if (classIter->second != std::to_string(hashList[i].second)) {
-                std::cerr << "[Patch] Found class " << hashList[i].first << " changed, not supported!" << std::endl;
+                if (hotReload_) {
+                    std::cerr << "[Patch] Found class " << hashList[i].first << " changed, not supported! If " <<
+                        hashList[i].first << " is not changed and you are changing UI Component, please only " <<
+                        "change one Component at a time and make sure the Component is placed at the bottom " <<
+                        "of the file." << std::endl;
+                } else {
+                    std::cerr << "[Patch] Found class " << hashList[i].first << " changed, not supported!" << std::endl;
+                }
                 patchError_ = true;
                 return false;
             }
