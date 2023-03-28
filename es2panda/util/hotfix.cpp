@@ -359,6 +359,13 @@ void Hotfix::AddHeadAndTailInsForPatchFuncMain0(std::vector<panda::pandasm::Ins>
     ins.push_back(returnUndefine);
 }
 
+void Hotfix::AddTailInsForPatchFuncMain1(std::vector<panda::pandasm::Ins> &ins)
+{
+    panda::pandasm::Ins returnUndefined;
+    returnUndefined.opcode = pandasm::Opcode::RETURNUNDEFINED;
+    ins.push_back(returnUndefined);
+}
+
 void Hotfix::CreateFunctionPatchMain0AndMain1(panda::pandasm::Function &patchFuncMain0,
     panda::pandasm::Function &patchFuncMain1)
 {
@@ -389,6 +396,7 @@ void Hotfix::CreateFunctionPatchMain0AndMain1(panda::pandasm::Function &patchFun
     }
 
     AddHeadAndTailInsForPatchFuncMain0(patchMain0DefineIns);
+    AddTailInsForPatchFuncMain1(patchMain1DefineIns);
 
     patchFuncMain0.ins = patchMain0DefineIns;
     patchFuncMain1.ins = patchMain1DefineIns;

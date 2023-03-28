@@ -78,7 +78,7 @@ public:
     static bool IsChild(const ir::AstNode *parent, const ir::AstNode *child);
     static bool IsObjectPropertyValue(const ir::ObjectExpression *object, const ir::AstNode *ident);
 
-    static bool OptimizeProgram(panda::pandasm::Program *prog, es2panda::CompilerOptions *options);
+    static void OptimizeProgram(panda::pandasm::Program *prog, const std::string &inputFile);
     template <typename T>
     static T BaseName(T const &path, T const &delims = std::string(panda::os::file::File::GetPathDelim()));
     static bool ReadFileToBuffer(const std::string &file, std::stringstream &ss);

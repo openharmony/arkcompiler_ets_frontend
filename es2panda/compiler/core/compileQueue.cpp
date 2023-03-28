@@ -103,8 +103,9 @@ void CompileFileJob::Run()
         return;
     }
 
-    if (options_->optLevel != 0) {
-        util::Helpers::OptimizeProgram(prog, options_);
+    if (src_->scriptKind != parser::ScriptKind::COMMONJS && options_->optLevel != 0) {
+        // common-js files has hidden parameters which cause optimizer abort, skip optimizing them.
+        util::Helpers::OptimizeProgram(prog, src_->fileName);
     }
 
     {

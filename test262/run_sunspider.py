@@ -329,7 +329,7 @@ class ArkProgram():
                 # '--merge-abc' is added due to 'merge-abc' is not opened as default in es2abc, should be removed later
                 cmd_args = [frontend_tool, '--function-threads=' +
                             str(self.es2abc_thread_count), '--outputProto',
-                            proto_bin_file, js_file, '--merge-abc']
+                            proto_bin_file, js_file, '--merge-abc', '--opt-level=' + str(self.opt_level)]
             else:
                 # for testing no-record-name abc
                 cmd_args = [frontend_tool, '--opt-level=' + str(self.opt_level),
