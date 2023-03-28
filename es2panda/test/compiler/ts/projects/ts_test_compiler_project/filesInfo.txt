@@ -1,3 +1,0 @@
-test/compiler/ts/projects/ts_test_compiler_project/dest-exec.ts;dest-exec;esm;test/compiler/ts/projects/ts_test_compiler_project/dest-exec.ts;dest-exec
-test/compiler/ts/projects/ts_test_compiler_project/src.ts;src;esm;test/compiler/ts/projects/ts_test_compiler_project/src.ts;src
-test/compiler/ts/projects/ts_test_compiler_project/dir/dir_src.ts;dir/dir_src;esm;test/compiler/ts/projects/ts_test_compiler_project/dir/dir_src.ts;dir_src
