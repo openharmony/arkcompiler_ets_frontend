@@ -306,6 +306,7 @@ void Lexer::ScanDecimalNumbers(bool allowNumericSeparator)
             }
             case LEX_CHAR_UNDERSCORE: {
                 Iterator().Backward(1);
+                isUnderscore_ = true;
 
                 if (Iterator().Peek() == LEX_CHAR_DOT || !allowNumericSeparator || !allowNumericOnNext) {
                     Iterator().Forward(1);
@@ -422,6 +423,10 @@ void Lexer::ScanNumber(bool allowNumericSeparator, bool allowBigInt)
     if (GetToken().flags_ & TokenFlags::NUMBER_BIGINT) {
         if (!allowBigInt) {
             ThrowError("Invalid BigInt number");
+        }
+        if (isUnderscore_) {
+            ConvertNumber(exponentSignPos);
+            isUnderscore_ = false;
         }
 
         return;

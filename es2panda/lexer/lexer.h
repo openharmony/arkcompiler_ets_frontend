@@ -174,6 +174,7 @@ private:
     const parser::ParserContext *parserContext_;
     util::StringView source_;
     LexerPosition pos_;
+    bool isUnderscore_ = false;
 };
 
 class TemplateLiteralParserContext {
