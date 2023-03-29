@@ -39,15 +39,14 @@ CompilerImpl::~CompilerImpl()
 panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const es2panda::CompilerOptions &options,
     const std::string &debugInfoSourceFile, const std::string &pkgName)
 {
+    bool isTypeExtractorEnabled = ((program->Extension() == ScriptExtension::TS) && options.typeExtractor);
     CompilerContext context(program->Binder(), options.isDebug, options.isDebuggerEvaluateExpressionMode,
-                            options.mergeAbc, options.typeExtractor, false, debugInfoSourceFile, pkgName,
+                            options.mergeAbc, isTypeExtractorEnabled, false, debugInfoSourceFile, pkgName,
                             program->RecordName(), hotfixHelper_);
 
     ArenaAllocator localAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
 
-    if (options.typeExtractor) {
-        ASSERT(program->Extension() == ScriptExtension::TS);
-
+    if (isTypeExtractorEnabled) {
         auto rootNode = context.Binder()->TopScope()->Node()->AsBlockStatement();
         extractor_ = std::make_unique<extractor::TypeExtractor>(rootNode, program->IsDtsFile(),
             options.typeDtsBuiltin, &localAllocator, &context);

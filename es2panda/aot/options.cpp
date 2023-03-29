@@ -15,29 +15,61 @@
 
 #include "options.h"
 
-#include "mergeProgram.h"
-#include "os/file.h"
-#include <util/helpers.h>
-#include <utils/pandargs.h>
+#include <fstream>
+#include <set>
+#include <sstream>
+#include <utility>
+
 #if defined(PANDA_TARGET_WINDOWS)
 #include <io.h>
 #else
 #include <dirent.h>
 #endif
 
-#include <fstream>
-#include <sstream>
-#include <utility>
+#include "os/file.h"
+
+#include "mergeProgram.h"
+#include "util/helpers.h"
+#include "utils/pandargs.h"
 
 namespace panda::es2panda::aot {
 constexpr char PROCESS_AS_LIST_MARK = '@';
 const std::string LIST_ITEM_SEPERATOR = ";";
+const std::set<std::string> VALID_EXTENSIONS = { "js", "ts", "as" };
 
 template <class T>
 T RemoveExtension(T const &filename)
 {
     typename T::size_type const P(filename.find_last_of('.'));
     return P > 0 && P != T::npos ? filename.substr(0, P) : filename;
+}
+
+static es2panda::ScriptExtension GetScriptExtensionFromStr(const std::string &extension)
+{
+    if (extension == "js") {
+        return es2panda::ScriptExtension::JS;
+    } else if (extension == "ts") {
+        return es2panda::ScriptExtension::TS;
+    } else if (extension == "as") {
+        return es2panda::ScriptExtension::AS;
+    } else {
+        return es2panda::ScriptExtension::JS;
+    }
+}
+
+static es2panda::ScriptExtension GetScriptExtension(const std::string &filename, const std::string &inputExtension)
+{
+    std::string fileExtension = "";
+    std::string::size_type pos(filename.find_last_of('.'));
+    if (pos > 0 && pos != std::string::npos) {
+        fileExtension = filename.substr(pos + 1);
+    }
+
+    if (VALID_EXTENSIONS.find(fileExtension) != VALID_EXTENSIONS.end()) {
+        return GetScriptExtensionFromStr(fileExtension);
+    }
+
+    return GetScriptExtensionFromStr(inputExtension);
 }
 
 static std::vector<std::string> GetStringItems(std::string &input, const std::string &delimiter)
@@ -59,7 +91,7 @@ static std::vector<std::string> GetStringItems(std::string &input, const std::st
 }
 
 // Options
-bool Options::CollectInputFilesFromFileList(const std::string &input)
+bool Options::CollectInputFilesFromFileList(const std::string &input, const std::string &inputExtension)
 {
     std::ifstream ifs;
     std::string line;
@@ -90,7 +122,7 @@ bool Options::CollectInputFilesFromFileList(const std::string &input)
             scriptKind = parser::ScriptKind::MODULE;
         }
 
-        es2panda::SourceFile src(fileName, recordName, scriptKind);
+        es2panda::SourceFile src(fileName, recordName, scriptKind, GetScriptExtension(fileName, inputExtension));
         src.sourcefile = itemList[3];
         if (compilerOptions_.mergeAbc) {
             src.pkgName = itemList[4];
@@ -110,8 +142,9 @@ bool Options::CollectInputFilesFromFileDirectory(const std::string &input, const
     if (!proto::MergeProgram::GetProtoFiles(input, extension, files)) {
         return false;
     }
-    for (auto &f : files) {
-        es2panda::SourceFile src(f, util::Helpers::BaseName(f), scriptKind_);
+
+    for (const auto &f : files) {
+        es2panda::SourceFile src(f, util::Helpers::BaseName(f), scriptKind_, GetScriptExtensionFromStr(extension));
         sourceFiles_.push_back(src);
     }
 
@@ -309,18 +342,11 @@ bool Options::Parse(int argc, const char **argv)
                 compilerOptions_.typeDtsBuiltin << std::endl;
         }
     };
+    parseTypeExtractor();  // Type Extractor is only enabled for TypeScript
 
     std::string extension = inputExtension.GetValue();
     if (!extension.empty()) {
-        if (extension == "js") {
-            extension_ = es2panda::ScriptExtension::JS;
-        } else if (extension == "ts") {
-            extension_ = es2panda::ScriptExtension::TS;
-            // Type Extractor is only enabled for TypeScript
-            parseTypeExtractor();
-        } else if (extension == "as") {
-            extension_ = es2panda::ScriptExtension::AS;
-        } else {
+        if (VALID_EXTENSIONS.find(extension) == VALID_EXTENSIONS.end()) {
             errorMsg_ = "Invalid extension (available options: js, ts, as)";
             return false;
         }
@@ -361,11 +387,11 @@ bool Options::Parse(int argc, const char **argv)
 
         auto fpath = inputAbs.Value();
         if (isInputFileList) {
-            CollectInputFilesFromFileList(fpath);
+            CollectInputFilesFromFileList(fpath, extension);
         } else if (panda::os::file::File::IsDirectory(fpath)) {
             CollectInputFilesFromFileDirectory(fpath, extension);
         } else {
-            es2panda::SourceFile src(sourceFile_, recordName_, scriptKind_);
+            es2panda::SourceFile src(sourceFile_, recordName_, scriptKind_, GetScriptExtension(sourceFile_, extension));
             sourceFiles_.push_back(src);
         }
     } else if (!base64InputIsEmpty) {
@@ -376,7 +402,8 @@ bool Options::Parse(int argc, const char **argv)
             return false;
         }
 
-        es2panda::SourceFile src("", recordName_, es2panda::parser::ScriptKind::SCRIPT);
+        es2panda::SourceFile src("", recordName_, es2panda::parser::ScriptKind::SCRIPT,
+                                 GetScriptExtensionFromStr(extension));
         src.source = base64Input_;
         sourceFiles_.push_back(src);
     }
@@ -413,7 +440,6 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.dumpLiteralBuffer = opDumpLiteralBuffer.GetValue();
     compilerOptions_.isDebuggerEvaluateExpressionMode = debuggerEvaluateExpression.GetValue();
 
-    compilerOptions_.extension = extension_;
     compilerOptions_.functionThreadCount = functionThreadCount_;
     compilerOptions_.fileThreadCount = fileThreadCount_;
     compilerOptions_.output = compilerOutput_;

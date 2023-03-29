@@ -95,7 +95,7 @@ void CompileFileJob::Run()
         }
     }
 
-    es2panda::Compiler compiler(options_->extension, options_->functionThreadCount);
+    es2panda::Compiler compiler(src_->scriptExtension, options_->functionThreadCount);
     auto *prog = compiler.CompileFile(*options_, src_, symbolTable_);
     if (prog == nullptr) {
         return;

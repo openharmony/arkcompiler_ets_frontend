@@ -60,11 +60,6 @@ public:
 
     bool Parse(int argc, const char **argv);
 
-    es2panda::ScriptExtension Extension() const
-    {
-        return extension_;
-    }
-
     const es2panda::CompilerOptions &CompilerOptions() const
     {
         return compilerOptions_;
@@ -132,12 +127,11 @@ public:
         return outputFiles_;
     }
 
-    bool CollectInputFilesFromFileList(const std::string &input);
+    bool CollectInputFilesFromFileList(const std::string &input, const std::string &inputExtension);
     bool CollectInputFilesFromFileDirectory(const std::string &input, const std::string &extension);
     void ParseCacheFileOption(const std::string &cacheInput);
 
 private:
-    es2panda::ScriptExtension extension_ {es2panda::ScriptExtension::JS};
     es2panda::CompilerOptions compilerOptions_ {};
     es2panda::parser::ScriptKind scriptKind_ {es2panda::parser::ScriptKind::SCRIPT};
     OptionFlags options_ {OptionFlags::DEFAULT};
