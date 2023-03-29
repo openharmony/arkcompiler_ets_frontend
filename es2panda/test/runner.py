@@ -1216,6 +1216,7 @@ class TypeExtractorRunner(Runner):
 
         self.add_tsc_directory("conformance", [])
         self.add_directory("testcases", [])
+        self.add_directory("dts-testcases", [], True)
         self.add_directory("testcases_with_assert", [])
 
     def add_tsc_directory(self, directory, flags):
@@ -1233,11 +1234,13 @@ class TypeExtractorRunner(Runner):
                 test = TypeExtractorTest(f, flags)
                 self.tests.append(test)
 
-    def add_directory(self, directory, flags):
+    def add_directory(self, directory, flags, is_dts_test=False):
         ts_suite_dir = path.join(self.test_root, 'type_extractor')
 
-        glob_expression = path.join(
-            ts_suite_dir, directory, "**/*.ts")
+        if is_dts_test:
+            glob_expression = path.join(ts_suite_dir, directory, "**/*.d.ts")
+        else:
+            glob_expression = path.join(ts_suite_dir, directory, "**/*.ts")
         files = glob(glob_expression, recursive=True)
         files = fnmatch.filter(files, ts_suite_dir + '**' + self.args.filter)
 
@@ -1246,7 +1249,7 @@ class TypeExtractorRunner(Runner):
                 test = TypeExtractorWithAssertTest(f, flags)
                 self.tests.append(test)
             else:
-                test = TypeExtractorTest(f, flags)
+                test = TypeExtractorTest(f, flags, is_dts_test)
                 self.tests.append(test)
 
     def test_path(self, src):
@@ -1254,13 +1257,16 @@ class TypeExtractorRunner(Runner):
 
 
 class TypeExtractorTest(Test):
-    def __init__(self, test_path, flags):
+    def __init__(self, test_path, flags, is_dts_test=False):
         Test.__init__(self, test_path, flags)
+        self.is_dts_test = is_dts_test
 
     def run(self, runner):
         test_abc_name = ("%s.abc" % (path.splitext(self.path)[0])).replace("/", "_")
         cmd = runner.cmd_prefix + [runner.es2panda,
             '--extension=ts', '--module', '--dump-literal-buffer', '--opt-level=2', '--type-extractor']
+        if self.is_dts_test:
+            cmd.append("--type-dts-builtin")
         cmd.extend(self.flags)
         cmd.extend(["--output=" + test_abc_name])
         cmd.append(self.path)
@@ -1275,7 +1281,11 @@ class TypeExtractorTest(Test):
         if os.path.isfile(test_abc_name):
             os.remove(test_abc_name)
 
-        expected_path = "%s-expected.txt" % (path.splitext(self.path)[0])
+        file_name = path.splitext(self.path)[0]
+        if self.is_dts_test:
+            expected_path = "%s-expected.txt" % (path.splitext(file_name)[0])
+        else:
+            expected_path = "%s-expected.txt" % (file_name)
         if not os.path.isfile(expected_path):
             expected_path = path.dirname(path.abspath(__file__)) + "/type_extractor/tsc_expect/%s" % \
                 expected_path.split("tests/cases/")[-1]

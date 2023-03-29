@@ -68,9 +68,9 @@ FunctionScope *Scope::EnclosingFunctionVariableScope()
 Variable *Scope::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
 {
     if (options & ResolveBindingOptions::INTERFACES) {
-        util::StringView interfaceNameView(binder::TSBinding::ToTSBinding(name));
+        const std::string &interfaceName = binder::TSBinding::ToTSBinding(name);
 
-        auto res = bindings_.find(interfaceNameView);
+        auto res = bindings_.find(util::StringView{interfaceName});
         if (res != bindings_.end()) {
             return res->second;
         }
