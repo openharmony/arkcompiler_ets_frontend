@@ -25,6 +25,9 @@
 #include <ir/astDump.h>
 #include <ir/expressions/chainExpression.h>
 #include <ir/expressions/memberExpression.h>
+#include <ir/ts/tsAsExpression.h>
+#include <ir/ts/tsNonNullExpression.h>
+#include <ir/ts/tsTypeAssertion.h>
 #include <ir/ts/tsTypeParameterInstantiation.h>
 
 namespace panda::es2panda::ir {
@@ -61,8 +64,19 @@ compiler::VReg CallExpression::CreateSpreadArguments(compiler::PandaGen *pg) con
 
 void CallExpression::Compile(compiler::PandaGen *pg) const
 {
-    if (callee_->IsCallExpression() || callee_->IsNewExpression()) {
-        if (pg->TryCompileFunctionCallOrNewExpression(callee_)) {
+    ir::Expression *realCallee = callee_;
+    while (realCallee->IsTSNonNullExpression() || realCallee->IsTSAsExpression() || realCallee->IsTSTypeAssertion()) {
+        if (realCallee->IsTSNonNullExpression()) {
+            realCallee = realCallee->AsTSNonNullExpression()->Expr();
+        } else if (realCallee->IsTSAsExpression()) {
+            realCallee = realCallee->AsTSAsExpression()->Expr();
+        } else if (realCallee->IsTSTypeAssertion()) {
+            realCallee = realCallee->AsTSTypeAssertion()->GetExpression();
+        }
+    }
+
+    if (realCallee->IsCallExpression() || realCallee->IsNewExpression()) {
+        if (pg->TryCompileFunctionCallOrNewExpression(realCallee)) {
             return;
         }
     }
@@ -113,17 +127,17 @@ void CallExpression::Compile(compiler::PandaGen *pg) const
     bool hasThis = false;
     compiler::VReg thisReg {};
 
-    if (callee_->IsMemberExpression()) {
+    if (realCallee->IsMemberExpression()) {
         hasThis = true;
         thisReg = pg->AllocReg();
 
         compiler::RegScope mrs(pg);
-        callee_->AsMemberExpression()->Compile(pg, thisReg);
-    } else if (callee_->IsChainExpression()) {
+        realCallee->AsMemberExpression()->Compile(pg, thisReg);
+    } else if (realCallee->IsChainExpression()) {
         hasThis = true;
-        callee_->AsChainExpression()->Compile(pg);
+        realCallee->AsChainExpression()->Compile(pg);
     } else {
-        callee_->Compile(pg);
+        realCallee->Compile(pg);
     }
 
     pg->StoreAccumulator(this, callee);
