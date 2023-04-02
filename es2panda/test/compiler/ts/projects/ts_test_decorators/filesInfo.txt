@@ -1,1 +1,0 @@
-test/compiler/ts/projects/ts_test_decorators/ts-test-decorators-export-exec.ts;ts-test-decorators-export-exec;esm;test/compiler/ts/projects/ts_test_decorators/ts-test-decorators-export-exec.ts;ts-test-decorators-export-exec

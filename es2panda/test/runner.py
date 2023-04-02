@@ -865,11 +865,14 @@ class CompilerProjectTest(Test):
         self.projects_path = projects_path
         self.project = project
         self.test_paths = test_paths
+        self.files_info_path = os.path.join(os.path.join(self.projects_path, self.project), 'filesInfo.txt')
 
     def remove_project(self, runner):
         project_path = runner.build_dir + "/" + self.project
         if path.exists(project_path):
             shutil.rmtree(project_path)
+        if path.exists(self.files_info_path):
+            os.remove(self.files_info_path)
 
     def get_file_absolute_path_and_name(self, runner):
         sub_path = self.path[len(self.projects_path):]
@@ -901,6 +904,16 @@ class CompilerProjectTest(Test):
                 self.remove_project(runner)
                 return self
 
+    def gen_files_info(self, runner):
+        fd = os.open(self.files_info_path, os.O_RDWR | os.O_CREAT | os.O_TRUNC)
+        f = os.fdopen(fd, "w")
+        for test_path in self.test_paths:
+            record_name = os.path.relpath(test_path, os.path.dirname(self.files_info_path)).split('.')[0]
+            module_kind = "esm"
+            file_info = ('%s;%s;%s;%s;%s' % (test_path, record_name, module_kind, test_path, record_name))
+            f.writelines(file_info + '\n')
+        f.close()
+
     def gen_merged_abc(self, runner):
         for test_path in self.test_paths:
             self.path = test_path
@@ -927,6 +940,7 @@ class CompilerProjectTest(Test):
     def run(self, runner):
         # Compile all ts source files in the project to abc files.
         if ("--merge-abc" in self.flags):
+            self.gen_files_info(runner)
             self.gen_merged_abc(runner)
         else:
             self.gen_single_abc(runner)
