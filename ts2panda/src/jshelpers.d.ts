@@ -24,7 +24,8 @@ export function getFlowNode(stmt: ts.Statement): ts.Node;
 export function bindSourceFile(sourceFile: ts.SourceFile, options: ts.CompilerOptions);
 export function createDiagnosticForNode(node: ts.Node, message: ts.DiagnosticMessage, ...args: (string | number | undefined)[]): ts.DiagnosticWithLocation;
 export function createCompilerDiagnostic(message: ts.DiagnosticMessage, ...args: (string | number | undefined)[]): ts.Diagnostic;
-export function createFileDiagnostic(file: ts.SourceFile, start: number, length: number, message: ts.DiagnosticMessage, ...args: (string | number | undefined)[]): ts.DiagnosticWithLocation;
+export function createFileDiagnostic(file: ts.SourceFile, start: number, length: number, message: ts.DiagnosticMessage,
+                                     ...args: (string | number | undefined)[]): ts.DiagnosticWithLocation;
 export function isEffectiveStrictModeSourceFile(node: ts.SourceFile, compilerOptions: ts.CompilerOptions): boolean;
 export function getErrorSpanForNode(sourceFile: ts.SourceFile, node: ts.Node): ts.TextSpan;
 export function getSpanOfTokenAtPosition(sourceFile: ts.SourceFile, pos: number): ts.TextSpan;

@@ -24,12 +24,12 @@ import { getObjAndProp } from "./memberAccessExpression";
 
 
 // @ts-ignore
-export function compileCallExpression(expr: ts.CallExpression, compiler: Compiler, inTailPos?: boolean) {
+export function compileCallExpression(expr: ts.CallExpression, compiler: Compiler, inTailPos?: boolean): void {
     let pandaGen = compiler.getPandaGen();
 
     let innerExpression = ts.skipPartiallyEmittedExpressions(expr.expression);
 
-    if (innerExpression.kind == ts.SyntaxKind.ImportKeyword) {
+    if (innerExpression.kind === ts.SyntaxKind.ImportKeyword) {
         compiler.compileExpression(expr.arguments[0]);
         pandaGen.dynamicImportCall(expr);
         return;
@@ -42,7 +42,7 @@ export function compileCallExpression(expr: ts.CallExpression, compiler: Compile
         }
     }
 
-    if (innerExpression.kind == ts.SyntaxKind.SuperKeyword) {
+    if (innerExpression.kind === ts.SyntaxKind.SuperKeyword) {
         let args: VReg[] = [];
         let hasSpread = emitCallArguments(compiler, expr, args);
         compileSuperCall(compiler, expr, args, hasSpread);
@@ -69,7 +69,7 @@ export function getHiddenParameters(expr: ts.Expression, compiler: Compiler) {
         // @ts-ignore
         let { obj: obj, prop: prop } = getObjAndProp(<ts.PropertyAccessExpression | ts.ElementAccessExpression>expr, thisReg, propReg, compiler);
 
-        if ((<ts.PropertyAccessExpression | ts.ElementAccessExpression>expr).expression.kind == ts.SyntaxKind.SuperKeyword) {
+        if ((<ts.PropertyAccessExpression | ts.ElementAccessExpression>expr).expression.kind === ts.SyntaxKind.SuperKeyword) {
             compileSuperProperty(compiler, expr, thisReg, prop);
         } else {
             pandaGen.loadObjProperty(
@@ -90,7 +90,7 @@ export function getHiddenParameters(expr: ts.Expression, compiler: Compiler) {
     return { arguments: args, passThis: passThis };
 }
 
-function emitCallArguments(compiler: Compiler, expr: ts.CallExpression, args: VReg[]) {
+function emitCallArguments(compiler: Compiler, expr: ts.CallExpression, args: VReg[]): boolean {
     let pandaGen = compiler.getPandaGen();
     let hasSpread = false;
     for (let i = 0; i < expr.arguments.length; i++) {
@@ -113,7 +113,7 @@ function emitCallArguments(compiler: Compiler, expr: ts.CallExpression, args: VR
     return hasSpread;
 }
 
-export function emitCall(expr: ts.CallExpression, args: VReg[], passThis: boolean, compiler: Compiler) {
+export function emitCall(expr: ts.CallExpression, args: VReg[], passThis: boolean, compiler: Compiler): void {
     let pandaGen = compiler.getPandaGen();
     let hasSpread = emitCallArguments(compiler, expr, args);
     let callee = expr.expression;
@@ -139,7 +139,7 @@ export function emitCall(expr: ts.CallExpression, args: VReg[], passThis: boolea
 
     // spread argument exist
     let calleeReg = args[0];
-    let thisReg = passThis ? args[1] : getVregisterCache(pandaGen, CacheList.undefined);
+    let thisReg = passThis ? args[1] : getVregisterCache(pandaGen, CacheList.UNDEFINED);
     let argArray = pandaGen.getTemp();
     createArrayFromElements(expr, compiler, <ts.NodeArray<ts.Expression>>expr.arguments, argArray);
     pandaGen.callSpread(debugNode, calleeReg, thisReg, argArray);

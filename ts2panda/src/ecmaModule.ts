@@ -70,7 +70,7 @@ export class SourceTextModuleRecord {
     // Targetcase 2: import {x} from 'test.js';
     // Targetcase 3: import {x as y} from 'test.js';
     // Targetcase 4: import defaultExport from 'test.js'
-    addImportEntry(node: ts.Node, importName: string, localName: string, moduleRequest: string) {
+    addImportEntry(node: ts.Node, importName: string, localName: string, moduleRequest: string): void {
         let importEntry: Entry = new Entry(node, undefined, localName, importName, this.addModuleRequest(moduleRequest));
         // We don't care if there's already an entry for this local name, as in that
         // case we will report an error when declaring the variable.
@@ -85,7 +85,7 @@ export class SourceTextModuleRecord {
     }
 
     // Targetcase 1: import * as x from 'test.js';
-    addStarImportEntry(node: ts.Node, localName: string, moduleRequest: string) {
+    addStarImportEntry(node: ts.Node, localName: string, moduleRequest: string): void {
         let starImportEntry: Entry = new Entry(node, undefined, localName, undefined, this.addModuleRequest(moduleRequest));
         this.namespaceImportEntries.push(starImportEntry);
     }
@@ -95,7 +95,7 @@ export class SourceTextModuleRecord {
     // Targetcase 3: export VariableStatement
     // Targetcase 4: export Declaration
     // Targetcase 5: export default ...
-    addLocalExportEntry(node: ts.Node, exportName: string, localName: string) {
+    addLocalExportEntry(node: ts.Node, exportName: string, localName: string): void {
         let localExportEntry: Entry = new Entry(node, exportName, localName, undefined);
         if (this.localExportEntries.has(localName)) {
             this.localExportEntries.get(localName)!.push(localExportEntry);
@@ -107,46 +107,46 @@ export class SourceTextModuleRecord {
     // Targetcase 1: export {x} from 'test.js';
     // Targetcase 2: export {x as y} from 'test.js';
     // Targetcase 3: import { x } from 'test.js'; export { x }
-    addIndirectExportEntry(node: ts.Node, importName: string, exportName: string, moduleRequest: string) {
+    addIndirectExportEntry(node: ts.Node, importName: string, exportName: string, moduleRequest: string): void {
         let indirectExportEntry: Entry = new Entry(node, exportName, undefined, importName, this.addModuleRequest(moduleRequest));
         this.indirectExportEntries.push(indirectExportEntry);
     }
 
     // Targetcase 1: export * from 'test.js';
-    addStarExportEntry(node: ts.Node, moduleRequest: string) {
+    addStarExportEntry(node: ts.Node, moduleRequest: string): void {
         let starExportEntry: Entry = new Entry(node, undefined, undefined, undefined, this.addModuleRequest(moduleRequest));
         this.starExportEntries.push(starExportEntry);
     }
 
-    getModuleName() {
+    getModuleName(): string {
         return this.moduleName;
     }
 
-    getModuleRequests() {
+    getModuleRequests(): string[] {
         return this.moduleRequests;
     }
 
-    getRegularImportEntries() {
+    getRegularImportEntries(): Map<string, Entry> {
         return this.regularImportEntries;
     }
 
-    getNamespaceImportEntries() {
+    getNamespaceImportEntries(): Entry[] {
         return this.namespaceImportEntries;
     }
 
-    getLocalExportEntries() {
+    getLocalExportEntries(): Map<string, Entry[]> {
         return this.localExportEntries;
     }
 
-    getStarExportEntries() {
+    getStarExportEntries(): Entry[] {
         return this.starExportEntries;
     }
 
-    getIndirectExportEntries() {
+    getIndirectExportEntries(): Entry[] {
         return this.indirectExportEntries;
     }
 
-    makeIndirectExportsExplicit() {
+    makeIndirectExportsExplicit(): void {
         // @ts-ignore
         this.localExportEntries.forEach((entries: Array<Entry>, localName: string) => {
             let importEntry: Entry | undefined = this.regularImportEntries.get(localName);
@@ -163,7 +163,7 @@ export class SourceTextModuleRecord {
         });
     }
 
-    nextDuplicateExportEntry(candidate: Entry, exportNameEntry: Map<string, Entry>, currentCandidate: Entry | undefined) {
+    nextDuplicateExportEntry(candidate: Entry, exportNameEntry: Map<string, Entry>, currentCandidate: Entry | undefined): Entry {
         if (!exportNameEntry.has(candidate.exportName!)) {
             exportNameEntry.set(candidate.exportName!, candidate);
             return currentCandidate;
@@ -194,50 +194,54 @@ export class SourceTextModuleRecord {
         return duplicateEntry;
     }
 
-    validateModuleRecordEntries(moduleScope: ModuleScope) {
+    validateModuleRecordEntries(moduleScope: ModuleScope): void {
         // check module is well-formed and report errors if not
         {
             let dupExportEntry: Entry | undefined = this.searchDuplicateExport();
             if (dupExportEntry !== undefined) {
-                throw new DiagnosticError(dupExportEntry.node, DiagnosticCode.Module_0_has_already_exported_a_member_named_1, getSourceFileOfNode(dupExportEntry.node), [getSourceFileOfNode(dupExportEntry.node).fileName, dupExportEntry.exportName]);
+                throw new DiagnosticError(dupExportEntry.node, DiagnosticCode.Module_0_has_already_exported_a_member_named_1,
+                                          getSourceFileOfNode(dupExportEntry.node),
+                                          [getSourceFileOfNode(dupExportEntry.node).fileName, dupExportEntry.exportName]);
             }
         }
 
         this.localExportEntries.forEach((entry: Array<Entry>, localName: string) => {
             if (!moduleScope.hasDecl(localName) && localName != '*default*') {
-                throw new DiagnosticError(entry[0].node, DiagnosticCode.Module_0_has_no_exported_member_1, getSourceFileOfNode(entry[0].node), [getSourceFileOfNode(entry[0].node).fileName, localName]);
+                throw new DiagnosticError(entry[0].node, DiagnosticCode.Module_0_has_no_exported_member_1,
+                                          getSourceFileOfNode(entry[0].node),
+                                          [getSourceFileOfNode(entry[0].node).fileName, localName]);
             }
         });
 
         this.makeIndirectExportsExplicit();
     }
 
-    setExportedDecls(moduleScope: ModuleScope) {
+    setExportedDecls(moduleScope: ModuleScope): void {
         // @ts-ignore
         this.localExportEntries.forEach((entry: Array<Entry>, localName: string) => {
             moduleScope.setExportDecl(localName);
         })
     }
 
-    setModuleEnvironment(moduleScope: ModuleScope) {
+    setModuleEnvironment(moduleScope: ModuleScope): void {
         this.validateModuleRecordEntries(moduleScope);
         this.setExportedDecls(moduleScope);
     }
 }
 
-export function setModuleNamespaceImports(compiler: Compiler, moduleScope: Scope, pandagen: PandaGen) {
+export function setModuleNamespaceImports(compiler: Compiler, moduleScope: Scope, pandagen: PandaGen): void {
     if (!(moduleScope instanceof ModuleScope)) {
         return;
     }
 
     moduleScope.module().getNamespaceImportEntries().forEach(entry => {
-        let namespace_lref = LReference.generateLReference(compiler, (<ts.NamespaceImport>entry.node).name, true);
+        let namespaceLref = LReference.generateLReference(compiler, (<ts.NamespaceImport>entry.node).name, true);
         pandagen.getModuleNamespace(entry.node, entry.moduleRequest);
-        namespace_lref.setValue();
+        namespaceLref.setValue();
     });
 }
 
-export function assignIndexToModuleVariable(moduleScope: Scope) {
+export function assignIndexToModuleVariable(moduleScope: Scope): void {
     if (!(moduleScope instanceof ModuleScope)) {
         return;
     }

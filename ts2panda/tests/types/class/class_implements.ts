@@ -14,8 +14,8 @@
  */
 
 {
-    class base1 { }
-    class base2 { }
-    class A implements base1, base2 { }
+    class Base1 { }
+    class Base2 { }
+    class A implements Base1, Base2 { }
     let a = new A();
 }

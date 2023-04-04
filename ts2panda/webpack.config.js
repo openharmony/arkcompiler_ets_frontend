@@ -27,7 +27,7 @@ let cleanOptions = {
 };
 
 function initConfig(config, envArgs) {
-    console.log(envArgs.buildMode)
+    console.log(envArgs.buildMode);
     Object.assign(config, {
         optimization: {
             minimize: envArgs.buildMode !== 'debug'

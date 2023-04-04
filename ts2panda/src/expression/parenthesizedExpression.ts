@@ -16,7 +16,7 @@
 import * as ts from "typescript";
 
 export function findInnerExprOfParenthesis(expr: ts.ParenthesizedExpression): ts.Expression {
-    while (expr.expression.kind == ts.SyntaxKind.ParenthesizedExpression) {
+    while (expr.expression.kind === ts.SyntaxKind.ParenthesizedExpression) {
         expr = <ts.ParenthesizedExpression>expr.expression;
     }
     return expr.expression;
@@ -24,7 +24,7 @@ export function findInnerExprOfParenthesis(expr: ts.ParenthesizedExpression): ts
 
 export function findOuterNodeOfParenthesis(expr: ts.Node): ts.Node {
     let parent = expr.parent;
-    while (parent.kind == ts.SyntaxKind.ParenthesizedExpression) {
+    while (parent.kind === ts.SyntaxKind.ParenthesizedExpression) {
         parent = parent.parent;
     }
     return parent;

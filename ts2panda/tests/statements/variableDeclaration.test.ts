@@ -257,6 +257,6 @@ describe("VariableDeclarationTest", function () {
         ];
         expect(checkInstructions(insns, expected)).to.be.true;
         let i = scope!.findLocal("i");
-        expect(i == undefined).to.be.true; // not in global
+        expect(i === undefined).to.be.true; // not in global
     });
 });

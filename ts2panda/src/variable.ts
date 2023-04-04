@@ -44,7 +44,7 @@ export abstract class Variable {
         this.typeIndex = 0;
     }
 
-    bindVreg(vreg: VReg) {
+    bindVreg(vreg: VReg): void {
         this.vreg = vreg;
         this.vreg.setTypeIndex(this.typeIndex);
         this.vreg.setVariableName(this.name);
@@ -56,35 +56,35 @@ export abstract class Variable {
 
     getVreg(): VReg {
         if (!this.vreg) {
-            throw new Error("variable has not been binded")
+            throw new Error("variable has not been binded");
         }
         return this.vreg;
     }
 
-    getName() {
+    getName(): string {
         return this.name;
     }
 
-    getTypeIndex() {
+    getTypeIndex(): number {
         return this.typeIndex;
     }
 
-    setTypeIndex(typeIndex: number) {
+    setTypeIndex(typeIndex: number): number {
         return this.typeIndex = typeIndex;
     }
 
-    setLexVar(scope: VariableScope | LoopScope) {
+    setLexVar(scope: VariableScope | LoopScope): number {
         if (this.lexical()) {
             return;
         }
-        this.idxLex = scope.getLexVarIdx()
+        this.idxLex = scope.getLexVarIdx();
         scope.pendingCreateEnv();
         this.isLexVar = true;
         scope.addLexVarInfo(this.name, this.idxLex);
         return this.idxLex;
     }
 
-    clearLexVar() {
+    clearLexVar(): void {
         this.isLexVar = false;
         this.idxLex = 0;
     }
@@ -93,32 +93,32 @@ export abstract class Variable {
         return this.isLexVar;
     }
 
-    lexIndex() {
+    lexIndex(): number {
         return this.idxLex;
     }
 
     isLet(): boolean {
-        return this.declKind == VarDeclarationKind.LET;
+        return this.declKind === VarDeclarationKind.LET;
     }
 
     isConst(): boolean {
-        return this.declKind == VarDeclarationKind.CONST;
+        return this.declKind === VarDeclarationKind.CONST;
     }
 
     isLetOrConst(): boolean {
-        return this.declKind == VarDeclarationKind.LET || this.declKind == VarDeclarationKind.CONST;
+        return this.declKind === VarDeclarationKind.LET || this.declKind === VarDeclarationKind.CONST;
     }
 
     isVar(): boolean {
-        return this.declKind == VarDeclarationKind.VAR;
+        return this.declKind === VarDeclarationKind.VAR;
     }
 
     isNone(): boolean {
-        return this.declKind == VarDeclarationKind.NONE;
+        return this.declKind === VarDeclarationKind.NONE;
     }
 
     isClass(): boolean {
-        return this.declKind == VarDeclarationKind.CLASS;
+        return this.declKind === VarDeclarationKind.CLASS;
     }
 }
 
@@ -130,13 +130,13 @@ export class LocalVariable extends Variable {
         this.status = status ? status : null;
     }
 
-    initialize() {
+    initialize(): void {
         this.status = InitStatus.INITIALIZED;
     }
 
-    isInitialized() {
+    isInitialized(): boolean {
         if (this.status != null) {
-            return this.status == InitStatus.INITIALIZED;
+            return this.status === InitStatus.INITIALIZED;
         }
         return true;
     }
@@ -153,30 +153,30 @@ export class ModuleVariable extends Variable {
         this.status = status ? status : null;
     }
 
-    initialize() {
+    initialize(): void {
         this.status = InitStatus.INITIALIZED;
     }
 
-    isInitialized() {
+    isInitialized(): boolean {
         if (this.status != null) {
-            return this.status == InitStatus.INITIALIZED;
+            return this.status === InitStatus.INITIALIZED;
         }
         return true;
     }
 
-    setExport() {
+    setExport(): void {
         this.isExport = true;
     }
 
-    isExportVar() {
+    isExportVar(): boolean {
         return this.isExport;
     }
 
-    assignIndex(index: number) {
+    assignIndex(index: number): void {
         this.index = index;
     }
 
-    getIndex() {
+    getIndex(): number {
         return this.index;
     }
 }
@@ -192,9 +192,9 @@ export const MandatoryNewTarget = "4newTarget";
 export const MandatoryThis = "this";
 export const MandatoryArguments = "arguments";
 
-export function isMandatoryParam(name: string) {
-    if (name == MandatoryFuncObj || name == MandatoryArguments ||
-        name == MandatoryNewTarget || name == MandatoryThis) {
+export function isMandatoryParam(name: string): boolean {
+    if (name === MandatoryFuncObj || name === MandatoryArguments ||
+        name === MandatoryNewTarget || name === MandatoryThis) {
         return true;
     }
 

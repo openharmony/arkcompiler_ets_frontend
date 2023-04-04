@@ -32,14 +32,14 @@ import {
     stringLiteralIsInRegExp
 } from "./syntaxCheckHelper";
 
-function checkDeleteStatement(node: ts.DeleteExpression) {
+function checkDeleteStatement(node: ts.DeleteExpression): void {
     let unaryExpr = node.expression;
     if (ts.isIdentifier(unaryExpr)) {
         throw new DiagnosticError(unaryExpr, DiagnosticCode.A_delete_cannot_be_called_on_an_identifier_in_strict_mode);
     }
 }
 
-function checkNumericLiteral(node: ts.NumericLiteral) {
+function checkNumericLiteral(node: ts.NumericLiteral): void {
     let num = jshelpers.getTextOfNode(node);
     if (!isOctalNumber(num)) {
         return;
@@ -48,7 +48,7 @@ function checkNumericLiteral(node: ts.NumericLiteral) {
     throw new DiagnosticError(node, DiagnosticCode.Octal_literals_are_not_allowed_in_strict_mode);
 }
 
-function checkString(node: ts.Node, text: string) {
+function checkString(node: ts.Node, text: string): void {
 
     if (isIncludeOctalEscapeSequence(text)) {
         throw new DiagnosticError(node, DiagnosticCode.Octal_escape_sequences_are_not_allowed_in_strict_mode);
@@ -59,7 +59,7 @@ function checkString(node: ts.Node, text: string) {
     }
 }
 
-function checkStringLiteral(node: ts.StringLiteral) {
+function checkStringLiteral(node: ts.StringLiteral): void {
     // Octal escape has been deprecated in ES5, but it can be used in regular expressions
     if (stringLiteralIsInRegExp(node)) {
         return;
@@ -69,7 +69,7 @@ function checkStringLiteral(node: ts.StringLiteral) {
     checkString(node, text);
 }
 
-function checkEvalOrArgumentsOrOriginalKeyword(contextNode: ts.Node, name: ts.Node | undefined) {
+function checkEvalOrArgumentsOrOriginalKeyword(contextNode: ts.Node, name: ts.Node | undefined): void {
     if (!name || !ts.isIdentifier(name)) {
         return;
     }
@@ -85,7 +85,7 @@ function checkEvalOrArgumentsOrOriginalKeyword(contextNode: ts.Node, name: ts.No
 }
 
 
-function getStrictModeEvalOrArgumentsDiagnosticCode(node: ts.Node) {
+function getStrictModeEvalOrArgumentsDiagnosticCode(node: ts.Node): any {
     if (jshelpers.getContainingClass(node)) {
         return DiagnosticCode.Invalid_use_of_0_Class_definitions_are_automatically_in_strict_mode;
     }
@@ -93,7 +93,7 @@ function getStrictModeEvalOrArgumentsDiagnosticCode(node: ts.Node) {
     return DiagnosticCode.Invalid_use_of_0_in_strict_mode;
 }
 
-function getStrictModeIdentifierDiagnosticCode(node: ts.Node) {
+function getStrictModeIdentifierDiagnosticCode(node: ts.Node): any {
     if (jshelpers.getContainingClass(node)) {
         return DiagnosticCode.Identifier_expected_0_is_a_reserved_word_in_strict_mode_Class_definitions_are_automatically_in_strict_mode;
     }
@@ -101,7 +101,7 @@ function getStrictModeIdentifierDiagnosticCode(node: ts.Node) {
     return DiagnosticCode.Identifier_expected_0_is_a_reserved_word_in_strict_mode;
 }
 
-function checkBinaryExpression(node: ts.BinaryExpression) {
+function checkBinaryExpression(node: ts.BinaryExpression): void {
     if (!isLeftHandSideExpression(node.left) || !isAssignmentOperator(node.operatorToken.kind)) {
         return;
     }
@@ -122,9 +122,9 @@ function checkBinaryExpression(node: ts.BinaryExpression) {
     checkEvalOrArgumentsOrOriginalKeyword(contextNode, <ts.Identifier>name);
 }
 
-function checkContextualIdentifier(node: ts.Identifier) {
+function checkContextualIdentifier(node: ts.Identifier): void {
     let file = jshelpers.getSourceFileOfNode(node);
-    if (jshelpers.getTextOfIdentifierOrLiteral(node) == 'await' && CmdOptions.isModules()) {
+    if (jshelpers.getTextOfIdentifierOrLiteral(node) === 'await' && CmdOptions.isModules()) {
         throw new DiagnosticError(node, DiagnosticCode.Identifier_expected_0_is_a_reserved_word_at_the_top_level_of_a_module, file, ['await']);
     }
 
@@ -138,7 +138,7 @@ function checkContextualIdentifier(node: ts.Identifier) {
 
 }
 
-function checkParameters(decl: ts.FunctionLikeDeclaration | ts.FunctionExpression) {
+function checkParameters(decl: ts.FunctionLikeDeclaration | ts.FunctionExpression): void {
     let parameters: ts.NodeArray<ts.ParameterDeclaration> = decl.parameters;
     let obj = new Map();
     for (let i = 0; i < parameters.length; i++) {
@@ -162,17 +162,17 @@ function checkParameters(decl: ts.FunctionLikeDeclaration | ts.FunctionExpressio
     }
 }
 
-function checkWithStatement(node: ts.WithStatement) {
+function checkWithStatement(node: ts.WithStatement): void {
     let file = jshelpers.getSourceFileOfNode(node);
     throw new DiagnosticError(node, DiagnosticCode.A_with_statements_are_not_allowed_in_strict_mode, file);
 }
 
-function checkNoSubstitutionTemplateLiteral(expr: ts.NoSubstitutionTemplateLiteral) {
+function checkNoSubstitutionTemplateLiteral(expr: ts.NoSubstitutionTemplateLiteral): void {
     let text = jshelpers.getTextOfNode(expr);
     checkString(expr, text.substring(1, text.length - 1));
 }
 
-function checkFunctionDeclaration(node: ts.FunctionDeclaration) {
+function checkFunctionDeclaration(node: ts.FunctionDeclaration): void {
     checkEvalOrArgumentsOrOriginalKeyword(node, node.name);
     checkParameters(node);
     if (!isInBlockScope(node.parent!)) {
@@ -180,7 +180,7 @@ function checkFunctionDeclaration(node: ts.FunctionDeclaration) {
     }
 }
 
-function checkClassDeclaration(node: ts.ClassDeclaration) {
+function checkClassDeclaration(node: ts.ClassDeclaration): void {
     if (!hasExportKeywordModifier(node) && !node.name) {
         if (!node.name && !hasDefaultKeywordModifier(node)) {
             throw new DiagnosticError(node, DiagnosticCode.Identifier_expected);
@@ -188,7 +188,7 @@ function checkClassDeclaration(node: ts.ClassDeclaration) {
     }
 }
 
-function checkImportDeclaration(node: ts.ImportDeclaration, scope: Scope) {
+function checkImportDeclaration(node: ts.ImportDeclaration, scope: Scope): void {
     if (!(scope instanceof ModuleScope)) {
         throw new DiagnosticError(node, DiagnosticCode.An_import_declaration_can_only_be_used_in_a_namespace_or_module);
     }
@@ -201,8 +201,8 @@ function checkImportDeclaration(node: ts.ImportDeclaration, scope: Scope) {
         let namedBindings = node.importClause.namedBindings;
         if (ts.isNamedImports(namedBindings)) {
             namedBindings.elements.forEach((element: any) => {
-                if (jshelpers.getTextOfIdentifierOrLiteral(element.name) == 'arguments'
-                    || jshelpers.getTextOfIdentifierOrLiteral(element.name) == 'eval') {
+                if (jshelpers.getTextOfIdentifierOrLiteral(element.name) === 'arguments' ||
+                    jshelpers.getTextOfIdentifierOrLiteral(element.name) === 'eval') {
                     throw new DiagnosticError(node, DiagnosticCode.Unexpected_eval_or_arguments_in_strict_mode);
                 }
             });
@@ -210,7 +210,7 @@ function checkImportDeclaration(node: ts.ImportDeclaration, scope: Scope) {
     }
 }
 
-function checkExportAssignment(node: ts.ExportAssignment, scope: Scope) {
+function checkExportAssignment(node: ts.ExportAssignment, scope: Scope): void {
     if (!(scope instanceof ModuleScope)) {
         throw new DiagnosticError(node, DiagnosticCode.An_export_assignment_must_be_at_the_top_level_of_a_file_or_module_declaration);
     }
@@ -220,7 +220,7 @@ function checkExportAssignment(node: ts.ExportAssignment, scope: Scope) {
     }
 }
 
-function checkExportDeclaration(node: ts.ExportDeclaration, scope: Scope) {
+function checkExportDeclaration(node: ts.ExportDeclaration, scope: Scope): void {
     if (!(scope instanceof ModuleScope)) {
         throw new DiagnosticError(node, DiagnosticCode.An_export_declaration_can_only_be_used_in_a_module);
     }
@@ -230,7 +230,7 @@ function checkExportDeclaration(node: ts.ExportDeclaration, scope: Scope) {
     }
 }
 
-export function checkSyntaxErrorForStrictMode(node: ts.Node, scope: Scope) {
+export function checkSyntaxErrorForStrictMode(node: ts.Node, scope: Scope): void {
     switch (node.kind) {
         case ts.SyntaxKind.NumericLiteral:
             checkNumericLiteral(<ts.NumericLiteral>node);

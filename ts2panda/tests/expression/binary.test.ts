@@ -107,7 +107,7 @@ describe("BinaryOperationsTest", function () {
 
         expect(checkInstructions(insns, expected)).to.be.true;
 
-        let jumps = insns.filter(item => item instanceof Jeqz || item instanceof Jmp)
+        let jumps = insns.filter(item => item instanceof Jeqz || item instanceof Jmp);
 
         expect(jumps.length).to.equal(3);
     });

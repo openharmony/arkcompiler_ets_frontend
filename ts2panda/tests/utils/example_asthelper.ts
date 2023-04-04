@@ -15,12 +15,12 @@
 
 import * as asthelper from "./asthelper";
 
-function testCreateAstFromSnippet() {
+function testCreateAstFromSnippet(): void {
     let ast = asthelper.creatAstFromSnippet("var aaa = 10");
     console.log(ast.getText());
 }
-function testCreateAstFromFile() {
-    const absolutePath = __dirname + "/example_asthelper.js"
+function testCreateAstFromFile(): void {
+    const absolutePath = __dirname + "/example_asthelper.js";
     let ast = asthelper.creatAstFromFile(absolutePath);
     console.log(ast.getText());
 }

@@ -49,7 +49,7 @@ abstract class VariableAccessBase {
         this.level = level;
     }
 
-    isLexVar() {
+    isLexVar(): boolean {
         return this.variable.isLexVar;
     }
 
@@ -166,7 +166,7 @@ export class VariableAcessStore extends VariableAccessBase {
             if (!this.isDeclaration) {
                 /**
                  * check TDZ first
-                 * If acc == hole -> throw reference error
+                 * If acc === hole -> throw reference error
                  * else -> execute the next insn
                 */
                 insns.push(loadLexicalVar(this.level, slot));
@@ -187,7 +187,7 @@ export class VariableAcessStore extends VariableAccessBase {
     }
 }
 
-function checkConstAssignment(pg: PandaGen, v: Variable, expansion: IRNode[], node: ts.Node | NodeKind) {
+function checkConstAssignment(pg: PandaGen, v: Variable, expansion: IRNode[], node: ts.Node | NodeKind): void {
     let nameReg = pg.getTemp();
     if (v.isConst()) {
         expansion.push(loadAccumulatorString(v.getName()));
@@ -195,12 +195,12 @@ function checkConstAssignment(pg: PandaGen, v: Variable, expansion: IRNode[], no
         expansion.push(throwConstAssignment(nameReg));
     }
 
-    if (v.isClass() && node != NodeKind.FirstNodeOfFunction &&
-        node != NodeKind.Invalid && node != NodeKind.Normal) {
+    if (v.isClass() && node != NodeKind.FIRST_NODE_OF_FUNCTION &&
+        node != NodeKind.INVALID && node != NodeKind.NORMAL) {
         let className = v.getName();
         while (node) {
             if (ts.isClassLike(node) && node.name &&
-                jshelpers.getTextOfIdentifierOrLiteral(node.name) == className) {
+                jshelpers.getTextOfIdentifierOrLiteral(node.name) === className) {
                 break;
             }
 

@@ -47,6 +47,6 @@ describe("FunctionToStringTest", function () {
         CmdOptions.needRecordSourceCode = () => {return false};
         let pandaGen = snippetCompiler.getPandaGenByName('UnitTest.foo');
         let expected = "function foo() {return 123;}";
-        expect(pandaGen.getSourceCode() == expected).to.be.true;
+        expect(pandaGen.getSourceCode() === expected).to.be.true;
     })
 })

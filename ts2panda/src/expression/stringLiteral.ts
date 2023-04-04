@@ -17,7 +17,7 @@ import * as ts from "typescript";
 import * as jshelpers from "../jshelpers";
 import { PandaGen } from "../pandagen";
 
-export function compileStringLiteral(pandaGen: PandaGen, lit: ts.StringLiteral) {
+export function compileStringLiteral(pandaGen: PandaGen, lit: ts.StringLiteral): void {
     let text = jshelpers.getTextOfIdentifierOrLiteral(lit);
     pandaGen.loadAccumulatorString(lit, text);
 }

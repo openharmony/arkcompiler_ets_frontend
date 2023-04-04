@@ -55,7 +55,7 @@ export function hasExportKeywordModifier(node: ts.Node): boolean {
     let hasExport: boolean = false;
     if (node.modifiers) {
         node.modifiers.forEach((mod) => {
-            if (mod.kind == ts.SyntaxKind.ExportKeyword) {
+            if (mod.kind === ts.SyntaxKind.ExportKeyword) {
                 hasExport = true;
             }
         });
@@ -68,7 +68,7 @@ export function hasDefaultKeywordModifier(node: ts.Node): boolean {
     let hasDefault: boolean = false;
     if (node.modifiers) {
         node.modifiers.forEach((mod) => {
-            if (mod.kind == ts.SyntaxKind.DefaultKeyword) {
+            if (mod.kind === ts.SyntaxKind.DefaultKeyword) {
                 hasDefault = true;
             }
         });
@@ -77,8 +77,8 @@ export function hasDefaultKeywordModifier(node: ts.Node): boolean {
     return hasDefault;
 }
 
-export function execute(cmd: string, args: Array<string>) {
-    var spawn = require('child_process').spawn;
+export function execute(cmd: string, args: Array<string>): number {
+    let spawn = require('child_process').spawn;
 
     let child = spawn(cmd, [...args], {
         stdio: ['pipe', 'inherit', 'inherit']
@@ -96,14 +96,14 @@ export function execute(cmd: string, args: Array<string>) {
     return 1;
 }
 
-export function addUnicodeEscape(text: string) {
+export function addUnicodeEscape(text: string): string {
     let firstIdx = 0;
     let secondIdx = 0;
     let len = text.length;
     let newText = "";
     while (secondIdx != len) {
-        if (text[secondIdx] == '\\' && secondIdx + 1 != len && text[secondIdx + 1] == 'u') {
-            if (secondIdx != 0 && text[secondIdx - 1] == '\\') {
+        if (text[secondIdx] === '\\' && secondIdx + 1 != len && text[secondIdx + 1] === 'u') {
+            if (secondIdx != 0 && text[secondIdx - 1] === '\\') {
                 newText += text.substr(firstIdx, secondIdx - firstIdx) + "\\\\" + "\\u";
             } else {
                 newText += text.substr(firstIdx, secondIdx - firstIdx) + "\\" + "\\u";
@@ -115,39 +115,39 @@ export function addUnicodeEscape(text: string) {
         }
     }
 
-    if (secondIdx == len && firstIdx != secondIdx) {
+    if (secondIdx === len && firstIdx != secondIdx) {
         newText += text.substr(firstIdx);
     }
 
     return newText;
 }
 
-export function isBindingPattern(node: ts.Node) {
+export function isBindingPattern(node: ts.Node): boolean {
     return ts.isArrayBindingPattern(node) || ts.isObjectBindingPattern(node);
 }
 
-export function isObjectBindingOrAssignmentPattern(node: ts.Node) {
+export function isObjectBindingOrAssignmentPattern(node: ts.Node): boolean {
     return ts.isObjectLiteralExpression(node) || ts.isObjectBindingPattern(node);
 }
 
-export function isArrayBindingOrAssignmentPattern(node: ts.Node) {
+export function isArrayBindingOrAssignmentPattern(node: ts.Node): boolean {
     return ts.isArrayLiteralExpression(node) || ts.isArrayBindingPattern(node);
 }
 
-export function isBindingOrAssignmentPattern(node: ts.Node) {
+export function isBindingOrAssignmentPattern(node: ts.Node): boolean {
     return isArrayBindingOrAssignmentPattern(node) || isObjectBindingOrAssignmentPattern(node);
 }
 
-export function isMemberExpression(node: ts.Node) {
-    if (ts.isPropertyAccessExpression(node)
-        || ts.isElementAccessExpression(node)) {
+export function isMemberExpression(node: ts.Node): boolean {
+    if (ts.isPropertyAccessExpression(node) ||
+        ts.isElementAccessExpression(node)) {
         return true;
     }
 
     return false;
 }
 
-export function isUndefinedIdentifier(node: ts.Node) {
+export function isUndefinedIdentifier(node: ts.Node): boolean {
     if (!ts.isIdentifier(node)) {
         return false;
     }
@@ -159,7 +159,7 @@ export function isUndefinedIdentifier(node: ts.Node) {
     return true;
 }
 
-export function isAnonymousFunctionDefinition(node: ts.Node) {
+export function isAnonymousFunctionDefinition(node: ts.Node): boolean {
     if (!isFunctionLikeDeclaration(node)) {
         return false;
     }
@@ -171,29 +171,29 @@ export function isAnonymousFunctionDefinition(node: ts.Node) {
     }
 }
 
-export function escapeUnicode(data: string) {
+export function escapeUnicode(data: string): string {
     let char = '\n';
     let i = 0;
     let j = 0;
-    let new_data = ""
+    let newData = "";
     while ((j = data.indexOf(char, i)) !== -1) {
         let tmp = data.substring(i, j);
         if (tmp.indexOf("\\u") != -1) {
             tmp = addUnicodeEscape(tmp);
         }
-        new_data = new_data.concat(tmp, "\n");
+        newData = newData.concat(tmp, "\n");
         i = j + 1;
     }
 
-    new_data = new_data.concat("}\n");
-    return new_data
+    newData = newData.concat("}\n");
+    return newData;
 }
 
-export function initiateTs2abc(args: Array<string>) {
+export function initiateTs2abc(args: Array<string>): any {
     let js2abc = path.join(path.resolve(__dirname, '../bin'), "js2abc");
     args.unshift("--compile-by-pipe");
     // @ts-ignore
-    var spawn = require('child_process').spawn;
+    let spawn = require('child_process').spawn;
     let child = spawn(js2abc, [...args], {
         stdio: ['pipe', 'inherit', 'inherit', 'pipe']
     });
@@ -201,7 +201,7 @@ export function initiateTs2abc(args: Array<string>) {
     return child;
 }
 
-export function terminateWritePipe(ts2abc: any) {
+export function terminateWritePipe(ts2abc: any): void {
     if (!ts2abc) {
         LOGD("ts2abc is not a valid object");
     }
@@ -209,7 +209,7 @@ export function terminateWritePipe(ts2abc: any) {
     ts2abc.stdio[3].end();
 }
 
-export function listenChildExit(child: any) {
+export function listenChildExit(child: any): void {
     if (!child) {
         LOGD("child is not a valid object");
     }
@@ -222,7 +222,7 @@ export function listenChildExit(child: any) {
     });
 }
 
-export function listenErrorEvent(child: any) {
+export function listenErrorEvent(child: any): void {
     if (!child) {
         LOGD("child is not a valid object");
     }
@@ -232,7 +232,7 @@ export function listenErrorEvent(child: any) {
     });
 }
 
-export function isRangeInst(ins: IRNode) {
+export function isRangeInst(ins: IRNode): boolean {
     if (ins instanceof Callthisrange ||
         ins instanceof WideCallthisrange ||
         ins instanceof Callrange ||
@@ -281,11 +281,11 @@ export function getRangeExplicitVregNums(ins: IRNode): number {
     return ins instanceof Createobjectwithexcludedkeys ? 2 : 1;
 }
 
-export function isRestParameter(parameter: ts.ParameterDeclaration) {
+export function isRestParameter(parameter: ts.ParameterDeclaration): boolean {
     return parameter.dotDotDotToken ? true : false;
 }
 
-export function getParamLengthOfFunc(node: ts.FunctionLikeDeclaration) {
+export function getParamLengthOfFunc(node: ts.FunctionLikeDeclaration): number {
     let length = 0;
     let validLengthRange = true;
     let parameters = node.parameters;
@@ -304,7 +304,7 @@ export function getParamLengthOfFunc(node: ts.FunctionLikeDeclaration) {
     return length;
 }
 
-export function getParameterLength4Ctor(node: ts.ClassLikeDeclaration) {
+export function getParameterLength4Ctor(node: ts.ClassLikeDeclaration): number {
     if (!extractCtorOfClass(node)) {
         return 0;
     }
@@ -321,7 +321,7 @@ export function getParameterLength4Ctor(node: ts.ClassLikeDeclaration) {
     return getParamLengthOfFunc(ctorNode!);
 }
 
-export function setPos(node: ts.Node) {
+export function setPos(node: ts.Node): ts.Node {
     ts.setTextRange(node, {pos:-1, end:-1});
     node.forEachChild(childNode => {
         setPos(childNode);
@@ -329,18 +329,18 @@ export function setPos(node: ts.Node) {
     return node;
 }
 
-export function getRecordTypeFlag(recordType: boolean) {
+export function getRecordTypeFlag(recordType: boolean): boolean {
     return recordType && CmdOptions.needRecordType() && CompilerDriver.isTsFile;
 }
 
 export function isBase64Str(input: string): boolean {
-    if (input == '' || input.trim() == '') {
+    if (input === '' || input.trim() === '') {
         return false;
     }
-    return Buffer.from(Buffer.from(input, 'base64').toString()).toString('base64') == input;
+    return Buffer.from(Buffer.from(input, 'base64').toString()).toString('base64') === input;
 }
 
-export function transformCommonjsModule(sourceFile: ts.SourceFile) {
+export function transformCommonjsModule(sourceFile: ts.SourceFile): ts.SourceFile {
     /*
      * Transform the commonjs module's AST by wrap the sourceCode & use Reflect.apply to invoke this wrapper with [this]
      * pointing to [exports] object
@@ -402,12 +402,12 @@ export function hasAbstractModifier(node: ts.Node): boolean {
 export const MAX_INT8 = 127;
 export const MAX_INT16 = 32767;
 
-export function getOutputBinName(node: ts.SourceFile) {
+export function getOutputBinName(node: ts.SourceFile): string {
     let outputBinName = CmdOptions.getOutputBinName();
     let fileName = node.fileName.substring(0, node.fileName.lastIndexOf('.'));
     let inputFileName = CmdOptions.getInputFileName();
     if (/^win/.test(require('os').platform())) {
-        var inputFileTmps = inputFileName.split(path.sep);
+        let inputFileTmps = inputFileName.split(path.sep);
         inputFileName = path.posix.join(...inputFileTmps);
     }
 
@@ -420,7 +420,7 @@ export function getOutputBinName(node: ts.SourceFile) {
 export function getRecordName(node: ts.SourceFile): string {
     let recordName = CmdOptions.getRecordName();
 
-    if (recordName == "" && CmdOptions.isMergeAbc()) {
+    if (recordName === "" && CmdOptions.isMergeAbc()) {
         let outputBinName = getOutputBinName(node);
         recordName = path.basename(outputBinName, path.extname(outputBinName));
     }
@@ -437,7 +437,7 @@ export function getLiteralKey(node: ts.SourceFile, idx:number): string {
  */
 function getNodeForGeneratedName(
     // @ts-ignore
-    name: ts.GeneratedIdentifier) {
+    name: ts.GeneratedIdentifier): ts.Node {
     const autoGenerateId = name.autoGenerateId;
     let node = name as ts.Node;
     // @ts-ignore
@@ -446,11 +446,11 @@ function getNodeForGeneratedName(
         node = original;
 
         // if "node" is a different generated name (having a different "autoGenerateId"), use it and stop traversing.
-        if (ts.isIdentifier(node)
+        if (ts.isIdentifier(node) &&
             // @ts-ignore
-            && !!(node.autoGenerateFlags! & ts.GeneratedIdentifierFlags.Node)
+            !!(node.autoGenerateFlags! & ts.GeneratedIdentifierFlags.Node) &&
             // @ts-ignore
-            && node.autoGenerateId !== autoGenerateId) {
+            node.autoGenerateId !== autoGenerateId) {
             break;
         }
         // @ts-ignore
@@ -492,7 +492,7 @@ function generateNameForTempAndLoopVariable(node: ts.Node): string {
     }
     let generatedName = generateUniqueName();
     // @ts-ignore
-    if ((node.autoGenerateFlags & ts.GeneratedIdentifierFlags.KindMask) == ts.GeneratedIdentifierFlags.Unique) {
+    if ((node.autoGenerateFlags & ts.GeneratedIdentifierFlags.KindMask) === ts.GeneratedIdentifierFlags.Unique) {
         // Unique names are generated and cached based on their unique autoGenerateId and original idText.
         // @ts-ignore
         generatedName = (<ts.Identifier>node).escapedText + generatedName;
@@ -501,11 +501,11 @@ function generateNameForTempAndLoopVariable(node: ts.Node): string {
     return generatedName;
 }
 
-export function resetUniqueNameIndex() {
+export function resetUniqueNameIndex(): void {
     uniqueNameIndex = 0;
 }
 
-export function makeNameForGeneratedNode(node: ts.Node) {
+export function makeNameForGeneratedNode(node: ts.Node): void {
     node.forEachChild(childNode => {
         switch (childNode.kind) {
             case ts.SyntaxKind.Identifier: {

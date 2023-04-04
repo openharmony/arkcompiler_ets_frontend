@@ -34,7 +34,7 @@ function createSourceFile(filename: string): ts.SourceFile {
 
 function recordNodes(node: ts.Node, flag: boolean): boolean {
     node.forEachChild(childNode => {
-        expect(isStrictMode(childNode) == flag).to.be.true;
+        expect(isStrictMode(childNode) === flag).to.be.true;
         recordNodes(childNode, flag);
     });
 
@@ -57,7 +57,7 @@ describe("strict_mode", function () {
             if (isFunctionLikeDeclaration(childNode)) {
                 let funcId = <ts.Identifier>(<ts.FunctionDeclaration>childNode).name;
                 let funcName = jshelpers.getTextOfIdentifierOrLiteral(funcId);
-                if (funcName == "add") {
+                if (funcName === "add") {
                     recordNodes(childNode, true);
                 } else {
                     recordNodes(childNode, false);

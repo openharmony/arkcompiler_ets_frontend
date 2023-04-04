@@ -19,7 +19,7 @@ import { VReg } from "../irnodes";
 import { containSpreadElement } from "../base/util";
 import { createArrayFromElements } from "./arrayLiteralExpression";
 
-export function compileNewExpression(expr: ts.NewExpression, compiler: Compiler) {
+export function compileNewExpression(expr: ts.NewExpression, compiler: Compiler): void {
     let pandaGen = compiler.getPandaGen();
     let ctorReg = pandaGen.getTemp();
 

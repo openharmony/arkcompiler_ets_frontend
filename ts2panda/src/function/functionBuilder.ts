@@ -61,7 +61,7 @@ export class FunctionBuilder {
         pg.storeAccumulator(node, this.resumeVal);
     }
 
-    resumeGenerator(node: ts.Node | NodeKind) {
+    resumeGenerator(node: ts.Node | NodeKind): void {
         let pg = this.pg;
         pg.resumeGenerator(node, this.funcObj);
         pg.storeAccumulator(node, this.resumeVal);
@@ -69,12 +69,12 @@ export class FunctionBuilder {
         pg.storeAccumulator(node, this.resumeType);
     }
 
-    explicitReturn(node: ts.Node | NodeKind, empty ? : boolean) {
+    explicitReturn(node: ts.Node | NodeKind, empty ? : boolean): void {
         this.pg.return(node);
     }
 
-    implicitReturn(node: ts.Node | NodeKind) {
-        CmdOptions.isWatchEvaluateExpressionMode() ? this.pg.return(NodeKind.Invalid) : this.pg.returnUndefined(node);
+    implicitReturn(node: ts.Node | NodeKind): void {
+        CmdOptions.isWatchEvaluateExpressionMode() ? this.pg.return(NodeKind.INVALID) : this.pg.returnUndefined(node);
     }
 
     builderType(): FunctionBuilderType {

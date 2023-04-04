@@ -14,11 +14,11 @@
  */
 
 function func(){
-    var x = 10;
+    let x = 10;
     function add(a,b) {
         "use strict";
-        var y = 12;
+        let y = 12;
         return a+b+y;
     }
-    var z = 14;
+    let z = 14;
 }

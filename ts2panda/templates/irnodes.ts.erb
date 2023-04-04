@@ -288,7 +288,7 @@ export function getInsnFormats(opcode: IRNodeKind) {
 }
 
 export abstract class IRNode {
-  private node: ts.Node | NodeKind = NodeKind.Normal;
+  private node: ts.Node | NodeKind = NodeKind.NORMAL;
   public static pg: PandaGen | undefined = undefined;
   constructor(
     readonly kind: IRNodeKind,
@@ -316,9 +316,9 @@ export abstract class IRNode {
   }
 
   getNodeName() {
-    if (this.node != NodeKind.Invalid &&
-        this.node != NodeKind.FirstNodeOfFunction &&
-        this.node != NodeKind.Normal) {
+    if (this.node != NodeKind.INVALID &&
+        this.node != NodeKind.FIRST_NODE_OF_FUNCTION &&
+        this.node != NodeKind.NORMAL) {
       return ts.SyntaxKind[(<ts.Node>this.node).kind];
     }
 

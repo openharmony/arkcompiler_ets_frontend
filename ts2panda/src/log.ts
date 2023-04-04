@@ -17,7 +17,7 @@
 import * as ts from "typescript";
 import { CmdOptions } from "./cmdOptions";
 
-export function LOGD(tag: any, ...args: any[]) {
+export function LOGD(tag: any, ...args: any[]): void {
     if (CmdOptions.isEnableDebugLog()) {
         if (tag) {
             console.log(tag + ": " + args);
@@ -27,7 +27,7 @@ export function LOGD(tag: any, ...args: any[]) {
     }
 }
 
-export function LOGE(tag: any, ...args: any[]) {
+export function LOGE(tag: any, ...args: any[]): void {
     if (tag) {
         console.error(tag + ": " + args);
     } else {
@@ -35,11 +35,11 @@ export function LOGE(tag: any, ...args: any[]) {
     }
 }
 
-export function printAstRecursively(node: ts.Node, indentLevel: number, sourceFile: ts.SourceFile) {
+export function printAstRecursively(node: ts.Node, indentLevel: number, sourceFile: ts.SourceFile): void {
     if (CmdOptions.isEnableDebugLog()) {
         const indentation = "-".repeat(indentLevel);
         let nodeContent = ts.SyntaxKind[node.kind] + ": ";
-        if (node.kind == ts.SyntaxKind.Identifier) {
+        if (node.kind === ts.SyntaxKind.Identifier) {
             // @ts-ignore
             nodeContent += (<ts.Identifier>node).escapedText;
         }

@@ -41,7 +41,7 @@ let options = {
     alwaysStrict: true
 }
 
-export function compileTsWithType(fileName: string) {
+export function compileTsWithType(fileName: string): { literalBufferArray: LiteralBuffer[]; snippetCompiler: SnippetCompiler; } {
 
     CmdOptions.parseUserCmd([""]);
     let filePath = [fileName];
@@ -62,7 +62,7 @@ export function compileTsWithType(fileName: string) {
     }
 }
 
-export function createVRegTypePair(input: any) {
+export function createVRegTypePair(input: any): Map<string, number> {
     let id2TypeIndex: Map<string, number> = new Map<string, number>();
     for (let rol of input) {
         id2TypeIndex.set(rol[0], rol[1]);
@@ -73,12 +73,12 @@ export function createVRegTypePair(input: any) {
 export function compareVReg2Type(expectedMap: Map<string, number>, generated: VReg[]): boolean {
     for (let vreg of generated) {
         let name = vreg.getVariableName();
-        if (name == "4funcObj" || name == "4newTarget" || name == "this") {
+        if (name === "4funcObj" || name === "4newTarget" || name === "this") {
             continue;
         }
-        let vregMarker = "#" + vreg.num + "#" + vreg.getVariableName()
+        let vregMarker = "#" + vreg.num + "#" + vreg.getVariableName();
         if (!expectedMap.has(vregMarker)) {
-            console.log("verg not found: ", vregMarker)
+            console.log("verg not found: ", vregMarker);
             return false;
         }
         if (expectedMap.get(vregMarker) != vreg.getTypeIndex()) {
@@ -92,7 +92,7 @@ export function compareVReg2Type(expectedMap: Map<string, number>, generated: VR
     return true;
 }
 
-export function createLiteralBufferArray(input: any) {
+export function createLiteralBufferArray(input: any): LiteralBuffer[] {
     let literalBufferArray: Array<LiteralBuffer> = new Array<LiteralBuffer>();
     for (let i = 0; i < input.length; i++) {
         let buff = input[i];
@@ -107,7 +107,7 @@ export function createLiteralBufferArray(input: any) {
     return literalBufferArray;
 }
 
-function printLiteralLog(expected: Literal, generated: Literal) {
+function printLiteralLog(expected: Literal, generated: Literal): void {
     console.log("expected literals:");
     console.log(expected);
     console.log("unmatched literals:");

@@ -42,7 +42,7 @@ import {
     Variable
 } from "./variable";
 
-function setVariableOrParameterType(node: ts.Node, v: Variable | undefined) {
+function setVariableOrParameterType(node: ts.Node, v: Variable | undefined): void {
     if (v) {
         let typeIndex = TypeRecorder.getInstance().tryGetVariable2Type(ts.getOriginalNode(node));
         if (typeIndex === PrimitiveType.ANY) {
@@ -52,14 +52,14 @@ function setVariableOrParameterType(node: ts.Node, v: Variable | undefined) {
     }
 }
 
-function setClassOrFunctionType(node: ts.Node, v: Variable | undefined) {
+function setClassOrFunctionType(node: ts.Node, v: Variable | undefined): void {
     if (v) {
         let typeIndex = TypeRecorder.getInstance().tryGetTypeIndex(ts.getOriginalNode(node));
         v.setTypeIndex(typeIndex);
     }
 }
 
-function setTypeIndex(node: ts.Node, v: Variable | undefined, isClassOrFunction: boolean) {
+function setTypeIndex(node: ts.Node, v: Variable | undefined, isClassOrFunction: boolean): void {
     if (isClassOrFunction) {
         setClassOrFunctionType(node, v);
     } else {
@@ -72,7 +72,7 @@ function addInnerArgs(node: ts.Node, scope: VariableScope, enableTypeRecord: boo
     scope.addParameter(MandatoryFuncObj, VarDeclarationKind.CONST, -1);
     // the second argument for newTarget
 
-    if (node.kind == ts.SyntaxKind.ArrowFunction) {
+    if (node.kind === ts.SyntaxKind.ArrowFunction) {
         scope.addParameter("0newTarget", VarDeclarationKind.CONST, -1);
         scope.addParameter("0this", VarDeclarationKind.CONST, 0);
     } else {
@@ -107,7 +107,7 @@ function addInnerArgs(node: ts.Node, scope: VariableScope, enableTypeRecord: boo
     }
 }
 
-export function addVariableToScope(recorder: Recorder, enableTypeRecord: boolean) {
+export function addVariableToScope(recorder: Recorder, enableTypeRecord: boolean): void {
     let scopeMap = recorder.getScopeMap();
     let hoistMap = recorder.getHoistMap();
 
@@ -210,7 +210,7 @@ function addParameters(node: ts.FunctionLikeDeclaration, scope: VariableScope, e
     }
 }
 
-function addPatternParamterElements(pattern: ts.BindingPattern, scope: VariableScope) {
+function addPatternParamterElements(pattern: ts.BindingPattern, scope: VariableScope): void {
     let name: string = '';
     pattern.elements.forEach(bindingElement => {
         if (ts.isOmittedExpression(bindingElement)) {

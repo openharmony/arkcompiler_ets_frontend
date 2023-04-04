@@ -65,7 +65,7 @@ import { getLiteralKey } from "./base/util";
 const dollarSign: RegExp = /\$/g;
 const starSign: RegExp = /\*/g;
 
-const JsonType = {
+const jsonType = {
     "function": 0,
     "record": 1,
     "string": 2,
@@ -90,7 +90,7 @@ export class Ts2Panda {
         return new Signature(pg.getParametersCount());
     }
 
-    static getFuncInsnsAndRegsNum(pg: PandaGen) {
+    static getFuncInsnsAndRegsNum(pg: PandaGen): { insns: Ins[]; regsNum: number; labels: string[]; } {
         let insns: Array<Ins> = [];
         let labels: Array<string> = [];
 
@@ -150,13 +150,13 @@ export class Ts2Panda {
                 });
             }
 
-            insn.debugPosInfo.ClearNodeKind();
+            insn.debugPosInfo.clearNodeKind();
 
             insns.push(new Ins(
                 insOpcode,
-                insRegs.length == 0 ? undefined : insRegs,
-                insIds.length == 0 ? undefined : insIds,
-                insImms.length == 0 ? undefined : insImms,
+                insRegs.length === 0 ? undefined : insRegs,
+                insIds.length === 0 ? undefined : insIds,
+                insImms.length === 0 ? undefined : insImms,
                 insLabel === "" ? undefined : insLabel,
                 insn.debugPosInfo,
             ));
@@ -165,7 +165,7 @@ export class Ts2Panda {
         return {
             insns: insns,
             regsNum: (pg.getTotalRegsNum() - pg.getParametersCount()),
-            labels: labels.length == 0 ? undefined : labels
+            labels: labels.length === 0 ? undefined : labels
         };
     }
 
@@ -187,7 +187,7 @@ export class Ts2Panda {
         let strings_arr = Array.from(Ts2Panda.strings);
 
         let strObject = {
-            "t": JsonType.string,
+            "t": jsonType.string,
             "s": strings_arr
         }
 
@@ -200,10 +200,10 @@ export class Ts2Panda {
         ts2abc.stdio[3].write(jsonStrUnicode + '\n');
     }
 
-    static dumpTypeLiteralArrayBuffer() {
+    static dumpTypeLiteralArrayBuffer(): string {
         let literalArrays = PandaGen.getLiteralArrayBuffer();
         let countType: LiteralBuffer = literalArrays[0];
-        let jsonTypeString: string = ""
+        let jsonTypeString: string = "";
         let typeCount = countType.getLiteral(0)?.getValue();
         if (typeCount) {
             for (let i = 0; i < typeCount; i++) {
@@ -225,7 +225,7 @@ export class Ts2Panda {
 
         literalArrays.forEach(function(literalArray) {
             let literalArrayObject = {
-                "t": JsonType.literal_arr,
+                "t": jsonType.literal_arr,
                 "lit_arr": literalArray
             }
             let jsonLiteralArrUnicode = escapeUnicode(JSON.stringify(literalArrayObject, null, 2));
@@ -241,7 +241,7 @@ export class Ts2Panda {
     static dumpCmdOptions(ts2abc: any): void {
         let enableRecordType: boolean = CmdOptions.needRecordType() && CompilerDriver.isTsFile;
         let options = {
-            "t": JsonType.options,
+            "t": jsonType.options,
             "merge_abc": CmdOptions.isMergeAbc(),
             "module_mode": CmdOptions.isModules(),
             "commonjs_module": CmdOptions.isCommonJs(),
@@ -266,7 +266,7 @@ export class Ts2Panda {
 
     static dumpRecord(ts2abc: any, recordName: string): void {
         let record = {
-            "t": JsonType.record,
+            "t": jsonType.record,
             "rb": new Record(recordName),
             "pn": CmdOptions.getPackageName()
         }
@@ -298,7 +298,7 @@ export class Ts2Panda {
             }
 
             // get builtin type for tryloadglobal instruction
-            if (inst.kind == IRNodeKind.TRYLDGLOBALBYNAME) {
+            if (inst.kind === IRNodeKind.TRYLDGLOBALBYNAME) {
                 let name = inst.operands[1] as string;
                 if (name in BuiltinType) {
                     typeIdx = BuiltinType[name];
@@ -308,7 +308,7 @@ export class Ts2Panda {
             }
 
             // skip arg type
-            if (i < paraCount && inst.kind == IRNodeKind.MOV) {
+            if (i < paraCount && inst.kind === IRNodeKind.MOV) {
                 let vreg = (inst.operands[0] as VReg).num;
                 let arg = (inst.operands[1] as VReg).num;
                 if (vreg >= paraCount || arg < vregCount) {
@@ -320,7 +320,7 @@ export class Ts2Panda {
             }
 
             // local vreg -> inst
-            if (inst.kind == IRNodeKind.STA) {
+            if (inst.kind === IRNodeKind.STA) {
                 let vreg = (inst.operands[0] as VReg).num;
                 if (vreg < locals.length && !handledSet.has(vreg)) {
                     typeIdx = locals[vreg].getTypeIndex();
@@ -414,7 +414,8 @@ export class Ts2Panda {
             );
         }
 
-        let variables = undefined, sourceCode = undefined;
+        let variables = undefined;
+        let sourceCode = undefined;
         if (CmdOptions.needRecordSourceCode() || CmdOptions.isDebugMode()) {
             // function's sourceCode will be undefined in debugMode
             // if we don't need to record function-sourceCode
@@ -464,7 +465,7 @@ export class Ts2Panda {
         LOGD(func);
 
         let funcObject = {
-            "t": JsonType.function,
+            "t": jsonType.function,
             "fb": func
         }
         let jsonFuncUnicode = escapeUnicode(JSON.stringify(funcObject, null, 2));
@@ -479,7 +480,7 @@ export class Ts2Panda {
     static dumpModuleRecords(ts2abc: any): void {
         Ts2Panda.moduleRecordlist.forEach(function(module){
             let moduleObject = {
-                "t": JsonType.module,
+                "t": jsonType.module,
                 "mod": module
             };
             let jsonModuleUnicode = escapeUnicode(JSON.stringify(moduleObject, null, 2));
@@ -503,7 +504,7 @@ export class Ts2Panda {
             'tsi': typeSummaryIndex
         }
         let typeInfoObject = {
-            't': JsonType.type_info,
+            't': jsonType.type_info,
             'ti': typeInfo
         };
         let jsonTypeInfoUnicode = escapeUnicode(JSON.stringify(typeInfoObject, null, 2));
@@ -517,7 +518,7 @@ export class Ts2Panda {
 
     static dumpInputJsonFileContent(ts2abc: any, inputJsonFileContent: string): void {
         let inputJsonFileContentObject = {
-            "t": JsonType.input_json_file_content,
+            "t": jsonType.input_json_file_content,
             "ijfc": inputJsonFileContent
         }
 
@@ -532,7 +533,7 @@ export class Ts2Panda {
 
     static dumpOutputFileName(ts2abc: any, outputFileName: string): void {
         let outputFileNameObject = {
-            "t": JsonType.output_filename,
+            "t": jsonType.output_filename,
             "ofn": outputFileName
         }
 
@@ -547,7 +548,7 @@ export class Ts2Panda {
         ts2abc.stdio[3].write("*" + '\n');
     }
 
-    static clearDumpData() {
+    static clearDumpData(): void {
         Ts2Panda.strings.clear();
         Ts2Panda.jsonString = "";
         Ts2Panda.moduleRecordlist = [];

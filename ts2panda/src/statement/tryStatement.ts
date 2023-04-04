@@ -81,20 +81,20 @@ export class CatchTable {
         pandaGen.getCatchMap().set(catchBeginLabel, this);
     }
 
-    getLabelPairs() {
+    getLabelPairs(): LabelPair[] {
         return this.labelPairs;
     }
 
-    getCatchBeginLabel() {
+    getCatchBeginLabel(): Label {
         return this.catchBeginLabel;
     }
 
-    getDepth() {
+    getDepth(): number {
         return this.depth;
     }
 
     // split the last labelPair after inline finally.
-    splitLabelPair(inlinedLabelPair: LabelPair) {
+    splitLabelPair(inlinedLabelPair: LabelPair): void {
         let lastLabelPair = this.labelPairs.pop();
         if (lastLabelPair) {
             this.labelPairs.push(new LabelPair(lastLabelPair.getBeginLabel(), inlinedLabelPair.getBeginLabel()));
@@ -139,44 +139,44 @@ export class TryStatement {
         TryStatement.currentTryStatement = this;
     }
 
-    destroy() {
+    destroy(): void {
         TryStatement.currentTryStatementDepth--;
         TryStatement.currentTryStatement = this.outer;
     }
 
-    static setCurrentTryStatement(tryStatement: TryStatement | undefined) {
+    static setCurrentTryStatement(tryStatement: TryStatement | undefined): void {
         TryStatement.currentTryStatement = tryStatement;
     }
 
-    static getCurrentTryStatement() {
+    static getCurrentTryStatement(): TryStatement {
         return TryStatement.currentTryStatement;
     }
 
-    static getcurrentTryStatementDepth() {
+    static getcurrentTryStatementDepth(): number {
         return TryStatement.currentTryStatementDepth;
     }
 
-    getOuterTryStatement() {
+    getOuterTryStatement(): TryStatement {
         return this.outer;
     }
 
-    getStatement() {
+    getStatement(): ts.Statement {
         return this.stmt;
     }
 
-    getCatchTable() {
+    getCatchTable(): CatchTable {
         return this.catchTable;
     }
 
-    getLoopEnvLevel() {
+    getLoopEnvLevel(): number {
         return this.loopEnvLevel;
     }
 
-    increaseLoopEnvLevel() {
+    increaseLoopEnvLevel(): void {
         this.loopEnvLevel += 1;
     }
 
-    decreaseLoopEnvLevel() {
+    decreaseLoopEnvLevel(): void {
         this.loopEnvLevel -= 1;
     }
 }
@@ -204,10 +204,10 @@ export abstract class TryBuilderBase {
 export class TryBuilder extends TryBuilderBase {
 
     constructor(compiler: Compiler, pandaGen: PandaGen, tryStmt: ts.TryStatement) {
-        super(compiler, pandaGen, tryStmt)
+        super(compiler, pandaGen, tryStmt);
     }
 
-    compileTryBlock(catchTable: CatchTable) {
+    compileTryBlock(catchTable: CatchTable): void {
         if ((<ts.TryStatement>this.stmt).finallyBlock) {
             this.tryStatement = new TryStatement(this.stmt, catchTable, this);
         } else {
@@ -220,13 +220,13 @@ export class TryBuilder extends TryBuilderBase {
         this.tryStatement.destroy();
     }
 
-    compileFinallyBlockIfExisted() {
+    compileFinallyBlockIfExisted(): void {
         if ((<ts.TryStatement>this.stmt).finallyBlock) {
             this.compiler.compileStatement((<ts.TryStatement>this.stmt).finallyBlock!);
         }
     }
 
-    compileExceptionHandler() {
+    compileExceptionHandler(): void {
         let catchClause = (<ts.TryStatement>this.stmt).catchClause;
         if (catchClause) {
             this.compiler.pushScope(catchClause);
@@ -248,7 +248,7 @@ export class TryBuilder extends TryBuilderBase {
     }
 
     // @ts-ignore
-    compileFinalizer(cfc: ControlFlowChange, continueTargetLabel: Label) {
+    compileFinalizer(cfc: ControlFlowChange, continueTargetLabel: Label): void {
         this.compiler.compileStatement((<ts.TryStatement>this.stmt).finallyBlock!);
     }
 }
@@ -260,7 +260,8 @@ export class TryBuilderWithForOf extends TryBuilderBase {
     private hasLoopEnv: boolean;
     private loopEnv: VReg | undefined;
 
-    constructor(compiler: Compiler, pandaGen: PandaGen, forOfStmt: ts.ForOfStatement, doneReg: VReg, iterator: IteratorRecord, labelTarget: LabelTarget, hasLoopEnv: boolean, loopEnv?: VReg) {
+    constructor(compiler: Compiler, pandaGen: PandaGen, forOfStmt: ts.ForOfStatement, doneReg: VReg, iterator: IteratorRecord,
+                labelTarget: LabelTarget, hasLoopEnv: boolean, loopEnv?: VReg) {
         super(compiler, pandaGen, forOfStmt);
 
         this.labelTarget = labelTarget;
@@ -270,7 +271,7 @@ export class TryBuilderWithForOf extends TryBuilderBase {
         this.loopEnv = loopEnv ? loopEnv : undefined;
     }
 
-    compileTryBlock(catchTable: CatchTable) {
+    compileTryBlock(catchTable: CatchTable): void {
         let stmt = <ts.ForOfStatement>this.stmt;
         let compiler = <Compiler>this.compiler;
         let pandaGen = this.pandaGen;
@@ -281,7 +282,7 @@ export class TryBuilderWithForOf extends TryBuilderBase {
 
         let loopScope = <LoopScope>compiler.getRecorder().getScopeOfNode(stmt);
 
-        pandaGen.loadAccumulator(stmt, getVregisterCache(pandaGen, CacheList.True));
+        pandaGen.loadAccumulator(stmt, getVregisterCache(pandaGen, CacheList.TRUE));
         pandaGen.storeAccumulator(stmt, this.doneReg);
 
         pandaGen.label(stmt, this.labelTarget.getContinueTargetLabel()!);
@@ -297,7 +298,7 @@ export class TryBuilderWithForOf extends TryBuilderBase {
         pandaGen.loadObjProperty(stmt, resultReg, "value");
         pandaGen.storeAccumulator(stmt, resultReg);
 
-        pandaGen.loadAccumulator(stmt, getVregisterCache(pandaGen, CacheList.False));
+        pandaGen.loadAccumulator(stmt, getVregisterCache(pandaGen, CacheList.FALSE));
         pandaGen.storeAccumulator(stmt, this.doneReg);
 
         let lref = LReference.generateLReference(this.compiler, stmt.initializer, isDeclaration);
@@ -309,9 +310,9 @@ export class TryBuilderWithForOf extends TryBuilderBase {
         pandaGen.freeTemps(resultReg);
     }
 
-    compileFinallyBlockIfExisted() { }
+    compileFinallyBlockIfExisted(): void { }
 
-    compileExceptionHandler() {
+    compileExceptionHandler(): void {
         let pandaGen = this.pandaGen;
         let noReturn = new Label();
         let exceptionVreg = pandaGen.getTemp();
@@ -321,14 +322,14 @@ export class TryBuilderWithForOf extends TryBuilderBase {
         pandaGen.condition(
             (<ts.ForOfStatement>this.stmt).expression,
             ts.SyntaxKind.ExclamationEqualsEqualsToken,
-            getVregisterCache(pandaGen, CacheList.True),
+            getVregisterCache(pandaGen, CacheList.TRUE),
             noReturn);
         // Iterator Close
         pandaGen.loadObjProperty(this.stmt, this.iterator.getObject(), "return");
         pandaGen.storeAccumulator(this.stmt, this.iterator.getNextMethod());
-        pandaGen.condition(this.stmt, ts.SyntaxKind.ExclamationEqualsEqualsToken, getVregisterCache(pandaGen, CacheList.undefined), noReturn);
+        pandaGen.condition(this.stmt, ts.SyntaxKind.ExclamationEqualsEqualsToken, getVregisterCache(pandaGen, CacheList.UNDEFINED), noReturn);
         pandaGen.call(this.stmt, [this.iterator.getNextMethod(), this.iterator.getObject()], true);
-        if (this.iterator.getType() == IteratorType.Async) {
+        if (this.iterator.getType() === IteratorType.Async) {
             (<AsyncGeneratorFunctionBuilder>(this.compiler.getFuncBuilder())).await(this.stmt);
         }
 
@@ -339,13 +340,13 @@ export class TryBuilderWithForOf extends TryBuilderBase {
         pandaGen.freeTemps(exceptionVreg);
     }
 
-    compileFinalizer(cfc: ControlFlowChange, continueTargetLabel: Label) {
-        if (cfc == ControlFlowChange.Break || continueTargetLabel != this.labelTarget.getContinueTargetLabel()) {
+    compileFinalizer(cfc: ControlFlowChange, continueTargetLabel: Label): void {
+        if (cfc === ControlFlowChange.Break || continueTargetLabel != this.labelTarget.getContinueTargetLabel()) {
             let noReturn = new Label();
             let innerResult = this.pandaGen.getTemp();
             this.pandaGen.loadObjProperty(this.stmt, this.iterator.getObject(), "return");
             this.pandaGen.storeAccumulator(this.stmt, this.iterator.getNextMethod());
-            this.pandaGen.condition(this.stmt, ts.SyntaxKind.ExclamationEqualsEqualsToken, getVregisterCache(this.pandaGen, CacheList.undefined), noReturn);
+            this.pandaGen.condition(this.stmt, ts.SyntaxKind.ExclamationEqualsEqualsToken, getVregisterCache(this.pandaGen, CacheList.UNDEFINED), noReturn);
             this.pandaGen.call(this.stmt, [this.iterator.getNextMethod(), this.iterator.getObject()], true);
 
             this.pandaGen.storeAccumulator(this.stmt, innerResult);
@@ -356,9 +357,9 @@ export class TryBuilderWithForOf extends TryBuilderBase {
         }
     }
 
-    private compileIteratorNext(stmt: ts.ForOfStatement, pandagen: PandaGen, iterator: IteratorRecord, resultObj: VReg) {
+    private compileIteratorNext(stmt: ts.ForOfStatement, pandagen: PandaGen, iterator: IteratorRecord, resultObj: VReg): void {
         pandagen.call(stmt, [iterator.getNextMethod(), iterator.getObject()], true);
-        if (iterator.getType() == IteratorType.Async) {
+        if (iterator.getType() === IteratorType.Async) {
             (<AsyncGeneratorFunctionBuilder>(this.compiler.getFuncBuilder())).await(this.stmt);
         }
         pandagen.storeAccumulator(stmt, resultObj);
@@ -366,13 +367,13 @@ export class TryBuilderWithForOf extends TryBuilderBase {
     }
 }
 
-function compileCatchClauseVariableDeclaration(compiler: Compiler, param: ts.VariableDeclaration | undefined) {
+function compileCatchClauseVariableDeclaration(compiler: Compiler, param: ts.VariableDeclaration | undefined): void {
     if (param) {
         compiler.compileVariableDeclaration(param);
     }
 }
 
-export function updateCatchTables(inlinedTry: TryStatement | undefined, targetTry: TryStatement, inlinedLabelPair: LabelPair) {
+export function updateCatchTables(inlinedTry: TryStatement | undefined, targetTry: TryStatement, inlinedLabelPair: LabelPair): void {
     for (; inlinedTry != targetTry; inlinedTry = inlinedTry?.getOuterTryStatement()) {
         inlinedTry!.getCatchTable().splitLabelPair(inlinedLabelPair);
     }
@@ -382,7 +383,7 @@ export function updateCatchTables(inlinedTry: TryStatement | undefined, targetTr
 export function generateCatchTables(catchMap: Map<Label, CatchTable>): CatchTable[] {
     let catchTableList: CatchTable[] = [];
     catchMap.forEach((catchTable) => {
-        catchTableList.push(catchTable)
+        catchTableList.push(catchTable);
     });
     catchTableList.sort((a, b) => (b.getDepth() - a.getDepth()));
     return catchTableList;

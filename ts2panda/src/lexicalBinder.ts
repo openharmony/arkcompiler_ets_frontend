@@ -41,11 +41,11 @@ export class LexicalBinder {
         this.recorder = recorder;
     }
 
-    resolve() {
+    resolve(): void {
         this.resolveIdentReference(this.srcFile, this.recorder.getScopeOfNode(this.srcFile));
     }
 
-    resolveIdentReference(node: ts.Node, scope: Scope) {
+    resolveIdentReference(node: ts.Node, scope: Scope): void {
         node.forEachChild((child) => {
             let tmp = this.recorder.getScopeOfNode(child);
             let newScope = tmp ? tmp : scope;
@@ -135,7 +135,7 @@ export class LexicalBinder {
         });
     }
 
-    lookUpLexicalReference(name: string, scope: Scope) {
+    lookUpLexicalReference(name: string, scope: Scope): void {
         let declPosInfo = scope.resolveDeclPos(name);
         if (!declPosInfo.isLexical) { // if find declaration position in the current function
             return;
@@ -154,7 +154,7 @@ export class LexicalBinder {
         declPosInfo.v.setLexVar(declPosInfo.defLexicalScope);
     }
 
-    setMandatoryParamLexical(name: string, scope: VariableScope) {
+    setMandatoryParamLexical(name: string, scope: VariableScope): void {
         if (ts.isArrowFunction(scope.getBindingNode())) {
             throw new Error("Arrow function should not be processed");
         }
@@ -163,7 +163,7 @@ export class LexicalBinder {
         v.setLexVar(scope);
     }
 
-    setMandatoryParamLexicalForNCFuncInDebug(scope: VariableScope) {
+    setMandatoryParamLexicalForNCFuncInDebug(scope: VariableScope): void {
         if (!ts.isArrowFunction(scope.getBindingNode())) {
             throw new Error("Non-ArrowFunction should not be processed");
         }
@@ -205,7 +205,7 @@ export class LexicalBinder {
     hasDeclarationParent(id: ts.Identifier): boolean {
         let parent = id.parent;
         if (ts.isBindingElement(parent) &&
-            parent.name == id) {
+            parent.name === id) {
             while (parent && !ts.isVariableDeclaration(parent)) {
                 parent = parent.parent;
             }
@@ -215,16 +215,16 @@ export class LexicalBinder {
 
         if ((ts.isVariableDeclaration(parent) || ts.isClassDeclaration(parent) ||
              ts.isClassExpression(parent) || ts.isFunctionLike(parent))
-             && parent.name == id) {
+             && parent.name === id) {
             return true;
         }
 
         return false;
     }
 
-    isPropertyName(id: ts.Identifier) {
+    isPropertyName(id: ts.Identifier): boolean {
         let parent = id.parent;
-        if (ts.isPropertyAccessExpression(parent) && (parent.name == id)) { // eg. a.b -> b is the property name
+        if (ts.isPropertyAccessExpression(parent) && (parent.name === id)) { // eg. a.b -> b is the property name
             return true;
         }
 

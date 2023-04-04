@@ -34,30 +34,30 @@ import { expandLexEnv } from "./lexEnv";
 
 export enum CacheList {
     MIN,
-    NaN = MIN,
+    NAN = MIN,
     HOLE,
     FUNC, // load function
-    Infinity,
-    undefined,
-    Symbol,
-    Null,
-    Global,
-    LexEnv,
-    True,
-    False,
+    INFINITY,
+    UNDEFINED,
+    SYMBOL,
+    NULL,
+    GLOBAL,
+    LEXENV,
+    TRUE,
+    FALSE,
     MAX
 }
 let cacheExpandHandlers = new Map([
     [CacheList.HOLE, expandHole],
-    [CacheList.NaN, expandNaN],
-    [CacheList.Infinity, expandInfinity],
-    [CacheList.undefined, expandUndefined],
-    [CacheList.Symbol, expandSymbol],
-    [CacheList.Null, expandNull],
-    [CacheList.Global, expandGlobal],
-    [CacheList.LexEnv, expandLexEnv],
-    [CacheList.True, expandTrue],
-    [CacheList.False, expandFalse],
+    [CacheList.NAN, expandNaN],
+    [CacheList.INFINITY, expandInfinity],
+    [CacheList.UNDEFINED, expandUndefined],
+    [CacheList.SYMBOL, expandSymbol],
+    [CacheList.NULL, expandNull],
+    [CacheList.GLOBAL, expandGlobal],
+    [CacheList.LEXENV, expandLexEnv],
+    [CacheList.TRUE, expandTrue],
+    [CacheList.FALSE, expandFalse],
     [CacheList.FUNC, expandFunc],
 ]);
 
@@ -70,7 +70,7 @@ class CacheItem {
     private flag: boolean;
     private vreg: VReg | undefined;
     private expander: Function;
-    isNeeded() {
+    isNeeded(): boolean {
         return this.flag;
     }
     getCache(): VReg {
@@ -80,7 +80,7 @@ class CacheItem {
         }
         return this.vreg;
     }
-    getExpander() {
+    getExpander(): Function {
         return this.expander;
     }
 }
@@ -96,7 +96,7 @@ export class VregisterCache {
             this.cache[i] = new CacheItem(handler);
         }
     }
-    getCache(index: CacheList) {
+    getCache(index: CacheList): CacheItem {
         if (index < CacheList.MIN || index > CacheList.MAX) {
             throw new Error("invalid builtin index");
         }
@@ -104,7 +104,7 @@ export class VregisterCache {
     }
 }
 
-export function getVregisterCache(pandaGen: PandaGen, index: CacheList) {
+export function getVregisterCache(pandaGen: PandaGen, index: CacheList): VReg {
     let cache = pandaGen.getVregisterCache();
     let cacheItem = cache.getCache(index);
 

@@ -82,26 +82,26 @@ export class Recorder {
         this.syntaxCheckStatus = syntaxCheckStatus;
     }
 
-    record() {
+    record(): ts.Node {
         this.setParent(this.node);
         this.setScopeMap(this.node, this.scope);
         this.recordInfo(this.node, this.scope);
         return this.node;
     }
 
-    getCtorOfClass(node: ts.ClassLikeDeclaration) {
+    getCtorOfClass(node: ts.ClassLikeDeclaration): ts.ConstructorDeclaration {
         return this.class2Ctor.get(node);
     }
 
-    setCtorOfClass(node: ts.ClassLikeDeclaration, ctor: ts.ConstructorDeclaration) {
+    setCtorOfClass(node: ts.ClassLikeDeclaration, ctor: ts.ConstructorDeclaration): void {
         if (!this.class2Ctor.has(node)) {
             this.class2Ctor.set(node, ctor);
         }
     }
 
-    private setParent(node: ts.Node) {
+    private setParent(node: ts.Node): void {
         node.forEachChild(childNode => {
-            if (!this.isTsFile || childNode!.parent == undefined || childNode.parent.kind != node.kind) {
+            if (!this.isTsFile || childNode!.parent === undefined || childNode.parent.kind != node.kind) {
                 childNode = jshelpers.setParent(childNode, node)!;
                 let originNode = ts.getOriginalNode(childNode);
                 childNode = ts.setTextRange(childNode, originNode);
@@ -110,7 +110,7 @@ export class Recorder {
         });
     }
 
-    private recordInfo(node: ts.Node, scope: Scope) {
+    private recordInfo(node: ts.Node, scope: Scope): void {
         node.forEachChild(childNode => {
             if (this.syntaxCheckStatus) {
                 checkSyntaxError(childNode, scope);
@@ -132,7 +132,8 @@ export class Recorder {
                     let isExport: boolean = false;
                     if (hasExportKeywordModifier(childNode)) {
                         if (!CmdOptions.isModules()) {
-                            throw new DiagnosticError(childNode, DiagnosticCode.Cannot_use_imports_exports_or_module_augmentations_when_module_is_none, jshelpers.getSourceFileOfNode(childNode));
+                            throw new DiagnosticError(childNode, DiagnosticCode.Cannot_use_imports_exports_or_module_augmentations_when_module_is_none,
+                                                      jshelpers.getSourceFileOfNode(childNode));
                         }
                         this.recordEcmaExportInfo(<ts.FunctionDeclaration>childNode, scope);
                         isExport = true;
@@ -172,7 +173,8 @@ export class Recorder {
                     let isExport: boolean = false;
                     if (hasExportKeywordModifier(childNode)) {
                         if (!CmdOptions.isModules()) {
-                            throw new DiagnosticError(childNode, DiagnosticCode.Cannot_use_imports_exports_or_module_augmentations_when_module_is_none, jshelpers.getSourceFileOfNode(childNode));
+                            throw new DiagnosticError(childNode, DiagnosticCode.Cannot_use_imports_exports_or_module_augmentations_when_module_is_none,
+                                                      jshelpers.getSourceFileOfNode(childNode));
                         }
                         this.recordEcmaExportInfo(<ts.ClassDeclaration>childNode, scope);
                         isExport = true;
@@ -202,7 +204,8 @@ export class Recorder {
                 }
                 case ts.SyntaxKind.ImportDeclaration: {
                     if (!CmdOptions.isModules()) {
-                        throw new DiagnosticError(childNode, DiagnosticCode.Cannot_use_imports_exports_or_module_augmentations_when_module_is_none, jshelpers.getSourceFileOfNode(childNode));
+                        throw new DiagnosticError(childNode, DiagnosticCode.Cannot_use_imports_exports_or_module_augmentations_when_module_is_none,
+                                                  jshelpers.getSourceFileOfNode(childNode));
                     }
                     this.recordEcmaImportInfo(<ts.ImportDeclaration>childNode, scope);
 
@@ -255,7 +258,7 @@ export class Recorder {
         });
     }
 
-    private recordClassInfo(childNode: ts.ClassLikeDeclaration, scope: Scope, isExport: boolean) {
+    private recordClassInfo(childNode: ts.ClassLikeDeclaration, scope: Scope, isExport: boolean): void {
         let localScope = new LocalScope(scope);
         this.setScopeMap(childNode, localScope);
         let ctor = extractCtorOfClass(childNode);
@@ -273,7 +276,7 @@ export class Recorder {
         this.recordInfo(childNode, localScope);
     }
 
-    buildVariableScope(curScope: Scope, node: ts.FunctionLikeDeclaration) {
+    buildVariableScope(curScope: Scope, node: ts.FunctionLikeDeclaration): FunctionScope {
         let functionScope = new FunctionScope(curScope, <ts.FunctionLikeDeclaration>node);
         let parentVariableScope = <VariableScope>curScope.getNearestVariableScope();
         functionScope.setParentVariableScope(parentVariableScope);
@@ -282,20 +285,20 @@ export class Recorder {
         return functionScope;
     }
 
-    private recordVariableDecl(id: ts.Identifier, scope: Scope) {
+    private recordVariableDecl(id: ts.Identifier, scope: Scope): void {
         let name = jshelpers.getTextOfIdentifierOrLiteral(id);
         let parent = this.getDeclarationNodeOfId(id);
 
         if (parent) {
             let declKind = astutils.getVarDeclarationKind(<ts.VariableDeclaration>parent);
             let isExportDecl: boolean = false;
-            if ((<ts.VariableDeclaration>parent).parent.parent.kind == ts.SyntaxKind.VariableStatement) {
+            if ((<ts.VariableDeclaration>parent).parent.parent.kind === ts.SyntaxKind.VariableStatement) {
                 isExportDecl = hasExportKeywordModifier((<ts.VariableDeclaration>parent).parent.parent);
             }
 
             // collect declaration information to corresponding scope
             let decl = this.addVariableDeclToScope(scope, id, parent, name, declKind, isExportDecl);
-            if (declKind == VarDeclarationKind.VAR) {
+            if (declKind === VarDeclarationKind.VAR) {
                 let variableScopeParent = <VariableScope>scope.getNearestVariableScope();
                 this.collectHoistDecls(id, variableScopeParent, decl);
             }
@@ -312,7 +315,7 @@ export class Recorder {
                     let needCreateLoopEnv: boolean = false;
                     if (nearestDefLexicalScope instanceof LoopScope) {
                         while (tmp) {
-                            if (tmp == nearestDefLexicalScope) {
+                            if (tmp === nearestDefLexicalScope) {
                                 needCreateLoopEnv = true;
                                 break;
                             }
@@ -328,7 +331,7 @@ export class Recorder {
             }
         }
 
-        if (name == MandatoryArguments) {
+        if (name === MandatoryArguments) {
             let varialbeScope = scope.getNearestVariableScope();
             varialbeScope?.setUseArgs(true);
         }
@@ -342,7 +345,7 @@ export class Recorder {
             case VarDeclarationKind.VAR:
                 break;
             case VarDeclarationKind.LET:
-                    if (parent.parent.kind == ts.SyntaxKind.CatchClause) {
+                    if (parent.parent.kind === ts.SyntaxKind.CatchClause) {
                     decl = new CatchParameter(name, node);
                 } else {
                     decl = new LetDecl(name, node, moduleKind);
@@ -361,10 +364,10 @@ export class Recorder {
     private getDeclarationNodeOfId(id: ts.Identifier): ts.VariableDeclaration | undefined {
         let parent = id.parent;
         if (ts.isVariableDeclaration(parent) &&
-            parent.name == id) {
+            parent.name === id) {
             return <ts.VariableDeclaration>parent;
         } else if (ts.isBindingElement(parent) &&
-            parent.name == id) {
+            parent.name === id) {
             while (parent && !ts.isVariableDeclaration(parent)) {
                 parent = parent.parent;
             }
@@ -471,7 +474,7 @@ export class Recorder {
             scope.setDecls(new ConstDecl(nameSpace, namedBindings, ModuleVarKind.NOT));
             scope.module().addStarImportEntry(namedBindings, nameSpace, moduleRequest);
         } else if (ts.isNamedImports(namedBindings)) {
-            if (namedBindings.elements.length == 0) {
+            if (namedBindings.elements.length === 0) {
                 // import {} from "a.js"
                 scope.module().addEmptyImportEntry(moduleRequest);
             }
@@ -487,7 +490,7 @@ export class Recorder {
         }
     }
 
-    private recordEcmaImportClause(importClause: ts.ImportClause, scope: ModuleScope, moduleRequest: string) {
+    private recordEcmaImportClause(importClause: ts.ImportClause, scope: ModuleScope, moduleRequest: string): void {
         // import defaultExport from "a.js"
         if (importClause.name) {
             let localName = jshelpers.getTextOfIdentifierOrLiteral(importClause.name);
@@ -500,7 +503,7 @@ export class Recorder {
         }
     }
 
-    private recordEcmaImportInfo(node: ts.ImportDeclaration, scope: Scope) {
+    private recordEcmaImportInfo(node: ts.ImportDeclaration, scope: Scope): void {
         if (!(scope instanceof ModuleScope)) {
             return;
         }
@@ -516,7 +519,7 @@ export class Recorder {
         }
     }
 
-    private recordEcmaExportDecl(node: ts.ExportDeclaration, scope: ModuleScope) {
+    private recordEcmaExportDecl(node: ts.ExportDeclaration, scope: ModuleScope): void {
         if (node.moduleSpecifier) {
             let moduleRequest: string = this.getModuleSpecifier(node.moduleSpecifier);
 
@@ -526,7 +529,7 @@ export class Recorder {
                     // Targetcase 1: export * as m from "mod";
                     // Targetcase 2: `export namespace` is not the ECMA2018's feature
                 } else if (ts.isNamedExports(namedBindings)) {
-                    if (namedBindings.elements.length == 0) {
+                    if (namedBindings.elements.length === 0) {
                         // export {} from "mod";
                         scope.module().addEmptyImportEntry(moduleRequest);
                     }
@@ -555,7 +558,8 @@ export class Recorder {
         }
     }
 
-    private recordEcmaExportInfo(node: ts.ExportDeclaration | ts.ExportAssignment | ts.VariableStatement | ts.FunctionDeclaration | ts.ClassDeclaration, scope: Scope) {
+    private recordEcmaExportInfo(node: ts.ExportDeclaration | ts.ExportAssignment | ts.VariableStatement |
+                                 ts.FunctionDeclaration | ts.ClassDeclaration, scope: Scope): void {
         if (!(scope instanceof ModuleScope)) {
             return;
         }
@@ -606,7 +610,7 @@ export class Recorder {
         }
     }
 
-    private recordFuncDecl(node: ts.FunctionDeclaration, scope: Scope, isExport: boolean) {
+    private recordFuncDecl(node: ts.FunctionDeclaration, scope: Scope, isExport: boolean): void {
         this.recordFuncInfo(node);
 
         let funcId = <ts.Identifier>(node).name;
@@ -635,7 +639,7 @@ export class Recorder {
         }
     }
 
-    private recordOtherFunc(node: ts.FunctionLikeDeclaration, scope: Scope) { // functionlikedecalration except function declaration
+    private recordOtherFunc(node: ts.FunctionLikeDeclaration, scope: Scope): void { // functionlikedecalration except function declaration
         this.recordFuncInfo(node);
         if (!ts.isFunctionExpression(node) && !ts.isMethodDeclaration(node)) {
             return;
@@ -648,12 +652,12 @@ export class Recorder {
         }
     }
 
-    private recordFuncInfo(node: ts.FunctionLikeDeclaration) {
+    private recordFuncInfo(node: ts.FunctionLikeDeclaration): void {
         this.recordFunctionParameters(node);
         this.recordFuncName(node);
     }
 
-    recordFuncName(node: ts.FunctionLikeDeclaration) {
+    recordFuncName(node: ts.FunctionLikeDeclaration): void {
         let name: string = '';
         if (ts.isConstructorDeclaration(node)) {
             let classNode = node.parent;
@@ -670,7 +674,7 @@ export class Recorder {
                     }
                 } else if (ts.isBinaryExpression(outerNode)) {
                     // @ts-ignore
-                    if (outerNode.operatorToken.kind == ts.SyntaxKind.EqualsToken && ts.isIdentifier(outerNode.left)) {
+                    if (outerNode.operatorToken.kind === ts.SyntaxKind.EqualsToken && ts.isIdentifier(outerNode.left)) {
                         // @ts-ignore
                         name = jshelpers.getTextOfIdentifierOrLiteral(outerNode.left);
                     }
@@ -679,7 +683,7 @@ export class Recorder {
                     let propName = outerNode.name;
                     if (ts.isIdentifier(propName) || ts.isStringLiteral(propName) || ts.isNumericLiteral(propName)) {
                         name = jshelpers.getTextOfIdentifierOrLiteral(propName);
-                        if (name == "__proto__") {
+                        if (name === "__proto__") {
                             name = '';
                         }
                     }
@@ -704,7 +708,7 @@ export class Recorder {
         }
     }
 
-    recordFunctionParameters(node: ts.FunctionLikeDeclaration) {
+    recordFunctionParameters(node: ts.FunctionLikeDeclaration): void {
         let parameters = node.parameters;
         let funcParams: FunctionParameter[] = [];
         let length = 0;
@@ -732,7 +736,7 @@ export class Recorder {
         this.setParametersMap(node, funcParams);
     }
 
-    recordPatternParameter(pattern: ts.BindingPattern, funcParams: Array<FunctionParameter>) {
+    recordPatternParameter(pattern: ts.BindingPattern, funcParams: Array<FunctionParameter>): void {
         let name: string = '';
         pattern.elements.forEach(bindingElement => {
             if (ts.isOmittedExpression(bindingElement)) {
@@ -751,7 +755,7 @@ export class Recorder {
     }
 
 
-    isRestParameter(parameter: ts.ParameterDeclaration) {
+    isRestParameter(parameter: ts.ParameterDeclaration): boolean {
         return parameter.dotDotDotToken ? true : false;
     }
 
@@ -764,7 +768,7 @@ export class Recorder {
             let functionParameters = this.getParametersOfFunction(<ts.FunctionLikeDeclaration>nearestFunc);
             if (functionParameters) {
                 for (let i = 0; i < functionParameters.length; i++) {
-                    if (functionParameters[i].name == declName) {
+                    if (functionParameters[i].name === declName) {
                         return false;
                     }
                 }
@@ -780,19 +784,19 @@ export class Recorder {
         return false;
     }
 
-    setScopeMap(node: ts.Node, scope: Scope) {
+    setScopeMap(node: ts.Node, scope: Scope): void {
         this.scopeMap.set(node, scope);
     }
 
-    getScopeMap() {
+    getScopeMap(): Map<ts.Node, Scope> {
         return this.scopeMap;
     }
 
-    getScopeOfNode(node: ts.Node) {
+    getScopeOfNode(node: ts.Node): Scope {
         return this.scopeMap.get(node);
     }
 
-    setHoistMap(scope: VariableScope, decl: Decl) {
+    setHoistMap(scope: VariableScope, decl: Decl): void {
         if (!this.hoistMap.has(scope)) {
             this.hoistMap.set(scope, [decl]);
             return;
@@ -800,7 +804,7 @@ export class Recorder {
 
         let hoistDecls = <Decl[]>this.hoistMap.get(scope);
         for (let i = 0; i < hoistDecls.length; i++) {
-            if (decl.name == hoistDecls[i].name) {
+            if (decl.name === hoistDecls[i].name) {
                 if (decl instanceof FuncDecl) {
                     hoistDecls[i] = decl;
                 }
@@ -810,23 +814,23 @@ export class Recorder {
         hoistDecls.push(decl);
     }
 
-    getHoistMap() {
+    getHoistMap(): Map<Scope, Decl[]> {
         return this.hoistMap;
     }
 
-    getHoistDeclsOfScope(scope: VariableScope) {
+    getHoistDeclsOfScope(scope: VariableScope): Decl[] {
         return this.hoistMap.get(scope);
     }
 
-    setParametersMap(node: ts.FunctionLikeDeclaration, parameters: FunctionParameter[]) {
+    setParametersMap(node: ts.FunctionLikeDeclaration, parameters: FunctionParameter[]): void {
         this.parametersMap.set(node, parameters);
     }
 
-    getParametersOfFunction(node: ts.FunctionLikeDeclaration) {
+    getParametersOfFunction(node: ts.FunctionLikeDeclaration): FunctionParameter[] {
         return this.parametersMap.get(node);
     }
 
-    getFuncNameMap() {
+    getFuncNameMap(): Map<string, number> {
         return this.funcNameMap;
     }
 }

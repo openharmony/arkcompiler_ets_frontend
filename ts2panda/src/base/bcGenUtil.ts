@@ -161,24 +161,24 @@ export function throwException(): IRNode {
     return new Throw();
 }
 
-export function throwConstAssignment(name: VReg) {
+export function throwConstAssignment(name: VReg): IRNode {
     return new ThrowConstassignment(name);
 }
 
-export function throwUndefinedIfHole(name: string) {
+export function throwUndefinedIfHole(name: string): IRNode {
     return new ThrowUndefinedifholewithname(name);
 }
 
-export function throwThrowNotExists() {
+export function throwThrowNotExists(): IRNode {
     return new ThrowNotexists();
 }
 
-export function throwDeleteSuperProperty() {
+export function throwDeleteSuperProperty(): IRNode {
     return new ThrowDeletesuperproperty();
 }
 
-export function newLexicalEnv(numVars: number, scopeInfoId: string | undefined) {
-    if (scopeInfoId == undefined) {
+export function newLexicalEnv(numVars: number, scopeInfoId: string | undefined): IRNode {
+    if (scopeInfoId === undefined) {
         return numVars <= MAX_INT8 ? new Newlexenv(new Imm(numVars)) :
                                      new WideNewlexenv(new Imm(numVars));
     }
@@ -186,54 +186,54 @@ export function newLexicalEnv(numVars: number, scopeInfoId: string | undefined) 
                                  new WideNewlexenvwithname(new Imm(numVars), scopeInfoId);
 }
 
-export function popLexicalEnv() {
+export function popLexicalEnv(): IRNode {
     return new Poplexenv();
 }
 
-export function loadLexicalVar(level: number, slot: number) {
+export function loadLexicalVar(level: number, slot: number): IRNode {
     if ((level > MAX_INT8) || (slot > MAX_INT8)) {
         return new WideLdlexvar(new Imm(level), new Imm(slot));
     }
     return new Ldlexvar(new Imm(level), new Imm(slot));
 }
 
-export function storeLexicalVar(level: number, slot: number) {
+export function storeLexicalVar(level: number, slot: number): IRNode {
     if ((level > MAX_INT8) || (slot > MAX_INT8)) {
         return new WideStlexvar(new Imm(level), new Imm(slot));
     }
     return new Stlexvar(new Imm(level), new Imm(slot));
 }
 
-export function tryLoadGlobalByName(key: string) {
+export function tryLoadGlobalByName(key: string): IRNode {
     return new Tryldglobalbyname(new Imm(0), key);
 }
 
-export function tryStoreGlobalByName(key: string) {
+export function tryStoreGlobalByName(key: string): IRNode {
     return new Trystglobalbyname(new Imm(0), key);
 }
 
-export function loadGlobalVar(name: string) {
+export function loadGlobalVar(name: string): IRNode {
     return new Ldglobalvar(new Imm(0), name);
 }
 
-export function storeGlobalVar(name: string) {
+export function storeGlobalVar(name: string): IRNode {
     return new Stglobalvar(new Imm(0), name);
 }
 
-export function loadObjByName(key: string) {
+export function loadObjByName(key: string): IRNode {
     return new Ldobjbyname(new Imm(0), key);
 }
 
-export function storeObjByName(obj: VReg, key: string) {
+export function storeObjByName(obj: VReg, key: string): IRNode {
     return new Stobjbyname(new Imm(0), key, obj);
 }
 
-export function loadObjByIndex(index: number) {
+export function loadObjByIndex(index: number): IRNode {
     return index <= MAX_INT16 ? new Ldobjbyindex(new Imm(0), new Imm(index)) :
                                 new WideLdobjbyindex(new Imm(index));
 }
 
-export function storeObjByIndex(obj: VReg, index: number) {
+export function storeObjByIndex(obj: VReg, index: number): IRNode {
     return index <= MAX_INT16 ? new Stobjbyindex(new Imm(0), obj, new Imm(index)) :
                                 new WideStobjbyindex(obj, new Imm(index));
 }
@@ -251,21 +251,21 @@ export function storeOwnByName(obj: VReg, key: string, nameSetting: boolean): IR
                          new Stownbyname(new Imm(0), key, obj);
 }
 
-export function storeOwnByIndex(obj: VReg, index: number) {
+export function storeOwnByIndex(obj: VReg, index: number): IRNode {
     return index <= MAX_INT16 ? new Stownbyindex(new Imm(0), obj, new Imm(index)) :
                                 new WideStownbyindex(obj, new Imm(index));
 }
 
-export function storeOwnByValue(obj: VReg, value: VReg, nameSetting: boolean) {
+export function storeOwnByValue(obj: VReg, value: VReg, nameSetting: boolean): IRNode {
     return nameSetting ? new Stownbyvaluewithnameset(new Imm(0), obj, value) :
                          new Stownbyvalue(new Imm(0), obj, value);
 }
 
-export function throwIfSuperNotCorrectCall(num: number) {
+export function throwIfSuperNotCorrectCall(num: number): IRNode {
     return new ThrowIfsupernotcorrectcall(new Imm(num));
 }
 
-export function call(args: VReg[], passThis: boolean) {
+export function call(args: VReg[], passThis: boolean): IRNode {
     let length = args.length;
     let insn: IRNode;
     if (!passThis) {
@@ -293,7 +293,7 @@ export function call(args: VReg[], passThis: boolean) {
     return insn;
 }
 
-function callThis(args: Array<VReg>) {
+function callThis(args: Array<VReg>): IRNode {
     let insn: IRNode;
     let thisReg: VReg = args[0];
     let length = args.length;
@@ -323,105 +323,105 @@ function callThis(args: Array<VReg>) {
     return insn;
 }
 
-export function newObject(args: VReg[]) {
+export function newObject(args: VReg[]): IRNode {
     let length = args.length;
     return length <= MAX_INT8 ? new Newobjrange(new Imm(0), new Imm(length), args) :
                                 new WideNewobjrange(new Imm(length), args);
 }
 
-export function getPropIterator() {
+export function getPropIterator(): IRNode {
     return new Getpropiterator();
 }
 
-export function getNextPropName(iter: VReg) {
+export function getNextPropName(iter: VReg): IRNode {
     return new Getnextpropname(iter);
 }
 
-export function returnUndefined() {
+export function returnUndefined(): IRNode {
     return new Returnundefined();
 }
 
-export function createEmptyObject() {
+export function createEmptyObject(): IRNode {
     return new Createemptyobject();
 }
 
-export function createObjectWithBuffer(bufferId: string) {
+export function createObjectWithBuffer(bufferId: string): IRNode {
     return new Createobjectwithbuffer(new Imm(0), bufferId);
 }
 
-export function setObjectWithProto(proto: VReg) {
+export function setObjectWithProto(proto: VReg): IRNode {
     return new Setobjectwithproto(new Imm(0), proto);
 }
 
-export function copyDataProperties(dstObj: VReg) {
+export function copyDataProperties(dstObj: VReg): IRNode {
     return new Copydataproperties(dstObj);
 }
 
-export function defineGetterSetterByValue(obj: VReg, name: VReg, getter: VReg, setter: VReg) {
+export function defineGetterSetterByValue(obj: VReg, name: VReg, getter: VReg, setter: VReg): IRNode {
     return new Definegettersetterbyvalue(obj, name, getter, setter);
 }
 
-export function createEmptyArray() {
+export function createEmptyArray(): IRNode {
     return new Createemptyarray(new Imm(0));
 }
 
-export function createArrayWithBuffer(bufferId: string) {
+export function createArrayWithBuffer(bufferId: string): IRNode {
     return new Createarraywithbuffer(new Imm(0), bufferId);
 }
 
-export function storeArraySpread(array: VReg, index: VReg) {
+export function storeArraySpread(array: VReg, index: VReg): IRNode {
     return new Starrayspread(array, index);
 }
 
-export function defineClassWithBuffer(id: string, litId: string, parameterLength: number, base: VReg) {
+export function defineClassWithBuffer(id: string, litId: string, parameterLength: number, base: VReg): IRNode {
     return new Defineclasswithbuffer(new Imm(0), id, litId, new Imm(parameterLength), base);
 }
 
-export function createObjectWithExcludedKeys(obj: VReg, args: VReg[]) {
+export function createObjectWithExcludedKeys(obj: VReg, args: VReg[]): IRNode {
     let followedArgs = args.length - 1;
     return followedArgs <= MAX_INT8 ? new Createobjectwithexcludedkeys(new Imm(followedArgs), obj, args) :
                                       new WideCreateobjectwithexcludedkeys(new Imm(followedArgs), obj, args);
 }
 
-export function throwObjectNonCoercible() {
+export function throwObjectNonCoercible(): IRNode {
     return new ThrowPatternnoncoercible();
 }
 
-export function throwIfNotObject(v: VReg) {
+export function throwIfNotObject(v: VReg): IRNode {
     return new ThrowIfnotobject(v);
 }
 
-export function getIterator() {
+export function getIterator(): IRNode {
     return new Getiterator(new Imm(0));
 }
 
-export function closeIterator(iter: VReg) {
+export function closeIterator(iter: VReg): IRNode {
     return new Closeiterator(new Imm(0), iter);
 }
 
-export function superCall(num: number, args: Array<VReg>) {
+export function superCall(num: number, args: Array<VReg>): IRNode {
     return num <= MAX_INT8 ? new Supercallthisrange(new Imm(0), new Imm(num), args) :
                              new WideSupercallthisrange(new Imm(num), args);
 }
 
-export function superCallInArrow(num: number, args: Array<VReg>) {
+export function superCallInArrow(num: number, args: Array<VReg>): IRNode {
     return num <= MAX_INT8 ? new Supercallarrowrange(new Imm(0), new Imm(num), args) :
                              new WideSupercallarrowrange(new Imm(num), args);
 }
 
-export function superCallSpread(vs: VReg) {
+export function superCallSpread(vs: VReg): IRNode {
     return new Supercallspread(new Imm(0), vs);
 }
 
-export function ldSuperByName(key: string) {
+export function ldSuperByName(key: string): IRNode {
     return new Ldsuperbyname(new Imm(0), key); // obj is in acc
 }
 
-export function stSuperByName(obj: VReg, key: string) {
+export function stSuperByName(obj: VReg, key: string): IRNode {
     return new Stsuperbyname(new Imm(0), key, obj);
 }
 
-export function stSuperByValue(obj: VReg, prop: VReg) {
+export function stSuperByValue(obj: VReg, prop: VReg): IRNode {
     return new Stsuperbyvalue(new Imm(0), obj, prop);
 }
 
@@ -429,11 +429,11 @@ export function ldSuperByValue(obj: VReg): IRNode {
     return new Ldsuperbyvalue(new Imm(0), obj); // prop is in acc
 }
 
-export function loadLocalModuleVariable(index: number) {
+export function loadLocalModuleVariable(index: number): IRNode {
     return index <= MAX_INT8 ? new Ldlocalmodulevar(new Imm(index)) : new WideLdlocalmodulevar(new Imm(index));
 }
 
-export function loadExternalModuleVariable(index: number) {
+export function loadExternalModuleVariable(index: number): IRNode {
     return index <= MAX_INT8 ? new Ldexternalmodulevar(new Imm(index)) : new WideLdexternalmodulevar(new Imm(index));
 }
 
@@ -442,40 +442,40 @@ export function dynamicImport() {
     return new Dynamicimport();
 }
 
-export function storeModuleVariable(index: number) {
+export function storeModuleVariable(index: number): IRNode {
     return index <= MAX_INT8 ? new Stmodulevar(new Imm(index)) : new WideStmodulevar(new Imm(index));
 }
 
-export function getModuleNamespace(moduleRequestIdx: number) {
+export function getModuleNamespace(moduleRequestIdx: number): IRNode {
     return moduleRequestIdx <= MAX_INT8 ? new Getmodulenamespace(new Imm(moduleRequestIdx)) :
                                           new WideGetmodulenamespace(new Imm(moduleRequestIdx));
 }
 
-export function defineFunc(name: string, paramLength: number) {
+export function defineFunc(name: string, paramLength: number): IRNode {
     return new Definefunc(new Imm(0), name, new Imm(paramLength));
 }
 
-export function defineMethod(name: string, paramLength: number) {
+export function defineMethod(name: string, paramLength: number): IRNode {
     return new Definemethod(new Imm(0), name, new Imm(paramLength));
 }
 
-export function isTrue() {
+export function isTrue(): IRNode {
     return new Istrue();
 }
 
-export function isFalse() {
+export function isFalse(): IRNode {
     return new Isfalse();
 }
 
-export function createRegExpWithLiteral(pattern: string, flags: number) {
+export function createRegExpWithLiteral(pattern: string, flags: number): IRNode {
     return new Createregexpwithliteral(new Imm(0), pattern, new Imm(flags));
 }
 
-export function stLetOrClassToGlobalRecord(name: string) {
+export function stLetOrClassToGlobalRecord(name: string): IRNode {
     return new Sttoglobalrecord(new Imm(0), name);
 }
 
-export function stConstToGlobalRecord(name: string) {
+export function stConstToGlobalRecord(name: string): IRNode {
     return new Stconsttoglobalrecord(new Imm(0), name);
 }
 

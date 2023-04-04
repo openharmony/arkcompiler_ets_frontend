@@ -262,8 +262,8 @@ describe("class tests in class.test.ts", function () {
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
-            ["#3#animal", shift + 1],
-            ["#4#dog", shift + 3],
+            ["#3#Animal", shift + 1],
+            ["#4#Dog", shift + 3],
             ["#5#d", shift + 5],
         ]
         let vreg2TypeMap = createVRegTypePair(extectedVRegTypePair);
@@ -307,8 +307,8 @@ describe("class tests in class.test.ts", function () {
         let locals = functionPg!.getLocals();
         // check vreg
         let extectedVRegTypePair = [
-            ["#3#base1", shift + 1],
-            ["#4#base2", shift + 2],
+            ["#3#Base1", shift + 1],
+            ["#4#Base2", shift + 2],
             ["#5#A", shift + 3],
             ["#6#a", shift + 4],
         ]

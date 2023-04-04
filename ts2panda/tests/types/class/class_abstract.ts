@@ -14,15 +14,15 @@
  */
 
 {
-    abstract class animal {
+    abstract class Animal {
         eat() { };
     }
 
-    class dog extends animal {
+    class Dog extends Animal {
         constructor() {
             super();
         }
     }
 
-    let d = new dog();
+    let d = new Dog();
 }

@@ -17,7 +17,7 @@ import * as ts from "typescript";
 import * as jshelpers from "../jshelpers";
 import { PandaGen } from "../pandagen";
 
-export function compileBigIntLiteral(pandaGen: PandaGen, lit: ts.BigIntLiteral) {
+export function compileBigIntLiteral(pandaGen: PandaGen, lit: ts.BigIntLiteral): void {
     let text = jshelpers.getTextOfIdentifierOrLiteral(lit);
     text = text.substring(0, text.length-1);
     pandaGen.loadAccumulatorBigInt(lit, text);
