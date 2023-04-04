@@ -361,6 +361,10 @@ public:
         if (extractor_->GetTypeDtsExtractor()) {
             buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(userType.size() +
                 TypeRecorder::USERTYPEINDEXHEAD - BuiltinType::BT_HEAD));
+            for (int builtinTypeOrder = BuiltinType::BT_HEAD; builtinTypeOrder < TypeRecorder::USERTYPEINDEXHEAD;
+                 builtinTypeOrder++) {
+                FillTypeIndexLiteralBuffer(builtinTypeOrder + 1);
+            }
         } else {
             buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(userType.size()));
         }
