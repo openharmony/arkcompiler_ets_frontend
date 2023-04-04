@@ -115,7 +115,7 @@ public:
 
     ALWAYS_INLINE void Dump(const parser::Program *program) const;
 
-    static constexpr uint8_t PRIMITIVETYPE_ANY = 0U;
+    static constexpr int64_t PRIMITIVETYPE_ANY = 0;
     static constexpr int64_t USERTYPEINDEXHEAD = 100;
 
 private:
