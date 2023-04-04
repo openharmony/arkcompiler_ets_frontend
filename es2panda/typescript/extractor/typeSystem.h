@@ -446,6 +446,11 @@ public:
                     name_ = recorder_->GetAnonymousFunctionNames(func);
                 }
                 FillModifier(func);
+                if (func->ThisParams() != nullptr) {
+                    auto identifier = func->ThisParams()->AsIdentifier();
+                    paramsTypeIndex_.emplace_back(extractor_->GetTypeIndexFromIdentifier(identifier));
+                    containThis_ = true;
+                }
             }
             FillParameters(func);
             FillReturn(func);
@@ -730,7 +735,7 @@ private:
     void FillMethod(const ir::MethodDefinition *method)
     {
         auto fn = [&method, this](const FunctionType &functionType, const util::StringView &name) {
-            if (functionType.GetModifier() == Modifier::NONSTATIC) {
+            if ((functionType.GetModifier() & Modifier::STATIC) == 0) {
                 methods_[name] = recorder_->GetNodeTypeIndex(method->Function());
             } else {
                 staticMethods_[name] = recorder_->GetNodeTypeIndex(method->Function());
@@ -938,7 +943,7 @@ private:
         for (const auto &t : interfaceDef->Extends()) {
             if (t != nullptr) {
                 // TSTypeReference
-                heritages_.emplace_back(extractor_->GetTypeIndexFromAnnotation(t->Expr()));
+                heritages_.emplace_back(extractor_->GetTypeIndexFromAnnotation(t->Expr(), false));
             }
         }
     }
