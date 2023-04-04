@@ -195,8 +195,6 @@ private:
     void ResetParentScopeForAstNodes(const ir::AstNode *parent) const;
     void ResetParentScopeForAstNode(ir::AstNode *childNode) const;
 
-    void RemoveOriginNodeValueForClassPerporty(const ir::ClassDefinition *node);
-
     template <typename T>
     ir::UpdateNodes VisitExportClassDeclaration(T *node);
 

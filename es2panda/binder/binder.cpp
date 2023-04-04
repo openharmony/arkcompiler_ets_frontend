@@ -310,7 +310,11 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
 
 void Binder::BuildFunction(FunctionScope *funcScope, util::StringView name, const ir::ScriptFunction *func)
 {
+    if (funcScope->InFunctionScopes()) {
+        return;
+    }
     functionScopes_.push_back(funcScope);
+    funcScope->SetInFunctionScopes();
 
     bool funcNameWithoutDot = (name.Find(".") == std::string::npos);
     bool funcNameWithoutBackslash = (name.Find("\\") == std::string::npos);

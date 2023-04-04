@@ -595,12 +595,23 @@ public:
         return internalName_;
     }
 
+    bool InFunctionScopes() const
+    {
+        return inFunctionScopes_;
+    }
+
+    void SetInFunctionScopes()
+    {
+        inFunctionScopes_ = true;
+    }
+
     bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                     [[maybe_unused]] ScriptExtension extension) override;
 
 private:
     util::StringView name_ {};
     util::StringView internalName_ {};
+    bool inFunctionScopes_ {false};
 };
 
 class LocalScope : public Scope {
