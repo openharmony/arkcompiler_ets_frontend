@@ -114,19 +114,21 @@ static void ExpandStoreNormalVar(PandaGen *pg, const ir::AstNode *node, const bi
     }
 
     auto context = pg->Context();
-    if (context->IsTypeExtractorEnabled()) {
-        auto typeIndex = context->TypeRecorder()->GetVariableTypeIndex(local);
-        if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
-            pg->StoreAccumulatorWithType(node, typeIndex, localReg);
-            DCOUT << "[LOG]Local vreg in variable has type index: " << local->Name() << "@" <<
-                local << " | " << typeIndex << std::endl;
+    if (context->IsTypeExtractorEnabled() && pg->TypedVars().count(local) == 0U) {
+        auto fn = [&pg, &node, &local, &localReg](auto typeIndex, const auto &tag) {
+            if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
+                pg->StoreAccumulatorWithType(node, typeIndex, localReg);
+                pg->TypedVars().emplace(local);
+                DCOUT << "[LOG]Local vreg in " << tag << " has type index: " << local->Name() <<
+                    "@" << local << " | " << typeIndex << std::endl;
+                return true;
+            }
+            return false;
+        };
+        if (fn(context->TypeRecorder()->GetVariableTypeIndex(local), "variable")) {
             return;
         }
-        typeIndex = context->TypeRecorder()->GetNodeTypeIndex(node);
-        if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
-            pg->StoreAccumulatorWithType(node, typeIndex, localReg);
-            DCOUT << "[LOG]Local vreg in declnode has type index: " << local->Name() << "@" <<
-                local << " | " << typeIndex << std::endl;
+        if (fn(context->TypeRecorder()->GetNodeTypeIndex(node), "declnode")) {
             return;
         }
         DCOUT << "[WARNING]Local vreg lose type index: " << local->Name() << "@" << local << std::endl;

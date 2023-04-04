@@ -86,6 +86,7 @@ public:
           rootNode_(scope->Node()),
           insns_(allocator_->Adapter()),
           typedInsns_(allocator_->Adapter()),
+          typedVars_(allocator_->Adapter()),
           catchList_(allocator_->Adapter()),
           strings_(allocator_->Adapter()),
           buffStorage_(allocator_->Adapter()),
@@ -154,6 +155,16 @@ public:
     const ArenaMap<const IRNode *, int64_t> &TypedInsns() const
     {
         return typedInsns_;
+    }
+
+    ArenaUnorderedSet<const binder::LocalVariable *> &TypedVars()
+    {
+        return typedVars_;
+    }
+
+    const ArenaUnorderedSet<const binder::LocalVariable *> &TypedVars() const
+    {
+        return typedVars_;
     }
 
     std::pair<int64_t, int64_t> &TypedFunc()
@@ -501,6 +512,7 @@ private:
     const ir::AstNode *rootNode_;
     ArenaList<IRNode *> insns_;
     ArenaMap<const IRNode *, int64_t> typedInsns_;
+    ArenaUnorderedSet<const binder::LocalVariable *> typedVars_;
     std::pair<int64_t, int64_t> typedFunc_ {};
     ArenaVector<CatchTable *> catchList_;
     ArenaSet<util::StringView> strings_;
