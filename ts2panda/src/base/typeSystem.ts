@@ -132,7 +132,8 @@ export enum MethodModifier {
     STATIC = 1 << 2,
     ASYNC = 1 << 3,
     ASTERISK = 1 << 4,
-    ABSTRACT = 1 << 6  // The fifth bit is held by GetOrSetAccessorFlag
+    ABSTRACT = 1 << 6,  // The fifth bit is held by GetOrSetAccessorFlag
+    DECLARE = 1 << 7
 }
 
 export enum ModifierReadonly {
@@ -276,9 +277,9 @@ export class ClassType extends BaseType {
     implementsHeritages: Array<number> = new Array<number>();
     // fileds Array: [typeIndex] [public -> 0, private -> 1, protected -> 2] [readonly -> 1]
     staticFields: Map<string, Array<number>> = new Map<string, Array<number>>();
-    staticMethods: Map<string, number> = new Map<string, number>();
+    staticMethods: Map<string, {typeIndex: number, isDeclare: boolean}> = new Map<string, {typeIndex: number, isDeclare: boolean}>();
     fields: Map<string, Array<number>> = new Map<string, Array<number>>();
-    methods: Map<string, number> = new Map<string, number>();
+    methods: Map<string, {typeIndex: number, isDeclare: boolean}> = new Map<string, {typeIndex: number, isDeclare: boolean}>();
     typeIndex: number;
     shiftedTypeIndex: number;
     field_with_init_num: number = 0;
@@ -393,6 +394,21 @@ export class ClassType extends BaseType {
         if (this.typeChecker.isFromDefaultLib(member)) {
             return;
         }
+        // Keep the rule to get the name as the same as to get function's name in FunctionType
+        let funcName = member.name ? jshelpers.getTextOfIdentifierOrLiteral(member.name) : "constructor";
+        let isStatic = false;
+        if (member.modifiers) {
+            for (let modifier of member.modifiers) {
+                if (modifier.kind == ts.SyntaxKind.StaticKeyword) {
+                    isStatic = true;
+                }
+            }
+        }
+        let foundSameNameFuncRet = isStatic ? this.staticMethods.get(funcName) : this.methods.get(funcName);
+        if (foundSameNameFuncRet && !foundSameNameFuncRet.isDeclare) {
+            // A same named method with implementation has already been recorded
+            return;
+        }
         let variableNode = member.name ? member.name : undefined;
         let funcType = new FunctionType(<ts.FunctionLikeDeclaration>member);
         if (variableNode) {
@@ -400,12 +416,11 @@ export class ClassType extends BaseType {
         }
 
         // Then, get the typeIndex and fill in the methods array
-        let typeIndex = this.tryGetTypeIndex(member);
-        let isStatic = funcType.hasModifier(MethodModifier.STATIC);
+        let type = this.tryGetTypeIndex(member);
         if (isStatic) {
-            this.staticMethods.set(funcType.getFunctionName(), typeIndex!);
+            this.staticMethods.set(funcType.getFunctionName(), {typeIndex: type!, isDeclare: member.body == undefined});
         } else {
-            this.methods.set(funcType.getFunctionName(), typeIndex!);
+            this.methods.set(funcType.getFunctionName(), {typeIndex: type!, isDeclare: member.body == undefined});
             if (member.body != undefined) {
                 this.method_with_body_num++;
             }
@@ -475,12 +490,13 @@ export class ClassType extends BaseType {
     }
 
     private transferMethods2Literal(classTypeLiterals: Array<Literal>, isStatic: boolean) {
-        let transferredTarget: Map<string, number> = isStatic ? this.staticMethods : this.methods;
+        let transferredTarget: Map<string, {typeIndex: number, isDeclare: boolean}> = isStatic ? this.staticMethods : this.methods;
 
         classTypeLiterals.push(new Literal(LiteralTag.INTEGER, transferredTarget.size));
         transferredTarget.forEach((typeInfo, name) => {
+            let typeIndex: number = <number>typeInfo.typeIndex;
             classTypeLiterals.push(new Literal(LiteralTag.STRING, name));
-            this.transferType2Literal(typeInfo, classTypeLiterals);
+            this.transferType2Literal(typeIndex, classTypeLiterals);
         });
     }
 }
@@ -583,6 +599,9 @@ export class FunctionType extends BaseType {
 
         if (!ts.isMethodSignature(node) && node.asteriskToken) {
             this.modifiers += MethodModifier.ASTERISK;
+        }
+        if (ts.isMethodSignature(node) || !<ts.FunctionLikeDeclaration>node.body) {
+            this.modifiers += MethodModifier.DECLARE;
         }
     }
 
