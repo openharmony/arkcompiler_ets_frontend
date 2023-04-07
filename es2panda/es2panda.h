@@ -47,8 +47,8 @@ enum class ScriptExtension {
 };
 
 struct SourceFile {
-    SourceFile(std::string fn, std::string rn, parser::ScriptKind sk)
-        : fileName(fn), recordName(rn), scriptKind(sk)
+    SourceFile(std::string fn, std::string rn, parser::ScriptKind sk, ScriptExtension se)
+        : fileName(fn), recordName(rn), scriptKind(sk), scriptExtension(se)
     {
     }
 
@@ -56,6 +56,7 @@ struct SourceFile {
     std::string recordName {};
     std::string_view source {};
     parser::ScriptKind scriptKind {};
+    ScriptExtension scriptExtension {};
     std::string sourcefile {};
     std::string pkgName {};
     uint32_t hash {0};
@@ -82,7 +83,6 @@ struct CompilerOptions {
     bool mergeAbc {false};
     bool typeExtractor {false};
     bool typeDtsBuiltin {false};
-    ScriptExtension extension {};
     int fileThreadCount {0};
     int functionThreadCount {0};
     int optLevel {0};

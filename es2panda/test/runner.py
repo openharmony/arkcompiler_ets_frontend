@@ -398,7 +398,7 @@ class TSCTest(Test):
         return test_options
 
     def run(self, runner):
-        cmd = runner.cmd_prefix + [runner.es2panda, '--parse-only', '--extension=ts']
+        cmd = runner.cmd_prefix + [runner.es2panda, '--parse-only']
         cmd.extend(self.flags)
         if "module" in self.options:
             cmd.append('--module')
@@ -1264,7 +1264,7 @@ class TypeExtractorTest(Test):
     def run(self, runner):
         test_abc_name = ("%s.abc" % (path.splitext(self.path)[0])).replace("/", "_")
         cmd = runner.cmd_prefix + [runner.es2panda,
-            '--extension=ts', '--module', '--dump-literal-buffer', '--opt-level=2', '--type-extractor']
+            '--module', '--dump-literal-buffer', '--opt-level=2', '--type-extractor']
         if self.is_dts_test:
             cmd.append("--type-dts-builtin")
         cmd.extend(self.flags)
@@ -1313,7 +1313,7 @@ class TypeExtractorWithAssertTest(Test):
     def run(self, runner):
         test_abc_name = ("%s.abc" % (path.splitext(self.path)[0])).replace("/", "_")
         cmd = runner.cmd_prefix + [runner.es2panda,
-            '--extension=ts', '--module', '--merge-abc', '--opt-level=2', '--type-extractor']
+            '--module', '--merge-abc', '--opt-level=2', '--type-extractor']
         cmd.extend(self.flags)
         cmd.extend(["--output=" + test_abc_name])
         cmd.append(self.path)
@@ -1369,18 +1369,18 @@ def main():
         runner.add_directory("parser/concurrent", "js", ["--module", "--dump-ast"])
         runner.add_directory("parser/js", "js", ["--parse-only", "--dump-ast"])
         runner.add_directory("parser/ts", "ts",
-                             ["--parse-only", "--module", "--extension=ts", "--dump-ast"])
+                             ["--parse-only", "--module", "--dump-ast"])
         runner.add_directory("parser/ts/type_checker", "ts",
-                             ["--parse-only", "--enable-type-check", "--module", "--extension=ts", "--dump-ast"])
+                             ["--parse-only", "--enable-type-check", "--module", "--dump-ast"])
         runner.add_directory("parser/ts/cases/declaration", "d.ts",
-                             ["--parse-only", "--module", "--extension=ts", "--dump-ast"], TSDeclarationTest)
+                             ["--parse-only", "--module", "--dump-ast"], TSDeclarationTest)
         runner.add_directory("parser/commonjs", "js", ["--commonjs", "--parse-only", "--dump-ast"])
 
         runners.append(runner)
 
         transformer_runner = TransformerRunner(args)
         transformer_runner.add_directory("parser/ts/transformed_cases", "ts",
-                                         ["--parse-only", "--module", "--extension=ts", "--dump-transformed-ast",
+                                         ["--parse-only", "--module", "--dump-transformed-ast",
                                           "--check-transformed-ast-structure"])
 
         runners.append(transformer_runner)
@@ -1394,10 +1394,10 @@ def main():
     if args.compiler:
         runner = CompilerRunner(args)
         runner.add_directory("compiler/js", "js", [])
-        runner.add_directory("compiler/ts/cases", "ts", ["--extension=ts"])
-        runner.add_directory("compiler/ts/projects", "ts", ["--module", "--extension=ts"])
-        runner.add_directory("compiler/ts/projects", "ts", ["--module", "--extension=ts", "--merge-abc"])
-        runner.add_directory("compiler/dts", "d.ts", ["--module", "--extension=ts", "--opt-level=0"])
+        runner.add_directory("compiler/ts/cases", "ts", [])
+        runner.add_directory("compiler/ts/projects", "ts", ["--module"])
+        runner.add_directory("compiler/ts/projects", "ts", ["--module", "--merge-abc"])
+        runner.add_directory("compiler/dts", "d.ts", ["--module", "--opt-level=0"])
         runner.add_directory("compiler/commonjs", "js", ["--commonjs"])
 
         runners.append(runner)
