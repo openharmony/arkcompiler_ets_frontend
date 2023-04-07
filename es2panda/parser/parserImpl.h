@@ -309,7 +309,7 @@ private:
     ir::MethodDefinition *CheckClassMethodOverload(ir::Statement *property, ir::MethodDefinition **ctor, bool isDeclare,
                                                    lexer::SourcePosition errorInfo, ir::MethodDefinition *lastOverload,
                                                    bool implExists, bool isAbstract = false);
-    ir::Identifier *SetIdentNodeInClassDefinition(bool isDeclare);
+    ir::Identifier *SetIdentNodeInClassDefinition(bool isDeclare, binder::ConstDecl **decl);
     ir::ClassDefinition *ParseClassDefinition(bool isDeclaration, bool idRequired = true, bool isDeclare = false,
                                               bool isAbstract = false);
 

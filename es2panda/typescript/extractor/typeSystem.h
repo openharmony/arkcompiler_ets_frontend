@@ -222,22 +222,14 @@ enum UserType : uint8_t {
     INDEXSIG
 };
 
-enum Modifier : uint8_t {
-    NONSTATIC = 0,
+enum FuncModifier : uint8_t {
+    NOMODIFIER = 0,
     STATIC = 1 << 2,
     ASYNC = 1 << 3,
     GENERATOR = 1 << 4,
-    ACCESSOR = 1 << 5
-};
-
-enum ModifierAB : uint8_t {
-    NONABSTRACT,
-    ABSTRACT
-};
-
-enum ModifierRO : uint8_t {
-    NONREADONLY,
-    READONLY
+    ACCESSOR = 1 << 5,
+    ABSTRACT = 1 << 6,
+    OVERLOAD = 1 << 7
 };
 
 enum AccessFlag : uint8_t {
@@ -470,12 +462,7 @@ public:
             if (modifiers & ir::ModifierFlags::PROTECTED) {
                 accessFlag_ = AccessFlag::PROTECTED;
             }
-            if (methodDef->IsStatic()) {
-                modifier_ += Modifier::STATIC;
-            }
-            if (methodDef->IsAccessor()) {
-                modifier_ += Modifier::ACCESSOR;
-            }
+            FillMethodModifier(methodDef);
             fn(methodDef->Function());
         } else if (node->IsFunctionDeclaration()) {
             fn(node->AsFunctionDeclaration()->Function());
@@ -506,7 +493,7 @@ public:
 private:
     util::StringView name_ {};
     AccessFlag accessFlag_ = AccessFlag::PUBLIC;
-    uint8_t modifier_ = Modifier::NONSTATIC;
+    uint8_t modifier_ = FuncModifier::NOMODIFIER;
     bool containThis_ = false;
     ArenaVector<int64_t> paramsTypeIndex_;
     int64_t typeIndexReturn_ = PrimitiveType::ANY;
@@ -540,13 +527,29 @@ private:
         FillLiteralBuffer();
     }
 
+    void FillMethodModifier(const ir::MethodDefinition *methodDef)
+    {
+        if (methodDef->IsStatic()) {
+            modifier_ += FuncModifier::STATIC;
+        }
+        if (methodDef->IsAccessor()) {
+            modifier_ += FuncModifier::ACCESSOR;
+        }
+        if (methodDef->IsAbstract()) {
+            modifier_ += FuncModifier::ABSTRACT;
+        }
+    }
+
     void FillModifier(const ir::ScriptFunction *scriptFunc)
     {
         if (scriptFunc->IsAsync()) {
-            modifier_ += Modifier::ASYNC;
+            modifier_ += FuncModifier::ASYNC;
         }
         if (scriptFunc->IsGenerator()) {
-            modifier_ += Modifier::GENERATOR;
+            modifier_ += FuncModifier::GENERATOR;
+        }
+        if (scriptFunc->IsOverload()) {
+            modifier_ += FuncModifier::OVERLOAD;
         }
     }
 
@@ -649,16 +652,16 @@ public:
     }
 
 private:
-    ModifierAB modifierAB_ = ModifierAB::NONABSTRACT;
+    bool modifierAB_ = false;
     int64_t extendsHeritage_ = PrimitiveType::ANY;
     ArenaVector<int64_t> implementsHeritages_;
     ArenaMap<util::StringView, int64_t> paramTypes_;
     // 3 field infos, typeIndex / accessFlag / modifier
     ArenaMap<util::StringView, std::array<int64_t, 3>> staticFields_;
-    ArenaMap<util::StringView, int64_t> staticMethods_;
+    ArenaMap<int64_t, util::StringView> staticMethods_;
     // 3 field infos, typeIndex / accessFlag / modifier
     ArenaMap<util::StringView, std::array<int64_t, 3>> fields_;
-    ArenaMap<util::StringView, int64_t> methods_;
+    ArenaMap<int64_t, util::StringView> methods_;
     ArenaMap<int64_t, int64_t> indexSignatures_;
     int64_t typeIndex_ = PrimitiveType::ANY;
     int64_t typeIndexShift_ = PrimitiveType::ANY;
@@ -668,9 +671,7 @@ private:
 
     void FillModifier(const ir::ClassDefinition *classDef)
     {
-        if (classDef->Abstract()) {
-            modifierAB_ = ModifierAB::ABSTRACT;
-        }
+        modifierAB_ = classDef->Abstract();
     }
 
     void FillHeritages(const ir::ClassDefinition *classDef)
@@ -698,14 +699,11 @@ private:
         if (modifiers & ir::ModifierFlags::PROTECTED) {
             flag = AccessFlag::PROTECTED;
         }
-        ModifierRO modifier = ModifierRO::NONREADONLY;
-        if (modifiers & ir::ModifierFlags::READONLY) {
-            modifier = ModifierRO::READONLY;
-        }
+        auto isReadonly = (modifiers & ir::ModifierFlags::READONLY);
  
         int64_t typeIndex = extractor_->GetTypeIndexFromAnnotation(field->TypeAnnotation());
         // 3 field infos, typeIndex / accessFlag / modifier
-        std::array<int64_t, 3> fieldInfo = {typeIndex, flag, modifier};
+        std::array<int64_t, 3> fieldInfo = {typeIndex, flag, static_cast<int64_t>(isReadonly)};
         auto fn = [&fieldInfo, &isStatic, this](const util::StringView &name) {
             if (isStatic) {
                 staticFields_[name] = fieldInfo;
@@ -739,10 +737,10 @@ private:
     void FillMethod(const ir::MethodDefinition *method)
     {
         auto fn = [&method, this](const FunctionType &functionType, const util::StringView &name) {
-            if ((functionType.GetModifier() & Modifier::STATIC) == 0) {
-                methods_[name] = recorder_->GetNodeTypeIndex(method->Function());
+            if ((functionType.GetModifier() & FuncModifier::STATIC) == 0) {
+                methods_[recorder_->GetNodeTypeIndex(method->Function())] = name;
             } else {
-                staticMethods_[name] = recorder_->GetNodeTypeIndex(method->Function());
+                staticMethods_ [recorder_->GetNodeTypeIndex(method->Function())] = name;
             }
         };
 
@@ -828,11 +826,11 @@ private:
 
     void FillMethodsLiteralBuffer(bool isStatic)
     {
-        auto fn = [this](const ArenaMap<util::StringView, int64_t> &map) {
+        auto fn = [this](const ArenaMap<int64_t, util::StringView> &map) {
             buffer_->Add(recorder_->Allocator()->New<ir::NumberLiteral>(map.size()));
             std::for_each(map.begin(), map.end(), [this](const auto &t) {
-                buffer_->Add(recorder_->Allocator()->New<ir::StringLiteral>(t.first));
-                FillTypeIndexLiteralBuffer(t.second);
+                buffer_->Add(recorder_->Allocator()->New<ir::StringLiteral>(t.second));
+                FillTypeIndexLiteralBuffer(t.first);
             });
         };
 
@@ -955,14 +953,11 @@ private:
     void FillField(const ir::TSPropertySignature *field)
     {
         AccessFlag flag = AccessFlag::PUBLIC;
-        ModifierRO modifier = ModifierRO::NONREADONLY;
-        if (field->Readonly()) {
-            modifier = ModifierRO::READONLY;
-        }
+        auto isReadonly = field->Readonly();
 
         int64_t typeIndex = extractor_->GetTypeIndexFromAnnotation(field->TypeAnnotation());
         // 3 field infos, typeIndex / accessFlag / modifier
-        std::array<int64_t, 3> fieldInfo = {typeIndex, flag, modifier};
+        std::array<int64_t, 3> fieldInfo = {typeIndex, flag, static_cast<int64_t>(isReadonly)};
 
         auto res = CalculateName(field->Key());
         if (std::holds_alternative<util::StringView>(res)) {
