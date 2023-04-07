@@ -32,6 +32,8 @@ def parse_args():
                         help='the converted target file')
     parser.add_argument('--frontend-tool-path',
                         help='path of the frontend conversion tool')
+    parser.add_argument('--extension',
+                        help='source file extension')
     parser.add_argument("--debug", action='store_true',
                         help='whether add debuginfo')
     parser.add_argument("--module", action='store_true',
@@ -46,6 +48,10 @@ def parse_args():
                         help='dump symbol table of base abc')
     parser.add_argument("--input-symbol-table",
                         help='input symbol table for patch abc')
+    parser.add_argument("--type-extractor", action='store_true',
+                        help='enable type extractor')
+    parser.add_argument("--type-dts-builtin", action='store_true',
+                        help='enable builtin type extractor')
     arguments = parser.parse_args()
     return arguments
 
@@ -64,6 +70,8 @@ def gen_abc_info(input_arguments):
            '--output', input_arguments.dst_file,
            input_arguments.src_js]
 
+    if input_arguments.extension:
+        cmd += ['--extension', input_arguments.extension]
     if input_arguments.dump_symbol_table:
         cmd += ['--dump-symbol-table', input_arguments.dump_symbol_table]
     if input_arguments.input_symbol_table:
@@ -84,6 +92,12 @@ def gen_abc_info(input_arguments):
         src_index = cmd.index(input_arguments.src_js)
         cmd.insert(src_index, '--generate-patch')
         # insert d.ts option to cmd later
+    if input_arguments.type_extractor:
+        src_index = cmd.index(input_arguments.src_js)
+        cmd.insert(src_index, '--type-extractor')
+    if input_arguments.type_dts_builtin:
+        src_index = cmd.index(input_arguments.src_js)
+        cmd.insert(src_index, '--type-dts-builtin')
     run_command(cmd, path)
 
 

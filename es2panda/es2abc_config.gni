@@ -71,6 +71,13 @@ template("es2abc_gen_abc") {
       rebase_path("${es2abc_build_path}"),
     ]
 
+    if (defined(invoker.extension)) {
+      args += [
+        "--extension",
+        invoker.extension,
+      ]
+    }
+
     if (defined(invoker.dump_symbol_table)) {
       args += [
         "--dump-symbol-table",
