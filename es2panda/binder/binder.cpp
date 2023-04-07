@@ -121,7 +121,9 @@ void Binder::CheckMandatoryArguments(const ir::Identifier *ident)
         }
 
         if (iter->IsObjectExpression() || iter->IsObjectPattern()) {
-            isPatternMember = util::Helpers::IsObjectPropertyValue(iter->AsObjectExpression(), ident);
+            auto &properties = iter->IsObjectExpression() ? iter->AsObjectExpression()->Properties() :
+                                                            iter->AsObjectPattern()->Properties();
+            isPatternMember = util::Helpers::IsObjectPropertyValue(properties, ident);
             break;
         }
         iter = iter->Parent();

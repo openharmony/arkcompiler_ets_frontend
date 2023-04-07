@@ -78,7 +78,7 @@ public:
     static std::tuple<util::StringView, bool> ParamName(ArenaAllocator *allocator, const ir::AstNode *param,
                                                         uint32_t index);
     static bool IsChild(const ir::AstNode *parent, const ir::AstNode *child);
-    static bool IsObjectPropertyValue(const ir::ObjectExpression *object, const ir::AstNode *ident);
+    static bool IsObjectPropertyValue(const ArenaVector<ir::Expression *> &properties, const ir::AstNode *ident);
 
     static void OptimizeProgram(panda::pandasm::Program *prog, const std::string &inputFile);
     template <typename T>
