@@ -840,7 +840,7 @@ void PandaGen::Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs,
         }
     }
 
-    BranchIfFalse(node, ifFalse);
+    ra_.Emit<Jeqz>(node, ifFalse);
 }
 
 void PandaGen::Unary(const ir::AstNode *node, lexer::TokenType op, VReg operand)
