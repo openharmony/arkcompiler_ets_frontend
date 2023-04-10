@@ -448,9 +448,9 @@ bool Helpers::IsChild(const ir::AstNode *parent, const ir::AstNode *child)
     return false;
 }
 
-bool Helpers::IsObjectPropertyValue(const ir::ObjectExpression *object, const ir::AstNode *ident)
+bool Helpers::IsObjectPropertyValue(const ArenaVector<ir::Expression *> &properties, const ir::AstNode *ident)
 {
-    for (const auto *prop : object->Properties()) {
+    for (const auto *prop : properties) {
         if (prop->AsProperty()->Value() == ident) {
             return true;
         }
