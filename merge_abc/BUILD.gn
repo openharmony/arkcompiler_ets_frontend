@@ -92,16 +92,23 @@ foreach(proto_file, proto_file_defines) {
 protoc_binary_out_path =
     "${OHOS_PROFILER_SUBSYS_NAME}/${OHOS_PROFILER_PART_NAME}"
 
-if (default_toolchain == current_toolchain) {
-  #if target build
-  host_out_path = "/" + get_label_info(host_toolchain, "name")
-} else {
-  #if host build (for some linke mingw)
-  host_out_path = "/../" + get_label_info(host_toolchain, "name")
-}
+if (!ark_standalone_build) {
+  if (default_toolchain == current_toolchain) {
+    #if target build
+    host_out_path = "/" + get_label_info(host_toolchain, "name")
+  } else {
+    #if host build (for some linke mingw)
+    host_out_path = "/../" + get_label_info(host_toolchain, "name")
+  }
 
-host_protoc_path =
-    root_out_dir + host_out_path + "/" + protoc_binary_out_path + "/protoc"
+  host_protoc_path =
+      root_out_dir + host_out_path + "/" + protoc_binary_out_path + "/protoc"
+} else {
+  host_protoc_path =
+      get_label_info(
+          "${ets_frontend_root}/merge_abc:merge_abc(${host_toolchain})",
+          "root_out_dir") + "/" + protoc_binary_out_path + "/protoc"
+}
 
 action("arkcompiler_generate_proto") {
   deps = [ "$ark_third_party_root/protobuf:protoc($host_toolchain)" ]
