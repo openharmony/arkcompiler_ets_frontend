@@ -44,6 +44,12 @@ struct Program;
 
 namespace panda::es2panda::util {
 
+enum class SignedNumberLiteral {
+    UNRECOGNIZED = 0,
+    POSITIVE = 1,
+    NEGATIVE = 2
+};
+
 class Helpers {
 public:
     Helpers() = delete;
@@ -79,6 +85,7 @@ public:
                                                         uint32_t index);
     static bool IsChild(const ir::AstNode *parent, const ir::AstNode *child);
     static bool IsObjectPropertyValue(const ArenaVector<ir::Expression *> &properties, const ir::AstNode *ident);
+    static SignedNumberLiteral GetSignedNumberLiteral(const ir::Expression *expr);
 
     static void OptimizeProgram(panda::pandasm::Program *prog, const std::string &inputFile);
     template <typename T>

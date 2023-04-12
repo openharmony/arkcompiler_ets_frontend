@@ -2276,9 +2276,9 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDe
 
             if (Extension() == ScriptExtension::TS) {
                 // TODO(songqi): Determine whether MemberExpression is a symbol during type check.
-                desc->invalidComputedProperty =
-                    !propName->IsNumberLiteral() && !propName->IsStringLiteral() &&
-                    !propName->IsMemberExpression() && !propName->IsIdentifier();
+                desc->invalidComputedProperty = !propName->IsNumberLiteral() &&
+                    util::Helpers::GetSignedNumberLiteral(propName) == util::SignedNumberLiteral::UNRECOGNIZED &&
+                    !propName->IsStringLiteral() && !propName->IsMemberExpression() && !propName->IsIdentifier();
             }
 
             if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
