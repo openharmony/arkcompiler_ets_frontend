@@ -2769,7 +2769,7 @@ bool ParserImpl::IsMethodDefinitionsAreSame(const ir::MethodDefinition *property
     return IsPropertyKeysAreSame(property->Key(), overload->Key());
 }
 
-ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition(bool isDeclare)
+ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition(bool isDeclare, binder::ConstDecl **decl)
 {
     lexer::TokenType keywType = lexer_->GetToken().KeywordType();
     CheckStrictReservedWord();
@@ -2780,7 +2780,7 @@ ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition(bool isDeclare)
 
     const util::StringView &identStr = lexer_->GetToken().Ident();
 
-    Binder()->AddDecl<binder::ConstDecl>(lexer_->GetToken().Start(), isDeclare, identStr);
+    *decl = Binder()->AddDecl<binder::ConstDecl>(lexer_->GetToken().Start(), isDeclare, identStr);
 
     auto *identNode = AllocNode<ir::Identifier>(identStr);
     identNode->SetRange(lexer_->GetToken().Loc());
@@ -2797,13 +2797,14 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
     lexer_->NextToken();
 
+    binder::ConstDecl *decl = nullptr;
     ir::Identifier *identNode = nullptr;
 
     auto classCtx = binder::LexicalScope<binder::LocalScope>(Binder());
 
     if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT && (Extension() != ScriptExtension::TS ||
         lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_IMPLEMENTS)) {
-        identNode = SetIdentNodeInClassDefinition(isDeclare);
+        identNode = SetIdentNodeInClassDefinition(isDeclare, &decl);
     } else if (isDeclaration && idRequired) {
         ThrowSyntaxError("Unexpected token, expected an identifier.");
     }
@@ -2947,6 +2948,9 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
         std::move(properties), std::move(indexSignatures), isDeclare, isAbstract);
 
     classDefinition->SetRange({classBodyStartLoc, classBodyEndLoc});
+    if (decl != nullptr) {
+        decl->BindNode(classDefinition);
+    }
 
     return classDefinition;
 }

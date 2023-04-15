@@ -1218,6 +1218,7 @@ class TypeExtractorRunner(Runner):
         self.add_directory("testcases", [])
         self.add_directory("dts-testcases", [], True)
         self.add_directory("testcases_with_assert", [])
+        self.add_directory("testcases_with_running", [])
 
     def add_tsc_directory(self, directory, flags):
         ts_suite_dir = path.join(self.tsc_path, 'tests/cases')
@@ -1245,8 +1246,10 @@ class TypeExtractorRunner(Runner):
         files = fnmatch.filter(files, ts_suite_dir + '**' + self.args.filter)
 
         for f in files:
-            if directory.endswith("testcases_with_assert"):
-                test = TypeExtractorWithAssertTest(f, flags)
+            if directory.endswith("testcases_with_assert") or directory.endswith("testcases_with_running"):
+                if (self.ld_library_path == "" or self.ark_aot_compiler == ""):
+                    break
+                test = TypeExtractorWithAOTTest(f, flags, directory.endswith("testcases_with_running"))
                 self.tests.append(test)
             else:
                 test = TypeExtractorTest(f, flags, is_dts_test)
@@ -1306,12 +1309,40 @@ class TypeExtractorTest(Test):
         return self
 
 
-class TypeExtractorWithAssertTest(Test):
-    def __init__(self, test_path, flags):
+class TypeExtractorWithAOTTest(Test):
+    def __init__(self, test_path, flags, with_running=False):
         Test.__init__(self, test_path, flags)
+        self.with_running = with_running
+
+    def run_js_vm(self, runner, file_name, test_abc_name):
+        expected_path = "%s-expected.txt" % (file_name)
+        run_aot_cmd = [runner.ark_js_vm]
+        run_aot_cmd.extend(["--aot-file=%s" % file_name])
+        run_aot_cmd.extend(["--entry-point=%s" % path.basename(file_name)])
+        run_aot_cmd.extend([test_abc_name])
+        self.log_cmd(run_aot_cmd)
+
+        process = subprocess.Popen(run_aot_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = process.communicate(timeout=runner.args.timeout)
+        self.output = out.decode("utf-8", errors="ignore") + err.decode("utf-8", errors="ignore")
+        try:
+            with open(expected_path, 'r') as fp:
+                expected = fp.read()
+            self.passed = expected == self.output and process.returncode in [0, 1]
+        except Exception:
+            self.passed = False
+
+        if not self.passed:
+            self.error = err.decode("utf-8", errors="ignore")
+
+        if os.path.isfile("%s.an" % (file_name)):
+            os.remove("%s.an" % (file_name))
+        if os.path.isfile("%s.ai" % (file_name)):
+            os.remove("%s.ai" % (file_name))
 
     def run(self, runner):
-        test_abc_name = ("%s.abc" % (path.splitext(self.path)[0])).replace("/", "_")
+        file_name = path.splitext(self.path)[0]
+        test_abc_name = ("%s.abc" % path.basename(file_name))
         cmd = runner.cmd_prefix + [runner.es2panda,
             '--module', '--merge-abc', '--opt-level=2', '--type-extractor']
         cmd.extend(self.flags)
@@ -1327,17 +1358,14 @@ class TypeExtractorWithAssertTest(Test):
             self.error = err.decode("utf-8", errors="ignore")
             return self
 
-        if (runner.ld_library_path == "" or runner.ld_library_path == ""):
-            if os.path.isfile(test_abc_name):
-                os.remove(test_abc_name)
-            self.passed = True
-            return self
-
         ld_library_path = runner.ld_library_path
         os.environ.setdefault("LD_LIBRARY_PATH", ld_library_path)
         aot_abc_cmd = [runner.ark_aot_compiler]
-        aot_abc_cmd.extend(["--assert-types=true"])
-        aot_abc_cmd.extend(["--enable-type-lowering=false"])
+        if self.with_running:
+            aot_abc_cmd.extend(["--aot-file=%s" % file_name])
+        else:
+            aot_abc_cmd.extend(["--assert-types=true"])
+            aot_abc_cmd.extend(["--enable-type-lowering=false"])
         aot_abc_cmd.extend([test_abc_name])
         self.log_cmd(aot_abc_cmd)
 
@@ -1347,7 +1375,10 @@ class TypeExtractorWithAssertTest(Test):
             self.passed = False
             self.error = err.decode("utf-8", errors="ignore")
         else:
-            self.passed = True
+            if self.with_running:
+                self.run_js_vm(runner, file_name, test_abc_name)
+            else:
+                self.passed = True
 
         if os.path.isfile(test_abc_name):
             os.remove(test_abc_name)
