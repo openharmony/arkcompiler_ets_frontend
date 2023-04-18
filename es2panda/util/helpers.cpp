@@ -29,6 +29,7 @@
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/objectExpression.h>
+#include <ir/expressions/unaryExpression.h>
 #include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
 #include <ir/ts/tsParameterProperty.h>
@@ -457,6 +458,32 @@ bool Helpers::IsObjectPropertyValue(const ArenaVector<ir::Expression *> &propert
     }
 
     return false;
+}
+
+SignedNumberLiteral Helpers::GetSignedNumberLiteral(const ir::Expression *expr)
+{
+    if (!expr->IsUnaryExpression()) {
+        return SignedNumberLiteral::UNRECOGNIZED;
+    }
+
+    auto unaryExpression = expr->AsUnaryExpression();
+    if (!unaryExpression->Argument()->IsNumberLiteral()) {
+        return SignedNumberLiteral::UNRECOGNIZED;
+    }
+
+    // TODO(hxw): Here we return different value for positive and nagative number literal in UnaryExpression.
+    // Because when we access a computed property by MemberExpression, the compiler should emit different instruction.
+    // Now es2abc always emits the instruction `loadObjByValue` whether the computed property is literal or not.
+    // It can be optimized. For positive integer literal, the instruction should be `loadObjByIndex`.
+    // While for negative number literal, the instruction should be `loadObjByName`.
+    // So I add this util api and return different value for future use.
+    if (unaryExpression->OperatorType() == lexer::TokenType::PUNCTUATOR_PLUS) {
+        return SignedNumberLiteral::POSITIVE;
+    } else if (unaryExpression->OperatorType() == lexer::TokenType::PUNCTUATOR_MINUS) {
+        return SignedNumberLiteral::NEGATIVE;
+    }
+
+    return SignedNumberLiteral::UNRECOGNIZED;
 }
 
 void Helpers::OptimizeProgram(panda::pandasm::Program *prog,  const std::string &inputFile)
