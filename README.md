@@ -436,7 +436,7 @@ If no parameter is specified for  **\[options\]**, an ARK binary file is generat
 </table>
 
 
-For more information, please see: [ARK-Runtime-Usage-Guide](https://gitee.com/openharmony/arkcompiler_ets_runtime/blob/master/docs/ARK-Runtime-Usage-Guide.md).
+For more information, please see: [ARK-Runtime-Usage-Guide](https://gitee.com/openharmony/arkcompiler_ets_runtime/blob/master/docs/README.md).
 
 ## Repositories Involved<a name="section1371113476307"></a>
 
