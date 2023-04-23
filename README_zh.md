@@ -437,7 +437,7 @@ $ node --expose-gc src/index.js [options] file.js
 </table>
 
 
-更多使用说明请参考：[方舟运行时使用指南](https://gitee.com/openharmony/arkcompiler_ets_runtime/blob/master/docs/README.md)
+更多使用说明请参考：[方舟运行时使用指南](https://gitee.com/openharmony/arkcompiler_ets_runtime/blob/master/docs/README_zh.md)
 
 ## 相关仓<a name="section1371113476307"></a>
 
