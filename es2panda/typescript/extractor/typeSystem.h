@@ -222,6 +222,11 @@ enum UserType : uint8_t {
     INDEXSIG
 };
 
+enum BuiltinFlag : int8_t {
+    NAMESPACE_FUNCTION = -1,
+    ENUM_FUNCTION = -2
+};
+
 enum FuncModifier : uint8_t {
     NOMODIFIER = 0,
     STATIC = 1 << 2,

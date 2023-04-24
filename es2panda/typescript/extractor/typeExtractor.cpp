@@ -17,10 +17,12 @@
 
 #include <binder/binder.h>
 #include <ir/base/spreadElement.h>
+#include <ir/expressions/callExpression.h>
 #include <ir/expressions/classExpression.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/expressions/newExpression.h>
 #include <ir/module/exportNamedDeclaration.h>
+#include <ir/statements/expressionStatement.h>
 #include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
 #include <ir/ts/tsAsExpression.h>
@@ -102,6 +104,8 @@ TypeExtractor::TypeExtractor(const ir::BlockStatement *rootNode, bool typeDtsExt
         std::bind(&TypeExtractor::HandleInterfaceDeclaration, this, std::placeholders::_1);
     handlerMap_[ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION] =
         std::bind(&TypeExtractor::HandleTypeAliasDeclaration, this, std::placeholders::_1);
+    handlerMap_[ir::AstNodeType::EXPRESSION_STATEMENT] =
+        std::bind(&TypeExtractor::HandleNewlyGenFuncExpression, this, std::placeholders::_1);
 }
 
 void TypeExtractor::StartTypeExtractor(const parser::Program *program)
@@ -737,6 +741,44 @@ void TypeExtractor::HandleTypeAliasDeclaration(const ir::AstNode *node)
     if (IsDeclareNode(node)) {
         recorder_->SetDeclareType(std::string(identifier->Name()),
             GetTypeIndexFromAnnotation(typeAliasDef->TypeAnnotation()));
+    }
+}
+
+void TypeExtractor::HandleNewlyGenFuncExpression(const ir::AstNode *node)
+{
+    if (!node->Original()) {
+        return;
+    }
+    auto originalNode = node->Original();
+    int64_t typeFlag = PrimitiveType::ANY;
+    switch (originalNode->Type()) {
+        case ir::AstNodeType::TS_MODULE_DECLARATION: {
+            typeFlag = extractor::BuiltinFlag::NAMESPACE_FUNCTION;
+            break;
+        }
+        case ir::AstNodeType::TS_ENUM_DECLARATION: {
+            typeFlag = extractor::BuiltinFlag::ENUM_FUNCTION;
+            break;
+        }
+        case ir::AstNodeType::EXPORT_NAMED_DECLARATION: {
+            auto decl = originalNode->AsExportNamedDeclaration()->Decl();
+            if (!decl) {
+                return;
+            }
+            if (decl->IsTSModuleDeclaration()) {
+                typeFlag = extractor::BuiltinFlag::NAMESPACE_FUNCTION;
+            } else if (decl->IsTSEnumDeclaration()) {
+                typeFlag = extractor::BuiltinFlag::ENUM_FUNCTION;
+            }
+            break;
+        }
+        default: {
+            return;
+        }
+    }
+    if (typeFlag != PrimitiveType::ANY) {
+        auto funcExpr = node->AsExpressionStatement()->GetExpression()->AsCallExpression()->Callee();
+        recorder_->SetNodeTypeIndex(funcExpr->AsFunctionExpression()->Function(), typeFlag);
     }
 }
 
