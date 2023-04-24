@@ -40,7 +40,7 @@ if (host_toolchain == toolchain_mac) {
       get_label_info("$ts2abc_root:ts2abc_build_mac($toolchain_mac)",
                      "root_out_dir") +
       "/obj/arkcompiler/ets_frontend/ts2panda/build-mac"
-  node_path = "${nodejs_dir}/node-v14.21.1-darwin-x64/bin/"
+  node_path = "${nodejs_dir}/current/bin/"
 } else if (host_toolchain == toolchain_win) {
   ts2abc_build_deps = [ "$ts2abc_root:ts2abc_build_win($toolchain_win)" ]
   ts2abc_build_path =
@@ -53,7 +53,7 @@ if (host_toolchain == toolchain_mac) {
       get_label_info("$ts2abc_root:ts2abc_build($toolchain_linux)",
                      "root_out_dir") +
       "/obj/arkcompiler/ets_frontend/ts2panda/build"
-  node_path = "${nodejs_dir}/node-v14.21.1-linux-x64/bin/"
+  node_path = "${nodejs_dir}/current/bin/"
   merge_abc_deps = [ "$merge_abc_root:merge_abc(${toolchain_linux})" ]
   merge_abc_path =
       get_label_info("$merge_abc_root:merge_abc($toolchain_linux)",
