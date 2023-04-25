@@ -580,10 +580,18 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitInstanceProperty(ir::Cl
         if (it->IsComputed()) {
             computedProps.push_back(AllocNode<ir::ExpressionStatement>(it->Key()));
         }
-        auto *member = GetClassMemberName(it->Key(), it->IsComputed(), it);
-        auto *left = AllocNode<ir::MemberExpression>(AllocNode<ir::ThisExpression>(), member,
-                                                     ir::MemberExpression::MemberExpressionKind::ELEMENT_ACCESS,
-                                                     true, false);
+
+        ir::MemberExpression *left = nullptr;
+        auto *member = GetClassMemberName(it->Key(), it->IsComputed(), it, false);
+        if (member->IsIdentifier() && !it->IsComputed()) {
+            left = AllocNode<ir::MemberExpression>(AllocNode<ir::ThisExpression>(), member,
+                                                   ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS,
+                                                   false, false);
+        } else {
+            left = AllocNode<ir::MemberExpression>(AllocNode<ir::ThisExpression>(), member,
+                                                   ir::MemberExpression::MemberExpressionKind::ELEMENT_ACCESS,
+                                                   true, false);
+        }
         auto assignment = AllocNode<ir::AssignmentExpression>(left, it->Value(),
                                                               lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
@@ -683,9 +691,18 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitStaticProperty(ir::Clas
         if (right == nullptr) {
             continue;
         }
-        auto *member = GetClassMemberName(classProperty->Key(), classProperty->IsComputed(), classProperty);
-        auto left = AllocNode<ir::MemberExpression>(CreateReferenceIdentifier(name), member,
-            ir::MemberExpression::MemberExpressionKind::ELEMENT_ACCESS, true, false);
+
+        ir::MemberExpression *left = nullptr;
+        auto *member = GetClassMemberName(classProperty->Key(), classProperty->IsComputed(), classProperty, false);
+        if (member->IsIdentifier() && !classProperty->IsComputed()) {
+            left = AllocNode<ir::MemberExpression>(CreateReferenceIdentifier(name), member,
+                                                   ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS,
+                                                   false, false);
+        } else {
+            left = AllocNode<ir::MemberExpression>(CreateReferenceIdentifier(name), member,
+                                                   ir::MemberExpression::MemberExpressionKind::ELEMENT_ACCESS,
+                                                   true, false);
+        }
         auto assignment = AllocNode<ir::AssignmentExpression>(left, right, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
         res.push_back(AllocNode<ir::ExpressionStatement>(assignment));
     }
@@ -939,14 +956,19 @@ ir::CallExpression *Transformer::CreateGetOwnPropertyDescriptorCall(ir::Expressi
     return AllocNode<ir::CallExpression>(caller, std::move(arguments), nullptr, false);
 }
 
-ir::Expression *Transformer::GetClassMemberName(ir::Expression *key, bool isComputed, ir::Statement *node)
+ir::Expression *Transformer::GetClassMemberName(ir::Expression *key, bool isComputed,
+                                                ir::Statement *node, bool inDecorator)
 {
     if (isComputed) {
         auto name = GetComputedPropertyBinding(node);
         return AllocNode<ir::Identifier>(name);
     }
     if (key->IsIdentifier()) {
-        return AllocNode<ir::StringLiteral>(key->AsIdentifier()->Name());
+        if (inDecorator) {
+            return AllocNode<ir::StringLiteral>(key->AsIdentifier()->Name());
+        } else {
+            return AllocNode<ir::Identifier>(key->AsIdentifier()->Name());
+        }
     } else if (key->IsStringLiteral()) {
         return AllocNode<ir::StringLiteral>(key->AsStringLiteral()->Str());
     } else if (key->IsNumberLiteral()) {
