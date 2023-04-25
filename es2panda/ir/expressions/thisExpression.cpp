@@ -15,11 +15,12 @@
 
 #include "thisExpression.h"
 
-#include <util/helpers.h>
 #include <binder/binder.h>
 #include <compiler/core/pandagen.h>
-#include <typescript/checker.h>
 #include <ir/astDump.h>
+#include <ir/base/classDefinition.h>
+#include <typescript/checker.h>
+#include <util/helpers.h>
 
 namespace panda::es2panda::ir {
 
@@ -42,8 +43,7 @@ void ThisExpression::Compile(compiler::PandaGen *pg) const
     }
 
     const ir::ScriptFunction *func = util::Helpers::GetContainingConstructor(this);
-
-    if (func) {
+    if (func && util::Helpers::GetClassDefiniton(func)->Super()) {
         pg->ThrowIfSuperNotCorrectCall(this, 0);
     }
 }

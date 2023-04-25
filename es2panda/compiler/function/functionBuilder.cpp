@@ -16,11 +16,12 @@
 #include "functionBuilder.h"
 
 #include <binder/binder.h>
-#include <util/helpers.h>
-#include <ir/statement.h>
-#include <ir/base/scriptFunction.h>
 #include <compiler/base/iterators.h>
 #include <compiler/core/pandagen.h>
+#include <ir/base/classDefinition.h>
+#include <ir/base/scriptFunction.h>
+#include <ir/statement.h>
+#include <util/helpers.h>
 
 namespace panda::es2panda::compiler {
 
@@ -57,7 +58,11 @@ void FunctionBuilder::ImplicitReturn(const ir::AstNode *node) const
     }
 
     pg_->GetThis(rootNode);
-    pg_->ThrowIfSuperNotCorrectCall(rootNode, 0);
+    if (rootNode->AsScriptFunction()->IsConstructor() &&
+        util::Helpers::GetClassDefiniton(rootNode->AsScriptFunction())->Super()) {
+            pg_->ThrowIfSuperNotCorrectCall(rootNode, 0);
+    }
+
     pg_->NotifyConcurrentResult(node);
     pg_->EmitReturn(node);
 }
