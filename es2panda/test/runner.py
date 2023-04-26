@@ -159,6 +159,8 @@ def get_args():
         help='run hotreload tests')
     parser.add_argument('--base64', dest='base64', action='store_true', default=False,
         help='run base64 tests')
+    parser.add_argument('--bytecode', dest='bytecode', action='store_true', default=False,
+        help='run bytecode tests')
 
     return parser.parse_args()
 
@@ -182,8 +184,11 @@ class Test:
         return "%s-expected.txt" % (self.path[:self.path.find(".d.ts")])
 
     def run(self, runner):
+        test_abc_name = ("%s.abc" % (path.splitext(self.path)[0])).replace("/", "_")
+        test_abc_path = path.join(runner.build_dir, test_abc_name)
         cmd = runner.cmd_prefix + [runner.es2panda]
         cmd.extend(self.flags)
+        cmd.extend(["--output=" + test_abc_path])
         cmd.append(self.path)
 
         self.log_cmd(cmd)
@@ -203,6 +208,9 @@ class Test:
 
         if not self.passed:
             self.error = err.decode("utf-8", errors="ignore")
+
+        if os.path.exists(test_abc_path):
+            os.remove(test_abc_path)
 
         return self
 
@@ -535,7 +543,7 @@ class Runner:
 
 class RegressionRunner(Runner):
     def __init__(self, args):
-        Runner.__init__(self, args, "Regresssion")
+        Runner.__init__(self, args, "Regression")
 
     def add_directory(self, directory, extension, flags, func=Test):
         glob_expression = path.join(
@@ -1389,6 +1397,19 @@ class TypeExtractorWithAOTTest(Test):
 
         return self
 
+class BytecodeRunner(Runner):
+    def __init__(self, args):
+        Runner.__init__(self, args, "Bytecode")
+
+    def add_directory(self, directory, extension, flags, func=Test):
+        glob_expression = path.join(
+            self.test_root, directory, "**/*.%s" % (extension))
+        files = glob(glob_expression, recursive=True)
+        files = fnmatch.filter(files, self.test_root + '**' + self.args.filter)
+        self.tests += list(map(lambda f: func(f, flags), files))
+
+    def test_path(self, src):
+        return src
 
 def main():
     args = get_args()
@@ -1444,6 +1465,12 @@ def main():
 
     if args.type_extractor:
         runners.append(TypeExtractorRunner(args))
+
+    if args.bytecode:
+        runner = BytecodeRunner(args)
+        runner.add_directory("bytecode/commonjs", "js", ["--commonjs", "--dump-assembly"])
+
+        runners.append(runner)
 
     failed_tests = 0
 

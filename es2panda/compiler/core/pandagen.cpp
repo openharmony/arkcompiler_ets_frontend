@@ -138,8 +138,10 @@ uint32_t PandaGen::FormalParametersCount() const
 
 uint32_t PandaGen::InternalParamCount() const
 {
-    static const uint32_t HIDDEN_PARAMS = 3;
-    return ParamCount() + HIDDEN_PARAMS;
+    if (rootNode_->IsProgram() && context_->Binder()->Program()->IsCommonjs()) {
+        return binder::Binder::CJS_MANDATORY_PARAMS_NUMBER;
+    }
+    return ParamCount() + binder::Binder::MANDATORY_PARAMS_NUMBER;
 }
 
 const util::StringView &PandaGen::InternalName() const
