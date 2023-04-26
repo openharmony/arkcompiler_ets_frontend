@@ -123,21 +123,21 @@ def gen_abc_info(input_arguments):
            '-t', '0']
 
     if input_arguments.debug:
-        cmd.insert(3, '--debug')
+        cmd.append('--debug')
     if input_arguments.module:
-        cmd.insert(4, '-m')
+        cmd.append('-m')
     if input_arguments.commonjs:
-        cmd.insert(5, '-c')
+        cmd.append('-c')
     if input_arguments.q:
-        cmd.insert(6, '-q')
+        cmd.append('-q')
     if input_arguments.b:
-        cmd.insert(7, '-b')
+        cmd.append('-b')
     if input_arguments.functionSourceCode:
-        cmd.insert(8, '--function-sourcecode')
+        cmd.append('--function-sourcecode')
     if input_arguments.merge_abc:
-        cmd.insert(9, '--merge-abc')
+        cmd.append('--merge-abc')
     if input_arguments.output_proto:
-        cmd.insert(10, '--output-proto')
+        cmd.append('--output-proto')
     run_command(cmd, path)
 
     if input_arguments.run_multi_file_tests:
