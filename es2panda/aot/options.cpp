@@ -144,7 +144,8 @@ bool Options::CollectInputFilesFromFileDirectory(const std::string &input, const
     }
 
     for (const auto &f : files) {
-        es2panda::SourceFile src(f, util::Helpers::BaseName(f), scriptKind_, GetScriptExtensionFromStr(extension));
+        es2panda::SourceFile src(f, RemoveExtension(f.substr(input.length() + 1)),
+                                 scriptKind_, GetScriptExtensionFromStr(extension));
         sourceFiles_.push_back(src);
     }
 
