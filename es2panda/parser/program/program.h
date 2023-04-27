@@ -70,6 +70,11 @@ public:
         return kind_;
     }
 
+    bool IsCommonjs() const
+    {
+        return kind_ == ScriptKind::COMMONJS;
+    }
+
     SourceTextModuleRecord *ModuleRecord() const
     {
         return moduleRecord_;
