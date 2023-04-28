@@ -277,10 +277,17 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
         case ir::AstNodeType::EXPORT_DEFAULT_DECLARATION: {
             auto *node = childNode->AsExportDefaultDeclaration();
             auto *decl = node->Decl();
-            if (!decl || !decl->IsClassDeclaration()) {
-                return VisitTSNodes(childNode);
+            ASSERT(decl != nullptr);
+            if (decl->IsClassDeclaration()) {
+                return VisitExportClassDeclaration<ir::ExportDefaultDeclaration>(node);
             }
-            return VisitExportClassDeclaration<ir::ExportDefaultDeclaration>(node);
+            // When we export default an identify 'a', a maybe a interface or type. So we should check here.
+            // if decl is not an identifier, it's won't be a type.
+            if (decl->IsIdentifier() && !IsValueReference(decl->AsIdentifier())) {
+                RemoveDefaultLocalExportEntry();
+                return nullptr;
+            }
+            return VisitTSNodes(childNode);
         }
         case ir::AstNodeType::TS_IMPORT_EQUALS_DECLARATION: {
             auto *node = childNode->AsTSImportEqualsDeclaration();
@@ -1018,10 +1025,10 @@ std::vector<ir::AstNode *> Transformer::CreateClassDecorators(ir::ClassDeclarati
 
 ir::AstNode *Transformer::VisitTsImportEqualsDeclaration(ir::TSImportEqualsDeclaration *node)
 {
-    auto *express = node->ModuleReference();
-    if (!IsInstantiatedTSModule(express, Scope())) {
+    if (!IsInstantiatedImportEquals(node, Scope())) {
         return node;
     }
+    auto *express = node->ModuleReference();
     auto name = node->Id()->Name();
     if (IsTsModule() && node->IsExport()) {
         auto moduleName = GetCurrentTSModuleName();
@@ -1046,37 +1053,39 @@ ir::AstNode *Transformer::VisitTsImportEqualsDeclaration(ir::TSImportEqualsDecla
     return res;
 }
 
-bool Transformer::IsInstantiatedTSModule(const ir::Expression *node, binder::Scope *scope) const
+bool Transformer::IsInstantiatedImportEquals(const ir::TSImportEqualsDeclaration *node, binder::Scope *scope) const
 {
-    auto *var = FindTSModuleVariable(node, scope);
+    if (!node) {
+        return false;
+    }
+    bool isType = true;
+    auto *var = FindTSModuleVariable(node->ModuleReference(), scope, &isType);
     if (var == nullptr) {
-        return true;
+        return !isType;
     }
     auto *decl = var->Declaration();
     ASSERT(decl->IsNamespaceDecl());
-    auto tsModules = decl->AsNamespaceDecl()->Decls();
-    for (auto *it : tsModules) {
-        if (it->IsInstantiated()) {
-            return true;
-        }
-    }
+    return decl->AsNamespaceDecl()->IsInstantiated();
     return false;
 }
 
-binder::Variable *Transformer::FindTSModuleVariable(const ir::Expression *node, binder::Scope *scope) const
+binder::Variable *Transformer::FindTSModuleVariable(const ir::Expression *node,
+                                                    const binder::Scope *scope,
+                                                    bool *isType) const
 {
-    if (node == nullptr) {
+    if (node == nullptr || !(node->IsTSQualifiedName() || node->IsIdentifier())) {
         return nullptr;
     }
     if (node->IsTSQualifiedName()) {
         auto *tsQualifiedName = node->AsTSQualifiedName();
-        auto *var = FindTSModuleVariable(tsQualifiedName->Left(), scope);
+        auto *var = FindTSModuleVariable(tsQualifiedName->Left(), scope, isType);
         if (var == nullptr) {
+            // If it's not a namespace, we would set isType flag before. So we don't set isType here.
             return nullptr;
         }
         auto *exportTSBindings = var->AsNamespaceVariable()->GetExportBindings();
         auto name = tsQualifiedName->Right()->Name();
-        auto *res = exportTSBindings->FindExportTSVariable<binder::TSBindingType::NAMESPACE>(name);
+        binder::Variable *res = exportTSBindings->FindExportTSVariable<binder::TSBindingType::NAMESPACE>(name);
         if (res != nullptr) {
             return res;
         }
@@ -1084,33 +1093,58 @@ binder::Variable *Transformer::FindTSModuleVariable(const ir::Expression *node, 
         if (res != nullptr) {
             auto *node = res->Declaration()->Node();
             return FindTSModuleVariable(node->Parent()->AsTSImportEqualsDeclaration()->ModuleReference(),
-                res->AsImportEqualsVariable()->GetScope());
+                res->AsImportEqualsVariable()->GetScope(), isType);
         }
+
+        // We process namespace and import equals before. So it should be a type, if it's not a js value or enum.
+        // And const enum was processed as enum in es2abc, so we don't thought it as type here.
+        // We should process const enum as type, if we change const enum to literal in es2abc later.
+        *isType = exportTSBindings->FindExportVariable(name) == nullptr &&
+            exportTSBindings->FindExportTSVariable<binder::TSBindingType::ENUMLITERAL>(name) == nullptr;
+
         return nullptr;
     }
-    ASSERT(node->IsIdentifier());
+
     auto name = node->AsIdentifier()->Name();
     auto *currentScope = scope;
     while (currentScope != nullptr) {
-        auto *res = currentScope->FindLocalTSVariable<binder::TSBindingType::NAMESPACE>(name);
-        if (res == nullptr && currentScope->IsTSModuleScope()) {
-            res = currentScope->AsTSModuleScope()->FindExportTSVariable<binder::TSBindingType::NAMESPACE>(name);
-        }
+        auto *res = FindTSVariable<binder::TSBindingType::NAMESPACE>(currentScope, name);
         if (res != nullptr) {
             return res;
         }
-        res = currentScope->FindLocalTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name);
-        if (res == nullptr && currentScope->IsTSModuleScope()) {
-            res = currentScope->AsTSModuleScope()->FindExportTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name);
-        }
+
+        res = FindTSVariable<binder::TSBindingType::IMPORT_EQUALS>(currentScope, name);
         if (res != nullptr) {
             auto *node = res->Declaration()->Node();
             return FindTSModuleVariable(node->Parent()->AsTSImportEqualsDeclaration()->ModuleReference(),
-                res->AsImportEqualsVariable()->GetScope());
+                res->AsImportEqualsVariable()->GetScope(), isType);
         }
+
+        // Enum is not a module, so we return null here.
+        // Const enum was processed as enum in es2abc, so we don't process it as type here.
+        res = FindTSVariable<binder::TSBindingType::ENUMLITERAL>(currentScope, name);
+        if (res != nullptr) {
+            *isType = false;
+            return nullptr;
+        }
+
+        // we don't process js variable here because it can't be used in import equals.
         currentScope = currentScope->Parent();
     }
+
+    // It should be an imported variable, so it won't be a type here.
+    *isType = false;
     return nullptr;
+}
+
+template <binder::TSBindingType type>
+binder::Variable *Transformer::FindTSVariable(const binder::Scope *scope, const util::StringView &name) const
+{
+    binder::Variable *res = scope->FindLocalTSVariable<type>(name);
+    if (res == nullptr && scope->IsTSModuleScope()) {
+        res = scope->AsTSModuleScope()->FindExportTSVariable<type>(name);
+    }
+    return res;
 }
 
 std::vector<ir::AstNode *> Transformer::VisitExportNamedVariable(ir::Statement *decl)
@@ -1753,8 +1787,8 @@ void Transformer::FindLocalTSVariables(binder::Scope *scope, const util::StringV
             case binder::TSBindingType::IMPORT_EQUALS: {
                 v = scope->FindLocalTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name);
                 if (v != nullptr &&
-                    !IsInstantiatedTSModule(v->AsImportEqualsVariable()->Declaration()->Node()->
-                    Parent()->AsTSImportEqualsDeclaration()->ModuleReference(), scope)) {
+                    !IsInstantiatedImportEquals(v->AsImportEqualsVariable()->Declaration()->Node()->
+                    Parent()->AsTSImportEqualsDeclaration(), scope)) {
                     v = nullptr;
                 }
                 break;
@@ -1789,8 +1823,8 @@ void Transformer::FindExportTSVariables(binder::Scope *scope, const util::String
             case binder::TSBindingType::IMPORT_EQUALS: {
                 v = scope->AsTSModuleScope()->FindExportTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name);
                 if (v != nullptr &&
-                    !IsInstantiatedTSModule(v->AsImportEqualsVariable()->Declaration()->Node()->
-                    Parent()->AsTSImportEqualsDeclaration()->ModuleReference(), scope)) {
+                    !IsInstantiatedImportEquals(v->AsImportEqualsVariable()->Declaration()->Node()->
+                    Parent()->AsTSImportEqualsDeclaration(), scope)) {
                     v = nullptr;
                 }
                 break;
@@ -2107,6 +2141,41 @@ void Transformer::ResetParentScopeForAstNode(ir::AstNode *childNode) const
             break;
         }
     }
+}
+
+bool Transformer::IsValueReference(ir::Identifier *node)
+{
+    auto scope = Scope();
+    ASSERT(scope != nullptr);
+    auto name = node->Name();
+    // If it's js value or enum, it won't be a type.
+    // Const enum was processed as enum in es2abc, so we don't process it as type here.
+    if (scope->FindLocal(name, binder::ResolveBindingOptions::BINDINGS) != nullptr ||
+        scope->FindLocalTSVariable<binder::TSBindingType::ENUMLITERAL>(name) != nullptr) {
+        return true;
+    }
+
+    binder::Variable *var = nullptr;
+
+    var = scope->FindLocalTSVariable<binder::TSBindingType::NAMESPACE>(name);
+    if (var != nullptr) {
+        auto *decl = var->Declaration()->AsNamespaceDecl();
+        return decl->IsInstantiated();
+    }
+
+    var = scope->FindLocalTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name);
+    if (var != nullptr) {
+        auto *node = var->Declaration()->Node()->AsTSImportEqualsDeclaration();
+        return IsInstantiatedImportEquals(node, scope);
+    }
+
+    return false;
+}
+
+void Transformer::RemoveDefaultLocalExportEntry()
+{
+    auto *moduleRecord = GetSourceTextModuleRecord();
+    moduleRecord->RemoveDefaultLocalExportEntry();
 }
 
 }  // namespace panda::es2panda::parser

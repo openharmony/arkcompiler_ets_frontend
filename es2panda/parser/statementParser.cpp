@@ -2728,7 +2728,7 @@ ir::Statement *ParserImpl::ParseExportDeclaration(StatementParsingFlags flags,
     }
 }
 
-void ParserImpl::ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers)
+void ParserImpl::ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers, bool isType)
 {
     lexer::SourcePosition namespaceStart = lexer_->GetToken().Start();
     lexer_->NextToken();  // eat `*` character
@@ -2745,11 +2745,23 @@ void ParserImpl::ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers)
     specifier->SetRange({namespaceStart, lexer_->GetToken().End()});
     specifiers->push_back(specifier);
 
-    auto *decl = Binder()->AddDecl<binder::ConstDecl>(namespaceStart, binder::DeclarationFlags::NAMESPACE_IMPORT,
-                                                      false, local->Name());
+    binder::Decl *decl = AddImportDecl(isType, local->Name(), namespaceStart,
+        binder::DeclarationFlags::NAMESPACE_IMPORT);
     decl->BindNode(specifier);
 
     lexer_->NextToken();  // eat local name
+}
+
+binder::Decl *ParserImpl::AddImportDecl(bool isType,
+                                        util::StringView name,
+                                        lexer::SourcePosition startPos,
+                                        binder::DeclarationFlags flag)
+{
+    if (isType) {
+        binder::TSBinding tsBinding(Allocator(), name);
+        return Binder()->AddTsDecl<binder::TypeAliasDecl>(startPos, flag, false, tsBinding.View());
+    }
+    return Binder()->AddDecl<binder::ConstDecl>(startPos, flag, false, name);
 }
 
 ir::Identifier *ParserImpl::ParseNamedImport(const lexer::Token &importedToken)
@@ -2776,7 +2788,7 @@ ir::Identifier *ParserImpl::ParseNamedImport(const lexer::Token &importedToken)
     return local;
 }
 
-void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers)
+void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isType)
 {
     lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);  // eat `{` character
 
@@ -2804,8 +2816,7 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
         specifier->SetRange({imported->Start(), local->End()});
         specifiers->push_back(specifier);
 
-        auto *decl = Binder()->AddDecl<binder::ConstDecl>(local->Start(), binder::DeclarationFlags::IMPORT,
-                                                          false, local->Name());
+        binder::Decl *decl = AddImportDecl(isType, local->Name(), local->Start(), binder::DeclarationFlags::IMPORT);
         decl->BindNode(specifier);
 
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
@@ -2855,7 +2866,7 @@ ir::Expression *ParserImpl::ParseModuleReference()
     return result;
 }
 
-ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers)
+ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isType)
 {
     ir::Identifier *local = ParseNamedImport(lexer_->GetToken());
     lexer_->NextToken();  // eat local name
@@ -2885,8 +2896,7 @@ ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> 
     specifier->SetRange(specifier->Local()->Range());
     specifiers->push_back(specifier);
 
-    auto *decl = Binder()->AddDecl<binder::ConstDecl>(local->Start(), binder::DeclarationFlags::IMPORT,
-                                                      false, local->Name());
+    binder::Decl *decl = AddImportDecl(isType, local->Name(), local->Start(), binder::DeclarationFlags::IMPORT);
     decl->BindNode(specifier);
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
@@ -2920,22 +2930,22 @@ ir::StringLiteral *ParserImpl::ParseFromClause(bool requireFrom)
     return source;
 }
 
-ir::AstNode *ParserImpl::ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers)
+ir::AstNode *ParserImpl::ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isType)
 {
     ASSERT(specifiers->empty());
 
     // import [default] from 'source'
     if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
-        ir::AstNode *astNode = ParseImportDefaultSpecifier(specifiers);
+        ir::AstNode *astNode = ParseImportDefaultSpecifier(specifiers, isType);
         if (astNode != nullptr) {
             return astNode;
         }
     }
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
-        ParseNameSpaceImport(specifiers);
+        ParseNameSpaceImport(specifiers, isType);
     } else if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        ParseNamedImportSpecifiers(specifiers);
+        ParseNamedImportSpecifiers(specifiers, isType);
     }
     return nullptr;
 }
@@ -2981,7 +2991,7 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
     ir::StringLiteral *source = nullptr;
 
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_STRING) {
-        ir::AstNode *astNode = ParseImportSpecifiers(&specifiers);
+        ir::AstNode *astNode = ParseImportSpecifiers(&specifiers, isType);
         if (astNode != nullptr) {
             ASSERT(astNode->IsTSImportEqualsDeclaration());
             astNode->SetRange({startLoc, lexer_->GetToken().End()});
