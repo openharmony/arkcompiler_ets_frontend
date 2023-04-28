@@ -146,7 +146,8 @@ private:
 
     util::StringView GetNameFromModuleDeclaration(ir::TSModuleDeclaration *node) const;
     util::StringView GetParamName(ir::AstNode *node, util::StringView name) const;
-    ir::Expression *GetClassMemberName(ir::Expression *key, bool isComputed, ir::Statement *node);
+    ir::Expression *GetClassMemberName(ir::Expression *key, bool isComputed,
+                                       ir::Statement *node, bool inDecorator = true);
     binder::Scope *FindExportVariableInTsModuleScope(util::StringView name) const;
     binder::Variable *FindTSModuleVariable(const ir::Expression *node, binder::Scope *scope) const;
     util::StringView FindPrivatePropertyBindName(util::StringView name);

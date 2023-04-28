@@ -208,8 +208,8 @@
             }
           },
           "property": {
-            "type": "StringLiteral",
-            "value": "a",
+            "type": "Identifier",
+            "name": "a",
             "loc": {
               "start": {
                 "line": 1,
@@ -221,7 +221,7 @@
               }
             }
           },
-          "computed": true,
+          "computed": false,
           "optional": false,
           "loc": {
             "start": {
