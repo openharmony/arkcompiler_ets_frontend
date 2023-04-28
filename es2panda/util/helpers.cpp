@@ -55,6 +55,7 @@
 #include <unistd.h>
 #endif
 #include <fstream>
+#include <iostream>
 
 namespace panda::es2panda::util {
 
@@ -70,7 +71,7 @@ bool Helpers::ContainSpreadElement(const ArenaVector<ir::Expression *> &args)
     return std::any_of(args.begin(), args.end(), [](const auto *it) { return it->IsSpreadElement(); });
 }
 
-util::StringView Helpers::LiteralToPropName(const ir::Expression *lit)
+util::StringView Helpers::LiteralToPropName(ArenaAllocator *allocator, const ir::Expression *lit)
 {
     switch (lit->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
@@ -80,7 +81,16 @@ util::StringView Helpers::LiteralToPropName(const ir::Expression *lit)
             return lit->AsStringLiteral()->Str();
         }
         case ir::AstNodeType::NUMBER_LITERAL: {
-            return lit->AsNumberLiteral()->Str();
+            auto str = lit->AsNumberLiteral()->Str();
+            auto number = lit->AsNumberLiteral()->Number();
+
+            // "e" and "E" represent scientific notation.
+            if ((str.Find("e") == std::string::npos && str.Find("E") == std::string::npos) &&
+                Helpers::IsInteger<uint32_t>(number) && number != 0) {
+                return str;
+            }
+
+            return Helpers::ToStringView(allocator, number);
         }
         case ir::AstNodeType::NULL_LITERAL: {
             return "null";
@@ -149,14 +159,144 @@ bool Helpers::EndsWith(std::string_view str, std::string_view suffix)
     return str.find(suffix, expectPos) == expectPos;
 }
 
+void Helpers::GetScientificNotationForDouble(double number, uint32_t significandBitCount, int32_t &numberBitCount,
+                                             char *significandArray, char *sciNotationArray, uint32_t size)
+{
+    if (size < MAX_DOUBLE_DIGIT) {
+        std::cerr << "Failed to set the size of buffer in snprintf_s!" << std::endl;
+        return;
+    }
+    if (snprintf_s(sciNotationArray, size, size - 1, "%.*e", significandBitCount - 1, number) == FAIL_SNPRINTF_S) {
+        std::cerr << "Failed to write number to buffer in snprintf_s!" << std::endl;
+        return;
+    }
+
+    // sciNotationArray includes significand, '.' and 'e'
+    // If significandBitCount == 1, sciNotationArray does not contain '.'
+    int32_t exponent = atoi(sciNotationArray + significandBitCount + 1 + (significandBitCount > 1));
+    numberBitCount = exponent + 1;
+
+    // Get the significand of the current sciNotationArray
+    if (significandBitCount > 1) {
+        for (uint32_t i = 0; i < significandBitCount + 1; i++) {
+            significandArray[i] = sciNotationArray[i];
+        }
+    }
+
+    significandArray[significandBitCount + 1] = '\0';
+}
+
+int32_t Helpers::GetIntegerSignificandBitCount(double number, int32_t &numberBitCount, char *significandArray)
+{
+    uint32_t bitPos = 0;
+    uint32_t minBitPos = 1;
+    uint32_t maxBitPos = MAX_DOUBLE_PRECISION_DIGIT;
+    uint32_t integerAndPointBitCount = 2;
+    char sciNotationArray[MAX_DOUBLE_DIGIT] = {0};
+
+    while (minBitPos < maxBitPos) {
+        bitPos = (minBitPos + maxBitPos) / 2; // 2: binary search
+        GetScientificNotationForDouble(number, bitPos, numberBitCount, significandArray,
+                                       sciNotationArray, sizeof(sciNotationArray));
+
+        // Update bitPos
+        if (std::strtod(sciNotationArray, nullptr) == number) {
+            while (bitPos >= integerAndPointBitCount && significandArray[bitPos] == '0') {
+                bitPos--;
+            }
+            maxBitPos = bitPos;
+        } else {
+            minBitPos = bitPos + 1;
+        }
+    }
+
+    // minBitPos == maxBitPos
+    bitPos = maxBitPos;
+    GetScientificNotationForDouble(number, bitPos, numberBitCount, significandArray,
+                                   sciNotationArray, sizeof(sciNotationArray));
+
+    return bitPos;
+}
+
+std::string Helpers::DoubleToString(double number)
+{
+    // In Scientific notation, number is expressed in the form of significand multiplied by exponent-th power of 10.
+    // The range of significand is: 1 <= |significand| < 10
+    // Scientific notation of number: sciNotationArray = significand * (10 ** exponent)
+    // number 1.23e25 => sciNotationArray: 1.23e+25, significand: 1.23, exponent: 25,
+
+    // In the ECMAScript, integerSignificand, integerSignificandBitCount and numberBitCount are defined as an integer:
+    // 1. integerSignificand is an integer in the Decimal representation of Scientific notation.
+    // 2. integerSignificandBitCount is the number of bits in the Decimal representation of significand.
+    // 3. numberBitCount is the number of bits in the Decimal representation of number.
+    // Scientific notation of number in the ECMAScript of Number::toString (number):
+    // integerSciNotationArray = integerSignificand * (10 ** (numberBitCount - integerSignificandBitCount))
+    // number 1.23e25 => integerSciNotationArray: 123e+23, integerSignificand: 123, integerExponent: 23,
+    //                   integerSignificandBitCount: 3, numberBitCount: 26
+    std::string result;
+    int32_t numberBitCount = 0;
+    char significandArray[MAX_DOUBLE_DIGIT] = {0};
+
+    if (number < 0) {
+        result += "-";
+        number = -number;
+    }
+
+    // The number of bits of significand in integer form
+    int32_t integerSignificandBitCount = GetIntegerSignificandBitCount(number, numberBitCount, significandArray);
+
+    std::string significand = significandArray;
+    std::string integerSignificand;
+    if (numberBitCount > 0 && numberBitCount <= MAX_DECIMAL_EXPONENT) {
+        integerSignificand = significand.erase(1, 1);
+        if (numberBitCount >= integerSignificandBitCount) {
+            // If integerSignificandBitCount ≤ numberBitCount ≤ 21, return the string represented by Decimal,
+            // integerSignificand followed by (numberBitCount - integerSignificandBitCount) digit zeros.
+            integerSignificand += std::string(numberBitCount - integerSignificandBitCount, '0');
+        } else {
+            // If 0 < numberBitCount < integerSignificandBitCount, return the string represented by Decimal,
+            // integerSignificand followed by point on the (numberBitCount + 1) digit.
+            integerSignificand.insert(numberBitCount, 1, '.');
+        }
+    } else if (numberBitCount <= 0 && numberBitCount > MIN_DECIMAL_EXPONENT) {
+        // If -6 < numberBitCount ≤ 0, return the string consisting of "0." and digit zeros represented by Decimal,
+        // string followed by integerSignificand.
+        integerSignificand = significand.erase(1, 1);
+        integerSignificand = std::string("0.") + std::string(-numberBitCount, '0') + integerSignificand;
+    } else {
+        // If integerSignificandBitCount == 1, return the string consisting of the single digit of significand.
+        if (integerSignificandBitCount == 1) {
+            significand = significand.erase(1, 1);
+        }
+        // If numberBitCount ≤ -6 or numberBitCount > 21, return the string represented by Scientific notation,
+        // integerSignificand followed by "e", symbol and (numberBitCount - 1) digit zeros.
+        significand += 'e' + (numberBitCount >= 1 ? std::string("+") : "") + std::to_string(numberBitCount - 1);
+
+        result += significand;
+        return result;
+    }
+
+    result += integerSignificand;
+    return result;
+}
+
 std::string Helpers::ToString(double number)
 {
-    std::string str;
+    if (std::isnan(number)) {
+        return "NaN";
+    }
+    if (number == 0.0) {
+        return "0";
+    }
+    if (std::isinf(number)) {
+        return "Infinity";
+    }
 
+    std::string str;
     if (Helpers::IsInteger<int32_t>(number)) {
         str = std::to_string(static_cast<int32_t>(number));
     } else {
-        str = std::to_string(number);
+        str = DoubleToString(number);
     }
 
     return str;
@@ -332,7 +472,7 @@ std::vector<const ir::Identifier *> Helpers::CollectBindingNames(const ir::AstNo
     return bindings;
 }
 
-util::StringView Helpers::FunctionName(const ir::ScriptFunction *func)
+util::StringView Helpers::FunctionName(ArenaAllocator *allocator, const ir::ScriptFunction *func)
 {
     if (func->Id()) {
         return func->Id()->Name();
@@ -395,7 +535,7 @@ util::StringView Helpers::FunctionName(const ir::ScriptFunction *func)
 
             if (prop->Kind() != ir::PropertyKind::PROTO &&
                 Helpers::IsConstantPropertyKey(prop->Key(), prop->IsComputed())) {
-                return Helpers::LiteralToPropName(prop->Key());
+                return Helpers::LiteralToPropName(allocator, prop->Key());
             }
 
             break;

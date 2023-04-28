@@ -1,0 +1,100 @@
+function() {
+        "show source"
+        return "Successfully called key 2e3";
+    }
+function() {
+        "show source"
+        return "Successfully called key 2e3";
+    }
+function() {
+        "show source"
+        return "Successfully called key 1000";
+    }
+function() {
+        "show source"
+        return "Successfully called key NaN";
+    }
+function() {
+        "show source"
+        return "Successfully called key 0.0";
+    }
+function() {
+        "show source"
+        return "Successfully called key Infinity";
+    }
+function() {
+        "show source"
+        return "Successfully called key 1e-6";
+    }
+function() {
+        "show source"
+        return "Successfully called key 1e-6";
+    }
+function() {
+        "show source"
+        return "Successfully called key 0.000002";
+    }
+function() {
+        "show source"
+        return "Successfully called key 1e-7";
+    }
+function() {
+        "show source"
+        return "Successfully called key 1e-7";
+    }
+function() {
+        "show source"
+        return "Successfully called key 0.0000002";
+    }
+function() {
+        "show source"
+        return "Successfully called key 0.1";
+    }
+function() {
+        "show source"
+        return "Successfully called key 1.1";
+    }
+function() {
+        "show source"
+        return "Successfully called key 1e20";
+    }
+function() {
+        "show source"
+        return "Successfully called key 1e20";
+    }
+function() {
+        "show source"
+        return "Successfully called key 200000000000000000000";
+    }
+function() {
+        "show source"
+        return "Successfully called key 1e21";
+    }
+function() {
+        "show source"
+        return "Successfully called key 1e21";
+    }
+function() {
+        "show source"
+        return "Successfully called key 2000000000000000000000";
+    }
+function() {
+        "show source"
+        return "Successfully called key 1234567890123456";
+    }
+function() {
+        "show source"
+        return "Successfully called key 12345678901234567";
+    }
+function() {
+        "show source"
+        return "Successfully called key 12345678901234567";
+    }
+function() {
+        "show source"
+        return "Successfully called key 123456789012345678";
+    }
+function() {
+        "show source"
+        return "Successfully called key 123456789012345678";
+    }

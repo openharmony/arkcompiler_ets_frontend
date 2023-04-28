@@ -395,7 +395,7 @@ void Binder::BuildScriptFunction(Scope *outerScope, const ir::ScriptFunction *sc
     }
 
     ASSERT(scope_->IsFunctionScope() || scope_->IsTSModuleScope() || scope_->IsTSEnumScope());
-    BuildFunction(scope_->AsFunctionVariableScope(), util::Helpers::FunctionName(scriptFunc), scriptFunc);
+    BuildFunction(scope_->AsFunctionVariableScope(), util::Helpers::FunctionName(Allocator(), scriptFunc), scriptFunc);
 }
 
 void Binder::BuildVarDeclaratorId(const ir::AstNode *parent, ir::AstNode *childNode)

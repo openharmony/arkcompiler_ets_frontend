@@ -468,7 +468,7 @@ public:
     void StOwnByValue(const ir::AstNode *node, VReg obj, VReg prop, bool nameSetting = false);
     void StOwnByIndex(const ir::AstNode *node, VReg obj, int64_t index);
 
-    static Operand ToNamedPropertyKey(const ir::Expression *prop, bool isComputed);
+    Operand ToNamedPropertyKey(const ir::Expression *prop, bool isComputed);
     Operand ToPropertyKey(const ir::Expression *prop, bool isComputed);
     VReg LoadPropertyKey(const ir::Expression *prop, bool isComputed);
 

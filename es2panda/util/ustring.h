@@ -109,7 +109,7 @@ public:
         return StringView(std::string_view(sv_.data() + begin, end - begin));
     }
 
-    constexpr size_t Find(const char *str)
+    constexpr size_t Find(const char *str) const
     {
         return sv_.find(str);
     }

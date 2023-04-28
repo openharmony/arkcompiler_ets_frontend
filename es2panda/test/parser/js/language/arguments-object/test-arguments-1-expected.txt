@@ -1,1 +1,1 @@
-SyntaxError: Assigning to 'arguments' in strict mode is invalid [test.js:1:11]
+SyntaxError: Assigning to 'arguments' in strict mode is invalid [test-arguments-1.js:18:11]

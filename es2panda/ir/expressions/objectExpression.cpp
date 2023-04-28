@@ -295,7 +295,7 @@ void ObjectExpression::CompileStaticProperties(compiler::PandaGen *pg, util::Bit
         }
 
         std::vector<const Literal *> propBuf;
-        util::StringView name = util::Helpers::LiteralToPropName(prop->Key());
+        util::StringView name = util::Helpers::LiteralToPropName(pg->Allocator(), prop->Key());
         size_t propIndex = i;
         auto res = propNameMap.insert({name, propIndex});
         if (res.second) {    // name not found in map
