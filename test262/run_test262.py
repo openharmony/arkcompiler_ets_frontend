@@ -103,6 +103,9 @@ def parse_args():
                         help="frontend merge abc binary tool")
     parser.add_argument('--merge-abc-mode',
                         help="run test for merge abc mode")
+    parser.add_argument('--product-name',
+                        default=DEFAULT_PRODUCT_NAME,
+                        help="ark's product name")
     return parser.parse_args()
 
 
@@ -493,6 +496,19 @@ def get_host_args(args, host_type):
     es2abc_thread_count = DEFAULT_ES2ABC_THREAD_COUNT
     merge_abc_binary = DEFAULT_MERGE_ABC_BINARY
     merge_abc_mode = DEFAULT_MERGE_ABC_MODE
+    product_name = DEFAULT_PRODUCT_NAME
+
+    if args.product_name:
+        product_name = args.product_name
+        ark_dir = f"{ARGS_PREFIX}{product_name}{ARK_DIR_SUFFIX}"
+        icui_dir = f"{ARGS_PREFIX}{product_name}{ICUI_DIR_SUFFIX}"
+        ark_js_runtime_dir = f"{ARGS_PREFIX}{product_name}{ARK_JS_RUNTIME_DIR_SUFFIX}"
+        zlib_dir = f"{ARGS_PREFIX}{product_name}{ZLIB_DIR_SUFFIX}"
+
+        ark_tool = os.path.join(ark_js_runtime_dir, "ark_js_vm")
+        libs_dir = f"{icui_dir}:{LLVM_DIR}:{ark_js_runtime_dir}:{zlib_dir}"
+        ark_aot_tool = os.path.join(ark_js_runtime_dir, "ark_aot_compiler")
+        merge_abc_binary = os.path.join(ark_dir, "merge_abc")
 
     if args.hostArgs:
         host_args = args.hostArgs
@@ -537,6 +553,7 @@ def get_host_args(args, host_type):
         host_args += f"--es2abc-thread-count={es2abc_thread_count} "
         host_args += f"--merge-abc-binary={merge_abc_binary} "
         host_args += f"--merge-abc-mode={merge_abc_mode} "
+        host_args += f"--product-name={product_name} "
 
     if args.ark_arch != ark_arch:
         host_args += f"--ark-arch={args.ark_arch} "

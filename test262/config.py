@@ -30,10 +30,7 @@ BASE_OUT_DIR = os.path.join("out", "test262")
 
 CUR_FILE_DIR = os.path.dirname(__file__)
 CODE_ROOT = os.path.abspath(os.path.join(CUR_FILE_DIR, "../../.."))
-ARK_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/arkcompiler/ets_frontend"
-ICUI_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/thirdparty/icu"
 LLVM_DIR = f"{CODE_ROOT}/prebuilts/clang/ohos/linux-x86_64/llvm/lib/"
-ARK_JS_RUNTIME_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/arkcompiler/ets_runtime"
 
 DEFAULT_MODE = 2
 
@@ -44,9 +41,24 @@ TEST_ES2021_DIR = os.path.join(DATA_DIR, "test_es2021")
 TEST_INTL_DIR = os.path.join(DATA_DIR, "test_intl")
 TEST_CI_DIR = os.path.join(DATA_DIR, "test_CI")
 
-DEFAULT_ARK_TOOL = os.path.join(ARK_JS_RUNTIME_DIR, "ark_js_vm")
-DEFAULT_ARK_AOT_TOOL = os.path.join(ARK_JS_RUNTIME_DIR, "ark_aot_compiler")
-DEFAULT_LIBS_DIR = f"{ICUI_DIR}:{LLVM_DIR}:{ARK_JS_RUNTIME_DIR}"
+HISPARK_TAURUS_PRODUCT_NAME = "hispark_taurus"
+RK3568_PRODUCT_NAME = "rk3568"
+DEFAULT_PRODUCT_NAME = HISPARK_TAURUS_PRODUCT_NAME
+
+ARGS_PREFIX = f"{CODE_ROOT}/out/"
+ARK_DIR_SUFFIX = "/clang_x64/arkcompiler/ets_frontend"
+ICUI_DIR_SUFFIX = "/clang_x64/thirdparty/icu"
+ARK_JS_RUNTIME_DIR_SUFFIX = "/clang_x64/arkcompiler/ets_runtime"
+ZLIB_DIR_SUFFIX = "/clang_x64/thirdparty/zlib"
+
+DEFAULT_ARK_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/arkcompiler/ets_frontend"
+DEFAULT_ICUI_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/thirdparty/icu"
+DEFAULT_ARK_JS_RUNTIME_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/arkcompiler/ets_runtime"
+DEFAULT_ZLIB_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/thirdparty/zlib"
+
+DEFAULT_ARK_TOOL = os.path.join(DEFAULT_ARK_JS_RUNTIME_DIR, "ark_js_vm")
+DEFAULT_LIBS_DIR = f"{DEFAULT_ICUI_DIR}:{LLVM_DIR}:{DEFAULT_ARK_JS_RUNTIME_DIR}:{DEFAULT_ZLIB_DIR}"
+DEFAULT_ARK_AOT_TOOL = os.path.join(DEFAULT_ARK_JS_RUNTIME_DIR, "ark_aot_compiler")
 
 DEFAULT_HOST_TYPE = "panda"
 DEFAULT_HOST_PATH = "python3"
@@ -93,13 +105,13 @@ ARK_FRONTEND_LIST = [
 ]
 
 ARK_FRONTEND_BINARY_LIST = [
-    os.path.join(ARK_DIR, "build", "src", "index.js"),
-    os.path.join(ARK_DIR, "es2abc")
+    os.path.join(DEFAULT_ARK_DIR, "build", "src", "index.js"),
+    os.path.join(DEFAULT_ARK_DIR, "es2abc")
 ]
 
 DEFAULT_ARK_FRONTEND = ARK_FRONTEND_LIST[0]
 DEFAULT_ARK_FRONTEND_BINARY = ARK_FRONTEND_BINARY_LIST[0]
-DEFAULT_MERGE_ABC_BINARY = os.path.join(ARK_DIR, "merge_abc")
+DEFAULT_MERGE_ABC_BINARY = os.path.join(DEFAULT_ARK_DIR, "merge_abc")
 
 ARK_ARCH_LIST = [
     "x64",
