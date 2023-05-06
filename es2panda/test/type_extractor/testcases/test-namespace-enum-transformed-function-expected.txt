@@ -1,0 +1,209 @@
+======> literal array buffer <======
+------------------------------------
+slot _-1
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: -1
+},
+{
+  index: 2
+    tag: 0
+    val: 25
+},
+{
+  index: 3
+    tag: 25
+    val: 254
+},
+------------------------------------
+slot _-2
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: -1
+},
+{
+  index: 2
+    tag: 0
+    val: 25
+},
+{
+  index: 3
+    tag: 25
+    val: 255
+},
+------------------------------------
+slot _-3
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: -1
+},
+{
+  index: 2
+    tag: 0
+    val: 25
+},
+{
+  index: 3
+    tag: 25
+    val: 254
+},
+------------------------------------
+slot _-4
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: -1
+},
+{
+  index: 2
+    tag: 0
+    val: 25
+},
+{
+  index: 3
+    tag: 25
+    val: 255
+},
+------------------------------------
+slot _-5
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: -1
+},
+{
+  index: 2
+    tag: 0
+    val: 25
+},
+{
+  index: 3
+    tag: 25
+    val: 254
+},
+------------------------------------
+slot _-6
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: -1
+},
+{
+  index: 2
+    tag: 0
+    val: 25
+},
+{
+  index: 3
+    tag: 25
+    val: 255
+},
+------------------------------------
+slot _-7
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: -1
+},
+{
+  index: 2
+    tag: 0
+    val: 25
+},
+{
+  index: 3
+    tag: 25
+    val: 255
+},
+------------------------------------
+slot _0
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 0
+    val: 2
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+------------------------------------
+slot _1
+{
+  index: 0
+    tag: 2
+    val: 0
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 2
+    val: 0
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 0
+},
+{
+  index: 5
+    tag: 2
+    val: 0
+},

@@ -117,7 +117,7 @@ void TypeExtractorEmitter::GenFunctionTypeInfo(panda::pandasm::Program *prog) co
         index++;
     }
 
-    if (pg_->TypedFunc().first > extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
+    if (pg_->TypedFunc().first != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
         // -1 for function type
         GenInsnTypeInfo(recorder, static_cast<uint32_t>(-1), pg_->TypedFunc().first, typedInsns);
         DCOUT << "[LOG]" << func_->name << ": -1 | " << pg_->TypedFunc().first << std::endl;
