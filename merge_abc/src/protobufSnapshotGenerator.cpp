@@ -56,7 +56,6 @@ panda::es2panda::util::ProgramCache *ProtobufSnapshotGenerator::GetCacheContext(
     std::fstream input(panda::os::file::File::GetExtendedFilePath(cacheFilePath),
         std::ios::in | std::ios::binary);
     if (!input) {
-        std::cout << "Cache file: " << cacheFilePath << " doesn't exist" << std::endl;
         return nullptr;
     }
 
