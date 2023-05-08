@@ -149,6 +149,16 @@ void TypeRecorder::SetNodeTypeIndex(const ir::AstNode *node, int64_t index)
     ASSERT(GetNodeTypeIndex(node) == index);
 }
 
+void TypeRecorder::UpdateNodeTypeIndex(const ir::AstNode *node, int64_t index)
+{
+    if (node == nullptr) {
+        return;
+    }
+
+    nodeTypeIndex_[node] = index;
+    ASSERT(GetNodeTypeIndex(node) == index);
+}
+
 int64_t TypeRecorder::GetVariableTypeIndex(const binder::Variable *variable) const
 {
     return FindValue(variableTypeIndex_, variable, PRIMITIVETYPE_ANY);

@@ -65,6 +65,7 @@ public:
 
     int64_t GetNodeTypeIndex(const ir::AstNode *node) const;
     void SetNodeTypeIndex(const ir::AstNode *node, int64_t index);
+    void UpdateNodeTypeIndex(const ir::AstNode *node, int64_t index);
 
     int64_t GetVariableTypeIndex(const binder::Variable *variable) const;
     void SetVariableTypeIndex(const binder::Variable *variable, int64_t index);
