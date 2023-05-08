@@ -805,7 +805,7 @@ private:
             // Update current type to IndexSignture Type
             IndexSigType indexSigType(extractor_, typeIndexShift_, &indexSignatures_);
             typeIndexShift_ = indexSigType.GetTypeIndexShift();
-            recorder_->SetNodeTypeIndex(classDef, typeIndexShift_);
+            recorder_->UpdateNodeTypeIndex(classDef, typeIndexShift_);
         }
     }
 
@@ -1024,7 +1024,7 @@ private:
             // Update current type to IndexSignture Type
             IndexSigType indexSigType(extractor_, typeIndexShift_, &indexSignatures_);
             typeIndexShift_ = indexSigType.GetTypeIndexShift();
-            recorder_->SetNodeTypeIndex(interfaceDef, typeIndexShift_);
+            recorder_->UpdateNodeTypeIndex(interfaceDef, typeIndexShift_);
         }
     }
 
