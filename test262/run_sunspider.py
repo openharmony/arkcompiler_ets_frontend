@@ -460,12 +460,12 @@ class ArkProgram():
         cmd_args = []
         if self.arch == ARK_ARCH_LIST[1]:
             cmd_args = [self.ark_aot_tool, ICU_PATH,
-                        f'--target-triple=aarch64-unknown-linux-gnu',
+                        f'--compiler-target-triple=aarch64-unknown-linux-gnu',
                         f'--aot-file={file_name_pre}',
                         self.abc_file]
         elif self.arch == ARK_ARCH_LIST[2]:
             cmd_args = [self.ark_aot_tool, ICU_PATH,
-                        f'--target-triple=arm-unknown-linux-gnu',
+                        f'--compiler-target-triple=arm-unknown-linux-gnu',
                         f'--aot-file={file_name_pre}',
                         self.abc_file]
         elif self.arch == ARK_ARCH_LIST[0]:

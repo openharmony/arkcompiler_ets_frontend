@@ -1372,8 +1372,8 @@ class TypeExtractorWithAOTTest(Test):
         if self.with_running:
             aot_abc_cmd.extend(["--aot-file=%s" % file_name])
         else:
-            aot_abc_cmd.extend(["--assert-types=true"])
-            aot_abc_cmd.extend(["--enable-type-lowering=false"])
+            aot_abc_cmd.extend(["--compiler-assert-types=true"])
+            aot_abc_cmd.extend(["--compiler-opt-type-lowering=false"])
         aot_abc_cmd.extend([test_abc_name])
         self.log_cmd(aot_abc_cmd)
 
