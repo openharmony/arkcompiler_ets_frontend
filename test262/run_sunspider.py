@@ -85,6 +85,10 @@ def parse_args():
                         default=DEFAULT_MERGE_ABC_MODE,
                         required=False,
                         help="run test for merge abc mode")
+    parser.add_argument('--product-name',
+                        default=DEFAULT_PRODUCT_NAME,
+                        required=False,
+                        help="ark's product name")
     arguments = parser.parse_args()
     return arguments
 
