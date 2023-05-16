@@ -790,7 +790,7 @@ private:
 
         // Create class instance type stands for 'this'
         if (!classDef->Abstract() && (fieldsWithInitNum_ > 0U || methodsWithBodyNum_ > 0U)) {
-            (void)extractor_->GetTypeIndexFromClassInst(typeIndexShift_);
+            (void)extractor_->GetTypeIndexFromClassInst(typeIndexShift_, classDef);
         }
     }
 

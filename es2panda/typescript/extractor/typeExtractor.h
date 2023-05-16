@@ -44,7 +44,8 @@ public:
     int64_t GetTypeIndexFromAnnotation(const ir::Expression *typeAnnotation, bool isNewInstance = true);
     int64_t GetTypeIndexFromIdentifier(const ir::Identifier *identifier);
     int64_t GetTypeIndexFromInitializer(const ir::Expression *initializer);
-    int64_t GetTypeIndexFromClassInst(int64_t typeIndex);
+    int64_t GetTypeIndexFromClassInst(int64_t typeIndex, const ir::AstNode *node,
+        int64_t builtinTypeIndex = TypeRecorder::PRIMITIVETYPE_ANY);
 
     void SetGenericParamTypeMap(const ArenaMap<util::StringView, int64_t> *genericParamTypeMap)
     {
@@ -102,7 +103,7 @@ private:
     // Builtin and Generic Helpers
     int64_t GetTypeIndexFromBuiltin(const util::StringView &name, const ir::TSTypeParameterInstantiation *node);
     int64_t GetTypeIndexFromBuiltinInst(int64_t typeIndexBuiltin, const ir::TSTypeParameterInstantiation *node);
-    int64_t GetTypeIndexFromGenericInst(int64_t typeIndexGeneric, const ir::TSTypeParameterInstantiation *node);
+    int64_t GetTypeIndexFromGenericInst(const ir::AstNode *declNode, const ir::TSTypeParameterInstantiation *node);
 
     // Other Helpers
     bool IsExportNode(const ir::AstNode *node) const;
