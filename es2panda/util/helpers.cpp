@@ -30,10 +30,14 @@
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/objectExpression.h>
 #include <ir/expressions/unaryExpression.h>
+#include <ir/statements/blockStatement.h>
+#include <ir/statements/expressionStatement.h>
 #include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
 #include <ir/ts/tsParameterProperty.h>
+#include <lexer/token/sourceLocation.h>
 #include <parser/module/sourceTextModuleRecord.h>
+#include <util/concurrent.h>
 
 #ifdef ENABLE_BYTECODE_OPT
 #include <bytecode_optimizer/bytecodeopt_options.h>
@@ -524,6 +528,55 @@ bool Helpers::ReadFileToBuffer(const std::string &file, std::stringstream &ss)
     }
     ss << inputStream.rdbuf();
     return true;
+}
+
+void Helpers::SetFuncFlagsForDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex)
+{
+    auto *body = func->Body();
+    if (!body || body->IsExpression()) {
+        return;
+    }
+
+    auto &statements = body->AsBlockStatement()->Statements();
+    if (statements.empty()) {
+        return;
+    }
+
+    const auto *stmt = statements.front();
+    if (!stmt->IsExpressionStatement()) {
+        return;
+    }
+
+    auto *expr = stmt->AsExpressionStatement()->GetExpression();
+    if (!expr->IsStringLiteral()) {
+        return;
+    }
+
+    if (expr->AsStringLiteral()->Str().Is(SHOW_SOURCE)) {
+        func->AddFlag(ir::ScriptFunctionFlags::SHOW_SOURCE);
+        return;
+    }
+
+    if (expr->AsStringLiteral()->Str().Is(USE_CONCURRENT)) {
+        util::Concurrent::SetConcurrent(func, stmt, lineIndex);
+    }
+
+    // "show source" may be the second stringliteral since if "use concurrent" exist it must be the fisrt node.
+    const auto *secondStmt = statements[1];
+    if (!secondStmt->IsExpressionStatement()) {
+        return;
+    }
+
+    auto *secondExpr = secondStmt->AsExpressionStatement()->GetExpression();
+    if (!secondExpr->IsStringLiteral()) {
+        return;
+    }
+
+    if (secondExpr->AsStringLiteral()->Str().Is(SHOW_SOURCE)) {
+        func->AddFlag(ir::ScriptFunctionFlags::SHOW_SOURCE);
+    }
+
+    return;
 }
 
 }  // namespace panda::es2panda::util

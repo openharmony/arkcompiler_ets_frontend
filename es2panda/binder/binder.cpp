@@ -609,7 +609,8 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
         }
         case ir::AstNodeType::SCRIPT_FUNCTION: {
             auto *scriptFunc = childNode->AsScriptFunction();
-            util::Concurrent::SetConcurrent(const_cast<ir::ScriptFunction *>(scriptFunc), Program()->GetLineIndex());
+            util::Helpers::SetFuncFlagsForDirectives(const_cast<ir::ScriptFunction *>(scriptFunc),
+                                                     Program()->GetLineIndex());
             auto *funcScope = scriptFunc->Scope();
 
             auto *outerScope = scope_;

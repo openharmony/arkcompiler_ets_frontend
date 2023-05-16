@@ -1,0 +1,4 @@
+() => {
+    "show source";
+    print(111);
+}

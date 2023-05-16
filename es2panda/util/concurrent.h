@@ -47,13 +47,11 @@ class Concurrent {
 public:
     Concurrent() = delete;
 
-    static void SetConcurrent(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex);
+    static void SetConcurrent(ir::ScriptFunction *func, const ir::AstNode *node, const lexer::LineIndex &lineIndex);
     static void ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *expr,
                                     ConcurrentInvalidFlag errFlag);
     static void VerifyImportVarForConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *node,
                                             const binder::ScopeFindResult &result);
-
-    static constexpr std::string_view USE_CONCURRENT = "use concurrent";
 };
 
 } // namespace panda::es2panda::util

@@ -26,6 +26,9 @@
 #include <compiler/base/catchTable.h>
 #include <es2panda.h>
 #include <gen/isa.h>
+#include <ir/base/methodDefinition.h>
+#include <ir/base/scriptFunction.h>
+#include <ir/expressions/functionExpression.h>
 #include <ir/expressions/literal.h>
 #include <ir/statements/blockStatement.h>
 #include <macros.h>
@@ -65,6 +68,7 @@ void FunctionEmitter::Generate(util::Hotfix *hotfixHelper)
     GenSourceFileDebugInfo();
     GenFunctionCatchTables();
     GenLiteralBuffers();
+    GenFunctionSource();
     if (hotfixHelper != nullptr) {
         hotfixHelper->ProcessFunction(pg_, func_, literalBuffers_);
     }
@@ -92,7 +96,21 @@ void FunctionEmitter::GenBufferLiterals(const LiteralBuffer *buff)
 
 util::StringView FunctionEmitter::SourceCode() const
 {
-    return pg_->Binder()->Program()->SourceCode();
+    auto wholeSource = pg_->Binder()->Program()->SourceCode();
+    if (pg_->RootNode()->IsProgram()) {
+        return wholeSource;
+    }
+
+    auto *funcNode = pg_->RootNode()->Parent();
+    if (funcNode->IsFunctionExpression() &&
+        funcNode->Parent()->IsMethodDefinition() &&
+        funcNode->Parent()->AsMethodDefinition()->Value() == funcNode->AsFunctionExpression()) {
+        funcNode = funcNode->Parent();
+    }
+
+    auto startIndex = funcNode->Start().index;
+    auto endIndex = funcNode->End().index;
+    return wholeSource.Substr(startIndex, endIndex);
 }
 
 lexer::LineIndex &FunctionEmitter::GetLineIndex() const
@@ -232,6 +250,19 @@ void FunctionEmitter::GenSourceFileDebugInfo()
     if (pg_->RootNode()->IsProgram()) {
         func_->source_code = SourceCode().Mutf8();
     }
+}
+
+void FunctionEmitter::GenFunctionSource()
+{
+    if (pg_->RootNode()->IsProgram()) {
+        return;
+    }
+
+    if (!(static_cast<const ir::ScriptFunction *>(pg_->RootNode()))->ShowSource()) {
+        return;
+    }
+
+    func_->source_code = SourceCode().Mutf8();
 }
 
 void FunctionEmitter::GenScopeVariableInfo(const binder::Scope *scope)

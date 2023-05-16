@@ -91,6 +91,7 @@ private:
 
     void GenLiteralBuffers();
     void GenBufferLiterals(const LiteralBuffer *buff);
+    void GenFunctionSource();
 
     const PandaGen *pg_;
     panda::pandasm::Function *func_ {};
