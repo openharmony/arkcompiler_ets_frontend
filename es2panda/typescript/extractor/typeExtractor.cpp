@@ -16,6 +16,7 @@
 #include "typeExtractor.h"
 
 #include <binder/binder.h>
+#include <binder/tsBinding.h>
 #include <ir/base/spreadElement.h>
 #include <ir/expressions/callExpression.h>
 #include <ir/expressions/classExpression.h>
@@ -946,28 +947,11 @@ void TypeExtractor::GetVariablesFromTSQualifiedNodes(const binder::Variable *var
             break;
         }
         case binder::VariableType::NAMESPACE: {
-            auto exportBindings = variable->AsNamespaceVariable()->GetExportBindings();
-            if (exportBindings != nullptr) {
-                ArenaVector<binder::Variable *> findRes(recorder_->Allocator()->Adapter());
-                auto fn = [&findRes](binder::Variable *variable) {
-                    if (variable != nullptr) {
-                        findRes.emplace_back(variable);
-                    }
-                };
-
-                auto name = identifiers.front()->Name();
-                if (identifiers.size() == 1U) {
-                    fn(exportBindings->FindExportVariable(name));
-                } else {
-                    fn(exportBindings->FindExportTSVariable<binder::TSBindingType::NAMESPACE>(name));
-                }
-                fn(exportBindings->FindExportTSVariable<binder::TSBindingType::ENUMLITERAL>(name));
-                fn(exportBindings->FindExportTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name));
-
-                identifiers.pop_front();
-                for (const auto &v : findRes) {
-                    GetVariablesFromTSQualifiedNodes(v, identifiers, variables);
-                }
+            ArenaVector<binder::Variable *> findRes(recorder_->Allocator()->Adapter());
+            GetVariablesFromNamespace(variable->AsNamespaceVariable(), findRes, identifiers, variables);
+            identifiers.pop_front();
+            for (const auto &v : findRes) {
+                GetVariablesFromTSQualifiedNodes(v, identifiers, variables);
             }
             break;
         }
@@ -989,6 +973,33 @@ void TypeExtractor::GetVariablesFromTSQualifiedNodes(const binder::Variable *var
         default:
             break;
     }
+}
+
+void TypeExtractor::GetVariablesFromNamespace(const binder::NamespaceVariable *variable,
+    ArenaVector<binder::Variable *> &findRes, ArenaDeque<const ir::Identifier *> &identifiers,
+    ArenaVector<const binder::Variable *> &variables) const
+{
+    ASSERT(variable->IsNamespaceVariable());
+    auto exportBindings = variable->GetExportBindings();
+    if (!exportBindings) {
+        return;
+    }
+    auto fn = [&findRes](binder::Variable *variable) {
+        if (variable != nullptr) {
+            findRes.emplace_back(variable);
+        }
+    };
+    auto name = identifiers.front()->Name();
+    if (identifiers.size() == 1U) {
+        fn(exportBindings->FindExportVariable(name));
+        if (findRes.empty()) {
+            fn(exportBindings->FindExportVariable(util::StringView(binder::TSBinding::ToTSBinding(name))));
+        }
+    } else {
+        fn(exportBindings->FindExportTSVariable<binder::TSBindingType::NAMESPACE>(name));
+    }
+    fn(exportBindings->FindExportTSVariable<binder::TSBindingType::ENUMLITERAL>(name));
+    fn(exportBindings->FindExportTSVariable<binder::TSBindingType::IMPORT_EQUALS>(name));
 }
 
 // static
