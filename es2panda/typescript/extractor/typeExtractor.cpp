@@ -345,9 +345,6 @@ int64_t TypeExtractor::GetTypeIndexFromDeclNode(const ir::AstNode *node, bool is
 int64_t TypeExtractor::GetTypeIndexFromIdentifierNode(const ir::AstNode *node, bool isNewInstance)
 {
     auto typeIndex = recorder_->GetNodeTypeIndex(node);
-    if (isNewInstance && typeIndex != PrimitiveType::ANY) {
-        typeIndex = GetTypeIndexFromClassInst(typeIndex);
-    }
     TLOG(node->Type(), typeIndex);
     return typeIndex;
 }
@@ -377,7 +374,7 @@ int64_t TypeExtractor::GetTypeIndexFromClassDefinition(const ir::AstNode *node, 
     }
 
     if (isNewInstance) {
-        typeIndex = GetTypeIndexFromClassInst(typeIndex);
+        typeIndex = GetTypeIndexFromClassInst(typeIndex, node);
     }
 
     TLOG(node->Type(), typeIndex);
@@ -624,8 +621,7 @@ int64_t TypeExtractor::GetTypeIndexFromInitializer(const ir::Expression *initial
     auto declNode = GetDeclNodeFromInitializer(initializer, &identifier);
     if (declNode != nullptr) {
         if (initializer->IsNewExpression() && initializer->AsNewExpression()->TypeParams() != nullptr) {
-            typeIndex = GetTypeIndexFromGenericInst(GetTypeIndexFromDeclNode(declNode, false),
-                initializer->AsNewExpression()->TypeParams());
+            typeIndex = GetTypeIndexFromGenericInst(declNode, initializer->AsNewExpression()->TypeParams());
         } else {
             typeIndex = GetTypeIndexFromDeclNode(declNode, initializer->IsNewExpression());
         }
@@ -782,8 +778,18 @@ void TypeExtractor::HandleNewlyGenFuncExpression(const ir::AstNode *node)
     }
 }
 
-int64_t TypeExtractor::GetTypeIndexFromClassInst(int64_t typeIndex)
+int64_t TypeExtractor::GetTypeIndexFromClassInst(int64_t typeIndex, const ir::AstNode *node, int64_t builtinTypeIndex)
 {
+    // A class instance type should point to a class type or a builtin type
+    ASSERT((node == nullptr) ^ (builtinTypeIndex == PrimitiveType::ANY));
+    if (node && !node->IsClassDefinition()) {
+        return PrimitiveType::ANY;
+    }
+
+    if (builtinTypeIndex != PrimitiveType::ANY && !recorder_->isBuiltinType(builtinTypeIndex)) {
+        return PrimitiveType::ANY;
+    }
+
     auto typeIndexTmp = recorder_->GetClassInst(typeIndex);
     if (typeIndexTmp == PrimitiveType::ANY) {
         ClassInstType classInstType(this, typeIndex);
@@ -820,8 +826,7 @@ int64_t TypeExtractor::GetTypeIndexFromTypeReference(const ir::TSTypeReference *
     if (declNode != nullptr) {
         int64_t typeIndex = PrimitiveType::ANY;
         if (typeReference->TypeParams() != nullptr) {
-            typeIndex = GetTypeIndexFromGenericInst(GetTypeIndexFromDeclNode(declNode, false),
-                typeReference->TypeParams());
+            typeIndex = GetTypeIndexFromGenericInst(declNode, typeReference->TypeParams());
         } else {
             typeIndex = GetTypeIndexFromDeclNode(declNode, isNewInstance);
         }
@@ -853,7 +858,7 @@ int64_t TypeExtractor::GetTypeIndexFromBuiltin(const util::StringView &name,
     auto typeIndexBuiltin = GetBuiltinTypeIndex(name);
     if (typeIndexBuiltin != PrimitiveType::ANY) {
         if (node == nullptr) {
-            return GetTypeIndexFromClassInst(typeIndexBuiltin);
+            return GetTypeIndexFromClassInst(typeIndexBuiltin, nullptr, typeIndexBuiltin);
         }
         return GetTypeIndexFromBuiltinInst(typeIndexBuiltin, node);
     }
@@ -874,12 +879,16 @@ int64_t TypeExtractor::GetTypeIndexFromBuiltinInst(int64_t typeIndexBuiltin,
 
     // New instance for builtin generic type
     BuiltinInstType builtinInstType(this, allTypes);
-    return GetTypeIndexFromClassInst(builtinInstType.GetTypeIndexShift());
+    return GetTypeIndexFromClassInst(builtinInstType.GetTypeIndexShift(), nullptr, typeIndexBuiltin);
 }
 
-int64_t TypeExtractor::GetTypeIndexFromGenericInst(int64_t typeIndexGeneric,
+int64_t TypeExtractor::GetTypeIndexFromGenericInst(const ir::AstNode *declNode,
                                                    const ir::TSTypeParameterInstantiation *node)
 {
+    if (!declNode->IsClassDefinition()) {
+        return PrimitiveType::ANY;
+    }
+    int64_t typeIndexGeneric = GetTypeIndexFromDeclNode(declNode, false);
     std::vector<int64_t> allTypes = {typeIndexGeneric};
     for (const auto &t : node->Params()) {
         allTypes.emplace_back(GetTypeIndexFromAnnotation(t));
@@ -891,7 +900,7 @@ int64_t TypeExtractor::GetTypeIndexFromGenericInst(int64_t typeIndexGeneric,
 
     // New instance for generic type
     GenericInstType genericInstType(this, allTypes);
-    return GetTypeIndexFromClassInst(genericInstType.GetTypeIndexShift());
+    return GetTypeIndexFromClassInst(genericInstType.GetTypeIndexShift(), declNode);
 }
 
 bool TypeExtractor::IsExportNode(const ir::AstNode *node) const
