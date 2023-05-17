@@ -2333,11 +2333,10 @@ void ParserImpl::AddExportLocalEntryItem(const ir::Statement *declNode, bool isT
                     declNode->AsFunctionDeclaration()->Function()->Id() :
                     declNode->AsClassDeclaration()->Definition()->Ident();
         if (name == nullptr) {
-            ThrowSyntaxError("A class or function declaration without the default modifier mush have a name.",
+            ThrowSyntaxError("A class or function declaration without the default modifier must have a name.",
                              declNode->Start());
         }
-        if (declNode->IsFunctionDeclaration() &&
-            declNode->AsFunctionDeclaration()->Function()->IsOverload()) {
+        if (declNode->IsFunctionDeclaration() && declNode->AsFunctionDeclaration()->Function()->IsOverload()) {
             return;
         }
         if (isTsModule) {
@@ -2349,6 +2348,24 @@ void ParserImpl::AddExportLocalEntryItem(const ir::Statement *declNode, bool isT
                 ThrowSyntaxError("Duplicate export name of '" + name->Name().Mutf8() + "'", name->Start());
             }
         }
+    }
+    AddTsTypeExportLocalEntryItem(declNode, isTsModule, tsModuleScope);
+}
+
+void ParserImpl::AddTsTypeExportLocalEntryItem(const ir::Statement *declNode, bool isTsModule,
+                                               binder::TSModuleScope *tsModuleScope)
+{
+    if (!declNode->IsTSInterfaceDeclaration() && !declNode->IsTSTypeAliasDeclaration()) {
+        return;
+    }
+    auto name = declNode->IsTSInterfaceDeclaration() ?
+                declNode->AsTSInterfaceDeclaration()->Id() : declNode->AsTSTypeAliasDeclaration()->Id();
+    if (name == nullptr) {
+        ThrowSyntaxError("An interface or type alias declaration must have a name.");
+    }
+    if (isTsModule) {
+        binder::TSBinding tsBinding(Allocator(), name->Name());
+        tsModuleScope->AddExportVariable(tsBinding.View());
     }
 }
 

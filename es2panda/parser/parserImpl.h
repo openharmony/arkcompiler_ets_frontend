@@ -437,6 +437,8 @@ private:
                                 const ir::Identifier *exported);
     void AddExportDefaultEntryItem(const ir::AstNode *declNode);
     void AddExportLocalEntryItem(const ir::Statement *declNode, bool isTsModule);
+    void AddTsTypeExportLocalEntryItem(const ir::Statement *declNode, bool isTsModule,
+                                       binder::TSModuleScope *tsModuleScope);
     parser::SourceTextModuleRecord *GetSourceTextModuleRecord();
 
     bool ParseDirective(ArenaVector<ir::Statement *> *statements);
