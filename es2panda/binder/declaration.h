@@ -258,6 +258,8 @@ public:
     {
         return DeclType::NAMESPACE;
     }
+
+    bool IsInstantiated() const;
 };
 
 class VarDecl : public Decl {

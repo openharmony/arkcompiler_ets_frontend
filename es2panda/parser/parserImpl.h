@@ -399,14 +399,18 @@ private:
     ir::Expression *ParseImportExpression();
     ir::FunctionExpression *ParseFunctionExpression(ParserStatus newStatus = ParserStatus::NO_OPTS);
     ir::Expression *ParseOptionalChain(ir::Expression *leftSideExpr);
-    void ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers);
+    void ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers, bool isType);
     ir::Identifier *ParseNamedImport(const lexer::Token &importedToken);
+    binder::Decl *AddImportDecl(bool isType,
+                                util::StringView name,
+                                lexer::SourcePosition startPos,
+                                binder::DeclarationFlags flag);
 
     ir::StringLiteral *ParseFromClause(bool requireFrom = true);
-    void ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers);
+    void ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isType);
     ir::Expression *ParseModuleReference();
-    ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers);
-    ir::AstNode *ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers);
+    ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool isType);
+    ir::AstNode *ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool isType);
     void ValidateAssignmentTarget(ExpressionParseFlags flags, ir::Expression *node);
     void ValidateLvalueAssignmentTarget(ir::Expression *node) const;
     void ValidateArrowParameterBindings(const ir::Expression *node);

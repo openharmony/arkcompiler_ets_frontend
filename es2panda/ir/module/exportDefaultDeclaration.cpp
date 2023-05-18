@@ -33,6 +33,9 @@ void ExportDefaultDeclaration::Dump(ir::AstDumper *dumper) const
 
 void ExportDefaultDeclaration::Compile(compiler::PandaGen *pg) const
 {
+    if (!decl_) {
+        return;
+    }
     decl_->Compile(pg);
     if (decl_->IsExpression()) {
         // export default [AssignmentExpression]

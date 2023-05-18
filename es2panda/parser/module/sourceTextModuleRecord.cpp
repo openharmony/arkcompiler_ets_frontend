@@ -187,4 +187,10 @@ namespace panda::es2panda::parser {
             (*index)++;
         }
     }
+
+    void SourceTextModuleRecord::RemoveDefaultLocalExportEntry()
+    {
+        util::StringView localName = parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME;
+        localExportEntries_.erase(localName);
+    }
 } // namespace panda::es2panda::parser
