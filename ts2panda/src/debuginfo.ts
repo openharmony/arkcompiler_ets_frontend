@@ -36,13 +36,13 @@ export class DebugPosInfo {
     private br: number | undefined;  // bound right
     private l: number = -1;  // line number
     private c: number = -1;  // column number
-    private nodeKind: NodeKind | undefined = NodeKind.FirstNodeOfFunction;
+    private nodeKind: NodeKind | undefined = NodeKind.FIRST_NODE_OF_FUNCTION;
 
     constructor() { }
 
     public setDebugPosInfoNodeState(extendedNode: ts.Node | NodeKind): void {
         if (DebugInfo.isNode(extendedNode)) {
-            this.nodeKind = NodeKind.Normal;
+            this.nodeKind = NodeKind.NORMAL;
         } else {
             this.nodeKind = <NodeKind>extendedNode;
         }
@@ -84,7 +84,7 @@ export class DebugPosInfo {
         return this.c;
     }
 
-    public ClearNodeKind(): void {
+    public clearNodeKind(): void {
         this.nodeKind = undefined;
     }
 }
@@ -128,9 +128,9 @@ export class VariableDebugInfo {
 }
 
 export enum NodeKind {
-    Normal,
-    Invalid,
-    FirstNodeOfFunction,
+    NORMAL,
+    INVALID,
+    FIRST_NODE_OF_FUNCTION,
 }
 
 export class DebugInfo {
@@ -138,17 +138,17 @@ export class DebugInfo {
     private static lastNode: ts.Node;
     constructor() { }
 
-    public static isNode(extendedNode: ts.Node | NodeKind) {
-        if (extendedNode != NodeKind.Invalid &&
-            extendedNode != NodeKind.FirstNodeOfFunction &&
-            extendedNode != NodeKind.Normal) {
+    public static isNode(extendedNode: ts.Node | NodeKind): boolean {
+        if (extendedNode != NodeKind.INVALID &&
+            extendedNode != NodeKind.FIRST_NODE_OF_FUNCTION &&
+            extendedNode != NodeKind.NORMAL) {
             return true;
         }
 
         return false;
     }
 
-    public static updateLastNode(lastNode: ts.Node | NodeKind) {
+    public static updateLastNode(lastNode: ts.Node | NodeKind): void {
         if (DebugInfo.isNode(lastNode)) {
             DebugInfo.lastNode = <ts.Node>lastNode;
         }
@@ -181,7 +181,7 @@ export class DebugInfo {
         }
     }
 
-    public static setPosInfoForUninitializeIns(posInfo: DebugPosInfo, pandaGen: PandaGen) {
+    public static setPosInfoForUninitializeIns(posInfo: DebugPosInfo, pandaGen: PandaGen): void {
         let firstStmt = pandaGen.getFirstStmt();
         if (firstStmt) {
             let res = this.searchForPos(firstStmt);
@@ -193,7 +193,7 @@ export class DebugInfo {
         }
     }
 
-    public static setInvalidPosInfoForUninitializeIns(posInfo: DebugPosInfo, pandaGen: PandaGen) {
+    public static setInvalidPosInfoForUninitializeIns(posInfo: DebugPosInfo, pandaGen: PandaGen): void {
         posInfo.setSourecLineNum(-1);
         posInfo.setSourecColumnNum(-1);
     }
@@ -275,13 +275,13 @@ export class DebugInfo {
         return length;
     }
 
-    private static setPosDebugInfo(pandaGen: PandaGen) {
+    private static setPosDebugInfo(pandaGen: PandaGen): void {
         let insns: IRNode[] = pandaGen.getInsns();
         let offset = 0;
 
         // count pos offset
         for (let i = 0; i < insns.length; i++) {
-            if (insns[i].debugPosInfo.getDebugPosInfoNodeState() == NodeKind.FirstNodeOfFunction) {
+            if (insns[i].debugPosInfo.getDebugPosInfoNodeState() === NodeKind.FIRST_NODE_OF_FUNCTION) {
                 DebugInfo.setInvalidPosInfoForUninitializeIns(insns[i].debugPosInfo, pandaGen);
             }
 
@@ -301,7 +301,7 @@ export class DebugInfo {
         }
     }
 
-    private static setVariablesDebugInfo(pandaGen: PandaGen) {
+    private static setVariablesDebugInfo(pandaGen: PandaGen): void {
         let insns = pandaGen.getInsns();
 
         for (let i = 0; i < insns.length; i++) {
@@ -330,7 +330,7 @@ export class DebugInfo {
                 if (!value.hasAlreadyBinded()) {
                     return;
                 }
-                if (value.getName() == "0this" || value.getName() == "0newTarget") {
+                if (value.getName() === "0this" || value.getName() === "0newTarget") {
                     return;
                 }
                 let variableInfo = new VariableDebugInfo(key, "any", "any", (value.getVreg().num));
@@ -341,7 +341,7 @@ export class DebugInfo {
         });
     }
 
-    public static setDebugInfo(pandaGen: PandaGen) {
+    public static setDebugInfo(pandaGen: PandaGen): void {
         // set position debug info
         DebugInfo.setPosDebugInfo(pandaGen);
         if (CmdOptions.isDebugMode()) {
@@ -354,7 +354,7 @@ export class DebugInfo {
         }
     }
 
-    public static setSourceFileDebugInfo(pandaGen: PandaGen, node: ts.SourceFile | ts.FunctionLikeDeclaration) {
+    public static setSourceFileDebugInfo(pandaGen: PandaGen, node: ts.SourceFile | ts.FunctionLikeDeclaration): void {
         let sourceFile = jshelpers.getSourceFileOfNode(node);
         if (CmdOptions.getSourceFile().length > 0) {
             pandaGen.setSourceFileDebugInfo(CmdOptions.getSourceFile());
@@ -367,11 +367,11 @@ export class DebugInfo {
         }
     }
 
-    public static copyDebugInfo(insn: IRNode, expansion: IRNode[]) {
+    public static copyDebugInfo(insn: IRNode, expansion: IRNode[]): void {
         expansion.forEach(irNode => irNode.debugPosInfo = insn.debugPosInfo);
     }
 
-    public static addDebugIns(scope: Scope, pandaGen: PandaGen, isStart: boolean) {
+    public static addDebugIns(scope: Scope, pandaGen: PandaGen, isStart: boolean): void {
         if (!CmdOptions.isDebugMode()) {
             return;
         }

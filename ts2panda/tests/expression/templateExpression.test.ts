@@ -41,7 +41,7 @@ import { checkInstructions, compileMainSnippet } from "../utils/base";
 import { creatAstFromSnippet } from "../utils/asthelper"
 import { PandaGen } from '../../src/pandagen';
 
-function MicroCreateAddInsns(leftVal: number, rightVal: number, icSize: number) {
+function microCreateAddInsns(leftVal: number, rightVal: number, icSize: number): { insns: any[]; nextIc: number; } {
     let insns = [];
     let lhs = new VReg();
 
@@ -55,7 +55,7 @@ function MicroCreateAddInsns(leftVal: number, rightVal: number, icSize: number) 
     return {insns: insns, nextIc: nextIc};
 }
 
-function MicroCreateObjAndPropInsns(icSize: number) {
+function microCreateObjAndPropInsns(icSize: number): { insns: any[]; nextIc: number; } {
     let insns = [];
     let obj = new VReg();
     let val = new VReg();
@@ -71,7 +71,7 @@ function MicroCreateObjAndPropInsns(icSize: number) {
     return {insns: insns, nextIc: nextIc};
 }
 
-function MicroGetTemplateObject(rawArr: VReg, cookedArr: VReg, icSize: number) {
+function microGetTemplateObject(rawArr: VReg, cookedArr: VReg, icSize: number): { insns: any[]; nextIc: number; } {
     let insns = [];
     let objReg = new VReg();
     let indexReg = new VReg();

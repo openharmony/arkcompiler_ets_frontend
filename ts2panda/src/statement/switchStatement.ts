@@ -23,7 +23,7 @@ import { Compiler } from "../compiler";
 import {
     DiagnosticCode,
     DiagnosticError
-} from "../diagnostic"
+} from "../diagnostic";
 import { LabelTarget } from "./labelTarget";
 export class SwitchBase {
     private stmt: ts.SwitchStatement;

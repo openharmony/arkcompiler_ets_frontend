@@ -55,7 +55,7 @@ export class AsyncGeneratorFunctionBuilder extends FunctionBuilder {
         this.compiler = compiler;
     }
 
-    prepare(node: ts.Node) {
+    prepare(node: ts.Node): void {
         let pg = this.pg;
 
         // backend handle funcobj, frontend set undefined
@@ -63,7 +63,7 @@ export class AsyncGeneratorFunctionBuilder extends FunctionBuilder {
         pg.storeAccumulator(node, this.funcObj);
 
         pg.label(node, this.beginLabel);
-        pg.loadAccumulator(node, getVregisterCache(pg, CacheList.undefined));
+        pg.loadAccumulator(node, getVregisterCache(pg, CacheList.UNDEFINED));
         pg.suspendGenerator(node, this.funcObj);
         pg.resumeGenerator(node, this.funcObj);
         pg.storeAccumulator(node, this.resumeVal);
@@ -79,7 +79,7 @@ export class AsyncGeneratorFunctionBuilder extends FunctionBuilder {
         let pg = this.pg;
         pg.storeAccumulator(node, this.resumeVal);
         pg.generatorComplete(node, this.funcObj);
-        pg.asyncgeneratorresolve(node, this.funcObj, this.resumeVal, getVregisterCache(pg, CacheList.True));
+        pg.asyncgeneratorresolve(node, this.funcObj, this.resumeVal, getVregisterCache(pg, CacheList.TRUE));
         pg.return(node);
     }
 
@@ -91,16 +91,16 @@ export class AsyncGeneratorFunctionBuilder extends FunctionBuilder {
             this.resumeGenerator(node);
         }
         pg.generatorComplete(node, this.funcObj);
-        pg.asyncgeneratorresolve(node, this.funcObj, this.resumeVal, getVregisterCache(pg, CacheList.True));
+        pg.asyncgeneratorresolve(node, this.funcObj, this.resumeVal, getVregisterCache(pg, CacheList.TRUE));
         pg.return(node);
     }
 
     implicitReturn(node: ts.Node | NodeKind): void {
-        this.pg.loadAccumulator(node, getVregisterCache(this.pg, CacheList.undefined));
+        this.pg.loadAccumulator(node, getVregisterCache(this.pg, CacheList.UNDEFINED));
         this.directReturn(node);
     }
 	
-    yield(node: ts.Node) {
+    yield(node: ts.Node): void {
         let pg = this.pg;
 
         // 27.6.3.8.5 Set value to ? Await(value).
@@ -114,13 +114,13 @@ export class AsyncGeneratorFunctionBuilder extends FunctionBuilder {
          *  is at the top of the execution context stack as the running execution context.
          *  27.6.3.8.9 Return ! AsyncGeneratorResolve(generator, value, false).
          */
-        pg.asyncgeneratorresolve(node, this.funcObj, this.resumeVal, getVregisterCache(pg, CacheList.False));
+        pg.asyncgeneratorresolve(node, this.funcObj, this.resumeVal, getVregisterCache(pg, CacheList.FALSE));
         this.resumeGenerator(node);
 
         this.handleAsyncYieldResume(node);
     }
 
-    yieldStar(node: ts.Node) {
+    yieldStar(node: ts.Node): void {
         let pg = this.pg;
         let method = pg.getTemp();
         let iterator = pg.getTemp();
@@ -139,7 +139,7 @@ export class AsyncGeneratorFunctionBuilder extends FunctionBuilder {
         this.resumeVal = nextResult;
 
         // 6. Let received be NormalCompletion(undefined)
-        pg.storeConst(node, this.resumeVal, CacheList.undefined);
+        pg.storeConst(node, this.resumeVal, CacheList.UNDEFINED);
         pg.loadAccumulatorInt(node, ResumeMode.NEXT);
         pg.storeAccumulator(node, this.resumeType);
         pg.moveVreg(node, nextMethod, iter.method());
@@ -152,7 +152,7 @@ export class AsyncGeneratorFunctionBuilder extends FunctionBuilder {
         let iterCompletion = new Label();
         // 7. Repeat
         pg.label(node, loopStart);
-        pg.storeConst(node, exitReturn, CacheList.False);
+        pg.storeConst(node, exitReturn, CacheList.FALSE);
 
         // a. If received.[[Type]] is normal, then
         pg.loadAccumulatorInt(node, ResumeMode.NEXT);
@@ -186,7 +186,7 @@ export class AsyncGeneratorFunctionBuilder extends FunctionBuilder {
         // c. Else,
         // i. Assert: received.[[Type]] is return
         pg.label(node, returnCompletion);
-        pg.storeConst(node, exitReturn, CacheList.True);
+        pg.storeConst(node, exitReturn, CacheList.TRUE);
         // ii. Let return be ? GetMethod(iterator, "return").
         iter.getMethod("return");
 
@@ -222,7 +222,7 @@ export class AsyncGeneratorFunctionBuilder extends FunctionBuilder {
         this.await(node);
 
         pg.generatorYield(node, this.funcObj);
-        pg.storeConst(node, done, CacheList.False);
+        pg.storeConst(node, done, CacheList.FALSE);
         pg.asyncgeneratorresolve(node, this.funcObj, this.resumeVal, done);
 
         this.resumeGenerator(node);
@@ -264,7 +264,7 @@ export class AsyncGeneratorFunctionBuilder extends FunctionBuilder {
         pg.freeTemps(method, iterator, nextResult, value, done, nextMethod, exitReturn);
     }
 
-    private handleAsyncYieldResume(node: ts.Node) {
+    private handleAsyncYieldResume(node: ts.Node): void {
         let pg = this.pg;
         let notRet = new Label();
         let normalCompletion = new Label();
@@ -310,7 +310,7 @@ export class AsyncGeneratorFunctionBuilder extends FunctionBuilder {
         pg.loadAccumulator(node, this.resumeVal);
     }
 
-    private handleMode(node: ts.Node) {
+    private handleMode(node: ts.Node): void {
         let pandaGen = this.pg;
 
         pandaGen.getResumeMode(node, this.funcObj);
@@ -330,12 +330,12 @@ export class AsyncGeneratorFunctionBuilder extends FunctionBuilder {
         pandaGen.loadAccumulator(node, this.resumeVal);
     }
 
-    resolve(node: ts.Node | NodeKind, value: VReg) {
+    resolve(node: ts.Node | NodeKind, value: VReg): void {
         let pandaGen = this.pg;
-        pandaGen.asyncgeneratorresolve(node, this.funcObj, value, getVregisterCache(pandaGen, CacheList.True));
+        pandaGen.asyncgeneratorresolve(node, this.funcObj, value, getVregisterCache(pandaGen, CacheList.TRUE));
     }
 
-    cleanUp(node: ts.Node) {
+    cleanUp(node: ts.Node): void {
         let pandaGen = this.pg;
         pandaGen.label(node, this.endLabel);
         // catch
@@ -343,7 +343,7 @@ export class AsyncGeneratorFunctionBuilder extends FunctionBuilder {
         pandaGen.generatorComplete(node, this.funcObj);
         pandaGen.loadAccumulator(node, this.resumeVal);
         pandaGen.asyncgeneratorreject(node, this.funcObj); // exception is in acc
-        pandaGen.return(NodeKind.Invalid);
+        pandaGen.return(NodeKind.INVALID);
         this.pg.freeTemps(this.funcObj, this.resumeVal, this.resumeType);
         new CatchTable(pandaGen, this.endLabel, new LabelPair(this.beginLabel, this.endLabel));
     }

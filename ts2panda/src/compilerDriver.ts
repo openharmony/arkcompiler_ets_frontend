@@ -95,7 +95,7 @@ export class CompilerDriver {
         }
     }
 
-    initiateTs2abcChildProcess(args: Array<string>) {
+    initiateTs2abcChildProcess(args: Array<string>): void {
         this.ts2abcProcess = initiateTs2abc(args);
         listenChildExit(this.getTs2abcProcess());
         listenErrorEvent(this.getTs2abcProcess());
@@ -103,16 +103,16 @@ export class CompilerDriver {
 
     getTs2abcProcess(): any {
         if (this.ts2abcProcess === undefined) {
-            throw new Error("ts2abc hasn't been initiated")
+            throw new Error("ts2abc hasn't been initiated");
         }
         return this.ts2abcProcess;
     }
 
-    getStatistics() {
+    getStatistics(): CompilerStatistics {
         return this.statistics;
     }
 
-    setCustomPasses(passes: Pass[]) {
+    setCustomPasses(passes: Pass[]): void {
         this.passes = passes;
     }
 
@@ -124,15 +124,15 @@ export class CompilerDriver {
         return internalName;
     }
 
-    getCompilationUnits() {
+    getCompilationUnits(): PandaGen[] {
         return this.compilationUnits;
     }
 
-    kind2String(kind: ts.SyntaxKind) {
+    kind2String(kind: ts.SyntaxKind): string {
         return ts.SyntaxKind[kind];
     }
 
-    getASTStatistics(node: ts.Node, statics: number[]) {
+    getASTStatistics(node: ts.Node, statics: number[]): void {
         node.forEachChild(childNode => {
             statics[<number>childNode.kind] = statics[<number>childNode.kind] + 1;
             this.getASTStatistics(childNode, statics);
@@ -147,7 +147,7 @@ export class CompilerDriver {
         stack.push(scope);
         while (stack.length > 0) {
             let temp: VariableScope | undefined = stack.pop();
-            if (temp == undefined) {
+            if (temp === undefined) {
                 break;
             }
             spArray.push(temp);
@@ -306,7 +306,7 @@ export class CompilerDriver {
     }
 
     private compileUnitTestImpl(node: ts.SourceFile | ts.FunctionLikeDeclaration, scope: Scope,
-        internalName: string, recorder: Recorder) {
+        internalName: string, recorder: Recorder): void {
         let pandaGen = new PandaGen(internalName, node, this.getParametersCount(node), scope);
         IRNode.pg = pandaGen;
         if (CmdOptions.needRecordSourceCode() && !ts.isSourceFile(node)) {
@@ -323,7 +323,7 @@ export class CompilerDriver {
         this.compilationUnits.push(pandaGen);
     }
 
-    static isTypeScriptSourceFile(node: ts.SourceFile) {
+    static isTypeScriptSourceFile(node: ts.SourceFile): boolean {
         let fileName = node.fileName;
         if (fileName && fileName.endsWith(".ts")) {
             return true;
@@ -332,7 +332,7 @@ export class CompilerDriver {
         }
     }
 
-    private compilePrologue(node: ts.SourceFile, recordType: boolean, syntaxCheckStatus: boolean) {
+    private compilePrologue(node: ts.SourceFile, recordType: boolean, syntaxCheckStatus: boolean): Recorder {
         let topLevelScope: GlobalScope | ModuleScope;
         if (CmdOptions.isModules()) {
             topLevelScope = new ModuleScope(node);
@@ -386,7 +386,7 @@ export class CompilerDriver {
         return idx;
     }
 
-    getFormatedRecordName() {
+    getFormatedRecordName(): string {
         let formatedRecordName: string = '';
         if (CmdOptions.isMergeAbc()) {
             formatedRecordName = this.recordName + '.';
@@ -408,15 +408,15 @@ export class CompilerDriver {
         } else {
             let funcNode = <ts.FunctionLikeDeclaration>node;
             name = (<FunctionScope>recorder.getScopeOfNode(funcNode)).getFuncName();
-            if (name == '') {
-                if ((ts.isFunctionDeclaration(node) && hasExportKeywordModifier(node) && hasDefaultKeywordModifier(node))
-                    || ts.isExportAssignment(findOuterNodeOfParenthesis(node))) {
+            if (name === '') {
+                if ((ts.isFunctionDeclaration(node) && hasExportKeywordModifier(node) && hasDefaultKeywordModifier(node)) ||
+                    ts.isExportAssignment(findOuterNodeOfParenthesis(node))) {
                     return `${this.getFormatedRecordName()}default`;
                 }
                 return `${this.getFormatedRecordName()}#${this.getFuncId(funcNode)}#`;
             }
 
-            if (name == "func_main_0") {
+            if (name === "func_main_0") {
                 return `${this.getFormatedRecordName()}#${this.getFuncId(funcNode)}#${name}`;
             }
 
@@ -431,22 +431,22 @@ export class CompilerDriver {
             }
 
             if (name.lastIndexOf(".") != -1 || name.lastIndexOf("\\") != -1) {
-                name = `#${this.getFuncId(funcNode)}#`
+                name = `#${this.getFuncId(funcNode)}#`;
             }
         }
         return `${this.getFormatedRecordName()}${name}`;
     }
 
-    getInternalNameForCtor(node: ts.ClassLikeDeclaration, ctor: ts.ConstructorDeclaration) {
+    getInternalNameForCtor(node: ts.ClassLikeDeclaration, ctor: ts.ConstructorDeclaration): string {
         let name = getClassNameForConstructor(node);
-        name = `#${this.getFuncId(ctor)}#${name}`
+        name = `#${this.getFuncId(ctor)}#${name}`;
         if (name.lastIndexOf(".") != -1) {
-            name = `#${this.getFuncId(ctor)}#`
+            name = `#${this.getFuncId(ctor)}#`;
         }
         return `${this.getFormatedRecordName()}${name}`;
     }
 
-    writeBinaryFile(pandaGen: PandaGen) {
+    writeBinaryFile(pandaGen: PandaGen): void {
         if (this.needDumpHeader) {
             AssemblyDumper.dumpHeader();
             this.needDumpHeader = false;
@@ -458,7 +458,7 @@ export class CompilerDriver {
         // each function and global scope accepts three parameters - funcObj + newTarget + this.
         // the runtime passes these to global scope when calls it
         let parametersCount = 3;
-        if (node.kind == ts.SyntaxKind.SourceFile) {
+        if (node.kind === ts.SyntaxKind.SourceFile) {
             if (CmdOptions.isCommonJs()) {
                 // global scope accepts 5 additional parameters:
                 // "exports", "require", "module", "__filename","__dirname"
@@ -472,13 +472,13 @@ export class CompilerDriver {
         return parametersCount;
     }
 
-    private setTypeInfoBeforeRecord(enableTypeRecord: boolean) {
+    private setTypeInfoBeforeRecord(enableTypeRecord: boolean): void {
         if (enableTypeRecord) {
             TypeRecorder.createInstance();
         }
     }
 
-    private setTypeInfoAfterRecord(enableTypeRecord: boolean) {
+    private setTypeInfoAfterRecord(enableTypeRecord: boolean): void {
         if (enableTypeRecord) {
             TypeRecorder.getInstance().setTypeSummary();
             if (CmdOptions.enableTypeLog()) {

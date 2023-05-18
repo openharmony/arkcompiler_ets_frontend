@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-function multi_local() {
+function multiLocal() {
     function emptyFunc(num: number, str:string): string {
         return str;
     }

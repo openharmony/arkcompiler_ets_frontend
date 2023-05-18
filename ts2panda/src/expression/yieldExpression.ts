@@ -20,7 +20,7 @@ import { CacheList, getVregisterCache } from "../base/vregisterCache";
 import { AsyncGeneratorFunctionBuilder } from "../function/asyncGeneratorFunctionBuilder";
 import { Compiler } from "../compiler";
 
-export function compileYieldExpression(compiler: Compiler, expr: ts.YieldExpression) {
+export function compileYieldExpression(compiler: Compiler, expr: ts.YieldExpression): void {
     if (!(compiler.getFuncBuilder() instanceof GeneratorFunctionBuilder || compiler.getFuncBuilder() instanceof AsyncGeneratorFunctionBuilder)) {
         throw new DiagnosticError(expr.parent, DiagnosticCode.A_yield_expression_is_only_allowed_in_a_generator_body);
     }
@@ -28,19 +28,19 @@ export function compileYieldExpression(compiler: Compiler, expr: ts.YieldExpress
     expr.asteriskToken ? genYieldStarExpr(compiler, expr) : genYieldExpr(compiler, expr);
 }
 
-function genYieldExpr(compiler: Compiler, expr: ts.YieldExpression) {
+function genYieldExpr(compiler: Compiler, expr: ts.YieldExpression): void {
     let pandaGen = compiler.getPandaGen();
     let funcBuilder = <GeneratorFunctionBuilder | AsyncGeneratorFunctionBuilder> compiler.getFuncBuilder();
     if (expr.expression) {
         compiler.compileExpression(expr.expression);
         funcBuilder.yield(expr);
     } else {
-        pandaGen.loadAccumulator(expr, getVregisterCache(pandaGen, CacheList.undefined));
+        pandaGen.loadAccumulator(expr, getVregisterCache(pandaGen, CacheList.UNDEFINED));
         funcBuilder.yield(expr);
     }
 }
 
-function genYieldStarExpr(compiler: Compiler, expr: ts.YieldExpression) {
+function genYieldStarExpr(compiler: Compiler, expr: ts.YieldExpression): void {
     let funcBuilder = <GeneratorFunctionBuilder>compiler.getFuncBuilder();
     if (!expr.expression) {
         throw new Error("yield* must have an expression!");

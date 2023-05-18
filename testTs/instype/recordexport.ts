@@ -1,4 +1,4 @@
-export default function hello(str: string) {
+export default function hello(str: string): string {
     return str;
 }
 
@@ -9,11 +9,11 @@ export let d: string = "world";
 
 export class Calculator{}
 
-export function add(x: number, y: number) {
+export function add(x: number, y: number): number {
     return x + y;
 }
 
-export function minus(x: number, y: number) {
+export function minus(x: number, y: number): number {
     return x - y;
 }
 

@@ -243,7 +243,7 @@ export class PandaGen {
     }
 
     public appendScopeInfo(lexVarInfo: Map<string, number>): string | undefined {
-        if (lexVarInfo.size == 0) {
+        if (lexVarInfo.size === 0) {
             return undefined;
         }
 
@@ -272,7 +272,7 @@ export class PandaGen {
 
         if (node.modifiers) {
             for (let i = 0; i < node.modifiers.length; i++) {
-                if (node.modifiers[i].kind == ts.SyntaxKind.AsyncKeyword) {
+                if (node.modifiers[i].kind === ts.SyntaxKind.AsyncKeyword) {
                     if (node.asteriskToken) {
                         this.funcKind = FunctionKind.ASYNC_GENERATOR_FUNCTION;
                         return;
@@ -397,22 +397,22 @@ export class PandaGen {
         PandaGen.literalArrayBuffer[index] = typeBuf;
     }
 
-    getFirstStmt() {
+    getFirstStmt(): ts.Statement {
         return this.firstStmt;
     }
 
-    setFirstStmt(firstStmt: ts.Statement) {
+    setFirstStmt(firstStmt: ts.Statement): void {
         if (this.firstStmt) {
             return;
         }
         this.firstStmt = firstStmt;
     }
 
-    getVregisterCache() {
+    getVregisterCache(): VregisterCache {
         return this.vregisterCache;
     }
 
-    getCatchMap() {
+    getCatchMap(): Map<Label, CatchTable> {
         return this.catchMap;
     }
 
@@ -424,7 +424,7 @@ export class PandaGen {
         return this.variableDebugInfoArray;
     }
 
-    addDebugVariableInfo(variable: VariableDebugInfo) {
+    addDebugVariableInfo(variable: VariableDebugInfo): void {
         this.variableDebugInfoArray.push(variable);
     }
 
@@ -454,7 +454,7 @@ export class PandaGen {
         return retval;
     }
 
-    freeTemps(...temps: VReg[]) {
+    freeTemps(...temps: VReg[]): void {
         this.temps.unshift(...temps);
     }
 
@@ -462,11 +462,11 @@ export class PandaGen {
         return this.insns;
     }
 
-    setInsns(insns: IRNode[]) {
+    setInsns(insns: IRNode[]): void {
         this.insns = insns;
     }
 
-    printInsns() {
+    printInsns(): void {
         LOGE("function " + this.internalName + "() {");
         this.getInsns().forEach(ins => {
             LOGE(ins.toString());
@@ -474,7 +474,7 @@ export class PandaGen {
         LOGE("}");
     }
 
-    setTotalRegsNum(num: number) {
+    setTotalRegsNum(num: number): void {
         this.totalRegsNum = num;
     }
 
@@ -482,7 +482,7 @@ export class PandaGen {
         return this.totalRegsNum;
     }
 
-    setParametersCount(count: number) {
+    setParametersCount(count: number): void {
         this.parametersCount = count;
     }
 
@@ -490,7 +490,7 @@ export class PandaGen {
         return this.parametersCount;
     }
 
-    setLocals(locals: VReg[]) {
+    setLocals(locals: VReg[]): void {
         this.locals = locals;
     }
 
@@ -502,19 +502,19 @@ export class PandaGen {
         return this.temps;
     }
 
-    getInstTypeMap() {
+    getInstTypeMap(): Map<IRNode, number> {
         return this.instTypeMap;
     }
 
-    getNode() {
+    getNode(): ts.SourceFile | ts.FunctionLikeDeclaration {
         return this.node;
     }
 
-    storeAccumulator(node: ts.Node | NodeKind, vreg: VReg) {
+    storeAccumulator(node: ts.Node | NodeKind, vreg: VReg): void {
         this.add(node, storeAccumulator(vreg));
     }
 
-    generatorYield(node: ts.Node, genObj: VReg) {
+    generatorYield(node: ts.Node, genObj: VReg): void {
         this.add(
             node,
             loadAccumulator(genObj),
@@ -522,7 +522,7 @@ export class PandaGen {
         )
     }
 
-    generatorComplete(node: ts.Node | NodeKind, genObj: VReg) {
+    generatorComplete(node: ts.Node | NodeKind, genObj: VReg): void {
         this.add(
             node,
             loadAccumulator(genObj),
@@ -530,7 +530,7 @@ export class PandaGen {
         )
     }
 
-    loadAccFromArgs(node: ts.Node) {
+    loadAccFromArgs(node: ts.Node): void {
         if ((<VariableScope>this.scope).getUseArgs()) {
             let v = this.scope!.findLocal(MandatoryArguments);
             if (this.scope instanceof FunctionScope) {
@@ -546,15 +546,15 @@ export class PandaGen {
         }
     }
 
-    deleteObjProperty(node: ts.Node, obj: VReg) {
+    deleteObjProperty(node: ts.Node, obj: VReg): void {
         this.add(node, deleteObjProperty(obj));
     }
 
-    loadAccumulator(node: ts.Node | NodeKind, vreg: VReg) {
+    loadAccumulator(node: ts.Node | NodeKind, vreg: VReg): void {
         this.add(node, loadAccumulator(vreg));
     }
 
-    createLexEnv(node: ts.Node, scope: VariableScope | LoopScope) {
+    createLexEnv(node: ts.Node, scope: VariableScope | LoopScope): void {
         let numVars = scope.getNumLexEnv();
         let scopeInfoId: string | undefined = undefined;
         let lexVarInfo = scope.getLexVarInfo();
@@ -568,21 +568,21 @@ export class PandaGen {
         )
     }
 
-    newLexicalEnv(node, numVars: number) {
+    newLexicalEnv(node, numVars: number): void {
         this.add(
             node,
             newLexicalEnv(numVars, undefined),
         )
     }
 
-    popLexicalEnv(node: ts.Node) {
+    popLexicalEnv(node: ts.Node): void {
         this.add(
             node,
             popLexicalEnv()
         )
     }
 
-    loadAccFromLexEnv(node: ts.Node, scope: Scope, level: number, v: Variable) {
+    loadAccFromLexEnv(node: ts.Node, scope: Scope, level: number, v: Variable): void {
         let expander = new VariableAccessLoad(scope, level, v);
         let insns = expander.expand(this);
         this.add(
@@ -591,7 +591,7 @@ export class PandaGen {
         );
     }
 
-    storeAccToLexEnv(node: ts.Node | NodeKind, scope: Scope, level: number, v: Variable, isDeclaration: boolean) {
+    storeAccToLexEnv(node: ts.Node | NodeKind, scope: Scope, level: number, v: Variable, isDeclaration: boolean): void {
         let expander = new VariableAcessStore(scope, level, v, isDeclaration, node);
         let insns = expander.expand(this);
         this.add(
@@ -600,7 +600,7 @@ export class PandaGen {
         )
     }
 
-    loadObjProperty(node: ts.Node, obj: VReg, prop: VReg | string | number) {
+    loadObjProperty(node: ts.Node, obj: VReg, prop: VReg | string | number): void {
         switch (typeof (prop)) {
             case "number": {
                 if (isInteger(prop)) {
@@ -625,7 +625,7 @@ export class PandaGen {
         }
     }
 
-    storeObjProperty(node: ts.Node | NodeKind, obj: VReg, prop: VReg | string | number) {
+    storeObjProperty(node: ts.Node | NodeKind, obj: VReg, prop: VReg | string | number): void {
         switch (typeof (prop)) {
             case "number":
                 if (isInteger(prop)) {
@@ -652,7 +652,7 @@ export class PandaGen {
         }
     }
 
-    storeOwnProperty(node: ts.Node | NodeKind, obj: VReg, prop: VReg | string | number, nameSetting: boolean = false) {
+    storeOwnProperty(node: ts.Node | NodeKind, obj: VReg, prop: VReg | string | number, nameSetting: boolean = false): void {
         switch (typeof prop) {
             case "number": {
                 if (isInteger(prop)) {
@@ -680,7 +680,7 @@ export class PandaGen {
         }
     }
 
-    private loadObjByName(node: ts.Node, obj: VReg, string_id: string) {
+    private loadObjByName(node: ts.Node, obj: VReg, string_id: string): void {
         this.add(
             node,
             loadAccumulator(obj),
@@ -688,14 +688,14 @@ export class PandaGen {
         );
     }
 
-    private storeObjByName(node: ts.Node | NodeKind, obj: VReg, string_id: string) {
+    private storeObjByName(node: ts.Node | NodeKind, obj: VReg, string_id: string): void {
         this.add(
             node,
             storeObjByName(obj, string_id)
         );
     }
 
-    private loadObjByIndex(node: ts.Node, obj: VReg, index: number) {
+    private loadObjByIndex(node: ts.Node, obj: VReg, index: number): void {
         this.add(
             node,
             loadAccumulator(obj),
@@ -703,7 +703,7 @@ export class PandaGen {
         )
     }
 
-    private storeObjByIndex(node: ts.Node | NodeKind, obj: VReg, index: number) {
+    private storeObjByIndex(node: ts.Node | NodeKind, obj: VReg, index: number): void {
         this.add(
             node,
             storeObjByIndex(obj, index)
@@ -711,7 +711,7 @@ export class PandaGen {
     }
 
 
-    private loadObjByValue(node: ts.Node, obj: VReg, value: VReg) {
+    private loadObjByValue(node: ts.Node, obj: VReg, value: VReg): void {
         this.add(
             node,
             loadAccumulator(value),
@@ -719,27 +719,27 @@ export class PandaGen {
         )
     }
 
-    private storeObjByValue(node: ts.Node | NodeKind, obj: VReg, prop: VReg) {
+    private storeObjByValue(node: ts.Node | NodeKind, obj: VReg, prop: VReg): void {
         this.add(
             node,
             storeObjByValue(obj, prop)
         )
     }
 
-    private stOwnByName(node: ts.Node | NodeKind, obj: VReg, string_id: string, nameSetting: boolean) {
+    private stOwnByName(node: ts.Node | NodeKind, obj: VReg, string_id: string, nameSetting: boolean): void {
         this.add(node, storeOwnByName(obj, string_id, nameSetting));
     }
 
-    private stOwnByIndex(node: ts.Node | NodeKind, obj: VReg, index: number) {
+    private stOwnByIndex(node: ts.Node | NodeKind, obj: VReg, index: number): void {
         this.add(node, storeOwnByIndex(obj, index));
     }
 
-    private stOwnByValue(node: ts.Node | NodeKind, obj: VReg, value: VReg, nameSetting: boolean) {
+    private stOwnByValue(node: ts.Node | NodeKind, obj: VReg, value: VReg, nameSetting: boolean): void {
         this.add(node, storeOwnByValue(obj, value, nameSetting));
     }
 
-    loadByNameViaDebugger(node: ts.Node, string_id: string, boolVal: CacheList) {
-        this.loadObjProperty(node, getVregisterCache(this, CacheList.Global), "debuggerGetValue");
+    loadByNameViaDebugger(node: ts.Node, string_id: string, boolVal: CacheList): void {
+        this.loadObjProperty(node, getVregisterCache(this, CacheList.GLOBAL), "debuggerGetValue");
         let getValueReg = this.getTemp();
         this.storeAccumulator(node, getValueReg);
         let variableReg = this.getTemp();
@@ -752,15 +752,15 @@ export class PandaGen {
     }
 
     // eg. print
-    tryLoadGlobalByName(node: ts.Node, string_id: string) {
-        CmdOptions.isWatchEvaluateExpressionMode() ? this.loadByNameViaDebugger(node, string_id, CacheList.True)
-                                : this.add(node, tryLoadGlobalByName(string_id));
+    tryLoadGlobalByName(node: ts.Node, string_id: string): void {
+        CmdOptions.isWatchEvaluateExpressionMode() ? this.loadByNameViaDebugger(node, string_id, CacheList.TRUE) :
+                                                     this.add(node, tryLoadGlobalByName(string_id));
     }
 
-    storeByNameViaDebugger(node: ts.Node, string_id: string) {
+    storeByNameViaDebugger(node: ts.Node, string_id: string): void {
         let valueReg = this.getTemp();
         this.storeAccumulator(node, valueReg);
-        this.loadObjProperty(node, getVregisterCache(this, CacheList.Global), "debuggerSetValue");
+        this.loadObjProperty(node, getVregisterCache(this, CacheList.GLOBAL), "debuggerSetValue");
         let setValueReg = this.getTemp();
         this.storeAccumulator(node, setValueReg);
         let variableReg = this.getTemp();
@@ -771,68 +771,68 @@ export class PandaGen {
     }
 
     // eg. a = 1
-    tryStoreGlobalByName(node: ts.Node, string_id: string) {
-        CmdOptions.isWatchEvaluateExpressionMode() ? this.storeByNameViaDebugger(node, string_id)
-                                : this.add(node, tryStoreGlobalByName(string_id));
+    tryStoreGlobalByName(node: ts.Node, string_id: string): void {
+        CmdOptions.isWatchEvaluateExpressionMode() ? this.storeByNameViaDebugger(node, string_id) :
+                                                     this.add(node, tryStoreGlobalByName(string_id));
     }
 
     // eg. var n; n;
-    loadGlobalVar(node: ts.Node, string_id: string) {
+    loadGlobalVar(node: ts.Node, string_id: string): void {
         this.add(
             node,
             loadGlobalVar(string_id));
     }
 
     // var n = 1;
-    storeGlobalVar(node: ts.Node | NodeKind, string_id: string) {
+    storeGlobalVar(node: ts.Node | NodeKind, string_id: string): void {
         this.add(
             node,
             storeGlobalVar(string_id));
     }
 
-    loadAccumulatorString(node: ts.Node | NodeKind, str: string) {
+    loadAccumulatorString(node: ts.Node | NodeKind, str: string): void {
         this.add(node, loadAccumulatorString(str));
     }
 
-    loadAccumulatorFloat(node: ts.Node, num: number) {
+    loadAccumulatorFloat(node: ts.Node, num: number): void {
         this.add(node, loadAccumulatorFloat(num));
     }
 
-    loadAccumulatorInt(node: ts.Node, num: number) {
+    loadAccumulatorInt(node: ts.Node, num: number): void {
         this.add(node, loadAccumulatorInt(num));
     }
 
-    moveVreg(node: ts.Node | NodeKind, vd: VReg, vs: VReg) {
+    moveVreg(node: ts.Node | NodeKind, vd: VReg, vs: VReg): void {
         this.add(node, moveVreg(vd, vs));
     }
 
     // @ts-ignore
-    label(node: ts.Node, label: Label) {
-        this.add(NodeKind.Invalid, label);
+    label(node: ts.Node, label: Label): void {
+        this.add(NodeKind.INVALID, label);
     }
 
-    branch(node: ts.Node | NodeKind, target: Label) {
+    branch(node: ts.Node | NodeKind, target: Label): void {
         this.add(node, jumpTarget(target));
     }
 
-    branchIfNotUndefined(node: ts.Node, target: Label) {
+    branchIfNotUndefined(node: ts.Node, target: Label): void {
         // the compared value is in acc
-        this.condition(node, ts.SyntaxKind.EqualsEqualsToken, getVregisterCache(this, CacheList.undefined), target);
+        this.condition(node, ts.SyntaxKind.EqualsEqualsToken, getVregisterCache(this, CacheList.UNDEFINED), target);
     }
 
-    branchIfUndefined(node: ts.Node, target: Label) {
+    branchIfUndefined(node: ts.Node, target: Label): void {
         // the compared value is in acc
-        this.condition(node, ts.SyntaxKind.ExclamationEqualsToken, getVregisterCache(this, CacheList.undefined), target)
+        this.condition(node, ts.SyntaxKind.ExclamationEqualsToken, getVregisterCache(this, CacheList.UNDEFINED), target)
     }
 
-    isTrue(node: ts.Node) {
+    isTrue(node: ts.Node): void {
         this.add(
             node,
             isTrue()
         )
     }
 
-    jumpIfTrue(node: ts.Node, target: Label) {
+    jumpIfTrue(node: ts.Node, target: Label): void {
         this.isFalse(node);
         this.add(
             node,
@@ -840,14 +840,14 @@ export class PandaGen {
         )
     }
 
-    isFalse(node: ts.Node) {
+    isFalse(node: ts.Node): void {
         this.add(
             node,
             isFalse()
         )
     }
 
-    jumpIfFalse(node: ts.Node, target: Label) {
+    jumpIfFalse(node: ts.Node, target: Label): void {
         this.isTrue(node);
         this.add(
             node,
@@ -855,46 +855,46 @@ export class PandaGen {
         )
     }
 
-    debugger(node: ts.Node) {
+    debugger(node: ts.Node): void {
         this.add(node, creatDebugger());
     }
 
-    throwUndefinedIfHole(node: ts.Node, name: string) {
+    throwUndefinedIfHole(node: ts.Node, name: string): void {
         this.add(
             node,
             throwUndefinedIfHole(name)
         )
     }
 
-    less(node: ts.Node, lhs: VReg) {
+    less(node: ts.Node, lhs: VReg): void {
         this.add(node, new Less(new Imm(0), lhs));
     }
 
-    greater(node: ts.Node, lhs: VReg) {
+    greater(node: ts.Node, lhs: VReg): void {
         this.add(node, new Greater(new Imm(0), lhs));
     }
 
-    greaterEq(node: ts.Node, lhs: VReg) {
+    greaterEq(node: ts.Node, lhs: VReg): void {
         this.add(node, new Greatereq(new Imm(0), lhs));
     }
 
-    lessEq(node: ts.Node, lhs: VReg) {
+    lessEq(node: ts.Node, lhs: VReg): void {
         this.add(node, new Lesseq(new Imm(0), lhs));
     }
 
-    equal(node: ts.Node, lhs: VReg) {
+    equal(node: ts.Node, lhs: VReg): void {
         this.add(node, new Eq(new Imm(0), lhs));
     }
 
-    notEqual(node: ts.Node, lhs: VReg) {
+    notEqual(node: ts.Node, lhs: VReg): void {
         this.add(node, new Noteq(new Imm(0), lhs));
     }
 
-    strictEqual(node: ts.Node, lhs: VReg) {
+    strictEqual(node: ts.Node, lhs: VReg): void {
         this.add(node, new Stricteq(new Imm(0), lhs));
     }
 
-    strictNotEqual(node: ts.Node, lhs: VReg) {
+    strictNotEqual(node: ts.Node, lhs: VReg): void {
         this.add(node, new Strictnoteq(new Imm(0), lhs));
     }
 
@@ -903,7 +903,7 @@ export class PandaGen {
      *          if (lhs OP acc) {...}
      * ifFalse: ...
      */
-    condition(node: ts.Node, op: SyntaxKind, lhs: VReg, ifFalse: Label) {
+    condition(node: ts.Node, op: SyntaxKind, lhs: VReg, ifFalse: Label): void {
         // Please keep order of cases the same as in types.ts
         switch (op) {
             case SyntaxKind.LessThanToken: // line 57
@@ -943,7 +943,7 @@ export class PandaGen {
         }
     }
 
-    unary(node: ts.Node, op: PrefixUnaryOperator, operand: VReg) {
+    unary(node: ts.Node, op: PrefixUnaryOperator, operand: VReg): void {
         switch (op) {
             case SyntaxKind.PlusToken:
                 this.toNumber(node, operand);
@@ -971,11 +971,11 @@ export class PandaGen {
                 let endLabel = new Label();
                 this.jumpIfFalse(node, falseLabel);
                 // operand is true
-                this.add(node, loadAccumulator(getVregisterCache(this, CacheList.False)));
+                this.add(node, loadAccumulator(getVregisterCache(this, CacheList.FALSE)));
                 this.branch(node, endLabel);
                 // operand is false
                 this.label(node, falseLabel);
-                this.add(node, loadAccumulator(getVregisterCache(this, CacheList.True)));
+                this.add(node, loadAccumulator(getVregisterCache(this, CacheList.TRUE)));
                 this.label(node, endLabel);
                 break;
             case SyntaxKind.TildeToken:
@@ -989,7 +989,7 @@ export class PandaGen {
         }
     }
 
-    binary(node: ts.Node, op: BinaryOperator, lhs: VReg) {
+    binary(node: ts.Node, op: BinaryOperator, lhs: VReg): void {
         switch (op) {
             case SyntaxKind.LessThanToken: // line 57
             case SyntaxKind.GreaterThanToken: // line 59
@@ -1066,30 +1066,30 @@ export class PandaGen {
 
     // throw needs argument of exceptionVreg
     // to ensure rethrow the exception after finally
-    throw(node: ts.Node) {
+    throw(node: ts.Node): void {
         this.add(
             node,
             throwException()
         );
     }
 
-    throwThrowNotExist(node: ts.Node) {
+    throwThrowNotExist(node: ts.Node): void {
         this.add(node, throwThrowNotExists());
     }
 
-    throwDeleteSuperProperty(node: ts.Node) {
+    throwDeleteSuperProperty(node: ts.Node): void {
         this.add(node, throwDeleteSuperProperty());
     }
 
-    throwConstAssignment(node: ts.Node, nameReg: VReg) {
+    throwConstAssignment(node: ts.Node, nameReg: VReg): void {
         this.add(node, throwConstAssignment(nameReg));
     }
 
-    return(node: ts.Node | NodeKind) {
+    return(node: ts.Node | NodeKind): void {
         this.add(node, new Return());
     }
 
-    call(node: ts.Node, args: VReg[], passThis: boolean) {
+    call(node: ts.Node, args: VReg[], passThis: boolean): void {
         this.add(
             node,
             loadAccumulator(args[0]), // callee is stored in acc
@@ -1097,21 +1097,21 @@ export class PandaGen {
         )
     }
 
-    returnUndefined(node: ts.Node | NodeKind) {
+    returnUndefined(node: ts.Node | NodeKind): void {
         this.add(
             node,
             returnUndefined()
         )
     }
 
-    newObject(node: ts.Node, args: VReg[]) {
+    newObject(node: ts.Node, args: VReg[]): void {
         this.add(
             node,
             newObject(args)
         );
     }
 
-    defineMethod(node: ts.FunctionLikeDeclaration, name: string, objReg: VReg) {
+    defineMethod(node: ts.FunctionLikeDeclaration, name: string, objReg: VReg): void {
         let paramLength = getParamLengthOfFunc(node);
         this.add(
             node,
@@ -1120,7 +1120,7 @@ export class PandaGen {
         );
     }
 
-    defineFunction(node: ts.FunctionLikeDeclaration | NodeKind, realNode: ts.FunctionLikeDeclaration, name: string) {
+    defineFunction(node: ts.FunctionLikeDeclaration | NodeKind, realNode: ts.FunctionLikeDeclaration, name: string): void {
         let paramLength = getParamLengthOfFunc(realNode);
         this.add(
             node,
@@ -1128,146 +1128,146 @@ export class PandaGen {
         );
     }
 
-    typeOf(node: ts.Node) {
+    typeOf(node: ts.Node): void {
         this.add(node, new Typeof(new Imm(0)));
     }
 
-    callSpread(node: ts.Node, func: VReg, thisReg: VReg, args: VReg) {
+    callSpread(node: ts.Node, func: VReg, thisReg: VReg, args: VReg): void {
         this.loadAccumulator(node, func);
         this.add(node, new Apply(new Imm(0), thisReg, args));
     }
 
-    newObjSpread(node: ts.Node, obj: VReg) {
+    newObjSpread(node: ts.Node, obj: VReg): void {
         this.add(node, new Newobjapply(new Imm(0), obj));
     }
 
-    getUnmappedArgs(node: ts.Node) {
+    getUnmappedArgs(node: ts.Node): void {
         this.add(node, new Getunmappedargs());
     }
 
-    toNumber(node: ts.Node, arg: VReg) {
+    toNumber(node: ts.Node, arg: VReg): void {
         this.loadAccumulator(node, arg);
         this.add(node, new Tonumber(new Imm(0)));
     }
 
-    toNumeric(node: ts.Node, arg: VReg) {
+    toNumeric(node: ts.Node, arg: VReg): void {
         this.loadAccumulator(node, arg);
         this.add(node, new Tonumeric(new Imm(0)));
     }
 
-    createGeneratorObj(node: ts.Node, funcObj: VReg) {
+    createGeneratorObj(node: ts.Node, funcObj: VReg): void {
         this.add(node, new Creategeneratorobj(funcObj));
     }
 
-    createAsyncGeneratorObj(node: ts.Node, funcObj: VReg) {
+    createAsyncGeneratorObj(node: ts.Node, funcObj: VReg): void {
         this.add(node, new Createasyncgeneratorobj(funcObj));
     }
 
-    Createiterresultobj(node: ts.Node, value: VReg, done: VReg) {
+    Createiterresultobj(node: ts.Node, value: VReg, done: VReg): void {
         this.add(node, new Createiterresultobj(value, done));
     }
 
-    asyncgeneratorresolve(node: ts.Node | NodeKind, genObj: VReg, value: VReg, done: VReg) {
+    asyncgeneratorresolve(node: ts.Node | NodeKind, genObj: VReg, value: VReg, done: VReg): void {
         this.add(node, new Asyncgeneratorresolve(genObj, value, done));
     }
 
-    asyncgeneratorreject(node: ts.Node, genObj: VReg) {
+    asyncgeneratorreject(node: ts.Node, genObj: VReg): void {
         this.add(node, new Asyncgeneratorreject(genObj));
     }
 
-    suspendGenerator(node: ts.Node | NodeKind, genObj: VReg) {
+    suspendGenerator(node: ts.Node | NodeKind, genObj: VReg): void {
         this.add(node, new Suspendgenerator(genObj)); // promise obj is in acc
     }
 
-    resumeGenerator(node: ts.Node | NodeKind, genObj: VReg) {
+    resumeGenerator(node: ts.Node | NodeKind, genObj: VReg): void {
         this.add(
             node,
             loadAccumulator(genObj),
             new Resumegenerator());
     }
 
-    getResumeMode(node: ts.Node | NodeKind, genObj: VReg) {
+    getResumeMode(node: ts.Node | NodeKind, genObj: VReg): void {
         this.add(
             node,
             loadAccumulator(genObj),
             new Getresumemode());
     }
 
-    asyncFunctionEnter(node: ts.Node | NodeKind) {
+    asyncFunctionEnter(node: ts.Node | NodeKind): void {
         this.add(node, new Asyncfunctionenter());
     }
 
-    asyncFunctionAwaitUncaught(node: ts.Node | NodeKind, asynFuncObj: VReg) {
+    asyncFunctionAwaitUncaught(node: ts.Node | NodeKind, asynFuncObj: VReg): void {
         this.add(node, new Asyncfunctionawaituncaught(asynFuncObj)); // received value is in acc
     }
 
-    asyncFunctionResolve(node: ts.Node | NodeKind, asyncObj: VReg) {
+    asyncFunctionResolve(node: ts.Node | NodeKind, asyncObj: VReg): void {
         this.add(node, new Asyncfunctionresolve(asyncObj)); // use retVal in acc
     }
 
-    asyncFunctionReject(node: ts.Node | NodeKind, asyncObj: VReg) {
+    asyncFunctionReject(node: ts.Node | NodeKind, asyncObj: VReg): void {
         this.add(node, new Asyncfunctionreject(asyncObj)); // exception is in acc
     }
 
-    getTemplateObject(node: ts.Node | NodeKind, value: VReg) {
+    getTemplateObject(node: ts.Node | NodeKind, value: VReg): void {
         this.loadAccumulator(node, value);
         this.add(node, new Gettemplateobject(new Imm(0)));
     }
 
-    copyRestArgs(node: ts.Node, index: number) {
+    copyRestArgs(node: ts.Node, index: number): void {
         this.add(node, 
                  index <= MAX_INT8 ? new Copyrestargs(new Imm(index)) : new WideCopyrestargs(new Imm(index)));
     }
 
-    getPropIterator(node: ts.Node) {
+    getPropIterator(node: ts.Node): void {
         this.add(node, getPropIterator());
     }
 
-    getNextPropName(node: ts.Node, iter: VReg) {
+    getNextPropName(node: ts.Node, iter: VReg): void {
         this.add(node, getNextPropName(iter));
     }
 
-    createEmptyObject(node: ts.Node) {
+    createEmptyObject(node: ts.Node): void {
         this.add(node, createEmptyObject());
     }
 
-    createObjectWithBuffer(node: ts.Node, bufferId: string) {
+    createObjectWithBuffer(node: ts.Node, bufferId: string): void {
         this.add(node, createObjectWithBuffer(bufferId));
     }
 
-    setObjectWithProto(node: ts.Node, proto: VReg, object: VReg) {
+    setObjectWithProto(node: ts.Node, proto: VReg, object: VReg): void {
         this.add(
             node,
             loadAccumulator(object),
             setObjectWithProto(proto));
     }
 
-    copyDataProperties(node: ts.Node, dstObj: VReg) {
+    copyDataProperties(node: ts.Node, dstObj: VReg): void {
         this.add(node, copyDataProperties(dstObj));
     }
 
-    defineGetterSetterByValue(node: ts.Node, obj: VReg, name: VReg, getter: VReg, setter: VReg, isComputedPropertyName: boolean) {
+    defineGetterSetterByValue(node: ts.Node, obj: VReg, name: VReg, getter: VReg, setter: VReg, isComputedPropertyName: boolean): void {
         if (isComputedPropertyName) {
-            this.add(node, loadAccumulator(getVregisterCache(this, CacheList.True)));
+            this.add(node, loadAccumulator(getVregisterCache(this, CacheList.TRUE)));
         } else {
-            this.add(node, loadAccumulator(getVregisterCache(this, CacheList.False)));
+            this.add(node, loadAccumulator(getVregisterCache(this, CacheList.FALSE)));
         }
         this.add(node, defineGetterSetterByValue(obj, name, getter, setter));
     }
 
-    createEmptyArray(node: ts.Node) {
+    createEmptyArray(node: ts.Node): void {
         this.add(node, createEmptyArray());
     }
 
-    createArrayWithBuffer(node: ts.Node, bufferId: string) {
+    createArrayWithBuffer(node: ts.Node, bufferId: string): void {
         this.add(node, createArrayWithBuffer(bufferId));
     }
 
-    storeArraySpreadElement(node: ts.Node, array: VReg, index: VReg) {
+    storeArraySpreadElement(node: ts.Node, array: VReg, index: VReg): void {
         this.add(node, storeArraySpread(array, index));
     }
 
-    storeLexicalVar(node: ts.Node, level: number, slot: number, value: VReg) {
+    storeLexicalVar(node: ts.Node, level: number, slot: number, value: VReg): void {
         this.loadAccumulator(node, value); // value is load to acc
         this.add(
             node,
@@ -1275,14 +1275,14 @@ export class PandaGen {
         );
     }
 
-    loadLexicalVar(node: ts.Node, level: number, slot: number) {
+    loadLexicalVar(node: ts.Node, level: number, slot: number): void {
         this.add(
             node,
             loadLexicalVar(level, slot)
         )
     }
 
-    loadModuleVariable(node: ts.Node, v: ModuleVariable, isLocal: boolean) {
+    loadModuleVariable(node: ts.Node, v: ModuleVariable, isLocal: boolean): void {
         let index: number = v.getIndex();
         let typeIndex: number = v.getTypeIndex();
         // For local module variable, we bind type with storeModuleVariable instruction
@@ -1298,7 +1298,7 @@ export class PandaGen {
         }
     }
 
-    storeModuleVariable(node: ts.Node | NodeKind, v: ModuleVariable) {
+    storeModuleVariable(node: ts.Node | NodeKind, v: ModuleVariable): void {
         let index: number = v.getIndex();
         let typeIndex: number = v.getTypeIndex();
         let stModuleVarInst: IRNode = storeModuleVariable(index);
@@ -1306,64 +1306,64 @@ export class PandaGen {
         this.add(node, stModuleVarInst);
     }
 
-    getModuleNamespace(node: ts.Node, moduleRequestIdx: number) {
+    getModuleNamespace(node: ts.Node, moduleRequestIdx: number): void {
         this.add(node, getModuleNamespace(moduleRequestIdx));
     }
 
-    dynamicImportCall(node: ts.Node) {
+    dynamicImportCall(node: ts.Node): void {
         this.add(node, dynamicImport());
     }
 
-    defineClassWithBuffer(node: ts.Node, name: string, litId: string, parameterLength: number, base: VReg) {
+    defineClassWithBuffer(node: ts.Node, name: string, litId: string, parameterLength: number, base: VReg): void {
         this.add(
             node,
             defineClassWithBuffer(name, litId, parameterLength, base)
         )
     }
 
-    createObjectWithExcludedKeys(node: ts.Node, obj: VReg, args: VReg[]) {
+    createObjectWithExcludedKeys(node: ts.Node, obj: VReg, args: VReg[]): void {
         this.add(
             node,
             createObjectWithExcludedKeys(obj, args)
         );
     }
 
-    throwObjectNonCoercible(node: ts.Node) {
+    throwObjectNonCoercible(node: ts.Node): void {
         this.add(
             node,
             throwObjectNonCoercible()
         );
     }
 
-    getIterator(node: ts.Node) {
+    getIterator(node: ts.Node): void {
         this.add(
             node,
             getIterator()
         );
     }
 
-    getAsyncIterator(node: ts.Node) {
+    getAsyncIterator(node: ts.Node): void {
         this.add(
             node,
             new Getasynciterator(new Imm(0))
         )
     }
 
-    closeIterator(node: ts.Node, iter: VReg) {
+    closeIterator(node: ts.Node, iter: VReg): void {
         this.add(
             node,
             closeIterator(iter)
         )
     }
 
-    throwIfNotObject(node: ts.Node, obj: VReg) {
+    throwIfNotObject(node: ts.Node, obj: VReg): void {
         this.add(
             node,
             throwIfNotObject(obj)
         );
     }
 
-    superCall(node: ts.Node, num: number, args: Array<VReg>) {
+    superCall(node: ts.Node, num: number, args: Array<VReg>): void {
         if (ts.isArrowFunction(jshelpers.getContainingFunction(node))) {
             this.add(
                 node,
@@ -1378,11 +1378,11 @@ export class PandaGen {
         )
     }
 
-    superCallSpread(node: ts.Node, vs: VReg) {
+    superCallSpread(node: ts.Node, vs: VReg): void {
         this.add(node, superCallSpread(vs));
     }
 
-    ldSuperByName(node: ts.Node, obj: VReg, key: string) {
+    ldSuperByName(node: ts.Node, obj: VReg, key: string): void {
         this.add(
             node,
             loadAccumulator(obj),
@@ -1390,28 +1390,28 @@ export class PandaGen {
         )
     }
 
-    stSuperByName(node: ts.Node, obj: VReg, key: string) {
+    stSuperByName(node: ts.Node, obj: VReg, key: string): void {
         this.add(
             node,
             stSuperByName(obj, key)
         )
     }
 
-    ldSuperByValue(node: ts.Node, obj: VReg) {
+    ldSuperByValue(node: ts.Node, obj: VReg): void {
         this.add(
             node,
             ldSuperByValue(obj)
         )
     }
 
-    stSuperByValue(node: ts.Node, obj: VReg, prop: VReg) {
+    stSuperByValue(node: ts.Node, obj: VReg, prop: VReg): void {
         this.add(
             node,
             stSuperByValue(obj, prop)
         )
     }
 
-    loadSuperProperty(node: ts.Node, obj: VReg, prop: VReg | string | number) {
+    loadSuperProperty(node: ts.Node, obj: VReg, prop: VReg | string | number): void {
         switch (typeof (prop)) {
             case "string":
                 this.ldSuperByName(node, obj, prop);
@@ -1426,11 +1426,11 @@ export class PandaGen {
         }
     }
 
-    throwIfSuperNotCorrectCall(node: ts.Node, num: number) {
+    throwIfSuperNotCorrectCall(node: ts.Node, num: number): void {
         this.add(node, throwIfSuperNotCorrectCall(num));
     }
 
-    storeSuperProperty(node: ts.Node, obj: VReg, prop: VReg | string | number) {
+    storeSuperProperty(node: ts.Node, obj: VReg, prop: VReg | string | number): void {
         switch (typeof (prop)) {
             case "string":
                 this.stSuperByName(node, obj, prop);
@@ -1440,44 +1440,44 @@ export class PandaGen {
                 this.loadAccumulatorInt(node, prop);
                 this.storeAccumulator(node, propReg);
                 this.stSuperByValue(node, obj, propReg);
-                this.freeTemps(propReg)
+                this.freeTemps(propReg);
                 break;
             default:
                 this.stSuperByValue(node, obj, prop);
         }
     }
 
-    createRegExpWithLiteral(node: ts.Node, pattern: string, flags: number) {
+    createRegExpWithLiteral(node: ts.Node, pattern: string, flags: number): void {
         this.add(
             node,
             createRegExpWithLiteral(pattern, flags)
         )
     }
 
-    stLetOrClassToGlobalRecord(node: ts.Node, string_id: string) {
+    stLetOrClassToGlobalRecord(node: ts.Node, string_id: string): void {
         this.add(
             node,
             stLetOrClassToGlobalRecord(string_id));
     }
 
-    stConstToGlobalRecord(node: ts.Node, string_id: string) {
+    stConstToGlobalRecord(node: ts.Node, string_id: string): void {
         this.add(
             node,
             stConstToGlobalRecord(string_id));
     }
 
-    loadAccumulatorBigInt(node: ts.Node | NodeKind, str: string) {
+    loadAccumulatorBigInt(node: ts.Node | NodeKind, str: string): void {
         this.add(
             node,
             loadAccumulatorBigInt(str));
     }
 
-    storeConst(node: ts.Node | NodeKind, dst: VReg, value: CacheList) {
+    storeConst(node: ts.Node | NodeKind, dst: VReg, value: CacheList): void {
         this.loadAccumulator(node, getVregisterCache(this, value));
         this.storeAccumulator(node, dst);
     }
 
-    private binaryRelation(node: ts.Node, op: BinaryOperator, lhs: VReg) {
+    private binaryRelation(node: ts.Node, op: BinaryOperator, lhs: VReg): void {
         let falseLabel = new Label();
         let endLabel = new Label();
         switch (op) {
@@ -1509,10 +1509,10 @@ export class PandaGen {
                 break;
         }
         this.add(node, new Jeqz(falseLabel));
-        this.add(node, loadAccumulator(getVregisterCache(this, CacheList.True)));
+        this.add(node, loadAccumulator(getVregisterCache(this, CacheList.TRUE)));
         this.branch(node, endLabel);
         this.label(node, falseLabel);
-        this.add(node, loadAccumulator(getVregisterCache(this, CacheList.False)));
+        this.add(node, loadAccumulator(getVregisterCache(this, CacheList.FALSE)));
         this.label(node, endLabel);
     }
 

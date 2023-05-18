@@ -115,7 +115,7 @@ describe("IfConditionTest", function () {
             endIfLabel,
         ];
         insns = insns.slice(4, insns.length - 1); // skip let a = 1; let b = 2; and return.
-        expect(checkInstructions(insns, expected)).to.be.true
+        expect(checkInstructions(insns, expected)).to.be.true;
     });
 
     it("if (a == b)", function () {

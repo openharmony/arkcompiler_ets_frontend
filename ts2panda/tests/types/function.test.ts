@@ -77,7 +77,7 @@ describe("function tests in function.test.ts", function () {
                 [2, 2], [24, "snippet_1"], [24, "snippet_2"], [2, 0]
             ],
             [
-                [2, 3], [2, 0], [5, "multi_local"],
+                [2, 3], [2, 0], [5, "multiLocal"],
                 [2, 0], [2, 0], [25, 0]
             ],
             [

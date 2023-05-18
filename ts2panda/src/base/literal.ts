@@ -39,11 +39,11 @@ export class Literal {
         this.v = v;
     }
 
-    getTag() {
+    getTag(): LiteralTag {
         return this.t;
     }
 
-    getValue() {
+    getValue(): any {
         return this.v;
     }
 }
@@ -58,22 +58,22 @@ export class LiteralBuffer {
         this.lb.push(...literals);
     }
 
-    getLiterals() {
+    getLiterals(): Literal[] {
         return this.lb;
     }
 
-    isEmpty() {
-        return this.lb.length == 0;
+    isEmpty(): boolean {
+        return this.lb.length === 0;
     }
 
-    getLiteral(index: number) {
+    getLiteral(index: number): Literal {
         if (index >= this.lb.length || this.lb.length <=0) {
         return ;
         }
         return this.lb[index];
     }
 
-    setKey(key: string) {
+    setKey(key: string): void {
         this.k = key;
     }
 }

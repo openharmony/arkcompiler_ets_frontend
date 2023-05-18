@@ -17,7 +17,7 @@ import * as ts from "typescript";
 import { VarDeclarationKind } from "./variable";
 
 export function getVarDeclarationKind(decl: ts.VariableDeclaration): VarDeclarationKind {
-    if (decl.parent.kind == ts.SyntaxKind.VariableDeclarationList) {
+    if (decl.parent.kind === ts.SyntaxKind.VariableDeclarationList) {
         let declList = <ts.VariableDeclarationList>decl.parent;
         if ((declList.flags & ts.NodeFlags.Let) != 0) {
             return VarDeclarationKind.LET;
@@ -26,7 +26,7 @@ export function getVarDeclarationKind(decl: ts.VariableDeclaration): VarDeclarat
         } else {
             return VarDeclarationKind.VAR;
         }
-    } else if (decl.parent.kind == ts.SyntaxKind.CatchClause) {
+    } else if (decl.parent.kind === ts.SyntaxKind.CatchClause) {
         return VarDeclarationKind.LET;
     } else {
         throw new Error("VariableDeclaration inside " + ts.SyntaxKind[decl.parent] + " is not implemented");

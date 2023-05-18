@@ -77,10 +77,10 @@ export namespace AST {
         }
 
         function isFile(node: any): node is ts.SourceFile {
-            return ((typeof (node) === "object") && ("kind" in node) && (node.kind == ts.SyntaxKind.SourceFile));
+            return ((typeof (node) === "object") && ("kind" in node) && (node.kind === ts.SyntaxKind.SourceFile));
         }
 
-        function Array2String(name: (undefined | string), array: ts.Node[], tab: number): string {
+        function array2String(name: (undefined | string), array: ts.Node[], tab: number): string {
             const repeat = ' '.repeat(tab);
             let retVal = "";
             let subStr = "";
@@ -90,7 +90,7 @@ export namespace AST {
             }
 
             for (const [key, value] of Object.entries(array)) {
-                subStr += Node2String(undefined, value, tab + tabSize);
+                subStr += node2String(undefined, value, tab + tabSize);
             }
 
             if (subStr) {
@@ -104,7 +104,7 @@ export namespace AST {
             return retVal;
         }
 
-        function Node2String(name: (undefined | string), node: ts.Node, tab: number): string {
+        function node2String(name: (undefined | string), node: ts.Node, tab: number): string {
             if (!isNode(node)) {
                 return "";
             }
@@ -119,17 +119,17 @@ export namespace AST {
                 retVal += repeat + name + ':' + '\n';
             }
 
-            subStr = kindNames.join('/')
+            subStr = kindNames.join('/');
             retVal += repeat + subStr + ',' + ' ' + kind + '\n';
-            subStr = ""
+            subStr = "";
 
             for (const [key, value] of Object.entries(node)) {
                 if (isArray(value)) {
-                    subStr += Array2String(key, value, tab + tabSize);
+                    subStr += array2String(key, value, tab + tabSize);
                 }
 
                 if (isNode(value)) {
-                    subStr += Node2String(key, value, tab + tabSize);
+                    subStr += node2String(key, value, tab + tabSize);
                 }
             }
 
@@ -155,7 +155,7 @@ export namespace AST {
 
             for (const value of file.statements) {
                 if (isNode(value)) {
-                    subStr += Node2String(undefined, value, tab + tabSize);
+                    subStr += node2String(undefined, value, tab + tabSize);
                 }
             }
 
@@ -204,8 +204,9 @@ function run(args: string[], useDefault?: boolean): void {
         return path.resolve(file);
     });
 
-    if (useDefault === true)
-        parsed.options = Object.assign(defaultOptions, parsed.options)
+    if (useDefault === true) {
+        parsed.options = Object.assign(defaultOptions, parsed.options);
+    }
 
     console.log(AST.Printer.Convert2String(parsed.fileNames, parsed.options));
 }

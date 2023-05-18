@@ -50,15 +50,15 @@ export class TypeRecorder {
         return TypeRecorder.instance;
     }
 
-    public setTypeSummary() {
+    public setTypeSummary(): void {
         this.typeSummary.setInfo(this.countUserDefinedTypeSet(), this.anonymousReExport);
     }
 
-    public getTypeSummaryIndex() {
+    public getTypeSummaryIndex(): number {
         return this.typeSummary.getPreservedIndex();
     }
 
-    public addUserDefinedTypeSet(index: number) {
+    public addUserDefinedTypeSet(index: number): void {
         if (index > userDefinedTypeStartIndex) {
             this.userDefinedTypeSet.add(index);
         }
@@ -68,12 +68,12 @@ export class TypeRecorder {
         return this.userDefinedTypeSet.size;
     }
 
-    public addType2Index(typeNode: ts.Node, index: number) {
+    public addType2Index(typeNode: ts.Node, index: number): void {
         this.type2Index.set(typeNode, index);
         this.addUserDefinedTypeSet(index);
     }
 
-    public setVariable2Type(variableNode: ts.Node, index: number) {
+    public setVariable2Type(variableNode: ts.Node, index: number): void {
         this.variable2Type.set(variableNode, index);
         this.addUserDefinedTypeSet(index);
     }
@@ -98,56 +98,56 @@ export class TypeRecorder {
         }
     }
 
-    public setArrayTypeMap(contentTypeIndex: number, arrayTypeIndex: number) {
-        this.arrayTypeMap.set(contentTypeIndex, arrayTypeIndex)
+    public setArrayTypeMap(contentTypeIndex: number, arrayTypeIndex: number): void {
+        this.arrayTypeMap.set(contentTypeIndex, arrayTypeIndex);
     }
 
-    public hasArrayTypeMapping(contentTypeIndex: number) {
+    public hasArrayTypeMapping(contentTypeIndex: number): boolean {
         return this.arrayTypeMap.has(contentTypeIndex);
     }
 
-    public getFromArrayTypeMap(contentTypeIndex: number) {
+    public getFromArrayTypeMap(contentTypeIndex: number): number {
         return this.arrayTypeMap.get(contentTypeIndex);
     }
 
-    public setUnionTypeMap(unionStr: string, unionTypeIndex: number) {
+    public setUnionTypeMap(unionStr: string, unionTypeIndex: number): void {
         this.unionTypeMap.set(unionStr, unionTypeIndex)
     }
 
-    public hasUnionTypeMapping(unionStr: string) {
+    public hasUnionTypeMapping(unionStr: string): boolean {
         return this.unionTypeMap.has(unionStr);
     }
 
-    public getFromUnionTypeMap(unionStr: string) {
+    public getFromUnionTypeMap(unionStr: string): number {
         return this.unionTypeMap.get(unionStr);
     }
 
-    public setClass2InstanceMap(classIndex: number, instanceIndex: number) {
-        this.class2InstanceMap.set(classIndex, instanceIndex)
+    public setClass2InstanceMap(classIndex: number, instanceIndex: number): void {
+        this.class2InstanceMap.set(classIndex, instanceIndex);
     }
 
-    public hasClass2InstanceMap(classIndex: number) {
+    public hasClass2InstanceMap(classIndex: number): boolean {
         return this.class2InstanceMap.has(classIndex);
     }
 
-    public getClass2InstanceMap(classIndex: number) {
+    public getClass2InstanceMap(classIndex: number): number {
         return this.class2InstanceMap.get(classIndex);
     }
 
-    public setBuiltinContainer2InstanceMap(builtinContainer: object, instanceIndex: number) {
-        this.builtinContainer2InstanceMap.set(builtinContainer, instanceIndex)
+    public setBuiltinContainer2InstanceMap(builtinContainer: object, instanceIndex: number): void {
+        this.builtinContainer2InstanceMap.set(builtinContainer, instanceIndex);
     }
 
-    public hasBuiltinContainer2InstanceMap(builtinContainer: object) {
+    public hasBuiltinContainer2InstanceMap(builtinContainer: object): boolean {
         return this.builtinContainer2InstanceMap.has(builtinContainer);
     }
 
-    public getBuiltinContainer2InstanceMap(builtinContainer: object) {
+    public getBuiltinContainer2InstanceMap(builtinContainer: object): number {
         return this.builtinContainer2InstanceMap.get(builtinContainer);
     }
 
     // exported/imported
-    public addImportedType(moduleStmt: ModuleStmt) {
+    public addImportedType(moduleStmt: ModuleStmt): void {
         moduleStmt.getBindingNodeMap().forEach((externalNode, localNode) => {
             let externalName = jshelpers.getTextOfIdentifierOrLiteral(externalNode);
             let importDeclNode = TypeChecker.getInstance().getTypeDeclForIdentifier(localNode);
@@ -159,12 +159,12 @@ export class TypeRecorder {
         if (moduleStmt.getNameSpace() != "") {
             this.setNamespaceMap(moduleStmt.getNameSpace(), moduleStmt.getModuleRequest());
             let externalType = new ExternalType("*", moduleStmt.getNameSpace());
-            let ImportTypeIndex = externalType.shiftedTypeIndex;
-            this.addUserDefinedTypeSet(ImportTypeIndex);
+            let importTypeIndex = externalType.shiftedTypeIndex;
+            this.addUserDefinedTypeSet(importTypeIndex);
         }
     }
 
-    public addExportedType(moduleStmt: ModuleStmt) {
+    public addExportedType(moduleStmt: ModuleStmt): void {
         if (moduleStmt.getModuleRequest() != "") {
             // re-export, no need to search in typeRecord cause it must not be there
             if (moduleStmt.getNameSpace() != "") {
@@ -198,7 +198,7 @@ export class TypeRecorder {
         }
     }
 
-    public addNonReExportedType(exportedName: string, typeNode: ts.Node, localNode: ts.Node) {
+    public addNonReExportedType(exportedName: string, typeNode: ts.Node, localNode: ts.Node): void {
         // Check if type of localName was already stroed in typeRecord
         // Imported type should already be stored in typeRecord by design
         let typeIndexForType = this.tryGetTypeIndex(typeNode);
@@ -210,32 +210,32 @@ export class TypeRecorder {
         } else {
             // not found in typeRecord. Need to create the type and
             // add to typeRecord with its localName and to exportedType with its exportedName
-            let typeIndex = TypeChecker.getInstance().getTypeFromDecl(typeNode, localNode.kind == ts.SyntaxKind.NewExpression);
+            let typeIndex = TypeChecker.getInstance().getTypeFromDecl(typeNode, localNode.kind === ts.SyntaxKind.NewExpression);
             this.setExportedType(exportedName, typeIndex);
         }
     }
 
-    public setExportedType(exportedName: string, typeIndex: number) {
+    public setExportedType(exportedName: string, typeIndex: number): void {
         this.exportedType.set(exportedName, typeIndex);
     }
 
-    public setDeclaredType(exportedName: string, typeIndex: number) {
+    public setDeclaredType(exportedName: string, typeIndex: number): void {
         this.declaredType.set(exportedName, typeIndex);
     }
 
-    public addAnonymousReExport(redirectName: string) {
+    public addAnonymousReExport(redirectName: string): void {
         this.anonymousReExport.push(redirectName);
     }
 
-    public setNamespaceMap(namespace: string, filePath: string) {
+    public setNamespaceMap(namespace: string, filePath: string): void {
         this.namespaceMap.set(namespace, filePath);
     }
 
-    public inNampespaceMap(targetName: string) {
+    public inNampespaceMap(targetName: string): boolean {
         return this.namespaceMap.has(targetName);
     }
 
-    public getPathForNamespace(targetName: string) {
+    public getPathForNamespace(targetName: string): string {
         return this.namespaceMap.get(targetName);
     }
 
@@ -248,39 +248,39 @@ export class TypeRecorder {
         return this.variable2Type;
     }
 
-    public getTypeSet() {
+    public getTypeSet(): Set<number> {
         return this.userDefinedTypeSet;
     }
 
-    public getExportedType() {
+    public getExportedType(): Map<string, number> {
         return this.exportedType;
     }
 
-    public getDeclaredType() {
+    public getDeclaredType(): Map<string, number> {
         return this.declaredType;
     }
 
-    public getAnonymousReExport() {
+    public getAnonymousReExport(): string[] {
         return this.anonymousReExport;
     }
 
-    public getNamespaceMap() {
+    public getNamespaceMap(): Map<string, string> {
         return this.namespaceMap;
     }
 
-    public printNodeMap(map: Map<ts.Node, number>) {
+    public printNodeMap(map: Map<ts.Node, number>): void {
         map.forEach((value, key) => {
             console.log(jshelpers.getTextOfNode(key) + ": " + value);
         });
     }
 
-    public printExportMap(map: Map<string, number>) {
+    public printExportMap(map: Map<string, number>): void {
         map.forEach((value, key) => {
             console.log(key + " : " + value);
         });
     }
 
-    public printReExportMap(map: Map<string, string>) {
+    public printReExportMap(map: Map<string, string>): void {
         map.forEach((value, key) => {
             console.log(key + " : " + value);
         });

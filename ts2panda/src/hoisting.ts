@@ -34,7 +34,7 @@ import {
 import { ModuleVariable } from "./variable";
 
 export function hoisting(rootNode: ts.SourceFile | ts.FunctionLikeDeclaration, pandaGen: PandaGen,
-    recorder: Recorder, compiler: Compiler) {
+    recorder: Recorder, compiler: Compiler): void {
     let variableScope = <VariableScope>recorder.getScopeOfNode(rootNode);
     let hoistDecls = recorder.getHoistDeclsOfScope(variableScope);
 
@@ -50,40 +50,40 @@ export function hoisting(rootNode: ts.SourceFile | ts.FunctionLikeDeclaration, p
     });
 }
 
-export function hoistVar(decl: VarDecl, scope: Scope, pandaGen: PandaGen) {
+export function hoistVar(decl: VarDecl, scope: Scope, pandaGen: PandaGen): void {
     let name = decl.name;
 
     if (scope instanceof GlobalScope) {
-        pandaGen.loadAccumulator(decl.node, getVregisterCache(pandaGen, CacheList.undefined));
+        pandaGen.loadAccumulator(decl.node, getVregisterCache(pandaGen, CacheList.UNDEFINED));
         pandaGen.storeGlobalVar(decl.node, name);
     } else if (scope instanceof FunctionScope || scope instanceof ModuleScope) {
         let v: ModuleVariable = <ModuleVariable>(scope.findLocal(name)!);
-        pandaGen.loadAccumulator(NodeKind.FirstNodeOfFunction, getVregisterCache(pandaGen, CacheList.undefined));
+        pandaGen.loadAccumulator(NodeKind.FIRST_NODE_OF_FUNCTION, getVregisterCache(pandaGen, CacheList.UNDEFINED));
         if (decl.isModule !== ModuleVarKind.NOT) {
-            pandaGen.storeModuleVariable(NodeKind.FirstNodeOfFunction, v);
+            pandaGen.storeModuleVariable(NodeKind.FIRST_NODE_OF_FUNCTION, v);
         } else {
-            pandaGen.storeAccToLexEnv(NodeKind.FirstNodeOfFunction, scope, 0, v, true);
+            pandaGen.storeAccToLexEnv(NodeKind.FIRST_NODE_OF_FUNCTION, scope, 0, v, true);
         }
     } else {
         throw new Error("Wrong scope to hoist");
     }
 }
 
-export function hoistFunction(decl: FuncDecl, scope: Scope, pandaGen: PandaGen, compiler: Compiler, compilerDriver: CompilerDriver) {
+export function hoistFunction(decl: FuncDecl, scope: Scope, pandaGen: PandaGen, compiler: Compiler, compilerDriver: CompilerDriver): void {
     let funcName = decl.name;
     let internalName = compilerDriver.getFuncInternalName(<ts.FunctionLikeDeclaration>decl.node, compiler.getRecorder());
     let env = compiler.getCurrentEnv();
 
     if (scope instanceof GlobalScope) {
-        pandaGen.defineFunction(NodeKind.FirstNodeOfFunction, <ts.FunctionDeclaration>decl.node, internalName);
-        pandaGen.storeGlobalVar(NodeKind.FirstNodeOfFunction, funcName);
+        pandaGen.defineFunction(NodeKind.FIRST_NODE_OF_FUNCTION, <ts.FunctionDeclaration>decl.node, internalName);
+        pandaGen.storeGlobalVar(NodeKind.FIRST_NODE_OF_FUNCTION, funcName);
     } else if ((scope instanceof FunctionScope) || (scope instanceof LocalScope) || (scope instanceof ModuleScope)) {
         let v: ModuleVariable = <ModuleVariable>(scope.findLocal(funcName)!);
-        pandaGen.defineFunction(NodeKind.FirstNodeOfFunction, <ts.FunctionDeclaration>decl.node, internalName);
+        pandaGen.defineFunction(NodeKind.FIRST_NODE_OF_FUNCTION, <ts.FunctionDeclaration>decl.node, internalName);
         if (decl.isModule !== ModuleVarKind.NOT) {
-            pandaGen.storeModuleVariable(NodeKind.FirstNodeOfFunction, v);
+            pandaGen.storeModuleVariable(NodeKind.FIRST_NODE_OF_FUNCTION, v);
         } else {
-            pandaGen.storeAccToLexEnv(NodeKind.FirstNodeOfFunction, scope, 0, v, true);
+            pandaGen.storeAccToLexEnv(NodeKind.FIRST_NODE_OF_FUNCTION, scope, 0, v, true);
         }
     } else {
         throw new Error("Wrong scope to hoist");
@@ -91,7 +91,7 @@ export function hoistFunction(decl: FuncDecl, scope: Scope, pandaGen: PandaGen, 
 }
 
 // this function is called when hoisting function inside blocks
-export function hoistFunctionInBlock(scope: Scope, pandaGen: PandaGen, strictMode: boolean, compiler: Compiler) {
+export function hoistFunctionInBlock(scope: Scope, pandaGen: PandaGen, strictMode: boolean, compiler: Compiler): void {
     let decls = scope.getDecls();
     let funcToHoist = new Array<FuncDecl>();
     for (let i = 0; i < decls.length; i++) {

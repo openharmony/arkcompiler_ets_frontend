@@ -335,7 +335,7 @@ describe("WatchExpressions", function () {
             new Return()
         ];
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "#1#") {
+            if (pg.internalName === "#1#") {
                 expect(checkInstructions(pg.getInsns(), expected)).to.be.true;
             }
         });
@@ -511,7 +511,7 @@ describe("WatchExpressions", function () {
             new Return()
         ];
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "func_main_0") {
+            if (pg.internalName === "func_main_0") {
                 expect(checkInstructions(pg.getInsns(), expected)).to.be.true;
             }
         });
@@ -639,7 +639,7 @@ describe("WatchExpressions", function () {
         ];
 
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "a") {
+            if (pg.internalName === "a") {
                 expect(checkInstructions(pg.getInsns(), expected)).to.be.true;
             }
         });
@@ -844,7 +844,7 @@ describe("WatchExpressions", function () {
         ];
 
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "func") {
+            if (pg.internalName === "func") {
                 expect(checkInstructions(pg.getInsns(), expected)).to.be.true;
             }
         });
@@ -875,7 +875,7 @@ describe("WatchExpressions", function () {
         ];
 
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "#1#") {
+            if (pg.internalName === "#1#") {
                 expect(checkInstructions(pg.getInsns(), expected)).to.be.true;
             }
         });
@@ -906,7 +906,7 @@ describe("WatchExpressions", function () {
             new Return()
         ];
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "func_main_0") {
+            if (pg.internalName === "func_main_0") {
                 expect(checkInstructions(pg.getInsns(), expected)).to.be.true;
             }
         });

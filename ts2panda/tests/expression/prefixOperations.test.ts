@@ -153,14 +153,14 @@ describe("PrefixOperationsTest", function () {
         let insns = compileMainSnippet("let i = 5; let j = ~i");
         IRNode.pg = new PandaGen("foo", creatAstFromSnippet("let i = 5; let j = ~i"), 0, undefined);
 
-        let temp_i = new VReg();
+        let tempI = new VReg();
 
         let expected = [
             new Ldai(new Imm(5)),
             new Sttoglobalrecord(new Imm(0), 'i'),
             new Tryldglobalbyname(new Imm(1), 'i'),
-            new Sta(temp_i),
-            new Lda(temp_i),
+            new Sta(tempI),
+            new Lda(tempI),
             new Not(new Imm(2)),
             new Sttoglobalrecord(new Imm(3), 'j'),
             new Returnundefined()

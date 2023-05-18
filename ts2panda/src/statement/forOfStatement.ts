@@ -38,21 +38,21 @@ export class IteratorRecord {
         this.nextMethod = nextMethod;
     }
 
-    getType() {
+    getType(): IteratorType {
         return this.type;
     }
 
-    getObject() {
+    getObject(): VReg {
         return this.object;
     }
 
-    getNextMethod() {
+    getNextMethod(): VReg {
         return this.nextMethod;
     }
 }
 
 
-export function compileForOfStatement(stmt: ts.ForOfStatement, compiler: Compiler) {
+export function compileForOfStatement(stmt: ts.ForOfStatement, compiler: Compiler): void {
     compiler.pushScope(stmt);
 
     let pandaGen = compiler.getPandaGen();
@@ -83,7 +83,7 @@ export function compileForOfStatement(stmt: ts.ForOfStatement, compiler: Compile
         compiler.popEnv();
     }
 
-    pandaGen.loadAccumulator(stmt, getVregisterCache(pandaGen, CacheList.False));
+    pandaGen.loadAccumulator(stmt, getVregisterCache(pandaGen, CacheList.FALSE));
     pandaGen.storeAccumulator(stmt, doneReg);
 
     let labelTarget = new LabelTarget(stmt, endLabel, nextLabel, needCreateLoopEnv);
@@ -107,7 +107,7 @@ export function compileForOfStatement(stmt: ts.ForOfStatement, compiler: Compile
     compiler.popScope();
 }
 
-export function getIteratorRecord(pandagen: PandaGen, node: ts.Node, nextMethod: VReg, object: VReg, type: IteratorType) {
+export function getIteratorRecord(pandagen: PandaGen, node: ts.Node, nextMethod: VReg, object: VReg, type: IteratorType): IteratorRecord {
     getIterator(pandagen, node, type);
 
     pandagen.storeAccumulator(node, object);
@@ -117,8 +117,8 @@ export function getIteratorRecord(pandagen: PandaGen, node: ts.Node, nextMethod:
     return new IteratorRecord(object, nextMethod, type);
 }
 
-function getIterator(pandagen: PandaGen, node: ts.Node, type: IteratorType) {
-    if (type == IteratorType.Async) {
+function getIterator(pandagen: PandaGen, node: ts.Node, type: IteratorType): void {
+    if (type === IteratorType.Async) {
         pandagen.getAsyncIterator(node);
     } else {
         pandagen.getIterator(node);

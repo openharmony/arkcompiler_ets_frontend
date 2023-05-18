@@ -15,9 +15,9 @@
 
 function func(){
     "use strict";
-    var x = 10;
+    let x = 10;
     function add(a,b) {
-        var y = 12;
+        let y = 12;
         return a + b + y;
     }
 }

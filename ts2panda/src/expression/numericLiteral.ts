@@ -35,15 +35,15 @@ export function isInteger(value: number): Boolean {
     return true;
 }
 
-export function compileNumericLiteral(pandaGen: PandaGen, lit: ts.NumericLiteral) {
+export function compileNumericLiteral(pandaGen: PandaGen, lit: ts.NumericLiteral): void {
     let text = jshelpers.getTextOfIdentifierOrLiteral(lit);
     let value = Number.parseFloat(text);
     // check whether value is a NaN
     if (Number.isNaN(value)) {
-        pandaGen.loadAccumulator(lit, getVregisterCache(pandaGen, CacheList.NaN));
+        pandaGen.loadAccumulator(lit, getVregisterCache(pandaGen, CacheList.NAN));
     } else if (!Number.isFinite(value)) {
         // check whether value is a Infinity
-        pandaGen.loadAccumulator(lit, getVregisterCache(pandaGen, CacheList.Infinity));
+        pandaGen.loadAccumulator(lit, getVregisterCache(pandaGen, CacheList.INFINITY));
     } else if (isInteger(value)) {
         // check whether value is a SafeInteger
         pandaGen.loadAccumulatorInt(lit, value);

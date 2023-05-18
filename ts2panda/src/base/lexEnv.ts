@@ -36,7 +36,7 @@ function createLexEnv(pandaGen: PandaGen, scope: VariableScope): IRNode[] {
 
     insns.push(
         newLexicalEnv(lexEnvVars, scopeInfoId),
-        storeAccumulator(getVregisterCache(pandaGen, CacheList.LexEnv))
+        storeAccumulator(getVregisterCache(pandaGen, CacheList.LEXENV))
     );
 
     return insns;

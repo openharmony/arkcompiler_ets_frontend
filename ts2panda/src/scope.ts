@@ -77,14 +77,14 @@ export class ClassDecl extends Decl {
 }
 
 export class CatchParameter extends Decl {
-    constructor(CpName: string, node: ts.Node, isModule: ModuleVarKind = ModuleVarKind.NOT) {
-        super(CpName, node, isModule);
+    constructor(cpName: string, node: ts.Node, isModule: ModuleVarKind = ModuleVarKind.NOT) {
+        super(cpName, node, isModule);
     }
 }
 
 export class FunctionParameter extends Decl {
-    constructor(FpName: string, node: ts.Node, isModule: ModuleVarKind = ModuleVarKind.NOT) {
-        super(FpName, node, isModule);
+    constructor(fpName: string, node: ts.Node, isModule: ModuleVarKind = ModuleVarKind.NOT) {
+        super(fpName, node, isModule);
     }
 }
 
@@ -106,7 +106,7 @@ export abstract class Scope {
         return this.name2variable;
     }
 
-    getScopeStartInsIdx() {
+    getScopeStartInsIdx(): number {
         return this.startInsIdx;
     }
 
@@ -118,11 +118,11 @@ export abstract class Scope {
         this.endInsIdx = endInsIdx;
     }
 
-    getScopeEndInsIdx() {
+    getScopeEndInsIdx(): number {
         return this.endInsIdx;
     }
 
-    setParent(parentScope: Scope | undefined) {
+    setParent(parentScope: Scope | undefined): void {
         this.parent = parentScope;
     }
 
@@ -173,7 +173,7 @@ export abstract class Scope {
 
         while (sp) {
             if (sp instanceof VariableScope) {
-                if (tempLevel == 0) {
+                if (tempLevel === 0) {
                     return <VariableScope>sp;
                 } else {
                     tempLevel--;
@@ -234,7 +234,7 @@ export abstract class Scope {
         let enclosingVariableScope: VariableScope = this.getNearestVariableScope();
 
         while (curScope) {
-            if (curScope == enclosingVariableScope.parent) {
+            if (curScope === enclosingVariableScope.parent) {
                 crossFunc = true;
             }
 
@@ -254,14 +254,14 @@ export abstract class Scope {
         return {isLexical: false, scope: undefined, defLexicalScope: undefined, v: undefined};
     }
 
-    setDecls(decl: Decl) {
+    setDecls(decl: Decl): void {
         this.decls.push(decl);
     }
 
     hasDecl(name: string): boolean {
         let decls = this.decls;
         for (let i = 0; i < decls.length; i++) {
-            if (decls[i].name == name) {
+            if (decls[i].name === name) {
                 return true;
             }
         }
@@ -272,7 +272,7 @@ export abstract class Scope {
     getDecl(name: string): Decl | undefined {
         let decls = this.decls;
         for (let i = 0; i < decls.length; i++) {
-            if (decls[i].name == name) {
+            if (decls[i].name === name) {
                 return decls[i];
             }
         }
@@ -280,11 +280,11 @@ export abstract class Scope {
         return undefined;
     }
 
-    getDecls() {
+    getDecls(): Decl[] {
         return this.decls;
     }
 
-    public setArgumentsOrRestargs() {
+    public setArgumentsOrRestargs(): void {
         this.isArgumentsOrRestargs = true;
     }
 
@@ -292,7 +292,7 @@ export abstract class Scope {
         return this.isArgumentsOrRestargs;
     }
 
-    isLexicalScope() {
+    isLexicalScope(): boolean {
         let scope = this;
         return ((scope instanceof VariableScope) || (scope instanceof LoopScope));
     }
@@ -308,31 +308,31 @@ export abstract class VariableScope extends Scope {
     protected childVariableScope: VariableScope[] = [];
     protected lexVarInfo: Map<string, number> = new Map<string, number>();
 
-    getLexVarInfo() {
+    getLexVarInfo(): Map<string, number> {
         return this.lexVarInfo;
     }
 
-    addLexVarInfo(name: string, slot: number) {
+    addLexVarInfo(name: string, slot: number): void {
         this.lexVarInfo.set(name, slot);
     }
 
-    getBindingNode() {
+    getBindingNode(): ts.Node {
         return this.node;
     }
 
-    setParentVariableScope(scope: VariableScope) {
+    setParentVariableScope(scope: VariableScope): void {
         this.parentVariableScope = scope;
     }
 
-    getParentVariableScope() {
+    getParentVariableScope(): VariableScope {
         return this.parentVariableScope;
     }
 
-    getChildVariableScope() {
+    getChildVariableScope(): VariableScope[] {
         return this.childVariableScope;
     }
 
-    addChildVariableScope(scope: VariableScope) {
+    addChildVariableScope(scope: VariableScope): void {
         this.childVariableScope.push(scope);
     }
 
@@ -346,7 +346,7 @@ export abstract class VariableScope extends Scope {
         return v;
     }
 
-    addFuncName(funcName: string) {
+    addFuncName(funcName: string): void {
         let funcObj = this.name2variable.get(MandatoryFuncObj);
         this.name2variable.set(funcName, funcObj!);
     }
@@ -355,7 +355,7 @@ export abstract class VariableScope extends Scope {
         return this.needCreateLexEnv;
     }
 
-    pendingCreateEnv() {
+    pendingCreateEnv(): void {
         this.needCreateLexEnv = true;
     }
 
@@ -371,7 +371,7 @@ export abstract class VariableScope extends Scope {
         return this.parameters;
     }
 
-    getLexVarIdx() {
+    getLexVarIdx(): number {
         this.needCreateLexEnv = true;
         return this.startLexIdx++;
     }
@@ -406,7 +406,7 @@ export class GlobalScope extends VariableScope {
         let name = decl instanceof Decl ? decl.name : decl;
         LOGD(this.debugTag, "globalscope.add (" + name + "), kind:" + declKind);
         let v: Variable | undefined;
-        if (declKind == VarDeclarationKind.NONE || declKind == VarDeclarationKind.VAR || declKind == VarDeclarationKind.FUNCTION) {
+        if (declKind === VarDeclarationKind.NONE || declKind === VarDeclarationKind.VAR || declKind === VarDeclarationKind.FUNCTION) {
             v = new GlobalVariable(declKind, name);
         } else {
             v = new LocalVariable(declKind, name, status);
@@ -425,14 +425,14 @@ export class ModuleScope extends VariableScope {
         this.moduleRecord = new SourceTextModuleRecord(node.fileName);
     }
 
-    setExportDecl(exportedLocalName: string) {
+    setExportDecl(exportedLocalName: string): void {
         let decl = this.getDecl(exportedLocalName);
         if (decl && decl.isModule != ModuleVarKind.IMPORTED) {
             decl.isModule = ModuleVarKind.EXPORTED;
         }
     }
 
-    module() {
+    module(): SourceTextModuleRecord {
         return this.moduleRecord;
     }
 
@@ -443,13 +443,13 @@ export class ModuleScope extends VariableScope {
 
         if (isModule !== ModuleVarKind.NOT) {
             v = new ModuleVariable(declKind, name, InitStatus.UNINITIALIZED);
-            if (isModule == ModuleVarKind.EXPORTED) {
+            if (isModule === ModuleVarKind.EXPORTED) {
                 (<ModuleVariable>v).setExport();
             }
         } else {
             if (declKind === VarDeclarationKind.NONE) {
                 v = new GlobalVariable(declKind, name);
-            } else if (declKind == VarDeclarationKind.VAR || declKind == VarDeclarationKind.FUNCTION) {
+            } else if (declKind === VarDeclarationKind.VAR || declKind === VarDeclarationKind.FUNCTION) {
                 v = new LocalVariable(declKind, name);
             } else {
                 v = new LocalVariable(declKind, name, status);
@@ -470,7 +470,7 @@ export class FunctionScope extends VariableScope {
         this.node = node ? node : undefined;
     }
 
-    setParameterLength(length: number) {
+    setParameterLength(length: number): void {
         this.parameterLength = length;
     }
 
@@ -478,11 +478,11 @@ export class FunctionScope extends VariableScope {
         return this.parameterLength;
     }
 
-    setFuncName(name: string) {
+    setFuncName(name: string): void {
         this.funcName = name;
     }
 
-    getFuncName() {
+    getFuncName(): string {
         return this.funcName;
     }
 
@@ -495,12 +495,12 @@ export class FunctionScope extends VariableScope {
         let v: Variable | undefined;
         LOGD(this.debugTag, "functionscope.add (" + name + "), kind:" + declKind);
 
-        if (declKind == VarDeclarationKind.NONE) {
+        if (declKind === VarDeclarationKind.NONE) {
             // the variable declared without anything should be global
             // See EcmaStandard: 13.3.2 Variable Statement
             let topLevelScope = this.getRootScope();
             v = topLevelScope.add(name, declKind);
-        } else if (declKind == VarDeclarationKind.VAR || declKind == VarDeclarationKind.FUNCTION) {
+        } else if (declKind === VarDeclarationKind.VAR || declKind === VarDeclarationKind.FUNCTION) {
             v = new LocalVariable(declKind, name);
             this.name2variable.set(name, v);
         } else {
@@ -514,7 +514,7 @@ export class FunctionScope extends VariableScope {
 export class LocalScope extends Scope {
     constructor(parent: Scope) {
         super();
-        this.parent = parent
+        this.parent = parent;
     }
 
     add(decl: Decl | string, declKind: VarDeclarationKind, status?: InitStatus): Variable | undefined {
@@ -522,10 +522,10 @@ export class LocalScope extends Scope {
         let v: Variable | undefined;
 
         LOGD(this.debugTag, "localscope.add (" + name + "), kind:" + declKind);
-        if (declKind == VarDeclarationKind.NONE) {
+        if (declKind === VarDeclarationKind.NONE) {
             let topLevelScope = this.getRootScope();
             v = topLevelScope.add(name, declKind);
-        } else if (declKind == VarDeclarationKind.VAR) {
+        } else if (declKind === VarDeclarationKind.VAR) {
             /**
              * the variable declared without anything should be accessible
              * in all parent scopes so delegate creation to the parent
@@ -550,11 +550,11 @@ export class LoopScope extends LocalScope {
         super(parent);
     }
 
-    getLexVarInfo() {
+    getLexVarInfo(): Map<string, number> {
         return this.lexVarInfo;
     }
 
-    addLexVarInfo(name: string, slot: number) {
+    addLexVarInfo(name: string, slot: number): void {
         this.lexVarInfo.set(name, slot);
     }
 
@@ -562,11 +562,11 @@ export class LoopScope extends LocalScope {
         return this.needCreateLexEnv;
     }
 
-    pendingCreateEnv() {
+    pendingCreateEnv(): void {
         this.needCreateLexEnv = true;
     }
 
-    getLexVarIdx() {
+    getLexVarIdx(): number {
         this.needCreateLexEnv = true;
         return this.startLexIdx++;
     }

@@ -15,13 +15,13 @@
 
 function add(a,b) {
     "use strict";
-    var x = 12;
+    let x = 12;
     return a + b + x;
 }
 
 function sub(a,b) {
-    var y = 12;
+    let y = 12;
     return a + b - y;
 }
 
-var z = 13;
+let z = 13;

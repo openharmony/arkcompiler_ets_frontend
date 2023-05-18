@@ -19,7 +19,7 @@ class A {
     get getName(): string {
         return this.name;
     }
-    get getId() {
+    get getId(): number {
         return this.id;
     }
     set setName(name: string) {
@@ -37,13 +37,13 @@ class A {
     }
     static a: number = 1;
     a: number = 2;
-    static stest() {
+    static stest(): void {
         console.log(this.a);
     }
-    test() {
+    test(): void {
         console.log(this.a);
     }
-    testwiththis(this: A) {
+    testwiththis(this: A): void {
         console.log(this.a);
     }
 }

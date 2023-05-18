@@ -17,7 +17,7 @@ import * as ts from "typescript";
 import { Compiler } from "../compiler";
 
 
-export function compileCommaListExpression(compiler: Compiler, exprList: ts.CommaListExpression) {
+export function compileCommaListExpression(compiler: Compiler, exprList: ts.CommaListExpression): void {
     exprList.elements.forEach(expr => {
         compiler.compileExpression(expr);
     })

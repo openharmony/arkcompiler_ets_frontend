@@ -50,12 +50,12 @@ export class Iterator {
         }
     }
 
-    getIterator() {
+    getIterator(): void {
         let pandaGen = this.pandaGen;
         let iterator = this.iterRecord.iterator;
 
         // get iterator
-        this.kind == IteratorType.Normal ? pandaGen.getIterator(this.node) : pandaGen.getAsyncIterator(this.node);
+        this.kind === IteratorType.Normal ? pandaGen.getIterator(this.node) : pandaGen.getAsyncIterator(this.node);
         pandaGen.storeAccumulator(this.node, iterator);
 
         // get the next method
@@ -67,7 +67,7 @@ export class Iterator {
         return this.iterRecord.nextMethod;
     }
 
-    getMethod(id: string) {
+    getMethod(id: string): void {
         this.pandaGen.loadObjProperty(this.node, this.iterRecord.iterator, id);
         this.pandaGen.storeAccumulator(this.node, this.iterRecord.nextMethod);
     }
@@ -78,28 +78,28 @@ export class Iterator {
      *      throw TypeError
      *  }
      */
-    callNext(iterResult: VReg) {
+    callNext(iterResult: VReg): void {
         this.pandaGen.call(this.node, [this.iterRecord.nextMethod, this.iterRecord.iterator], true);
         this.pandaGen.storeAccumulator(this.node, iterResult);
     }
 
-    callMethodwithValue(value: VReg) {
+    callMethodwithValue(value: VReg): void {
         this.pandaGen.call(this.node, [this.iterRecord.nextMethod, this.iterRecord.iterator, value], true);
     }
 
-    iteratorComplete(iterResult: VReg) {
+    iteratorComplete(iterResult: VReg): void {
         this.pandaGen.loadObjProperty(this.node, iterResult, "done");
         this.pandaGen.storeAccumulator(this.node, this.iterDone);
     }
 
-    iteratorValue(iterResult: VReg) {
+    iteratorValue(iterResult: VReg): void {
         this.pandaGen.loadObjProperty(this.node, iterResult, "value");
         this.pandaGen.storeAccumulator(this.node, this.iterValue);
     }
 
-    close() {
+    close(): void {
         let pg = this.pandaGen;
-        if (this.kind == IteratorType.Normal) {
+        if (this.kind === IteratorType.Normal) {
             pg.closeIterator(this.node, this.iterRecord.iterator);
             return;
         }
@@ -164,11 +164,11 @@ export class Iterator {
         pg.freeTemps(completion, res, exception)
     }
 
-    getCurrentValue() {
+    getCurrentValue(): VReg {
         return this.iterValue;
     }
 
-    getCurrrentDone() {
+    getCurrrentDone(): VReg {
         return this.iterDone;
     }
 }

@@ -41,7 +41,7 @@ class RegAllocator {
         this.vRegsId = 0;
     }
 
-    allocIndexForVreg(vreg: VReg) {
+    allocIndexForVreg(vreg: VReg): void {
         let num = this.getFreeVreg();
         vreg.num = num;
     }
@@ -77,7 +77,7 @@ class RegAllocator {
         return num;
     }
 
-    doRealAdjustment(operands: OperandType[], format: Format, index: number, irNodes: IRNode[]) {
+    doRealAdjustment(operands: OperandType[], format: Format, index: number, irNodes: IRNode[]): void {
         let head: IRNode[] = [];
         let tail: IRNode[] = [];
 
@@ -87,13 +87,13 @@ class RegAllocator {
                 if (vOrigin.num >= (1 << format[j][1])) {
                     let spill = this.getSpill();
                     operands[j] = spill;
-                    if (format[j][0] == OperandKind.SrcVReg) {
+                    if (format[j][0] === OperandKind.SrcVReg) {
                         head.push(new Mov(spill, vOrigin));
-                    } else if (format[j][0] == OperandKind.DstVReg) {
-                        tail.push(new Mov(vOrigin, spill))
-                    } else if (format[j][0] == OperandKind.SrcDstVReg) {
+                    } else if (format[j][0] === OperandKind.DstVReg) {
+                        tail.push(new Mov(vOrigin, spill));
+                    } else if (format[j][0] === OperandKind.SrcDstVReg) {
                         head.push(new Mov(spill, vOrigin));
-                        tail.push(new Mov(vOrigin, spill))
+                        tail.push(new Mov(vOrigin, spill));
                     } else {
                         // here we do nothing
                     }
@@ -135,7 +135,7 @@ class RegAllocator {
         }
 
         /* If the parameters are consecutive, no adjustment is required. */
-        if (i == (irNodes[index]).operands.length) {
+        if (i === (irNodes[index]).operands.length) {
             return true;
         }
 
@@ -143,7 +143,7 @@ class RegAllocator {
         return false;
     }
 
-    adjustDynRangeInstruction(irNodes: IRNode[], index: number) {
+    adjustDynRangeInstruction(irNodes: IRNode[], index: number): void {
         let head: IRNode[] = [];
         let operands = irNodes[index].operands;
 

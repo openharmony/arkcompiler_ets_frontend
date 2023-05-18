@@ -110,16 +110,16 @@ describe("PropertyAccess", function () {
         ];
 
         compilerunit.forEach(element => {
-            if (element.internalName == "func_main_0") {
+            if (element.internalName === "func_main_0") {
                 let insns = element.getInsns();
 
                 insns = insns.slice(0, insns.length - 3);
                 expect(checkInstructions(insns, expected)).to.be.true;
             }
 
-            if (element.internalName == "myMethod") {
+            if (element.internalName === "myMethod") {
                 let parameterLength = element.getParameterLength();
-                expect(parameterLength == 1).to.be.true;
+                expect(parameterLength === 1).to.be.true;
             }
         });
     });
@@ -152,7 +152,7 @@ describe("PropertyAccess", function () {
         ];
 
         compilerunit.forEach(element => {
-            if (element.internalName == "func_main_0") {
+            if (element.internalName === "func_main_0") {
                 let insns = element.getInsns();
 
                 insns = insns.slice(0, insns.length - 3);
@@ -193,7 +193,7 @@ describe("PropertyAccess", function () {
         ];
 
         compilerunit.forEach(element => {
-            if (element.internalName == "func_main_0") {
+            if (element.internalName === "func_main_0") {
                 let insns = element.getInsns();
 
                 insns = insns.slice(0, insns.length - 3);

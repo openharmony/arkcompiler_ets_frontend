@@ -57,7 +57,7 @@ describe("compileFunctionExpression", function () {
         let pandaGens = compileAllSnippet(source, passes);
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
-        let expected_func = [
+        let expectedFunc = [
             new Ldfunction(),
             new Sta(new VReg()),
             new Lda(new VReg()),
@@ -71,8 +71,8 @@ describe("compileFunctionExpression", function () {
 
         let checkCount = 0;
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "UnitTest.test") {
-                expect(checkInstructions(pg.getInsns(), expected_func), "check func insns").to.be.true;
+            if (pg.internalName === "UnitTest.test") {
+                expect(checkInstructions(pg.getInsns(), expectedFunc), "check func insns").to.be.true;
                 checkCount++;
             }
         });
@@ -89,11 +89,11 @@ describe("compileFunctionExpression", function () {
 
         let checkCount = 0;
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "UnitTest.a") {
+            if (pg.internalName === "UnitTest.a") {
                 checkCount++;
             }
 
-            if (pg.internalName == "UnitTest.func_main_0") {
+            if (pg.internalName === "UnitTest.func_main_0") {
 
                 pg.getInsns().forEach((insns) => {
                     if (insns instanceof Definefunc) {
@@ -117,11 +117,11 @@ describe("compileFunctionExpression", function () {
 
         let checkCount = 0;
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "UnitTest.a") {
+            if (pg.internalName === "UnitTest.a") {
                 checkCount++;
             }
 
-            if (pg.internalName == "UnitTest.func_main_0") {
+            if (pg.internalName === "UnitTest.func_main_0") {
 
                 pg.getInsns().forEach((insns) => {
                     if (insns instanceof Definefunc) {
@@ -146,11 +146,11 @@ describe("compileFunctionExpression", function () {
         let checkCount = 0;
 
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "UnitTest.a") {
+            if (pg.internalName === "UnitTest.a") {
                 checkCount++;
             }
 
-            if (pg.internalName == "UnitTest.func_main_0") {
+            if (pg.internalName === "UnitTest.func_main_0") {
 
                 pg.getInsns().forEach((insns) => {
                     if (insns instanceof Definefunc) {
@@ -172,7 +172,7 @@ describe("compileFunctionExpression", function () {
         let checkCount = 0;
         IRNode.pg = new PandaGen("", creatAstFromSnippet(``), 0, undefined);
 
-        let expected_func = [
+        let expectedFunc = [
             new Lda(new VReg()),
             new Sta(new VReg()),
             new Lda(new VReg()),
@@ -183,12 +183,12 @@ describe("compileFunctionExpression", function () {
         ];
 
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "UnitTest.p") {
-                expect(checkInstructions(pg.getInsns(), expected_func), "check arrow func insns").to.be.true;
+            if (pg.internalName === "UnitTest.p") {
+                expect(checkInstructions(pg.getInsns(), expectedFunc), "check arrow func insns").to.be.true;
                 checkCount++;
             }
 
-            if (pg.internalName == "UnitTest.func_main_0") {
+            if (pg.internalName === "UnitTest.func_main_0") {
 
                 pg.getInsns().forEach((insns) => {
                     if (insns instanceof Definefunc) {
@@ -229,7 +229,7 @@ describe("compileFunctionExpression", function () {
         let notRetLabel1 = new Label();
         let notThrowLabel1 = new Label();
 
-        let expected_func = [
+        let expectedFunc = [
             new Creategeneratorobj(new VReg()),
             new Sta(new VReg()),
             new Lda(new VReg()),
@@ -289,12 +289,12 @@ describe("compileFunctionExpression", function () {
         let checkCount = 0;
 
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "UnitTest.a") {
-                expect(checkInstructions(pg.getInsns(), expected_func), "check generator func insns").to.be.true;
+            if (pg.internalName === "UnitTest.a") {
+                expect(checkInstructions(pg.getInsns(), expectedFunc), "check generator func insns").to.be.true;
                 checkCount++;
             }
 
-            if (pg.internalName == "UnitTest.func_main_0") {
+            if (pg.internalName === "UnitTest.func_main_0") {
                 pg.getInsns().forEach((insns) => {
                     if (insns instanceof Definefunc) {
                         expect(insns.operands[1]).to.equal('UnitTest.a');
@@ -318,7 +318,7 @@ describe("compileFunctionExpression", function () {
         let endLabel = new Label();
         let nextLabel = new Label();
 
-        let expected_func = [
+        let expectedFunc = [
             new Asyncfunctionenter(),
             new Sta(new VReg()),
             beginLabel,
@@ -350,15 +350,15 @@ describe("compileFunctionExpression", function () {
         let checkCount = 0;
 
         pandaGens.forEach((pg) => {
-            if (pg.internalName == "UnitTest.a") {
+            if (pg.internalName === "UnitTest.a") {
                 pg.getInsns().forEach(ins => {
                     console.log(ins.toString());
                 })
-                expect(checkInstructions(pg.getInsns(), expected_func), "check async func insns").to.be.true;
+                expect(checkInstructions(pg.getInsns(), expectedFunc), "check async func insns").to.be.true;
                 checkCount++;
             }
 
-            if (pg.internalName == "UnitTest.func_main_0") {
+            if (pg.internalName === "UnitTest.func_main_0") {
                 pg.getInsns().forEach((insns) => {
                     if (insns instanceof Definefunc) {
                         expect(insns.operands[1]).to.equal('UnitTest.a');

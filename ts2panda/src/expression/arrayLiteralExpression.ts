@@ -22,17 +22,17 @@ import { PandaGen } from "../pandagen";
 import { isInteger } from "./numericLiteral";
 import { VReg } from "../irnodes";
 
-export function compileArrayLiteralExpression(compiler: Compiler, node: ts.ArrayLiteralExpression) {
+export function compileArrayLiteralExpression(compiler: Compiler, node: ts.ArrayLiteralExpression): void {
     let pandaGen = compiler.getPandaGen();
     let arrayObj = pandaGen.getTemp();
     createArrayFromElements(node, compiler, node.elements, arrayObj);
     pandaGen.freeTemps(arrayObj);
 }
 
-export function createArrayFromElements(node: ts.Node, compiler: Compiler, elements: ts.NodeArray<ts.Expression>, arrayObj: VReg) {
+export function createArrayFromElements(node: ts.Node, compiler: Compiler, elements: ts.NodeArray<ts.Expression>, arrayObj: VReg): void {
     let pandaGen = compiler.getPandaGen();
     // empty Array
-    if (elements.length == 0) {
+    if (elements.length === 0) {
         pandaGen.createEmptyArray(node);
         pandaGen.storeAccumulator(node, arrayObj);
         return;
@@ -51,7 +51,7 @@ export function createArrayFromElements(node: ts.Node, compiler: Compiler, eleme
 
             if (!arrayCreated) {
                 literalBuffer.addLiterals(elem);
-                if (i == elements.length - 1) {
+                if (i === elements.length - 1) {
                     emitCreateArrayWithBuffer(pandaGen, literalBuffer, element);
                     pandaGen.storeAccumulator(element, arrayObj);
                     arrayCreated = true;
@@ -93,7 +93,7 @@ export function createArrayFromElements(node: ts.Node, compiler: Compiler, eleme
                 arrayCreated = true;
             }
 
-            if (i == elements.length - 1) {
+            if (i === elements.length - 1) {
                 // omittedExpression is the last element, we need to set the length of the array
                 if (hasSpread) {
                     pandaGen.loadAccumulator(element, indexReg);
@@ -158,7 +158,7 @@ function parseConstantExpr(element: ts.Expression): Literal {
     return elem;
 }
 
-function emitCreateArrayWithBuffer(pandaGen: PandaGen, literalBuffer: LiteralBuffer, element: ts.Expression) {
+function emitCreateArrayWithBuffer(pandaGen: PandaGen, literalBuffer: LiteralBuffer, element: ts.Expression): void {
     if (literalBuffer.isEmpty()) {
         pandaGen.createEmptyArray(element);
     } else {
@@ -167,13 +167,13 @@ function emitCreateArrayWithBuffer(pandaGen: PandaGen, literalBuffer: LiteralBuf
     }
 }
 
-function storeElementIfSpreadExisted(pandaGen: PandaGen, element: ts.Expression, arrayObj: VReg, indexReg: VReg) {
+function storeElementIfSpreadExisted(pandaGen: PandaGen, element: ts.Expression, arrayObj: VReg, indexReg: VReg): void {
     pandaGen.storeOwnProperty(element, arrayObj, indexReg);
     pandaGen.unary(element, ts.SyntaxKind.PlusPlusToken, indexReg);
     pandaGen.storeAccumulator(element, indexReg);
 }
 
-function storeSpreadElement(compiler: Compiler, pandaGen: PandaGen, element: ts.SpreadElement, arrayObj: VReg, indexReg: VReg) {
+function storeSpreadElement(compiler: Compiler, pandaGen: PandaGen, element: ts.SpreadElement, arrayObj: VReg, indexReg: VReg): void {
     compiler.compileExpression(element.expression);
     pandaGen.storeArraySpreadElement(element, arrayObj, indexReg);
     pandaGen.storeAccumulator(element, indexReg);

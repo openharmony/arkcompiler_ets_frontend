@@ -25,9 +25,9 @@ import { CatchTable, LabelPair } from "../statement/tryStatement";
 import { FunctionBuilder, FunctionBuilderType } from "./functionBuilder";
 
 enum ResumeMode {
-    Return,
-    Throw,
-    Next
+    RETURN,
+    THROW,
+    NEXT
 };
 
 /**
@@ -47,8 +47,8 @@ export class AsyncFunctionBuilder extends FunctionBuilder {
     prepare(node: ts.Node): void {
         let pandaGen = this.pg;
 
-        pandaGen.asyncFunctionEnter(NodeKind.Invalid);
-        pandaGen.storeAccumulator(NodeKind.Invalid, this.funcObj);
+        pandaGen.asyncFunctionEnter(NodeKind.INVALID);
+        pandaGen.storeAccumulator(NodeKind.INVALID, this.funcObj);
 
         pandaGen.label(node, this.beginLabel);
     }
@@ -66,12 +66,12 @@ export class AsyncFunctionBuilder extends FunctionBuilder {
     }
 
     implicitReturn(node: ts.Node | NodeKind): void {
-        this.pg.loadAccumulator(node, getVregisterCache(this.pg, CacheList.undefined));
+        this.pg.loadAccumulator(node, getVregisterCache(this.pg, CacheList.UNDEFINED));
         this.pg.asyncFunctionResolve(node, this.funcObj);
         this.pg.return(node);
     }
 
-    private handleMode(node: ts.Node) {
+    private handleMode(node: ts.Node): void {
         let pandaGen = this.pg;
         let modeType = pandaGen.getTemp();
 
@@ -79,7 +79,7 @@ export class AsyncFunctionBuilder extends FunctionBuilder {
         pandaGen.storeAccumulator(node, modeType);
 
         // .reject
-        pandaGen.loadAccumulatorInt(node, ResumeMode.Throw);
+        pandaGen.loadAccumulatorInt(node, ResumeMode.THROW);
 
         let notThrowLabel = new Label();
 
@@ -95,7 +95,7 @@ export class AsyncFunctionBuilder extends FunctionBuilder {
         pandaGen.loadAccumulator(node, this.resumeVal);
     }
 
-    resolve(node: ts.Node | NodeKind, value: VReg) {
+    resolve(node: ts.Node | NodeKind, value: VReg): void {
         let pandaGen = this.pg;
         pandaGen.loadAccumulator(node, value);
         pandaGen.asyncFunctionResolve(node, this.funcObj);
@@ -107,8 +107,8 @@ export class AsyncFunctionBuilder extends FunctionBuilder {
         pandaGen.label(node, this.endLabel);
 
         // exception is in acc
-        pandaGen.asyncFunctionReject(NodeKind.Invalid, this.funcObj);
-        pandaGen.return(NodeKind.Invalid);
+        pandaGen.asyncFunctionReject(NodeKind.INVALID, this.funcObj);
+        pandaGen.return(NodeKind.INVALID);
 
         pandaGen.freeTemps(this.funcObj, this.resumeVal);
 

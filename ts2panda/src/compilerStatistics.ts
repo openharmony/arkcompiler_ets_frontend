@@ -37,37 +37,37 @@ class ItemValue {
         }
     }
 
-    add(num: number) {
+    add(num: number): void {
         this.count += num;
         this.relatedInsns.forEach(relatedInsn => { relatedInsn.num += num });
     }
 
-    set(num: number) {
+    set(num: number): void {
         this.count = num;
         this.relatedInsns.forEach(relatedInsn => { relatedInsn.num = num });
     }
 
-    getCount() {
+    getCount(): number {
         return this.count;
     }
 
-    getInstSize() {
+    getInstSize(): number {
         return this.instSize;
     }
 
-    getTotalSize() {
+    getTotalSize(): number {
         return this.count * this.instSize;
     }
 
-    getRelatedInsns() {
+    getRelatedInsns(): { name: string, num: number }[] {
         return this.relatedInsns;
     }
 
-    getNodeMap() {
+    getNodeMap(): Map<string, number> {
         return this.nodeMap;
     }
 
-    updateNodeMap(nodeName: string) {
+    updateNodeMap(nodeName: string): void {
         if (!this.nodeMap.has(nodeName)) {
             this.nodeMap.set(nodeName, 1);
         } else {
@@ -76,7 +76,7 @@ class ItemValue {
         }
     }
 
-    unionNodeMap(nodeMap: Map<string, number>) {
+    unionNodeMap(nodeMap: Map<string, number>): void {
         nodeMap.forEach((value: number, key: string) => {
             if (!this.nodeMap.has(key)) {
                 this.nodeMap.set(key, value);
@@ -88,7 +88,7 @@ class ItemValue {
         });
     }
 
-    getSavedSizeIfRemoved(Histogram: HistogramStatistics) {
+    getSavedSizeIfRemoved(Histogram: HistogramStatistics): number {
         let savedSize = this.getTotalSize();
         this.relatedInsns.forEach(relatedInsn => {
             let histogram = Histogram.getStatistics();
@@ -103,7 +103,7 @@ class ItemValue {
 
     static createItemValue(name: string, instSize: number): ItemValue {
         let relatedInsns: { name: string, num: number };
-        if (name == "lda.str") {
+        if (name === "lda.str") {
             relatedInsns = { name: "sta.dyn", num: 1 };
         }
 
@@ -120,8 +120,8 @@ class HistogramStatistics {
     }
 
     getInsName(ins: IRNode): string {
-        if (ins.kind == IRNodeKind.LABEL) {
-            return "Label"
+        if (ins.kind === IRNodeKind.LABEL) {
+            return "Label";
         }
 
         return ins.getMnemonic();
@@ -167,7 +167,7 @@ class HistogramStatistics {
         return this.insHistogram;
     }
 
-    getTotal() {
+    getTotal(): number[] {
         let totalInsnsNum: number = 0;
         let totalSize: number = 0;
         // @ts-ignore
@@ -187,14 +187,15 @@ class HistogramStatistics {
         LOGD("op code\t\t\tinsns number\tins size\ttotal size\tsize percentage");
         this.insHistogram.forEach((value, key) => {
             if (key.length < 8) { // 8 indicates insn name length
-                LOGD(key + "\t\t\t" + value.getCount() + "\t\t"+ value.getInstSize() + "\t\t" + value.getTotalSize() + "\t\t"
-                     + value.getSavedSizeIfRemoved(this) + "\t" + Math.round(value.getSavedSizeIfRemoved(this) / totalSize * 100) + "%"); // multiplying 100 is to calculate percentage data
+                // multiplying 100 is to calculate percentage data
+                LOGD(key + "\t\t\t" + value.getCount() + "\t\t"+ value.getInstSize() + "\t\t" + value.getTotalSize() + "\t\t" +
+                     value.getSavedSizeIfRemoved(this) + "\t" + Math.round(value.getSavedSizeIfRemoved(this) / totalSize * 100) + "%");
             } else if (key.length < 16) { // 16 indicates insn name length
-                LOGD(key + "\t\t" + value.getCount() + "\t\t" + value.getInstSize() + "\t\t" + value.getTotalSize() + "\t\t"
-                     + value.getSavedSizeIfRemoved(this) + "\t" + Math.round(value.getSavedSizeIfRemoved(this) / totalSize * 100) + "%");
+                LOGD(key + "\t\t" + value.getCount() + "\t\t" + value.getInstSize() + "\t\t" + value.getTotalSize() + "\t\t" +
+                     value.getSavedSizeIfRemoved(this) + "\t" + Math.round(value.getSavedSizeIfRemoved(this) / totalSize * 100) + "%");
             } else {
-                LOGD(key + "\t" + value.getCount() + "\t\t" + value.getInstSize() + "\t\t" + value.getTotalSize() + "\t\t"
-                     + value.getSavedSizeIfRemoved(this) + "\t" + Math.round(value.getSavedSizeIfRemoved(this) / totalSize * 100) + "%");
+                LOGD(key + "\t" + value.getCount() + "\t\t" + value.getInstSize() + "\t\t" + value.getTotalSize() + "\t\t" +
+                     value.getSavedSizeIfRemoved(this) + "\t" + Math.round(value.getSavedSizeIfRemoved(this) / totalSize * 100) + "%");
             }
         });
 
@@ -231,22 +232,22 @@ export class CompilerStatistics {
 
     }
 
-    addHoistingRelatedInsnNum(num: number) {
+    addHoistingRelatedInsnNum(num: number): void {
         this.hoistingRelatedInsnNum += num;
     }
 
-    addNumOfHoistCases(type: HoistingType) {
+    addNumOfHoistCases(type: HoistingType): void {
         this.numOfHoistingCases[type]++;
     }
 
-    getInsHistogramStatistics(pg: PandaGen) {
+    getInsHistogramStatistics(pg: PandaGen): void {
         let histogram = new HistogramStatistics(pg.internalName);
 
         histogram.catchStatistics(pg);
         this.histogramMap.set(pg.internalName, histogram);
     }
 
-    printHistogram(verbose: boolean) {
+    printHistogram(verbose: boolean): void {
         let totalHistogram = new HistogramStatistics("Total");
         
         // @ts-ignore

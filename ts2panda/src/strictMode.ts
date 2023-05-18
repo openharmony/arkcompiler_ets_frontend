@@ -21,12 +21,12 @@ let globalDeclare = false;
 
 export function checkStrictModeStatementList(node: ts.Node): boolean {
     let statements;
-    if (node.kind == ts.SyntaxKind.SourceFile) {
+    if (node.kind === ts.SyntaxKind.SourceFile) {
         statements = (<ts.SourceFile>node).statements;
     } else {
         let decl = <ts.FunctionLikeDeclaration>node;
         if (decl && decl.body) {
-            if (decl.body.kind == ts.SyntaxKind.Block) {
+            if (decl.body.kind === ts.SyntaxKind.Block) {
                 statements = (<ts.Block>decl.body).statements;
             }
         } else {
@@ -34,7 +34,7 @@ export function checkStrictModeStatementList(node: ts.Node): boolean {
         }
     }
 
-    if (statements == undefined) {
+    if (statements === undefined) {
         return false;
     }
 
@@ -80,7 +80,7 @@ function getGlobalStrict(): boolean {
     return globalStrict;
 }
 
-export function setGlobalStrict(flag: boolean) {
+export function setGlobalStrict(flag: boolean): void {
     globalStrict = flag;
 }
 
@@ -92,10 +92,10 @@ export function isStrictMode(node: ts.Node): boolean {
     return checkStrictMode(node);
 }
 
-export function setGlobalDeclare(flag: boolean) {
+export function setGlobalDeclare(flag: boolean): void {
     globalDeclare = flag;
 }
 
-export function isGlobalDeclare() {
+export function isGlobalDeclare(): boolean {
     return globalDeclare;
 }

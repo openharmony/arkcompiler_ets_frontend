@@ -42,7 +42,7 @@ import {
     resetUniqueNameIndex
 } from "./base/util";
 
-function checkIsGlobalDeclaration(sourceFile: ts.SourceFile) {
+function checkIsGlobalDeclaration(sourceFile: ts.SourceFile): boolean {
     for (let statement of sourceFile.statements) {
         if (statement.modifiers) {
             for (let modifier of statement.modifiers) {
@@ -59,7 +59,7 @@ function checkIsGlobalDeclaration(sourceFile: ts.SourceFile) {
     return true;
 }
 
-function generateDTs(node: ts.SourceFile, options: ts.CompilerOptions) {
+function generateDTs(node: ts.SourceFile, options: ts.CompilerOptions): void {
     let outputBinName = getOutputBinName(node);
     let compilerDriver = new CompilerDriver(outputBinName, getRecordName(node));
     CompilerDriver.srcNode = node;
@@ -68,7 +68,7 @@ function generateDTs(node: ts.SourceFile, options: ts.CompilerOptions) {
     compilerDriver.showStatistics();
 }
 
-function main(fileNames: string[], options: ts.CompilerOptions, inputJsonFiles?: string[], cmdArgsSet?: Map<string, string[]>) {
+function main(fileNames: string[], options: ts.CompilerOptions, inputJsonFiles?: string[], cmdArgsSet?: Map<string, string[]>): void {
     const host = ts.createCompilerHost(options);
     if (!CmdOptions.needGenerateTmpFile()) {
         host.writeFile = () => {};
@@ -140,7 +140,7 @@ function main(fileNames: string[], options: ts.CompilerOptions, inputJsonFiles?:
                                 initTs2abcProcessState = true;
                             }
                             let specifiedCmdArgs = cmdArgsSet.get(node.fileName);
-                            if (specifiedCmdArgs == undefined) {
+                            if (specifiedCmdArgs === undefined) {
                                 return node;
                             }
                         }
@@ -211,7 +211,7 @@ function main(fileNames: string[], options: ts.CompilerOptions, inputJsonFiles?:
     });
 }
 
-function transformSourcefilesList(parsed: ts.ParsedCommandLine | undefined) {
+function transformSourcefilesList(parsed: ts.ParsedCommandLine | undefined): void {
     let inputFile = CmdOptions.getCompileFilesList();
     let sourceFileInfoArray = [];
     try {
@@ -219,7 +219,7 @@ function transformSourcefilesList(parsed: ts.ParsedCommandLine | undefined) {
     } catch(err) {
         throw err;
     }
-    if (sourceFileInfoArray.length == 0) return;
+    if (sourceFileInfoArray.length === 0) return;
 
     let files: string[] = parsed.fileNames;
     let inputJsonFiles: string[] = [];
@@ -234,7 +234,7 @@ function transformSourcefilesList(parsed: ts.ParsedCommandLine | undefined) {
 
         let inputFileName = sourceFileInfo[0];
         let inputFileSuffix = inputFileName.substring(inputFileName.lastIndexOf(".") + 1);
-        if (inputFileSuffix == "json") {
+        if (inputFileSuffix === "json") {
             inputJsonFiles.push(inputFileName);
         } else {
             files.unshift(inputFileName);
@@ -283,7 +283,7 @@ function getDtsFiles(libDir: string): string[] {
     return dtsFiles;
 }
 
-function specifyCustomLib(customLib) {
+function specifyCustomLib(customLib): void {
     Compiler.Options.Default["lib"] = customLib;
     let curFiles = fs.readdirSync(__dirname);
     const { execSync } = require('child_process');
@@ -318,10 +318,10 @@ const es2abcDebuggerEvaluateFlag = "--debugger-evaluate-expression";
 const es2abcBase64Output = "--base64Output";
 // need to specify the record name as 'Base64Output' in es2abc's commandline; cancel the opMergeAbc option
 
-function callEs2pandaToolChain(ideInputStr: string) {
+function callEs2pandaToolChain(ideInputStr: string): void {
     let commandLine = "\"" + es2abcBinaryPath + es2abcBinaryName + "\" " + es2abcBase64Input + " \"" + ideInputStr
                       + "\" " + es2abcDebuggerEvaluateFlag + " " + es2abcBase64Output;
-    var exec = require('child_process').exec;
+    let exec = require('child_process').exec;
     exec(`${commandLine}`, function(error, stdout) {
         if (error) {
             console.log("generate abc file failed, please check the input string and syntax of the expression");
@@ -331,7 +331,7 @@ function callEs2pandaToolChain(ideInputStr: string) {
     });
 }
 
-function updateWatchJsFile() {
+function updateWatchJsFile(): void {
     let ideInputStr = CmdOptions.getEvaluateExpression();
     if (CmdOptions.watchViaEs2pandaToolchain()) {
         callEs2pandaToolChain(ideInputStr);
@@ -385,7 +385,7 @@ function updateWatchJsFile() {
 }
 
 function compileWatchExpression(jsFileName: string, errorMsgFileName: string, options: ts.CompilerOptions,
-                                watchedProgram: ts.Program) {
+                                watchedProgram: ts.Program): void {
     CmdOptions.setWatchEvaluateExpressionArgs(['','']);
     let fileName = watchFileName + ".js";
     let errorMsgRecordFlag = false;
@@ -412,7 +412,7 @@ function compileWatchExpression(jsFileName: string, errorMsgFileName: string, op
                 // @ts-ignore
                 (ctx: ts.TransformationContext) => {
                     return (node: ts.SourceFile) => {
-                        if (path.basename(node.fileName) == fileName) { node = sourceFile; }
+                        if (path.basename(node.fileName) === fileName) { node = sourceFile; }
                         let outputBinName = getOutputBinName(node);
                         let compilerDriver = new CompilerDriver(outputBinName, watchOutputFileName);
                         compilerDriver.compileForSyntaxCheck(node);
@@ -453,7 +453,7 @@ function compileWatchExpression(jsFileName: string, errorMsgFileName: string, op
     );
 }
 
-function launchWatchEvaluateDeamon(parsed: ts.ParsedCommandLine | undefined) {
+function launchWatchEvaluateDeamon(parsed: ts.ParsedCommandLine | undefined): void {
     if (CmdOptions.watchViaEs2pandaToolchain()) {
         console.log("startWatchingSuccess supportTimeout");
         return;
@@ -479,7 +479,7 @@ function launchWatchEvaluateDeamon(parsed: ts.ParsedCommandLine | undefined) {
         if (+curr.mtime <= +prev.mtime) {
             throw new Error("watched js file has not been initialized");
         }
-        if (fs.readFileSync(jsFileName).toString() == stopWatchingStr) {
+        if (fs.readFileSync(jsFileName).toString() === stopWatchingStr) {
             fs.unwatchFile(jsFileName);
             console.log("stopWatchingSuccess");
             return;
@@ -495,7 +495,7 @@ function launchWatchEvaluateDeamon(parsed: ts.ParsedCommandLine | undefined) {
     });
 }
 
-function checkDiagnosticsError(program: ts.Program) {
+function checkDiagnosticsError(program: ts.Program): boolean {
     let diagnosticsFlag = false;
     let allDiagnostics = ts
         .getPreEmitDiagnostics(program);

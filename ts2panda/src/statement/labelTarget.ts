@@ -44,44 +44,44 @@ export class LabelTarget {
         }
     }
 
-    containLoopEnv() {
+    containLoopEnv(): boolean {
         return this.hasLoopEnv;
     }
 
-    getBreakTargetLabel() {
+    getBreakTargetLabel(): Label {
         return this.breakTargetLabel;
     }
 
-    getContinueTargetLabel() {
+    getContinueTargetLabel(): any {
         return this.continueTargetLabel;
     }
 
-    getLoopEnvLevel() {
+    getLoopEnvLevel(): number {
         return this.loopEnvLevel;
     }
 
-    getTryStatement() {
+    getTryStatement(): TryStatement {
         return this.tryStatement;
     }
 
-    getPreLoopLabelTarget() {
+    getPreLoopLabelTarget(): LabelTarget {
         return this.preLoopLabelTarget;
     }
 
-    getCorrespondingNode() {
+    getCorrespondingNode(): ts.Node {
         return this.node;
     }
 
-    private increaseLoopEnvLevel() {
+    private increaseLoopEnvLevel(): void {
         this.loopEnvLevel += 1;
     }
 
-    private decreaseLoopEnvLevel() {
+    private decreaseLoopEnvLevel(): void {
         this.loopEnvLevel -= 1;
     }
 
     private static isLabelTargetsEmpty(): boolean {
-        if (LabelTarget.labelTargetStack.length == 0) {
+        if (LabelTarget.labelTargetStack.length === 0) {
             return true;
         }
         return false;
@@ -94,7 +94,7 @@ export class LabelTarget {
         return undefined;
     }
 
-    static pushLabelTarget(labelTarget: LabelTarget) {
+    static pushLabelTarget(labelTarget: LabelTarget): void {
         if (labelTarget.hasLoopEnv) {
             if (TryStatement.getCurrentTryStatement()) {
                 TryStatement.getCurrentTryStatement().increaseLoopEnvLevel();
@@ -104,7 +104,7 @@ export class LabelTarget {
         LabelTarget.labelTargetStack.push(labelTarget);
     }
 
-    static popLabelTarget() {
+    static popLabelTarget(): void {
         if (!LabelTarget.isLabelTargetsEmpty()) {
             let popedLabelTarget = LabelTarget.labelTargetStack.pop();
             if (popedLabelTarget.containLoopEnv()) {
@@ -119,8 +119,8 @@ export class LabelTarget {
         }
     }
 
-    static updateName2LabelTarget(node: ts.Node, labelTarget: LabelTarget) {
-        while (node.kind == ts.SyntaxKind.LabeledStatement) {
+    static updateName2LabelTarget(node: ts.Node, labelTarget: LabelTarget): void {
+        while (node.kind === ts.SyntaxKind.LabeledStatement) {
             let labeledStmt = <ts.LabeledStatement>node;
             let labelName = jshelpers.getTextOfIdentifierOrLiteral(labeledStmt.label);
 
@@ -134,11 +134,11 @@ export class LabelTarget {
         }
     }
 
-    static deleteName2LabelTarget(labelName: string) {
+    static deleteName2LabelTarget(labelName: string): void {
         LabelTarget.name2LabelTarget.delete(labelName);
     }
 
-    static getCurLoopLabelTarget() {
+    static getCurLoopLabelTarget(): LabelTarget {
         return LabelTarget.curLoopLabelTarget;
     }
 

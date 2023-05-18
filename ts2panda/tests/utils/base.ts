@@ -94,7 +94,7 @@ function basicOperandsEqual(left: OperandType, right: OperandType): boolean {
 
     if (isId(left) && isId(right)) {
         // string compare
-        return left == right;
+        return left === right;
     }
 
     let str = "operandsEqual: operands are not one of this types: VReg | Imm | Label | BuiltIns | string\n";
@@ -132,7 +132,7 @@ export function checkInstructions(actual: IRNode[], expected: IRNode[], checkFn?
     }
 
     if (actual.length !== expected.length) {
-        console.log("actual.length:" + actual.length + " expected.length:" + expected.length)
+        console.log("actual.length:" + actual.length + " expected.length:" + expected.length);
         return false;
     }
 
@@ -154,8 +154,8 @@ export function compileAllSnippet(snippet: string, passes?: Pass[], literalBuffe
         CmdOptions.setWatchEvaluateExpressionArgs(['','']);
     }
     CmdOptions.setMergeAbc(true);
-    CmdOptions.isWatchEvaluateExpressionMode() ? setGlobalStrict(true)
-                            : setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(sourceFile, compileOptions));
+    CmdOptions.isWatchEvaluateExpressionMode() ? setGlobalStrict(true) :
+        setGlobalStrict(jshelpers.isEffectiveStrictModeSourceFile(sourceFile, compileOptions));
     let compilerDriver = new CompilerDriver('UnitTest', 'UnitTest');
     CompilerDriver.srcNode = sourceFile;
 
@@ -178,14 +178,14 @@ export function compileMainSnippet(snippet: string, pandaGen?: PandaGen, scope?:
     // only return main function
     if (compileFunc) {
         compileUnits.filter((pg) => {
-            return (pg.internalName == "UnitTest.func_main_0");
+            return (pg.internalName === "UnitTest.func_main_0");
         })
     }
 
     return compileUnits[0].getInsns();
 }
 
-export function compileAfterSnippet(snippet: string, name:string, isCommonJs: boolean = false) {
+export function compileAfterSnippet(snippet: string, name:string, isCommonJs: boolean = false): any {
     let compileUnits = null;
     CmdOptions.parseUserCmd([""]);
     CmdOptions.setMergeAbc(true);
@@ -230,17 +230,17 @@ export function getCompileOptions(): ts.CompilerOptions {
 
 export class SnippetCompiler {
     pandaGens: PandaGen[] = [];
-    compile(snippet: string, passes?: Pass[], literalBufferArray?: Array<LiteralBuffer>) {
+    compile(snippet: string, passes?: Pass[], literalBufferArray?: Array<LiteralBuffer>): PandaGen[] {
         this.pandaGens = compileAllSnippet(snippet, passes, literalBufferArray);
         return this.pandaGens;
     }
 
-    compileAfter(snippet: string, name: string, passes?: Pass[], literalBufferArray?: Array<LiteralBuffer>) {
+    compileAfter(snippet: string, name: string, passes?: Pass[], literalBufferArray?: Array<LiteralBuffer>): PandaGen[] {
         this.pandaGens = compileAfterSnippet(snippet, name);
         return this.pandaGens;
     }
 
-    compileCommonjs(snippet: string, name: string) {
+    compileCommonjs(snippet: string, name: string): PandaGen[] {
         this.pandaGens = compileAfterSnippet(snippet, name, true);
         return this.pandaGens;
     }
@@ -262,7 +262,7 @@ export class SnippetCompiler {
 
     getPandaGenByName(name: string): PandaGen | undefined {
         let pgs = this.pandaGens.filter(pg => {
-            return (pg.internalName == name);
+            return (pg.internalName === name);
         })
         return pgs[0];
     }

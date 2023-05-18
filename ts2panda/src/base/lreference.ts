@@ -26,7 +26,7 @@ import { Scope } from "../scope";
 import { VarDeclarationKind, Variable } from "../variable";
 import { isBindingOrAssignmentPattern } from "./util";
 
-enum ReferenceKind { MemberAccess, LocalOrGlobal, Destructuring };
+enum ReferenceKind { MEMBER_ACCESS, LOCAL_OR_GLOBAL, DESTRUCTURING };
 export class LReference {
     private node: ts.Node;
     private compiler: Compiler;
@@ -49,20 +49,20 @@ export class LReference {
         this.isDeclaration = isDeclaration;
         this.refKind = refKind;
 
-        if (refKind == ReferenceKind.Destructuring) {
+        if (refKind === ReferenceKind.DESTRUCTURING) {
             this.destructuringTarget = <ts.BindingOrAssignmentPattern>node;
-        } else if (refKind == ReferenceKind.LocalOrGlobal) {
+        } else if (refKind === ReferenceKind.LOCAL_OR_GLOBAL) {
             this.variable = variable!;
-        } else if (refKind == ReferenceKind.MemberAccess) {
+        } else if (refKind === ReferenceKind.MEMBER_ACCESS) {
             this.obj = compiler.getPandaGen().getTemp();
             this.prop = compiler.getPandaGen().getTemp();
         }
     }
 
-    getValue() {
+    getValue(): void {
         let pandaGen = this.compiler.getPandaGen();
         switch (this.refKind) {
-            case ReferenceKind.MemberAccess:
+            case ReferenceKind.MEMBER_ACCESS:
                 let prop: VReg | number | string;
                 if (this.propLiteral === undefined) {
                     prop = <VReg>this.prop!;
@@ -71,21 +71,21 @@ export class LReference {
                 }
                 pandaGen.loadObjProperty(this.node, <VReg>this.obj, prop);
                 return;
-            case ReferenceKind.LocalOrGlobal:
+            case ReferenceKind.LOCAL_OR_GLOBAL:
                 this.compiler.loadTarget(this.node, this.variable!);
                 return;
-            case ReferenceKind.Destructuring:
+            case ReferenceKind.DESTRUCTURING:
                 throw new Error("Destructuring target can't be loaded");
             default:
-                throw new Error("Invalid LReference kind to GetValue")
+                throw new Error("Invalid LReference kind to GetValue");
         }
     }
 
-    setValue() {
+    setValue(): void {
         let pandaGen = this.compiler.getPandaGen();
         switch (this.refKind) {
-            case ReferenceKind.MemberAccess: {
-                let prop: VReg | number | string
+            case ReferenceKind.MEMBER_ACCESS: {
+                let prop: VReg | number | string;
                 if (this.propLiteral === undefined) {
                     prop = <VReg>this.prop!;
                 } else {
@@ -102,18 +102,18 @@ export class LReference {
                 pandaGen.freeTemps(...[<VReg>this.obj, <VReg>this.prop]);
                 return;
             }
-            case ReferenceKind.LocalOrGlobal:
+            case ReferenceKind.LOCAL_OR_GLOBAL:
                 this.compiler.storeTarget(this.node, this.variable!, this.isDeclaration);
                 return;
-            case ReferenceKind.Destructuring:
+            case ReferenceKind.DESTRUCTURING:
                 compileDestructuring(<ts.BindingOrAssignmentPattern>this.destructuringTarget, pandaGen, this.compiler);
                 return;
             default:
-                throw new Error("Invalid LReference kind to SetValue")
+                throw new Error("Invalid LReference kind to SetValue");
         }
     }
 
-    setObjectAndProperty(pandaGen: PandaGen, obj: VReg, prop: VReg | number | string) {
+    setObjectAndProperty(pandaGen: PandaGen, obj: VReg, prop: VReg | number | string): void {
         if (!jshelpers.isSuperProperty(this.node)) {
             pandaGen.moveVreg(this.node, <VReg>this.obj, obj);
         }
@@ -149,11 +149,11 @@ export class LReference {
                 }
             }
 
-            return new LReference(realNode, compiler, isDeclaration, ReferenceKind.LocalOrGlobal, variable);
+            return new LReference(realNode, compiler, isDeclaration, ReferenceKind.LOCAL_OR_GLOBAL, variable);
         }
 
         if (ts.isPropertyAccessExpression(realNode) || ts.isElementAccessExpression(realNode)) {
-            let lref = new LReference(realNode, compiler, false, ReferenceKind.MemberAccess, undefined);
+            let lref = new LReference(realNode, compiler, false, ReferenceKind.MEMBER_ACCESS, undefined);
             let objReg = pandaGen.getTemp();
             let propReg = pandaGen.getTemp();
             let { obj: object, prop: property } = getObjAndProp(realNode, objReg, propReg, compiler);
@@ -171,7 +171,7 @@ export class LReference {
         }
 
         if (isBindingOrAssignmentPattern(realNode)) {
-            return new LReference(realNode, compiler, isDeclaration, ReferenceKind.Destructuring, undefined);
+            return new LReference(realNode, compiler, isDeclaration, ReferenceKind.DESTRUCTURING, undefined);
         }
 
         throw new DiagnosticError(
