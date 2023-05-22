@@ -1236,12 +1236,11 @@ class TypeExtractorRunner(Runner):
         files = glob(glob_expression, recursive=True)
         files = fnmatch.filter(files, ts_suite_dir + '**' + self.args.filter)
 
-        passed_references = open(path.join(self.test_root, 'type_extractor/testlist.txt'), 'r').read()
-
-        for f in files:
-            if path.relpath(f, self.tsc_path) in passed_references:
-                test = TypeExtractorTest(f, flags)
-                self.tests.append(test)
+        with open(path.join(self.test_root, 'type_extractor/testlist.txt'), 'r') as passed_references:
+            for f in files:
+                if path.relpath(f, self.tsc_path) in passed_references.read():
+                    test = TypeExtractorTest(f, flags)
+                    self.tests.append(test)
 
     def add_directory(self, directory, flags, is_dts_test=False):
         ts_suite_dir = path.join(self.test_root, 'type_extractor')
