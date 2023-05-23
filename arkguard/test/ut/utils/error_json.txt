@@ -1,0 +1,4 @@
+{
+  "mCompact": true
+}
+1233
