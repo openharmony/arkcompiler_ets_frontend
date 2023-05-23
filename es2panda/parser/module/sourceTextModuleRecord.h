@@ -91,6 +91,7 @@ public:
     void AddImportEntry(ImportEntry *entry);
     void AddStarImportEntry(ImportEntry *entry);
     bool AddLocalExportEntry(ExportEntry *entry);
+    void RemoveDefaultLocalExportEntry();
     bool AddIndirectExportEntry(ExportEntry *entry);
     void AddStarExportEntry(ExportEntry *entry);
 

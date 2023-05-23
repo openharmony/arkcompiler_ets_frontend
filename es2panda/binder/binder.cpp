@@ -377,7 +377,7 @@ void Binder::BuildVarDeclaratorId(const ir::AstNode *parent, ir::AstNode *childN
                 break;
             }
 
-            auto *variable = scope_->FindLocal(name);
+            auto *variable = scope_->FindLocal(name, ResolveBindingOptions::BINDINGS);
 
             if (Program()->Extension() == ScriptExtension::TS) {
                 ident->SetVariable(variable);
