@@ -16,12 +16,12 @@
 import {
   factory,
   forEachChild,
-  isClassDeclaration,
   isComputedPropertyName,
   isConstructorDeclaration,
   isElementAccessExpression,
   isEnumMember,
   isIdentifier,
+  isClassDeclaration,
   isNumericLiteral,
   isPrivateIdentifier,
   isStringLiteralLike,
@@ -32,7 +32,6 @@ import {
 
 import type {
   ComputedPropertyName,
-  EnumMember,
   Expression,
   Identifier,
   Node,
@@ -47,7 +46,7 @@ import type {INameGenerator, NameGeneratorOptions} from '../../generator/INameGe
 import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import type {TransformPlugin} from '../TransformPlugin';
 import {NodeUtils} from '../../utils/NodeUtils';
-import { getClassProperties, isViewPUBasedClass } from '../../utils/OhsUtil';
+import {getClassProperties, isViewPUBasedClass} from '../../utils/OhsUtil';
 
 namespace secharmony {
   /**
@@ -80,8 +79,8 @@ namespace secharmony {
 
       let generator: INameGenerator = getNameGenerator(profile.mNameGeneratorType, options);
 
-      let reservedProperties: string[] = profile?.mReservedProperties ?? [];
-      let reservedNamesInEnum: string[] = [];
+      let tmpReservedProps: string[] = profile?.mReservedProperties ?? [];
+      let reservedProperties: Set<string> = new Set<string>(tmpReservedProps);
 
       let currentConstructorParams: Set<string> = new Set<string>();
 
@@ -156,7 +155,7 @@ namespace secharmony {
         }
 
         let original: string = node.text;
-        if (reservedProperties.includes(original)) {
+        if (reservedProperties.has(original)) {
           return node;
         }
 
@@ -179,17 +178,16 @@ namespace secharmony {
       }
 
       function getPropertyName(original: string): string {
+        if (reservedProperties.has(original)) {
+          return original;
+        }
+
         const historyName: string = historyMangledTable?.get(original);
         let mangledName: string = historyName ? historyName : globalMangledTable.get(original);
 
         while (!mangledName) {
           mangledName = generator.getName();
-          if (mangledName === original) {
-            mangledName = null;
-            continue;
-          }
-
-          if (reservedProperties.includes(mangledName)) {
+          if (mangledName === original || reservedProperties.has(mangledName)) {
             mangledName = null;
             continue;
           }
@@ -201,53 +199,46 @@ namespace secharmony {
 
           if (reserved.includes(mangledName)) {
             mangledName = null;
-            continue;
-          }
-
-          if (reservedNamesInEnum.includes(mangledName)) {
-            mangledName = null;
           }
         }
         globalMangledTable.set(original, mangledName);
         return mangledName;
       }
 
-      // enum syntax has special scenarios
-      function collectReservedNames(node: Node): void {
-        if (!isEnumMember(node) && !isClassDeclaration(node)) {
-          forEachChild(node, collectReservedNames);
-        }
-
-        // collect viewPU class properties
-        if (isClassDeclaration(node)) {
-          if (!isViewPUBasedClass(node)) {
-            return;
-          }
-          const properties = getClassProperties(node);
-          properties.forEach((property) => {
-            reservedProperties.push(property);
-          });
+      function visitEnumInitializer(childNode: Node): void {
+        if (!isIdentifier(childNode)) {
+          forEachChild(childNode, visitEnumInitializer);
           return;
         }
 
-        // collect enum properties
-        let initial: Expression = (node as EnumMember).initializer;
-        let visit = function (child: Node): void {
-          if (!isIdentifier(child)) {
-            return;
-          }
+        if (NodeUtils.isPropertyNode(childNode)) {
+          return;
+        }
 
-          if (NodeUtils.isPropertyNode(child)) {
-            return;
-          }
+        if (isTypeNode(childNode)) {
+          return;
+        }
 
-          if (isTypeNode(child)) {
-            return;
-          }
-          reservedNamesInEnum.push(child.text);
-        };
+        reservedProperties.add(childNode.text);
+      }
 
-        forEachChild(initial, visit);
+      // enum syntax has special scenarios
+      function collectReservedNames(node: Node): void {
+        // collect ViewPU class properties
+        if (isClassDeclaration(node) && isViewPUBasedClass(node)) {
+          getClassProperties(node, reservedProperties);
+          return;
+        }
+
+        // collect reserved name of enum
+        // example: enum H {A, B = A + 1}, enum H = {A, B= 1 + (A + 1)}; A is reserved
+        if (isEnumMember(node) && node.initializer) {
+          // collect enum properties
+          node.initializer.forEachChild(visitEnumInitializer);
+          return;
+        }
+
+        forEachChild(node, collectReservedNames);
       }
     }
   };

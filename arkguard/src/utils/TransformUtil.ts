@@ -25,13 +25,12 @@ import {
 
 import type {
   CommentRange,
-  Expression,
   Identifier,
   Node,
   SourceFile,
-  Statement,
   TransformationContext 
 } from 'typescript';
+
 /**
  * collect exist identifier names in current source file
  * @param sourceFile
@@ -72,34 +71,11 @@ export function collectIdentifiers(sourceFile: SourceFile, context: Transformati
   return identifiers;
 }
 
-/**
- * is current node contain ignore obfuscation comment
- * comment: // @skipObfuscate
- */
-export function isObfsIgnoreNode(node: Node, sourceFile: SourceFile): boolean {
-  const ranges: CommentRange[] = getLeadingCommentRangesOfNode(node, sourceFile);
-  if (!ranges) {
-    return false;
-  }
-
-  const ignoreComment: string = '//@skipObfuscate';
-  for (const range of ranges) {
-    const comment: string = sourceFile.text.slice(range.pos, range.end).replace(' ', '').replace('\t', '');
-    if (comment === ignoreComment) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 export enum OhPackType {
   NONE,
   JS_BUNDLE,
   ES_MODULE
 }
-
-
 
 export function isCommentedNode(node: Node, sourceFile: SourceFile): boolean {
   const ranges: CommentRange[] = getLeadingCommentRangesOfNode(node, sourceFile);

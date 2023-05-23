@@ -21,15 +21,23 @@ import {
   isPropertyAccessExpression,
   isStringLiteral,
   isVariableStatement,
-  SyntaxKind
+  SyntaxKind,
+  isPropertyDeclaration,
+  isObjectLiteralExpression,
+  isEnumDeclaration,
+  isPropertyAssignment,
+  StructDeclaration,
+  isStructDeclaration
 } from 'typescript';
 
 import type {
   ClassDeclaration,
+  ClassExpression,
+  EnumDeclaration,
   Expression,
   HeritageClause,
-  Identifier,
   NodeArray,
+  ObjectLiteralExpression,
   Statement
 } from 'typescript';
 
@@ -121,65 +129,54 @@ export function findOhImportStatement(node: Statement, moduleName: string): OhPa
   return OhPackType.NONE;
 }
 
-
 function containViewPU(heritageClauses: NodeArray<HeritageClause>): boolean {
   if (!heritageClauses) {
     return false;
   }
+
   let hasViewPU: boolean = false;
   heritageClauses.forEach(
     (heritageClause) => {
       if (!heritageClause || !heritageClause.types) {
         return;
       }
+
       const types = heritageClause.types;
       types.forEach((typeExpression) => {
         if (!typeExpression || !typeExpression.expression) {
           return;
         }
+
         const expression = typeExpression.expression;
         if (isIdentifier(expression) && expression.text === 'ViewPU') {
           hasViewPU = true;
         }
       });
-  });
+    });
+
   return hasViewPU;
 }
 
 /**
- * used to ignore user defined ui component class name
- * @param nameNode 
- */
-export function isViewPUBasedClassName(nameNode: Identifier): boolean {
-  if (!nameNode || !nameNode.parent) {
-    return false;
-  }
-  if (!isClassDeclaration(nameNode.parent)) {
-    return false;
-  }
-  const heritageClause = nameNode.parent.heritageClauses;
-  return containViewPU(heritageClause);
-}
-
-/**
  * used to ignore user defined ui component class property name
- * @param nameNode 
+ * @param classNode
  */
 export function isViewPUBasedClass(classNode: ClassDeclaration): boolean {
   if (!classNode) {
     return false;
   }
+
   if (!isClassDeclaration(classNode)) {
     return false;
   }
+
   const heritageClause = classNode.heritageClauses;
   return containViewPU(heritageClause);
 }
 
-export function getClassProperties(classNode: ClassDeclaration): Set<string> {
-  const properties: Set<string> = new Set<string>();
+export function getClassProperties(classNode: ClassDeclaration | ClassExpression | StructDeclaration, propertySet: Set<string>): void {
   if (!classNode || !classNode.members) {
-    return properties;
+    return;
   }
 
   classNode.members.forEach((member) => {
@@ -188,13 +185,102 @@ export function getClassProperties(classNode: ClassDeclaration): Set<string> {
     }
 
     if (isIdentifier(member.name)) {
-      properties.add(member.name.text);
+      propertySet.add(member.name.text);
     }
 
     if (isStringLiteral(member.name)) {
-      properties.add(member.name.text);
+      propertySet.add(member.name.text);
+    }
+
+    //extract class member's property, example: export class hello {info={read: {}}}
+    if (isClassDeclaration(classNode) && isViewPUBasedClass(classNode)) {
+      return;
+    }
+
+    if (!isPropertyDeclaration(member) || !member.initializer) {
+      return;
+    }
+
+    if (isObjectLiteralExpression(member.initializer)) {
+      getObjectProperties(member.initializer, propertySet);
+      return;
+    }
+
+    if (isClassDeclaration(member.initializer) || isStructDeclaration(member.initializer)) {
+      getClassProperties(member.initializer, propertySet);
+      return;
+    }
+
+    if (isEnumDeclaration(member.initializer)) {
+      getEnumProperties(member.initializer, propertySet);
+      return;
+    }
+  });
+
+  return;
+}
+
+export function getEnumProperties(enumNode: EnumDeclaration, propertySet: Set<string>): void {
+  if (!enumNode || !enumNode.members) {
+    return;
+  }
+
+  enumNode.members.forEach((member) => {
+    if (!member || !member.name) {
+      return;
+    }
+
+    if (isIdentifier(member.name)) {
+      propertySet.add(member.name.text);
+    }
+
+    if (isStringLiteral(member.name)) {
+      propertySet.add(member.name.text);
     }
     //other kind ignore
   });
-  return properties;
+
+  return;
+}
+
+export function getObjectProperties(objNode: ObjectLiteralExpression, propertySet: Set<string>): void {
+  if (!objNode || !objNode.properties) {
+    return;
+  }
+
+  objNode.properties.forEach((propertyElement) => {
+    if (!propertyElement || !propertyElement.name) {
+      return;
+    }
+
+    if (isIdentifier(propertyElement.name)) {
+      propertySet.add(propertyElement.name.text);
+    }
+
+    if (isStringLiteral(propertyElement.name)) {
+      propertySet.add(propertyElement.name.text);
+    }
+
+    //extract class element's property, example: export const hello = {info={read: {}}}
+    if (!isPropertyAssignment(propertyElement) || !propertyElement.initializer) {
+      return;
+    }
+
+    if (isObjectLiteralExpression(propertyElement.initializer)) {
+      getObjectProperties(propertyElement.initializer, propertySet);
+      return;
+    }
+
+    if (isClassDeclaration(propertyElement.initializer)) {
+      getClassProperties(propertyElement.initializer, propertySet);
+      return;
+    }
+
+    if (isEnumDeclaration(propertyElement.initializer)) {
+      getEnumProperties(propertyElement.initializer, propertySet);
+      return;
+    }
+  });
+
+  return;
 }

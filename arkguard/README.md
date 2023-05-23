@@ -23,7 +23,7 @@ When you create a new project, the following config will be generated in `build-
     "obfuscation": {
       "ruleOptions": {
         "enable": true,
-        "rules": ["obfusation-rules.txt"],
+        "rules": ["obfuscation-rules.txt"],
       }
     }
   }
@@ -36,7 +36,7 @@ When you create a new library, additional property `consumerRules` will be added
     "obfuscation": {
       "ruleOptions": {
         "enable": true,
-        "rules": ["obfusation-rules.txt"],
+        "rules": ["obfuscation-rules.txt"],
       }
       "consumerRules": ["consumer-rules.txt"]
     }
@@ -61,7 +61,7 @@ HAP, `obfuscation.txt` will not be generated.
 
 ## Write rules
 
-The files `obfusation-rules.txt` and `consumer-rules.txt` are created by DevEco Studio automatically, but they do not
+The files `obfuscation-rules.txt` and `consumer-rules.txt` are created by DevEco Studio automatically, but they do not
 contain any rule by default. You can write rules in these files or include rules from other files, as the following
 example shows.
 ```
@@ -70,7 +70,7 @@ example shows.
     "obfuscation": {
       "ruleOptions": {
         "enable": true,
-        "rules": ["obfusation-rules.txt", "myrules.txt"],
+        "rules": ["obfuscation-rules.txt", "myrules.txt"],
       }
       "consumerRules": ["consumer-rules.txt", "my-consumer-rules.txt"]
     }
@@ -82,7 +82,7 @@ In rule files, you can write [obfuscation options](#obfuscation-options) and [ke
 
 ### Obfuscation options
 
-`-disable-obfusation`
+`-disable-obfuscation`
 
 Specifies to disable all obfuscations. If you use this option, the resulting HAP or HAR will not be obfuscated. By default,
 Arkguard only obfuscates the parameter names and local variable names by assigning random short names to them.
@@ -91,7 +91,16 @@ Arkguard only obfuscates the parameter names and local variable names by assigni
 
 Specifies to obfuscate the property names. If you use this option, all property names will be obfuscated except the
 following:
-* the property names of `import/export` classes or objects.
+* the property names of `import/export` classes or objects. Note: Only for directly exported classes or objects, their
+property names will be kept. For example, the property name `data` in
+    ```
+    export class MyClass {
+       data: string;
+    }
+    ```
+    will not be obfuscated.
+In 'directly export' cases such as `export MyClass` and `let a = MyClass; export a;`, if you do not want to obfuscate
+their property names, you need to use [keep options](#keep-options) to keep them.
 * the property names defined in UI components. For example, the property names `message` and `data` in
     ```
     @Component struct MyExample {
@@ -179,6 +188,15 @@ console.log(obj['t']);        // t and 't' can be safely obfuscated, but we sugg
 obj.['v'] = 0;
 console.log(obj['v']);        // 'v' can be safely obfuscated, but we suggest keeping v
 ```
+The property names defined in UI components should also be kept for now. In the future, we will keep them automatically.
+```
+@Entry
+@Component
+struct Index {
+  @State messaage: string = 'Hello World';    // messaage should be kept
+  foo(){};                                    // foo should be kept
+}
+```
 
 `-keep-global-name` [,modifiers,...]
 
@@ -234,3 +252,58 @@ lastName
 age
 ```
 If your are building HAR, comments will not be merged into the resulting `obfuscation.txt`.
+
+### How Arkguard merges rules?
+Typically there may be serveral rule files in your project. These rule files come from:
+* `ruleOptions.rules` in main project (Here by main project we mean the project you are building)
+* `consumerRules` in local dependency libraries
+* `obfuscate.txt` in remote dependency HARs
+When building your main project, all these rules will be merged by the following strategy (in pseudo code):
+```
+let `listRules` be the list of all rule files that are mentioned above.
+let finalRule = {
+    disableObfuscation: false,
+    enablePropertyObfuscation: false,
+    enableToplevelObfuscation: false,
+    compact: false,
+    removeLog: false,
+    keepPropertyName: [],
+    keepGlobalName: [],
+    keepDts: []
+}
+for each file in `listRules`:
+    for each option in file:
+        switch(option) {
+            case -disable-obfuscation:
+                finalRule.disableObfuscation = true;
+                continue;
+            case -enable-property-obfuscation:
+                finalRule.enablePropertyObfuscation = true;
+                continue;
+            case -enable-toplevel-obfuscation:
+                finalRule.enableToplevelObfuscation = true;
+                continue;
+            case -compact:
+                finalRule.compact = true;
+                continue;
+            case -remove-log:
+                finalRule.removeLog = true;
+                continue;
+            case -keep-property-name:
+                finalRule.keepPropertyName.push(#{specified names});
+                continue;
+            case -keep-global-name:
+                finalRule.keepGlobalName.push(#{specified names});
+                continue;
+            case -keep-dts:
+                finalRule.keepDts.push(#{specified file paths});
+                continue;
+        }
+    end-for
+end-for
+```
+The final obfuscation rules are in the object `finalRule`.
+
+If you are building HAR, the resulting `obfuscate.txt` are obtained by merging the rules from `consumerRules` in main
+project and local dependency libraries, and `obfuscate.txt` in remote dependency HARs. The merging strategy is the same
+as above.

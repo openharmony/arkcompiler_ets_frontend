@@ -54,15 +54,21 @@ namespace secharmony {
 
       function transformShortHandProperty(node: Node): Node {
         /**
-         * 1. let name = 'hello'; let info = {name}
+         * ShortHandProperty example:
+         * `let name = 'hello;`
+         * `let info = {name};`
          */
         if (isShorthandPropertyAssignment((node))) {
           // update parent
           return factory.createPropertyAssignment(factory.createIdentifier(node.name.text), node.name);
         }
         /**
-         * const { x, y } = { x: 1, y: 2 };
-         * const { x: a, y: b} = { x, y } --> const {x: c, y: d} = { x: e, y: f };
+         * orinal ObjectBinding:
+         * `const { x, y } = { x: 1, y: 2 };`
+         * `const { x: a, y: b} = { x, y };`
+         * obfuscated ObjectBinding:
+         * `const { x: a, y: b } = { x: 1, y: 2 };`
+         * `const { x: c, y: d } = { x: a, y: b };`
          */
         if (isObjectBindingPattern(node) && NodeUtils.isObjectBindingPatternAssignment(node)) {
           return node;

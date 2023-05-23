@@ -29,6 +29,7 @@ import type {
   SourceFile,
   TypeChecker,
 } from 'typescript';
+
 import path from 'path';
 
 export class TypeUtils {
@@ -40,6 +41,7 @@ export class TypeUtils {
   public static createNewSourceFile(oldAst: SourceFile): SourceFile {
     let printer: Printer = createPrinter();
     let content: string = printer.printFile(oldAst);
+
     const fileSuffix: string = '.ts';
     const { dir, name } = path.parse(oldAst.fileName);
     const targetName: string = path.join(dir, name) + '__tmp' + fileSuffix;

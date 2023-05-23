@@ -83,19 +83,21 @@ namespace secharmony {
     return renameIdentifierFactory;
 
     function renameIdentifierFactory(context: TransformationContext): Transformer<Node> {
-      let reservedNames: string[] = [...(profile?.mReservedNames ?? []), 'this'];
+      let reservedNames: string[] = [...(profile?.mReservedNames ?? []), 'this', "__global"];
       let mangledSymbolNames: Map<Symbol, string> = new Map<Symbol, string>();
       let mangledLabelNames: Map<Label, string> = new Map<Label, string>();
-      let historyMangledNames: Set<string> = undefined;
-      if (historyNameCache && historyNameCache.size > 0) {
-        historyMangledNames = new Set<string>(Array.from(historyNameCache.values()));
-      }
+
       let options: NameGeneratorOptions = {};
       if (profile.mNameGeneratorType === NameGeneratorType.HEX) {
         options.hexWithPrefixSuffix = true;
       }
 
       let generator: INameGenerator = getNameGenerator(profile.mNameGeneratorType, options);
+
+      let historyMangledNames: Set<string> = undefined;
+      if (historyNameCache && historyNameCache.size > 0) {
+        historyMangledNames = new Set<string>(Array.from(historyNameCache.values()));
+      }
 
       let checker: TypeChecker = undefined;
       let manager: ScopeManager = createScopeManager();
@@ -237,6 +239,11 @@ namespace secharmony {
           }
 
           if (scope.importNames && scope.importNames.has(mangled)) {
+            mangled = '';
+            continue;
+          }
+
+          if (scope.exportNames && scope.exportNames.has(mangled)) {
             mangled = '';
             continue;
           }

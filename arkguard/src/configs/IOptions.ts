@@ -13,12 +13,7 @@
  * limitations under the License.
  */
 
-import type {IControlFlowFatteningOption} from './IControlFlowFatteningOption';
-import type {IDataObfuscationOption} from './IDataObfuscationOption';
-import type {IBogusControlFlowOption} from './IBogusControlFlowOption';
 import type {INameObfuscationOption} from './INameObfuscationOption';
-import type {IInstructionObfuscationOption} from './IInstructionObfuscationOption';
-import type {IHideOhApiOption} from './IHideOhApiOption';
 
 export interface IOptions {
   // Whether to generate compact code
@@ -36,25 +31,8 @@ export interface IOptions {
   // Whether to do code simplification, includes variable declarations merging, expression merging...
   readonly mSimplify?: boolean;
 
-  // whether to hide openHarmony api
-  readonly mHideOhApi?: IHideOhApiOption;
-
   // Whether to do Name Obfuscation
   readonly mNameObfuscation?: INameObfuscationOption;
-
-  // Whether to insert bogus control flow.
-  readonly mBogusControlFlow?: IBogusControlFlowOption;
-
-  // Whether to do control flow flattening
-  readonly mControlFlowFlattening?: IControlFlowFatteningOption;
-
-  // Whether to do data obfuscation
-  readonly mDataObfuscation?: IDataObfuscationOption;
-
-  // Whether to do Instruction obfuscation, includes obfuscating binary expression, logical expression, call expression.
-  readonly mInstructionObfuscation?: IInstructionObfuscationOption;
-
-  mNarrowFunctionNames?: Array<string>;
 
   mOutputDir?: string;
 

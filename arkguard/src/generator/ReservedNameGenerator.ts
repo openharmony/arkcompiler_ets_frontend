@@ -26,7 +26,7 @@ const gReservedIdentifier = [
   'interface', 'export', 'readonly', 'private', 'public', 'extends',
   'implements', 'constructor', 'this', 'static', 'protected', 'switch',
   'case', 'default', 'typeof', 'instanceof', 'in', 'of', 'import', 'require',
-  'module', 'from', 'abstract', 'async', 'namespace', 'arguments'
+  'module', 'from', 'abstract', 'async', 'namespace', 'arguments', '__global'
 ];
 
 const gTransformDict = {

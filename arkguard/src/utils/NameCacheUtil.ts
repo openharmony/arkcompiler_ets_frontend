@@ -23,6 +23,7 @@ export function writeCache(cache: Map<string, string>, destFileName: string): vo
   if (!cache) {
     return;
   }
+
   const cacheString: string = JSON.stringify(Object.fromEntries(cache));
   FileUtils.writeFile(destFileName, cacheString);
 }
