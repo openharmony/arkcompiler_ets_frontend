@@ -27,7 +27,7 @@ public:
     static const std::string SECOND_LEVEL_SEPERATOR;
 
     struct OriginFunctionInfo {
-        std::string funcName;
+        std::string recordName;
         std::string funcInternalName;
         std::string funcHash;
         ArenaMap<uint32_t, std::pair<std::string, int>> lexenv;  // lexenv: <slot, <name, type>>
@@ -41,7 +41,8 @@ public:
         : symbolTable_(inputSymbolTable), dumpSymbolTable_(dumpSymbolTable),
         allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
         originFunctionInfo_(allocator_.Adapter()),
-        originModuleInfo_(allocator_.Adapter()) {}
+        originModuleInfo_(allocator_.Adapter()),
+        originRecordHashFunctionNames_(allocator_.Adapter()) {}
 
     bool Initialize();
     void WriteSymbolTable(const std::string &content);
@@ -55,9 +56,16 @@ public:
         return &originModuleInfo_;
     }
 
+    ArenaUnorderedMap<std::string, std::vector<std::string>> *GetOriginRecordHashFunctionNames()
+    {
+        return &originRecordHashFunctionNames_;
+    }
+
 private:
     bool ReadSymbolTable(const std::string &symbolTable);
     std::vector<std::string_view> GetStringItems(std::string_view input, const std::string &separator);
+    void ReadRecordHashFunctionNames(std::string recordName, std::string funcInternalName,
+                                     std::string specialFuncIndex);
 
     std::mutex m_;
     std::string symbolTable_;
@@ -65,6 +73,7 @@ private:
     ArenaAllocator allocator_;
     ArenaUnorderedMap<std::string, OriginFunctionInfo> originFunctionInfo_;
     ArenaUnorderedMap<std::string, std::string> originModuleInfo_;
+    ArenaUnorderedMap<std::string, std::vector<std::string>> originRecordHashFunctionNames_;
 };
 }  // namespace panda::es2panda::util
 

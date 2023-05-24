@@ -27,7 +27,6 @@
 
 namespace panda::es2panda::util {
 
-constexpr std::string_view ANONYMOUS_OR_DUPLICATE_FUNCTION_SPECIFIER = "#";
 const std::string EXTERNAL_ATTRIBUTE = "external";
 const panda::panda_file::SourceLang SRC_LANG = panda::panda_file::SourceLang::ECMASCRIPT;
 
@@ -129,9 +128,9 @@ void Hotfix::ValidateJsonContentRecInfo(const std::string &recordName, const std
     }
 }
 
-bool Hotfix::IsAnonymousOrDuplicateNameFunction(const std::string &funcName)
+bool Hotfix::IsAnonymousOrSpecialOrDuplicateFunction(const std::string &funcName)
 {
-    return funcName.find(ANONYMOUS_OR_DUPLICATE_FUNCTION_SPECIFIER) != std::string::npos;
+    return funcName.find(binder::Binder::ANONYMOUS_SPECIAL_DUPLICATE_FUNCTION_SPECIFIER) != std::string::npos;
 }
 
 int64_t Hotfix::GetLiteralIdxFromStringId(const std::string &stringId)
@@ -490,22 +489,42 @@ bool Hotfix::CompareClassHash(std::vector<std::pair<std::string, size_t>> &hashL
     return true;
 }
 
+void Hotfix::CheckNewSpecialNameFunction(std::string funcName, std::string recordName)
+{
+    auto it = originRecordHashFunctionNames_->find(recordName);
+    if (it != originRecordHashFunctionNames_->end()) {
+        if (it->second.size() == 0 || globalIndexForSpecialFunc_ > it->second.size() - 1) {
+            // anonymous, special or duplicate function added
+            std::cerr << "[Patch] Found new anonymous, special(containing '.' or '\\') or duplicate name function "
+                    << funcName << " not supported!" << std::endl;
+            patchError_ = true;
+            return;
+        }
+        auto originalName = it->second[globalIndexForSpecialFunc_++];
+        // special name function in the same position must have the same real function name as original
+        if (originalName.substr(originalName.find_last_of("#")) != funcName.substr(funcName.find_last_of("#"))) {
+            std::cerr << "[Patch] Found new anonymous, special(containing '.' or '\\') or duplicate name function "
+                    << funcName << " not supported!" << std::endl;
+            patchError_ = true;
+            return;
+        }
+    }
+}
+
 void Hotfix::HandleFunction(const compiler::PandaGen *pg, panda::pandasm::Function *func,
     LiteralBuffers &literalBuffers)
 {
     std::string funcName = func->name;
-    auto originFunction = originFunctionInfo_->find(funcName);
-    if (originFunction == originFunctionInfo_->end()) {
+    if (IsAnonymousOrSpecialOrDuplicateFunction(funcName)) {
         // Support adding anonymous funtion in hotreload mode.
         if (hotReload_) {
             return;
         }
-        if (IsAnonymousOrDuplicateNameFunction(funcName)) {
-            std::cerr << "[Patch] Found new anonymous or duplicate name function " << funcName
-                      << " not supported!" << std::endl;
-            patchError_ = true;
-            return;
-        }
+        auto recordName = funcName.substr(0, funcName.find_last_of("."));
+        CheckNewSpecialNameFunction(funcName, recordName);
+    }
+    auto originFunction = originFunctionInfo_->find(funcName);
+    if (originFunction == originFunctionInfo_->end()) {
         newFuncNames_.insert(funcName);
         CollectFuncDefineIns(func);
         return;
@@ -545,6 +564,14 @@ void Hotfix::DumpFunctionInfo(const compiler::PandaGen *pg, panda::pandasm::Func
 
     std::vector<std::pair<std::string, size_t>> hashList = GenerateFunctionAndClassHash(func, literalBuffers);
     ss << hashList.back().second << SymbolTable::SECOND_LEVEL_SEPERATOR;
+
+    if (pg->InternalName().Mutf8().find("#") != std::string::npos) {
+        // anonymous, special-name and duplicate function index started from 1
+        ss << std::to_string(++globalIndexForSpecialFunc_) << SymbolTable::SECOND_LEVEL_SEPERATOR;
+    } else {
+        // index 0 for all the normal name functions
+        ss << "0" << SymbolTable::SECOND_LEVEL_SEPERATOR;
+    }
 
     ss << SymbolTable::FIRST_LEVEL_SEPERATOR;
     for (size_t i = 0; i < hashList.size() - 1; ++i) {

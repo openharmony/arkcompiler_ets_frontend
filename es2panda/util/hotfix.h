@@ -52,6 +52,7 @@ public:
         classMemberFunctions_(allocator_.Adapter()) {
             originFunctionInfo_ = symbolTable_->GetOriginFunctionInfo();
             originModuleInfo_ = symbolTable_->GetOriginModuleInfo();
+            originRecordHashFunctionNames_ = symbolTable_->GetOriginRecordHashFunctionNames();
             patchMain0_ = recordName_ + ".patch_main_0";
             patchMain1_ = recordName_ + ".patch_main_1";
             funcMain0_ = recordName_ + ".func_main_0";
@@ -85,7 +86,7 @@ private:
     void AddTailInsForPatchFuncMain1(std::vector<panda::pandasm::Ins> &ins);
     void CreateFunctionPatchMain0AndMain1(panda::pandasm::Function &patchFuncMain0,
         panda::pandasm::Function &patchFuncMain1);
-    bool IsAnonymousOrDuplicateNameFunction(const std::string &funcName);
+    bool IsAnonymousOrSpecialOrDuplicateFunction(const std::string &funcName);
     bool CompareLexenv(const std::string &funcName, const compiler::PandaGen *pg,
         SymbolTable::OriginFunctionInfo &bytecodeInfo);
     bool CompareClassHash(std::vector<std::pair<std::string, size_t>> &hashList,
@@ -94,9 +95,11 @@ private:
     std::vector<std::string> GetLiteralMethods(int64_t bufferIdx, LiteralBuffers &literalBuffers);
     void HandleModifiedClasses(panda::pandasm::Program *prog);
     int64_t GetLiteralIdxFromStringId(const std::string &stringId);
+    void CheckNewSpecialNameFunction(std::string funcName, std::string recordName);
 
     std::mutex m_;
     uint32_t topScopeIdx_ {0};
+    uint32_t globalIndexForSpecialFunc_ {0};
     bool patchError_ {false};
     bool generateSymbolFile_ {false};
     bool generatePatch_ {false};
@@ -110,6 +113,7 @@ private:
     ArenaAllocator allocator_;
     ArenaUnorderedMap<std::string, util::SymbolTable::OriginFunctionInfo> *originFunctionInfo_ {nullptr};
     ArenaUnorderedMap<std::string, std::string> *originModuleInfo_ {nullptr};
+    ArenaUnorderedMap<std::string, std::vector<std::string>> *originRecordHashFunctionNames_ {nullptr};
     ArenaUnorderedMap<std::string, uint32_t> topScopeLexEnvs_;
     ArenaSet<std::string> patchFuncNames_;
     ArenaSet<std::string> newFuncNames_;

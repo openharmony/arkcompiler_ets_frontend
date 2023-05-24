@@ -119,10 +119,16 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
 util::Hotfix *Compiler::InitHotfixHelper(const SourceFile &input, const CompilerOptions &options,
                                          util::SymbolTable *symbolTable)
 {
+    util::Hotfix *hotfixHelper = nullptr;
     bool needDumpSymbolFile = !options.hotfixOptions.dumpSymbolTable.empty();
     bool needGeneratePatch = options.hotfixOptions.generatePatch && !options.hotfixOptions.symbolTable.empty();
+    if (symbolTable && (needDumpSymbolFile || needGeneratePatch) && (options.functionThreadCount != 0)) {
+        std::cerr << "[Patch] The order of function to be compiled might be different if compiled parallelly! The"
+            << " option function-threads should be the default value or be specified as 0."
+            << std::endl;
+        return hotfixHelper;
+    }
     bool isHotReload = options.hotfixOptions.hotReload;
-    util::Hotfix *hotfixHelper = nullptr;
     if (symbolTable && (needDumpSymbolFile || needGeneratePatch || isHotReload)) {
         hotfixHelper = new util::Hotfix(needDumpSymbolFile, needGeneratePatch, isHotReload,
                                         input.recordName, symbolTable);

@@ -210,7 +210,8 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opDumpDebugInfo("dump-debug-info", false, "Dump debug info");
     panda::PandArg<int> opOptLevel("opt-level", 2,
         "Compiler optimization level (options: 0 | 1 | 2). In debug and base64Input mode, optimizer is disabled");
-    panda::PandArg<int> opFunctionThreadCount("function-threads", 0, "Number of worker threads to compile function");
+    panda::PandArg<int> opFunctionThreadCount("function-threads", 0, "Number of worker threads to compile function, "\
+        "which affects the recognition of changes in special name functions in hotfix mode if bigger than 0");
     panda::PandArg<int> opFileThreadCount("file-threads", 0, "Number of worker threads to compile file");
     panda::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
     panda::PandArg<bool> opDumpLiteralBuffer("dump-literal-buffer", false, "Dump literal buffer");

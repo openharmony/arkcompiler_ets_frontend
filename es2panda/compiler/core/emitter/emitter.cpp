@@ -96,21 +96,10 @@ void FunctionEmitter::GenBufferLiterals(const LiteralBuffer *buff)
 
 util::StringView FunctionEmitter::SourceCode() const
 {
-    auto wholeSource = pg_->Binder()->Program()->SourceCode();
     if (pg_->RootNode()->IsProgram()) {
-        return wholeSource;
+        return pg_->Binder()->Program()->SourceCode();
     }
-
-    auto *funcNode = pg_->RootNode()->Parent();
-    if (funcNode->IsFunctionExpression() &&
-        funcNode->Parent()->IsMethodDefinition() &&
-        funcNode->Parent()->AsMethodDefinition()->Value() == funcNode->AsFunctionExpression()) {
-        funcNode = funcNode->Parent();
-    }
-
-    auto startIndex = funcNode->Start().index;
-    auto endIndex = funcNode->End().index;
-    return wholeSource.Substr(startIndex, endIndex);
+    return static_cast<const ir::ScriptFunction *>(pg_->RootNode())->SourceCode(pg_->Binder());
 }
 
 lexer::LineIndex &FunctionEmitter::GetLineIndex() const

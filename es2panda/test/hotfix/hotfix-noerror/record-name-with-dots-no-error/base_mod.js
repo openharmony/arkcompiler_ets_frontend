@@ -12,12 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// Test scenario: add anonymous function, es2abc can specify and throw error.
 
-(()=>{
-    print("anonymous: 1");
-})()
+// Test scenario: no added special name function in file that originally did not have special name functions
 
-(()=>{
-    print("anonymous: 2");  // add anonymous function
-})()
+function A() {
+    print("A");
+}
+
+function B() {
+    print("B");
+}

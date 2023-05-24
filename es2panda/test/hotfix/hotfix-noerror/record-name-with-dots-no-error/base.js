@@ -13,12 +13,6 @@
  * limitations under the License.
  */
 
-// Test scenario: add anonymous function, es2abc can specify and throw error.
-
-(()=>{
-    print("anonymous: 1");
-})();
-
-(()=>{
-    print("anonymous: 2");  // add anonymous function
-})();
+function A() {
+    print("A");
+}
