@@ -18,7 +18,11 @@
         "ram": "",
         "deps": {
             "components": [],
-            "third_party": []
+            "third_party": [
+                "bounds_checking_function",
+                "icu",
+                "jsoncpp"
+            ]
         },
         "build": {
             "sub_component": [
