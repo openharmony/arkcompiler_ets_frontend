@@ -139,25 +139,6 @@ function getOutputBinName(node: ts.SourceFile) {
     return outputBinName;
 }
 
-function getDtsFiles(libDir: string): string[] {
-    let dtsFiles:string[] = [];
-    function finDtsFile(dir){
-        let files = fs.readdirSync(dir);
-        files.forEach(function (item, _) {
-            let fPath = path.join(dir,item);
-            let stat = fs.statSync(fPath);
-            if(stat.isDirectory() === true) {
-                finDtsFile(fPath);
-            }
-            if (stat.isFile() === true && item.endsWith(".d.ts") === true) {
-                dtsFiles.push(fPath);
-            }
-        });
-    }
-    finDtsFile(libDir);
-    return dtsFiles;
-}
-
 const stopWatchingStr = "####";
 const watchAbcFileDefaultTimeOut = 10;
 const watchFileName = "watch_expressions";
@@ -370,7 +351,5 @@ function run(args: string[], options?: ts.CompilerOptions): void {
     }
 }
 
-let dtsFiles = getDtsFiles(path["join"](__dirname, "../node_modules/typescript/lib"));
-process.argv.push(...dtsFiles);
 run(process.argv.slice(2), Compiler.Options.Default);
 global.gc();
