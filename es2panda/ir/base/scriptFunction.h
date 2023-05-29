@@ -193,6 +193,11 @@ public:
         return (flags_ & ir::ScriptFunctionFlags::CONCURRENT) != 0;
     }
 
+    bool ShowSource() const
+    {
+        return (flags_ & ir::ScriptFunctionFlags::SHOW_SOURCE) != 0;
+    }
+
     bool CanBeConcurrent() const
     {
         return !(IsGenerator() || IsArrow() || IsConstructor() || IsMethod());

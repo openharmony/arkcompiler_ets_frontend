@@ -27,49 +27,11 @@
 
 namespace panda::es2panda::util {
 
-void Concurrent::SetConcurrent(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex)
+void Concurrent::SetConcurrent(ir::ScriptFunction *func, const ir::AstNode * node, const lexer::LineIndex &lineIndex)
 {
-    auto *body = func->Body();
-    if (!body) {
-        return;
-    }
-
-    if (body->IsExpression()) {
-        return;
-    }
-
-    auto &statements = body->AsBlockStatement()->Statements();
-    if (statements.empty()) {
-        return;
-    }
-
-    /**
-     * verify the firstStmt
-     * if IsExpressionStatement(firstStmt) == false
-     *      return;
-     * else
-     *      if (firstStmt->IsStringLiteral() && strVal == "use concurrent")
-     *          [fall through]
-     *      else
-     *          return
-     */
-    const auto *stmt = statements.front();
-    if (!stmt->IsExpressionStatement()) {
-        return;
-    }
-
-    auto *expr = stmt->AsExpressionStatement()->GetExpression();
-    if (!expr->IsStringLiteral()) {
-        return;
-    }
-
-    if (!expr->AsStringLiteral()->Str().Is(USE_CONCURRENT)) {
-        return;
-    }
-
     // concurrent function should only be function declaration
     if (!func->CanBeConcurrent()) {
-        ThrowInvalidConcurrentFunction(lineIndex, stmt, ConcurrentInvalidFlag::NOT_ORDINARY_FUNCTION);
+        ThrowInvalidConcurrentFunction(lineIndex, node, ConcurrentInvalidFlag::NOT_ORDINARY_FUNCTION);
     }
 
     func->AddFlag(ir::ScriptFunctionFlags::CONCURRENT);

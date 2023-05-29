@@ -41,6 +41,9 @@ namespace panda::pandasm {
 struct Program;
 }  // namespace panda::pandasm
 
+namespace panda::es2panda::lexer {
+class LineIndex;
+}
 
 namespace panda::es2panda::util {
 
@@ -91,11 +94,14 @@ public:
     template <typename T>
     static T BaseName(T const &path, T const &delims = std::string(panda::os::file::File::GetPathDelim()));
     static bool ReadFileToBuffer(const std::string &file, std::stringstream &ss);
+    static void SetFuncFlagsForDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex);
 
     static const uint32_t INVALID_INDEX = 4294967295L;
     static const uint32_t MAX_INT32 = 2147483647;
     static const uint32_t MAX_INT16 = std::numeric_limits<int16_t>::max();
     static const uint32_t MAX_INT8 = std::numeric_limits<int8_t>::max();
+    static constexpr std::string_view SHOW_SOURCE = "show source";
+    static constexpr std::string_view USE_CONCURRENT = "use concurrent";
 };
 
 template <typename T>

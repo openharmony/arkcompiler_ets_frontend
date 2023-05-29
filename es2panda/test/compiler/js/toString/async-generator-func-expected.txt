@@ -1,0 +1,4 @@
+async function *a() {
+    "show source";
+    print(111);
+}
