@@ -142,21 +142,30 @@ ohos_source_set("assembly_proto_static") {
 
   deps = [
     ":arkcompiler_generate_proto",
-    "$ark_root/assembler:libarkassembler_frontend_static",
-    "$ark_root/libpandabase:libarkbase_frontend_static",
-    "$ark_root/libpandafile:libarkfile_frontend_static",
     "$ark_third_party_root/protobuf:protobuf_lite_static",
     "$ark_third_party_root/protobuf:protobuf_static",
+  ]
+
+  external_deps = [
+    "runtime_core:libarkassembler_frontend_static",
+    "runtime_core:libarkbase_frontend_static",
+    "runtime_core:libarkfile_frontend_static",
   ]
 
   sources = proto_generated_header + proto_generated_source +
             protobuf_snapshot_generator_sources
   public_configs = assembly_proto_configs
   public_configs += [ ":proto_file_cpp_config" ]
+
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_static_library("panda_assembly_proto_static") {
   deps = [ ":assembly_proto_static" ]
+
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_executable("merge_abc") {
@@ -180,9 +189,10 @@ ohos_executable("merge_abc") {
 
   deps = [
     ":panda_assembly_proto_static",
-    "$ark_root/libziparchive:libarkziparchive_frontend_static",
     "$ark_third_party_root/icu/icu4c:static_icuuc",
   ]
+
+  external_deps = [ "runtime_core:libarkziparchive_frontend_static" ]
 
   ldflags = []
   if (is_linux) {
