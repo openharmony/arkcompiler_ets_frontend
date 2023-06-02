@@ -18,6 +18,7 @@
 #include <binder/binder.h>
 #include <binder/scope.h>
 #include <ir/astDump.h>
+#include <ir/base/methodDefinition.h>
 #include <ir/expression.h>
 #include <ir/expressions/identifier.h>
 #include <ir/statements/blockStatement.h>
@@ -132,6 +133,20 @@ void ScriptFunction::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
     if (body_) {
         body_ = std::get<ir::AstNode *>(cb(body_));
     }
+}
+
+util::StringView ScriptFunction::SourceCode(binder::Binder *binder) const
+{
+    auto *funcNode = this->Parent();
+    if (funcNode->IsFunctionExpression() &&
+        funcNode->Parent()->IsMethodDefinition() &&
+        funcNode->Parent()->AsMethodDefinition()->Value() == funcNode->AsFunctionExpression()) {
+        funcNode = funcNode->Parent();
+    }
+
+    auto startIndex = funcNode->Start().index;
+    auto endIndex = funcNode->End().index;
+    return binder->Program()->SourceCode().Substr(startIndex, endIndex);
 }
 
 }  // namespace panda::es2panda::ir

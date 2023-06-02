@@ -15,4 +15,15 @@
 
 (()=>{
     print("anonymous: 1");
-})()
+})();
+
+function A() {
+    print("A");
+    function B() {
+        print("A::B");
+    }
+}
+
+function B() {
+    print("B");
+}

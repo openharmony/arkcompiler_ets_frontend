@@ -48,6 +48,7 @@ public:
           functionScopes_(Allocator()->Adapter()),
           functionNames_(Allocator()->Adapter()),
           anonymousFunctionNames_(Allocator()->Adapter()),
+          functionHashNames_(Allocator()->Adapter()),
           variableNames_(Allocator()->Adapter()),
           extension_(extension)
     {
@@ -157,6 +158,7 @@ public:
 
     static constexpr std::string_view MAIN_FUNC_NAME = "func_main_0";
     static constexpr std::string_view ANONYMOUS_FUNC_NAME = "";
+    static constexpr std::string_view ANONYMOUS_SPECIAL_DUPLICATE_FUNCTION_SPECIFIER = "#";
 
 private:
     using MandatoryParams = std::array<std::string_view, MANDATORY_PARAMS_NUMBER>;
@@ -215,8 +217,8 @@ private:
     ResolveBindingOptions bindingOptions_;
     ArenaSet<util::StringView> functionNames_;
     ArenaUnorderedMap<const ir::ScriptFunction *, util::StringView> anonymousFunctionNames_;
+    ArenaUnorderedMap<std::string, size_t> functionHashNames_;
     ArenaSet<util::StringView> variableNames_;
-    size_t functionNameIndex_ {1};
     ResolveBindingFlags bindingFlags_ {ResolveBindingFlags::ALL};
     ScriptExtension extension_;
 };

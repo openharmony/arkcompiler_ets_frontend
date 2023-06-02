@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 // Test scenario: add anonymous function, es2abc can specify and throw error.
 
 (()=>{
@@ -21,4 +20,4 @@
 
 (()=>{
     print("anonymous: 2");  // add anonymous function
-})();
+})()

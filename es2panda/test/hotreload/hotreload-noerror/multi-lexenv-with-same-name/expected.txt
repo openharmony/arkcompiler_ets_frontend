@@ -10,8 +10,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-[Patch] Found new anonymous, special(containing '.' or '\') or duplicate name function .#8673712528507858220#B not supported!
-[Patch] Found unsupported change in file, will not generate patch!
-Error:  [base_mod.js:0:0]
-the size of programs is expected to be 1, but is 0

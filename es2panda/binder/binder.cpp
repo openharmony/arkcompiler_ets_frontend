@@ -327,16 +327,32 @@ void Binder::BuildFunction(FunctionScope *funcScope, util::StringView name, cons
     bool funcNameWithoutDot = (name.Find(".") == std::string::npos);
     bool funcNameWithoutBackslash = (name.Find("\\") == std::string::npos);
     if (name != ANONYMOUS_FUNC_NAME && funcNameWithoutDot && funcNameWithoutBackslash && !functionNames_.count(name)) {
+        // function with normal name, and hasn't been recorded
         auto internalName = std::string(program_->FormatedRecordName()) + std::string(name);
         functionNames_.insert(name);
         funcScope->BindName(name, util::UString(internalName, Allocator()).View());
         return;
     }
+
     std::stringstream ss;
     ss << std::string(program_->FormatedRecordName());
-    uint32_t idx = functionNameIndex_++;
-    ss << "#" << std::to_string(idx) << "#";
-    if (name == ANONYMOUS_FUNC_NAME && func != nullptr) {
+
+    ASSERT(func != nullptr);
+
+    // For anonymous, special-name and duplicate function, get its source and name, make hash code,
+    // and make #hash_duplicateHashTime#name as its name;
+    auto funcContentNameStr = func->SourceCode(this).Mutf8() + name.Mutf8();
+    ss << ANONYMOUS_SPECIAL_DUPLICATE_FUNCTION_SPECIFIER << std::hash<std::string>{}(funcContentNameStr);
+
+    auto res = functionHashNames_.find(funcContentNameStr);
+    if (res != functionHashNames_.end()) {
+        ss << "_" << res->second++;
+    } else {
+        functionHashNames_.insert({funcContentNameStr, 1});
+    }
+    ss << ANONYMOUS_SPECIAL_DUPLICATE_FUNCTION_SPECIFIER;
+
+    if (name == ANONYMOUS_FUNC_NAME) {
         anonymousFunctionNames_[func] = util::UString(ss.str(), Allocator()).View();
     }
     if (funcNameWithoutDot && funcNameWithoutBackslash) {
