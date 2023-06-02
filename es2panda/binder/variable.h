@@ -20,7 +20,7 @@
 #include <binder/variableFlags.h>
 #include <ir/irnode.h>
 #include <macros.h>
-#include <util/hotfix.h>
+#include <util/patchFix.h>
 #include <util/ustring.h>
 
 #include <limits>
@@ -116,7 +116,7 @@ public:
     }
 
     const util::StringView &Name() const;
-    virtual void SetLexical(Scope *scope, util::Hotfix *hotfixHelper = nullptr) = 0;
+    virtual void SetLexical(Scope *scope, util::PatchFix *patchFixHelper = nullptr) = 0;
 
 protected:
     explicit Variable(Decl *decl, VariableFlags flags) : decl_(decl), flags_(flags) {}
@@ -159,7 +159,7 @@ public:
         return vreg_;
     }
 
-    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
+    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::PatchFix *patchFixHelper = nullptr) override;
     LocalVariable *Copy(ArenaAllocator *allocator, Decl *decl) const;
 
 private:
@@ -175,7 +175,7 @@ public:
         return VariableType::GLOBAL;
     }
 
-    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
+    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::PatchFix *patchFixHelper = nullptr) override;
 };
 
 class ModuleVariable : public Variable {
@@ -187,7 +187,7 @@ public:
         return VariableType::MODULE;
     }
 
-    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
+    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::PatchFix *patchFixHelper = nullptr) override;
 
     void AssignIndex(uint32_t index)
     {
@@ -257,7 +257,7 @@ public:
 
     void ResetDecl(Decl *decl);
 
-    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
+    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::PatchFix *patchFixHelper = nullptr) override;
 
 private:
     EnumMemberResult value_ {false};
@@ -275,7 +275,7 @@ public:
         return VariableType::NAMESPACE;
     }
 
-    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
+    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::PatchFix *patchFixHelper = nullptr) override;
 
     ExportBindings *GetExportBindings()
     {
@@ -305,7 +305,7 @@ public:
         return VariableType::ENUMLITERAL;
     }
 
-    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
+    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::PatchFix *patchFixHelper = nullptr) override;
 
     VariableMap *GetEnumMembers() const
     {
@@ -339,7 +339,7 @@ public:
         return VariableType::IMPORT_EQUALS;
     }
 
-    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper = nullptr) override;
+    void SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::PatchFix *patchFixHelper = nullptr) override;
 
     Scope *GetScope()
     {

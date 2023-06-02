@@ -15,4 +15,4 @@
 
 // Test scenario: modify import variables, es2abc can specify and throw error
 
-import streamV1 from '../hotfix-throwerror/modify-export-1/base.js'
+import streamV1 from '../../hotreload-throwerror/modify-export-1/base.js'

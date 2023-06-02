@@ -442,7 +442,7 @@ protected:
 
     VariableScopeFlags flags_ {};
     uint32_t slotIndex_ {};
-    ArenaMap<uint32_t, std::pair<util::StringView, int>> lexicalVarNameAndTypes_; // for debuginfo and hotfix
+    ArenaMap<uint32_t, std::pair<util::StringView, int>> lexicalVarNameAndTypes_; // for debuginfo and patchFix
 };
 
 class ParamScope : public Scope {

@@ -21,7 +21,7 @@
 
 #include <binder/variable.h>
 #include <ir/astNode.h>
-#include <util/hotfix.h>
+#include <util/patchFix.h>
 #include <util/ustring.h>
 
 #include <cstdint>
@@ -44,7 +44,7 @@ class CompilerContext {
 public:
     CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
                     bool isMergeAbc, bool isTypeExtractorEnabled, bool isJsonInputFile, std::string sourceFile,
-                    std::string pkgName, util::StringView recordName, util::Hotfix *hotfixHelper);
+                    std::string pkgName, util::StringView recordName, util::PatchFix *patchFixHelper);
     NO_COPY_SEMANTIC(CompilerContext);
     NO_MOVE_SEMANTIC(CompilerContext);
     ~CompilerContext() = default;
@@ -100,9 +100,9 @@ public:
         return pkgName_;
     }
 
-    util::Hotfix *HotfixHelper() const
+    util::PatchFix *PatchFixHelper() const
     {
-        return hotfixHelper_;
+        return patchFixHelper_;
     }
 
     const util::StringView &RecordName() const
@@ -142,7 +142,7 @@ private:
     std::string sourceFile_;
     std::string pkgName_;
     util::StringView recordName_;
-    util::Hotfix *hotfixHelper_ {nullptr};
+    util::PatchFix *patchFixHelper_ {nullptr};
     std::unique_ptr<Emitter> emitter_;
 };
 

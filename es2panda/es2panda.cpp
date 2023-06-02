@@ -48,10 +48,10 @@ Compiler::~Compiler()
     delete compiler_;
 }
 
-panda::pandasm::Program *CreateJsonContentProgram(std::string src, std::string rname, util::Hotfix *hotfixHelper)
+panda::pandasm::Program *CreateJsonContentProgram(std::string src, std::string rname, util::PatchFix *patchFixHelper)
 {
     panda::es2panda::compiler::CompilerContext context(nullptr, false, false, false, false, true,
-                                                       src, "", util::StringView(rname), hotfixHelper);
+                                                       src, "", util::StringView(rname), patchFixHelper);
     context.GetEmitter()->GenRecordNameInfo();
     return context.GetEmitter()->Finalize(false, nullptr);
 }
@@ -67,10 +67,10 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     std::string pkgName(input.pkgName);
     parser::ScriptKind kind(input.scriptKind);
 
-    auto *hotfixHelper = InitHotfixHelper(input, options, symbolTable);
+    auto *patchFixHelper = InitPatchFixHelper(input, options, symbolTable);
 
     if (fname.substr(fname.find_last_of(".") + 1) == "json") {
-        return CreateJsonContentProgram(src, rname, hotfixHelper);
+        return CreateJsonContentProgram(src, rname, patchFixHelper);
     }
 
     try {
@@ -106,43 +106,45 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
                                           sourcefile : options.debugInfoSourceFile;
         auto *prog = compiler_->Compile(&ast, options, debugInfoSourceFile, pkgName);
 
-        CleanHotfixHelper(hotfixHelper);
+        CleanPatchFixHelper(patchFixHelper);
         return prog;
     } catch (const class Error &e) {
         error_ = e;
 
-        CleanHotfixHelper(hotfixHelper);
+        CleanPatchFixHelper(patchFixHelper);
         return nullptr;
     }
 }
 
-util::Hotfix *Compiler::InitHotfixHelper(const SourceFile &input, const CompilerOptions &options,
-                                         util::SymbolTable *symbolTable)
+util::PatchFix *Compiler::InitPatchFixHelper(const SourceFile &input, const CompilerOptions &options,
+                                             util::SymbolTable *symbolTable)
 {
-    util::Hotfix *hotfixHelper = nullptr;
-    bool needDumpSymbolFile = !options.hotfixOptions.dumpSymbolTable.empty();
-    bool needGeneratePatch = options.hotfixOptions.generatePatch && !options.hotfixOptions.symbolTable.empty();
-    if (symbolTable && (needDumpSymbolFile || needGeneratePatch) && (options.functionThreadCount != 0)) {
-        std::cerr << "[Patch] The order of function to be compiled might be different if compiled parallelly! The"
-            << " option function-threads should be the default value or be specified as 0."
-            << std::endl;
-        return hotfixHelper;
-    }
-    bool isHotReload = options.hotfixOptions.hotReload;
+    util::PatchFix *patchFixHelper = nullptr;
+    bool needDumpSymbolFile = !options.patchFixOptions.dumpSymbolTable.empty();
+    bool needGeneratePatch = options.patchFixOptions.generatePatch && !options.patchFixOptions.symbolTable.empty();
+    bool isHotReload = options.patchFixOptions.hotReload;
+    bool isColdFix = options.patchFixOptions.coldFix;
     if (symbolTable && (needDumpSymbolFile || needGeneratePatch || isHotReload)) {
-        hotfixHelper = new util::Hotfix(needDumpSymbolFile, needGeneratePatch, isHotReload,
-                                        input.recordName, symbolTable);
-        parser_->AddHotfixHelper(hotfixHelper);
-        compiler_->AddHotfixHelper(hotfixHelper);
+        util::PatchFixKind patchFixKind = util::PatchFixKind::DUMPSYMBOLTABLE;
+        if (needGeneratePatch) {
+            patchFixKind = isColdFix ? util::PatchFixKind::COLDFIX : util::PatchFixKind::HOTFIX;
+        }
+        if (isHotReload) {
+            patchFixKind = util::PatchFixKind::HOTRELOAD;
+        }
+        patchFixHelper = new util::PatchFix(needDumpSymbolFile, needGeneratePatch, patchFixKind, input.recordName,
+            symbolTable);
+        parser_->AddPatchFixHelper(patchFixHelper);
+        compiler_->AddPatchFixHelper(patchFixHelper);
     }
-    return hotfixHelper;
+    return patchFixHelper;
 }
 
-void Compiler::CleanHotfixHelper(const util::Hotfix *hotfixHelper)
+void Compiler::CleanPatchFixHelper(const util::PatchFix *patchFixHelper)
 {
-    if (hotfixHelper) {
-        delete hotfixHelper;
-        hotfixHelper = nullptr;
+    if (patchFixHelper) {
+        delete patchFixHelper;
+        patchFixHelper = nullptr;
     }
 }
 
@@ -155,8 +157,9 @@ int Compiler::CompileFiles(CompilerOptions &options,
     std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo, panda::ArenaAllocator *allocator)
 {
     util::SymbolTable *symbolTable = nullptr;
-    if (!options.hotfixOptions.symbolTable.empty() || !options.hotfixOptions.dumpSymbolTable.empty()) {
-        symbolTable = new util::SymbolTable(options.hotfixOptions.symbolTable, options.hotfixOptions.dumpSymbolTable);
+    if (!options.patchFixOptions.symbolTable.empty() || !options.patchFixOptions.dumpSymbolTable.empty()) {
+        symbolTable = new util::SymbolTable(options.patchFixOptions.symbolTable,
+            options.patchFixOptions.dumpSymbolTable);
         if (!symbolTable->Initialize()) {
             std::cerr << "Exits due to hot fix initialize failed!" << std::endl;
             return 1;

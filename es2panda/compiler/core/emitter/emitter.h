@@ -22,7 +22,7 @@
 #include <lexer/token/sourceLocation.h>
 #include <macros.h>
 #include <typescript/extractor/typeRecorder.h>
-#include <util/hotfix.h>
+#include <util/patchFix.h>
 #include <util/ustring.h>
 
 #include <list>
@@ -74,7 +74,7 @@ public:
         return literalBuffers_;
     }
 
-    void Generate(util::Hotfix *hotfixHelper);
+    void Generate(util::PatchFix *patchFixHelper);
     const ArenaSet<util::StringView> &Strings() const;
 
 private:
@@ -114,7 +114,7 @@ public:
     static void GenBufferLiterals(ArenaVector<std::pair<int32_t, std::vector<Literal>>> &literalBuffers,
                                   const LiteralBuffer *buff);
     static void DumpAsm(const panda::pandasm::Program *prog);
-    panda::pandasm::Program *Finalize(bool dumpDebugInfo, util::Hotfix *hotfixHelper);
+    panda::pandasm::Program *Finalize(bool dumpDebugInfo, util::PatchFix *patchFixHelper);
     panda::pandasm::Program *GetProgram() const;
     void GenJsonContentRecord(const CompilerContext *context);
     void GenRecordNameInfo() const;

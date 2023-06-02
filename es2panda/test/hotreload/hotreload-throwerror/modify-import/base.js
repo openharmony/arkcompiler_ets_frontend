@@ -13,4 +13,4 @@
  * limitations under the License.
  */
 
-import base from '../hotfix-throwerror/modify-export-1/base.js'
+import base from '../../hotreload-throwerror/modify-export-1/base.js'

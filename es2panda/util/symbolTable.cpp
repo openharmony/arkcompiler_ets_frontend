@@ -52,13 +52,15 @@ void SymbolTable::ReadRecordHashFunctionNames(std::string recordName, std::strin
     if (specialFuncIndex == "0") {
         // 0: not anonymous, special or duplicate function
         if (recordHashFunctionNames == originRecordHashFunctionNames_.end())  {
-            originRecordHashFunctionNames_.insert({recordName, {}});
+            std::unordered_map<std::string, std::string> functionIndexNameMap {};
+            originRecordHashFunctionNames_.insert({recordName, functionIndexNameMap});
         }
     } else {
         if (recordHashFunctionNames != originRecordHashFunctionNames_.end()) {
-            recordHashFunctionNames->second.push_back(funcInternalName);
+            recordHashFunctionNames->second.insert({specialFuncIndex, funcInternalName});
         } else {
-            originRecordHashFunctionNames_.insert({recordName, {funcInternalName}});
+            std::unordered_map<std::string, std::string> functionIndexNameMap {{specialFuncIndex, funcInternalName}};
+            originRecordHashFunctionNames_.insert({recordName, functionIndexNameMap});
         }
     }
 }

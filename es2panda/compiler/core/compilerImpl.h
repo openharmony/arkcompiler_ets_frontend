@@ -21,7 +21,7 @@
 #include <mem/arena_allocator.h>
 #include <os/thread.h>
 #include <typescript/extractor/typeExtractor.h>
-#include <util/hotfix.h>
+#include <util/patchFix.h>
 
 #include <string>
 
@@ -47,15 +47,15 @@ public:
                                      const std::string &debugInfoSourceFile, const std::string &pkgName);
     static void DumpAsm(const panda::pandasm::Program *prog);
 
-    void AddHotfixHelper(util::Hotfix *hotfixHelper)
+    void AddPatchFixHelper(util::PatchFix *patchFixHelper)
     {
-        hotfixHelper_ = hotfixHelper;
+        patchFixHelper_ = patchFixHelper;
     }
 
 private:
     size_t threadCount_ {0};
     CompileFuncQueue *queue_ {nullptr};
-    util::Hotfix *hotfixHelper_ {nullptr};
+    util::PatchFix *patchFixHelper_ {nullptr};
     std::unique_ptr<extractor::TypeExtractor> extractor_ {};
 };
 }  // namespace panda::es2panda::compiler

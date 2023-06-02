@@ -54,6 +54,7 @@
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "util/concurrent.h"
+#include "util/patchFix.h"
 #include "util/helpers.h"
 
 namespace panda::es2panda::binder {
@@ -236,7 +237,7 @@ void Binder::LookupReference(const util::StringView &name)
     }
 
     ASSERT(res.variable);
-    res.variable->SetLexical(res.scope, program_->HotfixHelper());
+    res.variable->SetLexical(res.scope, program_->PatchFixHelper());
 }
 
 void Binder::InstantiateArguments()
@@ -299,7 +300,7 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
         ASSERT(res.variable);
         if (!res.variable->Declaration()->IsDeclare()) {
             util::Concurrent::VerifyImportVarForConcurrentFunction(Program()->GetLineIndex(), ident, res);
-            res.variable->SetLexical(res.scope, program_->HotfixHelper());
+            res.variable->SetLexical(res.scope, program_->PatchFixHelper());
         }
     }
 
@@ -314,6 +315,26 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
     }
 
     ident->SetVariable(res.variable);
+}
+
+void Binder::StoreAndCheckSpecialFunctionName(std::string &internalNameStr, std::string recordName)
+{
+    if (program_->PatchFixHelper()) {
+        if (program_->PatchFixHelper()->IsDumpSymbolTable()) {
+            // anonymous, special-name and duplicate function index started from 1
+            specialFuncNameIndexMap_.insert({internalNameStr, std::to_string(++globalIndexForSpecialFunc_)});
+            return;
+        }
+        if (program_->PatchFixHelper()->IsHotFix()) {
+            // Adding/removing anonymous, special or duplicate functions is supported for hotReload and coldFix mode,
+            // but forbidden in hotFix mode
+            program_->PatchFixHelper()->CheckAndRestoreSpecialFunctionName(++globalIndexForSpecialFunc_,
+                internalNameStr, recordName);
+            return;
+        }
+        // else: must be coldfix or hotreload mode
+        ASSERT(program_->PatchFixHelper()->IsColdFix() || program_->PatchFixHelper()->IsHotReload());
+    }
 }
 
 void Binder::BuildFunction(FunctionScope *funcScope, util::StringView name, const ir::ScriptFunction *func)
@@ -358,8 +379,9 @@ void Binder::BuildFunction(FunctionScope *funcScope, util::StringView name, cons
     if (funcNameWithoutDot && funcNameWithoutBackslash) {
         ss << name;
     }
-    util::UString internalName(ss.str(), Allocator());
-    funcScope->BindName(name, internalName.View());
+    std::string internalNameStr = ss.str();
+    StoreAndCheckSpecialFunctionName(internalNameStr, program_->RecordName().Mutf8());
+    funcScope->BindName(name, util::UString(internalNameStr, Allocator()).View());
 }
 
 void Binder::BuildScriptFunction(Scope *outerScope, const ir::ScriptFunction *scriptFunc)

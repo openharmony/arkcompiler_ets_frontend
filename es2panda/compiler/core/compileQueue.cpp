@@ -43,7 +43,7 @@ void CompileFunctionJob::Run()
     Function::Compile(&pg);
 
     FunctionEmitter funcEmitter(&allocator, &pg);
-    funcEmitter.Generate(context_->HotfixHelper());
+    funcEmitter.Generate(context_->PatchFixHelper());
 
     context_->GetEmitter()->AddFunction(&funcEmitter, context_);
 

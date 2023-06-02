@@ -11,4 +11,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-[Patch] The order of function to be compiled might be different if compiled parallelly! The option function-threads should be the default value or be specified as 0.
