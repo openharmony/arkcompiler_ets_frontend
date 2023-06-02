@@ -31,6 +31,7 @@ class ClassProperty;
 class Identifier;
 class AstNode;
 class ObjectExpression;
+class StringLiteral;
 }  // namespace panda::es2panda::ir
 
 namespace panda::es2panda {
@@ -94,7 +95,7 @@ public:
     template <typename T>
     static T BaseName(T const &path, T const &delims = std::string(panda::os::file::File::GetPathDelim()));
     static bool ReadFileToBuffer(const std::string &file, std::stringstream &ss);
-    static void SetFuncFlagsForDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex);
+    static void ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex);
 
     static const uint32_t INVALID_INDEX = 4294967295L;
     static const uint32_t MAX_INT32 = 2147483647;
@@ -102,6 +103,9 @@ public:
     static const uint32_t MAX_INT8 = std::numeric_limits<int8_t>::max();
     static constexpr std::string_view SHOW_SOURCE = "show source";
     static constexpr std::string_view USE_CONCURRENT = "use concurrent";
+private:
+    static bool SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::ScriptFunction *func,
+                                          const lexer::LineIndex &lineIndex);
 };
 
 template <typename T>
