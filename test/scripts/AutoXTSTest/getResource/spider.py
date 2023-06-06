@@ -1,32 +1,51 @@
-import tarfile
-import requests
-import os
-import json
-from tqdm import tqdm
-import xml.etree.ElementTree as ET
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-def GetDayu200_XTS(url):
+
+import os
+import tarfile
+import json
+import requests
+import xml.etree.ElementTree as ET
+from tqdm import tqdm
+
+
+def get_images_and_testcases(url):
     print(f"Get new image from {url},please wait!")
-    r = requests.get(url, stream = True)
+    r = requests.get(url, stream=True)
     total = int(r.headers.get('content-length'), 0)
-    with open(".\\dayu200_xts.tar.gz", "wb") as f, tqdm(
-        desc = "dayu200_xts.tar.gz",
-        total = total,
-        unit = 'iB',
-        unit_scale =True,
-        unit_divisor =1024,
+    flags = os.WRONLY | os.CREAT | os.EXCL
+    modes = stat.S_IWUSR | stat.S_IRUSR
+    with os.fdopen(os.open(".\\dayu200_xts.tar.gz", flags, modes), "wb") as f, tqdm(
+        desc="dayu200_xts.tar.gz",
+        total=total,
+        unit='iB',
+        unit_scale=True,
+        unit_divisor=1024,
     ) as bar:
-        for data in r.iter_content(chunk_size = 1024):
+        for data in r.iter_content(chunk_size=1024):
             size = f.write(data)
             bar.update(size)
     print("extracrting file")
     with tarfile.open(".\\dayu200_xts.tar.gz", "r") as tar:
-        for member in tqdm(desc = 'dayu200_xts', iterable = tar.getmembers(), total = len(tar.getmembers())):
-            tar.extract(path = ".\\dayu200_xts", member = member)
-
+        for member in tqdm(desc='dayu200_xts', iterable=tar.getmembers(), total=len(tar.getmembers())):
+            tar.extract(path=".\\dayu200_xts", member=member)
 
    
-def GetUrl():
+def get_url():
     url = "http://ci.openharmony.cn/api/ci-backend/ci-portal/v1/dailybuilds"
     headers = {
         'Accept': 'application/json, text/plain, */*',
@@ -49,7 +68,9 @@ def GetUrl():
         'Host': 'ci.openharmony.cn',
         'Origin': 'http://ci.openharmony.cn',
         'Referer': 'http://ci.openharmony.cn/dailys/dailybuilds',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.50'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64) \
+        AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0\
+         Safari/537.36 Edg/113.0.1774.50'
     }
     data = {
         'branch': "master",
@@ -65,19 +86,23 @@ def GetUrl():
         'startTime': "",
         'testResult': ""
     }
-    response = requests.post(url, json=data, headers = headers)
-    jsonObj = json.loads(response.text)
-    startTime = jsonObj['result']['dailyBuildVos'][0]['buildStartTime']
-    startTime = startTime[:8] + "_" + startTime[8:]
-    return f"http://download.ci.openharmony.cn/version/Daily_Version/dayu200-arm64/{startTime}/version-Daily_Version-dayu200-arm64-{startTime}-dayu200-arm64.tar.gz"
+    response = requests.post(url, json=data, headers=headers)
+    json_obj = json.loads(response.text)
+    start_time = json_obj['result']['dailyBuildVos'][0]['buildStartTime']
+    start_time = start_time[:8] + "_" + start_time[8:]
+    return f"http://download.ci.openharmony.cn/version/Daily_Version/dayu200-arm64\
+             /{start_time}/version-Daily_Version-dayu200-arm64-{start_time}-dayu200-arm64.tar.gz"
 
-def ChangeConfig(xml_path = ".\\dayu200_xts\\suites\\acts\\config\\user_config.xml", xml_dw = "./environment/device/port"):
+
+def change_config(xml_path=".\\dayu200_xts\\suites\\acts\\config\\user_config.xml", \
+                 xml_dw="./environment/device/port"):
     doc = ET.parse(xml_path)
     root = doc.getroot()
     sub1 = root.find(xml_dw)
     sub1.text = "8710"
     doc.write(xml_path)
 
+
 if __name__ == '__main__':
-    GetDayu200_XTS(GetUrl())
-    ChangeConfig()
+    get_images_and_testcases(get_url())
+    change_config()
