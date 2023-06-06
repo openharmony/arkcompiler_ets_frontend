@@ -157,6 +157,8 @@ def get_args():
         help='run hotfix tests')
     parser.add_argument('--hotreload', dest='hotreload', action='store_true', default=False,
         help='run hotreload tests')
+    parser.add_argument('--coldfix', dest='coldfix', action='store_true', default=False,
+        help='run coldfix tests')
     parser.add_argument('--base64', dest='base64', action='store_true', default=False,
         help='run base64 tests')
     parser.add_argument('--bytecode', dest='bytecode', action='store_true', default=False,
@@ -487,7 +489,7 @@ class Runner:
         path_str = test.path
         err_col = {}
         if test.error:
-            err_str = test.error.split('[')[0] if "hotfix" not in test.path else " hotfix throw error failed"
+            err_str = test.error.split('[')[0] if "patchfix" not in test.path else " patchfix throw error failed"
             err_col = {"path" : [path_str], "status": ["fail"], "error" : [test.error], "type" : [err_str]}
         else:
             err_col = {"path" : [path_str], "status": ["fail"], "error" : ["Segmentation fault"],
@@ -1060,8 +1062,6 @@ class PatchTest(Test):
         modified_output_abc = 'patch.abc'
 
         gen_base_cmd = runner.cmd_prefix + [runner.es2panda, '--module']
-        if os.path.basename(self.path) == 'multi-function-thread-compiling':
-            gen_base_cmd.extend(['--function-threads=1'])
         if 'record-name-with-dots' in os.path.basename(self.path):
             gen_base_cmd.extend(['--merge-abc', '--record-name=record.name.with.dots'])
         gen_base_cmd.extend(['--dump-symbol-table', os.path.join(self.path, symbol_table_file)])
@@ -1070,18 +1070,22 @@ class PatchTest(Test):
         self.log_cmd(gen_base_cmd)
 
         if self.mode == 'hotfix':
-            mode_arg = "--generate-patch"
+            mode_arg = ["--generate-patch"]
         elif self.mode == 'hotreload':
-            mode_arg = "--hot-reload"
+            mode_arg = ["--hot-reload"]
+        elif self.mode == 'coldfix':
+            mode_arg = ["--generate-patch", "--cold-fix"]
 
-        patch_test_cmd = runner.cmd_prefix + [runner.es2panda, '--module', mode_arg]
+        patch_test_cmd = runner.cmd_prefix + [runner.es2panda, '--module']
+        patch_test_cmd.extend(mode_arg)
         patch_test_cmd.extend(['--input-symbol-table', os.path.join(self.path, symbol_table_file)])
         patch_test_cmd.extend(['--output', os.path.join(self.path, modified_output_abc)])
         patch_test_cmd.extend([os.path.join(self.path, modified_input_file)])
         if 'record-name-with-dots' in os.path.basename(self.path):
             patch_test_cmd.extend(['--merge-abc', '--record-name=record.name.with.dots'])
+        if ('modify-anon-content-keep-origin-name' in os.path.basename(self.path)) or ('modify-class-memeber-function' in os.path.basename(self.path)):
+            patch_test_cmd.extend(['--dump-assembly'])
         self.log_cmd(patch_test_cmd)
-
         process_base = subprocess.Popen(gen_base_cmd, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
         stdout_base, stderr_base = process_base.communicate(timeout=runner.args.es2panda_timeout)
@@ -1155,6 +1159,12 @@ class HotreloadRunner(PatchRunner):
         self.add_directory()
         self.tests += list(map(lambda t: PatchTest(t, "hotreload"), self.tests_in_dirs))
 
+class ColdfixRunner(PatchRunner):
+    def __init__(self, args):
+        PatchRunner.__init__(self, args, "Coldfix")
+        self.test_directory = [path.join(self.test_root, "coldfix", "coldfix-throwerror"), path.join(self.test_root, "coldfix", "coldfix-noerror")]
+        self.add_directory()
+        self.tests += list(map(lambda t: PatchTest(t, "coldfix"), self.tests_in_dirs))
 
 class Base64Test(Test):
     def __init__(self, test_path, input_type):
@@ -1467,6 +1477,9 @@ def main():
 
     if args.hotreload:
         runners.append(HotreloadRunner(args))
+
+    if args.coldfix:
+        runners.append(ColdfixRunner(args))
 
     if args.base64:
         runners.append(Base64Runner(args))

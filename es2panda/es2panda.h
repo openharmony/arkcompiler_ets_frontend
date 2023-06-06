@@ -18,7 +18,7 @@
 
 #include <macros.h>
 #include <mem/arena_allocator.h>
-#include <util/hotfix.h>
+#include <util/patchFix.h>
 #include <util/programCache.h>
 #include <util/symbolTable.h>
 
@@ -62,11 +62,12 @@ struct SourceFile {
     uint32_t hash {0};
 };
 
-struct HotfixOptions {
+struct PatchFixOptions {
     std::string dumpSymbolTable {};
     std::string symbolTable {};
     bool generatePatch {false};
     bool hotReload {false};
+    bool coldFix {false};
 };
 
 struct CompilerOptions {
@@ -89,7 +90,7 @@ struct CompilerOptions {
     std::string output {};
     std::string debugInfoSourceFile {};
     std::vector<es2panda::SourceFile> sourceFiles;
-    HotfixOptions hotfixOptions;
+    PatchFixOptions patchFixOptions;
     bool bcVersion {false};
     bool bcMinVersion {false};
     std::unordered_map<std::string, std::string> cacheFiles;
@@ -195,9 +196,9 @@ public:
     }
 
 private:
-    util::Hotfix *InitHotfixHelper(const SourceFile &input, const CompilerOptions &options,
-                                   util::SymbolTable *symbolTable);
-    static void CleanHotfixHelper(const util::Hotfix *hotfixHelper);
+    util::PatchFix *InitPatchFixHelper(const SourceFile &input, const CompilerOptions &options,
+                                       util::SymbolTable *symbolTable);
+    static void CleanPatchFixHelper(const util::PatchFix *patchFixHelper);
 
     parser::ParserImpl *parser_;
     compiler::CompilerImpl *compiler_;

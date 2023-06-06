@@ -42,7 +42,7 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
     bool isTypeExtractorEnabled = ((program->Extension() == ScriptExtension::TS) && options.typeExtractor);
     CompilerContext context(program->Binder(), options.isDebug, options.isDebuggerEvaluateExpressionMode,
                             options.mergeAbc, isTypeExtractorEnabled, false, debugInfoSourceFile, pkgName,
-                            program->RecordName(), hotfixHelper_);
+                            program->RecordName(), patchFixHelper_);
 
     ArenaAllocator localAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
 
@@ -76,7 +76,7 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
             std::string(program->RecordName()));
     }
 
-    return context.GetEmitter()->Finalize(options.dumpDebugInfo, hotfixHelper_);
+    return context.GetEmitter()->Finalize(options.dumpDebugInfo, patchFixHelper_);
 }
 
 void CompilerImpl::DumpAsm(const panda::pandasm::Program *prog)

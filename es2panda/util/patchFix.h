@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_UTIL_HOTFIX_H
-#define ES2PANDA_UTIL_HOTFIX_H
+#ifndef ES2PANDA_UTIL_PATCHFIX_H
+#define ES2PANDA_UTIL_PATCHFIX_H
 
 #include <assembly-function.h>
 #include <assembly-ins.h>
@@ -34,13 +34,16 @@ class PandaGen;
 }  // namespace panda::es2panda::compiler
 
 namespace panda::es2panda::util {
-class Hotfix {
+
+enum class PatchFixKind { DUMPSYMBOLTABLE, HOTFIX, COLDFIX, HOTRELOAD };
+
+class PatchFix {
     using LiteralBuffers = ArenaVector<std::pair<int32_t, std::vector<panda::pandasm::LiteralArray::Literal>>>;
 
 public:
-    Hotfix(bool generateSymbolFile, bool generatePatch, bool hotReload, const std::string &recordName,
+    PatchFix(bool generateSymbolFile, bool generatePatch, PatchFixKind patchFixKind, const std::string &recordName,
         util::SymbolTable *symbolTable)
-        : generateSymbolFile_(generateSymbolFile), generatePatch_(generatePatch), hotReload_(hotReload),
+        : generateSymbolFile_(generateSymbolFile), generatePatch_(generatePatch), patchFixKind_(patchFixKind),
         recordName_(recordName),
         symbolTable_(symbolTable),
         allocator_(SpaceType::SPACE_TYPE_COMPILER, nullptr, true),
@@ -49,7 +52,8 @@ public:
         newFuncNames_(allocator_.Adapter()),
         funcDefineIns_(allocator_.Adapter()),
         modifiedClassNames_(allocator_.Adapter()),
-        classMemberFunctions_(allocator_.Adapter()) {
+        classMemberFunctions_(allocator_.Adapter()),
+        funcDefinedClasses_(allocator_.Adapter()) {
             originFunctionInfo_ = symbolTable_->GetOriginFunctionInfo();
             originModuleInfo_ = symbolTable_->GetOriginModuleInfo();
             originRecordHashFunctionNames_ = symbolTable_->GetOriginRecordHashFunctionNames();
@@ -67,13 +71,21 @@ public:
     void ProcessFunction(const compiler::PandaGen *pg, panda::pandasm::Function *func, LiteralBuffers &literalBuffers);
     void ProcessModule(const std::string &recordName, std::vector<panda::pandasm::LiteralArray::Literal> &moduleBuffer);
     void ProcessJsonContentRecord(const std::string &recordName, const std::string &jsonFileContent);
+    void CheckAndRestoreSpecialFunctionName(uint32_t globalIndexForSpecialFunc, std::string &funcName,
+        std::string recordName);
+    bool IsDumpSymbolTable() const;
+    bool IsHotFix() const;
+    bool IsColdFix() const;
+    bool IsHotReload() const;
 
 private:
     void DumpFunctionInfo(const compiler::PandaGen *pg, panda::pandasm::Function *func, LiteralBuffers &literalBuffers);
     void HandleFunction(const compiler::PandaGen *pg, panda::pandasm::Function *func, LiteralBuffers &literalBuffers);
+    void CollectFunctionsWithDefinedClasses(std::string funcName, std::string className);
     std::vector<std::pair<std::string, size_t>> GenerateFunctionAndClassHash(panda::pandasm::Function *func,
         LiteralBuffers &literalBuffers);
-    void DumpModuleInfo(const std::string &recordName, std::vector<panda::pandasm::LiteralArray::Literal> &moduleBuffer);
+    void DumpModuleInfo(const std::string &recordName,
+        std::vector<panda::pandasm::LiteralArray::Literal> &moduleBuffer);
     void ValidateModuleInfo(const std::string &recordName,
         std::vector<panda::pandasm::LiteralArray::Literal> &moduleBuffer);
     void DumpJsonContentRecInfo(const std::string &recordName, const std::string &jsonFileContent);
@@ -94,16 +106,15 @@ private:
     void CollectClassMemberFunctions(const std::string &className, int64_t bufferIdx, LiteralBuffers &literalBuffers);
     std::vector<std::string> GetLiteralMethods(int64_t bufferIdx, LiteralBuffers &literalBuffers);
     void HandleModifiedClasses(panda::pandasm::Program *prog);
+    void HandleModifiedDefinedClassFunc(panda::pandasm::Program *prog);
     int64_t GetLiteralIdxFromStringId(const std::string &stringId);
-    void CheckNewSpecialNameFunction(std::string funcName, std::string recordName);
 
     std::mutex m_;
     uint32_t topScopeIdx_ {0};
-    uint32_t globalIndexForSpecialFunc_ {0};
     bool patchError_ {false};
     bool generateSymbolFile_ {false};
     bool generatePatch_ {false};
-    bool hotReload_ {false};
+    PatchFixKind patchFixKind_;
     std::string recordName_;
     std::string funcMain0_;
     std::string patchMain0_;  // stores newly added function define ins, runtime will execute
@@ -113,14 +124,16 @@ private:
     ArenaAllocator allocator_;
     ArenaUnorderedMap<std::string, util::SymbolTable::OriginFunctionInfo> *originFunctionInfo_ {nullptr};
     ArenaUnorderedMap<std::string, std::string> *originModuleInfo_ {nullptr};
-    ArenaUnorderedMap<std::string, std::vector<std::string>> *originRecordHashFunctionNames_ {nullptr};
+    ArenaUnorderedMap<std::string, std::unordered_map<std::string, std::string>> *originRecordHashFunctionNames_ {
+        nullptr};
     ArenaUnorderedMap<std::string, uint32_t> topScopeLexEnvs_;
     ArenaSet<std::string> patchFuncNames_;
     ArenaSet<std::string> newFuncNames_;
     ArenaVector<panda::pandasm::Ins> funcDefineIns_;
     ArenaSet<std::string> modifiedClassNames_;
     ArenaUnorderedMap<std::string, std::vector<std::string>> classMemberFunctions_;
+    ArenaUnorderedMap<std::string, std::vector<std::string>> funcDefinedClasses_;
 };
 
 } // namespace panda::es2panda::util
-#endif // ES2PANDA_UTIL_HOTFIX_H
+#endif // ES2PANDA_UTIL_PATCHFIX_H

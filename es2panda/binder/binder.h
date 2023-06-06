@@ -50,6 +50,7 @@ public:
           anonymousFunctionNames_(Allocator()->Adapter()),
           functionHashNames_(Allocator()->Adapter()),
           variableNames_(Allocator()->Adapter()),
+          specialFuncNameIndexMap_(Allocator()->Adapter()),
           extension_(extension)
     {
         if (extension_ == ScriptExtension::TS) {
@@ -130,6 +131,11 @@ public:
         return anonymousFunctionNames_;
     }
 
+    const ArenaUnorderedMap<std::string, std::string> &SpecialFuncNameIndexMap() const
+    {
+        return specialFuncNameIndexMap_;
+    }
+
     void AddDeclarationName(const util::StringView &name, DeclType type = DeclType::NONE);
 
     bool HasVariableName(const util::StringView &name) const;
@@ -205,6 +211,7 @@ private:
     void ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode);
     void ResolveReferences(const ir::AstNode *parent);
     void ValidateExportDecl(const ir::ExportNamedDeclaration *exportDecl);
+    void StoreAndCheckSpecialFunctionName(std::string &internalNameStr, std::string recordName);
 
     // TypeScript specific functions
     void BuildTSSignatureDeclarationBaseParams(const ir::AstNode *typeNode);
@@ -219,6 +226,8 @@ private:
     ArenaUnorderedMap<const ir::ScriptFunction *, util::StringView> anonymousFunctionNames_;
     ArenaUnorderedMap<std::string, size_t> functionHashNames_;
     ArenaSet<util::StringView> variableNames_;
+    uint32_t globalIndexForSpecialFunc_ {0};
+    ArenaUnorderedMap<std::string, std::string> specialFuncNameIndexMap_;
     ResolveBindingFlags bindingFlags_ {ResolveBindingFlags::ALL};
     ScriptExtension extension_;
 };

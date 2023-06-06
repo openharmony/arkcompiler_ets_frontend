@@ -250,7 +250,7 @@ es2panda_src = [
   "util/concurrent.cpp",
   "util/dumper.cpp",
   "util/helpers.cpp",
-  "util/hotfix.cpp",
+  "util/patchFix.cpp",
   "util/moduleHelpers.cpp",
   "util/symbolTable.cpp",
   "util/ustring.cpp",

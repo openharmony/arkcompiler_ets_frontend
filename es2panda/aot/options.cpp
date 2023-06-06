@@ -210,8 +210,7 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opDumpDebugInfo("dump-debug-info", false, "Dump debug info");
     panda::PandArg<int> opOptLevel("opt-level", 2,
         "Compiler optimization level (options: 0 | 1 | 2). In debug and base64Input mode, optimizer is disabled");
-    panda::PandArg<int> opFunctionThreadCount("function-threads", 0, "Number of worker threads to compile function, "\
-        "which affects the recognition of changes in special name functions in hotfix mode if bigger than 0");
+    panda::PandArg<int> opFunctionThreadCount("function-threads", 0, "Number of worker threads to compile function");
     panda::PandArg<int> opFileThreadCount("file-threads", 0, "Number of worker threads to compile file");
     panda::PandArg<bool> opSizeStat("dump-size-stat", false, "Dump size statistics");
     panda::PandArg<bool> opDumpLiteralBuffer("dump-literal-buffer", false, "Dump literal buffer");
@@ -229,11 +228,13 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<std::string> opNpmModuleEntryList("npm-module-entry-list", "", "entry list file for module compile");
     panda::PandArg<bool> opMergeAbc("merge-abc", false, "Compile as merge abc");
 
-    // hotfix && hotreload
+    // patchfix && hotreload
     panda::PandArg<std::string> opDumpSymbolTable("dump-symbol-table", "", "dump symbol table to file");
     panda::PandArg<std::string> opInputSymbolTable("input-symbol-table", "", "input symbol table file");
-    panda::PandArg<bool> opGeneratePatch("generate-patch", false, "generate patch abc");
+    panda::PandArg<bool> opGeneratePatch("generate-patch", false, "generate patch abc, default as hotfix mode unless "\
+        "the cold-fix argument is set");
     panda::PandArg<bool> opHotReload("hot-reload", false, "compile as hot-reload mode");
+    panda::PandArg<bool> opColdFix("cold-fix", false, "generate patch abc as cold-fix mode");
 
     // version
     panda::PandArg<bool> bcVersion("bc-version", false, "Print ark bytecode version");
@@ -278,6 +279,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opInputSymbolTable);
     argparser_->Add(&opGeneratePatch);
     argparser_->Add(&opHotReload);
+    argparser_->Add(&opColdFix);
 
     argparser_->Add(&bcVersion);
     argparser_->Add(&bcMinVersion);
@@ -451,10 +453,23 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.sourceFiles = sourceFiles_;
     compilerOptions_.mergeAbc = opMergeAbc.GetValue();
 
-    compilerOptions_.hotfixOptions.dumpSymbolTable = opDumpSymbolTable.GetValue();
-    compilerOptions_.hotfixOptions.symbolTable = opInputSymbolTable.GetValue();
-    compilerOptions_.hotfixOptions.generatePatch = opGeneratePatch.GetValue();
-    compilerOptions_.hotfixOptions.hotReload = opHotReload.GetValue();
+    compilerOptions_.patchFixOptions.dumpSymbolTable = opDumpSymbolTable.GetValue();
+    compilerOptions_.patchFixOptions.symbolTable = opInputSymbolTable.GetValue();
+
+    bool generatePatch = opGeneratePatch.GetValue();
+    bool hotReload = opHotReload.GetValue();
+    bool coldFix = opColdFix.GetValue();
+    if (generatePatch && hotReload) {
+        errorMsg_ = "--generate-patch and --hot-reload can not be used simultaneously";
+        return false;
+    }
+    if (coldFix && !generatePatch) {
+        errorMsg_ = "--cold-fix can not be used without --generate-patch";
+        return false;
+    }
+    compilerOptions_.patchFixOptions.generatePatch = generatePatch;
+    compilerOptions_.patchFixOptions.hotReload = hotReload;
+    compilerOptions_.patchFixOptions.coldFix = coldFix;
 
     return true;
 }

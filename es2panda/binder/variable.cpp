@@ -40,7 +40,7 @@ LocalVariable *LocalVariable::Copy(ArenaAllocator *allocator, Decl *decl) const
     return var;
 }
 
-void LocalVariable::SetLexical(Scope *scope, util::Hotfix *hotfixHelper)
+void LocalVariable::SetLexical(Scope *scope, util::PatchFix *patchFixHelper)
 {
     if (LexicalBound()) {
         return;
@@ -50,10 +50,10 @@ void LocalVariable::SetLexical(Scope *scope, util::Hotfix *hotfixHelper)
     uint32_t slot = 0;
     auto name = Declaration()->Name();
 
-    if (hotfixHelper && hotfixHelper->IsScopeValidToPatchLexical(varScope)) {
-        slot = hotfixHelper->GetSlotIdFromSymbolTable(std::string(name));
-        if (hotfixHelper->IsPatchVar(slot)) {
-            hotfixHelper->AllocSlotfromPatchEnv(std::string(name));
+    if (patchFixHelper && patchFixHelper->IsScopeValidToPatchLexical(varScope)) {
+        slot = patchFixHelper->GetSlotIdFromSymbolTable(std::string(name));
+        if (patchFixHelper->IsPatchVar(slot)) {
+            patchFixHelper->AllocSlotfromPatchEnv(std::string(name));
         }
     } else {
         slot = varScope->NextSlot();
@@ -65,12 +65,12 @@ void LocalVariable::SetLexical(Scope *scope, util::Hotfix *hotfixHelper)
         static_cast<typename std::underlying_type<binder::DeclType>::type>(Declaration()->Type()));
 }
 
-void GlobalVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper) {}
-void ModuleVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper) {}
-void EnumVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper) {}
-void NamespaceVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper) {}
-void ImportEqualsVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper) {}
-void EnumLiteralVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::Hotfix *hotfixHelper) {}
+void GlobalVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::PatchFix *patchFixHelper) {}
+void ModuleVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::PatchFix *patchFixHelper) {}
+void EnumVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::PatchFix *patchFixHelper) {}
+void NamespaceVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::PatchFix *patchFixHelper) {}
+void ImportEqualsVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::PatchFix *patchFixHelper) {}
+void EnumLiteralVariable::SetLexical([[maybe_unused]] Scope *scope, [[maybe_unused]] util::PatchFix *patchFixHelper) {}
 
 void EnumVariable::ResetDecl(Decl *decl)
 {

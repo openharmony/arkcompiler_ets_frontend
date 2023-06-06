@@ -90,7 +90,7 @@ action("es2abc_patch_tests") {
 
   args = [
     "--no-progress",
-    "--hotfix",
+    "--patchfix",
     "--hotreload",
     rebase_path("${es2abc_build_path}"),
   ]

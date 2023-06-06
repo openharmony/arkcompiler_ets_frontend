@@ -56,7 +56,7 @@ public:
         return &originModuleInfo_;
     }
 
-    ArenaUnorderedMap<std::string, std::vector<std::string>> *GetOriginRecordHashFunctionNames()
+    ArenaUnorderedMap<std::string, std::unordered_map<std::string, std::string>> *GetOriginRecordHashFunctionNames()
     {
         return &originRecordHashFunctionNames_;
     }
@@ -73,7 +73,8 @@ private:
     ArenaAllocator allocator_;
     ArenaUnorderedMap<std::string, OriginFunctionInfo> originFunctionInfo_;
     ArenaUnorderedMap<std::string, std::string> originModuleInfo_;
-    ArenaUnorderedMap<std::string, std::vector<std::string>> originRecordHashFunctionNames_;
+    // <recordName, <specialFuncIndex, specialFuncName>>
+    ArenaUnorderedMap<std::string, std::unordered_map<std::string, std::string>> originRecordHashFunctionNames_;
 };
 }  // namespace panda::es2panda::util
 
