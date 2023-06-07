@@ -1808,7 +1808,16 @@ ir::Expression *ParserImpl::ParseTsFunctionType(lexer::SourcePosition startLoc, 
 
     FunctionParameterContext funcParamContext(&context_, Binder());
     auto *funcParamScope = funcParamContext.LexicalScope().GetScope();
-    ArenaVector<ir::Expression *> params = ParseFunctionParams(true);
+
+    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
+    try {
+        params = ParseFunctionParams(true);
+    } catch (const Error &e) {
+        if (!throwError) {
+            return nullptr;
+        }
+        throw e;
+    }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
         ThrowSyntaxError("'=>' expected");
