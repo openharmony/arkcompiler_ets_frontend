@@ -113,16 +113,16 @@ void PatchFix::ValidateJsonContentRecInfo(const std::string &recordName, const s
 {
     auto it = originModuleInfo_->find(recordName);
     if (it == originModuleInfo_->end()) {
-        std::cerr << "[Patch] Found new import/require json file expression in " << recordName
-                  << ", not supported!" << std::endl;
+        std::cerr << "[Patch] Found new import/require json file expression in " << recordName <<
+            ", not supported!" << std::endl;
         patchError_ = true;
         return;
     }
 
     auto hash = std::hash<std::string>{}(jsonFileContent);
     if (std::to_string(hash) != it->second) {
-        std::cerr << "[Patch] Found imported/required json file content changed in " << recordName
-                  << ", not supported!" << std::endl;
+        std::cerr << "[Patch] Found imported/required json file content changed in " << recordName <<
+            ", not supported!" << std::endl;
         patchError_ = true;
         return;
     }

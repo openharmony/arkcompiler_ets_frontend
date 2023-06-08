@@ -1083,7 +1083,8 @@ class PatchTest(Test):
         patch_test_cmd.extend([os.path.join(self.path, modified_input_file)])
         if 'record-name-with-dots' in os.path.basename(self.path):
             patch_test_cmd.extend(['--merge-abc', '--record-name=record.name.with.dots'])
-        if ('modify-anon-content-keep-origin-name' in os.path.basename(self.path)) or ('modify-class-memeber-function' in os.path.basename(self.path)):
+        if ('modify-anon-content-keep-origin-name' in os.path.basename(self.path) or
+            'modify-class-memeber-function' in os.path.basename(self.path)):
             patch_test_cmd.extend(['--dump-assembly'])
         self.log_cmd(patch_test_cmd)
         process_base = subprocess.Popen(gen_base_cmd, stdout=subprocess.PIPE,
@@ -1147,7 +1148,8 @@ class PatchRunner(Runner):
 class HotfixRunner(PatchRunner):
     def __init__(self, args):
         PatchRunner.__init__(self, args, "Hotfix")
-        self.test_directory = [path.join(self.test_root, "hotfix", "hotfix-throwerror"), path.join(self.test_root, "hotfix", "hotfix-noerror")]
+        self.test_directory = [path.join(self.test_root, "hotfix", "hotfix-throwerror"),
+            path.join(self.test_root, "hotfix", "hotfix-noerror")]
         self.add_directory()
         self.tests += list(map(lambda t: PatchTest(t, "hotfix"), self.tests_in_dirs))
 
@@ -1155,16 +1157,20 @@ class HotfixRunner(PatchRunner):
 class HotreloadRunner(PatchRunner):
     def __init__(self, args):
         PatchRunner.__init__(self, args, "Hotreload")
-        self.test_directory = [path.join(self.test_root, "hotreload", "hotreload-throwerror"), path.join(self.test_root, "hotreload", "hotreload-noerror")]
+        self.test_directory = [path.join(self.test_root, "hotreload", "hotreload-throwerror"),
+            path.join(self.test_root, "hotreload", "hotreload-noerror")]
         self.add_directory()
         self.tests += list(map(lambda t: PatchTest(t, "hotreload"), self.tests_in_dirs))
+
 
 class ColdfixRunner(PatchRunner):
     def __init__(self, args):
         PatchRunner.__init__(self, args, "Coldfix")
-        self.test_directory = [path.join(self.test_root, "coldfix", "coldfix-throwerror"), path.join(self.test_root, "coldfix", "coldfix-noerror")]
+        self.test_directory = [path.join(self.test_root, "coldfix", "coldfix-throwerror"),
+            path.join(self.test_root, "coldfix", "coldfix-noerror")]
         self.add_directory()
         self.tests += list(map(lambda t: PatchTest(t, "coldfix"), self.tests_in_dirs))
+
 
 class Base64Test(Test):
     def __init__(self, test_path, input_type):
@@ -1445,6 +1451,7 @@ def main():
                              ["--parse-only", "--module", "--dump-ast"], TSDeclarationTest)
         runner.add_directory("parser/commonjs", "js", ["--commonjs", "--parse-only", "--dump-ast"])
         runner.add_directory("parser/binder", "js", ["--dump-assembly"])
+        runner.add_directory("parser/js/emptySource", "js", ["--dump-assembly"])
 
         runners.append(runner)
 
