@@ -90,7 +90,8 @@ action("es2abc_patch_tests") {
 
   args = [
     "--no-progress",
-    "--patchfix",
+    "--hotfix",
+    "--coldfix",
     "--hotreload",
     rebase_path("${es2abc_build_path}"),
   ]
@@ -110,6 +111,20 @@ action("es2abc_base64_tests") {
   ]
 
   outputs = [ "${es2abc_build_path}/keep_es2abc_base64_tests_run" ]
+}
+
+action("es2abc_bytecode_tests") {
+  script = "${es2abc_root}/test/runner.py"
+
+  deps = es2abc_build_deps
+
+  args = [
+    "--no-progress",
+    "--bytecode",
+    rebase_path("${es2abc_build_path}"),
+  ]
+
+  outputs = [ "${es2abc_build_path}/keep_es2abc_bytecode_tests_run" ]
 }
 
 action("es2abc_type_extractor_tests") {

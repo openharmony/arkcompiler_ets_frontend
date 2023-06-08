@@ -1,5 +1,5 @@
 {
-    "name": "@ohos/arkcompiler_ets_frontend",
+    "name": "@arkcompiller/ets_frontend",
     "description": "支持应用TS/JS语言代码的编译，行为符合ArkUI框架需要的Strict模式的ES2015标准",
     "version": "3.1",
     "license": "Apache V2",
@@ -30,7 +30,9 @@
                 "//arkcompiler/ets_frontend:ets_frontend_build"
             ],
             "inner_kits": [],
-            "test": []
+            "test": [
+                "//arkcompiler/ets_frontend/es2panda:es2abc_tests"
+            ]
         }
     }
 }
