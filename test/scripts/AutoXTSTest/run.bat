@@ -11,7 +11,7 @@
 @REM See the License for the specific language governing permissions and
 @REM limitations under the License.
 
-@echo on
+@echo off
 SETLOCAL ENABLEEXTENSIONS
 
 REM change to work directory
