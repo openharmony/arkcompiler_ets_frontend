@@ -1018,6 +1018,7 @@ def main():
         runner.add_directory("parser/ts/type_checker", "ts",
                              ["--parse-only", "--enable-type-check", "--module", "--extension=ts"])
         runner.add_directory("parser/commonjs", "js", ["--commonjs", "--parse-only", "--dump-ast"])
+        runner.add_directory("parser/js/emptySource", "js", ["--dump-assembly"])
 
         runners.append(runner)
 

@@ -175,10 +175,6 @@ int Compiler::CompileFiles(CompilerOptions &options,
 panda::pandasm::Program *Compiler::CompileFile(const CompilerOptions &options, SourceFile *src,
                                                util::SymbolTable *symbolTable)
 {
-    if (src->source.empty()) {
-        return nullptr;
-    }
-
     auto *program = Compile(*src, options, symbolTable);
     if (!program) {
         const auto &err = GetError();
