@@ -1,4 +1,4 @@
-@REM Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+@REM Copyright (c) 2023 Huawei Device Co., Ltd.
 @REM Licensed under the Apache License, Version 2.0 (the "License");
 @REM you may not use this file except in compliance with the License.
 @REM You may obtain a copy of the License at
@@ -11,26 +11,35 @@
 @REM See the License for the specific language governing permissions and
 @REM limitations under the License.
 
-@echo off
+@echo on
+SETLOCAL ENABLEEXTENSIONS
 
 REM change to work directory
 cd /d %~dp0
 
+if not exist .\RKDevTool (
+python .\getResource\get_tool.py
+.\RKDevTool\DriverAssitant_v5.1.1\DriverAssitant_v5.1.1\DriverInstall.exe
+del /q .\RKDevTool.zip
+) 
+
 REM get image & XTS testcases
-rd /s /q .\dayu200_xts
+if not exist D:\AutoXTSTest (md D:\AutoXTSTest)
+rd /s /q D:\AutoXTSTest\dayu200_xts
 python .\getResource\spider.py
-del  /q .\dayu200_xts.tar.gz
+del  /q D:\AutoXTSTest\dayu200_xts.tar.gz
 
 REM load image to rk3568 \todo
 hdc shell reboot bootloader
-cd windows
-python autoburn.py
+cd RKDevTool
+python ..\autoburn.py
 cd ..
 
 REM run XTStest
 timeout /t 15
 hdc shell "power-shell setmode 602"
 hdc shell "hilog -Q pidoff"
-call .\dayu200_xts\suites\acts\run.bat run acts
+call D:\AutoXTSTest\dayu200_xts\suites\acts\run.bat run acts
 
 REM after
+ENDLOCAL
