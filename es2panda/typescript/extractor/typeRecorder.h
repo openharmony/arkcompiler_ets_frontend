@@ -115,7 +115,16 @@ public:
 
     ALWAYS_INLINE void Dump(const parser::Program *program) const;
 
+    bool isBuiltinType(const int64_t typeIndex)
+    {
+        if (typeIndex > BUILTINTYPE_HEAD && typeIndex < USERTYPEINDEXHEAD) {
+            return true;
+        }
+        return false;
+    }
+
     static constexpr int64_t PRIMITIVETYPE_ANY = 0;
+    static constexpr int64_t BUILTINTYPE_HEAD = 20;
     static constexpr int64_t USERTYPEINDEXHEAD = 100;
 
 private:
