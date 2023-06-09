@@ -288,7 +288,11 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
     if (bindingFlags_ & ResolveBindingFlags::TS_BEFORE_TRANSFORM) {
         ident->SetTSVariables(FindIdentifierTSVariables(ident, scope_, res));
     } else {
-        res = scope_->Find(ident->Name(), bindingOptions_);
+        if (ident->Parent()->IsTSTypeReference()) {
+            res = scope_->Find(ident->Name(), ResolveBindingOptions::ALL);
+        } else {
+            res = scope_->Find(ident->Name(), ResolveBindingOptions::BINDINGS);
+        }
     }
 
     if (res.level != 0) {
