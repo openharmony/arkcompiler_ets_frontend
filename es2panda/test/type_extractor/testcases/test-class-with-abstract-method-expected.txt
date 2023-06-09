@@ -1,6 +1,28 @@
 ======> literal array buffer <======
 ------------------------------------
-slot _-1
+slot _.func_main_0_-1
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 2
+},
+{
+  index: 2
+    tag: 0
+    val: 24
+},
+{
+  index: 3
+    tag: 24
+    val: _1
+},
+------------------------------------
+slot _.w_-1
 {
   index: 0
     tag: 0
@@ -22,7 +44,7 @@ slot _-1
     val: _5
 },
 ------------------------------------
-slot _-2
+slot _.y_-1
 {
   index: 0
     tag: 0
@@ -42,28 +64,6 @@ slot _-2
   index: 3
     tag: 24
     val: _3
-},
-------------------------------------
-slot _-3
-{
-  index: 0
-    tag: 0
-    val: 2
-},
-{
-  index: 1
-    tag: 2
-    val: 2
-},
-{
-  index: 2
-    tag: 0
-    val: 24
-},
-{
-  index: 3
-    tag: 24
-    val: _1
 },
 ------------------------------------
 slot _0

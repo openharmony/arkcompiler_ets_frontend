@@ -22,7 +22,6 @@
 
 namespace panda::es2panda::compiler {
 
-using AnnotationData = panda::pandasm::AnnotationData;
 using AnnotationElement = panda::pandasm::AnnotationElement;
 using ArrayValue = panda::pandasm::ArrayValue;
 using Field = panda::pandasm::Field;
@@ -30,8 +29,6 @@ using Record = panda::pandasm::Record;
 using ScalarValue = panda::pandasm::ScalarValue;
 using Type = panda::pandasm::Type;
 using ValueType = panda::pandasm::Value::Type;
-
-int32_t TypeExtractorEmitter::literalId_ = -1;
 
 TypeExtractorEmitter::TypeExtractorEmitter(const PandaGen *pg, panda::pandasm::Function *func) : pg_(pg), func_(func)
 {
@@ -90,7 +87,7 @@ static void GenInsnTypeInfo(const extractor::TypeRecorder *recorder, uint32_t or
     GenTypeInfo(recorder, typeIndex, typedInsns);
 }
 
-void TypeExtractorEmitter::GenFunctionTypeInfo(panda::pandasm::Program *prog) const
+void TypeExtractorEmitter::GenFunctionTypeInfo(panda::pandasm::Program *prog)
 {
     auto recorder = pg_->Context()->TypeRecorder();
     std::vector<Literal> typedInsns;
@@ -132,8 +129,9 @@ void TypeExtractorEmitter::GenFunctionTypeInfo(panda::pandasm::Program *prog) co
         return;
     }
 
+    std::lock_guard<std::mutex> lock(pg_->Context()->GetEmitter()->GetEmitterLock());
     std::string literalId = std::string(recorder->GetRecordName()) + "_" +
-        std::to_string(literalId_--);
+        func_->name + "_" + std::to_string(literalId_--);
     auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(typedInsns));
     prog->literalarray_table.emplace(literalId, std::move(literalArrayInstance));
 
@@ -145,8 +143,8 @@ void TypeExtractorEmitter::GenFunctionTypeInfo(panda::pandasm::Program *prog) co
 }
 
 template <bool isExport, typename M>
-static void GenImportOrDeclareTypeInfo(panda::pandasm::Program *prog, const extractor::TypeRecorder *recorder,
-    const M &map, AnnotationData &funcTypeAnnotation)
+void TypeExtractorEmitter::GenImportOrDeclareTypeInfo(panda::pandasm::Program *prog,
+    const extractor::TypeRecorder *recorder, const M &map, AnnotationData &funcTypeAnnotation)
 {
     std::string symbolTypeStr;
     if constexpr (isExport) {
@@ -170,8 +168,9 @@ static void GenImportOrDeclareTypeInfo(panda::pandasm::Program *prog, const extr
         GenTypeInfo(recorder, t.second, typedSymbols);
     }
 
+    std::lock_guard<std::mutex> lock(pg_->Context()->GetEmitter()->GetEmitterLock());
     std::string literalId = std::string(recorder->GetRecordName()) + "_" +
-        std::to_string(TypeExtractorEmitter::literalId_--);
+        func_->name + "_" + std::to_string(literalId_--);
     auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(typedSymbols));
     prog->literalarray_table.emplace(literalId, std::move(literalArrayInstance));
 
@@ -180,7 +179,7 @@ static void GenImportOrDeclareTypeInfo(panda::pandasm::Program *prog, const extr
     funcTypeAnnotation.AddElement(std::move(funcSymbolTypeElement));
 }
 
-void TypeExtractorEmitter::GenExportTypeInfo(panda::pandasm::Program *prog) const
+void TypeExtractorEmitter::GenExportTypeInfo(panda::pandasm::Program *prog)
 {
     AnnotationData funcTypeAnnotation(TypeExtractorEmitter::TYPE_ANNOTATION);
     GenImportOrDeclareTypeInfo<true>(prog, pg_->Context()->TypeRecorder(),
@@ -188,7 +187,7 @@ void TypeExtractorEmitter::GenExportTypeInfo(panda::pandasm::Program *prog) cons
     func_->metadata->AddAnnotations({ funcTypeAnnotation });
 }
 
-void TypeExtractorEmitter::GenDeclareTypeInfo(panda::pandasm::Program *prog) const
+void TypeExtractorEmitter::GenDeclareTypeInfo(panda::pandasm::Program *prog)
 {
     AnnotationData funcTypeAnnotation(TypeExtractorEmitter::TYPE_ANNOTATION);
     GenImportOrDeclareTypeInfo<false>(prog, pg_->Context()->TypeRecorder(),
