@@ -1,6 +1,6 @@
 ======> literal array buffer <======
 ------------------------------------
-slot _-1
+slot _.#10022928042193459397#dump_-1
 {
   index: 0
     tag: 0
@@ -22,7 +22,51 @@ slot _-1
     val: _6
 },
 ------------------------------------
-slot _-2
+slot _.Base_-1
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: -2
+},
+{
+  index: 2
+    tag: 0
+    val: 24
+},
+{
+  index: 3
+    tag: 24
+    val: _4
+},
+------------------------------------
+slot _.Student_-1
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: -2
+},
+{
+  index: 2
+    tag: 0
+    val: 24
+},
+{
+  index: 3
+    tag: 24
+    val: _5
+},
+------------------------------------
+slot _.dump_-1
 {
   index: 0
     tag: 0
@@ -64,51 +108,7 @@ slot _-2
     val: _5
 },
 ------------------------------------
-slot _-3
-{
-  index: 0
-    tag: 0
-    val: 2
-},
-{
-  index: 1
-    tag: 2
-    val: -2
-},
-{
-  index: 2
-    tag: 0
-    val: 24
-},
-{
-  index: 3
-    tag: 24
-    val: _5
-},
-------------------------------------
-slot _-4
-{
-  index: 0
-    tag: 0
-    val: 2
-},
-{
-  index: 1
-    tag: 2
-    val: -2
-},
-{
-  index: 2
-    tag: 0
-    val: 24
-},
-{
-  index: 3
-    tag: 24
-    val: _4
-},
-------------------------------------
-slot _-5
+slot _.func_main_0_-1
 {
   index: 0
     tag: 0
