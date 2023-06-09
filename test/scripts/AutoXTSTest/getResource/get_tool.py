@@ -42,7 +42,7 @@ def get_tool(url, headers):
             size = f.write(byte)
             bar.update(size)
     with zipfile.ZipFile(".\\RKDevTool.zip", 'r') as zfile:
-        zfile.extractall(path=".\\RKDevTool")
+        zfile.extractall(path=".")
 
 
 if __name__ == "__main__":
