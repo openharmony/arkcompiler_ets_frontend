@@ -32,6 +32,7 @@ def get_images_and_testcases(url):
     total = int(r.headers.get('content-length'), 0)
     flags = os.O_WRONLY | os.O_CREAT 
     modes = stat.S_IWUSR | stat.S_IRUSR
+    
     with os.fdopen(os.open(r"D:\AutoXTSTest\dayu200_xts.tar.gz", flags, modes), "wb") as f, tqdm(
         desc="dayu200_xts.tar.gz",
         total=total,
@@ -42,14 +43,15 @@ def get_images_and_testcases(url):
         for byte in r.iter_content(chunk_size=1024):
             size = f.write(byte)
             bar.update(size)
+            
     print("extracrting file")
     with tarfile.open(r"D:\AutoXTSTest\dayu200_xts.tar.gz", "r") as tar:
         for member in tqdm(desc='dayu200_xts', iterable=tar.getmembers(), total=len(tar.getmembers())):
             tar.extract(path=r"D:\AutoXTSTest\dayu200_xts", member=member)
 
    
-def get_url(url, headers, json, url_2):
-    response = requests.post(url, json=json, headers=headers)
+def get_url(url, headers, json_data, url_2):
+    response = requests.post(url, json=json_data, headers=headers)
     json_obj = json.loads(response.text)
     start_time = json_obj['result']['dailyBuildVos'][0]['buildStartTime']
     start_time = start_time[:8] + "_" + start_time[8:]

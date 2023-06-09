@@ -30,6 +30,7 @@ def get_tool(url):
     total = int(r.headers.get('content-length'), 0)
     flags = os.O_WRONLY | os.O_CREAT 
     modes = stat.S_IWUSR | stat.S_IRUSR
+    
     with os.fdopen(os.open(".\\RKDevTool.zip", flags, modes), "wb") as f, tqdm(
         desc="RKDevTool.zip",
         total=total,
@@ -37,9 +38,10 @@ def get_tool(url):
         unit_scale=True,
         unit_divisor=1024,
     ) as bar:
-        for data in r.iter_content(chunk_size=1024):
-            size = f.write(data)
+        for byte in r.iter_content(chunk_size=1024):
+            size = f.write(byte)
             bar.update(size)
+            
     with zipfile.ZipFile(".\\RKDevTool.zip", 'r') as zfile:
         zfile.extractall(path=".\\RKDevTool")
 

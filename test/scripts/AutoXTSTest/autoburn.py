@@ -35,6 +35,7 @@ def end_burn(dlg):
 def auto_burn():
     app = Application(backend='uia').start('RKDevTool.exe')
     dlg = app.top_window()
+    
     while True:
         mode = dlg.window(control_type="Tab").window_text()
         if mode == '发现一个LOADER设备':
