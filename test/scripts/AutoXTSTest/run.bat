@@ -11,27 +11,24 @@
 @REM See the License for the specific language governing permissions and
 @REM limitations under the License.
 
-@echo on
+@echo off
 SETLOCAL ENABLEEXTENSIONS
 
 REM change to work directory
 cd /d %~dp0
-
-
 set var=D:\AutoXTSTest
 
+REM get tool
 if not exist .\RKDevTool (
 python .\getResource\get_tool.py
 .\RKDevTool\DriverAssitant_v5.1.1\DriverAssitant_v5.1.1\DriverInstall.exe
 del /q .\RKDevTool.zip
-) 
-echo %var%
+
 REM get image & XTS testcases
 if not exist %var% (md %var%)
-pause
 rd /s /q %var%\dayu200_xts
 python .\getResource\spider.py
-del  /q %var%\dayu200_xts.tar.gz
+del /q %var%\dayu200_xts.tar.gz
 
 REM load image to rk3568 \todo
 hdc shell reboot bootloader
