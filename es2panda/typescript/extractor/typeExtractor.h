@@ -110,6 +110,8 @@ private:
     bool IsDeclareNode(const ir::AstNode *node) const;
     void GetVariablesFromTSQualifiedNodes(const binder::Variable *variable,
         ArenaDeque<const ir::Identifier *> &identifiers, ArenaVector<const binder::Variable *> &variables) const;
+    void GetVariablesFromNamespace(const binder::NamespaceVariable *variable, ArenaVector<binder::Variable *> &findRes,
+        ArenaDeque<const ir::Identifier *> &identifiers, ArenaVector<const binder::Variable *> &variables) const;
 };
 
 class GenericParamTypeBindScope {
