@@ -75,6 +75,9 @@ public:
     template <typename T, typename... Args>
     T *AddTsDecl(const lexer::SourcePosition &pos, bool isDeclare, Args &&... args);
 
+    template <typename T, typename... Args>
+    T *AddTsDecl(const lexer::SourcePosition &pos, DeclarationFlags flag, bool isDeclare, Args &&... args);
+
     ParameterDecl *AddParamDecl(const ir::AstNode *param);
 
     Scope *GetScope() const
@@ -264,6 +267,21 @@ template <typename T, typename... Args>
 T *Binder::AddTsDecl(const lexer::SourcePosition &pos, bool isDeclare, Args &&... args)
 {
     T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
+    decl->SetDeclare(isDeclare);
+
+    if (scope_->AddTsDecl(Allocator(), decl, program_->Extension())) {
+        AddDeclarationName(decl->Name());
+        return decl;
+    }
+
+    ThrowRedeclaration(pos, decl->Name());
+}
+
+template <typename T, typename... Args>
+T *Binder::AddTsDecl(const lexer::SourcePosition &pos, DeclarationFlags flag, bool isDeclare, Args &&... args)
+{
+    T *decl = Allocator()->New<T>(std::forward<Args>(args)...);
+    decl->AddFlag(flag);
     decl->SetDeclare(isDeclare);
 
     if (scope_->AddTsDecl(Allocator(), decl, program_->Extension())) {

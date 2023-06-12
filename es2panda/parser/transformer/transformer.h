@@ -149,10 +149,11 @@ private:
     ir::Expression *GetClassMemberName(ir::Expression *key, bool isComputed,
                                        ir::Statement *node, bool inDecorator = true);
     binder::Scope *FindExportVariableInTsModuleScope(util::StringView name) const;
-    binder::Variable *FindTSModuleVariable(const ir::Expression *node, binder::Scope *scope) const;
+    binder::Variable *FindTSModuleVariable(const ir::Expression *node, const binder::Scope *scope, bool *isType) const;
     util::StringView FindPrivatePropertyBindName(util::StringView name);
     void AddExportLocalEntryItem(util::StringView name, const ir::Identifier *identifier);
-    bool IsInstantiatedTSModule(const ir::Expression *node, binder::Scope *scope) const;
+    void RemoveDefaultLocalExportEntry();
+    bool IsInstantiatedImportEquals(const ir::TSImportEqualsDeclaration *node, binder::Scope *scope) const;
     void SetOriginalNode(ir::UpdateNodes res, ir::AstNode *originalNode) const;
 
     ir::UpdateNodes VisitTsEnumDeclaration(ir::TSEnumDeclaration *node, bool isExport = false);
@@ -198,6 +199,11 @@ private:
 
     template <typename T>
     ir::UpdateNodes VisitExportClassDeclaration(T *node);
+
+    template <binder::TSBindingType type>
+    binder::Variable *FindTSVariable(const binder::Scope *scope, const util::StringView &name) const;
+
+    bool IsValueReference(ir::Identifier *node);
 
     bool IsTsModule() const
     {
