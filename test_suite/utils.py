@@ -18,10 +18,16 @@ limitations under the License.
 Description: utils for test suite
 """
 
+import datetime
+import gzip
+import json
 import logging
-import time
-import sys
+import os
+import requests
+import shutil
 import subprocess
+import sys
+import time
 
 log_level_dict = {
     'debug': logging.DEBUG,
@@ -73,3 +79,65 @@ def is_same_file(file_a, file_b):
     ret_code = process.returncode
 
     return True if ret_code == 0 else False
+
+
+def get_sdk_url():
+    now_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')  
+    last_hour = (datetime.datetime.now() + datetime.timedelta(hours=-24)).strftime('%Y%m%d%H%M%S')
+    url = 'http://ci.openharmony.cn/api/ci-backend/ci-portal/v1/dailybuilds'
+    downnload_job = {
+        'pageNum': 1,
+        'pageSize': 1000,
+        'startTime': '',
+        'endTime': '',
+        'projectName': 'openharmony',
+        'branch': 'master',
+        'component': '',
+        'deviceLevel': '',
+        'hardwareBoard': '',
+        'buildStatus': '',
+        'buildFailReason': '',
+        'testResult': '',
+    }
+    downnload_job['startTime'] = str(last_hour)
+    downnload_job['endTime'] = str(now_time)
+    post_result = requests.post(url, data = downnload_job)
+    post_data = json.loads(post_result.text)
+    sdk_url_suffix = ''
+    for ohos_sdk_list in post_data['result']['dailyBuildVos']:
+        try:
+            if 'ohos-sdk-full.tar.gz' in ohos_sdk_list['obsPath']:
+                sdk_url_suffix = ohos_sdk_list['obsPath']
+                break
+        except BaseException as err:
+            logging.error(err)
+    sdk_url = 'http://download.ci.openharmony.cn/' + sdk_url_suffix
+    return sdk_url
+
+
+def npm_install(loader_path):
+    npm_path = shutil.which('npm')
+    os.chdir(loader_path)
+    try:
+        subprocess.run(f'{npm_path} install', check=True)
+    except subprocess.CalledProcessError:
+        logging.error(f'npm install failed . Please check the local configuration environment.')
+        sys.exit(1)
+    os.chdir(os.path.dirname(__file__))
+
+
+def get_api_version(json_path):
+    with open(json_path, 'r') as uni:
+        uni_cont = uni.read()
+        uni_data = json.loads(uni_cont)
+        api_version = uni_data['apiVersion']
+    return api_version
+
+
+def check_gzip_file(file_path):
+    try:
+        with gzip.open(file_path, 'rb') as gzfile:
+            gzfile.read(1)
+    except (gzip.BadGzipFile, OSError):
+        return False
+    return True
