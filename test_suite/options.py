@@ -76,8 +76,7 @@ class TestTask:
 
         self.full_compilation_info = FullCompilationInfo()
         self.incre_compilation_info = {}
-        self.break_compilation_info = CompilationInfo()
-        self.abc_consistency = TaskResult.undefind
+        self.other_tests = {}
 
         self.backup_info = BackupInfo()
 
@@ -141,7 +140,7 @@ def create_test_tasks():
 
     for hap in haps_list:
         if test_cases == 'all' or test_haps == 'all' \
-           or (test_cases and (hap['type'] in test_cases)) \
+           or (test_cases and (hap['type'][0] in test_cases)) \
            or (test_haps and (hap['name'] in test_haps)):
             if not os.path.exists(hap['path']):
                 logging.warn("Path of hap %s dosen't exist: %s" % (hap['name'], hap['path']))
@@ -151,6 +150,7 @@ def create_test_tasks():
             task.path = hap['path']
             task.type = hap['type']
             task.build_path = hap['build_path']
+            task.cache_path = hap['cache_path']
             task.output_hap_path = hap['output_hap_path']
             task.output_app_path = hap['output_app_path']
             task.inc_modify_file = hap['inc_modify_file']

@@ -31,13 +31,40 @@ import zipfile
 import options
 from utils import is_linux, is_mac, is_windows, get_time_string, get_api_version, npm_install, check_gzip_file
 
-def check_deveco_installation():
+def setup_env():
+    old_env = os.environ.copy()
+    old_env_path = old_env['PATH']
+
+    java_home = os.path.join(options.configs['deveco_path'], 'jbr')
+    node_js_path = options.configs['node_js_path']
+    java_path = os.path.join(java_home, 'bin')
+
+    os.environ['PATH'] = os.pathsep.join([java_path, node_js_path]) + os.pathsep + old_env_path
+    os.environ['JAVA_HOME'] = java_home
+
+    logging.debug('old env %s', old_env)
+    logging.debug('new env %s', os.environ.copy())
+
+
+def check_deveco_env():
     if is_linux():
-        return True ## caution! TODO: just for test, should be False
+        return False
+
     if is_mac() or (is_windows() and not options.arguments.pack_only):
-        if not os.path.exists(options.configs['deveco_path']):
+        deveco_path = os.path.join(options.configs['deveco_path'], 'bin', 'devecostudio64.exe')
+        if not os.path.exists(deveco_exe):
             logging.error("DevEco not found!")
             return False
+
+    java_path = os.path.join(options.configs['deveco_path'], 'jbr')
+    if not os.path.exists(java_path):
+        logging.error("Java not found!")
+        return False
+
+    if not os.path.exists(options.configs['node_js_path']):
+        logging.error("Node js not found!")
+        return False
+
     return True
 
 
@@ -46,7 +73,7 @@ def GetSdkFromRemote(sdk_url):
     temp_floder = deveco_sdk_path + '_temp'
     sdk_floder = os.path.join(temp_floder, 'SDK')
     sdk_temp_file = os.path.join(temp_floder, 'ohos-sdk-full.tar.gz')
-    
+
     if os.path.exists(temp_floder):
         shutil.rmtree(temp_floder)
     os.mkdir(temp_floder)
@@ -76,7 +103,8 @@ def update_sdk_to_deveco(sdk_path, api_version):
         api_version = '9'
     deveco_sdk_path = options.configs['deveco_sdk_path']
     deveco_sdk_version_path = os.path.join(deveco_sdk_path, api_version)
-    shutil.move(deveco_sdk_version_path, deveco_sdk_version_path + '-' + get_time_string())
+    if os.path.exists(deveco_sdk_version_path):
+        shutil.move(deveco_sdk_version_path, deveco_sdk_version_path + '-' + get_time_string())
     for item in os.listdir(sdk_path):
         shutil.move(os.path.join(sdk_path, item), os.path.join(deveco_sdk_version_path, item))
 
@@ -108,4 +136,7 @@ def prepare_image():
 
 
 def prepare_test_env():
-    return check_deveco_installation() and prepare_sdk() and prepare_image()
+    prepared = check_deveco_env()
+    setup_env()
+    prepared = prepared and prepare_sdk() and prepare_image()
+    return prepared

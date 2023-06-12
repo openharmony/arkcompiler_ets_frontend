@@ -25,9 +25,10 @@ import logging
 import os
 import requests
 import shutil
+import time
 import subprocess
 import sys
-import time
+
 
 log_level_dict = {
     'debug': logging.DEBUG,
@@ -62,27 +63,11 @@ def get_time_string():
 def is_esmodule(hap_type):
     # if hap_type is stage, it's esmodule.
     # if hap_type is js, fa, compatible 8, it's js_bundle
-    return hap_type in ['stage', 'stage_widget']
-
-
-def is_same_file(file_a, file_b):
-    cmd = []
-    if is_windows():
-        cmd.append('fc')
-    elif is_mac():
-        cmd.append('diff')
-
-    cmd.extend([file_a, file_b])
-    logging.debug("is_same_file cmd: %s", cmd)
-    process = subprocess.Popen(cmd)
-    process.communicate()
-    ret_code = process.returncode
-
-    return True if ret_code == 0 else False
+    return 'stage' in hap_type
 
 
 def get_sdk_url():
-    now_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')  
+    now_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     last_hour = (datetime.datetime.now() + datetime.timedelta(hours=-24)).strftime('%Y%m%d%H%M%S')
     url = 'http://ci.openharmony.cn/api/ci-backend/ci-portal/v1/dailybuilds'
     downnload_job = {
@@ -119,9 +104,12 @@ def npm_install(loader_path):
     npm_path = shutil.which('npm')
     os.chdir(loader_path)
     try:
-        subprocess.run(f'{npm_path} install', check=True)
-    except subprocess.CalledProcessError:
-        logging.error(f'npm install failed . Please check the local configuration environment.')
+        result = subprocess.run(f'{npm_path} install --force', check=True, capture_output=True, text=True)
+        if result.stderr:
+            logging.error(result.stderr)
+    except subprocess.CalledProcessError as e:
+        logging.exception(e)
+        logging.error(f'npm install failed. Please check the local configuration environment.')
         sys.exit(1)
     os.chdir(os.path.dirname(__file__))
 
@@ -141,3 +129,9 @@ def check_gzip_file(file_path):
     except (gzip.BadGzipFile, OSError):
         return False
     return True
+
+
+def is_file_timestamps_same(file_a, file_b):
+    file_a_mtime = os.stat(file_a).st_mtime
+    file_b_mtime = os.stat(file_b).st_mtime
+    return file_a_mtime == file_b_mtime

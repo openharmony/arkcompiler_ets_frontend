@@ -19,6 +19,7 @@ Description: entrance to run sdk test suite
 """
 
 import logging
+import os
 import sys
 import time
 
@@ -28,23 +29,25 @@ from preparation import prepare_test_env
 from result import process_test_result
 
 def run():
+    old_env = os.environ.copy()
     try:
         start_time = time.time()
         test_tasks = process_options()
         if not test_tasks:
             logging.error("No test task found, test suite exit!")
-            # TODO: make this open when finished:
-            # sys.exit(1)
+            sys.exit(1)
 
         if not prepare_test_env():
             logging.error("Prepare test environment failed, test suite exit!")
-            # TODO: make this open when finished:
-            # sys.exit(1)
+            sys.exit(1)
 
         execute(test_tasks)
         process_test_result(test_tasks, start_time)
     except Exception as e:
         logging.exception(e)
+    finally:
+        os.environ.clear()
+        os.environ.update(old_env)
 
 
 if __name__ == '__main__':

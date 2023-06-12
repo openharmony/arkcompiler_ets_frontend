@@ -62,7 +62,7 @@ def print_test_result(test_result, test_tasks):
         # print incremental compile result
         logging.info("--incremental compilation result:")
         for inc_task in task.incre_compilation_info.values():
-            logging.info("incre task: %s", inc_task.name)
+            logging.info("incre test: %s", inc_task.name)
             logging.info("debug: %s, abc_size(byte) %s, time(s) %s, error message: %s",
                          inc_task.debug_info.result,
                          inc_task.debug_info.abc_size,
@@ -73,7 +73,14 @@ def print_test_result(test_result, test_tasks):
                           inc_task.release_info.abc_size,
                           inc_task.release_info.time,
                           inc_task.release_info.error_message)
-        logging.info("--abc consistency: %s", task.abc_consistency)
+
+        # print other tests result
+        for name, task_info in task.other_tests.items():
+            logging.info("--test name: %s", name)
+            logging.info("result: %s, error message: %s",
+                         task_info.result,
+                         task_info.error_message)
+
         logging.info("-----")
         logging.info("========================================")
 
@@ -112,11 +119,14 @@ def is_incremental_compilation_passed(task_info):
 
 
 def is_task_passed(task):
-    return (is_full_compilation_passed(task.full_compilation_info) and
-        is_incremental_compilation_passed(task.incre_compilation_info) and
-        task.abc_consistency == options.TaskResult.passed)
-    # TODO: add break compile result
+    passed = True
 
+    passed = passed and is_full_compilation_passed(task.full_compilation_info)
+    passed = passed and is_incremental_compilation_passed(task.incre_compilation_info)
+    for test in task.other_tests.values():
+       passed = passed and (test.result == options.TaskResult.passed)
+
+    return passed
 
 
 def collect_result(test_result, test_tasks, start_time):
