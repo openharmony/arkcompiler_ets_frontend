@@ -15,6 +15,9 @@ if (!defined(ark_standalone_build)) {
   ark_standalone_build = false
 }
 
+is_cross_platform_build =
+    defined(build_cross_platform_version) && build_cross_platform_version
+
 if (!ark_standalone_build) {
   build_root = "//build"
   ark_third_party_root = "//third_party"
