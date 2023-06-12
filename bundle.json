@@ -17,7 +17,9 @@
         "rom": "",
         "ram": "",
         "deps": {
-            "components": [],
+            "components": [
+                "runtime_core"
+            ],
             "third_party": [
                 "bounds_checking_function",
                 "icu",
