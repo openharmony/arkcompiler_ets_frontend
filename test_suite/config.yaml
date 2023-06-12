@@ -1,0 +1,144 @@
+# Copyright (c) 2023 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http:\www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Description: configs for test suite
+
+# environment settings
+deveco_path: D:\deveco\bin\devecostudio64.exe
+deveco_sdk_path: D:\deveco-sdk\deveco-sdk-0602
+
+# test haps list
+# available values of attribute 'type' are: stage, stage_widget, fa, js, compatible8
+haps:
+  # complex haps
+  - calendar:
+    name: Calendar
+    path: D:\haps\calendar
+    type: stage
+    output_path:
+    output_hap_name:
+    output_app_name:
+    description:
+  - fangtaobao:
+    name: FangTaoBao
+    path: D:\haps\fangtaobao
+    type: stage
+    output_path:
+    output_hap_name:
+    output_app_name:
+    description:
+  - fangdouyin:
+    name: FangDouYin
+    path: D:\haps\fangdouyin
+    type: stage
+    output_path:
+    output_hap_name:
+    output_app_name:
+    description:
+  - fangweixin:
+    name: FangWeiXin
+    path: D:\haps\fangweixin
+    type: stage
+    output_path:
+    output_hap_name:
+    output_app_name:
+    description:
+  # arkui haps
+  - arkuistagedemo:
+    name: ArkuiStageDemo
+    path: D:\haps\arkuiStageDemo
+    type: stage
+    output_path:
+    output_hap_name:
+    output_app_name:
+    description:
+  - arkuifademo:
+    name: ArkuiFaDemo
+    path: D:\haps\arkuiFaDemo
+    type: fa
+    output_path:
+    output_hap_name:
+    output_app_name:
+    description:
+  # module haps
+  - moduledemo:
+    name: ModuleDemo
+    path: D:\haps\moduleDemo
+    type: stage
+    output_path:
+    output_hap_name:
+    output_app_name:
+    description:
+  # widget haps
+  - widgetdemo:
+    name: WidgetDemo
+    path: D:\haps\WidgetDemo
+    type: stage_widget
+    output_path:
+    output_hap_name:
+    output_app_name:
+    description:
+  # IDE demo haps
+  - idedemo_00:
+    name: IdeStageDemoEmptyAbility
+    path: D:\sdk-test\DemoApplication_EmptyAbility
+    type: stage
+    build_path: [entry, build, default]
+    output_hap_path: [outputs, default, entry-default-unsigned.hap]
+    output_app_path: [outputs, default, app, entry-default.hap]
+    inc_modify_file: [entry, src, main, ets, pages, index.ets]
+    baseline_full_compile_time: 0
+    baseline_inc_compile_time: 0
+    baseline_abc_size: 999999999
+    description:
+  - idedemo_01:
+    name: IdeFaDemoEmptyAbility
+    path: D:\sdk-test\DemoApplication_EmptyAbility_fa
+    type: fa
+    build_path: [entry, build, default]
+    output_hap_path: [outputs, default, entry-default-unsigned.hap]
+    output_app_path: [outputs, default, app, entry-default.hap]
+    inc_modify_file: [entry, src, main, ets, MainAbility, pages, index.ets]
+    baseline_full_compile_time: 0
+    baseline_inc_compile_time: 0
+    baseline_abc_size: 999999999
+    description:
+  - idedemo_02:
+    name: IdeCompatible8DemoEmptyAbility
+    path: D:\haps\IdeCompatible8DemoEmptyAbility
+    type: compatible8
+    output_path:
+    output_hap_name:
+    output_app_name:
+    description:
+  - idedemo_03:
+    name: IdeJsDemoEmptyAbility
+    path: D:\haps\IdeJsDemoEmptyAbility
+    type: js
+    output_path:
+    output_hap_name:
+    output_app_name:
+    description:
+  # error demo haps(to be added)
+
+# modifications for incremental compilation
+patch_content:
+  patch_new_file:
+    # This new file will be added to the same directory as 'inc_modify_file' specified in haps
+    name: test.ets
+    content: "export function a() {return 'a'}"
+  patch_lines_1:
+    head: "import {a} from './test'\n"
+    tail: "console.log(a.toString());\n"
+  patch_lines_2:
+    tail: "console.log('This is a new line');\n"
