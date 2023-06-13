@@ -401,18 +401,34 @@ ohos_static_library("es2panda_lib") {
     "../merge_abc:panda_assembly_proto_static",
   ]
 
-  external_deps = [
-    "runtime_core:libarkassembler_frontend_static",
-    "runtime_core:libarkbase_frontend_static",
-    "runtime_core:libarkfile_frontend_static",
-    "runtime_core:libarkziparchive_frontend_static",
-  ]
-
-  if (enable_bytecode_optimizer) {
+  external_deps = []
+  if (!is_cross_platform_build) {
     external_deps += [
-      "runtime_core:libarkbytecodeopt_frontend_static",
-      "runtime_core:libarkcompiler_frontend_static",
+      "runtime_core:libarkassembler_frontend_static",
+      "runtime_core:libarkbase_frontend_static",
+      "runtime_core:libarkfile_frontend_static",
+      "runtime_core:libarkziparchive_frontend_static",
     ]
+
+    if (enable_bytecode_optimizer) {
+      external_deps += [
+        "runtime_core:libarkbytecodeopt_frontend_static",
+        "runtime_core:libarkcompiler_frontend_static",
+      ]
+    }
+  } else {
+    deps += [
+      "$ark_root/assembler:libarkassembler_frontend_static",
+      "$ark_root/libpandabase:libarkbase_frontend_static",
+      "$ark_root/libpandafile:libarkfile_frontend_static",
+      "$ark_root/libziparchive:libarkziparchive_frontend_static",
+    ]
+    if (enable_bytecode_optimizer) {
+      deps += [
+        "$ark_root/bytecode_optimizer:libarkbytecodeopt_frontend_static",
+        "$ark_root/compiler:libarkcompiler_frontend_static",
+      ]
+    }
   }
 
   cflags = [
