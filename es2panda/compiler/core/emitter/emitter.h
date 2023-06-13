@@ -119,6 +119,10 @@ public:
     void GenJsonContentRecord(const CompilerContext *context);
     void GenRecordNameInfo() const;
     void GenTypeInfoRecord() const;
+    std::mutex &GetEmitterLock()
+    {
+        return m_;
+    };
 
 private:
     void SetCommonjsField(bool isCommonjs);

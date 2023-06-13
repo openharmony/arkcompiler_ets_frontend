@@ -1,6 +1,6 @@
 ======> literal array buffer <======
 ------------------------------------
-slot _-1
+slot _.Student_-1
 {
   index: 0
     tag: 0
@@ -22,7 +22,7 @@ slot _-1
     val: _2
 },
 ------------------------------------
-slot _-2
+slot _.func_main_0_-1
 {
   index: 0
     tag: 0

@@ -26,6 +26,8 @@
 
 namespace panda::es2panda::compiler {
 
+using AnnotationData = panda::pandasm::AnnotationData;
+
 class TypeExtractorEmitter {
 public:
     explicit TypeExtractorEmitter(const PandaGen *pg, panda::pandasm::Function *func);
@@ -39,8 +41,6 @@ public:
         const std::string &recordName);
     static void GenTypeLiteralBuffers(panda::pandasm::Program *prog, const extractor::TypeRecorder *recorder);
 
-    static int32_t literalId_;
-
     static constexpr const char *TYPE_INFO_RECORD = "_ESTypeInfoRecord";
     static constexpr const char *TYPE_ANNOTATION = "_ESTypeAnnotation";
     static constexpr const char *TYPE_INSTRUCTION = "_TypeOfInstruction";
@@ -51,13 +51,18 @@ public:
     static constexpr const char *DECLARED_SYMBOL_TYPES = "declaredSymbolTypes";
 
 private:
+    int32_t literalId_ = -1;
     const PandaGen *pg_;
     panda::pandasm::Function *func_;
 
     bool IsFuncMain0(const std::string &funcName, bool isMergeAbc) const;
-    void GenFunctionTypeInfo(panda::pandasm::Program *prog) const;
-    void GenExportTypeInfo(panda::pandasm::Program *prog) const;
-    void GenDeclareTypeInfo(panda::pandasm::Program *prog) const;
+    void GenFunctionTypeInfo(panda::pandasm::Program *prog);
+    void GenExportTypeInfo(panda::pandasm::Program *prog);
+    void GenDeclareTypeInfo(panda::pandasm::Program *prog);
+
+    template <bool isExport, typename M>
+    void GenImportOrDeclareTypeInfo(panda::pandasm::Program *prog, const extractor::TypeRecorder *recorder,
+        const M &map, AnnotationData &funcTypeAnnotation);
 };
 
 }  // namespace panda::es2panda::compiler
