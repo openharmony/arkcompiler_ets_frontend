@@ -18,18 +18,16 @@ limitations under the License.
 Description: prepare environment for test
 """
 
-import httpx
 import logging
 import os
 import shutil
 import sys
 import tarfile
-import tqdm
 import validators
 import zipfile
 
 import options
-from utils import is_linux, is_mac, is_windows, get_time_string, get_api_version, npm_install, check_gzip_file
+from utils import is_linux, is_mac, is_windows, get_time_string, get_api_version, npm_install, check_gzip_file, download
 
 def setup_env():
     old_env = os.environ.copy()
@@ -52,7 +50,7 @@ def check_deveco_env():
 
     if is_mac() or (is_windows() and not options.arguments.pack_only):
         deveco_path = os.path.join(options.configs['deveco_path'], 'bin', 'devecostudio64.exe')
-        if not os.path.exists(deveco_exe):
+        if not os.path.exists(deveco_path):
             logging.error("DevEco not found!")
             return False
 
@@ -77,21 +75,14 @@ def GetSdkFromRemote(sdk_url):
     if os.path.exists(temp_floder):
         shutil.rmtree(temp_floder)
     os.mkdir(temp_floder)
-    with httpx.stream('GET', sdk_url) as response:
-        with open(sdk_temp_file, "wb") as sdktemp:
-            total_length = int(response.headers.get("content-length"))
-            with tqdm.tqdm(total=total_length, unit="B", unit_scale=True) as pbar:
-                pbar.set_description('ohos-sdk-full.tar.gz')
-                for chunk in response.iter_bytes():
-                    sdktemp.write(chunk)
-                    pbar.update(len(chunk))
+    download(sdk_url, sdk_temp_file, 'ohos-sdk-full.tar.gz')
     if not check_gzip_file(sdk_temp_file):
         logging.error('The downloaded file is not a valid gzip file.')
         sys.exit(1)
     with tarfile.open(sdk_temp_file, 'r:gz') as tar:
         tar.extractall(temp_floder)
     for item in os.listdir(os.path.join(*[temp_floder, 'ohos-sdk', 'windows'])):
-        with zipfile.ZipFile(os.path.join(os.path.join(*[temp_floder, 'ohos-sdk', 'windows', item]))) as zip:
+        with zipfile.ZipFile(os.path.join(*[temp_floder, 'ohos-sdk', 'windows', item])) as zip:
             zip.extractall(os.path.join(sdk_floder))
     npm_install(os.path.join(*[sdk_floder, 'ets', 'build-tools', 'ets-loader']))
     npm_install(os.path.join(*[sdk_floder, 'js', 'build-tools', 'ace-loader']))

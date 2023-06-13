@@ -20,12 +20,14 @@ Description: utils for test suite
 
 import datetime
 import gzip
+import httpx
 import json
 import logging
 import os
 import requests
 import shutil
 import time
+import tqdm
 import subprocess
 import sys
 
@@ -135,3 +137,14 @@ def is_file_timestamps_same(file_a, file_b):
     file_a_mtime = os.stat(file_a).st_mtime
     file_b_mtime = os.stat(file_b).st_mtime
     return file_a_mtime == file_b_mtime
+
+
+def download(url, temp_file, temp_file_name):
+    with httpx.stream('GET', url) as response:
+        with open(temp_file, "wb") as temp:
+            total_length = int(response.headers.get("content-length"))
+            with tqdm.tqdm(total=total_length, unit="B", unit_scale=True) as pbar:
+                pbar.set_description(temp_file_name)
+                for chunk in response.iter_bytes():
+                    temp.write(chunk)
+                    pbar.update(len(chunk))

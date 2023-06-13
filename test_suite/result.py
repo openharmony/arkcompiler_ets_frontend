@@ -17,9 +17,14 @@ limitations under the License.
 
 Description: output test results
 """
-
 import logging
+import pandas
+import smtplib
 import time
+from email.header import Header
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 import options
 
@@ -140,9 +145,168 @@ def collect_result(test_result, test_tasks, start_time):
     test_result.time = round(end_time - start_time, 3)
 
 
-def email_result(test_result):
-    # TODO
-    return
+def email_result(test_result, test_tasks):
+    sender = ''
+    password = ''
+    receiver = []
+    subject = 'SDK Test Daily Report'
+
+    msg = MIMEMultipart()
+    msg['From'] = 'wuhailong'
+    msg['To'] = ", ".join(receiver)
+    msg['Subject'] = Header(subject, 'utf-8')
+
+    summary_data = {
+        'Total test number': [len(test_tasks)],
+        'Took time (s)': [test_result.time],
+        'Passed test number': [len(test_result.passed)],
+        'Failed test number': [len(test_result.failed)]
+    }
+
+    detail_data = []
+    idx = 1
+    for task in test_tasks:
+        task_data = {
+            'Task index': idx,
+            'Task name': task.name,
+            'Task type': task.type
+        }
+        
+        full_compilation_debug = task.full_compilation_info.debug_info
+        full_compilation_release = task.full_compilation_info.release_info
+        task_data['Full Compilation - Debug'] = {
+            'Result': full_compilation_debug.result,
+            'ABC Size': full_compilation_debug.abc_size,
+            'Error Message': full_compilation_debug.error_message
+        }
+        task_data['Full Compilation - Release'] = {
+            'Result': full_compilation_release.result,
+            'ABC Size': full_compilation_release.abc_size,
+            'Error Message': full_compilation_release.error_message
+        }
+        
+        incremental_compilation = task.incre_compilation_info
+        for inc_task_name, inc_task_info in incremental_compilation.items():
+            inc_task_debug = inc_task_info.debug_info
+            inc_task_release = inc_task_info.release_info
+            task_data[f'Incremental Compilation - {inc_task_name} - Debug'] = {
+                'Result': inc_task_debug.result,
+                'ABC Size': inc_task_debug.abc_size,
+                'Error Message': inc_task_debug.error_message
+            }
+            task_data[f'Incremental Compilation - {inc_task_name} - Release'] = {
+                'Result': inc_task_release.result,
+                'ABC Size': inc_task_release.abc_size,
+                'Error Message': inc_task_release.error_message
+            }
+        
+        for other_test_name, other_test_info in task.other_tests.items():
+            task_data[f'Other Test - {other_test_name}'] = {
+                'Result': other_test_info.result,
+                'Error Message': other_test_info.error_message
+            }
+        
+        detail_data.append(task_data)
+    
+    summary_df = pandas.DataFrame(summary_data)
+    detail_df = pandas.DataFrame(detail_data)
+
+    detail_table = '<table>'
+    detail_table += '<tr>'
+    for column in detail_df.columns:
+        detail_table += f'<th>{column}</th>'
+    detail_table += '</tr>'
+    for _, row in detail_df.iterrows():
+        detail_table += '<tr>'
+        for column, value in row.items():
+            if isinstance(value, dict):
+                detail_table += '<td>'
+                detail_table += '<table>'
+                for sub_column, sub_value in value.items():
+                    detail_table += f'<tr><td>{sub_column}</td><td>{sub_value}</td></tr>'
+                detail_table += '</table>'
+                detail_table += '</td>'
+            elif isinstance(value, list):
+                detail_table += '<td>'
+                detail_table += '<table>'
+                for sub_value in value:
+                    detail_table += f'<tr><td>{sub_value}</td></tr>'
+                detail_table += '</table>'
+                detail_table += '</td>'
+            else:
+                detail_table += f'<td>{value}</td>'
+        detail_table += '</tr>'
+    detail_table += '</table>'
+
+    summary_table = MIMEText(summary_df.to_html(index=False), 'html')
+    msg.attach(summary_table)
+
+    html_content = f'''
+    <html>
+    <head>
+    <style>
+    body {{
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }}
+
+    h2 {{
+        color: #333;
+    }}
+
+    table {{
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 20px;
+    }}
+
+    table th, table td {{
+        padding: 8px;
+        border: 1px solid #ddd;
+    }}
+
+    table th {{
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }}
+
+    .sub-table {{
+        border-collapse: collapse;
+        width: 100%;
+    }}
+
+    .sub-table td {{
+        padding: 4px;
+        border: 1px solid #ddd;
+    }}
+    </style>
+    </head>
+    <body>
+    <h2>Summary</h2>
+    {summary_table}
+    <h2>Detail Information</h2>
+    {detail_table}
+    </body>
+    </html>
+    '''
+
+    today_date = time.strftime("%Y%m%d")
+    daily_report_file=f'SDK-test-report-{today_date}.html'
+    with open(daily_report_file, 'w') as report:
+        report.write(html_content)
+
+    with open(daily_report_file, 'rb') as mesg:
+        attach_txt = MIMEApplication(mesg.read())
+        attach_txt.add_header('Content-Disposition', 'attachment', filename = daily_report_file)
+        msg.attach(attach_txt)
+
+    logging.info('Sending email')
+    smtp_server = 'smtp.163.com'
+    smtp = smtplib.SMTP(smtp_server, 25)
+    smtp.login(sender, password)
+    smtp.sendmail(sender, receiver, msg.as_string())
+    smtp.quit()
+    logging.info('Sent email successfully!')
 
 
 def process_test_result(test_tasks, start_time):
@@ -155,4 +319,4 @@ def process_test_result(test_tasks, start_time):
     # TODO: add write result to a file
 
     if options.arguments.email_result:
-        email_result(test_result)
+        email_result(test_result, test_tasks)
