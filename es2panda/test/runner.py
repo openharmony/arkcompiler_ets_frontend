@@ -1250,6 +1250,7 @@ class TypeExtractorRunner(Runner):
         self.add_directory("testcases", [])
         self.add_directory("dts-testcases", [], True)
         self.add_directory("testcases_with_assert", [])
+        self.add_directory("testcases_with_assert/projects", [], False, True)
         self.add_directory("testcases_with_running", [])
 
     def add_tsc_directory(self, directory, flags):
@@ -1266,21 +1267,22 @@ class TypeExtractorRunner(Runner):
                     test = TypeExtractorTest(f, flags)
                     self.tests.append(test)
 
-    def add_directory(self, directory, flags, is_dts_test=False):
+    def add_directory(self, directory, flags, is_dts_test=False, is_project=False):
         ts_suite_dir = path.join(self.test_root, 'type_extractor')
 
-        if is_dts_test:
+        if is_project:
+            glob_expression = path.join(ts_suite_dir, directory, "**/*-main.ts")
+        elif is_dts_test:
             glob_expression = path.join(ts_suite_dir, directory, "**/*.d.ts")
         else:
-            glob_expression = path.join(ts_suite_dir, directory, "**/*.ts")
+            glob_expression = path.join(ts_suite_dir, directory, "*.ts")
         files = glob(glob_expression, recursive=True)
         files = fnmatch.filter(files, ts_suite_dir + '**' + self.args.filter)
-
         for f in files:
-            if directory.endswith("testcases_with_assert") or directory.endswith("testcases_with_running"):
+            if directory.startswith("testcases_with_assert") or directory.startswith("testcases_with_running"):
                 if (self.ld_library_path == "" or self.ark_aot_compiler == ""):
                     break
-                test = TypeExtractorWithAOTTest(f, flags, directory.endswith("testcases_with_running"))
+                test = TypeExtractorWithAOTTest(f, flags, directory.startswith("testcases_with_running"), directory.endswith("projects"))
                 self.tests.append(test)
             else:
                 test = TypeExtractorTest(f, flags, is_dts_test)
@@ -1341,9 +1343,10 @@ class TypeExtractorTest(Test):
 
 
 class TypeExtractorWithAOTTest(Test):
-    def __init__(self, test_path, flags, with_running=False):
+    def __init__(self, test_path, flags, with_running=False, is_project=False):
         Test.__init__(self, test_path, flags)
         self.with_running = with_running
+        self.is_project = is_project
 
     def run_js_vm(self, runner, file_name, test_abc_name):
         expected_path = "%s-expected.txt" % (file_name)
@@ -1378,7 +1381,11 @@ class TypeExtractorWithAOTTest(Test):
             '--module', '--merge-abc', '--opt-level=2', '--type-extractor']
         cmd.extend(self.flags)
         cmd.extend(["--output=" + test_abc_name])
-        cmd.append(self.path)
+        if self.is_project:
+            cmd.append("--extension=ts")
+            cmd.append(path.dirname(self.path))
+        else:
+            cmd.append(self.path)
 
         self.log_cmd(cmd)
         process = subprocess.Popen(

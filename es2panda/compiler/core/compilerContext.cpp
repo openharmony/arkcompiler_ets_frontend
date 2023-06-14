@@ -38,4 +38,9 @@ void CompilerContext::SetTypeRecorder(extractor::TypeRecorder *recorder)
     recorder_ = recorder;
 }
 
+void CompilerContext::SetTypeExtractor(extractor::TypeExtractor *extractor)
+{
+    extractor_ = extractor;
+}
+
 }  // namespace panda::es2panda::compiler
