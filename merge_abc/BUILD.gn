@@ -13,7 +13,9 @@
 
 import("//arkcompiler/ets_frontend/ets_frontend_config.gni")
 import("//arkcompiler/runtime_core/ark_config.gni")
-import("//developtools/profiler/build/config.gni")
+
+THIRDPARTY_PROTOBUF_SUBSYS_NAME = "thirdparty"
+THIRDPARTY_PROTOBUF_PART_NAME = "protobuf"
 
 proto_base_dir = "protos"
 proto_out_dir = "$target_gen_dir" + "/protos_generated"
@@ -90,7 +92,7 @@ foreach(proto_file, proto_file_defines) {
 }
 
 protoc_binary_out_path =
-    "${OHOS_PROFILER_SUBSYS_NAME}/${OHOS_PROFILER_PART_NAME}"
+    "${THIRDPARTY_PROTOBUF_SUBSYS_NAME}/${THIRDPARTY_PROTOBUF_PART_NAME}"
 
 if (!ark_standalone_build) {
   if (default_toolchain == current_toolchain) {
