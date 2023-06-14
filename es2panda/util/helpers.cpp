@@ -530,7 +530,7 @@ bool Helpers::ReadFileToBuffer(const std::string &file, std::stringstream &ss)
     return true;
 }
 
-void Helpers::SetFuncFlagsForDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex)
+void Helpers::ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex)
 {
     auto *body = func->Body();
     if (!body || body->IsExpression()) {
@@ -542,41 +542,39 @@ void Helpers::SetFuncFlagsForDirectives(ir::ScriptFunction *func, const lexer::L
         return;
     }
 
-    const auto *stmt = statements.front();
-    if (!stmt->IsExpressionStatement()) {
-        return;
-    }
+    bool keepScan = true;
+    auto iter = statements.begin();
+    while (keepScan && (iter != statements.end())) {
+        auto *stmt = *iter++;
+        if (!stmt->IsExpressionStatement()) {
+            return;
+        }
 
-    auto *expr = stmt->AsExpressionStatement()->GetExpression();
-    if (!expr->IsStringLiteral()) {
-        return;
-    }
+        auto *expr = stmt->AsExpressionStatement()->GetExpression();
+        if (!expr->IsStringLiteral()) {
+            return;
+        }
 
-    if (expr->AsStringLiteral()->Str().Is(SHOW_SOURCE)) {
-        func->AddFlag(ir::ScriptFunctionFlags::SHOW_SOURCE);
-        return;
-    }
-
-    if (expr->AsStringLiteral()->Str().Is(USE_CONCURRENT)) {
-        util::Concurrent::SetConcurrent(func, stmt, lineIndex);
-    }
-
-    // "show source" may be the second stringliteral since if "use concurrent" exist it must be the fisrt node.
-    const auto *secondStmt = statements[1];
-    if (!secondStmt->IsExpressionStatement()) {
-        return;
-    }
-
-    auto *secondExpr = secondStmt->AsExpressionStatement()->GetExpression();
-    if (!secondExpr->IsStringLiteral()) {
-        return;
-    }
-
-    if (secondExpr->AsStringLiteral()->Str().Is(SHOW_SOURCE)) {
-        func->AddFlag(ir::ScriptFunctionFlags::SHOW_SOURCE);
+        keepScan = SetFuncFlagsForDirectives(expr->AsStringLiteral(), func, lineIndex);
     }
 
     return;
+}
+
+bool Helpers::SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::ScriptFunction *func,
+                                        const lexer::LineIndex &lineIndex)
+{
+    if (strLit->Str().Is(SHOW_SOURCE)) {
+        func->AddFlag(ir::ScriptFunctionFlags::SHOW_SOURCE);
+        return true;
+    }
+
+    if (strLit->Str().Is(USE_CONCURRENT)) {
+        util::Concurrent::SetConcurrent(func, strLit, lineIndex);
+        return true;
+    }
+
+    return false;
 }
 
 }  // namespace panda::es2panda::util
