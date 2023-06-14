@@ -54,3 +54,6 @@ url_2:
     - "/version-Daily_Version-dayu200-"
     - "-dayu200.tar.gz"
 url_3 : 'http://123.60.114.105:9999/RKDevTool.zip'
+path_1 : 'D:\\AutoXTSTest\\dayu200_xts.tar.gz'
+path_2 : 'D:\\AutoXTSTest\\dayu200_xts'
+path_3 : 'D:\\AutoXTSTest\\dayu200_xts\\suites\\acts\\config\\user_config.xml'

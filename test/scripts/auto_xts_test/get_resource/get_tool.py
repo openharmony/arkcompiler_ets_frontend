@@ -15,10 +15,10 @@
 # limitations under the License.
 
 
+import json
 import os
 import stat
 import zipfile
-import json
 
 import requests
 from tqdm import tqdm

@@ -23,8 +23,8 @@ from pywinauto.application import Application
 def end_burn(dlg):
     while True:
         mode = dlg.window(control_type="Tab").window_text()
-        if mode == '发现一个MASKROM设备':
-            dlg.window(title="关闭").click()
+        if mode == 'Found One MASKROM Device':
+            dlg.window(title="Close").click()
             print("image burnning finished")
             return
         else:
@@ -38,9 +38,9 @@ def auto_burn():
     
     while True:
         mode = dlg.window(control_type="Tab").window_text()
-        if mode == '发现一个LOADER设备':
+        if mode == 'Found One LOADER Device':
             print('start burning')
-            dlg.window(title="执行").click()
+            dlg.window(title="Run").click()
             time.sleep(100)
             end_burn(dlg)
             return

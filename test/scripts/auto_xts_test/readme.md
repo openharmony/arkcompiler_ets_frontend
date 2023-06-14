@@ -1,16 +1,22 @@
-# XTS测试自动化脚本说明
+# Description
 
-## 脚本目的
-XTS测试自动化脚本会自动从每日构建dailybuilts上获取最新dayu200镜像和相关xts用例，烧录镜像到rk3568开发板上并执行相关用例获取测试结果
+## Purpose
+This script will get the latest images and xts testcases from dailybuilds, then burn the images on the rk3568 demo board 
+and run the xts testcase on the target to get the test result.
 
-## 脚本使用
-### 运行环境
-XTS测试自动化脚本运行环境为windows，python3.7及以上
-### 脚本运行
-点击run.bat运行或在cmd中输入run.bat所在路径
-### 注意事项
-- 初次使用会下载镜像烧录工具并需要手动安装驱动，在程序运行一小段时间（下载烧录工具）之后会跳出用户账户控制界面，点击“确认”后进入驱动安装界面，如下：
-<br />![输入图片说明](attached_to_readme.PNG)
-<br />先后点击“驱动卸载”和“驱动安装”即可，关闭界面程序继续运行。
-- 由于镜像烧录工具运行时没有使用相对路径作为配置，因此此脚本使用了D:\AutoXTSTest目录作为镜像存放目录以保证运行稳定性。
-- 部分情况下，镜像烧录后开发板开机异常，与PC设备连接断掉，会导致hdc命令失效，脚本运行卡住，此时需要在镜像烧录时手动进入loader模式
+## Usage
+### Running environment
+This script will be running on windows, python3.7 or above needed.
+### How to work
+Double click the run.bat or in the cmd condition input the path of run.bat
+### Note
+- Only for the first time of running the script will download the burnning tool and need to install the driver for the tool
+by yourself. After the pragram run for a while(downloading the tool), there comes the User Account Control interface.
+Click 'yes' and you will see the driver installation interface as following:
+<br />![](https://gitee.com/huyunhui1/images/raw/build/%E6%8D%95%E8%8E%B7.PNG)
+<br />Click the "驱动卸载" button first and then click the "驱动安装" button, after that close the interface and the program
+will go on
+- Because the burning tool does not use the relative path as the the storage path of images, the script use the path 'D:\AutoXTSTest'
+as the storage path to make it run stably.
+- In rare cases, the rk3568 demo board could not start up normally after burnning, which leads to invalid hdc instructions.
+At that time, this script will be blocked in next running, you should reboot the rk3568 demo borad to loader mode when next burning.
