@@ -18,15 +18,16 @@
 import os
 import stat
 import zipfile
+import json
 
 import requests
 from tqdm import tqdm
 import yaml
 
 
-def get_tool(url, headers):
-    print(f"Get RKDevTool from {url}")
-    r = requests.get(url, headers=headers, stream=True)
+def get_tool(url):
+    print(f"Getting RKDevTool from {url}")
+    r = requests.get(url, stream=True)
     total = int(r.headers.get('content-length'), 0)
     flags = os.O_WRONLY | os.O_CREAT 
     modes = stat.S_IWUSR | stat.S_IRUSR
@@ -42,11 +43,11 @@ def get_tool(url, headers):
             size = f.write(byte)
             bar.update(size)
     with zipfile.ZipFile(".\\RKDevTool.zip", 'r') as zfile:
-        zfile.extractall(path=".")
+        zfile.extractall(path=".\\RKDevTool")
 
 
 if __name__ == "__main__":
-    yl = open(r".\getResource\config.yaml", 'r')
+    yl = open(r".\get_resource\config.yaml", 'r')
     data = yaml.safe_load(yl.read())
-    get_tool(data['url_3'], data['headers_2'])
+    get_tool(data['url_3'])
     yl.close()

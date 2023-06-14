@@ -68,7 +68,7 @@ def change_config(xml_path=r"D:\AutoXTSTest\dayu200_xts\suites\acts\config\user_
 
 
 if __name__ == '__main__':
-    yl = open(r".\getResource\config.yaml", 'r')
+    yl = open(r".\get_resource\config.yaml", 'r')
     data = yaml.safe_load(yl.read())
     get_images_and_testcases(get_url(data['url'], data['headers'], data['data'], data['url_2']))
     yl.close()

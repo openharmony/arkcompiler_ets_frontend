@@ -16,21 +16,22 @@ SETLOCAL ENABLEEXTENSIONS
 
 REM change to work directory
 cd /d %~dp0
-set var=D:\AutoXTSTest
 
 REM get tool
 if not exist .\RKDevTool (
-python .\getResource\get_tool.py
+python .\get_resource\get_tool.py
 .\RKDevTool\DriverAssitant_v5.1.1\DriverAssitant_v5.1.1\DriverInstall.exe
 del /q .\RKDevTool.zip
+)
 
 REM get image & XTS testcases
+set var=D:\AutoXTSTest
 if not exist %var% (md %var%)
 rd /s /q %var%\dayu200_xts
-python .\getResource\spider.py
+python .\get_resource\spider.py
 del /q %var%\dayu200_xts.tar.gz
 
-REM load image to rk3568 \todo
+REM load image to rk3568 
 hdc shell reboot bootloader
 cd RKDevTool
 python ..\autoburn.py
@@ -40,7 +41,7 @@ REM run XTStest
 timeout /t 15
 hdc shell "power-shell setmode 602"
 hdc shell "hilog -Q pidoff"
-call %var%\dayu200_xts\suites\acts\run.bat run acts
+call %var%\dayu200_xts\suites\acts\run.bat run acts -l ActsToolChainTest
 
 REM after
 ENDLOCAL
