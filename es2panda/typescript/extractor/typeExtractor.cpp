@@ -167,7 +167,17 @@ void TypeExtractor::ExtractImport(const parser::Program *program)
     if (moduleRecord == nullptr) {
         return;
     }
+    ExtractImportModuleRecord(moduleRecord);
 
+    auto typeModuleRecord = program->Binder()->Program()->TypeModuleRecord();
+    if (typeModuleRecord == nullptr) {
+        return;
+    }
+    ExtractImportModuleRecord(typeModuleRecord);
+}
+
+void TypeExtractor::ExtractImportModuleRecord(parser::SourceTextModuleRecord *moduleRecord)
+{
     const auto &regularImportEntries = moduleRecord->GetRegularImportEntries();
     for (const auto &t : regularImportEntries) {
         const auto &redirectPath = moduleRecord->GetModuleRequestIdxMap().at(t.second->moduleRequestIdx_);
@@ -190,7 +200,16 @@ void TypeExtractor::ExtractExport(const parser::Program *program)
     if (moduleRecord == nullptr) {
         return;
     }
+    ExtractExportModuleRecord(moduleRecord);
+    auto typeModuleRecord = program->Binder()->Program()->TypeModuleRecord();
+    if (typeModuleRecord == nullptr) {
+        return;
+    }
+    ExtractExportModuleRecord(typeModuleRecord);
+}
 
+void TypeExtractor::ExtractExportModuleRecord(parser::SourceTextModuleRecord *moduleRecord)
+{
     const auto &localExportEntries = moduleRecord->GetLocalExportEntries();
     for (const auto &t : localExportEntries) {
         auto identifier = t.second->localId_;

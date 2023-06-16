@@ -3706,6 +3706,11 @@ parser::SourceTextModuleRecord *ParserImpl::GetSourceTextModuleRecord()
     return Binder()->Program()->ModuleRecord();
 }
 
+parser::SourceTextModuleRecord *ParserImpl::GetSourceTextTypeModuleRecord()
+{
+    return Binder()->Program()->TypeModuleRecord();
+}
+
 void ParserImpl::AddPatchFixHelper(util::PatchFix *patchFixHelper)
 {
     program_.AddPatchFixHelper(patchFixHelper);
