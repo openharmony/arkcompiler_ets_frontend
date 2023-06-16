@@ -28,6 +28,7 @@ from options import process_options
 from preparation import prepare_test_env
 from result import process_test_result
 
+
 def run():
     old_env = os.environ.copy()
     try:

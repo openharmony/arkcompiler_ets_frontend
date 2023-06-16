@@ -23,53 +23,45 @@ import os
 import shutil
 import sys
 import tarfile
-import validators
 import zipfile
+
+import validators
 
 import options
 from utils import is_linux, is_mac, is_windows, get_time_string, get_api_version, npm_install, check_gzip_file, download
+
 
 def setup_env():
     old_env = os.environ.copy()
     old_env_path = old_env['PATH']
 
-    java_home = os.path.join(options.configs['deveco_path'], 'jbr')
-    node_js_path = options.configs['node_js_path']
+    java_home = os.path.join(options.configs.get('deveco_path'), 'jbr')
+    node_js_path = options.configs.get('node_js_path')
     java_path = os.path.join(java_home, 'bin')
 
     os.environ['PATH'] = os.pathsep.join([java_path, node_js_path]) + os.pathsep + old_env_path
     os.environ['JAVA_HOME'] = java_home
-
-    logging.debug('old env %s', old_env)
-    logging.debug('new env %s', os.environ.copy())
 
 
 def check_deveco_env():
     if is_linux():
         return False
 
-    if is_mac() or (is_windows() and not options.arguments.pack_only):
-        deveco_path = os.path.join(options.configs['deveco_path'], 'bin', 'devecostudio64.exe')
-        if not os.path.exists(deveco_path):
-            logging.error("DevEco not found!")
-            return False
-
-    java_path = os.path.join(options.configs['deveco_path'], 'jbr')
+    java_path = os.path.join(options.configs.get('deveco_path'), 'jbr')
     if not os.path.exists(java_path):
         logging.error("Java not found!")
         return False
 
-    if not os.path.exists(options.configs['node_js_path']):
+    if not os.path.exists(options.configs.get('node_js_path')):
         logging.error("Node js not found!")
         return False
 
     return True
 
 
-def GetSdkFromRemote(sdk_url):
-    deveco_sdk_path = options.configs['deveco_sdk_path']
+def get_sdk_from_remote(sdk_url):
+    deveco_sdk_path = options.configs.get('deveco_sdk_path')
     temp_floder = deveco_sdk_path + '_temp'
-    sdk_floder = os.path.join(temp_floder, 'SDK')
     sdk_temp_file = os.path.join(temp_floder, 'ohos-sdk-full.tar.gz')
 
     if os.path.exists(temp_floder):
@@ -78,21 +70,27 @@ def GetSdkFromRemote(sdk_url):
     download(sdk_url, sdk_temp_file, 'ohos-sdk-full.tar.gz')
     if not check_gzip_file(sdk_temp_file):
         logging.error('The downloaded file is not a valid gzip file.')
-        sys.exit(1)
+        return '', ''
     with tarfile.open(sdk_temp_file, 'r:gz') as tar:
         tar.extractall(temp_floder)
+
+    sdk_floder = os.path.join(temp_floder, 'SDK')
     for item in os.listdir(os.path.join(*[temp_floder, 'ohos-sdk', 'windows'])):
-        with zipfile.ZipFile(os.path.join(*[temp_floder, 'ohos-sdk', 'windows', item])) as zip:
-            zip.extractall(os.path.join(sdk_floder))
-    npm_install(os.path.join(*[sdk_floder, 'ets', 'build-tools', 'ets-loader']))
-    npm_install(os.path.join(*[sdk_floder, 'js', 'build-tools', 'ace-loader']))
+        with zipfile.ZipFile(os.path.join(*[temp_floder, 'ohos-sdk', 'windows', item])) as zip_file:
+            zip_file.extractall(os.path.join(sdk_floder))
+
+    if not npm_install(os.path.join(*[sdk_floder, 'ets', 'build-tools', 'ets-loader'])) or \
+        not npm_install(os.path.join(*[sdk_floder, 'js', 'build-tools', 'ace-loader'])):
+        return '', ''
+
     api_version = get_api_version(os.path.join(*[sdk_floder, 'ets', 'oh-uni-package.json']))
     return sdk_floder, api_version
+
 
 def update_sdk_to_deveco(sdk_path, api_version):
     if not api_version:
         api_version = '9'
-    deveco_sdk_path = options.configs['deveco_sdk_path']
+    deveco_sdk_path = options.configs.get('deveco_sdk_path')
     deveco_sdk_version_path = os.path.join(deveco_sdk_path, api_version)
     if os.path.exists(deveco_sdk_version_path):
         shutil.move(deveco_sdk_version_path, deveco_sdk_version_path + '-' + get_time_string())
@@ -108,9 +106,9 @@ def prepare_sdk():
     api_version = ''
     sdk_path = sdk_arg
     if validators.url(sdk_arg):
-        sdk_path, api_version = GetSdkFromRemote(sdk_arg)
+        sdk_path, api_version = get_sdk_from_remote(sdk_arg)
 
-    if not os.path.exists(sdk_path):
+    if not sdk_path or not os.path.exists(sdk_path):
         return False
 
     update_sdk_to_deveco(sdk_path, api_version)
@@ -118,7 +116,7 @@ def prepare_sdk():
 
 
 def prepare_image():
-    if options.arguments.pack_only:
+    if options.arguments.run_haps:
         return True
 
     ## TODO: 1)download image, 2)flash image

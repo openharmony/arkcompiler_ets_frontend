@@ -30,16 +30,16 @@ def add_content(content, file_name, test_part):
     if not os.path.exists(file_name):
         content += f'<p style="text-align:center;color:red;font-size:25px"> {test_part} run failed </p>'
         return content
-    with open(file_name, 'r') as f:
+    with open(file_name, 'r', encoding='utf-8') as f:
         content += f.read()
         return content
-        
-   
+
+
 def add_attachment(msg, file_list):
     for file in file_list:
         if os.path.exists(file):
-            with open(file, 'r') as f:
-                msg.add_attachment(f.read(), 'html', filename=os.path.basename(file))        
+            with open(file, 'r', encoding='utf-8') as f:
+                msg.add_attachment(f.read(), 'html', filename=os.path.basename(file))
 
 
 def send_email():
@@ -55,12 +55,12 @@ def send_email():
     perf_test = data["perf_report_file"]
     attachment_files = data["attatchment_files"]
     yl.close()
-    
+
     msg = EmailMessage()
     msg['From'] = sender
     msg['To'] = ", ".join(receiver)
     msg['Subject'] = "Arkcompiler Test"
-    
+
     html = ""
     dividing_line = '<hr align="center" width="80%" color="gray" size="8">'
     html = add_content(html, xts_test, "xts_test")
@@ -71,7 +71,7 @@ def send_email():
     msg.add_related(html, "html")
 
     add_attachment(msg, attachment_files)
-    
+
     smtp = smtplib.SMTP(smtp_server, smtp_port)
     smtp.login(sender, auth_code)
     smtp.sendmail(sender, receiver, msg.as_string())

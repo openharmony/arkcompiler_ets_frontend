@@ -21,12 +21,16 @@ Description: process options and configs for test suite
 import argparse
 import logging
 import os
+from enum import Enum
+
 import yaml
 
-from enum import Enum
 from utils import init_logger
 
-YAML_PATH = './config.yaml'
+
+arguments = {}
+configs = {}
+
 
 class TaskResult(Enum):
     undefind = 0
@@ -84,7 +88,7 @@ class TestTask:
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--sdkPath', type=str, dest='sdk_path', default='',
-                        help='specify sdk path if need to update sdk')
+                        help='specify sdk path if need to update sdk. Default to use sdk specify in config.yaml')
     parser.add_argument('--buildMode', type=str, dest='build_mode', default='all',
                         choices=['all', 'assemble', 'preview', 'hotreload', 'hotfix'],
                         help='specify build mode')
@@ -99,38 +103,31 @@ def parse_args():
                         help='specify test cases')
     parser.add_argument('--testHap', type=str, dest='test_hap', default='all',
                         help="specify test haps, option can be 'all' or a list of haps seperated by ','")
-    parser.add_argument('--imagePath', type=str, dest='image_path', default='all',
-                        help='specify image path if need to update rk/phone images')
-    parser.add_argument('--packOnly', type=bool, dest='pack_only', default=True,
-                        help='specify how to verify. if packOnly is true, will not verify results by running haps')
-    parser.add_argument('--outputBinarySize', type=bool, dest='output_binary_size', default=True,
-                        help='specify whether to output binary size to the result')
-    parser.add_argument('--outputCompileTime', type=bool, dest='output_compile_time', default=True,
-                        help='specify whether to output compilation time to the result')
-    parser.add_argument('--emailResult', type=bool, dest='email_result', default=True,
-                        help='specify whether to send result by email')
-    parser.add_argument('--resultFile', type=str, dest='result_file', default='',
-                        help='specify whether to output results to a file')
+    parser.add_argument('--imagePath', type=str, dest='image_path', default='',
+                        help='specify image path if need to update rk/phone images. Default not to update image')
+    parser.add_argument('--runHaps', dest='run_haps', action='store_true', default=False,
+                        help='specify whether to verify by running the haps on board.')
     parser.add_argument('--logLevel', type=str, dest='log_level', default='error',
                         choices=['debug', 'info', 'warn', 'error'],
                         help='specify log level of test suite')
     parser.add_argument('--logFile', type=str, dest='log_file', default='',
                         help='specify the file log outputs to, empty string will output to console')
-    parser.add_argument('--compileTimeout', type=int, dest='compile_timeout', default=600,
+    parser.add_argument('--compileTimeout', type=int, dest='compile_timeout', default=1800,
                         help='specify deveco compilation timeout')
     global arguments
     arguments = parser.parse_args()
 
 
 def parse_configs():
-    with open(YAML_PATH, 'r') as config_file:
+    config_yaml = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.yaml')
+    with open(config_yaml, 'r') as config_file:
         global configs
         configs = yaml.safe_load(config_file)
 
 
 def create_test_tasks():
     task_list = []
-    haps_list = configs['haps']
+    haps_list = configs.get('haps')
     test_cases = 'all' if arguments.test_case == 'all' else []
     test_haps = 'all' if arguments.test_hap == 'all' else []
     if test_cases != 'all':
@@ -143,7 +140,7 @@ def create_test_tasks():
            or (test_cases and (hap['type'][0] in test_cases)) \
            or (test_haps and (hap['name'] in test_haps)):
             if not os.path.exists(hap['path']):
-                logging.warn("Path of hap %s dosen't exist: %s" % (hap['name'], hap['path']))
+                logging.warning("Path of hap %s dosen't exist: %s", hap['name'], hap['path'])
                 continue
             task = TestTask()
             task.name = hap['name']

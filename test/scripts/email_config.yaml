@@ -11,15 +11,17 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-sender_email_address : 
-auth_code : 
-receiver_list : 
-smtp_server:
-smtp_port:
+sender_email_address :
+auth_code :
+receiver_list :
+smtp_server :
+smtp_port :
 
 xts_report_file : ".\\auto_xts_test\\result\\summary_report.html"
-sdk_report_file : ""
+sdk_report_file : ".\\sdk_test\\sdk_test_report.html"
 perf_report_file : ""
 attatchment_files :
     - ".\\auto_xts_test\\result\\details_report.html"
     - ".\\auto_xts_test\\result\\failures_report.html"
+    - ".\\sdk_test\\sdk_test_report.html"
+    - ".\\sdk_test\\sdk_test_log.txt"

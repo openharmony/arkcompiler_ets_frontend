@@ -19,31 +19,40 @@ Description: utils for test suite
 """
 
 import datetime
-import gzip
-import httpx
 import json
 import logging
 import os
-import requests
 import shutil
 import time
-import tqdm
 import subprocess
 import sys
 
+import gzip
+import httpx
+import requests
+import tqdm
 
-log_level_dict = {
-    'debug': logging.DEBUG,
-    'info': logging.INFO,
-    'warn': logging.WARN,
-    'error': logging.ERROR
-}
+
+def get_log_level(arg_log_level):
+    log_level_dict = {
+        'debug': logging.DEBUG,
+        'info': logging.INFO,
+        'warn': logging.WARN,
+        'error': logging.ERROR
+    }
+    if arg_log_level not in log_level_dict.keys():
+        return logging.ERROR  # use error as default log level
+    else:
+        return log_level_dict[arg_log_level]
+
 
 def init_logger(log_level, log_file):
     logging.basicConfig(filename=log_file,
-                        level=log_level_dict[log_level],
+                        level=get_log_level(log_level),
                         encoding='utf-8',
                         format='[%(asctime)s %(filename)s:%(lineno)d]: [%(levelname)s] %(message)s')
+    logging.info("Test command:")
+    logging.info(" ".join(sys.argv))
 
 
 def is_windows():
@@ -88,7 +97,7 @@ def get_sdk_url():
     }
     downnload_job['startTime'] = str(last_hour)
     downnload_job['endTime'] = str(now_time)
-    post_result = requests.post(url, data = downnload_job)
+    post_result = requests.post(url, data=downnload_job)
     post_data = json.loads(post_result.text)
     sdk_url_suffix = ''
     for ohos_sdk_list in post_data['result']['dailyBuildVos']:
@@ -112,8 +121,9 @@ def npm_install(loader_path):
     except subprocess.CalledProcessError as e:
         logging.exception(e)
         logging.error(f'npm install failed. Please check the local configuration environment.')
-        sys.exit(1)
+        return False
     os.chdir(os.path.dirname(__file__))
+    return True
 
 
 def get_api_version(json_path):
@@ -128,7 +138,8 @@ def check_gzip_file(file_path):
     try:
         with gzip.open(file_path, 'rb') as gzfile:
             gzfile.read(1)
-    except (gzip.BadGzipFile, OSError):
+    except Exception as e:
+        logging.exception(e)
         return False
     return True
 
