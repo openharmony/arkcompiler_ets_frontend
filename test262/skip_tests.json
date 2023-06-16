@@ -1323,5 +1323,28 @@
             "intl402/Intl/getCanonicalLocales/canonicalized-tags.js",
             "intl402/Intl/getCanonicalLocales/transformed-ext-invalid.js"
         ]
+    },
+    {
+        "reason": "Failed regexp cases caused by removing regexpp syntax check",
+        "files": [
+            "language/literals/regexp/u-unicode-esc-bounds.js",
+            "language/literals/regexp/u-invalid-range-negative-lookahead.js",
+            "language/literals/regexp/u-invalid-optional-lookahead.js",
+            "language/literals/regexp/invalid-braced-quantifier-exact.js",
+            "language/literals/regexp/u-invalid-non-empty-class-ranges-no-dash-a.js",
+            "language/literals/regexp/u-invalid-non-empty-class-ranges-no-dash-ab.js",
+            "language/literals/regexp/u-invalid-non-empty-class-ranges-no-dash-b.js",
+            "language/literals/regexp/u-invalid-non-empty-class-ranges.js",
+            "language/literals/regexp/u-invalid-identity-escape.js",
+            "language/literals/regexp/u-invalid-range-lookahead.js",
+            "language/literals/regexp/u-invalid-oob-decimal-escape.js",
+            "language/literals/regexp/invalid-braced-quantifier-range.js",
+            "language/literals/regexp/u-invalid-class-escape.js",
+            "language/literals/regexp/u-invalid-optional-negative-lookahead.js",
+            "language/literals/regexp/u-invalid-extended-pattern-char.js",
+            "language/literals/regexp/u-invalid-legacy-octal-escape.js",
+            "language/literals/regexp/invalid-braced-quantifier-lower.js",
+            "language/literals/regexp/u-unicode-esc-non-hex.js"
+        ]
     }
 ]

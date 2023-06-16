@@ -1202,12 +1202,6 @@ function checkSuperExpression(node: ts.SuperExpression) {
     }
 }
 
-function checkRegularExpression(regexp: ts.RegularExpressionLiteral) {
-    let regexpText = regexp.text;
-    let regexpParse = require("regexpp").RegExpParser;
-    new regexpParse().parseLiteral(regexpText);
-}
-
 function checkThrowStatement(node: ts.ThrowStatement) {
     if (ts.isIdentifier(node.expression) && (<ts.Identifier>node.expression).text === '') {
         throw new DiagnosticError(node, DiagnosticCode.Line_break_not_permitted_here, jshelpers.getSourceFileOfNode(node));
@@ -1275,9 +1269,6 @@ function checkSyntaxErrorForSloppyAndStrictMode(node: ts.Node) {
             break;
         case ts.SyntaxKind.LabeledStatement:
             checkLabeledStatement(<ts.LabeledStatement>node);
-            break;
-        case ts.SyntaxKind.RegularExpressionLiteral:
-            checkRegularExpression(<ts.RegularExpressionLiteral>node);
             break;
         case ts.SyntaxKind.ThrowStatement:
             checkThrowStatement(<ts.ThrowStatement>node);

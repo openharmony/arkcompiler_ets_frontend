@@ -13,10 +13,11 @@
  * limitations under the License.
  */
 
+import * as fs from "fs";
 import * as path from "path";
+import * as ts from "typescript";
 import { extractCtorOfClass } from "../statement/classStatement";
 import { LocalVariable, Variable } from "../variable";
-import * as ts from "typescript";
 import {
     EcmaCallirangedyn,
     EcmaCallithisrangedyn,
@@ -311,4 +312,23 @@ export function isBase64Str(input: string): boolean {
         return false;
     }
     return Buffer.from(Buffer.from(input, 'base64').toString()).toString('base64') == input;
+}
+
+export function getDtsFiles(libDir: string): string[] {
+    let dtsFiles:string[] = [];
+    function finDtsFile(dir){
+        let files = fs.readdirSync(dir);
+        files.forEach(function (item, _) {
+            let fPath = path.join(dir,item);
+            let stat = fs.statSync(fPath);
+            if(stat.isDirectory() === true) {
+                finDtsFile(fPath);
+            }
+            if (stat.isFile() === true && item.endsWith(".d.ts") === true) {
+                dtsFiles.push(fPath);
+            }
+        });
+    }
+    finDtsFile(libDir);
+    return dtsFiles;
 }
