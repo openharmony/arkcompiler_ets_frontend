@@ -569,6 +569,9 @@ private:
             if (param->IsAssignmentExpression()) {
                 param = param->AsAssignmentExpression()->Left();
             }
+            if (param->IsAssignmentPattern()) {
+                param = param->AsAssignmentPattern()->Left();
+            }
             
             // Identifier / SpreadElement / RestElement / ArrayExpression / ObjectExpression
             auto identifier = extractor_->GetIdentifierFromExpression(param);
