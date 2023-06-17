@@ -48,7 +48,10 @@ REM run XTStest
 timeout /t 15
 hdc shell "power-shell setmode 602"
 hdc shell "hilog -Q pidoff"
-call %var%\dayu200_xts\suites\acts\run.bat run acts -l ActsToolChainTest
+for /f "tokens=1,2 delims==" %%i in (config.ini) do (
+if "%%i"=="modules" set value=%%j
+)
+call D:\AutoXTSTest\dayu200_xts\suites\acts\run.bat run -l %value%
 
 REM get result
 cd /d %~dp0
@@ -59,7 +62,7 @@ ENDLOCAL
 exit
 
 REM error process
-：ToolError
+: ToolError
 echo "Error happens while getting tool" >> log.log
 ENDLOCAL
 exit
@@ -69,7 +72,7 @@ echo "Error happens while getting dailybuilds resource" >> log.log
 ENDLOCAL
 exit
 
-：BurnError
+: BurnError
 echo "Error happens while burnning images" >> log.log
 ENDLOCAL
 exit
