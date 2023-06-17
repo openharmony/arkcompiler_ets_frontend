@@ -16,6 +16,7 @@
 
 
 import json
+import logging
 import os
 import stat
 import tarfile
@@ -48,6 +49,8 @@ def get_images_and_testcases(url, download_path, extract_path):
     with tarfile.open(download_path, "r") as tar:
         for member in tqdm(desc='dayu200_xts', iterable=tar.getmembers(), total=len(tar.getmembers())):
             tar.extract(path=extract_path, member=member)
+    logging.basicConfig(filename="log.log", level='INFO')
+    logging.info(f'Downloading Success, url:{url}')
 
    
 def get_url(url, headers, json_data, url_2):
@@ -58,19 +61,19 @@ def get_url(url, headers, json_data, url_2):
     return url_2[0] + start_time + url_2[1] + start_time + url_2[2]
 
 
-def change_config(xml_path, xml_dw="./environment/device/port"):
+def change_port(xml_path, xml_dw="./environment/device/port"):
     doc = ET.parse(xml_path)
     root = doc.getroot()
-    sub1 = root.find(xml_dw)
-    sub1.text = "8710"
+    port = root.find(xml_dw)
+    port.text = "8710"
     doc.write(xml_path)
 
 
 if __name__ == '__main__':
     yl = open(r".\get_resource\config.yaml", 'r')
     data = yaml.safe_load(yl.read())
-    url = get_url(data['url'], data['headers'], data['data'], data['url_2'])
-    get_images_and_testcases(url, data['path_1'], data['path_2'])
-    change_config(data['path_3'])
+    dest_url = get_url(data['url_dailybuilds'], data['headers'], data['data'], data['url_dayu200'])
+    get_images_and_testcases(dest_url, data['path_xts_pack'], data['path_xts_dir'])
+    change_config(data['path_configfile'])
     yl.close()
     

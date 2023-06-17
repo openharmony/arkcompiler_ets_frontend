@@ -1,4 +1,4 @@
-#  Copyright (c) 2022 Huawei Device Co., Ltd.
+#  Copyright (c) 2023 Huawei Device Co., Ltd.
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
 #  You may obtain a copy of the License at
@@ -11,7 +11,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-url : "http://ci.openharmony.cn/api/ci-backend/ci-portal/v1/dailybuilds"
+url_dailybuilds : "http://ci.openharmony.cn/api/ci-backend/ci-portal/v1/dailybuilds"
 headers :
     'Accept': 'application/json, text/plain, */*'
     'Accept-Encoding': 'gzip, deflate'
@@ -49,11 +49,12 @@ data:
     'projectName': "openharmony"
     'startTime': ""
     'testResult': ""
-url_2:
+url_dayu200:
     - "http://download.ci.openharmony.cn/version/Daily_Version/dayu200/"
     - "/version-Daily_Version-dayu200-"
     - "-dayu200.tar.gz"
-url_3 : 'http://123.60.114.105:9999/RKDevTool.zip'
-path_1 : 'D:\\AutoXTSTest\\dayu200_xts.tar.gz'
-path_2 : 'D:\\AutoXTSTest\\dayu200_xts'
-path_3 : 'D:\\AutoXTSTest\\dayu200_xts\\suites\\acts\\config\\user_config.xml'
+url_tools : 'http://123.60.114.105:9999/RKDevTool.zip'
+path_xts_pack : 'D:\\AutoXTSTest\\dayu200_xts.tar.gz'
+path_xts_dir : 'D:\\AutoXTSTest\\dayu200_xts'
+path_configfile : 'D:\\AutoXTSTest\\dayu200_xts\\suites\\acts\\config\\user_config.xml'
+path_xts_report : 'D:\\AutoXTSTest\\dayu200_xts\\suites\\acts\\reports'
