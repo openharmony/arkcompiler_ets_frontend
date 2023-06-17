@@ -17,12 +17,16 @@ SETLOCAL ENABLEEXTENSIONS
 REM change to work directory
 cd /d %~dp0
 
+REM log
+echo "------------------------------------------------" >> log.log
+
 REM get tool
 if not exist .\RKDevTool (
 python .\get_resource\get_tool.py
 .\RKDevTool\DriverAssitant_v5.1.1\DriverAssitant_v5.1.1\DriverInstall.exe
 del /q .\RKDevTool.zip
 )
+if not exist .\RKDevTool\RKDevTool.exe (goto ToolError)
 
 REM get image & XTS testcases
 set var=D:\AutoXTSTest
@@ -30,12 +34,15 @@ if not exist %var% (md %var%)
 rd /s /q %var%\dayu200_xts
 python .\get_resource\spider.py
 del /q %var%\dayu200_xts.tar.gz
+if not exist %var%\dayu200_xts\suites (goto ResourceError)
 
 REM load image to rk3568 
 hdc shell reboot bootloader
 cd RKDevTool
 python ..\autoburn.py
 cd ..
+for /f "tokens=*" %%i in ('hdc list targets') do (set target=%%i)
+if "%var%"=="[Empty]" (goto BurnError)
 
 REM run XTStest
 timeout /t 15
@@ -43,5 +50,26 @@ hdc shell "power-shell setmode 602"
 hdc shell "hilog -Q pidoff"
 call %var%\dayu200_xts\suites\acts\run.bat run acts -l ActsToolChainTest
 
-REM after
+REM get result
+cd /d %~dp0
+echo "Successfully excute script" >> log.log
+if not exist result (md result)
+python get_result.py
 ENDLOCAL
+exit
+
+REM error process
+：ToolError
+echo "Error happens while getting tool" >> log.log
+ENDLOCAL
+exit
+
+: ResourceError
+echo "Error happens while getting dailybuilds resource" >> log.log
+ENDLOCAL
+exit
+
+：BurnError
+echo "Error happens while burnning images" >> log.log
+ENDLOCAL
+exit
