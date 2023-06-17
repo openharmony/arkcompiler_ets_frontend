@@ -35,6 +35,7 @@ def end_burn(dlg):
             time.sleep(5)
             timeout -= 5
 
+
 def auto_burn():
     app = Application(backend='uia').start('RKDevTool.exe')
     dlg = app.top_window()
