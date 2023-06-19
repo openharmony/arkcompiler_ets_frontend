@@ -48,7 +48,7 @@ REM run XTStest
 timeout /t 15
 hdc shell "power-shell setmode 602"
 hdc shell "hilog -Q pidoff"
-for /f "tokens=1,2 delims==" %%i in (config.ini) do (
+for /f "tokens=1,2 delims==" %%i in (xtsmodules.txt) do (
 if "%%i"=="modules" set value=%%j
 )
 call D:\AutoXTSTest\dayu200_xts\suites\acts\run.bat run -l %value%
