@@ -53,6 +53,7 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
         extractor_->StartTypeExtractor(program);
 
         context.SetTypeRecorder(extractor_->Recorder());
+        context.SetTypeExtractor(extractor_.get());
     }
 
     queue_ = new CompileFuncQueue(threadCount_, &context);

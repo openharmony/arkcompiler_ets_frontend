@@ -141,7 +141,7 @@ int64_t TypeRecorder::GetNodeTypeIndex(const ir::AstNode *node) const
 
 void TypeRecorder::SetNodeTypeIndex(const ir::AstNode *node, int64_t index)
 {
-    if (node == nullptr || GetNodeTypeIndex(node) != PRIMITIVETYPE_ANY) {
+    if (node == nullptr || GetNodeTypeIndex(node) != PRIMITIVETYPE_ANY || index == PRIMITIVETYPE_ANY) {
         return;
     }
 
@@ -166,7 +166,7 @@ int64_t TypeRecorder::GetVariableTypeIndex(const binder::Variable *variable) con
 
 void TypeRecorder::SetVariableTypeIndex(const binder::Variable *variable, int64_t index)
 {
-    if (variable == nullptr || GetVariableTypeIndex(variable) != PRIMITIVETYPE_ANY) {
+    if (variable == nullptr || GetVariableTypeIndex(variable) != PRIMITIVETYPE_ANY || index == PRIMITIVETYPE_ANY) {
         return;
     }
 
@@ -176,7 +176,7 @@ void TypeRecorder::SetVariableTypeIndex(const binder::Variable *variable, int64_
 
 void TypeRecorder::SetIdentifierTypeIndex(const ir::Identifier *identifier, int64_t index)
 {
-    if (identifier == nullptr) {
+    if (identifier == nullptr || index == PRIMITIVETYPE_ANY) {
         return;
     }
     SetNodeTypeIndex(identifier, index);

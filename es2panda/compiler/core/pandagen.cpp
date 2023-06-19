@@ -1691,6 +1691,16 @@ void PandaGen::LoadLocalModuleVariable(const ir::AstNode *node, const binder::Mo
 void PandaGen::LoadExternalModuleVariable(const ir::AstNode *node, const binder::ModuleVariable *variable)
 {
     auto index = variable->Index();
+    if (Context()->IsTypeExtractorEnabled()) {
+        const ir::Identifier *identifier = nullptr;
+        const ir::AstNode *declareNode = Context()->TypeExtractor()->GetDeclNodeFromIdentifier(node->AsIdentifier(), &identifier);
+        int64_t typeIndex = Context()->TypeRecorder()->GetNodeTypeIndex(declareNode);
+        if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
+            index <= util::Helpers::MAX_INT8 ? ra_.EmitWithType<Ldexternalmodulevar>(node, typeIndex, index) :
+                                               ra_.EmitWithType<WideLdexternalmodulevar>(node, typeIndex, index);
+            return;
+        }
+    }
     index <= util::Helpers::MAX_INT8 ? ra_.Emit<Ldexternalmodulevar>(node, index) :
                                        ra_.Emit<WideLdexternalmodulevar>(node, index);
 }
@@ -1698,6 +1708,14 @@ void PandaGen::LoadExternalModuleVariable(const ir::AstNode *node, const binder:
 void PandaGen::StoreModuleVariable(const ir::AstNode *node, const binder::ModuleVariable *variable)
 {
     auto index = variable->Index();
+    if (Context()->IsTypeExtractorEnabled()) {
+        int64_t typeIndex = Context()->TypeRecorder()->GetNodeTypeIndex(node);
+        if (typeIndex != extractor::TypeRecorder::PRIMITIVETYPE_ANY) {
+            index <= util::Helpers::MAX_INT8 ? ra_.EmitWithType<Stmodulevar>(node, typeIndex, index) :
+                                               ra_.EmitWithType<WideStmodulevar>(node, typeIndex, index);
+            return;
+        }
+    }
     index <= util::Helpers::MAX_INT8 ? ra_.Emit<Stmodulevar>(node, index) :
                                        ra_.Emit<WideStmodulevar>(node, index);
 }
