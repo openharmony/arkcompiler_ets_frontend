@@ -51,7 +51,7 @@ hdc shell "hilog -Q pidoff"
 for /f "tokens=1,2 delims==" %%i in (xtsmodules.txt) do (
 if "%%i"=="modules" set value=%%j
 )
-call D:\AutoXTSTest\dayu200_xts\suites\acts\run.bat run -l %value%
+call %var%\dayu200_xts\suites\acts\run.bat run -l %value%
 
 REM get result
 cd /d %~dp0
