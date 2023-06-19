@@ -73,6 +73,8 @@ private:
     void ExtractNodeType(const ir::AstNode *parent, const ir::AstNode *childNode);
     void ExtractImport(const parser::Program *program);
     void ExtractExport(const parser::Program *program);
+    void ExtractImportModuleRecord(parser::SourceTextModuleRecord *moduleRecord);
+    void ExtractExportModuleRecord(parser::SourceTextModuleRecord *moduleRecord);
 
     const ir::AstNode *GetDeclNodeFromInitializer(const ir::Expression *initializer, const ir::Identifier **variable);
 
