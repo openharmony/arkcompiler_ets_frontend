@@ -59,7 +59,7 @@ ENDLOCAL
 exit
 
 REM error process
-：ToolError
+: ToolError
 echo "Error happens while getting tool" >> log.log
 ENDLOCAL
 exit
@@ -69,7 +69,7 @@ echo "Error happens while getting dailybuilds resource" >> log.log
 ENDLOCAL
 exit
 
-：BurnError
+: BurnError
 echo "Error happens while burnning images" >> log.log
 ENDLOCAL
 exit
