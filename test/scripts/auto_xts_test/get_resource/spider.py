@@ -74,6 +74,6 @@ if __name__ == '__main__':
     data = yaml.safe_load(yl.read())
     dest_url = get_url(data['url_dailybuilds'], data['headers'], data['data'], data['url_dayu200'])
     get_images_and_testcases(dest_url, data['path_xts_pack'], data['path_xts_dir'])
-    change_config(data['path_configfile'])
+    change_port(data['path_configfile'])
     yl.close()
     
