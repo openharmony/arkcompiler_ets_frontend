@@ -21,6 +21,7 @@
 #include <assembly-literals.h>
 #include <assembly-program.h>
 #include <libpandabase/utils/arena_containers.h>
+#include <util/helpers.h>
 #include <util/symbolTable.h>
 
 #include <mutex>
@@ -82,7 +83,7 @@ private:
     void DumpFunctionInfo(const compiler::PandaGen *pg, panda::pandasm::Function *func, LiteralBuffers &literalBuffers);
     void HandleFunction(const compiler::PandaGen *pg, panda::pandasm::Function *func, LiteralBuffers &literalBuffers);
     void CollectFunctionsWithDefinedClasses(std::string funcName, std::string className);
-    std::vector<std::pair<std::string, size_t>> GenerateFunctionAndClassHash(panda::pandasm::Function *func,
+    std::vector<std::pair<std::string, std::string>> GenerateFunctionAndClassHash(panda::pandasm::Function *func,
         LiteralBuffers &literalBuffers);
     void DumpModuleInfo(const std::string &recordName,
         std::vector<panda::pandasm::LiteralArray::Literal> &moduleBuffer);
@@ -101,7 +102,7 @@ private:
     bool IsAnonymousOrSpecialOrDuplicateFunction(const std::string &funcName);
     bool CompareLexenv(const std::string &funcName, const compiler::PandaGen *pg,
         SymbolTable::OriginFunctionInfo &bytecodeInfo);
-    bool CompareClassHash(std::vector<std::pair<std::string, size_t>> &hashList,
+    bool CompareClassHash(std::vector<std::pair<std::string, std::string>> &hashList,
         SymbolTable::OriginFunctionInfo &bytecodeInfo);
     void CollectClassMemberFunctions(const std::string &className, int64_t bufferIdx, LiteralBuffers &literalBuffers);
     std::vector<std::string> GetLiteralMethods(int64_t bufferIdx, LiteralBuffers &literalBuffers);

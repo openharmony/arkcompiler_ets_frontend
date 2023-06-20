@@ -55,7 +55,6 @@
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "util/concurrent.h"
 #include "util/patchFix.h"
-#include "util/helpers.h"
 
 namespace panda::es2panda::binder {
 void Binder::InitTopScope()
@@ -363,7 +362,7 @@ void Binder::BuildFunction(FunctionScope *funcScope, util::StringView name, cons
     // For anonymous, special-name and duplicate function, get its source and name, make hash code,
     // and make #hash_duplicateHashTime#name as its name;
     auto funcContentNameStr = func->SourceCode(this).Mutf8() + name.Mutf8();
-    ss << ANONYMOUS_SPECIAL_DUPLICATE_FUNCTION_SPECIFIER << std::hash<std::string>{}(funcContentNameStr);
+    ss << ANONYMOUS_SPECIAL_DUPLICATE_FUNCTION_SPECIFIER << util::Helpers::GetHashString(funcContentNameStr);
 
     auto res = functionHashNames_.find(funcContentNameStr);
     if (res != functionHashNames_.end()) {

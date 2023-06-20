@@ -1,6 +1,6 @@
 .language ECMAScript
 
-.function any .#1026149943769461333#(any a0, any a1, any a2) {
+.function any .#1016906796659230483#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldundefined
@@ -8,7 +8,7 @@ label_0:
 label_2: 
 }
 
-.function any .#103306036873806529#(any a0, any a1, any a2) {
+.function any .#1016906796659230483_1#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldundefined
@@ -16,7 +16,7 @@ label_0:
 label_2: 
 }
 
-.function any .#4367845697697881801#(any a0, any a1, any a2) {
+.function any .#1471473088249306135#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldundefined
@@ -24,7 +24,7 @@ label_0:
 label_2: 
 }
 
-.function any .#4367845697697881801_1#(any a0, any a1, any a2) {
+.function any .#5496465400387880830#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldundefined
@@ -32,7 +32,7 @@ label_0:
 label_2: 
 }
 
-.function any .#6139272227607078344#aa(any a0, any a1, any a2) {
+.function any .#7640569466637989364#aa(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	ldundefined
@@ -60,18 +60,18 @@ label_0:
 	stglobalvar 0x1, aa
 	definefunc 0x2, .name1, 0x0
 	sttoglobalrecord 0x3, name1
-	definefunc 0x4, .#4367845697697881801#, 0x0
-	definefunc 0x5, .#4367845697697881801_1#, 0x0
-	definefunc 0x6, .#6139272227607078344#aa, 0x0
+	definefunc 0x4, .#1016906796659230483#, 0x0
+	definefunc 0x5, .#1016906796659230483_1#, 0x0
+	definefunc 0x6, .#7640569466637989364#aa, 0x0
 	createobjectwithbuffer 0x7, _0
 	sta v0
-	definefunc 0x8, .#103306036873806529#, 0x0
+	definefunc 0x8, .#1471473088249306135#, 0x0
 	stownbyname 0x9, index.js, v0
 	lda v0
 	sttoglobalrecord 0xb, obj
 	createobjectwithbuffer 0xc, _1
 	sta v0
-	definefunc 0xd, .#1026149943769461333#, 0x0
+	definefunc 0xd, .#5496465400387880830#, 0x0
 	stownbyname 0xe, \testcase, v0
 	lda v0
 	sttoglobalrecord 0x10, objBackslash

@@ -16,9 +16,9 @@
 // Test scenario: just modify anonymous function's content, no addition or deletion of anonymous functions in hotfix,
 // es2abc will keep the name in patch.abc same as base.abc.
 
-// in hotfix patch, its name keeps
-// as #9041263686285634408# other than #5678037123100335536# for first anonymous function
-// as #8070990178058117078# other than #14150848034378622959# for second anonymous function
+// in hotfix patch, special-name-function's name keeps the same as original
+// #16327008318272898567# other than #4142007332460109178# for first anonymous function
+// #7595881967332036965# other than #311697330876580632# for second anonymous function
 function A () {
     print("A2");
     (()=>{

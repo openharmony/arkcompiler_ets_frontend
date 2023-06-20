@@ -11,8 +11,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-[Patch] Found new anonymous, special(containing '.' or '\') or duplicate name function .#16597496927988530042# not supported!
-[Patch] Found new anonymous, special(containing '.' or '\') or duplicate name function .#13875230917451910345# not supported!
+[Patch] Found new anonymous, special(containing '.' or '\') or duplicate name function .#2883375060634092134# not supported!
+[Patch] Found new anonymous, special(containing '.' or '\') or duplicate name function .#3272928923455689677# not supported!
 [Patch] Found unsupported change in file, will not generate patch!
 Error:  [base_mod.js:0:0]
 the size of programs is expected to be 1, but is 0
