@@ -80,6 +80,11 @@ public:
         return moduleRecord_;
     }
 
+    SourceTextModuleRecord *TypeModuleRecord() const
+    {
+        return typeModuleRecord_;
+    }
+
     util::StringView SourceCode() const
     {
         return sourceCode_.View();
@@ -165,6 +170,7 @@ private:
     ScriptExtension extension_ {};
     lexer::LineIndex lineIndex_ {};
     SourceTextModuleRecord *moduleRecord_ {nullptr};
+    SourceTextModuleRecord *typeModuleRecord_ {nullptr};
     util::PatchFix *patchFixHelper_ {nullptr};
     bool isDtsFile_ {false};
 };
