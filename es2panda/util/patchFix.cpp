@@ -209,10 +209,9 @@ std::string PatchFix::ConvertLiteralToString(std::vector<panda::pandasm::Literal
             val += "val: ";
             val += element;
             val += " ";
-        }, literal.value_ );
+        }, literal.value_);
         ss << val;
         ss << "},";
-
     }
 
     return ss.str();
