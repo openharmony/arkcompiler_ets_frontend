@@ -189,6 +189,7 @@ void TypeExtractor::ExtractImportModuleRecord(parser::SourceTextModuleRecord *mo
     for (const auto &t : namespaceImportEntries) {
         const auto &redirectPath = moduleRecord->GetModuleRequestIdxMap().at(t->moduleRequestIdx_);
         ExternalType externalType(this, "*", redirectPath);
+        recorder_->SetNodeTypeIndex(t->localId_->Parent(), externalType.GetTypeIndexShift());
         recorder_->SetNamespaceType(std::string(t->localName_), externalType.GetTypeIndexShift());
         recorder_->SetNamespacePath(std::string(t->localName_), std::string(redirectPath));
     }

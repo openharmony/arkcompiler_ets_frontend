@@ -41,6 +41,7 @@ public:
     TypeRecorder *Recorder() const;
 
     const ir::Identifier *GetIdentifierFromExpression(const ir::Expression *expression);
+    const ir::AstNode *GetDeclNodeFromIdentifier(const ir::Identifier *identifier, const ir::Identifier **variable);
     int64_t GetTypeIndexFromAnnotation(const ir::Expression *typeAnnotation, bool isNewInstance = true);
     int64_t GetTypeIndexFromIdentifier(const ir::Identifier *identifier);
     int64_t GetTypeIndexFromInitializer(const ir::Expression *initializer);
@@ -75,7 +76,6 @@ private:
     void ExtractImportModuleRecord(parser::SourceTextModuleRecord *moduleRecord);
     void ExtractExportModuleRecord(parser::SourceTextModuleRecord *moduleRecord);
 
-    const ir::AstNode *GetDeclNodeFromIdentifier(const ir::Identifier *identifier, const ir::Identifier **variable);
     const ir::AstNode *GetDeclNodeFromInitializer(const ir::Expression *initializer, const ir::Identifier **variable);
 
     int64_t GetTypeIndexFromDeclNode(const ir::AstNode *node, bool isNewInstance);

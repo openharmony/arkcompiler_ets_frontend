@@ -33,6 +33,7 @@ class Binder;
 
 namespace panda::es2panda::extractor {
 class TypeRecorder;
+class TypeExtractor;
 }  // namespace panda::es2panda::extractor
 
 namespace panda::es2panda::compiler {
@@ -120,7 +121,13 @@ public:
         return recorder_;
     }
 
+    extractor::TypeExtractor *TypeExtractor() const
+    {
+        return extractor_;
+    }
+
     void SetTypeRecorder(extractor::TypeRecorder *recorder);
+    void SetTypeExtractor(extractor::TypeExtractor *extractor);
 
     bool IsJsonInputFile() const
     {
@@ -139,6 +146,7 @@ private:
     // true when input file is json file
     bool isJsonInputFile_;
     extractor::TypeRecorder *recorder_ {};
+    extractor::TypeExtractor *extractor_ {};
     std::string sourceFile_;
     std::string pkgName_;
     util::StringView recordName_;
