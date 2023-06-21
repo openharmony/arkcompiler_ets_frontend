@@ -15,26 +15,12 @@
 # limitations under the License.
 
 
-import functools
 import os
 import smtplib
 import socket
-import traceback
 from email.message import EmailMessage
 
 import yaml
-
-
-def catch_exceptions(cancel_on_failure=False):
-    def catch_exceptions_decorator(job_func):
-        @functools.wraps(job_func)
-        def wrapper(*args, **kwargs):
-            try:
-                job_func(*args, **kwargs)
-            except socket.gaierror:
-                print(traceback.format_exc())
-        return wrapper
-    return catch_exceptions_decorator
 
 
 def add_content(content, file_name, test_part):
@@ -45,9 +31,9 @@ def add_content(content, file_name, test_part):
         content += f'<p style="text-align:center;color:red;font-size:25px"> {test_part} run failed </p>'
         return content
     with open(file_name, 'r') as f:
-            content += f.read()
-            return content
-            
+        content += f.read()
+        return content
+        
    
 def add_attachment(msg, file_list):
     for file in file_list:
@@ -56,16 +42,17 @@ def add_attachment(msg, file_list):
                 msg.add_attachment(f.read(), 'html', filename=os.path.basename(file))        
 
 
-@catch_exceptions(cancel_on_failure=False)
 def send_email():
     yl = open(r".\email_config.yaml", 'r')
     data = yaml.safe_load(yl.read())
     sender = data["sender_email_address"]
     auth_code = data["auth_code"]
     receiver = data["receiver_list"]
+    smtp_server = data["smtp_server"]
+    smtp_port = data["smtp_port"]
     xts_test = data["xts_report_file"]
     sdk_test = data["sdk_report_file"]
-    pref_test = data["pref_report_file"]
+    perf_test = data["perf_report_file"]
     attachment_files = data["attatchment_files"]
     yl.close()
     
@@ -75,17 +62,17 @@ def send_email():
     msg['Subject'] = "Arkcompiler Test"
     
     html = ""
+    dividing_line = '<hr align="center" width="80%" color="gray" size="8">'
     html = add_content(html, xts_test, "xts_test")
-    html += '<hr align="center" width="80%" color="gray" size="8">'
+    html += dividing_line
     html = add_content(html, sdk_test, "sdk_test")
-    html += '<hr align="center" width="80%" color="gray" size="8">'
-    html = add_content(html, pref_test, "pref_test")
+    html += dividing_line
+    html = add_content(html, perf_test, "perf_test")
     msg.add_related(html, "html")
 
     add_attachment(msg, attachment_files)
     
-    smtp_server = 'smtp.163.com'
-    smtp = smtplib.SMTP(smtp_server, 25)
+    smtp = smtplib.SMTP(smtp_server, smtp_port)
     smtp.login(sender, auth_code)
     smtp.sendmail(sender, receiver, msg.as_string())
     smtp.quit()
