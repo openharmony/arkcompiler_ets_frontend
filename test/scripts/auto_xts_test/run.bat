@@ -56,7 +56,8 @@ call %var%\dayu200_xts\suites\acts\run.bat run -l %value%
 REM get result
 cd /d %~dp0
 echo "Successfully excute script" >> log.log
-if not exist result (md result)
+if exist result (rd /s /q result)
+md result
 python get_result.py
 ENDLOCAL
 exit
