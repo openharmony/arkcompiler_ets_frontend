@@ -25,12 +25,20 @@ import send_email
 
 def job(path):
     subprocess.run(path, shell=False)
+<<<<<<< HEAD
 
 
 if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
     #do prepare
     schedule.every().day.at("20:00").do(job, path=r'.\auto_xts_test\run.bat').tag('daily_xts_task')
+=======
+    
+if __name__ == "__main__":
+    os.chdir(os.path.dirname(os.path.realpath(__file__)))
+    #do prepare
+    schedule.every().day.at("20:00").do(job, path = r'.\auto_xts_test\run.bat').tag('daily_xts_task')
+>>>>>>> 55f009a710dbf8276af9c1651b001c475c71ba11
     #do sdk_test
     #do perf_test
     schedule.every().day.at("20:00").do(send_email.send_email).tag("send_email")
