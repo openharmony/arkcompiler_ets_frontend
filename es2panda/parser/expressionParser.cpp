@@ -1369,9 +1369,12 @@ ir::Expression *ParserImpl::ParseOptionalChain(ir::Expression *leftSideExpr)
 }
 
 ir::ArrowFunctionExpression *ParserImpl::ParsePotentialArrowExpression(ir::Expression **returnExpression,
-                                                                       const lexer::SourcePosition &startLoc)
+                                                                       const lexer::SourcePosition &startLoc,
+                                                                       bool ignoreCallExpression)
 {
     ir::TSTypeParameterDeclaration *typeParamDecl = nullptr;
+
+    const auto savedPos = lexer_->Save();
 
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::KEYW_FUNCTION: {
@@ -1410,8 +1413,6 @@ ir::ArrowFunctionExpression *ParserImpl::ParsePotentialArrowExpression(ir::Expre
                 return nullptr;
             }
 
-            const auto savedPos = lexer_->Save();
-
             typeParamDecl = ParseTsTypeParameterDeclaration(false);
             if (!typeParamDecl) {
                 lexer_->Rewind(savedPos);
@@ -1425,6 +1426,10 @@ ir::ArrowFunctionExpression *ParserImpl::ParsePotentialArrowExpression(ir::Expre
             [[fallthrough]];
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS: {
+            if (ignoreCallExpression) {
+                lexer_->Rewind(savedPos);
+                break;
+            }
             ir::CallExpression *callExpression = ParseCallExpression(*returnExpression, false, true);
 
             ir::Expression *returnTypeAnnotation = nullptr;
@@ -1670,7 +1675,8 @@ ir::Expression *ParserImpl::ParseMemberExpression(bool ignoreCallExpression, Exp
     }
 
     if (isAsync && !lexer_->GetToken().NewLine()) {
-        ir::ArrowFunctionExpression *arrow = ParsePotentialArrowExpression(&returnExpression, startLoc);
+        ir::ArrowFunctionExpression *arrow = ParsePotentialArrowExpression(&returnExpression, startLoc,
+                                                                           ignoreCallExpression);
 
         if (arrow) {
             return arrow;

@@ -2134,8 +2134,9 @@ void ParserImpl::ParseClassKeyModifiers(ClassElmentDescriptor *desc)
     char32_t nextCp = lexer_->Lookahead();
 
     if ((Extension() == ScriptExtension::JS && nextCp != LEX_CHAR_LEFT_PAREN) ||
-        (Extension() == ScriptExtension::TS && nextCp != LEX_CHAR_EQUALS && nextCp != LEX_CHAR_SEMICOLON &&
-         nextCp != LEX_CHAR_LEFT_PAREN && nextCp != LEX_CHAR_LESS_THAN)) {
+        (Extension() == ScriptExtension::TS &&
+        nextCp != LEX_CHAR_EQUALS && nextCp != LEX_CHAR_SEMICOLON && nextCp != LEX_CHAR_LEFT_PAREN &&
+        nextCp != LEX_CHAR_LESS_THAN && nextCp != LEX_CHAR_QUESTION && nextCp != LEX_CHAR_COLON)) {
         if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_GET) {
             if (desc->isPrivateIdent) {
                 ThrowSyntaxError("Private identifier can not be getter");

@@ -162,11 +162,11 @@ enum class TokenType {
     KEYW_GLOBAL,
     KEYW_INFER,
     KEYW_DECLARE,
+    KEYW_IS,
+    KEYW_ASSERTS,
     KEYW_ARGUMENTS,
     KEYW_EVAL,
     KEYW_STATIC,
-    KEYW_IS,
-    KEYW_ASSERTS,
 
     /* strict mode future reserved keywords */
     KEYW_PRIVATE,

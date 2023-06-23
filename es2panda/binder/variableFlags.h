@@ -162,6 +162,7 @@ enum class DeclarationFlags {
     IMPORT = 1 << 0,
     EXPORT = 1 << 1,
     NAMESPACE_IMPORT = 1 << 2,
+    EXPORT_IN_TSMODULE = 1 << 3,
 };
 
 DEFINE_BITOPS(DeclarationFlags)

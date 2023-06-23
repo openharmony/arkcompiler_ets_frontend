@@ -2052,6 +2052,9 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
         binder::Decl *decl = nullptr;
         binder::DeclarationFlags declflag = (flags & VariableParsingFlags::EXPORTED) ?
                                             binder::DeclarationFlags::EXPORT : binder::DeclarationFlags::NONE;
+        if (flags & VariableParsingFlags::EXPORTED_IN_TSMODULE) {
+            declflag |= binder::DeclarationFlags::EXPORT_IN_TSMODULE;
+        }
 
         if (flags & VariableParsingFlags::VAR) {
             decl = Binder()->AddDecl<binder::VarDecl>(startLoc, declflag, isDeclare, binding->Name());
@@ -2552,7 +2555,8 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
         ThrowSyntaxError("Decorators are not valid here.", decorators.front()->Start());
     }
 
-    VariableParsingFlags flag = isTsModule ? VariableParsingFlags::NO_OPTS : VariableParsingFlags::EXPORTED;
+    VariableParsingFlags flag = isTsModule ?
+        VariableParsingFlags::EXPORTED_IN_TSMODULE : VariableParsingFlags::EXPORTED;
     ParserStatus status = isTsModule ? ParserStatus::NO_OPTS : ParserStatus::EXPORT_REACHED;
 
     switch (lexer_->GetToken().Type()) {
