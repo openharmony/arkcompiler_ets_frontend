@@ -1,0 +1,186 @@
+.language ECMAScript
+
+.function any .func_main_0(any a0, any a1, any a2) {
+	mov v0, a0
+	mov v1, a1
+	mov v2, a2
+	createarraywithbuffer 0x0, _0
+	sta v6
+	sta v6
+	getiterator 0x1
+	sta v9
+	lda v9
+	ldobjbyname 0x3, next
+	sta v8
+	ldfalse
+	sta v7
+	ldfalse
+	sta v11
+	ldundefined
+	sta v12
+LABEL_0: 
+LABEL_4: 
+	lda v8
+	callthis0 0x5, v9
+	sta v10
+	throw.ifnotobject v10
+	lda v10
+	ldobjbyname 0x7, done
+	sta v11
+	isfalse
+	jnez LABEL_8
+	ldtrue
+	sta v11
+	ldundefined
+	ldundefined
+	jmp LABEL_9
+LABEL_8: 
+	lda v10
+	ldobjbyname 0x9, value
+	sta v12
+LABEL_9: 
+LABEL_5: 
+	jmp LABEL_7
+LABEL_6: 
+	sta v12
+	ldtrue
+	sta v11
+	lda v12
+	throw
+LABEL_7: 
+	sttoglobalrecord 0xb, a
+LABEL_10: 
+	lda v8
+	callthis0 0xc, v9
+	sta v10
+	throw.ifnotobject v10
+	lda v10
+	ldobjbyname 0xe, done
+	sta v11
+	isfalse
+	jnez LABEL_14
+	ldtrue
+	sta v11
+	ldundefined
+	ldundefined
+	jmp LABEL_15
+LABEL_14: 
+	lda v10
+	ldobjbyname 0x10, value
+	sta v12
+LABEL_15: 
+LABEL_11: 
+	jmp LABEL_13
+LABEL_12: 
+	sta v12
+	ldtrue
+	sta v11
+	lda v12
+	throw
+LABEL_13: 
+	sttoglobalrecord 0x12, b
+LABEL_1: 
+	lda v11
+	istrue
+	jnez LABEL_3
+	sta v13
+	lda v7
+	istrue
+	jnez LABEL_16
+	ldtrue
+	sta v7
+	ldundefined
+	sta v14
+	ldhole
+	sta v15
+LABEL_17: 
+	lda v9
+	ldobjbyname 0x13, return
+	sta v8
+	sta v16
+	ldundefined
+	eq 0x15, v16
+	jnez LABEL_16
+	lda v8
+	callthis0 0x16, v9
+	sta v14
+LABEL_18: 
+	jmp LABEL_20
+LABEL_19: 
+	sta v15
+LABEL_20: 
+	lda v15
+	sta v16
+	ldhole
+	sta v17
+	lda v16
+	noteq 0x18, v17
+	jeqz LABEL_21
+LABEL_22: 
+	lda v16
+	throw
+LABEL_21: 
+	lda v14
+	throw.ifnotobject v14
+LABEL_16: 
+	lda v13
+	jmp LABEL_3
+LABEL_2: 
+	sta v12
+	lda v11
+	istrue
+	jnez LABEL_23
+	lda v12
+	sta v13
+	lda v7
+	istrue
+	jnez LABEL_24
+	ldtrue
+	sta v7
+	ldundefined
+	sta v14
+	ldhole
+	sta v15
+LABEL_25: 
+	lda v9
+	ldobjbyname 0x19, return
+	sta v8
+	sta v16
+	ldundefined
+	eq 0x1b, v16
+	jnez LABEL_24
+	lda v8
+	callthis0 0x1c, v9
+	sta v14
+LABEL_26: 
+	jmp LABEL_28
+LABEL_27: 
+	sta v15
+LABEL_28: 
+	lda v13
+	throw
+	lda v14
+	throw.ifnotobject v14
+LABEL_24: 
+	lda v13
+	throw
+LABEL_23: 
+	lda v12
+	throw
+LABEL_3: 
+	lda v6
+	ldundefined
+	returnundefined
+}
+
+.catchall LABEL_4, LABEL_5, LABEL_6
+
+.catchall LABEL_10, LABEL_11, LABEL_12
+
+.catchall LABEL_17, LABEL_18, LABEL_19
+
+.catchall LABEL_25, LABEL_26, LABEL_27
+
+.catchall LABEL_0, LABEL_1, LABEL_2
+
+
