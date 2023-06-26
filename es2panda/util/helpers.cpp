@@ -577,4 +577,18 @@ bool Helpers::SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::Scr
     return false;
 }
 
+std::string Helpers::GetHashString(std::string str)
+{
+    uint64_t result = FNV_OFFSET;
+
+    const uint8_t *input = reinterpret_cast<const uint8_t *>(str.c_str());
+    // FNV-1a 64-bit Algorithm
+    for (size_t i = 0; i < str.size(); i++) {
+        result ^= input[i];
+        result *= FNV_PRIME;
+    }
+
+    return std::to_string(result);
+}
+
 }  // namespace panda::es2panda::util

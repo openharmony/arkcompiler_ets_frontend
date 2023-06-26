@@ -1,6 +1,6 @@
 .language ECMAScript
 
-.function any .#6142509188972423790#(any a0, any a1, any a2, any a3, any a4, any a5, any a6, any a7) {
+.function any .#14695981039346656037#(any a0, any a1, any a2, any a3, any a4, any a5, any a6, any a7) {
 label_1: 
 label_0: 
 	lda.str commonjsTest
@@ -21,7 +21,7 @@ label_0:
 	sta v0
 	ldobjbyname 0x1, apply
 	sta v1
-	definefunc 0x3, .#6142509188972423790#, 0x5
+	definefunc 0x3, .#14695981039346656037#, 0x5
 	sta v2
 	createemptyarray 0x4
 	sta v3

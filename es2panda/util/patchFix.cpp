@@ -76,8 +76,7 @@ void PatchFix::DumpModuleInfo(const std::string &recordName,
 {
     std::stringstream ss;
     ss << recordName << SymbolTable::SECOND_LEVEL_SEPERATOR;
-    auto hash = std::hash<std::string>{}(ConvertLiteralToString(moduleBuffer));
-    ss << hash << std::endl;
+    ss << Helpers::GetHashString(ConvertLiteralToString(moduleBuffer)) << std::endl;
     symbolTable_->WriteSymbolTable(ss.str());
 }
 
@@ -91,8 +90,7 @@ void PatchFix::ValidateModuleInfo(const std::string &recordName,
         return;
     }
 
-    auto hash = std::hash<std::string>{}(ConvertLiteralToString(moduleBuffer));
-    if (std::to_string(hash) != it->second) {
+    if (Helpers::GetHashString(ConvertLiteralToString(moduleBuffer)) != it->second) {
         std::cerr << "[Patch] Found import/export expression changed in " << recordName << ", not supported!" <<
             std::endl;
         patchError_ = true;
@@ -104,8 +102,7 @@ void PatchFix::DumpJsonContentRecInfo(const std::string &recordName, const std::
 {
     std::stringstream ss;
     ss << recordName << SymbolTable::SECOND_LEVEL_SEPERATOR;
-    auto hash = std::hash<std::string>{}(jsonFileContent);
-    ss << hash << std::endl;
+    ss << Helpers::GetHashString(jsonFileContent) << std::endl;
     symbolTable_->WriteSymbolTable(ss.str());
 }
 
@@ -119,8 +116,7 @@ void PatchFix::ValidateJsonContentRecInfo(const std::string &recordName, const s
         return;
     }
 
-    auto hash = std::hash<std::string>{}(jsonFileContent);
-    if (std::to_string(hash) != it->second) {
+    if (Helpers::GetHashString(jsonFileContent) != it->second) {
         std::cerr << "[Patch] Found imported/required json file content changed in " << recordName <<
             ", not supported!" << std::endl;
         patchError_ = true;
@@ -151,11 +147,11 @@ void PatchFix::CollectFunctionsWithDefinedClasses(std::string funcName, std::str
     funcDefinedClasses_.insert({funcName, funcDefinedClasses});
 }
 
-std::vector<std::pair<std::string, size_t>> PatchFix::GenerateFunctionAndClassHash(panda::pandasm::Function *func,
+std::vector<std::pair<std::string, std::string>> PatchFix::GenerateFunctionAndClassHash(panda::pandasm::Function *func,
     LiteralBuffers &literalBuffers)
 {
     std::stringstream ss;
-    std::vector<std::pair<std::string, size_t>> hashList;
+    std::vector<std::pair<std::string, std::string>> hashList;
 
     ss << ".function any " << func->name << '(';
 
@@ -177,8 +173,8 @@ std::vector<std::pair<std::string, size_t>> PatchFix::GenerateFunctionAndClassHa
             CollectFunctionsWithDefinedClasses(func->name, ins.ids[0]);
             int64_t bufferIdx = GetLiteralIdxFromStringId(ins.ids[1]);
             std::string literalStr = ExpandLiteral(bufferIdx, literalBuffers);
-            auto classHash = std::hash<std::string>{}(literalStr);
-            hashList.push_back(std::pair<std::string, size_t>(ins.ids[0], classHash));
+            auto classHash = Helpers::GetHashString(literalStr);
+            hashList.push_back(std::pair<std::string, std::string>(ins.ids[0], classHash));
             CollectClassMemberFunctions(ins.ids[0], bufferIdx, literalBuffers);
         }
         ss << " ";
@@ -191,8 +187,8 @@ std::vector<std::pair<std::string, size_t>> PatchFix::GenerateFunctionAndClassHa
             << std::endl;
     }
 
-    auto funcHash = std::hash<std::string>{}(ss.str());
-    hashList.push_back(std::pair<std::string, size_t>(func->name, funcHash));
+    auto funcHash = Helpers::GetHashString(ss.str());
+    hashList.push_back(std::pair<std::string, std::string>(func->name, funcHash));
     return hashList;
 }
 
@@ -490,14 +486,14 @@ bool PatchFix::CompareLexenv(const std::string &funcName, const compiler::PandaG
     return true;
 }
 
-bool PatchFix::CompareClassHash(std::vector<std::pair<std::string, size_t>> &hashList,
+bool PatchFix::CompareClassHash(std::vector<std::pair<std::string, std::string>> &hashList,
     SymbolTable::OriginFunctionInfo &bytecodeInfo)
 {
     auto &classInfo = bytecodeInfo.classHash;
     for (size_t i = 0; i < hashList.size() - 1; ++i) {
         auto &className = hashList[i].first;
         auto classIter = classInfo.find(className);
-        if (classIter != classInfo.end() && classIter->second != std::to_string(hashList[i].second)) {
+        if (classIter != classInfo.end() && classIter->second != hashList[i].second) {
             if (IsColdFix()) {
                 modifiedClassNames_.insert(className);
                 continue;
@@ -567,7 +563,7 @@ void PatchFix::HandleFunction(const compiler::PandaGen *pg, panda::pandasm::Func
         return;
     }
 
-    auto funcHash = std::to_string(hashList.back().second);
+    auto funcHash = hashList.back().second;
 
     if (funcName == funcMain0_) {
         if (IsHotFix()) {
@@ -594,7 +590,7 @@ void PatchFix::DumpFunctionInfo(const compiler::PandaGen *pg, panda::pandasm::Fu
     ss << pg->InternalName();
     ss << SymbolTable::SECOND_LEVEL_SEPERATOR << pg->InternalName() << SymbolTable::SECOND_LEVEL_SEPERATOR;
 
-    std::vector<std::pair<std::string, size_t>> hashList = GenerateFunctionAndClassHash(func, literalBuffers);
+    std::vector<std::pair<std::string, std::string>> hashList = GenerateFunctionAndClassHash(func, literalBuffers);
     ss << hashList.back().second << SymbolTable::SECOND_LEVEL_SEPERATOR;
 
     auto internalNameStr = pg->InternalName().Mutf8();

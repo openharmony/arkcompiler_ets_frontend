@@ -13,12 +13,12 @@
 
 .language ECMAScript
 
-.function any .#8070990178058117078#(any a0, any a1, any a2) {
+.function any .#16327008318272898567#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	tryldglobalbyname 0x0, print
 	sta v0
-	lda.str anonymous: 4
+	lda.str anonymous: 2
 	sta v1
 	lda v0
 	callarg1 0x1, v1
@@ -27,12 +27,12 @@ label_0:
 label_2: 
 }
 
-.function any .#9041263686285634408#(any a0, any a1, any a2) {
+.function any .#7595881967332036965#(any a0, any a1, any a2) {
 label_1: 
 label_0: 
 	tryldglobalbyname 0x0, print
 	sta v0
-	lda.str anonymous: 2
+	lda.str anonymous: 4
 	sta v1
 	lda v0
 	callarg1 0x1, v1
@@ -55,9 +55,9 @@ label_0:
 	sta v1
 	lda v0
 	callarg1 0x1, v1
-	definefunc 0x3, .#9041263686285634408#, 0x0
+	definefunc 0x3, .#16327008318272898567#, 0x0
 	callarg0 0x4
-	definefunc 0x6, .#8070990178058117078#, 0x0
+	definefunc 0x6, .#7595881967332036965#, 0x0
 	callarg0 0x7
 	ldundefined
 	returnundefined
@@ -84,8 +84,8 @@ label_2:
 .function any .patch_main_1(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	definefunc 0x3, .#9041263686285634408#, 0x0
-	definefunc 0x6, .#8070990178058117078#, 0x0
+	definefunc 0x3, .#16327008318272898567#, 0x0
+	definefunc 0x6, .#7595881967332036965#, 0x0
 	definefunc 0x0, .A, 0x0
 	returnundefined
 label_2: 
