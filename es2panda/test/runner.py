@@ -1504,6 +1504,7 @@ def main():
     if args.bytecode:
         runner = BytecodeRunner(args)
         runner.add_directory("bytecode/commonjs", "js", ["--commonjs", "--dump-assembly"])
+        runner.add_directory("bytecode/js", "js", ["--dump-assembly"])
 
         runners.append(runner)
 

@@ -90,7 +90,7 @@ void Iterator::Close(bool abruptCompletion) const
     pg_->BranchIfTrue(node_, noReturn);
 
     pg_->StoreConst(node_, closed_, Constant::JS_TRUE);
-
+    pg_->StoreConst(node_, innerResult, Constant::JS_UNDEFINED);
     pg_->StoreConst(node_, innerException, Constant::JS_HOLE);
 
     TryContext tryCtx(pg_);
