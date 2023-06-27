@@ -98,6 +98,27 @@ ohos_prebuilt_etc("js_package-lock_api8_mac") {
   subsystem_name = "arkcompiler"
 }
 
+ohos_prebuilt_etc("js_node_modules_api8_linux") {
+  source = "//prebuilts/build-tools/common/ts2abc/node_modules"
+  output = "js_linux/${source}"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_prebuilt_etc("js_node_modules_api8_win") {
+  source = "//prebuilts/build-tools/common/ts2abc/node_modules"
+  output = "js_win/${source}"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_prebuilt_etc("js_node_modules_api8_mac") {
+  source = "//prebuilts/build-tools/common/ts2abc/node_modules"
+  output = "js_mac/${source}"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
 # for ets-loader
 ohos_prebuilt_executable("ets_js2abc_api8_linux") {
   source = "./api8/bin/linux/js2abc"
@@ -178,6 +199,27 @@ ohos_prebuilt_etc("ets_package-lock_api8_win") {
 
 ohos_prebuilt_etc("ets_package-lock_api8_mac") {
   source = "./api8/package-lock.json"
+  output = "ets_mac/${source}"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_prebuilt_etc("ets_node_modules_api8_linux") {
+  source = "//prebuilts/build-tools/common/ts2abc/node_modules"
+  output = "ets_linux/${source}"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_prebuilt_etc("ets_node_modules_api8_win") {
+  source = "//prebuilts/build-tools/common/ts2abc/node_modules"
+  output = "ets_win/${source}"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_prebuilt_etc("ets_node_modules_api8_mac") {
+  source = "//prebuilts/build-tools/common/ts2abc/node_modules"
   output = "ets_mac/${source}"
   part_name = "ets_frontend"
   subsystem_name = "arkcompiler"
