@@ -1,0 +1,16 @@
+{
+    "mCompact": false,
+    "mRemoveComments": true,
+    "mOutputDir": "../test/local/",
+    "mDisableHilog": true,
+    "mDisableConsole":true,
+    "mNameObfuscation": {
+        "mEnable": true,
+        "mNameGeneratorType": 1,
+        "mRenameProperties": true,
+        "mReservedNames": []
+    },
+    "mEnableSourceMap": true,
+    "mEnableNameCache": false,
+    "mTopLevel":true
+}

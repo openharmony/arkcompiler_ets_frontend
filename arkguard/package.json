@@ -1,0 +1,51 @@
+{
+  "name": "arkguard",
+  "version": "1.0.0",
+  "description": "An obfuscator tools for open harmony apps.",
+  "bin": {
+    "arkguard": "bin/secharmony"
+  },
+  "main": "lib/ArkObfuscator.js",
+  "types": "lib/ArkObfuscator.d.ts",
+  "scripts": {
+    "clean": "rm -rf lib/*",
+    "build": "npm run clean && node node_modules/typescript/lib/tsc.js",
+    "test": "npm run test:ut && npm run test:grammar",
+    "test:ut": "node ./node_modules/mocha/bin/mocha --require ts-node/register ./test/ut/**/*.ts",
+    "test:grammar": "node --loader=ts-node/esm ./src/cli/SecHarmony.ts ./test/grammar --config-path ./scripts/grammarTestConfig.json && node ./scripts/grammarTestScript.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://codehub-dg-y.huawei.com/Jotun/secDroid/SecHarmony.git"
+  },
+  "keywords": [
+    "obfuscator",
+    "javascript",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chai": "^4.3.1",
+    "@types/commander": "^2.12.2",
+    "@types/fs-extra": "^9.0.13",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "^17.0.45",
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "ts-node": "^10.9.1"
+  },
+  "dependencies": {
+    "commander": "^9.3.0",
+    "fs-extra": "^10.1.0",
+    "source-map":"0.7.4"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "package.json",
+    "tsconfig.base.json",
+    "tsconfig.json",
+    "README.md"
+  ]
+}
