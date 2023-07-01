@@ -11,6 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("//arkcompiler/ets_frontend/es2panda/es2abc_config.gni")
 import("//arkcompiler/ets_frontend/ets_frontend_config.gni")
 import("//arkcompiler/runtime_core/ark_config.gni")
 
@@ -557,6 +558,35 @@ if (is_linux) {
     sources = [ "${es2abc_root_out_dir}/arkcompiler/ets_frontend/es2abc" ]
     outputs = [ "${es2abc_target_out_dir}/build-mac/bin/es2abc" ]
   }
+}
+
+ohos_copy("panda_es2abc") {
+  sources = [ "${es2abc_root}/scripts/ts2abc.js" ]
+
+  outputs = [ target_out_dir + "/$target_name/{{source_file_part}}" ]
+  module_source_dir = target_out_dir + "/$target_name/"
+  module_install_name = ""
+
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_copy("panda_es2abc_ets") {
+  sources = [ "${es2abc_root}/scripts/ts2abc.js" ]
+  outputs = [ target_out_dir + "/$target_name/{{source_file_part}}" ]
+  module_source_dir = target_out_dir + "/$target_name/"
+  module_install_name = ""
+
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_copy("es2abc_js_file") {
+  sources = [ "${es2abc_root}/scripts/ts2abc.js" ]
+  outputs = [ target_out_dir + "/{{source_file_part}}" ]
+
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 group("es2panda_build") {
