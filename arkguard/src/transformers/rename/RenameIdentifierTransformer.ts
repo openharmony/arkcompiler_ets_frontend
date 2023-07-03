@@ -236,6 +236,11 @@ namespace secharmony {
             continue;
           }
 
+          if (scope.importNames && scope.importNames.has(mangled)) {
+            mangled = '';
+            continue;
+          }
+
           if (historyMangledNames && historyMangledNames.has(mangled)) {
             mangled = '';
             continue;
