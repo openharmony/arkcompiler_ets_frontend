@@ -97,6 +97,7 @@ private:
     void HandleInterfaceDeclaration(const ir::AstNode *node);
     void HandleTypeAliasDeclaration(const ir::AstNode *node);
     void HandleNewlyGenFuncExpression(const ir::AstNode *node);
+    void HandleArrowFunctionExpression(const ir::AstNode *node);
 
     // Helpers
     int64_t GetTypeIndexFromTypeReference(const ir::TSTypeReference *typeReference, bool isNewInstance);

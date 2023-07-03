@@ -708,8 +708,12 @@ private:
             flag = AccessFlag::PROTECTED;
         }
         auto isReadonly = (modifiers & ir::ModifierFlags::READONLY);
- 
+
         int64_t typeIndex = extractor_->GetTypeIndexFromAnnotation(field->TypeAnnotation());
+        if (typeIndex == PrimitiveType::ANY && field->Value() != nullptr) {
+            typeIndex = extractor_->GetTypeIndexFromInitializer(field->Value());
+        }
+
         // 3 field infos, typeIndex / accessFlag / modifier
         std::array<int64_t, 3> fieldInfo = {typeIndex, flag, static_cast<int64_t>(isReadonly)};
         auto fn = [&fieldInfo, &isStatic, this](const util::StringView &name) {

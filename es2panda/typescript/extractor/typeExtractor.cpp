@@ -107,6 +107,8 @@ TypeExtractor::TypeExtractor(const ir::BlockStatement *rootNode, bool typeDtsExt
         std::bind(&TypeExtractor::HandleTypeAliasDeclaration, this, std::placeholders::_1);
     handlerMap_[ir::AstNodeType::EXPRESSION_STATEMENT] =
         std::bind(&TypeExtractor::HandleNewlyGenFuncExpression, this, std::placeholders::_1);
+    handlerMap_[ir::AstNodeType::ARROW_FUNCTION_EXPRESSION] =
+        std::bind(&TypeExtractor::HandleArrowFunctionExpression, this, std::placeholders::_1);
 }
 
 void TypeExtractor::StartTypeExtractor(const parser::Program *program)
@@ -797,6 +799,16 @@ void TypeExtractor::HandleNewlyGenFuncExpression(const ir::AstNode *node)
         auto funcExpr = node->AsExpressionStatement()->GetExpression()->AsCallExpression()->Callee();
         recorder_->SetNodeTypeIndex(funcExpr->AsFunctionExpression()->Function(), typeFlag);
     }
+}
+
+void TypeExtractor::HandleArrowFunctionExpression(const ir::AstNode *node)
+{
+    ASSERT(node->IsArrowFunctionExpression());
+    auto typeIndex = recorder_->GetNodeTypeIndex(node->AsArrowFunctionExpression()->Function());
+    if (typeIndex != PrimitiveType::ANY) {
+        return;
+    }
+    GetTypeIndexFromFunctionNode(node, false);
 }
 
 int64_t TypeExtractor::GetTypeIndexFromClassInst(int64_t typeIndex, const ir::AstNode *node, int64_t builtinTypeIndex)
