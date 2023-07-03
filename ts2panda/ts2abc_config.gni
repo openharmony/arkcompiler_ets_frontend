@@ -107,68 +107,7 @@ template("ts2abc_gen_file") {
   }
 }
 
-# Generate abc
-#
-# Mandatory arguments:
-# src_js -- name of js file, ex: BatteryPlugin.js
-# dst_file -- ex: BatteryPlugin.abc
-# out_puts
-template("ts2abc_gen_abc") {
-  assert(defined(invoker.src_js), "src_js is required!")
-  assert(defined(invoker.dst_file), "dst_file is required!")
-  assert(defined(invoker.out_puts), "out_puts is required!")
-
-  extra_dependencies = []
-  if (defined(invoker.extra_dependencies)) {
-    extra_dependencies += invoker.extra_dependencies
-  }
-
-  action("$target_name") {
-    if (defined(invoker.extra_visibility)) {
-      visibility = invoker.extra_visibility
-    }
-
-    script = "${ts2abc_root}/scripts/generate_js_bytecode.py"
-
-    deps = extra_dependencies
-    deps += ts2abc_build_deps
-
-    args = [
-      "--src-js",
-      invoker.src_js,
-      "--dst-file",
-      invoker.dst_file,
-      "--node",
-      rebase_path("${node_path}"),
-      "--frontend-tool-path",
-      rebase_path("${ts2abc_build_path}"),
-      "--node-modules",
-      rebase_path("${node_modules}"),
-    ]
-
-    if (defined(invoker.extra_args)) {
-      args += invoker.extra_args
-    }
-
-    if (defined(invoker.run_multi_file_tests) && invoker.run_multi_file_tests) {
-      assert(defined(invoker.src_ts), "src_ts is required!")
-      deps += merge_abc_deps
-      args += [
-        "--merge-abc-path",
-        rebase_path("${merge_abc_path}"),
-        "--src-ts",
-        invoker.src_ts,
-        "--run-multi-file-tests",
-      ]
-    }
-
-    if (defined(invoker.in_puts)) {
-      inputs = invoker.in_puts
-    }
-
-    outputs = invoker.out_puts
-  }
-}
+# ts2abc_gen_abc has been disabled, please use es2abc_gen_abc from es2abc_config.gni
 
 template("ts2abc_unittest_action") {
   _target_name_ = "${target_name}"
