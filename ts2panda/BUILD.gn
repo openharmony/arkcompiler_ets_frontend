@@ -41,6 +41,48 @@ ohos_copy("node_modules") {
   module_install_name = ""
 }
 
+ohos_prebuilt_etc("js_node_modules_ts2abc_linux") {
+  source = rebase_path("${node_modules}")
+  output = target_out_dir + "/js_linux/${source}"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_prebuilt_etc("js_node_modules_ts2abc_win") {
+  source = rebase_path("${node_modules}")
+  output = target_out_dir + "/js_win/${source}"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_prebuilt_etc("js_node_modules_ts2abc_mac") {
+  source = rebase_path("${node_modules}")
+  output = target_out_dir + "/js_mac/${source}"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_prebuilt_etc("ets_node_modules_ts2abc_linux") {
+  source = rebase_path("${node_modules}")
+  output = target_out_dir + "/ets_linux/${source}"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_prebuilt_etc("ets_node_modules_ts2abc_win") {
+  source = rebase_path("${node_modules}")
+  output = target_out_dir + "/ets_win/${source}"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
+ohos_prebuilt_etc("ets_node_modules_ts2abc_mac") {
+  source = rebase_path("${node_modules}")
+  output = target_out_dir + "/ets_mac/${source}"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
+}
+
 ohos_copy("config_files") {
   sources = [
     "${ts2abc_root}/package-lock.json",
