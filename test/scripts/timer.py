@@ -30,7 +30,7 @@ if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
     #do preparations
     schedule.every().day.at("20:00").do(job, cmd=r'.\auto_xts_test\run.bat').tag('daily_xts_task')
-    #do sdk_test
+    schedule.every().day.at("20:00").do(job, cmd=r'python .\sdk_test\entry.py').tag('daily_sdk_task')
     #do perf_test
     schedule.every().day.at("20:00").do(job, cmd=r'python .\send_email.py').tag("send_email")
     schedule.run_all()

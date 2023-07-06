@@ -1,0 +1,122 @@
+# Copyright (c) 2023 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http:\www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Description: configs for test suite
+
+# environment settings
+deveco_path: D:\Software\Deveco-0602\DevEco Studio
+deveco_sdk_path: D:\deveco-sdk\deveco-sdk-0602
+node_js_path: D:\Software\nodejs  # The nodejs which is used in Deveco
+
+# output settings
+output_html_file: ./sdk_test_report.html
+log_file: ./sdk_test_log.txt
+
+# descriptions about test haps list
+# each hap have the following attributes:
+# -name: name of the hap
+# -path: path of the hap project
+# -type: type of the hap. Available values are: [stage, fa, js, compatible8]
+#        besides, you can also append attributes in [widget, ohosTest, error, exceed_length_error]
+#        -widget: indicates this hap has widget, which has widgets.abc in stage mode
+#        -error: indicates this hap need to test whether compile error is correctly generated as well
+#        -exceed_length_error: indicates this hap need to test whether compile error is correctly generated when path exceed the limit
+#        -ohosTest: indicates this hap needed to compile ohosTest as well
+# -build_path: path to build path, in form of list
+# -cache_path: path to cache path, in form of list
+# -output_hap_path: path of output hap(debug mode), in form of list
+# -output_app_path: path of output app(release mode), in form of list
+# -inc_modify_file: path of modified file in incremental build, in form of list
+# -description: description about the hap, this attribute is not used yet.
+haps:
+  # complex haps
+  - calendar:
+    name: Calendar
+    path: D:\haps\calendar
+    type: [stage]
+    build_path:
+    cache_path:
+    output_hap_path:
+    output_app_path:
+    inc_modify_file:
+    description:
+  # widget haps
+  - widgetdemo:
+    name: WidgetDemo
+    path: D:\haps\WidgetDemo
+    type: [stage, widget]
+    build_path:
+    cache_path:
+    output_hap_path:
+    output_app_path:
+    inc_modify_file:
+    description:
+  # IDE demo haps
+  - idedemo_00:
+    name: IdeStageDemoEmptyAbility
+    path: D:\sdk-test\DemoApplication_EmptyAbility
+    type: [stage, ohosTest, exceed_length_error, error]
+    build_path: [entry, build, default]
+    cache_path: [cache, default, default@CompileArkTS, esmodule]
+    output_hap_path: [outputs, default, entry-default-unsigned.hap]
+    output_app_path: [outputs, default, app, entry-default.hap]
+    inc_modify_file: [entry, src, main, ets, pages, Index.ets]
+    description:
+  - idedemo_01:
+    name: IdeFaDemoEmptyAbility
+    path: D:\sdk-test\DemoApplication_EmptyAbility_fa
+    type: [fa, ohosTest, exceed_length_error, error]
+    build_path: [entry, build, default]
+    cache_path: [cache, default, default@LegacyCompileArkTS, jsbundle]
+    output_hap_path: [outputs, default, entry-default-unsigned.hap]
+    output_app_path: [outputs, default, app, entry-default.hap]
+    inc_modify_file: [entry, src, main, ets, MainAbility, pages, index.ets]
+    description:
+  - idedemo_02:
+    name: IdeCompatible8DemoEmptyAbility
+    path: D:\sdk-test\DemoApplication_EmptyAbility_compatible8
+    type: [compatible8, ohosTest, exceed_length_error, error]
+    build_path: [entry, build, default]
+    cache_path: [cache, default, default@LegacyCompileArkTS, jsbundle]
+    output_hap_path: [outputs, default, entry-default-unsigned.hap]
+    output_app_path: [outputs, default, app, entry-default.hap]
+    inc_modify_file: [entry, src, main, ets, MainAbility, pages, index.ets]
+    description:
+  - idedemo_03:
+    name: IdeJsDemoEmptyAbility
+    path:  D:\sdk-test\DemoApplication_EmptyAbility_js
+    type: [js, ohosTest, exceed_length_error, error]
+    build_path: [entry, build, default]
+    cache_path: [cache, default, default@LegacyCompileJS, jsbundle]
+    output_hap_path: [outputs, default, entry-default-unsigned.hap]
+    output_app_path: [outputs, default, app, entry-default.hap]
+    inc_modify_file: [entry, src, main, js, MainAbility, pages, index, index.js]
+    description:
+
+# modifications for incremental compilation and other tests
+patch_content:
+  patch_new_file_ets:
+    # This new file will be added to the same directory as 'inc_modify_file' specified in haps
+    name: test.ets
+    content: "export function a() {return 'a'}"
+  patch_new_file_js:
+    name: test.js
+    content: "export function a() {return 'a'}"
+  patch_lines_1:
+    head: "import {a} from './test'\n"
+    tail: "\n console.log(a.toString());\n"
+  patch_lines_2:
+    tail: "\n console.log('This is a new line');\n"
+  patch_lines_error:
+    tail: "\n let a_duplicated_value_for_test_suite = 1; function a_duplicated_value_for_test_suite() {};"
+    expected_error: [Duplicate identifier 'a_duplicated_value_for_test_suite', Identifier 'a_duplicated_value_for_test_suite' has already been declared]
