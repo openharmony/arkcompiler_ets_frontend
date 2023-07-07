@@ -84,9 +84,9 @@ HARNESS_GIT_HASH = "9c499f028eb24e67781435c0bb442e00343eb39d"
 ESHOST_GIT_HASH = "fa2d4d27d9d6152002bdef36ee2d17e98b886268"
 ESNEXT_GIT_HASH = "281eb10b2844929a7c0ac04527f5b42ce56509fd"
 
-TEST262_GIT_URL = "https://gitee.com/Han00000000/test262.git"
-ESHOST_GIT_URL = "https://gitee.com/Han00000000/eshost.git"
-HARNESS_GIT_URL = "https://gitee.com/Han00000000/test262-harness.git"
+TEST262_GIT_URL = "https://gitee.com/hufeng20/test262.git"
+ESHOST_GIT_URL = "https://gitee.com/hufeng20/eshost.git"
+HARNESS_GIT_URL = "https://gitee.com/hufeng20/test262-harness.git"
 
 SKIP_LIST_FILE = os.path.join("test262", "skip_tests.json")
 ES2ABC_SKIP_LIST_FILE = os.path.join("test262", "es2abc_skip_tests.json")
