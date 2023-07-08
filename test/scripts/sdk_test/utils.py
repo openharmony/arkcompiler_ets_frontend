@@ -49,10 +49,17 @@ def get_log_level(arg_log_level):
 def init_logger(log_level, log_file):
     logging.basicConfig(filename=log_file,
                         level=get_log_level(log_level),
-                        encoding='utf-8',
+                        encoding=get_encoding(),
                         format='[%(asctime)s %(filename)s:%(lineno)d]: [%(levelname)s] %(message)s')
     logging.info("Test command:")
     logging.info(" ".join(sys.argv))
+
+
+def get_encoding():
+    if is_windows():
+        return 'utf-8'
+    else:
+        return sys.getfilesystemencoding()
 
 
 def is_windows():
@@ -79,7 +86,8 @@ def is_esmodule(hap_type):
 
 def get_sdk_url():
     now_time = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-    last_hour = (datetime.datetime.now() + datetime.timedelta(hours=-24)).strftime('%Y%m%d%H%M%S')
+    last_hour = (datetime.datetime.now() +
+                 datetime.timedelta(hours=-24)).strftime('%Y%m%d%H%M%S')
     url = 'http://ci.openharmony.cn/api/ci-backend/ci-portal/v1/dailybuilds'
     downnload_job = {
         'pageNum': 1,
@@ -102,28 +110,13 @@ def get_sdk_url():
     sdk_url_suffix = ''
     for ohos_sdk_list in post_data['result']['dailyBuildVos']:
         try:
-            if 'ohos-sdk-full.tar.gz' in ohos_sdk_list['obsPath']:
+            if get_remote_sdk_name() in ohos_sdk_list['obsPath']:
                 sdk_url_suffix = ohos_sdk_list['obsPath']
                 break
         except BaseException as err:
             logging.error(err)
     sdk_url = 'http://download.ci.openharmony.cn/' + sdk_url_suffix
     return sdk_url
-
-
-def npm_install(loader_path):
-    npm_path = shutil.which('npm')
-    os.chdir(loader_path)
-    try:
-        result = subprocess.run(f'{npm_path} install --force', check=True, capture_output=True, text=True)
-        if result.stderr:
-            logging.error(result.stderr)
-    except subprocess.CalledProcessError as e:
-        logging.exception(e)
-        logging.error(f'npm install failed. Please check the local configuration environment.')
-        return False
-    os.chdir(os.path.dirname(__file__))
-    return True
 
 
 def get_api_version(json_path):
@@ -156,6 +149,33 @@ def download(url, temp_file, temp_file_name):
             total_length = int(response.headers.get("content-length"))
             with tqdm.tqdm(total=total_length, unit="B", unit_scale=True) as pbar:
                 pbar.set_description(temp_file_name)
+                chunk_sum = 0
+                count = 0
                 for chunk in response.iter_bytes():
                     temp.write(chunk)
+                    chunk_sum += len(chunk)
+                    percentage = chunk_sum / total_length * 100
+                    while str(percentage).startswith(str(count)):
+                        if str(percentage).startswith('100'):
+                            logging.info(f'SDK Download Complete {percentage: .1f}%')
+                            break
+                        else:
+                            logging.info(f'SDK Downloading... {percentage: .1f}%')
+                        count += 1
                     pbar.update(len(chunk))
+
+
+def add_executable_permission(file_path):
+    current_mode = os.stat(file_path).st_mode
+    new_mode = current_mode | 0o111
+    os.chmod(file_path, new_mode)
+
+
+def get_remote_sdk_name():
+    if is_windows():
+        return 'ohos-sdk-full.tar.gz'
+    elif is_mac():
+        return 'L2-MAC-SDK-FULL.tar.gz'
+    else:
+        logging.error('Unsuport platform to get sdk from daily build')
+        return ''

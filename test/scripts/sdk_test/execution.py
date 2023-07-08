@@ -38,14 +38,17 @@ class IncrementalTest:
         output_file = get_compile_output_file_path(task, is_debug)
         output_dir = os.path.dirname(output_file)
         output_file_name = os.path.basename(output_file)
-        output_file_name_items = output_file_name.split('-') # hap name format: entry-default.hap
+        output_file_name_items = output_file_name.split(
+            '-')  # hap name format: entry-default.hap
         output_file_name_items[0] = new_module_name
         output_file_name = '-'.join(output_file_name_items)
-        new_module_name_output_file = os.path.join(output_dir, output_file_name)
+        new_module_name_output_file = os.path.join(
+            output_dir, output_file_name)
 
         logging.debug(f"new module hap file: {new_module_name_output_file}")
 
-        passed = validate(inc_task, task, is_debug, stdout, stderr, new_module_name_output_file)
+        passed = validate(inc_task, task, is_debug, stdout,
+                          stderr, new_module_name_output_file)
         logging.debug(f"validate new module hap file, passed {passed}")
         if not passed:
             return
@@ -88,7 +91,8 @@ class IncrementalTest:
         if 'stage' in task_type:
             return backup_file_relative_path in modified_cache_files
         else:
-            non_temporary_path = backup_file_relative_path.split("temporary")[1].lstrip(os.path.sep)
+            non_temporary_path = backup_file_relative_path.split("temporary")[
+                1].lstrip(os.path.sep)
             logging.debug(f"non_temporary_path: {non_temporary_path}")
             for file in modified_cache_files:
                 logging.debug(f"modified_cache_files file: {file}")
@@ -115,11 +119,13 @@ class IncrementalTest:
         logging.debug(f"modified_cache_files: {modified_cache_files}")
 
         if is_debug:
-            cache_path = os.path.join(task.path, *(task.build_path), *(task.cache_path), 'debug')
+            cache_path = os.path.join(
+                task.path, *(task.build_path), *(task.cache_path), 'debug')
             backup_path = task.backup_info.cache_debug
             inc_info = inc_task.debug_info
         else:
-            cache_path = os.path.join(task.path, *(task.build_path), *(task.cache_path), 'release')
+            cache_path = os.path.join(
+                task.path, *(task.build_path), *(task.cache_path), 'release')
             backup_path = task.backup_info.cache_release
             inc_info = inc_task.release_info
 
@@ -128,7 +134,8 @@ class IncrementalTest:
                 if not file.endswith(cache_extention):
                     continue
                 file_absolute_path = os.path.join(root, file)
-                file_relative_path = os.path.relpath(file_absolute_path, cache_path)
+                file_relative_path = os.path.relpath(
+                    file_absolute_path, cache_path)
                 backup_file = os.path.join(backup_path, file_relative_path)
 
                 if not os.path.exists(backup_file):
@@ -167,7 +174,8 @@ class IncrementalTest:
         [stdout, stderr] = compile_project(task, is_debug)
         passed = validate(inc_task, task, is_debug, stdout, stderr)
         if passed:
-            IncrementalTest.validate_compile_incremental_file(task, inc_task, is_debug, [])
+            IncrementalTest.validate_compile_incremental_file(
+                task, inc_task, is_debug, [])
 
     @staticmethod
     def compile_incremental_add_oneline(task, is_debug):
@@ -181,13 +189,15 @@ class IncrementalTest:
         shutil.copyfile(modify_file, modify_file_backup)
 
         with open(modify_file, 'a', encoding='utf-8') as file:
-            file.write(options.configs.get('patch_content').get('patch_lines_2').get('tail'))
+            file.write(options.configs.get('patch_content').get(
+                'patch_lines_2').get('tail'))
 
         [stdout, stderr] = compile_project(task, is_debug)
         passed = validate(inc_task, task, is_debug, stdout, stderr)
         if passed:
             modified_files = [os.path.join(*modify_file_item)]
-            IncrementalTest.validate_compile_incremental_file(task, inc_task, is_debug, modified_files)
+            IncrementalTest.validate_compile_incremental_file(
+                task, inc_task, is_debug, modified_files)
 
         shutil.move(modify_file_backup, modify_file)
 
@@ -204,11 +214,13 @@ class IncrementalTest:
 
         modify_dir = os.path.dirname(modify_file)
         if 'js' in task.type:
-            patch_content = options.configs.get('patch_content').get('patch_new_file_js')
+            patch_content = options.configs.get(
+                'patch_content').get('patch_new_file_js')
             new_file_name = patch_content.get('name')
             new_file_content = patch_content.get('content')
         else:
-            patch_content = options.configs.get('patch_content').get('patch_new_file_ets')
+            patch_content = options.configs.get(
+                'patch_content').get('patch_new_file_ets')
             new_file_name = patch_content.get('name')
             new_file_content = patch_content.get('content')
         new_file = os.path.join(modify_dir, new_file_name)
@@ -219,7 +231,8 @@ class IncrementalTest:
         with open(modify_file, 'r+', encoding='utf-8') as file:
             old_content = file.read()
             file.seek(0)
-            patch_lines = options.configs.get('patch_content').get('patch_lines_1')
+            patch_lines = options.configs.get(
+                'patch_content').get('patch_lines_1')
             file.write(patch_lines.get('head'))
             file.write(old_content)
             file.write(patch_lines.get('tail'))
@@ -228,7 +241,8 @@ class IncrementalTest:
         passed = validate(inc_task, task, is_debug, stdout, stderr)
         if passed:
             modified_files = [os.path.join(*modify_file_item)]
-            IncrementalTest.validate_compile_incremental_file(task, inc_task, is_debug, modified_files)
+            IncrementalTest.validate_compile_incremental_file(
+                task, inc_task, is_debug, modified_files)
 
         shutil.move(modify_file_backup, modify_file)
         os.remove(new_file)
@@ -246,7 +260,8 @@ class IncrementalTest:
         if passed:
             modify_file_item = task.inc_modify_file
             modified_files = [os.path.join(*modify_file_item)]
-            IncrementalTest.validate_compile_incremental_file(task, inc_task, is_debug, modified_files)
+            IncrementalTest.validate_compile_incremental_file(
+                task, inc_task, is_debug, modified_files)
 
     @staticmethod
     def compile_incremental_reverse_hap_mode(task, is_debug):
@@ -295,7 +310,8 @@ class IncrementalTest:
 
         try:
             [stdout, stderr] = compile_project(task, is_debug)
-            IncrementalTest.validate_module_name_change(task, inc_task, is_debug, stdout, stderr, new_module_name)
+            IncrementalTest.validate_module_name_change(
+                task, inc_task, is_debug, stdout, stderr, new_module_name)
         except Exception as e:
             logging.exception(e)
         finally:
@@ -348,7 +364,7 @@ class OtherTest:
 
             if len(task.backup_info.output_release) == 2:
                 release_consistency = OtherTest.is_abc_same_in_haps(task.backup_info.output_release[0],
-                                                          task.backup_info.output_release[1])
+                                                                    task.backup_info.output_release[1])
             else:
                 release_consistency = False
             logging.debug(f"release consistency: {release_consistency}")
@@ -360,7 +376,7 @@ class OtherTest:
 
             if len(task.backup_info.output_debug) == 2:
                 debug_consistency = OtherTest.is_abc_same_in_haps(task.backup_info.output_debug[0],
-                                                        task.backup_info.output_debug[1])
+                                                                  task.backup_info.output_debug[1])
             else:
                 debug_consistency = False
             logging.debug(f"debug consistency: {debug_consistency}")
@@ -391,10 +407,13 @@ class OtherTest:
                 process.send_signal(signal.SIGTERM)
                 break
 
-        [stdout, stderr] = process.communicate(timeout=options.arguments.compile_timeout)
+        [stdout, stderr] = process.communicate(
+            timeout=options.arguments.compile_timeout)
 
-        logging.debug("first compile: stdcout: %s", stdout.decode('utf-8', errors="ignore"))
-        logging.warning("first compile: stdcerr: %s", stderr.decode('utf-8', errors="ignore"))
+        logging.debug("first compile: stdcout: %s",
+                      stdout.decode('utf-8', errors="ignore"))
+        logging.warning("first compile: stdcerr: %s",
+                        stderr.decode('utf-8', errors="ignore"))
 
         logging.debug("another compile")
         [stdout, stderr] = compile_project(task, is_debug)
@@ -420,7 +439,8 @@ class OtherTest:
         modify_file_backup = modify_file + ".bak"
         shutil.copyfile(modify_file, modify_file_backup)
 
-        patch_lines_error = options.configs.get('patch_content').get('patch_lines_error')
+        patch_lines_error = options.configs.get(
+            'patch_content').get('patch_lines_error')
         with open(modify_file, 'a', encoding='utf-8') as file:
             file.write(patch_lines_error.get('tail'))
 
@@ -434,7 +454,7 @@ class OtherTest:
                 break
 
         if passed:
-                test_info.result = options.TaskResult.passed
+            test_info.result = options.TaskResult.passed
         else:
             test_info.result = options.TaskResult.failed
             test_info.error_message = f"expected error message: {expected_errors}, but got {stderr}"
@@ -450,7 +470,8 @@ class OtherTest:
         logging.info(f"==========> Running {test_name} for task: {task.name}")
         # get build-profile.json5
         entry_item = task.build_path[:-2]  # to entry path
-        profile_file = os.path.join(task.path, *entry_item, 'build-profile.json5')
+        profile_file = os.path.join(
+            task.path, *entry_item, 'build-profile.json5')
         profile_file_backup = profile_file + ".bak"
         shutil.copyfile(profile_file, profile_file_backup)
 
@@ -466,13 +487,24 @@ class OtherTest:
             json5.dump(profile_data, file)
 
         [stdout, stderr] = compile_project(task, is_debug)
-        expected_error_message = 'The length of path exceeds the maximum length: 259'
+        # Only the Windows platform has a length limit
+        if utils.is_windows():
+            expected_error_message = 'The length of path exceeds the maximum length: 259'
 
-        if expected_error_message in stderr:
-            test_info.result = options.TaskResult.passed
+            if expected_error_message in stderr:
+                test_info.result = options.TaskResult.passed
+            else:
+                test_info.result = options.TaskResult.failed
+                test_info.error_message = f"expected error message: {expected_error_message}, but got {stderr}"
         else:
-            test_info.result = options.TaskResult.failed
-            test_info.error_message = f"expected error message: {expected_error_message}, but got {stderr}"
+            [is_success, time_string] = is_compile_success(stdout)
+            if not is_success:
+                test_info.result = options.TaskResult.failed
+                test_info.error_message = stderr
+            else:
+                passed = validate_compile_output(test_info, task, is_debug)
+                if passed:
+                    test_info.result = options.TaskResult.passed
 
         shutil.move(profile_file_backup, profile_file)
 
@@ -484,7 +516,8 @@ class OtherTest:
 
         logging.info(f"==========> Running {test_name} for task: {task.name}")
         # ohosTest has only debug mode
-        cmd = [get_hvigor_path(task.path), '--mode', 'module', '-p', 'module=entry@ohosTest', 'assembleHap']
+        cmd = [get_hvigor_path(task.path), '--mode', 'module',
+               '-p', 'module=entry@ohosTest', 'assembleHap']
         [stdout, stderr] = compile_project(task, True, cmd)
         [is_success, time_string] = is_compile_success(stdout)
         if not is_success:
@@ -496,8 +529,10 @@ class OtherTest:
             output_file_name = os.path.basename(output_file)
 
             ohos_test_str = 'ohosTest'
-            output_file_name_items = output_file_name.split('-')  # hap name format: entry-default-signed.hap
-            output_file_name_items[-2] = ohos_test_str  # ohosTest hap format: entry-ohosTest-signed.hap
+            output_file_name_items = output_file_name.split(
+                '-')  # hap name format: entry-default-signed.hap
+            # ohosTest hap format: entry-ohosTest-signed.hap
+            output_file_name_items[-2] = ohos_test_str
             output_file_name = '-'.join(output_file_name_items)
 
             output_dir_items = output_dir.split(os.path.sep)
@@ -505,9 +540,13 @@ class OtherTest:
             if utils.is_windows():
                 # for windows, need to add an empty string to mark between disk identifier and path
                 output_dir_items.insert(1, os.path.sep)
-            ohos_test_output_file = os.path.join(*output_dir_items, output_file_name)
+            elif utils.is_mac():
+                output_dir_items.insert(0, os.path.sep)
+            ohos_test_output_file = os.path.join(
+                *output_dir_items, output_file_name)
 
-            passed = validate_compile_output(test_info, task, True, ohos_test_output_file)
+            passed = validate_compile_output(
+                test_info, task, True, ohos_test_output_file)
             if passed:
                 test_info.result = options.TaskResult.passed
 
@@ -519,7 +558,7 @@ def disasm_abc(abc_file):
         ark_disasm = 'ark_disasm.exe'
     else:
         ark_disasm = 'ark_disasm'
-    ## try to find ark_disasm in api 10, api 9 sequentially
+    # try to find ark_disasm in api 10, api 9 sequentially
     ark_disasm_10_path = os.path.join(sdk_path, '10', 'toolchains', ark_disasm)
     ark_disasm_9_path = os.path.join(sdk_path, '9', 'toolchains', ark_disasm)
     if os.path.exists(ark_disasm_10_path):
@@ -533,11 +572,15 @@ def disasm_abc(abc_file):
     pa_file = abc_file + '.pa'
     cmd = [ark_disasm_path, '--verbose', abc_file, pa_file]
     logging.debug(f'cmd: {cmd}')
-    process = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    [stdout, stderr] = process.communicate(timeout=options.arguments.compile_timeout)
+    process = subprocess.Popen(
+        cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    [stdout, stderr] = process.communicate(
+        timeout=options.arguments.compile_timeout)
 
-    logging.debug("disasm stdcout: %s", stdout.decode('utf-8', errors="ignore"))
-    logging.warning("disasm: stdcerr: %s", stderr.decode('utf-8', errors="ignore"))
+    logging.debug("disasm stdcout: %s",
+                  stdout.decode('utf-8', errors="ignore"))
+    logging.warning("disasm: stdcerr: %s",
+                    stderr.decode('utf-8', errors="ignore"))
 
     return pa_file
 
@@ -573,7 +616,8 @@ def validate_output_for_jsbundle(info, task, uncompressed_output_path, is_debug)
 
     total_size = 0
     for file in abc_files:
-        total_size += os.path.getsize(os.path.join(uncompressed_output_path, file))
+        total_size += os.path.getsize(
+            os.path.join(uncompressed_output_path, file))
         if 'compatible8' not in task.type and not is_abc_debug_info_correct(file, is_debug):
             # skip compatible8 outputs as disasm may failed
             info.result = options.TaskResult.failed
@@ -639,7 +683,8 @@ def validate_output_for_esmodule(info, task, uncompressed_output_path, is_debug)
     if is_debug:
         sourcemap_path = abc_generated_path
     else:
-        sourcemap_path = os.path.join(task.path, *(task.build_path), *(task.cache_path), 'release')
+        sourcemap_path = os.path.join(
+            task.path, *(task.build_path), *(task.cache_path), 'release')
     sourcemap_file = os.path.join(sourcemap_path, 'sourceMaps.map')
     if not os.path.exists(sourcemap_file):
         info.result = options.TaskResult.failed
@@ -670,9 +715,11 @@ def get_compile_output_file_path(task, is_debug):
     output_file = ''
 
     if is_debug:
-        output_file = os.path.join(task.path, *(task.build_path), *(task.output_hap_path))
+        output_file = os.path.join(
+            task.path, *(task.build_path), *(task.output_hap_path))
     else:
-        output_file = os.path.join(task.path, *(task.build_path), *(task.output_app_path))
+        output_file = os.path.join(
+            task.path, *(task.build_path), *(task.output_app_path))
 
     return output_file
 
@@ -685,7 +732,8 @@ def validate_compile_output(info, task, is_debug, output_file=''):
     uncompressed_output_file = output_file + '.uncompressed'
 
     if not os.path.exists(output_file):
-        logging.error("output file for task %s not exists: %s", task.name, output_file)
+        logging.error("output file for task %s not exists: %s",
+                      task.name, output_file)
         passed = False
 
         info.result = options.TaskResult.failed
@@ -696,7 +744,8 @@ def validate_compile_output(info, task, is_debug, output_file=''):
             zip_ref.extractall(uncompressed_output_file)
     except Exception as e:
         logging.error(f"unzip exception: {e}")
-        logging.error(f"uncompressed output file for task {task.name} failed. output file: {output_file}")
+        logging.error(
+            f"uncompressed output file for task {task.name} failed. output file: {output_file}")
         passed = False
 
         info.result = options.TaskResult.failed
@@ -704,9 +753,11 @@ def validate_compile_output(info, task, is_debug, output_file=''):
         return passed
 
     if utils.is_esmodule(task.type):
-        passed = validate_output_for_esmodule(info, task, uncompressed_output_file, is_debug)
+        passed = validate_output_for_esmodule(
+            info, task, uncompressed_output_file, is_debug)
     else:
-        passed = validate_output_for_jsbundle(info, task, uncompressed_output_file, is_debug)
+        passed = validate_output_for_jsbundle(
+            info, task, uncompressed_output_file, is_debug)
 
     shutil.rmtree(uncompressed_output_file)
 
@@ -714,7 +765,7 @@ def validate_compile_output(info, task, is_debug, output_file=''):
 
 
 def run_compile_output(info, task_path):
-    ## TODO:
+    # TODO:
     # 1)install hap
     # 2)run hap and verify
     return False
@@ -761,6 +812,7 @@ def get_hvigor_path(project_path):
         hvigor = os.path.join(project_path, 'hvigorw.bat')
     else:
         hvigor = os.path.join(project_path, 'hvigorw')
+        utils.add_executable_permission(hvigor)
     return hvigor
 
 
@@ -781,7 +833,8 @@ def compile_project(task, is_debug, cmd=''):
     logging.debug(f"cmd execution path {task.path}")
     process = subprocess.Popen(cmd, shell=False, cwd=task.path,
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate(timeout=options.arguments.compile_timeout)
+    stdout, stderr = process.communicate(
+        timeout=options.arguments.compile_timeout)
     stdout_utf8 = stdout.decode("utf-8", errors="ignore")
     stderr_utf8 = stderr.decode("utf-8", errors="ignore")
     logging.debug(f"cmd stdout: {stdout_utf8}")
@@ -800,18 +853,22 @@ def clean_compile(task):
 
 
 def compile_incremental(task, is_debug):
-    logging.info(f"==========> Running task: {task.name} in incremental compilation")
+    logging.info(
+        f"==========> Running task: {task.name} in incremental compilation")
     [stdout, stderr] = compile_project(task, is_debug)
 
     [is_success, time_string] = is_compile_success(stdout)
     if not is_success:
-        logging.error("Incremental compile failed due to first compile failed!")
+        logging.error(
+            "Incremental compile failed due to first compile failed!")
         return
 
     if options.arguments.compile_mode == 'incremental':
-        passed = validate(task.full_compilation_info, task, is_debug, stdout, stderr)
+        passed = validate(task.full_compilation_info,
+                          task, is_debug, stdout, stderr)
         if not passed:
-            logging.error("Incremental compile failed due to first compile failed!")
+            logging.error(
+                "Incremental compile failed due to first compile failed!")
             return
 
     backup_compile_output(task, is_debug)
@@ -848,7 +905,8 @@ def backup_compile_output(task, is_debug):
 
     output_file = get_compile_output_file_path(task, is_debug)
     shutil.copy(output_file, backup_output_path)
-    backup_output = os.path.join(backup_output_path, os.path.basename(output_file))
+    backup_output = os.path.join(
+        backup_output_path, os.path.basename(output_file))
     backup_time_output = backup_output + '-' + utils.get_time_string()
     shutil.move(backup_output, backup_time_output)
 
@@ -866,7 +924,8 @@ def backup_compile_cache(task, is_debug):
     backup_cache_path = os.path.join(backup_path, 'cache')
     if not os.path.exists(backup_cache_path):
         os.mkdir(backup_cache_path)
-    cache_files = os.path.join(task.path, *(task.build_path), *(task.cache_path))
+    cache_files = os.path.join(
+        task.path, *(task.build_path), *(task.cache_path))
 
     if is_debug:
         if task.backup_info.cache_debug != '':
@@ -892,13 +951,15 @@ def execute_full_compile(task):
     passed = False
     if options.arguments.hap_mode in ['all', 'release']:
         [stdout, stderr] = compile_project(task, False)
-        passed = validate(task.full_compilation_info, task, False, stdout, stderr)
+        passed = validate(task.full_compilation_info,
+                          task, False, stdout, stderr)
         if passed:
             backup_compile_output(task, False)
         clean_compile(task)
     if options.arguments.hap_mode in ['all', 'debug']:
         [stdout, stderr] = compile_project(task, True)
-        passed = validate(task.full_compilation_info, task, True, stdout, stderr)
+        passed = validate(task.full_compilation_info,
+                          task, True, stdout, stderr)
         if passed:
             backup_compile_output(task, True)
         clean_compile(task)
@@ -907,12 +968,14 @@ def execute_full_compile(task):
 
 
 def execute_incremental_compile(task):
-    logging.info(f"==========> Running task: {task.name} in incremental compilation")
+    logging.info(
+        f"==========> Running task: {task.name} in incremental compilation")
     if options.arguments.hap_mode in ['all', 'release']:
         compile_incremental(task, False)
+        clean_compile(task)
     if options.arguments.hap_mode in ['all', 'debug']:
         compile_incremental(task, True)
-    clean_compile(task)
+        clean_compile(task)
 
 
 def clean_backup(task):

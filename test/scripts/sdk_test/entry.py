@@ -20,21 +20,19 @@ Description: entry to run sdk test daily
 
 import os
 import subprocess
-import time
 
 import utils
 
 
 def run():
-    test_start_time = time.strftime('%Y%m%d-%H%M%S')
     sdk_url = utils.get_sdk_url()
 
-    cmd = ['python3', 'run.py']
+    cmd = ['python', 'run.py']
     cmd.extend(['--sdkPath', sdk_url])
     cmd.extend(['--hapMode', 'all'])
     cmd.extend(['--compileMode', 'all'])
     cmd.extend(['--logLevel', 'debug'])
-    cmd.extend(['--logFile', 'log' + '_' + test_start_time + '.txt'])
+    cmd.extend(['--logFile', 'log' + '_' + utils.get_time_string() + '.txt'])
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     print(current_dir)

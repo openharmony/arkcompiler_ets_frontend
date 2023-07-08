@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 0123 Huawei Device Co., Ltd.
+# Copyright (c) 2023 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -29,13 +29,17 @@ def job(cmd):
 if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
     # do preparations
-    schedule.every().day.at("01:00").do(job, cmd=r'./auto_xts_test/run.bat').tag('daily_xts_task')
+    schedule.every().day.at("01:00").do(job, cmd=os.path.join(
+        ".", "auto_xts_test", "run.bat")).tag('daily_xts_task')
     # do sdk_test
-    schedule.every().day.at("01:00").do(job, cmd=r'python ./sdk_test/entry.py').tag('daily_sdk_task')
+    schedule.every().day.at("01:00").do(
+        job, cmd=f'python {os.path.join(".", "sdk_test", "entry.py")}').tag('daily_sdk_task')
     # do perf_test
-    schedule.every().day.at("01:00").do(job, cmd=r'python ./performance_test/performance_entry.py')
+    schedule.every().day.at("01:00").do(
+        job, cmd=f'python {os.path.join(".", "performance_test", "performance_entry.py")}')
     # send mail
-    schedule.every().day.at("01:00").do(job, cmd=r'python ./send_email.py').tag("send_email")
+    schedule.every().day.at("01:00").do(
+        job, cmd=f'python {os.path.join(".", "send_email.py")}').tag("send_email")
     schedule.run_all()
     while True:
         schedule.run_pending()
