@@ -11,17 +11,23 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-sender_email_address :
-auth_code :
-receiver_list :
-smtp_server :
-smtp_port :
+user_name : ""
+sender_email_address : ""
+auth_code : ""
+receiver_list : 
+    - ""
+smtp_server: ""
+smtp_port: "25"
 
-xts_report_file : ".\\auto_xts_test\\result\\summary_report.html"
-sdk_report_file : ".\\sdk_test\\sdk_test_report.html"
-perf_report_file : ""
+xts_report_file : "./auto_xts_test/result/summary_report.html"
+sdk_report_file : "./sdk_test/sdk_test_report.html"
+perf_report_file : "./performance_test/mail_data/email_msg.html"
 attatchment_files :
-    - ".\\auto_xts_test\\result\\details_report.html"
-    - ".\\auto_xts_test\\result\\failures_report.html"
-    - ".\\sdk_test\\sdk_test_report.html"
-    - ".\\sdk_test\\sdk_test_log.txt"
+    - "./auto_xts_test/result/details_report.html"
+    - "./auto_xts_test/result/failures_report.html"
+    - "./performance_test/mail_data/performance_logs.zip"
+image_files:
+    "./performance_test/mail_data/debug_full_time.jpg": performance00
+    "./performance_test/mail_data/debug_incremental_time.jpg": performance01
+    "./performance_test/mail_data/release_full_time.jpg": performance10
+    "./performance_test/mail_data/release_incremental_time.jpg": performance11

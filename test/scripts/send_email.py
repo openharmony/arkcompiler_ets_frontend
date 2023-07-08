@@ -17,9 +17,10 @@
 
 import os
 import smtplib
-import socket
-from email.message import EmailMessage
 
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import yaml
 
 
@@ -38,13 +39,25 @@ def add_content(content, file_name, test_part):
 def add_attachment(msg, file_list):
     for file in file_list:
         if os.path.exists(file):
-            with open(file, 'r', encoding='utf-8') as f:
-                msg.add_attachment(f.read(), 'html', filename=os.path.basename(file))
+            with open(file, 'rb') as f:
+                attachment = MIMEText(f.read(), 'base64', 'utf-8')
+                attachment['Content-Disposition'] = f'attachment; filename="{os.path.basename(file)}"'
+                msg.attach(attachment)
+
+
+def add_image(msg, img_dic):
+    for path in img_dic:
+        if os.path.exists(path):
+            with open(path, 'rb') as f:
+                img = MIMEImage(f.read())
+                img.add_header('Content-ID', img_dic[path])
+                msg.attach(img)
 
 
 def send_email():
     yl = open(r".\email_config.yaml", 'r')
     data = yaml.safe_load(yl.read())
+    user_name = data["user_name"]
     sender = data["sender_email_address"]
     auth_code = data["auth_code"]
     receiver = data["receiver_list"]
@@ -54,9 +67,10 @@ def send_email():
     sdk_test = data["sdk_report_file"]
     perf_test = data["perf_report_file"]
     attachment_files = data["attatchment_files"]
+    image_files = data["image_files"]
     yl.close()
 
-    msg = EmailMessage()
+    msg = MIMEMultipart()
     msg['From'] = sender
     msg['To'] = ", ".join(receiver)
     msg['Subject'] = "Arkcompiler Test"
@@ -68,12 +82,11 @@ def send_email():
     html = add_content(html, sdk_test, "sdk_test")
     html += dividing_line
     html = add_content(html, perf_test, "perf_test")
-    msg.add_related(html, "html")
-
+    msg.attach(MIMEText(html, 'html', 'utf-8'))
     add_attachment(msg, attachment_files)
-
+    add_image(msg, image_files)
     smtp = smtplib.SMTP(smtp_server, smtp_port)
-    smtp.login(sender, auth_code)
+    smtp.login(user_name, auth_code)
     smtp.sendmail(sender, receiver, msg.as_string())
     smtp.quit()
 
