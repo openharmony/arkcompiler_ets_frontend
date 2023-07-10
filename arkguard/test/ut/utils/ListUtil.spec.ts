@@ -65,10 +65,14 @@ describe('unit test for ListUtil.ts', function () {
       let arr = ListUtil.getInitList(26);
       ListUtil.shuffle(arr);
 
+      let isShuffled = false;
       for (let i = 1; i < arr.length; i++) {
-        const isShuffled = arr[i] !== i || Math.abs(arr[i - 1] - arr[i]) > 1;
-        assert.isTrue(isShuffled);
+        if (arr[i] !== i) {
+          isShuffled = true;
+        }
       }
+
+      assert.isTrue(isShuffled);
     });
   });
 

@@ -96,18 +96,19 @@ export function needReadApiInfo(customProfiles: IOptions): boolean {
  * @param projectPaths can be dir or file
  * @param customProfiles
  */
-export function readProjectProperties(projectPaths: string[], customProfiles: IOptions): void {
-  if (!needReadApiInfo(customProfiles)) {
-    return;
+export function readProjectProperties(projectPaths: string[], customProfiles: IOptions, isOHProject?: boolean): string[] {
+  if (!needReadApiInfo(customProfiles) && !isOHProject) {
+    return [];
   }
 
   for (const projectPath of projectPaths) {
     if (!fs.existsSync(projectPath)) {
       console.error(`File ${FileUtils.getFileName(projectPath)} is not found.`);
-      return;
+      return [];
     }
 
-    const projProperties: string[] = ApiExtractor.parseCommonProject(projectPath);
+    const sourcPath = isOHProject? path.join(projectPath, "src", "main") : projectPath;
+    const projProperties: string[] = ApiExtractor.parseCommonProject(sourcPath);
     const sdkProperties: string[] = readThirdPartyLibProperties(projectPath);
 
     // read project code export names
@@ -120,6 +121,7 @@ export function readProjectProperties(projectPaths: string[], customProfiles: IO
         customProfiles.mNameObfuscation.mReservedProperties);
     }
   }
+  return customProfiles.mNameObfuscation.mReservedProperties;
 }
 
 function readThirdPartyLibProperties(projectPath: string): string[] {
@@ -143,8 +145,7 @@ function readThirdPartyLibProperties(projectPath: string): string[] {
   let filePath: string = '';
   if (hasNodeModules) {
     filePath = path.join(projectPath, 'node_modules');
-  }
-  else {
+  } else {
     filePath = path.join(projectPath, 'oh_modules');
   }
 

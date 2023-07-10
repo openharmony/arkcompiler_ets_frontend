@@ -15,12 +15,8 @@
 
 import {
   createPrinter,
-  createProgram,
   createSourceFile, createTextWriter,
-  forEachChild,
-  isIdentifier,
-  isTypePredicateNode,
-  ScriptTarget, 
+  ScriptTarget,
   transform,
   createObfTextSingleLineWriter,
 } from 'typescript';
@@ -28,20 +24,13 @@ import {
 import type {
   CompilerOptions,
   EmitTextWriter,
-  JSDocReturnTag,
-  JSDocSignature,
   Node,
   Printer,
   PrinterOptions,
-  Program,
-  Signature,
-  SignatureDeclaration,
   SourceFile,
   SourceMapGenerator,
   TransformationResult,
   TransformerFactory,
-  TypeChecker,
-  TypeNode
 } from 'typescript';
 
 import * as fs from 'fs';
@@ -60,14 +49,15 @@ import {
   readCache, writeCache
 } from './utils/NameCacheUtil';
 import {ListUtil} from './utils/ListUtil';
-import {needReadApiInfo, getReservedProperties, readProjectProperties} from './common/ApiReader';
+import {needReadApiInfo, readProjectProperties} from './common/ApiReader';
 import {ApiExtractor} from './common/ApiExtractor';
 import es6Info from './configs/preset/es6_reserved_properties.json';
 
 export const renameIdentifierModule = require('./transformers/rename/RenameIdentifierTransformer');
 export const renamePropertyModule = require('./transformers/rename/RenamePropertiesTransformer');
 
-export { getMapFromJson, readProjectProperties };
+export {getMapFromJson, readProjectProperties};
+
 export class ArkObfuscator {
   // A text writer of Printer
   private mTextWriter: EmitTextWriter;
@@ -85,8 +75,6 @@ export class ArkObfuscator {
   private mCustomProfiles: IOptions;
 
   private mTransformers: TransformerFactory<Node>[];
-
-  private mNeedCollectNarrowFunction: boolean;
 
   public constructor(sourceFiles?: string[], configPath?: string) {
     this.mSourceFiles = sourceFiles;
@@ -110,8 +98,6 @@ export class ArkObfuscator {
 
     this.mCustomProfiles = config as IOptions;
 
-
-
     if (this.mCustomProfiles.mCompact) {
       this.mTextWriter = createObfTextSingleLineWriter();
     } else {
@@ -122,12 +108,8 @@ export class ArkObfuscator {
       this.mCompilerOptions.sourceMap = true;
     }
 
-
     // load transformers
     this.mTransformers = TransformerManager.getInstance().loadTransformers(this.mCustomProfiles);
-
-    // check need collect narrow function names
-    this.mNeedCollectNarrowFunction = this.checkNeedCollectNarrowFunction();
 
     if (needReadApiInfo(this.mCustomProfiles)) {
       this.mCustomProfiles.mNameObfuscation.mReservedProperties = ListUtil.uniqueMergeList(
@@ -135,7 +117,7 @@ export class ArkObfuscator {
         this.mCustomProfiles.mNameObfuscation.mReservedNames,
         es6Info);
     }
-  
+
     return true;
   }
 
@@ -146,13 +128,13 @@ export class ArkObfuscator {
     if (!path.isAbsolute(this.mCustomProfiles.mOutputDir)) {
       this.mCustomProfiles.mOutputDir = path.join(path.dirname(this.mConfigPath), this.mCustomProfiles.mOutputDir);
     }
+
     if (this.mCustomProfiles.mOutputDir && !fs.existsSync(this.mCustomProfiles.mOutputDir)) {
       fs.mkdirSync(this.mCustomProfiles.mOutputDir);
     }
-
     readProjectProperties(this.mSourceFiles, this.mCustomProfiles);
-
     this.readPropertyCache(this.mCustomProfiles.mOutputDir);
+
     // support directory and file obfuscate
     for (const sourcePath of this.mSourceFiles) {
       if (!fs.existsSync(sourcePath)) {
@@ -168,6 +150,7 @@ export class ArkObfuscator {
       const dirPrefix: string = FileUtils.getPrefix(sourcePath);
       await this.obfuscateDir(sourcePath, dirPrefix);
     }
+
     this.producePropertyCache(this.mCustomProfiles.mOutputDir);
   }
 
@@ -198,45 +181,6 @@ export class ArkObfuscator {
     }
   }
 
-  private checkNeedCollectNarrowFunction(): boolean {
-    return this.mCustomProfiles.mControlFlowFlattening &&
-      this.mCustomProfiles.mControlFlowFlattening.mEnable &&
-      this.mCustomProfiles.mInstructionObfuscation &&
-      this.mCustomProfiles.mInstructionObfuscation.mEnable;
-  }
-
-  private collectNarrowFunctions(file: string): void {
-    if (!this.mNeedCollectNarrowFunction) {
-      return;
-    }
-
-    let results: Set<string> = new Set<string>();
-
-    let program: Program = createProgram([file], this.mCompilerOptions);
-    let checker: TypeChecker = program.getTypeChecker();
-    let visit = (node: Node): void => {
-      if (!node) {
-        return;
-      }
-
-      if (isIdentifier(node)) {
-        let type: Signature = checker.getTypeAtLocation(node).getCallSignatures()[0];
-        let declaration: SignatureDeclaration | JSDocSignature = type?.declaration;
-        let retType: TypeNode | JSDocReturnTag = declaration?.type;
-        if (retType && isTypePredicateNode(retType)) {
-          results.add(node.text);
-        }
-      }
-
-      forEachChild(node, visit);
-    };
-
-    let ast: SourceFile = program.getSourceFile(file);
-    visit(ast);
-
-    this.mCustomProfiles.mNarrowFunctionNames = [...results];
-  }
-
   private readNameCache(sourceFile: string, outputDir: string): void {
     if (!this.mCustomProfiles.mNameObfuscation.mEnable || !this.mCustomProfiles.mEnableNameCache) {
       return;
@@ -249,15 +193,17 @@ export class ArkObfuscator {
   }
 
   private readPropertyCache(outputDir: string): void {
+    if (!this.mCustomProfiles.mNameObfuscation.mRenameProperties || !this.mCustomProfiles.mEnableNameCache) {
+      return;
+    }
+
     const propertyCachePath: string = path.join(outputDir, PROPERTY_CACHE_FILE);
     const propertyCache: Object = readCache(propertyCachePath);
     if (!propertyCache) {
       return;
     }
 
-    if (this.mCustomProfiles.mNameObfuscation.mRenameProperties) {
-      renamePropertyModule.historyMangledTable = getMapFromJson(propertyCache);
-    }
+    renamePropertyModule.historyMangledTable = getMapFromJson(propertyCache);
   }
 
   private produceNameCache(namecache: any, sourceFile: string, outputDir: string): void {
@@ -266,19 +212,21 @@ export class ArkObfuscator {
   }
 
   private producePropertyCache(outputDir: string): void {
-    if (this.mCustomProfiles.mNameObfuscation.mRenameProperties) {
+    if (this.mCustomProfiles.mNameObfuscation.mRenameProperties && this.mCustomProfiles.mEnableNameCache) {
       const propertyCachePath: string = path.join(outputDir, PROPERTY_CACHE_FILE);
       writeCache(renamePropertyModule.globalMangledTable, propertyCachePath);
     }
   }
 
-  async mergeSourcrMap(originMap: sourceMap.RawSourceMap, newMap: sourceMap.RawSourceMap): Promise<any> {
+  async mergeSourceMap(originMap: sourceMap.RawSourceMap, newMap: sourceMap.RawSourceMap): Promise<any> {
     if (!originMap) {
       return newMap;
     }
+
     if (!newMap) {
       return originMap;
     }
+
     const originConsumer: sourceMap.SourceMapConsumer = await new sourceMap.SourceMapConsumer(originMap);
     const newConsumer: sourceMap.SourceMapConsumer = await new sourceMap.SourceMapConsumer(newMap);
     const newMappingList: sourceMap.MappingItem[] = [];
@@ -286,14 +234,21 @@ export class ArkObfuscator {
       if (mapping.originalLine == null) {
         return;
       }
-      const originalPos = originConsumer.originalPositionFor({line: mapping.originalLine, column: mapping.originalColumn});
+
+      const originalPos = originConsumer.originalPositionFor({
+        line: mapping.originalLine,
+        column: mapping.originalColumn
+      });
+
       if (originalPos.source == null) {
         return;
       }
+
       mapping.originalLine = originalPos.line;
       mapping.originalColumn = originalPos.column;
       newMappingList.push(mapping);
     });
+
     const updatedGenerator: sourceMap.SourceMapGenerator = sourceMap.SourceMapGenerator.fromSourceMap(newConsumer);
     updatedGenerator['_file'] = originMap.file;
     updatedGenerator['_mappings']['_array'] = newMappingList;
@@ -309,32 +264,34 @@ export class ArkObfuscator {
     if (this.mCustomProfiles.mRemoveComments) {
       printerOptions.removeComments = true;
     }
+
     return createPrinter(printerOptions);
   }
 
+  private isObfsIgnoreFile(fileName: string): boolean {
+    let suffix: string = FileUtils.getFileExtension(fileName);
+
+    return (suffix !== 'js' && suffix !== 'ts') || fileName.endsWith('.d.ts');
+  }
+
   /**
-   * Obfuscate single source file
+   * Obfuscate single source file with path provided
    *
-   * @param sourceFile single source file path
+   * @param sourceFilePath single source file path
    * @param outputDir
    */
   public async obfuscateFile(sourceFilePath: string, outputDir: string): Promise<any> {
     const fileName: string = FileUtils.getFileName(sourceFilePath);
-    let suffix: string = FileUtils.getFileExtension(sourceFilePath);
-
-    if ((suffix !== 'js' && suffix !== 'ts') || fileName.endsWith('.d.ts')) {
+    if (this.isObfsIgnoreFile(fileName)) {
       fs.copyFileSync(sourceFilePath, path.join(outputDir, fileName));
       return;
     }
 
-    // Advanced confusion requires calling this function
-    this.collectNarrowFunctions(sourceFilePath);
-
     let content: string = FileUtils.readFile(sourceFilePath);
     this.readNameCache(sourceFilePath, outputDir);
-    const mixedInfo: {content: string, sourceMap, nameCache: Map<string, string>} = await this.obfuscate(content, sourceFilePath);
+    const mixedInfo: {content, sourceMap, nameCache} = await this.obfuscate(content, sourceFilePath);
 
-    if (outputDir) {
+    if (outputDir && mixedInfo) {
       fs.writeFileSync(path.join(outputDir, FileUtils.getFileName(sourceFilePath)), mixedInfo.content);
       if (this.mCustomProfiles.mEnableSourceMap && mixedInfo.sourceMap) {
         fs.writeFileSync(path.join(outputDir, FileUtils.getFileName(sourceFilePath) + '.map'), JSON.stringify(mixedInfo.sourceMap, null, 2));
@@ -343,25 +300,31 @@ export class ArkObfuscator {
         this.produceNameCache(mixedInfo.nameCache, sourceFilePath, outputDir);
       }
     }
-
   }
 
   /**
    * Obfuscate ast of a file.
-   * @param ast ast of a source file
+   * @param content ast or source code of a source file
+   * @param sourceFilePath
+   * @param previousStageSourceMap
+   * @param historyNameCache
    */
   public async obfuscate(content: SourceFile | string, sourceFilePath: string, previousStageSourceMap?: any, 
     historyNameCache?: Map<string, string>): Promise<any> {
     let ast: SourceFile;
+    if (this.isObfsIgnoreFile(sourceFilePath)) {
+      // need add return value
+      return;
+    }
+
     if (typeof content === 'string') {
       ast = createSourceFile(sourceFilePath, content, ScriptTarget.ES2015, true);
-    }
-    else {
+    } else {
       ast = content;
     }
 
     if (ast.statements.length === 0) {
-      return ast;
+      return;
     }
 
     if (historyNameCache && this.mCustomProfiles.mNameObfuscation) {
@@ -379,23 +342,27 @@ export class ArkObfuscator {
 
     this.createObfsPrinter().writeFile(ast, this.mTextWriter, sourceMapGenerator);
 
-    const result = { content: this.mTextWriter.getText() };
+    const result = {content: this.mTextWriter.getText()};
 
-    if (this.mCustomProfiles.mEnableSourceMap) {
+    if (this.mCustomProfiles.mEnableSourceMap && sourceMapGenerator) {
       let sourceMapJson = sourceMapGenerator.toJSON();
       sourceMapJson['sourceRoot'] = '';
       sourceMapJson.file = path.basename(sourceFilePath);
       if (previousStageSourceMap) {
-        sourceMapJson = await this.mergeSourcrMap(previousStageSourceMap, sourceMapJson as sourceMap.RawSourceMap);
+        sourceMapJson = await this.mergeSourceMap(previousStageSourceMap, sourceMapJson as sourceMap.RawSourceMap);
       }
       result['sourceMap'] = sourceMapJson;
     }
+
     if (this.mCustomProfiles.mEnableNameCache) {
       result['nameCache'] = Object.fromEntries(renameIdentifierModule.nameCache);
     }
+
     // clear cache of text writer
     this.mTextWriter.clear();
-    renameIdentifierModule.nameCache.clear();
+    if (renameIdentifierModule.nameCache) {
+      renameIdentifierModule.nameCache.clear();
+    }
     return result;
   }
 }

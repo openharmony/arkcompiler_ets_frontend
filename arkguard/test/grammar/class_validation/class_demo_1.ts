@@ -15,41 +15,35 @@
 
 import assert = require('assert');
 
-interface Square {
-  kind: 'square';
-  size: number;
-}
+export class Cat {
+  private mAge: number;
 
-interface Rectangle {
-  kind: 'rectangle';
-  width: number;
-  height: number;
-}
-
-interface Circle {
-  kind: 'circle';
-  radius: number;
-}
-
-type Shape = Square | Rectangle | Circle;
-
-function area(s: Shape): number {
-  let result: number;
-  switch (s.kind) {
-    case 'square':
-      result = s.size * s.size;
-      break;
-    case 'rectangle':
-      result = s.height * s.width;
-      break;
-    case 'circle':
-      result = Math.PI * s.radius * s.radius;
-      break;
+  constructor() {
+    this.mAge = -1;
   }
-  return result;
+
+  getAge() {
+    return this.mAge;
+  }
+
+  setAge(age) {
+    this.mAge = age;
+  }
+
+  get age(): number {
+    return this.mAge;
+  }
+
+  set age(_age) {
+    this.mAge = _age;
+  }
 }
 
-let a = {kind: 'square', size: 3};
+const cat = new Cat();
+assert.strictEqual(cat.getAge(), -1);
 
-const targetArea: number = 9;
-assert(area(<Square>a) === targetArea, 'success');
+cat.age = 12;
+assert.strictEqual(cat.age, 12);
+
+cat.setAge(13);
+assert.strictEqual(cat.age, 13);

@@ -303,7 +303,7 @@ namespace secharmony {
     /**
      * get reserved names like ViewPU component class name
      */
-    getReservedNames(): Set<string>
+    getReservedNames(): Set<string>;
     /**
      * do scope analysis
      *

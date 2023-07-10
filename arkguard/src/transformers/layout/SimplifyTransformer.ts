@@ -47,7 +47,7 @@ import type {TransformPlugin} from '../TransformPlugin';
 import {isCommentedNode, isSuperCallStatement} from '../../utils/TransformUtil';
 
 namespace secharmony {
-  const TRANSFORMER_ORDER: number = 10;
+  const TRANSFORMER_ORDER: number = 5;
   export let transformerPlugin: TransformPlugin = {
     'name': 'simplifyPlugin',
     'order': (1 << TRANSFORMER_ORDER),
