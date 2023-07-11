@@ -41,7 +41,7 @@ other_tests = ["binary_consistency",
                "compile_with_error",
                "compile_with_exceed_length",
                "ohos_test"
-              ]
+               ]
 
 
 class TestResult:
@@ -55,7 +55,8 @@ def print_result(test_result, test_tasks):
     logging.info("========================================")
     logging.info("Test finished. The result is as following:")
     logging.info("=====> Summary")
-    logging.info("Total test number: %s, took time: %.3f s", len(test_tasks), test_result.time)
+    logging.info("Total test number: %s, took time: %.3f s",
+                 len(test_tasks), test_result.time)
     logging.info("Passed test number: %s", len(test_result.passed))
     logging.info("Failed test number: %s", len(test_result.failed))
 
@@ -90,10 +91,10 @@ def print_result(test_result, test_tasks):
                          inc_task.debug_info.time,
                          inc_task.debug_info.error_message)
             logging.info("release: %s, abc_size(byte) %s, time(s) %s, error message: %s",
-                          inc_task.release_info.result,
-                          inc_task.release_info.abc_size,
-                          inc_task.release_info.time,
-                          inc_task.release_info.error_message)
+                         inc_task.release_info.result,
+                         inc_task.release_info.abc_size,
+                         inc_task.release_info.time,
+                         inc_task.release_info.error_message)
 
         # print other tests result
         for name, task_info in task.other_tests.items():
@@ -141,7 +142,7 @@ def is_incremental_compilation_passed(task_info):
 
 def is_task_passed(task):
     passed = is_full_compilation_passed(task.full_compilation_info) and \
-             is_incremental_compilation_passed(task.incre_compilation_info)
+        is_incremental_compilation_passed(task.incre_compilation_info)
 
     for test in task.other_tests.values():
         passed = passed and (test.result == options.TaskResult.passed)
@@ -170,7 +171,7 @@ def get_result_symbol(result_type):
 
 
 def generate_summary_data(test_result, test_tasks):
-    ## collect summary data
+    # collect summary data
     passed_task_name_list = []
     for task in test_result.passed:
         passed_task_name_list.append(task.name)
@@ -206,10 +207,14 @@ def generate_detail_data(test_tasks):
 
         full_compilation_debug = task.full_compilation_info.debug_info
         full_compilation_release = task.full_compilation_info.release_info
-        task_time_size_data['[Full Compilation]\n[Debug]\n[Compilation Time(s)]'] = full_compilation_debug.time
-        task_time_size_data['[Full Compilation]\n[Release]\n[Compilation Time(s)]'] = full_compilation_release.time
-        task_result_data['[Debug]'] = get_result_symbol(full_compilation_debug.result)
-        task_result_data['[Release]'] = get_result_symbol(full_compilation_release.result)
+        task_time_size_data[
+            '[Full Compilation]\n[Debug]\n[Compilation Time(s)]'] = full_compilation_debug.time
+        task_time_size_data[
+            '[Full Compilation]\n[Release]\n[Compilation Time(s)]'] = full_compilation_release.time
+        task_result_data['[Debug]'] = get_result_symbol(
+            full_compilation_debug.result)
+        task_result_data['[Release]'] = get_result_symbol(
+            full_compilation_release.result)
 
         for test in incremetal_compile_tests:
             debug_result = options.TaskResult.undefind
@@ -218,8 +223,10 @@ def generate_detail_data(test_tasks):
                 inc_task_info = task.incre_compilation_info[test]
                 debug_result = inc_task_info.debug_info.result
                 release_result = inc_task_info.release_info.result
-            task_result_data[f'[Debug]\n{test}'] = get_result_symbol(debug_result)
-            task_result_data[f'[Release]\n{test}'] = get_result_symbol(release_result)
+            task_result_data[f'[Debug]\n{test}'] = get_result_symbol(
+                debug_result)
+            task_result_data[f'[Release]\n{test}'] = get_result_symbol(
+                release_result)
 
             if test == 'add_oneline':
                 debug_test_time = 0
@@ -229,8 +236,10 @@ def generate_detail_data(test_tasks):
                     debug_test_time = inc_task_info.debug_info.time
                     release_test_time = inc_task_info.release_info.time
 
-                task_time_size_data['[Incremental Compilation]\n[Debug]\n[Compilation Time(s)]'] = debug_test_time
-                task_time_size_data['[Incremental Compilation]\n[Release]\n[Compilation Time(s)]'] = release_test_time
+                task_time_size_data[
+                    '[Incremental Compilation]\n[Debug]\n[Compilation Time(s)]'] = debug_test_time
+                task_time_size_data[
+                    '[Incremental Compilation]\n[Release]\n[Compilation Time(s)]'] = release_test_time
 
         for test in other_tests:
             result = options.TaskResult.undefind
@@ -253,75 +262,86 @@ def generate_detail_data(test_tasks):
 
 def generate_data_html(summary_data, detail_data):
     # summary table
-    key_value_pairs = [f'<tr><td>{key}</td><td>{value}</td></tr>' for key, value in summary_data.items()]
+    key_value_pairs = [
+        f'<tr><td>{key}</td><td>{value}</td></tr>' for key, value in summary_data.items()]
     summary_table_content = ''.join(key_value_pairs)
-    summary_table = f'<table>{summary_table_content}</table>'
+    summary_table = f'<table id=sdk>{summary_table_content}</table>'
 
     # time and size table
     time_size_data = detail_data.get('time_size_data')
     time_size_df = pandas.DataFrame(time_size_data)
 
     time_size_table_header = '<tr>' + \
-        ''.join([f'<th rowspan="2">{column}</th>' for column in time_size_df.columns[:2]])
+        ''.join(
+            [f'<th rowspan="2">{column}</th>' for column in time_size_df.columns[:2]])
     time_size_table_header += '<th colspan="2">Full Compilation Time(s)</th>' + \
         f'<th colspan="2">Incremental Compilation Time(s)</th>' + \
         f'<th colspan="2">Abc Size(byte)</th></tr>'
-    time_size_table_sub_header = '<tr>' + f'<th>[Debug]</th><th>[Release]</th>' * 3 + '</tr>'
+    time_size_table_sub_header = '<tr>' + \
+        f'<th>[Debug]</th><th>[Release]</th>' * 3 + '</tr>'
 
     time_size_table_content = ''.join([
-        '<tr>' + ''.join([f'<td>{value}</td>' for _, value in row.items()]) + '</tr>'
+        '<tr>' + ''.join([f'<td>{value}</td>' for _,
+                         value in row.items()]) + '</tr>'
         for _, row in time_size_df.iterrows()
     ])
-    time_size_table = f'<table>{time_size_table_header}{time_size_table_sub_header}{time_size_table_content}</table>'
+    time_size_table = f'<table id=sdk> \
+        {time_size_table_header}{time_size_table_sub_header}{time_size_table_content}</table>'
 
     # result table
     result_data = detail_data.get('result_data')
     result_df = pandas.DataFrame(result_data)
 
-    result_table_header = '<tr>' + ''.join([f'<th rowspan="2">{column}</th>' for column in result_df.columns[:3]])
+    result_table_header = '<tr>' + \
+        ''.join(
+            [f'<th rowspan="2">{column}</th>' for column in result_df.columns[:3]])
     result_table_header += '<th colspan="2">Full Compilation</th>' + \
         f'<th colspan={len(incremetal_compile_tests) * 2}>Incremental Compilation</th>' + \
         f'<th colspan={len(other_tests)}>Other Tests</th></tr>'
 
     result_table_sub_header = '<tr>' + \
-        ''.join([f'<th>{column}</th>' for column in result_df.columns[3:]]) + '</tr>'
+        ''.join(
+            [f'<th>{column}</th>' for column in result_df.columns[3:]]) + '</tr>'
     result_table_content = ''.join([
-        '<tr>' + ''.join([f'<td>{value}</td>' for _, value in row.items()]) + '</tr>'
+        '<tr>' + ''.join([f'<td>{value}</td>' for _,
+                         value in row.items()]) + '</tr>'
         for _, row in result_df.iterrows()
     ])
-    result_table = f'<table>{result_table_header}{result_table_sub_header}{result_table_content}</table>'
+    result_table = f'<table id=sdk> \
+        {result_table_header}{result_table_sub_header}{result_table_content}</table>'
 
     return summary_table, time_size_table, result_table
 
 
 def generate_report_html(summary_data, detail_data):
-    [summary_table, time_size_table, result_table] = generate_data_html(summary_data, detail_data)
+    [summary_table, time_size_table, result_table] = generate_data_html(
+        summary_data, detail_data)
 
     html_content = f'''
     <html>
     <head>
     <style>
-    body {{
+    #sdk body {{
         font-family: Arial, sans-serif;
         margin: 20px;
     }}
-    h2 {{
+    #sdk h2 {{
         color: #333;
     }}
-    table {{
+    #sdk {{
         border-collapse: collapse;
         width: 100%;
         margin-bottom: 20px;
     }}
-    table th, table td {{
+    #sdk th, #sdk td {{
         padding: 8px;
         border: 1px solid #ddd;
     }}
-    table th {{
+    #sdk th {{
         background-color: #f2f2f2;
         font-weight: bold;
     }}
-    tr:nth-child(odd) {{
+    #sdk tr:nth-child(odd) {{
         background-color: #f9f9f9;
     }}
     </style>
@@ -353,11 +373,11 @@ def generate_report_html(summary_data, detail_data):
 
 def generate_log_file():
     logger = logging.getLogger()
+    if not hasattr(logger.handlers[0], 'baseFilename'):
+        return
     log_file = logger.handlers[0].baseFilename
     logger.handlers[0].close()
     output_log_file = options.configs.get('log_file')
-    if os.path.exists(output_log_file):
-        os.remove(output_log_file)
     os.rename(log_file, output_log_file)
 
 

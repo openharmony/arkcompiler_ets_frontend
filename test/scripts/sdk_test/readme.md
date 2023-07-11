@@ -6,7 +6,7 @@ This test suite can perform end-to-end SDK test verification. There are two ways
 
 ## SDK Test Suite Usage
 ### Operating Environment
-The SDK test automation script runs on Windows, Python 3.7 and above. The MAC version has not been verified yet.
+The SDK test automation script runs on Windows, Python 3.7 and above.
 
 ### Test Preparation
 1. Ensure that Deveco is installed in the environment.
