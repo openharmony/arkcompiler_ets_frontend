@@ -15,8 +15,19 @@
 
 const assert = require('assert');
 
-const Cat1 = require('./export_demo_11');
+const myModule = require('./exports_demo_1');
 
-const cat1 = new Cat1.Dog();
+assert.strictEqual(myModule.myExportVar, 0);
 
-assert.strictEqual(cat1.getAge(), 3);
+assert.strictEqual(myModule.myVariable, 1);
+assert.strictEqual(myModule.myFunction(), 'Hello, world!');
+
+let myclass3 = new myModule.MyClass3()
+assert.strictEqual(myclass3.id3, '00001');
+assert.strictEqual(myclass3.info3.name3, 'jack3');
+assert.strictEqual(myclass3.info3.age3, 12);
+
+let myclass4 = new myModule.noNameClass();
+myclass4.stuAge = 16;
+assert.strictEqual(myclass4.stuID, 11);
+assert.strictEqual(myclass4.getAge(), 16);

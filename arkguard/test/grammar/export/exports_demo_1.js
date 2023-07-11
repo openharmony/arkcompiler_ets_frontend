@@ -13,10 +13,26 @@
  * limitations under the License.
  */
 
-const assert = require('assert');
 
-const Cat1 = require('./export_demo_11');
+let exportVar = 0;
 
-const cat1 = new Cat1.Dog();
+exports.myExportVar = exportVar;
+exports.myVariable = 1;
+exports.myFunction = function() {
+  return 'Hello, world!';
+};
 
-assert.strictEqual(cat1.getAge(), 3);
+class MyClass3 {
+  id3 = '00001';
+  info3 = {name3: 'jack3', age3: 12};
+}
+
+exports.MyClass3 = MyClass3;
+
+exports.noNameClass = class {
+  stuID = 11
+  stuAge = 15
+  getAge(){
+    return this.stuAge;
+  }
+}

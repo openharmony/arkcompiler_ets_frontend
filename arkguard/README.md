@@ -23,22 +23,22 @@ When you create a new project, the following config will be generated in `build-
     "obfuscation": {
       "ruleOptions": {
         "enable": true,
-        "rules": ["obfuscation-rules.txt"],
+        "files": ["obfuscation-rules.txt"],
       }
     }
   }
 }
 ```
-When you create a new library, additional property `consumerRules` will be added.
+When you create a new library, additional property `consumerFiles` will be added.
 ```
 "buildOption": {
   "arkOptions": {
     "obfuscation": {
       "ruleOptions": {
         "enable": true,
-        "rules": ["obfuscation-rules.txt"],
+        "files": ["obfuscation-rules.txt"],
       }
-      "consumerRules": ["consumer-rules.txt"]
+      "consumerFiles": ["consumer-rules.txt"]
     }
   }
 }
@@ -48,15 +48,15 @@ To enable obfuscation, the following conditions should be satisfied:
 * the property `ruleOptions.enable` is `true` and the property `ruleOptions.enable` of every dependency library is `true`.
 * build in release mode
 
-The rules in the property `ruleOptions.rules` will be applied when you build HAP or HAR.
+The files in the property `ruleOptions.files` will be applied when you build HAP or HAR.
 
-The rules in the property `consumerRules` will be applied when you build the project or library which
+The files in the property `consumerFiles` will be applied when you build the project or library which
 depends on this library. They will also be merged into a file `obfuscation.txt` in the resulting HAR.
 
-When you are building HAP or HAR, the final obfucation rules are combination of self's `ruleOptions.rules`
-property, dependency libraries' `consumerRules` properties and dependency HAR's `obfuscation.txt`.
-If your building HAR, the content of `obfuscation.txt` are the combination of self's `consumerRules` property,
-dependency libraries' `consumerRules` properties and dependency HAR's `obfuscation.txt`. If you are building
+When you are building HAP or HAR, the final obfucation rules are combination of self's `ruleOptions.files`
+property, dependency libraries' `consumerFiles` properties and dependency HAR's `obfuscation.txt`.
+If your building HAR, the content of `obfuscation.txt` are the combination of self's `consumerFiles` property,
+dependency libraries' `consumerFiles` properties and dependency HAR's `obfuscation.txt`. If you are building
 HAP, `obfuscation.txt` will not be generated.
 
 ## Write rules
@@ -70,9 +70,9 @@ example shows.
     "obfuscation": {
       "ruleOptions": {
         "enable": true,
-        "rules": ["obfuscation-rules.txt", "myrules.txt"],
+        "files": ["obfuscation-rules.txt", "myrules.txt"],
       }
-      "consumerRules": ["consumer-rules.txt", "my-consumer-rules.txt"]
+      "consumerFiles": ["consumer-rules.txt", "my-consumer-rules.txt"]
     }
   }
 }
@@ -238,7 +238,7 @@ If your are building HAR with this option, then the kept names will be merged in
 
 ### Comments
 
-You can write comments in rules file by using `#`. For each line, the content beginning with `#` and ending with the
+You can write comments in obfuscation rule file by using `#`. For each line, the content beginning with `#` and ending with the
 line feed will be treated as comment. For example,
 ```
 # white list for MainAbility.ets
@@ -255,8 +255,8 @@ If your are building HAR, comments will not be merged into the resulting `obfusc
 
 ### How Arkguard merges rules?
 Typically there may be serveral rule files in your project. These rule files come from:
-* `ruleOptions.rules` in main project (Here by main project we mean the project you are building)
-* `consumerRules` in local dependency libraries
+* `ruleOptions.files` in main project (Here by main project we mean the project you are building)
+* `consumerFiles` in local dependency libraries
 * `obfuscate.txt` in remote dependency HARs
 When building your main project, all these rules will be merged by the following strategy (in pseudo code):
 ```
@@ -304,6 +304,6 @@ end-for
 ```
 The final obfuscation rules are in the object `finalRule`.
 
-If you are building HAR, the resulting `obfuscate.txt` are obtained by merging the rules from `consumerRules` in main
+If you are building HAR, the resulting `obfuscate.txt` are obtained by merging the rules from `consumerFiles` in main
 project and local dependency libraries, and `obfuscate.txt` in remote dependency HARs. The merging strategy is the same
 as above.
