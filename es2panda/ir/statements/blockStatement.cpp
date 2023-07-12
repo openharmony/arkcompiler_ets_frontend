@@ -66,27 +66,7 @@ void BlockStatement::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
     auto scopeCtx = binder::LexicalScope<binder::Scope>::Enter(binder,
         scope_ != nullptr ? scope_ : binder->GetScope());
 
-    for (auto iter = statements_.begin(); iter != statements_.end();) {
-        auto newStatements = cb(*iter);
-        if (std::holds_alternative<ir::AstNode *>(newStatements)) {
-            auto statement = std::get<ir::AstNode *>(newStatements);
-            if (statement == *iter) {
-                iter++;
-            } else if (statement == nullptr) {
-                iter = statements_.erase(iter);
-            } else {
-                *iter = statement->AsStatement();
-                iter++;
-            }
-        } else {
-            auto statements = std::get<std::vector<ir::AstNode *>>(newStatements);
-            for (auto *it : statements) {
-                iter = statements_.insert(iter, it->AsStatement());
-                iter++;
-            }
-            iter = statements_.erase(iter);
-        }
-    }
+    UpdateForMultipleTransformedStatements(cb, statements_);
 }
 
 void BlockStatement::AddStatementAtPos(size_t insertPos, Statement *statement)

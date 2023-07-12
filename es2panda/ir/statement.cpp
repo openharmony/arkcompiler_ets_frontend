@@ -16,5 +16,29 @@
 #include "statement.h"
 
 namespace panda::es2panda::ir {
-
+void Statement::UpdateForMultipleTransformedStatements(const NodeUpdater &cb,
+                                                       ArenaVector<Statement *> &originStatements)
+{
+    for (auto iter = originStatements.begin(); iter != originStatements.end();) {
+        auto newStatements = cb(*iter);
+        if (std::holds_alternative<ir::AstNode *>(newStatements)) {
+            auto statement = std::get<ir::AstNode *>(newStatements);
+            if (statement == *iter) {
+                iter++;
+            } else if (statement == nullptr) {
+                iter = originStatements.erase(iter);
+            } else {
+                *iter = statement->AsStatement();
+                iter++;
+            }
+        } else {
+            auto statements = std::get<std::vector<ir::AstNode *>>(newStatements);
+            for (auto *it : statements) {
+                iter = originStatements.insert(iter, it->AsStatement());
+                iter++;
+            }
+            iter = originStatements.erase(iter);
+        }
+    }
+}
 }  // namespace panda::es2panda::ir
