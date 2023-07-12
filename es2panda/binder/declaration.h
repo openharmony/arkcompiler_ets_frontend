@@ -110,6 +110,11 @@ public:
         return HasFlag(DeclarationFlags::IMPORT | DeclarationFlags::EXPORT);
     }
 
+    bool IsExportDeclInTsModule() const
+    {
+        return HasFlag(DeclarationFlags::EXPORT_IN_TSMODULE);
+    }
+
     void SetDeclare(bool isDeclare)
     {
         isDeclare_ = isDeclare;

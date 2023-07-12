@@ -165,13 +165,13 @@ binder::Scope *Transformer::FindExportVariableInTsModuleScope(util::StringView n
     bool isExport = false;
     auto currentScope = Scope();
     while (currentScope != nullptr) {
-        binder::Variable *v = currentScope->FindLocal(name, binder::ResolveBindingOptions::ALL);
+        binder::Variable *v = currentScope->FindLocal(name, binder::ResolveBindingOptions::BINDINGS);
         bool isTSModuleScope = currentScope->IsTSModuleScope();
         if (v != nullptr) {
             if (!v->Declaration()->IsVarDecl() && !v->Declaration()->IsLetDecl() && !v->Declaration()->IsConstDecl()) {
                 break;
             }
-            if (isTSModuleScope && currentScope->AsTSModuleScope()->FindExportVariable(name)) {
+            if (isTSModuleScope && v->Declaration()->IsExportDeclInTsModule()) {
                 isExport = true;
             }
             break;
@@ -1369,7 +1369,7 @@ ir::UpdateNodes Transformer::VisitTsModuleDeclaration(ir::TSModuleDeclaration *n
 
     util::StringView name = GetNameFromModuleDeclaration(node);
 
-    auto findRes = Scope()->FindLocal(name, binder::ResolveBindingOptions::ALL);
+    auto findRes = Scope()->FindLocal(name, binder::ResolveBindingOptions::BINDINGS);
     if (findRes == nullptr) {
         res.push_back(CreateVariableDeclarationForTSEnumOrTSModule(name, node, isExport));
     }

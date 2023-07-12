@@ -370,7 +370,8 @@ private:
     ir::Expression *ParseBinaryExpression(ir::Expression *left);
     ir::CallExpression *ParseCallExpression(ir::Expression *callee, bool isOptionalChain = false, bool isAsync = false);
     ir::ArrowFunctionExpression *ParsePotentialArrowExpression(ir::Expression **returnExpression,
-                                                               const lexer::SourcePosition &startLoc);
+                                                               const lexer::SourcePosition &startLoc,
+                                                               bool ignoreCallExpression);
 
     void ValidateUpdateExpression(ir::Expression *returnExpression, bool isChainExpression);
     bool ParsePotentialTsGenericFunctionCall(ir::Expression **returnExpression, const lexer::SourcePosition &startLoc,
