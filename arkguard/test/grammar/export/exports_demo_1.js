@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-
 let exportVar = 0;
 
 exports.myExportVar = exportVar;

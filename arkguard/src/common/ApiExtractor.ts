@@ -13,12 +13,14 @@
  * limitations under the License.
  */
 
-import {isStructDeclaration, ModifiersArray, SourceFile} from 'typescript';
+import type { Node } from 'typescript';
 import {
   createSourceFile,
   forEachChild,
   isBinaryExpression,
-  isClassDeclaration, isClassExpression,
+  isClassDeclaration,
+  isClassExpression,
+  isStructDeclaration,
   isExpressionStatement,
   isEnumDeclaration,
   isEnumMember,
@@ -39,9 +41,10 @@ import {
   isElementAccessExpression,
   isPropertyAccessExpression,
   isStringLiteral,
+  SourceFile,
+  ModifiersArray,
   ScriptTarget,
-  SyntaxKind,
-  Node
+  SyntaxKind
 } from 'typescript';
 
 import fs from 'fs';
@@ -104,7 +107,7 @@ export namespace ApiExtractor {
 
     let {hasExport, hasDeclare} = getKeyword(astNode.modifiers);
     if (!hasExport) {
-      findJsExports(astNode);
+      addCommonJsExports(astNode);
       return;
     }
 
@@ -197,7 +200,7 @@ export namespace ApiExtractor {
    * - module.exports = {G: {}}
    * - ...
    */
-  const findJsExports = function (astNode): void {
+  const addCommonJsExports = function (astNode): void {
     if (!isExpressionStatement(astNode) || !astNode.expression) {
       return;
     }
@@ -244,14 +247,15 @@ export namespace ApiExtractor {
     }
 
     return;
-  }
+  };
 
   // module.exports = { p1: 1 }
   function isModuleExports(astNode: Node): boolean {
     if (isPropertyAccessExpression(astNode)) {
       if (isIdentifier(astNode.expression) && astNode.expression.escapedText.toString() === 'module' &&
-        isIdentifier(astNode.name) && astNode.name.escapedText.toString() === 'exports')
-      return true;
+        isIdentifier(astNode.name) && astNode.name.escapedText.toString() === 'exports') {
+        return true;
+      }
     }
     return false;
   }
@@ -326,7 +330,7 @@ export namespace ApiExtractor {
 
     let {hasExport} = getKeyword(astNode.modifiers);
     if (!hasExport) {
-      findJsExports(astNode);
+      addCommonJsExports(astNode);
       forEachChild(astNode, visitProjectExport);
       return;
     }

@@ -45,7 +45,7 @@ When you create a new library, additional property `consumerFiles` will be added
 ```
 
 To enable obfuscation, the following conditions should be satisfied:
-* the property `ruleOptions.enable` is `true` and the property `ruleOptions.enable` of every dependency library is `true`.
+* the property `ruleOptions.enable` is `true` and the property `ruleOptions.enable` of every dependent library is `true`.
 * build in release mode
 
 The files in the property `ruleOptions.files` will be applied when you build HAP or HAR.
@@ -54,10 +54,11 @@ The files in the property `consumerFiles` will be applied when you build the pro
 depends on this library. They will also be merged into a file `obfuscation.txt` in the resulting HAR.
 
 When you are building HAP or HAR, the final obfucation rules are combination of self's `ruleOptions.files`
-property, dependency libraries' `consumerFiles` properties and dependency HAR's `obfuscation.txt`.
-If your building HAR, the content of `obfuscation.txt` are the combination of self's `consumerFiles` property,
-dependency libraries' `consumerFiles` properties and dependency HAR's `obfuscation.txt`. If you are building
-HAP, `obfuscation.txt` will not be generated.
+property, dependent libraries' `consumerFiles` properties and dependent HAR's `obfuscation.txt`.
+If you are building HAR, the content of `obfuscation.txt` is the combination of self's `consumerFiles` property,
+dependent libraries' `consumerFiles` properties and dependent HAR's `obfuscation.txt`. If you are building
+HAP, `obfuscation.txt` will not be generated. For more details, please jump to
+"[How Arkguard merges rules](#how-arkguard-merges-rules)".
 
 ## Write rules
 
@@ -99,7 +100,7 @@ property names will be kept. For example, the property name `data` in
     }
     ```
     will not be obfuscated.
-In 'directly export' cases such as `export MyClass` and `let a = MyClass; export a;`, if you do not want to obfuscate
+For 'indirectly export' cases such as `export MyClass` and `let a = MyClass; export a;`, if you do not want to obfuscate
 their property names, you need to use [keep options](#keep-options) to keep them.
 * the property names defined in UI components. For example, the property names `message` and `data` in
     ```
@@ -238,8 +239,8 @@ If your are building HAR with this option, then the kept names will be merged in
 
 ### Comments
 
-You can write comments in obfuscation rule file by using `#`. For each line, the content beginning with `#` and ending with the
-line feed will be treated as comment. For example,
+You can write comments in obfuscation rule file by using `#`. The line begins with `#` is treated as comment.
+For example,
 ```
 # white list for MainAbility.ets
 -keep-global-name
@@ -253,11 +254,11 @@ age
 ```
 If your are building HAR, comments will not be merged into the resulting `obfuscation.txt`.
 
-### How Arkguard merges rules?
+### How Arkguard merges rules
 Typically there may be serveral rule files in your project. These rule files come from:
 * `ruleOptions.files` in main project (Here by main project we mean the project you are building)
-* `consumerFiles` in local dependency libraries
-* `obfuscate.txt` in remote dependency HARs
+* `consumerFiles` in local dependent libraries
+* `obfuscate.txt` in remote dependent HARs
 When building your main project, all these rules will be merged by the following strategy (in pseudo code):
 ```
 let `listRules` be the list of all rule files that are mentioned above.
@@ -269,7 +270,9 @@ let finalRule = {
     removeLog: false,
     keepPropertyName: [],
     keepGlobalName: [],
-    keepDts: []
+    keepDts: [],
+    printNamecache: string,
+    applyNamecache: string
 }
 for each file in `listRules`:
     for each option in file:
@@ -289,6 +292,12 @@ for each file in `listRules`:
             case -remove-log:
                 finalRule.removeLog = true;
                 continue;
+            case -print-namecache:
+                finalRule.printNamecache = #{specified path};
+                continue;
+            case -apply-namecache:
+                finalRule.applyNamecache = #{specified path};
+                continue;
             case -keep-property-name:
                 finalRule.keepPropertyName.push(#{specified names});
                 continue;
@@ -296,7 +305,7 @@ for each file in `listRules`:
                 finalRule.keepGlobalName.push(#{specified names});
                 continue;
             case -keep-dts:
-                finalRule.keepDts.push(#{specified file paths});
+                finalRule.keepDts.push(#{specified file path});
                 continue;
         }
     end-for
@@ -305,5 +314,9 @@ end-for
 The final obfuscation rules are in the object `finalRule`.
 
 If you are building HAR, the resulting `obfuscate.txt` are obtained by merging the rules from `consumerFiles` in main
-project and local dependency libraries, and `obfuscate.txt` in remote dependency HARs. The merging strategy is the same
-as above.
+project and local dependent libraries, and `obfuscate.txt` in remote dependent HARs. The merging strategy is the same
+except:
+* The `-keep-dts` option will be converted to `-keep-global-name` and `-keep-property-name` options in the resulting
+`obfuscate.txt`.
+* The options `-print-namecache` and `apply-namecache` will be omitted and will not appear in the resulting
+`obfuscate.txt`.
