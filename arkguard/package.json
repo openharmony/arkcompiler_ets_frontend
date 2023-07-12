@@ -12,7 +12,7 @@
     "build": "npm run clean && node node_modules/typescript/lib/tsc.js",
     "test": "npm run test:ut && npm run test:grammar",
     "test:ut": "node ./node_modules/mocha/bin/mocha --require ts-node/register ./test/ut/**/*.ts",
-    "test:grammar": "node --loader=ts-node/esm ./src/cli/SecHarmony.ts ./test/grammar --config-path ./scripts/grammarTestConfig.json && node ./scripts/grammarTestScript.js"
+    "test:grammar": "rm -rf test/local && node --loader=ts-node/esm ./src/cli/SecHarmony.ts ./test/grammar --config-path ./scripts/grammarTestConfig.json && node ./scripts/grammarTestScript.js"
   },
   "repository": {
     "type": "git",

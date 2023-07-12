@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-const assert = require('assert');
-
-const Cat1 = require('./export_demo_11');
-
-const cat1 = new Cat1.Dog();
-
-assert.strictEqual(cat1.getAge(), 3);
+module.exports = {
+  myVariable2: 2,
+  myFunction2: function() {
+    return 'Hello, world2!';
+  },
+  obj2:{p2: 22}
+};

@@ -15,8 +15,8 @@
 
 const assert = require('assert');
 
-const Cat1 = require('./export_demo_11');
+const myModule2 = require('./exports_demo_2');
 
-const cat1 = new Cat1.Dog();
-
-assert.strictEqual(cat1.getAge(), 3);
+assert.strictEqual(myModule2.myVariable2, 2);
+assert.strictEqual(myModule2.myFunction2(), 'Hello, world2!');
+assert.strictEqual(myModule2.obj2.p2, 22);

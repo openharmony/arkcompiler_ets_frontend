@@ -13,12 +13,15 @@
  * limitations under the License.
  */
 
-import {isStructDeclaration, ModifiersArray, SourceFile} from 'typescript';
+import type { Node } from 'typescript';
 import {
   createSourceFile,
   forEachChild,
   isBinaryExpression,
-  isClassDeclaration, isClassExpression,
+  isClassDeclaration,
+  isClassExpression,
+  isStructDeclaration,
+  isExpressionStatement,
   isEnumDeclaration,
   isEnumMember,
   isExportAssignment,
@@ -35,7 +38,11 @@ import {
   isTypeAliasDeclaration,
   isVariableDeclaration,
   isVariableStatement,
-  ScriptKind,
+  isElementAccessExpression,
+  isPropertyAccessExpression,
+  isStringLiteral,
+  SourceFile,
+  ModifiersArray,
   ScriptTarget,
   SyntaxKind
 } from 'typescript';
@@ -100,6 +107,7 @@ export namespace ApiExtractor {
 
     let {hasExport, hasDeclare} = getKeyword(astNode.modifiers);
     if (!hasExport) {
+      addCommonJsExports(astNode);
       return;
     }
 
@@ -112,10 +120,14 @@ export namespace ApiExtractor {
       return;
     }
 
-    if (hasDeclare && astNode.declarationList &&
-      !mCurrentExportNameSet.has(astNode.declarationList.declarations[0].name.getText())) {
-      mCurrentExportNameSet.add(astNode.declarationList.declarations[0].name.getText());
-      mPropertySet.add(astNode.declarationList.declarations[0].name.getText());
+    if (hasDeclare && astNode.declarationList) {
+      astNode.declarationList.declarations.forEach((declaration) => {
+        const declarationName = declaration.name.getText();
+        if (!mCurrentExportNameSet.has(declarationName)) {
+          mCurrentExportNameSet.add(declarationName);
+          mPropertySet.add(declarationName);
+        }
+      });
     }
   };
 
@@ -174,6 +186,79 @@ export namespace ApiExtractor {
 
     visitChildNode(astNode);
   };
+
+  /**
+   * commonjs exports extract
+   * examples:
+   * - exports.A = 1;
+   * - exports.B = hello; // hello can be variable or class ...
+   * - exports.C = {};
+   * - exports.D = class {};
+   * - exports.E = function () {}
+   * - class F {}
+   * - exports.F = F;
+   * - module.exports = {G: {}}
+   * - ...
+   */
+  const addCommonJsExports = function (astNode): void {
+    if (!isExpressionStatement(astNode) || !astNode.expression) {
+      return;
+    }
+
+    const expression = astNode.expression;
+    if (!isBinaryExpression(expression)) {
+      return;
+    }
+
+    const left = expression.left;
+    if (!isElementAccessExpression(left) && !isPropertyAccessExpression(left)) {
+      return;
+    }
+
+    if ((left.expression.getText() !== 'exports' && !isModuleExports(left)) ||
+      expression.operatorToken.kind !== SyntaxKind.EqualsToken) {
+      return;
+    }
+
+    if (isElementAccessExpression(left)) {
+      if (isStringLiteral(left.argumentExpression)) {
+        mPropertySet.add(left.argumentExpression.text);
+      }
+    }
+
+    if (isPropertyAccessExpression(left)) {
+      if (isIdentifier(left.name)) {
+        mPropertySet.add(left.name.getText());
+      }
+    }
+
+    if (isIdentifier(expression.right)) {
+      mCurrentExportNameSet.add(expression.right.getText());
+      return;
+    }
+
+    if (isClassDeclaration(expression.right) || isClassExpression(expression.right)) {
+      getClassProperties(expression.right, mPropertySet);
+      return;
+    }
+
+    if (isObjectLiteralExpression(expression.right)) {
+      getObjectProperties(expression.right, mPropertySet);
+    }
+
+    return;
+  };
+
+  // module.exports = { p1: 1 }
+  function isModuleExports(astNode: Node): boolean {
+    if (isPropertyAccessExpression(astNode)) {
+      if (isIdentifier(astNode.expression) && astNode.expression.escapedText.toString() === 'module' &&
+        isIdentifier(astNode.name) && astNode.name.escapedText.toString() === 'exports') {
+        return true;
+      }
+    }
+    return false;
+  }
 
   /**
    * extract project export name
@@ -245,6 +330,7 @@ export namespace ApiExtractor {
 
     let {hasExport} = getKeyword(astNode.modifiers);
     if (!hasExport) {
+      addCommonJsExports(astNode);
       forEachChild(astNode, visitProjectExport);
       return;
     }
@@ -483,4 +569,3 @@ export namespace ApiExtractor {
     fs.writeFileSync(outputPath, str);
   }
 }
-
