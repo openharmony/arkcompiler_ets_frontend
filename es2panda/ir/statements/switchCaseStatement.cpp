@@ -49,9 +49,7 @@ void SwitchCaseStatement::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] bin
         test_ = std::get<ir::AstNode *>(cb(test_))->AsExpression();
     }
 
-    for (auto iter = consequent_.begin(); iter != consequent_.end(); iter++) {
-        *iter = std::get<ir::AstNode *>(cb(*iter))->AsStatement();
-    }
+    UpdateForMultipleTransformedStatements(cb, consequent_);
 }
 
 }  // namespace panda::es2panda::ir
