@@ -82,7 +82,6 @@ built-ins/String/prototype/at/index-non-numeric-argument-tointeger-invalid.js
 built-ins/String/prototype/at/prop-desc.js
 built-ins/String/prototype/at/returns-item.js
 built-ins/String/prototype/at/name.js
-built-ins/TypedArray/prototype/at/BigInt/return-abrupt-from-this-out-of-bounds.js
 built-ins/TypedArray/prototype/at/returns-item-relative-index.js
 built-ins/TypedArray/prototype/at/index-argument-tointeger.js
 built-ins/TypedArray/prototype/at/index-non-numeric-argument-tointeger.js
@@ -90,7 +89,6 @@ built-ins/TypedArray/prototype/at/length.js
 built-ins/TypedArray/prototype/at/returns-undefined-for-out-of-range-index.js
 built-ins/TypedArray/prototype/at/return-abrupt-from-this.js
 built-ins/TypedArray/prototype/at/index-non-numeric-argument-tointeger-invalid.js
-built-ins/TypedArray/prototype/at/return-abrupt-from-this-out-of-bounds.js
 built-ins/TypedArray/prototype/at/prop-desc.js
 built-ins/TypedArray/prototype/at/returns-undefined-for-holes-in-sparse-arrays.js
 built-ins/TypedArray/prototype/at/returns-item.js
