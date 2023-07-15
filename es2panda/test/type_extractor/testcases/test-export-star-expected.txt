@@ -1,0 +1,100 @@
+======> literal array buffer <======
+------------------------------------
+slot _0
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: 0
+},
+{
+  index: 2
+    tag: 0
+    val: 2
+},
+{
+  index: 3
+    tag: 2
+    val: 1
+},
+{
+  index: 4
+    tag: 0
+    val: 5
+},
+{
+  index: 5
+    tag: 5
+    val: ./test2
+},
+------------------------------------
+slot _1
+{
+  index: 0
+    tag: 2
+    val: 2
+},
+{
+  index: 1
+    tag: 5
+    val: ./test1
+},
+{
+  index: 2
+    tag: 5
+    val: ./test2
+},
+{
+  index: 3
+    tag: 2
+    val: 0
+},
+{
+  index: 4
+    tag: 2
+    val: 1
+},
+{
+  index: 5
+    tag: 5
+    val: =ens0
+},
+{
+  index: 6
+    tag: 9
+    val: 0
+},
+{
+  index: 7
+    tag: 2
+    val: 1
+},
+{
+  index: 8
+    tag: 5
+    val: =ens0
+},
+{
+  index: 9
+    tag: 5
+    val: ns
+},
+{
+  index: 10
+    tag: 2
+    val: 0
+},
+{
+  index: 11
+    tag: 2
+    val: 1
+},
+{
+  index: 12
+    tag: 9
+    val: 1
+},

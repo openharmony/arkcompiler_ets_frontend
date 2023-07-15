@@ -189,6 +189,12 @@ void TypeExtractor::ExtractImportModuleRecord(parser::SourceTextModuleRecord *mo
 
     const auto &namespaceImportEntries = moduleRecord->GetNamespaceImportEntries();
     for (const auto &t : namespaceImportEntries) {
+        /*
+         * eg. export * as ns from './test'
+         */
+        if (t->localId_ == nullptr) {
+            continue;
+        }
         const auto &redirectPath = moduleRecord->GetModuleRequestIdxMap().at(t->moduleRequestIdx_);
         ExternalType externalType(this, "*", redirectPath);
         recorder_->SetNodeTypeIndex(t->localId_->Parent(), externalType.GetTypeIndexShift());
