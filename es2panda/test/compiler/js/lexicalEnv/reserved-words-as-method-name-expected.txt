@@ -1,0 +1,7 @@
+method break
+method case
+method catch
+method await
+method async
+method instanceof
+method in
