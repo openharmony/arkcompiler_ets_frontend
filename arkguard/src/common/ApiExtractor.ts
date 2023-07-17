@@ -152,21 +152,12 @@ export namespace ApiExtractor {
    * @param astNode
    */
   const visitChildNode = function (astNode): void {
-    if (isClassDeclaration(astNode) ||
-      isInterfaceDeclaration(astNode) ||
-      isEnumDeclaration(astNode) ||
-      isTypeAliasDeclaration(astNode) ||
-      isPropertySignature(astNode) ||
-      isMethodSignature(astNode) ||
-      isFunctionDeclaration(astNode) ||
-      isMethodDeclaration(astNode) ||
-      isPropertyDeclaration(astNode) ||
-      isEnumMember(astNode) ||
-      isExportSpecifier(astNode) ||
-      isVariableDeclaration(astNode)) {
-      if (astNode.name !== undefined && !mPropertySet.has(astNode.name.getText())) {
-        mPropertySet.add(astNode.name.getText());
-      }
+    if (!astNode) {
+      return;
+    }
+
+    if (astNode.name !== undefined && !mPropertySet.has(astNode.name.getText())) {
+      mPropertySet.add(astNode.name.getText());
     }
 
     astNode.forEachChild((childNode) => {

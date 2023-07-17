@@ -26,6 +26,16 @@ function runTestsInDirectory(directoryPath) {
 
     if (fs.statSync(filePath).isDirectory()) {
       runTestsInDirectory(filePath);
+    } else if (filePath.includes('obfuscation_validation')) {
+      if (filePath.includes('assert.ts')) {
+        const isSuccess = runTest(filePath);
+        if (isSuccess) {
+          successCount++;
+        } else {
+          failureCount++;
+          failedFiles.push(filePath);
+        }
+      }
     } else if (path.extname(filePath) === '.ts') {
       const isSuccess = runTest(filePath);
       if (isSuccess) {
