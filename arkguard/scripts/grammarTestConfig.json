@@ -9,9 +9,9 @@
         "mEnable": true,
         "mNameGeneratorType": 1,
         "mDictionaryList": [],
-        "mReservedNames": [],
+        "mReservedNames": ["moduleName01"],
         "mRenameProperties": true,
-        "mReservedProperties": ["strictEqual"]
+        "mReservedProperties": ["strictEqual", "readFileSync"]
     },
     "mEnableSourceMap": false,
     "mEnableNameCache": false,
