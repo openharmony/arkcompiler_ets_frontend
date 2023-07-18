@@ -1998,7 +1998,7 @@ Operand PandaGen::ToNamedPropertyKey(const ir::Expression *prop, bool isComputed
             return static_cast<int64_t>(num);
         }
 
-        return prop->AsNumberLiteral()->Str();
+        return util::Helpers::ToStringView(allocator_, num);
     }
 
     return res;

@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token, expected identifier after 'function' keyword [test-func-named-scientific-notation.js:17:10]

@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token [test-class-func-named-decimal.js:21:4]

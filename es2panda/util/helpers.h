@@ -60,7 +60,7 @@ public:
 
     static bool IsGlobalIdentifier(const util::StringView &str);
     static bool ContainSpreadElement(const ArenaVector<ir::Expression *> &args);
-    static util::StringView LiteralToPropName(const ir::Expression *lit);
+    static util::StringView LiteralToPropName(ArenaAllocator *allocator, const ir::Expression *lit);
 
     template <typename T>
     static bool IsInteger(double number);
@@ -69,6 +69,10 @@ public:
 
     static bool FileExtensionIs(std::string_view filePath, std::string_view extension);
     static bool EndsWith(std::string_view str, std::string_view suffix);
+    static std::string DoubleToString(double number);
+    static int32_t GetIntegerSignificandBitCount(double number, int32_t &numberBitCount, char *significandArray);
+    static void GetScientificNotationForDouble(double number, uint32_t significandBitCount, int32_t &numberBitCount,
+                                               char *significandArray, char *sciNotationArray, uint32_t size);
     static std::string ToString(double number);
     static util::StringView ToStringView(ArenaAllocator *allocator, double number);
     static util::StringView ToStringView(ArenaAllocator *allocator, int32_t number);
@@ -84,7 +88,7 @@ public:
     static bool IsBindingPattern(const ir::AstNode *node);
     static bool IsPattern(const ir::AstNode *node);
     static std::vector<const ir::Identifier *> CollectBindingNames(const ir::AstNode *node);
-    static util::StringView FunctionName(const ir::ScriptFunction *func);
+    static util::StringView FunctionName(ArenaAllocator *allocator, const ir::ScriptFunction *func);
     static std::tuple<util::StringView, bool> ParamName(ArenaAllocator *allocator, const ir::AstNode *param,
                                                         uint32_t index);
     static bool IsChild(const ir::AstNode *parent, const ir::AstNode *child);
@@ -98,6 +102,11 @@ public:
     static void ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex);
     static std::string GetHashString(std::string str);
 
+    static const uint32_t MAX_DOUBLE_DIGIT = 310;
+    static const uint32_t MAX_DOUBLE_PRECISION_DIGIT = 17;
+    static const int32_t MAX_DECIMAL_EXPONENT = 21;
+    static const int32_t MIN_DECIMAL_EXPONENT = -6;
+    static const int32_t FAIL_SNPRINTF_S  = -1;
     static const uint32_t INVALID_INDEX = 4294967295L;
     static const uint32_t MAX_INT32 = 2147483647;
     static const uint32_t MAX_INT16 = std::numeric_limits<int16_t>::max();
