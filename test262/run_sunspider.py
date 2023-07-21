@@ -531,6 +531,10 @@ class ArkProgram():
         else :
             sys.exit(f" test262 on {platform.system()} not supported")
         file_name_pre = os.path.splitext(self.js_file)[0]
+        # In the case of Windows, it is necessary to convert ' \\' to '/', otherwise there will be a crash or the file cannot be found
+        # Maintain consistent interface path with DevEco Studio 
+        if platform.system() == "Windows": 
+            file_name_pre = file_name_pre.replace("\\","/")
         cmd_args = []
         if self.arch == ARK_ARCH_LIST[1]:
             qemu_tool = "qemu-aarch64"
