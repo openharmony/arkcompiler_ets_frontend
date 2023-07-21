@@ -1,5 +1,7 @@
 # Arkguard
 Arkguard is a javascript and typescript obfuscation tool.
+For Chinese version please read [README-cn.md](README-cn.md)
+(中文版说明请查看[README-cn.md](README-cn.md)).
 
 # Usage in DevEco Studio
 Arkguard has been integrated into SDK. It is convenient to use Arkguard in DevEco Studio.
@@ -169,7 +171,7 @@ So for safety, we would suggest keeping all property names that are accessed dyn
 Example:
 ```
 var obj = {x0: 0, x1: 0, x2: 0};
-for (var i = 0; i < 2; i++) {
+for (var i = 0; i <= 2; i++) {
   console.log(obj['x' + i]);  // x0, x1, x2 should be kept
 }
 
@@ -186,7 +188,7 @@ console.log(obj.u);           // u can be safely obfuscated
 obj.t = 0;
 console.log(obj['t']);        // t and 't' can be safely obfuscated, but we suggest keeping t
 
-obj.['v'] = 0;
+obj['v'] = 0;
 console.log(obj['v']);        // 'v' can be safely obfuscated, but we suggest keeping v
 ```
 The property names defined in UI components should also be kept for now. In the future, we will keep them automatically.
