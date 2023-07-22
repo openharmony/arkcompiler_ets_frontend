@@ -551,6 +551,23 @@ util::StringView Transformer::CreatePrivatePropertyBindName(util::StringView nam
     return uniqueName;
 }
 
+size_t Transformer::GetInsertPosForConstructor(ir::ClassDefinition *node)
+{
+    size_t insertPos = 0;
+    ir::BlockStatement *blockStat = node->Ctor()->Function()->Body()->AsBlockStatement();
+    for (auto iter = blockStat->Statements().begin(); iter != blockStat->Statements().end();) {
+        if ((*iter)->IsExpressionStatement() &&
+            (*iter)->AsExpressionStatement()->GetExpression()->IsStringLiteral()) {
+            iter++;
+            insertPos++;
+        } else {
+            break;
+        }
+    }
+
+    return (node->Super() == nullptr || node->Super()->IsNullLiteral()) ? insertPos : (insertPos + 1);
+}
+
 std::vector<ir::ExpressionStatement *> Transformer::VisitInstanceProperty(ir::ClassDefinition *node)
 {
     /*
@@ -582,7 +599,7 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitInstanceProperty(ir::Cl
     auto ctorScopeCtx = binder::LexicalScope<binder::FunctionScope>::Enter(Binder(), node->Ctor()->Function()->Scope());
 
     ir::BlockStatement *blockStat = node->Ctor()->Function()->Body()->AsBlockStatement();
-    size_t insertPos = (node->Super() == nullptr) ? 0 : 1;
+    size_t insertPos = GetInsertPosForConstructor(node);
     for (auto *it : addToCtor) {
         if (it->IsComputed()) {
             computedProps.push_back(AllocNode<ir::ExpressionStatement>(it->Key()));
@@ -631,7 +648,7 @@ void Transformer::VisitTSParameterProperty(ir::ClassDefinition *node)
         return;
     }
     auto blockStatement = body->AsBlockStatement();
-    size_t insertPos = (node->Super() == nullptr) ? 0 : 1;
+    size_t insertPos = GetInsertPosForConstructor(node);
     for (auto *it : func->Params()) {
         if (!it->IsTSParameterProperty()) {
             continue;
@@ -2006,14 +2023,15 @@ void Transformer::CheckTransformedAstNode(const ir::AstNode *parent, ir::AstNode
     if (!(*passed)) {
         return;
     }
-    if (childNode->IsClassProperty() && childNode->AsClassProperty()->IsStatic()) {
+    if (childNode->IsClassProperty() &&
+        (childNode->AsClassProperty()->IsStatic() || childNode->AsClassProperty()->Value() != nullptr)) {
         return;
     }
     if (childNode->IsDecorator()) {
         return;
     }
     if (childNode->Parent() != parent) {
-        std::cout << "Illegal ast structure after transforme." << std::endl;
+        std::cout << "Illegal ast structure after transform." << std::endl;
         *passed = false;
         return;
     }

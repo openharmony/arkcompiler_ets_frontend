@@ -1,0 +1,1 @@
+SyntaxError: A super call must be the first statement in the constructor when a class contains initialized properties, parameter properties, or private identifiers. [test-class-constructor10.ts:20:5]

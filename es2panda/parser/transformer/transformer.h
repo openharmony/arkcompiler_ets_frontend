@@ -110,6 +110,7 @@ private:
                                                                util::StringView name);
     void VisitPrivateProperty(ir::ClassDefinition *node);
     void VisitComputedProperty(ir::ClassDefinition *node);
+    size_t GetInsertPosForConstructor(ir::ClassDefinition *node);
 
     ir::VariableDeclaration *CreateVariableDeclarationWithIdentify(util::StringView name,
                                                                    VariableParsingFlags flags,

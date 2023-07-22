@@ -1,0 +1,1 @@
+SyntaxError: A constructor cannot contain a super call when its class extends null. [test-class-constructor15.ts:18:5]

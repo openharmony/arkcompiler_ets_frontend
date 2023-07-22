@@ -305,7 +305,8 @@ private:
     ir::Statement *ParseClassElement(const ArenaVector<ir::Statement *> &properties,
                                      ArenaVector<ir::TSIndexSignature *> *indexSignatures, bool hasSuperClass,
                                      bool isDeclare, bool isAbstractClass);
-    ir::MethodDefinition *CreateImplicitConstructor(bool hasSuperClass, bool isDeclare = false);
+    ir::MethodDefinition *CreateImplicitConstructor(ir::Expression *superClass,
+                                                    bool hasSuperClass, bool isDeclare = false);
     ir::MethodDefinition *CheckClassMethodOverload(ir::Statement *property, ir::MethodDefinition **ctor, bool isDeclare,
                                                    lexer::SourcePosition errorInfo, ir::MethodDefinition *lastOverload,
                                                    bool implExists, bool isAbstract = false);
@@ -313,6 +314,13 @@ private:
     ir::ClassDefinition *ParseClassDefinition(bool isDeclaration, bool idRequired = true, bool isDeclare = false,
                                               bool isAbstract = false);
 
+    void ValidateClassConstructor(ir::MethodDefinition *ctor,
+                                  ArenaVector<ir::Statement *> &properties,
+                                  ir::Expression *superClass,
+                                  bool isDeclare, bool hasConstructorFuncBody, bool hasSuperClass);
+    void FindSuperCallInConstructor(const ir::AstNode *parent, bool *hasSuperCall);
+    void FindSuperCallInConstructorChildNode(const ir::AstNode *childNode, bool *hasSuperCall);
+    bool SuperCallShouldBeFirst(ir::MethodDefinition *ctor, ArenaVector<ir::Statement *> &properties);
     void ValidateAccessor(ExpressionParseFlags flags, lexer::TokenFlags currentTokenFlags);
     void CheckPropertyKeyAsycModifier(ParserStatus *methodStatus);
     ir::Property *ParseShorthandProperty(const lexer::LexerPosition *startPos);
