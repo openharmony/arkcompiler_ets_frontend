@@ -199,7 +199,7 @@ ohos_executable("merge_abc") {
   ]
 
   deps = [
-    "//arkcompiler/ets_frontend/es2panda:es2panda_lib",
+    "../es2panda:es2panda_lib",
     ":panda_assembly_proto_static",
     "$ark_third_party_root/icu/icu4c:static_icuuc",
   ]
