@@ -521,7 +521,7 @@ void Helpers::OptimizeProgram(panda::pandasm::Program *prog,  const std::string 
 
 bool Helpers::ReadFileToBuffer(const std::string &file, std::stringstream &ss)
 {
-    std::ifstream inputStream =  Helpers::FileStream<std::ifstream>(
+    std::ifstream inputStream = Helpers::FileStream<std::ifstream>(
         panda::os::file::File::GetExtendedFilePath(file), std::ios::binary);
     if (inputStream.fail()) {
         std::cerr << "Failed to read file to buffer: " << file << std::endl;
@@ -599,13 +599,21 @@ std::wstring Helpers::Utf8ToUtf16(const std::string &utf8)
     if (utf8.empty()) {
         return utf16;
     }
-    constexpr DWORD kFlags = MB_ERR_INVALID_CHARS;
+
     if (utf8.length() > static_cast<size_t>(std::numeric_limits<int>::max())) {
-        std::cerr << "Length of filename:" << utf8 << "is too long" <<std::endl;
-        return std::wstring{};
+        std::cerr << "Length of filename: " << utf8 << " is too long" << std::endl;
+        return utf16;
     }
+
     const int utf8Length = static_cast<int>(utf8.length());
+    constexpr DWORD kFlags = MB_ERR_INVALID_CHARS;
     const int utf16Length = MultiByteToWideChar(CP_UTF8, kFlags, utf8.data(), utf8Length, nullptr, 0);
+
+    if (utf16Length == 0) {
+        std::cerr << "The filename: " << utf8 << " is not a valid utf8 encoding string" << std::endl;
+        return utf16;
+    }
+
     utf16.resize(utf16Length);
     MultiByteToWideChar(CP_UTF8, kFlags, utf8.data(), utf8Length, &utf16[0], utf16Length);
     return utf16;

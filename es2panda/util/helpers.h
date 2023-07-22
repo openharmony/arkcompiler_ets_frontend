@@ -140,7 +140,7 @@ T Helpers::FileStream(const std::string &str, Args &&...args)
     T fileStream;
 #ifdef PANDA_TARGET_WINDOWS
     std::wstring filename = Helpers::Utf8ToUtf16(str);
-#else
+#else  //for linux and mac
     std::string filename = str;
 #endif
     fileStream.open(filename.c_str(), args...);
