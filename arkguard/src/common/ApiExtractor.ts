@@ -23,19 +23,13 @@ import {
   isStructDeclaration,
   isExpressionStatement,
   isEnumDeclaration,
-  isEnumMember,
   isExportAssignment,
   isExportDeclaration,
   isExportSpecifier,
-  isFunctionDeclaration,
   isIdentifier,
   isInterfaceDeclaration,
-  isMethodDeclaration,
-  isMethodSignature,
   isObjectLiteralExpression,
-  isPropertyDeclaration,
-  isPropertySignature,
-  isTypeAliasDeclaration,
+  isTypeAliasDeclaration, 
   isVariableDeclaration,
   isVariableStatement,
   isElementAccessExpression,
@@ -44,12 +38,20 @@ import {
   SourceFile,
   ModifiersArray,
   ScriptTarget,
-  SyntaxKind
+  SyntaxKind,
 } from 'typescript';
 
 import fs from 'fs';
 import path from 'path';
-import {getClassProperties, getEnumProperties, getObjectProperties} from '../utils/OhsUtil';
+import {
+  getClassProperties,
+  getElementAccessExpressionProperties,
+  getEnumProperties, getInterfaceProperties,
+  getObjectProperties,
+  getTypeAliasProperties,
+} from '../utils/OhsUtil';
+import {scanProjectConfig} from './ApiReader';
+import {stringPropsSet} from '../utils/OhsUtil';
 
 export namespace ApiExtractor {
   interface KeywordInfo {
@@ -157,7 +159,11 @@ export namespace ApiExtractor {
     }
 
     if (astNode.name !== undefined && !mPropertySet.has(astNode.name.getText())) {
-      mPropertySet.add(astNode.name.getText());
+      if (isStringLiteral(astNode.name)) {
+        mPropertySet.add(astNode.name.text);
+      } else {
+        mPropertySet.add(astNode.name.getText());
+      }
     }
 
     astNode.forEachChild((childNode) => {
@@ -364,33 +370,47 @@ export namespace ApiExtractor {
    * @param astNode
    */
   const visitProjectNode = function (astNode): void {
-    if ((isClassDeclaration(astNode) || isStructDeclaration(astNode)) && astNode.name && mCurrentExportNameSet.has(astNode.name.text)) {
-      getClassProperties(astNode, mPropertySet);
-      return;
+    const currentPropsSet: Set<string> = new Set();
+    let nodeName: string | undefined = astNode.name?.text;
+    if ((isClassDeclaration(astNode) || isStructDeclaration(astNode))) {
+      getClassProperties(astNode, currentPropsSet);
+    } else if (isEnumDeclaration(astNode)) { // collect export enum structure properties
+      getEnumProperties(astNode, currentPropsSet);
+    } else if (isVariableDeclaration(astNode)) {
+      if (astNode.initializer) {
+        if (isObjectLiteralExpression(astNode.initializer)) {
+          getObjectProperties(astNode.initializer, currentPropsSet);
+        } else if (isClassExpression(astNode.initializer)) {
+          getClassProperties(astNode.initializer, currentPropsSet);
+        }
+      }
+      nodeName = astNode.name?.getText();
+    } else if (isInterfaceDeclaration(astNode)) {
+      getInterfaceProperties(astNode, currentPropsSet);
+    } else if (isTypeAliasDeclaration(astNode)) {
+      getTypeAliasProperties(astNode, currentPropsSet);
+    } else if (isElementAccessExpression(astNode)) {
+      getElementAccessExpressionProperties(astNode, currentPropsSet);
+    } else if (isObjectLiteralExpression(astNode)) {
+      getObjectProperties(astNode, currentPropsSet);
+    } else if (isClassExpression(astNode)) {
+      getClassProperties(astNode, currentPropsSet);
     }
 
-    // collect export enum structure properties
-    if (isEnumDeclaration(astNode) && mCurrentExportNameSet.has(astNode.name.getText())) {
-      getEnumProperties(astNode, mPropertySet);
-      return;
-    }
-
-    if (isVariableDeclaration(astNode) && mCurrentExportNameSet.has(astNode.name.getText())) {
-      if (astNode.initializer && isObjectLiteralExpression(astNode.initializer)) {
-        getObjectProperties(astNode.initializer, mPropertySet);
-        return;
-      }
-
-      if (astNode.initializer && isClassExpression(astNode.initializer)) {
-        getClassProperties(astNode.initializer, mPropertySet);
-      }
-
-      return;
+    if (nodeName && mCurrentExportNameSet.has(nodeName)) {
+      addElement(currentPropsSet);
     }
 
     forEachChild(astNode, visitProjectNode);
   };
 
+
+  function addElement(currentPropsSet: Set<string>): void {
+    currentPropsSet.forEach((element: string) => {
+      mPropertySet.add(element);
+    });
+    currentPropsSet.clear();
+  }
   /**
    * parse file to api list and save to json object
    * @param fileName file name of api file
@@ -422,6 +442,12 @@ export namespace ApiExtractor {
         mCurrentExportNameSet.clear();
         forEachChild(sourceFile, visitProjectExport);
         forEachChild(sourceFile, visitProjectNode);
+        if (scanProjectConfig.mKeepStringProperty) {
+          stringPropsSet.forEach((element) => {
+            mPropertySet.add(element);
+          });
+          stringPropsSet.clear();
+        }
         mCurrentExportNameSet.clear();
         break;
       default:
