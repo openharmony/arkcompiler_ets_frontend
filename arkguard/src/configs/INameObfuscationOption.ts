@@ -28,4 +28,6 @@ export interface INameObfuscationOption {
   mReservedProperties: string[];
 
   readonly mDictionaryList?: string[];
+
+  readonly mKeepStringProperty?: boolean;
 }

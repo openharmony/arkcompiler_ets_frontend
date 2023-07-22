@@ -9,9 +9,10 @@
         "mEnable": true,
         "mNameGeneratorType": 1,
         "mDictionaryList": [],
-        "mReservedNames": ["moduleName01"],
+        "mReservedNames": ["moduleName01", "stringLiteralObj02", "Interface11", "class11", "enum11", "Object11"],
         "mRenameProperties": true,
-        "mReservedProperties": ["strictEqual", "readFileSync"]
+        "mReservedProperties": ["strictEqual", "readFileSync"],
+        "mKeepStringProperty": true
     },
     "mEnableSourceMap": false,
     "mEnableNameCache": false,
