@@ -18,6 +18,7 @@
 
 #include <ir/statements/blockStatement.h>
 #include <macros.h>
+#include <unordered_set>
 
 #include "typeRecorder.h"
 
@@ -60,8 +61,30 @@ public:
 
     static int64_t GetBuiltinTypeIndex(util::StringView name);
 
+    bool AddSearchingTypeRefNodes(const ir::Expression * node)
+    {
+        if (!IsInSearchingTypeRefNodes(node)) {
+            searchingTypeRefNodes_.insert(node);
+            return true;
+        }
+        return false;
+    }
+
+    void RemoveSearchingTypeRefNodes(const ir::Expression * node)
+    {
+        if (IsInSearchingTypeRefNodes(node)) {
+            searchingTypeRefNodes_.erase(node);
+        }
+    }
+
+    bool IsInSearchingTypeRefNodes(const ir::Expression * node)
+    {
+        return searchingTypeRefNodes_.find(node) != searchingTypeRefNodes_.end();
+    }
+
 private:
     const ir::BlockStatement *rootNode_;
+    std::unordered_set<const ir::Expression *> searchingTypeRefNodes_;
     const bool typeDtsExtractor_;
     const bool typeDtsBuiltin_;
     std::unique_ptr<TypeRecorder> recorder_;
