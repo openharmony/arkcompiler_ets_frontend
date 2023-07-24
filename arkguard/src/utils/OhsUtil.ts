@@ -34,12 +34,8 @@ import {
   isVariableStatement,
   PropertyName,
   SyntaxKind,
-  StructDeclaration,
   TypeAliasDeclaration,
-  TypeElement,
-  isParameterPropertyDeclaration,
   Modifier,
-  ModifierFlags,
   isExpressionStatement,
   isClassExpression,
 } from 'typescript';
@@ -52,8 +48,8 @@ import type {
   HeritageClause,
   NodeArray,
   ObjectLiteralExpression,
-  ParameterPropertyModifier,
-  Statement
+  Statement,
+  StructDeclaration,
 } from 'typescript';
 
 import {OhPackType} from './TransformUtil';
