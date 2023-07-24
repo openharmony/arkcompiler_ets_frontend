@@ -29,6 +29,7 @@
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/objectExpression.h"
+#include "ir/expressions/literals/numberLiteral.h"
 #include "ir/module/exportNamedDeclaration.h"
 #include "ir/module/exportSpecifier.h"
 #include "ir/statements/blockStatement.h"
@@ -311,6 +312,10 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
     if (decl->IsLetOrConstOrClassDecl() && !decl->HasFlag(DeclarationFlags::NAMESPACE_IMPORT) &&
         !res.variable->HasFlag(VariableFlags::INITIALIZED)) {
         ident->SetTdz();
+    }
+    // in release mode, replace const reference with its initialization
+    if (!this->Program()->IsDebug() && decl->IsConstDecl()) {
+        ReplaceConstReferenceWithInitialization(ident, decl);
     }
 
     ident->SetVariable(res.variable);
@@ -931,6 +936,46 @@ std::vector<Variable *> Binder::FindIdentifierTSVariables(const ir::Identifier *
     }
 
     return findRes;
+}
+
+void Binder::ReplaceConstReferenceWithInitialization(const ir::Identifier *ident, const Decl *decl)
+{
+    bool isValidAssignmentExpr = ident->Parent()->IsAssignmentExpression() &&
+        ident->Parent()->AsAssignmentExpression()->Right() == ident;
+    bool isBinaryExpr = ident->Parent()->IsBinaryExpression();
+    bool isVariableDecl = ident->Parent()->IsVariableDeclarator() &&
+        ident->Parent()->AsVariableDeclarator()->Init() == ident;
+    if (!isValidAssignmentExpr && !isBinaryExpr && !isVariableDecl) {
+        return;
+    }
+
+    if (decl->Node() == nullptr || decl->Node()->Parent() == nullptr ||
+        !decl->Node()->Parent()->IsVariableDeclarator()) {
+        return;
+    }
+
+    const ir::AstNode *initialization = static_cast<const ir::AstNode *>(
+        decl->Node()->Parent()->AsVariableDeclarator()->Init());
+    if (initialization == nullptr || !initialization->IsNumberLiteral()) {
+        return;
+    }
+
+    auto newNode = Allocator()->New<ir::NumberLiteral>(initialization->AsNumberLiteral()->Number());
+    if (newNode == nullptr) {
+        throw Error(ErrorType::GENERIC, "Unsuccessful allocation during replacing const reference node");
+    }
+    // Make sure the new node get the correct line number
+    // Column number may be incorrect, but it doesn't matter in release mode
+    newNode->SetRange(ident->Range());
+
+    auto *parentNode = const_cast<panda::es2panda::ir::AstNode *>(ident->Parent());
+    // update the reference node with initialization node
+    parentNode->UpdateSelf([=](auto *childNode) {
+            if (childNode == ident) {
+                return static_cast<ir::AstNode *>(newNode);
+            }
+            return childNode;
+        }, this);
 }
 
 }  // namespace panda::es2panda::binder

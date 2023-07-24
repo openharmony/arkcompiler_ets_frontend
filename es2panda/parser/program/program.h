@@ -154,6 +154,16 @@ public:
     {
         return isDtsFile_;
     }
+    
+    bool IsDebug() const
+    {
+        return isDebug_;
+    }
+
+    void SetDebug(bool isDebug)
+    {
+        isDebug_ = isDebug;
+    }
 
     std::string Dump() const;
     void SetKind(ScriptKind kind);
@@ -173,6 +183,7 @@ private:
     SourceTextModuleRecord *typeModuleRecord_ {nullptr};
     util::PatchFix *patchFixHelper_ {nullptr};
     bool isDtsFile_ {false};
+    bool isDebug_ {false};
 };
 
 }  // namespace panda::es2panda::parser

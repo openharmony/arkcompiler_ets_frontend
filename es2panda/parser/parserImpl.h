@@ -190,6 +190,10 @@ public:
         return program_.Allocator();
     }
     bool IsDtsFile() const;
+    void SetDebug(bool isDebug)
+    {
+        program_.SetDebug(isDebug);
+    }
 
 private:
     bool IsStartOfMappedType() const;
