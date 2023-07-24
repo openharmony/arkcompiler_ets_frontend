@@ -101,6 +101,9 @@ public:
     static bool ReadFileToBuffer(const std::string &file, std::stringstream &ss);
     static void ScanDirectives(ir::ScriptFunction *func, const lexer::LineIndex &lineIndex);
     static std::string GetHashString(std::string str);
+    static std::wstring Utf8ToUtf16(const std::string &utf8);
+    template <typename T, typename... Args>
+    static T FileStream(const std::string &str, Args &&...args);
 
     static const uint32_t MAX_DOUBLE_DIGIT = 310;
     static const uint32_t MAX_DOUBLE_PRECISION_DIGIT = 17;
@@ -138,6 +141,19 @@ template <class T>
 T Helpers::BaseName(T const &path, T const &delims)
 {
     return path.substr(path.find_last_of(delims) + 1);
+}
+
+template <typename T, typename... Args>
+T Helpers::FileStream(const std::string &str, Args &&...args)
+{
+    T fileStream;
+#ifdef PANDA_TARGET_WINDOWS
+    std::wstring filename = Helpers::Utf8ToUtf16(str);
+#else  //for linux and mac
+    std::string filename = str;
+#endif
+    fileStream.open(filename.c_str(), args...);
+    return fileStream;
 }
 
 }  // namespace panda::es2panda::util

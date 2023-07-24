@@ -16,6 +16,7 @@
 #include "assemblyProgramProto.h"
 #include "assembly-program.h"
 #include "protobufSnapshotGenerator.h"
+#include "util/helpers.h"
 
 namespace panda::proto {
 void ProtobufSnapshotGenerator::GenerateSnapshot(const panda::pandasm::Program &program, const std::string &outputName)
@@ -24,7 +25,8 @@ void ProtobufSnapshotGenerator::GenerateSnapshot(const panda::pandasm::Program &
 
     Program::Serialize(program, protoProgram);
 
-    std::fstream output(panda::os::file::File::GetExtendedFilePath(outputName),
+    std::fstream output = panda::es2panda::util::Helpers::FileStream<std::fstream>(
+        panda::os::file::File::GetExtendedFilePath(outputName),
         std::ios::out | std::ios::trunc | std::ios::binary);
     if (!output) {
         std::cerr << "Failed to create: " << outputName << std::endl;
@@ -37,7 +39,9 @@ void ProtobufSnapshotGenerator::GenerateSnapshot(const panda::pandasm::Program &
 void ProtobufSnapshotGenerator::GenerateProgram(const std::string &inputName, panda::pandasm::Program &prog,
                                                 panda::ArenaAllocator *allocator)
 {
-    std::fstream input(panda::os::file::File::GetExtendedFilePath(inputName), std::ios::in | std::ios::binary);
+    std::fstream input = panda::es2panda::util::Helpers::FileStream<std::fstream>(
+        panda::os::file::File::GetExtendedFilePath(inputName),
+        std::ios::in | std::ios::binary);
     if (!input) {
         std::cerr << "Failed to open: " << inputName << std::endl;
         return;
@@ -53,7 +57,8 @@ void ProtobufSnapshotGenerator::GenerateProgram(const std::string &inputName, pa
 panda::es2panda::util::ProgramCache *ProtobufSnapshotGenerator::GetCacheContext(const std::string &cacheFilePath,
     panda::ArenaAllocator *allocator)
 {
-    std::fstream input(panda::os::file::File::GetExtendedFilePath(cacheFilePath),
+    std::fstream input = panda::es2panda::util::Helpers::FileStream<std::fstream>(
+        panda::os::file::File::GetExtendedFilePath(cacheFilePath),
         std::ios::in | std::ios::binary);
     if (!input) {
         return nullptr;
@@ -81,7 +86,8 @@ void ProtobufSnapshotGenerator::UpdateCacheFile(const panda::es2panda::util::Pro
     auto *protoProgram = protoCache.mutable_program();
     Program::Serialize(programCache->program, *protoProgram);
 
-    std::fstream output(panda::os::file::File::GetExtendedFilePath(cacheFilePath),
+    std::fstream output = panda::es2panda::util::Helpers::FileStream<std::fstream>(
+        panda::os::file::File::GetExtendedFilePath(cacheFilePath),
         std::ios::out | std::ios::trunc | std::ios::binary);
     if (!output) {
         std::cerr << "Failed to create cache file: " << cacheFilePath << std::endl;
