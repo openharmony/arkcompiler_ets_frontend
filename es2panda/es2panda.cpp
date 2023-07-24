@@ -74,6 +74,7 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
     }
 
     try {
+        parser_->SetDebug(options.isDebug);
         auto ast = parser_->Parse(fname, src, rname, kind);
         ast.Binder()->SetProgram(&ast);
 
