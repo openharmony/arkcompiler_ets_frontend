@@ -1,0 +1,1 @@
+SyntaxError: Constructors for derived classes must contain a super call. [test-class-constructor17.ts:20:5]
