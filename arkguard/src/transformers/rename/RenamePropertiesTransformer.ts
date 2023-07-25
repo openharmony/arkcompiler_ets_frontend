@@ -27,7 +27,8 @@ import {
   isStringLiteralLike,
   isTypeNode,
   setParentRecursive,
-  visitEachChild
+  visitEachChild,
+  isStringLiteral
 } from 'typescript';
 
 import type {
@@ -37,7 +38,11 @@ import type {
   Node,
   TransformationContext,
   Transformer,
-  TransformerFactory
+  TransformerFactory,
+  ClassDeclaration,
+  ClassExpression,
+  StructDeclaration,
+  PropertyName
 } from 'typescript';
 
 import type {IOptions} from '../../configs/IOptions';
@@ -46,7 +51,7 @@ import type {INameGenerator, NameGeneratorOptions} from '../../generator/INameGe
 import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import type {TransformPlugin} from '../TransformPlugin';
 import {NodeUtils} from '../../utils/NodeUtils';
-import {getClassProperties, isViewPUBasedClass} from '../../utils/OhsUtil';
+import {collectPropertyNamesAndStrings, isViewPUBasedClass} from '../../utils/OhsUtil';
 
 namespace secharmony {
   /**
@@ -226,7 +231,7 @@ namespace secharmony {
       function collectReservedNames(node: Node): void {
         // collect ViewPU class properties
         if (isClassDeclaration(node) && isViewPUBasedClass(node)) {
-          getClassProperties(node, reservedProperties);
+          getViewPUClassProperties(node, reservedProperties);
           return;
         }
 
@@ -239,6 +244,20 @@ namespace secharmony {
         }
 
         forEachChild(node, collectReservedNames);
+      }
+
+      function getViewPUClassProperties(classNode: ClassDeclaration | ClassExpression | StructDeclaration, propertySet: Set<string>): void {
+        if (!classNode || !classNode.members) {
+          return;
+        }
+
+        classNode.members.forEach((member) => {
+          const memberName: PropertyName = member.name;
+          if (!member || !memberName) {
+            return;
+          }
+          collectPropertyNamesAndStrings(memberName, propertySet);
+        });
       }
     }
   };
