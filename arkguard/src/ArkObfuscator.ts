@@ -27,6 +27,7 @@ import type {
   Node,
   Printer,
   PrinterOptions,
+  RawSourceMap,
   SourceFile,
   SourceMapGenerator,
   TransformationResult,
@@ -58,6 +59,13 @@ export const renamePropertyModule = require('./transformers/rename/RenamePropert
 
 export {getMapFromJson, readProjectProperties};
 
+type ObfuscationResultType = {
+  content: string,
+  sourceMap?: RawSourceMap,
+  nameCache?: { [k: string]: string }
+};
+
+const JSON_TEXT_INDENT_LENGTH: number = 2;
 export class ArkObfuscator {
   // A text writer of Printer
   private mTextWriter: EmitTextWriter;
@@ -87,7 +95,7 @@ export class ArkObfuscator {
    * init ArkObfuscator according to user config
    * should be called after constructor
    */
-  public init(config?: any): boolean {
+  public init(config?: IOptions): boolean {
     if (!this.mConfigPath && !config) {
       return false;
     }
@@ -96,7 +104,7 @@ export class ArkObfuscator {
       config = FileUtils.readFileAsJson(this.mConfigPath);
     }
 
-    this.mCustomProfiles = config as IOptions;
+    this.mCustomProfiles = config;
 
     if (this.mCustomProfiles.mCompact) {
       this.mTextWriter = createObfTextSingleLineWriter();
@@ -124,7 +132,7 @@ export class ArkObfuscator {
   /**
    * Obfuscate all the source files.
    */
-  public async obfuscateFiles() {
+  public async obfuscateFiles(): Promise<void> {
     if (!path.isAbsolute(this.mCustomProfiles.mOutputDir)) {
       this.mCustomProfiles.mOutputDir = path.join(path.dirname(this.mConfigPath), this.mCustomProfiles.mOutputDir);
     }
@@ -206,9 +214,9 @@ export class ArkObfuscator {
     renamePropertyModule.historyMangledTable = getMapFromJson(propertyCache);
   }
 
-  private produceNameCache(namecache: any, sourceFile: string, outputDir: string): void {
+  private produceNameCache(namecache: { [k: string]: string }, sourceFile: string, outputDir: string): void {
     const nameCachePath: string = path.join(outputDir, FileUtils.getFileName(sourceFile) + NAME_CACHE_SUFFIX);
-    fs.writeFileSync(nameCachePath, JSON.stringify(namecache, null, 2));
+    fs.writeFileSync(nameCachePath, JSON.stringify(namecache, null, JSON_TEXT_INDENT_LENGTH));
   }
 
   private producePropertyCache(outputDir: string): void {
@@ -218,13 +226,13 @@ export class ArkObfuscator {
     }
   }
 
-  async mergeSourceMap(originMap: sourceMap.RawSourceMap, newMap: sourceMap.RawSourceMap): Promise<any> {
+  async mergeSourceMap(originMap: sourceMap.RawSourceMap, newMap: sourceMap.RawSourceMap): Promise<RawSourceMap> {
     if (!originMap) {
-      return newMap;
+      return newMap as RawSourceMap;
     }
 
     if (!newMap) {
-      return originMap;
+      return originMap as RawSourceMap;
     }
 
     const originConsumer: sourceMap.SourceMapConsumer = await new sourceMap.SourceMapConsumer(originMap);
@@ -252,7 +260,7 @@ export class ArkObfuscator {
     const updatedGenerator: sourceMap.SourceMapGenerator = sourceMap.SourceMapGenerator.fromSourceMap(newConsumer);
     updatedGenerator['_file'] = originMap.file;
     updatedGenerator['_mappings']['_array'] = newMappingList;
-    return JSON.parse(updatedGenerator.toString());
+    return JSON.parse(updatedGenerator.toString()) as RawSourceMap;
   }
 
   /**
@@ -280,7 +288,7 @@ export class ArkObfuscator {
    * @param sourceFilePath single source file path
    * @param outputDir
    */
-  public async obfuscateFile(sourceFilePath: string, outputDir: string): Promise<any> {
+  public async obfuscateFile(sourceFilePath: string, outputDir: string): Promise<void> {
     const fileName: string = FileUtils.getFileName(sourceFilePath);
     if (this.isObfsIgnoreFile(fileName)) {
       fs.copyFileSync(sourceFilePath, path.join(outputDir, fileName));
@@ -289,12 +297,13 @@ export class ArkObfuscator {
 
     let content: string = FileUtils.readFile(sourceFilePath);
     this.readNameCache(sourceFilePath, outputDir);
-    const mixedInfo: {content, sourceMap, nameCache} = await this.obfuscate(content, sourceFilePath);
+    const mixedInfo: ObfuscationResultType = await this.obfuscate(content, sourceFilePath);
 
     if (outputDir && mixedInfo) {
       fs.writeFileSync(path.join(outputDir, FileUtils.getFileName(sourceFilePath)), mixedInfo.content);
       if (this.mCustomProfiles.mEnableSourceMap && mixedInfo.sourceMap) {
-        fs.writeFileSync(path.join(outputDir, FileUtils.getFileName(sourceFilePath) + '.map'), JSON.stringify(mixedInfo.sourceMap, null, 2));
+        fs.writeFileSync(path.join(outputDir, FileUtils.getFileName(sourceFilePath) + '.map'),
+          JSON.stringify(mixedInfo.sourceMap, null, JSON_TEXT_INDENT_LENGTH));
       }
       if (this.mCustomProfiles.mEnableNameCache && this.mCustomProfiles.mEnableNameCache) {
         this.produceNameCache(mixedInfo.nameCache, sourceFilePath, outputDir);
@@ -309,12 +318,13 @@ export class ArkObfuscator {
    * @param previousStageSourceMap
    * @param historyNameCache
    */
-  public async obfuscate(content: SourceFile | string, sourceFilePath: string, previousStageSourceMap?: any, 
-    historyNameCache?: Map<string, string>): Promise<any> {
+  public async obfuscate(content: SourceFile | string, sourceFilePath: string, previousStageSourceMap?: sourceMap.RawSourceMap, 
+    historyNameCache?: Map<string, string>): Promise<ObfuscationResultType> {
     let ast: SourceFile;
+    let result: ObfuscationResultType = { content: undefined };
     if (this.isObfsIgnoreFile(sourceFilePath)) {
       // need add return value
-      return;
+      return result;
     }
 
     if (typeof content === 'string') {
@@ -324,7 +334,7 @@ export class ArkObfuscator {
     }
 
     if (ast.statements.length === 0) {
-      return;
+      return result;
     }
 
     if (historyNameCache && this.mCustomProfiles.mNameObfuscation) {
@@ -342,20 +352,20 @@ export class ArkObfuscator {
 
     this.createObfsPrinter().writeFile(ast, this.mTextWriter, sourceMapGenerator);
 
-    const result = {content: this.mTextWriter.getText()};
+    result.content = this.mTextWriter.getText();
 
     if (this.mCustomProfiles.mEnableSourceMap && sourceMapGenerator) {
-      let sourceMapJson = sourceMapGenerator.toJSON();
-      sourceMapJson['sourceRoot'] = '';
+      let sourceMapJson: RawSourceMap = sourceMapGenerator.toJSON();
+      sourceMapJson.sourceRoot = '';
       sourceMapJson.file = path.basename(sourceFilePath);
       if (previousStageSourceMap) {
         sourceMapJson = await this.mergeSourceMap(previousStageSourceMap, sourceMapJson as sourceMap.RawSourceMap);
       }
-      result['sourceMap'] = sourceMapJson;
+      result.sourceMap = sourceMapJson;
     }
 
     if (this.mCustomProfiles.mEnableNameCache) {
-      result['nameCache'] = Object.fromEntries(renameIdentifierModule.nameCache);
+      result.nameCache = Object.fromEntries(renameIdentifierModule.nameCache);
     }
 
     // clear cache of text writer

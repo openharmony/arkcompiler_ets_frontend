@@ -15,7 +15,7 @@
 
 import {existsSync, readFileSync, writeFileSync} from 'fs';
 import {readJsonSync} from 'fs-extra';
-import { IOptions } from '../configs/IOptions';
+import type {IOptions} from '../configs/IOptions';
 
 export class FileUtils {
   /**
