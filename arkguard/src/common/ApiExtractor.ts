@@ -13,7 +13,12 @@
  * limitations under the License.
  */
 
-import type { Node } from 'typescript';
+import type {
+  ModifiersArray,
+  Node,
+  SourceFile
+} from 'typescript';
+
 import {
   createSourceFile,
   forEachChild,
@@ -35,8 +40,6 @@ import {
   isElementAccessExpression,
   isPropertyAccessExpression,
   isStringLiteral,
-  SourceFile,
-  ModifiersArray,
   ScriptTarget,
   SyntaxKind,
 } from 'typescript';

@@ -15,6 +15,7 @@
 
 import {existsSync, readFileSync, writeFileSync} from 'fs';
 import {readJsonSync} from 'fs-extra';
+import type {IOptions} from '../configs/IOptions';
 
 export class FileUtils {
   /**
@@ -35,7 +36,7 @@ export class FileUtils {
    *
    * @param filePath file path
    */
-  public static readFileAsJson(filePath: string): any {
+  public static readFileAsJson(filePath: string): IOptions | undefined {
     if (!existsSync(filePath)) {
       console.error(`File <${this.getFileName(filePath)} is not found.>`);
       return undefined;

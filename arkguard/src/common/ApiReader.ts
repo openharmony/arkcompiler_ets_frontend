@@ -45,45 +45,6 @@ export function initPlugin(sdkDir: string, outputDir: string): void {
   });
 }
 
-
-export function getReservedProperties(apiSavedPath?: string): string[] {
-  let reservedProperties: string[] = [];
-  if (apiSavedPath) {
-    reservedProperties = readOhReservedProperties(apiSavedPath);
-  }
-  // read language reserved property
-  reservedProperties = [...reservedProperties, ...es6Info];
-  const propertySet: Set<string> = new Set<string>(reservedProperties);
-
-  return Array.from(propertySet);
-}
-
-/**
- * read reserved properties of openHarmony sdk
- */
-export function readOhReservedProperties(apiSavedPath: string): string[] {
-  // 1. read oh sdk api reserved property and string
-  let reservedProperties: string[] = [];
-
-  const sdkApiDir: string = path.resolve(__dirname, apiSavedPath);
-  const fileNames: string[] = fs.readdirSync(sdkApiDir);
-  for (const fileName of fileNames) {
-    const filePath: string = path.join(sdkApiDir, fileName);
-    if (!fs.lstatSync(filePath).isFile()) {
-      continue;
-    }
-
-    const properties: string[] = FileUtils.readFileAsJson(filePath);
-    if (properties === undefined) {
-      console.error('read openHarmony reserved property file error.');
-      continue;
-    }
-
-    reservedProperties = [...reservedProperties, ...properties];
-  }
-  return reservedProperties;
-}
-
 /**
  * need read api info or not
  * @param customProfiles
@@ -112,7 +73,7 @@ export function readProjectProperties(projectPaths: string[], customProfiles: IO
       return [];
     }
 
-    const sourcPath = isOHProject? path.join(projectPath, "src", "main") : projectPath;
+    const sourcPath = isOHProject ? path.join(projectPath, 'src', 'main') : projectPath;
     const projProperties: string[] = ApiExtractor.parseCommonProject(sourcPath);
     const sdkProperties: string[] = readThirdPartyLibProperties(projectPath);
 
