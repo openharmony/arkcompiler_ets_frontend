@@ -463,8 +463,14 @@ int64_t TypeExtractor::GetTypeIndexFromImportNode(const ir::AstNode *node, [[may
 
 int64_t TypeExtractor::GetTypeIndexFromTypeAliasNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance)
 {
-    auto typeIndex = GetTypeIndexFromAnnotation(node->AsTSTypeAliasDeclaration()->TypeAnnotation());
+    auto typeNode = node->AsTSTypeAliasDeclaration()->TypeAnnotation();
+    if (!AddSearchingTypeRefNodes(typeNode)) {
+        RemoveSearchingTypeRefNodes(typeNode);
+        return PrimitiveType::ANY;
+    }
+    auto typeIndex = GetTypeIndexFromAnnotation(typeNode);
     TLOG(node->Type(), typeIndex);
+    RemoveSearchingTypeRefNodes(typeNode);
     return typeIndex;
 }
 
