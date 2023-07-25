@@ -201,6 +201,7 @@ ohos_executable("merge_abc") {
   deps = [
     ":panda_assembly_proto_static",
     "$ark_third_party_root/icu/icu4c:static_icuuc",
+    "../es2panda:es2panda_lib",
   ]
 
   if (!is_cross_platform_build) {
