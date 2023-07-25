@@ -62,7 +62,7 @@ void SwitchStatement::Compile(compiler::PandaGen *pg) const
         builder.JumpIfCase(tag, i);
     }
 
-    if (defaultIndex > 0) {
+    if (!cases_[defaultIndex]->Test()) {
         builder.JumpToDefault(defaultIndex);
     } else {
         builder.Break();
