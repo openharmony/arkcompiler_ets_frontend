@@ -21,6 +21,9 @@ import {ListUtil} from '../utils/ListUtil';
 import type {IOptions} from '../configs/IOptions';
 import es6Info from '../configs/preset/es6_reserved_properties.json';
 
+
+export const scanProjectConfig: {mKeepStringProperty?: boolean} = {};
+
 /**
  * if rename property is not open, api read and extract can be skipped
  *
@@ -100,6 +103,8 @@ export function readProjectProperties(projectPaths: string[], customProfiles: IO
   if (!needReadApiInfo(customProfiles) && !isOHProject) {
     return [];
   }
+
+  scanProjectConfig.mKeepStringProperty = customProfiles.mNameObfuscation?.mKeepStringProperty;
 
   for (const projectPath of projectPaths) {
     if (!fs.existsSync(projectPath)) {
