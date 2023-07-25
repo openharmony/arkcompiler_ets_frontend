@@ -2672,7 +2672,8 @@ static bool IsConstructor(ir::Statement *stmt)
     return def->Kind() == ir::MethodDefinitionKind::CONSTRUCTOR;
 }
 
-ir::MethodDefinition *ParserImpl::CreateImplicitConstructor(bool hasSuperClass, bool isDeclare)
+ir::MethodDefinition *ParserImpl::CreateImplicitConstructor(ir::Expression *superClass,
+                                                            bool hasSuperClass, bool isDeclare)
 {
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
@@ -2681,18 +2682,20 @@ ir::MethodDefinition *ParserImpl::CreateImplicitConstructor(bool hasSuperClass, 
     auto *scope = Binder()->Allocator()->New<binder::FunctionScope>(Allocator(), paramScope);
 
     if (hasSuperClass) {
-        util::StringView argsStr = "args";
-        params.push_back(AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT,
-                                                      AllocNode<ir::Identifier>(argsStr)));
-        paramScope->AddParamDecl(Allocator(), params.back());
+        if (Extension() != ScriptExtension::TS || !superClass->IsNullLiteral()) {
+            util::StringView argsStr = "args";
+            params.push_back(AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT,
+                                                          AllocNode<ir::Identifier>(argsStr)));
+            paramScope->AddParamDecl(Allocator(), params.back());
 
-        ArenaVector<ir::Expression *> callArgs(Allocator()->Adapter());
-        auto *superExpr = AllocNode<ir::SuperExpression>();
-        callArgs.push_back(AllocNode<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT,
-                                                        AllocNode<ir::Identifier>(argsStr)));
+            ArenaVector<ir::Expression *> callArgs(Allocator()->Adapter());
+            auto *superExpr = AllocNode<ir::SuperExpression>();
+            callArgs.push_back(AllocNode<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT,
+                                                            AllocNode<ir::Identifier>(argsStr)));
 
-        auto *callExpr = AllocNode<ir::CallExpression>(superExpr, std::move(callArgs), nullptr, false);
-        statements.push_back(AllocNode<ir::ExpressionStatement>(callExpr));
+            auto *callExpr = AllocNode<ir::CallExpression>(superExpr, std::move(callArgs), nullptr, false);
+            statements.push_back(AllocNode<ir::ExpressionStatement>(callExpr));
+        }
     }
 
     auto *body = AllocNode<ir::BlockStatement>(scope, std::move(statements));
@@ -2943,15 +2946,13 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
 
     lexer::SourcePosition classBodyEndLoc = lexer_->GetToken().End();
     if (ctor == nullptr) {
-        ctor = CreateImplicitConstructor(hasSuperClass, isDeclare);
+        ctor = CreateImplicitConstructor(superClass, hasSuperClass, isDeclare);
         ctor->SetRange({startLoc, classBodyEndLoc});
         hasConstructorFuncBody = !isDeclare;
     }
     lexer_->NextToken();
 
-    if (!isDeclare && !hasConstructorFuncBody) {
-        ThrowSyntaxError("Constructor implementation is missing.", ctor->Start());
-    }
+    ValidateClassConstructor(ctor, properties, superClass, isDeclare, hasConstructorFuncBody, hasSuperClass);
 
     auto *classDefinition = AllocNode<ir::ClassDefinition>(
         classCtx.GetScope(), identNode, typeParamDecl, superTypeParams, std::move(implements), ctor, superClass,
@@ -2963,6 +2964,105 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
     }
 
     return classDefinition;
+}
+
+void ParserImpl::ValidateClassConstructor(ir::MethodDefinition *ctor,
+                                          ArenaVector<ir::Statement *> &properties,
+                                          ir::Expression *superClass,
+                                          bool isDeclare, bool hasConstructorFuncBody, bool hasSuperClass)
+{
+    if (!hasConstructorFuncBody) {
+        if (isDeclare) {
+            return;
+        }
+        ThrowSyntaxError("Constructor implementation is missing.", ctor->Start());
+    }
+
+    if (Extension() != ScriptExtension::TS || !hasSuperClass) {
+        return;
+    }
+
+    bool hasSuperCall = false;
+    FindSuperCallInConstructor(ctor, &hasSuperCall);
+    if (hasSuperCall) {
+        if (superClass->IsNullLiteral()) {
+            ThrowSyntaxError("A constructor cannot contain a super call when its class extends null.", ctor->Start());
+        }
+
+        if (SuperCallShouldBeFirst(ctor, properties)) {
+            ir::Statement *firstStat = nullptr;
+            ASSERT(ctor->Function()->Body()->IsBlockStatement());
+            ir::BlockStatement *blockStat = ctor->Function()->Body()->AsBlockStatement();
+            for (auto iter = blockStat->Statements().begin(); iter != blockStat->Statements().end();) {
+                if ((*iter)->IsExpressionStatement() &&
+                    (*iter)->AsExpressionStatement()->GetExpression()->IsStringLiteral()) {
+                    iter++;
+                } else {
+                    firstStat = *iter;
+                    break;
+                }
+            }
+
+            if (firstStat == nullptr || !firstStat->IsExpressionStatement() ||
+                !firstStat->AsExpressionStatement()->GetExpression()->IsCallExpression() ||
+                !firstStat->AsExpressionStatement()->GetExpression()->AsCallExpression()
+                ->Callee()->IsSuperExpression()) {
+                ThrowSyntaxError("A super call must be the first statement in the constructor when a class contains "
+                                 "initialized properties, parameter properties, or private identifiers.",
+                                 ctor->Start());
+            }
+        }
+    } else if (!superClass->IsNullLiteral()) {
+        ThrowSyntaxError("Constructors for derived classes must contain a super call.", ctor->Start());
+    }
+}
+
+bool ParserImpl::SuperCallShouldBeFirst(ir::MethodDefinition *ctor, ArenaVector<ir::Statement *> &properties)
+{
+    for (const auto *property : properties) {
+        if (property->IsClassProperty() && (property->AsClassProperty()->Value() != nullptr ||
+            property->AsClassProperty()->Key()->IsTSPrivateIdentifier())) {
+            return true;
+        }
+    }
+
+    for (const auto &param : ctor->Function()->Params()) {
+        if (param->IsTSParameterProperty() &&
+            (param->AsTSParameterProperty()->Accessibility() != ir::AccessibilityOption::NO_OPTS ||
+            param->AsTSParameterProperty()->Readonly())) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void ParserImpl::FindSuperCallInConstructor(const ir::AstNode *parent, bool *hasSuperCall)
+{
+    parent->Iterate([this, hasSuperCall](auto *childNode) {
+        FindSuperCallInConstructorChildNode(childNode, hasSuperCall);
+    });
+}
+
+void ParserImpl::FindSuperCallInConstructorChildNode(const ir::AstNode *childNode, bool *hasSuperCall)
+{
+    if (*hasSuperCall) {
+        return;
+    }
+    switch (childNode->Type()) {
+        case ir::AstNodeType::CALL_EXPRESSION: {
+            if (childNode->AsCallExpression()->Callee()->IsSuperExpression()) {
+                *hasSuperCall = true;
+            }
+            break;
+        }
+        case ir::AstNodeType::CLASS_DEFINITION: {
+            break;
+        }
+        default: {
+            FindSuperCallInConstructor(childNode, hasSuperCall);
+            break;
+        }
+    }
 }
 
 ir::TSEnumDeclaration *ParserImpl::ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enumStart,

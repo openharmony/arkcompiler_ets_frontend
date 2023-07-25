@@ -561,11 +561,13 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
         classDef->Ident()->SetParent(classDef);
     }
 
-    ResolveReference(classDef, classDef->Ctor());
-
     for (auto *stmt : classDef->Body()) {
         ResolveReference(classDef, stmt);
     }
+
+    // ResolveReference of ctor is after the classBody to ensure that
+    // the parent of the astNode added in the transformer is set correctly.
+    ResolveReference(classDef, classDef->Ctor());
 
     for (auto *iter : classDef->IndexSignatures()) {
         ResolveReference(classDef, iter);
