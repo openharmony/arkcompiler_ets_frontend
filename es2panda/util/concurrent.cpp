@@ -38,7 +38,7 @@ void Concurrent::SetConcurrent(ir::ScriptFunction *func, const ir::AstNode * nod
 }
 
 void Concurrent::ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *expr,
-                                     ConcurrentInvalidFlag errFlag)
+                                                ConcurrentInvalidFlag errFlag, util::StringView varName)
 {
     auto line = expr->Range().start.line;
     auto column = (const_cast<lexer::LineIndex &>(lineIndex)).GetLocation(expr->Range().start).col - 1;
@@ -49,8 +49,10 @@ void Concurrent::ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineInde
             break;
         }
         case ConcurrentInvalidFlag::NOT_IMPORT_VARIABLE: {
-            throw Error {ErrorType::GENERIC, "Concurrent function should only use import variable or local variable",
-                         line, column};
+            std::stringstream ss;
+            ss << "Concurrent function should only use import variable or local variable, '" << varName
+               << "' is not one of them";
+            throw Error {ErrorType::GENERIC, ss.str(), line, column};
             break;
         }
         default:
@@ -69,7 +71,8 @@ void Concurrent::VerifyImportVarForConcurrentFunction(const lexer::LineIndex &li
         return;
     }
 
-    ThrowInvalidConcurrentFunction(lineIndex, node, ConcurrentInvalidFlag::NOT_IMPORT_VARIABLE);
+    ThrowInvalidConcurrentFunction(lineIndex, node, ConcurrentInvalidFlag::NOT_IMPORT_VARIABLE,
+                                   result.variable->Declaration()->Name());
 }
 
 } // namespace panda::es2panda::util
