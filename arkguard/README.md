@@ -20,28 +20,24 @@ You can enable them by [obfuscation options](#obfuscation-options).
 
 When you create a new project, the following config will be generated in `build-profile.json5`.
 ```
-"buildOption": {
-  "arkOptions": {
-    "obfuscation": {
-      "ruleOptions": {
-        "enable": true,
-        "files": ["obfuscation-rules.txt"],
-      }
+"arkOptions": {
+  "obfuscation": {
+    "ruleOptions": {
+      "enable": true,
+      "files": ["obfuscation-rules.txt"],
     }
   }
 }
 ```
 When you create a new library, additional property `consumerFiles` will be added.
 ```
-"buildOption": {
-  "arkOptions": {
-    "obfuscation": {
-      "ruleOptions": {
-        "enable": true,
-        "files": ["obfuscation-rules.txt"],
-      }
-      "consumerFiles": ["consumer-rules.txt"]
+"arkOptions": {
+  "obfuscation": {
+    "ruleOptions": {
+      "enable": true,
+      "files": ["obfuscation-rules.txt"],
     }
+    "consumerFiles": ["consumer-rules.txt"]
   }
 }
 ```
@@ -103,7 +99,12 @@ property names will be kept. For example, the property name `data` in
     ```
     will not be obfuscated.
 For 'indirectly export' cases such as `export MyClass` and `let a = MyClass; export a;`, if you do not want to obfuscate
-their property names, you need to use [keep options](#keep-options) to keep them.
+their property names, you need to use [keep options](#keep-options) to keep them. Besides, for the property names of properties of directly exported classes or objects, like `name` and `age` in the following example, if you do not want to obfuscate them, then you also need [keep options](#keep-options) to keep them.
+    ```
+    export class MyClass {
+       person = {name: "123", age: 100};
+    }
+    ```
 * the property names defined in UI components. For example, the property names `message` and `data` in
     ```
     @Component struct MyExample {
@@ -115,8 +116,20 @@ their property names, you need to use [keep options](#keep-options) to keep them
     will not be obfuscated.
 * the property names that are specified by [keep options](#keep-options).
 * the property names in system API list. System API list is a name set which is extracted from SDK automatically by default.
-
-`-enable-toplevel-obfuscation`
+* the property names that are string literals. For example, the property names "name" and "age" in the following code will not be obfuscated.
+    ```
+    let person = {"name": "abc"};
+    person["age"] = 22;
+    ```
+    If you want to obfuscate these string literal property names, you should addtionally use the option `-enable-toplevel-obfuscation`. For example,
+    ```
+    -enable-property-obfuscation
+    -enable-string-property-obfuscation
+    ```
+    Note: If there are string literal property names which contain special characters (that is, all characters except
+    `a-z, A-Z, 0-9, _`, for example `let obj = {"\n": 123, "": 4, " ": 5}` then we would not suggest to enable the
+    option `-enable-string-property-obfuscation`, because [keep options](#keep-options) may not allow to keep these
+    names when you do not want to obfuscate them.
 
 Specifies to obfuscate the names in the global scope. If you use this option, all global names will be obfuscated
 except the following:
@@ -165,8 +178,7 @@ lastName
 
 **What property names should be kept?**
 
-Property obfuscation will not obfuscate the string literals and properties that are accessed dynamically.
-So for safety, we would suggest keeping all property names that are accessed dynamically.
+For safety, we would suggest keeping all property names that are not accessed through dot syntax.
 
 Example:
 ```
@@ -175,8 +187,8 @@ for (var i = 0; i <= 2; i++) {
   console.log(obj['x' + i]);  // x0, x1, x2 should be kept
 }
 
-Object.defineProperty(obj, 'y', {});
-console.log(obj.y);           // y should be kept
+Object.defineProperty(obj, 'y', {});  // y should be kept
+console.log(obj.y);
 
 obj.s = 0;
 let key = 's';
@@ -186,19 +198,10 @@ obj.u = 0;
 console.log(obj.u);           // u can be safely obfuscated
 
 obj.t = 0;
-console.log(obj['t']);        // t and 't' can be safely obfuscated, but we suggest keeping t
+console.log(obj['t']);        // t and 't' can be safely obfuscated when `-enable-string-property-obfuscation`, but we suggest keeping t
 
 obj['v'] = 0;
-console.log(obj['v']);        // 'v' can be safely obfuscated, but we suggest keeping v
-```
-The property names defined in UI components should also be kept for now. In the future, we will keep them automatically.
-```
-@Entry
-@Component
-struct Index {
-  @State messaage: string = 'Hello World';    // messaage should be kept
-  foo(){};                                    // foo should be kept
-}
+console.log(obj['v']);        // 'v' can be safely obfuscated when `-enable-string-property-obfuscation`, but we suggest keeping v
 ```
 
 `-keep-global-name` [,modifiers,...]
