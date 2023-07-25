@@ -47,7 +47,6 @@ def get_tool(url):
 
 
 if __name__ == "__main__":
-    yl = open(r".\get_resource\config.yaml", 'r')
-    data = yaml.safe_load(yl.read())
+    with open(r".\get_resource\config.yaml", 'r') as config_file:
+        data = yaml.safe_load(config_file.read())
     get_tool(data['url_tools'])
-    yl.close()

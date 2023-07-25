@@ -70,10 +70,9 @@ def change_port(xml_path, xml_dw="./environment/device/port"):
 
 
 if __name__ == '__main__':
-    yl = open(r".\get_resource\config.yaml", 'r')
-    data = yaml.safe_load(yl.read())
+    with open(r".\get_resource\config.yaml", 'r') as config_file:
+        data = yaml.safe_load(config_file.read())
     dest_url = get_url(data['url_dailybuilds'], data['headers'], data['data'], data['url_dayu200'])
     get_images_and_testcases(dest_url, data['path_xts_pack'], data['path_xts_dir'])
     change_port(data['path_configfile'])
-    yl.close()
     

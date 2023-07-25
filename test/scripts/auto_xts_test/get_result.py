@@ -21,12 +21,12 @@ import shutil
 import yaml
     
 if __name__ == "__main__":
-    yl = open(r".\get_resource\config.yaml", 'r')
-    data = yaml.safe_load(yl.read())
+    with open(r".\get_resource\config.yaml", 'r') as f:
+        data = yaml.safe_load(f.read())
+
     path = data['path_xts_report']
-    yl.close()
     file_list = os.listdir(path)
-    
+
     summary_report = os.path.join(path, file_list[-1], "summary_report.html")
     if (os.path.exists(summary_report)):
         shutil.copy2(summary_report, "result\\")
