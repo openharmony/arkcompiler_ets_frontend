@@ -49,7 +49,7 @@ public:
 
     static void SetConcurrent(ir::ScriptFunction *func, const ir::AstNode *node, const lexer::LineIndex &lineIndex);
     static void ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *expr,
-                                    ConcurrentInvalidFlag errFlag);
+                                               ConcurrentInvalidFlag errFlag, util::StringView varName = "");
     static void VerifyImportVarForConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *node,
                                             const binder::ScopeFindResult &result);
 };
