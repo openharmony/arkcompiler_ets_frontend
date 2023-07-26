@@ -212,6 +212,7 @@ private:
     void ResolveReferences(const ir::AstNode *parent);
     void ValidateExportDecl(const ir::ExportNamedDeclaration *exportDecl);
     void StoreAndCheckSpecialFunctionName(std::string &internalNameStr, std::string recordName);
+    void ReplaceConstReferenceWithInitialization(const ir::Identifier *ident, const Decl *decl);
 
     // TypeScript specific functions
     void BuildTSSignatureDeclarationBaseParams(const ir::AstNode *typeNode);
