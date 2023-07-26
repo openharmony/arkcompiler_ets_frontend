@@ -73,7 +73,7 @@ bool Token::IsPropNameLiteral() const
 
 bool Token::IsKeyword() const
 {
-    return (type_ >= TokenType::FIRST_KEYW);
+    return (type_ >= TokenType::FIRST_KEYW || type_ == TokenType::KEYW_IN || type_ == TokenType::KEYW_INSTANCEOF);
 }
 
 bool Token::IsReservedTypeName() const
