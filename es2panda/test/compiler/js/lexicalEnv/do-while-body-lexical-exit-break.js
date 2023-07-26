@@ -13,17 +13,29 @@
  * limitations under the License.
  */
 
-let c;
-let b = 1;
-function x() {
-    do {
-        let a = 1;
-        c = function b() {
-            print(a);
-        }
-        b++;
-    } while ((() => { return b })() == 1)
+function a2() {
+    let dd;
+    let a1 = 2
+    function a() {
+    
+        var c = 1;
+        do {
+            let d = 1;
+            if (c == 2) {
+                break;
+            }
+            dd = function b() {
+                print(d, a1);
+            }
+            c++;
+            d++;
+        } while (true)
+    
+        print(a1);
+    }
+
+    a();
 }
 
-x();
-c();
+a2();
+
