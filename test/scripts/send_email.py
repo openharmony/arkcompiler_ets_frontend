@@ -55,8 +55,9 @@ def add_image(msg, img_dic):
 
 
 def send_email():
-    yl = open(r".\email_config.yaml", 'r')
-    data = yaml.safe_load(yl.read())
+    with open(r".\email_config.yaml", 'r') as f:
+        data = yaml.safe_load(f.read())
+        
     user_name = data["user_name"]
     sender = data["sender_email_address"]
     auth_code = data["auth_code"]
@@ -68,7 +69,6 @@ def send_email():
     perf_test = data["perf_report_file"]
     attachment_files = data["attatchment_files"]
     image_files = data["image_files"]
-    yl.close()
 
     msg = MIMEMultipart()
     msg['From'] = sender

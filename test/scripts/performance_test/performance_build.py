@@ -215,9 +215,8 @@ class PerformanceBuild():
         if self.developing_test_mode:
             content = self.developing_test_data.split("\t")
         else:
-            src = open(self.config.temp_filename, "r", encoding='UTF-8')
-            content = src.read().split("\t")
-            src.close()
+            with open(self.config.temp_filename, "r", encoding='UTF-8') as src:
+                content = src.read().split("\t")
         clean_filter = False
         for task_build_time_str in content:
             if len(task_build_time_str) == 0:
