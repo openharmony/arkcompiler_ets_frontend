@@ -44,12 +44,13 @@ void DoWhileStatement::Compile(compiler::PandaGen *pg) const
 
     pg->SetLabel(this, startLabel);
 
-    compiler::LoopEnvScope envScope(pg, labelTarget, scope_);
-    body_->Compile(pg);
+    {
+        compiler::LoopEnvScope envScope(pg, labelTarget, scope_);
+        body_->Compile(pg);
+    }
 
     pg->SetLabel(this, labelTarget.ContinueTarget());
     compiler::Condition::Compile(pg, this->Test(), labelTarget.BreakTarget());
-    envScope.PopLexEnvBeforeTheNextIter();
 
     pg->Branch(this, startLabel);
     pg->SetLabel(this, labelTarget.BreakTarget());
