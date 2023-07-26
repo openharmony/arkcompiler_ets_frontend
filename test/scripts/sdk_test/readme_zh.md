@@ -6,12 +6,13 @@
 
 ## SDK测试套使用
 ### 运行环境
-SDK测试自动化脚本运行环境为windows，python3.7及以上。
+SDK测试自动化脚本运行环境为windows，python3.9及以上。
 ### 测试准备
 1. 确保环境中已安装Deveco
 2. 安装测试套依赖：
 `python3 -m pip install pyyaml validators requests httpx tqdm json5 pandas`
 3. 修改配置文件config.yaml，配置Deveco和测试应用的相关参数。各项配置说明详见该文件。
+4. 如需新增测试应用，可修改配置文件config.yaml，在haps字段中增加配置。可参考配置中的已有应用进行配置。
 
 ### 测试运行
 测试套支持daily运行和手动单次运行。

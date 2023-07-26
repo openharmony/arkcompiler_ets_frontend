@@ -29,5 +29,7 @@ attatchment_files :
 image_files:
     "./performance_test/mail_data/debug_full_time.jpg": performance00
     "./performance_test/mail_data/debug_incremental_time.jpg": performance01
+    "./performance_test/mail_data/debug_size.jpg": performance02
     "./performance_test/mail_data/release_full_time.jpg": performance10
     "./performance_test/mail_data/release_incremental_time.jpg": performance11
+    "./performance_test/mail_data/release_size.jpg": performance12
