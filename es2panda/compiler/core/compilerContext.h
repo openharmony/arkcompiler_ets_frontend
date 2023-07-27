@@ -44,8 +44,10 @@ class Emitter;
 class CompilerContext {
 public:
     CompilerContext(binder::Binder *binder, bool isDebug, bool isDebuggerEvaluateExpressionMode,
-                    bool isMergeAbc, bool isTypeExtractorEnabled, bool isJsonInputFile, std::string sourceFile,
-                    std::string pkgName, util::StringView recordName, util::PatchFix *patchFixHelper);
+                    bool isMergeAbc, bool isTypeExtractorEnabled, bool isJsonInputFile, bool isRecordSource,
+                    std::string sourceFile, std::string pkgName, util::StringView recordName,
+                    util::PatchFix *patchFixHelper);
+
     NO_COPY_SEMANTIC(CompilerContext);
     NO_MOVE_SEMANTIC(CompilerContext);
     ~CompilerContext() = default;
@@ -134,6 +136,12 @@ public:
         return isJsonInputFile_;
     }
 
+    bool IsRecordSource() const
+    {
+        return isRecordSource_;
+; 
+    }
+
 private:
     binder::Binder *binder_;
     int32_t literalBufferIdx_ {0};
@@ -145,6 +153,7 @@ private:
     bool isTypeExtractorEnabled_;
     // true when input file is json file
     bool isJsonInputFile_;
+    bool isRecordSource_;
     extractor::TypeRecorder *recorder_ {};
     extractor::TypeExtractor *extractor_ {};
     std::string sourceFile_;

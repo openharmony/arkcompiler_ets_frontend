@@ -41,8 +41,8 @@ panda::pandasm::Program *CompilerImpl::Compile(parser::Program *program, const e
 {
     bool isTypeExtractorEnabled = ((program->Extension() == ScriptExtension::TS) && options.typeExtractor);
     CompilerContext context(program->Binder(), options.isDebug, options.isDebuggerEvaluateExpressionMode,
-                            options.mergeAbc, isTypeExtractorEnabled, false, debugInfoSourceFile, pkgName,
-                            program->RecordName(), patchFixHelper_);
+                            options.mergeAbc, isTypeExtractorEnabled, false, options.recordSource, debugInfoSourceFile,
+                            pkgName, program->RecordName(), patchFixHelper_);
 
     ArenaAllocator localAllocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
 
