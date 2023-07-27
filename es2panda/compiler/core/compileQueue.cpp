@@ -47,8 +47,8 @@ void CompileFunctionJob::Run()
 
     context_->GetEmitter()->AddFunction(&funcEmitter, context_);
 
-    if (dependant_) {
-        dependant_->Signal();
+    for (auto *dependant : dependants_) {
+        dependant->Signal();
     }
 }
 
@@ -62,8 +62,8 @@ void CompileModuleRecordJob::Run()
 
     context_->GetEmitter()->AddSourceTextModuleRecord(&moduleEmitter, context_);
 
-    if (dependant_) {
-        dependant_->Signal();
+    for (auto *dependant : dependants_) {
+        dependant->Signal();
     }
 }
 

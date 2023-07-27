@@ -26,14 +26,28 @@ void EmitFileQueue::Schedule()
     ASSERT(jobsCount_ == 0);
     std::unique_lock<std::mutex> lock(m_);
 
-    // generate abcs
     if (mergeAbc_) {
+        // generate merged abc
         auto emitMergedAbcJob = new EmitMergedAbcJob(options_->CompilerOutput(), progsInfo_);
         jobs_.push_back(emitMergedAbcJob);
         jobsCount_++;
+        for (const auto &info: progsInfo_) {
+            // generate cache protoBins and set dependencies
+            if (!info.second->needUpdateCache) {
+                continue;
+            }
+            auto outputCacheIter = options_->CompilerOptions().cacheFiles.find(info.first);
+            if (outputCacheIter != options_->CompilerOptions().cacheFiles.end()) {
+                auto emitProtoJob = new EmitCacheJob(outputCacheIter->second, info.second);
+                emitProtoJob->DependsOn(emitMergedAbcJob);
+                jobs_.push_back(emitProtoJob);
+                jobsCount_++;
+            }
+        }
     } else {
         for (const auto &info: progsInfo_) {
             try {
+                // generate multi abcs
                 auto outputFileName = options_->OutputFiles().empty() ? options_->CompilerOutput() :
                     options_->OutputFiles().at(info.first);
                 auto emitSingleAbcJob = new EmitSingleAbcJob(outputFileName, &(info.second->program), statp_);
@@ -42,19 +56,6 @@ void EmitFileQueue::Schedule()
             } catch (std::exception &error) {
                 throw Error(ErrorType::GENERIC, error.what());
             }
-        }
-    }
-
-    // generate cache protoBins
-    for (const auto &info: progsInfo_) {
-        if (!info.second->needUpdateCache) {
-            continue;
-        }
-        auto outputCacheIter = options_->CompilerOptions().cacheFiles.find(info.first);
-        if (outputCacheIter != options_->CompilerOptions().cacheFiles.end()) {
-            auto emitProtoJob = new EmitCacheJob(outputCacheIter->second, info.second);
-            jobs_.push_back(emitProtoJob);
-            jobsCount_++;
         }
     }
 
@@ -68,6 +69,9 @@ void EmitSingleAbcJob::Run()
         nullptr, true)) {
         throw Error(ErrorType::GENERIC, "Failed to emit " + outputFileName_ + ", error: " +
             panda::pandasm::AsmEmitter::GetLastError());
+    }
+    for (auto *dependant : dependants_) {
+        dependant->Signal();
     }
 }
 
@@ -83,10 +87,15 @@ void EmitMergedAbcJob::Run()
         throw Error(ErrorType::GENERIC, "Failed to emit " + outputFileName_ + ", error: " +
             panda::pandasm::AsmEmitter::GetLastError());
     }
+    for (auto *dependant : dependants_) {
+        dependant->Signal();
+    }
 }
 
 void EmitCacheJob::Run()
 {
+    std::unique_lock<std::mutex> lock(m_);
+    cond_.wait(lock, [this] { return dependencies_ == 0; });
     panda::proto::ProtobufSnapshotGenerator::UpdateCacheFile(progCache_, outputProtoName_);
 }
 
