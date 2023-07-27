@@ -15,11 +15,15 @@
 # limitations under the License.
 
 
+import logging
 import os
 import subprocess
 import stat
+import sys
 import time
 import zipfile
+
+import json5
 
 import performance_config
 
@@ -33,43 +37,12 @@ class PerformanceBuild():
         self.size_avg_dic = {}
         self.all_size_dic = {}
         self.mail_helper = None
-        self.built_times = 0
         self.mail_msg = ''
-        # If developing_test_mode is True, the project will not be built and use following test data
         self.developing_test_mode = False
-        self.developing_test_data = 'entry:clean|18 ms 	:clean|1 ms 	total build cost|1 s 204 ms 	' + \
-        'entry:default@OneTime|1 s 204 ms 	' + \
-        'entry:default@MergeProfile|4 ms 	entry:default@BuildNativeWithCmake|1 ms 	' + \
-        'entry:default@GenerateLoaderJson|2 ms 	entry:default@MakePackInfo|8 ms 	' + \
-        'entry:default@ProcessProfile|85 ms 	entry:default@BuildNativeWithNinja|1 ms 	' + \
-        'entry:default@ProcessResource|2 ms 	entry:default@ProcessLibs|3 ms 	entry:default@CompileResource|78 ms 	' + \
-        'entry:default@CompileJS|2 ms 	entry:default@CompileArkTS|2 s 591 ms 	entry:default@PackageHap|924 ms 	' + \
-        'entry:default@SignHap|2 ms 	entry:assembleHap|1 ms 	total build cost|4 s 886 ms 	' + \
-        'entry:default@BuildNativeWithCmake|1 ms 	entry:default@BuildNativeWithNinja|1 ms 	' + \
-        'entry:default@CompileJS|4 ms 	entry:default@CompileArkTS|2 s 472 ms 	entry:default@PackageHap|919 ms 	' + \
-        'entry:assembleHap|1 ms 	entry:default@SignHap|2 ms 	total build cost|4 s 632 ms 	' + \
-        'entry:clean|18 ms 	:clean|1 ms 	total build cost|1 s 204 ms 	entry:default@MergeProfile|4 ms 	' + \
-        'entry:default@BuildNativeWithCmake|1 ms 	entry:default@GenerateLoaderJson|2 ms 	' + \
-        'entry:default@MakePackInfo|8 ms 	entry:default@ProcessProfile|85 ms 	' + \
-        'entry:default@BuildNativeWithNinja|1 ms 	entry:default@ProcessResource|2 ms 	' + \
-        'entry:default@ProcessLibs|3 ms 	entry:default@CompileResource|78 ms 	entry:default@CompileJS|2 ms 	' + \
-        'entry:default@CompileArkTS|2 s 591 ms 	entry:default@PackageHap|924 ms 	entry:default@SignHap|2 ms 	' + \
-        'entry:assembleHap|1 ms 	total build cost|4 s 886 ms 	entry:default@BuildNativeWithCmake|1 ms 	' + \
-        'entry:default@BuildNativeWithNinja|1 ms 	entry:default@CompileJS|4 ms 	' + \
-        'entry:default@CompileArkTS|2 s 472 ms 	entry:default@PackageHap|919 ms 	entry:default@SignHap|2 ms 	' + \
-        'entry:assembleHap|1 ms 	total build cost|4 s 632 ms 	entry:clean|18 ms 	:clean|1 ms 	' + \
-        'total build cost|1 s 204 ms 	entry:default@MergeProfile|4 ms 	entry:default@BuildNativeWithCmake|1 ms' + \
-        ' 	entry:default@GenerateLoaderJson|2 ms 	entry:default@MakePackInfo|8 ms 	' + \
-        'entry:default@ProcessProfile|85 ms 	entry:default@BuildNativeWithNinja|1 ms' + \
-        ' 	entry:default@ProcessResource|2 ms 	entry:default@ProcessLibs|3 ms 	entry:default@CompileResource|78 ms' + \
-        ' 	entry:default@CompileJS|2 ms 	entry:default@CompileArkTS|2 s 591 ms 	' + \
-        'entry:default@PackageHap|924 ms 	entry:default@SignHap|2 ms 	entry:assembleHap|1 ms 	' + \
-        'total build cost|4 s 886 ms 	entry:default@BuildNativeWithCmake|1 ms 	' + \
-        'entry:default@BuildNativeWithNinja|1 ms 	entry:default@CompileJS|4 ms 	' + \
-        'entry:default@CompileArkTS|2 s 472 ms 	entry:default@PackageHap|919 ms 	entry:default@SignHap|2 ms 	' + \
-        'entry:assembleHap|1 ms 	total build cost|4 s 632 ms 	'
         self.mail_helper = mail_obj
         self.config = config_input
+        self.prj_name = ''
+        self.timeout = 180
 
     def start(self):
         self.init()
@@ -92,10 +65,10 @@ class PerformanceBuild():
         os.environ['JAVA_HOME'] = self.config.jbr_path
         self.config.cmd_prefix = os.path.join(self.config.project_path, self.config.cmd_prefix)
         self.config.log_direct = os.path.join(self.config.project_path, self.config.log_direct)
-        self.config.temp_filename = os.path.join(self.config.log_direct, self.config.temp_filename)
         self.config.debug_package_path = os.path.join(self.config.project_path, self.config.debug_package_path)
         self.config.release_package_path = os.path.join(self.config.project_path, self.config.release_package_path)
         self.config.incremental_code_path = os.path.join(self.config.project_path, self.config.incremental_code_path)
+        self.config.json5_path = os.path.join(self.config.project_path, self.config.json5_path)
         if not os.path.exists(self.config.log_direct):
             os.makedirs(self.config.log_direct)
         self.config.log_direct = os.path.join(self.config.log_direct,
@@ -104,12 +77,11 @@ class PerformanceBuild():
         if not os.path.exists(self.config.log_direct):
             os.makedirs(self.config.log_direct)
         self.config.log_direct = os.path.join(self.config.project_path, self.config.log_direct)
+        self.config.error_filename = os.path.join(self.config.log_direct, self.config.error_filename)
+        logging.basicConfig(filename=self.config.error_filename,
+                            format='[%(asctime)s %(filename)s:%(lineno)d]: [%(levelname)s] %(message)s')
         if self.developing_test_mode:
             self.config.build_times = 3
-
-    def clean_temp_log(self):
-        if os.path.exists(self.config.temp_filename):
-            os.remove(self.config.temp_filename)
 
     @staticmethod
     def add_code(code_path, start_pos, end_pos, code_str, lines):
@@ -151,14 +123,14 @@ class PerformanceBuild():
         self.all_time_dic = {}
         self.size_avg_dic = {}
         self.all_size_dic = {}
-        self.built_times = 0
-        self.clean_temp_log()
         self.revert_incremental_code()
 
     def clean_project(self):
         if not self.developing_test_mode:
             print(self.config.cmd_prefix + " clean --no-daemon")
-            subprocess.Popen(self.config.cmd_prefix + " clean --no-daemon").wait()
+            subprocess.Popen((self.config.cmd_prefix + " clean --no-daemon").split(" "),
+                             stderr=sys.stderr,
+                             stdout=sys.stdout).communicate(timeout=self.timeout)
 
     def get_bytecode_size(self, is_debug):
         if self.developing_test_mode:
@@ -180,10 +152,44 @@ class PerformanceBuild():
 
     def start_build(self, is_debug):
         if self.developing_test_mode:
-            return
+            # test data
+            PerformanceBuild.append_into_dic("task1", 6800, self.all_time_dic)
+            PerformanceBuild.append_into_dic("task2", 3200, self.all_time_dic)
+            PerformanceBuild.append_into_dic("total build cost", 15200, self.all_time_dic)
+            return True
         cmd_suffix = self.config.cmd_debug_suffix if is_debug else self.config.cmd_release_suffix
         print(self.config.cmd_prefix + cmd_suffix)
-        subprocess.Popen(self.config.cmd_prefix + cmd_suffix).wait()
+        p = subprocess.Popen((self.config.cmd_prefix + cmd_suffix).split(" "),
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+        while True:
+            log_str = p.stdout.readline().decode('utf-8')
+            if not log_str:
+                break
+            print(log_str, end='')
+            cost_time = 0
+            str_finished = "Finished :"
+            if str_finished in log_str:
+                name_start_pos = log_str.find(str_finished) + len(str_finished)
+                name_end_pos = log_str.find('...')
+                key_str = log_str[name_start_pos:name_end_pos]
+                cost_time = self.get_millisecond(log_str.split(' after ')[1])
+            elif 'BUILD SUCCESSFUL' in log_str:
+                key_str = 'total build cost'
+                cost_time = self.get_millisecond(log_str.split(' in ')[1])
+            elif 'ERROR' in log_str:
+                rest_error = p.stdout.read().decode('utf-8')
+                print(rest_error)
+                log_str += rest_error
+                logging.error(log_str)
+                p.communicate(timeout=self.timeout)
+                return False
+            else:
+                continue
+            PerformanceBuild.append_into_dic(key_str, cost_time, self.all_time_dic)
+        p.communicate(timeout=self.timeout)
+        return True
+        
 
     def get_millisecond(self, time_string):
         if self.config.ide != performance_config.IdeType.DevEco and not self.developing_test_mode:
@@ -211,27 +217,6 @@ class PerformanceBuild():
         
     def cal_incremental_avg_time(self):
         self.first_line_in_avg_excel = self.first_line_in_avg_excel + "\n"
-        content = ""
-        if self.developing_test_mode:
-            content = self.developing_test_data.split("\t")
-        else:
-            with open(self.config.temp_filename, "r", encoding='UTF-8') as src:
-                content = src.read().split("\t")
-        clean_filter = False
-        for task_build_time_str in content:
-            if len(task_build_time_str) == 0:
-                continue
-            pair = task_build_time_str.split("|")
-            key_str = pair[0]
-            if clean_filter:
-                if "total" in key_str:
-                    clean_filter = False
-                continue
-            if "clean" in key_str:
-                clean_filter = True
-                continue
-            cost_time = self.get_millisecond(pair[1])
-            PerformanceBuild.append_into_dic(key_str, cost_time, self.all_time_dic)
         for key in self.all_time_dic:
             task_count = len(self.all_time_dic[key])
             has_task = True
@@ -294,7 +279,6 @@ class PerformanceBuild():
     def cal_incremental_avg(self):
         self.cal_incremental_avg_time()
         self.cal_incremental_avg_size()
-        self.clean_temp_log()
 
     @staticmethod
     def add_row(context):
@@ -316,11 +300,26 @@ class PerformanceBuild():
     def app_title(context):
         return rf'<th bgcolor="SkyBlue" colspan="3"><font size="4">{context}</font></th>'
     
-    def write_mail_files(self, file_path, first_line, dic, mail_table_title="", is_debug=""):
+    def add_time_pic_data(self, dic, is_debug):
+        for key in dic:
+            full_time = dic[key][0]
+            full_time = float(full_time[:len(full_time) - 2])
+            incremental_time = dic[key][1]
+            incremental_time = float(incremental_time[:len(incremental_time) - 2])
+        self.mail_helper.add_pic_data(self.prj_name, is_debug, [full_time, incremental_time])
+
+    def add_size_pic_data(self, dic, is_debug):
+        for key in dic:
+            full_size = dic[key][0]
+            full_size = float(full_size[:len(full_size) - 5])
+        self.mail_helper.add_pic_data(self.prj_name, is_debug, [full_size])
+    
+    @staticmethod
+    def write_mail_files(first_line, dic, mail_table_title="", is_debug=""):
         msg = PerformanceBuild.test_type_title(mail_table_title)
         if first_line:
             first_row = ""
-            first_line_res = first_line.replace("\n", "").split("\t")
+            first_line_res = first_line.replace("\n", "").split(",")
             for i in first_line_res:
                 first_row += PerformanceBuild.add_th(i)
             rows = PerformanceBuild.add_row(first_row)
@@ -331,23 +330,17 @@ class PerformanceBuild():
                 for v in dic[key]:
                     content_row += PerformanceBuild.add_td(v)
                 rows += PerformanceBuild.add_row(content_row)
-                if is_debug != '':
-                    full_time = dic[key][0]
-                    full_time = float(full_time[:len(full_time) - 2])
-                    incremental_time = dic[key][1]
-                    incremental_time = float(incremental_time[:len(incremental_time) - 2])
-                    self.mail_helper.add_pic_data(is_debug, [full_time, incremental_time])
         msg += rows
         return msg
 
-    def write_from_dic(self, file_path, first_line, dic, mail_table_title="", is_debug=""):
+    def write_from_dic(self, file_path, first_line, dic):
         content_list = []
         if first_line:
             content_list.append(first_line)
         for key in dic:
             content_list.append(key)
             for v in dic[key]:
-                content_list.append("\t")
+                content_list.append(",")
                 content_list.append(str(v))
             content_list.append("\n")
         excel_path = os.path.join(self.config.log_direct, os.path.basename(file_path))
@@ -357,61 +350,117 @@ class PerformanceBuild():
                                stat.S_IRWXU | stat.S_IRWXO | stat.S_IRWXG), 'w') as excel:
             excel.write(content)
             self.mail_helper.add_logs_file(file_path, content.encode())
-        
-        if mail_table_title:
-            return self.write_mail_files(file_path, first_line, dic, mail_table_title, is_debug)
-        else:
-            return ""
 
-    def generate_full_and_incremental_results(self, is_debug):
+
+    def generate_full_and_incremental_results(self, is_debug, aot_mode):
         path_prefix = self.config.output_split.join(
             (self.config.ide_filename[self.config.ide - 1],
             self.config.debug_or_release[0 if is_debug else 1],
+            self.config.aot_mode[aot_mode],
             self.config.build_type_of_log[0])
         )
-        prj_name = os.path.basename(self.config.project_path)
         temp_mail_msg = ""
         # sizeAll
         file_path = self.config.output_split.join((path_prefix, self.config.log_filename[0]))
-        file_path = os.path.join(prj_name, file_path)
+        file_path = os.path.join(self.prj_name, file_path)
         self.write_from_dic(file_path, None, self.all_size_dic)
         # sizeAvg and mailmsg
         file_path = self.config.output_split.join((path_prefix, self.config.log_filename[1]))
-        file_path = os.path.join(prj_name, file_path)
-        temp_mail_msg += self.write_from_dic(file_path, self.first_line_in_avg_excel, self.size_avg_dic, "Size")
+        file_path = os.path.join(self.prj_name, file_path)
+        self.write_from_dic(file_path, self.first_line_in_avg_excel, self.size_avg_dic)
+        temp_mail_msg += PerformanceBuild.write_mail_files(self.first_line_in_avg_excel,
+                                                           self.size_avg_dic, 'abc Size')
+        self.add_size_pic_data(self.size_avg_dic, is_debug)
         # timeAll
         file_path = self.config.output_split.join((path_prefix, self.config.log_filename[2]))
-        file_path = os.path.join(prj_name, file_path)
+        file_path = os.path.join(self.prj_name, file_path)
         self.write_from_dic(file_path, None, self.all_time_dic)
         # timeAvg and mailmsg
         file_path = self.config.output_split.join((path_prefix, self.config.log_filename[3]))
-        file_path = os.path.join(prj_name, file_path)
-        temp_mail_msg += self.write_from_dic(file_path, self.first_line_in_avg_excel,
-                                             self.time_avg_dic, "Time", is_debug)
+        file_path = os.path.join(self.prj_name, file_path)
+        self.write_from_dic(file_path, self.first_line_in_avg_excel, self.time_avg_dic)
+        temp_mail_msg += PerformanceBuild.write_mail_files(self.first_line_in_avg_excel,
+                                                           self.time_avg_dic, 'Build Time', is_debug)
+        self.add_time_pic_data(self.time_avg_dic, is_debug)
         # mail files
         if self.config.send_mail:
             temp_mail_msg = '<table width="100%" border=1 cellspacing=0 cellpadding=0 align="center">' + \
-                PerformanceBuild.app_title(prj_name + (' Debug' if is_debug else ' Release')) + \
+                PerformanceBuild.app_title(self.prj_name + (' Debug' if is_debug else ' Release')) + \
                 temp_mail_msg + '</table>'
             self.mail_msg += temp_mail_msg
 
-    def full_and_incremental_build(self, is_debug):
+    def set_aot_mode(self, aot_mode):
+        with open(self.config.json5_path, 'r+', encoding='UTF-8') as modified_file:
+            json_obj = json5.load(modified_file)
+            opt_obj = json_obj.get("buildOption")
+            if not opt_obj:
+                opt_obj = {}
+                json_obj["buildOption"] = opt_obj
+            compile_mode = opt_obj.get("aotCompileMode")
+            if aot_mode == performance_config.AotMode.Type:
+                if compile_mode == 'type':
+                    return
+                else:
+                    opt_obj["aotCompileMode"] = 'type'
+            else:
+                if not compile_mode:
+                    return
+                else:
+                    del opt_obj["aotCompileMode"]
+            modified_file.seek(0)
+            json5.dump(json_obj, modified_file, indent=4)
+            modified_file.truncate()
+
+
+    def error_handle(self, is_debug, log_type, aot_mode):
+        build_mode = performance_config.BuildMode.DEBUG if is_debug else performance_config.BuildMode.RELEASE
+        if log_type == performance_config.LogType.FULL:
+            self.mail_helper.add_failed_project(self.prj_name, build_mode,
+                                                performance_config.LogType.FULL, aot_mode)
+        self.mail_helper.add_failed_project(self.prj_name, build_mode,
+                                            performance_config.LogType.INCREMENTAL, aot_mode)
+        if os.path.exists(self.config.error_filename):
+            with open(self.config.error_filename, 'r') as error_log:
+                save_name = os.path.basename(self.config.error_filename)
+                self.mail_helper.add_logs_file(os.path.join(self.prj_name, save_name),
+                                               error_log.read())
+
+    def full_and_incremental_build(self, is_debug, aot_mode):
         self.reset()
-        self.first_line_in_avg_excel = self.first_line_in_avg_excel + "\tfirst build\tincremental build"
+        self.set_aot_mode(aot_mode)
+        self.prj_name = self.mail_helper.get_project_name(
+            os.path.basename(self.config.project_path),
+            aot_mode
+        )
+        if self.developing_test_mode:
+            PerformanceBuild.append_into_dic("task0", 7100, self.all_time_dic)
+        self.first_line_in_avg_excel = self.first_line_in_avg_excel + ",first build,incremental build"
         for i in range(self.config.build_times):
             self.clean_project()
-            self.start_build(is_debug)
+            print(f"fullbuild: is_debug{is_debug}, aot_mode:{aot_mode == performance_config.AotMode.Type}")
+            res = self.start_build(is_debug)
+            if not res:
+                self.error_handle(is_debug, performance_config.LogType.FULL, aot_mode)
+                return res
             self.get_bytecode_size(is_debug)
             self.add_incremental_code(1)
-            self.start_build(is_debug)
+            print(f"incremental: is_debug{is_debug}, aot_mode:{aot_mode == performance_config.AotMode.Type}")
+            res = self.start_build(is_debug)
+            if not res:
+                self.error_handle(is_debug, performance_config.LogType.INCREMENTAL, aot_mode)
+                return res
             self.get_bytecode_size(is_debug)
             self.revert_incremental_code()
         self.cal_incremental_avg()
-        self.generate_full_and_incremental_results(is_debug)
+        self.generate_full_and_incremental_results(is_debug, aot_mode)
+        return True
 
     def start_test(self):
-        self.full_and_incremental_build(True)
-        self.full_and_incremental_build(False)
+        self.full_and_incremental_build(True, performance_config.AotMode.NoAOT)
+        self.full_and_incremental_build(False, performance_config.AotMode.NoAOT)
+        self.full_and_incremental_build(True, performance_config.AotMode.Type)
+        self.full_and_incremental_build(False, performance_config.AotMode.Type)
+        self.set_aot_mode(performance_config.AotMode.NoAOT)
 
     def write_mail_msg(self):
         if self.config.send_mail:
@@ -422,7 +471,7 @@ def run(config_input, mail_obj):
     start_time = time.time()
     PerformanceBuild(config_input, mail_obj).start()
     print("Test [%s] finished at: %s\n"\
-          "total cost: %ds"
-          % (os.path.basename(config_input.project_path),
+        "total cost: %ds"
+        % (os.path.basename(config_input.project_path),
             time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
             time.time() - start_time))

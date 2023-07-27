@@ -19,14 +19,19 @@ import os
 
 class IdeType():
     AS = 1
-    DevEco = 2    
+    DevEco = 2
+
+
+class AotMode():
+    NoAOT = 0
+    Type = 1
 
 
 class Config():
     log_direct = "buildTestData"
     log_direct_data_format = "%Y-%m-%d-%H-%M-%S"
-    temp_filename = "temp.txt"
     send_mail = True
+    run_list = ["FTB", "FDY", "FWX"]
 
     def __init__(self):
         # Default config settings for all projects, if it's not what you need, config them in application_configs
@@ -36,8 +41,10 @@ class Config():
         self.ide_filename = ["AS", "DevEco"]
         self.debug_or_release = ["Debug", "Release"]
         self.build_type_of_log = ["full_then_incremental", "add_code_and_ui"]
-        self.log_filename = ["sizeAll.csv", "sizeAvg.csv",
-                             "timeAll.csv", "timeAvg.csv"]
+        self.log_filename = ["size_all.csv", "size_avg.csv",
+                             "time_all.csv", "time_avg.csv"]
+        self.error_filename = 'error.log'
+        self.aot_mode = ["noaot", "aottype"]
         self.ide = IdeType.DevEco
         self.incremental_code_str = "let index = 5 + 6\n"
         self.incremental_code_start_pos = "let index = 5 + 6\n"
@@ -47,6 +54,7 @@ class Config():
         self.debug_package_path = r'entry/build/default/outputs/default/entry-default-signed.hap'
         self.release_package_path = r'entry/build/default/outputs/default/app/entry-default.hap'
         self.incremental_code_path = r'entry/src/main/ets/pages/Index.ets'
+        self.json5_path = r'entry/build-profile.json5'
 
         # build serveral times then calculate the average value
         self.build_times = 3
@@ -110,12 +118,16 @@ def get_config(index):
 
 def get_html_prefix():
     return '<html><body><table width="100%" border=1 cellspacing=0 cellpadding=0 align="center">' + \
-           '<tr><th bgcolor="SlateBlue"><font size="5">Daily Performance Test</font></th></tr></table>'
+           '<tr><th bgcolor="SlateBlue"><font size="5">Daily Performance Test</font></th></tr></table>' + \
+           '<font size="5" color=red>{}' + \
+           '<img src="cid:performance10"><img src="cid:performance11">' + \
+           '<img src="cid:performance00"><img src="cid:performance01">' + \
+           '<img src="cid:performance02"><img src="cid:performance12">'
+           
 
 
 def get_html_suffix():
-    return '<br><img src="cid:performance00"></br><br><img src="cid:performance01"></br>' + \
-           '<br><img src="cid:performance10"></br><br><img src="cid:performance11"></br></body></html>'
+    return '</body></html>'
 
 
 class BuildMode():
@@ -123,9 +135,10 @@ class BuildMode():
     RELEASE = 1
 
 
-class BuildType():
+class LogType():
     FULL = 0
     INCREMENTAL = 1
+    SIZE = 2
 
 
 class MailPicConfig():
@@ -147,33 +160,39 @@ class MailPicConfig():
     # Count of days which will be add into the email picture
     mail_pic_table_name = {
         BuildMode.DEBUG: {
-            BuildType.FULL: os.path.join(mail_data_path, 'debug_full_time.csv'),
-            BuildType.INCREMENTAL: os.path.join(mail_data_path, 'debug_incremental_time.csv')
+            LogType.FULL: os.path.join(mail_data_path, 'debug_full_time.csv'),
+            LogType.INCREMENTAL: os.path.join(mail_data_path, 'debug_incremental_time.csv'),
+            LogType.SIZE: os.path.join(mail_data_path, 'debug_size.csv')
         },
         BuildMode.RELEASE:{
-            BuildType.FULL: os.path.join(mail_data_path, 'release_full_time.csv'),
-            BuildType.INCREMENTAL: os.path.join(mail_data_path, 'release_incremental_time.csv')
+            LogType.FULL: os.path.join(mail_data_path, 'release_full_time.csv'),
+            LogType.INCREMENTAL: os.path.join(mail_data_path, 'release_incremental_time.csv'),
+            LogType.SIZE: os.path.join(mail_data_path, 'release_size.csv')
         }
     }
     
     mail_pic_name = {
         BuildMode.DEBUG: {
-            BuildType.FULL:os.path.join(mail_data_path, 'debug_full_time.jpg'),
-            BuildType.INCREMENTAL: os.path.join(mail_data_path, 'debug_incremental_time.jpg')
+            LogType.FULL:os.path.join(mail_data_path, 'debug_full_time.jpg'),
+            LogType.INCREMENTAL: os.path.join(mail_data_path, 'debug_incremental_time.jpg'),
+            LogType.SIZE: os.path.join(mail_data_path, 'debug_size.jpg')
         },
         BuildMode.RELEASE:{
-            BuildType.FULL: os.path.join(mail_data_path, 'release_full_time.jpg'),
-            BuildType.INCREMENTAL: os.path.join(mail_data_path, 'release_incremental_time.jpg')
+            LogType.FULL: os.path.join(mail_data_path, 'release_full_time.jpg'),
+            LogType.INCREMENTAL: os.path.join(mail_data_path, 'release_incremental_time.jpg'),
+            LogType.SIZE: os.path.join(mail_data_path, 'release_size.jpg')
         }
     }
     
     mail_pic_table_lable = {
         BuildMode.DEBUG: {
-            BuildType.FULL: 'Debug Full Build',
-            BuildType.INCREMENTAL: 'Debug Incremental Build'
+            LogType.FULL: 'Debug Full Build',
+            LogType.INCREMENTAL: 'Debug Incremental Build',
+            LogType.SIZE: 'Debug Full Build size'
         },
         BuildMode.RELEASE:{
-            BuildType.FULL: 'Release Full Build',
-            BuildType.INCREMENTAL: 'Release Incremental Time'
+            LogType.FULL: 'Release Full Build',
+            LogType.INCREMENTAL: 'Release Incremental Time',
+            LogType.SIZE: 'Release Full Build size'
         }
     }
