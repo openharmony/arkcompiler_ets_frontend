@@ -93,6 +93,8 @@ public:
 
     void CopyPerIterationCtx();
 
+    void PopLexEnvBeforeTheNextIter();
+
 private:
     static bool NeedEnv(binder::VariableScope *scope)
     {
