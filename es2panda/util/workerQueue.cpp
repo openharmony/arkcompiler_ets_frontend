@@ -19,7 +19,7 @@ namespace panda::es2panda::util {
 
 void WorkerJob::DependsOn(WorkerJob *job)
 {
-    job->dependant_ = this;
+    job->dependants_.push_back(this);
     dependencies_++;
 }
 
@@ -79,8 +79,8 @@ void WorkerQueue::Consume()
     activeWorkers_++;
 
     while (jobsCount_ > 0) {
-        --jobsCount_;
-        auto &job = *(jobs_[jobsCount_]);
+        auto &job = *(jobs_[jobs_.size() - jobsCount_]);
+        jobsCount_--;
 
         lock.unlock();
 
