@@ -14,28 +14,24 @@ Arkguard默认使能对参数名和局部变量名的混淆。顶层作用域名
 
 创建一个新工程的时候，配置文件`build-profile.json5`中会自动生成以下内容:
 ```
-"buildOption": {
-  "arkOptions": {
-    "obfuscation": {
-      "ruleOptions": {
-        "enable": true,
-        "files": ["obfuscation-rules.txt"],
-      }
+"arkOptions": {
+  "obfuscation": {
+    "ruleOptions": {
+      "enable": true,
+      "files": ["obfuscation-rules.txt"],
     }
   }
 }
 ```
 创建一个新的library的时候，还会额外生成`consumerFiles`属性:
 ```
-"buildOption": {
-  "arkOptions": {
-    "obfuscation": {
-      "ruleOptions": {
-        "enable": true,
-        "files": ["obfuscation-rules.txt"],
-      }
-      "consumerFiles": ["consumer-rules.txt"]
+"arkOptions": {
+  "obfuscation": {
+    "ruleOptions": {
+      "enable": true,
+      "files": ["obfuscation-rules.txt"],
     }
+    "consumerFiles": ["consumer-rules.txt"]
   }
 }
 ```
@@ -92,7 +88,12 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
     }
     ```
 对于间接导出的场景，比如`export MyClass`和`let a = MyClass; export a;`，如果你不想混淆它们的属性名，
-那么你需要使用[保留选项](#保留选项)来保留这些属性名。
+那么你需要使用[保留选项](#保留选项)来保留这些属性名。另外，对于直接导出的类或对象的属性的属性名，比如下面例子中的`name`和`age`, 如果你不想混淆它们，那么你也需要使用[保留选项](#保留选项)来保留这些属性名。
+    ```
+    export class MyClass {
+       person = {name: "123", age: 100};
+    }
+    ```
 * ArkUI组件中的属性名不会被混淆。比如下面例子中的`message`和`data`不会被混淆。
     ```
     @Component struct MyExample {
@@ -103,6 +104,17 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
     ```
 * 被[保留选项](#保留选项)指定的属性名不会被混淆。
 * 系统API列表中的属性名不会被混淆。系统API列表是构建时从SDK中自动提取出来的一个名称列表。
+* 字符串字面量属性名不会被混淆。比如下面例子中的`"name"`和`"age"`不会被混淆。
+    ```
+    let person = {"name": "abc"};
+    person["age"] = 22;
+    ```
+    如果你想混淆字符串字面量属性名，你需要在该选项的基础上再使用`-enable-string-property-obfuscation`选项。比如
+    ```
+    -enable-property-obfuscation
+    -enable-string-property-obfuscation
+    ```
+    注意：如果你的代码里面有字符串属性名包含特殊字符(除了`a-z, A-Z, 0-9, _`之外的字符)，比如`let obj = {"\n": 123, "": 4, " ": 5}`，我们建议不要开启`-enable-string-property-obfuscation`选项，因为当你不想混淆这些名字时，可能无法通过[保留选项](#保留选项)来指定保留这些名字。
 
 `-enable-toplevel-obfuscation`
 
@@ -149,7 +161,7 @@ lastName
 
 **哪些属性名应该被保留?**
 
-属性混淆不会混淆字符串字面量和动态访问的属性。为了保障混淆的正确性，我们建议你保留所有动态访问的属性。
+为了保障混淆的正确性，我们建议你保留所有不通过点语法访问的属性。
 
 例子:
 ```
@@ -158,8 +170,8 @@ for (var i = 0; i <= 2; i++) {
     console.log(obj['x' + i]);  // x0, x1, x2 应该被保留
 }
 
-Object.defineProperty(obj, 'y', {});
-console.log(obj.y);           // y 应该被保留
+Object.defineProperty(obj, 'y', {});  // y 应该被保留
+console.log(obj.y);
 
 obj.s = 0;
 let key = 's';
@@ -169,19 +181,10 @@ obj.u = 0;
 console.log(obj.u);           // u 可以被正确地混淆
 
 obj.t = 0;
-console.log(obj['t']);        // t and 't' 会被正确地混淆，但是我们建议保留
+console.log(obj['t']);        // 在开启字符串字面量属性名混淆时t和't'会被正确地混淆，但是我们建议保留
 
 obj['v'] = 0;
-console.log(obj['v']);        // 'v' 会被正确地混淆，但是我们建议保留
-```
-目前ArkUI组件的属性也应该被配置保留。后续我们会自动保留它们。
-```
-@Entry
-@Component
-struct Index {
-  @State messaage: string = 'Hello World';    // messaage 应该被保留
-  foo(){};                                    // foo 应该被保留
-}
+console.log(obj['v']);        // 在开启字符串字面量属性名混淆时'v'会被正确地混淆，但是我们建议保留
 ```
 
 `-keep-global-name` [,modifiers,...]
