@@ -2027,6 +2027,10 @@ void Transformer::CheckTransformedAstNode(const ir::AstNode *parent, ir::AstNode
         (childNode->AsClassProperty()->IsStatic() || childNode->AsClassProperty()->Value() != nullptr)) {
         return;
     }
+    if (childNode->IsMethodDefinition() &&
+        childNode->AsMethodDefinition()->Kind() == ir::MethodDefinitionKind::CONSTRUCTOR) {
+        return;
+    }
     if (childNode->IsDecorator()) {
         return;
     }
