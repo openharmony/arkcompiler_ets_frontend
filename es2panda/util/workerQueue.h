@@ -39,7 +39,7 @@ public:
 protected:
     std::mutex m_;
     std::condition_variable cond_;
-    WorkerJob *dependant_ {};
+    std::vector<WorkerJob *> dependants_ {};
     size_t dependencies_ {0};
 };
 
