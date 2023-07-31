@@ -80,11 +80,9 @@ void AsyncGeneratorFunctionBuilder::ExplicitReturn(const ir::AstNode *node) cons
     VReg resumeValue = pg_->AllocReg();
     VReg canSuspend = pg_->AllocReg();
 
-    pg_->StoreAccumulator(node, resumeValue);
-    pg_->GeneratorComplete(node, funcObj_);
-    pg_->LoadAccumulator(node, resumeValue);
     pg_->AsyncFunctionAwait(node, funcObj_);
     SuspendResumeExecution(node, resumeType, resumeValue);
+    pg_->GeneratorComplete(node, funcObj_);
     pg_->StoreConst(node, canSuspend, Constant::JS_TRUE);
     pg_->AsyncGeneratorResolve(node, funcObj_, resumeValue, canSuspend);
     pg_->EmitReturn(node);
