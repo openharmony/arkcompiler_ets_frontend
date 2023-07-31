@@ -1016,7 +1016,8 @@ ir::Expression *ParserImpl::ParseTsQualifiedReference(ir::Expression *typeName)
 
 ir::Expression *ParserImpl::ParseTsIndexAccessType(ir::Expression *typeName, bool throwError)
 {
-    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+    TypeAnnotationParsingOptions options = throwError ?
+        TypeAnnotationParsingOptions::THROW_ERROR : TypeAnnotationParsingOptions::NO_OPTS;
 
     do {
         lexer_->NextToken();  // eat '['
