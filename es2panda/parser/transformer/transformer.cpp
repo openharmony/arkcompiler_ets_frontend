@@ -1145,12 +1145,17 @@ binder::Variable *Transformer::FindTSModuleVariable(const ir::Expression *node,
             return nullptr;
         }
 
-        // we don't process js variable here because it can't be used in import equals.
+        res = currentScope->FindLocal(name, binder::ResolveBindingOptions::BINDINGS);
+        if (res != nullptr) {
+            *isType = false;
+            return nullptr;
+        }
+
         currentScope = currentScope->Parent();
     }
 
-    // It should be an imported variable, so it won't be a type here.
-    *isType = false;
+    // can not find variable
+    *isType = true;
     return nullptr;
 }
 
