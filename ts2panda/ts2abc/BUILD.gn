@@ -86,6 +86,7 @@ if (!ark_standalone_build) {
     ]
 
     deps = [
+      "../../es2panda:es2panda_lib",
       "//arkcompiler/ets_frontend/merge_abc:panda_assembly_proto_static",
       sdk_libc_secshared_dep,
     ]

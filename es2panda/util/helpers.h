@@ -82,7 +82,10 @@ public:
     template <typename T>
     static T BaseName(T const &path, T const &delims = std::string(panda::os::file::File::GetPathDelim()));
     static bool ReadFileToBuffer(const std::string &file, std::stringstream &ss);
-
+    static std::wstring Utf8ToUtf16(const std::string &utf8);
+    template <typename T, typename... Args>
+    static T FileStream(const std::string &str, Args &&...args);
+    
     static const uint32_t INVALID_INDEX = 4294967295L;
     static const uint32_t MAX_INT32 = 2147483647;
     static const uint32_t MAX_INT16 = std::numeric_limits<int16_t>::max();
@@ -107,6 +110,19 @@ template <class T>
 T Helpers::BaseName(T const &path, T const &delims)
 {
     return path.substr(path.find_last_of(delims) + 1);
+}
+
+template <typename T, typename... Args>
+T Helpers::FileStream(const std::string &str, Args &&...args)
+{
+    T fileStream;
+#ifdef PANDA_TARGET_WINDOWS
+    std::wstring filename = Helpers::Utf8ToUtf16(str);
+#else  //for linux and mac
+    std::string filename = str;
+#endif
+    fileStream.open(filename.c_str(), args...);
+    return fileStream;
 }
 
 }  // namespace panda::es2panda::util

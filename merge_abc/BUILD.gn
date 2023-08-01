@@ -175,6 +175,7 @@ ohos_executable("merge_abc") {
     ":panda_assembly_proto_static",
     "$ark_root/libziparchive:libarkziparchive_frontend_static",
     "$ark_third_party_root/icu/icu4c:static_icuuc",
+    "../es2panda:es2panda_lib",
   ]
 
   ldflags = []
