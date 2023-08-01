@@ -29,8 +29,6 @@ void EmitFileQueue::Schedule()
     if (mergeAbc_) {
         // generate merged abc
         auto emitMergedAbcJob = new EmitMergedAbcJob(options_->CompilerOutput(), progsInfo_);
-        jobs_.push_back(emitMergedAbcJob);
-        jobsCount_++;
         for (const auto &info: progsInfo_) {
             // generate cache protoBins and set dependencies
             if (!info.second->needUpdateCache) {
@@ -44,6 +42,9 @@ void EmitFileQueue::Schedule()
                 jobsCount_++;
             }
         }
+        //  One job should be placed after those jobs which depend on it to prevent blocking
+        jobs_.push_back(emitMergedAbcJob);
+        jobsCount_++;
     } else {
         for (const auto &info: progsInfo_) {
             try {
