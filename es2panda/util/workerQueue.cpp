@@ -79,8 +79,8 @@ void WorkerQueue::Consume()
     activeWorkers_++;
 
     while (jobsCount_ > 0) {
-        auto &job = *(jobs_[jobs_.size() - jobsCount_]);
-        jobsCount_--;
+        --jobsCount_;
+        auto &job = *(jobs_[jobsCount_]);
 
         lock.unlock();
 
