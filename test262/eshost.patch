@@ -48,7 +48,7 @@ index 947c1db..3bf41a0 100644
 +    let tempFile = path.join(this.out, tmps[1]);
 +    tempFile = tempFile.substring(0, tempFile.indexOf('.js'));
 +    let fileBase = path.basename(tempFile);
-+    if (tempFile.indexOf("/dynamic-import/") != -1) {
++    if (tempFile.indexOf("/dynamic-import/") != -1 || tempFile.indexOf("\\dynamic-import\\") != -1) {
 +      tempFile = path.join(tempFile, "/", fileBase);
 +    }
 +    tempFile = path.normalize(
