@@ -18,10 +18,12 @@
 #include <abc2program/program_dump.h>
 #include <assembly-program.h>
 #include <assembly-emitter.h>
-#include <emitFiles.h>
-#include <es2panda.h>
 #include <mem/arena_allocator.h>
 #include <mem/pool_manager.h>
+#include "utils/timers.h"
+
+#include <emitFiles.h>
+#include <es2panda.h>
 #include <options.h>
 #include <protobufSnapshotGenerator.h>
 #include <resolveDepsRelation.h>
@@ -279,6 +281,28 @@ static bool ResolveDepsRelations(const std::map<std::string, panda::es2panda::ut
     return depsRelationResolver.Resolve();
 }
 
+static bool ResolveAndGenerate(std::map<std::string, panda::es2panda::util::ProgramCache*> &programsInfo,
+                               const std::unique_ptr<panda::es2panda::aot::Options> &options)
+{
+    panda::Timer::timerStart(panda::EVENT_RESOLVE_DEPS, "");
+    // A mapping of program to its records which are resolved and collected as valid dependencies.
+    std::map<std::string, std::unordered_set<std::string>> resolvedDepsRelation {};
+
+    if (options->NeedCollectDepsRelation() &&
+        !ResolveDepsRelations(programsInfo, options, resolvedDepsRelation)) {
+        return true;
+    }
+    panda::Timer::timerEnd(panda::EVENT_RESOLVE_DEPS, "");
+
+    panda::Timer::timerStart(panda::EVENT_EMIT_ABC, "");
+    if (!GenerateAbcFiles(programsInfo, options, Compiler::GetExpectedProgsCount(), resolvedDepsRelation)) {
+        return true;
+    }
+    panda::Timer::timerEnd(panda::EVENT_EMIT_ABC, "");
+
+    return false;
+}
+
 int Run(int argc, const char **argv)
 {
     auto options = std::make_unique<Options>();
@@ -294,6 +318,7 @@ int Run(int argc, const char **argv)
         return 0;
     }
 
+    panda::Timer::timerStart(panda::EVENT_TOTAL, "");
     if (options->CompilerOptions().bcVersion || options->CompilerOptions().bcMinVersion) {
         std::string version = options->CompilerOptions().bcVersion ?
             panda::panda_file::GetVersion(panda::panda_file::version) :
@@ -306,6 +331,7 @@ int Run(int argc, const char **argv)
     panda::ArenaAllocator allocator(panda::SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
 
     Compiler::SetExpectedProgsCount(options->CompilerOptions().sourceFiles.size());
+    panda::Timer::timerStart(panda::EVENT_COMPILE, "");
     int ret = Compiler::CompileFiles(options->CompilerOptions(), programsInfo, &allocator);
 
     if (!CheckMergeModeConsistency(options->CompilerOptions().mergeAbc, programsInfo)) {
@@ -321,19 +347,15 @@ int Run(int argc, const char **argv)
             options->CompilerOptions(), programsInfo, &allocator);
         Compiler::SetExpectedProgsCount(Compiler::GetExpectedProgsCount() + 1);
     }
+    panda::Timer::timerEnd(panda::EVENT_COMPILE, "");
 
-    // A mapping of program to its records which are resolved and collected as valid dependencies.
-    std::map<std::string, std::unordered_set<std::string>> resolvedDepsRelation {};
-
-    if (options->NeedCollectDepsRelation() &&
-        !ResolveDepsRelations(programsInfo, options, resolvedDepsRelation)) {
+    if (ResolveAndGenerate(programsInfo, options)) {
         return 1;
     }
-
-    if (!GenerateAbcFiles(programsInfo, options, Compiler::GetExpectedProgsCount(), resolvedDepsRelation)) {
-        return 1;
+    panda::Timer::timerEnd(panda::EVENT_TOTAL, "");
+    if (!options->PerfFile().empty()) {
+        panda::Timer::PrintTimers();
     }
-
     return 0;
 }
 }  // namespace panda::es2panda::aot

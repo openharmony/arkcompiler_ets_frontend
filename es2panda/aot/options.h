@@ -134,6 +134,16 @@ public:
         return outputFiles_;
     }
 
+    std::string PerfFile() const
+    {
+        return perfFile_;
+    }
+
+    int PerfLevel() const
+    {
+        return perfLevel_;
+    }
+
     bool CollectInputFilesFromFileList(const std::string &input, const std::string &inputExtension);
     bool CollectInputFilesFromFileDirectory(const std::string &input, const std::string &extension);
     void ParseCacheFileOption(const std::string &cacheInput);
@@ -166,6 +176,8 @@ private:
     std::string npmModuleEntryList_;
     std::vector<es2panda::SourceFile> sourceFiles_;
     std::unordered_map<std::string, std::string> outputFiles_;
+    std::string perfFile_;
+    int perfLevel_ {0};
 };
 }  // namespace panda::es2panda::aot
 

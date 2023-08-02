@@ -15,6 +15,10 @@
 
 #include "compileQueue.h"
 
+#include <mem/arena_allocator.h>
+#include <mem/pool_manager.h>
+#include "utils/timers.h"
+
 #include <binder/binder.h>
 #include <binder/scope.h>
 #include <compiler/core/compilerContext.h>
@@ -22,8 +26,6 @@
 #include <compiler/core/function.h>
 #include <compiler/core/pandagen.h>
 #include <es2panda.h>
-#include <mem/arena_allocator.h>
-#include <mem/pool_manager.h>
 #include <protobufSnapshotGenerator.h>
 #include <util/commonUtil.h>
 #include <util/dumper.h>
@@ -103,6 +105,7 @@ void CompileFileJob::Run()
 {
     std::stringstream ss;
     std::string buffer;
+    panda::Timer::timerStart(panda::EVENT_READ_INPUT_AND_CACHE, src_->fileName);
     if (!src_->fileName.empty() && src_->isSourceMode) {
         if (!util::Helpers::ReadFileToBuffer(src_->fileName, ss)) {
             return;
@@ -110,35 +113,58 @@ void CompileFileJob::Run()
         buffer = ss.str();
         src_->source = buffer;
         if (RetrieveProgramFromCacheFiles(buffer)) {
+            panda::Timer::timerEnd(panda::EVENT_READ_INPUT_AND_CACHE, src_->fileName);
             return;
         }
     }
+    panda::Timer::timerEnd(panda::EVENT_READ_INPUT_AND_CACHE, src_->fileName);
 
+    CompileProgram();
+}
+
+void CompileFileJob::CompileProgram()
+{
     es2panda::Compiler compiler(src_->scriptExtension, options_->functionThreadCount);
     panda::pandasm::Program *prog = nullptr;
+
     if (src_->isSourceMode) {
+        panda::Timer::timerStart(panda::EVENT_COMPILE_FILE, src_->fileName);
         prog = compiler.CompileFile(*options_, src_, symbolTable_);
+        panda::Timer::timerEnd(panda::EVENT_COMPILE_FILE, src_->fileName);
     } else if (!options_->mergeAbc) {
         // If input is an abc file, in non merge-abc mode, compile classes one by one.
+        panda::Timer::timerStart(panda::EVENT_COMPILE_ABC_FILE, src_->fileName);
         prog = compiler.CompileAbcFile(src_->fileName, *options_);
+        panda::Timer::timerEnd(panda::EVENT_COMPILE_ABC_FILE, src_->fileName);
     } else {
         // If input is an abc file, in merge-abc mode, compile each class parallelly.
+        panda::Timer::timerStart(panda::EVENT_COMPILE_ABC_FILE, src_->fileName);
         compiler.CompileAbcFileInParallel(src_, *options_, progsInfo_, allocator_);
+        panda::Timer::timerEnd(panda::EVENT_COMPILE_ABC_FILE, src_->fileName);
         return;
     }
+
     if (prog == nullptr) {
         return;
     }
 
+    OptimizeAndCacheProgram(prog);
+}
+
+void CompileFileJob::OptimizeAndCacheProgram(panda::pandasm::Program *prog)
+{
     bool requireOptimizationAfterAnalysis = false;
     // When cross-program optimizations are required, skip program-local optimization at this stage
     // and perform it later after the analysis of all programs has been completed
     if (src_->isSourceMode && options_->transformLib.empty()) {
         if (options_->requireGlobalOptimization) {
+            panda::Timer::timerStart(panda::EVENT_OPTIMIZE_PROGRAM, src_->fileName);
             util::Helpers::AnalysisProgram(prog, src_->fileName);
             requireOptimizationAfterAnalysis = true;
         } else if (options_->optLevel != 0) {
+            panda::Timer::timerStart(panda::EVENT_OPTIMIZE_PROGRAM, src_->fileName);
             util::Helpers::OptimizeProgram(prog, src_->fileName);
+            panda::Timer::timerEnd(panda::EVENT_OPTIMIZE_PROGRAM, src_->fileName);
         }
     }
 
@@ -156,12 +182,16 @@ void CompileAbcClassJob::Run()
 {
     panda_file::File::EntityId recordId(classId_);
     auto *program = new panda::pandasm::Program();
-    compiler_.CompileAbcClass(recordId, *program);
+    std::string record_name = "";
+    compiler_.CompileAbcClass(recordId, *program, record_name);
 
     // Update version for abc input when needed
     if (options_.updatePkgVersionForAbcInput && pkgVersionUpdateRequiredInAbc_) {
+        panda::Timer::timerStart(panda::EVENT_UPDATE_ABC_PKG_VERSION, record_name);
         UpdatePackageVersion(program, options_);
+        panda::Timer::timerEnd(panda::EVENT_UPDATE_ABC_PKG_VERSION, record_name);
         // Remove redundant strings created due to version replacement
+        panda::Timer::timerStart(panda::EVENT_UPDATE_ABC_PROGRAM_STRING, record_name);
         if (options_.removeRedundantFile && hasUpdatedVersion_) {
             program->strings.clear();
             for (const auto &[_, function] : program->function_table) {
@@ -169,8 +199,10 @@ void CompileAbcClassJob::Run()
                 program->strings.insert(funcStringSet.begin(), funcStringSet.end());
             }
         }
+        panda::Timer::timerEnd(panda::EVENT_UPDATE_ABC_PROGRAM_STRING, record_name);
     }
 
+    panda::Timer::timerStart(panda::EVENT_UPDATE_ABC_PROG_CACHE, record_name);
     {
         std::unique_lock<std::mutex> lock(CompileFileJob::globalMutex_);
         ASSERT(compiler_.GetAbcFile().GetFilename().find(util::CHAR_VERTICAL_LINE) == std::string::npos);
@@ -181,6 +213,7 @@ void CompileAbcClassJob::Run()
         auto *cache = allocator_->New<util::ProgramCache>(std::move(*program));
         progsInfo_.emplace(name, cache);
     }
+    panda::Timer::timerEnd(panda::EVENT_UPDATE_ABC_PROG_CACHE, record_name);
 
     delete program;
     program = nullptr;
@@ -232,6 +265,7 @@ void CompileAbcClassJob::UpdatePackageVersion(panda::pandasm::Program *prog,
 void PostAnalysisOptimizeFileJob::Run()
 {
     util::Helpers::OptimizeProgram(program_, fileName_);
+    panda::Timer::timerEnd(panda::EVENT_OPTIMIZE_PROGRAM, fileName_);
 }
 
 void CompileFuncQueue::Schedule()
