@@ -38,6 +38,8 @@ TEST_FULL_DIR = os.path.join(DATA_DIR, "test")
 TEST_ES5_DIR = os.path.join(DATA_DIR, "test_es51")
 TEST_ES2015_DIR = os.path.join(DATA_DIR, "test_es2015")
 TEST_ES2021_DIR = os.path.join(DATA_DIR, "test_es2021")
+TEST_ES2022_DIR = os.path.join(DATA_DIR, "test_es2022")
+TEST_ES2023_DIR = os.path.join(DATA_DIR, "test_es2023")
 TEST_INTL_DIR = os.path.join(DATA_DIR, "test_intl")
 TEST_CI_DIR = os.path.join(DATA_DIR, "test_CI")
 
@@ -71,6 +73,8 @@ ES5_LIST_FILE = os.path.join("test262", "es5_tests.txt")
 ES2015_LIST_FILE = os.path.join("test262", "es2015_tests.txt")
 INTL_LIST_FILE = os.path.join("test262", "intl_tests.txt")
 ES2021_LIST_FILE = os.path.join("test262", "es2021_tests.txt")
+ES2022_LIST_FILE = os.path.join("test262", "es2022_tests.txt")
+ES2023_LIST_FILE = os.path.join("test262", "es2023_tests.txt")
 CI_LIST_FILE = os.path.join("test262", "CI_tests.txt")
 MODULE_LIST = []
 DYNAMIC_IMPORT_LIST = []
@@ -79,7 +83,7 @@ with open(os.path.join("test262", "module_tests.txt")) as m_file:
 with open(os.path.join("test262", "dynamicImport_tests.txt")) as d_file:
     DYNAMIC_IMPORT_LIST = d_file.read().splitlines()
 
-TEST262_GIT_HASH = "9ca13b12728b7e0089c7eb03fa2bd17f8abe297f"
+TEST262_GIT_HASH = "bad7c0487ee1edf4a9059ff2a51fd19fc2d53170"
 HARNESS_GIT_HASH = "9c499f028eb24e67781435c0bb442e00343eb39d"
 ESHOST_GIT_HASH = "fa2d4d27d9d6152002bdef36ee2d17e98b886268"
 ESNEXT_GIT_HASH = "281eb10b2844929a7c0ac04527f5b42ce56509fd"
