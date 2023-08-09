@@ -144,7 +144,7 @@ static void GenObjectProperty(PandaGen *pg, const ir::ObjectExpression *object,
     LReference lref = LReference::CreateLRef(pg, target, object->IsDeclaration());
 
     // load obj property from rhs, return undefined if no corresponding property exists
-    if (key->IsIdentifier()) {
+    if (key->IsIdentifier() && !propExpr->IsComputed()) {
         pg->LoadObjByName(element, value, key->AsIdentifier()->Name());
     } else {
         key->Compile(pg);
