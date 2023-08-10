@@ -3004,9 +3004,15 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
             ConsumeSemicolon(astNode->AsTSImportEqualsDeclaration());
             return astNode->AsTSImportEqualsDeclaration();
         }
+        if (Extension() == ScriptExtension::TS && !context_.IsModule()) {
+            ThrowSyntaxError("'import' and 'export' may appear only with 'sourceType: module'");
+        }
         source = ParseFromClause(true);
         AddImportEntryItem(source, &specifiers, isType);
     } else {
+        if (Extension() == ScriptExtension::TS && !context_.IsModule()) {
+            ThrowSyntaxError("'import' and 'export' may appear only with 'sourceType: module'");
+        }
         // import 'source'
         source = ParseFromClause(false);
         AddImportEntryItem(source, nullptr, isType);
