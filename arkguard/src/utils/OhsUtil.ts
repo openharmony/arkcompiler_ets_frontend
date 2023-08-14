@@ -14,7 +14,6 @@
  */
 
 import {
-  ElementAccessExpression,
   isBinaryExpression,
   isCallExpression,
   isClassDeclaration,
@@ -29,13 +28,9 @@ import {
   isPropertyDeclaration,
   isStructDeclaration,
   isStringLiteral,
-  InterfaceDeclaration,
   isTypeLiteralNode,
   isVariableStatement,
-  PropertyName,
   SyntaxKind,
-  TypeAliasDeclaration,
-  Modifier,
   isExpressionStatement,
   isClassExpression,
 } from 'typescript';
@@ -43,13 +38,18 @@ import {
 import type {
   ClassDeclaration,
   ClassExpression,
+  ElementAccessExpression,
   EnumDeclaration,
   Expression,
   HeritageClause,
+  InterfaceDeclaration,
+  Modifier,
   NodeArray,
   ObjectLiteralExpression,
+  PropertyName,
   Statement,
   StructDeclaration,
+  TypeAliasDeclaration,
 } from 'typescript';
 
 import {OhPackType} from './TransformUtil';
