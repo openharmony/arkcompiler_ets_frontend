@@ -1,0 +1,1 @@
+SyntaxError: '=>' expected. [test-object-expression2.ts:20:1]
