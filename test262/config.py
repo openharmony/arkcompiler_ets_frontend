@@ -83,7 +83,7 @@ with open(os.path.join("test262", "module_tests.txt")) as m_file:
 with open(os.path.join("test262", "dynamicImport_tests.txt")) as d_file:
     DYNAMIC_IMPORT_LIST = d_file.read().splitlines()
 
-TEST262_GIT_HASH = "bad7c0487ee1edf4a9059ff2a51fd19fc2d53170"
+TEST262_GIT_HASH = "6291e42a727aa8269fb649919de3c59dad365aaf"
 HARNESS_GIT_HASH = "9c499f028eb24e67781435c0bb442e00343eb39d"
 ESHOST_GIT_HASH = "fa2d4d27d9d6152002bdef36ee2d17e98b886268"
 ESNEXT_GIT_HASH = "281eb10b2844929a7c0ac04527f5b42ce56509fd"

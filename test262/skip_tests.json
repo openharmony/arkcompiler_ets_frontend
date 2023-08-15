@@ -656,6 +656,13 @@
             "built-ins/Set/proto-from-ctor-realm.js",
             "built-ins/String/proto-from-ctor-realm.js",
             "built-ins/Array/prototype/includes/from/proto-from-ctor-realm.js",
+            "built-ins/Array/prototype/findLast/callbackfn-resize-arraybuffer.js",
+            "built-ins/Array/prototype/findLastIndex/callbackfn-resize-arraybuffer.js",
+            "built-ins/TypedArray/prototype/findLast/callbackfn-resize.js",
+            "built-ins/TypedArray/prototype/findLastIndex/callbackfn-resize.js",
+            "built-ins/TypedArray/prototype/findLastIndex/return-abrupt-from-this-out-of-bounds.js",
+            "built-ins/TypedArray/prototype/findLast/BigInt/return-abrupt-from-this-out-of-bounds.js",
+            "built-ins/TypedArray/prototype/findLastIndex/BigInt/return-abrupt-from-this-out-of-bounds.js",
             "built-ins/Array/from/proto-from-ctor-realm.js",
             "built-ins/Array/proto-from-ctor-realm-one.js",
             "built-ins/Array/proto-from-ctor-realm-two.js",
@@ -906,6 +913,15 @@
             "built-ins/TypedArray/prototype/reduce/callbackfn-detachbuffer.js",
             "built-ins/TypedArray/prototype/reduceRight/callbackfn-detachbuffer.js",
             "built-ins/TypedArray/prototype/some/callbackfn-detachbuffer.js",
+            "built-ins/TypedArray/prototype/findLast/predicate-may-detach-buffer.js",
+            "built-ins/TypedArray/prototype/findLast/return-abrupt-from-this-out-of-bounds.js",
+            "built-ins/TypedArray/prototype/findLastIndex/predicate-may-detach-buffer.js",
+            "built-ins/TypedArray/prototype/findLastIndex/detached-buffer.js",
+            "built-ins/TypedArray/prototype/toReversed/this-value-invalid.js",
+            "built-ins/TypedArray/prototype/findLast/BigInt/detached-buffer.js",
+            "built-ins/TypedArray/prototype/findLast/BigInt/predicate-may-detach-buffer.js",
+            "built-ins/TypedArray/prototype/findLastIndex/BigInt/detached-buffer.js",
+            "built-ins/TypedArray/prototype/findLastIndex/BigInt/predicate-may-detach-buffer.js",
             "built-ins/TypedArrayConstructors/ctors/buffer-arg/bufferbyteoffset-throws-from-modulo-element-size-sab.js",
             "built-ins/TypedArrayConstructors/ctors/buffer-arg/byteoffset-is-negative-throws-sab.js",
             "built-ins/TypedArrayConstructors/ctors/buffer-arg/byteoffset-is-negative-zero-sab.js",
@@ -1033,7 +1049,8 @@
             "built-ins/DataView/prototype/setBigInt64/detached-buffer-after-toindex-byteoffset.js",
             "built-ins/DataView/prototype/setBigInt64/detached-buffer-before-outofrange-byteoffset.js",
             "built-ins/DataView/prototype/setBigInt64/detached-buffer.js",
-            "built-ins/DataView/prototype/setBigInt64/detached-buffer-after-bigint-value.js"
+            "built-ins/DataView/prototype/setBigInt64/detached-buffer-after-bigint-value.js",
+            "built-ins/TypedArray/prototype/findLast/detached-buffer.js"
         ]
     },
     {
@@ -1598,7 +1615,8 @@
             "language/expressions/optional-chaining/iteration-statement-for-await-of.js",
             "language/expressions/async-generator/named-yield-star-next-then-returns-abrupt.js",
             "language/expressions/async-generator/yield-star-next-then-returns-abrupt.js",
-            "language/statements/async-generator/yield-star-next-then-returns-abrupt.js"
+            "language/statements/async-generator/yield-star-next-then-returns-abrupt.js",
+            "language/statements/async-generator/yield-star-return-then-getter-ticks.js"
         ]
     }
 ]
