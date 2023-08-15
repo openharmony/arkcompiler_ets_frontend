@@ -124,17 +124,22 @@ private:
     ir::Expression *CreateTsModuleParam(util::StringView paramName, bool isExport);
     ir::ExpressionStatement *CreateTsModuleAssignment(util::StringView name);
     ir::Expression *CreateMemberExpressionFromQualified(ir::Expression *node);
-    std::vector<ir::AstNode *> CreateClassDecorators(ir::ClassDeclaration *node);
+    std::vector<ir::AstNode *> CreateClassDecorators(ir::ClassDeclaration *node,
+                                                     const std::vector<ir::AstNode *> &variableDeclarations);
     std::vector<ir::AstNode *> CreateMethodDecorators(util::StringView className,
                                                       ir::MethodDefinition *node,
+                                                      const std::vector<ir::AstNode *> &variableDeclarations,
                                                       bool isStatic);
     std::vector<ir::AstNode *> CreatePropertyDecorators(util::StringView className,
                                                         ir::ClassProperty *node,
+                                                        const std::vector<ir::AstNode *> &variableDeclarations,
                                                         bool isStatic);
     ir::CallExpression *CreateGetOwnPropertyDescriptorCall(ir::Expression *target, ir::Expression *key);
     ir::CallExpression *CreateDefinePropertyCall(ir::Expression *target, ir::Expression *key, ir::Expression *value);
+    std::vector<ir::AstNode *> CreateVariableDeclarationForDecorators(ir::AstNode *node);
     std::vector<ir::AstNode *> CreateParamDecorators(util::StringView className,
                                                      ir::MethodDefinition *node,
+                                                     const std::vector<ir::AstNode *> &variableDeclarations,
                                                      bool isConstructor,
                                                      bool isStatic);
     ir::MemberExpression *CreateClassPrototype(util::StringView className);
