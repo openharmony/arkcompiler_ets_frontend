@@ -649,6 +649,7 @@
             "built-ins/NativeErrors/RangeError/proto-from-ctor-realm.js",
             "built-ins/NativeErrors/SyntaxError/proto-from-ctor-realm.js",
             "built-ins/WeakSet/proto-from-ctor-realm.js",
+            "built-ins/WeakSet/iterable-with-symbol-values.js",
             "built-ins/GeneratorFunction/proto-from-ctor-realm.js",
             "built-ins/GeneratorFunction/proto-from-ctor-realm-prototype.js",
             "built-ins/Function/prototype/bind/proto-from-ctor-realm.js",
@@ -658,6 +659,7 @@
             "built-ins/Array/prototype/includes/from/proto-from-ctor-realm.js",
             "built-ins/Array/prototype/findLast/callbackfn-resize-arraybuffer.js",
             "built-ins/Array/prototype/findLastIndex/callbackfn-resize-arraybuffer.js",
+            "built-ins/Array/prototype/toSpliced/mutate-while-iterating.js",
             "built-ins/TypedArray/prototype/findLast/callbackfn-resize.js",
             "built-ins/TypedArray/prototype/findLastIndex/callbackfn-resize.js",
             "built-ins/TypedArray/prototype/findLastIndex/return-abrupt-from-this-out-of-bounds.js",
@@ -1040,6 +1042,8 @@
             "built-ins/TypedArray/prototype/fill/coerced-value-detach.js",
             "built-ins/TypedArray/prototype/find/predicate-may-detach-buffer.js",
             "built-ins/TypedArray/prototype/findIndex/predicate-may-detach-buffer.js",
+            "built-ins/TypedArray/prototype/toSorted/this-value-invalid.js",
+            "built-ins/TypedArray/prototype/findLast/detached-buffer.js",
             "built-ins/DataView/prototype/getBigUint64/detached-buffer-after-toindex-byteoffset.js",
             "built-ins/DataView/prototype/getBigUint64/detached-buffer-before-outofrange-byteoffset.js",
             "built-ins/DataView/prototype/getBigUint64/detached-buffer.js",
@@ -1049,8 +1053,7 @@
             "built-ins/DataView/prototype/setBigInt64/detached-buffer-after-toindex-byteoffset.js",
             "built-ins/DataView/prototype/setBigInt64/detached-buffer-before-outofrange-byteoffset.js",
             "built-ins/DataView/prototype/setBigInt64/detached-buffer.js",
-            "built-ins/DataView/prototype/setBigInt64/detached-buffer-after-bigint-value.js",
-            "built-ins/TypedArray/prototype/findLast/detached-buffer.js"
+            "built-ins/DataView/prototype/setBigInt64/detached-buffer-after-bigint-value.js"
         ]
     },
     {
