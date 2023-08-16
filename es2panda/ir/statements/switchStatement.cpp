@@ -51,6 +51,10 @@ void SwitchStatement::Compile(compiler::PandaGen *pg) const
     compiler::LocalRegScope lrs(pg, scope_);
     uint32_t defaultIndex = 0;
 
+    if (cases_.size() == 0) {
+        return;
+    }
+
     for (size_t i = 0; i < cases_.size(); i++) {
         const auto *clause = cases_[i];
 
