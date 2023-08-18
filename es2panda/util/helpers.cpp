@@ -26,6 +26,7 @@
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/functionExpression.h>
 #include <ir/expressions/identifier.h>
+#include <ir/expressions/literals/booleanLiteral.h>
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
 #include <ir/expressions/objectExpression.h>
@@ -94,6 +95,12 @@ util::StringView Helpers::LiteralToPropName(ArenaAllocator *allocator, const ir:
         }
         case ir::AstNodeType::NULL_LITERAL: {
             return "null";
+        }
+        case ir::AstNodeType::BOOLEAN_LITERAL: {
+            if (lit->AsBooleanLiteral()->Value()) {
+                return "true";
+            }
+            return "false";
         }
         default: {
             UNREACHABLE();
@@ -748,7 +755,6 @@ std::wstring Helpers::Utf8ToUtf16(const std::string &utf8)
     const int utf8Length = static_cast<int>(utf8.length());
     constexpr DWORD kFlags = MB_ERR_INVALID_CHARS;
     const int utf16Length = MultiByteToWideChar(CP_UTF8, kFlags, utf8.data(), utf8Length, nullptr, 0);
-
     if (utf16Length == 0) {
         std::cerr << "The filename: " << utf8 << " is not a valid utf8 encoding string" << std::endl;
         return utf16;
