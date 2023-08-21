@@ -199,6 +199,8 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> opDumpTransformedAst("dump-transformed-ast", false, "Dump the parsed AST after transform");
     panda::PandArg<bool> opCheckTransformedAstStructure("check-transformed-ast-structure", false,
                                                         "Check the AST structure after transform");
+    panda::PandArg<bool> opRecordSource("record-source", false, "Record all functions' source codes to support the "\
+        "using of [function].toString()");
 
     // type extractor
     panda::PandArg<bool> opTypeExtractor("type-extractor", false, "Enable type extractor for typescript");
@@ -249,6 +251,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&opDumpAst);
     argparser_->Add(&opDumpTransformedAst);
     argparser_->Add(&opCheckTransformedAstStructure);
+    argparser_->Add(&opRecordSource);
     argparser_->Add(&opParseOnly);
     argparser_->Add(&opEnableTypeCheck);
     argparser_->Add(&opTypeExtractor);
@@ -433,6 +436,7 @@ bool Options::Parse(int argc, const char **argv)
         options_ |= OptionFlags::SIZE_STAT;
     }
 
+    compilerOptions_.recordSource = opRecordSource.GetValue();
     compilerOptions_.dumpAsm = opDumpAssembly.GetValue();
     compilerOptions_.dumpAst = opDumpAst.GetValue();
     compilerOptions_.dumpTransformedAst = opDumpTransformedAst.GetValue();

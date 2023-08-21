@@ -247,11 +247,10 @@ void FunctionEmitter::GenFunctionSource()
         return;
     }
 
-    if (!(static_cast<const ir::ScriptFunction *>(pg_->RootNode()))->ShowSource()) {
-        return;
+    if (pg_->Context()->IsRecordSource() || (static_cast<const ir::ScriptFunction *>(pg_->RootNode()))->ShowSource()) {
+        func_->source_code = SourceCode().Mutf8();
     }
-
-    func_->source_code = SourceCode().Mutf8();
+    
 }
 
 void FunctionEmitter::GenScopeVariableInfo(const binder::Scope *scope)

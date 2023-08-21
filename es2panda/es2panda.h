@@ -84,6 +84,7 @@ struct CompilerOptions {
     bool mergeAbc {false};
     bool typeExtractor {false};
     bool typeDtsBuiltin {false};
+    bool recordSource {false};
     int fileThreadCount {0};
     int functionThreadCount {0};
     int optLevel {0};
