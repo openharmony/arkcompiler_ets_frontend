@@ -1,0 +1,1 @@
+SyntaxError: Property cannot have an initializer because it is marked abstract. [test-class-definiton27.ts:18:27]

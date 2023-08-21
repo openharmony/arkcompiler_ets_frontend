@@ -2457,6 +2457,9 @@ ir::Statement *ParserImpl::ParseClassProperty(ClassElmentDescriptor *desc,
     ir::Expression *value = nullptr;
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+        if (Extension() == ScriptExtension::TS && (desc->modifiers & ir::ModifierFlags::ABSTRACT)) {
+            ThrowSyntaxError("Property cannot have an initializer because it is marked abstract.");
+        }
         lexer_->NextToken();  // eat equals
 
         if (isDeclare) {
