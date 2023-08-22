@@ -59,105 +59,42 @@
       }
     },
     {
-      "type": "TSModuleDeclaration",
+      "type": "TSTypeAliasDeclaration",
       "id": {
         "type": "Identifier",
-        "name": "ns",
+        "name": "b",
         "loc": {
           "start": {
             "line": 18,
-            "column": 19
+            "column": 6
           },
           "end": {
             "line": 18,
-            "column": 21
+            "column": 7
           }
         }
       },
-      "body": {
-        "type": "TSModuleBlock",
-        "body": [
-          {
-            "type": "ExportNamedDeclaration",
-            "declaration": null,
-            "source": null,
-            "specifiers": [
-              {
-                "type": "ExportSpecifier",
-                "local": {
-                  "type": "Identifier",
-                  "name": "a",
-                  "loc": {
-                    "start": {
-                      "line": 19,
-                      "column": 13
-                    },
-                    "end": {
-                      "line": 19,
-                      "column": 14
-                    }
-                  }
-                },
-                "exported": {
-                  "type": "Identifier",
-                  "name": "a",
-                  "loc": {
-                    "start": {
-                      "line": 19,
-                      "column": 13
-                    },
-                    "end": {
-                      "line": 19,
-                      "column": 14
-                    }
-                  }
-                },
-                "isType": false,
-                "loc": {
-                  "start": {
-                    "line": 19,
-                    "column": 13
-                  },
-                  "end": {
-                    "line": 19,
-                    "column": 14
-                  }
-                }
-              }
-            ],
-            "loc": {
-              "start": {
-                "line": 19,
-                "column": 5
-              },
-              "end": {
-                "line": 19,
-                "column": 16
-              }
-            }
-          }
-        ],
+      "typeAnnotation": {
+        "type": "TSNumberKeyword",
         "loc": {
           "start": {
             "line": 18,
-            "column": 22
+            "column": 10
           },
           "end": {
-            "line": 20,
-            "column": 2
+            "line": 18,
+            "column": 16
           }
         }
       },
-      "declare": true,
-      "global": false,
       "loc": {
         "start": {
           "line": 18,
-          "column": 9
+          "column": 1
         },
         "end": {
-          "line": 22,
-          "column": 4
+          "line": 18,
+          "column": 17
         }
       }
     },
@@ -168,40 +105,40 @@
           "type": "VariableDeclarator",
           "id": {
             "type": "Identifier",
-            "name": "b",
+            "name": "type",
             "loc": {
               "start": {
-                "line": 22,
+                "line": 19,
                 "column": 5
               },
               "end": {
-                "line": 22,
-                "column": 6
+                "line": 19,
+                "column": 9
               }
             }
           },
           "init": {
             "type": "NumberLiteral",
-            "value": 1,
+            "value": 2,
             "loc": {
               "start": {
-                "line": 22,
-                "column": 9
+                "line": 19,
+                "column": 12
               },
               "end": {
-                "line": 22,
-                "column": 10
+                "line": 19,
+                "column": 13
               }
             }
           },
           "loc": {
             "start": {
-              "line": 22,
+              "line": 19,
               "column": 5
             },
             "end": {
-              "line": 22,
-              "column": 10
+              "line": 19,
+              "column": 13
             }
           }
         }
@@ -209,12 +146,12 @@
       "kind": "var",
       "loc": {
         "start": {
-          "line": 22,
+          "line": 19,
           "column": 1
         },
         "end": {
-          "line": 22,
-          "column": 11
+          "line": 19,
+          "column": 14
         }
       }
     },
@@ -227,15 +164,99 @@
           "type": "ExportSpecifier",
           "local": {
             "type": "Identifier",
+            "name": "a",
+            "loc": {
+              "start": {
+                "line": 20,
+                "column": 10
+              },
+              "end": {
+                "line": 20,
+                "column": 11
+              }
+            }
+          },
+          "exported": {
+            "type": "Identifier",
+            "name": "a",
+            "loc": {
+              "start": {
+                "line": 20,
+                "column": 10
+              },
+              "end": {
+                "line": 20,
+                "column": 11
+              }
+            }
+          },
+          "isType": false,
+          "loc": {
+            "start": {
+              "line": 20,
+              "column": 10
+            },
+            "end": {
+              "line": 20,
+              "column": 11
+            }
+          }
+        },
+        {
+          "type": "ExportSpecifier",
+          "local": {
+            "type": "Identifier",
+            "name": "type",
+            "loc": {
+              "start": {
+                "line": 20,
+                "column": 13
+              },
+              "end": {
+                "line": 20,
+                "column": 17
+              }
+            }
+          },
+          "exported": {
+            "type": "Identifier",
+            "name": "type",
+            "loc": {
+              "start": {
+                "line": 20,
+                "column": 13
+              },
+              "end": {
+                "line": 20,
+                "column": 17
+              }
+            }
+          },
+          "isType": false,
+          "loc": {
+            "start": {
+              "line": 20,
+              "column": 13
+            },
+            "end": {
+              "line": 20,
+              "column": 17
+            }
+          }
+        },
+        {
+          "type": "ExportSpecifier",
+          "local": {
+            "type": "Identifier",
             "name": "b",
             "loc": {
               "start": {
-                "line": 23,
-                "column": 9
+                "line": 20,
+                "column": 24
               },
               "end": {
-                "line": 23,
-                "column": 10
+                "line": 20,
+                "column": 25
               }
             }
           },
@@ -244,36 +265,36 @@
             "name": "b",
             "loc": {
               "start": {
-                "line": 23,
-                "column": 9
+                "line": 20,
+                "column": 24
               },
               "end": {
-                "line": 23,
-                "column": 10
+                "line": 20,
+                "column": 25
               }
             }
           },
-          "isType": false,
+          "isType": true,
           "loc": {
             "start": {
-              "line": 23,
-              "column": 9
+              "line": 20,
+              "column": 24
             },
             "end": {
-              "line": 23,
-              "column": 10
+              "line": 20,
+              "column": 25
             }
           }
         }
       ],
       "loc": {
         "start": {
-          "line": 23,
+          "line": 20,
           "column": 1
         },
         "end": {
-          "line": 23,
-          "column": 12
+          "line": 20,
+          "column": 28
         }
       }
     }
@@ -284,7 +305,7 @@
       "column": 1
     },
     "end": {
-      "line": 25,
+      "line": 21,
       "column": 1
     }
   }

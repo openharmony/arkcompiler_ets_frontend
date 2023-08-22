@@ -1,0 +1,1 @@
+SyntaxError: The type modifier cannot be used on a named import when 'import type' is used on its import statement. [test_import_type2.ts:17:23]

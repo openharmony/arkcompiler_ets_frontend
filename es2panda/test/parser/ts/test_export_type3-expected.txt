@@ -2,51 +2,34 @@
   "type": "Program",
   "statements": [
     {
-      "type": "VariableDeclaration",
-      "declarations": [
-        {
-          "type": "VariableDeclarator",
-          "id": {
-            "type": "Identifier",
-            "name": "a",
-            "loc": {
-              "start": {
-                "line": 17,
-                "column": 5
-              },
-              "end": {
-                "line": 17,
-                "column": 6
-              }
-            }
+      "type": "TSTypeAliasDeclaration",
+      "id": {
+        "type": "Identifier",
+        "name": "type",
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 6
           },
-          "init": {
-            "type": "NumberLiteral",
-            "value": 1,
-            "loc": {
-              "start": {
-                "line": 17,
-                "column": 9
-              },
-              "end": {
-                "line": 17,
-                "column": 10
-              }
-            }
-          },
-          "loc": {
-            "start": {
-              "line": 17,
-              "column": 5
-            },
-            "end": {
-              "line": 17,
-              "column": 10
-            }
+          "end": {
+            "line": 17,
+            "column": 10
           }
         }
-      ],
-      "kind": "var",
+      },
+      "typeAnnotation": {
+        "type": "TSNumberKeyword",
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 13
+          },
+          "end": {
+            "line": 17,
+            "column": 19
+          }
+        }
+      },
       "loc": {
         "start": {
           "line": 17,
@@ -54,7 +37,7 @@
         },
         "end": {
           "line": 17,
-          "column": 11
+          "column": 20
         }
       }
     },
@@ -67,41 +50,41 @@
           "type": "ExportSpecifier",
           "local": {
             "type": "Identifier",
-            "name": "a",
+            "name": "type",
             "loc": {
               "start": {
                 "line": 18,
-                "column": 9
+                "column": 15
               },
               "end": {
                 "line": 18,
-                "column": 10
+                "column": 19
               }
             }
           },
           "exported": {
             "type": "Identifier",
-            "name": "a",
+            "name": "type",
             "loc": {
               "start": {
                 "line": 18,
-                "column": 9
+                "column": 15
               },
               "end": {
                 "line": 18,
-                "column": 10
+                "column": 19
               }
             }
           },
-          "isType": false,
+          "isType": true,
           "loc": {
             "start": {
               "line": 18,
-              "column": 9
+              "column": 15
             },
             "end": {
               "line": 18,
-              "column": 10
+              "column": 19
             }
           }
         }
@@ -113,7 +96,7 @@
         },
         "end": {
           "line": 18,
-          "column": 12
+          "column": 22
         }
       }
     }

@@ -199,6 +199,10 @@ void Binder::ValidateExportDecl(const ir::ExportNamedDeclaration *exportDecl)
 
     ASSERT(topScope_->IsModuleScope());
     for (auto *it : exportDecl->Specifiers()) {
+        if (it->AsExportSpecifier()->IsType()) {
+            continue;
+        }
+
         auto localName = it->AsExportSpecifier()->Local()->Name();
         if (scope_->IsTSModuleScope()) {
             auto currentScope = scope_;

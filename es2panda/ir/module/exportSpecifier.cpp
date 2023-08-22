@@ -28,7 +28,7 @@ void ExportSpecifier::Iterate(const NodeTraverser &cb) const
 
 void ExportSpecifier::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ExportSpecifier"}, {"local", local_}, {"exported", exported_}});
+    dumper->Add({{"type", "ExportSpecifier"}, {"local", local_}, {"exported", exported_}, {"isType", isType_}});
 }
 
 void ExportSpecifier::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
