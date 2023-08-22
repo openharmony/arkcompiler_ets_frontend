@@ -68,11 +68,8 @@ checker::Type *ClassProperty::Check([[maybe_unused]] checker::Checker *checker) 
     return nullptr;
 }
 
-void ClassProperty::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
+void ClassProperty::UpdateChildNodes(const NodeUpdater &cb)
 {
-    const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(this);
-    auto scopeCtx = binder::LexicalScope<binder::FunctionScope>::Enter(binder, ctor->Scope());
-
     key_ = std::get<ir::AstNode *>(cb(key_))->AsExpression();
 
     if (value_) {
@@ -85,6 +82,18 @@ void ClassProperty::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 
     for (auto iter = decorators_.begin(); iter != decorators_.end(); iter++) {
         *iter = std::get<ir::AstNode *>(cb(*iter))->AsDecorator();
+    }
+}
+
+void ClassProperty::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
+{
+    if (!IsStatic()) {
+        const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(this);
+        auto scopeCtx = binder::LexicalScope<binder::FunctionScope>::Enter(binder, ctor->Scope());
+
+        UpdateChildNodes(cb);
+    } else {
+        UpdateChildNodes(cb);
     }
 }
 
