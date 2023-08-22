@@ -82,16 +82,7 @@ util::StringView Helpers::LiteralToPropName(ArenaAllocator *allocator, const ir:
             return lit->AsStringLiteral()->Str();
         }
         case ir::AstNodeType::NUMBER_LITERAL: {
-            auto str = lit->AsNumberLiteral()->Str();
-            auto number = lit->AsNumberLiteral()->Number();
-
-            // "e" and "E" represent scientific notation.
-            if ((str.Find("e") == std::string::npos && str.Find("E") == std::string::npos) &&
-                Helpers::IsInteger<uint32_t>(number) && number != 0) {
-                return str;
-            }
-
-            return Helpers::ToStringView(allocator, number);
+            return Helpers::ToStringView(allocator, lit->AsNumberLiteral()->Number());
         }
         case ir::AstNodeType::NULL_LITERAL: {
             return "null";
