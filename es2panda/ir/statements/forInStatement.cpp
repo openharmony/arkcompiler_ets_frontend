@@ -17,6 +17,7 @@
 
 #include <binder/binder.h>
 #include <binder/scope.h>
+#include <compiler/base/catchTable.h>
 #include <compiler/base/lreference.h>
 #include <compiler/core/labelTarget.h>
 #include <compiler/core/pandagen.h>
@@ -50,7 +51,26 @@ void ForInStatement::Compile(compiler::PandaGen *pg) const
     compiler::VReg propName = pg->AllocReg();
 
     // create enumerator
-    right_->Compile(pg);
+    {
+        compiler::TryContext enumeratorInitTryCtx(pg);
+        const auto &labelSet = enumeratorInitTryCtx.LabelSet();
+        pg->SetLabel(right_, labelSet.TryBegin());
+        right_->Compile(pg);
+        pg->SetLabel(right_, labelSet.TryEnd());
+        pg->Branch(right_, labelSet.CatchEnd());
+
+        pg->SetLabel(right_, labelSet.CatchBegin());
+        compiler::VReg exception = pg->AllocReg();
+        pg->StoreAccumulator(right_, exception);
+        if (scope_->NeedLexEnv()) {
+            pg->PopLexEnv(this);
+        }
+        pg->LoadAccumulator(right_, exception);
+        pg->EmitThrow(right_);
+        pg->SetLabel(right_, labelSet.CatchEnd());
+    }
+
+    // if no exception occurred, the target object should be in acc
     pg->GetPropIterator(this);
     pg->StoreAccumulator(this, iter);
 
