@@ -17,6 +17,7 @@
 
 #include <binder/binder.h>
 #include <binder/scope.h>
+#include <compiler/base/catchTable.h>
 #include <compiler/base/iterators.h>
 #include <compiler/base/lreference.h>
 #include <compiler/core/labelTarget.h>
@@ -47,7 +48,24 @@ void ForOfStatement::Compile(compiler::PandaGen *pg) const
         pg->NewLexEnv(this, scope_->LexicalSlots());
     }
 
-    right_->Compile(pg); // if poplexenv next, acc will not be affected, no need to store the value to a vreg
+    {
+        compiler::TryContext iterInitTryCtx(pg);
+        const auto &labelSet = iterInitTryCtx.LabelSet();
+        pg->SetLabel(right_, labelSet.TryBegin());
+        right_->Compile(pg);
+        pg->SetLabel(right_, labelSet.TryEnd());
+        pg->Branch(right_, labelSet.CatchEnd());
+
+        pg->SetLabel(right_, labelSet.CatchBegin());
+        compiler::VReg exception = pg->AllocReg();
+        pg->StoreAccumulator(right_, exception);
+        if (scope_->NeedLexEnv()) {
+            pg->PopLexEnv(this);
+        }
+        pg->LoadAccumulator(right_, exception);
+        pg->EmitThrow(right_);
+        pg->SetLabel(right_, labelSet.CatchEnd());
+    }
 
     if (scope_->NeedLexEnv()) {
         pg->PopLexEnv(this);
