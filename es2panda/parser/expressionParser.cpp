@@ -50,6 +50,7 @@
 #include <ir/expressions/taggedTemplateExpression.h>
 #include <ir/expressions/templateLiteral.h>
 #include <ir/expressions/thisExpression.h>
+#include <ir/expressions/typeArgumentsExpression.h>
 #include <ir/expressions/unaryExpression.h>
 #include <ir/expressions/updateExpression.h>
 #include <ir/expressions/yieldExpression.h>
@@ -1473,6 +1474,35 @@ ir::ArrowFunctionExpression *ParserImpl::ParsePotentialArrowExpression(ir::Expre
     return nullptr;
 }
 
+bool ParserImpl::IsGenericInstantiation()
+{
+    switch (lexer_->GetToken().Type()) {
+        case lexer::TokenType::EOS:
+        case lexer::TokenType::PUNCTUATOR_SEMI_COLON:
+        case lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS:
+        case lexer::TokenType::PUNCTUATOR_RIGHT_BRACE:
+        case lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET:
+        case lexer::TokenType::PUNCTUATOR_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_QUESTION_MARK:
+        case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND:
+        case lexer::TokenType::PUNCTUATOR_SUBSTITUTION:
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR:
+        case lexer::TokenType::PUNCTUATOR_COMMA:
+        case lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING:
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR_EQUAL: {
+            return true;
+        }
+        default: {
+            return false;
+        }
+    }
+}
+
 bool ParserImpl::ParsePotentialTsGenericFunctionCall(ir::Expression **returnExpression,
                                                      const lexer::SourcePosition &startLoc, bool ignoreCallExpression)
 {
@@ -1503,8 +1533,11 @@ bool ParserImpl::ParsePotentialTsGenericFunctionCall(ir::Expression **returnExpr
         return true;
     }
 
-    if (lexer_->GetToken().Type() == lexer::TokenType::EOS) {
-        ThrowSyntaxError("'(' or '`' expected");
+    if (IsGenericInstantiation() || lexer_->GetToken().NewLine()) {
+        *returnExpression = AllocNode<ir::TypeArgumentsExpression>(*returnExpression, typeParams);
+        lexer::SourcePosition endLoc = typeParams->End();
+        (*returnExpression)->SetRange({startLoc, endLoc});
+        return false;
     }
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {

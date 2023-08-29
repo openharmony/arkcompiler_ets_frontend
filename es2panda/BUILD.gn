@@ -92,6 +92,7 @@ es2panda_src = [
   "ir/expressions/taggedTemplateExpression.cpp",
   "ir/expressions/templateLiteral.cpp",
   "ir/expressions/thisExpression.cpp",
+  "ir/expressions/typeArgumentsExpression.cpp",
   "ir/expressions/unaryExpression.cpp",
   "ir/expressions/updateExpression.cpp",
   "ir/expressions/yieldExpression.cpp",

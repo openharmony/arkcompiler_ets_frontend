@@ -41,6 +41,7 @@
 #include <ir/expressions/memberExpression.h>
 #include <ir/expressions/objectExpression.h>
 #include <ir/expressions/superExpression.h>
+#include <ir/expressions/typeArgumentsExpression.h>
 #include <ir/module/exportDefaultDeclaration.h>
 #include <ir/module/exportNamedDeclaration.h>
 #include <ir/module/exportSpecifier.h>
@@ -1085,11 +1086,12 @@ ir::Expression *ParserImpl::ParseTsTypeReferenceOrQuery(TypeAnnotationParsingOpt
 
     ir::TSTypeParameterInstantiation *typeParamInst = nullptr;
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        if (parseQuery) {
-            ThrowSyntaxError("Unexpected token.");
-        }
-
         typeParamInst = ParseTsTypeParameterInstantiation(options & TypeAnnotationParsingOptions::THROW_ERROR);
+        if (parseQuery) {
+            typeName = AllocNode<ir::TypeArgumentsExpression>(typeName, typeParamInst);
+            lexer::SourcePosition endLoc = typeParamInst->End();
+            typeName->SetRange({referenceStartLoc, endLoc});
+        }
     }
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET &&
