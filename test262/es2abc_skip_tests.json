@@ -148,7 +148,9 @@
             "built-ins/RegExp/match-indices/indices-array-unicode-property-names.js",
             "built-ins/RegExp/match-indices/indices-array-non-unicode-match.js",
             "built-ins/RegExp/match-indices/indices-array-unicode-match.js",
-            "built-ins/JSON/stringify/value-string-escape-unicode.js"
+            "built-ins/JSON/stringify/value-string-escape-unicode.js",
+            "built-ins/RegExp/prototype/Symbol.match/get-unicode-error.js",
+            "built-ins/RegExp/prototype/Symbol.replace/get-unicode-error.js"
         ]
     },
     {
