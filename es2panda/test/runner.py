@@ -1083,9 +1083,10 @@ class PatchTest(Test):
         patch_test_cmd.extend([os.path.join(self.path, modified_input_file)])
         if 'record-name-with-dots' in os.path.basename(self.path):
             patch_test_cmd.extend(['--merge-abc', '--record-name=record.name.with.dots'])
-        if ('modify-anon-content-keep-origin-name' in os.path.basename(self.path) or
-            'modify-class-memeber-function' in os.path.basename(self.path)):
-            patch_test_cmd.extend(['--dump-assembly'])
+        dump_assembly_testname = ['modify-anon-content-keep-origin-name', 'modify-class-memeber-function', 'exist-lexenv-3', 'lexenv-reduce', 'lexenv-increase']
+        for name in dump_assembly_testname:
+            if name in os.path.basename(self.path):
+                patch_test_cmd.extend(['--dump-assembly'])
         self.log_cmd(patch_test_cmd)
         process_base = subprocess.Popen(gen_base_cmd, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
