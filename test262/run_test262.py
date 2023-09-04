@@ -54,12 +54,14 @@ def parse_args():
     parser.add_argument('--es2022', default=False, const='all',
                         nargs='?', choices=['all', 'only'],
                         help='Run test262 - ES2022. ' +
-                        'all: Contains all use cases for es5_tests and es2015_tests and es2021_tests and es2022_tests and intl_tests' +
+                        'all: Contains all use cases for es5_tests and es2015_tests and es2021_tests' +
+                        'and es2022_tests and intl_tests' +
                         'only: Only include use cases for ES2022')
     parser.add_argument('--es2023', default=False, const='all',
                         nargs='?', choices=['all', 'only'],
                         help='Run test262 - ES2023. ' +
-                        'all: Contains all use cases for es5_tests and es2015_tests and es2021_tests and es2022_tests and es2023_tests and intl_tests' +
+                        'all: Contains all use cases for es5_tests and es2015_tests and es2021_tests' +
+                        'and es2022_tests and es2023_tests and intl_tests' +
                         'only: Only include use cases for ES2023')
     parser.add_argument('--intl', default=False, const='intl',
                         nargs='?', choices=['intl'],
