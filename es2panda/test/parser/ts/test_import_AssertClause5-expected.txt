@@ -1,0 +1,1 @@
+SyntaxError: Import assertion values must be string literal expressions. [test_import_AssertClause5.ts:17:59]

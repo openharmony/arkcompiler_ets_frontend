@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_IR_MODULE_IMPORT_DECLARATION_H
 #define ES2PANDA_IR_MODULE_IMPORT_DECLARATION_H
 
+#include <ir/module/assertClause.h>
 #include <ir/statement.h>
 #include <util/ustring.h>
 
@@ -34,10 +35,12 @@ class StringLiteral;
 
 class ImportDeclaration : public Statement {
 public:
-    explicit ImportDeclaration(StringLiteral *source, ArenaVector<AstNode *> &&specifiers, bool isType)
+    explicit ImportDeclaration(StringLiteral *source, ArenaVector<AstNode *> &&specifiers,
+                               AssertClause *assertClause, bool isType)
         : Statement(AstNodeType::IMPORT_DECLARATION),
           source_(source),
           specifiers_(std::move(specifiers)),
+          assertClause_(assertClause),
           isType_(isType)
     {
     }
@@ -66,6 +69,7 @@ public:
 private:
     StringLiteral *source_;
     ArenaVector<AstNode *> specifiers_;
+    AssertClause *assertClause_;
     bool isType_;
 };
 

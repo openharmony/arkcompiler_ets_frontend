@@ -2371,20 +2371,55 @@ ir::Expression *ParserImpl::ParseImportExpression()
 
     ir::Expression *source = ParseExpression();
 
+    ir::ObjectExpression *importAssertion = nullptr;
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-        ThrowSyntaxError(
-            "Dynamic imports can only accept a module specifier, optional assertion is not supported yet.");
+        importAssertion = ParseImportAssertionForDynamicImport();
     }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         ThrowSyntaxError("Unexpected token");
     }
 
-    auto *importExpression = AllocNode<ir::ImportExpression>(source);
+    auto *importExpression = AllocNode<ir::ImportExpression>(source, importAssertion);
     importExpression->SetRange({startLoc, lexer_->GetToken().End()});
 
     lexer_->NextToken();  // eat right paren
     return importExpression;
+}
+
+ir::ObjectExpression *ParserImpl::ParseImportAssertionForDynamicImport()
+{
+    if (Extension() != ScriptExtension::TS) {
+        ThrowSyntaxError(
+            "Dynamic imports can only accept a module specifier, optional assertion is not supported yet.");
+    }
+
+    lexer_->NextToken();
+    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+        ThrowSyntaxError("expected '{'.");
+    }
+
+    ir::ObjectExpression *importAssertion = ParseObjectExpression();
+
+    ValidateImportAssertionForDynamicImport(importAssertion);
+
+    return importAssertion;
+}
+
+void ParserImpl::ValidateImportAssertionForDynamicImport(ir::ObjectExpression *importAssertion)
+{
+    ArenaVector<ir::Expression *> properties = importAssertion->Properties();
+    if (properties.size() != 1) {
+        ThrowSyntaxError("There should be only one Import assertion in dynamic import.");
+    }
+
+    auto *property = properties.front();
+    if (!property->IsProperty() ||
+        !property->AsProperty()->Key()->IsIdentifier() ||
+        !property->AsProperty()->Key()->AsIdentifier()->Name().Is("assert") ||
+        !property->AsProperty()->Value()->IsObjectExpression()) {
+        ThrowSyntaxError("Incorrect format of Import assertion in dynamic import.");
+    }
 }
 
 ir::FunctionExpression *ParserImpl::ParseFunctionExpression(ParserStatus newStatus)

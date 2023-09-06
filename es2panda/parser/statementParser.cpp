@@ -2483,7 +2483,14 @@ ir::ExportAllDeclaration *ParserImpl::ParseExportAllDeclaration(const lexer::Sou
     // record export star entry
     AddExportStarEntryItem(startLoc, source, exported);
 
-    auto *exportDeclaration = AllocNode<ir::ExportAllDeclaration>(source, exported);
+    ir::AssertClause *assertClause = nullptr;
+    if (Extension() == ScriptExtension::TS && !lexer_->GetToken().NewLine() &&
+        lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
+        lexer_->GetToken().Ident().Is("assert")) {
+        assertClause = ParseAssertClause();
+    }
+
+    auto *exportDeclaration = AllocNode<ir::ExportAllDeclaration>(source, exported, assertClause);
     exportDeclaration->SetRange({startLoc, endLoc});
 
     ConsumeSemicolon(exportDeclaration);
@@ -2566,7 +2573,21 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
     // record ExportEntry
     AddExportNamedEntryItem(specifiers, source, isType);
 
-    auto *exportDeclaration = AllocNode<ir::ExportNamedDeclaration>(source, std::move(specifiers), isType);
+    ir::AssertClause *assertClause = nullptr;
+    if (Extension() == ScriptExtension::TS && !lexer_->GetToken().NewLine() &&
+        lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
+        lexer_->GetToken().Ident().Is("assert")) {
+        if (source == nullptr) {
+            ThrowSyntaxError("';' expected.");
+        }
+        if (isType) {
+            ThrowSyntaxError("Import assertions cannot be used with type-only imports or exports.");
+        }
+        assertClause = ParseAssertClause();
+    }
+
+    auto *exportDeclaration = AllocNode<ir::ExportNamedDeclaration>(source, std::move(specifiers),
+                                                                    assertClause, isType);
     exportDeclaration->SetRange({startLoc, endPos});
     ConsumeSemicolon(exportDeclaration);
 
@@ -3072,13 +3093,87 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
         AddImportEntryItem(source, nullptr, isType);
     }
 
+    ir::AssertClause *assertClause = nullptr;
+    if (Extension() == ScriptExtension::TS && !lexer_->GetToken().NewLine() &&
+        lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
+        lexer_->GetToken().Ident().Is("assert")) {
+        if (isType) {
+            ThrowSyntaxError("Import assertions cannot be used with type-only imports or exports.");
+        }
+        assertClause = ParseAssertClause();
+    }
+
     lexer::SourcePosition endLoc = source->End();
-    auto *importDeclaration = AllocNode<ir::ImportDeclaration>(source, std::move(specifiers), isType);
+    auto *importDeclaration = AllocNode<ir::ImportDeclaration>(source, std::move(specifiers), assertClause, isType);
     importDeclaration->SetRange({startLoc, endLoc});
 
     ConsumeSemicolon(importDeclaration);
 
     return importDeclaration;
+}
+
+ir::AssertClause *ParserImpl::ParseAssertClause()
+{
+    lexer::SourcePosition startLoc = lexer_->GetToken().Start();
+    lexer_->NextToken();  // eat assert
+
+    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+        ThrowSyntaxError("expected left brace.");
+    }
+    lexer_->NextToken();  // eat '{'
+
+    ArenaVector<ir::AssertEntry *> elements(Allocator()->Adapter());
+    while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        elements.push_back(ParseAssertEntry());
+    }
+
+    lexer_->NextToken();  // eat '}'
+
+    auto *assertClause = AllocNode<ir::AssertClause>(std::move(elements));
+    assertClause->SetRange({startLoc, lexer_->GetToken().End()});
+
+    return assertClause;
+}
+
+ir::AssertEntry *ParserImpl::ParseAssertEntry()
+{
+    ir::Expression *key = nullptr;
+    if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
+        key = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
+        key->SetRange(lexer_->GetToken().Loc());
+    } else if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_STRING) {
+        key = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());
+        key->SetRange(lexer_->GetToken().Loc());
+    } else {
+        ThrowSyntaxError("Identifier or string literal expected.");
+    }
+
+    lexer_->NextToken();
+
+    if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
+        ThrowSyntaxError("':' expected.");
+    }
+    lexer_->NextToken();  // eat :
+
+    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_STRING) {
+        ThrowSyntaxError("Import assertion values must be string literal expressions.");
+    }
+
+    ir::StringLiteral *value = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());
+    value->SetRange(lexer_->GetToken().Loc());
+    lexer_->NextToken();
+
+    ASSERT(key);
+    ASSERT(value);
+
+    auto *assertEntry = AllocNode<ir::AssertEntry>(key, value);
+    assertEntry->SetRange({key->Start(), value->End()});
+
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
+        lexer_->NextToken();  // eat comma
+    }
+
+    return assertEntry;
 }
 
 }  // namespace panda::es2panda::parser

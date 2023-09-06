@@ -1,0 +1,1 @@
+SyntaxError: Identifier or string literal expected. [test_import_AssertClause4.ts:17:51]

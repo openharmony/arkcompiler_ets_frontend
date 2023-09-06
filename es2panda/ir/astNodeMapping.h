@@ -18,6 +18,8 @@
 
 #define AST_NODE_MAPPING(_)                                          \
     _(ARROW_FUNCTION_EXPRESSION, ArrowFunctionExpression)            \
+    _(ASSERT_CLAUSE, AssertClause)                                   \
+    _(ASSERT_ENTRY, AssertEntry)                                     \
     _(AWAIT_EXPRESSION, AwaitExpression)                             \
     _(BIGINT_LITERAL, BigIntLiteral)                                 \
     _(BINARY_EXPRESSION, BinaryExpression)                           \

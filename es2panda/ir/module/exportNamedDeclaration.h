@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_IR_MODULE_EXPORT_DECLARATION_H
 #define ES2PANDA_IR_MODULE_EXPORT_DECLARATION_H
 
+#include <ir/module/assertClause.h>
 #include <ir/statement.h>
 
 namespace panda::es2panda::compiler {
@@ -34,11 +35,13 @@ class ExportSpecifier;
 
 class ExportNamedDeclaration : public Statement {
 public:
-    explicit ExportNamedDeclaration(StringLiteral *source, ArenaVector<ExportSpecifier *> &&specifiers, bool isType)
+    explicit ExportNamedDeclaration(StringLiteral *source, ArenaVector<ExportSpecifier *> &&specifiers,
+                                    AssertClause *assertClause, bool isType)
         : Statement(AstNodeType::EXPORT_NAMED_DECLARATION),
           source_(source),
           decl_(nullptr),
           specifiers_(std::move(specifiers)),
+          assertClause_(assertClause),
           isType_(isType)
     {
     }
@@ -48,6 +51,7 @@ public:
           source_(nullptr),
           decl_(decl),
           specifiers_(std::move(specifiers)),
+          assertClause_(nullptr),
           isType_(false)
     {
     }
@@ -92,6 +96,7 @@ private:
     StringLiteral *source_;
     Statement *decl_;
     ArenaVector<ExportSpecifier *> specifiers_;
+    AssertClause *assertClause_;
     bool isType_;
 };
 

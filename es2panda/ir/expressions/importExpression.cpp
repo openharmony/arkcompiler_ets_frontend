@@ -23,11 +23,17 @@ namespace panda::es2panda::ir {
 void ImportExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(source_);
+
+    if (importAssertion_) {
+        cb(importAssertion_);
+    }
 }
 
 void ImportExpression::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ImportExpression"}, {"source", source_}});
+    dumper->Add({{"type", "ImportExpression"},
+                 {"source", source_},
+                 {"importAssertion", AstDumper::Optional(importAssertion_)}});
 }
 
 void ImportExpression::Compile(compiler::PandaGen *pg) const
@@ -44,6 +50,10 @@ checker::Type *ImportExpression::Check([[maybe_unused]] checker::Checker *checke
 void ImportExpression::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder)
 {
     source_ = std::get<ir::AstNode *>(cb(source_))->AsExpression();
+
+    if (importAssertion_) {
+        importAssertion_ = std::get<ir::AstNode *>(cb(importAssertion_))->AsObjectExpression();
+    }
 }
 
 }  // namespace panda::es2panda::ir

@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_IR_MODULE_EXPORT_ALL_DECLARATION_H
 #define ES2PANDA_IR_MODULE_EXPORT_ALL_DECLARATION_H
 
+#include <ir/module/assertClause.h>
 #include <ir/statement.h>
 
 namespace panda::es2panda::compiler {
@@ -34,8 +35,9 @@ class StringLiteral;
 
 class ExportAllDeclaration : public Statement {
 public:
-    explicit ExportAllDeclaration(StringLiteral *source, Identifier *exported)
-        : Statement(AstNodeType::EXPORT_ALL_DECLARATION), source_(source), exported_(exported)
+    explicit ExportAllDeclaration(StringLiteral *source, Identifier *exported, AssertClause *assertClause)
+        : Statement(AstNodeType::EXPORT_ALL_DECLARATION),
+          source_(source), exported_(exported), assertClause_(assertClause)
     {
     }
 
@@ -58,6 +60,7 @@ public:
 private:
     StringLiteral *source_;
     Identifier *exported_;
+    AssertClause *assertClause_;
 };
 
 }  // namespace panda::es2panda::ir
