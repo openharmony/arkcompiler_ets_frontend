@@ -90,8 +90,7 @@ Arkguard only obfuscates the parameter names and local variable names by assigni
 
 Specifies to obfuscate the property names. If you use this option, all property names will be obfuscated except the
 following:
-* the property names of `import/export` classes or objects. Note: Only for directly exported classes or objects, their
-property names will be kept. For example, the property name `data` in
+* the property names of classes or objects directly imported or exported by `import/export` will be kept. For example, the property name `data` in
     ```
     export class MyClass {
        data: string;
