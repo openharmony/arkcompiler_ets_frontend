@@ -96,6 +96,23 @@ bool Token::IsReservedTypeName() const
     }
 }
 
+bool Token::IsDefinableTypeName() const
+{
+    switch (keyword_type_) {
+        case TokenType::KEYW_BOOLEAN:
+        case TokenType::KEYW_DOUBLE:
+        case TokenType::KEYW_BYTE:
+        case TokenType::KEYW_FLOAT:
+        case TokenType::KEYW_SHORT:
+        case TokenType::KEYW_INT:
+        case TokenType::KEYW_CHAR:
+        case TokenType::KEYW_LONG:
+            return true;
+        default:
+            return false;
+    }
+}
+
 bool Token::IsBinaryToken(TokenType type)
 {
     return (type >= TokenType::PUNCTUATOR_NULLISH_COALESCING && type <= TokenType::PUNCTUATOR_EXPONENTIATION);

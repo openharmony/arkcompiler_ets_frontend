@@ -1072,10 +1072,14 @@ void ParserImpl::ThrowParameterModifierError(ir::ModifierFlags status) const
                      lexer_->GetToken().Start());
 }
 
-ir::Identifier *ParserImpl::ExpectIdentifier(bool is_reference)
+ir::Identifier *ParserImpl::ExpectIdentifier(bool is_reference, bool is_user_defined_type)
 {
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT) {
         return ParseIdentifierFormatPlaceholder();
+    }
+
+    if (lexer_->GetToken().IsDefinableTypeName() && is_user_defined_type) {
+        ThrowSyntaxError("Cannot be used as user-defined type.");
     }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {

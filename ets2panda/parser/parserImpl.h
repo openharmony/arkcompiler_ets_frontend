@@ -306,7 +306,7 @@ protected:
 
     bool CheckModuleAsModifier();
 
-    ir::Identifier *ExpectIdentifier(bool is_reference = false);
+    ir::Identifier *ExpectIdentifier(bool is_reference = false, bool is_user_defined_type = false);
     void ExpectToken(lexer::TokenType token_type, bool consume_token = true);
 
     // ExpressionParser.cpp

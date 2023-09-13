@@ -68,8 +68,7 @@ keywords:
 
   - name: 'boolean'
     token: KEYW_BOOLEAN
-    keyword: [ets]
-    keyword_like: [js, ts]
+    keyword_like: [ets, js, ts]
 
   - name: 'break'
     token: KEYW_BREAK
@@ -77,7 +76,7 @@ keywords:
 
   - name: 'byte'
     token: KEYW_BYTE
-    keyword: [ets]
+    keyword_like: [ets]
 
   - name: 'case'
     token: KEYW_CASE
@@ -90,7 +89,7 @@ keywords:
 
   - name: 'char'
     token: KEYW_CHAR
-    keyword: [ets]
+    keyword_like: [ets]
 
   - name: 'class'
     token: KEYW_CLASS
@@ -135,7 +134,7 @@ keywords:
 
   - name: 'double'
     token: KEYW_DOUBLE
-    keyword: [ets]
+    keyword_like: [ets]
 
   - name: 'else'
     token: KEYW_ELSE
@@ -184,7 +183,7 @@ keywords:
 
   - name: 'float'
     token: KEYW_FLOAT
-    keyword: [ets]
+    keyword_like: [ets]
 
   - name: 'for'
     token: KEYW_FOR
@@ -257,7 +256,7 @@ keywords:
 
   - name: 'int'
     token: KEYW_INT
-    keyword: [ets]
+    keyword_like: [ets]
 
   - name: 'interface'
     token: KEYW_INTERFACE
@@ -286,7 +285,7 @@ keywords:
 
   - name: 'long'
     token: KEYW_LONG
-    keyword: [ets]
+    keyword_like: [ets]
 
   - name: 'meta'
     token: KEYW_META
@@ -383,7 +382,7 @@ keywords:
 
   - name: 'short'
     token: KEYW_SHORT
-    keyword: [ets]
+    keyword_like: [ets]
 
   - name: 'static'
     token: KEYW_STATIC

@@ -163,6 +163,7 @@ private:
     ir::TypeNode *ParsePrimitiveType(TypeAnnotationParsingOptions *options, ir::PrimitiveType type);
     ir::TypeNode *ParseUnionType(ir::TypeNode *first_type);
     ir::TSIntersectionType *ParseIntersectionType(ir::Expression *type);
+    ir::TypeNode *GetTypeAnnotationOfPrimitiveType(lexer::TokenType token_type, TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseFunctionType();
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);

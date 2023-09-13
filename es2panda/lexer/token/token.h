@@ -118,6 +118,7 @@ public:
     bool IsKeyword() const;
     bool IsReservedTypeName() const;
     bool IsJsStrictReservedWord() const;
+    bool IsDefinableTypeName() const;
 
     static bool IsBinaryToken(TokenType type);
     static bool IsBinaryLvalueToken(TokenType type);
