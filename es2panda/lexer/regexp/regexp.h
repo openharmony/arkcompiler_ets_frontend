@@ -31,6 +31,7 @@ enum class RegExpFlags {
     STICKY = 1 << 3,
     UNICODE = 1 << 4,
     DOTALL = 1 << 5,
+    HAS_INDICES = 1 << 6,
 };
 
 DEFINE_BITOPS(RegExpFlags)
