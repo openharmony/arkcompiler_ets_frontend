@@ -50,11 +50,11 @@ void LocalVariable::SetLexical(Scope *scope, util::PatchFix *patchFixHelper)
     uint32_t slot = 0;
     auto name = Declaration()->Name();
 
-    if (patchFixHelper && patchFixHelper->IsScopeValidToPatchLexical(varScope)) {
+    if (patchFixHelper && !patchFixHelper->IsHotReload() && patchFixHelper->IsScopeValidToPatchLexical(varScope)) {
         slot = patchFixHelper->GetSlotIdFromSymbolTable(std::string(name));
         if (patchFixHelper->IsPatchVar(slot)) {
             patchFixHelper->AllocSlotfromPatchEnv(std::string(name));
-        }
+        } 
     } else {
         slot = varScope->NextSlot();
     }
