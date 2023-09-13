@@ -320,13 +320,16 @@ private:
     ir::ClassDefinition *ParseClassDefinition(bool isDeclaration, bool idRequired = true, bool isDeclare = false,
                                               bool isAbstract = false);
 
-    void ValidateClassConstructor(ir::MethodDefinition *ctor,
-                                  ArenaVector<ir::Statement *> &properties,
-                                  ir::Expression *superClass,
-                                  bool isDeclare, bool hasConstructorFuncBody, bool hasSuperClass);
-    void FindSuperCallInConstructor(const ir::AstNode *parent, bool *hasSuperCall);
-    void FindSuperCallInConstructorChildNode(const ir::AstNode *childNode, bool *hasSuperCall);
-    bool SuperCallShouldBeFirst(ir::MethodDefinition *ctor, ArenaVector<ir::Statement *> &properties);
+    void ValidateClassConstructor(const ir::MethodDefinition *ctor,
+                                  const ArenaVector<ir::Statement *> &properties,
+                                  bool isDeclare, bool hasConstructorFuncBody,
+                                  bool hasSuperClass, bool isExtendsFromNull);
+    void FindSuperCall(const ir::AstNode *parent, bool *hasSuperCall);
+    void FindSuperCallInCtorChildNode(const ir::AstNode *childNode, bool *hasSuperCall);
+    bool SuperCallShouldBeRootLevel(const ir::MethodDefinition *ctor, const ArenaVector<ir::Statement *> &properties);
+    void ValidateSuperCallLocation(const ir::MethodDefinition *ctor, bool superCallShouldBeRootLevel);
+    void FindThisOrSuperReference(const ir::AstNode *parent, bool *hasThisOrSuperReference);
+    void FindThisOrSuperReferenceInChildNode(const ir::AstNode *childNode, bool *hasThisOrSuperReference);
     void ValidateAccessor(ExpressionParseFlags flags, lexer::TokenFlags currentTokenFlags);
     void CheckPropertyKeyAsycModifier(ParserStatus *methodStatus);
     ir::Property *ParseShorthandProperty(const lexer::LexerPosition *startPos);

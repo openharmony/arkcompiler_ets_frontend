@@ -40,6 +40,3 @@ es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclaration
 es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/RegressionTests/parser579071.ts
 es2panda/test/TypeScript/tests/cases/conformance/scanner/ecmascript3/scannerES3NumericLiteral2.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/members/objectTypeWithStringNamedNumericProperty.ts
-es2panda/test/TypeScript/tests/cases/conformance/classes/constructorDeclarations/superCalls/emitStatementsBeforeSuperCall.ts
-es2panda/test/TypeScript/tests/cases/conformance/classes/constructorDeclarations/superCalls/emitStatementsBeforeSuperCallWithDefineFields.ts
-es2panda/test/TypeScript/tests/cases/conformance/classes/members/privateNames/privateNameBadSuperUseDefineForClassFields.ts

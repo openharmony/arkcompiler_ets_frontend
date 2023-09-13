@@ -137,6 +137,8 @@ private:
     void VisitPrivateElement(ir::ClassDefinition *node);
     void VisitComputedProperty(ir::ClassDefinition *node);
     size_t GetInsertPosForConstructor(ir::ClassDefinition *node);
+    void FindSuperCall(const ir::AstNode *parent, bool *hasSuperCall);
+    void FindSuperCallInCtorChildNode(const ir::AstNode *childNode, bool *hasSuperCall);
 
     ir::VariableDeclaration *CreateVariableDeclarationWithIdentify(util::StringView name,
                                                                    VariableParsingFlags flags,

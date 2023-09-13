@@ -14,10 +14,18 @@
  */
 
 
-class Base { }
+class Base { prop = 1 }
 class A extends Base {
     constructor(readonly prop: number) {
-        print("hello");
+        var a = { super: "xxx" };
+        const b = () => this;
+        var c = function (this: any) {
+            return this;
+        }
+        function f(this: any) {
+            return this;
+        }
+
         super();
     }
 }
