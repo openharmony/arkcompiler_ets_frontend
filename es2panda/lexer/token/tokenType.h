@@ -152,6 +152,7 @@ enum class TokenType {
     KEYW_VOID,
     KEYW_WHILE,
     KEYW_WITH,
+    KEYW_ACCESSOR,
 
     KEYW_ASYNC,
     KEYW_READONLY,

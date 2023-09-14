@@ -101,6 +101,16 @@ public:
         return isComputed_;
     }
 
+    void SetComputed(bool computed)
+    {
+        isComputed_ = computed;
+    }
+
+    bool IsAutoAccessor() const
+    {
+        return (modifiers_ & ModifierFlags::ACCESSOR) != 0;
+    }
+
     bool Definite() const
     {
         return definite_;

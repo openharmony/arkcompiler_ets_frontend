@@ -51,6 +51,12 @@ bool Token::IsReadonlyModifier() const
             !(flags_ & TokenFlags::HAS_ESCAPE));
 }
 
+bool Token::IsAccessorModifier() const
+{
+    return (type_ == TokenType::LITERAL_IDENT && keywordType_ == TokenType::KEYW_ACCESSOR &&
+            !(flags_ & TokenFlags::HAS_ESCAPE));
+}
+
 bool Token::IsUpdate() const
 {
     return (type_ == TokenType::PUNCTUATOR_MINUS_MINUS || type_ == TokenType::PUNCTUATOR_PLUS_PLUS);

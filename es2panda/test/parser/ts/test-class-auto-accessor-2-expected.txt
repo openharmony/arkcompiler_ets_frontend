@@ -1,0 +1,1 @@
+SyntaxError: An auto accessor property can't be declared optional. [test-class-auto-accessor-2.ts:18:27]

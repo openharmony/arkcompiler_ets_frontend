@@ -21,6 +21,7 @@
 #include "binder/binder.h"
 #include "binder/scope.h"
 #include "ir/astNode.h"
+#include "ir/base/methodDefinition.h"
 #include "parser/module/sourceTextModuleRecord.h"
 #include "parser/parserFlags.h"
 #include "parser/program/program.h"
@@ -45,6 +46,14 @@ struct ClassInfo {
     size_t propertyIndex;
     PrivateElementMap *bindNameMap;
     ComputedPropertyMap *computedPropertyMap;
+};
+
+struct MethodInfo {
+    ir::Expression *key;
+    util::StringView backupName; // For computed property.
+    ir::MethodDefinitionKind kind;
+    ir::ModifierFlags modifiers;
+    bool isComputed;
 };
 
 class DuringClass {
@@ -91,6 +100,7 @@ private:
     static constexpr std::string_view OBJECT_VAR_NAME = "Object";
     static constexpr std::string_view FUNC_NAME_OF_DEFINE_PROPERTY = "defineProperty";
     static constexpr std::string_view FUNC_NAME_OF_GET_OWN_PROPERTY_DESCRIPTOR = "getOwnPropertyDescriptor";
+    static constexpr std::string_view AUTO_ACCESSOR_STORAGE_NAME = "auto_accessor_storage";
 
     void TransformFromTS();
 
@@ -105,6 +115,22 @@ private:
     ir::UpdateNodes VisitClassDeclaration(ir::ClassDeclaration *node);
     ir::UpdateNodes VisitClassExpression(ir::ClassExpression *node);
     void VisitTSParameterProperty(ir::ClassDefinition *node);
+    void VisitAutoAccessorProperty(ir::ClassDefinition *node);
+    ir::Expression *CopyClassKeyExpression(ir::Expression *orginalExpr);
+    void ProcessAutoAccessorProperty(ir::ClassProperty *node, ir::ClassDefinition *classDefinition);
+    ir::MethodDefinition* AddMethodToClass(ir::ClassDefinition *classDefinition,
+                                           const MethodInfo &methodInfo,
+                                           ArenaVector<ir::Expression *> &params,
+                                           ArenaVector<ir::Statement *> &statements);
+    /*
+     * Only support for adding generated set&get method to class.
+     */
+    ir::MethodDefinition* AddGeneratedMethodToClass(ir::ClassDefinition *classDefinition,
+                                                    const MethodInfo &methodInfo,
+                                                    util::StringView propName);
+    void AddGeneratedSetOrGetMethodToClass(ir::ClassDefinition *classDefinition,
+                                           ir::ClassProperty *propertyNode,
+                                           const MethodInfo &methodInfo);
     std::vector<ir::ExpressionStatement *> VisitInstanceProperty(ir::ClassDefinition *node);
     std::vector<ir::ExpressionStatement *> VisitStaticProperty(ir::ClassDefinition *node,
                                                                util::StringView name);
