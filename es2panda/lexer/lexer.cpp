@@ -1099,6 +1099,10 @@ RegExpFlags Lexer::ScanRegExpFlags()
                 flag = RegExpFlags::STICKY;
                 break;
             }
+            case LEX_CHAR_LOWERCASE_D: {
+                flag = RegExpFlags::HAS_INDICES;
+                break;
+            }
             case LEX_CHAR_SP: {
                 return resultFlags;
             }
