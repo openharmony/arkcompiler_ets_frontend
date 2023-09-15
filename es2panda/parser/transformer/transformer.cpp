@@ -320,7 +320,7 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
         }
         case ir::AstNodeType::CLASS_DEFINITION: {
             auto *node = childNode->AsClassDefinition();
-            VisitPrivateProperty(node);
+            VisitPrivateElement(node);
             VisitComputedProperty(node);
             auto res = VisitTSNodes(childNode);
             SetOriginalNode(res, childNode);
@@ -328,7 +328,7 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
         }
         case ir::AstNodeType::TS_PRIVATE_IDENTIFIER: {
             auto id = childNode->AsTSPrivateIdentifier()->Key()->AsIdentifier();
-            auto name = FindPrivatePropertyBindName(id->Name());
+            auto name = FindPrivateElementBindName(id->Name());
             auto res = CreateReferenceIdentifier(name);
             SetOriginalNode(res, childNode);
             return res;
@@ -498,7 +498,7 @@ void Transformer::VisitComputedProperty(ir::ClassDefinition *node)
     }
 }
 
-void Transformer::VisitPrivateProperty(ir::ClassDefinition *node)
+void Transformer::VisitPrivateElement(ir::ClassDefinition *node)
 {
     /*
      *  Create an unique variable name for private property member in class
@@ -513,20 +513,20 @@ void Transformer::VisitPrivateProperty(ir::ClassDefinition *node)
      *  }
      */
     for (auto *it : node->Body()) {
-        if (!it->IsClassProperty()) {
+        if (!it->IsClassProperty() && !it->IsMethodDefinition()) {
             continue;
         }
-        auto *key = it->AsClassProperty()->Key();
+        auto *key = it->IsClassProperty() ? it->AsClassProperty()->Key() : it->AsMethodDefinition()->Key();
         if (!key->IsTSPrivateIdentifier()) {
             continue;
         }
         auto name = key->AsTSPrivateIdentifier()->Key()->AsIdentifier()->Name();
-        auto bindName = CreatePrivatePropertyBindName(name);
-        AddPrivatePropertyBinding(name, bindName);
+        auto bindName = CreatePrivateElementBindName(name);
+        AddPrivateElementBinding(name, bindName);
     }
 }
 
-util::StringView Transformer::FindPrivatePropertyBindName(util::StringView name)
+util::StringView Transformer::FindPrivateElementBindName(util::StringView name)
 {
     for (size_t i = classList_.size() - 1; i >= 0; i--) {
         auto res = classList_[i].bindNameMap->find(name);
@@ -537,7 +537,7 @@ util::StringView Transformer::FindPrivatePropertyBindName(util::StringView name)
     UNREACHABLE();
 }
 
-util::StringView Transformer::CreatePrivatePropertyBindName(util::StringView name)
+util::StringView Transformer::CreatePrivateElementBindName(util::StringView name)
 {
     std::stringstream head;
     head << NEW_VAR_PREFIX << std::string(RecordName());

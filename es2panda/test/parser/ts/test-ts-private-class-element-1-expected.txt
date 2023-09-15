@@ -1,0 +1,1 @@
+SyntaxError: Private identifiers are not allowed outside class bodies. [test-ts-private-class-element-1.ts:27:4]
