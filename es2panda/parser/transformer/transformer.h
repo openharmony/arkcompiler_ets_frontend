@@ -37,13 +37,13 @@ struct TsEnumInfo {
     binder::Scope *scope;
 };
 
-using PrivatePropertyMap = std::unordered_map<util::StringView, util::StringView>;
+using PrivateElementMap = std::unordered_map<util::StringView, util::StringView>;
 using ComputedPropertyMap = std::unordered_map<ir::Statement *, util::StringView>;
 
 struct ClassInfo {
     util::StringView name;
     size_t propertyIndex;
-    PrivatePropertyMap *bindNameMap;
+    PrivateElementMap *bindNameMap;
     ComputedPropertyMap *computedPropertyMap;
 };
 
@@ -61,7 +61,7 @@ public:
     }
 
 private:
-    PrivatePropertyMap bindNameMap_ {};
+    PrivateElementMap bindNameMap_ {};
     ComputedPropertyMap computedPropertyMap_ {};
     ArenaVector<ClassInfo> *classList_ {nullptr};
 };
@@ -108,7 +108,7 @@ private:
     std::vector<ir::ExpressionStatement *> VisitInstanceProperty(ir::ClassDefinition *node);
     std::vector<ir::ExpressionStatement *> VisitStaticProperty(ir::ClassDefinition *node,
                                                                util::StringView name);
-    void VisitPrivateProperty(ir::ClassDefinition *node);
+    void VisitPrivateElement(ir::ClassDefinition *node);
     void VisitComputedProperty(ir::ClassDefinition *node);
     size_t GetInsertPosForConstructor(ir::ClassDefinition *node);
 
@@ -145,7 +145,7 @@ private:
     ir::MemberExpression *CreateClassPrototype(util::StringView className);
     ir::Expression *CreateDecoratorTarget(util::StringView className, bool isStatic);
     ir::Identifier *CreateReferenceIdentifier(util::StringView name);
-    util::StringView CreatePrivatePropertyBindName(util::StringView name);
+    util::StringView CreatePrivateElementBindName(util::StringView name);
     util::StringView CreateNewVariable(bool needAddToStatements = true);
     util::StringView CreateNewVariableName() const;
     util::StringView CreateUniqueName(const std::string &head, size_t *index = nullptr) const;
@@ -156,7 +156,7 @@ private:
                                        ir::Statement *node, bool inDecorator = true);
     binder::Scope *FindExportVariableInTsModuleScope(util::StringView name) const;
     binder::Variable *FindTSModuleVariable(const ir::Expression *node, const binder::Scope *scope, bool *isType) const;
-    util::StringView FindPrivatePropertyBindName(util::StringView name);
+    util::StringView FindPrivateElementBindName(util::StringView name);
     void AddExportLocalEntryItem(util::StringView name, const ir::Identifier *identifier);
     void RemoveDefaultLocalExportEntry();
     bool IsInstantiatedImportEquals(const ir::TSImportEqualsDeclaration *node, binder::Scope *scope) const;
@@ -296,7 +296,7 @@ private:
         classList_.back().propertyIndex = newIndex;
     }
 
-    void AddPrivatePropertyBinding(util::StringView name, util::StringView bindName)
+    void AddPrivateElementBinding(util::StringView name, util::StringView bindName)
     {
         classList_.back().bindNameMap->insert({name, bindName});
     }

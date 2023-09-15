@@ -2146,10 +2146,6 @@ void ParserImpl::ParseClassKeyModifiers(ClassElmentDescriptor *desc)
         nextCp != LEX_CHAR_EQUALS && nextCp != LEX_CHAR_SEMICOLON && nextCp != LEX_CHAR_LEFT_PAREN &&
         nextCp != LEX_CHAR_LESS_THAN && nextCp != LEX_CHAR_QUESTION && nextCp != LEX_CHAR_COLON)) {
         if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_GET) {
-            if (desc->isPrivateIdent) {
-                ThrowSyntaxError("Private identifier can not be getter");
-            }
-
             if (lexer_->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) {
                 ThrowSyntaxError("Keyword must not contain escaped characters");
             }
@@ -2158,11 +2154,8 @@ void ParserImpl::ParseClassKeyModifiers(ClassElmentDescriptor *desc)
             desc->methodStart = lexer_->GetToken().Start();
 
             lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);
+            CheckClassPrivateIdentifier(desc);
         } else if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_SET) {
-            if (desc->isPrivateIdent) {
-                ThrowSyntaxError("Private identifier can not be setter");
-            }
-
             if (lexer_->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) {
                 ThrowSyntaxError("Keyword must not contain escaped characters");
             }
@@ -2171,6 +2164,7 @@ void ParserImpl::ParseClassKeyModifiers(ClassElmentDescriptor *desc)
             desc->methodStart = lexer_->GetToken().Start();
 
             lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);
+            CheckClassPrivateIdentifier(desc);
         }
     }
 }
@@ -2323,11 +2317,6 @@ void ParserImpl::ValidateClassMethodStart(ClassElmentDescriptor *desc, ir::Expre
         desc->classMethod = true;
     }
 
-    if (Extension() == ScriptExtension::TS &&
-        lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS && desc->isPrivateIdent) {
-        ThrowSyntaxError("A method cannot be named with a private identifier");
-    }
-
     if (Extension() == ScriptExtension::TS) {
         if (!typeAnnotation && (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
                                 lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN)) {
@@ -2433,9 +2422,23 @@ ir::MethodDefinition *ParserImpl::ParseClassMethod(ClassElmentDescriptor *desc,
 
     *propEnd = func->End();
     func->AddFlag(ir::ScriptFunctionFlags::METHOD);
-    auto *method = AllocNode<ir::MethodDefinition>(desc->methodKind, propName, funcExpr, desc->modifiers, Allocator(),
-                                                   std::move(decorators), std::move(paramDecorators),
-                                                   desc->isComputed);
+
+    ir::MethodDefinition *method = nullptr;
+
+    if (desc->isPrivateIdent && Extension() == ScriptExtension::TS) {
+        ir::Expression *privateId = AllocNode<ir::TSPrivateIdentifier>(propName, nullptr, nullptr);
+        auto privateIdStart = lexer::SourcePosition(propName->Start().index - 1, propName->Start().line);
+        privateId->SetRange({privateIdStart, propName->End()});
+        method = AllocNode<ir::MethodDefinition>(desc->methodKind, privateId, funcExpr, desc->modifiers, Allocator(),
+                                                 std::move(decorators), std::move(paramDecorators),
+                                                 desc->isComputed);
+        method->SetRange(funcExpr->Range());
+        return method;
+    }
+
+    method = AllocNode<ir::MethodDefinition>(desc->methodKind, propName, funcExpr, desc->modifiers, Allocator(),
+                                             std::move(decorators), std::move(paramDecorators),
+                                             desc->isComputed);
     method->SetRange(funcExpr->Range());
     return method;
 }
@@ -2479,7 +2482,8 @@ ir::Statement *ParserImpl::ParseClassProperty(ClassElmentDescriptor *desc,
     } else {
         if (desc->isPrivateIdent) {
             privateId = AllocNode<ir::TSPrivateIdentifier>(propName, value, typeAnnotation);
-            privateId->SetRange({desc->propStart, propName->End()});
+            auto privateIdStart = lexer::SourcePosition(propName->Start().index - 1, propName->Start().line);
+            privateId->SetRange({privateIdStart, propName->End()});
         }
     }
 
@@ -2517,7 +2521,7 @@ void ParserImpl::CheckClassPrivateIdentifier(ClassElmentDescriptor *desc)
         return;
     }
 
-    if (desc->modifiers & ~ir::ModifierFlags::READONLY) {
+    if (desc->modifiers & ~ir::ModifierFlags::READONLY && desc->modifiers & ~ir::ModifierFlags::STATIC) {
         ThrowSyntaxError("Unexpected modifier on private identifier");
     }
 
