@@ -28,7 +28,7 @@ void ImportSpecifier::Iterate(const NodeTraverser &cb) const
 
 void ImportSpecifier::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ImportSpecifier"}, {"local", local_}, {"imported", imported_}});
+    dumper->Add({{"type", "ImportSpecifier"}, {"local", local_}, {"imported", imported_}, {"isType", isType_}});
 }
 
 void ImportSpecifier::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}

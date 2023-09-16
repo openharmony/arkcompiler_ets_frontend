@@ -450,6 +450,9 @@ private:
     bool IsLabelFollowedByIterationStatement();
 
     void AddImportEntryItem(const ir::StringLiteral *source, const ArenaVector<ir::AstNode *> *specifiers, bool isType);
+    void AddImportEntryItemForImportSpecifier(const ir::StringLiteral *source, const ir::AstNode *specifier);
+    void AddImportEntryItemForImportDefaultOrNamespaceSpecifier(const ir::StringLiteral *source,
+                                                                const ir::AstNode *specifier, bool isType);
     void AddExportNamedEntryItem(const ArenaVector<ir::ExportSpecifier *> &specifiers,
                                  const ir::StringLiteral *source, bool isType);
     void AddExportStarEntryItem(const lexer::SourcePosition &startLoc, const ir::StringLiteral *source,

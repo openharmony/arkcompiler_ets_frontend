@@ -56,11 +56,11 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 9
+                "column": 14
               },
               "end": {
                 "line": 18,
-                "column": 10
+                "column": 15
               }
             }
           },
@@ -70,22 +70,23 @@
             "loc": {
               "start": {
                 "line": 18,
-                "column": 9
+                "column": 14
               },
               "end": {
                 "line": 18,
-                "column": 10
+                "column": 15
               }
             }
           },
+          "isType": true,
           "loc": {
             "start": {
               "line": 18,
-              "column": 9
+              "column": 14
             },
             "end": {
               "line": 18,
-              "column": 10
+              "column": 15
             }
           }
         }
@@ -97,7 +98,7 @@
         },
         "end": {
           "line": 18,
-          "column": 11
+          "column": 16
         }
       }
     }

@@ -33,8 +33,8 @@ class Identifier;
 
 class ExportSpecifier : public Statement {
 public:
-    explicit ExportSpecifier(Identifier *local, Identifier *exported)
-        : Statement(AstNodeType::EXPORT_SPECIFIER), local_(local), exported_(exported)
+    explicit ExportSpecifier(Identifier *local, Identifier *exported, bool isType)
+        : Statement(AstNodeType::EXPORT_SPECIFIER), local_(local), exported_(exported), isType_(isType)
     {
     }
 
@@ -48,6 +48,11 @@ public:
         return exported_;
     }
 
+    bool IsType() const
+    {
+        return isType_;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
@@ -57,6 +62,7 @@ public:
 private:
     Identifier *local_;
     Identifier *exported_;
+    bool isType_ { false };
 };
 
 }  // namespace panda::es2panda::ir

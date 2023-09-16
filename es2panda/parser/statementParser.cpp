@@ -2153,50 +2153,65 @@ void ParserImpl::AddImportEntryItem(const ir::StringLiteral *source,
     }
 
     ASSERT(source != nullptr);
-    auto *moduleRecord = isType ? GetSourceTextTypeModuleRecord() : GetSourceTextModuleRecord();
-    ASSERT(moduleRecord != nullptr);
-    auto moduleRequestIdx = moduleRecord->AddModuleRequest(source->Str());
 
     if (specifiers == nullptr) {
         if (isType) {
             ThrowSyntaxError("Unexpected import type syntax", source->Start());
         }
+        auto *moduleRecord = GetSourceTextModuleRecord();
+        ASSERT(moduleRecord != nullptr);
+        moduleRecord->AddModuleRequest(source->Str());
         return;
     }
 
     for (auto *it : *specifiers) {
-        switch (it->Type()) {
-            case ir::AstNodeType::IMPORT_DEFAULT_SPECIFIER: {
-                auto localName = it->AsImportDefaultSpecifier()->Local()->Name();
-                auto importName = parser::SourceTextModuleRecord::DEFAULT_EXTERNAL_NAME;
-                auto localId = it->AsImportDefaultSpecifier()->Local();
-                auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
-                    localName, importName, moduleRequestIdx, localId, nullptr);
-                moduleRecord->AddImportEntry(entry);
-                break;
-            }
-            case ir::AstNodeType::IMPORT_NAMESPACE_SPECIFIER: {
-                auto localName = it->AsImportNamespaceSpecifier()->Local()->Name();
-                auto localId = it->AsImportNamespaceSpecifier()->Local();
-                auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
-                    localName, moduleRequestIdx, localId);
-                moduleRecord->AddStarImportEntry(entry);
-                break;
-            }
-            case ir::AstNodeType::IMPORT_SPECIFIER: {
-                auto localName = it->AsImportSpecifier()->Local()->Name();
-                auto importName = it->AsImportSpecifier()->Imported()->Name();
-                auto localId = it->AsImportSpecifier()->Local();
-                auto importId = it->AsImportSpecifier()->Imported();
-                auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
-                    localName, importName, moduleRequestIdx, localId, importId);
-                moduleRecord->AddImportEntry(entry);
-                break;
-            }
-            default: {
-                ThrowSyntaxError("Unexpected astNode type", it->Start());
-            }
+        if (!it->IsImportDefaultSpecifier() && !it->IsImportNamespaceSpecifier() && !it->IsImportSpecifier()) {
+            ThrowSyntaxError("Unexpected astNode type", it->Start());
         }
+        if (it->IsImportSpecifier()) {
+            AddImportEntryItemForImportSpecifier(source, it);
+        } else {
+            AddImportEntryItemForImportDefaultOrNamespaceSpecifier(source, it, isType);
+        }
+    }
+}
+
+void ParserImpl::AddImportEntryItemForImportSpecifier(const ir::StringLiteral *source, const ir::AstNode *specifier)
+{
+    auto *moduleRecord = specifier->AsImportSpecifier()->IsType() ?
+        GetSourceTextTypeModuleRecord() : GetSourceTextModuleRecord();
+    ASSERT(moduleRecord != nullptr);
+    int moduleRequestIdx = moduleRecord->AddModuleRequest(source->Str());
+
+    auto localName = specifier->AsImportSpecifier()->Local()->Name();
+    auto importName = specifier->AsImportSpecifier()->Imported()->Name();
+    auto localId = specifier->AsImportSpecifier()->Local();
+    auto importId = specifier->AsImportSpecifier()->Imported();
+    auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
+        localName, importName, moduleRequestIdx, localId, importId);
+    moduleRecord->AddImportEntry(entry);
+}
+
+void ParserImpl::AddImportEntryItemForImportDefaultOrNamespaceSpecifier(const ir::StringLiteral *source,
+                                                                        const ir::AstNode *specifier, bool isType)
+{
+    auto *moduleRecord = isType ? GetSourceTextTypeModuleRecord() : GetSourceTextModuleRecord();
+    ASSERT(moduleRecord != nullptr);
+    auto moduleRequestIdx = moduleRecord->AddModuleRequest(source->Str());
+
+    if (specifier->IsImportDefaultSpecifier()) {
+        auto localName = specifier->AsImportDefaultSpecifier()->Local()->Name();
+        auto importName = parser::SourceTextModuleRecord::DEFAULT_EXTERNAL_NAME;
+        auto localId = specifier->AsImportDefaultSpecifier()->Local();
+        auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
+            localName, importName, moduleRequestIdx, localId, nullptr);
+        moduleRecord->AddImportEntry(entry);
+    } else if (specifier->IsImportNamespaceSpecifier()) {
+        auto localName = specifier->AsImportNamespaceSpecifier()->Local()->Name();
+        auto localId = specifier->AsImportNamespaceSpecifier()->Local();
+        auto *entry = moduleRecord->NewEntry<parser::SourceTextModuleRecord::ImportEntry>(
+            localName, moduleRequestIdx, localId);
+        moduleRecord->AddStarImportEntry(entry);
     }
 }
 
@@ -2208,13 +2223,15 @@ void ParserImpl::AddExportNamedEntryItem(const ArenaVector<ir::ExportSpecifier *
         ASSERT(Binder()->GetScope()->IsTSModuleScope());
         return;
     }
-    auto moduleRecord = isType ? GetSourceTextTypeModuleRecord() : GetSourceTextModuleRecord();
-    ASSERT(moduleRecord != nullptr);
-    if (source) {
-        auto moduleRequestIdx = moduleRecord->AddModuleRequest(source->Str());
 
+    if (source) {
         for (auto *it : specifiers) {
             auto exportSpecifier = it->AsExportSpecifier();
+            auto moduleRecord =
+                exportSpecifier->IsType() ? GetSourceTextTypeModuleRecord() : GetSourceTextModuleRecord();
+            ASSERT(moduleRecord != nullptr);
+            auto moduleRequestIdx = moduleRecord->AddModuleRequest(source->Str());
+
             auto importName = exportSpecifier->Local()->Name();
             auto exportName = exportSpecifier->Exported()->Name();
             auto importId = exportSpecifier->Local();
@@ -2229,6 +2246,10 @@ void ParserImpl::AddExportNamedEntryItem(const ArenaVector<ir::ExportSpecifier *
     } else {
         for (auto *it : specifiers) {
             auto exportSpecifier = it->AsExportSpecifier();
+            auto moduleRecord =
+                exportSpecifier->IsType() ? GetSourceTextTypeModuleRecord() : GetSourceTextModuleRecord();
+            ASSERT(moduleRecord != nullptr);
+
             auto exportName = exportSpecifier->Exported()->Name();
             auto localName = exportSpecifier->Local()->Name();
             auto exportId = exportSpecifier->Exported();
@@ -2483,6 +2504,22 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
     ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
 
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        bool isTypeOfExportSpecifier = isType;
+        if (Extension() == ScriptExtension::TS && lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE) {
+            const auto savedPos = lexer_->Save();
+            lexer_->NextToken();  // eat type
+
+            if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+                lexer_->Rewind(savedPos);
+            } else {
+                if (isType) {
+                    ThrowSyntaxError("The type modifier cannot be used on a named export "
+                                     "when 'export type' is used on its export statement.");
+                }
+                isTypeOfExportSpecifier = true;
+            }
+        }
+
         if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
             ThrowSyntaxError("Unexpected token");
         }
@@ -2507,7 +2544,7 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
             exported = ParseNamedExport(localToken);
         }
 
-        auto *specifier = AllocNode<ir::ExportSpecifier>(local, exported);
+        auto *specifier = AllocNode<ir::ExportSpecifier>(local, exported, isTypeOfExportSpecifier);
         specifier->SetRange({local->Start(), exported->End()});
 
         specifiers.push_back(specifier);
@@ -2799,6 +2836,22 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
     lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);  // eat `{` character
 
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        bool isTypeOfImportSpecifier = isType;
+        if (Extension() == ScriptExtension::TS && lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_TYPE) {
+            const auto savedPos = lexer_->Save();
+            lexer_->NextToken();  // eat type
+
+            if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+                lexer_->Rewind(savedPos);
+            } else {
+                if (isType) {
+                    ThrowSyntaxError("The type modifier cannot be used on a named import "
+                                     "when 'import type' is used on its import statement.");
+                }
+                isTypeOfImportSpecifier = true;
+            }
+        }
+
         if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
             ThrowSyntaxError("Unexpected token");
         }
@@ -2818,11 +2871,12 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
             local = ParseNamedImport(importedToken);
         }
 
-        auto *specifier = AllocNode<ir::ImportSpecifier>(imported, local);
+        auto *specifier = AllocNode<ir::ImportSpecifier>(imported, local, isTypeOfImportSpecifier);
         specifier->SetRange({imported->Start(), local->End()});
         specifiers->push_back(specifier);
 
-        binder::Decl *decl = AddImportDecl(isType, local->Name(), local->Start(), binder::DeclarationFlags::IMPORT);
+        binder::Decl *decl = AddImportDecl(isTypeOfImportSpecifier, local->Name(), local->Start(),
+                                           binder::DeclarationFlags::IMPORT);
         decl->BindNode(specifier);
 
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {

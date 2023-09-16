@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,5 +14,18 @@
  */
 
 
-interface I {}
-export {type I}
+export interface I1 { p: string }
+export interface I2 { p: string }
+export interface I3 { p: string }
+
+export var v1: number = 1;
+export var v2: number = 2;
+var v3: number = 3;
+export default v3;
+
+interface I4 { p: string }
+interface I5 { p: string }
+interface II6 { p: string }
+
+export type { I4 };
+export { type I5, type II6 as I6 };

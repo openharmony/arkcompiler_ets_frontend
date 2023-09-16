@@ -207,6 +207,7 @@
                     }
                   }
                 },
+                "isType": false,
                 "loc": {
                   "start": {
                     "line": 19,
@@ -455,6 +456,7 @@
                     }
                   }
                 },
+                "isType": false,
                 "loc": {
                   "start": {
                     "line": 26,
@@ -581,6 +583,7 @@
               }
             }
           },
+          "isType": false,
           "loc": {
             "start": {
               "line": 32,
@@ -761,6 +764,7 @@
                     }
                   }
                 },
+                "isType": false,
                 "loc": {
                   "start": {
                     "line": 39,
