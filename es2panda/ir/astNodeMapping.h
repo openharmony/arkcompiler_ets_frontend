@@ -136,6 +136,7 @@
     _(TEMPLATE_ELEMENT, TemplateElement)                             \
     _(TEMPLATE_LITERAL, TemplateLiteral)                             \
     _(THIS_EXPRESSION, ThisExpression)                               \
+    _(TYPE_ARGUMENTS_EXPRESSION, TypeArgumentsExpression)            \
     _(THROW_STATEMENT, ThrowStatement)                               \
     _(TRY_STATEMENT, TryStatement)                                   \
     _(UNARY_EXPRESSION, UnaryExpression)                             \

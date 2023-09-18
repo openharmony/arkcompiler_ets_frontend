@@ -387,6 +387,7 @@ private:
                                                                bool ignoreCallExpression);
 
     void ValidateUpdateExpression(ir::Expression *returnExpression, bool isChainExpression);
+    bool IsGenericInstantiation();
     bool ParsePotentialTsGenericFunctionCall(ir::Expression **returnExpression, const lexer::SourcePosition &startLoc,
                                              bool ignoreCallExpression);
     ir::Expression *ParsePostPrimaryExpression(ir::Expression *primaryExpr, lexer::SourcePosition startLoc,
