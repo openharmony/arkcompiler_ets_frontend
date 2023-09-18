@@ -137,6 +137,7 @@ keywords = [
 
     # keywords start with 's'
     {
+        "satisfies" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_SATISFIES"],
         "set" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_SET"],
         "static" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_STATIC"],
         "string" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_STRING"],

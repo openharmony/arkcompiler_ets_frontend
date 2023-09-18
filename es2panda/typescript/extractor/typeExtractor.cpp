@@ -33,6 +33,7 @@
 #include <ir/ts/tsModuleDeclaration.h>
 #include <ir/ts/tsParenthesizedType.h>
 #include <ir/ts/tsQualifiedName.h>
+#include <ir/ts/tsSatisfiesExpression.h>
 #include <ir/ts/tsTypeAliasDeclaration.h>
 #include <ir/ts/tsTypeAssertion.h>
 #include <ir/ts/tsTypeParameterInstantiation.h>
@@ -88,6 +89,8 @@ TypeExtractor::TypeExtractor(const ir::BlockStatement *rootNode, bool typeDtsExt
         std::bind(&TypeExtractor::GetTypeIndexFromTypeAliasNode, this, std::placeholders::_1, std::placeholders::_2);
     getterMap_[ir::AstNodeType::TS_AS_EXPRESSION] =
         std::bind(&TypeExtractor::GetTypeIndexFromAsNode, this, std::placeholders::_1, std::placeholders::_2);
+    getterMap_[ir::AstNodeType::TS_SATISFIES_EXPRESSION] =
+        std::bind(&TypeExtractor::GetTypeIndexFromSatisfiesNode, this, std::placeholders::_1, std::placeholders::_2);
     getterMap_[ir::AstNodeType::TS_TYPE_ASSERTION] =
         std::bind(&TypeExtractor::GetTypeIndexFromAssertionNode, this, std::placeholders::_1, std::placeholders::_2);
     getterMap_[ir::AstNodeType::MEMBER_EXPRESSION] =
@@ -477,6 +480,13 @@ int64_t TypeExtractor::GetTypeIndexFromTypeAliasNode(const ir::AstNode *node, [[
 int64_t TypeExtractor::GetTypeIndexFromAsNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance)
 {
     auto typeIndex = GetTypeIndexFromAnnotation(node->AsTSAsExpression()->TypeAnnotation());
+    TLOG(node->Type(), typeIndex);
+    return typeIndex;
+}
+
+int64_t TypeExtractor::GetTypeIndexFromSatisfiesNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance)
+{
+    auto typeIndex = GetTypeIndexFromAnnotation(node->AsTSSatisfiesExpression()->TypeAnnotation());
     TLOG(node->Type(), typeIndex);
     return typeIndex;
 }

@@ -1,0 +1,1 @@
+SyntaxError: Type expected [test_satisfies10.ts:17:26]

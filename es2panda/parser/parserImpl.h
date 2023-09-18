@@ -103,6 +103,7 @@ class TSTypeParameterInstantiation;
 class TSParameterProperty;
 class TSTypeAssertion;
 class TSAsExpression;
+class TSSatisfiesExpression;
 class YieldExpression;
 class MetaProperty;
 class TSModuleDeclaration;
@@ -363,6 +364,7 @@ private:
     ir::ArrowFunctionExpression *ParseTsGenericArrowFunction();
     ir::TSTypeAssertion *ParseTsTypeAssertion(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::TSAsExpression *ParseTsAsExpression(ir::Expression *expr, ExpressionParseFlags flags);
+    ir::TSSatisfiesExpression *ParseTsSatisfiesExpression(ir::Expression *expr);
     ir::Expression *ParseArrayExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     ir::YieldExpression *ParseYieldExpression();
     ir::Expression *ParsePotentialExpressionSequence(ir::Expression *expr, ExpressionParseFlags flags);

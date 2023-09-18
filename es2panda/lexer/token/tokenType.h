@@ -104,6 +104,7 @@ enum class TokenType {
     KEYW_META,
     KEYW_REQUIRE,
     KEYW_ABSTRACT,
+    KEYW_SATISFIES,
 
     /* reserved keywords */
     FIRST_KEYW,

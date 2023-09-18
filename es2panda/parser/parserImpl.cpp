@@ -83,6 +83,7 @@
 #include <ir/ts/tsPropertySignature.h>
 #include <ir/ts/tsQualifiedName.h>
 #include <ir/ts/tsRestType.h>
+#include <ir/ts/tsSatisfiesExpression.h>
 #include <ir/ts/tsSignatureDeclaration.h>
 #include <ir/ts/tsStringKeyword.h>
 #include <ir/ts/tsSymbolKeyword.h>
@@ -3689,6 +3690,10 @@ void ParserImpl::ValidateLvalueAssignmentTarget(ir::Expression *node) const
         }
         case ir::AstNodeType::TS_AS_EXPRESSION: {
             ValidateLvalueAssignmentTarget(node->AsTSAsExpression()->Expr());
+            break;
+        }
+        case ir::AstNodeType::TS_SATISFIES_EXPRESSION: {
+            ValidateLvalueAssignmentTarget(node->AsTSSatisfiesExpression()->Expr());
             break;
         }
         case ir::AstNodeType::TS_TYPE_ASSERTION: {
