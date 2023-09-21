@@ -289,11 +289,9 @@ public:
                                 const ArenaVector<ir::Expression *> &arguments,
                                 const std::vector<bool> &arg_type_inference_required);
     Signature *ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
-                                           const ArenaVector<ir::Expression *> &arguments,
                                            const std::vector<bool> &arg_type_inference_required,
                                            const lexer::SourcePosition &pos, size_t arguments_size = ULONG_MAX);
     Signature *ChooseMostSpecificProxySignature(ArenaVector<Signature *> &signatures,
-                                                const ArenaVector<ir::Expression *> &arguments,
                                                 const std::vector<bool> &arg_type_inference_required,
                                                 const lexer::SourcePosition &pos, size_t arguments_size);
     Signature *ResolveCallExpression(ArenaVector<Signature *> &signatures,

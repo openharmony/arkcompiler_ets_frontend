@@ -362,7 +362,7 @@ Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compat
                                                 const lexer::SourcePosition &pos, TypeRelationFlag resolve_flags)
 {
     Signature *most_specific_signature =
-        ChooseMostSpecificSignature(compatible_signatures, arguments, arg_type_inference_required, pos);
+        ChooseMostSpecificSignature(compatible_signatures, arg_type_inference_required, pos);
 
     if (most_specific_signature == nullptr) {
         ThrowTypeError({"Reference to ", compatible_signatures.front()->Function()->Id()->Name(), " is ambiguous"},
@@ -387,7 +387,7 @@ Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compat
 
     if (!proxy_signatures.empty()) {
         auto *const proxy_signature = ChooseMostSpecificProxySignature(
-            proxy_signatures, arguments, arg_type_inference_required, pos, arguments.size());
+            proxy_signatures, arg_type_inference_required, pos, arguments.size());
         if (proxy_signature != nullptr) {
             check_ambiguous(proxy_signature);
         }
@@ -412,8 +412,8 @@ Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
     }
 
     if (!proxy_signatures.empty()) {
-        auto *const proxy_signature = ChooseMostSpecificProxySignature(
-            proxy_signatures, arguments, arg_type_inference_required, pos, arguments.size());
+        auto *const proxy_signature =
+            ChooseMostSpecificProxySignature(proxy_signatures, arg_type_inference_required, pos, arguments.size());
         if (proxy_signature != nullptr) {
             return proxy_signature;
         }
@@ -427,7 +427,6 @@ Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
 }
 
 Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &signatures,
-                                                   const ArenaVector<ir::Expression *> &arguments,
                                                    const std::vector<bool> &arg_type_inference_required,
                                                    const lexer::SourcePosition &pos, size_t arguments_size)
 {
@@ -450,8 +449,8 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
     // Collect which signatures are most specific for each parameter.
     ArenaMultiMap<size_t /* parameter index */, Signature *> best_signatures_for_parameter(Allocator()->Adapter());
 
-    checker::SavedTypeRelationFlagsContext saved_type_relation_flag_ctx(Relation(),
-                                                                        TypeRelationFlag::ONLY_CHECK_WIDENING);
+    const checker::SavedTypeRelationFlagsContext saved_type_relation_flag_ctx(Relation(),
+                                                                              TypeRelationFlag::ONLY_CHECK_WIDENING);
 
     for (size_t i = 0; i < param_count; ++i) {
         if (arg_type_inference_required[i]) {
@@ -462,51 +461,56 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
         }
         // 1st step: check which is the most specific parameter type for i. parameter.
         Type *most_specific_type = signatures.front()->Params().at(i)->TsType();
+        Signature *prev_sig = signatures.front();
 
-        for (auto it = ++signatures.begin(); it != signatures.end(); ++it) {
-            Signature *sig = *it;
-            // Each signature must have the same amount of parameters.
-            if (arguments_size == ULONG_MAX) {
-                ASSERT(sig->Params().size() == param_count);
+        auto init_most_specific_type = [&most_specific_type, &prev_sig, i](Signature *sig) {
+            if (Type *sig_type = sig->Params().at(i)->TsType();
+                sig_type->IsETSObjectType() && !sig_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
+                most_specific_type = sig_type;
+                prev_sig = sig;
+                return true;
             }
+            return false;
+        };
 
-            Type *sig_type = sig->Params().at(i)->TsType();
-
-            if (Relation()->IsIdenticalTo(sig_type, most_specific_type)) {
-                continue;
-            }
-
+        auto evaluate_result = [this, &most_specific_type, &prev_sig, pos](Signature *sig, Type *sig_type) {
             if (Relation()->IsAssignableTo(sig_type, most_specific_type)) {
                 most_specific_type = sig_type;
+                prev_sig = sig;
+            } else if (sig_type->IsETSObjectType() && most_specific_type->IsETSObjectType() &&
+                       !Relation()->IsAssignableTo(most_specific_type, sig_type)) {
+                auto func_name = sig->Function()->Id()->Name();
+                ThrowTypeError({"Call to `", func_name, "` is ambiguous as `2` versions of `", func_name,
+                                "` are available: `", func_name, prev_sig, "` and `", func_name, sig, "`"},
+                               pos);
             }
-        }
+        };
 
-        // 2nd step: collect which signatures fit to the i. most specific parameter type.
-        Type *prev_sig_type = nullptr;
-        Signature *prev_sig = nullptr;
-        Type *arg_type = arguments.at(i)->TsType();
+        auto search_among_types = [this, &most_specific_type, arguments_size, param_count, i,
+                                   &evaluate_result](Signature *sig, const bool look_for_class_type) {
+            if (look_for_class_type && arguments_size == ULONG_MAX) {
+                [[maybe_unused]] const bool equal_param_size = sig->Params().size() == param_count;
+                ASSERT(equal_param_size);
+            }
+            Type *sig_type = sig->Params().at(i)->TsType();
+            const bool is_class_type =
+                sig_type->IsETSObjectType() && !sig_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE);
+            if (is_class_type == look_for_class_type) {
+                if (Relation()->IsIdenticalTo(sig_type, most_specific_type)) {
+                    return;
+                }
+                evaluate_result(sig, sig_type);
+            }
+        };
+
+        std::any_of(signatures.begin(), signatures.end(), init_most_specific_type);
+        std::for_each(signatures.begin(), signatures.end(),
+                      [&search_among_types](Signature *sig) mutable { search_among_types(sig, true); });
+        std::for_each(signatures.begin(), signatures.end(),
+                      [&search_among_types](Signature *sig) mutable { search_among_types(sig, false); });
+
         for (auto *sig : signatures) {
             Type *sig_type = sig->Params().at(i)->TsType();
-            if (arg_type->IsETSObjectType()) {
-                auto it = std::find(arg_type->AsETSObjectType()->Interfaces().begin(),
-                                    arg_type->AsETSObjectType()->Interfaces().end(), sig_type);
-                bool found_coincidence = it != arg_type->AsETSObjectType()->Interfaces().end() ||
-                                         arg_type->AsETSObjectType()->SuperType() == sig_type;
-                if (found_coincidence && prev_sig_type != nullptr) {  // Ambiguous call
-                    bool is_assignable =
-                        IsTypeAssignableTo(prev_sig_type, sig_type) || IsTypeAssignableTo(sig_type, prev_sig_type);
-                    if (!is_assignable) {
-                        auto func_name = sig->Function()->Id()->Name();
-                        ThrowTypeError({"Call to `", func_name, "` is ambiguous as `2` versions of `", func_name,
-                                        "` are available: `", func_name, prev_sig, "` and `", func_name, sig, "`"},
-                                       pos);
-                    }
-                } else if (found_coincidence && !arg_type->IsETSStringType()) {
-                    prev_sig = sig;
-                    prev_sig_type = sig_type;
-                }
-            }
-
             if (Relation()->IsIdenticalTo(sig_type, most_specific_type)) {
                 best_signatures_for_parameter.insert({i, sig});
             }
@@ -552,7 +556,6 @@ Signature *ETSChecker::ChooseMostSpecificSignature(ArenaVector<Signature *> &sig
 }
 
 Signature *ETSChecker::ChooseMostSpecificProxySignature(ArenaVector<Signature *> &signatures,
-                                                        const ArenaVector<ir::Expression *> &arguments,
                                                         const std::vector<bool> &arg_type_inference_required,
                                                         const lexer::SourcePosition &pos, size_t arguments_size)
 {
@@ -561,7 +564,7 @@ Signature *ETSChecker::ChooseMostSpecificProxySignature(ArenaVector<Signature *>
     }
 
     const auto most_specific_signature =
-        ChooseMostSpecificSignature(signatures, arguments, arg_type_inference_required, pos, arguments_size);
+        ChooseMostSpecificSignature(signatures, arg_type_inference_required, pos, arguments_size);
 
     if (most_specific_signature == nullptr) {
         const auto str = signatures.front()->Function()->Id()->Name().Mutf8().substr(
