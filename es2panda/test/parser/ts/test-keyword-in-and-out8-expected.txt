@@ -1,0 +1,1 @@
+SyntaxError: 'out' modifier can only appear on a type parameter of a class, interface or type alias [test-keyword-in-and-out8.ts:17:13]

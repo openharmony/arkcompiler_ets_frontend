@@ -1,0 +1,1 @@
+SyntaxError: 'out' modifier already seen. [test-keyword-in-and-out6.ts:17:20]

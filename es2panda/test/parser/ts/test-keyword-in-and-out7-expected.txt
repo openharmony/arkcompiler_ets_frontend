@@ -1,0 +1,1 @@
+SyntaxError: 'in' modifier already seen. [test-keyword-in-and-out7.ts:17:17]

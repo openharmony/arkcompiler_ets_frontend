@@ -840,6 +840,8 @@
                   }
                 }
               },
+              "in": false,
+              "out": false,
               "loc": {
                 "start": {
                   "line": 33,

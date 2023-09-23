@@ -33,8 +33,14 @@ class Identifier;
 
 class TSTypeParameter : public Expression {
 public:
-    explicit TSTypeParameter(Identifier *name, Expression *constraint, Expression *defaultType)
-        : Expression(AstNodeType::TS_TYPE_PARAMETER), name_(name), constraint_(constraint), defaultType_(defaultType)
+    explicit TSTypeParameter(Identifier *name, Expression *constraint, Expression *defaultType,
+                             bool isTypeIn = false, bool isTypeOut = false)
+        : Expression(AstNodeType::TS_TYPE_PARAMETER),
+        name_(name),
+        constraint_(constraint),
+        defaultType_(defaultType),
+        isTypeIn_(isTypeIn),
+        isTypeOut_(isTypeOut)
     {
     }
 
@@ -53,6 +59,16 @@ public:
         return defaultType_;
     }
 
+    bool IsTypeIn() const
+    {
+        return isTypeIn_;
+    }
+
+    bool IsTypeOut() const
+    {
+        return isTypeOut_;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
@@ -63,6 +79,8 @@ private:
     Identifier *name_;
     Expression *constraint_;
     Expression *defaultType_;
+    bool isTypeIn_;
+    bool isTypeOut_;
 };
 }  // namespace panda::es2panda::ir
 

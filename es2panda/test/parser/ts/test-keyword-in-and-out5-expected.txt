@@ -1,0 +1,1 @@
+SyntaxError: 'in' modifier must precede 'out' modifier. [test-keyword-in-and-out5.ts:17:17]
