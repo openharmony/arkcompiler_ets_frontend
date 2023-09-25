@@ -525,6 +525,7 @@
               }
             },
             "readonly": false,
+            "static": false,
             "loc": {
               "start": {
                 "line": 24,
@@ -994,6 +995,7 @@
               }
             },
             "readonly": true,
+            "static": false,
             "loc": {
               "start": {
                 "line": 31,

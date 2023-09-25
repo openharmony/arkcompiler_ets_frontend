@@ -803,12 +803,16 @@ private:
 
     void FillIndexSignatures(const ir::ClassDefinition *classDef)
     {
+        bool isAllIndexSignatureStatic = true;
         for (const auto &t : classDef->IndexSignatures()) {
-            auto key = t->Param()->AsIdentifier()->TypeAnnotation();
-            indexSignatures_[extractor_->GetTypeIndexFromAnnotation(key)] =
-                extractor_->GetTypeIndexFromAnnotation(t->TypeAnnotation());
+            if (!t->Static()) {
+                isAllIndexSignatureStatic = false;
+                auto key = t->Param()->AsIdentifier()->TypeAnnotation();
+                indexSignatures_[extractor_->GetTypeIndexFromAnnotation(key)] =
+                    extractor_->GetTypeIndexFromAnnotation(t->TypeAnnotation());
+            }
         }
-        if (indexSignatures_.size() > 0U) {
+        if (indexSignatures_.size() > 0U && !isAllIndexSignatureStatic) {
             // Update current type to IndexSignture Type
             IndexSigType indexSigType(extractor_, typeIndexShift_, &indexSignatures_);
             typeIndexShift_ = indexSigType.GetTypeIndexShift();

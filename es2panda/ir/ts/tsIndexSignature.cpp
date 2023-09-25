@@ -39,7 +39,8 @@ void TSIndexSignature::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSIndexSignature"},
                  {"parameters", param_},
                  {"typeAnnotation", typeAnnotation_},
-                 {"readonly", readonly_}});
+                 {"readonly", readonly_},
+                 {"static", static_}});
 }
 
 void TSIndexSignature::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}

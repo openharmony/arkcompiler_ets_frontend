@@ -269,10 +269,11 @@
               }
             },
             "readonly": false,
+            "static": false,
             "loc": {
               "start": {
                 "line": 19,
-                "column": 4
+                "column": 3
               },
               "end": {
                 "line": 19,
