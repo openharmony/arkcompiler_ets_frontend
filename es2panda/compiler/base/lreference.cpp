@@ -25,6 +25,7 @@
 #include <ir/statements/variableDeclaration.h>
 #include <ir/statements/variableDeclarator.h>
 #include <ir/ts/tsAsExpression.h>
+#include <ir/ts/tsSatisfiesExpression.h>
 #include <ir/ts/tsTypeAssertion.h>
 
 namespace panda::es2panda::compiler {
@@ -136,6 +137,9 @@ LReference LReference::CreateLRef(PandaGen *pg, const ir::AstNode *node, bool is
         }
         case ir::AstNodeType::TS_AS_EXPRESSION: {
             return LReference::CreateLRef(pg, node->AsTSAsExpression()->Expr(), isDeclaration);
+        }
+        case ir::AstNodeType::TS_SATISFIES_EXPRESSION: {
+            return LReference::CreateLRef(pg, node->AsTSSatisfiesExpression()->Expr(), isDeclaration);
         }
         case ir::AstNodeType::TS_TYPE_ASSERTION: {
             return LReference::CreateLRef(pg, node->AsTSTypeAssertion()->GetExpression(), isDeclaration);

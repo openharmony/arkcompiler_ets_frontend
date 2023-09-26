@@ -168,6 +168,7 @@ es2panda_src = [
   "ir/ts/tsPropertySignature.cpp",
   "ir/ts/tsQualifiedName.cpp",
   "ir/ts/tsRestType.cpp",
+  "ir/ts/tsSatisfiesExpression.cpp",
   "ir/ts/tsSignatureDeclaration.cpp",
   "ir/ts/tsStringKeyword.cpp",
   "ir/ts/tsSymbolKeyword.cpp",

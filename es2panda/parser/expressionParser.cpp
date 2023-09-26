@@ -58,6 +58,7 @@
 #include <ir/ts/tsAsExpression.h>
 #include <ir/ts/tsNonNullExpression.h>
 #include <ir/ts/tsPrivateIdentifier.h>
+#include <ir/ts/tsSatisfiesExpression.h>
 #include <ir/ts/tsTypeAssertion.h>
 #include <ir/ts/tsTypeParameter.h>
 #include <ir/ts/tsTypeParameterDeclaration.h>
@@ -152,6 +153,24 @@ ir::TSAsExpression *ParserImpl::ParseTsAsExpression(ir::Expression *expr, [[mayb
     }
 
     return asExpr;
+}
+
+ir::TSSatisfiesExpression *ParserImpl::ParseTsSatisfiesExpression(ir::Expression *expr)
+{
+    lexer_->NextToken();  // eat 'satisfies'
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+    ir::Expression *typeAnnotation = ParseTsTypeAnnotation(&options);
+
+    lexer::SourcePosition startLoc = expr->Start();
+    auto *satisfiesExpr = AllocNode<ir::TSSatisfiesExpression>(expr, typeAnnotation);
+    satisfiesExpr->SetRange({startLoc, lexer_->GetToken().End()});
+
+    if (Extension() == ScriptExtension::TS && lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
+        lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_SATISFIES) {
+        return ParseTsSatisfiesExpression(satisfiesExpr);
+    }
+
+    return satisfiesExpr;
 }
 
 ir::Expression *ParserImpl::ParseExpression(ExpressionParseFlags flags)
@@ -821,10 +840,15 @@ ir::Expression *ParserImpl::ParseAssignmentExpression(ir::Expression *lhsExpress
             return binaryAssignmentExpression;
         }
         case lexer::TokenType::LITERAL_IDENT: {
-            if (Extension() == ScriptExtension::TS && lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_AS &&
-                !(flags & ExpressionParseFlags::EXP_DISALLOW_AS) && !lexer_->GetToken().NewLine()) {
-                ir::Expression *asExpression = ParseTsAsExpression(lhsExpression, flags);
-                return ParseAssignmentExpression(asExpression);
+            if (Extension() == ScriptExtension::TS && !lexer_->GetToken().NewLine()) {
+                lexer::TokenType keywordType = lexer_->GetToken().KeywordType();
+                if (keywordType == lexer::TokenType::KEYW_AS && !(flags & ExpressionParseFlags::EXP_DISALLOW_AS)) {
+                    ir::Expression *asExpression = ParseTsAsExpression(lhsExpression, flags);
+                    return ParseAssignmentExpression(asExpression);
+                } else if (keywordType == lexer::TokenType::KEYW_SATISFIES) {
+                    ir::Expression *satisfiesExpression = ParseTsSatisfiesExpression(lhsExpression);
+                    return ParseAssignmentExpression(satisfiesExpression);
+                }
             }
             break;
         }

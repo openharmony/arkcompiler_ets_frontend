@@ -110,6 +110,7 @@ private:
     int64_t GetTypeIndexFromImportNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
     int64_t GetTypeIndexFromTypeAliasNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
     int64_t GetTypeIndexFromAsNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
+    int64_t GetTypeIndexFromSatisfiesNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
     int64_t GetTypeIndexFromAssertionNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
     int64_t GetTypeIndexFromMemberNode(const ir::AstNode *node, [[maybe_unused]] bool isNewInstance);
     int64_t GetTypeIndexFromTSQualifiedNode(const ir::AstNode *node, bool isNewInstance);
