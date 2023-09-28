@@ -1962,6 +1962,7 @@ static bool IsModifierKind(const lexer::Token &token)
             case lexer::TokenType::KEYW_DECLARE:
             case lexer::TokenType::KEYW_READONLY:
             case lexer::TokenType::KEYW_ACCESSOR:
+            case lexer::TokenType::KEYW_OVERRIDE:
                 return true;
             default:
                 return false;
@@ -1996,25 +1997,28 @@ ir::ModifierFlags ParserImpl::ParseModifiers()
             case lexer::TokenType::KEYW_PUBLIC: {
                 actualStatus = ir::ModifierFlags::PUBLIC;
                 nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC | ir::ModifierFlags::READONLY |
-                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::ACCESSOR;
+                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::ACCESSOR |
+                             ir::ModifierFlags::OVERRIDE;
                 break;
             }
             case lexer::TokenType::KEYW_PRIVATE: {
                 actualStatus = ir::ModifierFlags::PRIVATE;
                 nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC | ir::ModifierFlags::READONLY |
-                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::ACCESSOR;
+                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::ACCESSOR |
+                             ir::ModifierFlags::OVERRIDE;
                 break;
             }
             case lexer::TokenType::KEYW_PROTECTED: {
                 actualStatus = ir::ModifierFlags::PROTECTED;
                 nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC | ir::ModifierFlags::READONLY |
-                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::ACCESSOR;
+                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::ACCESSOR |
+                             ir::ModifierFlags::OVERRIDE;
                 break;
             }
             case lexer::TokenType::KEYW_STATIC: {
                 actualStatus = ir::ModifierFlags::STATIC;
                 nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::READONLY | ir::ModifierFlags::DECLARE |
-                             ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::ACCESSOR;
+                             ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::ACCESSOR | ir::ModifierFlags::OVERRIDE;
                 break;
             }
             case lexer::TokenType::KEYW_ASYNC: {
@@ -2025,7 +2029,7 @@ ir::ModifierFlags ParserImpl::ParseModifiers()
             case lexer::TokenType::KEYW_ABSTRACT: {
                 actualStatus = ir::ModifierFlags::ABSTRACT;
                 nextStatus = ir::ModifierFlags::ACCESS | ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC |
-                             ir::ModifierFlags::READONLY | ir::ModifierFlags::DECLARE;
+                             ir::ModifierFlags::READONLY | ir::ModifierFlags::DECLARE | ir::ModifierFlags::OVERRIDE;
                 break;
             }
             case lexer::TokenType::KEYW_DECLARE: {
@@ -2042,6 +2046,11 @@ ir::ModifierFlags ParserImpl::ParseModifiers()
             case lexer::TokenType::KEYW_ACCESSOR: {
                 actualStatus = ir::ModifierFlags::ACCESSOR;
                 nextStatus = ir::ModifierFlags::NONE;
+                break;
+            }
+            case lexer::TokenType::KEYW_OVERRIDE: {
+                actualStatus = ir::ModifierFlags::OVERRIDE;
+                nextStatus = ir::ModifierFlags::ACCESSOR | ir::ModifierFlags::ASYNC | ir::ModifierFlags::READONLY;
                 break;
             }
             default: {
@@ -2592,7 +2601,7 @@ ArenaVector<ir::Decorator *> ParserImpl::ParseDecorators()
 
 ir::Statement *ParserImpl::ParseClassElement(const ArenaVector<ir::Statement *> &properties,
                                              ArenaVector<ir::TSIndexSignature *> *indexSignatures, bool hasSuperClass,
-                                             bool isDeclare, bool isAbstractClass)
+                                             bool isDeclare, bool isAbstractClass, bool isExtendsFromNull)
 {
     ClassElmentDescriptor desc;
 
@@ -2610,6 +2619,11 @@ ir::Statement *ParserImpl::ParseClassElement(const ArenaVector<ir::Statement *> 
     }
     if (!decorators.empty() && (desc.modifiers & ir::ModifierFlags::ACCESSOR)) {
         ThrowSyntaxError("Decorators are not available for auto accessor property now.");
+    }
+
+    if ((desc.modifiers & ir::ModifierFlags::OVERRIDE) && (!desc.hasSuperClass || isExtendsFromNull)) {
+        ThrowSyntaxError({"This member cannot have an 'override' modifier because its containing class "
+                          "does not extend another class."});
     }
 
     CheckClassPrivateIdentifier(&desc);
@@ -2862,11 +2876,14 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
     // Parse SuperClass
     ir::Expression *superClass = nullptr;
     bool hasSuperClass = false;
+    bool isExtendsFromNull = false;
 
     if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS) {
         lexer_->NextToken();
         hasSuperClass = true;
         superClass = ParseLeftHandSideExpression();
+        ASSERT(superClass != nullptr);
+        isExtendsFromNull = superClass->IsNullLiteral();
     }
 
     ir::TSTypeParameterInstantiation *superTypeParams = nullptr;
@@ -2952,7 +2969,8 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
             continue;
         }
 
-        ir::Statement *property = ParseClassElement(properties, &indexSignatures, hasSuperClass, isDeclare, isAbstract);
+        ir::Statement *property = ParseClassElement(properties, &indexSignatures, hasSuperClass,
+                                                    isDeclare, isAbstract, isExtendsFromNull);
 
         if (property->IsEmptyStatement()) {
             continue;
@@ -3668,6 +3686,7 @@ ir::TSParameterProperty *ParserImpl::CreateTsParameterProperty(ir::Expression *p
 {
     auto accessibility = ir::AccessibilityOption::NO_OPTS;
     bool readonly = false;
+    bool isOverride = false;
     bool isStatic = false;
     bool isExport = false;
 
@@ -3683,13 +3702,17 @@ ir::TSParameterProperty *ParserImpl::CreateTsParameterProperty(ir::Expression *p
         readonly = true;
     }
 
+    if (modifiers & ir::ModifierFlags::OVERRIDE) {
+        isOverride = true;
+    }
+
     if (modifiers & ir::ModifierFlags::STATIC) {
         isStatic = true;
     }
 
     // TODO(Csaba Repasi): Handle export property of TSParameterProperty
 
-    return AllocNode<ir::TSParameterProperty>(accessibility, parameter, readonly, isStatic, isExport);
+    return AllocNode<ir::TSParameterProperty>(accessibility, parameter, readonly, isOverride, isStatic, isExport);
 }
 
 ir::Expression *ParserImpl::ParseFunctionParameter(bool isDeclare)

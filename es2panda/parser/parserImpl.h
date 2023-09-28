@@ -310,7 +310,7 @@ private:
     ArenaVector<ir::Decorator *> ParseDecorators();
     ir::Statement *ParseClassElement(const ArenaVector<ir::Statement *> &properties,
                                      ArenaVector<ir::TSIndexSignature *> *indexSignatures, bool hasSuperClass,
-                                     bool isDeclare, bool isAbstractClass);
+                                     bool isDeclare, bool isAbstractClass, bool isExtendsFromNull);
     ir::MethodDefinition *CreateImplicitConstructor(ir::Expression *superClass,
                                                     bool hasSuperClass, bool isDeclare = false);
     ir::MethodDefinition *CheckClassMethodOverload(ir::Statement *property, ir::MethodDefinition **ctor, bool isDeclare,

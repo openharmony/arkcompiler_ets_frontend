@@ -1,0 +1,1 @@
+SyntaxError: Unexpected modifier [test_override3.ts:23:14]

@@ -1,0 +1,1 @@
+SyntaxError: This member cannot have an 'override' modifier because its containing class does not extend another class. [test_override.ts:18:14]

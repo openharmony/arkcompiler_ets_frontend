@@ -53,6 +53,7 @@ void ClassProperty::Dump(ir::AstDumper *dumper) const
                  {"abstract", AstDumper::Optional((modifiers_ & ModifierFlags::ABSTRACT) != 0)},
                  {"static", (modifiers_ & ModifierFlags::STATIC) != 0},
                  {"readonly", (modifiers_ & ModifierFlags::READONLY) != 0},
+                 {"override", AstDumper::Optional((modifiers_ & ModifierFlags::OVERRIDE) != 0)},
                  {"declare", (modifiers_ & ModifierFlags::DECLARE) != 0},
                  {"optional", (modifiers_ & ModifierFlags::OPTIONAL) != 0},
                  {"computed", isComputed_},
