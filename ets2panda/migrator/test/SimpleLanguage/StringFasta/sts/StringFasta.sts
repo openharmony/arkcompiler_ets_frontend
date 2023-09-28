@@ -1,0 +1,129 @@
+/*
+ * Copyright (c) 2022-2022 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// The Great Computer Language Shootout
+//  http://shootout.alioth.debian.org
+//
+//  Contributed by Ian Osgood
+
+function StringFasta() {
+  this.ALU = 'GGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGG' +
+      'GAGGCCGAGGCGGGCGGATCACCTGAGGTCAGGAGTTCGAGA' +
+      'CCAGCCTGGCCAACATGGTGAAACCCCGTCTCTACTAAAAAT' +
+      'ACAAAAATTAGCCGGGCGTGGTGGCGCGCGCCTGTAATCCCA' +
+      'GCTACTCGGGAGGCTGAGGCAGGAGAATCGCTTGAACCCGGG' +
+      'AGGCGGAGGTTGCAGTGAGCCGAGATCGCGCCACTGCACTCC' +
+      'AGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAA';
+
+  this.IUB = {
+    a: 0.27,
+    c: 0.12,
+    g: 0.12,
+    t: 0.27,
+    B: 0.02,
+    D: 0.02,
+    H: 0.02,
+    K: 0.02,
+    M: 0.02,
+    N: 0.02,
+    R: 0.02,
+    S: 0.02,
+    V: 0.02,
+    W: 0.02,
+    Y: 0.02
+  };
+
+  this.HomoSap = {
+    a: 0.3029549426680,
+    c: 0.1979883004921,
+    g: 0.1975473066391,
+    t: 0.3015094502008
+  };
+
+  this.last = 42;
+  this.A = 3877;
+  this.C = 29573;
+  this.M = 139968;
+
+  this.ret = 0;
+}
+
+StringFasta.prototype.rand = function(max) {
+  this.last = (this.last * this.A + this.C) % this.M;
+  return max * this.last / this.M;
+};
+
+StringFasta.prototype.makeCumulative = function(table) {
+  let last: string = null;
+  for (let c in table) {
+    if (last) table[c] += table[last];
+    last = c;
+  }
+};
+
+StringFasta.prototype.fastaRepeat = function(n, seq) {
+  let seqi: int = 0, lenOut: int = 60;
+  while (n > 0) {
+    if (n < lenOut) lenOut = n;
+    if (seqi + lenOut < seq.length) {
+      this.ret += seq.substring(seqi, seqi + lenOut).length;
+      seqi += lenOut;
+    } else {
+      let s: string = seq.substring(seqi);
+      seqi = lenOut - s.length;
+      this.ret += (s + seq.substring(0, seqi)).length;
+    }
+    n -= lenOut;
+  }
+};
+
+StringFasta.prototype.fastaRandom = function(n, table) {
+  let line: string[] = new Array(60);
+
+  this.makeCumulative(table);
+  while (n > 0) {
+    if (n < line.length) line = new Array(n);
+    for (let i = 0; i < line.length; i++) {
+      let r: int = this.rand(1);
+      for (let c in table) {
+        if (r < table[c]) {
+          line[i] = c;
+          break;
+        }
+      }
+    }
+    this.ret += line.join('').length;
+    n -= line.length;
+  }
+};
+
+StringFasta.prototype.setup = function() {
+  this.ret = 0;
+};
+
+StringFasta.prototype.run = function() {
+  let count: int = 7;
+  let expected: int = 1456000;
+
+  this.fastaRepeat(2 * count * 100000, this.ALU);
+  this.fastaRandom(3 * count * 1000, this.IUB);
+  this.fastaRandom(5 * count * 1000, this.HomoSap);
+
+  if (this.ret != expected)
+    throw 'ERROR: bad result: expected ' + expected + ' but got ' + this.ret;
+
+  let consumer = new consumer();
+  consumer.consumeInt(this.ret);
+};

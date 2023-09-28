@@ -1,0 +1,387 @@
+/**
+ * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include "callExpression.h"
+
+#include "plugins/ecmascript/es2panda/util/helpers.h"
+#include "plugins/ecmascript/es2panda/compiler/core/function.h"
+#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
+#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
+#include "plugins/ecmascript/es2panda/compiler/core/regScope.h"
+#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
+#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
+#include "plugins/ecmascript/es2panda/checker/types/ts/objectType.h"
+#include "plugins/ecmascript/es2panda/checker/types/signature.h"
+#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
+#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "plugins/ecmascript/es2panda/ir/ets/etsFunctionType.h"
+#include "plugins/ecmascript/es2panda/ir/expressions/chainExpression.h"
+#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
+#include "plugins/ecmascript/es2panda/ir/expressions/memberExpression.h"
+#include "plugins/ecmascript/es2panda/ir/expressions/arrowFunctionExpression.h"
+#include "plugins/ecmascript/es2panda/ir/expressions/literals/numberLiteral.h"
+#include "plugins/ecmascript/es2panda/ir/statements/blockStatement.h"
+#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameterInstantiation.h"
+#include "plugins/ecmascript/es2panda/ir/ts/tsEnumMember.h"
+
+namespace panda::es2panda::ir {
+void CallExpression::Iterate(const NodeTraverser &cb) const
+{
+    cb(callee_);
+
+    if (type_params_ != nullptr) {
+        cb(type_params_);
+    }
+
+    for (auto *it : arguments_) {
+        cb(it);
+    }
+
+    if (trailing_block_ != nullptr) {
+        cb(trailing_block_);
+    }
+}
+
+void CallExpression::Dump(ir::AstDumper *dumper) const
+{
+    dumper->Add({{"type", "CallExpression"},
+                 {"callee", callee_},
+                 {"arguments", arguments_},
+                 {"optional", optional_},
+                 {"typeParameters", AstDumper::Optional(type_params_)}});
+}
+
+compiler::VReg CallExpression::CreateSpreadArguments(compiler::PandaGen *pg) const
+{
+    compiler::VReg args_obj = pg->AllocReg();
+    pg->CreateArray(this, arguments_, args_obj);
+
+    return args_obj;
+}
+
+void CallExpression::Compile(compiler::PandaGen *pg) const
+{
+    compiler::RegScope rs(pg);
+    bool contains_spread = util::Helpers::ContainSpreadElement(arguments_);
+
+    if (callee_->IsSuperExpression()) {
+        if (contains_spread) {
+            compiler::RegScope param_scope(pg);
+            compiler::VReg args_obj = CreateSpreadArguments(pg);
+
+            pg->GetFunctionObject(this);
+            pg->SuperCallSpread(this, args_obj);
+        } else {
+            compiler::RegScope param_scope(pg);
+            compiler::VReg arg_start {};
+
+            if (arguments_.empty()) {
+                arg_start = pg->AllocReg();
+                pg->StoreConst(this, arg_start, compiler::Constant::JS_UNDEFINED);
+            } else {
+                arg_start = pg->NextReg();
+            }
+
+            for (const auto *it : arguments_) {
+                compiler::VReg arg = pg->AllocReg();
+                it->Compile(pg);
+                pg->StoreAccumulator(it, arg);
+            }
+
+            pg->GetFunctionObject(this);
+            pg->SuperCall(this, arg_start, arguments_.size());
+        }
+
+        compiler::VReg new_this = pg->AllocReg();
+        pg->StoreAccumulator(this, new_this);
+
+        pg->GetThis(this);
+        pg->ThrowIfSuperNotCorrectCall(this, 1);
+
+        pg->LoadAccumulator(this, new_this);
+        pg->SetThis(this);
+
+        compiler::Function::CompileInstanceFields(pg, pg->RootNode()->AsScriptFunction());
+        return;
+    }
+
+    compiler::VReg callee = pg->AllocReg();
+    compiler::VReg this_reg = compiler::VReg::Invalid();
+
+    if (callee_->IsMemberExpression()) {
+        this_reg = pg->AllocReg();
+
+        compiler::RegScope mrs(pg);
+        callee_->AsMemberExpression()->CompileToReg(pg, this_reg);
+    } else if (callee_->IsChainExpression()) {
+        this_reg = pg->AllocReg();
+
+        compiler::RegScope mrs(pg);
+        callee_->AsChainExpression()->CompileToReg(pg, this_reg);
+    } else {
+        callee_->Compile(pg);
+    }
+
+    pg->StoreAccumulator(this, callee);
+    pg->OptionalChainCheck(optional_, callee);
+
+    if (contains_spread || arguments_.size() >= compiler::PandaGen::MAX_RANGE_CALL_ARG) {
+        if (this_reg.IsInvalid()) {
+            this_reg = pg->AllocReg();
+            pg->StoreConst(this, this_reg, compiler::Constant::JS_UNDEFINED);
+        }
+
+        compiler::VReg args_obj = CreateSpreadArguments(pg);
+        pg->CallSpread(this, callee, this_reg, args_obj);
+    } else {
+        pg->Call(this, callee, this_reg, arguments_);
+    }
+}
+
+void CallExpression::Compile(compiler::ETSGen *etsg) const
+{
+    compiler::RegScope rs(etsg);
+    compiler::VReg callee_reg = etsg->AllocReg();
+
+    const auto is_proxy = signature_->HasSignatureFlag(checker::SignatureFlags::PROXY);
+
+    if (is_proxy && callee_->IsMemberExpression() &&
+        callee_->AsMemberExpression()->Object()->TsType()->IsETSEnumType()) {
+        ArenaVector<ir::Expression *> arguments(etsg->Allocator()->Adapter());
+
+        checker::Signature *const signature = [this, &arguments]() {
+            auto *const callee_obj = callee_->AsMemberExpression()->Object();
+            const auto *const enum_type = callee_obj->TsType()->AsETSEnumType();
+            const auto &member_proxy_method_name = signature_->InternalName();
+
+            if (member_proxy_method_name == checker::ETSEnumType::TO_STRING_METHOD_NAME) {
+                arguments.push_back(callee_obj);
+                return enum_type->ToStringMethod().global_signature;
+            }
+            if (member_proxy_method_name == checker::ETSEnumType::GET_VALUE_METHOD_NAME) {
+                arguments.push_back(callee_obj);
+                return enum_type->GetValueMethod().global_signature;
+            }
+            if (member_proxy_method_name == checker::ETSEnumType::GET_NAME_METHOD_NAME) {
+                arguments.push_back(callee_obj);
+                return enum_type->GetNameMethod().global_signature;
+            }
+            if (member_proxy_method_name == checker::ETSEnumType::VALUES_METHOD_NAME) {
+                return enum_type->ValuesMethod().global_signature;
+            }
+            if (member_proxy_method_name == checker::ETSEnumType::VALUE_OF_METHOD_NAME) {
+                arguments.push_back(arguments_.front());
+                return enum_type->ValueOfMethod().global_signature;
+            }
+            UNREACHABLE();
+        }();
+
+        ASSERT(signature->ReturnType() == signature_->ReturnType());
+        etsg->CallStatic(this, signature, arguments);
+        etsg->SetAccumulatorType(TsType());
+        return;
+    }
+
+    bool is_static = signature_->HasSignatureFlag(checker::SignatureFlags::STATIC);
+    bool is_reference = signature_->HasSignatureFlag(checker::SignatureFlags::TYPE);
+    bool is_dynamic = callee_->TsType()->IsETSDynamicType();
+
+    compiler::VReg dyn_param2;
+
+    // Helper function to avoid branching in non optional cases
+    auto emit_arguments = [this, etsg, is_static, is_dynamic, &callee_reg, &dyn_param2]() {
+        if (is_dynamic) {
+            etsg->CallDynamic(this, callee_reg, dyn_param2, signature_, arguments_);
+        } else if (is_static) {
+            etsg->CallStatic(this, signature_, arguments_);
+        } else if (signature_->HasSignatureFlag(checker::SignatureFlags::PRIVATE) || IsETSConstructorCall() ||
+                   (callee_->IsMemberExpression() && callee_->AsMemberExpression()->Object()->IsSuperExpression())) {
+            etsg->CallThisStatic(this, callee_reg, signature_, arguments_);
+        } else {
+            etsg->CallThisVirtual(this, callee_reg, signature_, arguments_);
+        }
+
+        if (GetBoxingUnboxingFlags() != ir::BoxingUnboxingFlags::NONE) {
+            etsg->ApplyConversion(this, nullptr);
+        } else {
+            etsg->SetAccumulatorType(TsType());
+        }
+    };
+
+    if (is_dynamic) {
+        dyn_param2 = etsg->AllocReg();
+
+        ir::Expression *obj = callee_;
+        std::vector<util::StringView> parts;
+
+        while (obj->IsMemberExpression() && obj->AsMemberExpression()->ObjType()->IsETSDynamicType()) {
+            auto *mem_expr = obj->AsMemberExpression();
+            obj = mem_expr->Object();
+            parts.push_back(mem_expr->Property()->AsIdentifier()->Name());
+        }
+
+        if (!obj->IsMemberExpression() && obj->IsIdentifier()) {
+            auto *var = obj->AsIdentifier()->Variable();
+            auto *import = util::Helpers::ImportDeclarationForDynamicVar(var);
+            if (import != nullptr) {
+                ASSERT(import->Language().IsDynamic());
+                etsg->LoadAccumulatorDynamicModule(this, import);
+
+                auto *decl = var->Declaration()->Node();
+                if (decl->IsImportSpecifier()) {
+                    parts.push_back(decl->AsImportSpecifier()->Imported()->Name());
+                }
+            } else {
+                obj->Compile(etsg);
+            }
+        } else {
+            obj->Compile(etsg);
+        }
+
+        etsg->StoreAccumulator(this, callee_reg);
+
+        if (!parts.empty()) {
+            std::stringstream ss;
+            for_each(parts.rbegin(), parts.rend(), [&ss](util::StringView sv) { ss << "." << sv; });
+
+            etsg->LoadAccumulatorString(this, util::UString(ss.str(), etsg->Allocator()).View());
+        } else {
+            etsg->LoadUndefinedDynamic(this, callee_->TsType()->AsETSDynamicType()->Language());
+        }
+
+        etsg->StoreAccumulator(this, dyn_param2);
+
+        emit_arguments();
+    } else if (!is_reference && callee_->IsIdentifier()) {
+        if (!is_static) {
+            etsg->LoadThis(this);
+            etsg->StoreAccumulator(this, callee_reg);
+        }
+        emit_arguments();
+    } else if (!is_reference && callee_->IsMemberExpression()) {
+        if (!is_static) {
+            callee_->AsMemberExpression()->Object()->Compile(etsg);
+            etsg->StoreAccumulator(this, callee_reg);
+        }
+        emit_arguments();
+    } else {
+        callee_->Compile(etsg);
+        etsg->StoreAccumulator(this, callee_reg);
+        if (optional_) {
+            compiler::Label *end_label = etsg->AllocLabel();
+            etsg->BranchIfNull(this, end_label);
+            emit_arguments();
+            etsg->SetLabel(this, end_label);
+        } else {
+            emit_arguments();
+        }
+    }
+}
+
+checker::Type *CallExpression::Check(checker::TSChecker *checker)
+{
+    checker::Type *callee_type = callee_->Check(checker);
+
+    // TODO(aszilagyi): handle optional chain
+    if (callee_type->IsObjectType()) {
+        checker::ObjectType *callee_obj = callee_type->AsObjectType();
+        return checker->ResolveCallOrNewExpression(callee_obj->CallSignatures(), arguments_, Start());
+    }
+
+    checker->ThrowTypeError("This expression is not callable.", Start());
+    return nullptr;
+}
+
+bool CallExpression::IsETSConstructorCall() const
+{
+    return callee_->IsThisExpression() || callee_->IsSuperExpression();
+}
+
+checker::Type *CallExpression::Check(checker::ETSChecker *checker)
+{
+    checker::Type *callee_type = callee_->Check(checker);
+    if (callee_type->IsETSDynamicType()) {
+        // Trailing lambda for js function call is not supported, check the correctness of `foo() {}`
+        checker->EnsureValidCurlyBrace(this);
+        signature_ = checker->ResolveDynamicCallExpression(callee_, arguments_, false);
+    } else {
+        bool constructor_call = IsETSConstructorCall();
+        bool functional_interface =
+            callee_type->IsETSObjectType() &&
+            callee_type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
+
+        if (callee_->IsArrowFunctionExpression()) {
+            callee_type = InitAnonymousLambdaCallee(checker, callee_, callee_type);
+            functional_interface = true;
+        }
+
+        if (!functional_interface && !callee_type->IsETSFunctionType() && !constructor_call) {
+            checker->ThrowTypeError("This expression is not callable.", Start());
+        }
+
+        auto &signatures = constructor_call ? callee_type->AsETSObjectType()->ConstructSignatures()
+                           : functional_interface
+                               ? callee_type->AsETSObjectType()
+                                     ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke")
+                                     ->TsType()
+                                     ->AsETSFunctionType()
+                                     ->CallSignatures()
+                               : callee_type->AsETSFunctionType()->CallSignatures();
+
+        signature_ = checker->ResolveCallExpressionAndTrailingLambda(signatures, this, Start());
+
+        checker->CheckObjectLiteralArguments(signature_, arguments_);
+
+        checker->AddNullParamsForDefaultParams(signature_, arguments_, checker);
+
+        if (!functional_interface) {
+            checker::ETSObjectType *callee_obj {};
+            if (constructor_call) {
+                callee_obj = callee_type->AsETSObjectType();
+            } else if (callee_->IsIdentifier()) {
+                callee_obj = checker->Context().ContainingClass();
+            } else {
+                ASSERT(callee_->IsMemberExpression());
+                callee_obj = callee_->AsMemberExpression()->ObjType();
+            }
+
+            checker->ValidateSignatureAccessibility(callee_obj, signature_, Start());
+        }
+
+        ASSERT(signature_->Function() != nullptr);
+
+        if (signature_->Function()->IsThrowing() || signature_->Function()->IsRethrowing()) {
+            checker->CheckThrowingStatements(this);
+        }
+    }
+
+    SetTsType(signature_->ReturnType());
+    return TsType();
+}
+
+checker::Type *CallExpression::InitAnonymousLambdaCallee(checker::ETSChecker *checker, Expression *callee,
+                                                         checker::Type *callee_type)
+{
+    auto *const arrow_func = callee->AsArrowFunctionExpression()->Function();
+    auto orig_params = arrow_func->Params();
+    auto *func_type = checker->Allocator()->New<ir::ETSFunctionType>(
+        arrow_func->Scope()->AsFunctionScope()->ParamScope(), std::move(orig_params), nullptr,
+        arrow_func->ReturnTypeAnnotation(), ir::ScriptFunctionFlags::NONE);
+    auto *const func_iface = func_type->Check(checker);
+    checker->Relation()->SetNode(callee);
+    checker->Relation()->IsAssignableTo(callee_type, func_iface);
+    return func_iface;
+}
+}  // namespace panda::es2panda::ir

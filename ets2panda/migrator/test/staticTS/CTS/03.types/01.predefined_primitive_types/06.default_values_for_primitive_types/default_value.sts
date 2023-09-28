@@ -1,0 +1,13 @@
+{% for i in default_value %}
+
+/*---
+desc: Default value for primitive type {{.i.type}}
+params: {{.i.type}}, {{.i.value}}
+---*/
+
+let x: {{.i.type}};
+function main(): void {
+  assert x == {{.i.value}};
+}
+
+{% endfor %}

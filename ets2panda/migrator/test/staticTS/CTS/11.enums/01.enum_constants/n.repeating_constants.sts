@@ -1,0 +1,9 @@
+/*---
+desc: Enum cannot have two constants with equal names
+---*/
+
+enum Colors {
+  Red,
+  {% for id in identifiers %} {{.id}} {% endfor %}
+  Red
+}

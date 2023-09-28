@@ -1,0 +1,19 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 10,
+            "problem": "DefaultImport",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 7,
+                    "end": 23,
+                    "replacementText": "d"
+                }
+            ],
+            "suggest": "",
+            "rule": "\"import default as ...\" is not supported (arkts-no-import-default-as)"
+        }
+    ]
+}

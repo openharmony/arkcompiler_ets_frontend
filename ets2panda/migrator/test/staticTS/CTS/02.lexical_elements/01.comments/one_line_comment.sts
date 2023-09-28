@@ -1,0 +1,6 @@
+/*---
+desc: Line comment
+---*/
+
+// one-liner
+function main(): void {}

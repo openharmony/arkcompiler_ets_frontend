@@ -1,0 +1,1 @@
+SyntaxError: 'key' expected. [test_interface2.ts:18:6]

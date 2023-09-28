@@ -1,0 +1,6 @@
+/*---
+desc: Null literal
+---*/
+
+let x= null;
+function main(): void {}

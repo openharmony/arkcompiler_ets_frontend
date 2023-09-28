@@ -1,0 +1,24 @@
+{% for qname in qualified_names %}
+
+/*---
+desc: Qualified name {{.qname}}
+params: {{.qname}}
+---*/
+
+package test;
+
+class Class {
+  static StaticField: int;
+  static StaticMethod(): void {}
+
+  Field: int;
+  Method(): void {}
+}
+
+let Instance: Class = new Class;
+
+function main(): void {
+  {{.qname}}
+}
+
+{% endfor %}

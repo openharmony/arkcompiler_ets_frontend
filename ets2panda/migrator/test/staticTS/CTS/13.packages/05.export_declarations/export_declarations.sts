@@ -1,0 +1,12 @@
+{% for decl in toplevel_declarations %}
+
+/*---
+desc: \'export\' keyword can be added to any toplevel declaration
+params: |
+    {{.decl}}
+---*/
+
+export {{.decl}}
+function main(): void {}
+
+{%- endfor %}

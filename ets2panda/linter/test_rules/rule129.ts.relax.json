@@ -1,0 +1,31 @@
+{
+    "nodes": [
+        {
+            "line": 4,
+            "column": 9,
+            "problem": "NonDeclarationInNamespace",
+            "suggest": "",
+            "rule": "Non-declaration statements in namespaces are not supported (arkts-no-ns-statements)"
+        },
+        {
+            "line": 2,
+            "column": 5,
+            "problem": "ShorthandAmbientModuleDecl",
+            "suggest": "",
+            "rule": "Ambient module declaration is not supported (arkts-no-ambient-decls)"
+        },
+        {
+            "line": 2,
+            "column": 5,
+            "problem": "WildcardsInModuleName",
+            "suggest": "",
+            "rule": "Wildcards in module names are not supported (arkts-no-module-wildcards)"
+        },
+        {
+            "line": 8,
+            "column": 5,
+            "problem": "ImportAfterStatement",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
+        }
+    ]
+}

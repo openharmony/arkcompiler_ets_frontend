@@ -1,0 +1,118 @@
+{
+    "copyright": [
+        "Copyright (c) 2022-2023 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "nodes": [
+        {
+            "line": 17,
+            "column": 12,
+            "problem": "AnyType"
+        },
+        {
+            "line": 25,
+            "column": 5,
+            "problem": "EnumMemberWithInitializer"
+        },
+        {
+            "line": 26,
+            "column": 5,
+            "problem": "EnumMemberWithInitializer"
+        },
+        {
+            "line": 27,
+            "column": 5,
+            "problem": "EnumMemberWithInitializer"
+        },
+        {
+            "line": 31,
+            "column": 5,
+            "problem": "EnumMemberWithInitializer"
+        },
+        {
+            "line": 32,
+            "column": 5,
+            "problem": "EnumMemberWithInitializer"
+        },
+        {
+            "line": 33,
+            "column": 5,
+            "problem": "EnumMemberWithInitializer"
+        },
+        {
+            "line": 36,
+            "column": 1,
+            "problem": "TopLevelStmt"
+        },
+        {
+            "line": 36,
+            "column": 14,
+            "problem": "InOperator"
+        },
+        {
+            "line": 39,
+            "column": 15,
+            "problem": "UnionType"
+        },
+        {
+            "line": 42,
+            "column": 20,
+            "problem": "AnyType"
+        },
+        {
+            "line": 49,
+            "column": 1,
+            "problem": "TopLevelStmt"
+        },
+        {
+            "line": 52,
+            "column": 1,
+            "problem": "InterfaceOrEnumMerging"
+        },
+        {
+            "line": 52,
+            "column": 1,
+            "problem": "InterfaceExtendsClass"
+        },
+        {
+            "line": 56,
+            "column": 1,
+            "problem": "InterfaceOrEnumMerging"
+        },
+        {
+            "line": 56,
+            "column": 1,
+            "problem": "InterfaceExtendsClass"
+        },
+        {
+            "line": 60,
+            "column": 1,
+            "problem": "InterfaceOrEnumMerging"
+        },
+        {
+            "line": 61,
+            "column": 1,
+            "problem": "InterfaceOrEnumMerging"
+        },
+        {
+            "line": 87,
+            "column": 15,
+            "problem": "AnyType"
+        },
+        {
+            "line": 92,
+            "column": 5,
+            "problem": "EnumMemberWithInitializer"
+        }
+    ]
+}

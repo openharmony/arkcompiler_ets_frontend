@@ -1,0 +1,1 @@
+SyntaxError: Comma is mandatory between elements in an array literal [array_2.ets:16:25]

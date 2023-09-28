@@ -1,0 +1,13 @@
+/*---
+desc: Floating number equality
+corner-case: true
+---*/
+
+function main(): void {
+    let a = 0.1;
+    assert a != NaN;
+    assert NaN != a;
+
+    assert !(a == NaN);
+    assert !(NaN == a);
+}

@@ -1,0 +1,4 @@
+--- # List of all possible var declaration forms
+- "let a: int;"
+- "let b = 1;"
+- "let c: int = 6, d = 1, e = \"hello\";"

@@ -1,0 +1,323 @@
+{
+    "copyright": [
+        "Copyright (c) 2022-2023 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "nodes": [
+        {
+            "line": 17,
+            "column": 17,
+            "problem": "AnyType"
+        },
+        {
+            "line": 18,
+            "column": 17,
+            "problem": "SymbolType"
+        },
+        {
+            "line": 19,
+            "column": 20,
+            "problem": "UnknownType"
+        },
+        {
+            "line": 20,
+            "column": 18,
+            "problem": "UndefinedType"
+        },
+        {
+            "line": 26,
+            "column": 18,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 28,
+            "column": 19,
+            "problem": "TupleType"
+        },
+        {
+            "line": 30,
+            "column": 12,
+            "problem": "ArrayLiteralNoContextType"
+        },
+        {
+            "line": 31,
+            "column": 15,
+            "problem": "PropertyAccessByIndex"
+        },
+        {
+            "line": 33,
+            "column": 18,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 34,
+            "column": 14,
+            "problem": "KeyOfOperator"
+        },
+        {
+            "line": 35,
+            "column": 17,
+            "problem": "IndexedAccessType"
+        },
+        {
+            "line": 35,
+            "column": 23,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 37,
+            "column": 20,
+            "problem": "UnionType"
+        },
+        {
+            "line": 37,
+            "column": 24,
+            "problem": "UndefinedType"
+        },
+        {
+            "line": 38,
+            "column": 18,
+            "problem": "UnionType"
+        },
+        {
+            "line": 38,
+            "column": 22,
+            "problem": "AnyType"
+        },
+        {
+            "line": 39,
+            "column": 16,
+            "problem": "UnionType"
+        },
+        {
+            "line": 40,
+            "column": 21,
+            "problem": "UnionType"
+        },
+        {
+            "line": 42,
+            "column": 17,
+            "problem": "TypeOfExpression"
+        },
+        {
+            "line": 44,
+            "column": 26,
+            "problem": "AnyType"
+        },
+        {
+            "line": 44,
+            "column": 32,
+            "problem": "IsOperator"
+        },
+        {
+            "line": 45,
+            "column": 16,
+            "problem": "TypeOfExpression"
+        },
+        {
+            "line": 48,
+            "column": 17,
+            "problem": "RegexLiteral"
+        },
+        {
+            "line": 55,
+            "column": 26,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 58,
+            "column": 5,
+            "problem": "ComputedPropertyName"
+        },
+        {
+            "line": 59,
+            "column": 5,
+            "problem": "ComputedPropertyName"
+        },
+        {
+            "line": 63,
+            "column": 5,
+            "problem": "LiteralAsPropertyName"
+        },
+        {
+            "line": 64,
+            "column": 5,
+            "problem": "LiteralAsPropertyName"
+        },
+        {
+            "line": 68,
+            "column": 4,
+            "problem": "LiteralAsPropertyName"
+        },
+        {
+            "line": 69,
+            "column": 4,
+            "problem": "LiteralAsPropertyName"
+        },
+        {
+            "line": 73,
+            "column": 19,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 74,
+            "column": 5,
+            "problem": "IndexMember"
+        },
+        {
+            "line": 74,
+            "column": 20,
+            "problem": "UnknownType"
+        },
+        {
+            "line": 78,
+            "column": 32,
+            "problem": "AnyType"
+        },
+        {
+            "line": 79,
+            "column": 13,
+            "problem": "InOperator"
+        },
+        {
+            "line": 80,
+            "column": 9,
+            "problem": "PropertyAccessByIndex"
+        },
+        {
+            "line": 94,
+            "column": 22,
+            "problem": "IntersectionType"
+        },
+        {
+            "line": 96,
+            "column": 28,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 98,
+            "column": 5,
+            "problem": "CallSignature"
+        },
+        {
+            "line": 104,
+            "column": 1,
+            "problem": "TopLevelStmt"
+        },
+        {
+            "line": 105,
+            "column": 1,
+            "problem": "TopLevelStmt"
+        },
+        {
+            "line": 111,
+            "column": 19,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 112,
+            "column": 10,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 112,
+            "column": 31,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 112,
+            "column": 35,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 114,
+            "column": 1,
+            "problem": "TopLevelStmt"
+        },
+        {
+            "line": 114,
+            "column": 9,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 114,
+            "column": 23,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 117,
+            "column": 15,
+            "problem": "TypeAssertion"
+        },
+        {
+            "line": 117,
+            "column": 16,
+            "problem": "AnyType"
+        },
+        {
+            "line": 118,
+            "column": 22,
+            "problem": "TypeAssertion"
+        },
+        {
+            "line": 122,
+            "column": 13,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 123,
+            "column": 5,
+            "problem": "PropertyAccessByIndex"
+        },
+        {
+            "line": 124,
+            "column": 17,
+            "problem": "PropertyAccessByIndex"
+        },
+        {
+            "line": 126,
+            "column": 12,
+            "problem": "AnyType"
+        },
+        {
+            "line": 126,
+            "column": 18,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 132,
+            "column": 12,
+            "problem": "GenericArrayType"
+        },
+        {
+            "line": 133,
+            "column": 12,
+            "problem": "GenericArrayType"
+        },
+        {
+            "line": 133,
+            "column": 28,
+            "problem": "GenericArrayType"
+        },
+        {
+            "line": 136,
+            "column": 49,
+            "problem": "GenericArrayType"
+        },
+        {
+            "line": 136,
+            "column": 60,
+            "problem": "GenericArrayType"
+        }
+    ]
+}

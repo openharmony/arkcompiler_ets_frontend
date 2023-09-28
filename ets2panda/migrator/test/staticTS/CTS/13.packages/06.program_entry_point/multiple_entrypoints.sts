@@ -1,0 +1,13 @@
+/*---
+desc: Multiple entrypoints with different names
+---*/
+
+package test;
+
+function main(): void {}
+
+{% for id in identifiers %}
+
+function main${{.id}}(): void {}
+
+{%- endfor %}

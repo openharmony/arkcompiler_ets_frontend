@@ -1,0 +1,7 @@
+/*---
+desc: Identifiers
+---*/
+
+let simple_ident: int = 1;
+let _underscore_ident: int = 2;
+let $dollar_ident: int = 3;

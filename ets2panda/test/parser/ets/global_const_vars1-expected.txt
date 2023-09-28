@@ -1,0 +1,1 @@
+SyntaxError: Missing initializer in const declaration [global_const_vars1.ets:17:13]

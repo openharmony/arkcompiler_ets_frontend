@@ -1,0 +1,241 @@
+{
+    "copyright": [
+        "Copyright (c) 2023-2023 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "nodes": [
+        {
+            "line": 16,
+            "column": 1,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 631,
+                    "end": 631,
+                    "replacementText": ": number"
+                }
+            ]
+        },
+        {
+            "line": 23,
+            "column": 1,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 726,
+                    "end": 726,
+                    "replacementText": ": string"
+                }
+            ]
+        },
+        {
+            "line": 33,
+            "column": 1,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 857,
+                    "end": 857,
+                    "replacementText": ": number[]"
+                }
+            ]
+        },
+        {
+            "line": 40,
+            "column": 1,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": false
+        },
+        {
+            "line": 46,
+            "column": 1,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": false
+        },
+        {
+            "line": 54,
+            "column": 1,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": false
+        },
+        {
+            "line": 57,
+            "column": 1,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": false
+        },
+        {
+            "line": 57,
+            "column": 15,
+            "problem": "AnyType",
+            "autofixable": false
+        },
+        {
+            "line": 62,
+            "column": 12,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1273,
+                    "end": 1324,
+                    "replacementText": "(c: C): C => {\r\n    return f2(c);\r\n}"
+                }
+            ]
+        },
+        {
+            "line": 65,
+            "column": 12,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1337,
+                    "end": 1378,
+                    "replacementText": "(c: C) => {\r\n    return new C();\r\n}"
+                }
+            ]
+        },
+        {
+            "line": 69,
+            "column": 12,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1394,
+                    "end": 1449,
+                    "replacementText": "(x: number, y: number) => {\r\n    return x + y;\r\n}"
+                }
+            ]
+        },
+        {
+            "line": 73,
+            "column": 12,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1463,
+                    "end": 1509,
+                    "replacementText": "(): Map<string, number> => {\r\n    return f5();\r\n}"
+                }
+            ]
+        },
+        {
+            "line": 76,
+            "column": 12,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1522,
+                    "end": 1577,
+                    "replacementText": "() => {\r\n    return new Map<string, number>();\r\n}"
+                }
+            ]
+        },
+        {
+            "line": 80,
+            "column": 12,
+            "problem": "FunctionExpression",
+            "autofixable": false
+        },
+        {
+            "line": 80,
+            "column": 12,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": false
+        },
+        {
+            "line": 86,
+            "column": 12,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1686,
+                    "end": 1686,
+                    "replacementText": ": T"
+                }
+            ]
+        },
+        {
+            "line": 97,
+            "column": 12,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1848,
+                    "end": 1848,
+                    "replacementText": ": (x: number) => string"
+                }
+            ]
+        },
+        {
+            "line": 104,
+            "column": 12,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": false
+        },
+        {
+            "line": 110,
+            "column": 3,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 2037,
+                    "end": 2037,
+                    "replacementText": ": number"
+                }
+            ]
+        },
+        {
+            "line": 114,
+            "column": 3,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 2090,
+                    "end": 2090,
+                    "replacementText": ": number"
+                }
+            ]
+        },
+        {
+            "line": 122,
+            "column": 3,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 2177,
+                    "end": 2177,
+                    "replacementText": ": number"
+                }
+            ]
+        },
+        {
+            "line": 126,
+            "column": 3,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": false
+        }
+    ]
+}

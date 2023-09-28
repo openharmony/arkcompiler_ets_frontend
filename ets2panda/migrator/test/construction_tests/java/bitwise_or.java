@@ -1,0 +1,29 @@
+/*
+ * Copyright (c) 2022-2022 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
+ public class BitwiseOr {
+    public static void main(String[] args) {
+        //declaring variables
+        int num1 = 7; //111 in binary
+        int num2 = 5; //101 in binary
+        int result;
+
+        //calculating the result, using bitwise or operator
+        result = num1 | num2;
+
+        //printing the value of result variable
+        System.out.println(Integer.toBinaryString(result));
+    }
+}

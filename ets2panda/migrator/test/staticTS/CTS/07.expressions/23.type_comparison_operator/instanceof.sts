@@ -1,0 +1,19 @@
+{% for io in instanceof %}
+/*---
+desc: instanceof operator test
+params: |
+    {{.io.negation}}({{.io.left}} instanceof {{.io.right}})
+---*/
+
+class A {}
+class B {}
+
+function main(): void {
+  let a = new A;
+  let b = new B;
+  let n = null;
+
+  assert {{.io.negation}}({{.io.left}} instanceof {{.io.right}});
+}
+
+{% endfor %}

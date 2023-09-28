@@ -1,0 +1,12 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 5,
+            "problem": "DefiniteAssignment",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Definite assignment assertions are not supported (arkts-no-definite-assignment)"
+        }
+    ]
+}

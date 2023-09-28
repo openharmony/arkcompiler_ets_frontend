@@ -1,0 +1,1 @@
+SyntaxError: Identifier expected. [const_enum.ets:16:7]

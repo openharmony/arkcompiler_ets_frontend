@@ -1,0 +1,13 @@
+{% for cd in bad_const_decl %}
+
+/*---
+desc: Incorrect constant definition
+params: >
+  {{.cd}}
+---*/
+
+{{.cd}}
+
+function main(): void {}
+
+{% endfor %}

@@ -1,0 +1,5 @@
+--- # List of declarations to be unique
+
+- "class A{}"
+- "enum E {V1, V2}"
+- "function f(): void {}"

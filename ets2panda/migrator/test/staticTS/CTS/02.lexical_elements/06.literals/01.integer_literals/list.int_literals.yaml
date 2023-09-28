@@ -1,0 +1,5 @@
+--- # List of valid integer literals
+- 153   # Decimal literal
+- 0xDAD # Hex literal
+- 0o777 # Octal literal
+- 0b101 # Binary literal

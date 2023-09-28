@@ -1,0 +1,11 @@
+{
+    "nodes": [
+        {
+            "line": 3,
+            "column": 9,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
+        }
+    ]
+}

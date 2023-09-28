@@ -1,0 +1,11 @@
+{% for type in types %}
+
+/*---
+desc: The keyword {{.type}} denotes predefined type name and may not be used as identifier
+params: {{.type}}
+---*/
+
+let {{.type}} = 0;
+function main(): void {}
+
+{% endfor %}

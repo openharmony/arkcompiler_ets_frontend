@@ -1,0 +1,4 @@
+--- # List of boxing conversion (NaN)
+
+- {origin: float,  dest: Float}
+- {origin: double, dest: Double}

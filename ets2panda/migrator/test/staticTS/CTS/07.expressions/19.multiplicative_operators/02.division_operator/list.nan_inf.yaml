@@ -1,0 +1,17 @@
+--- # List of multiplications where NaN involved
+
+- {x:  NaN, y:  NaN, result:  NaN}
+- {x:  NaN, y:  1.0, result:  NaN}
+- {x:  1.0, y:  NaN, result:  NaN}
+- {x:  NaN, y:  1.0, result:  NaN}
+- {x:  NaN, y:  INF, result:  NaN}
+- {x:  INF, y:  NaN, result:  NaN}
+- {x:  NaN, y: -INF, result:  NaN}
+- {x: -INF, y:  NaN, result:  NaN}
+- {x:  1.0, y:  INF, result:  0.0}
+- {x: -1.0, y:  INF, result: -0.0}
+- {x:  1.0, y: -INF, result: -0.0}
+- {x:  INF, y:  INF, result:  NaN}
+- {x:  0.0, y:  0.0, result:  NaN}
+- {x:  1.0, y:  0.0, result:  INF}
+- {x: -1.0, y:  0.0, result: -INF}

@@ -1,0 +1,19 @@
+{
+    "nodes": [
+        {
+            "line": 5,
+            "column": 12,
+            "problem": "TypeOnlyImport",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 120,
+                    "end": 144,
+                    "replacementText": "{ APIResponseType }"
+                }
+            ],
+            "suggest": "",
+            "rule": "Special import type declarations are not supported (arkts-no-special-imports)"
+        }
+    ]
+}

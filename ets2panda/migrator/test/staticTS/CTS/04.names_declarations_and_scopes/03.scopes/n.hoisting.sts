@@ -1,0 +1,9 @@
+/*---
+desc: Hoisting not available
+---*/
+package scopes;
+
+function main(): void {
+  let x = y;
+  let y = 1;
+}

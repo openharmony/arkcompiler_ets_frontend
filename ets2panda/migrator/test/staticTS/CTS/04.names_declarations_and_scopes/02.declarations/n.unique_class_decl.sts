@@ -1,0 +1,10 @@
+/*---
+desc: A name must be unique in its class space
+---*/
+
+class A {
+  x: int;
+  x: int;
+}
+
+function main(): void {}

@@ -1,0 +1,24 @@
+/*---
+desc: Multi-line comments
+---*/
+
+/**/
+
+/*
+  block
+*/
+
+/*
+  /*
+    nested block
+  */
+*/
+
+/*
+  // nested one-liner
+*/
+
+// /*
+
+// */
+function main(): void {}

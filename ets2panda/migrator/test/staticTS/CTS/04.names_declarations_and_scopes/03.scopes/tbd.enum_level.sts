@@ -1,0 +1,10 @@
+/*---
+desc: Enum level scope
+---*/
+package scopes;
+
+interface I {
+  x: int = 1;
+}
+
+function main(): void {}

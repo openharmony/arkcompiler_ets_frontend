@@ -1,0 +1,1 @@
+SyntaxError: Can not use 'new' on primitive types. [new_object_1.ets:18:21]

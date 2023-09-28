@@ -1,0 +1,12 @@
+{
+    "nodes": [
+        {
+            "line": 5,
+            "column": 1,
+            "problem": "InterfaceExtendsClass",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Interfaces cannot extend classes (arkts-extends-only-class)"
+        }
+    ]
+}

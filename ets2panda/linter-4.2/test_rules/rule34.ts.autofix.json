@@ -1,0 +1,20 @@
+{
+    "nodes": [
+        {
+            "line": 11,
+            "column": 5,
+            "problem": "UnknownType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 11,
+            "column": 9,
+            "problem": "GenericCallNoTypeArgs",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)"
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+
+/*---
+desc: Floating-point type NaN values
+corner-case: true
+---*/
+
+let f: float = NaN;
+let d: double = NaN;
+
+function main(): void {}
+

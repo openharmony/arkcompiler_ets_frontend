@@ -1,0 +1,5 @@
+/*---
+desc: Inteface extends must be followed by a type
+---*/
+
+interface Name extends {}

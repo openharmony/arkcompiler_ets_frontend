@@ -1,0 +1,11 @@
+{% for item in float_types %}
+
+/*---
+desc: Floating-point type {{.item.type}}
+params: {{.item.type}}, {{.item.value}}
+---*/
+
+let x: {{.item.type}} = {{.item.value}};
+function main(): void {}
+
+{% endfor %}

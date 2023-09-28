@@ -1,0 +1,14 @@
+--- # List of possible ident start symbols
+- $
+- _
+- \\u0024
+- q
+- Q
+- я
+- Я
+- Î
+- î
+- ʻ # Modifier Letter Turned Comma
+- ⅲ # Small Roman Numeral Three
+- ℘ # Script Capital P
+- ǂ # Latin Letter Alveolar Click

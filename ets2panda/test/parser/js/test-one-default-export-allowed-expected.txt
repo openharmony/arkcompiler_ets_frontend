@@ -1,0 +1,1 @@
+SyntaxError: Variable '*default*' has already been declared. [test-one-default-export-allowed.js:21:16]

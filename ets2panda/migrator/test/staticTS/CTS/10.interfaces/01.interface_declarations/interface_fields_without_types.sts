@@ -1,0 +1,14 @@
+{% for id in identifiers %}
+{% for item in default_value %}
+
+/*---
+desc: Interface fields without types
+params: "{{.id}} = {{.item.value}}"
+---*/
+
+interface Name {
+  {{.id}} = {{.item.value}};
+}
+
+{% endfor %}
+{% endfor %}

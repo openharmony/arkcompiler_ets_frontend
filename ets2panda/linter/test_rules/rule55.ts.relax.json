@@ -1,0 +1,46 @@
+{
+    "nodes": [
+        {
+            "line": 2,
+            "column": 9,
+            "problem": "UnaryArithmNotNumber",
+            "suggest": "",
+            "rule": "Unary operators \"+\", \"-\" and \"~\" work only on numbers (arkts-no-polymorphic-unops)"
+        },
+        {
+            "line": 4,
+            "column": 9,
+            "problem": "UnaryArithmNotNumber",
+            "suggest": "",
+            "rule": "Unary operators \"+\", \"-\" and \"~\" work only on numbers (arkts-no-polymorphic-unops)"
+        },
+        {
+            "line": 6,
+            "column": 9,
+            "problem": "UnaryArithmNotNumber",
+            "suggest": "",
+            "rule": "Unary operators \"+\", \"-\" and \"~\" work only on numbers (arkts-no-polymorphic-unops)"
+        },
+        {
+            "line": 7,
+            "column": 9,
+            "problem": "UnaryArithmNotNumber",
+            "suggest": "",
+            "rule": "Unary operators \"+\", \"-\" and \"~\" work only on numbers (arkts-no-polymorphic-unops)"
+        },
+        {
+            "line": 17,
+            "column": 9,
+            "problem": "UnaryArithmNotNumber",
+            "suggest": "",
+            "rule": "Unary operators \"+\", \"-\" and \"~\" work only on numbers (arkts-no-polymorphic-unops)"
+        },
+        {
+            "line": 18,
+            "column": 9,
+            "problem": "UnaryArithmNotNumber",
+            "suggest": "",
+            "rule": "Unary operators \"+\", \"-\" and \"~\" work only on numbers (arkts-no-polymorphic-unops)"
+        }
+    ]
+}

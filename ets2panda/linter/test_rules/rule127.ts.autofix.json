@@ -1,0 +1,19 @@
+{
+    "nodes": [
+        {
+            "line": 12,
+            "column": 5,
+            "problem": "TypeOnlyExport",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 218,
+                    "end": 240,
+                    "replacementText": "export { Class2 };"
+                }
+            ],
+            "suggest": "",
+            "rule": "Special \"export type\" declarations are not supported (arkts-no-special-exports)"
+        }
+    ]
+}

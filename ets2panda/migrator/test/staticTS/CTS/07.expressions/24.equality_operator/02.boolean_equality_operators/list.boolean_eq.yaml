@@ -1,0 +1,11 @@
+--- # List of boolean equality operators
+
+- {left:  "true", right:  "true", op: "==", result:  "true"}
+- {left:  "true", right: "false", op: "==", result: "false"}
+- {left: "false", right:  "true", op: "==", result: "false"}
+- {left: "false", right: "false", op: "==", result:  "true"}
+
+- {left:  "true", right:  "true", op: "!=", result: "false"}
+- {left:  "true", right: "false", op: "!=", result:  "true"}
+- {left: "false", right:  "true", op: "!=", result:  "true"}
+- {left: "false", right: "false", op: "!=", result: "false"}

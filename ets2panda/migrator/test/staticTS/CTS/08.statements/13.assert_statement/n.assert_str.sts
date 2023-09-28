@@ -1,0 +1,7 @@
+/*---
+desc: Assert statement (failed)
+---*/
+
+function main(): void {
+  assert false : "Assert failed";
+}

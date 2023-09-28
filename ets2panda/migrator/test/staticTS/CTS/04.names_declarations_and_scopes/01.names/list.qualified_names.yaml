@@ -1,0 +1,10 @@
+--- # All possible qualified names
+
+- test.Class;
+- test.Instance;
+- Class.StaticField;
+- Class.StaticMethod();
+- test.Class.StaticField;
+- test.Class.StaticMethod();
+- Instance.Field;
+- Instance.Method();

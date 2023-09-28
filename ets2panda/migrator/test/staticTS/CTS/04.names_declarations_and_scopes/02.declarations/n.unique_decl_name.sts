@@ -1,0 +1,11 @@
+{% for un in unique_decl %}
+/*---
+desc: A name must be unique in its declaration space
+---*/
+
+{{.un}}
+{{.un}}
+
+function main(): void {}
+
+{% endfor %}

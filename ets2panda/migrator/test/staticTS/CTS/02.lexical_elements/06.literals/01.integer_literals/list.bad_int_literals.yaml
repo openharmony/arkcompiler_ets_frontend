@@ -1,0 +1,4 @@
+--- # List of invalid integer literals
+- 0x
+- 0o
+- 0b

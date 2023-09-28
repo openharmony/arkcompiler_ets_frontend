@@ -1,0 +1,12 @@
+{
+    "nodes": [
+        {
+            "line": 3,
+            "column": 5,
+            "problem": "PrivateIdentifier",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Private '#' identifiers are not supported (arkts-no-private-identifiers)"
+        }
+    ]
+}

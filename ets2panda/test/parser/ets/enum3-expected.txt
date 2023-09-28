@@ -1,0 +1,1 @@
+SyntaxError: An enum must have at least one enum constant [enum3.ets:18:1]

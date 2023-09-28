@@ -1,0 +1,10 @@
+--- # List of unboxing conversions
+
+- {origin: Boolean,   dest: boolean,   value: "true"}
+- {origin: Byte,      dest: byte,      value: 1}
+- {origin: Short,     dest: short,     value: 1}
+- {origin: Integer,   dest: integer,   value: 1}
+- {origin: Long,      dest: long,      value: 1}
+- {origin: Character, dest: character, value: 'a'}
+- {origin: Float,     dest: float,     value: 1.0}
+- {origin: Double,    dest: double,    value: 1.0}

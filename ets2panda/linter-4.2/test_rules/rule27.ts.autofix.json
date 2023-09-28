@@ -1,0 +1,12 @@
+{
+    "nodes": [
+        {
+            "line": 2,
+            "column": 5,
+            "problem": "ConstructorIface",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Construct signatures are not supported in interfaces (arkts-no-ctor-signatures-iface)"
+        }
+    ]
+}

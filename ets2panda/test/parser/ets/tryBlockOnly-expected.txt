@@ -1,0 +1,1 @@
+SyntaxError: A try statement should contain either finally clause or at least one catch clause. [tryBlockOnly.ets:17:5]

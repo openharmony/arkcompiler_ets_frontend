@@ -1,0 +1,1 @@
+SyntaxError: Duplicate enum initialization value 0 [enum20.ets:16:52]

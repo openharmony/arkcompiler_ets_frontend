@@ -1,0 +1,10 @@
+/*---
+desc: A name must be unique in its block space
+---*/
+
+function main(): void {
+  {
+    let x = 0;
+    let x = 0;
+  }
+}

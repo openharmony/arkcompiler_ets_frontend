@@ -1,0 +1,11 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 26,
+            "problem": "LambdaWithTypeParameters",
+            "suggest": "",
+            "rule": "Use generic functions instead of generic arrow functions (arkts-no-generic-lambdas)"
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{% for word1 in words %}
+  {% for word2 in words %}
+
+/*---
+desc: Identifiers with '$' in the middle
+params: {{.word1}}${{.word2}}
+---*/
+
+let {{.word1}}${{.word2}} = 1;
+
+function {{.word2}}${{.word1}}(): void {}
+
+  {% endfor %}
+{% endfor %}

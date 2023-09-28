@@ -1,0 +1,1 @@
+SyntaxError: Identifier expected [test_type_alias1.ets:16:6]

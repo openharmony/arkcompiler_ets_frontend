@@ -1,0 +1,1 @@
+SyntaxError: Invalid left-hand side in 'for' statement: must have a single binding. [test-for-4.js:17:12]

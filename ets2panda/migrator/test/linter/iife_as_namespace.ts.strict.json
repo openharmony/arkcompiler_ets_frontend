@@ -1,0 +1,153 @@
+{
+    "copyright": [
+        "Copyright (c) 2022-2023 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ], 
+    "nodes": [
+        {
+            "line": 16,
+            "column": 1,
+            "problem": "VarDeclaration"
+        },
+        {
+            "line": 16,
+            "column": 10,
+            "problem": "FunctionExpression"
+        },
+        {
+            "line": 17,
+            "column": 3,
+            "problem": "FuncWithoutReturnType"
+        },
+        {
+            "line": 17,
+            "column": 3,
+            "problem": "FunctionContainsThis"
+        },
+        {
+            "line": 17,
+            "column": 3,
+            "problem": "LocalFunction"
+        },
+        {
+            "line": 24,
+            "column": 1,
+            "problem": "TopLevelStmt"
+        },
+        {
+            "line": 24,
+            "column": 1,
+            "problem": "IifeAsNamespace"
+        },
+        {
+            "line": 26,
+            "column": 1,
+            "problem": "TopLevelStmt"
+        },
+        {
+            "line": 26,
+            "column": 37,
+            "problem": "IifeAsNamespace"
+        },
+        {
+            "line": 28,
+            "column": 1,
+            "problem": "VarDeclaration"
+        },
+        {
+            "line": 28,
+            "column": 10,
+            "problem": "FunctionExpression"
+        },
+        {
+            "line": 31,
+            "column": 27,
+            "problem": "AnyType"
+        },
+        {
+            "line": 38,
+            "column": 1,
+            "problem": "TopLevelStmt"
+        },
+        {
+            "line": 38,
+            "column": 1,
+            "problem": "IifeAsNamespace"
+        },
+        {
+            "line": 39,
+            "column": 1,
+            "problem": "TopLevelStmt"
+        },
+        {
+            "line": 39,
+            "column": 27,
+            "problem": "IifeAsNamespace"
+        },
+        {
+            "line": 40,
+            "column": 1,
+            "problem": "TopLevelStmt"
+        },
+        {
+            "line": 41,
+            "column": 1,
+            "problem": "TopLevelStmt"
+        },
+        {
+            "line": 42,
+            "column": 1,
+            "problem": "TopLevelStmt"
+        },
+        {
+            "line": 42,
+            "column": 35,
+            "problem": "IifeAsNamespace"
+        },
+        {
+            "line": 44,
+            "column": 1,
+            "problem": "VarDeclaration"
+        },
+        {
+            "line": 44,
+            "column": 10,
+            "problem": "FunctionExpression"
+        },
+        {
+            "line": 45,
+            "column": 12,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 48,
+            "column": 1,
+            "problem": "TopLevelStmt"
+        },
+        {
+            "line": 48,
+            "column": 1,
+            "problem": "IifeAsNamespace"
+        },
+        {
+            "line": 49,
+            "column": 1,
+            "problem": "TopLevelStmt"
+        },
+        {
+            "line": 49,
+            "column": 30,
+            "problem": "IifeAsNamespace"
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "nodes": [
+        {
+            "line": 5,
+            "column": 9,
+            "problem": "NamespaceAsObject",
+            "suggest": "",
+            "rule": "Namespaces cannot be used as objects (arkts-no-ns-as-obj)"
+        }
+    ]
+}

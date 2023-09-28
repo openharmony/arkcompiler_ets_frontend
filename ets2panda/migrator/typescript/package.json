@@ -1,0 +1,34 @@
+{
+  "name": "@panda/ts-transpiler",
+  "version": "1.0.0",
+  "main": "dist/tslinter.js",
+  "bin": "bin/tslinter.js",
+  "files": [
+    "dist/*"
+  ],
+  "private": true,
+  "license": "Apache-2.0",
+  "scripts": {
+    "antlr4ts": "antlr4ts -no-listener -no-visitor -o build/typescript -Xexact-output-dir ../src/com/ohos/migrator/staticTS/parser/StaticTSLexer.g4 ../src/com/ohos/migrator/staticTS/parser/StaticTSParser.g4",
+    "postantlr4ts": "node scripts/fix-generated-parser.mjs build/typescript",
+    "tsc": "tsc",
+    "webpack":"webpack -t node --config ./src/linter/webpackcfg/webpack.config.js",
+    "build": "npm run antlr4ts && npm run tsc && npm run webpack",
+    "postinstall": "npm run build && npm run pack:linter",
+    "pack:linter": "rimraf bundle && mkdir bundle && npm pack --pack-destination bundle"
+  },
+  "dependencies": {
+    "antlr4ts": "0.5.0-alpha.4",
+    "typescript": "4.8.4"
+  },
+  "devDependencies": {
+    "@types/node": "18.11.7",
+    "antlr4ts-cli": "0.5.0-alpha.4",
+    "rimraf": "^3.0.2",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
+  },
+  "bundledDependencies": [
+    "typescript"
+  ]
+}

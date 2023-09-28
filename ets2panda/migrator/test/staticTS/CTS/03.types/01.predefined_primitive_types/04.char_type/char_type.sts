@@ -1,0 +1,7 @@
+/*---
+desc: Char type
+---*/
+
+let charMin: char = '\u0000';
+let charMax: char = '\uffff';
+function main(): void {}

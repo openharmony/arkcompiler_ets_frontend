@@ -1,0 +1,48 @@
+/*
+ * Copyright (c) 2022-2022 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */ 
+package com.ohos.migrator.test.kotlin;
+
+export function main(): kotlin.Unit {
+    const integer = 50;
+    const integer2 = 1_2_3_4;
+    const longVal = 100;
+    const longVal2 = 50_60_70;
+    const hex = 0x5A;
+    const hex2 = 0X1_B_C;
+    const binary = 0b10;
+    const binary2 = 0B01_01_101;
+    const floatVal = 1;
+    const floatVal2 = 2_3.4_5;
+    const floatVal3 = 10e2_0;
+    const floatVal4 = 45E+3;
+    const doubleVal = 1.25;
+    const doubleVal2 = 2.5E-10;
+    const doubleVal3 = .45_67;
+    const doubleVal4 = 3e+5;
+    const trueVal = true;
+    const falseVal = false;
+    const letter = 'a';
+    const digit = '5';
+    const cr = '\r';
+    const lf = '\n';
+    const tab = '\t';
+    const backspace = '\b';
+    const quote = '\'';
+    const doubleQuote = '\"';
+    const backslash = '\b';
+    const dollar = '\$';
+    const unicode = '\u01FA';
+    const nullVal = null;
+}

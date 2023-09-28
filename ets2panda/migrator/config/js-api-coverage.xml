@@ -1,0 +1,1577 @@
+<!-- Following are rule coverage information, also contains rules for mapping -->
+
+<Rules>
+	<_ type="NewClassInstanceExpressionRule" status="Same" id="60f1ec3b-b0dd-4b8e-b542-6964f8f515f9">
+		<Match type="Object"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="0fb37181-360c-4f08-bc30-9d7ebeb78235">
+		<Match propertyName="__proto__" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="8e3b47ea-a2fb-43b2-8f6b-75784616e4b8">
+		<Match propertyName="__defineGetter__" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="d73a6a26-36f2-4992-a94b-5457a8c64a6d">
+		<Match propertyName="__defineSetter__" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="b6aa5887-d130-4d27-b9da-3c9c079c2fbc">
+		<Match propertyName="__lookupGetter__" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="8d86b70a-7cb2-4fec-a958-9ad42da738dd">
+		<Match propertyName="__lookupSetter__" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="a48c6560-2199-4c06-9317-896364001dac" notes="Dynamic">
+		<Match propertyName="assign" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="2677cc8f-6f55-4a52-b49a-145f3594b3e2" notes="Dynamic">
+		<Match propertyName="create" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="2b9890c0-5a4f-4dea-b3b2-a2411443eda5" notes="Dynamic">
+		<Match propertyName="defineProperties" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="fe356c3c-eef5-4633-a19d-203728c84182" notes="Dynamic">
+		<Match propertyName="defineProperty" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="3fb26360-a4a9-40bc-b6cc-52d99ca557fb" notes="Dynamic">
+		<Match propertyName="entries" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="326da128-a936-4046-98a7-b69ae235959e" notes="Dynamic">
+		<Match propertyName="freeze" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="fe82fd42-2d69-430f-b030-ef6e85d016aa" notes="Dynamic">
+		<Match propertyName="fromEntries" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="63c9ce01-f5b9-46fe-8010-14a7b2ca92f4" notes="Dynamic">
+		<Match propertyName="getOwnPropertyDescriptor" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="ed539205-29dd-4d07-b9b4-eee16d0e66fd" notes="Dynamic">
+		<Match propertyName="getOwnPropertyDescriptors" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="4df7af6f-1708-4aa9-8b91-0af0ddf91000" notes="Dynamic">
+		<Match propertyName="getOwnPropertyNames" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="d99dfed7-b733-490e-af12-e290db4d5429" notes="Dynamic">
+		<Match propertyName="getOwnPropertySymbols" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="7b2aac5c-6b16-405a-a0f0-1f9c24049c74" notes="Dynamic">
+		<Match propertyName="getPrototypeOf" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="9cdcfeaf-5c81-4389-8ccc-fa28f5483058" notes="Dynamic">
+		<Match propertyName="hasOwn" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="f5608058-b54e-420b-b0a1-2ddd1c4c44e9" notes="Dynamic">
+		<Match propertyName="prototype.hasOwnProperty" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="77b4d70a-f34f-48c5-bc2d-89beec52b1e3" notes="Dynamic">
+		<Match propertyName="is" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="5bca33e8-75b5-4a9d-98d0-9c5cdd797faa" notes="Dynamic">
+		<Match propertyName="isExtensible" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="8431d167-e1c3-42ca-9631-ad985d1c77b7" notes="Dynamic">
+		<Match propertyName="isFrozen" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="0e691ea4-e276-4e20-be46-fcd7490db043" notes="Dynamic">
+		<Match propertyName="prototype.isPrototypeOf" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="fdac2d84-8dd3-47b1-aa23-0a35efcc2d5a" notes="Dynamic">
+		<Match propertyName="isSealed" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="cac793b4-51bf-492c-ae29-60e3b395479a">
+		<Match propertyName="keys" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="335a8658-b5fc-4a61-b807-adc2afda1bec" notes="Dynamic">
+		<Match propertyName="preventExtensions" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="ef93f6ce-3127-432b-849e-e073245e55bb" notes="Dynamic">
+		<Match propertyName="prototype.propertyIsEnumerable" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="497b81c7-6500-4df3-af05-2c2327c8f87a" notes="Dynamic">
+		<Match propertyName="seal" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="5dd6536e-5c33-4765-bc67-cd5185a5eb97" notes="Dynamic">
+		<Match propertyName="setPrototypeOf" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="bd9441f5-c644-407a-8eb4-ae4c377ffde0" notes="Dynamic">
+		<Match propertyName="prototype.toString" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="85770422-639b-4a99-81ae-c7e325360cb5">
+		<Match propertyName="prototype.toLocaleString()" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+		<Replace signature="toString(): String">
+			<ArktsMethodName value="toString" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="5a32370c-52cd-45b6-b4bd-0080c95dcf14" notes="Dynamic">
+		<Match propertyName="prototype.valueOf" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="75f0ab13-d3bd-4023-b732-7ea8ea6f9afc" notes="Dynamic">
+		<Match propertyName="values" type="Object,Function,Boolean,Symbol,Error,AggregateError,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,Number,BigInt,Math,Date,String,RegExp,Array,Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,BigInt64Array,BigUint64Array,Float32Array,Float64Array,Map,Set,WeakMap,WeakSet,ArrayBuffer,SharedArrayBuffer,DataView,JSON,WeakRef,FinalizationRegistry,Promise,Proxy,Reflect,Generator,AsyncFunction,AsyncGenerator,AsyncGeneratorFunction,Infinity,NaN,Intl"/>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="NA" id="558b9142-e478-47e6-8bf1-cd14d1293a6c" notes="Dynamic">
+		<Match type="Function"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="28237615-ce45-475b-945f-45b29bd2b7a1" notes="Dynamic">
+		<Match propertyName="prototype.length" type="Function"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="c6e3c0e0-4141-40d8-8037-63f81ac570fe" notes="Dynamic">
+		<Match propertyName="prototype.name" type="Function"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="6bf04765-6ba1-4b57-a9cb-1853ff52860c" notes="Dynamic">
+		<Match propertyName="prototype.apply" type="Function"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="81fa5201-30b9-4a97-abb0-947fde0b032d" notes="Dynamic">
+		<Match propertyName="prototype.bind" type="Function"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="802e037f-6be9-43a2-8574-18afb5418fe4" notes="Dynamic">
+		<Match propertyName="prototype.call" type="Function"/>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="Same" id="22bf7b42-3c3e-4499-9eb2-62911c60a5f5">
+		<Match type="Boolean"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="700644e1-4f96-4d9d-afd2-d280ee641362">
+		<Match propertyName="valueOf" type="Boolean"/>
+		<Replace signature="unboxed(): boolean">
+			<ArktsMethodName value="unboxed" />
+		</Replace>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="NA" id="c876793f-8869-463f-8b3c-6c19c32acb74" notes="Dynamic + Semantically different">
+		<Match type="Symbol"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="3972f272-e995-461f-888e-84c55ee40d58" notes="Dynamic + Semantically different">
+		<Match propertyName="asyncIterator" type="Symbol"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="9d69734f-30a8-41d2-ae1f-3d3f3b565cc3" notes="Dynamic + Semantically different">
+		<Match propertyName="prototype.description" type="Symbol"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="f33a55ea-5511-4754-a412-309086e5d9f1" notes="Dynamic + Semantically different">
+		<Match propertyName="hasInstance" type="Symbol"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="487d2ef1-a544-49ad-a0b4-dabf2ca4c767" notes="Dynamic + Semantically different">
+		<Match propertyName="isConcatSpreadable" type="Symbol"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="784f3529-2f39-4b0c-a8c1-bdae9ff2c4d5" notes="Dynamic + Semantically different">
+		<Match propertyName="iterator" type="Symbol"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="3560b9b7-3a91-4799-b643-29d6e2275259" notes="Dynamic + Semantically different">
+		<Match propertyName="match" type="Symbol"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="83ec3906-01f5-4ee6-b134-c94bcc25fad9" notes="Dynamic + Semantically different">
+		<Match propertyName="matchAll" type="Symbol"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="ba1ed1f1-6d5c-4845-9ab3-b3e47c5c4340" notes="Dynamic + Semantically different">
+		<Match propertyName="replace" type="Symbol"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="986713c7-129f-4a53-b04e-0ce61c85eaf8" notes="Dynamic + Semantically different">
+		<Match propertyName="search" type="Symbol"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="f5ed60e2-7f32-410f-b2a3-23b76cd05c9f" notes="Dynamic + Semantically different">
+		<Match propertyName="species" type="Symbol"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="f907c8e1-a4e3-408f-9549-32812efc8623" notes="Dynamic + Semantically different">
+		<Match propertyName="split" type="Symbol"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="edf0312b-178b-413a-a25b-e5d54bee2404" notes="Dynamic + Semantically different">
+		<Match propertyName="toPrimitive" type="Symbol"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="c14e3f96-adee-4e0c-82ea-92865c652bf0" notes="Dynamic + Semantically different">
+		<Match propertyName="unscopables" type="Symbol"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="3de18ab5-5b7f-4bf9-a500-68baa96acc99" notes="Dynamic + Semantically different">
+		<Match propertyName="for" type="Symbol"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="adc85426-2be6-45b1-8aea-ca393565aef8" notes="Dynamic + Semantically different">
+		<Match propertyName="keyFor" type="Symbol"/>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="Done" id="0702cdad-686d-4d8a-b888-60860066d217">
+		<Match type="Error,EvalError,RangeError,ReferenceError,SyntaxError,TypeError,URIError"/>
+		<Replace type="Exception">
+			<TypeReference arktsName="Exception" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="5cb0f504-1d42-4969-940c-9b4be3a7697b">
+		<Match propertyName="prototype.message" type="Error"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="be9e2cba-d135-406d-a2e4-e8e0cc6d2974">
+		<Match propertyName="prototype.name" type="Error"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="591d82c6-0205-46cb-9634-7f9c06fdad4b">
+		<Match propertyName="prototype.cause" type="Error"/>
+		<Replace signature="cause(): Map<String, Object>">
+		</Replace>
+	</_ >
+	<_ type="MemberAccessExpressionRule" status="Done" id="e1badc35-477d-4a7c-bd95-b4a1a49a2457">
+		<Match propertyName="prototype.columnNumber" type="Error"/>
+		<Replace signature="column(): int">
+			<ArktsMethodName value="column"/>
+		</Replace>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="de0b7c70-9efa-4feb-b843-73fead3be66e">
+		<Match propertyName="prototype.fileName" type="Error"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Done" id="0687dc7c-c313-4f1a-a49c-1c7775c99bd0">
+		<Match propertyName="prototype.lineNumber" type="Error"/>
+		<Replace signature="line(): int">
+			<ArktsMethodName value="line"/>
+		</Replace>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Done" id="8f0cda73-babc-4a32-9c17-15a04258712b">
+		<Match propertyName="prototype.stack" type="Error"/>
+		<Replace signature="stackTrace(): String">
+			<ArktsMethodName value="stackTrace"/>
+		</Replace>
+	</_>
+	<_ type="TypeReferenceRule" status="Done" id="9a2d8c9f-4fb1-436f-aa02-64926114a4fe">
+		<Match propertyName="Error" type="Error"/>
+		<Replace propertyName="Exception">
+			<TypeReferenceRule jsType="Error">
+				<TypeReference arktsName="Exception" />
+			</TypeReferenceRule>
+		</Replace>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="Done" id="687e97a5-a9c3-44fa-a1a1-e4cd10acc174">
+		<Match type="AggregateError"/>
+		<Replace type="AggregateException">
+			<TypeReference arktsTypeName="AggregateException"/>
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="35667ec6-c22e-43a6-aa1e-b8b851539804">
+		<Match propertyName="prototype.message" type="AggregateError"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="5ad24a1e-e130-4795-ae4a-cfc300083eb3">
+		<Match propertyName="prototype.name" type="AggregateError"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same">
+		<Match propertyName="prototype.cause" type="AggregateError"/>
+		<Replace signature="cause(): Map<String, Object>">
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done">
+		<Match propertyName="prototype.errors" type="AggregateError"/>
+		<Replace signature="exceptions(): Array<Object>">
+			<ArktsMethodName value="exceptions"/>
+		</Replace>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="Done" id="6a468762-735d-4b9d-a5f6-6c9e8c4eaf32">
+		<Match type="Number"/>
+		<Replace >
+			<TypeReference arktsTypeName="Double"/>
+		</Replace>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Done" id="353299c7-91e7-4d51-85c8-60088e025a24">
+		<Match propertyName="EPSILON" type="Number"/>
+		<Replace propertyName="doubleEpsilon"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="5fe17949-4e2c-4991-be06-d976b79cef4a">
+		<Match propertyName="MAX_SAFE_INTEGER" type="Number"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="44c73442-c8cf-40bc-8adf-2b151dc407f7">
+		<Match propertyName="MAX_VALUE" type="Number"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="3b4e1467-c85a-45f0-a2e1-0a15a6e84a26">
+		<Match propertyName="MIN_SAFE_INTEGER" type="Number"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="0a954157-3663-4ad7-951f-5a511cdefa0c">
+		<Match propertyName="MIN_VALUE" type="Number"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="be692d37-efde-4323-adec-debddc5658fd">
+		<Match propertyName="NaN" type="Number"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="43f553f3-6373-4022-b06f-d82641f46e78">
+		<Match propertyName="NEGATIVE_INFINITY" type="Number"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="937ee4b1-ed3a-4bf8-bf18-21e887746804">
+		<Match propertyName="POSITIVE_INFINITY" type="Number"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="115fbad8-274b-41df-8996-4eb916552514">
+		<Match propertyName="isFinite" type="Number"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="27ccd6fa-e983-4e68-857d-55c609e5cb19">
+		<Match propertyName="isInteger" type="Number"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="098fe2a5-049c-438d-9dbc-85804adb46eb">
+		<Match propertyName="isNaN" type="Number"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="62762d80-d6ff-48c5-9ce7-2b0a36c0528f">
+		<Match propertyName="isSafeInteger" type="Number"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="f7d4881a-ebf7-4eb3-a82a-0e1fb5e6e8ea">
+		<Match propertyName="parseFloat" type="Number"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="19937f42-40bf-4da3-9681-4a56e96765c2">
+		<Match propertyName="parseInt" type="Number"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="e8dde7ac-a8a1-463f-a0b4-cbe603a8124a">
+		<Match propertyName="toPrecision" type="Number"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="f868eca0-beac-4ccc-a51b-f3220912a6ab">
+		<Match propertyName="prototype.toFixed" type="Number"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="d3369e14-e788-48ef-83a6-1ee307dafbbe">
+		<Match propertyName="prototype.toExponential" type="Number"/>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="Same" id="70e62477-75f8-45ef-9e99-a1722c157bad">
+		<Match type="BigInt"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="39e15714-fbf0-45a3-a66c-9578e3e804d3">
+		<Match propertyName="asIntN" type="BigInt"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="12e295cd-d59f-49a7-8154-76fd4bf38d4f">
+		<Match propertyName="asUintN" type="BigInt"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Done" id="862cc740-e726-4525-bef9-cb95decbc32b">
+		<Match propertyName="E" type="Math"/>
+		<Replace propertyName="e"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Done" id="313f17ae-ce2b-4f70-a16a-95b33b3f3c1a">
+		<Match propertyName="LN10" type="Math"/>
+		<Replace propertyName="LN10">
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Done" id="b74eea72-0a44-4476-9bf5-33cab7d1db3e">
+		<Match propertyName="LN2" type="Math"/>
+		<Replace propertyName="LN2">
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Done" id="5cab50dd-b4a0-449e-87ba-e7a03f2660a1">
+		<Match propertyName="LOG10E" type="Math"/>
+		<Replace propertyName="LOG10E">
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Done" id="82438a21-4639-4a2b-b6ec-2fddf0f2a3e7">
+		<Match propertyName="LOG2E" type="Math"/>
+		<Replace propertyName="LOG2E">
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Done" id="3305fb33-c83d-45ee-89ff-30cb61e0ea6d">
+		<Match propertyName="PI" type="Math"/>
+		<Replace propertyName="PI">
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Done" id="17128623-1ff8-405c-9d84-05664a1782d7">
+		<Match propertyName="SQRT1_2" type="Math"/>
+		<Replace propertyName="SQRT1_2">
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Done" id="48a1a893-3ce5-4ca6-b352-0529b733213a">
+		<Match propertyName="SQRT2" type="Math"/>
+		<Replace propertyName="SQRT2">
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="f3a9c9d0-68cd-4652-b339-a7b1e6753afe">
+		<Match propertyName="abs" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="a345d0a3-ccf0-4ecd-be9e-be15ae9e7cc7">
+		<Match propertyName="acos" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="8260a7e1-c9ee-4481-9fd1-5dae576940c7">
+		<Match propertyName="acosh" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="2212e657-daaa-47e2-a33c-e42ba3bc0802">
+		<Match propertyName="asin" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="857acd7a-7c8f-4c3c-8f2e-43da33d1000e">
+		<Match propertyName="asinh" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="c32227ef-dc82-43e1-b070-c30e78a15df5">
+		<Match propertyName="atan" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="d5f1ca64-f9fd-4643-b8c0-f27577626448">
+		<Match propertyName="atanh" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="97048f75-5a43-4560-a7c2-8a2301118004">
+		<Match propertyName="atan2" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="c6105e29-1bad-405f-8511-c02c7d3f4253">
+		<Match propertyName="cbrt" type="Math"/>
+		<Replace signature="cuberoot ( x:double ):double">
+			<ArktsTypeName value="" />
+			<ArktsMethodName value="cuberoot" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="a7232291-2aaa-4952-9512-06b162db2a29">
+		<Match propertyName="ceil" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="17f7c58b-ac76-4a3b-a57e-2c19307234b8">
+		<Match propertyName="clz32" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="1a0e52fd-e90b-411c-9d30-ccbea06eb71c">
+		<Match propertyName="cos" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="201075ab-fe0c-4de9-a927-0c96699dada1">
+		<Match propertyName="cosh" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="23829daa-676f-403e-91c4-1fc609d21f2f">
+		<Match propertyName="exp" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="6cfc033d-38f9-4d73-8359-274740c1f067">
+		<Match propertyName="expm1" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="f16f173e-9e7b-475d-a2d3-04ce4ffb1e1f">
+		<Match propertyName="floor" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="0ecca72e-0a41-4998-951f-11d0677e66fe">
+		<Match propertyName="fround" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="5412b3c0-cd73-4af2-9457-05f4dca49fc9">
+		<Match propertyName="hypot" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="d0059dc8-7db0-4248-b4c3-710ba7817aaa">
+		<Match propertyName="imul" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="1dbd8680-3057-4ce6-9ce4-770e6c07f6ec">
+		<Match propertyName="log" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="13d1b19e-f955-4058-a541-97f5ca354645">
+		<Match propertyName="log1p" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="766f61c8-1db4-4d64-9618-0d7abf6c9028">
+		<Match propertyName="log10" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="ef6b4087-4245-4502-a837-2813b0bd52b7">
+		<Match propertyName="log2" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="2879929b-e04a-44a1-8f98-a4ec3cee4e76">
+		<Match propertyName="max" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="dde86f22-893a-484a-84b6-2287f29cc3d7">
+		<Match propertyName="min" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="6fc78482-8680-4ccf-91de-8c9e29e61a5f">
+		<Match propertyName="pow" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="ce7f0ae7-e81f-469c-9d8d-fdd9eb08ed62">
+		<Match propertyName="random" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="8a187261-5fc7-4cac-bebc-66e52cc467ed">
+		<Match propertyName="round" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="d01eedd9-825b-4132-aa48-e74a75f9e5bb">
+		<Match propertyName="sign" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="0ae7a19f-56ea-43b7-8dd8-f62bfc4aa223">
+		<Match propertyName="sin" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="5f43a4ee-1ffb-4bb1-9b6a-cdd5d6dc063a">
+		<Match propertyName="sinh" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="5c8db0a3-350e-49ad-a3d3-f3418fc2d8c8">
+		<Match propertyName="sqrt" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="b1ea238d-d0c6-4daf-89a4-4106e029e1ac">
+		<Match propertyName="tan" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="a45f140d-d8da-4f0c-b147-2c119f3c8367">
+		<Match propertyName="tanh" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="a7c7d438-a862-4662-8330-f58be4cdbc93">
+		<Match propertyName="trunc" type="Math"/>
+		<Replace>
+			<ArktsTypeName value="" />
+		</Replace>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="Same" id="8a79725c-eb7b-4c1d-8ef1-b3f760ecb5c6">
+		<Match type="String"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="7c3fdc28-9ec4-446f-8f76-9d465be203da">
+		<Match propertyName="prototype.length" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="88926e1f-e268-4cfc-bad0-b5bd8d83505c">
+		<Match propertyName="fromCharCode" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="6a7f1ead-febc-43b6-b6ee-b9396573bba8">
+		<Match propertyName="fromCodePoint" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="b0a04912-978b-4d41-bd16-1334e745e8be">
+		<Match propertyName="raw" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="90e5f98e-2eef-4312-ba73-10d3cf374ace">
+		<Match propertyName="prototype.at" type="String"/>
+		<Replace signature="charAt(index: int): char">
+			<ArktsMethodName value="charAt" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="1692dccd-dd24-4101-86ad-177de9f9fc52">
+		<Match propertyName="prototype.big" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="03d12443-cd53-4520-941e-6ab6eb7b97ac">
+		<Match propertyName="prototype.blink" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="55657ad2-7a12-425f-a422-9db7a47f9c69">
+		<Match propertyName="prototype.bold" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="4c02b631-80ea-4b49-bfc9-6ed010e5e1fe">
+		<Match propertyName="prototype.charAt" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="fe2dae9f-5a2b-4762-b23d-137cc0bd887d">
+		<Match propertyName="prototype.charCodeAt" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="45da6817-0986-4abc-baea-d1a5020d6324">
+		<Match propertyName="prototype.codePointAt" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="716eb4f9-472e-4bf7-9ec1-eb2348795a39">
+		<Match propertyName="prototype.concat" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="f1bc204b-96a3-432c-8ec6-d696a3e420a0">
+		<Match propertyName="prototype.endsWith" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="3cd41d72-35ca-41fd-a235-974dc09709bc">
+		<Match propertyName="prototype.fixed" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="ce1028a8-773e-405b-a54e-5ce39c1999c1">
+		<Match propertyName="prototype.fontcolor" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="dca9fd26-c054-4cea-8606-d02f92ae19a9">
+		<Match propertyName="prototype.fontsize" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="2452c4b1-8e2d-4277-818d-30bad4088e0f">
+		<Match propertyName="prototype.includes" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="3b97a5bf-6807-4ba4-b8b0-1b6576ad254d">
+		<Match propertyName="prototype.indexOf" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="1eb862a7-1142-4a01-85fb-8f2d4587b737">
+		<Match propertyName="prototype.lastIndexOf" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="ffde17e7-8283-47bb-aa1b-3a86dfda8ff5">
+		<Match propertyName="prototype.link" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="dfce8101-d630-4a50-82fa-dae3a9a8c850">
+		<Match propertyName="prototype.localeCompare" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="d88ceb36-4858-4e07-9ac5-0b2fa37adf60">
+		<Match propertyName="prototype.match" type="String"/>
+		<Replace notes="str.match(regex) => new RegExp(regex).match(str)">
+			<ArktsObject>
+				<NewClassInstanceExpression>
+					<TypeReference atktsTypeName="RegExp" />
+					<Arguments>
+						<SrcArgument index="0"/>
+					</Arguments>
+				</NewClassInstanceExpression>
+			</ArktsObject>
+			<Arguments>
+				<SrcObject />
+			</Arguments>
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="d50d1874-9869-4a3e-a350-90e05bc7b494">
+		<Match propertyName="prototype.matchAll" type="String"/>
+		<Replace notes="str.matchAll(regex) => new RegExp(regex).matchAll(str)">
+			<ArktsObject>
+				<NewClassInstanceExpression>
+					<TypeReference atktsTypeName="RegExp" />
+					<Arguments>
+						<SrcArgument index="0"/>
+					</Arguments>
+				</NewClassInstanceExpression>
+			</ArktsObject>
+			<Arguments>
+				<SrcObject />
+			</Arguments>
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="8ada17ac-3d75-4ba5-9f71-cd3f3b04b3eb">
+		<Match propertyName="prototype.normalize" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="b6ae0efc-bedb-4ac9-abce-fa403f52a1e1">
+		<Match propertyName="prototype.padEnd" type="String"/>
+		<Replace>
+			<ArktsMethodName value="padRight" />
+			<Arguments>
+				<SrcArgument index="1" />
+				<SrcArgument index="0" />
+			</Arguments>
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="6ef09b25-e236-4117-8d40-2d60e2ca4c40">
+		<Match propertyName="prototype.padStart" type="String"/>
+		<Replace>
+			<ArktsMethodName value="padLeft" />
+			<Arguments>
+				<SrcArgument index="1" />
+				<SrcArgument index="0" />
+			</Arguments>
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="17df40ab-056c-483e-abce-67afbd91be79">
+		<Match propertyName="prototype.repeat" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="b639693f-161d-48ec-9e32-b9214fa48547">
+		<Match propertyName="prototype.replace" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="768205fb-c5fd-474c-9028-206b06de514e">
+		<Match propertyName="prototype.replaceAll" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="e4510230-fe5d-4c95-985c-d7dff6107fdc">
+		<Match propertyName="prototype.search" type="String"/>
+		<Replace notes="str.search(regex) => new RegExp(regex).search(str)">
+			<ArktsObject>
+				<NewClassInstanceExpression>
+					<TypeReference atktsTypeName="RegExp" />
+					<Arguments>
+						<SrcArgument index="0"/>
+					</Arguments>
+				</NewClassInstanceExpression>
+			</ArktsObject>
+			<Arguments>
+				<SrcObject />
+			</Arguments>
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="8c176cbd-9cf6-4bbd-bd36-7cf568b766c3">
+		<Match propertyName="prototype.small" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="3055d698-5cbb-4e9d-9a9c-3d94d212ee2b">
+		<Match propertyName="prototype.slice" type="String"/>
+		<Replace>
+			<ArktsMethodName value="substring" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="1338422e-9e8b-4884-b38a-6ecf22748fbe">
+		<Match propertyName="prototype.split" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="5e0f39aa-a927-43fd-a5b0-edd3fb723d21">
+		<Match propertyName="prototype.startsWith" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="77786f7d-a33d-4ed0-bbb6-6db3e79936a9">
+		<Match propertyName="prototype.strike" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="ab88bf7e-11b6-4619-8855-c2d3964b5e7c">
+		<Match propertyName="prototype.sub" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="f7ddf8b3-0c70-4e99-8d3e-7c240ef91604">
+		<Match propertyName="prototype.substr" type="String"/>
+		<Replace>
+			<ArktsMethodName value="slice" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="5e0b54f6-5e12-4eaf-a019-8e5d4d36c4d9">
+		<Match propertyName="prototype.sup" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="b872d2cc-d727-47e2-898d-4e6472aa8c4f">
+		<Match propertyName="prototype.substring" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="f9586d9f-45a4-461c-8c60-8f051e06aeb6">
+		<Match propertyName="prototype.toLocaleLowerCase" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="4e5b4238-d74a-47de-838f-45df4d7defab">
+		<Match propertyName="prototype.toLocaleUpperCase" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="b43c47e0-603d-481f-b232-092b1c2060bd">
+		<Match propertyName="prototype.toLowerCase" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="a763c10d-e8a8-47d4-ae91-c33bc7a6b658">
+		<Match propertyName="prototype.toUpperCase" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="e240ab76-aad3-4417-ad10-ab6e80731e71">
+		<Match propertyName="prototype.trim" type="String"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="dbf203a0-2aff-4dcc-b27a-911225251509">
+		<Match propertyName="prototype.trimEnd" type="String"/>
+		<Replace>
+			<ArktsMethodName value="trimRight" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="9ca7eac4-409b-4f22-8fea-91861a788b3b">
+		<Match propertyName="prototype.trimStart" type="String"/>
+		<Replace>
+			<ArktsMethodName value="trimRight" />
+		</Replace>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="Done" id="21be2400-3a84-4a6f-aac2-2f073baca26d">
+		<Match type="Array"/>
+		<Replace>
+			<TypeReference arktsName="List">
+				<TypeArguments>
+					<TypeReference arktsName="Object" />
+				</TypeArguments>
+			</TypeReference>
+		</Replace>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="724285a6-90a6-4fa6-86ec-4060cac24859">
+		<Match propertyName="prototype.length" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="9f24aa49-1be3-4b4e-8111-9d2927896b6d">
+		<Match propertyName="from" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array" parameterCount="1"/>
+		<Replace notes="Array.from(iterable) => List(iterable)">
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="9f24aa49-1be3-4b4e-8111-9d2927896b6d">
+		<Match propertyName="from" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array" parameterCount="2"/>
+		<Replace notes="Array.from(iterable, mapFn) => List(iterable).forEach(mapFn)">
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="9f24aa49-1be3-4b4e-8111-9d2927896b6d">
+		<Match propertyName="from" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array" parameterCount="3"/>
+		<Replace notes="Array.from(iterable, mapFn, thisArg) => List(iterable).forEach(bind(mapFn, thisArg))">
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="bd4ae50e-fe75-454c-b7a3-7759406505aa">
+		<Match propertyName="isArray" type="Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="0b6303a6-131e-49b5-b630-494213482300">
+		<Match propertyName="of" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="c343cc69-71cc-4d78-90c4-619d7305f412">
+		<Match propertyName="prototype.at" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="31109cd4-0856-45e5-880e-3e0527199bc2">
+		<Match propertyName="prototype.concat" type="Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="80b802cc-246c-4637-95e6-b124b98148cf">
+		<Match propertyName="prototype.copyWithin" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="c1acf62f-87cc-44a5-b7de-f748fc091a5a">
+		<Match propertyName="prototype.entries" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="01ae05c7-b703-4550-ba3a-5ce4298b0db7">
+		<Match propertyName="prototype.every" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="820ad642-10a1-4751-8f13-841bf0b18f6b">
+		<Match propertyName="prototype.fill" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="59ac2396-1110-4ae7-9a12-771533f257a0">
+		<Match propertyName="prototype.filter" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="2366d6f6-8b48-4227-b865-488eacfaaacd">
+		<Match propertyName="prototype.find" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="82db4a6d-2ba7-4e68-a326-e7cd58ff2ccf">
+		<Match propertyName="prototype.findIndex" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="f26c4973-3286-4bb3-8a1f-ea116ed6ccc8">
+		<Match propertyName="prototype.flat" type="Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="146985f6-d940-4296-9852-839ca4f7332b">
+		<Match propertyName="prototype.flatMap" type="Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="abc02376-7faa-4abc-abb0-2a8e80353a32">
+		<Match propertyName="prototype.forEach" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="8d5bd35f-c479-467e-89ee-fd2d2604238e">
+		<Match propertyName="prototype.group" type="Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="ce351ff3-1d09-4893-966a-c16aed57f743">
+		<Match propertyName="prototype.groupToMap" type="Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="f37d0b85-08bc-4c48-8473-aca495968577">
+		<Match propertyName="prototype.includes" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="f7008af8-89d0-46aa-9246-b51838b59492">
+		<Match propertyName="prototype.indexOf" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="5c92bc96-71fb-4920-b6c4-2d811aa0d7e2">
+		<Match propertyName="prototype.join" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+		<Replace notes="arr.join(sep) => sep.join(arr) not sure tho">
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="8aaa58f1-a42b-4e62-bfb5-a73f85681305">
+		<Match propertyName="prototype.keys" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="d8e6c1ba-b8e9-46b0-b081-2ce1aaa87076">
+		<Match propertyName="prototype.lastIndexOf" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="751ff8f2-0308-41cf-aa27-a90a71175f7f">
+		<Match propertyName="prototype.map" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="f8082475-0926-42b7-be81-5f330b711fb0">
+		<Match propertyName="prototype.pop" type="Array"/>
+		<Replace>
+			<ArktsMethodName value="popBack" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="7b608ab1-8af9-4a34-9890-c558e4a5c111">
+		<Match propertyName="prototype.push" type="Array"/>
+		<Replace>
+			<ArktsMethodName value="pushBack" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="431531ed-ec82-44e9-8b9e-af1436d223a5">
+		<Match propertyName="prototype.reduce" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+		<Replace>
+			<ArktsMethodName value="fold" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="b2e4a6aa-582f-4883-9d22-842b8bbadca2">
+		<Match propertyName="prototype.reduceRight" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+		<Replace>
+			<ArktsMethodName value="foldRight" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="f8050300-1227-478a-8a5d-75ed2631194c">
+		<Match propertyName="prototype.reverse" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="cc1f68e8-79b8-4f37-80e9-07f7667901c0">
+		<Match propertyName="prototype.shift" type="Array"/>
+		<Replace>
+			<ArktsMethodName value="popFront" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="ffbcab15-4edd-4dae-9beb-f66c998de60a">
+		<Match propertyName="prototype.slice" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="72ec9d3e-08f3-4087-b0c2-d7e0533a9e8e">
+		<Match propertyName="prototype.some" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+		<Replace>
+			<ArktsMethodName value="anyOf" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="2ddebf03-c48f-448c-85fc-b74e4b366498">
+		<Match propertyName="prototype.sort" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="8663d16f-bfbb-4474-a3b9-909d55073585">
+		<Match propertyName="prototype.splice" type="Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="577163cc-2c07-454b-b684-aee37f2fcf4c">
+		<Match propertyName="prototype.unshift" type="Array"/>
+		<Replace>
+			<ArktsMethodName value="pushFront" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="15a238ff-c827-43a7-b1b6-117a90fb1433">
+		<Match propertyName="prototype.values" type="Array, Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="Same" id="686182c7-17e5-4662-a8fd-17148c3b90d6">
+		<Match type="Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="501acce8-f819-402e-8c52-f812f226cbc3">
+		<Match propertyName="prototype.buffer" type="Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="27fc7ae4-71cc-46e3-99c9-7753064d080a">
+		<Match propertyName="prototype.byteLength" type="Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="388c6102-46d4-4b7e-9f41-dccd93e98719">
+		<Match propertyName="prototype.byteOffset" type="Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="9a250fec-44b0-4834-80e7-fac1e9240c1e">
+		<Match propertyName="BYTES_PER_ELEMENT" type="Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="38964cec-b908-4211-a9a4-a0f2bfa36bc0">
+		<Match propertyName="prototype.lastIndexOf" type="Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="2bf609a3-1809-43c6-8648-eaca82d6578c">
+		<Match propertyName="prototype.subarray" type="Int8Array, Uint8Array, Uint8ClampedArray, Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array, BigInt64Array, BigUint64Array"/>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="Done" id="47955f6e-d3f7-4682-8f9c-ffb681f05c12">
+		<Match type="Map, WeakMap"/>
+		<Replace>
+			<TypeReference arktsName="Map, WeakMap">
+				<TypeArguments>
+					<TypeReference arktsName="Object" />
+					<TypeReference arktsName="Object" />
+				</TypeArguments>
+			</TypeReference>
+		</Replace>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="38e02765-90c8-48bd-88c5-6b86c8108d8a">
+		<Match propertyName="prototype.size" type="Map, WeakMap"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="b429f0bc-0448-4aa6-a380-c73193651306">
+		<Match propertyName="prototype.clear" type="Map, WeakMap"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="6320120c-540f-4d41-b9e5-5182d55bb43e">
+		<Match propertyName="prototype.delete" type="Map, WeakMap"/>
+		<Replace>
+			<ArktsMethodName value="remove" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="49cf399c-2472-4ff9-ad77-7d2ddbdc35a7">
+		<Match propertyName="prototype.entries" type="Map, WeakMap"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="491505d8-4b0d-47d3-bca4-026455243212">
+		<Match propertyName="prototype.forEach" type="Map, WeakMap"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="4905b474-9bd8-4871-b249-d2a3a0b24662">
+		<Match propertyName="prototype.get" type="Map, WeakMap"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="af51b4ca-714e-44db-9b72-2014bc079b59">
+		<Match propertyName="prototype.has" type="Map, WeakMap"/>
+		<Replace>
+			<ArktsMethodName value="putKey" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="a649ca6f-b7d3-4e7e-b1f3-d3a076abb2d7">
+		<Match propertyName="prototype.keys" type="Map, WeakMap"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="98d07859-d9ec-4d81-b893-1d30f7ac4fd1">
+		<Match propertyName="prototype.set" type="Map, WeakMap"/>
+		<Replace>
+			<ArktsMethodName value="put" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="63489060-6add-4dac-91d3-4301cc6f7990">
+		<Match propertyName="prototype.values" type="Map, WeakMap"/>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="Same" id="b17f902c-70fb-4e11-9aaa-28fa7f29f226">
+		<Match type="Set"/>
+		<Replace>
+			<TypeReference arktsName="Set">
+				<TypeArguments>
+					<TypeReference arktsName="Object" />
+					<TypeReference arktsName="Object" />
+				</TypeArguments>
+			</TypeReference>
+		</Replace>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="ddce0ca6-6367-4909-b157-d59d09cd7575">
+		<Match propertyName="prototype.size" type="Set"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="f744d9ef-1a00-439d-9e9e-02c5ec5903b5">
+		<Match propertyName="prototype.add" type="Set"/>
+		<Replace>
+			<ArktsMethodName value="put" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="832c4642-f7e9-44cd-96fd-c0a18ac39c57">
+		<Match propertyName="prototype.clear" type="Set"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="e4700efc-10d9-4f01-b773-3a65262fddb3">
+		<Match propertyName="prototype.delete" type="Set"/>
+		<Replace>
+			<ArktsMethodName value="remove" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="a8730281-e911-4349-a44b-721c89b1ef01">
+		<Match propertyName="prototype.entries" type="Set"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="41ecb55a-d855-4551-a12a-dbad3f00dd24">
+		<Match propertyName="prototype.forEach" type="Set"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="1275a97a-7690-4a1c-8080-0cb7135fa199">
+		<Match propertyName="prototype.has" type="Set"/>
+		<Replace>
+			<ArktsMethodName value="hasValue" />
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="76f28e7e-8254-4406-96b4-5fbe97e75c2c">
+		<Match propertyName="prototype.keys" type="Set"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="2c49e5de-f447-49fa-bf05-5396969e6737">
+		<Match propertyName="prototype.values" type="Set"/>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="Done" id="28a82775-b19a-45f9-a9b8-29dd4a700e46">
+		<Match type="ArrayBuffer"/>
+		<Replace>
+			<TypeReference arktsName="ByteArray"/>
+		</Replace>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="f62b6369-1b0e-4077-9eec-98ab08d35af0">
+		<Match propertyName="prototype.byteLength" type="ArrayBuffer"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="1f54f4ad-ee49-4b50-b078-868016711493">
+		<Match propertyName="isView" type="ArrayBuffer"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="36f1216f-2b47-40d2-8cdc-509589222bb2">
+		<Match propertyName="prototype.slice" type="ArrayBuffer"/>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="Done" id="7413dd85-0be6-4998-be29-23b00e2e6e35">
+		<Match type="SharedArrayBuffer"/>
+		<Replace>
+			<TypeReference arktsName="ByteArray"/>
+		</Replace>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="c69142d4-458a-410e-b5f5-865914c9aa58">
+		<Match propertyName="prototype.byteLength" type="SharedArrayBuffer"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="514d3d2f-63ee-43c0-9143-dc3a471717ef">
+		<Match propertyName="isView" type="SharedArrayBuffer"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="19e152d0-a85b-4fdc-9d21-541cca94ebae">
+		<Match propertyName="prototype.slice" type="SharedArrayBuffer"/>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="Same" id="40f6c3ee-d679-4a35-a8bb-bd425d1ba49f">
+		<Match type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="30ef39fa-ebca-4c12-9372-7d574f809602">
+		<Match propertyName="prototype.buffer" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="3d199a8c-0f14-4f14-b1e1-178219dfd118">
+		<Match propertyName="prototype.byteLength" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="1e6b84f8-fa61-49ee-babf-bb7ad5855854">
+		<Match propertyName="prototype.byteOffset" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="add61d83-9260-4c8b-b7cf-d6e2c08433be">
+		<Match propertyName="prototype.getBigInt64" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="13d91247-5a09-4744-a0b5-0debd465511a">
+		<Match propertyName="prototype.getBigUint64" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="136710b7-adf2-484b-85a8-8732e28f7734">
+		<Match propertyName="prototype.getFloat32" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="5e3bfc90-b3b1-4d1f-90a2-89bc17366b0f">
+		<Match propertyName="prototype.getFloat64" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="be26971e-0d26-453a-bf64-43927f0b23d2">
+		<Match propertyName="prototype.getInt8" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="0b2f60ba-abb8-4ab2-a949-a6a51a996cc4">
+		<Match propertyName="prototype.getInt16" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="fbb80440-3258-4c42-97e4-197161cafa56">
+		<Match propertyName="prototype.getInt32" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="5d22eada-06d4-4f20-b925-a7726cb193ef">
+		<Match propertyName="prototype.getUint8" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="62991e93-c504-4499-b6b7-2a01a635e3ee">
+		<Match propertyName="prototype.getUint16" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="9f8362c0-5284-4e1c-92a7-9ece7277edbc">
+		<Match propertyName="prototype.getUint32" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="f133fef2-2fdf-4e87-bd51-ce479fbb80cf">
+		<Match propertyName="prototype.setBigInt64" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="d47e523c-34b1-4e7a-b08b-d7949d50d1a9">
+		<Match propertyName="prototype.setBigUint64" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="9411beca-40d1-4171-b505-6ef740ae3d3c">
+		<Match propertyName="prototype.setFloat32" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="cc8d255b-75c7-4f2e-9023-d96f027ac48a">
+		<Match propertyName="prototype.setFloat64" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="8a158f7b-3613-4379-b39a-9bb50406d055">
+		<Match propertyName="prototype.setInt8" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="79ded22c-3320-4f8d-b1c0-e7dd05b139ab">
+		<Match propertyName="prototype.setInt16" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="6893daa8-22e0-4144-80d5-4eae126c685d">
+		<Match propertyName="prototype.setInt32" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="1a40a015-b212-4247-bd8f-c6c0189b999f">
+		<Match propertyName="prototype.setUint8" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="f8903774-38d6-48e4-9407-954f475cbd11">
+		<Match propertyName="prototype.setUint16" type="DataView"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="6f5e44ee-dd3b-4917-926f-53beb977b164">
+		<Match propertyName="prototype.setUint32" type="DataView"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="1066c148-6da0-4adf-9b52-11cb38acfbd7">
+		<Match propertyName="parse" type="JSON"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="e437fca8-60b7-40f7-a961-662d87de0c27">
+		<Match propertyName="stringify" type="JSON"/>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="NA" id="20547555-5895-4692-89e8-6a1cd6e1f617">
+		<Match type="WeakRef"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="e82609ac-388e-455e-994d-9af799422b6e">
+		<Match propertyName="prototype.deref" type="WeakRef"/>
+	</_>
+	<_ type="NewClassInstanceExpressionRule" status="NA" id="ef28e9f7-586e-4481-83dc-30011d22826b">
+		<Match type="FinalizationRegistry"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="43ad2aab-be0d-47ba-9075-a45c0214373f">
+		<Match propertyName="prototype.register" type="FinalizationRegistry"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="903e9939-4fea-448b-b695-dc0dd903dbe0">
+		<Match propertyName="prototype.unregister" type="FinalizationRegistry"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="173dc146-3192-44ad-bfec-8be0d79ea3d7">
+		<Match propertyName="apply" type="Reflect"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="fb1a0cab-6f36-4d63-9b23-8771f21fac68">
+		<Match propertyName="construct" type="Reflect"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="ed65f120-1d40-43a0-95e6-31f2609fb96d">
+		<Match propertyName="defineProperty" type="Reflect"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="416f78cc-7e1b-412e-965a-b1b0318c6e62">
+		<Match propertyName="get" type="Reflect"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="75a3d468-2d89-477b-82c9-75d6a3aa3cd0">
+		<Match propertyName="getOwnPropertyDescriptor" type="Reflect"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="3a8f3538-cbef-48e8-8f69-2eaa5a6a5e52">
+		<Match propertyName="getPrototypeOf" type="Reflect"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="1b03c5c6-58f2-4bd3-844b-aad869b5c424">
+		<Match propertyName="has" type="Reflect"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="6b0a2a53-bc22-4d30-b2ee-ba62d751b1bb">
+		<Match propertyName="isExtensible" type="Reflect"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="4fc3c595-ba26-4410-b09b-b60a5eb5592f">
+		<Match propertyName="ownKeys" type="Reflect"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="0f2ad135-cc3c-4e1f-be3f-82465283b780">
+		<Match propertyName="preventExtensions" type="Reflect"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="6cae3008-af7c-49b6-bb7d-603d5f54234f">
+		<Match propertyName="set" type="Reflect"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="4e99192e-657a-4799-bf9e-30fbdd4d292d">
+		<Match propertyName="setPrototypeOf" type="Reflect"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="91c95666-2f51-458c-b25d-8c81b4b9206e">
+		<Match propertyName="prototype.next" type="Generator"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="2e2150d7-3646-40a0-a4de-0f687db86ca2">
+		<Match propertyName="prototype.return" type="Generator"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="82ca1831-5561-4f5f-a098-dd654c84aa85">
+		<Match propertyName="prototype.throw" type="Generator"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="8b68971d-cb0c-454a-919b-be9503f1f289">
+		<Match propertyName="all" type="Promise"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="bfa32274-b802-44f9-a4f4-279fc878cc54">
+		<Match propertyName="allSettled" type="Promise"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="9324be61-746c-4765-a734-c64a92e4be88">
+		<Match propertyName="any" type="Promise"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="407e6277-ee88-4681-97a6-e0d19e54ebda">
+		<Match propertyName="prototype.catch" type="Promise"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="d85d71de-3653-4269-8b15-458756824db1">
+		<Match propertyName="prototype.finally" type="Promise"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="cd77e834-8fc0-436e-ae17-02e489b491f2">
+		<Match propertyName="race" type="Promise"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="b1c4b8a9-6d74-4736-97bc-bc8bf267d5cc">
+		<Match propertyName="reject" type="Promise"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="2c925aa2-3a63-4ba5-a56b-bc5772bf54ed">
+		<Match propertyName="resolve" type="Promise"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="6a39965b-0754-4848-9363-d1660f478e51">
+		<Match propertyName="prototype.then" type="Promise"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="5f38efcc-c71b-4f85-bb4c-ba8c43029229">
+		<Match propertyName="getCanonicalLocales" type="Intl"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="18d022a1-71a2-43ea-8ad8-8208cd9f675b">
+		<Match propertyName="supportedValuesOf" type="Intl"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="ee56a2cb-baae-4dc3-b725-352bbb70fd44">
+		<Match propertyName="prototype.dotAll" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="fb9af19e-8da8-4dec-9e40-552f6a855566">
+		<Match propertyName="prototype.flags" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="3aa06478-83d6-4d2b-b9f2-f9bb6c99f947">
+		<Match propertyName="prototype.global" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="facf77c6-003a-44de-b309-4f4153903900">
+		<Match propertyName="prototype.hasIndicies" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="5c3ddd2c-8f91-48b8-836a-81647be6f011">
+		<Match propertyName="prototype.ignoreCase" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="3daf7937-9a3c-46f8-a975-b362729b2359">
+		<Match propertyName="input" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="551690a3-c83e-43f0-9652-d58afeaec57a">
+		<Match propertyName="lastIndex" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="2c13472a-7945-458d-9006-d60fbd516166">
+		<Match propertyName="lastMatch" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="2e479d71-c14e-4b2a-bea3-b361175c9b2e">
+		<Match propertyName="lastParen" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="872e8bfa-7367-4305-b55d-ce9fb6bdafa2">
+		<Match propertyName="leftContext" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="13a1bfa5-3d82-45fa-b56d-5b6c444685a0">
+		<Match propertyName="prototype.multiline" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="12bd83a3-9179-4657-9fa5-05eba9f4e12f">
+		<Match propertyName="$1" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="7720aa89-b776-4c5a-ba4d-1aa3c748f460">
+		<Match propertyName="$2" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="0c108430-b83c-49fc-8c14-ffce59e56a17">
+		<Match propertyName="$3" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="742438f2-3b5d-47d8-9789-ba252f6709ae">
+		<Match propertyName="$4" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="da575414-f04d-42b3-857d-c9aabda5309a">
+		<Match propertyName="$5" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="0324beea-3bd3-458d-b556-211d0f3d0c13">
+		<Match propertyName="$6" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="5b7148a1-6c3f-4aad-8c88-52867ab7ee8e">
+		<Match propertyName="$7" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="24e20a33-128f-4c0c-867b-8cd5e08cfec7">
+		<Match propertyName="$8" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="a756425f-7080-403a-aa20-10c1d8ea1bef">
+		<Match propertyName="$9" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="ace51b6e-128e-49c0-9423-9ee68bb58640">
+		<Match propertyName="rightContext" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="b2c34e05-6978-4a2e-8ab9-38f4129252e3">
+		<Match propertyName="prototype.source" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="0eaf8bd7-7d50-4037-89d7-c92e539c1857">
+		<Match propertyName="prototype.sticky" type="RegExp"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="Same" id="09426f55-79a0-4a43-b516-9c018c8ff48a">
+		<Match propertyName="prototype.unicode" type="RegExp"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="3b0065a4-beb8-4be6-9c71-42f784b17469">
+		<Match propertyName="compile" type="RegExp"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="f8b57fca-a456-461f-aa05-aa8c33b64189">
+		<Match propertyName="exec" type="RegExp"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="2bfbb7bd-5384-4470-a68f-ffbd627a0607">
+		<Match propertyName="test" type="RegExp"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="dda79086-be08-497f-96d5-1d26b846175d">
+		<Match propertyName="add" type="Atomics"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="e68891ae-7e95-4a79-9845-072b65fc6c4a">
+		<Match propertyName="and" type="Atomics"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="88613d39-71bc-4b99-ad90-d60f4d213562">
+		<Match propertyName="compareExchange" type="Atomics"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="5292b1e1-964f-4ec6-bf3d-ed46ea7b5101">
+		<Match propertyName="exchange" type="Atomics"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="87a76196-89b7-4af2-a59d-80f5d88910d4">
+		<Match propertyName="isLockFree" type="Atomics"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="874dc10f-e54c-43d4-9023-797640512810">
+		<Match propertyName="load" type="Atomics"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="dc320324-cfab-4dfd-8409-1f55478e39d8">
+		<Match propertyName="notify" type="Atomics"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="9edcd52b-c957-40ba-b887-a0bb227716fe">
+		<Match propertyName="or" type="Atomics"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="7aa8078b-9711-4cfb-8ad6-f555c542b973">
+		<Match propertyName="store" type="Atomics"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="03325e86-dae3-46d2-baf0-2f70440fe3ff">
+		<Match propertyName="sub" type="Atomics"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="ba5a7ee2-1bb8-4e47-8ce1-8d28076f64d8">
+		<Match propertyName="wait" type="Atomics"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="56ae5764-5b6b-4b25-b2d1-8995f2067055">
+		<Match propertyName="waitAsync" type="Atomics"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="4b58fccc-ec0c-4650-8037-d4784468356d">
+		<Match propertyName="xor" type="Atomics"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="dc6ca41d-90f7-4da6-bc9c-f188ca335ef9">
+		<Match propertyName="now" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="18987103-4d0e-4e0a-b3c6-121d098837e7">
+		<Match propertyName="parse" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="d0c78eff-0adf-4e16-ba32-ab38da9152d3">
+		<Match propertyName="UTC" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="491aec0e-e42e-425b-89cf-866a3969b7a4">
+		<Match propertyName="prototype.getDate" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="51d01294-5a75-4a12-b03d-ca04942d446d">
+		<Match propertyName="prototype.getDay" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="8f527651-02a0-4819-9022-dacdfe3d4869">
+		<Match propertyName="prototype.getFullYear" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="3bdccb57-c5a4-4f90-980f-f94b6718f6d0">
+		<Match propertyName="prototype.getHours" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="8a878296-fe8e-4f78-97df-65571f1f9bd8">
+		<Match propertyName="prototype.getMilliseconds" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="c1e019c3-50d1-40d4-bd7d-04e94b9c9a9f">
+		<Match propertyName="prototype.getMinutes" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="c9610a14-b0b5-46ac-b492-e981546cad69">
+		<Match propertyName="prototype.getMonth" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="0bb08179-ee74-450f-b315-52d140eacd8d">
+		<Match propertyName="prototype.getSeconds" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="cd6fe234-030b-4ea5-b407-f740472afb75">
+		<Match propertyName="prototype.getTime" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="a77df9ee-5106-4a0e-a752-f0a04b8024b8">
+		<Match propertyName="prototype.getTimezoneOffset" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="d22c0404-4ac8-4042-86b2-d9a5bb186ee5">
+		<Match propertyName="prototype.getUTCDate" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="be5cdb1f-1fea-4979-9659-33e7713a437b">
+		<Match propertyName="prototype.getUTCDay" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="be8bb542-8351-4df4-959f-a54ff65afab3">
+		<Match propertyName="prototype.getUTCFullYear" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="bc838049-078e-490e-bc57-55ba3a1e7fff">
+		<Match propertyName="prototype.getUTCHours" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="ca1acfb8-b763-4f9a-80e9-79361c913fb9">
+		<Match propertyName="prototype.getUTCMilliseconds" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="b971ad56-fcba-4750-81cf-54dbb8b05035">
+		<Match propertyName="prototype.getUTCMinutes" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="29e42ab4-6ff6-4ac0-bbbf-433995ee91d5">
+		<Match propertyName="prototype.getUTCMonth" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="8d4ac88d-dcc0-451e-b336-dc6a001549db">
+		<Match propertyName="prototype.getUTCSeconds" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="2258b939-0419-4a99-b19e-7d9edafda8f2">
+		<Match propertyName="prototype.getYear" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="463e2fbb-7319-41e4-81d9-fc64d31c0e03">
+		<Match propertyName="prototype.setDate" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="1d8cf2bb-553b-427b-8c4f-0ddfc22a5b42">
+		<Match propertyName="prototype.setDay" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="3ac43a1b-55f7-4e57-b79d-86e5e281774d">
+		<Match propertyName="prototype.setFullYear" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="f06a0db7-1758-4bea-9f05-d975883cf911">
+		<Match propertyName="prototype.setHours" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="a5057307-61e0-4b61-91bf-a4b70955e58c">
+		<Match propertyName="prototype.setMilliseconds" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="48cbe2c0-e4e0-40dd-9bbe-ecc5354998f3">
+		<Match propertyName="prototype.setMinutes" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="331d592a-4379-4cd1-ace2-b09a79d0f438">
+		<Match propertyName="prototype.setMonth" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="6730807b-1dc4-4c95-be98-d4d8c6171883">
+		<Match propertyName="prototype.setSeconds" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="e8c0a6d1-f136-4d00-86dd-0d66f7779a5c">
+		<Match propertyName="prototype.setTime" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="e2f7de66-e90c-47f5-9ec8-daa1169734f6">
+		<Match propertyName="prototype.setTimezoneOffset" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="44f0651a-d698-40a3-87be-fd157467f709">
+		<Match propertyName="prototype.setUTCDate" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="ab501b99-7194-4dfa-9fe3-d1a480b38568">
+		<Match propertyName="prototype.setUTCDay" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="8828e111-a8ce-445b-83e0-7cd8984d890b">
+		<Match propertyName="prototype.setUTCFullYear" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="3d5e160f-6c9d-49c6-bdfd-0f93ceeae2a2">
+		<Match propertyName="prototype.setUTCHours" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="b4f15012-3baf-4ac2-92f9-5741668f3df4">
+		<Match propertyName="prototype.setUTCMilliseconds" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="cc4dfe9f-e967-4697-a44b-2ed0fa171112">
+		<Match propertyName="prototype.setUTCMinutes" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="8726af2b-0b11-4d44-bcb3-34b52ae6b04b">
+		<Match propertyName="prototype.setUTCMonth" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="46c9bc58-c816-47a4-914b-17068f902664">
+		<Match propertyName="prototype.setUTCSeconds" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="67046380-2eaa-48f9-b052-e5dfa61e3bfb">
+		<Match propertyName="prototype.setYear" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="3ee77729-e531-4457-b35b-b11fd3ab290f">
+		<Match propertyName="prototype.toDateString" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="e7573f97-155b-4e96-b34c-e4396fe299bc">
+		<Match propertyName="prototype.toISOString" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="e46eafeb-e22d-407c-b145-e52a22fb6a14">
+		<Match propertyName="prototype.toJSON" type="Date"/>
+		<Replace signature="date.toJSON() => JSON.parseDate(date)">
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="943e33a3-1eb0-4751-bfbf-7c113889cd26">
+		<Match propertyName="prototype.toLocaleDateString" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="1eb656f4-e876-4114-99ca-0c9adffbc39e">
+		<Match propertyName="prototype.toLocaleString" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="NA" id="d36163c5-3603-4338-951f-62206aad26db">
+		<Match propertyName="prototype.toLocaleTimeString" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="b65f137c-9a9d-41b1-b8a8-05873755da2d">
+		<Match propertyName="prototype.toTimeString" type="Date"/>
+	</_>
+	<_ type="CallExpressionRule" status="Same" id="330ede40-63be-46f6-8030-e23829b8e813">
+		<Match propertyName="prototype.toUTCString" type="Date"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="e0dc3a72-37f1-4a6c-be09-ff021912808e">
+		<Match type="Infinity"/>
+	</_>
+	<_ type="MemberAccessExpressionRule" status="NA" id="8ea18658-0338-4640-8763-706253202ba0">
+		<Match type="NaN"/>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="f7e8374a-fce8-4bbd-b069-f72d7a478dec">
+		<Match propertyName="isNaN"/>
+		<Replace notes="isNaN(num) => num.isNaN()">
+			<SrcArgument index="0"/>
+			<ArktsMethodName value="isNaN"/>
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="Done" id="d78c7289-e1a3-4113-a1ad-7584d60f9fd7">
+		<Match propertyName="isFinite"/>
+		<Replace notes="isFinite(num) => num.isFinite()">
+			<SrcArgument index="0"/>
+			<ArktsMethodName value="isFinite"/>
+		</Replace>
+	</_>
+	<_ type="CallExpressionRule" status="TODO" id="f2d85e73-1c07-451e-bcc8-6676df03d938">
+		<Match propertyName="parseInt"/>
+	</_>
+	<_ type="CallExpressionRule" status="TODO" id="1bee4fed-0c5d-4d5d-95a7-ec186fe7ed93">
+		<Match propertyName="parseFloat"/>
+	</_>
+	<_ type="CallExpressionRule" status="TODO" id="6f5b1237-22f3-4bed-b4fa-c72686cefc8f">
+		<Match propertyName="decodeURI"/>
+	</_>
+	<_ type="CallExpressionRule" status="TODO" id="c805f32f-cdb2-4200-8aa5-1780f9650cd5">
+		<Match propertyName="decodeURIComponent"/>
+	</_>
+	<_ type="CallExpressionRule" status="TODO" id="52c34a0e-052b-407a-ae25-591d760abe0a">
+		<Match propertyName="encodeURI"/>
+	</_>
+	<_ type="CallExpressionRule" status="TODO" id="c8afd8ed-c728-4f65-a6a9-00e7e49c0d74">
+		<Match propertyName="encodeURIComponent"/>
+	</_>
+	<_ type="CallExpressionRule" status="TODO" id="f2d3a37c-fe2f-4091-ad7b-981012a80ae8">
+		<Match propertyName="escape"/>
+	</_>
+	<_ type="CallExpressionRule" status="TODO" id="9509538a-d4d4-4df8-b967-9c02c62c4ecb">
+		<Match propertyName="unescape"/>
+	</_>
+</Rules>

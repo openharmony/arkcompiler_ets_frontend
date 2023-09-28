@@ -1,0 +1,1 @@
+SyntaxError: '=' expected [test_type_alias2.ets:16:10]

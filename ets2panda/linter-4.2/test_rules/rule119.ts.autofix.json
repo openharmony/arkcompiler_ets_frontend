@@ -1,0 +1,19 @@
+{
+    "nodes": [
+        {
+            "line": 9,
+            "column": 5,
+            "problem": "ImportAfterStatement",
+            "autofixable": false,
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
+        },
+        {
+            "line": 9,
+            "column": 5,
+            "problem": "ImportFromPath",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Importing a module for side-effects only is not supported (arkts-no-side-effects-imports)"
+        }
+    ]
+}

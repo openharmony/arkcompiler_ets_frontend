@@ -1,0 +1,64 @@
+/*
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+open class B  {
+}
+
+open class C extends B  {
+    private f : Double ;
+    protected s : String ;
+    public constructor(f : Double = 1, s : String = "C") {
+        super();
+        this.f = f;
+        this.s = s;
+        console.log("In C ctor");
+    }
+
+    public getf(): Double {
+        return this.f;
+    }
+    public gets(): String {
+        return this.s;
+    }
+}
+
+open class D  {
+    private f : Double ;
+    public s : String ;
+    public constructor(f : Double, s : String) {
+        this.f = f;
+        this.s = s;
+    }
+
+    public getID(): String {
+        return this.s + this.f;
+    }
+}
+
+open class E  {
+    private id : String ;
+    public f : Double ;
+    private s : String ;
+    public constructor(f : Double, s : String = "E") {
+        this.f = f;
+        this.s = s;
+        this.id = this.s + this.f;
+        console.log("In E ctor");
+    }
+
+    public getID(): String {
+        return this.id;
+    }
+}

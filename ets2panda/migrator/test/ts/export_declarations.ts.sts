@@ -1,0 +1,50 @@
+/*
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+export open class A  {
+}
+
+export type E = A;
+
+export interface I {
+}
+
+enum E {
+    K,
+    L,
+    M
+}
+export type L = E;
+export function B(): void {
+}
+export function C(): void {
+    B();
+}
+function C(x : String): String {
+    return x;
+}
+export function D(x : String): String {
+    return C(x);
+}
+function D(... x: Double[] ): Double {
+    return x.length ? x[0] : 0;
+}
+export function F(... x: Double[] ): Double {
+    return D(x);
+}
+export let n = 2;
+export let num = n;
+const pi = 3.1416;
+export const pee = pi;

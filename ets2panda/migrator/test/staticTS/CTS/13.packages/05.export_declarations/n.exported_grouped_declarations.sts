@@ -1,0 +1,12 @@
+{% for decl in grouped_declarations %}
+
+/*---
+desc: Grouped declarations cannot be exported
+params: |
+    {{.decl}}
+---*/
+
+export {{.decl}}
+function main(): void {}
+
+{%- endfor %}

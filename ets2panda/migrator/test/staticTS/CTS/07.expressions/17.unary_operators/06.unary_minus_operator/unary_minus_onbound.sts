@@ -1,0 +1,14 @@
+{% for onb in unary_minus_onbound %}
+
+/*---
+desc: Unary minus operator (inbound)
+params: {{.onb.type}} {{.onb.origin}} => {{.onb.dest}}
+corner-case: true
+---*/
+
+function main(): void {
+  let a: {{.onb.type}} = {{.onb.origin}};
+  assert -a == {{.onb.dest}};
+}
+
+{% endfor %}

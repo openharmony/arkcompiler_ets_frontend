@@ -1,0 +1,1 @@
+SyntaxError: 'null' expected [test_type_annotation1.ts:18:1]

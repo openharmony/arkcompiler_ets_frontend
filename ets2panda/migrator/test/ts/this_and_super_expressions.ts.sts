@@ -1,0 +1,49 @@
+/*
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+open class A  {
+    private num : Double ;
+    protected str : String = "A";
+    public constructor(n : Double) {
+        this.num = n;
+    }
+
+    protected foo(): Double {
+        return this.num * this.num;
+    }
+}
+
+open class B extends A  {
+    private id : String ;
+    public constructor(n : Double, s : String) {
+        super(n);
+        this.id = s;
+    }
+
+    public foo(): Double {
+        let slen = this.str.length;
+        return super.foo() + slen * slen;
+    }
+    private getId(): String {
+        return "B" + this.id;
+    }
+    public bar(): String {
+        return super.str + this.getId();
+    }
+    public goo(): String {
+        return this.id + super.str;
+    }
+}
+

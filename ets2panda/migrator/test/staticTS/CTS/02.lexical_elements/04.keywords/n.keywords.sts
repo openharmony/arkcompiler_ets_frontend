@@ -1,0 +1,11 @@
+{% for kwd in keywords %}
+
+/*---
+desc: The {{.kwd}} is reserved and may not be used as identifiers
+params: {{.kwd}}
+---*/
+
+let {{.kwd}} = 0;
+function main(): void {}
+
+{% endfor %}

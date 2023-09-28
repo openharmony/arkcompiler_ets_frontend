@@ -1,0 +1,1 @@
+TypeError: Bad operand type, the types of the operands must be same type. [dynamic_instanceof_error.ets:24:11]

@@ -1,0 +1,15 @@
+--- # List of valid values for specific integer types
+
+- {type: byte, value:  127}
+- {type: byte, value: -128}
+
+- {type: short, value:  32767}
+- {type: short, value: -32768}
+
+- {type: int, value:  2147483647}
+- {type: int, value: -2147483648}
+
+- {type: long, value:  9223372036854775807}
+- {type: long, value: -9223372036854775808}
+
+

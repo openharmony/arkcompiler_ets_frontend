@@ -1,0 +1,56 @@
+/*
+ * Copyright (c) 2022-2022 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.ohos.migrator.test.java;
+
+import * from "std/math/math";
+open class literals  {
+    open test(): void {
+// integer literals
+        let b : byte = 0;
+        let b2 : byte = 1_0_2;
+        let s : short = 0x1;
+        let s2 : short = 0X1_F;
+        let i : int = 0o2;
+        let i2 : int = 0o3_4_56;
+        let l : long = 0b11;
+        let l2 : long = 0B1_01_11;
+// floating-point literals
+        let f : float = 4;
+        let f2 : float = 1_2.23_45e+6;
+        let f3 : float = 3.402_823_5e1_7;
+        let d : double = 5.;
+        let d2 : double = .123_456;
+        let d3 : double = 0.123876;
+        let pi : double = 3.1416;
+        let G : double = 6.6_73_00E-11;
+// char and string literals
+        let c : char = '6';
+        let c2 : char = '\t';
+        let c3 : char = '\'';
+        let str : String = "7";
+        let str2 : String = "Who needs \"dots\" over \"eyes\"? ;)\r\n";
+// null and boolean literals
+        let nl : literals = null;
+        let tl : boolean = true;
+        let fl : boolean = false;
+// class literals
+        let cl : Class<literals> = literals.class;
+        let ll : Class<out> = long.class;
+        let sal : Class<String[]> = String[].class;
+        let dal : Class<out> = double[].class;
+    }
+}
+

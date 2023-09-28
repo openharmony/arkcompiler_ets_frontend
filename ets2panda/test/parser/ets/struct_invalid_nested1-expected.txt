@@ -1,0 +1,1 @@
+SyntaxError: Field type annotation expected [struct_invalid_nested1.ets:17:12]

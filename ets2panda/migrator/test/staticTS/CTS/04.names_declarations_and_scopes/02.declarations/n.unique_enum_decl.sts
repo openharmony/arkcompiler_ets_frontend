@@ -1,0 +1,7 @@
+/*---
+desc: A name must be unique in its enum space
+---*/
+
+enum E {V1, V1}
+
+function main(): void {}

@@ -1,0 +1,9 @@
+{% for ident in start %}
+/*---
+desc: First character {{.ident}} should be Unicode code point with the Unicode property "ID_Start"
+---*/
+
+let {{.ident}} = 0;
+function main(): void {}
+
+{% endfor %}

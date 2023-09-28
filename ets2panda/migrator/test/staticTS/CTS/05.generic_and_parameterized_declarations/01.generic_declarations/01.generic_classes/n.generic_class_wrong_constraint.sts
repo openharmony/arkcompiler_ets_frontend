@@ -1,0 +1,16 @@
+{% for wc in wrong_constraints %}
+{% for cm in toplevel_class_modifiers %}
+
+/*---
+desc: Self-dependency is prohibited
+params: >
+  {{.wc}}
+  {{.cm}}
+---*/
+
+{{.cm}} class Point<T extends {{.wc}}> {}
+
+function main(): void {}
+
+{% endfor %}
+{% endfor %}

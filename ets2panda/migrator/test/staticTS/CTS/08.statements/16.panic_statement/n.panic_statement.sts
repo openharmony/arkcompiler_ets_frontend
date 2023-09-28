@@ -1,0 +1,7 @@
+/*---
+desc: Panic statement
+---*/
+
+function main(): void {
+  panic "Stop";
+}

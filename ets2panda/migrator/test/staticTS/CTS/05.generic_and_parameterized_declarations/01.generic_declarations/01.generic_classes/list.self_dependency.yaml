@@ -1,0 +1,7 @@
+--- # Self dependency tests
+
+- T
+- U<T>
+- U<W<T>>
+- U<U<T>>
+- T<U>

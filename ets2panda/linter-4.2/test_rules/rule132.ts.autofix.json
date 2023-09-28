@@ -1,0 +1,28 @@
+{
+    "nodes": [
+        {
+            "line": 7,
+            "column": 9,
+            "problem": "LimitedStdLibApi",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 7,
+            "column": 48,
+            "problem": "Prototype",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)"
+        },
+        {
+            "line": 7,
+            "column": 37,
+            "problem": "NewTarget",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"new.target\" is not supported (arkts-no-new-target)"
+        }
+    ]
+}

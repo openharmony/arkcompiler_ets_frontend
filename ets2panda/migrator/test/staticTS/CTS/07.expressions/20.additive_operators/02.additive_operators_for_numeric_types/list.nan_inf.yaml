@@ -1,0 +1,16 @@
+--- # List of addition tests where NaN, INF and zeroes involved
+
+- {x:  NaN, y:  NaN, result:  NaN}
+- {x:  0.0, y:  NaN, result:  NaN}
+- {x:  NaN, y:  0.0, result:  NaN}
+- {x: -INF, y:  INF, result:  NaN}
+- {x:  INF, y: -INF, result:  NaN}
+- {x: -INF, y:  1.0, result: -INF}
+- {x:  INF, y:  1.0, result:  INF}
+- {x:  0.0, y: -0.0, result:  0.0}
+- {x: -0.0, y:  0.0, result:  0.0}
+- {x: -0.0, y: -0.0, result: -0.0}
+- {x:  0.0, y:  0.0, result:  0.0}
+- {x:  0.0, y:  1.0, result:  1.0}
+- {x:  1.0, y:  0.0, result:  1.0}
+- {x:  1.0, y: -1.0, result:  0.0}

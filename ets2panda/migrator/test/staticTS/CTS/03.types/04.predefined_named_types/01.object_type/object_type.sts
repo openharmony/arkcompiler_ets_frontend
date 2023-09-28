@@ -1,0 +1,8 @@
+/*---
+desc: Object type
+---*/
+
+let x: Object;
+let y: std.core.Object;
+
+function main(): void {}

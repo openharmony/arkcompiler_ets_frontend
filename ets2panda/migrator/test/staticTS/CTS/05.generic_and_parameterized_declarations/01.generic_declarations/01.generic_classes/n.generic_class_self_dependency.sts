@@ -1,0 +1,16 @@
+{% for sd in self_dependency %}
+{% for cm in toplevel_class_modifiers %}
+
+/*---
+desc: Self-dependency is prohibited
+params: >
+  {{.sd}}
+  {{.cm}}
+---*/
+
+{{.cm}} class T<{{.sd}}> {}
+
+function main(): void {}
+
+{% endfor %}
+{% endfor %}

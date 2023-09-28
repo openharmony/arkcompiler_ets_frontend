@@ -1,0 +1,10 @@
+/*---
+desc: Enum type methods (values)
+---*/
+
+enum Colors {Red, Green, Blue}
+
+function main(): void {
+  let colors = Color.values();
+  assert colors != [];
+}

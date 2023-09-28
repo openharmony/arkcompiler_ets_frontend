@@ -1,0 +1,42 @@
+/*
+ * Copyright (c) 2022-2022 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.ohos.migrator.tests.java;
+
+import * from "std/math/math";
+abstract class method_full  {
+    open foo(): void {
+    }
+    open foo_void(b : boolean): void {
+        return;
+    }
+    open foo_int(b : double, c : char, i : int): int {
+        return 1;
+    }
+    open foo_bool(d : double, c : char, ... i: int ): boolean {
+        return true;
+    }
+    private foo_private(d : double): int {
+        return 2;
+    }
+    public foo_final(d : double): double {
+        return 1.;
+    }
+    protected static foo_final(i : int): boolean {
+        return false;
+    }
+    protected abstract foo_abstract(): int ;
+    private native foo_native(): int ;
+}
+

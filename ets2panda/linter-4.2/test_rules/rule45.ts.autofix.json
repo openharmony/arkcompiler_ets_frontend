@@ -1,0 +1,12 @@
+{
+    "nodes": [
+        {
+            "line": 2,
+            "column": 10,
+            "problem": "AnyType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        }
+    ]
+}

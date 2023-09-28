@@ -1,0 +1,12 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 21,
+            "problem": "RegexLiteral",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)"
+        }
+    ]
+}

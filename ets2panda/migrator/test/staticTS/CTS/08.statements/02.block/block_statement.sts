@@ -1,0 +1,15 @@
+{% for item in block_statements %}
+
+/*---
+desc: Block statement
+params: > 
+  {{.item.expr}}
+---*/
+
+function main(): void {
+  {
+    {{.item.expr}};
+  }
+}
+
+{% endfor %}

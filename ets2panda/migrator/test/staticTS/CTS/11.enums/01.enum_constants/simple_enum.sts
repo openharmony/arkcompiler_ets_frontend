@@ -1,0 +1,9 @@
+/*---
+desc: Simple enum
+---*/
+
+enum Colors {
+  Red,
+  Green,
+  Blue
+}

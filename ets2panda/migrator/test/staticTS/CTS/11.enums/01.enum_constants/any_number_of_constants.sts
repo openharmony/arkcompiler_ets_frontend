@@ -1,0 +1,14 @@
+{% for i in range(100, 1000, 100) %}
+
+/*---
+desc: Enum must support any number of constants
+params: number of consts = {{.i}}
+---*/
+
+enum GeneratedEnum {
+{% for length in range (1, i) -%}
+  {% for _ in range(length) %}A{% endfor %}{% if length is lt(i - 1)%},{% endif %}
+{% endfor %}
+}
+
+{%- endfor %}

@@ -1,0 +1,11 @@
+{
+    "nodes": [
+        {
+            "line": 6,
+            "column": 12,
+            "problem": "StrictDiagnostic",
+            "suggest": "Variable 'x' is used before being assigned.",
+            "rule": "Variable 'x' is used before being assigned."
+        }
+    ]
+}

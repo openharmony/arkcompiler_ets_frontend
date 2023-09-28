@@ -1,0 +1,18 @@
+{
+    "nodes": [
+        {
+            "line": 2,
+            "column": 16,
+            "problem": "ThisType",
+            "suggest": "",
+            "rule": "Type notation using \"this\" is not supported (arkts-no-typing-with-this)"
+        },
+        {
+            "line": 8,
+            "column": 10,
+            "problem": "ThisType",
+            "suggest": "",
+            "rule": "Type notation using \"this\" is not supported (arkts-no-typing-with-this)"
+        }
+    ]
+}

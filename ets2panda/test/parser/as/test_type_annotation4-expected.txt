@@ -1,0 +1,1 @@
+SyntaxError: Type expected [test_type_annotation4.ts:18:1]

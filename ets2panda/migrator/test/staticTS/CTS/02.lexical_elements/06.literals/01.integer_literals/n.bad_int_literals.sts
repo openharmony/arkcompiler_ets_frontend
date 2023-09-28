@@ -1,0 +1,11 @@
+{% for lit in bad_int_literals %}
+
+/*---
+desc: Incorrect integer literals
+params: {{.lit}}
+---*/
+
+let x = {{.lit}};
+function main(): void {}
+
+{% endfor %}

@@ -1,0 +1,11 @@
+{% for name in qualified_names %}
+{% for id in words %}
+/*---
+desc: In import declaration usage of '*' and 'as' simultaneously is prohibited
+params: qualified name = {{.name}}, identifier = {{.id}}
+---*/
+
+import {{.name}}.* as {{.id}};
+
+{% endfor %}
+{% endfor %}

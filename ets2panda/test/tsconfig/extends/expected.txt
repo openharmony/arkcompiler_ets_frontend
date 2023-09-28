@@ -1,0 +1,2 @@
+./build/src/component/index.abc
+./build/src/file2.abc

@@ -1,0 +1,6 @@
+--- # List of valid on-bound integer unary minus tests
+
+- {type: byte,  origin:                 -128, dest:                 -128}
+- {type: short, origin:               -32768, dest:               -32768}
+- {type: int,   origin:          -2147483648, dest:          -2147483648}
+- {type: long,  origin: -9223372036854775808, dest: -9223372036854775808}

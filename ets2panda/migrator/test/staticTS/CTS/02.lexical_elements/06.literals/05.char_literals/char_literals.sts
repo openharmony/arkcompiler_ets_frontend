@@ -1,0 +1,12 @@
+{% for ch in char_literals %}
+
+/*---
+desc: Correct char literals
+params: {{.ch}}
+---*/
+
+let x = {{.ch}};
+
+function main(): void {}
+
+{% endfor %}

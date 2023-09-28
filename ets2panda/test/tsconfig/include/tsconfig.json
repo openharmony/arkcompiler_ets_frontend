@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "outDir": "build"
+    },
+    "files": [
+        "file1.ts",
+        "file2.ts"
+    ],
+    "include": [
+        "src/component1",
+        "src/**/*Util?.ts",
+        "src/component2/exampleComponent?.ts",
+        "test",
+        "main.ts",
+        "non_existent_path"
+    ],
+    "exclude": [
+        "src/component1/exampleUtil?.ts",
+        "src/component1/index.ts"
+    ]
+}

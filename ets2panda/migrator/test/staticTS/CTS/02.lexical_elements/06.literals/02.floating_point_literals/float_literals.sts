@@ -1,0 +1,12 @@
+{% for f in float_literals %}
+
+/*---
+desc: Floating-point literals
+params: {{.f}}
+---*/
+
+let x = {{.f}};
+
+function main(): void {}
+
+{% endfor %}

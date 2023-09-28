@@ -1,0 +1,40 @@
+parser/ets/import_tests/modules/module.ets
+parser/ets/import_tests/import_class_members_1.ets
+parser/ets/import_tests/import_class_members_2.ets
+parser/ets/import_tests/import_class_members_3.ets
+parser/ets/import_tests/import_invalid_package.ets
+parser/ets/import_tests/import_name_conflict_1.ets
+parser/ets/import_tests/import_name_conflict_3.ets
+parser/ets/import_tests/import_nested_class_1.ets
+parser/ets/import_tests/import_nested_class_2.ets
+parser/ets/import_tests/import_nested_class_3.ets
+parser/ets/import_tests/import_separate_module.ets
+parser/ets/import_tests/import_several_8.ets
+parser/ets/import_tests/import_recursive.ets
+parser/ets/import_tests/packages/recursive/subpackage/subpackage_module_1.ets
+parser/ets/import_tests/packages/recursive/subpackage_module_1.ets
+
+# Disabled temporarily, because Local type declaration (class, struct, interface and enum) support is not yet implemented.
+compiler/ets/identifierReference1.ets
+compiler/ets/invalidInheritance2.ets
+compiler/ets/identifierReference6.ets
+compiler/ets/identifierReference7.ets
+compiler/ets/identifierReference15.ets
+compiler/ets/identifierReference16.ets
+compiler/ets/invalidPrivateAccess5.ets
+compiler/ets/invalidPrivateAccess6.ets
+compiler/ets/staticInitializerInInnerClass.ets
+parser/ets/StringFasta.ets
+parser/ets/class_property_access.ets
+parser/ets/named_types.ets
+
+# panda#11580 ([ETS front-end] Overriding issues)
+compiler/ets/override3.ets
+compiler/ets/override4.ets
+compiler/ets/override5.ets
+
+# Disabled temporarily #11468
+parser/ets/null-coalesc-negative.ets
+
+# Lambda tests, disabled because crash during compiler
+parser/ets/trailing_lambda_tests/trailing_lambda_define_lambda_in_body_capture_variable.ets

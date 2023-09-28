@@ -1,0 +1,5 @@
+/*---
+desc: Incorrect variable declaration
+---*/
+
+var x;

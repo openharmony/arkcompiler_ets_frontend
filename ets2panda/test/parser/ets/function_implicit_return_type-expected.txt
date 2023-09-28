@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token, expected: '=>'. [function_implicit_return_type.ets:23:29]

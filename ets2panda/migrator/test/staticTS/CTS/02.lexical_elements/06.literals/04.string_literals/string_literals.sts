@@ -1,0 +1,6 @@
+/*---
+desc: String literals
+---*/
+
+let x = "hello";
+function main(): void {}

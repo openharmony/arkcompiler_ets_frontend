@@ -1,0 +1,1 @@
+SyntaxError: '=>' expected [test_type_annotation5.ts:17:24]

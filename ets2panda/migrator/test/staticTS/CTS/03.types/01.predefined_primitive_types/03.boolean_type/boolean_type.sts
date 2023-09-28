@@ -1,0 +1,7 @@
+/*---
+desc: Boolean type
+---*/
+
+let t: boolean = true;
+let f: boolean = false;
+function main(): void {}

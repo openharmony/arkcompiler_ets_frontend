@@ -1,0 +1,9 @@
+/*---
+desc: Private interface methods
+---*/
+
+interface Vehicle {
+  private static getHorsePower(rpm: int, torque: int): int
+}
+
+function main(): void {}

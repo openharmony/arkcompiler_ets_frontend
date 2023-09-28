@@ -1,0 +1,12 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 27,
+            "problem": "MappedType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Mapped type expression is not supported (arkts-no-mapped-types)"
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+/*---
+desc: Boolean literals
+---*/
+
+let t = true;
+let f = false;
+function main(): void {}

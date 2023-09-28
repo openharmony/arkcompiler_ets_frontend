@@ -1,0 +1,9 @@
+/*---
+desc: While statement (not executed)
+---*/
+
+function main(): void {
+  while (false) {
+    assert false;
+  }
+}

@@ -1,0 +1,1 @@
+import { obj } from "something.json" assert { type: "json" }

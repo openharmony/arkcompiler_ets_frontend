@@ -1,0 +1,13 @@
+/*---
+desc: Continue statement (inside while statement)
+---*/
+
+function main(): void {
+  let i: int = 0;
+  while (i <= 2) {
+    i++;
+    continue;
+    assert false;
+  }
+  assert i == 3;
+}

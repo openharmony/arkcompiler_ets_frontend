@@ -1,0 +1,1 @@
+SyntaxError: Field type annotation expected [trailing_lambda_not_transform_trailing_block_5.ets:24:22]

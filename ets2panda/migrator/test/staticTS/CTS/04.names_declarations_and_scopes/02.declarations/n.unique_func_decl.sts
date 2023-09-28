@@ -1,0 +1,8 @@
+/*---
+desc: A name must be unique in its function space
+---*/
+
+function main(): void {
+  let x = 0;
+  let x = 0;
+}

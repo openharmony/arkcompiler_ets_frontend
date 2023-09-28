@@ -1,0 +1,11 @@
+{% for name in qualified_names %}
+
+/*---
+desc: Import declaration without 'as' like 'import a.b.c.d' or 'import a.b.c.*';
+params: qualified name = {{.name}}
+---*/
+
+import {{.name}};
+import {{.name}}.*;
+
+{% endfor %}

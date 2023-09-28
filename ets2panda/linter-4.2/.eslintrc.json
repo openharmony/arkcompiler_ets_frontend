@@ -1,0 +1,117 @@
+{
+  "root": true,
+  "env": {
+    "browser": false,
+    "es6": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parser": "@typescript-eslint/parser",
+      "extends": [
+        "plugin:@typescript-eslint/recommended",
+        "prettier/@typescript-eslint",
+        "plugin:prettier/recommended"
+      ],
+      "rules": {
+        "prettier/prettier": ["error", { "singleQuote": true }],
+        "complexity": ["error", { "max": 10 }],
+        "max-params": ["error", { "max": 5 }],
+        "max-depth": ["error", { "max": 4 }],
+        "max-lines-per-function": ["error", { "max": 50, "skipBlankLines": true, "skipComments": true }],
+        "quotes": ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
+        "max-len": [
+          "error",
+          {
+            "code": 120,
+            "tabWidth": 2,
+            "ignoreTemplateLiterals": true,
+            "ignoreRegExpLiterals": true,
+            "ignoreStrings": true
+          }
+        ],
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/prefer-function-type": "error",
+        "no-unmodified-loop-condition": "error",
+        "no-shadow-restricted-names": "error",
+        "prefer-object-spread": "error",
+        "no-iterator": "error",
+        "array-callback-return": "error",
+        "no-new-wrappers": "error",
+        "@typescript-eslint/naming-convention": [
+          "error",
+          { "selector": "variableLike", "format": ["camelCase", "UPPER_CASE"] }
+        ],
+        "require-yield": "error",
+        "no-caller": "error",
+        "no-multi-str": "error",
+        "no-implied-eval": "off",
+        "@typescript-eslint/no-implied-eval": ["error"],
+        "no-invalid-regexp": "error",
+        "no-compare-neg-zero": "error",
+        "no-useless-catch": "error",
+        "no-labels": "error",
+        "for-direction": "error",
+        "@typescript-eslint/adjacent-overload-signatures": "error",
+        "no-useless-rename": "error",
+        "grouped-accessor-pairs": "error",
+        "no-regex-spaces": "error",
+        "no-useless-concat": "error",
+        "no-global-assign": "error",
+        "no-useless-call": "error",
+        "@typescript-eslint/no-empty-interface": "error",
+        "no-sequences": "error",
+        "no-new-func": "error",
+        "no-proto": "error",
+        "no-self-compare": "error",
+        "no-sparse-arrays": "error",
+        "no-dupe-class-members": "off",
+        "@typescript-eslint/no-dupe-class-members": ["error"],
+        "no-undef-init": "error",
+        "guard-for-in": "error",
+        "no-empty-pattern": "error",
+        "symbol-description": "error",
+        "no-new-object": "error",
+        "no-empty-character-class": "error",
+        "prefer-regex-literals": "error",
+        "no-lone-blocks": "error",
+        "no-eq-null": "error",
+        "no-useless-computed-key": "error",
+        "no-template-curly-in-string": "error",
+        "no-array-constructor": "off",
+        "@typescript-eslint/no-array-constructor": ["error"],
+        "no-extend-native": "error",
+        "no-extra-bind": "error",
+        "no-self-assign": "error",
+        "no-extra-boolean-cast": "error",
+        "no-async-promise-executor": "error",
+        "no-duplicate-case": "error",
+        "no-class-assign": "error",
+        "no-constructor-return": "error",
+        "no-misleading-character-class": "error",
+        "no-func-assign": "error",
+        "no-ex-assign": "error",
+        "no-dupe-else-if": "error",
+        "no-fallthrough": "error",
+        "no-case-declarations": "error"
+      }
+    },
+    {
+      "files": ["*.js"],
+      "extends": ["eslint:recommended", "prettier"],
+      "rules": {
+        "quotes": ["error", "single"],
+        "semi": ["error", "always"],
+        "import/no-extraneous-dependencies": "off",
+        "import/order": "off",
+        "global-require": "off"
+      }
+    }
+  ]
+}

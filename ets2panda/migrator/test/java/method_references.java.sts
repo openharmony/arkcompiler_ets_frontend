@@ -1,0 +1,260 @@
+/*
+* Copyright (c) 2022-2022 Huawei Device Co., Ltd.
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+package com.ohos.migrator.tests.java;
+
+import * from "std/math/math";
+open class MethodReferencesExamples  {
+    interface Function0<T> {
+        apply(): T ;
+    }
+
+    interface Function1<T, R> {
+        apply(t : T): R ;
+    }
+
+    interface Function2<T, U, R> {
+        apply(t : T, u : U): R ;
+    }
+
+    interface Consumer<T> {
+        apply(t : T): void ;
+    }
+
+    interface BiConsumer<T, U> {
+        apply(t : T, u : U): void ;
+    }
+
+    public open factory<T>(f : Function0<T>): T {
+        return f.apply();
+    }
+    public open factory<T, R>(f : Function1<T, R>, t : T): R {
+        return f.apply(t);
+    }
+    public open factory<T, U, R>(f : Function2<T, U, R>, t : T, u : U): R {
+        return f.apply(t, u);
+    }
+    open class Person  {
+        public constructor() {
+        }
+
+        public constructor(age : int) {
+        }
+
+        public constructor(age : int, name : String) {
+        }
+
+        public open sleep(hours : int): void {
+        }
+    }
+
+    public static mergeThings<T>(a : T, b : T, merger : Function2<T, T, T>): T {
+        return merger.apply(a, b);
+    }
+    public static appendStrings(a : String, b : String): String {
+        return a + b;
+    }
+    public open appendStrings2(a : String, b : String): String {
+        return a + b;
+    }
+    open class A  {
+        open class B  {
+            public open foo(): void {
+            }
+            public static bar(s : String): void {
+            }
+        }
+
+    }
+
+    inner open class Generic<T>  {
+        public open bar(t : T): void {
+        }
+    }
+
+    public static classMethodReferences(): void {
+        let myApp : MethodReferencesExamples = new MethodReferencesExamples();
+// Reference to static method | ContainingClass::staticMethodName
+        System.out.println(MethodReferencesExamples.mergeThings("Hello ", "World!", (__migrator_lambda_param_1 : String, __migrator_lambda_param_2 : String): String => MethodReferencesExamples.appendStrings(__migrator_lambda_param_1, __migrator_lambda_param_2)));
+// Reference to an instance method of a particular object | containingObject::instanceMethodName
+        System.out.println(MethodReferencesExamples.mergeThings("Hello ", "World!", (__migrator_lambda_param_1 : String, __migrator_lambda_param_2 : String): String => myApp.appendStrings2(__migrator_lambda_param_1, __migrator_lambda_param_2)));
+// Reference to an instance method of an arbitrary object of a particular type | ContainingType::methodName
+        System.out.println(MethodReferencesExamples.mergeThings("Hello ", "World!", (__migrator_lambda_param_1 : String, __migrator_lambda_param_2 : String): String => __migrator_lambda_param_1.concat(__migrator_lambda_param_2)));
+// Reference to a constructor | ClassName::new
+        let person : Person = myApp.factory((): com.ohos.migrator.tests.java.MethodReferencesExamples.Person => new Person());
+        let person2 : Person = myApp.factory((__migrator_lambda_param_1 : int): com.ohos.migrator.tests.java.MethodReferencesExamples.Person => new Person(__migrator_lambda_param_1), 25);
+        let person3 : Person = myApp.factory((__migrator_lambda_param_1 : int, __migrator_lambda_param_2 : String): com.ohos.migrator.tests.java.MethodReferencesExamples.Person => new Person(__migrator_lambda_param_1, __migrator_lambda_param_2), 40, "Peter");
+// Reference with qualified type name
+        let cons1 : Consumer<A.B> = (__migrator_lambda_param_1 : com.ohos.migrator.tests.java.MethodReferencesExamples.A.B): void => __migrator_lambda_param_1.foo();
+        let cons2 : Consumer<String> = (__migrator_lambda_param_1 : String): void => A.B.bar(__migrator_lambda_param_1);
+// Reference with parametrized type name
+        let generic : BiConsumer<Generic<>, Int> = (__migrator_lambda_param_1 : com.ohos.migrator.tests.java.MethodReferencesExamples.Generic<Int>, __migrator_lambda_param_2 : Int): void => __migrator_lambda_param_1.bar(__migrator_lambda_param_2);
+// Reference with primary expressions
+        let getLength : Function0<Int> = (): int => "sleeping".length();
+        let length : int = getLength.apply();
+        let persons : Person[] = new Person[5];
+        let sleep : Consumer<Int> = (__migrator_lambda_param_1 : int): void => persons[2].sleep(__migrator_lambda_param_1);
+        sleep.apply(length);
+    }
+// Arrays
+    interface ArrayFactory<T> {
+        createArray(size : int): T[] ;
+    }
+
+    interface ArrayFactory2<T> {
+        createArray(size : int): T[][] ;
+    }
+
+    interface ArrayFactory3<T> {
+        createArray(size : int): T[][][] ;
+    }
+
+    public static arrayMethodReferences(): void {
+        let myApp : MethodReferencesExamples = new MethodReferencesExamples();
+        let arrayClone : Function1<Int[], Int[]> = (__migrator_lambda_param_1 : Int[]): Int[] => __migrator_lambda_param_1.clone();
+        arrayClone.apply([1, 2, 3]);
+        let intArray : int[] = [1, 2, 3, 4, 5];
+        let arrayClone2 : Function0<int[]> = (): int[] => intArray.clone();
+        intArray = arrayClone2.apply();
+        intArray = myApp.factory((): int[] => intArray.clone());
+        intArray = myApp.factory((__migrator_lambda_param_1 : int[]): int[] => __migrator_lambda_param_1.clone(), intArray);
+    }
+    public static arrayCreationReferences(): void {
+        let arrayFactory1 : ArrayFactory<Int> = (__migrator_lambda_param_1 : int): Int[] => new Int[__migrator_lambda_param_1];
+        let newArray : Int[] = arrayFactory1.createArray(5);
+        let arrayFactory2 : ArrayFactory2<String> = (__migrator_lambda_param_1 : int): String[][] => new String[__migrator_lambda_param_1][];
+        let newArray2 : String[][] = arrayFactory2.createArray(10);
+        let arrayFactory3 : ArrayFactory3<Double> = (__migrator_lambda_param_1 : int): Double[][][] => new Double[__migrator_lambda_param_1][][];
+        let newArray3 : Double[][][] = arrayFactory3.createArray(15);
+        java.util.Arrays.stream(new Object[5]).toArray((__migrator_lambda_param_1 : int): String[] => new String[__migrator_lambda_param_1]);
+    }
+// Varargs
+    interface IVarargs {
+        m(s : String, i : int[]): int ;
+    }
+
+    interface IVarargs2 {
+        m(s : String, ... i: int ): int ;
+    }
+
+    interface IVarargs3 {
+        m(s : String, ... i: int[] ): int ;
+    }
+
+    open class VarArgs  {
+        open m1(s : String, i : int[]): int {
+            return 5;
+        }
+        open m2(s : String, ... i: int ): int {
+            return 5;
+        }
+        open m3(s : String, ... i: int[] ): int {
+            return 5;
+        }
+    }
+
+    public static methodReferencesWithVarargs(): void {
+        let obj : VarArgs = new VarArgs();
+        let i1m1 : IVarargs = (__migrator_lambda_param_1 : String, __migrator_lambda_param_2 : int[]): int => obj.m1(__migrator_lambda_param_1, __migrator_lambda_param_2);
+        let i2m1 : IVarargs2 = (__migrator_lambda_param_1 : String, __migrator_lambda_param_2 : int[]): int => obj.m1(__migrator_lambda_param_1, __migrator_lambda_param_2);
+        let i3m1 : IVarargs3 = __untranslated_expression( /* obj::m1 */); // Illegal
+        let i1m2 : IVarargs = (__migrator_lambda_param_1 : String, __migrator_lambda_param_2 : int[]): int => obj.m2(__migrator_lambda_param_1, __migrator_lambda_param_2);
+        let i2m2 : IVarargs2 = (__migrator_lambda_param_1 : String, __migrator_lambda_param_2 : int[]): int => obj.m2(__migrator_lambda_param_1, __migrator_lambda_param_2);
+        let i3m2 : IVarargs3 = __untranslated_expression( /* obj::m2 */); // Illegal
+        let i1m3 : IVarargs = (__migrator_lambda_param_1 : String, __migrator_lambda_param_2 : int[][]): int => obj.m3(__migrator_lambda_param_1, __migrator_lambda_param_2);
+        let i2m3 : IVarargs2 = (__migrator_lambda_param_1 : String, __migrator_lambda_param_2 : int[][]): int => obj.m3(__migrator_lambda_param_1, __migrator_lambda_param_2);
+        let i3m3 : IVarargs3 = (__migrator_lambda_param_1 : String, __migrator_lambda_param_2 : int[][]): int => obj.m3(__migrator_lambda_param_1, __migrator_lambda_param_2);
+    }
+// Inner/outer classes
+    interface FooMethod {
+        foo(x : int): int ;
+    }
+
+    interface InnerFactory {
+        create(): Outer.Inner ;
+    }
+
+    open class OuterBase  {
+        public open foo(x : int): int {
+            return x + 5;
+        }
+    }
+
+    public open class Outer extends OuterBase  {
+        public override foo(x : int): int {
+            return x - 5;
+        }
+        public open bar(): void {
+            let thisFoo : FooMethod = (__migrator_lambda_param_1 : int): int => this.foo(__migrator_lambda_param_1);
+            let superFoo : FooMethod = (__migrator_lambda_param_1 : int): int => super.foo(__migrator_lambda_param_1);
+// Local inner class
+            open class LocalInner  {
+                open foo(): void {
+                    let outerThisFoo : FooMethod = (__migrator_lambda_param_1 : int): int => Outer.this.foo(__migrator_lambda_param_1);
+                    let outerSuperFoo : FooMethod = (__migrator_lambda_param_1 : int): int => Outer.super.foo(__migrator_lambda_param_1);
+                }
+            }
+
+        }
+// Inner class
+        inner open class Inner  {
+            open foo(): void {
+                let outerThisFoo : FooMethod = (__migrator_lambda_param_1 : int): int => Outer.this.foo(__migrator_lambda_param_1);
+                let outerSuperFoo : FooMethod = (__migrator_lambda_param_1 : int): int => Outer.super.foo(__migrator_lambda_param_1);
+            }
+            open innerContext(): InnerFactory {
+                return (): com.ohos.migrator.tests.java.MethodReferencesExamples.Outer.Inner => new Inner(); // Creation reference from Inner context
+            }
+        }
+
+        public open outerContext(): void {
+            let factory : InnerFactory = (): com.ohos.migrator.tests.java.MethodReferencesExamples.Outer.Inner => new Inner(); // Creation reference from Outer context
+            let inner : Inner = factory.create();
+        }
+    }
+
+// Exceptions and error handling
+    interface TryFunction0<T> {
+        apply(): T  throws ;
+    }
+
+    interface TryFunction1<T, R> {
+        apply(t : T): R  throws ;
+    }
+
+    inner open class MyException extends Exception  {
+    }
+
+    open class Exceptions  {
+        public constructor() throws {
+        }
+
+        public open getName(): String  throws {
+            return "George";
+        }
+    }
+
+    public static methodReferencesWithExceptions(): void {
+        try {
+            let createExceptions : TryFunction0<Exceptions> = (): com.ohos.migrator.tests.java.MethodReferencesExamples.Exceptions  throws => new Exceptions();
+            let exceptions : Exceptions = createExceptions.apply();
+            let getNameFun : TryFunction1<Exceptions, String> = (__migrator_lambda_param_1 : com.ohos.migrator.tests.java.MethodReferencesExamples.Exceptions): String  throws => __migrator_lambda_param_1.getName();
+            let name : String = getNameFun.apply(exceptions);
+        }
+        catch (ex : MyException) {
+        }
+
+    }
+}
+

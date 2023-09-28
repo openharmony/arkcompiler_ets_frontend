@@ -1,0 +1,1 @@
+SyntaxError: Private field 'a' must be declared in an enclosing class [test-class-static-block5.js:18:14]

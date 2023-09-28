@@ -1,0 +1,213 @@
+{
+    "copyright": [
+        "Copyright (c) 2022-2023 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "nodes": [
+        {
+            "line": 16,
+            "column": 1,
+            "problem": "FuncWithoutReturnType"
+        },
+        {
+            "line": 17,
+            "column": 17,
+            "problem": "ArrayLiteralNoContextType"
+        },
+        {
+            "line": 18,
+            "column": 5,
+            "problem": "FuncWithoutReturnType"
+        },
+        {
+            "line": 18,
+            "column": 5,
+            "problem": "LocalFunction"
+        },
+        {
+            "line": 23,
+            "column": 13,
+            "problem": "SpreadOperator"
+        },
+        {
+            "line": 28,
+            "column": 5,
+            "problem": "FuncWithoutReturnType"
+        },
+        {
+            "line": 28,
+            "column": 5,
+            "problem": "GeneratorFunction"
+        },
+        {
+            "line": 31,
+            "column": 13,
+            "problem": "YieldExpression"
+        },
+        {
+            "line": 41,
+            "column": 1,
+            "problem": "FuncWithoutReturnType"
+        },
+        {
+            "line": 41,
+            "column": 30,
+            "problem": "TypeParameterWithDefaultValue"
+        },
+        {
+            "line": 47,
+            "column": 17,
+            "problem": "FunctionExpression"
+        },
+        {
+            "line": 49,
+            "column": 20,
+            "problem": "FunctionExpression"
+        },
+        {
+            "line": 51,
+            "column": 5,
+            "problem": "LocalFunction"
+        },
+        {
+            "line": 52,
+            "column": 16,
+            "problem": "FunctionExpression"
+        },
+        {
+            "line": 55,
+            "column": 18,
+            "problem": "FunctionExpression"
+        },
+        {
+            "line": 57,
+            "column": 6,
+            "problem": "FunctionExpression"
+        },
+        {
+            "line": 61,
+            "column": 10,
+            "problem": "FunctionExpression"
+        },
+        {
+            "line": 65,
+            "column": 21,
+            "problem": "FunctionExpression"
+        },
+        {
+            "line": 69,
+            "column": 17,
+            "problem": "ArrayLiteralNoContextType"
+        },
+        {
+            "line": 70,
+            "column": 18,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 70,
+            "column": 28,
+            "problem": "FunctionExpression"
+        },
+        {
+            "line": 71,
+            "column": 29,
+            "problem": "FunctionExpression"
+        },
+        {
+            "line": 73,
+            "column": 19,
+            "problem": "FunctionExpression"
+        },
+        {
+            "line": 73,
+            "column": 19,
+            "problem": "LambdaWithTypeParameters"
+        },
+        {
+            "line": 76,
+            "column": 1,
+            "problem": "FuncWithoutReturnType"
+        },
+        {
+            "line": 77,
+            "column": 17,
+            "problem": "ArrowFunctionWithOmittedTypes"
+        },
+        {
+            "line": 79,
+            "column": 18,
+            "problem": "ArrowFunctionWithOmittedTypes"
+        },
+        {
+            "line": 81,
+            "column": 18,
+            "problem": "ArrowFunctionWithOmittedTypes"
+        },
+        {
+            "line": 83,
+            "column": 16,
+            "problem": "ArrowFunctionWithOmittedTypes"
+        },
+        {
+            "line": 84,
+            "column": 16,
+            "problem": "ArrayLiteralNoContextType"
+        },
+        {
+            "line": 84,
+            "column": 42,
+            "problem": "ArrowFunctionWithOmittedTypes"
+        },
+        {
+            "line": 86,
+            "column": 15,
+            "problem": "ArrowFunctionWithOmittedTypes"
+        },
+        {
+            "line": 88,
+            "column": 19,
+            "problem": "ArrowFunctionWithOmittedTypes"
+        },
+        {
+            "line": 88,
+            "column": 19,
+            "problem": "LambdaWithTypeParameters"
+        },
+        {
+            "line": 91,
+            "column": 1,
+            "problem": "FunctionContainsThis"
+        },
+        {
+            "line": 102,
+            "column": 15,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 109,
+            "column": 13,
+            "problem": "LogNotWithNotBool"
+        },
+        {
+            "line": 109,
+            "column": 14,
+            "problem": "ObjectRuntimeCheck"
+        },
+        {
+            "line": 116,
+            "column": 12,
+            "problem": "GenericCallNoTypeArgs"
+        }
+    ]
+}

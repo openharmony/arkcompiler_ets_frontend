@@ -1,0 +1,6 @@
+"--project-folder"
+"..\..\..\openharmony\applications_photos\common"
+"--project-folder"
+"..\..\..\openharmony\applications_photos\entry"
+"--project-folder"
+"..\..\..\openharmony\applications_photos\features"

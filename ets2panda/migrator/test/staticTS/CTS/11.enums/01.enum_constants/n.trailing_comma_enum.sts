@@ -1,0 +1,9 @@
+/*---
+desc: Trailing commas are not allowed in enum constant lists
+---*/
+
+enum Colors {
+  Red,
+  Green,
+  Blue,
+}

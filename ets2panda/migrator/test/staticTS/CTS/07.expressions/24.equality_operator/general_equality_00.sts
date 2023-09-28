@@ -1,0 +1,14 @@
+/*---
+desc: Equality operators, common rules
+---*/
+
+function main(): void {
+    let a = 0;
+    let b = 0;
+    let c = 1;
+
+    let cmp1 = a == b != c;
+    let cmp2 = (a == b) != c;
+
+    assert cmp1 == cmp2;
+}

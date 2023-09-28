@@ -1,0 +1,50 @@
+/*
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+type funcType = () => String;
+
+function getPeach(): String { return "peach" }
+function getMelon(): String { return "melon" }
+
+function foo(a: funcType | null) {
+    let fruit: String = a?.() ?? "apple";
+
+    fruit = getPeach?.() ?? "banana";
+    assert(fruit == "peach");
+
+    fruit = getMelon() ?? "strawberry";
+    assert(fruit == "melon");
+
+    let test = false;
+    try {
+       fruit = a();
+    } catch (e: NullPointerException) {
+        test = true;
+    }
+
+    assert(test == true);
+}
+
+function main(): void {
+  let getFruit: funcType | null = null;
+  foo(getFruit);
+
+  let a : funcType = getPeach;
+  let b = getPeach?.();
+  assert(b == "peach");
+
+  b = getMelon();
+  assert(b == "melon");
+}

@@ -1,0 +1,241 @@
+{
+    "copyright": [
+        "Copyright (c) 2022-2023 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "nodes": [
+        {
+            "line": 16,
+            "column": 15,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 624,
+                    "end": 638,
+                    "replacementText": "() => { }"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 18,
+            "column": 18,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 658,
+                    "end": 709,
+                    "replacementText": "(x: number, y): number => {\r\n    return x * y;\r\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 18,
+            "column": 39,
+            "problem": "AnyType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 23,
+            "column": 10,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 759,
+                    "end": 792,
+                    "replacementText": "() => {\r\n    return 100;\r\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 28,
+            "column": 17,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 813,
+                    "end": 863,
+                    "replacementText": "() => {\r\n    return 'get result immediately';\r\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 32,
+            "column": 2,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 870,
+                    "end": 908,
+                    "replacementText": "() => {\r\n    console.log('foo!');\r\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 36,
+            "column": 7,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 920,
+                    "end": 958,
+                    "replacementText": "() => {\r\n    console.log('bar!');\r\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 41,
+            "column": 26,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1023,
+                    "end": 1055,
+                    "replacementText": "(e) => {\r\n    return e * 2;\r\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 44,
+            "column": 27,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1084,
+                    "end": 1122,
+                    "replacementText": "(x) => {\r\n    return x % 2 === 0;\r\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 48,
+            "column": 22,
+            "problem": "FunctionExpression",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 48,
+            "column": 22,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
+        },
+        {
+            "line": 48,
+            "column": 35,
+            "problem": "AnyType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 52,
+            "column": 19,
+            "problem": "FunctionExpression",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 52,
+            "column": 19,
+            "problem": "GeneratorFunction",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Generator functions are not supported (arkts-no-generators)"
+        },
+        {
+            "line": 53,
+            "column": 3,
+            "problem": "YieldExpression",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Generator functions are not supported (arkts-no-generators)"
+        },
+        {
+            "line": 56,
+            "column": 17,
+            "problem": "FunctionExpression",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 56,
+            "column": 17,
+            "problem": "LambdaWithTypeParameters",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use generic functions instead of generic arrow functions (arkts-no-generic-lambdas)"
+        },
+        {
+            "line": 60,
+            "column": 18,
+            "problem": "FunctionExpression",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 64,
+            "column": 19,
+            "problem": "FunctionExpression",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 71,
+            "column": 25,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1492,
+                    "end": 1649,
+                    "replacementText": "(p: () => number): void => {\r\n    let a = factorial(3);\r\n    let b = p();\r\n    let c = new C();\r\n    c.m();\r\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        }
+    ]
+}

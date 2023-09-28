@@ -1,0 +1,17 @@
+{% for i in type_and_initializer %}
+
+/*---
+desc: Type {{.i.type}} compartibility with initializer {{.i.value}}
+params: !!str
+  {{.i.typedecl}}
+  {{.i.type}}
+  {{.i.value}}
+---*/
+
+{{.i.typedecl}}
+
+function main(): void {
+  let a: {{.i.type}} = {{.i.value}};
+}
+
+{% endfor %}

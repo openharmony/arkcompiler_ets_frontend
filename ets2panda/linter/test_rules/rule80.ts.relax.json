@@ -1,0 +1,11 @@
+{
+    "nodes": [
+        {
+            "line": 2,
+            "column": 1,
+            "problem": "ForInStatement",
+            "suggest": "",
+            "rule": "\"for .. in\" is not supported (arkts-no-for-in)"
+        }
+    ]
+}

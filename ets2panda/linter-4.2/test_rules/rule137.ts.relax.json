@@ -1,0 +1,11 @@
+{
+    "nodes": [
+        {
+            "line": 5,
+            "column": 5,
+            "problem": "GlobalThis",
+            "suggest": "",
+            "rule": "\"globalThis\" is not supported (arkts-no-globalthis)"
+        }
+    ]
+}

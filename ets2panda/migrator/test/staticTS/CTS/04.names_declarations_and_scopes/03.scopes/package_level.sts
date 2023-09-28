@@ -1,0 +1,21 @@
+/*---
+desc: Package level scope
+---*/
+package scopes;
+
+let x = 1;
+
+class C {
+  y: int = x + 1;
+}
+
+interface I {
+  // TODO: Is that correct?
+  z: int = x * 2;
+}
+
+function foo(): int {
+  return x - 1;
+}
+
+function main(): void {}

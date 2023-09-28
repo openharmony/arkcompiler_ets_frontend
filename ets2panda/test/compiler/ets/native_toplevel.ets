@@ -1,0 +1,1 @@
+native function attr(name: String): String;

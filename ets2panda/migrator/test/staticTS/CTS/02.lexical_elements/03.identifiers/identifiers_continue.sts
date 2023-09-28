@@ -1,0 +1,9 @@
+{% for ident in continue %}
+/*---
+desc: Other character {{.ident}} should be Unicode code point with the Unicode property "ID_Continue"
+---*/
+
+let X{{.ident}} = 0;
+function main(): void {}
+
+{% endfor %}

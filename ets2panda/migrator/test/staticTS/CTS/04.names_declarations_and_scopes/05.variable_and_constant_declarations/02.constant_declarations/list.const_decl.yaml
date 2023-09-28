@@ -1,0 +1,4 @@
+--- # List of all possible correct const declaration forms
+- "const a: int = 1;"
+- "const b = 1;"
+- "const c: int = 6, d = 1, e = \"hello\";"

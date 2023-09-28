@@ -1,0 +1,9 @@
+/*---
+desc: Return statement
+---*/
+
+function main(): void {
+  return;
+
+  assert false;
+}

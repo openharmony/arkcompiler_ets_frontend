@@ -1,0 +1,1 @@
+SyntaxError: Unexpected super keyword [test-class-static-block3.js:18:14]

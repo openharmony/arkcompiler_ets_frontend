@@ -1,0 +1,6 @@
+--- # List of qualified names
+
+- A.B.C
+- java.lang.String
+- A.B.C.D.R
+- java.concurrency.BlockingQueue

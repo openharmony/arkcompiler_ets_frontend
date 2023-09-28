@@ -1,0 +1,1 @@
+SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. [enum2.ets:17:13]

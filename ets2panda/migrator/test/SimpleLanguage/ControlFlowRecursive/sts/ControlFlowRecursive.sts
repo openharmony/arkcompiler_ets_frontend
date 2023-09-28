@@ -1,0 +1,59 @@
+/*
+ * Copyright (c) 2022-2022 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// The Computer Language Shootout
+// http://shootout.alioth.debian.org/
+// contributed by Isaac Gouy
+
+
+function ControlFlowRecursive() {}
+
+ControlFlowRecursive.prototype.ack = function(m, n) {
+    if (m == 0) { return n + 1; }
+    if (n == 0) { return this.ack(m - 1, 1); }
+    return this.ack(m - 1, this.ack(m, n - 1));
+}
+
+ControlFlowRecursive.prototype.fib = function(n) {
+    if (n < 2) { return 1; }
+    return this.fib(n - 2) + this.fib(n - 1);
+}
+
+ControlFlowRecursive.prototype.tak = function(x, y, z) {
+    if (y >= x) return z;
+    return this.tak(this.tak(x - 1, y, z), this.tak(y - 1, z, x), this.tak(z - 1, x, y));
+}
+
+ControlFlowRecursive.prototype.setup = function() {}
+
+ControlFlowRecursive.prototype.run = function() {
+    let result: int = 0;
+
+    let n1: int = 3
+    let n2: int = 5
+    let expected: int = 57775
+
+    for (let i: int = n1; i <= n2; i++) {
+        result += this.ack(3, i);
+        result += this.fib(17.0 + i);
+        result += this.tak(3 * i + 3, 2 * i + 2, i + 1);
+    }
+    
+    if (result != expected)
+        throw "ERROR: bad result: expected " + expected + " but got " + result;
+    
+    let consumer = new consumer();
+    consumer.consumeInt(result);
+}

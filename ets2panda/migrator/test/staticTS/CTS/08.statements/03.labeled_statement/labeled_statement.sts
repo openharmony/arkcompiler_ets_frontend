@@ -1,0 +1,8 @@
+/*---
+desc: Labeled statement
+---*/
+
+function main(): void {
+  let x = 0;
+  lbl: {}
+}

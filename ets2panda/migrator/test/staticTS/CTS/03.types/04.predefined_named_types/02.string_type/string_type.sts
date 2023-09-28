@@ -1,0 +1,8 @@
+/*---
+desc: String type
+---*/
+
+let x: String;
+let y: std.core.String;
+
+function main(): void {}

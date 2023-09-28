@@ -1,0 +1,1 @@
+SyntaxError: Variable 'x' has already been declared. [test_type_alias4.ets:17:6]

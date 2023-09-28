@@ -1,0 +1,88 @@
+/*
+ * Copyright (c) 2022-2022 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import utils.Consumer;
+
+export class MathCordic {
+  static const AG_CONST: double = 0.6072529350;
+  static const TARGET_ANGLE: double = 28.027;
+  static const expected: double = 10362.570468755888;
+
+  static const ANGLES: double[] = [
+    fnFixed(45.0), fnFixed(26.565), fnFixed(14.0362), fnFixed(7.12502),
+    fnFixed(3.57633), fnFixed(1.78991), fnFixed(0.895174), fnFixed(0.447614),
+    fnFixed(0.223811), fnFixed(0.111906), fnFixed(0.055953),    fnFixed(0.027977)
+  ];
+
+  private static fnFixed(x: double): double {
+    return x * 65536.0;
+  }
+
+  private static fnFloat(x: double): double {
+    return x / 65536.0;
+  }
+
+  private static fnDegToRad(x: double): double {
+    return 0.017453 * x;
+  }
+
+  private static cordicsincos(target: double): double {
+    let x: double;
+    let y: double;
+    let targetAngle: double = fnFixed(target);
+    let currAngle: double = 0;
+    let step: int;
+    x = fnFixed(AG_CONST); /* AG_CONST * cos(0) */
+    y = 0;                 /* AG_CONST * sin(0) */
+
+    for (step = 0; step < 12; step++) {
+      let newX: double;
+      if (targetAngle > currAngle) {
+        newX = x - (y as int >> step);
+        y = (x as int >> step) + y;
+        x = newX;
+        currAngle += ANGLES[step];
+      } else {
+        newX = x + (y as int >> step);
+        y = -(x as int >> step) + y;
+        x = newX;
+        currAngle -= ANGLES[step];
+      }
+    }
+
+    return fnFloat(x) * fnFloat(y);
+  }
+
+  private static cordic(runs: int): double {
+    let total: double = 0;
+    for (let i: int = 0; i < runs; i++) {
+      total += cordicsincos(TARGET_ANGLE);
+    }
+
+    return total;
+  }
+
+  n: int; // TBD was volatile in Java example
+
+  public run(): void {
+    this.n = 25000;
+    let total: double = cordic(n);
+    if (total != this.expected) {      //System.err.println("ERROR: bad result: expected " + expected + " but got " + total);
+      //System.exit(-1);
+    }
+    Consumer.consumeDouble(total);
+  }
+}
+

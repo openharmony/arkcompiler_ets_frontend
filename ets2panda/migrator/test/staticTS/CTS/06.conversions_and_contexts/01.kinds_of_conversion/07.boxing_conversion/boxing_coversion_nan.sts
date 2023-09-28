@@ -1,0 +1,16 @@
+{% for conv in boxing_nan %}
+
+/*---
+desc: Boxing conversion floating-point types (NaN)
+corner-case: true
+---*/
+
+let origin: {{.conv.origin}} = NaN;
+let dest:   {{.conv.dest}};
+
+function main(): void {
+  dest = origin;
+  assert dest.isNaN();
+}
+
+{% endfor %}

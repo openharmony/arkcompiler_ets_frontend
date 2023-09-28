@@ -1,0 +1,1406 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JavaApiList>
+<!-- Java™ Platform, Standard Edition 8 API Specification (part): -->
+    <java.io>
+        // Interfaces:
+        java.io.Closeable
+        java.io.DataInput
+        java.io.DataOutput
+        java.io.Externalizable
+        java.io.FileFilter
+        java.io.FilenameFilter
+        java.io.Flushable
+        java.io.ObjectInput
+        java.io.ObjectInputValidation
+        java.io.ObjectOutput
+        java.io.ObjectStreamConstants
+        java.io.Serializable
+        // Classes:
+        java.io.BufferedInputStream
+        java.io.BufferedOutputStream
+        java.io.BufferedReader
+        java.io.BufferedWriter
+        java.io.ByteArrayInputStream
+        java.io.ByteArrayOutputStream
+        java.io.CharArrayReader
+        java.io.CharArrayWriter
+        java.io.Console
+        java.io.DataInputStream
+        java.io.DataOutputStream
+        java.io.File
+        java.io.FileDescriptor
+        java.io.FileInputStream
+        java.io.FileOutputStream
+        java.io.FilePermission
+        java.io.FileReader
+        java.io.FileWriter
+        java.io.FilterInputStream
+        java.io.FilterOutputStream
+        java.io.FilterReader
+        java.io.FilterWriter
+        java.io.InputStream
+        java.io.InputStreamReader
+        java.io.LineNumberInputStream
+        java.io.LineNumberReader
+        java.io.ObjectInputStream
+        java.io.ObjectInputStream.GetField
+        java.io.ObjectOutputStream
+        java.io.ObjectOutputStream.PutField
+        java.io.ObjectStreamClass
+        java.io.ObjectStreamField
+        java.io.OutputStream
+        java.io.OutputStreamWriter
+        java.io.PipedInputStream
+        java.io.PipedOutputStream
+        java.io.PipedReader
+        java.io.PipedWriter
+        java.io.PrintStream
+        java.io.PrintWriter
+        java.io.PushbackInputStream
+        java.io.PushbackReader
+        java.io.RandomAccessFile
+        java.io.Reader
+        java.io.SequenceInputStream
+        java.io.SerializablePermission
+        java.io.StreamTokenizer
+        java.io.StringBufferInputStream
+        java.io.StringReader
+        java.io.StringWriter
+        java.io.Writer
+        // Exceptions:
+        java.io.CharConversionException
+        java.io.EOFException
+        java.io.FileNotFoundException
+        java.io.InterruptedIOException
+        java.io.InvalidClassException
+        java.io.InvalidObjectException
+        java.io.IOException
+        java.io.NotActiveException
+        java.io.NotSerializableException
+        java.io.ObjectStreamException
+        java.io.OptionalDataException
+        java.io.StreamCorruptedException
+        java.io.SyncFailedException
+        java.io.UncheckedIOException
+        java.io.UnsupportedEncodingException
+        java.io.UTFDataFormatException
+        java.io.WriteAbortedException
+        // Errors:
+        java.io.IOError
+    </java.io>
+    <java.lang>
+        // Interfaces:
+        java.lang.Appendable
+        java.lang.AutoCloseable
+        java.lang.CharSequence                          ==> std.core.String ????
+        java.lang.Cloneable
+        <java.lang.Comparable>
+            ==> std.core.Comparable
+            int compareTo(T o)                          ArkTS: the same
+        </java.lang.Comparable>
+        java.lang.Iterable
+        java.lang.Readable
+        java.lang.Runnable
+        java.lang.Thread.UncaughtExceptionHandler
+        // Classes:
+        <java.lang.Boolean>
+            ==> std.core.Boolean
+
+            static Boolean FALSE                        ArkTS: the same
+            static Boolean TRUE                         ArkTS: the same
+            static Class<Boolean/> TYPE
+
+            Boolean(boolean value)                      ArkTS: the same
+            Boolean(String s)
+
+            boolean booleanValue()                      ArkTS: public unboxed(): boolean
+            static int compare(boolean x, boolean y)    ArkTS: new Boolean(x).compareTo(new Boolean(y))
+            int compareTo(Boolean b)                    ArkTS: the same
+            boolean equals(Object obj)                  ArkTS: the same
+            static boolean getBoolean(String name)
+            int hashCode()                              ArkTS: the same
+            static int hashCode(boolean value)          ArkTS: new Boolean(value).hasCode()
+            static boolean logicalAnd(boolean a, boolean b)
+            static boolean logicalOr(boolean a, boolean b)
+            static boolean logicalXor(boolean a, boolean b)
+            static boolean parseBoolean(String s)
+            String toString()                           ArkTS: the same
+            static String toString(boolean b)           ArkTS: new Boolean(b).toString()
+            static Boolean valueOf(boolean b)           ArkTS: the same
+            static Boolean valueOf(String s)
+        </java.lang.Boolean>
+        <java.lang.Byte>
+            ==> std.core.Byte
+
+            static int BYTES                                    ArkTS: BYTE_SIZE
+            static byte MAX_VALUE                               ArkTS: the same
+            static byte MIN_VALUE                               ArkTS: the same
+            static int SIZE                                     ArkTS: BIT_SIZE
+            static Class<Byte/> TYPE
+
+            Byte(byte value)                                    ArkTS: the same
+            Byte(String s)
+            byte byteValue()                                    ArkTS: the same
+            static int compare(byte x, byte y)                  ArkTS: new Byte(x).compareTo(new Byte(y))
+            int compareTo(Byte anotherByte)                     ArkTS: the same
+            static Byte decode(String nm)
+            double doubleValue()                                ArkTS: the same
+            boolean equals(Object obj)                          ArkTS: the same
+            float floatValue()                                  ArkTS: the same
+            int hashCode()                                      ArkTS: the same
+            static int hashCode(byte value)                     ArkTS: new Byte(value).hasCode()
+            int intValue()                                      ArkTS: the same
+            long longValue()                                    ArkTS: the same
+            static byte parseByte(String s)
+            static byte parseByte(String s, int radix)
+            short shortValue()                                  ArkTS: the same
+            String toString()                                   ArkTS: the same
+            static String toString(byte b)                      ArkTS: new Byte(b).toString()
+            static int toUnsignedInt(byte x)
+            static long toUnsignedLong(byte x)
+            static Byte valueOf(byte b)
+            static Byte valueOf(String s)
+            static Byte valueOf(String s, int radix)
+        </java.lang.Byte>
+        <java.lang.Character>
+            ==> std.core.Character
+
+            static int BYTES
+            static byte COMBINING_SPACING_MARK
+            static byte CONNECTOR_PUNCTUATION
+            static byte CONTROL
+            static byte CURRENCY_SYMBOL
+            static byte DASH_PUNCTUATION
+            static byte DECIMAL_DIGIT_NUMBER
+            static byte DIRECTIONALITY_ARABIC_NUMBER
+            static byte DIRECTIONALITY_BOUNDARY_NEUTRAL
+            static byte DIRECTIONALITY_COMMON_NUMBER_SEPARATOR
+            static byte DIRECTIONALITY_EUROPEAN_NUMBER
+            static byte DIRECTIONALITY_EUROPEAN_NUMBER_SEPARATOR
+            static byte DIRECTIONALITY_EUROPEAN_NUMBER_TERMINATOR
+            static byte DIRECTIONALITY_LEFT_TO_RIGHT
+            static byte DIRECTIONALITY_LEFT_TO_RIGHT_EMBEDDING
+            static byte DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE
+            static byte DIRECTIONALITY_NONSPACING_MARK
+            static byte DIRECTIONALITY_OTHER_NEUTRALS
+            static byte DIRECTIONALITY_PARAGRAPH_SEPARATOR
+            static byte DIRECTIONALITY_POP_DIRECTIONAL_FORMAT
+            static byte DIRECTIONALITY_RIGHT_TO_LEFT
+            static byte DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC
+            static byte DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING
+            static byte DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE
+            static byte DIRECTIONALITY_SEGMENT_SEPARATOR
+            static byte DIRECTIONALITY_UNDEFINED
+            static byte DIRECTIONALITY_WHITESPACE
+            static byte ENCLOSING_MARK
+            static byte END_PUNCTUATION
+            static byte FINAL_QUOTE_PUNCTUATION
+            static byte FORMAT
+            static byte INITIAL_QUOTE_PUNCTUATION
+            static byte LETTER_NUMBER
+            static byte LINE_SEPARATOR
+            static byte LOWERCASE_LETTER
+            static byte MATH_SYMBOL
+            static int MAX_CODE_POINT
+            static char MAX_HIGH_SURROGATE                                  ArkTS: HIGH_SURROGATE_MAX
+            static char MAX_LOW_SURROGATE                                   ArkTS: LOW_SURROGATE_MAX
+            static int MAX_RADIX
+            static char MAX_SURROGATE
+            static char MAX_VALUE
+            static int MIN_CODE_POINT
+            static char MIN_HIGH_SURROGATE                                  ArkTS: HIGH_SURROGATE_MIN
+            static char MIN_LOW_SURROGATE                                   ArkTS: LOW_SURROGATE_MIN
+            static int MIN_RADIX
+            static int MIN_SUPPLEMENTARY_CODE_POINT
+            static char MIN_SURROGATE
+            static char MIN_VALUE
+            static byte MODIFIER_LETTER
+            static byte MODIFIER_SYMBOL
+            static byte NON_SPACING_MARK
+            static byte OTHER_LETTER
+            static byte OTHER_NUMBER
+            static byte OTHER_PUNCTUATION
+            static byte OTHER_SYMBOL
+            static byte PARAGRAPH_SEPARATOR
+            static byte PRIVATE_USE
+            static int 	SIZE                                                ArkTS: CHAR_BIT_SIZE
+            static byte SPACE_SEPARATOR
+            static byte START_PUNCTUATION
+            static byte SURROGATE
+            static byte TITLECASE_LETTER
+            static Class<Character/> TYPE
+            static byte UNASSIGNED
+            static byte UPPERCASE_LETTER
+
+            Character(char value)                                           ArkTS: Char(char value)
+            static int 	charCount(int codePoint)
+            char charValue()
+            static int codePointAt(char[] a, int index)
+            static int codePointAt(char[] a, int index, int limit)
+            static int codePointAt(CharSequence seq, int index)
+            static int codePointBefore(char[] a, int index)
+            static int codePointBefore(char[] a, int index, int start)
+            static int codePointBefore(CharSequence seq, int index)
+            static int codePointCount(char[] a, int offset, int count)
+            static int codePointCount(CharSequence seq, int beginIndex, int endIndex)
+            static int compare(char x, char y)                              ArkTS: new Char(x).compareTo(new Char(y))
+            int compareTo(Character anotherCharacter)                       ArkTS: the same
+            static int digit(char ch, int radix)
+            static int digit(int codePoint, int radix)
+            boolean equals(Object obj)                                      ArkTS: the same
+            static char forDigit(int digit, int radix)
+            static byte getDirectionality(char ch)
+            static byte getDirectionality(int codePoint)
+            static String getName(int codePoint)
+            static int getNumericValue(char ch)
+            static int getNumericValue(int codePoint)
+            static int getType(char ch)
+            static int getType(int codePoint)
+            int hashCode()                                                  ArkTS: the same
+            static int hashCode(char value)                                 ArkTS: the same function name but the type is renamed
+            static char highSurrogate(int codePoint)                        ArkTS: static getHighSurrogate(codePoint: int): char
+            static boolean isAlphabetic(int codePoint)
+            static boolean isBmpCodePoint(int codePoint)
+            static boolean isDefined(char ch)
+            static boolean isDefined(int codePoint)
+            static boolean isDigit(char ch)                                 ArkTS: the same function name but the type is renamed
+            static boolean isDigit(int codePoint)
+            static boolean isHighSurrogate(char ch)                         ArkTS: the same function name but the type is renamed
+            static boolean isIdentifierIgnorable(char ch)
+            static boolean isIdentifierIgnorable(int codePoint)
+            static boolean isIdeographic(int codePoint)
+            static boolean isISOControl(char ch)
+            static boolean isISOControl(int codePoint)
+            static boolean isJavaIdentifierPart(char ch)
+            static boolean isJavaIdentifierPart(int codePoint)
+            static boolean isJavaIdentifierStart(char ch)
+            static boolean isJavaIdentifierStart(int codePoint)
+            static boolean isJavaLetter(char ch)
+            static boolean isJavaLetterOrDigit(char ch)
+            static boolean isLetter(char ch)                                ArkTS: the same function but the type is renamed
+            static boolean isLetter(int codePoint)
+            static boolean isLetterOrDigit(char ch)
+            static boolean isLetterOrDigit(int codePoint)
+            static boolean isLowerCase(char ch)                             ArkTS: the same function but the type is renamed
+            static boolean isLowerCase(int codePoint)
+            static boolean isLowSurrogate(char ch)                          ArkTS: the same function but the type is renamed
+            static boolean isMirrored(char ch)
+            static boolean isMirrored(int codePoint)
+            static boolean isSpace(char ch)
+            static boolean isSpaceChar(char ch)
+            static boolean isSpaceChar(int codePoint)
+            static boolean isSupplementaryCodePoint(int codePoint)
+            static boolean isSurrogate(char ch)
+            static boolean isSurrogatePair(char high, char low)
+            static boolean isTitleCase(char ch)
+            static boolean isTitleCase(int codePoint)
+            static boolean isUnicodeIdentifierPart(char ch)
+            static boolean isUnicodeIdentifierPart(int codePoint)
+            static boolean isUnicodeIdentifierStart(char ch)
+            static boolean isUnicodeIdentifierStart(int codePoint)
+            static boolean isUpperCase(char ch)                             ArkTS: the same function but the type is renamed
+            static boolean isUpperCase(int codePoint)
+            static boolean isValidCodePoint(int codePoint)
+            static boolean isWhitespace(char ch)                            ArkTS: the same function but the type is renamed
+            static boolean isWhitespace(int codePoint)
+            static char lowSurrogate(int codePoint)                         ArkTS:  static getLowSurrogate(codePoint: int): char
+            static int offsetByCodePoints(char[] a, int start, int count, int index, int codePointOffset)
+            static int offsetByCodePoints(CharSequence seq, int index, int codePointOffset)
+            static char reverseBytes(char ch)
+            static char[] toChars(int codePoint)
+            static int toChars(int codePoint, char[] dst, int dstIndex)
+            static int toCodePoint(char high, char low)
+            static char toLowerCase(char ch)                                ArkTS: the same function but the type is renamed
+            static int toLowerCase(int codePoint)
+            String 	toString()                                              ArkTS: the same
+            static String toString(char c)                                  ArkTS: new Char(c).toString();
+            static char toTitleCase(char ch)
+            static int toTitleCase(int codePoint)
+            static char toUpperCase(char ch)                                ArkTS: the same function but the type is renamed
+            static int toUpperCase(int codePoint)
+            static Character valueOf(char c)                                ArkTS: the same function but the type is renamed
+        </java.lang.Character>
+        java.lang.Character.Subset
+        java.lang.Character.UnicodeBlock
+        java.lang.Class                                 ==> std.core.Type ????
+        java.lang.ClassLoader
+        java.lang.ClassValue
+        java.lang.Compiler
+        <java.lang.Double>
+            ==> std.core.Double
+
+            static int BYTES                                ArkTS: BYTE_SIZE
+            static int MAX_EXPONENT
+            static double MAX_VALUE                         ArkTS: the same
+            static int MIN_EXPONENT
+            static double MIN_NORMAL
+            static double MIN_VALUE                         ArkTS: the same
+            static double NaN                               ArkTS: the same
+            static double NEGATIVE_INFINITY                 ArkTS: the same
+            static double POSITIVE_INFINITY                 ArkTS: the same
+            static int SIZE                                 ArkTS: BIT_SIZE
+            static Class<Double/> TYPE
+
+            Double(double value)                            ArkTS: the same
+            Double(String s)
+            byte byteValue()                                ArkTS: the same
+            static int compare(double d1, double d2)        ArkTS: new Double(d1).compareTo(new Double(d2)
+            int compareTo(Double anotherDouble)             ArkTS: the same
+            static long doubleToLongBits(double value)
+            static long doubleToRawLongBits(double value)
+            double doubleValue()                            ArkTS: the same
+            boolean equals(Object obj)                      ArkTS: the same
+            float floatValue()                              ArkTS: the same
+            int hashCode()                                  ArkTS: the same
+            static int hashCode(double value)
+            int intValue()                                  ArkTS: the same
+            static boolean isFinite(double d)
+            boolean isInfinite()
+            static boolean isInfinite(double v)
+            boolean isNaN()
+            static boolean isNaN(double v)
+            static double longBitsToDouble(long bits)
+            long longValue()                                ArkTS: the same
+            static double max(double a, double b)
+            static double min(double a, double b)
+            static double parseDouble(String s)
+            short shortValue()                              ArkTS: the same
+            static double sum(double a, double b)
+            static String toHexString(double d)
+            String 	toString()                              ArkTS: the same
+            static String toString(double d)
+            static Double valueOf(double d)                 ArkTS: the same
+            static Double valueOf(String s)
+        </java.lang.Double>
+        java.lang.Enum
+        <java.lang.Float>
+            ==> std.core.Float
+
+            static int BYTES                            ArkTS: BYTE_SIZE
+            static int MAX_EXPONENT
+            static float MAX_VALUE                      ArkTS: the same
+            static int MIN_EXPONENT
+            static float MIN_NORMAL
+            static float MIN_VALUE                      ArkTS: the same
+            static float NaN                            ArkTS: the same
+            static float NEGATIVE_INFINITY              ArkTS: the same
+            static float POSITIVE_INFINITY              ArkTS: the same
+            static int SIZE                             ArkTS: BIT_SIZE
+            static Class<Float/> TYPE
+
+            Float(double value)
+            Float(float value)                          ArkTS: the same
+            Float(String s)
+            byte byteValue()                            ArkTS: the same
+            static int compare(float f1, float f2)      ArkTS: new Float(f1).compareTo(new Float(f2))
+            int compareTo(Float anotherFloat)           ArkTS: the same
+            double doubleValue()                        ArkTS: the same
+            boolean equals(Object obj)                  ArkTS: the same
+            static int floatToIntBits(float value)
+            static int floatToRawIntBits(float value)
+            float floatValue()                          ArkTS: the same
+            int hashCode()                              ArkTS: the same
+            static int hashCode(float value)            ArkTS: new Float(value).hashCode();
+            static float intBitsToFloat(int bits)
+            int intValue()                              ArkTS: the same
+            static boolean isFinite(float f)
+            boolean isInfinite()
+            static boolean isInfinite(float v)
+            boolean isNaN()
+            static boolean isNaN(float v)
+            long longValue()                            ArkTS: the same
+            static float max(float a, float b)
+            static float min(float a, float b)
+            static float parseFloat(String s)
+            short shortValue()                          ArkTS: the same
+            static float sum(float a, float b)
+            static String toHexString(float f)
+            String toString()                           ArkTS: the same
+            static String toString(float f)             ArkTS: new Float(f).toString()
+            static Float valueOf(float f)               ArkTS: the same
+            static Float valueOf(String s)
+        </java.lang.Float>
+        java.lang.InheritableThreadLocal
+        <java.lang.Integer>
+            ==> std.core.Int
+
+            static int BYTES                                    ArkTS: BYTE_SIZE
+            static int MAX_VALUE                                ArkTS: the same
+            static int MIN_VALUE                                ArkTS: the same
+            static int SIZE                                     ArkTS: BIT_SIZE
+            static Class<Integer/> TYPE
+
+            Integer(int value)                                  ArkTS: the same
+            Integer(String s)
+            static int bitCount(int i)
+            byte byteValue()                                    ArkTS: the same
+            static int compare(int x, int y)                    ArkTS: new Int(x).compareTo(new Int(y))
+            int compareTo(Integer anotherInteger)               ArkTS: the same
+            static int compareUnsigned(int x, int y)
+            static Integer decode(String nm)
+            static int divideUnsigned(int dividend, int divisor)
+            double doubleValue()                                ArkTS: the same
+            boolean equals(Object obj)                          ArkTS: the same
+            float floatValue()                                  ArkTS: the same
+            static Integer getInteger(String nm)
+            static Integer getInteger(String nm, int val)
+            static Integer getInteger(String nm, Integer val)
+            int hashCode()                                      ArkTS: the same
+            static int hashCode(int value)                      ArkTS: new Int(value).hasCode()
+            static int highestOneBit(int i)
+            int intValue()                                      ArkTS: the same
+            long longValue()                                    ArkTS: the same
+            static int lowestOneBit(int i)
+            static int max(int a, int b)
+            static int min(int a, int b)
+            static int numberOfLeadingZeros(int i)
+            static int numberOfTrailingZeros(int i)
+            static int parseInt(String s)
+            static int parseInt(String s, int radix)
+            static int parseUnsignedInt(String s)
+            static int parseUnsignedInt(String s, int radix)
+            static int remainderUnsigned(int dividend, int divisor)
+            static int reverse(int i)
+            static int reverseBytes(int i)
+            static int rotateLeft(int i, int distance)
+            static int rotateRight(int i, int distance)
+            short shortValue()                                  ArkTS: the same
+            static int signum(int i)
+            static int sum(int a, int b)
+            static String toBinaryString(int i)
+            static String toHexString(int i)
+            static String toOctalString(int i)
+            String toString()                                   ArkTS: the same
+            static String toString(int i)                       ArkTS: new Int(i).toString()
+            static String toString(int i, int radix)
+            static long  toUnsignedLong(int x)
+            static String  toUnsignedString(int i)
+            static String  toUnsignedString(int i, int radix)
+            static Integer valueOf(int i)                       ArkTS: the same
+            static Integer valueOf(String s)
+            static Integer valueOf(String s, int radix)
+        </java.lang.Integer>
+        <java.lang.Long>
+            ==> std.core.Long
+
+            static int BYTES                                    ArkTS: BYTE_SIZE
+            static long MAX_VALUE                               ArkTS: the same
+            static long MIN_VALUE                               ArkTS: the same
+            static int SIZE                                     ArkTS: BIT_SIZE
+            static Class<Long/> TYPE
+
+            Long(long value)                                    ArkTS: the same
+            Long(String s)
+            static int bitCount(long i)
+            byte byteValue()                                    ArkTS: the same
+            static int compare(long x, long y)                  ArkTS: new Long(x).compareTo(new Long(y))
+            int compareTo(Long anotherLong)                     ArkTS: the same
+            static int compareUnsigned(long x, long y)
+            static Long decode(String nm)
+            static long divideUnsigned(long dividend, long divisor)
+            double doubleValue()                                ArkTS: the same
+            boolean equals(Object obj)                          ArkTS: the same
+            float floatValue()                                  ArkTS: the same
+            static Long getLong(String nm)
+            static Long getLong(String nm, long val)
+            static Long getLong(String nm, Long val)
+            int hashCode()                                      ArkTS: the same
+            static int hashCode(long value)                     ArkTS: new Long(value).hashCode()
+            static long highestOneBit(long i)
+            int intValue()                                      ArkTS: the same
+            long longValue()                                    ArkTS: the same
+            static long lowestOneBit(long i)
+            static long max(long a, long b)
+            static long min(long a, long b)
+            static int numberOfLeadingZeros(long i)
+            static int numberOfTrailingZeros(long i)
+            static long parseLong(String s)
+            static long parseLong(String s, int radix)
+            static long parseUnsignedLong(String s)
+            static long parseUnsignedLong(String s, int radix)
+            static long remainderUnsigned(long dividend, long divisor)
+            static long reverse(long i)
+            static long reverseBytes(long i)
+            static long rotateLeft(long i, int distance)
+            static long rotateRight(long i, int distance)
+            short shortValue()                                  ArkTS: the same
+            static int signum(long i)
+            static long sum(long a, long b)
+            static String toBinaryString(long i)
+            static String toHexString(long i)
+            static String toOctalString(long i)
+            String toString()                                   ArkTS: the same
+            static String toString(long i)                      ArkTS: new Long(i).toString()
+            static String toString(long i, int radix)
+            static String toUnsignedString(long i)
+            static String toUnsignedString(long i, int radix)
+            static Long valueOf(long l)                         ArkTS: the same
+            static Long valueOf(String s)
+            static Long valueOf(String s, int radix)
+        </java.lang.Long>
+        <java.lang.Math>
+            ==> std.math.math.*
+            static double 	E
+            static double 	PI                          ==> std.math.math.PI;
+
+            static double abs(double a)                 ArkTS: the same but global function
+            static float abs(float a)
+            static int abs(int a)
+            static long abs(long a)
+            static double acos(double a)                ArkTS: the same but global function
+            static int addExact(int x, int y)
+            static long addExact(long x, long y)
+            static double asin(double a)                ArkTS: the same but global function
+            static double atan(double a)                ArkTS: the same but global function
+            static double atan2(double y, double x)     ArkTS: the same but global function
+            static double cbrt(double a)                ArktTS: function cuberoot(v: double): double
+            static double ceil(double a)                ArkTS: the same
+            static double copySign(double magnitude, double sign)
+            static float copySign(float magnitude, float sign)
+            static double cos(double a)                 ArkTS: the same but global function
+            static double cosh(double x)                ArkTS: the same but global function
+            static int decrementExact(int a)
+            static long decrementExact(long a)
+            static double exp(double a)                 ArkTS: the same but global function
+            static double expm1(double x)               ArkTS: the same but global function
+            static double floor(double a)               ArkTS: the same but global function
+            static int floorDiv(int x, int y)
+            static long floorDiv(long x, long y)
+            static int floorMod(int x, int y)
+            static long floorMod(long x, long y)
+            static int getExponent(double d)
+            static int getExponent(float f)
+            static double hypot(double x, double y)     ArkTS: the same but global function
+            static double IEEEremainder(double f1, double f2)
+            static int incrementExact(int a)
+            static long incrementExact(long a)
+            static double log(double a)                 ArkTS: the same but global function
+            static double log10(double a)               ArkTS: the same but global function
+            static double log1p(double x)               ArkTS: the same but global function
+            static double max(double a, double b)       ArkTS: the same but global function
+            static float max(float a, float b)
+            static int max(int a, int b)                ArkTS: the same but global function
+            static long max(long a, long b)
+            static double min(double a, double b)       ArkTS: the same but global function
+            static float min(float a, float b)
+            static int min(int a, int b)                ArkTS: the same but global function
+            static long min(long a, long b)
+            static int multiplyExact(int x, int y)
+            static long multiplyExact(long x, long y)
+            static int negateExact(int a)
+            static long negateExact(long a)
+            static double nextAfter(double start, double direction)
+            static float nextAfter(float start, double direction)
+            static double nextDown(double d)
+            static float nextDown(float f)
+            static double nextUp(double d)
+            static float nextUp(float f)
+            static double pow(double a, double b)       ArkTS: function power(v: double, u: double): double;
+            static double random()
+            static double rint(double a)
+            static long round(double a)                 ArkTS: the same but global function
+            static int round(float a)
+            static double scalb(double d, int scaleFactor)
+            static float scalb(float f, int scaleFactor)    ArkTS: function scalbn(v: double, n: int): double
+            static double signum(double d)              ArkTS: function sign(v: double): double {
+            static float signum(float f)
+            static double sin(double a)                 ArkTS: the same but global function
+            static double sinh(double x)                ArkTS: the same but global function
+            static double sqrt(double a)                ArkTS: the same but global function
+            static int subtractExact(int x, int y)
+            static long subtractExact(long x, long y)
+            static double tan(double a)                 ArkTS: the same
+            static double tanh(double x)                ArkTS: the same
+            static double toDegrees(double angrad)
+            static int toIntExact(long value)
+            static double toRadians(double angdeg)
+            static double ulp(double d)
+            static float ulp(float f)
+        </java.lang.Math>
+        <java.lang.Number>
+            ==> std.core.Integral
+
+            byte byteValue()                                ArkTS: the same
+            abstract double doubleValue()                   ArkTS: the same
+            abstract float floatValue()                     ArkTS: the same
+            abstract int intValue()                         ArkTS: the same
+            abstract long longValue()                       ArkTS: the same
+            short shortValue()                              ArkTS: the same
+        </java.lang.Number>
+        <java.lang.Object>
+            ==> std.core.Object
+
+            Object()
+            protected Object clone()
+            boolean equals(Object obj)                  ArkTS: the same
+            protected void finalize()
+            Class<z/> getClass()
+            int hashCode()                              ArkTS: the same
+            void notify()
+            void notifyAll()
+            String 	toString()                          ArkTS: the same
+            void wait()
+            void wait(long timeout)
+            void wait(long timeout, int nanos)
+        </java.lang.Object>
+        java.lang.Package
+        java.lang.Process
+        java.lang.ProcessBuilder
+        java.lang.ProcessBuilder.Redirect
+        <java.lang.Runtime>
+            ==> std.core.Runtime
+
+            void addShutdownHook(Thread hook)
+            int availableProcessors()
+            Process exec(String command)
+            Process exec(String[] cmdarray)
+            Process exec(String[] cmdarray, String[] envp)
+            Process exec(String[] cmdarray, String[] envp, File dir)
+            Process exec(String command, String[] envp)
+            Process exec(String command, String[] envp, File dir)
+            void exit(int status)
+            long freeMemory()
+            void gc()
+            InputStream getLocalizedInputStream(InputStream in)
+            OutputStream getLocalizedOutputStream(OutputStream out)
+            static Runtime getRuntime()
+            void halt(int status)
+            void load(String filename)
+            void loadLibrary(String libname)                            ArkTS: the same
+            long maxMemory()
+            boolean removeShutdownHook(Thread hook)
+            void runFinalization()
+            static void runFinalizersOnExit(boolean value)
+            long totalMemory()
+            void traceInstructions(boolean on)
+            void traceMethodCalls(boolean on)
+        </java.lang.Runtime>
+        java.lang.RuntimePermission
+        java.lang.SecurityManager
+        <java.lang.Short>
+            ==> std.core.Short
+
+            static int BYTES                                ArkTS: BYTE_SIZE
+            static short MAX_VALUE                          ArkTS: the same
+            static short MIN_VALUE                          ArkTS: the same
+            static int SIZE                                 ArkTS: BIT_SIZE
+            static Class<Short/> TYPE
+
+            Short(short value)                              ArkTS: the same
+            Short(String s)
+
+            byte byteValue()                                ArkTS: the same
+            static int compare(short x, short y)            new Short(x).compareTo(new Short(y))
+            int compareTo(Short anotherShort)               ArkTS: the same
+            static Short decode(String nm)
+            double doubleValue()                            ArkTS: the same
+            boolean equals(Object obj)                      ArkTS: the same
+            float floatValue()                              ArkTS: the same
+            int hashCode()                                  ArkTS: the same
+            static int hashCode(short s)                    ArkTS: new Short(s).hashCode()
+            int intValue()                                  ArkTS: the same
+            long longValue()                                ArkTS: the same
+            static short parseShort(String s)
+            static short parseShort(String s, int radix)
+            static short reverseBytes(short i)
+            short shortValue()                              ArkTS: the same
+            String toString()                               ArkTS: the same
+            static String toString(short s)                 ArkTS: new Short(s).toString()
+            static int toUnsignedInt(short x)
+            static long toUnsignedLong(short x)
+            static Short valueOf(short s)                   ArkTS: the same
+            static Short valueOf(String s)
+            static Short valueOf(String s, int radix)
+        </java.lang.Short>
+        java.lang.StackTraceElement
+        java.lang.StrictMath
+        <java.lang.String>
+            ==> std.core.String
+
+            static Comparator<String/> CASE_INSENSITIVE_ORDER
+
+            String()                                                            ArkTS: the same
+            String(byte[] bytes)
+            String(byte[] bytes, Charset charset)
+            String(byte[] ascii, int hibyte)
+            String(byte[] bytes, int offset, int length)
+            String(byte[] bytes, int offset, int length, Charset charset)
+            String(byte[] ascii, int hibyte, int offset, int count)
+            String(byte[] bytes, int offset, int length, String charsetName)
+            String(byte[] bytes, String charsetName)
+            String(char[] value)                                                ArkTS: the same
+            String(char[] value, int offset, int count)
+            String(int[] codePoints, int offset, int count)
+            String(String original)
+            String(StringBuffer buffer)
+            String(StringBuilder builder)
+
+            char charAt(int index)                                              ArkTS: the same
+            int codePointAt(int index)                                          ArkTS: the same
+            int codePointBefore(int index)
+            int codePointCount(int beginIndex, int endIndex)                    ArkTS: the same
+            int compareTo(String anotherString)                                 ArkTS: the same
+            int compareToIgnoreCase(String str)
+            String concat(String str)                                           ArkTS: the same
+            boolean contains(CharSequence s)                                    ArkTS: contains(str: String, fromIndex: int): boolean
+            boolean contentEquals(CharSequence cs)
+            boolean contentEquals(StringBuffer sb)                              ArkTS: the same ????: contentEquals(sb: StringBuilder): boolean ??? StringBuffer != StringBuilder
+            static String copyValueOf(char[] data)
+            static String copyValueOf(char[] data, int offset, int count)
+            boolean endsWith(String suffix)                                     ArkTS: the same
+            boolean equals(Object anObject)                                     ArkTS: the same
+            boolean equalsIgnoreCase(String anotherString)
+            static String format(Locale l, String format, Object... args)
+            static String format(String format, Object... args)
+            byte[] getBytes()
+            byte[] getBytes(Charset charset)
+            void getBytes(int srcBegin, int srcEnd, byte[] dst, int dstBegin)
+            byte[] getBytes(String charsetName)
+            void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin)
+            int hashCode()                                                      ArkTS: the same
+            int indexOf(int ch)                                                 ArkTS: the same
+            int indexOf(int ch, int fromIndex)                                  ArkTS: the same
+            int indexOf(String str)                                             ArkTS: the same
+            int indexOf(String str, int fromIndex)                              ArkTS: the same
+            String intern()
+            boolean isEmpty()
+            static String join(CharSequence delimiter, CharSequence... elements)                        ArkTS: join(strings: String[], delim: String): String
+            static String join(CharSequence delimiter, Iterable<z_extends_CharSequence/> elements)      ArkTS: join(strings: String[], delim: String): String
+            int lastIndexOf(int ch)                                             ArkTS: the same
+            int lastIndexOf(int ch, int fromIndex)                              ArkTS: the same
+            int lastIndexOf(String str)                                         ArkTS: the same
+            int lastIndexOf(String str, int fromIndex)                          ArkTS: the same
+            int length()                                                        ArkTS: the same
+            boolean matches(String regex)
+            int offsetByCodePoints(int index, int codePointOffset)
+            boolean regionMatches(boolean ignoreCase, int toffset, String other, int ooffset, int len)
+            boolean regionMatches(int toffset, String other, int ooffset, int len)
+            String replace(char oldChar, char newChar)                          ArkTS: the same
+            String replace(CharSequence target, CharSequence replacement)
+            String replaceAll(String regex, String replacement)
+            String replaceFirst(String regex, String replacement)
+            String[] split(String regex)
+            String[] split(String regex, int limit)
+            boolean startsWith(String prefix)                                   ArkTS: the same
+            boolean startsWith(String prefix, int toffset)                      ArkTS: the same
+            CharSequence subSequence(int beginIndex, int endIndex)
+            String substring(int beginIndex)                                    ArkTS: the same
+            String substring(int beginIndex, int endIndex)                      ArkTS: the same
+            char[] toCharArray()
+            String toLowerCase()                                                ArkTS: the same
+            String toLowerCase(Locale locale)
+            String toString()
+            String toUpperCase()                                                ArkTS: the same
+            String toUpperCase(Locale locale)
+            String trim()                                                       ArkTS: the same
+            static String valueOf(boolean b)
+            static String valueOf(char c)                                       ArkTS: static StringBuilder.toString(c: char): String
+            static String valueOf(char[] data)
+            static String valueOf(char[] data, int offset, int count)
+            static String valueOf(double d)                                     ArkTS: static StringBuilder.toString(d: double): String
+            static String valueOf(float f)                                      ArkTS: static StringBuilder.toString(f: float): String
+            static String valueOf(int i)                                        ArkTS: static StringBuilder.toString(i: int): String
+            static String valueOf(long l)                                       ArkTS: static StringBuilder.toString(l: long): String
+            static String valueOf(Object obj)
+        </java.lang.String>
+        java.lang.StringBuffer                          ==> std.core.StringBuilder ????
+        <java.lang.StringBuilder>
+            ==> std.core.StringBuilder
+
+            StringBuilder()                                                     ArkTS: the same
+            StringBuilder(CharSequence seq)
+            StringBuilder(int capacity)
+            StringBuilder(String str)                                           ArkTS: the same
+
+            StringBuilder append(boolean b)
+            StringBuilder append(char c)                                        ArkTS: the same
+            StringBuilder append(char[] str)
+            StringBuilder append(char[] str, int offset, int len)
+            StringBuilder append(CharSequence s)
+            StringBuilder append(CharSequence s, int start, int end)
+            StringBuilder append(double d)                                      ArkTS: the same
+            StringBuilder append(float f)                                       ArkTS: the same
+            StringBuilder append(int i)                                         ArkTS: the same
+            StringBuilder append(long lng)                                      ArkTS: the same
+            StringBuilder append(Object obj)
+            StringBuilder append(String str)                                    ArkTS: the same
+            StringBuilder append(StringBuffer sb)
+            StringBuilder appendCodePoint(int codePoint)
+            int capacity()
+            char charAt(int index)
+            int codePointAt(int index)
+            int codePointBefore(int index)
+            int codePointCount(int beginIndex, int endIndex)
+            StringBuilder delete(int start, int end)
+            StringBuilder deleteCharAt(int index)
+            void ensureCapacity(int minimumCapacity)
+            void getChars(int srcBegin, int srcEnd, char[] dst, int dstBegin)
+            int indexOf(String str)
+            int indexOf(String str, int fromIndex)
+            StringBuilder insert(int offset, boolean b)
+            StringBuilder insert(int offset, char c)
+            StringBuilder insert(int offset, char[] str)
+            StringBuilder insert(int index, char[] str, int offset, int len)
+            StringBuilder insert(int dstOffset, CharSequence s)
+            StringBuilder insert(int dstOffset, CharSequence s, int start, int end)
+            StringBuilder insert(int offset, double d)
+            StringBuilder insert(int offset, float f)
+            StringBuilder insert(int offset, int i)
+            StringBuilder insert(int offset, long l)
+            StringBuilder insert(int offset, Object obj)
+            StringBuilder insert(int offset, String str)
+            int lastIndexOf(String str)
+            int lastIndexOf(String str, int fromIndex)
+            int length()
+            int offsetByCodePoints(int index, int codePointOffset)
+            StringBuilder replace(int start, int end, String str)
+            StringBuilder reverse()
+            void setCharAt(int index, char ch)
+            void setLength(int newLength)
+            CharSequence subSequence(int start, int end)
+            String substring(int start)
+            String substring(int start, int end)
+            String toString()                                                   ArkTS: the same
+            void trimToSize()
+        </java.lang.StringBuilder>
+        <java.lang.System>
+            ==> std.core.System
+
+            static PrintStream err
+            static InputStream in
+            static PrintStream out
+
+            static void arraycopy(Object src, int srcPos, Object dest, int destPos, int length)
+            static String clearProperty(String key)
+            static Console console()
+            static long currentTimeMillis()
+            static void exit(int status)                                        ArkTS: the same
+            static void gc()
+            static Map<String_String/> getenv()
+            static String getenv(String name)
+            static Properties getProperties()
+            static String getProperty(String key)
+            static String getProperty(String key, String def)
+            static SecurityManager getSecurityManager()
+            static int identityHashCode(Object x)
+            static Channel inheritedChannel()
+            static String lineSeparator()
+            static void load(String filename)
+            static void loadLibrary(String libname)
+            static String mapLibraryName(String libname)
+            static long nanoTime()
+            static void runFinalization()
+            static void runFinalizersOnExit(boolean value)
+            static void setErr(PrintStream err)
+            static void setIn(InputStream in)
+            static void setOut(PrintStream out)
+            static void setProperties(Properties props)
+            static String setProperty(String key, String value)
+            static void setSecurityManager(SecurityManager s)
+        </java.lang.System>
+        java.lang.Thread
+        java.lang.ThreadGroup
+        java.lang.ThreadLocal
+        java.lang.Throwable
+        java.lang.Void
+        // Enums:
+        java.lang.haracter.UnicodeScript
+        java.lang.rocessBuilder.Redirect.Type
+        java.lang.Thread.State
+        // Exceptions:
+        java.lang.ArithmeticException                       ==> std.core.StdExceptions.ArithmeticException
+        java.lang.ArrayIndexOutOfBoundsException            ==> std.core.StdExceptions.ArrayIndexOutOfBoundsException
+        java.lang.ArrayStoreException
+        java.lang.ClassCastException
+        java.lang.ClassNotFoundException
+        java.lang.CloneNotSupportedException
+        java.lang.EnumConstantNotPresentException
+        java.lang.Exception                                 ==> std.core.Exception, std.core.Panic
+        java.lang.IllegalAccessException
+        java.lang.IllegalArgumentException
+        java.lang.IllegalMonitorStateException
+        java.lang.IllegalStateException
+        java.lang.IllegalThreadStateException
+        java.lang.IndexOutOfBoundsException
+        java.lang.InstantiationException
+        java.lang.InterruptedException
+        java.lang.NegativeArraySizeException
+        java.lang.NoSuchFieldException
+        java.lang.NoSuchMethodException
+        java.lang.NullPointerException                      ==> std.core.StdPanics.NullPointerPanic
+        java.lang.NumberFormatException
+        java.lang.ReflectiveOperationException
+        java.lang.RuntimeException
+        java.lang.SecurityException
+        java.lang.StringIndexOutOfBoundsException
+        java.lang.TypeNotPresentException
+        java.lang.UnsupportedOperationException
+        // Errors:
+        java.lang.AbstractMethodError
+        java.lang.AssertionError
+        java.lang.BootstrapMethodError
+        java.lang.ClassCircularityError
+        java.lang.ClassFormatError
+        java.lang.Error
+        java.lang.ExceptionInInitializerError
+        java.lang.IllegalAccessError
+        java.lang.IncompatibleClassChangeError
+        java.lang.InstantiationError
+        java.lang.InternalError
+        java.lang.LinkageError
+        java.lang.NoClassDefFoundError
+        java.lang.NoSuchFieldError
+        java.lang.NoSuchMethodError
+        java.lang.OutOfMemoryError
+        java.lang.StackOverflowError
+        java.lang.ThreadDeath
+        java.lang.UnknownError
+        java.lang.UnsatisfiedLinkError
+        java.lang.UnsupportedClassVersionError
+        java.lang.VerifyError
+        java.lang.VirtualMachineError
+        // Annotation Types:
+        java.lang.Deprecated
+        java.lang.FunctionalInterface
+        java.lang.Override
+        java.lang.SafeVarargs
+        java.lang.SuppressWarnings
+    </java.lang>
+    <java.lang.reflect>
+        // Interfaces:
+        java.lang.reflect.AnnotatedArrayType
+        java.lang.reflect.AnnotatedElement
+        java.lang.reflect.AnnotatedParameterizedType
+        java.lang.reflect.AnnotatedType
+        java.lang.reflect.AnnotatedTypeVariable
+        java.lang.reflect.AnnotatedWildcardType
+        java.lang.reflect.GenericArrayType
+        java.lang.reflect.GenericDeclaration
+        java.lang.reflect.InvocationHandler
+        java.lang.reflect.Member
+        java.lang.reflect.ParameterizedType
+        java.lang.reflect.Type                              ==> std.core.Types  ???
+        java.lang.reflect.TypeVariable
+        java.lang.reflect.WildcardType
+        // Classes:
+        java.lang.reflect.AccessibleObject
+        java.lang.reflect.Array
+        java.lang.reflect.Constructor
+        java.lang.reflect.Executable
+        java.lang.reflect.Field
+        java.lang.reflect.Method
+        java.lang.reflect.Modifier
+        java.lang.reflect.Parameter
+        java.lang.reflect.Proxy
+        java.lang.reflect.ReflectPermission
+        // Exceptions:
+        java.lang.reflect.InvocationTargetException
+        java.lang.reflect.MalformedParameterizedTypeException
+        java.lang.reflect.MalformedParametersException
+        java.lang.reflect.UndeclaredThrowableException
+        // Errors:
+        java.lang.reflect.GenericSignatureFormatError
+    </java.lang.reflect>
+    <java.nio>
+        // Classes:
+        java.nio.Buffer
+        java.nio.ByteBuffer
+        java.nio.ByteOrder
+        java.nio.CharBuffer
+        java.nio.DoubleBuffer
+        java.nio.FloatBuffer
+        java.nio.IntBuffer
+        java.nio.LongBuffer
+        java.nio.MappedByteBuffer
+        java.nio.ShortBuffer
+        // Exceptions:
+        java.nio.ufferOverflowException
+        java.nio.ufferUnderflowException
+        java.nio.nvalidMarkException
+        java.nio.ReadOnlyBufferException
+    </java.nio>
+    <java.text>
+        // Interfaces:
+        java.text.AttributedCharacterIterator
+        java.text.CharacterIterator
+        // Classes:
+        java.text.Annotation
+        java.text.AttributedCharacterIterator.Attribute
+        java.text.AttributedString
+        java.text.Bidi
+        java.text.BreakIterator
+        java.text.ChoiceFormat
+        java.text.CollationElementIterator
+        java.text.CollationKey
+        java.text.Collator
+        java.text.DateFormat
+        java.text.DateFormat.Field
+        java.text.DateFormatSymbols
+        java.text.DecimalFormat
+        java.text.DecimalFormatSymbols
+        java.text.FieldPosition
+        java.text.Format
+        java.text.Format.Field
+        java.text.MessageFormat
+        java.text.MessageFormat.Field
+        java.text.Normalizer
+        java.text.NumberFormat
+        java.text.NumberFormat.Field
+        java.text.ParsePosition
+        java.text.RuleBasedCollator
+        java.text.SimpleDateFormat
+        java.text.StringCharacterIterator
+        // Enums:
+        java.text.Normalizer.Form
+        // Exceptions:
+        java.text.ParseException
+    </java.text>
+    <java.util>
+        // Interfaces:
+        java.util.Collection
+        java.util.Comparator
+        java.util.Deque
+        java.util.Enumeration
+        java.util.EventListener
+        java.util.Formattable
+        java.util.Iterator
+        java.util.List
+        java.util.ListIterator
+        <java.util.Map>
+            ==> std.containers.Map
+            // In std.containers.Map is a class and in java.util.Map<K_V/> is a generic interface. So at the moement
+            // there is no equivalent mapping.
+
+            void 	clear()
+            default V compute(K key, BiFunction<z_super_K_z_super_V_z_extends_V/> remappingFunction)
+            default V computeIfAbsent(K key, Function<z_super_K_z_extends_V/> mappingFunction)
+            default V computeIfPresent(K key, BiFunction<z_super_K_z_super_V_z_extends_V/> remappingFunction)
+            boolean containsKey(Object key)
+            boolean containsValue(Object value)
+            Set<Map.Entry_K_V/> 	entrySet()
+            boolean equals(Object o)
+            default void forEach(BiConsumer<z_super_K_z_super_V/> action)
+            V get(Object key)
+            default V getOrDefault(Object key, V defaultValue)
+            int hashCode()
+            boolean isEmpty()
+            Set<K/> keySet()
+            default V merge(K key, V value, BiFunction<z_super_V_z_super_V_z_extends_V/> remappingFunction)
+            V put(K key, V value)
+            void putAll(Map<z_extends_K_z_extends_V/> m)
+            default V putIfAbsent(K key, V value)
+            V remove(Object key)
+            default boolean remove(Object key, Object value)
+            default V replace(K key, V value)
+            default boolean replace(K key, V oldValue, V newValue)
+            default void replaceAll(BiFunction<z_super_Kz_super_V_z_extends_V/> function)
+            int size()
+            Collection<V/> values()
+        </java.util.Map>
+        java.util.Map.Entry
+        java.util.NavigableMap
+        java.util.NavigableSet
+        java.util.Observer
+        java.util.PrimitiveIterator
+        java.util.PrimitiveIterator.OfDouble
+        java.util.PrimitiveIterator.OfInt
+        java.util.PrimitiveIterator.OfLong
+        java.util.Queue
+        java.util.RandomAccess
+        <java.util.Set>
+            ==> std.containers.Set
+            // In std.containers.Set is a class and in java.util.Set<E/> is a generic interface. So at the moement
+            // there is no equivalent mapping.
+
+            boolean add(E e)
+            boolean addAll(Collection<z_extends_E/> c)
+            void clear()
+            boolean contains(Object o)
+            boolean containsAll(Collection<z/> c)
+            boolean equals(Object o)
+            int hashCode()
+            boolean isEmpty()
+            Iterator<E/> iterator()
+            boolean remove(Object o)
+            boolean removeAll(Collection<z/> c)
+            boolean retainAll(Collection<z/> c)
+            int size()
+            default Spliterator<E/> spliterator()
+            Object[] toArray()
+            <T/> T[] toArray(T[] a)
+        </java.util.Set>
+        java.util.SortedMap
+        java.util.SortedSet
+        java.util.Spliterator
+        java.util.Spliterator.OfDouble
+        java.util.Spliterator.OfInt
+        java.util.Spliterator.OfLong
+        java.util.Spliterator.OfPrimitive
+        // Classes:
+        java.util.AbstractCollection
+        java.util.AbstractList
+        java.util.AbstractMap
+        java.util.AbstractMap.SimpleEntry
+        java.util.AbstractMap.SimpleImmutableEntry
+        java.util.AbstractQueue
+        java.util.AbstractSequentialList
+        java.util.AbstractSet
+        java.util.ArrayDeque
+        java.util.ArrayList
+        <java.util.Arrays>
+            ==> std.core.Array
+
+            static <T/> List<T/> asList(T... a)
+            static int binarySearch(byte[] a, byte key)
+            static int binarySearch(byte[] a, int fromIndex, int toIndex, byte key)
+            static int binarySearch(char[] a, char key)
+            static int binarySearch(char[] a, int fromIndex, int toIndex, char key)
+            static int binarySearch(double[] a, double key)
+            static int binarySearch(double[] a, int fromIndex, int toIndex, double key)
+            static int binarySearch(float[] a, float key)
+            static int binarySearch(float[] a, int fromIndex, int toIndex, float key)
+            static int binarySearch(int[] a, int key)                                           ArkTS: static int 	binarySearch(int[] a, int key)
+            static int binarySearch(int[] a, int fromIndex, int toIndex, int key)               ArkTS: function indexOf(arr: int[], key: int, startIndex: int, endIndex: int): int
+            static int binarySearch(long[] a, int fromIndex, int toIndex, long key)
+            static int binarySearch(long[] a, long key)
+            static int binarySearch(Object[] a, int fromIndex, int toIndex, Object key)
+            static int binarySearch(Object[] a, Object key)
+            static int binarySearch(short[] a, int fromIndex, int toIndex, short key)
+            static int binarySearch(short[] a, short key)
+            static <T/> int binarySearch(T[] a, int fromIndex, int toIndex, T key, Comparator<z_super_T/> c)
+            static <T/> int binarySearch(T[] a, T key, Comparator<z_super_T/> c)
+            static boolean[] copyOf(boolean[] original, int newLength)
+            static byte[] copyOf(byte[] original, int newLength)
+            static char[] copyOf(char[] original, int newLength)
+            static double[] copyOf(double[] original, int newLength)
+            static float[] copyOf(float[] original, int newLength)
+            static int[] copyOf(int[] original, int newLength)
+            static long[] copyOf(long[] original, int newLength)
+            static short[] copyOf(short[] original, int newLength)
+            static <T/> T[] copyOf(T[] original, int newLength)
+            static <T_U/> T[] copyOf(U[] original, int newLength, Class<z_extends_T/> newType)
+            static boolean[] copyOfRange(boolean[] original, int from, int to)
+            static byte[] copyOfRange(byte[] original, int from, int to)
+            static char[] copyOfRange(char[] original, int from, int to)
+            static double[] copyOfRange(double[] original, int from, int to)
+            static float[] copyOfRange(float[] original, int from, int to)
+            static int[] copyOfRange(int[] original, int from, int to)                              ArkTS: function copyOf(arr: int[], startIndex: int, endIndex: int): int[]
+            static long[] copyOfRange(long[] original, int from, int to)
+            static short[] copyOfRange(short[] original, int from, int to)
+            static <T/> T[] copyOfRange(T[] original, int from, int to)
+            static <T_U/> T[] copyOfRange(U[] original, int from, int to, Class<z_extends_T/> newType)
+            static boolean deepEquals(Object[] a1, Object[] a2)
+            static int deepHashCode(Object[] a)
+            static String deepToString(Object[] a)
+            static boolean equals(boolean[] a, boolean[] a2)
+            static boolean equals(byte[] a, byte[] a2)
+            static boolean equals(char[] a, char[] a2)
+            static boolean equals(double[] a, double[] a2)
+            static boolean equals(float[] a, float[] a2)
+            static boolean equals(int[] a, int[] a2)
+            static boolean equals(long[] a, long[] a2)
+            static boolean equals(Object[] a, Object[] a2)
+            static boolean equals(short[] a, short[] a2)
+            static void fill(boolean[] a, boolean val)
+            static void fill(boolean[] a, int fromIndex, int toIndex, boolean val)
+            static void fill(byte[] a, byte val)
+            static void fill(byte[] a, int fromIndex, int toIndex, byte val)
+            static void fill(char[] a, char val)
+            static void fill(char[] a, int fromIndex, int toIndex, char val)
+            static void fill(double[] a, double val)
+            static void fill(double[] a, int fromIndex, int toIndex, double val)
+            static void fill(float[] a, float val)
+            static void fill(float[] a, int fromIndex, int toIndex, float val)                      ArkTS: function fill(arr: int[], value: int, startIndex: int, endIndex: int): void
+            static void fill(int[] a, int val)                                                      ArkTS: the same
+            static void fill(int[] a, int fromIndex, int toIndex, int val)
+            static void fill(long[] a, int fromIndex, int toIndex, long val)
+            static void fill(long[] a, long val)
+            static void fill(Object[] a, int fromIndex, int toIndex, Object val)
+            static void fill(Object[] a, Object val)
+            static void fill(short[] a, int fromIndex, int toIndex, short val)
+            static void fill(short[] a, short val)
+            static int hashCode(boolean[] a)
+            static int hashCode(byte[] a)
+            static int hashCode(char[] a)
+            static int hashCode(double[] a)
+            static int hashCode(float[] a)
+            static int hashCode(int[] a)
+            static int hashCode(long[] a)
+            static int hashCode(Object[] a)
+            static int hashCode(short[] a)
+            static void parallelPrefix(double[] array, DoubleBinaryOperator op)
+            static void parallelPrefix(double[] array, int fromIndex, int toIndex, DoubleBinaryOperator op)
+            static void parallelPrefix(int[] array, IntBinaryOperator op)
+            static void parallelPrefix(int[] array, int fromIndex, int toIndex, IntBinaryOperator op)
+            static void parallelPrefix(long[] array, int fromIndex, int toIndex, LongBinaryOperator op)
+            static void parallelPrefix(long[] array, LongBinaryOperator op)
+            static <T/> void parallelPrefix(T[] array, BinaryOperator<T/> op)
+            static <T/> void parallelPrefix(T[] array, int fromIndex, int toIndex, BinaryOperator<T/> op)
+            static void parallelSetAll(double[] array, IntToDoubleFunction generator)
+            static void parallelSetAll(int[] array, IntUnaryOperator generator)
+            static void parallelSetAll(long[] array, IntToLongFunction generator)
+            static <T/> void parallelSetAll(T[] array, IntFunction<z_extends_T/> generator)
+            static void parallelSort(byte[] a)
+            static void parallelSort(byte[] a, int fromIndex, int toIndex)
+            static void parallelSort(char[] a)
+            static void parallelSort(char[] a, int fromIndex, int toIndex)
+            static void parallelSort(double[] a)
+            static void parallelSort(double[] a, int fromIndex, int toIndex)
+            static void parallelSort(float[] a)
+            static void parallelSort(float[] a, int fromIndex, int toIndex)
+            static void parallelSort(int[] a)
+            static void parallelSort(int[] a, int fromIndex, int toIndex)
+            static void parallelSort(long[] a)
+            static void parallelSort(long[] a, int fromIndex, int toIndex)
+            static void parallelSort(short[] a)
+            static void parallelSort(short[] a, int fromIndex, int toIndex)
+            static <T_extends_Comparable_z_super_T/> void 	parallelSort(T[] a)
+            static <T/> void parallelSort(T[] a, Comparator<z_super_T/> cmp)
+            static <T_extends_Comparable_z_super_T/> void parallelSort(T[] a, int fromIndex, int toIndex)
+            static <T/> void parallelSort(T[] a, int fromIndex, int toIndex, Comparator<z_super_T/> cmp)
+            static void setAll(double[] array, IntToDoubleFunction generator)
+            static void setAll(int[] array, IntUnaryOperator generator)
+            static void setAll(long[] array, IntToLongFunction generator)
+            static <T/> void setAll(T[] array, IntFunction<z_extends_T/> generator)
+            static void sort(byte[] a)
+            static void sort(byte[] a, int fromIndex, int toIndex)
+            static void sort(char[] a)
+            static void sort(char[] a, int fromIndex, int toIndex)
+            static void sort(double[] a)
+            static void sort(double[] a, int fromIndex, int toIndex)
+            static void sort(float[] a)
+            static void sort(float[] a, int fromIndex, int toIndex)
+            static void sort(int[] a)                                                                   ArkTS: the same
+            static void sort(int[] a, int fromIndex, int toIndex)                                       ArkTS: the same
+            static void sort(long[] a)
+            static void sort(long[] a, int fromIndex, int toIndex)
+            static void sort(Object[] a)
+            static void sort(Object[] a, int fromIndex, int toIndex)
+            static void sort(short[] a)
+            static void sort(short[] a, int fromIndex, int toIndex)
+            static <T/> void sort(T[] a, Comparator<z_super_T/> c)
+            static <T/> void sort(T[] a, int fromIndex, int toIndex, Comparator<z_super_T/> c)
+            static Spliterator.OfDouble spliterator(double[] array)
+            static Spliterator.OfDouble spliterator(double[] array, int startInclusive, int endExclusive)
+            static Spliterator.OfInt spliterator(int[] array)
+            static Spliterator.OfInt spliterator(int[] array, int startInclusive, int endExclusive)
+            static Spliterator.OfLong spliterator(long[] array)
+            static Spliterator.OfLong spliterator(long[] array, int startInclusive, int endExclusive)
+            static <T/> Spliterator<T/> spliterator(T[] array)
+            static <T/> Spliterator<T/> spliterator(T[] array, int startInclusive, int endExclusive)
+            static DoubleStream stream(double[] array)
+            static DoubleStream stream(double[] array, int startInclusive, int endExclusive)
+            static IntStream stream(int[] array)
+            static IntStream stream(int[] array, int startInclusive, int endExclusive)
+            static LongStream stream(long[] array)
+            static LongStream stream(long[] array, int startInclusive, int endExclusive)
+            static <T/> Stream<T/> stream(T[] array)
+            static <T/> Stream<T/> stream(T[] array, int startInclusive, int endExclusive)
+            static String toString(boolean[] a)
+            static String toString(byte[] a)
+            static String toString(char[] a)
+            static String toString(double[] a)
+            static String toString(float[] a)
+            static String toString(int[] a)
+            static String toString(long[] a)
+            static String toString(Object[] a)
+            static String toString(short[] a)
+        </java.util.Arrays>
+        java.util.Base64
+        java.util.Base64.Decoder
+        java.util.Base64.Encoder
+        java.util.BitSet
+        java.util.Calendar
+        java.util.Calendar.Builder
+        java.util.Collections
+        java.util.Currency
+        <java.util.Date>
+            import ==> std.time.Date
+            There are no implemented methods to do mapping yet.
+        </java.util.Date>
+        java.util.Dictionary
+        java.util.DoubleSummaryStatistics
+        java.util.EnumMap
+        java.util.EnumSet
+        java.util.EventListenerProxy
+        java.util.EventObject
+        java.util.FormattableFlags
+        java.util.Formatter
+        java.util.GregorianCalendar
+        java.util.HashMap
+        java.util.HashSet
+        java.util.Hashtable
+        java.util.IdentityHashMap
+        java.util.IntSummaryStatistics
+        java.util.LinkedHashMap
+        java.util.LinkedHashSet
+        java.util.LinkedList
+        java.util.ListResourceBundle
+        java.util.Locale
+        java.util.Locale.Builder
+        java.util.Locale.LanguageRange
+        java.util.LongSummaryStatistics
+        java.util.Objects
+        java.util.Observable
+        java.util.Optional
+        java.util.OptionalDouble
+        java.util.OptionalInt
+        java.util.OptionalLong
+        java.util.PriorityQueue
+        java.util.Properties
+        java.util.PropertyPermission
+        java.util.PropertyResourceBundle
+        java.util.Random
+        java.util.ResourceBundle
+        java.util.ResourceBundle.Control
+        java.util.Scanner
+        java.util.ServiceLoader
+        java.util.SimpleTimeZone
+        java.util.Spliterators
+        java.util.Spliterators.AbstractDoubleSpliterator
+        java.util.Spliterators.AbstractIntSpliterator
+        java.util.Spliterators.AbstractLongSpliterator
+        java.util.Spliterators.AbstractSpliterator
+        java.util.SplittableRandom
+        java.util.Stack
+        java.util.StringJoiner
+        java.util.StringTokenizer
+        java.util.Timer
+        java.util.TimerTask
+        java.util.TimeZone
+        java.util.TreeMap
+        java.util.TreeSet
+        java.util.UUID
+        java.util.Vector
+        java.util.WeakHashMap
+        // Enums:
+        java.util.Formatter.BigDecimalLayoutForm
+        java.util.Locale.Category
+        java.util.Locale.FilteringMode
+        // Exceptions:
+        java.util.ConcurrentModificationException
+        java.util.DuplicateFormatFlagsException
+        java.util.EmptyStackException
+        java.util.FormatFlagsConversionMismatchException
+        java.util.FormatterClosedException
+        java.util.IllegalFormatCodePointException
+        java.util.IllegalFormatConversionException
+        java.util.IllegalFormatException
+        java.util.IllegalFormatFlagsException
+        java.util.IllegalFormatPrecisionException
+        java.util.IllegalFormatWidthException
+        java.util.IllformedLocaleException
+        java.util.InputMismatchException
+        java.util.InvalidPropertiesFormatException
+        java.util.MissingFormatArgumentException
+        java.util.MissingFormatWidthException
+        java.util.MissingResourceException
+        java.util.NoSuchElementException
+        java.util.TooManyListenersException
+        java.util.UnknownFormatConversionException
+        java.util.UnknownFormatFlagsException
+        // Errors:
+        java.util.ServiceConfigurationError
+    </java.util>
+</JavaApiList>

@@ -1,0 +1,5 @@
+/*---
+desc: void type
+---*/
+
+function main(): void {}

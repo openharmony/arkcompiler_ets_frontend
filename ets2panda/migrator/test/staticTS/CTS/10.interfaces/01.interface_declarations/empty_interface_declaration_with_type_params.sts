@@ -1,0 +1,15 @@
+{% for id in identifiers %}
+{% for static in ["", "static"] %}
+{% for params in identifiers_list %}
+
+/*---
+desc: Empty interface declaration with type parameters
+params: {{.static}} interface {{.id}}<{{.params}}>{} 
+---*/
+
+{{.static}} interface {{.id}}<{{.params}}>{}
+function main(): void {}
+
+{% endfor %}
+{% endfor %}
+{% endfor %}

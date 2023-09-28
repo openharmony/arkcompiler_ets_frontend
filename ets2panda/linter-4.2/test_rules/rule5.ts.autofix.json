@@ -1,0 +1,28 @@
+{
+    "nodes": [
+        {
+            "line": 4,
+            "column": 8,
+            "problem": "VarDeclaration",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
+        },
+        {
+            "line": 14,
+            "column": 5,
+            "problem": "VarDeclaration",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
+        },
+        {
+            "line": 6,
+            "column": 12,
+            "problem": "StrictDiagnostic",
+            "autofixable": false,
+            "suggest": "Variable 'x' is used before being assigned.",
+            "rule": "Variable 'x' is used before being assigned."
+        }
+    ]
+}

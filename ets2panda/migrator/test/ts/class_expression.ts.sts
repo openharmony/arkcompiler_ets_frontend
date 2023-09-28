@@ -1,0 +1,78 @@
+/*
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+function foo(): void {
+    class C  {
+        private f : C = this;
+        public getf(): C {
+            return this.f;
+        }
+    }
+
+    let c = new C();
+}
+function bar(): void {
+    let f = (c : __UnknownType__ /* new () => object */): void => {
+        new __UnknownType__ /* c */();
+    }
+;
+    class __migrator_class_1  {
+        public f : Double = 1;
+    }
+
+    f((): __migrator_class_1 => new __migrator_class_1());
+}
+function goo(n : Double): void {
+    {
+        let f = (c : __UnknownType__ /* new(n: number) => object */): Object => {
+            return new __UnknownType__ /* c */(1);
+        }
+;
+        switch (n) {
+            case 0:
+                {
+                    class C  {
+                        private s_ : String ;
+                        public constructor(s : String) {
+                            this.s_ = s;
+                        }
+
+                        public get s(): String {
+                            return this.s_;
+                        }
+                        public set s(s : String){
+                            this.s_ = s;
+                        }
+                    }
+
+                    let c = new C("goo");
+                    break;
+                }
+            case 1:
+                {
+                    class __migrator_class_2  {
+                        private f : Double ;
+                        public constructor(n : Double) {
+                            this.f = n;
+                        }
+
+                    }
+
+                    f((n : Double): __migrator_class_2 => new __migrator_class_2(n));
+                }
+        }
+
+    }
+}

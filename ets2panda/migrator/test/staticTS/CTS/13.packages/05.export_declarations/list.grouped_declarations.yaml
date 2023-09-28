@@ -1,0 +1,5 @@
+--- # List of declarations, grouped into list. These cannot be used as toplevel declarations
+
+- "let c = 1, b = 2;"
+- "let c: int = 2, b = 1.0, z = \"hello\";"
+- "const a: int = 1, b = \"a string\";"

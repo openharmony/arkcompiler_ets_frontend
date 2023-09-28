@@ -1,0 +1,11 @@
+--- # List of keywords denoting predefined data types
+- boolean
+- byte
+- char
+- double
+- float
+- int
+- long
+- short
+- string
+- void

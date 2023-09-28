@@ -1,0 +1,12 @@
+/*---
+desc: While statement
+---*/
+
+function main(): void {
+  let i = 1;
+  do {
+    i--;
+  } while (i > 0);
+
+  assert i == 0;
+}

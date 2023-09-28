@@ -1,0 +1,20 @@
+{
+    "nodes": [
+        {
+            "line": 8,
+            "column": 9,
+            "problem": "InstanceofUnsupported",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
+        },
+        {
+            "line": 9,
+            "column": 9,
+            "problem": "InstanceofUnsupported",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
+        }
+    ]
+}

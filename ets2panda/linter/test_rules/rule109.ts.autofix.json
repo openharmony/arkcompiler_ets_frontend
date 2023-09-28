@@ -1,0 +1,20 @@
+{
+    "nodes": [
+        {
+            "line": 4,
+            "column": 5,
+            "problem": "IndexMember",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Indexed signatures are not supported (arkts-no-indexed-signatures)"
+        },
+        {
+            "line": 7,
+            "column": 24,
+            "problem": "ObjectLiteralNoContextType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        }
+    ]
+}

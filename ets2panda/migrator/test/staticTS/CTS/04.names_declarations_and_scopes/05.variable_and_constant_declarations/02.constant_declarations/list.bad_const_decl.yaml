@@ -1,0 +1,4 @@
+--- # List of incorrect const declaration forms
+- "const x;"
+- "const y: int;"
+

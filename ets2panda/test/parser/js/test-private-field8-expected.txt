@@ -1,0 +1,1 @@
+SyntaxError: Private fields can not be deleted [test-private-field8.js:19:23]

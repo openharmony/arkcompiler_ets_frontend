@@ -1,0 +1,53 @@
+/*
+ * Copyright (c) 2022-2022 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.ohos.migrator.tests.java;
+
+import * from "std/math/math";
+open class Main  {
+    interface I1 {
+        M(): void ;
+    }
+
+    interface I2 {
+        M(b : boolean): int ;
+    }
+
+    interface I3 {
+        M(i : int, s : String): int ;
+    }
+
+    open Test(): void {
+        let i1 : I1 = (): void => {
+        }
+;
+        i1.M();
+        let i2 : I2 = (x : boolean): int => !x ? 1 : 2;
+        let i : int = i2.M(true);
+        let i2_2 : I2 = getLambda();
+        i2_2.M(false);
+        PassLambdaByParam((x1 : int, x2 : String): int => x2.contains("x", 0) ? x1 : 0);
+    }
+    open getLambda(): I2 {
+        return (b : boolean): int => {
+            if (b) return 10;
+            else return 20;
+        }
+;
+    }
+    open PassLambdaByParam(i3 : I3): int {
+        return i3.M(10, "Text");
+    }
+}
+

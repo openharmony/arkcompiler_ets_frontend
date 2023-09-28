@@ -1,0 +1,1 @@
+SyntaxError: 'declare' modifier cannot appear on class elements of this kind [test_declare_method.ts:18:16]

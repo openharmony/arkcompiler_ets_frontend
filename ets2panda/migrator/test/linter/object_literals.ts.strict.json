@@ -1,0 +1,363 @@
+{
+    "copyright": [
+        "Copyright (c) 2023-2023 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "nodes": [
+        {
+            "line": 27,
+            "column": 8,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 28,
+            "column": 8,
+            "problem": "AnyType"
+        },
+        {
+            "line": 36,
+            "column": 14,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 37,
+            "column": 13,
+            "problem": "AnyType"
+        },
+        {
+            "line": 37,
+            "column": 19,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 38,
+            "column": 13,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 38,
+            "column": 38,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 39,
+            "column": 17,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 42,
+            "column": 12,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 43,
+            "column": 12,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 44,
+            "column": 12,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 49,
+            "column": 10,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 50,
+            "column": 10,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 51,
+            "column": 10,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 52,
+            "column": 10,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 55,
+            "column": 12,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 56,
+            "column": 12,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 57,
+            "column": 12,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 62,
+            "column": 5,
+            "problem": "FuncWithoutReturnType"
+        },
+        {
+            "line": 62,
+            "column": 5,
+            "problem": "LocalFunction"
+        },
+        {
+            "line": 62,
+            "column": 22,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 63,
+            "column": 5,
+            "problem": "FuncWithoutReturnType"
+        },
+        {
+            "line": 63,
+            "column": 5,
+            "problem": "LocalFunction"
+        },
+        {
+            "line": 63,
+            "column": 22,
+            "problem": "AnyType"
+        },
+        {
+            "line": 63,
+            "column": 28,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 64,
+            "column": 5,
+            "problem": "FuncWithoutReturnType"
+        },
+        {
+            "line": 64,
+            "column": 5,
+            "problem": "LocalFunction"
+        },
+        {
+            "line": 64,
+            "column": 22,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 64,
+            "column": 47,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 65,
+            "column": 5,
+            "problem": "FuncWithoutReturnType"
+        },
+        {
+            "line": 65,
+            "column": 5,
+            "problem": "LocalFunction"
+        },
+        {
+            "line": 65,
+            "column": 26,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 66,
+            "column": 5,
+            "problem": "FuncWithoutReturnType"
+        },
+        {
+            "line": 66,
+            "column": 5,
+            "problem": "LocalFunction"
+        },
+        {
+            "line": 69,
+            "column": 9,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 70,
+            "column": 10,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 71,
+            "column": 10,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 72,
+            "column": 10,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 76,
+            "column": 5,
+            "problem": "FuncWithoutReturnType"
+        },
+        {
+            "line": 76,
+            "column": 5,
+            "problem": "LocalFunction"
+        },
+        {
+            "line": 76,
+            "column": 29,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 77,
+            "column": 5,
+            "problem": "LocalFunction"
+        },
+        {
+            "line": 77,
+            "column": 22,
+            "problem": "AnyType"
+        },
+        {
+            "line": 77,
+            "column": 35,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 78,
+            "column": 5,
+            "problem": "LocalFunction"
+        },
+        {
+            "line": 78,
+            "column": 22,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 78,
+            "column": 54,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 79,
+            "column": 5,
+            "problem": "LocalFunction"
+        },
+        {
+            "line": 79,
+            "column": 33,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 80,
+            "column": 5,
+            "problem": "LocalFunction"
+        },
+        {
+            "line": 84,
+            "column": 24,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 84,
+            "column": 42,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 85,
+            "column": 24,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 85,
+            "column": 42,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 86,
+            "column": 24,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 86,
+            "column": 42,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 87,
+            "column": 24,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 87,
+            "column": 42,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 91,
+            "column": 16,
+            "problem": "ArrayLiteralNoContextType"
+        },
+        {
+            "line": 91,
+            "column": 18,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 91,
+            "column": 35,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 92,
+            "column": 15,
+            "problem": "AnyType"
+        },
+        {
+            "line": 92,
+            "column": 25,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 92,
+            "column": 42,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 93,
+            "column": 15,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 93,
+            "column": 44,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 93,
+            "column": 61,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 94,
+            "column": 23,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 94,
+            "column": 40,
+            "problem": "ObjectLiteralNoContextType"
+        }
+    ]
+}

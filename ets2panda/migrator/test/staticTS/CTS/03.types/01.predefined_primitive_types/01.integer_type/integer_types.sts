@@ -1,0 +1,11 @@
+{% for item in integer_types %}
+
+/*---
+desc: Integer type {{.item.type}}
+params: {{.item.type}}, {{.item.value}}
+---*/
+
+let x: {{.item.type}} = {{.item.value}};
+function main(): void {}
+
+{% endfor %}

@@ -1,0 +1,20 @@
+--- # Wrong type constraints for generic parameters
+
+- boolean
+- byte
+- char
+- double
+- float
+- int
+- int && Object
+- int && Object && String
+- long
+- Object && int
+- Object && int && String
+- Object && String && int
+- short
+- void
+- "enum Color { Red, Green, Blue }"
+- "int[]"
+- "int, extends Object"
+- "Object, extends int"

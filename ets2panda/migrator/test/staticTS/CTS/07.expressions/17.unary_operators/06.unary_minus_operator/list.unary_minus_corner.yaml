@@ -1,0 +1,7 @@
+--- # List of corner cases for unary minus
+
+- {origin:  NaN, dest:  NaN}
+- {origin:  INF, dest: -INF}
+- {origin: -INF, dest:  INF}
+- {origin:  0.0, dest: -0.0}
+- {origin: -0.0, dest:  0.0}

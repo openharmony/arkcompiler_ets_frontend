@@ -1,0 +1,1 @@
+SyntaxError: return keyword should be used in function body [test-class-static-block2.js:18:9]

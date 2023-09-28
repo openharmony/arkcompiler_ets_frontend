@@ -1,0 +1,11 @@
+{% for item in array_literal %}
+
+/*---
+desc: Array literal
+params: {{.item.array}}
+---*/
+
+let x = {{.item.array}};
+function main(): void {}
+
+{% endfor %}

@@ -1,0 +1,11 @@
+{
+   "compilerOptions": {
+        "outDir": "build"
+    },
+    "files": [
+        "hello.ets"
+    ],
+    "include": [
+        "packages/*"
+    ]
+}

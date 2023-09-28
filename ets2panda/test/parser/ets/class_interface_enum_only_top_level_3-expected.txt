@@ -1,0 +1,1 @@
+SyntaxError: Local type declaration (class, struct, interface and enum) support is not yet implemented. [class_interface_enum_only_top_level_3.ets:17:3]

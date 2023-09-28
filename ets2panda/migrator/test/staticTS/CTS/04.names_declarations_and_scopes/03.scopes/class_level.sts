@@ -1,0 +1,13 @@
+/*---
+desc: Class level scope
+---*/
+package scopes;
+
+class C {
+  x: int = 1;
+  foo(): int {
+    return this.x;
+  }
+}
+
+function main(): void {}

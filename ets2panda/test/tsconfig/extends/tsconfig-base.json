@@ -1,0 +1,16 @@
+{
+    "extends": "package/tsconfig-base-base.json",
+    "compilerOptions": {
+        "outDir": "build",
+        "rootDir": ""
+    },
+    "files": [
+        "src/file1.ts"
+    ],
+    "include": [
+        "src/component"
+    ],
+    "exclude": [
+        "**/exclude.ts"
+    ]
+}

@@ -1,0 +1,11 @@
+{% for name in qualified_names %}
+{% for id in words %}
+/*---
+desc: Import declaration with 'as' like 'import a.b.c.d as name' 
+params: qualified name = {{.name}}, identifier = {{.id}}
+---*/
+
+import {{.name}} as {{.id}};
+
+{% endfor %}
+{% endfor %}

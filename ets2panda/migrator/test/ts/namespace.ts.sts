@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+export namespace X {
+    export open class C implements I  {
+        private n : Double ;
+        public constructor(n : Double) {
+            this.n = n;
+        }
+        public static s : String = "X.C";
+    }
+
+    export interface I {
+    }
+
+    export enum E {
+        FAIL,
+        OK
+    }
+
+    export function f(): Double {
+        return pi;
+    }
+    export let c : C = new C(f());
+    export const pi = 3.1416;
+    export type S = C; /* export namespace N {         export function q(): void {}  export class D {}     } */
+    export let n = __invalid_expression( /* N */);
+}
+let x = __invalid_expression( /* X */);
+function bad(): X.S {
+    let c = new __UnknownType__ /* x.C */(__invalid_expression( /* x */).E.FAIL);
+    let i = __invalid_expression( /* x */).f();
+    let s = (i !== __invalid_expression( /* foo() */).pi) ? "bad" : "good";
+    try {
+        bar();
+    }
+    catch (e) {
+        let ex = e as __UnknownType__ /* typeof X */;
+        console.log(__invalid_expression( /* ex */).C.s);
+    }
+
+    __invalid_expression( /* X.N */).q();
+    __invalid_expression( /* X.n */).q();
+    __invalid_expression( /* x.N */).q();
+    __invalid_expression( /* x.n */).q();
+    let d : __UnknownType__ /* X.N.D */ = new __UnknownType__ /* X.N.D */();
+    d = new __UnknownType__ /* X.n.D */();
+    d = new __UnknownType__ /* x.N.D */();
+    d = new __UnknownType__ /* x.n.D */();
+    return __invalid_expression( /* x */).c;
+}
+function good(): X.S {
+    let c : X.C = new X.C(X.E.OK);
+    let i = X.f();
+    if (i === X.pi) console.log("OK");
+    try {
+        bar();
+    }
+    catch (e) {
+        console.log(X.C.s);
+    }
+
+    return X.c;
+}
+function foo(): __UnknownType__ /* typeof X */ {
+    return __invalid_expression( /* X */);
+}
+function bar(): Never {
+    throw new Error("", __invalid_expression( /* X */));
+}
+open class BadClass1 extends __UnknownType__ /* x.C */  {
+}
+
+open class BadClass2 extends __UnknownType__ /* X.N.D */  {
+}
+
+open class BadClass3 extends __UnknownType__ /* x.N.D */  {
+}
+
+open class BadClass4 extends __UnknownType__ /* X.n.D */  {
+}
+
+open class BadClass5 extends __UnknownType__ /* x.n.D */  {
+}
+
+open class GoodClass extends X.C  {
+}

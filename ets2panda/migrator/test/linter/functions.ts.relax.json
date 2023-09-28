@@ -1,0 +1,73 @@
+{
+    "copyright": [
+        "Copyright (c) 2022-2023 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "nodes": [
+        {
+            "line": 17,
+            "column": 17,
+            "problem": "ArrayLiteralNoContextType"
+        },
+        {
+            "line": 23,
+            "column": 13,
+            "problem": "SpreadOperator"
+        },
+        {
+            "line": 28,
+            "column": 5,
+            "problem": "GeneratorFunction"
+        },
+        {
+            "line": 31,
+            "column": 13,
+            "problem": "YieldExpression"
+        },
+        {
+            "line": 69,
+            "column": 17,
+            "problem": "ArrayLiteralNoContextType"
+        },
+        {
+            "line": 73,
+            "column": 19,
+            "problem": "LambdaWithTypeParameters"
+        },
+        {
+            "line": 84,
+            "column": 16,
+            "problem": "ArrayLiteralNoContextType"
+        },
+        {
+            "line": 88,
+            "column": 19,
+            "problem": "LambdaWithTypeParameters"
+        },
+        {
+            "line": 91,
+            "column": 1,
+            "problem": "FunctionContainsThis"
+        },
+        {
+            "line": 109,
+            "column": 13,
+            "problem": "LogNotWithNotBool"
+        },
+        {
+            "line": 109,
+            "column": 14,
+            "problem": "ObjectRuntimeCheck"
+        }
+    ]
+}

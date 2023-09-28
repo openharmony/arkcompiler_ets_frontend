@@ -1,0 +1,4 @@
+---
+- a\u0024
+- a‌\u0024 # Zero Width Non-Joiner (U+200C) between a and \u0024
+- a‍\u0024 # Zero Width Joiner (U+200D) between a and \u0024

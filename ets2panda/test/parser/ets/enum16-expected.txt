@@ -1,0 +1,1 @@
+SyntaxError: Invalid numeric literal [enum16.ets:18:13]

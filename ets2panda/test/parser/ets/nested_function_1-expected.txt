@@ -1,0 +1,1 @@
+SyntaxError: Nested functions are not allowed [nested_function_1.ets:19:5]

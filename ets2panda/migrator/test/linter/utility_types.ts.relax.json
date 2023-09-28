@@ -1,0 +1,718 @@
+{
+    "copyright": [
+        "Copyright (c) 2023-2023 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "nodes": [
+        {
+            "line": 17,
+            "column": 14,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 19,
+            "column": 14,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 21,
+            "column": 14,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 21,
+            "column": 22,
+            "problem": "UnionType"
+        },
+        {
+            "line": 30,
+            "column": 53,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 31,
+            "column": 16,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 31,
+            "column": 18,
+            "problem": "SpreadAssignment"
+        },
+        {
+            "line": 31,
+            "column": 27,
+            "problem": "SpreadAssignment"
+        },
+        {
+            "line": 34,
+            "column": 19,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 39,
+            "column": 37,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 46,
+            "column": 9,
+            "problem": "InterfaceOptionalProp"
+        },
+        {
+            "line": 47,
+            "column": 9,
+            "problem": "InterfaceOptionalProp"
+        },
+        {
+            "line": 50,
+            "column": 24,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 51,
+            "column": 17,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 51,
+            "column": 35,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 59,
+            "column": 17,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 59,
+            "column": 34,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 72,
+            "column": 20,
+            "problem": "UnionType"
+        },
+        {
+            "line": 72,
+            "column": 20,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 72,
+            "column": 30,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 72,
+            "column": 40,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 74,
+            "column": 17,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 74,
+            "column": 44,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 75,
+            "column": 16,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 76,
+            "column": 16,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 77,
+            "column": 18,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 90,
+            "column": 24,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 90,
+            "column": 35,
+            "problem": "UnionType"
+        },
+        {
+            "line": 90,
+            "column": 35,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 90,
+            "column": 45,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 92,
+            "column": 31,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 108,
+            "column": 24,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 108,
+            "column": 35,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 110,
+            "column": 31,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 118,
+            "column": 21,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 118,
+            "column": 32,
+            "problem": "UnionType"
+        },
+        {
+            "line": 118,
+            "column": 32,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 118,
+            "column": 46,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 120,
+            "column": 32,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 130,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 130,
+            "column": 23,
+            "problem": "UnionType"
+        },
+        {
+            "line": 130,
+            "column": 23,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 130,
+            "column": 29,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 130,
+            "column": 35,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 130,
+            "column": 40,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 132,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 132,
+            "column": 23,
+            "problem": "UnionType"
+        },
+        {
+            "line": 132,
+            "column": 23,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 132,
+            "column": 29,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 132,
+            "column": 35,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 132,
+            "column": 40,
+            "problem": "UnionType"
+        },
+        {
+            "line": 132,
+            "column": 40,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 132,
+            "column": 46,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 134,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 134,
+            "column": 23,
+            "problem": "UnionType"
+        },
+        {
+            "line": 138,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 138,
+            "column": 23,
+            "problem": "UnionType"
+        },
+        {
+            "line": 138,
+            "column": 23,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 138,
+            "column": 29,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 138,
+            "column": 35,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 138,
+            "column": 40,
+            "problem": "UnionType"
+        },
+        {
+            "line": 138,
+            "column": 40,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 138,
+            "column": 46,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 140,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 140,
+            "column": 23,
+            "problem": "UnionType"
+        },
+        {
+            "line": 144,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 144,
+            "column": 27,
+            "problem": "UnionType"
+        },
+        {
+            "line": 144,
+            "column": 45,
+            "problem": "UndefinedType"
+        },
+        {
+            "line": 146,
+            "column": 15,
+            "problem": "GenericArrayType"
+        },
+        {
+            "line": 146,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 146,
+            "column": 27,
+            "problem": "UnionType"
+        },
+        {
+            "line": 146,
+            "column": 45,
+            "problem": "UndefinedType"
+        },
+        {
+            "line": 150,
+            "column": 22,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 152,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 154,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 156,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 158,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 160,
+            "column": 15,
+            "problem": "GenericArrayType"
+        },
+        {
+            "line": 160,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 160,
+            "column": 26,
+            "problem": "AnyType"
+        },
+        {
+            "line": 162,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 166,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 168,
+            "column": 15,
+            "problem": "GenericArrayType"
+        },
+        {
+            "line": 168,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 170,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 172,
+            "column": 15,
+            "problem": "GenericArrayType"
+        },
+        {
+            "line": 172,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 172,
+            "column": 37,
+            "problem": "AnyType"
+        },
+        {
+            "line": 176,
+            "column": 20,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 176,
+            "column": 54,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 178,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 180,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 182,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 184,
+            "column": 15,
+            "problem": "GenericArrayType"
+        },
+        {
+            "line": 184,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 186,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 188,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 188,
+            "column": 26,
+            "problem": "AnyType"
+        },
+        {
+            "line": 190,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 199,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 201,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 201,
+            "column": 28,
+            "problem": "AnyType"
+        },
+        {
+            "line": 203,
+            "column": 15,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 207,
+            "column": 5,
+            "problem": "FunctionContainsThis"
+        },
+        {
+            "line": 211,
+            "column": 32,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 212,
+            "column": 16,
+            "problem": "FunctionApplyBindCall"
+        },
+        {
+            "line": 217,
+            "column": 5,
+            "problem": "FunctionContainsThis"
+        },
+        {
+            "line": 221,
+            "column": 22,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 221,
+            "column": 56,
+            "problem": "FunctionApplyBindCall"
+        },
+        {
+            "line": 226,
+            "column": 1,
+            "problem": "FunctionContainsThis"
+        },
+        {
+            "line": 227,
+            "column": 35,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 229,
+            "column": 19,
+            "problem": "IntersectionType"
+        },
+        {
+            "line": 229,
+            "column": 23,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 229,
+            "column": 32,
+            "problem": "IntersectionType"
+        },
+        {
+            "line": 232,
+            "column": 62,
+            "problem": "IntersectionType"
+        },
+        {
+            "line": 233,
+            "column": 28,
+            "problem": "LogicalWithNonBoolean"
+        },
+        {
+            "line": 233,
+            "column": 28,
+            "problem": "ObjectRuntimeCheck"
+        },
+        {
+            "line": 233,
+            "column": 41,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 234,
+            "column": 31,
+            "problem": "LogicalWithNonBoolean"
+        },
+        {
+            "line": 234,
+            "column": 31,
+            "problem": "ObjectRuntimeCheck"
+        },
+        {
+            "line": 234,
+            "column": 47,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 235,
+            "column": 16,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 235,
+            "column": 18,
+            "problem": "SpreadAssignment"
+        },
+        {
+            "line": 235,
+            "column": 27,
+            "problem": "SpreadAssignment"
+        },
+        {
+            "line": 235,
+            "column": 43,
+            "problem": "IntersectionType"
+        },
+        {
+            "line": 238,
+            "column": 26,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 239,
+            "column": 11,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 240,
+            "column": 18,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 254,
+            "column": 21,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 255,
+            "column": 27,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 257,
+            "column": 52,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 258,
+            "column": 33,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 262,
+            "column": 21,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 263,
+            "column": 26,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 265,
+            "column": 52,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 266,
+            "column": 33,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 270,
+            "column": 30,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 271,
+            "column": 21,
+            "problem": "UtilityType"
+        },
+        {
+            "line": 275,
+            "column": 30,
+            "problem": "StringLiteralType"
+        },
+        {
+            "line": 276,
+            "column": 34,
+            "problem": "UtilityType"
+        }
+    ]
+}

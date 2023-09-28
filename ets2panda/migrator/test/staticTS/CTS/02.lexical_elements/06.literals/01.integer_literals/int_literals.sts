@@ -1,0 +1,11 @@
+{% for lit in int_literals %}
+
+/*---
+desc: Correct integer literals with bases 16, 10, 8 and 2
+params: {{.lit}}
+---*/
+
+let x = {{.lit}};
+function main(): void {}
+
+{% endfor %}

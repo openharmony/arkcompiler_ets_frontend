@@ -1,0 +1,12 @@
+{
+    "nodes": [
+        {
+            "line": 2,
+            "column": 5,
+            "problem": "LocalFunction",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
+        }
+    ]
+}

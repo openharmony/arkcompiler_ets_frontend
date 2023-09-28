@@ -1,0 +1,1 @@
+SyntaxError: Type expected [test_class_property1.ts:18:7]
