@@ -18,7 +18,9 @@
 
 #include "ir/expression.h"
 #include "lexer/token/tokenType.h"
-
+namespace panda::es2panda::checker {
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
 namespace panda::es2panda::ir {
 class AssignmentExpression : public Expression {
 private:
@@ -44,6 +46,9 @@ public:
     }
 
     explicit AssignmentExpression(Tag tag, AssignmentExpression const &other, Expression *left, Expression *right);
+
+    // TODO (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
 
     [[nodiscard]] const Expression *Left() const noexcept
     {

@@ -22,6 +22,7 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/switchBuilder.h"
 #include "compiler/function/functionBuilder.h"
+#include "util/bitset.h"
 #include "util/helpers.h"
 namespace panda::es2panda::compiler {
 
@@ -438,9 +439,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ScriptFunction *node) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::SpreadElement *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::SpreadElement *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -554,8 +554,11 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ETSWildcardType *expr) const
 // JSCompiler::compile methods for EXPRESSIONS in alphabetical order
 void JSCompiler::Compile(const ir::ArrayExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::RegScope rs(pg);
+    compiler::VReg array_obj = pg->AllocReg();
+
+    pg->CreateArray(expr, expr->Elements(), array_obj);
 }
 
 void JSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
@@ -566,8 +569,29 @@ void JSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
 
 void JSCompiler::Compile(const ir::AssignmentExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::RegScope rs(pg);
+    auto lref = compiler::JSLReference::Create(pg, expr->Left(), false);
+
+    if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND_EQUAL ||
+        expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_OR_EQUAL) {
+        compiler::PandaGen::Unimplemented();
+    }
+
+    if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+        expr->Right()->Compile(pg);
+        lref.SetValue();
+        return;
+    }
+
+    compiler::VReg lhs_reg = pg->AllocReg();
+
+    lref.GetValue();
+    pg->StoreAccumulator(expr->Left(), lhs_reg);
+    expr->Right()->Compile(pg);
+    pg->Binary(expr, expr->OperatorType(), lhs_reg);
+
+    lref.SetValue();
 }
 
 void JSCompiler::Compile(const ir::AwaitExpression *expr) const
@@ -899,13 +923,204 @@ void JSCompiler::Compile(const ir::NewExpression *expr) const
 
 void JSCompiler::Compile(const ir::ObjectExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    if (expr->Properties().empty()) {
+        pg->CreateEmptyObject(expr);
+        return;
+    }
+
+    util::BitSet compiled(expr->Properties().size());
+    CompileStaticProperties(pg, &compiled, expr);
+
+    if (compiled.Any(false)) {
+        CompileRemainingProperties(pg, &compiled, expr);
+    }
 }
 
-void JSCompiler::Compile(const ir::OpaqueTypeNode *node) const
+static compiler::Literal CreateLiteral(const ir::Property *prop, util::BitSet *compiled, size_t prop_index)
 {
-    (void)node;
+    compiler::Literal lit = util::Helpers::ToConstantLiteral(prop->Value());
+    if (!lit.IsInvalid()) {
+        compiled->Set(prop_index);
+        return lit;
+    }
+
+    if (prop->Kind() != ir::PropertyKind::INIT) {
+        ASSERT(prop->IsAccessor());
+        return compiler::Literal::AccessorLiteral();
+    }
+
+    if (!prop->Value()->IsFunctionExpression()) {
+        return compiler::Literal::NullLiteral();
+    }
+
+    const ir::ScriptFunction *method = prop->Value()->AsFunctionExpression()->Function();
+
+    compiler::LiteralTag tag = compiler::LiteralTag::METHOD;
+
+    if (method->IsGenerator()) {
+        tag = compiler::LiteralTag::GENERATOR_METHOD;
+
+        if (method->IsAsyncFunc()) {
+            tag = compiler::LiteralTag::ASYNC_GENERATOR_METHOD;
+        }
+    }
+
+    compiled->Set(prop_index);
+    return compiler::Literal(tag, method->Scope()->InternalName());
+}
+
+static bool IsLiteralBufferCompatible(const ir::Expression *expr)
+{
+    if (expr->IsSpreadElement()) {
+        return false;
+    }
+
+    const ir::Property *prop = expr->AsProperty();
+    if (prop->Value()->IsFunctionExpression() && !prop->Value()->AsFunctionExpression()->Function()->IsMethod()) {
+        return false;
+    }
+
+    return util::Helpers::IsConstantPropertyKey(prop->Key(), prop->IsComputed()) &&
+           prop->Kind() != ir::PropertyKind::PROTO;
+}
+
+void JSCompiler::CompileStaticProperties(compiler::PandaGen *pg, util::BitSet *compiled,
+                                         const ir::ObjectExpression *expr) const
+{
+    bool has_method = false;
+    bool seen_computed = false;
+    compiler::LiteralBuffer buf;
+    std::unordered_map<util::StringView, size_t> prop_name_map;
+
+    for (size_t i = 0; i < expr->Properties().size(); i++) {
+        if (!IsLiteralBufferCompatible(expr->Properties()[i])) {
+            seen_computed = true;
+            continue;
+        }
+
+        const ir::Property *prop = expr->Properties()[i]->AsProperty();
+
+        util::StringView name = util::Helpers::LiteralToPropName(prop->Key());
+        size_t buffer_pos = buf.size();
+        auto res = prop_name_map.insert({name, buffer_pos});
+        if (res.second) {
+            if (seen_computed) {
+                break;
+            }
+
+            buf.emplace_back(name);
+            buf.emplace_back();
+        } else {
+            buffer_pos = res.first->second;
+        }
+
+        compiler::Literal lit = CreateLiteral(prop, compiled, i);
+        if (lit.IsTagMethod()) {
+            has_method = true;
+        }
+
+        buf[buffer_pos + 1] = std::move(lit);
+    }
+
+    if (buf.empty()) {
+        pg->CreateEmptyObject(expr);
+        return;
+    }
+
+    uint32_t buf_idx = pg->AddLiteralBuffer(std::move(buf));
+
+    if (has_method) {
+        pg->CreateObjectHavingMethod(expr, buf_idx);
+    } else {
+        pg->CreateObjectWithBuffer(expr, buf_idx);
+    }
+}
+
+void JSCompiler::CompileRemainingProperties(compiler::PandaGen *pg, const util::BitSet *compiled,
+                                            const ir::ObjectExpression *expr) const
+{
+    compiler::RegScope rs(pg);
+    compiler::VReg obj_reg = pg->AllocReg();
+
+    pg->StoreAccumulator(expr, obj_reg);
+
+    for (size_t i = 0; i < expr->Properties().size(); i++) {
+        if (compiled->Test(i)) {
+            continue;
+        }
+
+        compiler::RegScope prs(pg);
+
+        if (expr->Properties()[i]->IsSpreadElement()) {
+            compiler::VReg src_obj = pg->AllocReg();
+            auto const *const spread = expr->Properties()[i]->AsSpreadElement();
+
+            spread->Argument()->Compile(pg);
+            pg->StoreAccumulator(spread, src_obj);
+
+            pg->CopyDataProperties(spread, obj_reg, src_obj);
+            continue;
+        }
+
+        const ir::Property *prop = expr->Properties()[i]->AsProperty();
+
+        switch (prop->Kind()) {
+            case ir::PropertyKind::GET:
+            case ir::PropertyKind::SET: {
+                compiler::VReg key = pg->LoadPropertyKey(prop->Key(), prop->IsComputed());
+
+                compiler::VReg undef = pg->AllocReg();
+                pg->LoadConst(expr, compiler::Constant::JS_UNDEFINED);
+                pg->StoreAccumulator(expr, undef);
+
+                compiler::VReg getter = undef;
+                compiler::VReg setter = undef;
+
+                compiler::VReg accessor = pg->AllocReg();
+                pg->LoadAccumulator(prop->Value(), obj_reg);
+                prop->Value()->Compile(pg);
+                pg->StoreAccumulator(prop->Value(), accessor);
+
+                if (prop->Kind() == ir::PropertyKind::GET) {
+                    getter = accessor;
+                } else {
+                    setter = accessor;
+                }
+
+                pg->DefineGetterSetterByValue(expr, obj_reg, key, getter, setter, prop->IsComputed());
+                break;
+            }
+            case ir::PropertyKind::INIT: {
+                compiler::Operand key = pg->ToOwnPropertyKey(prop->Key(), prop->IsComputed());
+
+                if (prop->IsMethod()) {
+                    pg->LoadAccumulator(prop->Value(), obj_reg);
+                }
+
+                prop->Value()->Compile(pg);
+                pg->StoreOwnProperty(expr, obj_reg, key);
+                break;
+            }
+            case ir::PropertyKind::PROTO: {
+                prop->Value()->Compile(pg);
+                compiler::VReg proto = pg->AllocReg();
+                pg->StoreAccumulator(expr, proto);
+
+                pg->SetObjectWithProto(expr, proto, obj_reg);
+                break;
+            }
+            default: {
+                UNREACHABLE();
+            }
+        }
+    }
+
+    pg->LoadAccumulator(expr, obj_reg);
+}
+
+void JSCompiler::Compile([[maybe_unused]] const ir::OpaqueTypeNode *node) const
+{
     UNREACHABLE();
 }
 
@@ -1105,9 +1320,23 @@ void JSCompiler::Compile(const ir::UpdateExpression *expr) const
 
 void JSCompiler::Compile(const ir::YieldExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::RegScope rs(pg);
+
+    if (expr->Argument() != nullptr) {
+        expr->Argument()->Compile(pg);
+    } else {
+        pg->LoadConst(expr, compiler::Constant::JS_UNDEFINED);
+    }
+
+    if (expr->HasDelegate()) {
+        ASSERT(expr->Argument());
+        pg->FuncBuilder()->YieldStar(expr);
+    } else {
+        pg->FuncBuilder()->Yield(expr);
+    }
 }
+
 // Compile methods for LITERAL EXPRESSIONS in alphabetical order
 void JSCompiler::Compile(const ir::BigIntLiteral *expr) const
 {
@@ -1624,8 +1853,22 @@ void JSCompiler::Compile(const ir::TryStatement *st) const
 
 void JSCompiler::Compile(const ir::VariableDeclarator *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    auto lref = compiler::JSLReference::Create(pg, st->Id(), true);
+    const ir::VariableDeclaration *decl = st->Parent()->AsVariableDeclaration();
+
+    if (st->Init() != nullptr) {
+        st->Init()->Compile(pg);
+    } else {
+        if (decl->Kind() == ir::VariableDeclaration::VariableDeclarationKind::VAR) {
+            return;
+        }
+        if (decl->Kind() == ir::VariableDeclaration::VariableDeclarationKind::LET && !decl->Parent()->IsCatchClause()) {
+            pg->LoadConst(st, compiler::Constant::JS_UNDEFINED);
+        }
+    }
+
+    lref.SetValue();
 }
 
 void JSCompiler::Compile(const ir::VariableDeclaration *st) const
@@ -1636,11 +1879,30 @@ void JSCompiler::Compile(const ir::VariableDeclaration *st) const
     }
 }
 
+template <typename CodeGen>
+void CompileImpl(const ir::WhileStatement *while_stmt, [[maybe_unused]] CodeGen *cg)
+{
+    compiler::LabelTarget label_target(cg);
+
+    cg->SetLabel(while_stmt, label_target.ContinueTarget());
+    compiler::Condition::Compile(cg, while_stmt->Test(), label_target.BreakTarget());
+
+    {
+        compiler::LocalRegScope reg_scope(cg, while_stmt->Scope());
+        compiler::LabelContext label_ctx(cg, label_target);
+        while_stmt->Body()->Compile(cg);
+    }
+
+    cg->Branch(while_stmt, label_target.ContinueTarget());
+    cg->SetLabel(while_stmt, label_target.BreakTarget());
+}
+
 void JSCompiler::Compile(const ir::WhileStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    CompileImpl(st, pg);
 }
+
 // from ts folder
 void JSCompiler::Compile([[maybe_unused]] const ir::TSAnyKeyword *node) const
 {

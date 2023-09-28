@@ -17,6 +17,7 @@
 #define ES2PANDA_COMPILER_CORE_JSCOMPILER_H
 
 #include "compiler/core/ASTCompiler.h"
+#include "util/bitset.h"
 
 namespace panda::es2panda::ir {
 class AstNode;
@@ -36,6 +37,10 @@ public:
 #define DECLARE_JSCOMPILER_COMPILE_METHOD(_, __, nodeType, ___) void Compile(const ir::nodeType *node) const override;
     AST_NODE_REINTERPRET_MAPPING(DECLARE_JSCOMPILER_COMPILE_METHOD)
 #undef DECLARE_JSCOMPILER_COMPILE_METHOD
+    void CompileStaticProperties(compiler::PandaGen *pg, util::BitSet *compiled,
+                                 const ir::ObjectExpression *expr) const;
+    void CompileRemainingProperties(compiler::PandaGen *pg, const util::BitSet *compiled,
+                                    const ir::ObjectExpression *expr) const;
 
 private:
     PandaGen *GetPandaGen() const;

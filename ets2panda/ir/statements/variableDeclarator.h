@@ -18,7 +18,9 @@
 
 #include "ir/expression.h"
 #include "ir/statement.h"
-
+namespace panda::es2panda::checker {
+class TSAnalyzer;
+}  // namespace panda::es2panda::checker
 namespace panda::es2panda::ir {
 class Expression;
 
@@ -30,6 +32,9 @@ public:
         : TypedStatement(AstNodeType::VARIABLE_DECLARATOR), id_(ident), init_(init)
     {
     }
+
+    // TODO (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    friend class checker::TSAnalyzer;
 
     Expression *Init()
     {

@@ -206,169 +206,17 @@ void ArrayExpression::Dump(ir::AstDumper *dumper) const
 
 void ArrayExpression::Compile(compiler::PandaGen *pg) const
 {
-    compiler::RegScope rs(pg);
-    compiler::VReg array_obj = pg->AllocReg();
-
-    pg->CreateArray(this, elements_, array_obj);
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void ArrayExpression::Compile(compiler::ETSGen *const etsg) const
 {
-    const compiler::RegScope rs(etsg);
-
-    const auto arr = etsg->AllocReg();
-    const auto dim = etsg->AllocReg();
-
-    const compiler::TargetTypeContext ttctx(etsg, etsg->Checker()->GlobalIntType());
-    etsg->LoadAccumulatorInt(this, static_cast<std::int32_t>(elements_.size()));
-    etsg->StoreAccumulator(this, dim);
-    etsg->NewArray(this, arr, dim, TsType());
-
-    const auto index_reg = etsg->AllocReg();
-    for (std::uint32_t i = 0; i < elements_.size(); ++i) {
-        const auto *const expr = elements_[i];
-        etsg->LoadAccumulatorInt(this, i);
-        etsg->StoreAccumulator(this, index_reg);
-
-        const compiler::TargetTypeContext ttctx2(etsg, preferred_type_);
-        if (!etsg->TryLoadConstantExpression(expr)) {
-            expr->Compile(etsg);
-        }
-
-        etsg->ApplyConversion(expr, nullptr);
-        etsg->ApplyConversion(expr);
-
-        if (expr->TsType()->IsETSArrayType()) {
-            etsg->StoreArrayElement(this, arr, index_reg, expr->TsType());
-        } else {
-            etsg->StoreArrayElement(this, arr, index_reg, TsType()->AsETSArrayType()->ElementType());
-        }
-    }
-
-    etsg->LoadAccumulator(this, arr);
-}
-
-void GetSpreadElementType(checker::TSChecker *checker, checker::Type *spread_type,
-                          ArenaVector<checker::Type *> &element_types, const lexer::SourcePosition &loc)
-{
-    bool in_const_context = checker->HasStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
-
-    if (spread_type->IsObjectType() && spread_type->AsObjectType()->IsTupleType()) {
-        ArenaVector<checker::Type *> tuple_element_types(checker->Allocator()->Adapter());
-        checker::TupleType *spread_tuple = spread_type->AsObjectType()->AsTupleType();
-
-        for (auto *it : spread_tuple->Properties()) {
-            if (in_const_context) {
-                element_types.push_back(it->TsType());
-                continue;
-            }
-
-            tuple_element_types.push_back(it->TsType());
-        }
-
-        if (in_const_context) {
-            return;
-        }
-
-        element_types.push_back(checker->CreateUnionType(std::move(tuple_element_types)));
-        return;
-    }
-
-    if (spread_type->IsUnionType()) {
-        ArenaVector<checker::Type *> spread_types(checker->Allocator()->Adapter());
-        bool throw_error = false;
-
-        for (auto *type : spread_type->AsUnionType()->ConstituentTypes()) {
-            if (type->IsArrayType()) {
-                spread_types.push_back(type->AsArrayType()->ElementType());
-                continue;
-            }
-
-            if (type->IsObjectType() && type->AsObjectType()->IsTupleType()) {
-                checker::TupleType *tuple = type->AsObjectType()->AsTupleType();
-
-                for (auto *it : tuple->Properties()) {
-                    spread_types.push_back(it->TsType());
-                }
-
-                continue;
-            }
-
-            throw_error = true;
-            break;
-        }
-
-        if (!throw_error) {
-            element_types.push_back(checker->CreateUnionType(std::move(spread_types)));
-            return;
-        }
-    }
-
-    checker->ThrowTypeError(
-        {"Type '", spread_type, "' must have a '[Symbol.iterator]()' method that returns an iterator."}, loc);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *ArrayExpression::Check(checker::TSChecker *checker)
 {
-    ArenaVector<checker::Type *> element_types(checker->Allocator()->Adapter());
-    ArenaVector<checker::ElementFlags> element_flags(checker->Allocator()->Adapter());
-    bool in_const_context = checker->HasStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
-    bool create_tuple = checker->HasStatus(checker::CheckerStatus::FORCE_TUPLE);
-
-    for (auto *it : elements_) {
-        if (it->IsSpreadElement()) {
-            checker::Type *spread_type = it->AsSpreadElement()->Argument()->Check(checker);
-
-            if (spread_type->IsArrayType()) {
-                element_types.push_back(in_const_context ? spread_type : spread_type->AsArrayType()->ElementType());
-                element_flags.push_back(checker::ElementFlags::VARIADIC);
-                continue;
-            }
-
-            GetSpreadElementType(checker, spread_type, element_types, it->Start());
-            element_flags.push_back(checker::ElementFlags::REST);
-            continue;
-        }
-
-        checker::Type *element_type = it->Check(checker);
-
-        if (!in_const_context) {
-            element_type = checker->GetBaseTypeOfLiteralType(element_type);
-        }
-
-        element_flags.push_back(checker::ElementFlags::REQUIRED);
-        element_types.push_back(element_type);
-    }
-
-    if (in_const_context || create_tuple) {
-        checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
-        uint32_t index = 0;
-
-        for (auto it = element_types.begin(); it != element_types.end(); it++, index++) {
-            util::StringView member_index = util::Helpers::ToStringView(checker->Allocator(), index);
-            varbinder::LocalVariable *tuple_member = varbinder::Scope::CreateVar(
-                checker->Allocator(), member_index, varbinder::VariableFlags::PROPERTY, nullptr);
-
-            if (in_const_context) {
-                tuple_member->AddFlag(varbinder::VariableFlags::READONLY);
-            }
-
-            tuple_member->SetTsType(*it);
-            desc->properties.push_back(tuple_member);
-        }
-
-        return checker->CreateTupleType(desc, std::move(element_flags), checker::ElementFlags::REQUIRED, index, index,
-                                        in_const_context);
-    }
-
-    checker::Type *array_element_type = nullptr;
-    if (element_types.empty()) {
-        array_element_type = checker->GlobalAnyType();
-    } else {
-        array_element_type = checker->CreateUnionType(std::move(element_types));
-    }
-
-    return checker->Allocator()->New<checker::ArrayType>(array_element_type);
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *ArrayExpression::CheckPattern(checker::TSChecker *checker)
@@ -516,72 +364,6 @@ void ArrayExpression::HandleNestedArrayExpression(checker::ETSChecker *const che
 
 checker::Type *ArrayExpression::Check(checker::ETSChecker *checker)
 {
-    if (TsType() != nullptr) {
-        return TsType();
-    }
-
-    const bool is_array =
-        (preferred_type_ != nullptr) && preferred_type_->IsETSArrayType() && !preferred_type_->IsETSTupleType();
-
-    if (is_array) {
-        preferred_type_ = preferred_type_->AsETSArrayType()->ElementType();
-    }
-
-    if (!elements_.empty()) {
-        if (preferred_type_ == nullptr) {
-            preferred_type_ = elements_[0]->Check(checker);
-        }
-
-        const bool is_preferred_tuple = preferred_type_->IsETSTupleType();
-        auto *const target_element_type =
-            is_preferred_tuple && !is_array ? preferred_type_->AsETSTupleType()->ElementType() : preferred_type_;
-
-        for (std::size_t idx = 0; idx < elements_.size(); ++idx) {
-            auto *const current_element = elements_[idx];
-
-            if (current_element->IsArrayExpression()) {
-                HandleNestedArrayExpression(checker, current_element->AsArrayExpression(), is_array, is_preferred_tuple,
-                                            idx);
-            }
-
-            if (current_element->IsObjectExpression()) {
-                current_element->AsObjectExpression()->SetPreferredType(preferred_type_);
-            }
-
-            checker::Type *element_type = current_element->Check(checker);
-
-            if (!element_type->IsETSArrayType() && is_preferred_tuple) {
-                auto *const compare_type = preferred_type_->AsETSTupleType()->GetTypeAtIndex(idx);
-
-                if (compare_type == nullptr) {
-                    checker->ThrowTypeError({"Too many elements in array initializer for tuple with size of ",
-                                             static_cast<uint32_t>(preferred_type_->AsETSTupleType()->GetTupleSize())},
-                                            current_element->Start());
-                }
-
-                const checker::CastingContext cast(
-                    checker->Relation(), current_element, element_type, compare_type, current_element->Start(),
-                    {"Array initializer's type is not assignable to tuple type at index: ", idx});
-
-                element_type = compare_type;
-            }
-
-            checker::AssignmentContext(checker->Relation(), current_element, element_type, target_element_type,
-                                       current_element->Start(),
-                                       {"Array element type '", element_type, "' is not assignable to explicit type '",
-                                        GetPreferredType(), "'"});
-        }
-
-        SetPreferredType(target_element_type);
-    }
-
-    if (preferred_type_ == nullptr) {
-        checker->ThrowTypeError("Can't resolve array type", Start());
-    }
-
-    SetTsType(checker->CreateETSArrayType(preferred_type_));
-    auto *const array_type = TsType()->AsETSArrayType();
-    checker->CreateBuiltinArraySignature(array_type, array_type->Rank());
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

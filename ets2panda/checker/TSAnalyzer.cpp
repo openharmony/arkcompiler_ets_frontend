@@ -99,9 +99,8 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ScriptFunction *node) cons
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::SpreadElement *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::SpreadElement *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -307,10 +306,129 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSWildcardType *node) con
     UNREACHABLE();
 }
 // compile methods for EXPRESSIONS in alphabetical order
+
+static void GetSpreadElementType(checker::TSChecker *checker, checker::Type *spread_type,
+                                 ArenaVector<checker::Type *> &element_types, const lexer::SourcePosition &loc)
+{
+    bool in_const_context = checker->HasStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
+
+    if (spread_type->IsObjectType() && spread_type->AsObjectType()->IsTupleType()) {
+        ArenaVector<checker::Type *> tuple_element_types(checker->Allocator()->Adapter());
+        checker::TupleType *spread_tuple = spread_type->AsObjectType()->AsTupleType();
+
+        for (auto *it : spread_tuple->Properties()) {
+            if (in_const_context) {
+                element_types.push_back(it->TsType());
+                continue;
+            }
+
+            tuple_element_types.push_back(it->TsType());
+        }
+
+        if (in_const_context) {
+            return;
+        }
+
+        element_types.push_back(checker->CreateUnionType(std::move(tuple_element_types)));
+        return;
+    }
+
+    if (spread_type->IsUnionType()) {
+        ArenaVector<checker::Type *> spread_types(checker->Allocator()->Adapter());
+        bool throw_error = false;
+
+        for (auto *type : spread_type->AsUnionType()->ConstituentTypes()) {
+            if (type->IsArrayType()) {
+                spread_types.push_back(type->AsArrayType()->ElementType());
+                continue;
+            }
+
+            if (type->IsObjectType() && type->AsObjectType()->IsTupleType()) {
+                checker::TupleType *tuple = type->AsObjectType()->AsTupleType();
+
+                for (auto *it : tuple->Properties()) {
+                    spread_types.push_back(it->TsType());
+                }
+
+                continue;
+            }
+
+            throw_error = true;
+            break;
+        }
+
+        if (!throw_error) {
+            element_types.push_back(checker->CreateUnionType(std::move(spread_types)));
+            return;
+        }
+    }
+
+    checker->ThrowTypeError(
+        {"Type '", spread_type, "' must have a '[Symbol.iterator]()' method that returns an iterator."}, loc);
+}
+
 checker::Type *TSAnalyzer::Check(ir::ArrayExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    ArenaVector<checker::Type *> element_types(checker->Allocator()->Adapter());
+    ArenaVector<checker::ElementFlags> element_flags(checker->Allocator()->Adapter());
+    bool in_const_context = checker->HasStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
+    bool create_tuple = checker->HasStatus(checker::CheckerStatus::FORCE_TUPLE);
+
+    for (auto *it : expr->Elements()) {
+        if (it->IsSpreadElement()) {
+            checker::Type *spread_type = it->AsSpreadElement()->Argument()->Check(checker);
+
+            if (spread_type->IsArrayType()) {
+                element_types.push_back(in_const_context ? spread_type : spread_type->AsArrayType()->ElementType());
+                element_flags.push_back(checker::ElementFlags::VARIADIC);
+                continue;
+            }
+
+            GetSpreadElementType(checker, spread_type, element_types, it->Start());
+            element_flags.push_back(checker::ElementFlags::REST);
+            continue;
+        }
+
+        checker::Type *element_type = it->Check(checker);
+
+        if (!in_const_context) {
+            element_type = checker->GetBaseTypeOfLiteralType(element_type);
+        }
+
+        element_flags.push_back(checker::ElementFlags::REQUIRED);
+        element_types.push_back(element_type);
+    }
+
+    if (in_const_context || create_tuple) {
+        checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
+        uint32_t index = 0;
+
+        for (auto it = element_types.begin(); it != element_types.end(); it++, index++) {
+            util::StringView member_index = util::Helpers::ToStringView(checker->Allocator(), index);
+            varbinder::LocalVariable *tuple_member = varbinder::Scope::CreateVar(
+                checker->Allocator(), member_index, varbinder::VariableFlags::PROPERTY, nullptr);
+
+            if (in_const_context) {
+                tuple_member->AddFlag(varbinder::VariableFlags::READONLY);
+            }
+
+            tuple_member->SetTsType(*it);
+            desc->properties.push_back(tuple_member);
+        }
+
+        return checker->CreateTupleType(desc, std::move(element_flags), checker::ElementFlags::REQUIRED, index, index,
+                                        in_const_context);
+    }
+
+    checker::Type *array_element_type = nullptr;
+    if (element_types.empty()) {
+        array_element_type = checker->GlobalAnyType();
+    } else {
+        array_element_type = checker->CreateUnionType(std::move(element_types));
+    }
+
+    return checker->Allocator()->New<checker::ArrayType>(array_element_type);
 }
 
 checker::Type *TSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
@@ -348,8 +466,73 @@ checker::Type *TSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
 
 checker::Type *TSAnalyzer::Check(ir::AssignmentExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    if (expr->Left()->IsArrayPattern()) {
+        auto saved_context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
+        auto destructuring_context =
+            checker::ArrayDestructuringContext(checker, expr->Left(), true, true, nullptr, expr->Right());
+        destructuring_context.Start();
+        return destructuring_context.InferredType();
+    }
+
+    if (expr->Left()->IsObjectPattern()) {
+        auto saved_context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
+        auto destructuring_context =
+            checker::ObjectDestructuringContext(checker, expr->Left(), true, true, nullptr, expr->Right());
+        destructuring_context.Start();
+        return destructuring_context.InferredType();
+    }
+
+    if (expr->Left()->IsIdentifier() && expr->Left()->AsIdentifier()->Variable() != nullptr &&
+        expr->Left()->AsIdentifier()->Variable()->Declaration()->IsConstDecl()) {
+        checker->ThrowTypeError(
+            {"Cannot assign to ", expr->Left()->AsIdentifier()->Name(), " because it is a constant."},
+            expr->Left()->Start());
+    }
+
+    auto *left_type = expr->Left()->Check(checker);
+
+    if (left_type->HasTypeFlag(checker::TypeFlag::READONLY)) {
+        checker->ThrowTypeError("Cannot assign to this property because it is readonly.", expr->Left()->Start());
+    }
+
+    if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+        checker->ElaborateElementwise(left_type, expr->Right(), expr->Left()->Start());
+        return checker->CheckTypeCached(expr->Right());
+    }
+
+    auto *right_type = expr->Right()->Check(checker);
+
+    switch (expr->OperatorType()) {
+        case lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_EXPONENTIATION_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_MOD_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_MINUS_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL: {
+            return checker->CheckBinaryOperator(left_type, right_type, expr->Left(), expr->Right(), expr,
+                                                expr->OperatorType());
+        }
+        case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL: {
+            return checker->CheckPlusOperator(left_type, right_type, expr->Left(), expr->Right(), expr,
+                                              expr->OperatorType());
+        }
+        case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
+            checker->CheckAssignmentOperator(expr->OperatorType(), expr->Left(), left_type, right_type);
+            return right_type;
+        }
+        default: {
+            UNREACHABLE();
+            break;
+        }
+    }
+
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::AwaitExpression *expr) const
@@ -629,11 +812,170 @@ checker::Type *TSAnalyzer::Check(ir::NewExpression *expr) const
     checker->ThrowTypeError("This expression is not callable.", expr->Start());
     return nullptr;
 }
+static const util::StringView &GetPropertyName(const ir::Expression *key)
+{
+    if (key->IsIdentifier()) {
+        return key->AsIdentifier()->Name();
+    }
+
+    if (key->IsStringLiteral()) {
+        return key->AsStringLiteral()->Str();
+    }
+
+    ASSERT(key->IsNumberLiteral());
+    return key->AsNumberLiteral()->Str();
+}
+
+static varbinder::VariableFlags GetFlagsForProperty(const ir::Property *prop)
+{
+    if (!prop->IsMethod()) {
+        return varbinder::VariableFlags::PROPERTY;
+    }
+
+    varbinder::VariableFlags prop_flags = varbinder::VariableFlags::METHOD;
+
+    if (prop->IsAccessor() && prop->Kind() == ir::PropertyKind::GET) {
+        prop_flags |= varbinder::VariableFlags::READONLY;
+    }
+
+    return prop_flags;
+}
+
+static checker::Type *GetTypeForProperty(ir::Property *prop, checker::TSChecker *checker)
+{
+    if (prop->IsAccessor()) {
+        checker::Type *func_type = prop->Value()->Check(checker);
+
+        if (prop->Kind() == ir::PropertyKind::SET) {
+            return checker->GlobalAnyType();
+        }
+
+        ASSERT(func_type->IsObjectType() && func_type->AsObjectType()->IsFunctionType());
+        return func_type->AsObjectType()->CallSignatures()[0]->ReturnType();
+    }
+
+    if (prop->IsShorthand()) {
+        return prop->Key()->Check(checker);
+    }
+
+    return prop->Value()->Check(checker);
+}
 
 checker::Type *TSAnalyzer::Check(ir::ObjectExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+
+    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
+    std::unordered_map<util::StringView, lexer::SourcePosition> all_properties_map;
+    bool in_const_context = checker->HasStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
+    ArenaVector<checker::Type *> computed_number_prop_types(checker->Allocator()->Adapter());
+    ArenaVector<checker::Type *> computed_string_prop_types(checker->Allocator()->Adapter());
+    bool has_computed_number_property = false;
+    bool has_computed_string_property = false;
+    bool seen_spread = false;
+
+    for (auto *it : expr->Properties()) {
+        if (it->IsProperty()) {
+            auto *prop = it->AsProperty();
+
+            if (prop->IsComputed()) {
+                checker::Type *computed_name_type = checker->CheckComputedPropertyName(prop->Key());
+
+                if (computed_name_type->IsNumberType()) {
+                    has_computed_number_property = true;
+                    computed_number_prop_types.push_back(prop->Value()->Check(checker));
+                    continue;
+                }
+
+                if (computed_name_type->IsStringType()) {
+                    has_computed_string_property = true;
+                    computed_string_prop_types.push_back(prop->Value()->Check(checker));
+                    continue;
+                }
+            }
+
+            checker::Type *prop_type = GetTypeForProperty(prop, checker);
+            varbinder::VariableFlags flags = GetFlagsForProperty(prop);
+            const util::StringView &prop_name = GetPropertyName(prop->Key());
+
+            auto *member_var = varbinder::Scope::CreateVar(checker->Allocator(), prop_name, flags, it);
+
+            if (in_const_context) {
+                member_var->AddFlag(varbinder::VariableFlags::READONLY);
+            } else {
+                prop_type = checker->GetBaseTypeOfLiteralType(prop_type);
+            }
+
+            member_var->SetTsType(prop_type);
+
+            if (prop->Key()->IsNumberLiteral()) {
+                member_var->AddFlag(varbinder::VariableFlags::NUMERIC_NAME);
+            }
+
+            varbinder::LocalVariable *found_member = desc->FindProperty(prop_name);
+            all_properties_map.insert({prop_name, it->Start()});
+
+            if (found_member != nullptr) {
+                found_member->SetTsType(prop_type);
+                continue;
+            }
+
+            desc->properties.push_back(member_var);
+            continue;
+        }
+
+        ASSERT(it->IsSpreadElement());
+
+        checker::Type *const spread_type = it->AsSpreadElement()->Argument()->Check(checker);
+        seen_spread = true;
+
+        // NOTE: aszilagyi. handle union of object types
+        if (!spread_type->IsObjectType()) {
+            checker->ThrowTypeError("Spread types may only be created from object types.", it->Start());
+        }
+
+        for (auto *spread_prop : spread_type->AsObjectType()->Properties()) {
+            auto found = all_properties_map.find(spread_prop->Name());
+            if (found != all_properties_map.end()) {
+                checker->ThrowTypeError(
+                    {found->first, " is specified more than once, so this usage will be overwritten."}, found->second);
+            }
+
+            varbinder::LocalVariable *found_member = desc->FindProperty(spread_prop->Name());
+
+            if (found_member != nullptr) {
+                found_member->SetTsType(spread_prop->TsType());
+                continue;
+            }
+
+            desc->properties.push_back(spread_prop);
+        }
+    }
+
+    if (!seen_spread && (has_computed_number_property || has_computed_string_property)) {
+        for (auto *it : desc->properties) {
+            computed_string_prop_types.push_back(it->TsType());
+
+            if (has_computed_number_property && it->HasFlag(varbinder::VariableFlags::NUMERIC_NAME)) {
+                computed_number_prop_types.push_back(it->TsType());
+            }
+        }
+
+        if (has_computed_number_property) {
+            desc->number_index_info = checker->Allocator()->New<checker::IndexInfo>(
+                checker->CreateUnionType(std::move(computed_number_prop_types)), "x", in_const_context);
+        }
+
+        if (has_computed_string_property) {
+            desc->string_index_info = checker->Allocator()->New<checker::IndexInfo>(
+                checker->CreateUnionType(std::move(computed_string_prop_types)), "x", in_const_context);
+        }
+    }
+
+    checker::Type *return_type = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
+    return_type->AsObjectType()->AddObjectFlag(checker::ObjectFlags::RESOLVED_MEMBERS |
+                                               checker::ObjectFlags::CHECK_EXCESS_PROPS);
+    return return_type;
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::OmittedExpression *expr) const
@@ -642,10 +984,9 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::OmittedExpression *expr) c
     return checker->GlobalUndefinedType();
 }
 
-checker::Type *TSAnalyzer::Check(ir::OpaqueTypeNode *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::OpaqueTypeNode *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    return expr->TsType();
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::SequenceExpression *expr) const
@@ -798,10 +1139,11 @@ checker::Type *TSAnalyzer::Check(ir::UpdateExpression *expr) const
     return checker->GetUnaryResultType(operand_type);
 }
 
-checker::Type *TSAnalyzer::Check(ir::YieldExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::YieldExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    // NOTE: aszilagyi.
+    return checker->GlobalAnyType();
 }
 // compile methods for LITERAL EXPRESSIONS in alphabetical order
 checker::Type *TSAnalyzer::Check(ir::BigIntLiteral *expr) const
@@ -1145,10 +1487,93 @@ checker::Type *TSAnalyzer::Check(ir::TryStatement *st) const
     return nullptr;
 }
 
+static void CheckSimpleVariableDeclaration(checker::TSChecker *checker, ir::VariableDeclarator *declarator)
+{
+    varbinder::Variable *const binding_var = declarator->Id()->AsIdentifier()->Variable();
+    checker::Type *previous_type = binding_var->TsType();
+    auto *const type_annotation = declarator->Id()->AsIdentifier()->TypeAnnotation();
+    auto *const initializer = declarator->Init();
+    const bool is_const = declarator->Parent()->AsVariableDeclaration()->Kind() ==
+                          ir::VariableDeclaration::VariableDeclarationKind::CONST;
+
+    if (is_const) {
+        checker->AddStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
+    }
+
+    if (type_annotation != nullptr) {
+        type_annotation->Check(checker);
+    }
+
+    if (type_annotation != nullptr && initializer != nullptr) {
+        checker::Type *const annotation_type = type_annotation->GetType(checker);
+        checker->ElaborateElementwise(annotation_type, initializer, declarator->Id()->Start());
+        binding_var->SetTsType(annotation_type);
+    } else if (type_annotation != nullptr) {
+        binding_var->SetTsType(type_annotation->GetType(checker));
+    } else if (initializer != nullptr) {
+        checker::Type *initializer_type = checker->CheckTypeCached(initializer);
+
+        if (!is_const) {
+            initializer_type = checker->GetBaseTypeOfLiteralType(initializer_type);
+        }
+
+        if (initializer_type->IsNullType()) {
+            checker->ThrowTypeError(
+                {"Cannot infer type for variable '", declarator->Id()->AsIdentifier()->Name(), "'."},
+                declarator->Id()->Start());
+        }
+
+        binding_var->SetTsType(initializer_type);
+    } else {
+        checker->ThrowTypeError({"Variable ", declarator->Id()->AsIdentifier()->Name(), " implicitly has an any type."},
+                                declarator->Id()->Start());
+    }
+
+    if (previous_type != nullptr) {
+        checker->IsTypeIdenticalTo(binding_var->TsType(), previous_type,
+                                   {"Subsequent variable declaration must have the same type. Variable '",
+                                    binding_var->Name(), "' must be of type '", previous_type, "', but here has type '",
+                                    binding_var->TsType(), "'."},
+                                   declarator->Id()->Start());
+    }
+
+    checker->RemoveStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
+}
+
 checker::Type *TSAnalyzer::Check(ir::VariableDeclarator *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+
+    if (st->TsType() == st->CHECKED) {
+        return nullptr;
+    }
+
+    if (st->Id()->IsIdentifier()) {
+        CheckSimpleVariableDeclaration(checker, st);
+        st->SetTsType(st->CHECKED);
+        return nullptr;
+    }
+
+    if (st->Id()->IsArrayPattern()) {
+        auto context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
+        checker::ArrayDestructuringContext(checker, st->Id(), false,
+                                           st->Id()->AsArrayPattern()->TypeAnnotation() == nullptr,
+                                           st->Id()->AsArrayPattern()->TypeAnnotation(), st->Init())
+            .Start();
+
+        st->SetTsType(st->CHECKED);
+        return nullptr;
+    }
+
+    ASSERT(st->Id()->IsObjectPattern());
+    auto context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
+    checker::ObjectDestructuringContext(checker, st->Id(), false,
+                                        st->Id()->AsObjectPattern()->TypeAnnotation() == nullptr,
+                                        st->Id()->AsObjectPattern()->TypeAnnotation(), st->Init())
+        .Start();
+
+    st->SetTsType(st->CHECKED);
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::VariableDeclaration *st) const
@@ -1163,8 +1588,14 @@ checker::Type *TSAnalyzer::Check(ir::VariableDeclaration *st) const
 
 checker::Type *TSAnalyzer::Check(ir::WhileStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::ScopeContext scope_ctx(checker, st->Scope());
+
+    checker::Type *test_type = st->Test()->Check(checker);
+    checker->CheckTruthinessOfType(test_type, st->Test()->Start());
+
+    st->Body()->Check(checker);
+    return nullptr;
 }
 // from ts folder
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSAnyKeyword *node) const

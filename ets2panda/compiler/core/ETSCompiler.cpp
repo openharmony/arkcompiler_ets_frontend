@@ -23,7 +23,6 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/switchBuilder.h"
 #include "compiler/function/functionBuilder.h"
-
 namespace panda::es2panda::compiler {
 
 ETSGen *ETSCompiler::GetETSGen() const
@@ -109,9 +108,8 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ScriptFunction *node) const
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::SpreadElement *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::SpreadElement *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -332,8 +330,39 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ETSWildcardType *node) cons
 // compile methods for EXPRESSIONS in alphabetical order
 void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    const compiler::RegScope rs(etsg);
+
+    const auto arr = etsg->AllocReg();
+    const auto dim = etsg->AllocReg();
+
+    const compiler::TargetTypeContext ttctx(etsg, etsg->Checker()->GlobalIntType());
+    etsg->LoadAccumulatorInt(expr, static_cast<std::int32_t>(expr->Elements().size()));
+    etsg->StoreAccumulator(expr, dim);
+    etsg->NewArray(expr, arr, dim, expr->TsType());
+
+    const auto index_reg = etsg->AllocReg();
+    for (std::uint32_t i = 0; i < expr->Elements().size(); ++i) {
+        const auto *const expression = expr->Elements()[i];
+        etsg->LoadAccumulatorInt(expr, i);
+        etsg->StoreAccumulator(expr, index_reg);
+
+        const compiler::TargetTypeContext ttctx2(etsg, expr->preferred_type_);
+        if (!etsg->TryLoadConstantExpression(expression)) {
+            expression->Compile(etsg);
+        }
+
+        etsg->ApplyConversion(expression, nullptr);
+        etsg->ApplyConversion(expression);
+
+        if (expression->TsType()->IsETSArrayType()) {
+            etsg->StoreArrayElement(expr, arr, index_reg, expression->TsType());
+        } else {
+            etsg->StoreArrayElement(expr, arr, index_reg, expr->TsType()->AsETSArrayType()->ElementType());
+        }
+    }
+
+    etsg->LoadAccumulator(expr, arr);
 }
 
 void ETSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
@@ -360,8 +389,20 @@ void ETSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
 
 void ETSCompiler::Compile(const ir::AssignmentExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    // All other operations are handled in OpAssignmentLowering
+    ASSERT(expr->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    compiler::RegScope rs(etsg);
+    auto lref = compiler::ETSLReference::Create(etsg, expr->Left(), false);
+    auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
+
+    if (expr->Right()->IsNullLiteral()) {
+        etsg->LoadAccumulatorNull(expr, expr->Left()->TsType());
+    } else {
+        expr->Right()->Compile(etsg);
+        etsg->ApplyConversion(expr->Right(), expr->TsType());
+    }
+    lref.SetValue();
 }
 
 void ETSCompiler::Compile(const ir::AwaitExpression *expr) const
@@ -892,8 +933,59 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::NewExpression *expr) const
 
 void ETSCompiler::Compile(const ir::ObjectExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    compiler::RegScope rs {etsg};
+    checker::ETSObjectType const *obj_type = expr->TsType()->AsETSObjectType();
+    compiler::VReg obj_reg = etsg->AllocReg();
+    if (expr->TsType()->IsETSDynamicType()) {
+        auto *signature_info = etsg->Allocator()->New<checker::SignatureInfo>(etsg->Allocator());
+        auto *create_obj_sig = etsg->Allocator()->New<checker::Signature>(
+            signature_info, nullptr, compiler::Signatures::BUILTIN_JSRUNTIME_CREATE_OBJECT);
+        compiler::VReg dummy_reg = compiler::VReg::RegStart();
+        etsg->CallDynamic(expr, dummy_reg, dummy_reg, create_obj_sig,
+                          ArenaVector<ir::Expression *>(etsg->Allocator()->Adapter()));
+    } else {
+        checker::Signature *empty_sig = nullptr;
+        for (checker::Signature *sig : obj_type->ConstructSignatures()) {
+            if (sig->Params().empty()) {
+                empty_sig = sig;
+                break;
+            }
+        }
+        if (empty_sig == nullptr) {  // Would have already thrown in the checker.
+            UNREACHABLE();
+        }
+        etsg->InitObject(expr, empty_sig, ArenaVector<ir::Expression *>(etsg->Allocator()->Adapter()));
+    }
+    etsg->SetAccumulatorType(expr->TsType());
+    etsg->StoreAccumulator(expr, obj_reg);
+
+    for (ir::Expression *prop_expr : expr->Properties()) {
+        ASSERT(prop_expr->IsProperty());
+        ir::Property *prop = prop_expr->AsProperty();
+        ir::Expression *key = prop->Key();
+        ir::Expression *value = prop->Value();
+
+        util::StringView pname;
+        if (key->IsStringLiteral()) {
+            pname = key->AsStringLiteral()->Str();
+        } else if (key->IsIdentifier()) {
+            pname = key->AsIdentifier()->Name();
+        } else {
+            UNREACHABLE();
+        }
+
+        value->Compile(etsg);
+        etsg->ApplyConversion(value, key->TsType());
+        if (expr->TsType()->IsETSDynamicType()) {
+            etsg->StorePropertyDynamic(expr, value->TsType(), obj_reg, pname,
+                                       expr->TsType()->AsETSDynamicType()->Language());
+        } else {
+            etsg->StoreProperty(expr, key->TsType(), obj_reg, pname);
+        }
+    }
+
+    etsg->LoadAccumulator(expr, obj_reg);
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::OmittedExpression *expr) const
@@ -901,9 +993,8 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::OmittedExpression *expr) co
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::OpaqueTypeNode *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::OpaqueTypeNode *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -991,9 +1082,8 @@ void ETSCompiler::Compile(const ir::UpdateExpression *expr) const
     etsg->LoadAccumulator(expr->Argument(), original_value_reg);
 }
 
-void ETSCompiler::Compile(const ir::YieldExpression *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::YieldExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 // compile methods for LITERAL EXPRESSIONS in alphabetical order
@@ -1514,8 +1604,27 @@ void ETSCompiler::Compile(const ir::TryStatement *st) const
 
 void ETSCompiler::Compile(const ir::VariableDeclarator *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    auto lref = compiler::ETSLReference::Create(etsg, st->Id(), true);
+    auto ttctx = compiler::TargetTypeContext(etsg, st->TsType());
+
+    if (st->Id()->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::BOXED)) {
+        etsg->EmitLocalBoxCtor(st->Id());
+        etsg->StoreAccumulator(st, lref.Variable()->AsLocalVariable()->Vreg());
+        etsg->SetAccumulatorType(lref.Variable()->TsType());
+    }
+
+    if (st->Init() != nullptr) {
+        if (!etsg->TryLoadConstantExpression(st->Init())) {
+            st->Init()->Compile(etsg);
+            etsg->ApplyConversion(st->Init(), nullptr);
+        }
+    } else {
+        etsg->LoadDefaultValue(st, st->Id()->AsIdentifier()->Variable()->TsType());
+    }
+
+    etsg->ApplyConversion(st, st->TsType());
+    lref.SetValue();
 }
 
 void ETSCompiler::Compile(const ir::VariableDeclaration *st) const
@@ -1526,10 +1635,28 @@ void ETSCompiler::Compile(const ir::VariableDeclaration *st) const
     }
 }
 
+template <typename CodeGen>
+void CompileImpl(const ir::WhileStatement *while_stmt, [[maybe_unused]] CodeGen *cg)
+{
+    compiler::LabelTarget label_target(cg);
+
+    cg->SetLabel(while_stmt, label_target.ContinueTarget());
+    compiler::Condition::Compile(cg, while_stmt->Test(), label_target.BreakTarget());
+
+    {
+        compiler::LocalRegScope reg_scope(cg, while_stmt->Scope());
+        compiler::LabelContext label_ctx(cg, label_target);
+        while_stmt->Body()->Compile(cg);
+    }
+
+    cg->Branch(while_stmt, label_target.ContinueTarget());
+    cg->SetLabel(while_stmt, label_target.BreakTarget());
+}
+
 void ETSCompiler::Compile(const ir::WhileStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    CompileImpl(st, etsg);
 }
 // from ts folder
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSAnyKeyword *node) const
