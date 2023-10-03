@@ -222,6 +222,12 @@ void ETSCompiler::Compile(const ir::ETSTypeReferencePart *node) const
     node->Name()->Compile(etsg);
 }
 
+void ETSCompiler::Compile(const ir::ETSUnionType *node) const
+{
+    (void)node;
+    UNREACHABLE();
+}
+
 void ETSCompiler::Compile([[maybe_unused]] const ir::ETSWildcardType *node) const
 {
     ETSGen *etsg = GetETSGen();

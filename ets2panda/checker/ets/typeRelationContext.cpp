@@ -69,31 +69,46 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
             continue;
         }
 
-        auto *constraint_type = type_param_constraint->GetType(checker_)->AsETSObjectType();
-        auto *arg_ref_type = param_type->AsETSObjectType();
-
-        if (const auto *const found = checker_->AsETSChecker()->Scope()->FindLocal(
-                constraint_type->Name(), binder::ResolveBindingOptions::TYPE_ALIASES);
-            found != nullptr) {
-            arg_ref_type = found->TsType()->AsETSObjectType();
-        }
-
-        auto assignable = checker_->Relation()->IsAssignableTo(arg_ref_type, constraint_type);
-        if (constraint_type->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
-            for (const auto *const interface : arg_ref_type->Interfaces()) {
-                // TODO(mmartin): make correct check later for multiple bounds
-                assignable = (interface == constraint_type) || assignable;
-            }
+        bool assignable = false;
+        auto *constraint_type = type_param_constraint->GetType(checker_);
+        if (constraint_type->IsETSObjectType() && param_type->IsETSObjectType()) {
+            assignable = ValidateTypeArg(constraint_type->AsETSObjectType(), param_type->AsETSObjectType());
+        } else if (param_type->IsETSUnionType() && !constraint_type->IsETSUnionType()) {
+            auto constituent_types = param_type->AsETSUnionType()->ConstituentTypes();
+            assignable =
+                std::all_of(constituent_types.begin(), constituent_types.end(), [this, constraint_type](Type *c_type) {
+                    return c_type->IsETSObjectType() &&
+                           ValidateTypeArg(constraint_type->AsETSObjectType(), c_type->AsETSObjectType());
+                });
         }
 
         if (!assignable) {
-            checker_->ThrowTypeError(
-                {"Type '", arg_ref_type, "' is not assignable to constraint type '", constraint_type, "'."},
-                type_args->Params().at(type_param_iter)->Start());
+            checker_->ThrowTypeError({"Type '", param_type->AsETSObjectType(),
+                                      "' is not assignable to constraint type '", constraint_type, "'."},
+                                     type_args->Params().at(type_param_iter)->Start());
         }
     }
 
     return false;
+}
+
+bool InstantiationContext::ValidateTypeArg(ETSObjectType *constraint_type, ETSObjectType *arg_ref_type)
+{
+    if (const auto *const found = checker_->AsETSChecker()->Scope()->FindLocal(
+            constraint_type->Name(), binder::ResolveBindingOptions::TYPE_ALIASES);
+        found != nullptr) {
+        arg_ref_type = found->TsType()->AsETSObjectType();
+    }
+
+    auto assignable = checker_->Relation()->IsAssignableTo(arg_ref_type, constraint_type);
+    if (constraint_type->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
+        for (const auto *const interface : arg_ref_type->Interfaces()) {
+            // TODO(mmartin): make correct check later for multiple bounds
+            assignable = (interface == constraint_type) || assignable;
+        }
+    }
+
+    return assignable;
 }
 
 void InstantiationContext::InstantiateType(ETSObjectType *type, ir::TSTypeParameterInstantiation *type_args)
@@ -132,7 +147,18 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ArenaVector<Type
 
     auto *substitution = checker_->NewSubstitution();
     for (size_t ix = 0; ix < type_params.size(); ix++) {
-        if (!checker_->IsCompatibleTypeArgument(type_params[ix], type_arg_types[ix])) {
+        auto *type_param = type_params[ix];
+        bool is_compatible_type_arg;
+        if (type_arg_types[ix]->IsETSUnionType()) {
+            auto union_constituent_types = type_arg_types[ix]->AsETSUnionType()->ConstituentTypes();
+            is_compatible_type_arg = std::all_of(union_constituent_types.begin(), union_constituent_types.end(),
+                                                 [this, type_param](Type *type_arg) {
+                                                     return checker_->IsCompatibleTypeArgument(type_param, type_arg);
+                                                 });
+        } else {
+            is_compatible_type_arg = checker_->IsCompatibleTypeArgument(type_param, type_arg_types[ix]);
+        }
+        if (!is_compatible_type_arg) {
             checker_->ThrowTypeError(
                 {"Type ", type_arg_types[ix], " is not assignable to", " type parameter ", type_params[ix]}, pos);
         }

@@ -104,7 +104,6 @@ Condition::Result Condition::CheckConstantExpr(ETSGen *etsg, const ir::Expressio
         }
         return e;
     }(expr);
-
     if (resulting_expression == nullptr) {
         return Result::UNKNOWN;
     }

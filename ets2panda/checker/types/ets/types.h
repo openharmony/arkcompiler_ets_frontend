@@ -27,6 +27,7 @@
 #include "etsEnumType.h"
 #include "etsExtensionFuncHelperType.h"
 #include "etsFunctionType.h"
+#include "etsUnionType.h"
 #include "etsVoidType.h"
 #include "etsStringType.h"
 #include "etsObjectType.h"

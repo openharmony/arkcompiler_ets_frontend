@@ -114,6 +114,35 @@ ETSArrayType *ETSChecker::CreateETSArrayType(Type *element_type)
     return array_type;
 }
 
+Type *ETSChecker::CreateETSUnionType(ArenaVector<Type *> &&constituent_types)
+{
+    if (constituent_types.empty()) {
+        return nullptr;
+    }
+
+    ArenaVector<Type *> new_constituent_types(Allocator()->Adapter());
+
+    for (auto *it : constituent_types) {
+        if (it->IsUnionType()) {
+            for (auto *type : it->AsETSUnionType()->ConstituentTypes()) {
+                new_constituent_types.push_back(type);
+            }
+
+            continue;
+        }
+
+        new_constituent_types.push_back(it);
+    }
+
+    if (new_constituent_types.size() == 1) {
+        return new_constituent_types[0];
+    }
+
+    auto *new_union_type = Allocator()->New<ETSUnionType>(std::move(new_constituent_types));
+
+    return ETSUnionType::HandleUnionType(new_union_type);
+}
+
 ETSFunctionType *ETSChecker::CreateETSFunctionType(ArenaVector<Signature *> &signatures)
 {
     auto *func_type = Allocator()->New<ETSFunctionType>(signatures[0]->Function()->Id()->Name(), Allocator());

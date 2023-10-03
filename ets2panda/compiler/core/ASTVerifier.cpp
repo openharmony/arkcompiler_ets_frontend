@@ -252,8 +252,8 @@ std::string ToStringHelper(const ir::AstNode *ast)
             return "PKG_DECL ";
         }
         case ir::AstNodeType::TS_TYPE_PARAMETER_DECLARATION: {
-            return "PARAM_DECL " + ToStringParamsHelper<ir::TSTypeParameter>(
-                                       ast->Parent(), ast->AsTSTypeParameterDeclaration()->Params());
+            auto params = ast->AsTSTypeParameterDeclaration()->Params();
+            return "PARAM_DECL " + ToStringParamsHelper<ir::TSTypeParameter>(ast->Parent(), params);
         }
         case ir::AstNodeType::TS_TYPE_PARAMETER: {
             return "TYPE_PARAM " + ToStringHelper(ast->AsTSTypeParameter()->Name());

@@ -540,6 +540,12 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ETSTypeReferencePart *expr) 
     UNREACHABLE();
 }
 
+void JSCompiler::Compile(const ir::ETSUnionType *node) const
+{
+    (void)node;
+    UNREACHABLE();
+}
+
 void JSCompiler::Compile([[maybe_unused]] const ir::ETSWildcardType *expr) const
 {
     UNREACHABLE();

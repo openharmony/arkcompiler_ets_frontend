@@ -21,6 +21,7 @@
 #include "compiler/core/function.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
+#include "checker/types/ets/etsUnionType.h"
 #include "ir/astNode.h"
 #include "ir/base/spreadElement.h"
 #include "ir/base/classProperty.h"
@@ -319,8 +320,13 @@ void ETSLReference::SetValue() const
             if (static_obj_ref_->IsETSDynamicType()) {
                 auto lang = static_obj_ref_->AsETSDynamicType()->Language();
                 etsg_->StorePropertyDynamic(Node(), member_expr->TsType(), base_reg_, prop_name, lang);
+            } else if (static_obj_ref_->IsETSUnionType()) {
+                etsg_->StoreUnionProperty(Node(), base_reg_, prop_name);
             } else {
                 auto type = etsg_->Checker()->MaybeBoxedType(member_expr->PropVar(), etsg_->Allocator());
+                if (type->IsETSUnionType()) {
+                    type = type->AsETSUnionType()->GetLeastUpperBoundType();
+                }
                 etsg_->StoreProperty(Node(), type, base_reg_, prop_name);
             }
             break;

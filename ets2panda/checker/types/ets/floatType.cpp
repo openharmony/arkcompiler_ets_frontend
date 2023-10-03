@@ -82,6 +82,11 @@ void FloatType::Cast(TypeRelation *const relation, Type *const target)
         return;
     }
 
+    if (target->IsETSUnionType()) {
+        target->AsETSUnionType()->CastToThis(relation, this);
+        return;
+    }
+
     conversion::Forbidden(relation);
 }
 

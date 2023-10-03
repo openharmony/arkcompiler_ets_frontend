@@ -110,6 +110,7 @@ private:
     ir::TypeNode *ParseTypeReference(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseBaseTypeReference(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParsePrimitiveType(TypeAnnotationParsingOptions *options, ir::PrimitiveType type);
+    ir::ETSUnionType *ParseUnionType(ir::Expression *type);
     ir::TSIntersectionType *ParseIntersectionType(ir::Expression *type);
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseFunctionType();

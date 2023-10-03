@@ -53,6 +53,7 @@
     _(TypeFlag::FUNCTION, ETSFunctionType)            \
     _(TypeFlag::ETS_OBJECT, ETSObjectType)            \
     _(TypeFlag::ETS_ARRAY, ETSArrayType)              \
+    _(TypeFlag::ETS_UNION, ETSUnionType)              \
     _(TypeFlag::NON_PRIMITIVE, NonPrimitiveType)      \
     _(TypeFlag::WILDCARD, WildcardType)               \
     _(TypeFlag::ETS_TYPE_PARAMETER, ETSTypeParameter) \

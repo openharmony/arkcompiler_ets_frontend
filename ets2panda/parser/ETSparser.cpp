@@ -91,6 +91,7 @@
 #include "ir/ets/etsScript.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
+#include "ir/ets/etsUnionType.h"
 #include "ir/ets/etsImportSource.h"
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsStructDeclaration.h"
@@ -2238,9 +2239,14 @@ void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *
     proxy_method_def->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
 }
 
-std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *const type_annotation)
+std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *type_annotation)
 {
     const std::string optional_nullable = type_annotation->IsNullable() ? "|null" : "";
+
+    // FIXME(aakmaev): Support nullable types as unions
+    if (type_annotation->IsNullable() && type_annotation->IsETSUnionType()) {
+        type_annotation = type_annotation->AsETSUnionType()->Types().front();
+    }
 
     if (type_annotation->IsETSPrimitiveType()) {
         switch (type_annotation->AsETSPrimitiveType()->GetPrimitiveType()) {
@@ -2464,6 +2470,42 @@ ir::TypeNode *ETSParser::ParsePrimitiveType(TypeAnnotationParsingOptions *option
     return type_annotation;
 }
 
+ir::ETSUnionType *ETSParser::ParseUnionType(ir::Expression *type)
+{
+    TypeAnnotationParsingOptions options =
+        TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::DISALLOW_UNION;
+    lexer::SourcePosition start_loc = type->Start();
+    ArenaVector<ir::TypeNode *> types(Allocator()->Adapter());
+    ASSERT(type->IsTypeNode());
+    types.push_back(type->AsTypeNode());
+
+    bool is_nullable {false};
+    while (true) {
+        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
+            break;
+        }
+
+        Lexer()->NextToken();  // eat '|'
+
+        if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_NULL) {
+            Lexer()->NextToken();  // eat 'null'
+            type->AddModifier(ir::ModifierFlags::NULLABLE);
+            is_nullable = true;
+            continue;
+        }
+
+        types.push_back(ParseTypeAnnotation(&options));
+    }
+
+    lexer::SourcePosition end_loc = types.back()->End();
+    auto *union_type = AllocNode<ir::ETSUnionType>(std::move(types));
+    union_type->SetRange({start_loc, end_loc});
+    if (is_nullable) {
+        union_type->AddModifier(ir::ModifierFlags::NULLABLE);
+    }
+    return union_type;
+}
+
 ir::TSIntersectionType *ETSParser::ParseIntersectionType(ir::Expression *type)
 {
     auto start_loc = type->Start();
@@ -2654,19 +2696,9 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
         type_annotation->SetRange({start_pos, Lexer()->GetToken().End()});
     }
 
-    while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
-        Lexer()->NextToken();  // eat '|'
-
-        if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_NULL) {
-            if (throw_error) {
-                ThrowExpectedToken(lexer::TokenType::LITERAL_NULL);
-            }
-
-            return nullptr;
-        }
-        Lexer()->NextToken();  // eat 'null'
-
-        type_annotation->AddModifier(ir::ModifierFlags::NULLABLE);
+    if (((*options) & TypeAnnotationParsingOptions::DISALLOW_UNION) == 0 &&
+        Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
+        return ParseUnionType(type_annotation);
     }
 
     return type_annotation;
@@ -3546,7 +3578,8 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
             auto start_loc = Lexer()->GetToken().Start();
             auto saved_pos = Lexer()->Save();
             TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::POTENTIAL_CLASS_LITERAL |
-                                                   TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE;
+                                                   TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE |
+                                                   TypeAnnotationParsingOptions::DISALLOW_UNION;
             ir::TypeNode *potential_type = ParseTypeAnnotation(&options);
 
             if (potential_type != nullptr) {

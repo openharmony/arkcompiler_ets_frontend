@@ -380,6 +380,16 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
             FlagExpressionWithUnboxing(left_type, unboxed_l, left);
             FlagExpressionWithUnboxing(right_type, unboxed_r, right);
 
+            if (left_type->IsETSUnionType()) {
+                ts_type = GlobalETSBooleanType();
+                return {ts_type, left_type->AsETSUnionType()};
+            }
+
+            if (right_type->IsETSUnionType()) {
+                ts_type = GlobalETSBooleanType();
+                return {ts_type, right_type->AsETSUnionType()};
+            }
+
             if (promotedType == nullptr && !bothConst) {
                 ThrowTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
             }
@@ -394,8 +404,8 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
             return {ts_type, op_type};
         }
         case lexer::TokenType::KEYW_INSTANCEOF: {
-            if (!left_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) ||
-                !right_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+            if (!left_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | checker::TypeFlag::ETS_UNION) ||
+                !right_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | checker::TypeFlag::ETS_UNION)) {
                 ThrowTypeError("Bad operand type, the types of the operands must be same type.", pos);
             }
 

@@ -36,8 +36,8 @@ public:
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
 
 private:
     ArenaVector<TypeNode *> types_;

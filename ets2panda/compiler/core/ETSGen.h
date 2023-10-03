@@ -77,6 +77,10 @@ public:
     void StoreElementDynamic(const ir::AstNode *node, VReg object_reg, VReg index, Language lang);
     void LoadElementDynamic(const ir::AstNode *node, VReg object_reg, Language lang);
 
+    void StoreUnionProperty(const ir::AstNode *node, VReg obj_reg, const util::StringView &name);
+    void LoadUnionProperty(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
+                           const util::StringView &prop_name);
+
     void LoadUndefinedDynamic(const ir::AstNode *node, Language lang);
 
     void LoadThis(const ir::AstNode *node);
@@ -95,6 +99,42 @@ public:
 
     bool TryLoadConstantExpression(const ir::Expression *node);
     void Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, Label *if_false);
+
+    template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
+    void ResolveConditionalResultFloat(const ir::AstNode *node, [[maybe_unused]] Label *if_false, Label *end)
+    {
+        auto type = node->IsExpression() ? node->AsExpression()->TsType() : GetAccumulatorType();
+        VReg tmp_reg = AllocReg();
+        StoreAccumulator(node, tmp_reg);
+        if (type->IsFloatType()) {
+            FloatIsNaN(node);
+        } else {
+            DoubleIsNaN(node);
+        }
+
+        Sa().Emit<Xori>(node, 1);
+        auto real_end_label = [](Label *end_label, Label *if_false_label, ETSGen *etsgn,
+                                 bool use_false_label) {
+            if (use_false_label) {
+                return if_false_label;
+            }
+            if (end_label == nullptr) {
+                end_label = etsgn->AllocLabel();
+            }
+            return end_label;
+        }(end, if_false, this, USE_FALSE_LABEL);
+        BranchIfFalse(node, real_end_label);
+        LoadAccumulator(node, tmp_reg);
+        VReg zero_reg = AllocReg();
+
+        if (type->IsFloatType()) {
+            MoveImmediateToRegister(node, zero_reg, checker::TypeFlag::FLOAT, 0);
+            BinaryNumberComparison<Fcmpl, Jeqz>(node, zero_reg, real_end_label);
+        } else {
+            MoveImmediateToRegister(node, zero_reg, checker::TypeFlag::DOUBLE, 0);
+            BinaryNumberComparison<FcmplWide, Jeqz>(node, zero_reg, real_end_label);
+        }
+    }
 
     template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
     void ResolveConditionalResult(const ir::AstNode *node, [[maybe_unused]] Label *if_false)
@@ -164,36 +204,7 @@ public:
                 }
                 case checker::TypeFlag::DOUBLE:
                 case checker::TypeFlag::FLOAT: {
-                    VReg tmp_reg = AllocReg();
-                    StoreAccumulator(node, tmp_reg);
-                    if (type->IsFloatType()) {
-                        FloatIsNaN(node);
-                    } else {
-                        DoubleIsNaN(node);
-                    }
-                    Sa().Emit<Xori>(node, 1);
-
-                    auto real_end_label = [](Label *end_label, Label *if_false_label, ETSGen *etsgn,
-                                             bool use_false_label) {
-                        if (use_false_label) {
-                            return if_false_label;
-                        }
-                        if (end_label == nullptr) {
-                            end_label = etsgn->AllocLabel();
-                        }
-                        return end_label;
-                    }(end, if_false, this, USE_FALSE_LABEL);
-                    BranchIfFalse(node, real_end_label);
-
-                    LoadAccumulator(node, tmp_reg);
-                    VReg zero_reg = AllocReg();
-                    if (type->IsFloatType()) {
-                        MoveImmediateToRegister(node, zero_reg, checker::TypeFlag::FLOAT, 0);
-                        BinaryNumberComparison<Fcmpl, Jeqz>(node, zero_reg, real_end_label);
-                    } else {
-                        MoveImmediateToRegister(node, zero_reg, checker::TypeFlag::DOUBLE, 0);
-                        BinaryNumberComparison<FcmplWide, Jeqz>(node, zero_reg, real_end_label);
-                    }
+                    ResolveConditionalResultFloat<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, if_false, end);
                     break;
                 }
                 default:
@@ -1056,8 +1067,9 @@ private:
 template <typename T>
 void ETSGen::LoadAccumulatorNumber(const ir::AstNode *node, T number, checker::TypeFlag target_type)
 {
-    auto type_kind =
-        target_type_ && !target_type_->IsETSObjectType() ? checker::ETSChecker::TypeKind(target_type_) : target_type;
+    auto type_kind = target_type_ && (!target_type_->IsETSObjectType() && !target_type_->IsETSUnionType())
+                         ? checker::ETSChecker::TypeKind(target_type_)
+                         : target_type;
 
     switch (type_kind) {
         case checker::TypeFlag::ETS_BOOLEAN:

@@ -163,6 +163,7 @@ enum class TypeAnnotationParsingOptions : uint32_t {
     ALLOW_WILDCARD = 1U << 12U,
     IGNORE_FUNCTION_TYPE = 1U << 13U,
     ALLOW_DECLARATION_SITE_VARIANCE = 1U << 14U,
+    DISALLOW_UNION = 1U << 15U,
 };
 
 DEFINE_BITOPS(TypeAnnotationParsingOptions)

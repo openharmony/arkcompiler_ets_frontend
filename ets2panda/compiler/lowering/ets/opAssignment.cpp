@@ -148,7 +148,7 @@ void AdjustBoxingUnboxingFlags(ir::Expression *new_expr, const ir::Expression *o
 
 ir::Expression *HandleOpAssignment(checker::ETSChecker *checker, ir::AssignmentExpression *assignment)
 {
-    if (assignment->TsType() == nullptr) {  // hasn't been throiugh checker
+    if (assignment->TsType() == nullptr) {  // hasn't been through checker
         return assignment;
     }
 
