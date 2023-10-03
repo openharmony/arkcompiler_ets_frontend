@@ -16,10 +16,10 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_RELATION_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_RELATION_H
 
-#include "plugins/ecmascript/es2panda/lexer/token/sourceLocation.h"
-#include "plugins/ecmascript/es2panda/lexer/token/tokenType.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
+#include "lexer/token/sourceLocation.h"
+#include "lexer/token/tokenType.h"
+#include "util/ustring.h"
+#include "util/enumbitops.h"
 
 #include "macros.h"
 

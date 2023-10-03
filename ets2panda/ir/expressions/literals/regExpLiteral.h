@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_IR_EXPRESSION_LITERAL_REGEXP_LITERAL_H
 #define ES2PANDA_IR_EXPRESSION_LITERAL_REGEXP_LITERAL_H
 
-#include "plugins/ecmascript/es2panda/ir/expressions/literal.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
-#include "plugins/ecmascript/es2panda/lexer/regexp/regexp.h"
+#include "ir/expressions/literal.h"
+#include "util/ustring.h"
+#include "lexer/regexp/regexp.h"
 
 namespace panda::es2panda::ir {
 class RegExpLiteral : public Literal {

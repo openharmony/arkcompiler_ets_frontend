@@ -15,21 +15,21 @@
 
 #include "assignmentExpression.h"
 
-#include "plugins/ecmascript/es2panda/compiler/base/lreference.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regScope.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/base/spreadElement.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/arrayExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/binaryExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/objectExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/memberExpression.h"
+#include "compiler/base/lreference.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/regScope.h"
+#include "ir/astDump.h"
+#include "ir/base/spreadElement.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/arrayExpression.h"
+#include "ir/expressions/binaryExpression.h"
+#include "ir/expressions/objectExpression.h"
+#include "ir/expressions/memberExpression.h"
 
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ts/destructuringContext.h"
-#include "plugins/ecmascript/es2panda/checker/ets/typeRelationContext.h"
+#include "checker/TSchecker.h"
+#include "checker/ts/destructuringContext.h"
+#include "checker/ets/typeRelationContext.h"
 
 namespace panda::es2panda::ir {
 bool AssignmentExpression::ConvertibleToAssignmentPattern(bool must_be_pattern)

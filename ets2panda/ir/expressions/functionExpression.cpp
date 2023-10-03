@@ -15,13 +15,13 @@
 
 #include "functionExpression.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/statements/variableDeclarator.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/expressions/identifier.h"
+#include "ir/statements/variableDeclarator.h"
 
 namespace panda::es2panda::ir {
 void FunctionExpression::Iterate(const NodeTraverser &cb) const

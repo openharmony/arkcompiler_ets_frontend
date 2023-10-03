@@ -13,25 +13,25 @@
  * limitations under the License.
  */
 
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/assignmentExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/binaryExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/memberExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/statements/variableDeclarator.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsQualifiedName.h"
-#include "plugins/ecmascript/es2panda/ir/base/tsPropertySignature.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeAliasDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeReference.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameterDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameter.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
+#include "ir/typeNode.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/expressions/assignmentExpression.h"
+#include "ir/expressions/binaryExpression.h"
+#include "ir/expressions/memberExpression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/statements/variableDeclarator.h"
+#include "ir/ts/tsQualifiedName.h"
+#include "ir/base/tsPropertySignature.h"
+#include "ir/ts/tsTypeAliasDeclaration.h"
+#include "ir/ts/tsTypeReference.h"
+#include "ir/ts/tsTypeParameterDeclaration.h"
+#include "ir/ts/tsTypeParameter.h"
+#include "binder/variable.h"
+#include "binder/scope.h"
+#include "util/helpers.h"
 
-#include "plugins/ecmascript/es2panda/checker/ts/typeElaborationContext.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
+#include "checker/ts/typeElaborationContext.h"
+#include "checker/TSchecker.h"
 
 namespace panda::es2panda::checker {
 void TSChecker::CheckTruthinessOfType(Type *type, lexer::SourcePosition line_info)

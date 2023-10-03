@@ -15,14 +15,14 @@
 
 #include "codeGen.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/emitter.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regAllocator.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regScope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/compilerContext.h"
-#include "plugins/ecmascript/es2panda/compiler/core/dynamicContext.h"
-#include "plugins/ecmascript/es2panda/compiler/base/catchTable.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
+#include "compiler/core/emitter.h"
+#include "compiler/core/regAllocator.h"
+#include "compiler/core/regScope.h"
+#include "compiler/core/compilerContext.h"
+#include "compiler/core/dynamicContext.h"
+#include "compiler/base/catchTable.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::compiler {
 

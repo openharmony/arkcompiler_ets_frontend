@@ -15,7 +15,7 @@
 
 #include "tsThisType.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void TSThisType::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}

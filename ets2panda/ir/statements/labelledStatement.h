@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_IR_STATEMENT_LABELLED_STATEMENT_H
 #define ES2PANDA_IR_STATEMENT_LABELLED_STATEMENT_H
 
-#include "plugins/ecmascript/es2panda/ir/statement.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "ir/statement.h"
+#include "util/ustring.h"
 
 namespace panda::es2panda::ir {
 class Identifier;

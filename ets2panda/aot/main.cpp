@@ -19,8 +19,8 @@
 #include "mem/arena_allocator.h"
 #include "mem/pool_manager.h"
 #include "options.h"
-#include "plugins/ecmascript/es2panda/es2panda.h"
-#include "plugins/ecmascript/es2panda/util/arktsconfig.h"
+#include "es2panda.h"
+#include "util/arktsconfig.h"
 
 #include <iostream>
 #include <memory>

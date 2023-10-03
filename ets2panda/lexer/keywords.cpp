@@ -14,8 +14,8 @@
  */
 
 #include "generated/keywords.h"
-#include "plugins/ecmascript/es2panda/lexer/keywordsUtil.h"
-#include "plugins/ecmascript/es2panda/parser/context/parserContext.h"
+#include "lexer/keywordsUtil.h"
+#include "parser/context/parserContext.h"
 
 namespace panda::es2panda::lexer {
 

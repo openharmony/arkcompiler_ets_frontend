@@ -15,18 +15,18 @@
 
 #include "catchClause.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/compiler/base/lreference.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/arrayExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/objectExpression.h"
-#include "plugins/ecmascript/es2panda/ir/statements/blockStatement.h"
+#include "binder/scope.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/base/lreference.h"
+#include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/expression.h"
+#include "ir/typeNode.h"
+#include "ir/expressions/arrayExpression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/objectExpression.h"
+#include "ir/statements/blockStatement.h"
 
 namespace panda::es2panda::ir {
 void CatchClause::Iterate(const NodeTraverser &cb) const

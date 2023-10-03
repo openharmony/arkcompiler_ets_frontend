@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_CLASS_STATIC_BLOCK_H
 #define ES2PANDA_PARSER_INCLUDE_AST_CLASS_STATIC_BLOCK_H
 
-#include "plugins/ecmascript/es2panda/ir/base/classElement.h"
+#include "ir/base/classElement.h"
 
 namespace panda::es2panda::ir {
 class Expression;

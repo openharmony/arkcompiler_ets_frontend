@@ -212,6 +212,13 @@ bool Options::Parse(int argc, const char **argv)
         }
     }
 
+#ifndef PANDA_WITH_ECMASCRIPT
+    if (extension_ == es2panda::ScriptExtension::JS) {
+        error_msg_ = "js extension is not supported within current build";
+        return false;
+    }
+#endif
+
     if (extension_ != es2panda::ScriptExtension::JS && op_module.GetValue()) {
         error_msg_ = "Error: --module is not supported for this extension.";
         return false;

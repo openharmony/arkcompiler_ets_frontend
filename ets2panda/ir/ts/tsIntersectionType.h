@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_INTERSECTION_TYPE_H
 #define ES2PANDA_IR_TS_INTERSECTION_TYPE_H
 
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
+#include "ir/typeNode.h"
 
 namespace panda::es2panda::ir {
 class TSIntersectionType : public TypeNode {

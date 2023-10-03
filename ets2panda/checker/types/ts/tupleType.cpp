@@ -15,7 +15,7 @@
 
 #include "tupleType.h"
 
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
+#include "checker/TSchecker.h"
 
 namespace panda::es2panda::checker {
 Type *TupleType::ConvertToArrayType(TSChecker *checker)

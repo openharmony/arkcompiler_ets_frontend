@@ -15,7 +15,7 @@
 
 #include "functionType.h"
 
-#include "plugins/ecmascript/es2panda/checker/types/signature.h"
+#include "checker/types/signature.h"
 
 namespace panda::es2panda::checker {
 void FunctionType::ToString(std::stringstream &ss) const

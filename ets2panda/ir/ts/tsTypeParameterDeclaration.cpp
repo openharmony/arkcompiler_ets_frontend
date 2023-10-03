@@ -15,9 +15,9 @@
 
 #include "tsTypeParameterDeclaration.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameter.h"
+#include "binder/scope.h"
+#include "ir/astDump.h"
+#include "ir/ts/tsTypeParameter.h"
 
 namespace panda::es2panda::ir {
 void TSTypeParameterDeclaration::Iterate(const NodeTraverser &cb) const

@@ -15,11 +15,11 @@
 
 #include "lexenv.h"
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/compiler/core/envScope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/moduleContext.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
+#include "binder/variable.h"
+#include "compiler/core/envScope.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/moduleContext.h"
+#include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::compiler {
 // Helpers

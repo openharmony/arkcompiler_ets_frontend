@@ -15,12 +15,12 @@
 
 #include "compileQueue.h"
 
-#include "plugins/ecmascript/es2panda/binder/binder.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/compilerContext.h"
-#include "plugins/ecmascript/es2panda/compiler/core/emitter.h"
-#include "plugins/ecmascript/es2panda/compiler/core/function.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
+#include "binder/binder.h"
+#include "binder/scope.h"
+#include "compiler/core/compilerContext.h"
+#include "compiler/core/emitter.h"
+#include "compiler/core/function.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::compiler {
 CompileQueue::CompileQueue(size_t thread_count)

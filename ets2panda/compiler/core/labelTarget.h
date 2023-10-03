@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CORE_LABEL_TARGET_H
 #define ES2PANDA_COMPILER_CORE_LABEL_TARGET_H
 
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
-#include "plugins/ecmascript/es2panda/compiler/core/labelPair.h"
+#include "ir/irnode.h"
+#include "compiler/core/labelPair.h"
 
 #include <unordered_map>
 

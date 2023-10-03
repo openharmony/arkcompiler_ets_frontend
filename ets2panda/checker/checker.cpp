@@ -15,18 +15,18 @@
 
 #include "checker.h"
 
-#include "plugins/ecmascript/es2panda/checker/types/type.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/statements/blockStatement.h"
-#include "plugins/ecmascript/es2panda/parser/program/program.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
-#include "plugins/ecmascript/es2panda/binder/binder.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/es2panda.h"
-#include "plugins/ecmascript/es2panda/checker/types/globalTypesHolder.h"
-#include "plugins/ecmascript/es2panda/checker/types/ts/unionType.h"
-#include "plugins/ecmascript/es2panda/checker/types/signature.h"
+#include "checker/types/type.h"
+#include "ir/expression.h"
+#include "ir/statements/blockStatement.h"
+#include "parser/program/program.h"
+#include "util/helpers.h"
+#include "binder/binder.h"
+#include "binder/scope.h"
+#include "binder/variable.h"
+#include "es2panda.h"
+#include "checker/types/globalTypesHolder.h"
+#include "checker/types/ts/unionType.h"
+#include "checker/types/signature.h"
 
 #include <cstdint>
 #include <initializer_list>

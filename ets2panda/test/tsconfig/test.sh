@@ -22,6 +22,7 @@ PANDA_RUN_PREFIX="$3"
 TSCONFIG="$TSCONFIG_DIR"/tsconfig.json
 EXPECTED="$TSCONFIG_DIR"/expected.txt
 BUILD="$TSCONFIG_DIR"/build
+PANDA_ROOT="$4"
 
 ensure_exists "$TSCONFIG"
 ensure_exists "$ES2PANDA"
@@ -30,7 +31,7 @@ ensure_exists "$EXPECTED"
 rm -rf "$BUILD"
 
 ACTUAL=$(mktemp /tmp/actual.XXXXXX)
-STDLIB="$SCRIPT_DIR/../../../../ets/stdlib"
+STDLIB="$PANDA_ROOT/plugins/ets/stdlib"
 CMD="$PANDA_RUN_PREFIX $ES2PANDA --stdlib=$STDLIB --arktsconfig=$TSCONFIG"
 $CMD 2> /dev/null
 pushd "$TSCONFIG_DIR" &> /dev/null

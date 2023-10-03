@@ -16,9 +16,9 @@
 #include "keywordsUtil.h"
 
 #include "generated/keywords.h"
-#include "plugins/ecmascript/es2panda/lexer/lexer.h"
+#include "lexer/lexer.h"
 #include "unicode/uchar.h"
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
+#include "util/enumbitops.h"
 
 namespace panda::es2panda::lexer {
 enum class AsciiFlags : uint32_t {

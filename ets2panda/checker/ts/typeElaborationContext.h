@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_CHECKER_TS_TYPE_ELABORATION_CONTEXT_H
 #define ES2PANDA_CHECKER_TS_TYPE_ELABORATION_CONTEXT_H
 
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "checker/TSchecker.h"
+#include "ir/expression.h"
 
 #include <macros.h>
 

@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_TEMPLATE_ELEMENT_H
 #define ES2PANDA_PARSER_INCLUDE_AST_TEMPLATE_ELEMENT_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "ir/expression.h"
+#include "util/ustring.h"
 
 namespace panda::es2panda::ir {
 class TemplateElement : public Expression {

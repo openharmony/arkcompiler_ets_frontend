@@ -78,6 +78,51 @@
             "line": 29,
             "column": 9,
             "problem": "SymbolType"
+        },
+        {
+            "line": 31,
+            "column": 12,
+            "problem": "SymbolType"
+        },
+        {
+            "line": 33,
+            "column": 10,
+            "problem": "SymbolType"
+        },
+        {
+            "line": 33,
+            "column": 10,
+            "problem": "SymbolType"
+        },
+        {
+            "line": 35,
+            "column": 20,
+            "problem": "SymbolType"
+        },
+        {
+            "line": 38,
+            "column": 44,
+            "problem": "SymbolType"
+        },
+        {
+            "line": 39,
+            "column": 22,
+            "problem": "SymbolType"
+        },
+        {
+            "line": 42,
+            "column": 14,
+            "problem": "SymbolType"
+        },
+        {
+            "line": 46,
+            "column": 14,
+            "problem": "SymbolType"
+        },
+        {
+            "line": 50,
+            "column": 12,
+            "problem": "SymbolType"
         }
     ]
 }

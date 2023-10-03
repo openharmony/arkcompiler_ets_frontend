@@ -16,11 +16,11 @@
 #ifndef ES2PANDA_COMPILER_SCOPES_SCOPE_H
 #define ES2PANDA_COMPILER_SCOPES_SCOPE_H
 
-#include "plugins/ecmascript/es2panda/binder/declaration.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/es2panda.h"
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "binder/declaration.h"
+#include "binder/variable.h"
+#include "es2panda.h"
+#include "util/enumbitops.h"
+#include "util/ustring.h"
 
 #include <map>
 #include <unordered_map>

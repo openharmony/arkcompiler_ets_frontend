@@ -21,6 +21,7 @@ let Link: PropDecorator;
 let ObjectLink: PropDecorator;
 let Consume: PropDecoratorWithCall;
 let Provide: PropDecoratorWithCall;
+let CustomDialog: PropDecorator = (x, y) => {};
 
 class Decorators {
   @Prop
@@ -54,4 +55,18 @@ class Decorators {
   f3: any;
 
   f4;
+}
+
+class CustomDialogController {
+};
+
+@CustomDialog
+class A {
+  controller: CustomDialogController;
+  build() {}
+}
+
+class B {
+  controller: CustomDialogController;
+  build() {}
 }

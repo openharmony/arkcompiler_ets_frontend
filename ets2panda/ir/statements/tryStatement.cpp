@@ -15,13 +15,13 @@
 
 #include "tryStatement.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/dynamicContext.h"
-#include "plugins/ecmascript/es2panda/compiler/base/catchTable.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/base/catchClause.h"
-#include "plugins/ecmascript/es2panda/ir/statements/blockStatement.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/dynamicContext.h"
+#include "compiler/base/catchTable.h"
+#include "ir/astDump.h"
+#include "ir/base/catchClause.h"
+#include "ir/statements/blockStatement.h"
 
 namespace panda::es2panda::ir {
 void TryStatement::Iterate(const NodeTraverser &cb) const

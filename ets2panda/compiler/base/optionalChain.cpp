@@ -15,7 +15,7 @@
 
 #include "optionalChain.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::compiler {
 OptionalChain::OptionalChain(PandaGen *pg, const ir::AstNode *node) : pg_(pg), node_(node), prev_(pg->optional_chain_)

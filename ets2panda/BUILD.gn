@@ -20,6 +20,7 @@ config("libes2panda_public_config") {
     "$ark_third_party_root/icu/icu4c/source/common",
     "$ark_third_party_root/icu/icu4c/source/i18n",
     "$ark_third_party_root/icu/icu4c/source/",
+    ".",
   ]
 }
 
@@ -343,7 +344,8 @@ config("libes2panda_config") {
   cflags_cc = [
     "-fexceptions",
     "-Werror=shadow",
-    "-DDEFAULT_ARKTSCONFIG=\"$build_gen_root/plugins/ecmascript/es2panda/generated/arktsconfig.json\""
+    # TODO(vpukhov): adjust es2panda path
+    "-DDEFAULT_ARKTSCONFIG=\"$build_gen_root/plugins/es2panda/generated/arktsconfig.json\""
   ]
 }
 
@@ -374,7 +376,6 @@ ohos_shared_library("libes2panda") {
     "$ark_third_party_root/icu/icu4c:shared_icuuc",
   ]
 
-  relative_install_dir = "ark"
   output_extension = "so"
   part_name = ark_part_name
   subsystem_name = "$ark_subsystem_name"
@@ -395,6 +396,8 @@ ohos_static_library("libes2panda_frontend_static") {
     "$ark_third_party_root/icu/icu4c:static_icui18n",
     "$ark_third_party_root/icu/icu4c:static_icuuc",
   ]
+  part_name = ark_part_name
+  subsystem_name = ark_subsystem_name
 }
 
 ark_isa_gen("isa_gen_es2panda") {

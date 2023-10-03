@@ -15,8 +15,8 @@
 
 #include "etsBooleanType.h"
 
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ets/conversion.h"
+#include "checker/ETSchecker.h"
+#include "checker/ets/conversion.h"
 
 namespace panda::es2panda::checker {
 void ETSBooleanType::Identical(TypeRelation *relation, Type *other)

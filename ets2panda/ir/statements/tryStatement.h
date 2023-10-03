@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_IR_STATEMENT_TRY_STATEMENT_H
 #define ES2PANDA_IR_STATEMENT_TRY_STATEMENT_H
 
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/ir/statement.h"
+#include "compiler/core/ETSGen.h"
+#include "ir/statement.h"
 
 namespace panda::es2panda::compiler {
 class PandaGen;

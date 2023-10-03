@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_LEXER_KEYWORDS_BASE_H
 #define ES2PANDA_LEXER_KEYWORDS_BASE_H
 
-#include "plugins/ecmascript/es2panda/lexer/keywordString.h"
-#include "plugins/ecmascript/es2panda/lexer/keywordsUtil.h"
+#include "lexer/keywordString.h"
+#include "lexer/keywordsUtil.h"
 #include "macros.h"
 
 namespace panda::es2panda::lexer {

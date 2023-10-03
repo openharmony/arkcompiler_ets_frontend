@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_CLASS_IMPLEMENTS_H
 #define ES2PANDA_IR_TS_CLASS_IMPLEMENTS_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 class TSTypeParameterInstantiation;

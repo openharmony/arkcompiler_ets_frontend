@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_COMPILER_BASE_CONDITION_H
 #define ES2PANDA_COMPILER_BASE_CONDITION_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::compiler {
 class PandaGen;

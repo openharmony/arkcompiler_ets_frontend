@@ -15,9 +15,9 @@
 
 #include "tsIndexedAccessType.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "ir/astDump.h"
 
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
+#include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
 void TSIndexedAccessType::Iterate(const NodeTraverser &cb) const

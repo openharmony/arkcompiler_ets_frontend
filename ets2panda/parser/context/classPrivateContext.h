@@ -17,8 +17,8 @@
 #define ES2PANDA_PARSER_CONTEXT_CLASS_PRIVATE_CONTEXT_H
 
 #include <macros.h>
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "util/enumbitops.h"
+#include "util/ustring.h"
 
 #include <vector>
 

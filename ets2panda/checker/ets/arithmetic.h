@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_ETS_ARITHMETIC_H
 #define ES2PANDA_COMPILER_CHECKER_ETS_ARITHMETIC_H
 
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/types/ets/etsBooleanType.h"
+#include "checker/ETSchecker.h"
+#include "checker/types/ets/etsBooleanType.h"
 
 namespace panda::es2panda::checker {
 

@@ -15,8 +15,8 @@
 
 #include "JSchecker.h"
 
-#include "plugins/ecmascript/es2panda/binder/binder.h"
-#include "plugins/ecmascript/es2panda/parser/program/program.h"
+#include "binder/binder.h"
+#include "parser/program/program.h"
 
 namespace panda::es2panda::checker {
 

@@ -43,7 +43,6 @@ ArkTS supports ``typeof`` operator only in the expression context. Using
 - Recipe 029:  Indexed access is not supported for fields (``arkts-no-props-by-index``)
 - Recipe 059:  ``delete`` operator is not supported (``arkts-no-delete``)
 - Recipe 066:  ``in`` operator is not supported (``arkts-no-in``)
-- Recipe 105:  Property-based runtime type checks are not supported (``arkts-no-prop-existence-check``)
 - Recipe 144:  Usage of standard library is restricted (``arkts-limited-stdlib``)
 
 

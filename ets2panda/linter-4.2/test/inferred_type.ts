@@ -33,3 +33,7 @@ class C {
     
     h(x, y, ...z) {} // 'x', 'y' and 'z' are implicitly 'Any'
 }
+
+let s1 = new Array(10);
+let s2 = new Array<any>(10);
+let s3 = new Array<unknown>(10);

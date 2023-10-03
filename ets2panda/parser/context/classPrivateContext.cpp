@@ -15,10 +15,10 @@
 
 #include "classPrivateContext.h"
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/base/classElement.h"
-#include "plugins/ecmascript/es2panda/ir/base/methodDefinition.h"
+#include "ir/expression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/base/classElement.h"
+#include "ir/base/methodDefinition.h"
 
 namespace panda::es2panda::parser {
 bool ClassPrivateContext::AddElement(const ir::ClassElement *elem)

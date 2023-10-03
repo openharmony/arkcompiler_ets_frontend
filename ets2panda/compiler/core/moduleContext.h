@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CORE_MODULE_CONTEXT_H
 #define ES2PANDA_COMPILER_CORE_MODULE_CONTEXT_H
 
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "util/ustring.h"
 
 #include <vector>
 

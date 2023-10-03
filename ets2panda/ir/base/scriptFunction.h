@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_SCRIPT_FUNCTION_H
 #define ES2PANDA_PARSER_INCLUDE_AST_SCRIPT_FUNCTION_H
 
-#include "plugins/ecmascript/es2panda/ir/astNode.h"
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
+#include "ir/astNode.h"
+#include "util/enumbitops.h"
 
 namespace panda::es2panda::binder {
 class FunctionScope;

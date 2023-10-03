@@ -15,7 +15,7 @@
 
 #include "etsStringType.h"
 
-#include "plugins/ecmascript/es2panda/binder/ETSBinder.h"
+#include "binder/ETSBinder.h"
 
 namespace panda::es2panda::checker {
 void ETSStringType::Identical(TypeRelation *relation, Type *other)

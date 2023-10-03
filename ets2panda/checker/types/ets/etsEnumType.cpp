@@ -15,12 +15,12 @@
 
 #include "etsEnumType.h"
 
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ets/conversion.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/numberLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/memberExpression.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsEnumMember.h"
+#include "checker/ETSchecker.h"
+#include "checker/ets/conversion.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/literals/numberLiteral.h"
+#include "ir/expressions/memberExpression.h"
+#include "ir/ts/tsEnumMember.h"
 
 namespace panda::es2panda::checker {
 ETSEnumType::ETSEnumType(const ir::TSEnumDeclaration *const enum_decl, UType ordinal,

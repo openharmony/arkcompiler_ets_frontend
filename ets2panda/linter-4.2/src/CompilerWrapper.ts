@@ -57,7 +57,13 @@ function formTscOptions(cmdOptions: CommandLineOptions, extraOptions?: any): ts.
 
   let options: ts.CreateProgramOptions = {
     rootNames: cmdOptions.inputFiles,
-    options: { target: ts.ScriptTarget.Latest, module: ts.ModuleKind.CommonJS, checkJs: true },
+    options: {
+      target: ts.ScriptTarget.Latest,
+      module: ts.ModuleKind.CommonJS,
+      allowJs: true,
+      checkJs: true,
+      maxNodeModuleJsDepth: 2
+    },
   };
 
   if (extraOptions) {

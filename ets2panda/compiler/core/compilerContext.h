@@ -18,8 +18,8 @@
 
 #include "macros.h"
 #include "mem/arena_allocator.h"
-#include "plugins/ecmascript/es2panda/es2panda.h"
-#include "plugins/ecmascript/es2panda/compiler/base/literals.h"
+#include "es2panda.h"
+#include "compiler/base/literals.h"
 
 #include <cstdint>
 #include <mutex>

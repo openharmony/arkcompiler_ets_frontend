@@ -15,9 +15,9 @@
 
 #include "type.h"
 
-#include "plugins/ecmascript/es2panda/checker/types/typeFlag.h"
-#include "plugins/ecmascript/es2panda/checker/types/typeRelation.h"
-#include "plugins/ecmascript/es2panda/checker/types/ets/etsObjectType.h"
+#include "checker/types/typeFlag.h"
+#include "checker/types/typeRelation.h"
+#include "checker/types/ets/etsObjectType.h"
 
 namespace panda::es2panda::checker {
 bool Type::IsETSNullType() const

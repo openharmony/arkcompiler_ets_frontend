@@ -17,7 +17,7 @@
 #define ES2PANDA_COMPILER_CORE_REG_ALLOCATOR_H
 
 #include "generated/isa.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regSpiller.h"
+#include "compiler/core/regSpiller.h"
 #include "macros.h"
 
 namespace panda::es2panda::ir {

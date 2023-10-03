@@ -950,7 +950,16 @@ export class TsUtils {
   }
 
   public isLibraryType(type: ts.Type): boolean {
-    return this.isLibrarySymbol(type.aliasSymbol ?? type.getSymbol());
+    const nonNullableType = type.getNonNullableType();
+    if (nonNullableType.isUnion()) {
+      for (const componentType of nonNullableType.types) {
+        if (!this.isLibraryType(componentType)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return this.isLibrarySymbol(nonNullableType.aliasSymbol ?? nonNullableType.getSymbol());
   }
 
   public hasLibraryType(node: ts.Node): boolean {

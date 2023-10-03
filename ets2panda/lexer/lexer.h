@@ -16,10 +16,10 @@
 #ifndef ES2PANDA_PARSER_CORE_LEXER_H
 #define ES2PANDA_PARSER_CORE_LEXER_H
 
-#include "plugins/ecmascript/es2panda/lexer/regexp/regexp.h"
-#include "plugins/ecmascript/es2panda/lexer/token/letters.h"
-#include "plugins/ecmascript/es2panda/lexer/token/token.h"
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
+#include "lexer/regexp/regexp.h"
+#include "lexer/token/letters.h"
+#include "lexer/token/token.h"
+#include "util/enumbitops.h"
 
 namespace panda::es2panda::parser {
 class ParserContext;
@@ -247,7 +247,7 @@ protected:
     void ScanStringUnicodePart(util::UString *str);
     char32_t ScanUnicodeCharacter();
 
-    void ScanDecimalNumbers(bool allow_numeric_separator);
+    void ScanDecimalNumbers();
 
     virtual void ScanNumberLeadingZero()
     {
@@ -258,7 +258,7 @@ protected:
     void ScanNumberLeadingZeroImpl();
     template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>
     void ScanNumberRadix(bool allow_numeric_separator = true);
-    void ScanNumber(bool allow_numeric_separator = true, bool allow_big_int = true);
+    void ScanNumber(bool allow_big_int = true);
     virtual void ConvertNumber(const std::string &utf8, NumberFlags flags);
     void ScanDecimalLiteral();
     void ScanDecimalDigits(bool allow_numeric_separator);
@@ -485,19 +485,20 @@ void Lexer::ScanNumberLeadingZeroImpl()
         case LEX_CHAR_6:
         case LEX_CHAR_7: {
             ThrowError("Implicit octal literal not allowed");
-            break;
         }
         case LEX_CHAR_8:
         case LEX_CHAR_9: {
             ThrowError("NonOctalDecimalIntegerLiteral is not enabled in strict mode code");
-            break;
+        }
+        case LEX_CHAR_UNDERSCORE: {
+            ThrowError("Numeric separator '_' is not allowed in numbers that start with '0'.");
         }
         default: {
             break;
         }
     }
 
-    ScanNumber(Iterator().Peek() == LEX_CHAR_0);
+    ScanNumber();
 }
 
 template <bool RANGE_CHECK(char32_t), int RADIX, typename RadixType, typename RadixLimit>

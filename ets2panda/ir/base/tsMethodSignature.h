@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_TS_METHOD_SIGNATURE_H
 #define ES2PANDA_PARSER_INCLUDE_AST_TS_METHOD_SIGNATURE_H
 
-#include "plugins/ecmascript/es2panda/ir/statement.h"
+#include "ir/statement.h"
 
 namespace panda::es2panda::binder {
 class Scope;

@@ -15,12 +15,12 @@
 
 #include "templateLiteral.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/base/templateElement.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/TSchecker.h"
+#include "checker/ETSchecker.h"
+#include "ir/astDump.h"
+#include "ir/base/templateElement.h"
 
 namespace panda::es2panda::ir {
 void TemplateLiteral::Iterate(const NodeTraverser &cb) const

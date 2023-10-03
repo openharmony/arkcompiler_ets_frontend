@@ -17,10 +17,10 @@
 #ifndef ES2PANDA_IR_ETS_IMPORT_SOURCE_H
 #define ES2PANDA_IR_ETS_IMPORT_SOURCE_H
 
-#include "plugins/ecmascript/es2panda/checker/types/type.h"
-#include "plugins/ecmascript/es2panda/ir/astNode.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/stringLiteral.h"
-#include "plugins/ecmascript/es2panda/util/language.h"
+#include "checker/types/type.h"
+#include "ir/astNode.h"
+#include "ir/expressions/literals/stringLiteral.h"
+#include "util/language.h"
 
 namespace panda::es2panda::ir {
 

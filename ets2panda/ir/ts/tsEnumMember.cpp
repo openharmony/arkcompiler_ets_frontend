@@ -15,9 +15,9 @@
 
 #include "tsEnumMember.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
+#include "ir/astDump.h"
+#include "ir/expression.h"
+#include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
 void TSEnumMember::Iterate(const NodeTraverser &cb) const

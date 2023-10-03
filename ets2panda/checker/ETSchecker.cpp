@@ -15,17 +15,17 @@
 
 #include "ETSchecker.h"
 
-#include "plugins/ecmascript/es2panda/es2panda.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/base/classDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsInterfaceDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/statements/blockStatement.h"
-#include "plugins/ecmascript/es2panda/binder/ETSBinder.h"
-#include "plugins/ecmascript/es2panda/parser/program/program.h"
-#include "plugins/ecmascript/es2panda/checker/ets/aliveAnalyzer.h"
+#include "es2panda.h"
+#include "ir/expression.h"
+#include "ir/base/classDefinition.h"
+#include "ir/ts/tsInterfaceDeclaration.h"
+#include "ir/statements/blockStatement.h"
+#include "binder/ETSBinder.h"
+#include "parser/program/program.h"
+#include "checker/ets/aliveAnalyzer.h"
 
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
+#include "ir/base/scriptFunction.h"
+#include "util/helpers.h"
 
 namespace panda::es2panda::checker {
 void ETSChecker::InitializeBuiltins(binder::ETSBinder *binder)

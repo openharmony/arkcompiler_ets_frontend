@@ -15,12 +15,12 @@
 
 #include "etsNewMultiDimArrayInstanceExpression.h"
 
-#include "plugins/ecmascript/es2panda/binder/ETSBinder.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/types/signature.h"
+#include "binder/ETSBinder.h"
+#include "ir/astDump.h"
+#include "ir/typeNode.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/ETSchecker.h"
+#include "checker/types/signature.h"
 
 namespace panda::es2panda::ir {
 void ETSNewMultiDimArrayInstanceExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const

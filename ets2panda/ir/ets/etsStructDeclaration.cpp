@@ -15,13 +15,13 @@
 
 #include "etsStructDeclaration.h"
 
-#include "plugins/ecmascript/es2panda/compiler/base/lreference.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/base/classDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/base/decorator.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
+#include "compiler/base/lreference.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/base/classDefinition.h"
+#include "ir/base/decorator.h"
+#include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
 void ETSStructDeclaration::Iterate(const NodeTraverser &cb) const

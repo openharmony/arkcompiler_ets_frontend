@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_ETS_CASTING_CONTEXT_H
 #define ES2PANDA_COMPILER_CHECKER_ETS_CASTING_CONTEXT_H
 
-#include "plugins/ecmascript/es2panda/checker/types/typeRelation.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "checker/types/typeRelation.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::checker {
 class CastingContext {

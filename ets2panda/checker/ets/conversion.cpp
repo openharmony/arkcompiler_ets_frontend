@@ -15,10 +15,10 @@
 
 #include "conversion.h"
 
-#include "plugins/ecmascript/es2panda/checker/ets/boxingConverter.h"
-#include "plugins/ecmascript/es2panda/checker/ets/narrowingConverter.h"
-#include "plugins/ecmascript/es2panda/checker/ets/unboxingConverter.h"
-#include "plugins/ecmascript/es2panda/checker/ets/wideningConverter.h"
+#include "checker/ets/boxingConverter.h"
+#include "checker/ets/narrowingConverter.h"
+#include "checker/ets/unboxingConverter.h"
+#include "checker/ets/wideningConverter.h"
 
 namespace panda::es2panda::checker::conversion {
 void Identity(TypeRelation *const relation, Type *const source, Type *const target)

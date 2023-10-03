@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_EXPRESSION_LITERAL_NULL_LITERAL_H
 #define ES2PANDA_IR_EXPRESSION_LITERAL_NULL_LITERAL_H
 
-#include "plugins/ecmascript/es2panda/ir/expressions/literal.h"
+#include "ir/expressions/literal.h"
 
 namespace panda::es2panda::ir {
 class NullLiteral : public Literal {

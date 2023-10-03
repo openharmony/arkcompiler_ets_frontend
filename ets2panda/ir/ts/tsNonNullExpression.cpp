@@ -15,9 +15,9 @@
 
 #include "tsNonNullExpression.h"
 
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "checker/ETSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void TSNonNullExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const

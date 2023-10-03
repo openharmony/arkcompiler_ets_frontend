@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_ETS_NARROWING_WIDENING_CONVERTER_H
 #define ES2PANDA_COMPILER_CHECKER_ETS_NARROWING_WIDENING_CONVERTER_H
 
-#include "plugins/ecmascript/es2panda/checker/ets/narrowingConverter.h"
-#include "plugins/ecmascript/es2panda/checker/ets/wideningConverter.h"
+#include "checker/ets/narrowingConverter.h"
+#include "checker/ets/wideningConverter.h"
 
 namespace panda::es2panda::checker {
 class NarrowingWideningConverter : public NarrowingConverter {

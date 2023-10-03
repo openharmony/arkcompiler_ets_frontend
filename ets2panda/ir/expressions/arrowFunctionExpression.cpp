@@ -15,16 +15,16 @@
 
 #include "arrowFunctionExpression.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/thisExpression.h"
-#include "plugins/ecmascript/es2panda/ir/statements/variableDeclarator.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ets/typeRelationContext.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/thisExpression.h"
+#include "ir/statements/variableDeclarator.h"
+#include "checker/ETSchecker.h"
+#include "checker/ets/typeRelationContext.h"
 
 namespace panda::es2panda::ir {
 void ArrowFunctionExpression::Iterate(const NodeTraverser &cb) const

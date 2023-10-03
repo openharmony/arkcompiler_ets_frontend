@@ -17,7 +17,7 @@
 #define ES2PANDA_PARSER_PARSER_FLAGS_H
 
 #include <cstdint>
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
+#include "util/enumbitops.h"
 
 namespace panda::es2panda::parser {
 enum class LexicalScopeType {

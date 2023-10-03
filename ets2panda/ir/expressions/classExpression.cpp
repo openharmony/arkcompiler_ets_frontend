@@ -15,8 +15,8 @@
 
 #include "classExpression.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/base/classDefinition.h"
+#include "ir/astDump.h"
+#include "ir/base/classDefinition.h"
 
 namespace panda::es2panda::ir {
 void ClassExpression::Iterate(const NodeTraverser &cb) const

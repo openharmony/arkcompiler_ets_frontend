@@ -15,7 +15,7 @@
 
 #include "regexp.h"
 
-#include "plugins/ecmascript/es2panda/lexer/token/letters.h"
+#include "lexer/token/letters.h"
 #include "unicode/uchar.h"
 
 #include <iostream>

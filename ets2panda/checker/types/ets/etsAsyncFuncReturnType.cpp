@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/types/globalTypesHolder.h"
-#include "plugins/ecmascript/es2panda/checker/types/ets/etsAsyncFuncReturnType.h"
+#include "checker/ETSchecker.h"
+#include "checker/types/globalTypesHolder.h"
+#include "checker/types/ets/etsAsyncFuncReturnType.h"
 
 namespace panda::es2panda::checker {
 void ETSAsyncFuncReturnType::ToString(std::stringstream &ss) const

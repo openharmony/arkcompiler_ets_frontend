@@ -14,9 +14,9 @@
  */
 
 #include "baseAnalyzer.h"
-#include "plugins/ecmascript/es2panda/ir/astNode.h"
-#include "plugins/ecmascript/es2panda/ir/statements/breakStatement.h"
-#include "plugins/ecmascript/es2panda/ir/statements/continueStatement.h"
+#include "ir/astNode.h"
+#include "ir/statements/breakStatement.h"
+#include "ir/statements/continueStatement.h"
 
 namespace panda::es2panda::checker {
 void BaseAnalyzer::ClearPendingExits()

@@ -16,10 +16,10 @@
 #ifndef ES2PANDA_COMPILER_CORE_DYNAMIC_CONTEXT_H
 #define ES2PANDA_COMPILER_CORE_DYNAMIC_CONTEXT_H
 
-#include "plugins/ecmascript/es2panda/util/ustring.h"
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
-#include "plugins/ecmascript/es2panda/compiler/core/labelTarget.h"
-#include "plugins/ecmascript/es2panda/compiler/base/iterators.h"
+#include "util/ustring.h"
+#include "ir/irnode.h"
+#include "compiler/core/labelTarget.h"
+#include "compiler/base/iterators.h"
 
 namespace panda::es2panda::ir {
 class TryStatement;

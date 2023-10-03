@@ -15,14 +15,14 @@
 
 #include "doWhileStatement.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/compiler/base/condition.h"
-#include "plugins/ecmascript/es2panda/compiler/core/labelTarget.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "binder/scope.h"
+#include "compiler/base/condition.h"
+#include "compiler/core/labelTarget.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 void DoWhileStatement::Iterate(const NodeTraverser &cb) const

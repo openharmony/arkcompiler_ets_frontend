@@ -15,8 +15,8 @@
 
 #include "expressionStatement.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "ir/astDump.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 void ExpressionStatement::Iterate(const NodeTraverser &cb) const

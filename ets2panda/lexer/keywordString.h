@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_PARSER_CORE_KEYWORD_STRING_H
 #define ES2PANDA_PARSER_CORE_KEYWORD_STRING_H
 
-#include "plugins/ecmascript/es2panda/lexer/token/tokenType.h"
+#include "lexer/token/tokenType.h"
 #include "macros.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "util/ustring.h"
 
 namespace panda::es2panda::lexer {
 struct KeywordString {

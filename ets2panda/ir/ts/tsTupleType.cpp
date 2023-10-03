@@ -15,13 +15,13 @@
 
 #include "tsTupleType.h"
 
-#include "plugins/ecmascript/es2panda/util/helpers.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/types/ts/indexInfo.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsNamedTupleMember.h"
+#include "util/helpers.h"
+#include "binder/scope.h"
+#include "checker/TSchecker.h"
+#include "checker/types/ts/indexInfo.h"
+#include "ir/astDump.h"
+#include "ir/expressions/identifier.h"
+#include "ir/ts/tsNamedTupleMember.h"
 
 namespace panda::es2panda::ir {
 void TSTupleType::Iterate(const NodeTraverser &cb) const

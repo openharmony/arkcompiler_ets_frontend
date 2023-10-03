@@ -15,8 +15,8 @@
 
 #include "astDump.h"
 
-#include "plugins/ecmascript/es2panda/ir/astNode.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
+#include "ir/astNode.h"
+#include "util/helpers.h"
 
 #include <cmath>
 #include <iostream>

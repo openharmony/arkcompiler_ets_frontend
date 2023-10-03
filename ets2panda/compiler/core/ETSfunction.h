@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CORE_ETSFUNCTION_H
 #define ES2PANDA_COMPILER_CORE_ETSFUNCTION_H
 
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
+#include "ir/irnode.h"
 
 namespace panda::es2panda::ir {
 class ScriptFunction;

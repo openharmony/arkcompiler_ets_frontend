@@ -14,7 +14,7 @@
  */
 
 #include "number.h"
-#include "plugins/ecmascript/es2panda/lexer/lexer.h"
+#include "lexer/lexer.h"
 
 #include <cstdint>
 #include <cstdlib>

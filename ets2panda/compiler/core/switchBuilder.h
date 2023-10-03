@@ -16,12 +16,12 @@
 #ifndef ES2PANDA_COMPILER_CORE_SWITCH_BUILDER_H
 #define ES2PANDA_COMPILER_CORE_SWITCH_BUILDER_H
 
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
-#include "plugins/ecmascript/es2panda/ir/statements/switchStatement.h"
-#include "plugins/ecmascript/es2panda/ir/statements/switchCaseStatement.h"
-#include "plugins/ecmascript/es2panda/compiler/core/dynamicContext.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/checker.h"
+#include "ir/irnode.h"
+#include "ir/statements/switchStatement.h"
+#include "ir/statements/switchCaseStatement.h"
+#include "compiler/core/dynamicContext.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/checker.h"
 
 namespace panda::es2panda::ir {
 class SwitchStatement;

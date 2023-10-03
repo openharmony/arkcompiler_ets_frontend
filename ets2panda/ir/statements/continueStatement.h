@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_IR_STATEMENT_H_CONTINUE_STATEMENT_H
 #define ES2PANDA_IR_STATEMENT_H_CONTINUE_STATEMENT_H
 
-#include "plugins/ecmascript/es2panda/ir/statement.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
+#include "ir/statement.h"
+#include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
 class ContinueStatement : public Statement {

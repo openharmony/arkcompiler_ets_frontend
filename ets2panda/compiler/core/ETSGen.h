@@ -16,13 +16,13 @@
 #ifndef ES2PANDA_COMPILER_CORE_ETSGEN_H
 #define ES2PANDA_COMPILER_CORE_ETSGEN_H
 
-#include "plugins/ecmascript/es2panda/ir/astNode.h"
-#include "plugins/ecmascript/es2panda/binder/ETSBinder.h"
-#include "plugins/ecmascript/es2panda/compiler/core/codeGen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSfunction.h"
-#include "plugins/ecmascript/es2panda/compiler/core/targetTypeContext.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
+#include "ir/astNode.h"
+#include "binder/ETSBinder.h"
+#include "compiler/core/codeGen.h"
+#include "compiler/core/ETSfunction.h"
+#include "compiler/core/targetTypeContext.h"
+#include "checker/ETSchecker.h"
+#include "util/helpers.h"
 
 namespace panda::es2panda::compiler {
 

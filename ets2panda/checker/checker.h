@@ -16,12 +16,12 @@
 #ifndef ES2PANDA_CHECKER_CHECKER_H
 #define ES2PANDA_CHECKER_CHECKER_H
 
-#include "plugins/ecmascript/es2panda/binder/enumMemberResult.h"
-#include "plugins/ecmascript/es2panda/checker/checkerContext.h"
-#include "plugins/ecmascript/es2panda/checker/types/typeRelation.h"
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
-#include "plugins/ecmascript/es2panda/es2panda.h"
+#include "binder/enumMemberResult.h"
+#include "checker/checkerContext.h"
+#include "checker/types/typeRelation.h"
+#include "util/enumbitops.h"
+#include "util/ustring.h"
+#include "es2panda.h"
 #include "macros.h"
 
 #include <cstdint>

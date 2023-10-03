@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_TYPE_PARAMETER_DECLARATION_H
 #define ES2PANDA_IR_TS_TYPE_PARAMETER_DECLARATION_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::binder {
 class LocalScope;

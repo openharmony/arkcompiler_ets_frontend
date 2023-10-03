@@ -18,9 +18,9 @@
 
 #include "macros.h"
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/checker/types/ts/elementFlags.h"
-#include "plugins/ecmascript/es2panda/checker/types/ts/objectType.h"
+#include "binder/variable.h"
+#include "checker/types/ts/elementFlags.h"
+#include "checker/types/ts/objectType.h"
 
 namespace panda::es2panda::checker {
 using NamedTupleMemberPool = ArenaUnorderedMap<binder::LocalVariable *, util::StringView>;

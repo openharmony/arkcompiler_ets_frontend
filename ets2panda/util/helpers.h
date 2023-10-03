@@ -16,10 +16,10 @@
 #ifndef ES2PANDA_UTIL_HELPERS_H
 #define ES2PANDA_UTIL_HELPERS_H
 
-#include "plugins/ecmascript/es2panda/binder/variableFlags.h"
+#include "binder/variableFlags.h"
 #include "mem/pool_manager.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
-#include "plugins/ecmascript/es2panda/ir/module/importSpecifier.h"
+#include "util/ustring.h"
+#include "ir/module/importSpecifier.h"
 
 #include <cmath>
 #include <string>

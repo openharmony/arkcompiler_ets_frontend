@@ -16,7 +16,7 @@
 enum Color { Red, Green, Blue }
 
 function main(): void {
-  let red = Color.Red;
+  const red = Color.Red;
   switch (Color.Green) {
     case Color.Blue: break;
     case red: break;

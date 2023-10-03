@@ -15,10 +15,10 @@
 
 #include "yieldExpression.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/function/generatorFunctionBuilder.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/function/generatorFunctionBuilder.h"
+#include "checker/TSchecker.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void YieldExpression::Iterate(const NodeTraverser &cb) const

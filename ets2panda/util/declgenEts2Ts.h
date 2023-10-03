@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#include "plugins/ecmascript/es2panda/parser/program/program.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
+#include "parser/program/program.h"
+#include "checker/ETSchecker.h"
 #include "libpandabase/os/file.h"
 
 #ifndef ES2PANDA_UTIL_DECLGEN_ETS2TS_H

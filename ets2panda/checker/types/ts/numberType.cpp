@@ -15,8 +15,8 @@
 
 #include "numberType.h"
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/checker/types/ts/enumType.h"
+#include "binder/variable.h"
+#include "checker/types/ts/enumType.h"
 
 namespace panda::es2panda::checker {
 void NumberType::ToString(std::stringstream &ss) const

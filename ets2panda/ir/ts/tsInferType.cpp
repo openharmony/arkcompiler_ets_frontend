@@ -15,8 +15,8 @@
 
 #include "tsInferType.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameter.h"
+#include "ir/astDump.h"
+#include "ir/ts/tsTypeParameter.h"
 
 namespace panda::es2panda::ir {
 void TSInferType::Iterate(const NodeTraverser &cb) const

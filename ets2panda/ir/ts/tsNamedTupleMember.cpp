@@ -15,7 +15,7 @@
 
 #include "tsNamedTupleMember.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void TSNamedTupleMember::Iterate(const NodeTraverser &cb) const

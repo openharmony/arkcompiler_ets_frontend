@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_IR_EXPRESSION_MEMBER_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_MEMBER_EXPRESSION_H
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
+#include "binder/variable.h"
+#include "ir/expression.h"
+#include "ir/irnode.h"
 
 namespace panda::es2panda::checker {
 class ETSObjectType;

@@ -28,7 +28,7 @@ export enum FaultID {
   NonDeclarationInNamespace, GeneratorFunction, FunctionContainsThis, PropertyAccessByIndex, JsxElement,
   EnumMemberNonConstInit, ImplementsClass, MethodReassignment, MultipleStaticBlocks, ThisType, 
   IntefaceExtendDifProps, StructuralIdentity, TypeOnlyImport, TypeOnlyExport, DefaultImport, 
-  ExportAssignment, ImportAssignment, PropertyRuntimeCheck,
+  ExportAssignment, ImportAssignment,
   GenericCallNoTypeArgs, ParameterProperties,
   InstanceofUnsupported, ShorthandAmbientModuleDecl, WildcardsInModuleName, UMDModuleDefinition,
   NewTarget, DefiniteAssignment, Prototype, GlobalThis,

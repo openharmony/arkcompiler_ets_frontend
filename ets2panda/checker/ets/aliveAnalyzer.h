@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_ETS_ALIVE_ANALYZER_H
 #define ES2PANDA_COMPILER_CHECKER_ETS_ALIVE_ANALYZER_H
 
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ets/baseAnalyzer.h"
+#include "checker/ETSchecker.h"
+#include "checker/ets/baseAnalyzer.h"
 
 #include "utils/arena_containers.h"
 

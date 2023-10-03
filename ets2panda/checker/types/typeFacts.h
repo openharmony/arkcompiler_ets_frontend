@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_FACTS_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_FACTS_H
 
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
+#include "util/enumbitops.h"
 
 namespace panda::es2panda::checker {
 enum class TypeFacts : uint32_t {

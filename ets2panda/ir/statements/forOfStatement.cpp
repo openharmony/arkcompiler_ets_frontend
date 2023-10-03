@@ -15,18 +15,18 @@
 
 #include "forOfStatement.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/compiler/base/iterators.h"
-#include "plugins/ecmascript/es2panda/compiler/base/lreference.h"
-#include "plugins/ecmascript/es2panda/compiler/core/labelTarget.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/superExpression.h"
-#include "plugins/ecmascript/es2panda/ir/statements/variableDeclarator.h"
-#include "plugins/ecmascript/es2panda/ir/statements/variableDeclaration.h"
+#include "binder/scope.h"
+#include "compiler/base/iterators.h"
+#include "compiler/base/lreference.h"
+#include "compiler/core/labelTarget.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/expression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/superExpression.h"
+#include "ir/statements/variableDeclarator.h"
+#include "ir/statements/variableDeclaration.h"
 
 namespace panda::es2panda::ir {
 void ForOfStatement::Iterate(const NodeTraverser &cb) const

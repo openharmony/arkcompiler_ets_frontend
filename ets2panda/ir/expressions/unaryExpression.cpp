@@ -15,16 +15,16 @@
 
 #include "unaryExpression.h"
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/bigIntLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/numberLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/memberExpression.h"
+#include "binder/variable.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/TSchecker.h"
+#include "checker/ETSchecker.h"
+#include "ir/astDump.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/literals/bigIntLiteral.h"
+#include "ir/expressions/literals/numberLiteral.h"
+#include "ir/expressions/memberExpression.h"
 
 namespace panda::es2panda::ir {
 void UnaryExpression::Iterate(const NodeTraverser &cb) const

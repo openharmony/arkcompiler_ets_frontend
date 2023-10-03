@@ -15,10 +15,10 @@
 
 #include "etsNewArrayInstanceExpression.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
+#include "ir/astDump.h"
+#include "ir/typeNode.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/ETSchecker.h"
 
 namespace panda::es2panda::ir {
 void ETSNewArrayInstanceExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const

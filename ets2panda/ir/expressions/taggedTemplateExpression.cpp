@@ -15,15 +15,15 @@
 
 #include "taggedTemplateExpression.h"
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/compiler/base/literals.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regScope.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/memberExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/templateLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameterInstantiation.h"
+#include "binder/variable.h"
+#include "compiler/base/literals.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/regScope.h"
+#include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/expressions/memberExpression.h"
+#include "ir/expressions/templateLiteral.h"
+#include "ir/ts/tsTypeParameterInstantiation.h"
 
 namespace panda::es2panda::ir {
 void TaggedTemplateExpression::Iterate(const NodeTraverser &cb) const

@@ -17,7 +17,7 @@
 #include "libpandabase/utils/json_builder.h"
 #include "libpandabase/utils/json_parser.h"
 #include "libpandabase/os/filesystem.h"
-#include "plugins/ecmascript/es2panda/util/language.h"
+#include "util/language.h"
 #include "generated/signatures.h"
 
 #include <fstream>

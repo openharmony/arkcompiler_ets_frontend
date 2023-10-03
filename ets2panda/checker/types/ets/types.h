@@ -33,6 +33,6 @@
 #include "etsArrayType.h"
 #include "wildcardType.h"
 #include "etsTypeParameter.h"
-#include "plugins/ecmascript/es2panda/checker/types/signature.h"
+#include "checker/types/signature.h"
 
 #endif /* TYPES_H */

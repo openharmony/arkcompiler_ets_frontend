@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_IR_TS_MAPPED_TYPE_H
 #define ES2PANDA_IR_TS_MAPPED_TYPE_H
 
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameter.h"
+#include "ir/typeNode.h"
+#include "ir/ts/tsTypeParameter.h"
 
 namespace panda::es2panda::ir {
 class TSMappedType : public TypeNode {

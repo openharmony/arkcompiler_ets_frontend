@@ -15,7 +15,7 @@
 
 #include "tsExternalModuleReference.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void TSExternalModuleReference::Iterate(const NodeTraverser &cb) const

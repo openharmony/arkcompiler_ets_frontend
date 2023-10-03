@@ -17,8 +17,8 @@
 #define ES2PANDA_LEXER_TOKEN_NUMBER_H
 
 #include "macros.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
+#include "util/ustring.h"
+#include "util/enumbitops.h"
 
 #include <cstdint>
 #include <type_traits>

@@ -357,41 +357,6 @@ export class TypeScriptLinter {
     return found;
   }
 
-  private isPropertyRuntimeCheck(expr: ts.PropertyAccessExpression): boolean {
-    // Check whether base expression is 'any' type and its property
-    // is being checked in runtime (i.e. expression appears as condition
-    // of if/for/while, or is an operand of '&&', '||' or '!' operators).
-    const tsBaseExprType = this.tsTypeChecker.getTypeAtLocation(
-      expr.expression
-    );
-
-    // Get parent node of the expression, pass through enclosing parentheses if needed.
-    let exprParent = expr.parent;
-    while (ts.isParenthesizedExpression(exprParent))
-      exprParent = exprParent.parent;
-
-    return (
-      this.tsUtils.isAnyType(tsBaseExprType) &&
-      ((ts.isIfStatement(exprParent) &&
-        expr === this.tsUtils.unwrapParenthesized(exprParent.expression)) ||
-        (ts.isWhileStatement(exprParent) &&
-          expr === this.tsUtils.unwrapParenthesized(exprParent.expression)) ||
-        (ts.isDoStatement(exprParent) &&
-          expr === this.tsUtils.unwrapParenthesized(exprParent.expression)) ||
-        (ts.isForStatement(exprParent) &&
-          exprParent.condition &&
-          expr === this.tsUtils.unwrapParenthesized(exprParent.condition)) ||
-        (ts.isConditionalExpression(exprParent) &&
-          expr === this.tsUtils.unwrapParenthesized(exprParent.condition)) ||
-        (ts.isBinaryExpression(exprParent) &&
-          (exprParent.operatorToken.kind ===
-            ts.SyntaxKind.AmpersandAmpersandToken ||
-            exprParent.operatorToken.kind === ts.SyntaxKind.BarBarToken)) ||
-        (ts.isPrefixUnaryExpression(exprParent) &&
-          exprParent.operator === ts.SyntaxKind.ExclamationToken))
-    );
-  }
-
   private isPrototypePropertyAccess(
     tsPropertyAccess: ts.PropertyAccessExpression
   ): boolean {
@@ -722,10 +687,7 @@ export class TypeScriptLinter {
 
   private handlePropertyAccessExpression(node: ts.Node) {
     let propertyAccessNode = node as ts.PropertyAccessExpression;
-    if (this.isPropertyRuntimeCheck(propertyAccessNode)) {
-      this.incrementCounters(node, FaultID.PropertyRuntimeCheck);
-    }
-    
+
     if (this.isPrototypePropertyAccess(propertyAccessNode)) {
       this.incrementCounters(propertyAccessNode.name, FaultID.Prototype);
     }
@@ -788,6 +750,12 @@ export class TypeScriptLinter {
       this.filterOutDecoratorsDiagnostics(decorators, TsUtils.NON_INITIALIZABLE_PROPERTY_DECORATORS,
         {begin: propName.getStart(), end: propName.getStart()},
         TsUtils.PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE);
+
+      const classDecorators = node.parent.decorators;
+      const propType = (node as ts.PropertyDeclaration).type?.getText();
+      this.filterOutDecoratorsDiagnostics(classDecorators, TsUtils.NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
+        {begin: propName.getStart(), end: propName.getStart()}, TsUtils.PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE, propType);
+
       this.handleDeclarationInferredType(node);
       this.handleDefiniteAssignmentAssertion(node);
     }
@@ -797,7 +765,8 @@ export class TypeScriptLinter {
     decorators: readonly ts.Decorator[] | undefined,
     expectedDecorators: readonly string[],
     range: {begin: number, end: number},
-    code: number
+    code: number,
+    propType?: string
   ) {
     // Filter out non-initializable property decorators from strict diagnostics.
     if (this.tscStrictDiagnostics && this.sourceFile) {
@@ -810,7 +779,11 @@ export class TypeScriptLinter {
             ts.isIdentifier(x.expression.expression)
           )
             decoratorName = x.expression.expression.text;
-
+          
+          // special case for property of type CustomDialogController of the @CustomDialog-decorated class
+          if (expectedDecorators.includes(TsUtils.NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS[0])) {
+            return expectedDecorators.includes(decoratorName) && propType === 'CustomDialogController'
+          }
           return expectedDecorators.includes(
             decoratorName
           );
@@ -2234,6 +2207,34 @@ export class TypeScriptLinter {
 
   private validatedTypesSet = new Set<ts.Type>();
 
+  private checkAnyOrUnknownChildNode(node: ts.Node): boolean {
+    if (node.kind === ts.SyntaxKind.AnyKeyword ||
+        node.kind === ts.SyntaxKind.UnknownKeyword) {
+      return true;
+    }
+    for (let child of node.getChildren()) {
+      if (this.checkAnyOrUnknownChildNode(child)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private handleInferredObjectreference(
+    type: ts.Type,
+    decl: ts.VariableDeclaration | ts.PropertyDeclaration | ts.ParameterDeclaration
+  ) {
+    const typeArgs = this.tsTypeChecker.getTypeArguments(type as ts.TypeReference);
+    if (typeArgs) {
+      const haveAnyOrUnknownNodes = this.checkAnyOrUnknownChildNode(decl);
+      if (!haveAnyOrUnknownNodes) {
+        for (const typeArg of typeArgs) {
+          this.validateDeclInferredType(typeArg, decl);
+        }
+      }
+    }
+  }
+
   private validateDeclInferredType(
     type: ts.Type,
     decl:
@@ -2244,13 +2245,10 @@ export class TypeScriptLinter {
     if (type.aliasSymbol != undefined) {
       return;
     }
-    if (type.flags & ts.TypeFlags.Object && (type as ts.ObjectType).objectFlags & ts.ObjectFlags.Reference) {
-      const typeArgs = this.tsTypeChecker.getTypeArguments(type as ts.TypeReference);
-      if (typeArgs) {
-        for (const typeArg of typeArgs) {
-          this.validateDeclInferredType(typeArg, decl);
-        }
-      }
+    const isObject = type.flags & ts.TypeFlags.Object;
+    const isReference = (type as ts.ObjectType).objectFlags & ts.ObjectFlags.Reference;
+    if (isObject && isReference) {
+      this.handleInferredObjectreference(type, decl);
       return;
     }
     if (this.validatedTypesSet.has(type)) {

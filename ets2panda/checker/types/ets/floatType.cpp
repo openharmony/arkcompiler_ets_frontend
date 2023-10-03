@@ -15,8 +15,8 @@
 
 #include "floatType.h"
 
-#include "plugins/ecmascript/es2panda/checker/ets/conversion.h"
-#include "plugins/ecmascript/es2panda/checker/ets/narrowingWideningConverter.h"
+#include "checker/ets/conversion.h"
+#include "checker/ets/narrowingWideningConverter.h"
 
 namespace panda::es2panda::checker {
 void FloatType::Identical(TypeRelation *relation, Type *other)

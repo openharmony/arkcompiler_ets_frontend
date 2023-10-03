@@ -246,8 +246,6 @@ Specify types explicitly.
 |CB_SEE|
 ~~~~~~~~
 
-* :ref:`R013`
-
 .. _R009:
 
 |CB_R| #9: You can extend your |TS| code with more numeric types

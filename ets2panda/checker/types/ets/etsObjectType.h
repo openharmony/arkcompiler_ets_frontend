@@ -16,12 +16,12 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_ETS_OBJECT_TYPE_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_ETS_OBJECT_TYPE_H
 
-#include "plugins/ecmascript/es2panda/checker/types/type.h"
-#include "plugins/ecmascript/es2panda/checker/types/signature.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsInterfaceDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameterDeclaration.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/ir/base/classDefinition.h"
+#include "checker/types/type.h"
+#include "checker/types/signature.h"
+#include "ir/ts/tsInterfaceDeclaration.h"
+#include "ir/ts/tsTypeParameterDeclaration.h"
+#include "binder/scope.h"
+#include "ir/base/classDefinition.h"
 
 namespace panda::es2panda::checker {
 

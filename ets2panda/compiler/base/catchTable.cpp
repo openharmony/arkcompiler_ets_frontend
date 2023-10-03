@@ -15,7 +15,7 @@
 
 #include "catchTable.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::compiler {
 TryLabelSet::TryLabelSet(CodeGen *cg)

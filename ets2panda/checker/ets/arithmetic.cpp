@@ -15,11 +15,11 @@
 
 #include "arithmetic.h"
 
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/binder/declaration.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
+#include "ir/expressions/identifier.h"
+#include "binder/variable.h"
+#include "binder/scope.h"
+#include "binder/declaration.h"
+#include "checker/ETSchecker.h"
 
 namespace panda::es2panda::checker {
 

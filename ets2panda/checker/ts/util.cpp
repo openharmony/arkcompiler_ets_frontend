@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-#include "plugins/ecmascript/es2panda/ir/expressions/assignmentExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/binaryExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/memberExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/templateLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsQualifiedName.h"
+#include "ir/expressions/assignmentExpression.h"
+#include "ir/expressions/binaryExpression.h"
+#include "ir/expressions/memberExpression.h"
+#include "ir/expressions/templateLiteral.h"
+#include "ir/ts/tsQualifiedName.h"
 
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
+#include "checker/TSchecker.h"
 
 namespace panda::es2panda::checker {
 ir::MemberExpression *TSChecker::ResolveLeftMostMemberExpression(ir::MemberExpression *expr)

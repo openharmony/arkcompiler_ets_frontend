@@ -15,10 +15,10 @@
 
 #include "condition.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/binaryExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/unaryExpression.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "ir/expressions/binaryExpression.h"
+#include "ir/expressions/unaryExpression.h"
 
 namespace panda::es2panda::compiler {
 void Condition::Compile(PandaGen *pg, const ir::Expression *expr, Label *false_label)

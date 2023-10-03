@@ -14,10 +14,10 @@
  */
 
 #include "etsFunctionType.h"
-#include "plugins/ecmascript/es2panda/checker/types/typeRelation.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
+#include "checker/types/typeRelation.h"
+#include "checker/ETSchecker.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::checker {
 

@@ -15,8 +15,8 @@
 
 #include "exportDefaultDeclaration.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void ExportDefaultDeclaration::Iterate(const NodeTraverser &cb) const

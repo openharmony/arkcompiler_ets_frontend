@@ -15,7 +15,7 @@
 
 #include "es2panda.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/compilerImpl.h"
+#include "compiler/core/compilerImpl.h"
 
 #include <iostream>
 #include <thread>

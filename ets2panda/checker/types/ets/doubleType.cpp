@@ -15,8 +15,8 @@
 
 #include "doubleType.h"
 
-#include "plugins/ecmascript/es2panda/checker/ets/conversion.h"
-#include "plugins/ecmascript/es2panda/checker/ets/wideningConverter.h"
+#include "checker/ets/conversion.h"
+#include "checker/ets/wideningConverter.h"
 
 namespace panda::es2panda::checker {
 void DoubleType::Identical(TypeRelation *relation, Type *other)

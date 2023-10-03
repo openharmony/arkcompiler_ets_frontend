@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_BASE_LITERALS_H
 #define ES2PANDA_COMPILER_BASE_LITERALS_H
 
-#include "plugins/ecmascript/es2panda/ir/expressions/literal.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "ir/expressions/literal.h"
+#include "util/ustring.h"
 
 #include <variant>
 

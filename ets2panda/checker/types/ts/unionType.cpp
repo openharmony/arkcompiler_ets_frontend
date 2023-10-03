@@ -16,7 +16,7 @@
 #include "unionType.h"
 #include <algorithm>
 
-#include "plugins/ecmascript/es2panda/checker/types/globalTypesHolder.h"
+#include "checker/types/globalTypesHolder.h"
 
 namespace panda::es2panda::checker {
 void UnionType::ToString(std::stringstream &ss) const

@@ -17,7 +17,7 @@
 #define ES2PANDA_COMPILER_FUNCTION_FUNCTION_BUILDER_H
 
 #include "macros.h"
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
+#include "ir/irnode.h"
 
 namespace panda::es2panda::ir {
 class ScriptFunction;

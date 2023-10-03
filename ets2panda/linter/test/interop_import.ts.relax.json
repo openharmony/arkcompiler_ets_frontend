@@ -15,11 +15,25 @@
     ],
     "nodes": [
         {
-            "line": 27,
+            "line": 29,
             "column": 7,
             "problem": "Prototype",
             "suggest": "",
             "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)"
+        },
+        {
+            "line": 39,
+            "column": 5,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
+        },
+        {
+            "line": 42,
+            "column": 5,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
         }
     ]
 }

@@ -15,9 +15,9 @@
 
 #include "iterators.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/base/catchTable.h"
-#include "plugins/ecmascript/es2panda/compiler/function/functionBuilder.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/base/catchTable.h"
+#include "compiler/function/functionBuilder.h"
 
 namespace panda::es2panda::compiler {
 // Iterator

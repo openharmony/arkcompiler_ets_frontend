@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_ETS_NEW_ARRAY_INSTANCE_EXPRESSION_H
 #define ES2PANDA_IR_ETS_NEW_ARRAY_INSTANCE_EXPRESSION_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 

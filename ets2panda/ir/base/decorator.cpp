@@ -15,8 +15,8 @@
 
 #include "decorator.h"
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "ir/expression.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void Decorator::Iterate(const NodeTraverser &cb) const

@@ -16,12 +16,12 @@
 #ifndef ES2PANDA_COMPILER_IR_IRNODE_H
 #define ES2PANDA_COMPILER_IR_IRNODE_H
 
-#include "plugins/ecmascript/es2panda/compiler/base/literals.h"
-#include "plugins/ecmascript/es2panda/compiler/core/vReg.h"
-#include "plugins/ecmascript/es2panda/compiler/core/programElement.h"
-#include "plugins/ecmascript/es2panda/lexer/token/sourceLocation.h"
+#include "compiler/base/literals.h"
+#include "compiler/core/vReg.h"
+#include "compiler/core/programElement.h"
+#include "lexer/token/sourceLocation.h"
 #include "macros.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "util/ustring.h"
 #include "utils/span.h"
 
 #include <cstdint>

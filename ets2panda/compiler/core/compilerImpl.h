@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_INCLUDE_COMPILER_IMPL_H
 #define ES2PANDA_COMPILER_INCLUDE_COMPILER_IMPL_H
 
-#include "plugins/ecmascript/es2panda/es2panda.h"
-#include "plugins/ecmascript/es2panda/compiler/core/compileQueue.h"
+#include "es2panda.h"
+#include "compiler/core/compileQueue.h"
 #include "macros.h"
 #include "mem/arena_allocator.h"
 #include "os/thread.h"

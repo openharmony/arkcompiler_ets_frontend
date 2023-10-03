@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_IR_AST_NODE_H
 #define ES2PANDA_IR_AST_NODE_H
 
-#include "plugins/ecmascript/es2panda/ir/astNodeMapping.h"
-#include "plugins/ecmascript/es2panda/lexer/token/sourceLocation.h"
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
+#include "ir/astNodeMapping.h"
+#include "lexer/token/sourceLocation.h"
+#include "util/enumbitops.h"
 
 #include <functional>
 #include "macros.h"

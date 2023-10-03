@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_IR_EXPRESSION_IDENTIFIER_H
 #define ES2PANDA_IR_EXPRESSION_IDENTIFIER_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
-#include "plugins/ecmascript/es2panda/ir/validationInfo.h"
+#include "ir/expression.h"
+#include "util/ustring.h"
+#include "ir/validationInfo.h"
 
 namespace panda::es2panda::binder {
 class Variable;

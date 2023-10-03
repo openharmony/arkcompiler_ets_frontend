@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_ETS_CONVERSION_H
 #define ES2PANDA_COMPILER_CHECKER_ETS_CONVERSION_H
 
-#include "plugins/ecmascript/es2panda/checker/types/type.h"
-#include "plugins/ecmascript/es2panda/checker/types/typeRelation.h"
+#include "checker/types/type.h"
+#include "checker/types/typeRelation.h"
 
 namespace panda::es2panda::checker::conversion {
 void Identity(TypeRelation *relation, Type *source, Type *target);

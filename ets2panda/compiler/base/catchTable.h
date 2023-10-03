@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_BASE_CATCH_TABLE_H
 #define ES2PANDA_COMPILER_BASE_CATCH_TABLE_H
 
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
-#include "plugins/ecmascript/es2panda/compiler/core/labelPair.h"
+#include "ir/irnode.h"
+#include "compiler/core/labelPair.h"
 
 namespace panda::es2panda::compiler {
 class CodeGen;

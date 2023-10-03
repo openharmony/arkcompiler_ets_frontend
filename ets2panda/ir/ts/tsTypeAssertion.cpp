@@ -15,8 +15,8 @@
 
 #include "tsTypeAssertion.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
+#include "ir/astDump.h"
+#include "ir/typeNode.h"
 
 namespace panda::es2panda::ir {
 void TSTypeAssertion::Iterate(const NodeTraverser &cb) const

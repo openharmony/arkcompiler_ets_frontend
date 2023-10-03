@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_MODULE_EXPORT_ALL_DECLARATION_H
 #define ES2PANDA_IR_MODULE_EXPORT_ALL_DECLARATION_H
 
-#include "plugins/ecmascript/es2panda/ir/statement.h"
+#include "ir/statement.h"
 
 namespace panda::es2panda::ir {
 class Identifier;

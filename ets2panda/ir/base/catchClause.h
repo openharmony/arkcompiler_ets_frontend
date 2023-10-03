@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_BASE_CATCH_CLAUSE_H
 #define ES2PANDA_IR_BASE_CATCH_CLAUSE_H
 
-#include "plugins/ecmascript/es2panda/ir/statement.h"
+#include "ir/statement.h"
 
 namespace panda::es2panda::binder {
 class CatchScope;

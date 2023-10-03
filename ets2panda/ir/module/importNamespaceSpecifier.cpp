@@ -15,12 +15,12 @@
 
 #include "importNamespaceSpecifier.h"
 
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/binder/ETSBinder.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/module/importDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/stringLiteral.h"
+#include "checker/ETSchecker.h"
+#include "binder/ETSBinder.h"
+#include "ir/astDump.h"
+#include "ir/expressions/identifier.h"
+#include "ir/module/importDeclaration.h"
+#include "ir/expressions/literals/stringLiteral.h"
 
 namespace panda::es2panda::ir {
 void ImportNamespaceSpecifier::Iterate(const NodeTraverser &cb) const

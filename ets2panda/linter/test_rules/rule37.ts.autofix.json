@@ -7,6 +7,62 @@
             "autofixable": false,
             "suggest": "",
             "rule": "RegExp literals are not supported (arkts-no-regexp-literals)"
+        },
+        {
+            "line": 5,
+            "column": 16,
+            "problem": "RegexLiteral",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)"
+        },
+        {
+            "line": 9,
+            "column": 43,
+            "problem": "RegexLiteral",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)"
+        },
+        {
+            "line": 11,
+            "column": 35,
+            "problem": "RegexLiteral",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)"
+        },
+        {
+            "line": 16,
+            "column": 21,
+            "problem": "RegexLiteral",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)"
+        },
+        {
+            "line": 24,
+            "column": 21,
+            "problem": "RegexLiteral",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)"
+        },
+        {
+            "line": 32,
+            "column": 16,
+            "problem": "RegexLiteral",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)"
+        },
+        {
+            "line": 36,
+            "column": 27,
+            "problem": "RegexLiteral",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "RegExp literals are not supported (arkts-no-regexp-literals)"
         }
     ]
 }

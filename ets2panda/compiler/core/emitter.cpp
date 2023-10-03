@@ -15,20 +15,20 @@
 
 #include "emitter.h"
 
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/compiler/base/literals.h"
-#include "plugins/ecmascript/es2panda/compiler/core/compilerContext.h"
-#include "plugins/ecmascript/es2panda/compiler/core/codeGen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regSpiller.h"
-#include "plugins/ecmascript/es2panda/compiler/debugger/debuginfoDumper.h"
-#include "plugins/ecmascript/es2panda/compiler/base/catchTable.h"
-#include "plugins/ecmascript/es2panda/es2panda.h"
-#include "plugins/ecmascript/es2panda/ir/statements/blockStatement.h"
-#include "plugins/ecmascript/es2panda/parser/program/program.h"
-#include "plugins/ecmascript/es2panda/checker/types/type.h"
+#include "ir/irnode.h"
+#include "util/helpers.h"
+#include "binder/scope.h"
+#include "binder/variable.h"
+#include "compiler/base/literals.h"
+#include "compiler/core/compilerContext.h"
+#include "compiler/core/codeGen.h"
+#include "compiler/core/regSpiller.h"
+#include "compiler/debugger/debuginfoDumper.h"
+#include "compiler/base/catchTable.h"
+#include "es2panda.h"
+#include "ir/statements/blockStatement.h"
+#include "parser/program/program.h"
+#include "checker/types/type.h"
 #include "generated/isa.h"
 #include "macros.h"
 
@@ -357,6 +357,7 @@ Emitter::~Emitter()
 
 static void UpdateLiteralBufferId(panda::pandasm::Ins *ins, uint32_t offset)
 {
+#ifdef PANDA_WITH_ECMASCRIPT
     switch (ins->opcode) {
         case pandasm::Opcode::ECMA_DEFINECLASSWITHBUFFER: {
             ins->imms.back() = std::get<int64_t>(ins->imms.back()) + offset;
@@ -376,6 +377,11 @@ static void UpdateLiteralBufferId(panda::pandasm::Ins *ins, uint32_t offset)
             break;
         }
     }
+#else
+    (void) ins;
+    (void) offset;
+    UNREACHABLE();
+#endif
 }
 
 void Emitter::AddProgramElement(ProgramElement *program_element)

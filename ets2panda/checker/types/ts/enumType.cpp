@@ -15,7 +15,7 @@
 
 #include "enumType.h"
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
+#include "binder/variable.h"
 
 namespace panda::es2panda::checker {
 void EnumType::ToString(std::stringstream &ss) const

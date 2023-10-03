@@ -16,19 +16,19 @@
 #ifndef ES2PANDA_PARSER_CORE_PARSER_IMPL_H
 #define ES2PANDA_PARSER_CORE_PARSER_IMPL_H
 
-#include "plugins/ecmascript/es2panda/binder/binder.h"
-#include "plugins/ecmascript/es2panda/es2panda.h"
-#include "plugins/ecmascript/es2panda/ir/astNode.h"
-#include "plugins/ecmascript/es2panda/lexer/token/sourceLocation.h"
-#include "plugins/ecmascript/es2panda/lexer/token/tokenType.h"
+#include "binder/binder.h"
+#include "es2panda.h"
+#include "ir/astNode.h"
+#include "lexer/token/sourceLocation.h"
+#include "lexer/token/tokenType.h"
 #include "macros.h"
 #include "mem/arena_allocator.h"
-#include "plugins/ecmascript/es2panda/parser/context/classPrivateContext.h"
-#include "plugins/ecmascript/es2panda/parser/context/parserContext.h"
-#include "plugins/ecmascript/es2panda/parser/parserFlags.h"
-#include "plugins/ecmascript/es2panda/parser/program/program.h"
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "parser/context/classPrivateContext.h"
+#include "parser/context/parserContext.h"
+#include "parser/parserFlags.h"
+#include "parser/program/program.h"
+#include "util/enumbitops.h"
+#include "util/ustring.h"
 
 #include <memory>
 #include <sstream>

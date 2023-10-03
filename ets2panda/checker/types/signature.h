@@ -18,8 +18,8 @@
 
 #include "type.h"
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/compiler/core/compilerContext.h"
+#include "binder/variable.h"
+#include "compiler/core/compilerContext.h"
 
 namespace panda::es2panda::checker {
 // For use in Signature::ToAssemblerType

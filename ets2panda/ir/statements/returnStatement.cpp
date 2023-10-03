@@ -15,18 +15,18 @@
 
 #include "returnStatement.h"
 
-#include "plugins/ecmascript/es2panda/ir/base/methodDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ets/typeRelationContext.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/objectExpression.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
+#include "ir/base/methodDefinition.h"
+#include "ir/base/scriptFunction.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/TSchecker.h"
+#include "checker/ETSchecker.h"
+#include "checker/ets/typeRelationContext.h"
+#include "ir/astDump.h"
+#include "ir/typeNode.h"
+#include "ir/expression.h"
+#include "ir/expressions/objectExpression.h"
+#include "util/helpers.h"
 
 namespace panda::es2panda::ir {
 void ReturnStatement::Iterate(const NodeTraverser &cb) const

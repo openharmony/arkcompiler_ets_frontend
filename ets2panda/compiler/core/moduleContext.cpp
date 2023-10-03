@@ -15,14 +15,14 @@
 
 #include "moduleContext.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/compiler/base/lreference.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/stringLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/module/exportAllDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/module/exportNamedDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/module/importDeclaration.h"
+#include "binder/scope.h"
+#include "binder/variable.h"
+#include "compiler/base/lreference.h"
+#include "compiler/core/pandagen.h"
+#include "ir/expressions/literals/stringLiteral.h"
+#include "ir/module/exportAllDeclaration.h"
+#include "ir/module/exportNamedDeclaration.h"
+#include "ir/module/importDeclaration.h"
 
 namespace panda::es2panda::compiler {
 void CompileImports(PandaGen *pg, binder::ModuleScope *scope)

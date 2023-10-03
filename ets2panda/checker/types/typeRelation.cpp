@@ -15,9 +15,9 @@
 
 #include "typeRelation.h"
 
-#include "plugins/ecmascript/es2panda/checker/checker.h"
-#include "plugins/ecmascript/es2panda/checker/types/ts/indexInfo.h"
-#include "plugins/ecmascript/es2panda/checker/types/signature.h"
+#include "checker/checker.h"
+#include "checker/types/ts/indexInfo.h"
+#include "checker/types/signature.h"
 
 namespace panda::es2panda::checker {
 ArenaAllocator *TypeRelation::Allocator()

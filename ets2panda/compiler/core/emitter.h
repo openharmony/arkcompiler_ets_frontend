@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CORE_EMITTER_H
 #define ES2PANDA_COMPILER_CORE_EMITTER_H
 
-#include "plugins/ecmascript/es2panda/compiler/base/literals.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "compiler/base/literals.h"
+#include "util/ustring.h"
 
 #include <list>
 #include <mutex>

@@ -17,7 +17,7 @@
 #define ES2PANDA_COMPILER_CORE_PROGRAM_ELEMENT_H
 
 #include "macros.h"
-#include "plugins/ecmascript/es2panda/compiler/base/literals.h"
+#include "compiler/base/literals.h"
 
 namespace panda::pandasm {
 struct Ins;

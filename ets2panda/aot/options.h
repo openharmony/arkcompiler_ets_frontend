@@ -17,8 +17,8 @@
 #define ES2PANDA_AOT_OPTIONS_H
 
 #include "libpandabase/os/file.h"
-#include "plugins/ecmascript/es2panda/es2panda.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
+#include "es2panda.h"
+#include "util/helpers.h"
 
 #include <exception>
 #include <fstream>

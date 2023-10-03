@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_BASE_OPTIONAL_CHAIN_H
 #define ES2PANDA_COMPILER_BASE_OPTIONAL_CHAIN_H
 
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "ir/irnode.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::compiler {
 class PandaGen;

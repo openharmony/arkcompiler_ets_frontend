@@ -19,10 +19,10 @@
 #include "macros.h"
 #include "mem/pool_manager.h"
 #include "os/filesystem.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
-#include "plugins/ecmascript/es2panda/binder/binder.h"
+#include "util/ustring.h"
+#include "binder/binder.h"
 
-#include "plugins/ecmascript/es2panda/es2panda.h"
+#include "es2panda.h"
 
 namespace panda::es2panda::ir {
 class BlockStatement;

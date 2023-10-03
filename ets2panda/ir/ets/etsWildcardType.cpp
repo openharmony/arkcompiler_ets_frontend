@@ -15,11 +15,11 @@
 
 #include "etsWildcardType.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsTypeReference.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/ets/etsTypeReference.h"
+#include "checker/TSchecker.h"
+#include "checker/ETSchecker.h"
+#include "compiler/core/ETSGen.h"
 
 namespace panda::es2panda::ir {
 void ETSWildcardType::Iterate([[maybe_unused]] const NodeTraverser &cb) const

@@ -17,42 +17,79 @@
         {
             "line": 16,
             "column": 31,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 16,
             "column": 49,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 17,
             "column": 30,
-            "problem": "IntersectionType"
+            "problem": "IntersectionType",
+            "suggest": "",
+            "rule": "Use inheritance instead of intersection types (arkts-no-intersection-types)"
         },
         {
-            "line": 54,
+            "line": 24,
+            "column": 36,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 24,
+            "column": 39,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 55,
             "column": 7,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 56,
+            "line": 57,
             "column": 3,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 42,
+            "line": 43,
             "column": 3,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'pr' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'pr' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 45,
+            "line": 46,
             "column": 3,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'pr2' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'pr2' has no initializer and is not definitely assigned in the constructor."
         },
         {
-            "line": 52,
+            "line": 53,
             "column": 3,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'f2' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'f2' has no initializer and is not definitely assigned in the constructor."
+        },
+        {
+            "line": 70,
+            "column": 3,
+            "problem": "StrictDiagnostic",
+            "suggest": "Property 'controller' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'controller' has no initializer and is not definitely assigned in the constructor."
         }
     ]
 }

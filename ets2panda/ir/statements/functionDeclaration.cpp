@@ -15,18 +15,18 @@
 
 #include "functionDeclaration.h"
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/types/ets/etsFunctionType.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/ir/base/spreadElement.h"
-#include "plugins/ecmascript/es2panda/ir/base/decorator.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
+#include "binder/variable.h"
+#include "binder/scope.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/TSchecker.h"
+#include "checker/ETSchecker.h"
+#include "checker/types/ets/etsFunctionType.h"
+#include "ir/astDump.h"
+#include "ir/typeNode.h"
+#include "ir/base/spreadElement.h"
+#include "ir/base/decorator.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
 void FunctionDeclaration::Iterate(const NodeTraverser &cb) const

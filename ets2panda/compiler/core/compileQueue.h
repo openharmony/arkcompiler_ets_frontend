@@ -18,8 +18,8 @@
 
 #include "macros.h"
 #include "os/thread.h"
-#include "plugins/ecmascript/es2panda/es2panda.h"
-#include "plugins/ecmascript/es2panda/compiler/core/compileJob.h"
+#include "es2panda.h"
+#include "compiler/core/compileJob.h"
 
 #include <condition_variable>
 #include <functional>

@@ -15,21 +15,21 @@
 
 #include "declgenEts2Ts.h"
 
-#include "plugins/ecmascript/es2panda/ir/base/classProperty.h"
-#include "plugins/ecmascript/es2panda/ir/base/methodDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsImportDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsPrimitiveType.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/numberLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/module/importSpecifier.h"
-#include "plugins/ecmascript/es2panda/ir/statements/blockStatement.h"
-#include "plugins/ecmascript/es2panda/ir/statements/classDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsClassImplements.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsEnumMember.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsInterfaceBody.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeAliasDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameter.h"
+#include "ir/base/classProperty.h"
+#include "ir/base/methodDefinition.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/ets/etsImportDeclaration.h"
+#include "ir/ets/etsPrimitiveType.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/literals/numberLiteral.h"
+#include "ir/module/importSpecifier.h"
+#include "ir/statements/blockStatement.h"
+#include "ir/statements/classDeclaration.h"
+#include "ir/ts/tsClassImplements.h"
+#include "ir/ts/tsEnumMember.h"
+#include "ir/ts/tsInterfaceBody.h"
+#include "ir/ts/tsTypeAliasDeclaration.h"
+#include "ir/ts/tsTypeParameter.h"
 
 #define DEBUG_PRINT 0
 
@@ -496,6 +496,10 @@ void TSDeclGen::GenMethodDeclaration(const ir::MethodDefinition *method_def)
     if (state_.in_global_class) {
         Out("exports.", method_name, " = (globalThis as any).Panda.getFunction('", state_.current_class_descriptor,
             "', '", method_name, "');");
+        if (method_name == compiler::Signatures::INIT_METHOD) {
+            OutEndl();
+            Out("exports.", method_name, "();");
+        }
         OutEndl(2);
     }
 }

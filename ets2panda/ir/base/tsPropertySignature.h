@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_TS_PROPERTY_SIGNATURE_H
 #define ES2PANDA_PARSER_INCLUDE_AST_TS_PROPERTY_SIGNATURE_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 class TypeNode;

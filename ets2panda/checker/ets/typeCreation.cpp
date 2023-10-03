@@ -14,18 +14,18 @@
  */
 
 #include "generated/signatures.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/binder/binder.h"
-#include "plugins/ecmascript/es2panda/binder/ETSBinder.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsScript.h"
-#include "plugins/ecmascript/es2panda/ir/base/classDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsEnumDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsEnumMember.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsInterfaceDeclaration.h"
-#include "plugins/ecmascript/es2panda/parser/program/program.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
+#include "checker/ETSchecker.h"
+#include "binder/binder.h"
+#include "binder/ETSBinder.h"
+#include "ir/ets/etsScript.h"
+#include "ir/base/classDefinition.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/expressions/identifier.h"
+#include "ir/ts/tsEnumDeclaration.h"
+#include "ir/ts/tsEnumMember.h"
+#include "ir/ts/tsInterfaceDeclaration.h"
+#include "parser/program/program.h"
+#include "util/helpers.h"
 
 namespace panda::es2panda::checker {
 ByteType *ETSChecker::CreateByteType(int8_t value)

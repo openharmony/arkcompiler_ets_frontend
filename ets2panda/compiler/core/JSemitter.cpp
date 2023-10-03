@@ -15,15 +15,16 @@
 
 #include "JSemitter.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/binder/binder.h"
-#include "plugins/ecmascript/es2panda/parser/program/program.h"
-#include "plugins/ecmascript/es2panda/compiler/core/compilerContext.h"
+#include "compiler/core/pandagen.h"
+#include "binder/binder.h"
+#include "parser/program/program.h"
+#include "compiler/core/compilerContext.h"
 #include "assembly-program.h"
 
 namespace panda::es2panda::compiler {
 pandasm::Function *JSFunctionEmitter::GenFunctionSignature()
 {
+#ifdef PANDA_WITH_ECMASCRIPT
     auto *func = new pandasm::Function(Cg()->InternalName().Mutf8(), panda_file::SourceLang::ECMASCRIPT);
     GetProgramElement()->SetFunction(func);
 
@@ -38,6 +39,9 @@ pandasm::Function *JSFunctionEmitter::GenFunctionSignature()
     func->return_type = pandasm::Type("any", 0);
 
     return func;
+#else
+    UNREACHABLE();
+#endif
 }
 
 void JSFunctionEmitter::GenVariableSignature(pandasm::debuginfo::LocalVariable &variable_debug,
@@ -70,9 +74,13 @@ void JSFunctionEmitter::GenFunctionAnnotations(pandasm::Function *func)
 
 void JSEmitter::GenAnnotation()
 {
+#ifdef PANDA_WITH_ECMASCRIPT
     Program()->lang = panda_file::SourceLang::ECMASCRIPT;
     GenESAnnotationRecord();
     GenESModuleModeRecord(Context()->Binder()->Program()->Kind() == parser::ScriptKind::MODULE);
+#else
+    UNREACHABLE();
+#endif
 }
 
 void JSEmitter::GenESAnnotationRecord()

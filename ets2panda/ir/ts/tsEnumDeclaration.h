@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_IR_TS_ENUM_DECLARATION_H
 #define ES2PANDA_IR_TS_ENUM_DECLARATION_H
 
-#include "plugins/ecmascript/es2panda/ir/statement.h"
-#include "plugins/ecmascript/es2panda/binder/enumMemberResult.h"
+#include "ir/statement.h"
+#include "binder/enumMemberResult.h"
 
 namespace panda::es2panda::binder {
 class LocalScope;

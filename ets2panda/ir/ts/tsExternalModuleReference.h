@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_EXTERNAL_MODULE_REFERENCE_H
 #define ES2PANDA_IR_TS_EXTERNAL_MODULE_REFERENCE_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 class TSExternalModuleReference : public Expression {

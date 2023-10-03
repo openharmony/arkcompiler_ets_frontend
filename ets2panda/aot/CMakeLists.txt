@@ -19,6 +19,7 @@ set(ES2PANDA_AOT_SRC
 panda_add_executable(es2panda ${ES2PANDA_AOT_SRC})
 panda_target_link_libraries(es2panda es2panda-lib arkassembler arkbytecodeopt)
 panda_target_include_directories(es2panda PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+panda_target_include_directories(es2panda PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 if (PANDA_FUZZILLI)
     panda_target_compile_options(es2panda

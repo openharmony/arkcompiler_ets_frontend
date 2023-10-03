@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_PROPERTY_H
 #define ES2PANDA_PARSER_INCLUDE_AST_PROPERTY_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/validationInfo.h"
+#include "ir/expression.h"
+#include "ir/validationInfo.h"
 
 namespace panda::es2panda::ir {
 enum class PropertyKind { INIT, GET, SET, PROTO };

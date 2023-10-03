@@ -15,8 +15,8 @@
 
 #include "classElement.h"
 
-#include "plugins/ecmascript/es2panda/ir/base/methodDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
+#include "ir/base/methodDefinition.h"
+#include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
 

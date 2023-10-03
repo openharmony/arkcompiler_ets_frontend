@@ -15,12 +15,12 @@
 
 #include "tsConstructorType.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/types/signature.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameter.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameterDeclaration.h"
+#include "binder/scope.h"
+#include "checker/TSchecker.h"
+#include "checker/types/signature.h"
+#include "ir/astDump.h"
+#include "ir/ts/tsTypeParameter.h"
+#include "ir/ts/tsTypeParameterDeclaration.h"
 
 namespace panda::es2panda::ir {
 void TSConstructorType::Iterate(const NodeTraverser &cb) const

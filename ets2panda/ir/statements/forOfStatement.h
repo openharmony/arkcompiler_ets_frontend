@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_STATEMENT_FOR_OF_STATEMENT_H
 #define ES2PANDA_IR_STATEMENT_FOR_OF_STATEMENT_H
 
-#include "plugins/ecmascript/es2panda/ir/statements/loopStatement.h"
+#include "ir/statements/loopStatement.h"
 
 namespace panda::es2panda::binder {
 class LoopScope;

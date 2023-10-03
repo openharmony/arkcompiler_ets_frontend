@@ -25,7 +25,7 @@ export class TypeScriptDiagnosticsExtractor {
   public getStrictDiagnostics(fileName: string): ts.Diagnostic[] {
     // applying filter is a workaround for tsc bug
     const strict = getAllDiagnostics(this.strictProgram, fileName)
-                   .filter(diag => diag.length !== 0 && diag.start !== 0);
+                   .filter(diag => !(diag.length === 0 && diag.start === 0));
     const nonStrict = getAllDiagnostics(this.nonStrictProgram, fileName);
 
     // collect hashes for later easier comparison

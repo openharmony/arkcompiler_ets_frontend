@@ -15,7 +15,7 @@
 
 #include "targetTypeContext.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
+#include "compiler/core/ETSGen.h"
 
 namespace panda::es2panda::compiler {
 TargetTypeContext::TargetTypeContext(ETSGen *etsg, const checker::Type *target_type)

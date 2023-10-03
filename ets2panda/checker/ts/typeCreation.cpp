@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/types/ts/indexInfo.h"
+#include "checker/TSchecker.h"
+#include "checker/types/ts/indexInfo.h"
 
 namespace panda::es2panda::checker {
 Type *TSChecker::CreateNumberLiteralType(double value)

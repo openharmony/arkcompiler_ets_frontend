@@ -15,11 +15,11 @@
 
 #include "tsIndexSignature.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
+#include "ir/astDump.h"
+#include "ir/typeNode.h"
+#include "ir/expressions/identifier.h"
 
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
+#include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
 TSIndexSignature::TSIndexSignatureKind TSIndexSignature::Kind() const

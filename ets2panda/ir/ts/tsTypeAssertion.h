@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_TYPE_ASSERTION_H
 #define ES2PANDA_IR_TS_TYPE_ASSERTION_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 class TSTypeAssertion : public AnnotatedExpression {

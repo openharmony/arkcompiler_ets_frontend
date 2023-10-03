@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_ETS_ENUM_TYPE_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_ETS_ENUM_TYPE_H
 
-#include "plugins/ecmascript/es2panda/checker/types/type.h"
-#include "plugins/ecmascript/es2panda/ir/base/property.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsEnumDeclaration.h"
+#include "checker/types/type.h"
+#include "ir/base/property.h"
+#include "ir/ts/tsEnumDeclaration.h"
 
 template <typename>
 // NOLINTNEXTLINE(readability-identifier-naming)

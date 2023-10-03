@@ -15,12 +15,12 @@
 
 #include "chainExpression.h"
 
-#include "plugins/ecmascript/es2panda/ir/expressions/callExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/memberExpression.h"
-#include "plugins/ecmascript/es2panda/compiler/base/optionalChain.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regScope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "ir/expressions/callExpression.h"
+#include "ir/expressions/memberExpression.h"
+#include "compiler/base/optionalChain.h"
+#include "compiler/core/regScope.h"
+#include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void ChainExpression::Iterate(const NodeTraverser &cb) const

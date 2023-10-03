@@ -16,10 +16,10 @@
 #ifndef ES2PANDA_COMPILER_CORE_CODEGEN_H
 #define ES2PANDA_COMPILER_CORE_CODEGEN_H
 
-#include "plugins/ecmascript/es2panda/compiler/base/literals.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regAllocator.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regScope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/dynamicContext.h"
+#include "compiler/base/literals.h"
+#include "compiler/core/regAllocator.h"
+#include "compiler/core/regScope.h"
+#include "compiler/core/dynamicContext.h"
 
 namespace panda::es2panda::compiler {
 class CatchTable;

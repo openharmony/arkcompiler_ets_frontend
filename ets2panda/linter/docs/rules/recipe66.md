@@ -45,7 +45,6 @@ to check whether certain class members exist.
 - Recipe 029:  Indexed access is not supported for fields (``arkts-no-props-by-index``)
 - Recipe 059:  ``delete`` operator is not supported (``arkts-no-delete``)
 - Recipe 060:  ``typeof`` operator is allowed only in expression contexts (``arkts-no-type-query``)
-- Recipe 105:  Property-based runtime type checks are not supported (``arkts-no-prop-existence-check``)
 - Recipe 144:  Usage of standard library is restricted (``arkts-limited-stdlib``)
 
 

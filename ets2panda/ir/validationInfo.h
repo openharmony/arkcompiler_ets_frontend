@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_IR_VALIDATION_INFO_H
 #define ES2PANDA_IR_VALIDATION_INFO_H
 
-#include "plugins/ecmascript/es2panda/lexer/token/sourceLocation.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "lexer/token/sourceLocation.h"
+#include "util/ustring.h"
 
 namespace panda::es2panda::ir {
 class ValidationInfo {

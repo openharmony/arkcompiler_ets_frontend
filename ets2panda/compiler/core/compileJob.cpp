@@ -15,7 +15,7 @@
 
 #include "compileQueue.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/compilerContext.h"
+#include "compiler/core/compilerContext.h"
 
 namespace panda::es2panda::compiler {
 

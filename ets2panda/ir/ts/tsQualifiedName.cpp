@@ -15,10 +15,10 @@
 
 #include "tsQualifiedName.h"
 
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
+#include "checker/ETSchecker.h"
+#include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
 void TSQualifiedName::Iterate(const NodeTraverser &cb) const

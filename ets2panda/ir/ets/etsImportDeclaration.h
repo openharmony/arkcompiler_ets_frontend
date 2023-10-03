@@ -16,10 +16,10 @@
 #ifndef ES2PANDA_IR_ETS_IMPORT_DECLARATION_H
 #define ES2PANDA_IR_ETS_IMPORT_DECLARATION_H
 
-#include "plugins/ecmascript/es2panda/ir/ets/etsImportSource.h"
-#include "plugins/ecmascript/es2panda/ir/module/importDeclaration.h"
-#include "plugins/ecmascript/es2panda/util/language.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "ir/ets/etsImportSource.h"
+#include "ir/module/importDeclaration.h"
+#include "util/language.h"
+#include "util/ustring.h"
 
 namespace panda::es2panda::ir {
 class StringLiteral;

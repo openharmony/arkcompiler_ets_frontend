@@ -14,7 +14,7 @@
  */
 
 #include "ASchecker.h"
-#include "plugins/ecmascript/es2panda/parser/program/program.h"
+#include "parser/program/program.h"
 
 namespace panda::es2panda::checker {
 

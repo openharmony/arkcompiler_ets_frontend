@@ -17,7 +17,7 @@
 #define ES2PANDA_COMPILER_CHECKER_TYPES_TS_OBJECT_DESCRIPTOR_H
 
 #include "macros.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "util/ustring.h"
 #include <vector>
 
 namespace panda::es2panda::binder {

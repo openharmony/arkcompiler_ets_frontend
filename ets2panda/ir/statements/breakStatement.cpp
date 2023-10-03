@@ -15,11 +15,11 @@
 
 #include "breakStatement.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/expressions/identifier.h"
+#include "checker/ETSchecker.h"
 
 namespace panda::es2panda::ir {
 void BreakStatement::Iterate(const NodeTraverser &cb) const

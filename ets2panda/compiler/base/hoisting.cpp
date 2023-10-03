@@ -15,9 +15,9 @@
 
 #include "hoisting.h"
 
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
+#include "ir/base/scriptFunction.h"
+#include "binder/scope.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::compiler {
 static void HoistVar(PandaGen *pg, binder::Variable *var, const binder::VarDecl *decl)

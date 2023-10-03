@@ -15,8 +15,8 @@
 
 #include "prefixAssertionExpression.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
+#include "ir/astDump.h"
+#include "ir/typeNode.h"
 
 namespace panda::es2panda::ir {
 void PrefixAssertionExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const

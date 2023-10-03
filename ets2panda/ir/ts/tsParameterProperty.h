@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_IR_TS_PARAMETER_PROPERTY_H
 #define ES2PANDA_IR_TS_PARAMETER_PROPERTY_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/lexer/token/tokenType.h"
+#include "ir/expression.h"
+#include "lexer/token/tokenType.h"
 
 namespace panda::es2panda::ir {
 enum class AccessibilityOption { NO_OPTS, PUBLIC, PRIVATE, PROTECTED };

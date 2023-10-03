@@ -16,13 +16,13 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_ETS_TYPE_RELATION_CONTEXT_H
 #define ES2PANDA_COMPILER_CHECKER_ETS_TYPE_RELATION_CONTEXT_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/base/classDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameterInstantiation.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameterDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsInterfaceDeclaration.h"
-#include "plugins/ecmascript/es2panda/checker/types/type.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
+#include "ir/expression.h"
+#include "ir/base/classDefinition.h"
+#include "ir/ts/tsTypeParameterInstantiation.h"
+#include "ir/ts/tsTypeParameterDeclaration.h"
+#include "ir/ts/tsInterfaceDeclaration.h"
+#include "checker/types/type.h"
+#include "checker/ETSchecker.h"
 
 namespace panda::es2panda::checker {
 class ETSChecker;

@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_ETS_FUNCTION_TYPE_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_ETS_FUNCTION_TYPE_H
 
-#include "plugins/ecmascript/es2panda/checker/types/type.h"
-#include "plugins/ecmascript/es2panda/checker/types/signature.h"
+#include "checker/types/type.h"
+#include "checker/types/signature.h"
 
 namespace panda::es2panda::checker {
 

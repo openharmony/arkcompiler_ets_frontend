@@ -16,19 +16,19 @@
 #ifndef ES2PANDA_CHECKER_ETS_CHECKER_H
 #define ES2PANDA_CHECKER_ETS_CHECKER_H
 
-#include "plugins/ecmascript/es2panda/checker/checkerContext.h"
-#include "plugins/ecmascript/es2panda/checker/types/ets/etsObjectType.h"
-#include "plugins/ecmascript/es2panda/checker/checker.h"
-#include "plugins/ecmascript/es2panda/binder/enumMemberResult.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameter.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameterInstantiation.h"
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
-#include "plugins/ecmascript/es2panda/checker/types/ets/types.h"
-#include "plugins/ecmascript/es2panda/checker/ets/typeConverter.h"
-#include "plugins/ecmascript/es2panda/checker/ets/primitiveWrappers.h"
-#include "plugins/ecmascript/es2panda/checker/types/globalTypesHolder.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
+#include "checker/checkerContext.h"
+#include "checker/types/ets/etsObjectType.h"
+#include "checker/checker.h"
+#include "binder/enumMemberResult.h"
+#include "ir/ts/tsTypeParameter.h"
+#include "ir/ts/tsTypeParameterInstantiation.h"
+#include "util/enumbitops.h"
+#include "util/ustring.h"
+#include "checker/types/ets/types.h"
+#include "checker/ets/typeConverter.h"
+#include "checker/ets/primitiveWrappers.h"
+#include "checker/types/globalTypesHolder.h"
+#include "binder/scope.h"
 
 #include "macros.h"
 
@@ -407,8 +407,8 @@ public:
         return MaybeBoxedType(var, Allocator());
     }
     void CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> *cases);
-    std::string GetStringFromIdentifierValue(ir::Expression *identifier) const;
-    bool CompareIdentifiersValuesAreDifferent(ir::Expression *identifier, ir::Expression *compare_value);
+    std::string GetStringFromIdentifierValue(checker::Type *case_type) const;
+    bool CompareIdentifiersValuesAreDifferent(ir::Expression *compare_value, const std::string &case_value);
     void CheckIdentifierSwitchCase(ir::Expression *current_case, ir::Expression *compare_case,
                                    const lexer::SourcePosition &pos);
     std::string GetStringFromLiteral(ir::Expression *case_test) const;

@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_ETS_UNBOXING_CONVERTER_H
 #define ES2PANDA_COMPILER_CHECKER_ETS_UNBOXING_CONVERTER_H
 
-#include "plugins/ecmascript/es2panda/checker/ets/typeConverter.h"
-#include "plugins/ecmascript/es2panda/checker/types/ets/etsObjectType.h"
+#include "checker/ets/typeConverter.h"
+#include "checker/types/ets/etsObjectType.h"
 
 namespace panda::es2panda::checker {
 

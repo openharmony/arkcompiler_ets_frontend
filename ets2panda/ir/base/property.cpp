@@ -15,14 +15,14 @@
 
 #include "property.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/arrayExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/assignmentExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/objectExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/stringLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/validationInfo.h"
+#include "ir/astDump.h"
+#include "ir/expression.h"
+#include "ir/expressions/arrayExpression.h"
+#include "ir/expressions/assignmentExpression.h"
+#include "ir/expressions/objectExpression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/literals/stringLiteral.h"
+#include "ir/validationInfo.h"
 
 namespace panda::es2panda::ir {
 bool Property::ConvertibleToPatternProperty()

@@ -15,12 +15,12 @@
 
 #include "tsInterfaceHeritage.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameterInstantiation.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeReference.h"
+#include "binder/scope.h"
+#include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/expressions/identifier.h"
+#include "ir/ts/tsTypeParameterInstantiation.h"
+#include "ir/ts/tsTypeReference.h"
 
 namespace panda::es2panda::ir {
 void TSInterfaceHeritage::Iterate(const NodeTraverser &cb) const

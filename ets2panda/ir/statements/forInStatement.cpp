@@ -15,14 +15,14 @@
 
 #include "forInStatement.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/compiler/base/lreference.h"
-#include "plugins/ecmascript/es2panda/compiler/core/labelTarget.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
+#include "binder/scope.h"
+#include "compiler/base/lreference.h"
+#include "compiler/core/labelTarget.h"
+#include "compiler/core/pandagen.h"
+#include "checker/TSchecker.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "ir/astDump.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 void ForInStatement::Iterate(const NodeTraverser &cb) const

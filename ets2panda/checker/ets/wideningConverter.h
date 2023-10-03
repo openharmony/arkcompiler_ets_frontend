@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_ETS_WIDENING_CONVERTER_H
 #define ES2PANDA_COMPILER_CHECKER_ETS_WIDENING_CONVERTER_H
 
-#include "plugins/ecmascript/es2panda/checker/ets/typeConverter.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
+#include "checker/ets/typeConverter.h"
+#include "checker/ETSchecker.h"
 
 namespace panda::es2panda::checker {
 

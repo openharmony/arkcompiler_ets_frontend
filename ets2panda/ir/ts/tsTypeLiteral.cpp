@@ -15,12 +15,12 @@
 
 #include "tsTypeLiteral.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "ir/astDump.h"
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/binder/declaration.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/types/signature.h"
+#include "binder/variable.h"
+#include "binder/declaration.h"
+#include "checker/TSchecker.h"
+#include "checker/types/signature.h"
 
 namespace panda::es2panda::ir {
 void TSTypeLiteral::Iterate(const NodeTraverser &cb) const

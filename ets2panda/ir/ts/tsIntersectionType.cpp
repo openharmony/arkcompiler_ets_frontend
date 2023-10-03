@@ -15,8 +15,8 @@
 
 #include "tsIntersectionType.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
+#include "ir/astDump.h"
+#include "checker/ETSchecker.h"
 
 namespace panda::es2panda::ir {
 void TSIntersectionType::Iterate(const NodeTraverser &cb) const

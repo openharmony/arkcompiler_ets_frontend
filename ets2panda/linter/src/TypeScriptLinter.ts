@@ -33,7 +33,8 @@ import { LIMITED_STD_OBJECT_API } from './utils/consts/LimitedStdObjectAPI';
 import { LIMITED_STD_REFLECT_API } from './utils/consts/LimitedStdReflectAPI';
 import { LIMITED_STD_PROXYHANDLER_API } from './utils/consts/LimitedStdProxyHandlerAPI';
 import { LIMITED_STD_ARRAYBUFFER_API } from './utils/consts/LimitedStdArrayBufferAPI';
-import { NON_INITIALIZABLE_PROPERTY_DECORATORS } from './utils/consts/NonInitializablePropertyDecorators';
+import { NON_INITIALIZABLE_PROPERTY_DECORATORS,
+         NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS } from './utils/consts/NonInitializablePropertyDecorators';
 import { NON_RETURN_FUNCTION_DECORATORS } from './utils/consts/NonReturnFunctionDecorators';
 import { LIMITED_STANDARD_UTILITY_TYPES } from './utils/consts/LimitedStandardUtilityTypes';
 import { PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE } from './utils/consts/PropertyHasNoInitializerErrorCode';
@@ -325,33 +326,6 @@ export class TypeScriptLinter {
     }
   }
 
-  private isPropertyRuntimeCheck(expr: ts.PropertyAccessExpression): boolean {
-    // Check whether base expression is 'any' type and its property
-    // is being checked in runtime (i.e. expression appears as condition
-    // of if/for/while, or is an operand of '&&', '||' or '!' operators).
-    const tsBaseExprType = this.tsTypeChecker.getTypeAtLocation(expr.expression);
-    // Get parent node of the expression, pass through enclosing parentheses if needed.
-    let exprParent = expr.parent;
-    while (ts.isParenthesizedExpression(exprParent)) {
-      exprParent = exprParent.parent;
-    }
-    return (
-      this.tsUtils.isAnyType(tsBaseExprType) &&
-      (
-        (ts.isIfStatement(exprParent) && expr === this.tsUtils.unwrapParenthesized(exprParent.expression)) ||
-        (ts.isWhileStatement(exprParent) && expr === this.tsUtils.unwrapParenthesized(exprParent.expression)) ||
-        (ts.isDoStatement(exprParent) && expr === this.tsUtils.unwrapParenthesized(exprParent.expression)) ||
-        (ts.isForStatement(exprParent) && exprParent.condition &&
-          expr === this.tsUtils.unwrapParenthesized(exprParent.condition)) ||
-        (ts.isConditionalExpression(exprParent) && expr === this.tsUtils.unwrapParenthesized(exprParent.condition)) ||
-        (ts.isBinaryExpression(exprParent) &&
-          (exprParent.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken ||
-            exprParent.operatorToken.kind === ts.SyntaxKind.BarBarToken)) ||
-        (ts.isPrefixUnaryExpression(exprParent) && exprParent.operator === ts.SyntaxKind.ExclamationToken)
-      )
-    );
-  }
-
   private isPrototypePropertyAccess(tsPropertyAccess: ts.PropertyAccessExpression): boolean {
     if (!(ts.isIdentifier(tsPropertyAccess.name) && tsPropertyAccess.name.text === 'prototype')) {
       return false;
@@ -629,9 +603,6 @@ export class TypeScriptLinter {
 
   private handlePropertyAccessExpression(node: ts.Node) {
     let propertyAccessNode = node as ts.PropertyAccessExpression;
-    if (this.isPropertyRuntimeCheck(propertyAccessNode)) {
-      this.incrementCounters(node, FaultID.PropertyRuntimeCheck);
-    }
     if (this.isPrototypePropertyAccess(propertyAccessNode)) { 
       this.incrementCounters(propertyAccessNode.name, FaultID.Prototype);
     }
@@ -678,6 +649,11 @@ export class TypeScriptLinter {
       this.handleDecorators(decorators);
       this.filterOutDecoratorsDiagnostics(decorators, NON_INITIALIZABLE_PROPERTY_DECORATORS,
         {begin: propName.getStart(), end: propName.getStart()}, PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE);
+      
+      const classDecorators = ts.getDecorators(node.parent);
+      const propType = (node as ts.PropertyDeclaration).type?.getText();
+      this.filterOutDecoratorsDiagnostics(classDecorators, NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
+        {begin: propName.getStart(), end: propName.getStart()}, PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE, propType);
       this.handleDeclarationInferredType(node);
       this.handleDefiniteAssignmentAssertion(node);
     }
@@ -688,6 +664,7 @@ export class TypeScriptLinter {
     expectedDecorators: readonly string[],
     range: {begin: number, end: number},
     code: number,
+    propType?: string
   ) {
     // Filter out non-initializable property decorators from strict diagnostics.
     if (this.tscStrictDiagnostics && this.sourceFile) {
@@ -697,6 +674,10 @@ export class TypeScriptLinter {
           decoratorName = x.expression.text;
         } else if (ts.isCallExpression(x.expression) && ts.isIdentifier(x.expression.expression)) {
           decoratorName = x.expression.expression.text;
+        }
+        // special case for property of type CustomDialogController of the @CustomDialog-decorated class
+        if (expectedDecorators.includes(NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS[0])) {
+          return expectedDecorators.includes(decoratorName) && propType === 'CustomDialogController'
         }
         return expectedDecorators.includes(decoratorName);
       })) {
@@ -1768,6 +1749,8 @@ export class TypeScriptLinter {
       let leadingComments = ts.getLeadingCommentRanges(srcText, node.getFullStart());
       if (leadingComments) {
         for (const comment of leadingComments) {
+          // In the real-time linter comment from the first line is double proccessed.
+          // It may be caused by tsc, but it should be investigated. This is a workaround
           if (!this.walkedComments.has(comment.pos) && comment.pos !== comment.end) {
             this.walkedComments.add(comment.pos);
             this.checkErrorSuppressingAnnotation(comment, srcText);
@@ -1779,6 +1762,8 @@ export class TypeScriptLinter {
       let trailingComments = ts.getTrailingCommentRanges(srcText, node.getEnd());
       if (trailingComments) {
         for (const comment of trailingComments) {
+          // In the real-time linter comment from the first line is double proccessed.
+          // It may be caused by tsc, but it should be investigated. This is a workaround
           if (!this.walkedComments.has(comment.pos) && comment.pos !== comment.end) {
             this.walkedComments.add(comment.pos);
             this.checkErrorSuppressingAnnotation(comment, srcText);
@@ -1865,6 +1850,34 @@ export class TypeScriptLinter {
 
   private validatedTypesSet = new Set<ts.Type>();
 
+  private checkAnyOrUnknownChildNode(node: ts.Node): boolean {
+    if (node.kind === ts.SyntaxKind.AnyKeyword ||
+        node.kind === ts.SyntaxKind.UnknownKeyword) {
+      return true;
+    }
+    for (let child of node.getChildren()) {
+      if (this.checkAnyOrUnknownChildNode(child)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private handleInferredObjectreference(
+    type: ts.Type,
+    decl: ts.VariableDeclaration | ts.PropertyDeclaration | ts.ParameterDeclaration
+  ) {
+    const typeArgs = this.tsTypeChecker.getTypeArguments(type as ts.TypeReference);
+    if (typeArgs) {
+      const haveAnyOrUnknownNodes = this.checkAnyOrUnknownChildNode(decl);
+      if (!haveAnyOrUnknownNodes) {
+        for (const typeArg of typeArgs) {
+          this.validateDeclInferredType(typeArg, decl);
+        }
+      }
+    }
+  }
+
   private validateDeclInferredType(
     type: ts.Type,
     decl: ts.VariableDeclaration | ts.PropertyDeclaration | ts.ParameterDeclaration
@@ -1872,13 +1885,10 @@ export class TypeScriptLinter {
     if (type.aliasSymbol != undefined) {
       return;
     }
-    if (type.flags & ts.TypeFlags.Object && (type as ts.ObjectType).objectFlags & ts.ObjectFlags.Reference) {
-      const typeArgs = this.tsTypeChecker.getTypeArguments(type as ts.TypeReference);
-      if (typeArgs) {
-        for (const typeArg of typeArgs) {
-          this.validateDeclInferredType(typeArg, decl);
-        }
-      }
+    const isObject = type.flags & ts.TypeFlags.Object;
+    const isReference = (type as ts.ObjectType).objectFlags & ts.ObjectFlags.Reference;
+    if (isObject && isReference) {
+      this.handleInferredObjectreference(type, decl);
       return;
     }
     if (this.validatedTypesSet.has(type)) {

@@ -21,6 +21,8 @@ if(NOT DEFINED ES2PANDA_REGRESSION_TESTS_GROUPS)
     set(ES2PANDA_REGRESSION_TESTS_GROUPS 32)
 endif()
 
+add_custom_target(es2panda_tests COMMENT "Running es2panda test suites")
+
 if(PANDA_WITH_ETS)
     set(ETS_RESULT_FOLDER ${CMAKE_BINARY_DIR}/tests/es2panda-regression-tests)
     set(OPTIONS --parser
@@ -42,6 +44,10 @@ if(PANDA_WITH_ETS)
         endif()
     endif()
 
+    if(NOT PANDA_WITH_ECMASCRIPT)
+        set(OPTIONS --no-js ${OPTIONS})
+    endif()
+
     add_custom_target(es2panda-regression-tests COMMENT "Running es2panda-regression-tests test suites")
     foreach(CURRENT_GROUP RANGE 1 ${ES2PANDA_REGRESSION_TESTS_GROUPS})
         add_custom_target(es2panda-regression-tests-${CURRENT_GROUP}
@@ -56,9 +62,7 @@ if(PANDA_WITH_ETS)
         add_dependencies(es2panda-regression-tests es2panda-regression-tests-${CURRENT_GROUP})
     endforeach()
 
-    add_custom_target(es2panda_tests COMMENT "Running es2panda test suites")
     add_dependencies(es2panda_tests es2panda-regression-tests)
-    add_dependencies(ecmascript_tests es2panda_tests)
     if(TARGET ets_tests)
         add_dependencies(ets_tests es2panda_tests)
     endif()

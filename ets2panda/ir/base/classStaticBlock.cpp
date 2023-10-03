@@ -15,15 +15,15 @@
 
 #include "classStaticBlock.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/base/decorator.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/functionExpression.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
+#include "binder/scope.h"
+#include "compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/base/decorator.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/expression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/functionExpression.h"
+#include "checker/ETSchecker.h"
 
 #include <cstdint>
 #include <string>

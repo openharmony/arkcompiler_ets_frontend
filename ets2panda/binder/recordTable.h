@@ -18,8 +18,8 @@
 
 #include "macros.h"
 #include "utils/arena_containers.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
+#include "util/ustring.h"
+#include "util/enumbitops.h"
 
 namespace panda::es2panda::parser {
 class Program;

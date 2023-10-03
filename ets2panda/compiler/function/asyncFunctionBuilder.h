@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_FUNCTION_ASYNC_FUNCTION_BUILDER_H
 #define ES2PANDA_COMPILER_FUNCTION_ASYNC_FUNCTION_BUILDER_H
 
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
-#include "plugins/ecmascript/es2panda/compiler/function/functionBuilder.h"
+#include "ir/irnode.h"
+#include "compiler/function/functionBuilder.h"
 
 namespace panda::es2panda::compiler {
 class PandaGen;

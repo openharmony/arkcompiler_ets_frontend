@@ -15,8 +15,8 @@
 
 #include "tsModuleBlock.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "binder/scope.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void TSModuleBlock::Iterate(const NodeTraverser &cb) const

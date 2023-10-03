@@ -15,14 +15,14 @@
 
 #include "assertStatement.h"
 
-#include "plugins/ecmascript/es2panda/binder/ETSBinder.h"
-#include "plugins/ecmascript/es2panda/compiler/base/condition.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "binder/ETSBinder.h"
+#include "compiler/base/condition.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/ETSchecker.h"
+#include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 void AssertStatement::Iterate(const NodeTraverser &cb) const

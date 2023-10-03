@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_MODULE_IMPORT_NAMESPACE_SPECIFIER_H
 #define ES2PANDA_IR_MODULE_IMPORT_NAMESPACE_SPECIFIER_H
 
-#include "plugins/ecmascript/es2panda/ir/statement.h"
+#include "ir/statement.h"
 
 namespace panda::es2panda::ir {
 class Identifier;

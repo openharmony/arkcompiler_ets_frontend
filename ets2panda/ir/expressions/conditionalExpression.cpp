@@ -15,11 +15,11 @@
 
 #include "conditionalExpression.h"
 
-#include "plugins/ecmascript/es2panda/compiler/base/condition.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "compiler/base/condition.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/TSchecker.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void ConditionalExpression::Iterate(const NodeTraverser &cb) const

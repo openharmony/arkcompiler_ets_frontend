@@ -15,16 +15,16 @@
 
 #include "variableDeclaration.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/base/decorator.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/arrayExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/objectExpression.h"
-#include "plugins/ecmascript/es2panda/ir/statements/variableDeclarator.h"
+#include "binder/scope.h"
+#include "binder/variable.h"
+#include "checker/TSchecker.h"
+#include "checker/ETSchecker.h"
+#include "ir/astDump.h"
+#include "ir/base/decorator.h"
+#include "ir/expressions/arrayExpression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/objectExpression.h"
+#include "ir/statements/variableDeclarator.h"
 
 namespace panda::es2panda::ir {
 void VariableDeclaration::Iterate(const NodeTraverser &cb) const

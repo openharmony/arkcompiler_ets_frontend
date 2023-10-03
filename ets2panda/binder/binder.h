@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_BINDER_BINDER_H
 #define ES2PANDA_BINDER_BINDER_H
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/binder/variableFlags.h"
-#include "plugins/ecmascript/es2panda/lexer/token/sourceLocation.h"
+#include "binder/scope.h"
+#include "binder/variableFlags.h"
+#include "lexer/token/sourceLocation.h"
 #include "macros.h"
 
 namespace panda::es2panda::parser {

@@ -15,12 +15,12 @@
 
 #include "lexer.h"
 
-#include "plugins/ecmascript/es2panda/es2panda.h"
+#include "es2panda.h"
 #include "generated/keywords.h"
-#include "plugins/ecmascript/es2panda/lexer/token/letters.h"
-#include "plugins/ecmascript/es2panda/lexer/token/tokenType.h"
-#include "plugins/ecmascript/es2panda/parser/context/parserContext.h"
-#include "plugins/ecmascript/es2panda/parser/program/program.h"
+#include "lexer/token/letters.h"
+#include "lexer/token/tokenType.h"
+#include "parser/context/parserContext.h"
+#include "parser/program/program.h"
 
 #include <array>
 
@@ -236,7 +236,7 @@ void Lexer::CheckNumberLiteralEnd()
     }
 }
 
-void Lexer::ScanDecimalNumbers(bool allow_numeric_separator)
+void Lexer::ScanDecimalNumbers()
 {
     bool allow_numeric_on_next = true;
 
@@ -259,7 +259,7 @@ void Lexer::ScanDecimalNumbers(bool allow_numeric_separator)
             case LEX_CHAR_UNDERSCORE: {
                 Iterator().Backward(1);
 
-                if (Iterator().Peek() == LEX_CHAR_DOT || !allow_numeric_separator || !allow_numeric_on_next) {
+                if (Iterator().Peek() == LEX_CHAR_DOT || !allow_numeric_on_next) {
                     Iterator().Forward(1);
                     ThrowError("Invalid numeric separator");
                 }
@@ -292,14 +292,14 @@ void Lexer::ConvertNumber(const std::string &utf8, [[maybe_unused]] NumberFlags 
     }
 }
 
-void Lexer::ScanNumber(bool allow_numeric_separator, bool allow_big_int)
+void Lexer::ScanNumber(bool allow_big_int)
 {
     const bool is_period = GetToken().type_ == TokenType::PUNCTUATOR_PERIOD;
     GetToken().type_ = TokenType::LITERAL_NUMBER;
     GetToken().keyword_type_ = TokenType::LITERAL_NUMBER;
 
     if (!is_period) {
-        ScanDecimalNumbers(allow_numeric_separator);
+        ScanDecimalNumbers();
     }
 
     size_t exponent_sign_pos = std::numeric_limits<size_t>::max();
@@ -315,7 +315,7 @@ void Lexer::ScanNumber(bool allow_numeric_separator, bool allow_big_int)
 
         auto cp = Iterator().Peek();
         if (IsDecimalDigit(cp) || cp == LEX_CHAR_LOWERCASE_E || cp == LEX_CHAR_UPPERCASE_E) {
-            ScanDecimalNumbers(allow_numeric_separator);
+            ScanDecimalNumbers();
         } else {
             parse_exponent = false;
         }
@@ -352,7 +352,7 @@ void Lexer::ScanNumber(bool allow_numeric_separator, bool allow_big_int)
             if (!IsDecimalDigit(Iterator().Peek())) {
                 ThrowError("Invalid numeric literal");
             }
-            ScanDecimalNumbers(allow_numeric_separator);
+            ScanDecimalNumbers();
             break;
         }
         default: {

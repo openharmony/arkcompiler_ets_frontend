@@ -15,32 +15,246 @@
 
 #include "pandagen.h"
 
-#include "plugins/ecmascript/es2panda/binder/binder.h"
-#include "plugins/ecmascript/es2panda/checker/checker.h"
-#include "plugins/ecmascript/es2panda/checker/types/globalTypesHolder.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/compiler/base/catchTable.h"
-#include "plugins/ecmascript/es2panda/compiler/base/lexenv.h"
-#include "plugins/ecmascript/es2panda/compiler/base/literals.h"
-#include "plugins/ecmascript/es2panda/compiler/core/compilerContext.h"
-#include "plugins/ecmascript/es2panda/compiler/core/labelTarget.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regAllocator.h"
-#include "plugins/ecmascript/es2panda/compiler/function/asyncFunctionBuilder.h"
-#include "plugins/ecmascript/es2panda/compiler/function/asyncGeneratorFunctionBuilder.h"
-#include "plugins/ecmascript/es2panda/compiler/function/functionBuilder.h"
-#include "plugins/ecmascript/es2panda/compiler/function/generatorFunctionBuilder.h"
-#include "plugins/ecmascript/es2panda/es2panda.h"
+#include "binder/binder.h"
+#include "checker/checker.h"
+#include "checker/types/globalTypesHolder.h"
+#include "util/helpers.h"
+#include "binder/scope.h"
+#include "binder/variable.h"
+#include "compiler/base/catchTable.h"
+#include "compiler/base/lexenv.h"
+#include "compiler/base/literals.h"
+#include "compiler/core/compilerContext.h"
+#include "compiler/core/labelTarget.h"
+#include "compiler/core/regAllocator.h"
+#include "compiler/function/asyncFunctionBuilder.h"
+#include "compiler/function/asyncGeneratorFunctionBuilder.h"
+#include "compiler/function/functionBuilder.h"
+#include "compiler/function/generatorFunctionBuilder.h"
+#include "es2panda.h"
 #include "generated/isa.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/base/spreadElement.h"
-#include "plugins/ecmascript/es2panda/ir/statement.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/numberLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/stringLiteral.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/base/spreadElement.h"
+#include "ir/statement.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/literals/numberLiteral.h"
+#include "ir/expressions/literals/stringLiteral.h"
 
 namespace panda::es2panda::compiler {
+
+#ifndef PANDA_WITH_ECMASCRIPT
+class EcmaDisabled : public IRNode {
+public:
+    template <typename... Args>
+    explicit EcmaDisabled(const ir::AstNode *node, [[maybe_unused]] Args &&...args) : IRNode(node)
+    {
+        UNREACHABLE();
+    }
+
+    Formats GetFormats() const override
+    {
+        UNREACHABLE();
+    }
+
+    size_t Registers([[maybe_unused]] std::array<VReg *, MAX_REG_OPERAND> *regs) override
+    {
+        UNREACHABLE();
+    }
+
+    size_t Registers([[maybe_unused]] std::array<const VReg *, MAX_REG_OPERAND> *regs) const override
+    {
+        UNREACHABLE();
+    }
+
+    size_t OutRegisters([[maybe_unused]] std::array<OutVReg, MAX_REG_OPERAND> *regs) const override
+    {
+        UNREACHABLE();
+    }
+
+    void Transform([[maybe_unused]] pandasm::Ins *ins, [[maybe_unused]] ProgramElement *program_element,
+                   [[maybe_unused]] uint32_t total_regs) const override
+    {
+        UNREACHABLE();
+    }
+};
+
+using EcmaLdhole = EcmaDisabled;
+using EcmaLdnan = EcmaDisabled;
+using EcmaLdinfinity = EcmaDisabled;
+using EcmaLdglobal = EcmaDisabled;
+using EcmaLdundefined = EcmaDisabled;
+using EcmaLdsymbol = EcmaDisabled;
+using EcmaLdnull = EcmaDisabled;
+using EcmaLdtrue = EcmaDisabled;
+using EcmaLdfalse = EcmaDisabled;
+using EcmaTryldglobalbyname = EcmaDisabled;
+using EcmaTrystglobalbyname = EcmaDisabled;
+using EcmaLdobjbyname = EcmaDisabled;
+using EcmaStobjbyname = EcmaDisabled;
+using EcmaLdobjbyindex = EcmaDisabled;
+using EcmaLdobjbyvalue = EcmaDisabled;
+using EcmaStobjbyvalue = EcmaDisabled;
+using EcmaStobjbyindex = EcmaDisabled;
+using EcmaStownbyname = EcmaDisabled;
+using EcmaStownbyvalue = EcmaDisabled;
+using EcmaStownbyindex = EcmaDisabled;
+using EcmaDelobjprop = EcmaDisabled;
+using EcmaLdglobalvar = EcmaDisabled;
+using EcmaStglobalvar = EcmaDisabled;
+using EcmaLdbigint = EcmaDisabled;
+using EcmaEqdyn = EcmaDisabled;
+using EcmaNoteqdyn = EcmaDisabled;
+using EcmaStricteqdyn = EcmaDisabled;
+using EcmaStrictnoteqdyn = EcmaDisabled;
+using EcmaLessdyn = EcmaDisabled;
+using EcmaLesseqdyn = EcmaDisabled;
+using EcmaGreaterdyn = EcmaDisabled;
+using EcmaGreatereqdyn = EcmaDisabled;
+using EcmaTonumber = EcmaDisabled;
+using EcmaNegdyn = EcmaDisabled;
+using EcmaNotdyn = EcmaDisabled;
+using EcmaNegate = EcmaDisabled;
+using EcmaIncdyn = EcmaDisabled;
+using EcmaDecdyn = EcmaDisabled;
+using EcmaEqdyn = EcmaDisabled;
+using EcmaNoteqdyn = EcmaDisabled;
+using EcmaStricteqdyn = EcmaDisabled;
+using EcmaStrictnoteqdyn = EcmaDisabled;
+using EcmaLessdyn = EcmaDisabled;
+using EcmaLesseqdyn = EcmaDisabled;
+using EcmaGreaterdyn = EcmaDisabled;
+using EcmaGreatereqdyn = EcmaDisabled;
+using EcmaAdd2dyn = EcmaDisabled;
+using EcmaSub2dyn = EcmaDisabled;
+using EcmaMul2dyn = EcmaDisabled;
+using EcmaDiv2dyn = EcmaDisabled;
+using EcmaMod2dyn = EcmaDisabled;
+using EcmaExpdyn = EcmaDisabled;
+using EcmaShl2dyn = EcmaDisabled;
+using EcmaShr2dyn = EcmaDisabled;
+using EcmaAshr2dyn = EcmaDisabled;
+using EcmaAnd2dyn = EcmaDisabled;
+using EcmaOr2dyn = EcmaDisabled;
+using EcmaXor2dyn = EcmaDisabled;
+using EcmaIsindyn = EcmaDisabled;
+using EcmaInstanceofdyn = EcmaDisabled;
+using EcmaIsundefined = EcmaDisabled;
+using EcmaIsundefined = EcmaDisabled;
+using EcmaJtrue = EcmaDisabled;
+using EcmaIstrue = EcmaDisabled;
+using EcmaJfalse = EcmaDisabled;
+using EcmaIscoercible = EcmaDisabled;
+using EcmaThrowdyn = EcmaDisabled;
+using EcmaRethrowdyn = EcmaDisabled;
+using EcmaReturnDyn = EcmaDisabled;
+using EcmaReturnundefined = EcmaDisabled;
+using EcmaCall0thisdyn = EcmaDisabled;
+using EcmaCall1thisdyn = EcmaDisabled;
+using EcmaCall0dyn = EcmaDisabled;
+using EcmaCall1thisdyn = EcmaDisabled;
+using EcmaCall1dyn = EcmaDisabled;
+using EcmaCall2thisdyn = EcmaDisabled;
+using EcmaCall2dyn = EcmaDisabled;
+using EcmaCall3thisdyn = EcmaDisabled;
+using EcmaCall3dyn = EcmaDisabled;
+using EcmaCallithisrangedyn = EcmaDisabled;
+using EcmaCallirangedyn = EcmaDisabled;
+using EcmaCall1thisdyn = EcmaDisabled;
+using EcmaCall1dyn = EcmaDisabled;
+using EcmaCall2thisdyn = EcmaDisabled;
+using EcmaCall2dyn = EcmaDisabled;
+using EcmaCall3thisdyn = EcmaDisabled;
+using EcmaCall3dyn = EcmaDisabled;
+using EcmaCallithisrangedyn = EcmaDisabled;
+using EcmaCallirangedyn = EcmaDisabled;
+using EcmaSupercall = EcmaDisabled;
+using EcmaSupercallspread = EcmaDisabled;
+using EcmaNewobjdynrange = EcmaDisabled;
+using EcmaLdhomeobject = EcmaDisabled;
+using EcmaDefinemethod = EcmaDisabled;
+using EcmaDefineasyncgeneratorfunc = EcmaDisabled;
+using EcmaDefineasyncfunc = EcmaDisabled;
+using EcmaDefinegeneratorfunc = EcmaDisabled;
+using EcmaDefinencfuncdyn = EcmaDisabled;
+using EcmaDefinefuncdyn = EcmaDisabled;
+using EcmaTypeofdyn = EcmaDisabled;
+using EcmaCallspreaddyn = EcmaDisabled;
+using EcmaNewobjspreaddyn = EcmaDisabled;
+using EcmaGetunmappedargs = EcmaDisabled;
+using EcmaNegate = EcmaDisabled;
+using EcmaToboolean = EcmaDisabled;
+using EcmaTonumber = EcmaDisabled;
+using EcmaGetmethod = EcmaDisabled;
+using EcmaCreategeneratorobj = EcmaDisabled;
+using EcmaCreateasyncgeneratorobj = EcmaDisabled;
+using EcmaCreateiterresultobj = EcmaDisabled;
+using EcmaSuspendgenerator = EcmaDisabled;
+using EcmaSuspendasyncgenerator = EcmaDisabled;
+using EcmaSetgeneratorstate = EcmaDisabled;
+using EcmaSetgeneratorstate = EcmaDisabled;
+using EcmaResumegenerator = EcmaDisabled;
+using EcmaGetresumemode = EcmaDisabled;
+using EcmaAsyncfunctionenter = EcmaDisabled;
+using EcmaAsyncfunctionawait = EcmaDisabled;
+using EcmaAsyncfunctionresolve = EcmaDisabled;
+using EcmaAsyncfunctionreject = EcmaDisabled;
+using EcmaAsyncgeneratorresolve = EcmaDisabled;
+using EcmaAsyncgeneratorreject = EcmaDisabled;
+using EcmaGettemplateobject = EcmaDisabled;
+using EcmaCopyrestargs = EcmaDisabled;
+using EcmaGetpropiterator = EcmaDisabled;
+using EcmaGetnextpropname = EcmaDisabled;
+using EcmaCreateemptyobject = EcmaDisabled;
+using EcmaCreateobjectwithbuffer = EcmaDisabled;
+using EcmaCreateobjecthavingmethod = EcmaDisabled;
+using EcmaSetobjectwithproto = EcmaDisabled;
+using EcmaCopydataproperties = EcmaDisabled;
+using EcmaDefinegettersetterbyvalue = EcmaDisabled;
+using EcmaCreateemptyarray = EcmaDisabled;
+using EcmaCreatearraywithbuffer = EcmaDisabled;
+using EcmaStarrayspread = EcmaDisabled;
+using EcmaCreateregexpwithliteral = EcmaDisabled;
+using EcmaThrowifnotobject = EcmaDisabled;
+using EcmaThrowthrownotexists = EcmaDisabled;
+using EcmaGetiterator = EcmaDisabled;
+using EcmaGetasynciterator = EcmaDisabled;
+using EcmaCreateobjectwithexcludedkeys = EcmaDisabled;
+using EcmaThrowpatternnoncoercible = EcmaDisabled;
+using EcmaCloseiterator = EcmaDisabled;
+using EcmaImportmodule = EcmaDisabled;
+using EcmaSetclasscomputedfields = EcmaDisabled;
+using EcmaDefineclasswithbuffer = EcmaDisabled;
+using EcmaLoadclasscomputedinstancefields = EcmaDisabled;
+using EcmaDefineclassprivatefields = EcmaDisabled;
+using EcmaClassfieldadd = EcmaDisabled;
+using EcmaClassprivatefieldadd = EcmaDisabled;
+using EcmaClassprivatemethodoraccessoradd = EcmaDisabled;
+using EcmaClassprivatefieldget = EcmaDisabled;
+using EcmaClassprivatefieldset = EcmaDisabled;
+using EcmaClassprivatefieldin = EcmaDisabled;
+using EcmaLdmodvarbyname = EcmaDisabled;
+using EcmaStmodulevar = EcmaDisabled;
+using EcmaCopymodule = EcmaDisabled;
+using EcmaStsuperbyname = EcmaDisabled;
+using EcmaLdsuperbyname = EcmaDisabled;
+using EcmaStsuperbyvalue = EcmaDisabled;
+using EcmaLdsuperbyvalue = EcmaDisabled;
+using EcmaLdlexvardyn = EcmaDisabled;
+using EcmaLdlexdyn = EcmaDisabled;
+using EcmaStlexvardyn = EcmaDisabled;
+using EcmaStlexdyn = EcmaDisabled;
+using EcmaThrowifsupernotcorrectcall = EcmaDisabled;
+using EcmaThrowtdz = EcmaDisabled;
+using EcmaThrowconstassignment = EcmaDisabled;
+using EcmaPoplexenvdyn = EcmaDisabled;
+using EcmaCopylexenvdyn = EcmaDisabled;
+using EcmaNewlexenvdyn = EcmaDisabled;
+using EcmaLdlexenvdyn = EcmaDisabled;
+using EcmaLdevalvar = EcmaDisabled;
+using EcmaStevalvar = EcmaDisabled;
+using EcmaLdevalbindings = EcmaDisabled;
+using EcmaDirecteval = EcmaDisabled;
+#endif
 
 PandaGen::PandaGen(ArenaAllocator *const allocator, RegSpiller *const spiller, CompilerContext *const context,
                    binder::FunctionScope *const scope, ProgramElement *const program_element)

@@ -16,15 +16,15 @@
 #ifndef ES2PANDA_COMPILER_CORE_PANDAGEN_H
 #define ES2PANDA_COMPILER_CORE_PANDAGEN_H
 
-#include "plugins/ecmascript/es2panda/compiler/core/codeGen.h"
-#include "plugins/ecmascript/es2panda/compiler/base/optionalChain.h"
-#include "plugins/ecmascript/es2panda/compiler/core/envScope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/function.h"
+#include "compiler/core/codeGen.h"
+#include "compiler/base/optionalChain.h"
+#include "compiler/core/envScope.h"
+#include "compiler/core/function.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/regAllocator.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regScope.h"
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
-#include "plugins/ecmascript/es2panda/lexer/token/tokenType.h"
+#include "compiler/core/regAllocator.h"
+#include "compiler/core/regScope.h"
+#include "ir/irnode.h"
+#include "lexer/token/tokenType.h"
 #include "macros.h"
 
 #include <unordered_map>

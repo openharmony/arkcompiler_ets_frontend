@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_CLASS_DEFINITION_H
 #define ES2PANDA_PARSER_INCLUDE_AST_CLASS_DEFINITION_H
 
-#include "plugins/ecmascript/es2panda/ir/astNode.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/util/bitset.h"
+#include "ir/astNode.h"
+#include "binder/variable.h"
+#include "util/bitset.h"
 
 namespace panda::es2panda::binder {
 class LocalScope;

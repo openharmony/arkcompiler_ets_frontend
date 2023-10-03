@@ -15,17 +15,17 @@
 
 #include "destructuring.h"
 
-#include "plugins/ecmascript/es2panda/util/helpers.h"
-#include "plugins/ecmascript/es2panda/compiler/base/iterators.h"
-#include "plugins/ecmascript/es2panda/compiler/base/lreference.h"
-#include "plugins/ecmascript/es2panda/compiler/base/catchTable.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/ir/base/property.h"
-#include "plugins/ecmascript/es2panda/ir/base/spreadElement.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/arrayExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/assignmentExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/objectExpression.h"
+#include "util/helpers.h"
+#include "compiler/base/iterators.h"
+#include "compiler/base/lreference.h"
+#include "compiler/base/catchTable.h"
+#include "compiler/core/pandagen.h"
+#include "ir/base/property.h"
+#include "ir/base/spreadElement.h"
+#include "ir/expressions/arrayExpression.h"
+#include "ir/expressions/assignmentExpression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/objectExpression.h"
 
 namespace panda::es2panda::compiler {
 static void GenRestElement(PandaGen *pg, const ir::SpreadElement *rest_element,

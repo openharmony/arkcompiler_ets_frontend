@@ -17,8 +17,8 @@
 #define ES2PANDA_CHECKER_CHECKER_CONTEXT_H
 
 #include <macros.h>
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
+#include "binder/variable.h"
+#include "util/enumbitops.h"
 
 #include <vector>
 

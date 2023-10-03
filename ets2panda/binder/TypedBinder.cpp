@@ -14,11 +14,11 @@
  */
 
 #include "TypedBinder.h"
-#include "plugins/ecmascript/es2panda/ir/base/tsSignatureDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/base/tsMethodSignature.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsFunctionType.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsConstructorType.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsFunctionType.h"
+#include "ir/base/tsSignatureDeclaration.h"
+#include "ir/base/tsMethodSignature.h"
+#include "ir/ts/tsFunctionType.h"
+#include "ir/ts/tsConstructorType.h"
+#include "ir/ets/etsFunctionType.h"
 
 namespace panda::es2panda::binder {
 

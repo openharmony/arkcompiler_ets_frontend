@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_TEMPLATE_LITERAL_H
 #define ES2PANDA_PARSER_INCLUDE_AST_TEMPLATE_LITERAL_H
 
-#include "plugins/ecmascript/es2panda/ir/base/templateElement.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "ir/base/templateElement.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 class TemplateLiteral : public Expression {

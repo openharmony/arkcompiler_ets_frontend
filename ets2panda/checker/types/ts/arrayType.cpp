@@ -15,8 +15,8 @@
 
 #include "arrayType.h"
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/checker/types/ts/objectType.h"
+#include "binder/variable.h"
+#include "checker/types/ts/objectType.h"
 
 namespace panda::es2panda::checker {
 void ArrayType::ToString(std::stringstream &ss) const

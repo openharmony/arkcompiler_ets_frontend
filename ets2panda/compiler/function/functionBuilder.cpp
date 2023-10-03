@@ -15,12 +15,12 @@
 
 #include "functionBuilder.h"
 
-#include "plugins/ecmascript/es2panda/binder/binder.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
-#include "plugins/ecmascript/es2panda/ir/statement.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/compiler/base/iterators.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
+#include "binder/binder.h"
+#include "util/helpers.h"
+#include "ir/statement.h"
+#include "ir/base/scriptFunction.h"
+#include "compiler/base/iterators.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::compiler {
 FunctionBuilder::FunctionBuilder(PandaGen *pg, CatchTable *catch_table)

@@ -15,11 +15,11 @@
 
 #include "program.h"
 
-#include "plugins/ecmascript/es2panda/binder/binder.h"
-#include "plugins/ecmascript/es2panda/binder/ETSBinder.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/base/classDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/statements/blockStatement.h"
+#include "binder/binder.h"
+#include "binder/ETSBinder.h"
+#include "ir/astDump.h"
+#include "ir/base/classDefinition.h"
+#include "ir/statements/blockStatement.h"
 
 namespace panda::es2panda::parser {
 

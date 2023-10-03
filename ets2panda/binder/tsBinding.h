@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_BINDER_TS_BINDING_H
 #define ES2PANDA_BINDER_TS_BINDING_H
 
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "util/ustring.h"
 
 #include <variant>
 

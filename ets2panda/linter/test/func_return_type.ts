@@ -127,3 +127,7 @@ class C {
     return z(30);
   }
 }
+
+function no_space_before_body(x: number){ // Need fix
+  return w(x)
+}

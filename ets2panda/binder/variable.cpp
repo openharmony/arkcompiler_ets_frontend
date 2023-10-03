@@ -15,7 +15,7 @@
 
 #include "variable.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
+#include "binder/scope.h"
 
 #include <utility>
 

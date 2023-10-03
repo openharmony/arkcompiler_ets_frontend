@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_SPREAD_ELEMENT_H
 #define ES2PANDA_PARSER_INCLUDE_AST_SPREAD_ELEMENT_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/validationInfo.h"
+#include "ir/expression.h"
+#include "ir/validationInfo.h"
 
 namespace panda::es2panda::ir {
 class SpreadElement : public AnnotatedExpression {

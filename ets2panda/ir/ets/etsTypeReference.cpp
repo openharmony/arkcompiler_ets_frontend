@@ -15,11 +15,11 @@
 
 #include "etsTypeReference.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsQualifiedName.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsTypeReferencePart.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/ts/tsQualifiedName.h"
+#include "ir/ets/etsTypeReferencePart.h"
+#include "checker/ETSchecker.h"
+#include "compiler/core/ETSGen.h"
 
 namespace panda::es2panda::ir {
 void ETSTypeReference::Iterate([[maybe_unused]] const NodeTraverser &cb) const

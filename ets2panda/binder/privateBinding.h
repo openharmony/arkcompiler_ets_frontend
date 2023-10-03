@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_BINDER_PRIVATE_BINDING_H
 #define ES2PANDA_BINDER_PRIVATE_BINDING_H
 
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "util/ustring.h"
 
 namespace panda::es2panda::binder {
 class PrivateBinding : public util::UString {

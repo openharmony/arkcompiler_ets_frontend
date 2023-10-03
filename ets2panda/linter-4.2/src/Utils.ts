@@ -125,6 +125,8 @@ export class TsUtils {
 
   static NON_INITIALIZABLE_PROPERTY_DECORATORS = ['Link', 'Consume', 'ObjectLink', 'Prop', 'BuilderParam'];
 
+  static NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS = ['CustomDialog']
+
   static NON_RETURN_FUNCTION_DECORATORS = ['AnimatableExtend', 'Builder', 'Extend', 'Styles'];
 
   static PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE = 2564;
@@ -1141,7 +1143,16 @@ export class TsUtils {
   }
 
   public isLibraryType(type: ts.Type): boolean {
-    return this.isLibrarySymbol(type.aliasSymbol ?? type.getSymbol());
+    const nonNullableType = type.getNonNullableType();
+    if (nonNullableType.isUnion()) {
+      for (const componentType of nonNullableType.types) {
+        if (!this.isLibraryType(componentType)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return this.isLibrarySymbol(nonNullableType.aliasSymbol ?? nonNullableType.getSymbol());
   }
 
   public hasLibraryType(node: ts.Node): boolean {

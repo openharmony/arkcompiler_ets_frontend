@@ -17,9 +17,9 @@
 
 #include "directEvalExpression.h"
 
-#include "plugins/ecmascript/es2panda/util/helpers.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regScope.h"
+#include "util/helpers.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/regScope.h"
 
 namespace panda::es2panda::ir {
 void DirectEvalExpression::Compile(compiler::PandaGen *pg) const

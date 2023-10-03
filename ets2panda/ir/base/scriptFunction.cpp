@@ -15,15 +15,15 @@
 
 #include "scriptFunction.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/statements/blockStatement.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameter.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameterDeclaration.h"
+#include "binder/scope.h"
+#include "compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/expression.h"
+#include "ir/typeNode.h"
+#include "ir/expressions/identifier.h"
+#include "ir/statements/blockStatement.h"
+#include "ir/ts/tsTypeParameter.h"
+#include "ir/ts/tsTypeParameterDeclaration.h"
 
 namespace panda::es2panda::ir {
 bool ScriptFunction::HasBody() const

@@ -15,17 +15,17 @@
 
 #include "tsTypeReference.h"
 
-#include "plugins/ecmascript/es2panda/binder/declaration.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsInterfaceDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeAliasDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameterInstantiation.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsEnumDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsQualifiedName.h"
+#include "binder/declaration.h"
+#include "binder/scope.h"
+#include "binder/variable.h"
+#include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/expressions/identifier.h"
+#include "ir/ts/tsInterfaceDeclaration.h"
+#include "ir/ts/tsTypeAliasDeclaration.h"
+#include "ir/ts/tsTypeParameterInstantiation.h"
+#include "ir/ts/tsEnumDeclaration.h"
+#include "ir/ts/tsQualifiedName.h"
 
 namespace panda::es2panda::ir {
 void TSTypeReference::Iterate(const NodeTraverser &cb) const

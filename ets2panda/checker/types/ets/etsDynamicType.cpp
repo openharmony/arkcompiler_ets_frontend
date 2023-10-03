@@ -14,7 +14,7 @@
  */
 
 #include "etsDynamicType.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
+#include "checker/ETSchecker.h"
 
 namespace panda::es2panda::checker {
 

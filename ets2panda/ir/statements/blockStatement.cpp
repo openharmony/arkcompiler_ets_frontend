@@ -15,12 +15,12 @@
 
 #include "blockStatement.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regScope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "binder/scope.h"
+#include "compiler/core/regScope.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/TSchecker.h"
+#include "checker/ETSchecker.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void BlockStatement::Iterate(const NodeTraverser &cb) const

@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_IR_EXPRESSION_CHAIN_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_CHAIN_EXPRESSION_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
+#include "ir/expression.h"
+#include "ir/irnode.h"
 
 namespace panda::es2panda::ir {
 class ChainExpression : public Expression {

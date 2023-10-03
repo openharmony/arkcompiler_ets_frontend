@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_CORE_REG_SPILLER_H
 #define ES2PANDA_COMPILER_CORE_REG_SPILLER_H
 
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regScope.h"
+#include "ir/irnode.h"
+#include "compiler/core/regScope.h"
 
 namespace panda::es2panda::ir {
 class AstNode;

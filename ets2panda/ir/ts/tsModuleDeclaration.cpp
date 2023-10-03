@@ -15,10 +15,10 @@
 
 #include "tsModuleDeclaration.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/base/decorator.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "binder/scope.h"
+#include "ir/astDump.h"
+#include "ir/base/decorator.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 void TSModuleDeclaration::Iterate(const NodeTraverser &cb) const

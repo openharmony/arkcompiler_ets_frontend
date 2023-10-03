@@ -16,11 +16,11 @@
 #ifndef ES2PANDA_IR_AST_DUMP_H
 #define ES2PANDA_IR_AST_DUMP_H
 
-#include "plugins/ecmascript/es2panda/ir/astNode.h"
-#include "plugins/ecmascript/es2panda/lexer/token/sourceLocation.h"
-#include "plugins/ecmascript/es2panda/lexer/token/tokenType.h"
-#include "plugins/ecmascript/es2panda/lexer/token/number.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "ir/astNode.h"
+#include "lexer/token/sourceLocation.h"
+#include "lexer/token/tokenType.h"
+#include "lexer/token/number.h"
+#include "util/ustring.h"
 
 #include <sstream>
 #include <variant>

@@ -15,14 +15,14 @@
 
 #include "etsObjectType.h"
 
-#include "plugins/ecmascript/es2panda/binder/declaration.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ets/conversion.h"
-#include "plugins/ecmascript/es2panda/checker/types/typeFlag.h"
-#include "plugins/ecmascript/es2panda/checker/types/typeRelation.h"
-#include "plugins/ecmascript/es2panda/ir/base/methodDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
+#include "binder/declaration.h"
+#include "checker/ETSchecker.h"
+#include "checker/ets/conversion.h"
+#include "checker/types/typeFlag.h"
+#include "checker/types/typeRelation.h"
+#include "ir/base/methodDefinition.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::checker {
 

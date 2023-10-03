@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_COMPILER_SCOPES_DECLARATION_H
 #define ES2PANDA_COMPILER_SCOPES_DECLARATION_H
 
-#include "plugins/ecmascript/es2panda/binder/variableFlags.h"
+#include "binder/variableFlags.h"
 #include "macros.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "util/ustring.h"
 
 namespace panda::es2panda::ir {
 class AstNode;

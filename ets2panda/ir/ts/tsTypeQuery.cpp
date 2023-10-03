@@ -15,8 +15,8 @@
 
 #include "tsTypeQuery.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
 void TSTypeQuery::Iterate(const NodeTraverser &cb) const

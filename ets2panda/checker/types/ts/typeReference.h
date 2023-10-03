@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_TS_TYPE_REFERENCE_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_TS_TYPE_REFERENCE_H
 
-#include "plugins/ecmascript/es2panda/checker/types/type.h"
+#include "checker/types/type.h"
 
 namespace panda::es2panda::checker {
 class TypeReference : public Type {

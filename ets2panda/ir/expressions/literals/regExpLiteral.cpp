@@ -15,11 +15,11 @@
 
 #include "regExpLiteral.h"
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regScope.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "binder/variable.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/regScope.h"
+#include "checker/TSchecker.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void RegExpLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}

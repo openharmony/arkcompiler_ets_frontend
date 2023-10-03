@@ -17,7 +17,7 @@
 #define ES2PANDA_LEXER_TOKEN_SOURCE_LOCATION_H
 
 #include "macros.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "util/ustring.h"
 
 #include <cstddef>
 #include <cstdint>

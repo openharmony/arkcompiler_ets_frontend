@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_BASE_JSLREFERENCE_H
 #define ES2PANDA_COMPILER_BASE_JSLREFERENCE_H
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
+#include "binder/scope.h"
+#include "ir/irnode.h"
 
 namespace panda::es2panda::ir {
 class AstNode;

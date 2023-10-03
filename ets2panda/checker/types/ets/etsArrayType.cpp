@@ -15,10 +15,10 @@
 
 #include "etsArrayType.h"
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ets/conversion.h"
-#include "plugins/ecmascript/es2panda/checker/types/typeRelation.h"
+#include "binder/variable.h"
+#include "checker/ETSchecker.h"
+#include "checker/ets/conversion.h"
+#include "checker/types/typeRelation.h"
 
 namespace panda::es2panda::checker {
 void ETSArrayType::ToString(std::stringstream &ss) const

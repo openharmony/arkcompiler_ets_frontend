@@ -15,8 +15,8 @@
 
 #include "tsUnionType.h"
 
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
+#include "checker/TSchecker.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void TSUnionType::Iterate(const NodeTraverser &cb) const

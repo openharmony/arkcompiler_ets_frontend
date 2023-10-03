@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_IR_STATEMENT_VARIABLE_DECLARATOR_H
 #define ES2PANDA_IR_STATEMENT_VARIABLE_DECLARATOR_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/statement.h"
+#include "ir/expression.h"
+#include "ir/statement.h"
 
 namespace panda::es2panda::ir {
 class Expression;

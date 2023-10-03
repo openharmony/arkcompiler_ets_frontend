@@ -15,9 +15,9 @@
 
 #include "tsClassImplements.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameter.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameterInstantiation.h"
+#include "ir/astDump.h"
+#include "ir/ts/tsTypeParameter.h"
+#include "ir/ts/tsTypeParameterInstantiation.h"
 
 namespace panda::es2panda::ir {
 void TSClassImplements::Iterate(const NodeTraverser &cb) const

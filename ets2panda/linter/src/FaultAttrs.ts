@@ -80,7 +80,6 @@ faultsAttrs[FaultID.SpreadOperator] = {cookBookRef: '99',};
 faultsAttrs[FaultID.IntefaceExtendDifProps] = {cookBookRef: '102',};
 faultsAttrs[FaultID.InterfaceMerging] = {cookBookRef: '103',};
 faultsAttrs[FaultID.InterfaceExtendsClass] = {cookBookRef: '104',};
-faultsAttrs[FaultID.PropertyRuntimeCheck] = {cookBookRef: '105',};
 faultsAttrs[FaultID.ConstructorFuncs] = {cookBookRef: '106',};
 faultsAttrs[FaultID.EnumMemberNonConstInit] = {cookBookRef: '111',};
 faultsAttrs[FaultID.EnumMerging] = {cookBookRef: '113',};

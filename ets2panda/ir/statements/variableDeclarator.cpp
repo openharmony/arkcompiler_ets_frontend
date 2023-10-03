@@ -15,22 +15,22 @@
 
 #include "variableDeclarator.h"
 
-#include "plugins/ecmascript/es2panda/binder/variableFlags.h"
-#include "plugins/ecmascript/es2panda/compiler/base/lreference.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/astNode.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/statements/variableDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/arrayExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/objectExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
+#include "binder/variableFlags.h"
+#include "compiler/base/lreference.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/astNode.h"
+#include "ir/typeNode.h"
+#include "ir/expression.h"
+#include "ir/statements/variableDeclaration.h"
+#include "ir/expressions/arrayExpression.h"
+#include "ir/expressions/objectExpression.h"
+#include "ir/expressions/identifier.h"
 
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ts/destructuringContext.h"
+#include "checker/TSchecker.h"
+#include "checker/ETSchecker.h"
+#include "checker/ts/destructuringContext.h"
 
 namespace panda::es2panda::ir {
 void VariableDeclarator::Iterate(const NodeTraverser &cb) const

@@ -17,9 +17,9 @@
 #define ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_H
 
 #include "generated/signatures.h"
-#include "plugins/ecmascript/es2panda/checker/types/typeMapping.h"
-#include "plugins/ecmascript/es2panda/checker/types/typeRelation.h"
-#include "plugins/ecmascript/es2panda/checker/types/typeFacts.h"
+#include "checker/types/typeMapping.h"
+#include "checker/types/typeRelation.h"
+#include "checker/types/typeFacts.h"
 
 #include "macros.h"
 #include <sstream>

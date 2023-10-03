@@ -15,17 +15,17 @@
 
 #include "updateExpression.h"
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/compiler/base/lreference.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regScope.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/unaryExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/memberExpression.h"
+#include "binder/variable.h"
+#include "compiler/base/lreference.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/regScope.h"
+#include "checker/TSchecker.h"
+#include "checker/ETSchecker.h"
+#include "ir/astDump.h"
+#include "ir/expressions/unaryExpression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/memberExpression.h"
 
 namespace panda::es2panda::ir {
 void UpdateExpression::Iterate(const NodeTraverser &cb) const

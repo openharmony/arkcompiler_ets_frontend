@@ -63,6 +63,23 @@
             "line": 34,
             "column": 13,
             "problem": "AnyType"
+        },
+        {
+            "line": 37,
+            "column": 5,
+            "problem": "AnyType"
+        },
+        {
+            "line": 38,
+            "column": 20,
+            "problem": "AnyType"
+        },
+        {
+            "line": 39,
+            "column": 20,
+            "problem": "UnknownType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         }
     ]
 }

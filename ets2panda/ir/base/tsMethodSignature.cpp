@@ -15,13 +15,13 @@
 
 #include "tsMethodSignature.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameter.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameterDeclaration.h"
+#include "binder/scope.h"
+#include "ir/astDump.h"
+#include "ir/typeNode.h"
+#include "ir/ts/tsTypeParameter.h"
+#include "ir/ts/tsTypeParameterDeclaration.h"
 
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
+#include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
 void TSMethodSignature::Iterate(const NodeTraverser &cb) const

@@ -25,7 +25,9 @@
                     "end": 631,
                     "replacementText": ": number"
                 }
-            ]
+            ],
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 23,
@@ -38,7 +40,9 @@
                     "end": 726,
                     "replacementText": ": string"
                 }
-            ]
+            ],
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 33,
@@ -51,37 +55,49 @@
                     "end": 857,
                     "replacementText": ": number[]"
                 }
-            ]
+            ],
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 40,
             "column": 1,
             "problem": "LimitedReturnTypeInference",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 46,
             "column": 1,
             "problem": "LimitedReturnTypeInference",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 54,
             "column": 1,
             "problem": "LimitedReturnTypeInference",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 57,
             "column": 1,
             "problem": "LimitedReturnTypeInference",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 57,
             "column": 15,
             "problem": "AnyType",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 62,
@@ -92,9 +108,11 @@
                 {
                     "start": 1273,
                     "end": 1324,
-                    "replacementText": "(c: C): C => {\r\n    return f2(c);\r\n}"
+                    "replacementText": "(c: C): C => {\n    return f2(c);\n}"
                 }
-            ]
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
         {
             "line": 65,
@@ -105,9 +123,11 @@
                 {
                     "start": 1337,
                     "end": 1378,
-                    "replacementText": "(c: C) => {\r\n    return new C();\r\n}"
+                    "replacementText": "(c: C) => {\n    return new C();\n}"
                 }
-            ]
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
         {
             "line": 69,
@@ -118,9 +138,11 @@
                 {
                     "start": 1394,
                     "end": 1449,
-                    "replacementText": "(x: number, y: number) => {\r\n    return x + y;\r\n}"
+                    "replacementText": "(x: number, y: number) => {\n    return x + y;\n}"
                 }
-            ]
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
         {
             "line": 73,
@@ -131,9 +153,11 @@
                 {
                     "start": 1463,
                     "end": 1509,
-                    "replacementText": "(): Map<string, number> => {\r\n    return f5();\r\n}"
+                    "replacementText": "(): Map<string, number> => {\n    return f5();\n}"
                 }
-            ]
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
         {
             "line": 76,
@@ -144,21 +168,27 @@
                 {
                     "start": 1522,
                     "end": 1577,
-                    "replacementText": "() => {\r\n    return new Map<string, number>();\r\n}"
+                    "replacementText": "() => {\n    return new Map<string, number>();\n}"
                 }
-            ]
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
         {
             "line": 80,
             "column": 12,
             "problem": "FunctionExpression",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
         {
             "line": 80,
             "column": 12,
             "problem": "LimitedReturnTypeInference",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 86,
@@ -171,7 +201,9 @@
                     "end": 1686,
                     "replacementText": ": T"
                 }
-            ]
+            ],
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 97,
@@ -184,13 +216,17 @@
                     "end": 1848,
                     "replacementText": ": (x: number) => string"
                 }
-            ]
+            ],
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 104,
             "column": 12,
             "problem": "LimitedReturnTypeInference",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 110,
@@ -203,7 +239,9 @@
                     "end": 2037,
                     "replacementText": ": number"
                 }
-            ]
+            ],
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 114,
@@ -216,7 +254,9 @@
                     "end": 2090,
                     "replacementText": ": number"
                 }
-            ]
+            ],
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 122,
@@ -229,13 +269,32 @@
                     "end": 2177,
                     "replacementText": ": number"
                 }
-            ]
+            ],
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         },
         {
             "line": 126,
             "column": 3,
             "problem": "LimitedReturnTypeInference",
-            "autofixable": false
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
+        },
+        {
+            "line": 131,
+            "column": 1,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 2310,
+                    "end": 2310,
+                    "replacementText": ": number"
+                }
+            ],
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         }
     ]
 }

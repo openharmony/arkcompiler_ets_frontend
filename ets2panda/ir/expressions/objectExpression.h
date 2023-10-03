@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_IR_EXPRESSION_OBJECT_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_OBJECT_EXPRESSION_H
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/validationInfo.h"
+#include "binder/variable.h"
+#include "ir/expression.h"
+#include "ir/validationInfo.h"
 
 namespace panda::es2panda::util {
 class BitSet;

@@ -178,7 +178,7 @@ function getReturnTypePosition(funcLikeDecl: ts.FunctionLikeDeclaration): number
     const children = funcLikeDecl.getChildren();
     for (let i = children.length - 1; i >= 0; i--) {
       const child = children[i];
-      if (child.kind === ts.SyntaxKind.CloseParenToken && child.getEnd() < postParametersPosition)
+      if (child.kind === ts.SyntaxKind.CloseParenToken && child.getEnd() <= postParametersPosition)
         return child.getEnd();
     }
   }

@@ -15,9 +15,9 @@
 
 #include "numberLiteralType.h"
 
-#include "plugins/ecmascript/es2panda/util/helpers.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/checker/types/ts/enumType.h"
+#include "util/helpers.h"
+#include "binder/variable.h"
+#include "checker/types/ts/enumType.h"
 
 namespace panda::es2panda::checker {
 void NumberLiteralType::ToString(std::stringstream &ss) const

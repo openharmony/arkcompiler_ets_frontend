@@ -14,13 +14,13 @@
  */
 
 #include "typeRelationContext.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/binder/declaration.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/arrayExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsArrayType.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameter.h"
+#include "binder/variable.h"
+#include "binder/scope.h"
+#include "binder/declaration.h"
+#include "ir/expressions/arrayExpression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/ts/tsArrayType.h"
+#include "ir/ts/tsTypeParameter.h"
 
 namespace panda::es2panda::checker {
 void AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *relation, ir::ArrayExpression *node,

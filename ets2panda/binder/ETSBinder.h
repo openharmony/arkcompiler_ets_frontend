@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_BINDER_ETS_BINDER_H
 #define ES2PANDA_BINDER_ETS_BINDER_H
 
-#include "plugins/ecmascript/es2panda/binder/TypedBinder.h"
-#include "plugins/ecmascript/es2panda/binder/recordTable.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsImportDeclaration.h"
+#include "binder/TypedBinder.h"
+#include "binder/recordTable.h"
+#include "ir/ets/etsImportDeclaration.h"
 
 namespace panda::es2panda::binder {
 

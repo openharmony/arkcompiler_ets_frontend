@@ -15,8 +15,8 @@
 
 #include "charType.h"
 
-#include "plugins/ecmascript/es2panda/checker/ets/conversion.h"
-#include "plugins/ecmascript/es2panda/checker/ets/narrowingConverter.h"
+#include "checker/ets/conversion.h"
+#include "checker/ets/narrowingConverter.h"
 
 namespace panda::es2panda::checker {
 void CharType::Identical(TypeRelation *relation, Type *other)

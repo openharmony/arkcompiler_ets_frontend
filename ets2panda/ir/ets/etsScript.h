@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_ETS_SCRIPT_H
 #define ES2PANDA_IR_ETS_SCRIPT_H
 
-#include "plugins/ecmascript/es2panda/ir/statements/blockStatement.h"
+#include "ir/statements/blockStatement.h"
 
 namespace panda::es2panda::parser {
 class Program;

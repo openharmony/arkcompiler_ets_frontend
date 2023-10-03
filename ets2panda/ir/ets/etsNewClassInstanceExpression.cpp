@@ -15,18 +15,18 @@
 
 #include "etsNewClassInstanceExpression.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/ir/base/classDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsTypeReference.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsTypeReferencePart.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/statements/variableDeclarator.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsQualifiedName.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/types/ets/types.h"
+#include "compiler/core/ETSGen.h"
+#include "ir/base/classDefinition.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/astDump.h"
+#include "ir/ets/etsTypeReference.h"
+#include "ir/ets/etsTypeReferencePart.h"
+#include "ir/expressions/identifier.h"
+#include "ir/statements/variableDeclarator.h"
+#include "ir/ts/tsQualifiedName.h"
+#include "checker/TSchecker.h"
+#include "checker/ETSchecker.h"
+#include "checker/types/ets/types.h"
 
 namespace panda::es2panda::ir {
 void ETSNewClassInstanceExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const

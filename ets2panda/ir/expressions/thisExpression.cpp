@@ -15,18 +15,18 @@
 
 #include "thisExpression.h"
 
-#include "plugins/ecmascript/es2panda/util/helpers.h"
-#include "plugins/ecmascript/es2panda/binder/binder.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/base/classDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/base/methodDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/statements/blockStatement.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/callExpression.h"
+#include "util/helpers.h"
+#include "binder/binder.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/TSchecker.h"
+#include "checker/ETSchecker.h"
+#include "ir/base/classDefinition.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/base/methodDefinition.h"
+#include "ir/statements/blockStatement.h"
+#include "ir/astDump.h"
+#include "ir/expressions/callExpression.h"
 
 namespace panda::es2panda::ir {
 void ThisExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}

@@ -42,7 +42,6 @@ Properties and functions of the global object: ``eval``,
 - Recipe 029:  Indexed access is not supported for fields (``arkts-no-props-by-index``)
 - Recipe 060:  ``typeof`` operator is allowed only in expression contexts (``arkts-no-type-query``)
 - Recipe 066:  ``in`` operator is not supported (``arkts-no-in``)
-- Recipe 105:  Property-based runtime type checks are not supported (``arkts-no-prop-existence-check``)
 - Recipe 137:  ``globalThis`` is not supported (``arkts-no-globalthis``)
 
 

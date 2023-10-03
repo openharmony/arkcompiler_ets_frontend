@@ -15,10 +15,10 @@
 
 #include "signature.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameter.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
+#include "binder/scope.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/ts/tsTypeParameter.h"
+#include "checker/ETSchecker.h"
 
 namespace panda::es2panda::checker {
 

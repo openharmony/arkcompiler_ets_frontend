@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-#include "plugins/ecmascript/es2panda/ir/expressions/assignmentExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/memberExpression.h"
+#include "ir/expressions/assignmentExpression.h"
+#include "ir/expressions/memberExpression.h"
 
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
+#include "checker/TSchecker.h"
 
 namespace panda::es2panda::checker {
 Type *TSChecker::CheckBinaryOperator(Type *left_type, Type *right_type, ir::Expression *left_expr,

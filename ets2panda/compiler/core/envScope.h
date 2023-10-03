@@ -16,11 +16,11 @@
 #ifndef ES2PANDA_COMPILER_CORE_ENV_SCOPE_H
 #define ES2PANDA_COMPILER_CORE_ENV_SCOPE_H
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/ir/irnode.h"
-#include "plugins/ecmascript/es2panda/compiler/core/dynamicContext.h"
-#include "plugins/ecmascript/es2panda/compiler/core/regScope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/labelTarget.h"
+#include "binder/scope.h"
+#include "ir/irnode.h"
+#include "compiler/core/dynamicContext.h"
+#include "compiler/core/regScope.h"
+#include "compiler/core/labelTarget.h"
 
 namespace panda::es2panda::ir {
 class AstNode;

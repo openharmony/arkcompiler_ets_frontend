@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_EXPRESSION_NEW_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_NEW_EXPRESSION_H
 
-#include "plugins/ecmascript/es2panda/ir/expression.h"
+#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 class NewExpression : public Expression {

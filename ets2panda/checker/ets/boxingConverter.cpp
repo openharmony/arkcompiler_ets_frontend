@@ -14,10 +14,10 @@
  */
 
 #include "boxingConverter.h"
-#include "plugins/ecmascript/es2panda/checker/types/ets/types.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
-#include "plugins/ecmascript/es2panda/checker/ets/primitiveWrappers.h"
+#include "checker/types/ets/types.h"
+#include "checker/ETSchecker.h"
+#include "util/helpers.h"
+#include "checker/ets/primitiveWrappers.h"
 
 namespace panda::es2panda::checker {
 

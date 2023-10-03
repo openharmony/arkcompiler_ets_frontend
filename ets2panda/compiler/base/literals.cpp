@@ -15,10 +15,10 @@
 
 #include "literals.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/ir/base/templateElement.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/taggedTemplateExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/templateLiteral.h"
+#include "compiler/core/pandagen.h"
+#include "ir/base/templateElement.h"
+#include "ir/expressions/taggedTemplateExpression.h"
+#include "ir/expressions/templateLiteral.h"
 
 namespace panda::es2panda::compiler {
 void Literals::GetTemplateObject(PandaGen *pg, const ir::TaggedTemplateExpression *lit)

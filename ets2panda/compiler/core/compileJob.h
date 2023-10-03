@@ -17,8 +17,8 @@
 #define ES2PANDA_COMPILER_CORE_COMPILE_JOB_H
 
 #include "macros.h"
-#include "plugins/ecmascript/es2panda/es2panda.h"
-#include "plugins/ecmascript/es2panda/compiler/core/programElement.h"
+#include "es2panda.h"
+#include "compiler/core/programElement.h"
 
 #include <condition_variable>
 #include <mutex>

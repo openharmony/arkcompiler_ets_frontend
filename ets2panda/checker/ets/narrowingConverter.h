@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_ETS_NARROWING_CONVERTER_H
 #define ES2PANDA_COMPILER_CHECKER_ETS_NARROWING_CONVERTER_H
 
-#include "plugins/ecmascript/es2panda/checker/ets/typeConverter.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
+#include "checker/ets/typeConverter.h"
+#include "checker/ETSchecker.h"
+#include "util/helpers.h"
 
 namespace panda::es2panda::checker {
 class NarrowingConverter : public TypeConverter {

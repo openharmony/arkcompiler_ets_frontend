@@ -15,8 +15,8 @@
 
 #include "TSchecker.h"
 
-#include "plugins/ecmascript/es2panda/ir/statements/blockStatement.h"
-#include "plugins/ecmascript/es2panda/parser/program/program.h"
+#include "ir/statements/blockStatement.h"
+#include "parser/program/program.h"
 
 namespace panda::es2panda::checker {
 

@@ -15,8 +15,8 @@
 
 #include "regAllocator.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/codeGen.h"
-#include "plugins/ecmascript/es2panda/checker/types/type.h"
+#include "compiler/core/codeGen.h"
+#include "checker/types/type.h"
 
 #include <algorithm>
 #include <vector>

@@ -13,57 +13,59 @@
  * limitations under the License.
  */
 
-#include "plugins/ecmascript/es2panda/binder/variableFlags.h"
-#include "plugins/ecmascript/es2panda/checker/checker.h"
-#include "plugins/ecmascript/es2panda/checker/checkerContext.h"
-#include "plugins/ecmascript/es2panda/checker/ets/narrowingWideningConverter.h"
-#include "plugins/ecmascript/es2panda/checker/types/globalTypesHolder.h"
-#include "plugins/ecmascript/es2panda/checker/types/ets/etsObjectType.h"
-#include "plugins/ecmascript/es2panda/ir/astNode.h"
-#include "plugins/ecmascript/es2panda/lexer/token/tokenType.h"
-#include "plugins/ecmascript/es2panda/ir/base/catchClause.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/base/classProperty.h"
-#include "plugins/ecmascript/es2panda/ir/base/methodDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/statements/blockStatement.h"
-#include "plugins/ecmascript/es2panda/ir/statements/classDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/statements/variableDeclarator.h"
-#include "plugins/ecmascript/es2panda/ir/statements/switchCaseStatement.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/arrayExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/objectExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/callExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/memberExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/booleanLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/charLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/binaryExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/assignmentExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/arrowFunctionExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/numberLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/nullLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/statements/labelledStatement.h"
-#include "plugins/ecmascript/es2panda/ir/statements/tryStatement.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsFunctionType.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsNewClassInstanceExpression.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsParameterExpression.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeAliasDeclaration.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsTypeParameter.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsTypeReference.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsTypeReferencePart.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsPrimitiveType.h"
-#include "plugins/ecmascript/es2panda/ir/ts/tsQualifiedName.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/binder/declaration.h"
-#include "plugins/ecmascript/es2panda/parser/program/program.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/binder/ETSBinder.h"
-#include "plugins/ecmascript/es2panda/checker/ets/typeRelationContext.h"
-#include "plugins/ecmascript/es2panda/checker/ets/boxingConverter.h"
-#include "plugins/ecmascript/es2panda/checker/ets/unboxingConverter.h"
-#include "plugins/ecmascript/es2panda/checker/types/ets/types.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
+#include "binder/variableFlags.h"
+#include "checker/checker.h"
+#include "checker/checkerContext.h"
+#include "checker/ets/narrowingWideningConverter.h"
+#include "checker/types/globalTypesHolder.h"
+#include "checker/types/ets/etsObjectType.h"
+#include "ir/astNode.h"
+#include "lexer/token/tokenType.h"
+#include "ir/base/catchClause.h"
+#include "ir/expression.h"
+#include "ir/typeNode.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/base/classProperty.h"
+#include "ir/base/methodDefinition.h"
+#include "ir/statements/blockStatement.h"
+#include "ir/statements/classDeclaration.h"
+#include "ir/statements/variableDeclarator.h"
+#include "ir/statements/switchCaseStatement.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/arrayExpression.h"
+#include "ir/expressions/objectExpression.h"
+#include "ir/expressions/callExpression.h"
+#include "ir/expressions/memberExpression.h"
+#include "ir/expressions/literals/booleanLiteral.h"
+#include "ir/expressions/literals/charLiteral.h"
+#include "ir/expressions/binaryExpression.h"
+#include "ir/expressions/assignmentExpression.h"
+#include "ir/expressions/arrowFunctionExpression.h"
+#include "ir/expressions/literals/numberLiteral.h"
+#include "ir/expressions/literals/nullLiteral.h"
+#include "ir/statements/labelledStatement.h"
+#include "ir/statements/tryStatement.h"
+#include "ir/ets/etsFunctionType.h"
+#include "ir/ets/etsNewClassInstanceExpression.h"
+#include "ir/ets/etsParameterExpression.h"
+#include "ir/ts/tsTypeAliasDeclaration.h"
+#include "ir/ts/tsEnumMember.h"
+#include "ir/ts/tsTypeParameter.h"
+#include "ir/ets/etsTypeReference.h"
+#include "ir/ets/etsTypeReferencePart.h"
+#include "ir/ets/etsPrimitiveType.h"
+#include "ir/ts/tsQualifiedName.h"
+#include "binder/variable.h"
+#include "binder/scope.h"
+#include "binder/declaration.h"
+#include "parser/program/program.h"
+#include "checker/ETSchecker.h"
+#include "binder/ETSBinder.h"
+#include "checker/ets/typeRelationContext.h"
+#include "checker/ets/boxingConverter.h"
+#include "checker/ets/unboxingConverter.h"
+#include "checker/types/ets/types.h"
+#include "util/helpers.h"
 
 namespace panda::es2panda::checker {
 void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
@@ -1343,25 +1345,26 @@ void ETSChecker::CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> 
         for (size_t compare_case = case_num + 1; compare_case < cases->size(); compare_case++) {
             auto *case_test = cases->at(case_num)->Test();
             auto *compare_case_test = cases->at(compare_case)->Test();
+
             if (case_test == nullptr || compare_case_test == nullptr) {
                 continue;
             }
 
-            if (case_test->IsMemberExpression()) {
-                ASSERT(compare_case_test->IsMemberExpression());
-                if (case_test->AsMemberExpression()->Property()->AsIdentifier()->Name() !=
-                    compare_case_test->AsMemberExpression()->Property()->AsIdentifier()->Name()) {
+            if (case_test->TsType()->IsETSEnumType()) {
+                if (!case_test->TsType()->AsETSEnumType()->IsSameEnumLiteralType(
+                        compare_case_test->TsType()->AsETSEnumType())) {
                     continue;
                 }
-                ThrowTypeError("Case duplicate", cases->at(compare_case)->Start());
+
+                ThrowTypeError("Case duplicate", case_test->Start());
             }
 
-            if (case_test->IsIdentifier()) {
+            if (case_test->IsIdentifier() || case_test->IsMemberExpression()) {
                 CheckIdentifierSwitchCase(case_test, compare_case_test, cases->at(case_num)->Start());
                 continue;
             }
 
-            if (compare_case_test->IsIdentifier()) {
+            if (compare_case_test->IsIdentifier() || compare_case_test->IsMemberExpression()) {
                 CheckIdentifierSwitchCase(compare_case_test, case_test, cases->at(compare_case)->Start());
                 continue;
             }
@@ -1375,26 +1378,28 @@ void ETSChecker::CheckForSameSwitchCases(ArenaVector<ir::SwitchCaseStatement *> 
     }
 }
 
-std::string ETSChecker::GetStringFromIdentifierValue(ir::Expression *identifier) const
+std::string ETSChecker::GetStringFromIdentifierValue(checker::Type *case_type) const
 {
-    ASSERT(identifier->AsIdentifier()->Variable()->TsType());
-    auto *identifier_type = identifier->AsIdentifier()->Variable()->TsType();
-    auto identifier_type_kind = ETSChecker::TypeKind(identifier_type);
+    const auto identifier_type_kind = ETSChecker::TypeKind(case_type);
     switch (identifier_type_kind) {
         case TypeFlag::BYTE: {
-            return std::to_string(identifier_type->AsByteType()->GetValue());
+            return std::to_string(case_type->AsByteType()->GetValue());
         }
         case TypeFlag::SHORT: {
-            return std::to_string(identifier_type->AsShortType()->GetValue());
+            return std::to_string(case_type->AsShortType()->GetValue());
         }
         case TypeFlag::CHAR: {
-            return std::to_string(identifier_type->AsCharType()->GetValue());
+            return std::to_string(case_type->AsCharType()->GetValue());
         }
         case TypeFlag::INT: {
-            return std::to_string(identifier_type->AsIntType()->GetValue());
+            return std::to_string(case_type->AsIntType()->GetValue());
         }
         case TypeFlag::LONG: {
-            return std::to_string(identifier_type->AsLongType()->GetValue());
+            return std::to_string(case_type->AsLongType()->GetValue());
+        }
+        case TypeFlag::ETS_OBJECT: {
+            Binder()->ThrowError(case_type->AsETSObjectType()->Variable()->Declaration()->Node()->Start(),
+                                 "not implemented");
         }
         default: {
             UNREACHABLE();
@@ -1402,11 +1407,25 @@ std::string ETSChecker::GetStringFromIdentifierValue(ir::Expression *identifier)
     }
 }
 
-bool ETSChecker::CompareIdentifiersValuesAreDifferent(ir::Expression *identifier, ir::Expression *compare_value)
+bool IsConstantMemberOrIdentifierExpression(ir::Expression *expression)
 {
-    auto case_value = GetStringFromIdentifierValue(identifier);
-    if (compare_value->IsIdentifier() && compare_value->AsIdentifier()->Variable()->Declaration()->IsConstDecl()) {
-        auto compare_case_value = GetStringFromIdentifierValue(compare_value);
+    if (expression->IsMemberExpression()) {
+        return expression->AsMemberExpression()->PropVar()->Declaration()->IsConstDecl();
+    }
+
+    if (expression->IsIdentifier()) {
+        return expression->AsIdentifier()->Variable()->Declaration()->IsConstDecl();
+    }
+
+    return false;
+}
+
+bool ETSChecker::CompareIdentifiersValuesAreDifferent(ir::Expression *compare_value, const std::string &case_value)
+{
+    if (IsConstantMemberOrIdentifierExpression(compare_value)) {
+        checker::Type *compare_case_type = compare_value->TsType();
+
+        const auto compare_case_value = GetStringFromIdentifierValue(compare_case_type);
         return case_value != compare_case_value;
     }
 
@@ -1417,10 +1436,14 @@ void ETSChecker::CheckIdentifierSwitchCase(ir::Expression *current_case, ir::Exp
                                            const lexer::SourcePosition &pos)
 {
     current_case->Check(this);
-    if (!current_case->AsIdentifier()->Variable()->Declaration()->IsConstDecl()) {
+
+    if (!IsConstantMemberOrIdentifierExpression(current_case)) {
         ThrowTypeError("Constant expression required", pos);
     }
-    if (!CompareIdentifiersValuesAreDifferent(current_case, compare_case)) {
+
+    checker::Type *case_type = current_case->TsType();
+
+    if (!CompareIdentifiersValuesAreDifferent(compare_case, GetStringFromIdentifierValue(case_type))) {
         ThrowTypeError("Variable has same value with another switch case", pos);
     }
 }

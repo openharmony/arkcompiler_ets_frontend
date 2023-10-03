@@ -15,9 +15,9 @@
 
 #include "envScope.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/codeGen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/ir/statement.h"
+#include "compiler/core/codeGen.h"
+#include "compiler/core/pandagen.h"
+#include "ir/statement.h"
 
 namespace panda::es2panda::compiler {
 ScopeContext::ScopeContext(CodeGen *cg, binder::Scope *new_scope) : cg_(cg), prev_scope_(cg_->scope_)

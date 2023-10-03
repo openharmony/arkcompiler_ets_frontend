@@ -15,9 +15,9 @@
 
 #include "interfaceType.h"
 
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/checker/checker.h"
-#include "plugins/ecmascript/es2panda/checker/types/ts/typeParameter.h"
+#include "binder/variable.h"
+#include "checker/checker.h"
+#include "checker/types/ts/typeParameter.h"
 
 #include <algorithm>
 #include <utility>

@@ -17,7 +17,7 @@
 #define ES2PANDA_COMPILER_CHECKER_ETS_BASE_ANALYZER_H
 
 #include "utils/arena_containers.h"
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
+#include "util/enumbitops.h"
 
 namespace panda::es2panda::ir {
 class AstNode;

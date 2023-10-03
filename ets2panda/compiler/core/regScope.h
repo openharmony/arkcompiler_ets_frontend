@@ -17,7 +17,7 @@
 #define ES2PANDA_COMPILER_CORE_REG_SCOPE_H
 
 #include "macros.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
+#include "binder/scope.h"
 
 namespace panda::es2panda::ir {
 class AstNode;

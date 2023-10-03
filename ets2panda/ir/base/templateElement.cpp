@@ -15,9 +15,9 @@
 
 #include "templateElement.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/util/ustring.h"
+#include "compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "util/ustring.h"
 
 #include <utility>
 

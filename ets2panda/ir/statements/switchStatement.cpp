@@ -15,16 +15,18 @@
 
 #include "switchStatement.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/compiler/core/labelTarget.h"
-#include "plugins/ecmascript/es2panda/compiler/core/switchBuilder.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ets/typeRelationContext.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/statements/switchCaseStatement.h"
+#include "binder/scope.h"
+#include "compiler/core/labelTarget.h"
+#include "compiler/core/switchBuilder.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/TSchecker.h"
+#include "checker/ets/typeRelationContext.h"
+#include "ir/astDump.h"
+#include "ir/expression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/memberExpression.h"
+#include "ir/statements/switchCaseStatement.h"
 
 namespace panda::es2panda::ir {
 void SwitchStatement::Iterate(const NodeTraverser &cb) const
@@ -129,18 +131,17 @@ checker::Type *SwitchStatement::Check(checker::ETSChecker *const checker)
     auto unboxed_disc_type = (Discriminant()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U
                                  ? checker->ETSBuiltinTypeAsPrimitiveType(compared_expr_type)
                                  : compared_expr_type;
+
     bool valid_case_type;
 
     for (auto *it : cases_) {
         if (it->Test() != nullptr) {
             auto *case_type = it->Test()->Check(checker);
             valid_case_type = true;
-
             if (case_type->HasTypeFlag(checker::TypeFlag::CHAR)) {
                 valid_case_type = compared_expr_type->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL);
-            } else if (case_type->IsETSEnumType()) {
-                valid_case_type = case_type->AsETSEnumType()->IsEnumLiteralExpression(it->Test()) &&
-                                  compared_expr_type->HasTypeFlag(checker::TypeFlag::ETS_ENUM);
+            } else if (case_type->IsETSEnumType() && discriminant_->TsType()->IsETSEnumType()) {
+                valid_case_type = discriminant_->TsType()->AsETSEnumType()->IsSameEnumType(case_type->AsETSEnumType());
             } else {
                 checker::AssignmentContext(
                     checker->Relation(), discriminant_, case_type, unboxed_disc_type, it->Test()->Start(),

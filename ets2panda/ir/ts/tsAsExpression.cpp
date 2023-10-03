@@ -15,17 +15,17 @@
 
 #include "tsAsExpression.h"
 
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ets/castingContext.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literal.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/memberExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/objectExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/unaryExpression.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsFunctionType.h"
+#include "binder/scope.h"
+#include "checker/TSchecker.h"
+#include "checker/ets/castingContext.h"
+#include "compiler/core/ETSGen.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/literal.h"
+#include "ir/expressions/memberExpression.h"
+#include "ir/expressions/objectExpression.h"
+#include "ir/expressions/unaryExpression.h"
+#include "ir/typeNode.h"
+#include "ir/ets/etsFunctionType.h"
 
 namespace panda::es2panda::ir {
 Expression *TSAsExpression::Expr()

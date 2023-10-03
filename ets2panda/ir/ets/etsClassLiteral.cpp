@@ -15,11 +15,11 @@
 
 #include "etsClassLiteral.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ets/typeRelationContext.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/typeNode.h"
+#include "checker/TSchecker.h"
+#include "checker/ets/typeRelationContext.h"
+#include "compiler/core/ETSGen.h"
 
 namespace panda::es2panda::ir {
 void ETSClassLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const

@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_ENUM_MEMBER_H
 #define ES2PANDA_IR_TS_ENUM_MEMBER_H
 
-#include "plugins/ecmascript/es2panda/ir/statement.h"
+#include "ir/statement.h"
 
 namespace panda::es2panda::ir {
 class Expression;

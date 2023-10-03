@@ -15,14 +15,14 @@
 
 #include "etsLaunchExpression.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/callExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/memberExpression.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/ETSchecker.h"
+#include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/callExpression.h"
+#include "ir/expressions/memberExpression.h"
 
 namespace panda::es2panda::ir {
 ETSLaunchExpression::ETSLaunchExpression(CallExpression *expr)

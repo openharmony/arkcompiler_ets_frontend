@@ -15,7 +15,7 @@
 
 #include "labelTarget.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/codeGen.h"
+#include "compiler/core/codeGen.h"
 
 namespace panda::es2panda::compiler {
 LabelTarget::LabelTarget(CodeGen *cg)

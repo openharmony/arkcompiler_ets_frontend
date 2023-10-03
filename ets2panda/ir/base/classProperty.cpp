@@ -15,14 +15,14 @@
 
 #include "classProperty.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/base/decorator.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/ir/expression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/checker/types/ets/etsObjectType.h"
+#include "ir/astDump.h"
+#include "ir/base/decorator.h"
+#include "ir/typeNode.h"
+#include "ir/expression.h"
+#include "ir/expressions/identifier.h"
+#include "checker/ETSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "checker/types/ets/etsObjectType.h"
 
 #include <cstdint>
 #include <string>

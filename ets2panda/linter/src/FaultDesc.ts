@@ -82,7 +82,6 @@ faultDesc[FaultID.TypeOnlyExport] = 'Type-only exports';
 faultDesc[FaultID.DefaultImport] = 'Default import declarations';
 faultDesc[FaultID.ExportAssignment] = 'Export assignments (export = ..)';
 faultDesc[FaultID.ImportAssignment] = 'Import assignments (import = ..)';
-faultDesc[FaultID.PropertyRuntimeCheck] = 'Property-based runtime checks';
 faultDesc[FaultID.GenericCallNoTypeArgs] = 'Generic calls without type arguments';
 faultDesc[FaultID.ParameterProperties] = 'Parameter properties in constructor';
 faultDesc[FaultID.InstanceofUnsupported] = 'Left-hand side of "instanceof" is wrong';

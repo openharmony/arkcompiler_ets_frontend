@@ -15,11 +15,11 @@
 
 #include "importDeclaration.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/stringLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/module/importNamespaceSpecifier.h"
-#include "plugins/ecmascript/es2panda/ir/module/importSpecifier.h"
+#include "compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/expressions/literals/stringLiteral.h"
+#include "ir/module/importNamespaceSpecifier.h"
+#include "ir/module/importSpecifier.h"
 
 namespace panda::es2panda::ir {
 void ImportDeclaration::Iterate(const NodeTraverser &cb) const

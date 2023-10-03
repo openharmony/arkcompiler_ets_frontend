@@ -21,7 +21,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "plugins/ecmascript/es2panda/util/language.h"
+#include "util/language.h"
 
 // TODO(ivagin): If ARKTSCONFIG_USE_FILESYSTEM is not defined part of ArkTsConfig functionality is disabled.
 //       Only build configuration which prevents us from usage of std::filesystem is "MOBILE" build

@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_BINDER_TS_BINDER_H
 #define ES2PANDA_BINDER_TS_BINDER_H
 
-#include "plugins/ecmascript/es2panda/binder/TypedBinder.h"
+#include "binder/TypedBinder.h"
 
 namespace panda::es2panda::binder {
 class TSBinder : public TypedBinder {

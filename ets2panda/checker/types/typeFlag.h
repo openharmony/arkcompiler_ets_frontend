@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_FLAG_H
 #define ES2PANDA_COMPILER_CHECKER_TYPES_TYPE_FLAG_H
 
-#include "plugins/ecmascript/es2panda/util/enumbitops.h"
+#include "util/enumbitops.h"
 
 #include <cinttypes>
 

@@ -15,11 +15,11 @@
 
 #include "labelledStatement.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/labelTarget.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/labelTarget.h"
+#include "ir/astDump.h"
+#include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
 void LabelledStatement::Iterate(const NodeTraverser &cb) const

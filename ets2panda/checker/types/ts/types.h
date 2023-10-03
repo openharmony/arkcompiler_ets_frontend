@@ -44,6 +44,6 @@
 #include "indexInfo.h"
 #include "typeParameter.h"
 #include "typeReference.h"
-#include "plugins/ecmascript/es2panda/checker/types/signature.h"
+#include "checker/types/signature.h"
 
 #endif /* TYPES_H */

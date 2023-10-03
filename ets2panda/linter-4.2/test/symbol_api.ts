@@ -28,3 +28,25 @@ let l = Symbol.unscopables;
 
 let m = Symbol();
 
+const sc = Symbol();
+
+let id = Symbol.for("item");
+
+let lambda = () => Symbol();
+
+class TestClass {
+  static readonly symStaticField: Symbol = Symbol();
+  private symField = Symbol();
+
+  static staticSymbolMethod() {
+    let sv = Symbol();
+  }
+
+  symbolMethod() {
+    let sv = Symbol();
+  }
+
+  methodRet(): Symbol {
+    return Symbol();
+  }
+}

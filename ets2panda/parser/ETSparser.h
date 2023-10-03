@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_PARSER_CORE_ETS_PARSER_H
 #define ES2PANDA_PARSER_CORE_ETS_PARSER_H
 
-#include "plugins/ecmascript/es2panda/util/arktsconfig.h"
+#include "util/arktsconfig.h"
 #include "TypedParser.h"
-#include "plugins/ecmascript/es2panda/ir/ets/etsParameterExpression.h"
+#include "ir/ets/etsParameterExpression.h"
 
 namespace panda::es2panda::ir {
 class ETSPackageDeclaration;

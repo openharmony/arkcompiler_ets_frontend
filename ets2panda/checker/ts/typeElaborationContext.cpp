@@ -15,15 +15,15 @@
 
 #include "typeElaborationContext.h"
 
-#include "plugins/ecmascript/es2panda/util/helpers.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/objectExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/arrayExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/numberLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/literals/stringLiteral.h"
-#include "plugins/ecmascript/es2panda/ir/base/spreadElement.h"
-#include "plugins/ecmascript/es2panda/ir/base/property.h"
+#include "util/helpers.h"
+#include "binder/scope.h"
+#include "ir/expressions/identifier.h"
+#include "ir/expressions/objectExpression.h"
+#include "ir/expressions/arrayExpression.h"
+#include "ir/expressions/literals/numberLiteral.h"
+#include "ir/expressions/literals/stringLiteral.h"
+#include "ir/base/spreadElement.h"
+#include "ir/base/property.h"
 
 namespace panda::es2panda::checker {
 Type *ElaborationContext::GetBestMatchingType(Type *index_type, ir::Expression *source_node)

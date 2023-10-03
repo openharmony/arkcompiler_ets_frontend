@@ -19,6 +19,8 @@ import { CNode } from "./node_modules/node_import";
 import { COh } from "./oh_modules/oh_import";
 import { CGood } from "./ignore_files/good";
 import { CHvigor } from "./ignore_files/hvigorfile";
+import { Cjs2 } from "./node_modules/2";
+import { Cjs1 } from "./node_modules/node_lib/1";
 
 CPreview.prototype;
 CBuild.prototype;
@@ -26,3 +28,15 @@ CNode.prototype;
 COh.prototype;
 CGood.prototype;
 CHvigor.prototype;
+Cjs1.prototype;
+Cjs2.prototype;
+
+class B {
+  f: number = 1;
+}
+
+let cjs1 = new Cjs1();
+let f1: B = cjs1;
+
+let cjs2 = new Cjs2();
+let f2: B = cjs2;

@@ -15,13 +15,13 @@
 
 #include "etsParameterExpression.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ets/typeRelationContext.h"
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/base/spreadElement.h"
+#include "compiler/core/pandagen.h"
+#include "checker/ETSchecker.h"
+#include "checker/ets/typeRelationContext.h"
+#include "ir/astDump.h"
+#include "ir/typeNode.h"
+#include "ir/expressions/identifier.h"
+#include "ir/base/spreadElement.h"
 
 namespace panda::es2panda::ir {
 

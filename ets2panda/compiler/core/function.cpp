@@ -15,18 +15,18 @@
 
 #include "function.h"
 
-#include "plugins/ecmascript/es2panda/binder/binder.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/compiler/base/lreference.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/ir/base/classDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/base/classProperty.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/assignmentExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/identifier.h"
-#include "plugins/ecmascript/es2panda/ir/statements/blockStatement.h"
+#include "binder/binder.h"
+#include "util/helpers.h"
+#include "binder/scope.h"
+#include "binder/variable.h"
+#include "compiler/base/lreference.h"
+#include "compiler/core/pandagen.h"
+#include "ir/base/classDefinition.h"
+#include "ir/base/classProperty.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/expressions/assignmentExpression.h"
+#include "ir/expressions/identifier.h"
+#include "ir/statements/blockStatement.h"
 
 namespace panda::es2panda::compiler {
 static void CompileSourceBlock(PandaGen *pg, const ir::BlockStatement *block)

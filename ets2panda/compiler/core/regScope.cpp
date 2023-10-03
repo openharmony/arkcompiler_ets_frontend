@@ -15,13 +15,13 @@
 
 #include "regScope.h"
 
-#include "plugins/ecmascript/es2panda/binder/binder.h"
-#include "plugins/ecmascript/es2panda/binder/scope.h"
-#include "plugins/ecmascript/es2panda/binder/variable.h"
-#include "plugins/ecmascript/es2panda/compiler/base/hoisting.h"
-#include "plugins/ecmascript/es2panda/compiler/core/codeGen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/pandagen.h"
-#include "plugins/ecmascript/es2panda/compiler/core/moduleContext.h"
+#include "binder/binder.h"
+#include "binder/scope.h"
+#include "binder/variable.h"
+#include "compiler/base/hoisting.h"
+#include "compiler/core/codeGen.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/moduleContext.h"
 
 namespace panda::es2panda::compiler {
 // RegScope

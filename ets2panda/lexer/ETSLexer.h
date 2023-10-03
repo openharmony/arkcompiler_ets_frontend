@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_PARSER_CORE_ETS_LEXER_H
 #define ES2PANDA_PARSER_CORE_ETS_LEXER_H
 
-#include "plugins/ecmascript/es2panda/lexer/lexer.h"
+#include "lexer/lexer.h"
 
 namespace panda::es2panda::lexer {
 class ETSLexer final : public Lexer {

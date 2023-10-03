@@ -15,11 +15,11 @@
 
 #include "spreadElement.h"
 
-#include "plugins/ecmascript/es2panda/ir/astDump.h"
-#include "plugins/ecmascript/es2panda/ir/base/decorator.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/arrayExpression.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/objectExpression.h"
+#include "ir/astDump.h"
+#include "ir/base/decorator.h"
+#include "ir/typeNode.h"
+#include "ir/expressions/arrayExpression.h"
+#include "ir/expressions/objectExpression.h"
 
 namespace panda::es2panda::ir {
 ValidationInfo SpreadElement::ValidateExpression()
