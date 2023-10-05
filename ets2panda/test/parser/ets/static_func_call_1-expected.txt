@@ -10,11 +10,11 @@
           "decorators": [],
           "loc": {
             "start": {
-              "line": 1,
+              "line": 16,
               "column": 7
             },
             "end": {
-              "line": 1,
+              "line": 16,
               "column": 8
             }
           }
@@ -30,11 +30,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 17,
                   "column": 12
                 },
                 "end": {
-                  "line": 2,
+                  "line": 17,
                   "column": 15
                 }
               }
@@ -54,11 +54,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 2,
+                      "line": 17,
                       "column": 12
                     },
                     "end": {
-                      "line": 2,
+                      "line": 17,
                       "column": 15
                     }
                   }
@@ -72,33 +72,33 @@
                   "statements": [],
                   "loc": {
                     "start": {
-                      "line": 2,
+                      "line": 17,
                       "column": 18
                     },
                     "end": {
-                      "line": 2,
+                      "line": 17,
                       "column": 20
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 2,
+                    "line": 17,
                     "column": 15
                   },
                   "end": {
-                    "line": 2,
+                    "line": 17,
                     "column": 20
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 2,
+                  "line": 17,
                   "column": 15
                 },
                 "end": {
-                  "line": 2,
+                  "line": 17,
                   "column": 20
                 }
               }
@@ -107,11 +107,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 2,
+                "line": 17,
                 "column": 5
               },
               "end": {
-                "line": 2,
+                "line": 17,
                 "column": 20
               }
             }
@@ -124,11 +124,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 3,
+                  "line": 18,
                   "column": 5
                 },
                 "end": {
-                  "line": 3,
+                  "line": 18,
                   "column": 8
                 }
               }
@@ -148,11 +148,11 @@
                   "decorators": [],
                   "loc": {
                     "start": {
-                      "line": 3,
+                      "line": 18,
                       "column": 5
                     },
                     "end": {
-                      "line": 3,
+                      "line": 18,
                       "column": 8
                     }
                   }
@@ -174,11 +174,11 @@
                           "decorators": [],
                           "loc": {
                             "start": {
-                              "line": 3,
+                              "line": 18,
                               "column": 13
                             },
                             "end": {
-                              "line": 3,
+                              "line": 18,
                               "column": 16
                             }
                           }
@@ -187,22 +187,22 @@
                         "optional": false,
                         "loc": {
                           "start": {
-                            "line": 3,
+                            "line": 18,
                             "column": 13
                           },
                           "end": {
-                            "line": 3,
+                            "line": 18,
                             "column": 18
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 3,
+                          "line": 18,
                           "column": 13
                         },
                         "end": {
-                          "line": 3,
+                          "line": 18,
                           "column": 19
                         }
                       }
@@ -210,33 +210,33 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 3,
+                      "line": 18,
                       "column": 11
                     },
                     "end": {
-                      "line": 3,
+                      "line": 18,
                       "column": 21
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 3,
+                    "line": 18,
                     "column": 8
                   },
                   "end": {
-                    "line": 3,
+                    "line": 18,
                     "column": 21
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 3,
+                  "line": 18,
                   "column": 8
                 },
                 "end": {
-                  "line": 3,
+                  "line": 18,
                   "column": 21
                 }
               }
@@ -245,11 +245,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 3,
+                "line": 18,
                 "column": 5
               },
               "end": {
-                "line": 3,
+                "line": 18,
                 "column": 21
               }
             }
@@ -338,11 +338,11 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 4,
+                "line": 19,
                 "column": 2
               },
               "end": {
-                "line": 4,
+                "line": 19,
                 "column": 2
               }
             }
@@ -350,22 +350,22 @@
         ],
         "loc": {
           "start": {
-            "line": 1,
+            "line": 16,
             "column": 9
           },
           "end": {
-            "line": 4,
+            "line": 19,
             "column": 2
           }
         }
       },
       "loc": {
         "start": {
-          "line": 1,
+          "line": 16,
           "column": 1
         },
         "end": {
-          "line": 4,
+          "line": 19,
           "column": 2
         }
       }
@@ -515,9 +515,9 @@
       "column": 1
     },
     "end": {
-      "line": 5,
+      "line": 20,
       "column": 1
     }
   }
 }
-TypeError: Static property 'bar' must be accessed through it's class 'A' [static_func_call_1.ets:3:13]
+TypeError: Static property 'bar' must be accessed through it's class 'A' [static_func_call_1.ets:18:13]

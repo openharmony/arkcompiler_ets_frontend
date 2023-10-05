@@ -124,11 +124,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 16,
                   "column": 5
                 },
                 "end": {
-                  "line": 1,
+                  "line": 16,
                   "column": 11
                 }
               }
@@ -146,11 +146,11 @@
                   "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 16,
                       "column": 35
                     },
                     "end": {
-                      "line": 1,
+                      "line": 16,
                       "column": 38
                     }
                   }
@@ -165,22 +165,22 @@
                         "value": 1,
                         "loc": {
                           "start": {
-                            "line": 1,
+                            "line": 16,
                             "column": 51
                           },
                           "end": {
-                            "line": 1,
+                            "line": 16,
                             "column": 52
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 16,
                           "column": 44
                         },
                         "end": {
-                          "line": 1,
+                          "line": 16,
                           "column": 53
                         }
                       }
@@ -188,33 +188,33 @@
                   ],
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 16,
                       "column": 42
                     },
                     "end": {
-                      "line": 1,
+                      "line": 16,
                       "column": 55
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 16,
                     "column": 31
                   },
                   "end": {
-                    "line": 1,
+                    "line": 16,
                     "column": 55
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 16,
                   "column": 31
                 },
                 "end": {
-                  "line": 1,
+                  "line": 16,
                   "column": 55
                 }
               }
@@ -232,22 +232,22 @@
                 "type": "ETSPrimitiveType",
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 16,
                     "column": 19
                   },
                   "end": {
-                    "line": 1,
+                    "line": 16,
                     "column": 22
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 16,
                   "column": 13
                 },
                 "end": {
-                  "line": 1,
+                  "line": 16,
                   "column": 22
                 }
               }
@@ -295,9 +295,9 @@
       "column": 1
     },
     "end": {
-      "line": 2,
+      "line": 17,
       "column": 1
     }
   }
 }
-TypeError: Return type of async lambda must be 'Promise' [async_lambda_bad.ets:1:31]
+TypeError: Return type of async lambda must be 'Promise' [async_lambda_bad.ets:16:31]

@@ -81,11 +81,11 @@
                           "decorators": [],
                           "loc": {
                             "start": {
-                              "line": 1,
+                              "line": 16,
                               "column": 5
                             },
                             "end": {
-                              "line": 1,
+                              "line": 16,
                               "column": 6
                             }
                           }
@@ -96,11 +96,11 @@
                           "decorators": [],
                           "loc": {
                             "start": {
-                              "line": 1,
+                              "line": 16,
                               "column": 34
                             },
                             "end": {
-                              "line": 1,
+                              "line": 16,
                               "column": 37
                             }
                           }
@@ -182,11 +182,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 16,
                   "column": 5
                 },
                 "end": {
-                  "line": 1,
+                  "line": 16,
                   "column": 6
                 }
               }
@@ -197,11 +197,11 @@
               "decorators": [],
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 16,
                   "column": 34
                 },
                 "end": {
-                  "line": 1,
+                  "line": 16,
                   "column": 37
                 }
               }
@@ -224,11 +224,11 @@
                       "type": "ETSPrimitiveType",
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 16,
                           "column": 11
                         },
                         "end": {
-                          "line": 1,
+                          "line": 16,
                           "column": 14
                         }
                       }
@@ -236,22 +236,22 @@
                     "decorators": [],
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 16,
                         "column": 8
                       },
                       "end": {
-                        "line": 1,
+                        "line": 16,
                         "column": 14
                       }
                     }
                   },
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 16,
                       "column": 8
                     },
                     "end": {
-                      "line": 1,
+                      "line": 16,
                       "column": 14
                     }
                   }
@@ -265,11 +265,11 @@
                       "type": "ETSPrimitiveType",
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 16,
                           "column": 19
                         },
                         "end": {
-                          "line": 1,
+                          "line": 16,
                           "column": 22
                         }
                       }
@@ -277,22 +277,22 @@
                     "decorators": [],
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 16,
                         "column": 16
                       },
                       "end": {
-                        "line": 1,
+                        "line": 16,
                         "column": 22
                       }
                     }
                   },
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 16,
                       "column": 16
                     },
                     "end": {
-                      "line": 1,
+                      "line": 16,
                       "column": 22
                     }
                   }
@@ -308,44 +308,44 @@
                     "decorators": [],
                     "loc": {
                       "start": {
-                        "line": 1,
+                        "line": 16,
                         "column": 27
                       },
                       "end": {
-                        "line": 1,
+                        "line": 16,
                         "column": 31
                       }
                     }
                   },
                   "loc": {
                     "start": {
-                      "line": 1,
+                      "line": 16,
                       "column": 27
                     },
                     "end": {
-                      "line": 1,
+                      "line": 16,
                       "column": 33
                     }
                   }
                 },
                 "loc": {
                   "start": {
-                    "line": 1,
+                    "line": 16,
                     "column": 27
                   },
                   "end": {
-                    "line": 1,
+                    "line": 16,
                     "column": 33
                   }
                 }
               },
               "loc": {
                 "start": {
-                  "line": 1,
+                  "line": 16,
                   "column": 7
                 },
                 "end": {
-                  "line": 1,
+                  "line": 16,
                   "column": 33
                 }
               }
@@ -393,9 +393,9 @@
       "column": 1
     },
     "end": {
-      "line": 2,
+      "line": 17,
       "column": 1
     }
   }
 }
-TypeError: Initializers type is not assignable to the target type [identifierReference2.ets:1:34]
+TypeError: Initializers type is not assignable to the target type [identifierReference2.ets:16:34]

@@ -1,1 +1,1 @@
-SyntaxError: Unexpected token, expected ')' [AllowSequence.ets:4:17]
+SyntaxError: Unexpected token, expected ')' [AllowSequence.ets:19:17]
