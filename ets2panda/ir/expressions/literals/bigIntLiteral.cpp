@@ -20,6 +20,7 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void BigIntLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void BigIntLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void BigIntLiteral::Dump(ir::AstDumper *dumper) const

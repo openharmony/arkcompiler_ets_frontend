@@ -94,6 +94,12 @@ ValidationInfo Property::ValidateExpression()
     return info;
 }
 
+void Property::TransformChildren(const NodeTransformer &cb)
+{
+    key_ = cb(key_)->AsExpression();
+    value_ = cb(value_)->AsExpression();
+}
+
 void Property::Iterate(const NodeTraverser &cb) const
 {
     cb(key_);

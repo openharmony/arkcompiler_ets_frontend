@@ -2373,4 +2373,4 @@
     }
   }
 }
-TypeError: Only abstract or native methods can't have body [methods.ets:36:4]
+TypeError: Only abstract or native methods can't have body. [methods.ets:36:4]

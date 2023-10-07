@@ -18,10 +18,6 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::binder {
-class Scope;
-}  // namespace panda::es2panda::binder
-
 namespace panda::es2panda::ir {
 class TSTypeParameterDeclaration;
 
@@ -40,7 +36,13 @@ public:
           return_type_annotation_(return_type_annotation)
     {
     }
-    binder::Scope *Scope() const
+
+    bool IsScopeBearer() const override
+    {
+        return true;
+    }
+
+    binder::Scope *Scope() const override
     {
         return scope_;
     }
@@ -65,6 +67,7 @@ public:
         return kind_;
     }
 
+    void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;

@@ -20,6 +20,11 @@
 #include "compiler/core/ETSGen.h"
 
 namespace panda::es2panda::ir {
+void ETSPackageDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    name_ = cb(name_)->AsExpression();
+}
+
 void ETSPackageDeclaration::Iterate([[maybe_unused]] const NodeTraverser &cb) const
 {
     cb(name_);

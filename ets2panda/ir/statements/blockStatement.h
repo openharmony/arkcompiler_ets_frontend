@@ -18,10 +18,6 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::binder {
-class Scope;
-}  // namespace panda::es2panda::binder
-
 namespace panda::es2panda::ir {
 class BlockStatement : public Statement {
 public:
@@ -33,7 +29,12 @@ public:
     {
     }
 
-    binder::Scope *Scope() const
+    bool IsScopeBearer() const override
+    {
+        return true;
+    }
+
+    binder::Scope *Scope() const override
     {
         return scope_;
     }
@@ -56,6 +57,16 @@ public:
     void AddTrailingBlock(AstNode *stmt, BlockStatement *trailing_block)
     {
         trailing_blocks_.emplace(stmt, trailing_block);
+    }
+
+    void TransformChildren(const NodeTransformer &cb) override;
+    void SetReturnType(checker::ETSChecker *checker, checker::Type *type) override
+    {
+        for (auto *statement : statements_) {
+            if (statement != nullptr) {
+                statement->SetReturnType(checker, type);
+            }
+        }
     }
 
     void Iterate(const NodeTraverser &cb) const override;

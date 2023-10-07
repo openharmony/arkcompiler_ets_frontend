@@ -23,6 +23,7 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void NumberLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void NumberLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void NumberLiteral::Dump(ir::AstDumper *dumper) const

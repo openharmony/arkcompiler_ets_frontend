@@ -27,6 +27,23 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
+void ForUpdateStatement::TransformChildren(const NodeTransformer &cb)
+{
+    if (init_ != nullptr) {
+        init_ = cb(init_);
+    }
+
+    if (test_ != nullptr) {
+        test_ = cb(test_)->AsExpression();
+    }
+
+    if (update_ != nullptr) {
+        update_ = cb(update_)->AsExpression();
+    }
+
+    body_ = cb(body_)->AsStatement();
+}
+
 void ForUpdateStatement::Iterate(const NodeTraverser &cb) const
 {
     if (init_ != nullptr) {

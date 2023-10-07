@@ -20,6 +20,7 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void MetaProperty::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void MetaProperty::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void MetaProperty::Dump(ir::AstDumper *dumper) const

@@ -26,6 +26,16 @@
 #include "ir/ts/tsTypeParameterInstantiation.h"
 
 namespace panda::es2panda::ir {
+void TaggedTemplateExpression::TransformChildren(const NodeTransformer &cb)
+{
+    if (type_params_ != nullptr) {
+        type_params_ = cb(type_params_)->AsTSTypeParameterInstantiation();
+    }
+
+    tag_ = cb(tag_)->AsExpression();
+    quasi_ = cb(quasi_)->AsTemplateLiteral();
+}
+
 void TaggedTemplateExpression::Iterate(const NodeTraverser &cb) const
 {
     if (type_params_ != nullptr) {

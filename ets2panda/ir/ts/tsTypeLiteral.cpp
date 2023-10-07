@@ -23,6 +23,13 @@
 #include "checker/types/signature.h"
 
 namespace panda::es2panda::ir {
+void TSTypeLiteral::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : members_) {
+        it = cb(it);
+    }
+}
+
 void TSTypeLiteral::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : members_) {

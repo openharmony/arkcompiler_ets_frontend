@@ -17,12 +17,10 @@
 #define ES2PANDA_PARSER_INCLUDE_AST_CLASS_DEFINITION_H
 
 #include "ir/astNode.h"
+#include "binder/scope.h"
 #include "binder/variable.h"
 #include "util/bitset.h"
-
-namespace panda::es2panda::binder {
-class LocalScope;
-}  // namespace panda::es2panda::binder
+#include "util/language.h"
 
 namespace panda::es2panda::ir {
 class ClassElement;
@@ -56,7 +54,7 @@ public:
                              TSTypeParameterDeclaration *type_params, TSTypeParameterInstantiation *super_type_params,
                              ArenaVector<TSClassImplements *> &&implements, MethodDefinition *ctor,
                              Expression *super_class, ArenaVector<AstNode *> &&body, ClassDefinitionModifiers modifiers,
-                             ModifierFlags flags)
+                             ModifierFlags flags, Language lang)
         : TypedAstNode(AstNodeType::CLASS_DEFINITION, flags),
           scope_(scope),
           private_id_(private_id),
@@ -67,33 +65,41 @@ public:
           ctor_(ctor),
           super_class_(super_class),
           body_(std::move(body)),
-          modifiers_(modifiers)
+          modifiers_(modifiers),
+          lang_(lang)
     {
     }
 
     explicit ClassDefinition(ArenaAllocator *allocator, binder::LocalScope *scope, Identifier *ident,
-                             ArenaVector<AstNode *> &&body, ClassDefinitionModifiers modifiers)
+                             ArenaVector<AstNode *> &&body, ClassDefinitionModifiers modifiers, Language lang)
         : TypedAstNode(AstNodeType::CLASS_DEFINITION),
           scope_(scope),
           ident_(ident),
           implements_(allocator->Adapter()),
           body_(std::move(body)),
-          modifiers_(modifiers)
+          modifiers_(modifiers),
+          lang_(lang)
     {
     }
 
     explicit ClassDefinition(ArenaAllocator *allocator, binder::LocalScope *scope, Identifier *ident,
-                             ClassDefinitionModifiers modifiers, ModifierFlags flags)
+                             ClassDefinitionModifiers modifiers, ModifierFlags flags, Language lang)
         : TypedAstNode(AstNodeType::CLASS_DEFINITION, flags),
           scope_(scope),
           ident_(ident),
           implements_(allocator->Adapter()),
           body_(allocator->Adapter()),
-          modifiers_(modifiers)
+          modifiers_(modifiers),
+          lang_(lang)
     {
     }
 
-    binder::LocalScope *Scope() const
+    bool IsScopeBearer() const override
+    {
+        return true;
+    }
+
+    binder::LocalScope *Scope() const override
     {
         return scope_;
     }
@@ -156,6 +162,11 @@ public:
     bool IsGlobalInitialized() const
     {
         return (modifiers_ & ClassDefinitionModifiers::GLOBAL_INITIALIZED) != 0;
+    }
+
+    es2panda::Language Language() const
+    {
+        return lang_;
     }
 
     void SetGlobalInitialized()
@@ -222,6 +233,7 @@ public:
     bool HasComputedInstanceField() const;
     bool HasMatchingPrivateKey(const util::StringView &name) const;
 
+    void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
@@ -245,6 +257,7 @@ private:
     Expression *super_class_ {};
     ArenaVector<AstNode *> body_;
     ClassDefinitionModifiers modifiers_;
+    es2panda::Language lang_;
 };
 }  // namespace panda::es2panda::ir
 

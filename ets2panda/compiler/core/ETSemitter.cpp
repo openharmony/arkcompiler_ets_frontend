@@ -426,7 +426,7 @@ void ETSEmitter::GenInterfaceRecord(const ir::TSInterfaceDeclaration *interface_
 
     for (const auto *prop : interface_decl->Body()->Body()) {
         if (prop->IsClassProperty()) {
-            GenClassField(prop->AsClassProperty(), interface_record, false);
+            GenClassField(prop->AsClassProperty(), interface_record, external);
         } else if (prop->IsMethodDefinition()) {
             GenInterfaceMethodDefinition(prop->AsMethodDefinition(), external);
         }
@@ -472,6 +472,11 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *class_def, bool exter
     }
 
     for (auto *it : base_type->Interfaces()) {
+        // We do not need to add dynamic interfaces
+        if (it->IsETSDynamicType()) {
+            continue;
+        }
+
         auto *decl_node = it->GetDeclNode();
         // TODO(itrubachev): replace it with ASSERT(decl_node->IsTSInterfaceDeclaration())
         // after adding proper creation of lambda object in ETSFunctionType::AssignmentSource

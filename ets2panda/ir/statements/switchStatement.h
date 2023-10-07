@@ -16,11 +16,8 @@
 #ifndef ES2PANDA_IR_STATEMENT_SWITCH_STATEMENT_H
 #define ES2PANDA_IR_STATEMENT_SWITCH_STATEMENT_H
 
+#include "binder/scope.h"
 #include "ir/statement.h"
-
-namespace panda::es2panda::binder {
-class LocalScope;
-}  // namespace panda::es2panda::binder
 
 namespace panda::es2panda::ir {
 class Expression;
@@ -44,10 +41,18 @@ public:
         return cases_;
     }
 
-    binder::LocalScope *Scope() const
+    bool IsScopeBearer() const override
+    {
+        return true;
+    }
+
+    binder::LocalScope *Scope() const override
     {
         return scope_;
     }
+
+    void TransformChildren(const NodeTransformer &cb) override;
+    void SetReturnType(checker::ETSChecker *checker, checker::Type *type) override;
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;

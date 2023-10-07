@@ -18,6 +18,7 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void TSThisType::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void TSThisType::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void TSThisType::Dump(ir::AstDumper *dumper) const

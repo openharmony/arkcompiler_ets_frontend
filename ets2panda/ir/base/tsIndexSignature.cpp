@@ -28,6 +28,12 @@ TSIndexSignature::TSIndexSignatureKind TSIndexSignature::Kind() const
                                                                          : TSIndexSignatureKind::STRING;
 }
 
+void TSIndexSignature::TransformChildren(const NodeTransformer &cb)
+{
+    param_ = cb(param_)->AsExpression();
+    type_annotation_ = static_cast<TypeNode *>(cb(type_annotation_));
+}
+
 void TSIndexSignature::Iterate(const NodeTraverser &cb) const
 {
     cb(param_);

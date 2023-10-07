@@ -19,6 +19,13 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void TSUnionType::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : types_) {
+        it = static_cast<TypeNode *>(cb(it));
+    }
+}
+
 void TSUnionType::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : types_) {

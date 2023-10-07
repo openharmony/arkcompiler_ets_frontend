@@ -39,6 +39,12 @@ void TSAsExpression::SetExpr(Expression *expr)
     SetStart(expression_->Start());
 }
 
+void TSAsExpression::TransformChildren(const NodeTransformer &cb)
+{
+    expression_ = cb(expression_)->AsExpression();
+    SetTsTypeAnnotation(static_cast<TypeNode *>(cb(TypeAnnotation())));
+}
+
 void TSAsExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(expression_);

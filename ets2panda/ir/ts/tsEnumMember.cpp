@@ -20,6 +20,15 @@
 #include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
+void TSEnumMember::TransformChildren(const NodeTransformer &cb)
+{
+    key_ = cb(key_)->AsExpression();
+
+    if (init_ != nullptr) {
+        init_ = cb(init_)->AsExpression();
+    }
+}
+
 void TSEnumMember::Iterate(const NodeTraverser &cb) const
 {
     cb(key_);

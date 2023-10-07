@@ -17,11 +17,9 @@
 #define ES2PANDA_PARSER_INCLUDE_AST_SCRIPT_FUNCTION_H
 
 #include "ir/astNode.h"
+#include "binder/scope.h"
 #include "util/enumbitops.h"
-
-namespace panda::es2panda::binder {
-class FunctionScope;
-}  // namespace panda::es2panda::binder
+#include "util/language.h"
 
 namespace panda::es2panda::checker {
 class Signature;
@@ -35,7 +33,7 @@ class ScriptFunction : public AstNode {
 public:
     explicit ScriptFunction(binder::FunctionScope *scope, ArenaVector<Expression *> &&params,
                             TSTypeParameterDeclaration *type_params, AstNode *body, TypeNode *return_type_annotation,
-                            ir::ScriptFunctionFlags func_flags, bool declare)
+                            ir::ScriptFunctionFlags func_flags, bool declare, Language lang)
         : AstNode(AstNodeType::SCRIPT_FUNCTION),
           scope_(scope),
           params_(std::move(params)),
@@ -43,13 +41,14 @@ public:
           body_(body),
           return_type_annotation_(return_type_annotation),
           func_flags_(func_flags),
-          declare_(declare)
+          declare_(declare),
+          lang_(lang)
     {
     }
 
     explicit ScriptFunction(binder::FunctionScope *scope, ArenaVector<Expression *> &&params,
                             TSTypeParameterDeclaration *type_params, AstNode *body, TypeNode *return_type_annotation,
-                            ir::ScriptFunctionFlags func_flags, ir::ModifierFlags flags, bool declare)
+                            ir::ScriptFunctionFlags func_flags, ir::ModifierFlags flags, bool declare, Language lang)
         : AstNode(AstNodeType::SCRIPT_FUNCTION, flags),
           scope_(scope),
           params_(std::move(params)),
@@ -57,7 +56,8 @@ public:
           body_(body),
           return_type_annotation_(return_type_annotation),
           func_flags_(func_flags),
-          declare_(declare)
+          declare_(declare),
+          lang_(lang)
     {
     }
 
@@ -218,19 +218,19 @@ public:
         return (func_flags_ & ir::ScriptFunctionFlags::RETHROWS) != 0;
     }
 
-    bool IsDefaultParamProxy() const
+    bool IsDefaultParamProxy() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::DEFAULT_PARAM_PROXY) != 0;
     }
 
-    bool IsDefaultParamProxy()
-    {
-        return (func_flags_ & ir::ScriptFunctionFlags::DEFAULT_PARAM_PROXY) != 0;
-    }
-
-    void SetDefaultParamProxy()
+    void SetDefaultParamProxy() noexcept
     {
         AddFlag(ir::ScriptFunctionFlags::DEFAULT_PARAM_PROXY);
+    }
+
+    bool IsDynamic() const
+    {
+        return lang_.IsDynamic();
     }
 
     bool Declare() const
@@ -262,9 +262,21 @@ public:
 
     size_t FormalParamsLength() const;
 
-    binder::FunctionScope *Scope() const
+    bool IsScopeBearer() const override
+    {
+        return true;
+    }
+
+    binder::FunctionScope *Scope() const override
     {
         return scope_;
+    }
+
+    void TransformChildren(const NodeTransformer &cb) override;
+
+    es2panda::Language Language() const
+    {
+        return lang_;
     }
 
     void Iterate(const NodeTraverser &cb) const override;
@@ -284,6 +296,7 @@ private:
     ir::ScriptFunctionFlags func_flags_;
     checker::Signature *signature_ {};
     bool declare_;
+    es2panda::Language lang_;
 };
 }  // namespace panda::es2panda::ir
 

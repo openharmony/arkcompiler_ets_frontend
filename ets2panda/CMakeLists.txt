@@ -28,10 +28,12 @@ if(PANDA_WITH_ETS)
       "    \"paths\": {\n"
       "      \"std\": [\"${PANDA_ROOT}/plugins/ets/stdlib/std\"],\n"
       "      \"escompat\": [\"${PANDA_ROOT}/plugins/ets/stdlib/escompat\"],\n"
-      "      \"import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/import_tests\"]\n"
+      "      \"import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/import_tests\"],\n"
+      "      \"dynamic_import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests\"]\n"
       "    },\n"
       "    \"dynamicPaths\": {\n"
-      "      \"dynamic_js_import_tests\": {\"language\": \"js\", \"hasDecl\": false}\n"
+      "      \"dynamic_js_import_tests\": {\"language\": \"js\", \"hasDecl\": false},\n"
+      "      \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests\": {\"language\": \"js\", \"hasDecl\": true}\n"
       "    }\n"
       "  }\n"
       "}\n"
@@ -126,9 +128,13 @@ set(ES2PANDA_LIB_SRC
   compiler/function/asyncGeneratorFunctionBuilder.cpp
   compiler/function/functionBuilder.cpp
   compiler/function/generatorFunctionBuilder.cpp
+  compiler/lowering/phase.cpp
+  compiler/lowering/util.cpp
+  compiler/lowering/ets/opAssignment.cpp
   ir/astDump.cpp
   ir/astNode.cpp
   ir/irnode.cpp
+  ir/opaqueTypeNode.cpp
   ir/base/catchClause.cpp
   ir/base/classElement.cpp
   ir/base/classDefinition.cpp

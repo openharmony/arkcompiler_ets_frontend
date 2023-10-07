@@ -592,4 +592,4 @@
     }
   }
 }
-TypeError: Return statements return type is not compatible with the containing functions return type [n_returnNullableFromMethod.ets:20:16]
+TypeError: Return statement type is not compatible with the enclosing method's return type. [n_returnNullableFromMethod.ets:20:16]

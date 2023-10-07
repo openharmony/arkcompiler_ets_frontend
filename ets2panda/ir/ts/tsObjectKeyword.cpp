@@ -19,6 +19,7 @@
 #include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
+void TSObjectKeyword::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void TSObjectKeyword::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void TSObjectKeyword::Dump(ir::AstDumper *dumper) const

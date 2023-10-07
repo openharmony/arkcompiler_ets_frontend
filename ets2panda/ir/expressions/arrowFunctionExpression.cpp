@@ -27,6 +27,11 @@
 #include "checker/ets/typeRelationContext.h"
 
 namespace panda::es2panda::ir {
+void ArrowFunctionExpression::TransformChildren(const NodeTransformer &cb)
+{
+    func_ = cb(func_)->AsScriptFunction();
+}
+
 void ArrowFunctionExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(func_);

@@ -342,4 +342,4 @@
     }
   }
 }
-TypeError: Return statements return type is not compatible with the containing functions return type [async_func_return_type_bad.ets:17:12]
+TypeError: Return statement type is not compatible with the enclosing method's return type. [async_func_return_type_bad.ets:17:12]

@@ -19,6 +19,11 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void ImportExpression::TransformChildren(const NodeTransformer &cb)
+{
+    source_ = cb(source_)->AsExpression();
+}
+
 void ImportExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(source_);

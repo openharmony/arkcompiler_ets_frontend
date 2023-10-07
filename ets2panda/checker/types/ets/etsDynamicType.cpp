@@ -15,6 +15,7 @@
 
 #include "etsDynamicType.h"
 #include "checker/ETSchecker.h"
+#include "checker/types/ets/etsDynamicFunctionType.h"
 
 namespace panda::es2panda::checker {
 
@@ -35,13 +36,19 @@ binder::LocalVariable *ETSDynamicType::GetPropertyDynamic(const util::StringView
 
 void ETSDynamicType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
-    if (IsConvertableTo(source)) {
-        relation->Result(true);
+    if (has_decl_) {
+        return ETSObjectType::AssignmentTarget(relation, source);
     }
+
+    relation->Result(true);
 }
 
 bool ETSDynamicType::AssignmentSource(TypeRelation *relation, Type *target)
 {
+    if (has_decl_) {
+        return ETSObjectType::AssignmentSource(relation, target);
+    }
+
     if (target->HasTypeFlag(checker::TypeFlag::ETS_TYPE_TO_DYNAMIC)) {
         relation->Result(true);
     }
@@ -50,6 +57,15 @@ bool ETSDynamicType::AssignmentSource(TypeRelation *relation, Type *target)
 
 void ETSDynamicType::Cast(TypeRelation *relation, Type *target)
 {
+    if (has_decl_) {
+        return ETSObjectType::Cast(relation, target);
+    }
+
+    if (relation->InCastingContext()) {
+        relation->Result(true);
+        return;
+    }
+
     if (IsConvertableTo(target)) {
         relation->Result(true);
     }
@@ -59,6 +75,16 @@ bool ETSDynamicType::IsConvertableTo(Type *target) const
 {
     return target->IsETSStringType() || target->IsLambdaObject() || target->IsETSDynamicType() ||
            target->HasTypeFlag(checker::TypeFlag::ETS_TYPE_TO_DYNAMIC | checker::TypeFlag::ETS_BOOLEAN);
+}
+
+ETSFunctionType *ETSDynamicType::CreateETSFunctionType(const util::StringView &name) const
+{
+    return Allocator()->New<ETSDynamicFunctionType>(name, Allocator(), lang_);
+}
+
+void ETSDynamicType::ToAssemblerType(std::stringstream &ss) const
+{
+    ss << compiler::Signatures::Dynamic::Type(lang_);
 }
 
 }  // namespace panda::es2panda::checker

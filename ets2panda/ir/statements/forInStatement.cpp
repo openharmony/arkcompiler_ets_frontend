@@ -25,6 +25,13 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
+void ForInStatement::TransformChildren(const NodeTransformer &cb)
+{
+    left_ = cb(left_);
+    right_ = cb(right_)->AsExpression();
+    body_ = cb(body_)->AsStatement();
+}
+
 void ForInStatement::Iterate(const NodeTraverser &cb) const
 {
     cb(left_);

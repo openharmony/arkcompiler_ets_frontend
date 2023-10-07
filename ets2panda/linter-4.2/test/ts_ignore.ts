@@ -24,3 +24,38 @@ if (false) {
 
 let a: number = 0 // @ts-ignore: suppresses CTE for the next line
 let b: number = null;
+
+
+
+        // @ts-expect-error
+console.log("Hello" * 42);
+
+ /*
+ @ts-expect-error
+*/
+console.log("Hello" * 42);
+
+// no @ts-expect-error
+console.log("Hello" * 42);
+
+const l1 = (): void => {
+    let l2 = () => {
+        // @ts-expect-error
+        console.log("Hello" * 42);
+    }
+    l2();
+}
+
+l1();
+
+class SomeClass {
+  // @ts-ignore
+  static readonly m1;
+
+  methodError(param: any) {
+        // @ts-expect-error
+        console.log("Hello" * param);
+        // @ts-ignore
+        let nns: String = null;
+  }
+}

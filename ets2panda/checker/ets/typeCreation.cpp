@@ -15,6 +15,7 @@
 
 #include "generated/signatures.h"
 #include "checker/ETSchecker.h"
+#include "checker/types/ets/etsDynamicFunctionType.h"
 #include "binder/binder.h"
 #include "binder/ETSBinder.h"
 #include "ir/ets/etsScript.h"
@@ -131,6 +132,16 @@ ETSFunctionType *ETSChecker::CreateETSFunctionType(Signature *signature)
 
 ETSFunctionType *ETSChecker::CreateETSFunctionType(Signature *signature, util::StringView name)
 {
+    return Allocator()->New<ETSFunctionType>(name, signature, Allocator());
+}
+
+ETSFunctionType *ETSChecker::CreateETSFunctionType(ir::ScriptFunction *func, Signature *signature,
+                                                   util::StringView name)
+{
+    if (func->IsDynamic()) {
+        return Allocator()->New<ETSDynamicFunctionType>(name, signature, Allocator(), func->Language());
+    }
+
     return Allocator()->New<ETSFunctionType>(name, signature, Allocator());
 }
 
@@ -356,9 +367,28 @@ ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::Ast
         assembler_name = full_path.View();
     }
 
-    auto lang = compiler::Signatures::Dynamic::LanguageFromType(assembler_name.Utf8());
-    if (lang) {
-        return Allocator()->New<ETSDynamicType>(Allocator(), name, assembler_name, decl_node, flags, *lang);
+    Language lang(Language::Id::ETS);
+    bool has_decl = false;
+
+    if (decl_node->IsClassDefinition()) {
+        auto *cls_def = decl_node->AsClassDefinition();
+        lang = cls_def->Language();
+        has_decl = cls_def->IsDeclare();
+    }
+
+    if (decl_node->IsTSInterfaceDeclaration()) {
+        auto *iface_decl = decl_node->AsTSInterfaceDeclaration();
+        lang = iface_decl->Language();
+        has_decl = iface_decl->IsDeclare();
+    }
+
+    auto res = compiler::Signatures::Dynamic::LanguageFromType(assembler_name.Utf8());
+    if (res) {
+        lang = *res;
+    }
+
+    if (lang.IsDynamic()) {
+        return Allocator()->New<ETSDynamicType>(Allocator(), name, assembler_name, decl_node, flags, lang, has_decl);
     }
 
     return Allocator()->New<ETSObjectType>(Allocator(), name, assembler_name, decl_node, flags);

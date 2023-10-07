@@ -14,10 +14,17 @@
  */
 
 #include "parserContext.h"
+#include "parser/program/program.h"
 
 #include <algorithm>
 
 namespace panda::es2panda::parser {
+
+ParserContext::ParserContext(const Program *program, ParserStatus status)
+    : program_(program), status_(status), lang_(ToLanguage(program->Extension()))
+{
+}
+
 const ParserContext *ParserContext::FindLabel(const util::StringView &label) const
 {
     const auto *iter = this;

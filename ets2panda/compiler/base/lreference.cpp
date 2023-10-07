@@ -16,10 +16,12 @@
 #include "lreference.h"
 
 #include "binder/declaration.h"
+#include "binder/variableFlags.h"
 #include "compiler/base/destructuring.h"
 #include "compiler/core/function.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
+#include "ir/astNode.h"
 #include "ir/base/spreadElement.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/classDefinition.h"
@@ -181,7 +183,8 @@ ETSLReference::ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind
     const auto *member_expr = Node()->AsMemberExpression();
     static_obj_ref_ = member_expr->Object()->TsType();
 
-    if (!member_expr->IsComputed() && member_expr->PropVar()->HasFlag(binder::VariableFlags::STATIC)) {
+    if (!member_expr->IsComputed() &&
+        (member_expr->PropVar()->HasFlag(binder::VariableFlags::STATIC) && !static_obj_ref_->IsETSDynamicType())) {
         return;
     }
 
@@ -220,6 +223,9 @@ ReferenceKind ETSLReference::ResolveReferenceKind(const binder::Variable *variab
 {
     if (variable->HasFlag(binder::VariableFlags::SYNTHETIC)) {
         return ReferenceKind::METHOD;
+    }
+    if (variable->HasFlag(binder::VariableFlags::LOCAL)) {
+        return ReferenceKind::LOCAL;
     }
 
     auto *decl_node = variable->Declaration()->Node();
@@ -286,7 +292,12 @@ void ETSLReference::SetValue() const
             if (member_expr->PropVar()->HasFlag(binder::VariableFlags::STATIC)) {
                 util::StringView full_name =
                     etsg_->FormClassPropReference(static_obj_ref_->AsETSObjectType(), prop_name);
-                etsg_->StoreStaticProperty(Node(), member_expr->TsType(), full_name);
+                if (static_obj_ref_->IsETSDynamicType()) {
+                    auto lang = static_obj_ref_->AsETSDynamicType()->Language();
+                    etsg_->StorePropertyDynamic(Node(), member_expr->TsType(), base_reg_, prop_name, lang);
+                } else {
+                    etsg_->StoreStaticProperty(Node(), member_expr->TsType(), full_name);
+                }
                 break;
             }
 

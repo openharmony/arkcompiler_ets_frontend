@@ -84,6 +84,17 @@ void Checker::ThrowTypeError(std::string_view message, const lexer::SourcePositi
     throw Error {ErrorType::TYPE, program_->SourceFile().Utf8(), message, loc.line, loc.col};
 }
 
+void Checker::Warning(const std::string_view message, const lexer::SourcePosition &pos) const
+{
+    lexer::LineIndex index(program_->SourceCode());
+    lexer::SourceLocation loc = index.GetLocation(pos);
+
+    // TODO(user) This should go to stderr but currently the test system does not handle stderr messages
+    auto file_name = program_->SourceFile().Utf8();
+    file_name = file_name.substr(file_name.find_last_of(panda::os::file::File::GetPathDelim()) + 1);
+    std::cout << "Warning: " << message << " [" << file_name << ":" << loc.line << ":" << loc.col << "]" << std::endl;
+}
+
 bool Checker::IsAllTypesAssignableTo(Type *source, Type *target)
 {
     if (source->TypeFlags() == TypeFlag::UNION) {

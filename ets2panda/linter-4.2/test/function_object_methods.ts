@@ -13,17 +13,78 @@
  * limitations under the License.
  */
 
+interface Author {
+  firstName: string;
+  lastName: string;
+  anotherName: Function;
+  asyncName: Function;
+}
+
 class C {
   firstName: string;
   lastName: string;
   constructor(firstName: string, lastName: string) {
     this.firstName = firstName;
     this.lastName = lastName;
-  }
+    this.fullName = this.fullName.bind(this);
+    this.asyncFullName = this.asyncFullName.bind(this);
+   }
+
+   author(): Author {
+       let author: Author = {
+         firstName: this.firstName,
+         lastName: this.lastName,
+         anotherName: this.fullName.bind(this),
+         asyncName: this.asyncFullName.bind(this)
+       }
+       return author
+   }
 
   fullName(): string {
     return this.firstName + " " + this.lastName;
   }
+
+  async asyncFullName(): Promise<string> {
+    return Promise<string>(fullName());
+  }
+
+  sayHello(greet: string) {
+    console.log(greet, this.fullName());
+  }
+
+  async asyncSayHello(greet: string) {
+    const afn = await this.asyncFullName();
+    console.log(greet, afn);
+  }
+}
+
+async function asyncFoo(): Promise<void> {
+  const person1 = new C("Arthur", "Clarke");
+  const person2 = new C("Ray", "Bradbury");
+
+  await person1.asyncFullName();
+  const afn = await person1.asyncFullName();
+
+  const afn2 = await person1.asyncFullName.apply(person2);
+
+  const f = person2.asyncFullName.bind(person1);
+  await f();
+
+  await asyncBar(person1);
+
+  const ash1: Function = person1.asyncSayHello.bind(person1, "Hello");
+  await ash1()
+
+  const ash2: Function = person1.asyncSayHello.bind(person1);
+  await ash2("Hello")
+
+  await person1.asyncSayHello.apply(person2, "Hello");
+  await person1.asyncSayHello.call(person2, "Hello")
+}
+
+async function asyncBar(c: C): Promise<string> {
+  const person = new C("Stanislaw", "Lem");
+  return await c.asyncFullName.call(person);
 }
 
 function foo(): void {
@@ -36,6 +97,15 @@ function foo(): void {
   f();
 
   bar(person1);
+
+  const sh1: Function = person1.sayHello.bind(person1, "Hello");
+  sh1()
+
+  const sh2: Function = person1.sayHello.bind(person1);
+  sh2("Hello")
+
+  person1.sayHello.apply(person2, "Hello");
+  person1.sayHello.call(person2, "Hello")
 }
 
 function bar(c: C): string {

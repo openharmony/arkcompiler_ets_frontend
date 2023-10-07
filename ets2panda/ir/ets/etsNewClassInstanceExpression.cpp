@@ -29,6 +29,19 @@
 #include "checker/types/ets/types.h"
 
 namespace panda::es2panda::ir {
+void ETSNewClassInstanceExpression::TransformChildren(const NodeTransformer &cb)
+{
+    type_reference_ = cb(type_reference_)->AsExpression();
+
+    for (auto *&arg : arguments_) {
+        arg = cb(arg)->AsExpression();
+    }
+
+    if (class_def_ != nullptr) {
+        class_def_ = cb(class_def_)->AsClassDefinition();
+    }
+}
+
 void ETSNewClassInstanceExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const
 {
     cb(type_reference_);
@@ -68,13 +81,14 @@ void ETSNewClassInstanceExpression::CreateDynamicObject(const ir::AstNode *node,
     }
 
     auto *var = name->AsIdentifier()->Variable();
-    auto *import = util::Helpers::ImportDeclarationForDynamicVar(var);
-    if (import != nullptr) {
+    auto *data = etsg->Binder()->DynamicImportDataForVar(var);
+    if (data != nullptr) {
+        auto *import = data->import;
+        auto *specifier = data->specifier;
         ASSERT(import->Language().IsDynamic());
         etsg->LoadAccumulatorDynamicModule(node, import);
-        auto *decl = var->Declaration()->Node();
-        if (decl->IsImportSpecifier()) {
-            parts.push_back(decl->AsImportSpecifier()->Imported()->Name());
+        if (specifier->IsImportSpecifier()) {
+            parts.push_back(specifier->AsImportSpecifier()->Imported()->Name());
         }
     } else {
         name->Compile(etsg);
@@ -143,18 +157,28 @@ checker::Type *ETSNewClassInstanceExpression::Check([[maybe_unused]] checker::ET
         checker->ThrowTypeError({callee_obj->Name(), " is abstract therefore cannot be instantiated."}, Start());
     }
 
-    if (callee_type->IsETSDynamicType()) {
-        signature_ = checker->ResolveDynamicCallExpression(type_reference_, arguments_, true);
+    if (callee_type->IsETSDynamicType() && !callee_type->AsETSDynamicType()->HasDecl()) {
+        auto lang = callee_type->AsETSDynamicType()->Language();
+        signature_ = checker->ResolveDynamicCallExpression(type_reference_, arguments_, lang, true);
     } else {
-        signature_ = checker->ResolveConstructExpression(callee_obj, arguments_, Start());
+        auto *signature = checker->ResolveConstructExpression(callee_obj, arguments_, Start());
 
-        checker->CheckObjectLiteralArguments(signature_, arguments_);
-        checker->ValidateSignatureAccessibility(callee_obj, signature_, Start());
+        checker->CheckObjectLiteralArguments(signature, arguments_);
+        checker->ValidateSignatureAccessibility(callee_obj, signature, Start());
 
-        ASSERT(signature_->Function() != nullptr);
+        ASSERT(signature->Function() != nullptr);
 
-        if (signature_->Function()->IsThrowing() || signature_->Function()->IsRethrowing()) {
+        if (signature->Function()->IsThrowing() || signature->Function()->IsRethrowing()) {
             checker->CheckThrowingStatements(this);
+        }
+
+        if (callee_type->IsETSDynamicType()) {
+            ASSERT(signature->Function()->IsDynamic());
+            auto lang = callee_type->AsETSDynamicType()->Language();
+            signature_ = checker->ResolveDynamicCallExpression(type_reference_, signature->Params(), lang, true);
+        } else {
+            ASSERT(!signature->Function()->IsDynamic());
+            signature_ = signature;
         }
     }
 

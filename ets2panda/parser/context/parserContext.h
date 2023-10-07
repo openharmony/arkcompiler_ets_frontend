@@ -18,6 +18,7 @@
 
 #include "macros.h"
 #include "util/enumbitops.h"
+#include "util/language.h"
 #include "util/ustring.h"
 
 #include <vector>
@@ -68,9 +69,10 @@ DEFINE_BITOPS(ParserStatus)
 
 class ParserContext {
 public:
-    explicit ParserContext(const Program *program, ParserStatus status) : program_(program), status_(status) {}
+    explicit ParserContext(const Program *program, ParserStatus status);
+
     explicit ParserContext(ParserContext *current, ParserStatus new_status, util::StringView label = "")
-        : program_(current->program_), prev_(current), label_(label)
+        : program_(current->program_), prev_(current), label_(label), lang_(current->lang_)
     {
         ParserStatus current_status = current->status_;
         current_status &= (ParserStatus::MODULE | ParserStatus::ALLOW_NEW_TARGET | ParserStatus::IN_EXTENDS |
@@ -91,6 +93,18 @@ public:
     void SetProgram(Program *program)
     {
         program_ = program;
+    }
+
+    Language GetLanguge() const
+    {
+        return lang_;
+    }
+
+    Language SetLanguage(Language lang)
+    {
+        auto res = lang_;
+        lang_ = lang;
+        return res;
     }
 
     ParserContext *Prev() const
@@ -128,6 +142,11 @@ public:
         return (status_ & ParserStatus::MODULE) != 0;
     }
 
+    bool IsDynamic() const
+    {
+        return lang_.IsDynamic();
+    }
+
     const ParserContext *FindLabel(const util::StringView &label) const;
 
 private:
@@ -135,6 +154,7 @@ private:
     ParserContext *prev_ {};
     ParserStatus status_ {};
     util::StringView label_ {};
+    Language lang_;
 };
 }  // namespace panda::es2panda::parser
 

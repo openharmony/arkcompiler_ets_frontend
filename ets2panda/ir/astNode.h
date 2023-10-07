@@ -36,13 +36,16 @@ class Type;
 
 namespace panda::es2panda::binder {
 class Variable;
+class Scope;
 }  // namespace panda::es2panda::binder
 
 namespace panda::es2panda::ir {
 class AstNode;
 class TypeNode;
 
+using NodeTransformer = std::function<AstNode *(AstNode *)>;
 using NodeTraverser = std::function<void(AstNode *)>;
+using NodePredicate = std::function<bool(AstNode *)>;
 
 enum class AstNodeType {
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
@@ -507,10 +510,25 @@ public:
         return reinterpret_cast<const ir::ClassElement *>(this);
     }
 
+    virtual bool IsScopeBearer() const
+    {
+        return false;
+    }
+
+    virtual binder::Scope *Scope() const
+    {
+        UNREACHABLE();
+    }
+
     ir::BlockStatement *GetTopStatement();
     const ir::BlockStatement *GetTopStatement() const;
 
+    virtual void TransformChildren(const NodeTransformer &cb) = 0;
     virtual void Iterate(const NodeTraverser &cb) const = 0;
+    void TransformChildrenRecursively(const NodeTransformer &cb);
+    void IterateRecursively(const NodeTraverser &cb) const;
+    bool IsAnyChild(const NodePredicate &cb) const;
+
     virtual void Dump(ir::AstDumper *dumper) const = 0;
     virtual void Compile([[maybe_unused]] compiler::PandaGen *pg) const = 0;
     virtual void Compile([[maybe_unused]] compiler::ETSGen *etsg) const {};

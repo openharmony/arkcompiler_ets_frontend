@@ -26,6 +26,17 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
+void Identifier::TransformChildren(const NodeTransformer &cb)
+{
+    if (TypeAnnotation() != nullptr) {
+        SetTsTypeAnnotation(static_cast<TypeNode *>(cb(TypeAnnotation())));
+    }
+
+    for (auto *&it : decorators_) {
+        it = cb(it)->AsDecorator();
+    }
+}
+
 void Identifier::Iterate(const NodeTraverser &cb) const
 {
     if (TypeAnnotation() != nullptr) {
@@ -136,6 +147,10 @@ checker::Type *Identifier::Check(checker::TSChecker *checker)
 
 checker::Type *Identifier::Check(checker::ETSChecker *checker)
 {
+    if (TsType() != nullptr) {
+        return TsType();
+    }
+
     SetTsType(checker->ResolveIdentifier(this));
     return TsType();
 }

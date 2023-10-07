@@ -21,7 +21,20 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
-void NamedType::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+void NamedType::TransformChildren(const NodeTransformer &cb)
+{
+    name_ = cb(name_)->AsIdentifier();
+
+    if (type_params_ != nullptr) {
+        type_params_ = cb(type_params_)->AsTSTypeParameterInstantiation();
+    }
+
+    if (next_ != nullptr) {
+        next_ = cb(next_)->AsNamedType();
+    }
+}
+
+void NamedType::Iterate(const NodeTraverser &cb) const
 {
     cb(name_);
 

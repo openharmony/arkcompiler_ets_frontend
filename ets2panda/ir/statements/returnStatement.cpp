@@ -22,6 +22,7 @@
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/typeRelationContext.h"
+#include "checker/types/typeRelation.h"
 #include "ir/astDump.h"
 #include "ir/typeNode.h"
 #include "ir/expression.h"
@@ -29,6 +30,13 @@
 #include "util/helpers.h"
 
 namespace panda::es2panda::ir {
+void ReturnStatement::TransformChildren(const NodeTransformer &cb)
+{
+    if (argument_ != nullptr) {
+        argument_ = cb(argument_)->AsExpression();
+    }
+}
+
 void ReturnStatement::Iterate(const NodeTraverser &cb) const
 {
     if (argument_ != nullptr) {
@@ -151,46 +159,190 @@ checker::Type *ReturnStatement::Check(checker::ETSChecker *checker)
         return nullptr;
     }
 
-    ASSERT(containing_func->ReturnTypeAnnotation() != nullptr ||
-           // should be the implicit void return type
-           containing_func->Signature()->ReturnType()->IsETSVoidType() ||
-           containing_func->Signature()->ReturnType() == checker->GlobalBuiltinVoidType());
+    ASSERT(containing_func->ReturnTypeAnnotation() != nullptr || containing_func->Signature()->ReturnType() != nullptr);
 
-    return_type_ = containing_func->ReturnTypeAnnotation() != nullptr
-                       ? checker->GetTypeFromTypeAnnotation(containing_func->ReturnTypeAnnotation())
-                       : containing_func->Signature()->ReturnType();
+    checker::Type *func_return_type;
 
-    const auto name = containing_func->Scope()->InternalName().Mutf8();
-    if (name.find(compiler::Signatures::ETS_MAIN_WITH_MANGLE_BEGIN) != std::string::npos) {
-        if (return_type_ == checker->GlobalBuiltinVoidType()) {
-            return_type_ = checker->GlobalVoidType();
-        } else if (!return_type_->IsETSVoidType() && !return_type_->IsIntType()) {
-            checker->ThrowTypeError("Bad return type, main enable only void or int type.", Start());
+    if (auto *const return_type_annotation = containing_func->ReturnTypeAnnotation();
+        return_type_annotation != nullptr) {
+        // Case when function's return type is defined explicitly:
+        func_return_type = checker->GetTypeFromTypeAnnotation(return_type_annotation);
+
+        if (argument_ == nullptr) {
+            if (!func_return_type->IsETSVoidType() && func_return_type != checker->GlobalBuiltinVoidType()) {
+                checker->ThrowTypeError("Missing return value.", Start());
+            }
+            func_return_type =
+                containing_func->IsEntryPoint() ? checker->GlobalVoidType() : checker->GlobalBuiltinVoidType();
+        } else {
+            const auto name = containing_func->Scope()->InternalName().Mutf8();
+            if (name.find(compiler::Signatures::ETS_MAIN_WITH_MANGLE_BEGIN) != std::string::npos) {
+                if (func_return_type == checker->GlobalBuiltinVoidType()) {
+                    func_return_type = checker->GlobalVoidType();
+                } else if (!func_return_type->IsETSVoidType() && !func_return_type->IsIntType()) {
+                    checker->ThrowTypeError("Bad return type, main enable only void or int type.", Start());
+                }
+            }
+
+            if (argument_->IsObjectExpression()) {
+                argument_->AsObjectExpression()->SetPreferredType(func_return_type);
+            }
+            checker::Type *argument_type = argument_->Check(checker);
+
+            if (func_return_type->IsETSVoidType() || func_return_type == checker->GlobalBuiltinVoidType()) {
+                if (argument_type != checker->GlobalVoidType() && argument_type != checker->GlobalBuiltinVoidType()) {
+                    checker->ThrowTypeError("Unexpected return value, enclosing method return type is void.",
+                                            argument_->Start());
+                }
+            } else {
+                checker::AssignmentContext(
+                    checker->Relation(), argument_, argument_type, func_return_type, argument_->Start(),
+                    {"Return statement type is not compatible with the enclosing method's return type."},
+                    checker::TypeRelationFlag::DIRECT_RETURN);
+            }
+        }
+    } else {
+        //  Case when function's return type should be inferred from return statement(s):
+        if (containing_func->Signature()->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
+            //  First (or single) return statement in the function:
+            func_return_type = argument_ == nullptr ? checker->GlobalBuiltinVoidType() : argument_->Check(checker);
+
+            if (func_return_type->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
+                // remove CONSTANT type modifier if exists
+                func_return_type = func_return_type->Instantiate(checker->Allocator(), checker->Relation(),
+                                                                 checker->GetGlobalTypesHolder());
+                func_return_type->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
+            }
+
+            containing_func->Signature()->SetReturnType(func_return_type);
+            containing_func->Signature()->RemoveSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE);
+
+            if (argument_ != nullptr && argument_->IsObjectExpression()) {
+                argument_->AsObjectExpression()->SetPreferredType(func_return_type);
+            }
+        } else {
+            //  All subsequent return statements:
+            func_return_type = containing_func->Signature()->ReturnType();
+
+            if (argument_ == nullptr) {
+                // previous return statement(s) have value
+                if (!func_return_type->IsETSVoidType() && func_return_type != checker->GlobalBuiltinVoidType()) {
+                    checker->ThrowTypeError("All return statements in the function should be empty or have a value.",
+                                            Start());
+                }
+            } else {
+                //  previous return statement(s) don't have any value
+                if (func_return_type->IsETSVoidType() || func_return_type == checker->GlobalBuiltinVoidType()) {
+                    checker->ThrowTypeError("All return statements in the function should be empty or have a value.",
+                                            argument_->Start());
+                }
+
+                const auto name = containing_func->Scope()->InternalName().Mutf8();
+                if (name.find(compiler::Signatures::ETS_MAIN_WITH_MANGLE_BEGIN) != std::string::npos) {
+                    if (func_return_type == checker->GlobalBuiltinVoidType()) {
+                        func_return_type = checker->GlobalVoidType();
+                    } else if (!func_return_type->IsETSVoidType() && !func_return_type->IsIntType()) {
+                        checker->ThrowTypeError("Bad return type, main enable only void or int type.", Start());
+                    }
+                }
+
+                if (argument_->IsObjectExpression()) {
+                    argument_->AsObjectExpression()->SetPreferredType(func_return_type);
+                }
+
+                checker::Type *argument_type = argument_->Check(checker);
+                // remove CONSTANT type modifier if exists
+                if (argument_type->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
+                    argument_type = argument_type->Instantiate(checker->Allocator(), checker->Relation(),
+                                                               checker->GetGlobalTypesHolder());
+                    argument_type->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
+                }
+
+                auto *const relation = checker->Relation();
+                relation->SetNode(argument_);
+
+                if (!relation->IsIdenticalTo(func_return_type, argument_type)) {
+                    if (func_return_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) ||
+                        argument_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+                        // function return type should be of reference (object) type
+                        relation->SetFlags(checker::TypeRelationFlag::NONE);
+
+                        if (!argument_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+                            argument_type = checker->PrimitiveTypeAsETSBuiltinType(argument_type);
+                            if (argument_type == nullptr) {
+                                checker->ThrowTypeError("Invalid return statement expression", argument_->Start());
+                            }
+                            // argument_->SetTsType(argument_type);
+                            argument_->AddBoxingUnboxingFlag(checker->GetBoxingFlag(argument_type));
+                        }
+
+                        if (!func_return_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+                            func_return_type = checker->PrimitiveTypeAsETSBuiltinType(func_return_type);
+                            if (func_return_type == nullptr) {
+                                checker->ThrowTypeError("Invalid return function expression", Start());
+                            }
+                        }
+
+                        func_return_type = checker->FindLeastUpperBound(func_return_type, argument_type);
+                        containing_func->Signature()->SetReturnType(func_return_type);
+                        containing_func->Signature()->AddSignatureFlag(checker::SignatureFlags::INFERRED_RETURN_TYPE);
+
+                    } else if (func_return_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE_RETURN) &&
+                               argument_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE_RETURN)) {
+                        // function return type is of primitive type (including enums):
+                        relation->SetFlags(checker::TypeRelationFlag::DIRECT_RETURN |
+                                           checker::TypeRelationFlag::IN_ASSIGNMENT_CONTEXT |
+                                           checker::TypeRelationFlag::ASSIGNMENT_CONTEXT);
+
+                        if (relation->IsAssignableTo(func_return_type, argument_type)) {
+                            func_return_type = argument_type;
+                            // func_return_type = argument_type->Instantiate(checker->Allocator(), relation,
+                            //     checker->GetGlobalTypesHolder());
+                            containing_func->Signature()->SetReturnType(func_return_type);
+                            containing_func->Signature()->AddSignatureFlag(
+                                checker::SignatureFlags::INFERRED_RETURN_TYPE);
+                        } else if (!relation->IsAssignableTo(argument_type, func_return_type)) {
+                            checker->ThrowTypeError(
+                                "Return statement type is not compatible with previous method's return statement "
+                                "type(s).",
+                                argument_->Start());
+                        }
+
+                    } else {
+                        checker->ThrowTypeError("Invalid return statement type(s).", Start());
+                    }
+                }
+
+                relation->SetNode(nullptr);
+                relation->SetFlags(checker::TypeRelationFlag::NONE);
+            }
         }
     }
 
-    if (argument_ == nullptr) {
-        if (return_type_->IsETSVoidType() || return_type_ == checker->GlobalBuiltinVoidType()) {
-            return nullptr;
-        }
-
-        checker->ThrowTypeError("Missing return value.", Start());
-    }
-
-    if (return_type_->IsETSVoidType()) {
-        checker->ThrowTypeError("Unexpected return value, enclosing method return type is void.", argument_->Start());
-    }
-
-    if (argument_->IsObjectExpression()) {
-        argument_->AsObjectExpression()->SetPreferredType(return_type_);
-    }
-    checker::Type *argument_type = argument_->Check(checker);
-
-    checker::AssignmentContext(
-        checker->Relation(), argument_, argument_type, return_type_, argument_->Start(),
-        {"Return statements return type is not compatible with the containing functions return type"},
-        checker::TypeRelationFlag::DIRECT_RETURN);
-
+    return_type_ = func_return_type;
     return nullptr;
+}
+
+void ReturnStatement::SetReturnType(checker::ETSChecker *checker, checker::Type *type)
+{
+    return_type_ = type;
+    if (argument_ != nullptr) {
+        checker::Type *argument_type = argument_->Check(checker);
+        if (type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) &&
+            !argument_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+            auto *const relation = checker->Relation();
+            relation->SetNode(argument_);
+            relation->SetFlags(checker::TypeRelationFlag::NONE);
+
+            argument_type = checker->PrimitiveTypeAsETSBuiltinType(argument_type);
+            if (argument_type == nullptr) {
+                checker->ThrowTypeError("Invalid return statement expression", argument_->Start());
+            }
+            // argument_->SetTsType(argument_type);
+            argument_->AddBoxingUnboxingFlag(checker->GetBoxingFlag(argument_type));
+
+            relation->SetNode(nullptr);
+        }
+    }
 }
 }  // namespace panda::es2panda::ir

@@ -86,8 +86,11 @@ bool ETSChecker::StartChecker([[maybe_unused]] binder::Binder *binder, const Com
     auto *ets_binder = binder->AsETSBinder();
     InitializeBuiltins(ets_binder);
 
-    for (auto *var : ets_binder->DynamicImportVars()) {
-        var->SetTsType(GlobalBuiltinDynamicType(util::Helpers::ImportDeclarationForDynamicVar(var)->Language()));
+    for (auto &entry : ets_binder->DynamicImportVars()) {
+        auto &data = entry.second;
+        if (data.import->IsPureDynamic()) {
+            data.variable->SetTsType(GlobalBuiltinDynamicType(data.import->Language()));
+        }
     }
 
     CheckProgram(Program(), true);

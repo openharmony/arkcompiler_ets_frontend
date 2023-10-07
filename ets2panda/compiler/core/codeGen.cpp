@@ -284,8 +284,8 @@ CatchTable *CodeGen::CreateCatchTable(const LabelPair try_label_pair, const util
 
 void CodeGen::SortCatchTables()
 {
-    std::sort(catch_list_.begin(), catch_list_.end(),
-              [](const CatchTable *a, const CatchTable *b) { return b->Depth() < a->Depth(); });
+    std::stable_sort(catch_list_.begin(), catch_list_.end(),
+                     [](const CatchTable *a, const CatchTable *b) { return b->Depth() < a->Depth(); });
 }
 
 void CodeGen::SetFirstStmt(const ir::Statement *stmt) noexcept

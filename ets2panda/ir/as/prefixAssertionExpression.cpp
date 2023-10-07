@@ -19,7 +19,13 @@
 #include "ir/typeNode.h"
 
 namespace panda::es2panda::ir {
-void PrefixAssertionExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+void PrefixAssertionExpression::TransformChildren(const NodeTransformer &cb)
+{
+    type_ = static_cast<TypeNode *>(cb(type_));
+    expr_ = cb(expr_)->AsExpression();
+}
+
+void PrefixAssertionExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(type_);
     cb(expr_);

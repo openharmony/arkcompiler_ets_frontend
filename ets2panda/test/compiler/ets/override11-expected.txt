@@ -919,4 +919,4 @@
     }
   }
 }
-TypeError: fn(t: int): void in B cannot override fn(t: int): int in A because overriding return type is not compatible with the other return type. [override11.ets:21:14]
+TypeError: fn(t: int): void in B cannot override fn(t: int): int in A<T> because overriding return type is not compatible with the other return type. [override11.ets:21:14]

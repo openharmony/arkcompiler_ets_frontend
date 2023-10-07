@@ -20,6 +20,19 @@
 #include "ir/ts/tsTypeParameterInstantiation.h"
 
 namespace panda::es2panda::ir {
+void TSImportType::TransformChildren(const NodeTransformer &cb)
+{
+    param_ = cb(param_)->AsExpression();
+
+    if (type_params_ != nullptr) {
+        type_params_ = cb(type_params_)->AsTSTypeParameterInstantiation();
+    }
+
+    if (qualifier_ != nullptr) {
+        qualifier_ = cb(qualifier_)->AsExpression();
+    }
+}
+
 void TSImportType::Iterate(const NodeTraverser &cb) const
 {
     cb(param_);

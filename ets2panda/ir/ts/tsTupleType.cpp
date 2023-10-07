@@ -24,6 +24,13 @@
 #include "ir/ts/tsNamedTupleMember.h"
 
 namespace panda::es2panda::ir {
+void TSTupleType::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : element_types_) {
+        it = static_cast<TypeNode *>(cb(it));
+    }
+}
+
 void TSTupleType::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : element_types_) {

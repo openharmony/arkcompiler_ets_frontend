@@ -20,6 +20,13 @@
 #include "ir/ts/tsTypeParameter.h"
 
 namespace panda::es2panda::ir {
+void TSTypeParameterDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : params_) {
+        cb(it)->AsTSTypeParameter();
+    }
+}
+
 void TSTypeParameterDeclaration::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : params_) {

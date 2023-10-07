@@ -19,6 +19,11 @@
 #include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
+void TSParenthesizedType::TransformChildren(const NodeTransformer &cb)
+{
+    type_ = static_cast<TypeNode *>(cb(type_));
+}
+
 void TSParenthesizedType::Iterate(const NodeTraverser &cb) const
 {
     cb(type_);

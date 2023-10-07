@@ -29,6 +29,15 @@
 #include "ir/statements/switchCaseStatement.h"
 
 namespace panda::es2panda::ir {
+void SwitchStatement::TransformChildren(const NodeTransformer &cb)
+{
+    discriminant_ = cb(discriminant_)->AsExpression();
+
+    for (auto *&it : cases_) {
+        it = cb(it)->AsSwitchCaseStatement();
+    }
+}
+
 void SwitchStatement::Iterate(const NodeTraverser &cb) const
 {
     cb(discriminant_);
@@ -166,5 +175,14 @@ checker::Type *SwitchStatement::Check(checker::ETSChecker *const checker)
     checker->CheckForSameSwitchCases(&cases_);
 
     return nullptr;
+}
+
+void SwitchStatement::SetReturnType(checker::ETSChecker *checker, checker::Type *type)
+{
+    for (auto *cs : cases_) {
+        if (cs != nullptr) {
+            cs->SetReturnType(checker, type);
+        }
+    }
 }
 }  // namespace panda::es2panda::ir

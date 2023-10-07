@@ -36,6 +36,25 @@ Options::~Options()
     delete argparser_;
 }
 
+static std::unordered_set<util::StringView> StringToStringSet(const std::string &str)
+{
+    std::unordered_set<util::StringView> res;
+    std::string_view curr_str {str};
+    auto ix = curr_str.find(',');
+    while (ix != std::string::npos) {
+        if (ix != 0) {
+            res.insert(curr_str.substr(0, ix));
+        }
+        curr_str = curr_str.substr(ix + 1);
+        ix = curr_str.find(',');
+    }
+
+    if (!curr_str.empty()) {
+        res.insert(curr_str);
+    }
+    return res;
+}
+
 // NOLINTNEXTLINE(readability-function-size)
 bool Options::Parse(int argc, const char **argv)
 {
@@ -66,6 +85,11 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<std::string> log_level("log-level", "error", "Log-level");
     panda::PandArg<std::string> std_lib("stdlib", "", "Path to standard library");
     panda::PandArg<bool> gen_std_lib("gen-stdlib", false, "Gen standard library");
+    panda::PandArg<std::string> skip_phases("skip-phases", "", "Phases to skip");
+    panda::PandArg<std::string> dump_before_phases("dump-before-phases", "",
+                                                   "Generate program dump before running phases in the list");
+    panda::PandArg<std::string> dump_after_phases("dump-after-phases", "",
+                                                  "Generate program dump after running phases in the list");
     panda::PandArg<std::string> arkts_config("arktsconfig", DEFAULT_ARKTSCONFIG, "Path to arkts configuration file");
 
     // tail arguments
@@ -91,6 +115,9 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&log_level);
     argparser_->Add(&std_lib);
     argparser_->Add(&gen_std_lib);
+    argparser_->Add(&skip_phases);
+    argparser_->Add(&dump_before_phases);
+    argparser_->Add(&dump_after_phases);
     argparser_->Add(&arkts_config);
     argparser_->Add(&op_ts_decl_out);
 
@@ -270,6 +297,9 @@ bool Options::Parse(int argc, const char **argv)
     compiler_options_.std_lib = std_lib.GetValue();
     compiler_options_.compilation_mode = compilation_mode;
     compiler_options_.is_ets_module = op_ets_module.GetValue();
+    compiler_options_.skip_phases = StringToStringSet(skip_phases.GetValue());
+    compiler_options_.dump_before_phases = StringToStringSet(dump_before_phases.GetValue());
+    compiler_options_.dump_after_phases = StringToStringSet(dump_after_phases.GetValue());
 
     return true;
 }

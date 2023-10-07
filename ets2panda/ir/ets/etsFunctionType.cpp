@@ -31,6 +31,21 @@
 #include "ir/ets/etsParameterExpression.h"
 
 namespace panda::es2panda::ir {
+void ETSFunctionType::TransformChildren(const NodeTransformer &cb)
+{
+    if (type_params_ != nullptr) {
+        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
+    }
+
+    for (auto *&it : params_) {
+        it = cb(it)->AsExpression();
+    }
+
+    if (return_type_ != nullptr) {
+        return_type_ = static_cast<TypeNode *>(cb(return_type_));
+    }
+}
+
 void ETSFunctionType::Iterate(const NodeTraverser &cb) const
 {
     if (type_params_ != nullptr) {

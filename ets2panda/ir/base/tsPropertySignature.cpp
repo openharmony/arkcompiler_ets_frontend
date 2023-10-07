@@ -21,6 +21,15 @@
 #include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
+void TSPropertySignature::TransformChildren(const NodeTransformer &cb)
+{
+    key_ = cb(key_)->AsExpression();
+
+    if (TypeAnnotation() != nullptr) {
+        SetTsTypeAnnotation(static_cast<TypeNode *>(cb(TypeAnnotation())));
+    }
+}
+
 void TSPropertySignature::Iterate(const NodeTraverser &cb) const
 {
     cb(key_);

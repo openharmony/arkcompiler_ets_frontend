@@ -355,7 +355,7 @@ Emitter::~Emitter()
     delete prog_;
 }
 
-static void UpdateLiteralBufferId(panda::pandasm::Ins *ins, uint32_t offset)
+static void UpdateLiteralBufferId([[maybe_unused]] panda::pandasm::Ins *ins, [[maybe_unused]] uint32_t offset)
 {
 #ifdef PANDA_WITH_ECMASCRIPT
     switch (ins->opcode) {
@@ -378,8 +378,6 @@ static void UpdateLiteralBufferId(panda::pandasm::Ins *ins, uint32_t offset)
         }
     }
 #else
-    (void) ins;
-    (void) offset;
     UNREACHABLE();
 #endif
 }

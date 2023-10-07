@@ -158,6 +158,21 @@ void ObjectExpression::SetOptional(bool optional)
     optional_ = optional;
 }
 
+void ObjectExpression::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : decorators_) {
+        it = cb(it)->AsDecorator();
+    }
+
+    for (auto *&it : properties_) {
+        it = cb(it)->AsExpression();
+    }
+
+    if (TypeAnnotation() != nullptr) {
+        SetTsTypeAnnotation(static_cast<TypeNode *>(cb(TypeAnnotation())));
+    }
+}
+
 void ObjectExpression::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : decorators_) {
@@ -733,6 +748,10 @@ void ObjectExpression::Compile(compiler::ETSGen *etsg) const
 
 checker::Type *ObjectExpression::Check(checker::ETSChecker *checker)
 {
+    if (TsType() != nullptr) {
+        return TsType();
+    }
+
     if (PreferredType() == nullptr) {
         checker->ThrowTypeError({"need to specify target type for class composite"}, Start());
     }

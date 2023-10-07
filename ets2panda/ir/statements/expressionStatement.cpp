@@ -19,6 +19,11 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
+void ExpressionStatement::TransformChildren(const NodeTransformer &cb)
+{
+    expression_ = cb(expression_)->AsExpression();
+}
+
 void ExpressionStatement::Iterate(const NodeTraverser &cb) const
 {
     cb(expression_);

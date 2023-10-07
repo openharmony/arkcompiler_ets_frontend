@@ -20,6 +20,12 @@
 #include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
+void TSIndexedAccessType::TransformChildren(const NodeTransformer &cb)
+{
+    object_type_ = static_cast<TypeNode *>(cb(object_type_));
+    index_type_ = static_cast<TypeNode *>(cb(index_type_));
+}
+
 void TSIndexedAccessType::Iterate(const NodeTraverser &cb) const
 {
     cb(object_type_);

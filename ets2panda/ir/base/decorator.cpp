@@ -19,6 +19,11 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void Decorator::TransformChildren(const NodeTransformer &cb)
+{
+    expr_ = cb(expr_)->AsExpression();
+}
+
 void Decorator::Iterate(const NodeTraverser &cb) const
 {
     cb(expr_);

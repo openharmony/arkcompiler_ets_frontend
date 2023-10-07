@@ -22,6 +22,7 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void RegExpLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void RegExpLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void RegExpLiteral::Dump(ir::AstDumper *dumper) const

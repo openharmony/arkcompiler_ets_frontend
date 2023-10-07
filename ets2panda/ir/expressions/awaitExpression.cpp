@@ -26,6 +26,13 @@
 #include "ir/expressions/arrowFunctionExpression.h"
 
 namespace panda::es2panda::ir {
+void AwaitExpression::TransformChildren(const NodeTransformer &cb)
+{
+    if (argument_ != nullptr) {
+        argument_ = cb(argument_)->AsExpression();
+    }
+}
+
 void AwaitExpression::Iterate(const NodeTraverser &cb) const
 {
     if (argument_ != nullptr) {
@@ -69,8 +76,12 @@ checker::Type *AwaitExpression::Check([[maybe_unused]] checker::TSChecker *check
     return checker->GlobalAnyType();
 }
 
-checker::Type *AwaitExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *AwaitExpression::Check(checker::ETSChecker *checker)
 {
+    if (TsType() != nullptr) {
+        return TsType();
+    }
+
     checker::Type *arg_type = argument_->Check(checker);
     // Check the argument type of await expression
     if (!arg_type->IsETSObjectType() ||

@@ -25,6 +25,23 @@
 #include "ir/ts/tsTypeParameterDeclaration.h"
 
 namespace panda::es2panda::ir {
+void TSTypeAliasDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : decorators_) {
+        it = cb(it)->AsDecorator();
+    }
+
+    id_ = cb(id_)->AsIdentifier();
+
+    if (type_params_ != nullptr) {
+        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
+    }
+
+    if (TypeAnnotation() != nullptr) {
+        SetTsTypeAnnotation(static_cast<TypeNode *>(cb(TypeAnnotation())));
+    }
+}
+
 void TSTypeAliasDeclaration::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : decorators_) {

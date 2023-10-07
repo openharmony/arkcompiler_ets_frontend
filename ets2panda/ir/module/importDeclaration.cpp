@@ -22,6 +22,15 @@
 #include "ir/module/importSpecifier.h"
 
 namespace panda::es2panda::ir {
+void ImportDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    source_ = cb(source_)->AsStringLiteral();
+
+    for (auto *&it : specifiers_) {
+        it = cb(it);
+    }
+}
+
 void ImportDeclaration::Iterate(const NodeTraverser &cb) const
 {
     cb(source_);

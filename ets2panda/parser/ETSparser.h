@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,6 +40,12 @@ public:
     ~ETSParser() = default;
 
 private:
+    struct ImportData {
+        Language lang;
+        std::string module;
+        bool has_decl;
+    };
+
     void ParseProgram(ScriptKind kind) override;
     [[nodiscard]] std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &source_file) override;
     void ParsePackageDeclaration(ArenaVector<ir::Statement *> &statements);
@@ -50,7 +56,7 @@ private:
     void ParseTopLevelDeclaration(ArenaVector<ir::Statement *> &statements);
     void CollectDefaultSources();
     std::string ResolveImportPath(const std::string &path);
-    std::tuple<Language, bool> GetImportData(const std::string &path);
+    ImportData GetImportData(const std::string &path);
     std::tuple<std::vector<std::string>, bool> CollectUserSources(const std::string &path);
     void ParseSources(const std::vector<std::string> &paths, bool is_external = true);
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool require_from);
@@ -216,6 +222,25 @@ private:
     ir::Statement *ParseTopLevelStatement(StatementParsingFlags flags = StatementParsingFlags::NONE);
 
     void ParseTrailingBlock([[maybe_unused]] ir::CallExpression *call_expr) override;
+
+    void CheckDeclare();
+
+    //  Methods to create AST node(s) from the specified string (part of valid ETS-code!)
+    //  NOTE: the correct initial scope should be entered BEFORE calling any of these methods,
+    //  and correct parent and, probably, variable set to the node(s) after obtaining
+    // NOLINTNEXTLINE(modernize-avoid-c-arrays)
+    inline static constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
+    // NOLINTBEGIN(google-default-arguments)
+    ir::Statement *CreateStatement(std::string_view source_code, std::string_view file_name = DEFAULT_SOURCE_FILE);
+    ArenaVector<ir::Statement *> CreateStatements(std::string_view source_code,
+                                                  std::string_view file_name = DEFAULT_SOURCE_FILE);
+    ir::MethodDefinition *CreateMethodDefinition(ir::ModifierFlags modifiers, std::string_view source_code,
+                                                 std::string_view file_name = DEFAULT_SOURCE_FILE);
+    ir::Expression *CreateExpression(ExpressionParseFlags flags, std::string_view source_code,
+                                     std::string_view file_name = DEFAULT_SOURCE_FILE);
+    ir::TypeNode *CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view source_code,
+                                       std::string_view file_name = DEFAULT_SOURCE_FILE);
+    // NOLINTEND(google-default-arguments)
 
     friend class ExternalSourceParser;
     friend class InnerSourceParser;

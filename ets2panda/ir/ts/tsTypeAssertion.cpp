@@ -19,6 +19,12 @@
 #include "ir/typeNode.h"
 
 namespace panda::es2panda::ir {
+void TSTypeAssertion::TransformChildren(const NodeTransformer &cb)
+{
+    SetTsTypeAnnotation(static_cast<TypeNode *>(cb(TypeAnnotation())));
+    expression_ = cb(expression_)->AsExpression();
+}
+
 void TSTypeAssertion::Iterate(const NodeTraverser &cb) const
 {
     cb(TypeAnnotation());

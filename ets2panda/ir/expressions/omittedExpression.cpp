@@ -19,6 +19,7 @@
 #include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
+void OmittedExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void OmittedExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void OmittedExpression::Dump(ir::AstDumper *dumper) const

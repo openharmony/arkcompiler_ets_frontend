@@ -18,6 +18,13 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void TSInterfaceBody::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : body_) {
+        it = cb(it);
+    }
+}
+
 void TSInterfaceBody::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : body_) {

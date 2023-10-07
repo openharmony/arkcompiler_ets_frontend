@@ -29,6 +29,15 @@
 #include "ir/statements/blockStatement.h"
 
 namespace panda::es2panda::ir {
+void CatchClause::TransformChildren(const NodeTransformer &cb)
+{
+    if (param_ != nullptr) {
+        param_ = cb(param_)->AsExpression();
+    }
+
+    body_ = cb(body_)->AsBlockStatement();
+}
+
 void CatchClause::Iterate(const NodeTraverser &cb) const
 {
     if (param_ != nullptr) {

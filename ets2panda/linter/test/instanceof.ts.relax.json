@@ -28,6 +28,41 @@
             "line": 50,
             "column": 12,
             "problem": "InstanceofUnsupported"
+        },
+        {
+            "line": 55,
+            "column": 25,
+            "problem": "InstanceofUnsupported"
+        },
+        {
+            "line": 58,
+            "column": 29,
+            "problem": "InstanceofUnsupported"
+        },
+        {
+            "line": 61,
+            "column": 16,
+            "problem": "InstanceofUnsupported"
+        },
+        {
+            "line": 65,
+            "column": 13,
+            "problem": "InstanceofUnsupported"
+        },
+        {
+            "line": 70,
+            "column": 16,
+            "problem": "InstanceofUnsupported"
+        },
+        {
+            "line": 76,
+            "column": 18,
+            "problem": "InstanceofUnsupported"
+        },
+        {
+            "line": 76,
+            "column": 19,
+            "problem": "ClassAsObject"
         }
     ]
 }

@@ -16,10 +16,11 @@
 #ifndef ES2PANDA_IR_TS_INTERFACE_DECLARATION_H
 #define ES2PANDA_IR_TS_INTERFACE_DECLARATION_H
 
+#include "binder/scope.h"
 #include "ir/statement.h"
+#include "util/language.h"
 
 namespace panda::es2panda::binder {
-class LocalScope;
 class Variable;
 }  // namespace panda::es2panda::binder
 
@@ -33,7 +34,7 @@ class TSInterfaceDeclaration : public TypedStatement {
 public:
     explicit TSInterfaceDeclaration(ArenaAllocator *allocator, binder::LocalScope *scope, Identifier *id,
                                     TSTypeParameterDeclaration *type_params, TSInterfaceBody *body,
-                                    ArenaVector<TSInterfaceHeritage *> &&extends, bool is_static)
+                                    ArenaVector<TSInterfaceHeritage *> &&extends, bool is_static, Language lang)
         : TypedStatement(AstNodeType::TS_INTERFACE_DECLARATION),
           decorators_(allocator->Adapter()),
           scope_(scope),
@@ -41,14 +42,20 @@ public:
           type_params_(type_params),
           body_(body),
           extends_(std::move(extends)),
-          is_static_(is_static)
+          is_static_(is_static),
+          lang_(lang)
     {
         if (is_static_) {
             AddModifier(ir::ModifierFlags::STATIC);
         }
     }
 
-    binder::LocalScope *Scope() const
+    bool IsScopeBearer() const override
+    {
+        return true;
+    }
+
+    binder::LocalScope *Scope() const override
     {
         return scope_;
     }
@@ -123,6 +130,13 @@ public:
         return !in_ts;
     }
 
+    void TransformChildren(const NodeTransformer &cb) override;
+
+    es2panda::Language Language() const
+    {
+        return lang_;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
@@ -139,6 +153,7 @@ private:
     ArenaVector<TSInterfaceHeritage *> extends_;
     util::StringView internal_name_ {};
     bool is_static_;
+    es2panda::Language lang_;
 };
 }  // namespace panda::es2panda::ir
 

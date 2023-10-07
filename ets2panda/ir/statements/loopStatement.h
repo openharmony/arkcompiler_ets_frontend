@@ -16,20 +16,26 @@
 #ifndef ES2PANDA_IR_STATEMENT_LOOP_STATEMENT_H
 #define ES2PANDA_IR_STATEMENT_LOOP_STATEMENT_H
 
+#include "binder/scope.h"
 #include "ir/statement.h"
-
-namespace panda::es2panda::binder {
-class LoopScope;
-}  // namespace panda::es2panda::binder
 
 namespace panda::es2panda::ir {
 class LoopStatement : public Statement {
 public:
-    binder::LoopScope *Scope() const
+    bool IsScopeBearer() const override
+    {
+        return true;
+    }
+
+    binder::LoopScope *Scope() const override
     {
         return scope_;
     }
 
+    void TransformChildren([[maybe_unused]] const NodeTransformer &cb) override
+    {
+        UNREACHABLE();
+    }
     void Iterate([[maybe_unused]] const NodeTraverser &cb) const override
     {
         UNREACHABLE();

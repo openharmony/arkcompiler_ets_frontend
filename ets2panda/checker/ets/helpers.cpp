@@ -136,8 +136,12 @@ Type *ETSChecker::GetTypeOfVariable(binder::Variable *const var)
         return var->TsType();
     }
 
-    if (util::Helpers::IsDynamicModuleVariable(var)) {
-        return GlobalBuiltinDynamicType(util::Helpers::ImportDeclarationForDynamicVar(var)->Language());
+    // TODO(kbaladurin): forbid usage of imported entities as types without declarations
+    if (Binder()->AsETSBinder()->IsDynamicModuleVariable(var)) {
+        auto *import_data = Binder()->AsETSBinder()->DynamicImportDataForVar(var);
+        if (import_data->import->IsPureDynamic()) {
+            return GlobalBuiltinDynamicType(import_data->import->Language());
+        }
     }
 
     binder::Decl *decl = var->Declaration();
@@ -212,6 +216,9 @@ Type *ETSChecker::GetTypeOfVariable(binder::Variable *const var)
 
 void ETSChecker::ValidatePropertyAccess(binder::Variable *var, ETSObjectType *obj, const lexer::SourcePosition &pos)
 {
+    if ((Context().Status() & CheckerStatus::IGNORE_VISIBILITY) != 0U) {
+        return;
+    }
     if (var->HasFlag(binder::VariableFlags::METHOD)) {
         return;
     }
@@ -870,9 +877,10 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
         return qualified->Check(this);
     }
 
-    auto *import = util::Helpers::ImportDeclarationForDynamicVar(name->AsIdentifier()->Variable());
-    if (import != nullptr) {
-        return GlobalBuiltinDynamicType(import->Language());
+    // TODO(kbaladurin): forbid usage imported entities as types without declarations
+    auto *import_data = Binder()->AsETSBinder()->DynamicImportDataForVar(name->AsIdentifier()->Variable());
+    if (import_data != nullptr && import_data->import->IsPureDynamic()) {
+        return GlobalBuiltinDynamicType(import_data->import->Language());
     }
 
     ASSERT(name->IsIdentifier() && name->AsIdentifier()->Variable());
@@ -1129,7 +1137,6 @@ const ir::AstNode *ETSChecker::FindJumpTarget(ir::AstNodeType node_type, const i
             case ir::AstNodeType::WHILE_STATEMENT:
             case ir::AstNodeType::FOR_UPDATE_STATEMENT:
             case ir::AstNodeType::FOR_OF_STATEMENT:
-            case ir::AstNodeType::SWITCH_CASE_STATEMENT:
             case ir::AstNodeType::SWITCH_STATEMENT: {
                 if (target == nullptr) {
                     return iter;
@@ -1534,6 +1541,10 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
     if (boxed_source_type == nullptr) {
         return;
     }
+    // Do not box primitive in case of cast to dynamic types
+    if (target->IsETSDynamicType()) {
+        return;
+    }
     relation->IsAssignableTo(boxed_source_type, target);
     if (relation->IsTrue() && !relation->OnlyCheckBoxingUnboxing()) {
         AddBoxingFlagToPrimitiveType(relation, boxed_source_type);
@@ -1759,89 +1770,6 @@ ETSObjectType *ETSChecker::GetOriginalBaseType(Type *const object)
     }
 
     return base_iter;
-}
-
-bool ETSChecker::GetOperatorForSetterGetter(ir::AssignmentExpression *expr)
-{
-    const auto op_type = expr->OperatorType();
-    lexer::TokenType new_op_type = lexer::TokenType::PUNCTUATOR_EQUAL;
-
-    switch (op_type) {
-        case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_LESS_THAN;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_GREATER_THAN;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_LEFT_SHIFT;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_PLUS;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_MINUS_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_MINUS;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_MULTIPLY;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_DIVIDE;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_MOD_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_MOD;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_BITWISE_AND;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_BITWISE_OR;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_BITWISE_XOR;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_LOGICAL_AND;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_LOGICAL_OR;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_NULLISH_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING;
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_EXPONENTIATION_EQUAL: {
-            new_op_type = lexer::TokenType::PUNCTUATOR_EXPONENTIATION;
-            break;
-        }
-        default: {
-            return false;
-        }
-    }
-
-    expr->SetOperatorType(new_op_type);
-    return true;
 }
 
 Type *ETSChecker::GetTypeFromTypeAnnotation(ir::TypeNode *const type_annotation)

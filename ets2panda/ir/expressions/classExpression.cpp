@@ -19,6 +19,11 @@
 #include "ir/base/classDefinition.h"
 
 namespace panda::es2panda::ir {
+void ClassExpression::TransformChildren(const NodeTransformer &cb)
+{
+    def_ = cb(def_)->AsClassDefinition();
+}
+
 void ClassExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(def_);

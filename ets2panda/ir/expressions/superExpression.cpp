@@ -23,6 +23,7 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void SuperExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void SuperExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void SuperExpression::Dump(ir::AstDumper *dumper) const
@@ -54,6 +55,10 @@ checker::Type *SuperExpression::Check(checker::TSChecker *checker)
 
 checker::Type *SuperExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
+    if (TsType() != nullptr) {
+        return TsType();
+    }
+
     SetTsType(checker->CheckThisOrSuperAccess(this, checker->Context().ContainingClass()->SuperType(), "super"));
     return TsType();
 }

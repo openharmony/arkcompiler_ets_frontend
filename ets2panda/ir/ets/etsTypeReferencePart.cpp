@@ -24,7 +24,20 @@
 #include "compiler/core/ETSGen.h"
 
 namespace panda::es2panda::ir {
-void ETSTypeReferencePart::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+void ETSTypeReferencePart::TransformChildren(const NodeTransformer &cb)
+{
+    name_ = cb(name_)->AsExpression();
+
+    if (type_params_ != nullptr) {
+        type_params_ = cb(type_params_)->AsTSTypeParameterInstantiation();
+    }
+
+    if (prev_ != nullptr) {
+        prev_ = cb(prev_)->AsETSTypeReferencePart();
+    }
+}
+
+void ETSTypeReferencePart::Iterate(const NodeTraverser &cb) const
 {
     cb(name_);
 

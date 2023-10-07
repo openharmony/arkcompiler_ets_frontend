@@ -29,6 +29,25 @@
 #include "ir/ts/tsTypeParameterDeclaration.h"
 
 namespace panda::es2panda::ir {
+void TSInterfaceDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : decorators_) {
+        it = cb(it)->AsDecorator();
+    }
+
+    id_ = cb(id_)->AsIdentifier();
+
+    if (type_params_ != nullptr) {
+        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
+    }
+
+    for (auto *&it : extends_) {
+        it = cb(it)->AsTSInterfaceHeritage();
+    }
+
+    body_ = cb(body_)->AsTSInterfaceBody();
+}
+
 void TSInterfaceDeclaration::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : decorators_) {

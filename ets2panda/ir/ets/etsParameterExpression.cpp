@@ -96,6 +96,15 @@ bool ETSParameterExpression::IsDefault() const
     return initializer_ != nullptr;
 }
 
+void ETSParameterExpression::TransformChildren(const NodeTransformer &cb)
+{
+    ident_ = cb(ident_)->AsIdentifier();
+
+    if (IsDefault()) {
+        initializer_ = cb(initializer_)->AsExpression();
+    }
+}
+
 void ETSParameterExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(ident_);

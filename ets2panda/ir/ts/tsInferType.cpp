@@ -19,6 +19,11 @@
 #include "ir/ts/tsTypeParameter.h"
 
 namespace panda::es2panda::ir {
+void TSInferType::TransformChildren(const NodeTransformer &cb)
+{
+    type_param_ = cb(type_param_)->AsTSTypeParameter();
+}
+
 void TSInferType::Iterate(const NodeTraverser &cb) const
 {
     cb(type_param_);

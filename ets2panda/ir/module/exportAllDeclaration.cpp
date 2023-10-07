@@ -20,6 +20,15 @@
 #include "ir/expressions/literals/stringLiteral.h"
 
 namespace panda::es2panda::ir {
+void ExportAllDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    source_ = cb(source_)->AsStringLiteral();
+
+    if (exported_ != nullptr) {
+        exported_ = cb(exported_)->AsIdentifier();
+    }
+}
+
 void ExportAllDeclaration::Iterate(const NodeTraverser &cb) const
 {
     cb(source_);

@@ -75,6 +75,19 @@ bool SpreadElement::ConvertibleToRest(bool is_declaration, bool allow_pattern)
     return conv_result;
 }
 
+void SpreadElement::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : decorators_) {
+        it = cb(it)->AsDecorator();
+    }
+
+    argument_ = cb(argument_)->AsExpression();
+
+    if (TypeAnnotation() != nullptr) {
+        SetTsTypeAnnotation(static_cast<TypeNode *>(cb(TypeAnnotation())));
+    }
+}
+
 void SpreadElement::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : decorators_) {

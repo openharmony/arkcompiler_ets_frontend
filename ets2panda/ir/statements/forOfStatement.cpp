@@ -29,6 +29,13 @@
 #include "ir/statements/variableDeclaration.h"
 
 namespace panda::es2panda::ir {
+void ForOfStatement::TransformChildren(const NodeTransformer &cb)
+{
+    left_ = cb(left_);
+    right_ = cb(right_)->AsExpression();
+    body_ = cb(body_)->AsStatement();
+}
+
 void ForOfStatement::Iterate(const NodeTraverser &cb) const
 {
     cb(left_);

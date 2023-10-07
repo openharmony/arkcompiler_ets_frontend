@@ -24,6 +24,15 @@
 #include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
+void ETSStructDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : decorators_) {
+        it = cb(it)->AsDecorator();
+    }
+
+    def_ = cb(def_)->AsClassDefinition();
+}
+
 void ETSStructDeclaration::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : decorators_) {

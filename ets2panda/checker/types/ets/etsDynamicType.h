@@ -22,10 +22,11 @@ namespace panda::es2panda::checker {
 class ETSDynamicType : public ETSObjectType {
 public:
     explicit ETSDynamicType(ArenaAllocator *allocator, util::StringView name, util::StringView assembler_name,
-                            ir::AstNode *decl_node, ETSObjectFlags flags, Language lang)
+                            ir::AstNode *decl_node, ETSObjectFlags flags, Language lang, bool has_decl)
         : ETSObjectType(allocator, name, assembler_name, decl_node, flags | ETSObjectFlags::DYNAMIC),
           properties_cache_ {allocator->Adapter()},
-          lang_(lang)
+          lang_(lang),
+          has_decl_(has_decl)
     {
         AddTypeFlag(TypeFlag::ETS_DYNAMIC_TYPE);
     }
@@ -42,11 +43,21 @@ public:
         return lang_;
     }
 
+    bool HasDecl() const
+    {
+        return has_decl_;
+    }
+
+    ETSFunctionType *CreateETSFunctionType(const util::StringView &name) const override;
+
+    void ToAssemblerType(std::stringstream &ss) const override;
+
 private:
     bool IsConvertableTo(Type *target) const;
 
     mutable PropertyMap properties_cache_;
     es2panda::Language lang_;
+    bool has_decl_;
 };
 }  // namespace panda::es2panda::checker
 

@@ -27,6 +27,11 @@
 #include "ir/expressions/memberExpression.h"
 
 namespace panda::es2panda::ir {
+void UnaryExpression::TransformChildren(const NodeTransformer &cb)
+{
+    argument_ = cb(argument_)->AsExpression();
+}
+
 void UnaryExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(argument_);
@@ -206,6 +211,10 @@ checker::Type *UnaryExpression::Check([[maybe_unused]] checker::TSChecker *check
 
 checker::Type *UnaryExpression::Check(checker::ETSChecker *checker)
 {
+    if (TsType() != nullptr) {
+        return TsType();
+    }
+
     auto arg_type = argument_->Check(checker);
     checker::Type *operand_type = checker->ApplyUnaryOperatorPromotion(arg_type);
     auto unboxed_operand_type = checker->ETSBuiltinTypeAsPrimitiveType(arg_type);

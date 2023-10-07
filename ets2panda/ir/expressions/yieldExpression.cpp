@@ -21,6 +21,13 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void YieldExpression::TransformChildren(const NodeTransformer &cb)
+{
+    if (argument_ != nullptr) {
+        argument_ = cb(argument_)->AsExpression();
+    }
+}
+
 void YieldExpression::Iterate(const NodeTraverser &cb) const
 {
     if (argument_ != nullptr) {

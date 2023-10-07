@@ -51,6 +51,29 @@ size_t ScriptFunction::FormalParamsLength() const
     return length;
 }
 
+void ScriptFunction::TransformChildren(const NodeTransformer &cb)
+{
+    if (id_ != nullptr) {
+        id_ = cb(id_)->AsIdentifier();
+    }
+
+    if (type_params_ != nullptr) {
+        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
+    }
+
+    for (auto *&it : params_) {
+        it = cb(it)->AsExpression();
+    }
+
+    if (return_type_annotation_ != nullptr) {
+        return_type_annotation_ = static_cast<TypeNode *>(cb(return_type_annotation_));
+    }
+
+    if (body_ != nullptr) {
+        body_ = cb(body_);
+    }
+}
+
 void ScriptFunction::Iterate(const NodeTraverser &cb) const
 {
     if (id_ != nullptr) {

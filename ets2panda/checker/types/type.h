@@ -35,6 +35,7 @@ class GlobalTypesHolder;
 class ETSDynamicType;
 class ETSAsyncFuncReturnType;
 class ETSChecker;
+class ETSDynamicFunctionType;
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_TYPENAMES(typeFlag, typeName) class typeName;
@@ -125,6 +126,23 @@ public:
     {
         ASSERT(IsETSAsyncFuncReturnType());
         return reinterpret_cast<const ETSAsyncFuncReturnType *>(this);
+    }
+
+    bool IsETSDynamicFunctionType() const
+    {
+        return TypeFlags() == TypeFlag::ETS_DYNAMIC_FUNCTION_TYPE;
+    }
+
+    ETSDynamicFunctionType *AsETSDynamicFunctionType()
+    {
+        ASSERT(IsETSDynamicFunctionType());
+        return reinterpret_cast<ETSDynamicFunctionType *>(this);
+    }
+
+    const ETSDynamicFunctionType *AsETSDynamicFunctionType() const
+    {
+        ASSERT(IsETSDynamicFunctionType());
+        return reinterpret_cast<const ETSDynamicFunctionType *>(this);
     }
 
     TypeFlag TypeFlags() const

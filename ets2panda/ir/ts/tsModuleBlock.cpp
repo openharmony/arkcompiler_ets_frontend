@@ -19,6 +19,13 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void TSModuleBlock::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : statements_) {
+        it = cb(it)->AsStatement();
+    }
+}
+
 void TSModuleBlock::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : statements_) {

@@ -23,7 +23,15 @@
 #include "checker/types/signature.h"
 
 namespace panda::es2panda::ir {
-void ETSNewMultiDimArrayInstanceExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+void ETSNewMultiDimArrayInstanceExpression::TransformChildren(const NodeTransformer &cb)
+{
+    type_reference_ = static_cast<TypeNode *>(cb(type_reference_));
+    for (auto *&dim : dimensions_) {
+        dim = cb(dim)->AsExpression();
+    }
+}
+
+void ETSNewMultiDimArrayInstanceExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(type_reference_);
     for (auto *dim : dimensions_) {

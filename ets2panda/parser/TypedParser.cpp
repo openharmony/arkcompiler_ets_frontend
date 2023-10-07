@@ -521,8 +521,9 @@ ir::Statement *TypedParser::ParseInterfaceDeclaration(bool is_static)
     auto *body = AllocNode<ir::TSInterfaceBody>(std::move(members));
     body->SetRange({body_start, Lexer()->GetToken().End()});
 
-    auto *interface_decl = AllocNode<ir::TSInterfaceDeclaration>(Allocator(), local_scope.GetScope(), id,
-                                                                 type_param_decl, body, std::move(extends), is_static);
+    auto *interface_decl =
+        AllocNode<ir::TSInterfaceDeclaration>(Allocator(), local_scope.GetScope(), id, type_param_decl, body,
+                                              std::move(extends), is_static, GetContext().GetLanguge());
     interface_decl->SetRange({interface_start, Lexer()->GetToken().End()});
     ident_decl->BindNode(interface_decl);
 
@@ -984,9 +985,9 @@ ir::ClassDefinition *TypedParser::ParseClassDefinition(ir::ClassDefinitionModifi
     CreateCCtor(class_ctx.GetScope(), properties, bodyRange.start);
 
     auto *class_scope = class_ctx.GetScope();
-    auto *class_definition = AllocNode<ir::ClassDefinition>(class_scope, private_binding.View(), ident_node,
-                                                            type_param_decl, superTypeParams, std::move(implements),
-                                                            ctor, superClass, std::move(properties), modifiers, flags);
+    auto *class_definition = AllocNode<ir::ClassDefinition>(
+        class_scope, private_binding.View(), ident_node, type_param_decl, superTypeParams, std::move(implements), ctor,
+        superClass, std::move(properties), modifiers, flags, GetContext().GetLanguge());
 
     class_definition->SetRange(bodyRange);
     class_scope->BindNode(class_definition);

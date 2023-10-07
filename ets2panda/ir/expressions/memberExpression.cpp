@@ -37,6 +37,12 @@ bool MemberExpression::IsPrivateReference() const
     return property_->IsIdentifier() && property_->AsIdentifier()->IsPrivateIdent();
 }
 
+void MemberExpression::TransformChildren(const NodeTransformer &cb)
+{
+    object_ = cb(object_)->AsExpression();
+    property_ = cb(property_)->AsExpression();
+}
+
 void MemberExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(object_);
@@ -356,6 +362,10 @@ checker::Type *MemberExpression::Check(checker::TSChecker *checker)
 
 checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
 {
+    if (TsType() != nullptr) {
+        return TsType();
+    }
+
     if (computed_) {
         SetTsType(checker->CheckArrayElementAccess(this));
         return TsType();

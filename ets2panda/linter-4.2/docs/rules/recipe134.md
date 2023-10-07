@@ -2,7 +2,7 @@
 
 Rule ``arkts-no-definite-assignment``
 
-**Severity: error**
+**Severity: warning**
 
 ArkTS does not support definite assignment assertions ``let v!: T`` because
 they are considered an excessive compiler hint.

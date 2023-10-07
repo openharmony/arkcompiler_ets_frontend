@@ -19,6 +19,11 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
+void TSParameterProperty::TransformChildren(const NodeTransformer &cb)
+{
+    parameter_ = cb(parameter_)->AsExpression();
+}
+
 void TSParameterProperty::Iterate(const NodeTraverser &cb) const
 {
     cb(parameter_);

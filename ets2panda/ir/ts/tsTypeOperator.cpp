@@ -18,6 +18,11 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void TSTypeOperator::TransformChildren(const NodeTransformer &cb)
+{
+    type_ = static_cast<TypeNode *>(cb(type_));
+}
+
 void TSTypeOperator::Iterate(const NodeTraverser &cb) const
 {
     cb(type_);

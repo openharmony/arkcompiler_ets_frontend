@@ -405,22 +405,36 @@ void AliveAnalyzer::AnalyzeThrow(const ir::ThrowStatement *throw_stmt)
     MarkDead();
 }
 
-void AliveAnalyzer::AnalyzeSwitch([[maybe_unused]] const ir::SwitchStatement *switch_stmt)
+void AliveAnalyzer::AnalyzeSwitch(const ir::SwitchStatement *switch_stmt)
 {
-    // TODO(aszilagyi): fix analysis to be correct
-    /*
-    PendingExitsVector oldPendingExits = std::move(pendingExits_);
-    AnalyzeNode(switchStmt->Discriminant());
+    SetOldPendingExits(PendingExits());
 
-    std::vector<binder::LocalVariable *> constants;
-    for (const auto *it : switchStmt->Cases()) {
+    AnalyzeNode(switch_stmt->Discriminant());
+
+    bool has_default = false;
+    for (std::size_t i = 0, size = switch_stmt->Cases().size(); i < size; i++) {
+        const auto *case_clause = switch_stmt->Cases()[i];
         status_ = LivenessStatus::ALIVE;
-        AnalyzeNode(it->Test());
-        AnalyzeStats(it->Consequent());
+
+        if (case_clause->Test() == nullptr) {
+            has_default = true;
+        } else {
+            AnalyzeNode(case_clause->Test());
+        }
+
+        AnalyzeStats(case_clause->Consequent());
+
+        if (status_ == LivenessStatus::ALIVE && !case_clause->Consequent().empty() && i < size - 1) {
+            // TODO(user) Add lint categories and option to enable/disable compiler warnings
+            checker_->Warning("Possible fall-through into case", case_clause->Start());
+        }
     }
 
-    status_ = Or(status_, ResolveBreaks(switchStmt, oldPendingExits));
-    */
+    if (!has_default) {
+        status_ = LivenessStatus::ALIVE;
+    }
+
+    status_ = Or(status_, ResolveBreaks(switch_stmt));
 }
 
 void AliveAnalyzer::AnalyzeBreak(const ir::BreakStatement *break_stmt)

@@ -24,25 +24,28 @@ public:
     explicit ReturnStatement() : ReturnStatement(nullptr) {}
     explicit ReturnStatement(Expression *argument) : Statement(AstNodeType::RETURN_STATEMENT), argument_(argument) {}
 
-    Expression *Argument()
+    Expression *Argument() noexcept
     {
         return argument_;
     }
 
-    const Expression *Argument() const
+    const Expression *Argument() const noexcept
     {
         return argument_;
     }
 
-    checker::Type *ReturnType()
+    checker::Type *ReturnType() noexcept
     {
         return return_type_;
     }
 
-    const checker::Type *ReturnType() const
+    const checker::Type *ReturnType() const noexcept
     {
         return return_type_;
     }
+
+    void TransformChildren(const NodeTransformer &cb) override;
+    void SetReturnType(checker::ETSChecker *checker, checker::Type *type) override;
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;

@@ -203,6 +203,7 @@ public:
     ETSArrayType *CreateETSArrayType(Type *element_type);
     ETSFunctionType *CreateETSFunctionType(Signature *signature);
     ETSFunctionType *CreateETSFunctionType(Signature *signature, util::StringView name);
+    ETSFunctionType *CreateETSFunctionType(ir::ScriptFunction *func, Signature *signature, util::StringView name);
     ETSFunctionType *CreateETSFunctionType(util::StringView name);
     ETSFunctionType *CreateETSFunctionType(ArenaVector<Signature *> &signatures);
     ETSTypeParameter *CreateTypeParameter(Type *assembler_type);
@@ -430,7 +431,6 @@ public:
     void ValidateResolvedProperty(const binder::LocalVariable *property, const ETSObjectType *target,
                                   const ir::Identifier *ident, PropertySearchFlags flags);
     bool IsValidSetterLeftSide(const ir::MemberExpression *member);
-    void CreateBinaryExpressionForSetter(ir::Expression *member);
     void CheckThrowingStatements(ir::AstNode *node);
     bool CheckThrowingPlacement(ir::AstNode *node, const ir::AstNode *ancestor_function);
     ir::BlockStatement *FindFinalizerOfTryStatement(ir::AstNode *start_from, const ir::AstNode *p);
@@ -439,7 +439,6 @@ public:
     util::StringView GetHashFromTypeArguments(const ArenaVector<Type *> &type_arg_types);
     util::StringView GetHashFromSubstitution(const Substitution *substitution);
     ETSObjectType *GetOriginalBaseType(Type *object);
-    bool GetOperatorForSetterGetter(ir::AssignmentExpression *expr);
     Type *GetTypeFromTypeAnnotation(ir::TypeNode *type_annotation);
     void AddNullParamsForDefaultParams(const Signature *signature,
                                        ArenaVector<panda::es2panda::ir::Expression *> &arguments, ETSChecker *checker);
@@ -467,7 +466,8 @@ public:
     [[nodiscard]] ETSEnumType::Method CreateEnumValuesMethod(ir::Identifier *items_array_ident, ETSEnumType *enum_type);
 
     // Dynamic interop
-    Signature *ResolveDynamicCallExpression(ir::Expression *callee, const ArenaVector<ir::Expression *> &arguments,
+    template <typename T>
+    Signature *ResolveDynamicCallExpression(ir::Expression *callee, const ArenaVector<T *> &arguments, Language lang,
                                             bool is_construct);
     void BuildDynamicCallClass(bool is_construct);
     void BuildDynamicNewClass(bool is_construct);
@@ -509,8 +509,9 @@ private:
                                             panda::es2panda::ir::ModifierFlags modifier_flags,
                                             const MethodBuilder &builder);
 
-    ir::ScriptFunction *CreateDynamicCallIntrinsic(ir::Expression *callee,
-                                                   const ArenaVector<ir::Expression *> &arguments);
+    template <typename T>
+    ir::ScriptFunction *CreateDynamicCallIntrinsic(ir::Expression *callee, const ArenaVector<T *> &arguments,
+                                                   Language lang);
     ir::ClassStaticBlock *CreateDynamicCallClassInitializer(binder::ClassScope *class_scope, Language lang,
                                                             bool is_construct);
     ir::ClassStaticBlock *CreateDynamicModuleClassInitializer(binder::ClassScope *class_scope,

@@ -20,6 +20,11 @@
 #include "checker/ETSchecker.h"
 
 namespace panda::es2panda::ir {
+void TSArrayType::TransformChildren(const NodeTransformer &cb)
+{
+    element_type_ = static_cast<TypeNode *>(cb(element_type_));
+}
+
 void TSArrayType::Iterate(const NodeTraverser &cb) const
 {
     cb(element_type_);

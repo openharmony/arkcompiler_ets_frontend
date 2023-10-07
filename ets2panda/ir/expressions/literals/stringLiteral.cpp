@@ -24,6 +24,7 @@
 #include <utility>
 
 namespace panda::es2panda::ir {
+void StringLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void StringLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void StringLiteral::Dump(ir::AstDumper *dumper) const

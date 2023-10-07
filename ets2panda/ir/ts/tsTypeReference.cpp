@@ -28,6 +28,15 @@
 #include "ir/ts/tsQualifiedName.h"
 
 namespace panda::es2panda::ir {
+void TSTypeReference::TransformChildren(const NodeTransformer &cb)
+{
+    if (type_params_ != nullptr) {
+        type_params_ = cb(type_params_)->AsTSTypeParameterInstantiation();
+    }
+
+    type_name_ = cb(type_name_)->AsExpression();
+}
+
 void TSTypeReference::Iterate(const NodeTraverser &cb) const
 {
     if (type_params_ != nullptr) {

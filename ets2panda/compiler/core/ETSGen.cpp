@@ -195,9 +195,12 @@ void ETSGen::MoveVreg(const ir::AstNode *const node, const VReg vd, const VReg v
 
 util::StringView ETSGen::FormDynamicModulePropReference(const binder::Variable *var)
 {
-    ASSERT(util::Helpers::IsDynamicModuleVariable(var) || util::Helpers::IsDynamicNamespaceVariable(var));
+    ASSERT(Binder()->IsDynamicModuleVariable(var) || Binder()->IsDynamicNamespaceVariable(var));
 
-    auto *import = var->Declaration()->Node()->Parent()->AsETSImportDeclaration();
+    auto *data = Binder()->DynamicImportDataForVar(var);
+    ASSERT(data != nullptr);
+
+    auto *import = data->import;
 
     return FormDynamicModulePropReference(import);
 }
@@ -227,14 +230,15 @@ void ETSGen::LoadDynamicModuleVariable(const ir::AstNode *node, binder::Variable
 {
     RegScope rs(this);
 
-    auto *import = util::Helpers::ImportDeclarationForDynamicVar(var);
+    auto *data = Binder()->DynamicImportDataForVar(var);
+    auto *import = data->import;
 
     LoadStaticProperty(node, var->TsType(), FormDynamicModulePropReference(var));
 
     auto obj_reg = AllocReg();
     StoreAccumulator(node, obj_reg);
 
-    auto *id = var->Declaration()->Node()->AsImportSpecifier()->Imported();
+    auto *id = data->specifier->AsImportSpecifier()->Imported();
     auto lang = import->Language();
     LoadPropertyDynamic(node, Checker()->GlobalBuiltinDynamicType(lang), obj_reg, id->Name(), lang);
 
@@ -250,12 +254,12 @@ void ETSGen::LoadDynamicNamespaceVariable(const ir::AstNode *node, binder::Varia
 
 void ETSGen::LoadVar(const ir::AstNode *node, binder::Variable const *const var)
 {
-    if (util::Helpers::IsDynamicModuleVariable(var)) {
+    if (Binder()->IsDynamicModuleVariable(var)) {
         LoadDynamicModuleVariable(node, var);
         return;
     }
 
-    if (util::Helpers::IsDynamicNamespaceVariable(var)) {
+    if (Binder()->IsDynamicNamespaceVariable(var)) {
         LoadDynamicNamespaceVariable(node, var);
         return;
     }
@@ -431,6 +435,7 @@ void ETSGen::LoadProperty(const ir::AstNode *const node, const checker::Type *pr
 void ETSGen::StorePropertyDynamic(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
                                   const util::StringView &prop_name, Language lang)
 {
+    auto *type = prop_type;
     std::string_view method_name {};
     if (prop_type->IsETSBooleanType()) {
         method_name = Signatures::Dynamic::SetPropertyBooleanBuiltin(lang);
@@ -451,8 +456,8 @@ void ETSGen::StorePropertyDynamic(const ir::AstNode *node, const checker::Type *
     } else if (prop_type->IsETSStringType()) {
         method_name = Signatures::Dynamic::SetPropertyStringBuiltin(lang);
     } else if (prop_type->IsETSObjectType()) {
-        ASSERT(prop_type->IsETSDynamicType());
         method_name = Signatures::Dynamic::SetPropertyDynamicBuiltin(lang);
+        type = Checker()->GlobalBuiltinDynamicType(lang);
     } else {
         ASSERT_PRINT(false, "Unsupported property type");
     }
@@ -461,6 +466,11 @@ void ETSGen::StorePropertyDynamic(const ir::AstNode *node, const checker::Type *
 
     // Load property value
     VReg prop_value_reg = AllocReg();
+
+    if (prop_type != type && !prop_type->IsETSDynamicType()) {
+        CastToDynamic(node, type->AsETSDynamicType());
+    }
+
     StoreAccumulator(node, prop_value_reg);
 
     // Load property name
@@ -476,6 +486,7 @@ void ETSGen::StorePropertyDynamic(const ir::AstNode *node, const checker::Type *
 void ETSGen::LoadPropertyDynamic(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
                                  const util::StringView &prop_name, Language lang)
 {
+    auto *type = prop_type;
     std::string_view method_name {};
     if (prop_type->IsETSBooleanType()) {
         method_name = Signatures::Dynamic::GetPropertyBooleanBuiltin(lang);
@@ -496,8 +507,8 @@ void ETSGen::LoadPropertyDynamic(const ir::AstNode *node, const checker::Type *p
     } else if (prop_type->IsETSStringType()) {
         method_name = Signatures::Dynamic::GetPropertyStringBuiltin(lang);
     } else if (prop_type->IsETSObjectType()) {
-        ASSERT(prop_type->IsETSDynamicType());
         method_name = Signatures::Dynamic::GetPropertyDynamicBuiltin(lang);
+        type = Checker()->GlobalBuiltinDynamicType(lang);
     } else {
         ASSERT_PRINT(false, "Unsupported property type");
     }
@@ -511,7 +522,11 @@ void ETSGen::LoadPropertyDynamic(const ir::AstNode *node, const checker::Type *p
 
     // Get property by name
     Ra().Emit<CallShort, 2>(node, method_name, obj_reg, prop_name_object);
-    SetAccumulatorType(prop_type);
+    SetAccumulatorType(type);
+
+    if (prop_type != type && !prop_type->IsETSDynamicType()) {
+        CastDynamicToObject(node, prop_type);
+    }
 }
 
 void ETSGen::StoreElementDynamic(const ir::AstNode *node, VReg object_reg, VReg index, Language lang)
@@ -816,6 +831,8 @@ void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targe
             CastToLong(node);
             break;
         }
+        case checker::TypeFlag::ETS_ARRAY:
+            [[fallthrough]];
         case checker::TypeFlag::ETS_OBJECT: {
             if (GetAccumulatorType() != nullptr && GetAccumulatorType()->IsETSDynamicType()) {
                 CastDynamicToObject(node, target_type);
@@ -1434,8 +1451,18 @@ void ETSGen::CastToArrayOrObject(const ir::AstNode *const node, const checker::T
     ASSERT(GetAccumulatorType()->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT));
 
     const auto *const source_type = GetAccumulatorType();
+    if (source_type->IsETSDynamicType() && target_type->IsETSDynamicType()) {
+        SetAccumulatorType(target_type);
+        return;
+    }
+
     if (source_type->IsETSDynamicType()) {
         CastDynamicToObject(node, target_type);
+        return;
+    }
+
+    if (target_type->IsETSDynamicType()) {
+        CastToDynamic(node, target_type->AsETSDynamicType());
         return;
     }
 
@@ -1465,8 +1492,27 @@ void ETSGen::CastDynamicToObject(const ir::AstNode *node, const checker::Type *t
         return;
     }
 
-    if (target_type->IsETSObjectType()) {
-        CastDynamicTo(node, checker::TypeFlag::OBJECT);
+    if (target_type == Checker()->GlobalETSObjectType()) {
+        SetAccumulatorType(target_type);
+        return;
+    }
+
+    if (target_type->IsETSArrayType() || target_type->IsETSObjectType()) {
+        auto lang = GetAccumulatorType()->AsETSDynamicType()->Language();
+        auto method_name = compiler::Signatures::Dynamic::GetObjectBuiltin(lang);
+
+        RegScope rs(this);
+        VReg dyn_obj_reg = AllocReg();
+        StoreAccumulator(node, dyn_obj_reg);
+
+        VReg type_reg = AllocReg();
+        std::stringstream ss;
+        target_type->ToAssemblerTypeWithRank(ss);
+        Sa().Emit<LdaType>(node, util::UString(ss.str(), Allocator()).View());
+        StoreAccumulator(node, type_reg);
+
+        Ra().Emit<CallShort, 2>(node, method_name, dyn_obj_reg, type_reg);
+        SetAccumulatorType(target_type);
         return;
     }
 
@@ -1525,10 +1571,16 @@ void ETSGen::CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicTyp
         case checker::TypeFlag::ETS_OBJECT: {
             if (GetAccumulatorType()->IsETSStringType()) {
                 method_name = compiler::Signatures::Dynamic::NewStringBuiltin(type->Language());
+                break;
             }
             if (GetAccumulatorType()->IsLambdaObject()) {
                 method_name = Signatures::BUILTIN_JSRUNTIME_CREATE_LAMBDA_PROXY;
+                break;
             }
+            [[fallthrough]];
+        }
+        case checker::TypeFlag::ETS_ARRAY: {
+            method_name = compiler::Signatures::Dynamic::NewObjectBuiltin(type->Language());
             break;
         }
         case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
@@ -1538,6 +1590,8 @@ void ETSGen::CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicTyp
             UNREACHABLE();
         }
     }
+
+    ASSERT(!method_name.empty());
 
     RegScope rs(this);
     // Load value

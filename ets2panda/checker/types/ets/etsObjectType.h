@@ -441,6 +441,11 @@ public:
         properties_instantiated_ = true;
     }
 
+    [[nodiscard]] bool IsGeneric() const noexcept
+    {
+        return !type_arguments_.empty();
+    }
+
     std::vector<const binder::LocalVariable *> ForeignProperties() const;
     binder::LocalVariable *GetProperty(const util::StringView &name, PropertySearchFlags flags) const;
     std::vector<binder::LocalVariable *> GetAllProperties() const;
@@ -493,6 +498,9 @@ public:
     {
         return allocator_;
     }
+
+protected:
+    virtual ETSFunctionType *CreateETSFunctionType(const util::StringView &name) const;
 
 private:
     template <size_t... IS>

@@ -85,97 +85,6 @@
             "rule": "\"globalThis\" is not supported (arkts-no-globalthis)"
         },
         {
-            "line": 43,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 44,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 45,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 45,
-            "column": 31,
-            "problem": "ObjectLiteralNoContextType",
-            "suggest": "",
-            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
-        },
-        {
-            "line": 46,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 48,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 49,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 50,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 51,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 52,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 53,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 54,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 55,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
             "line": 56,
             "column": 1,
             "problem": "LimitedStdLibApi",
@@ -197,14 +106,14 @@
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
-            "line": 59,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
+            "line": 58,
+            "column": 31,
+            "problem": "ObjectLiteralNoContextType",
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
         {
-            "line": 60,
+            "line": 59,
             "column": 1,
             "problem": "LimitedStdLibApi",
             "suggest": "",
@@ -232,6 +141,20 @@
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
+            "line": 64,
+            "column": 1,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 65,
+            "column": 1,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
             "line": 66,
             "column": 1,
             "problem": "LimitedStdLibApi",
@@ -246,13 +169,6 @@
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
-            "line": 67,
-            "column": 32,
-            "problem": "ClassAsObject",
-            "suggest": "",
-            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)"
-        },
-        {
             "line": 68,
             "column": 1,
             "problem": "LimitedStdLibApi",
@@ -260,14 +176,14 @@
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
-            "line": 68,
-            "column": 32,
-            "problem": "ObjectLiteralNoContextType",
+            "line": 69,
+            "column": 1,
+            "problem": "LimitedStdLibApi",
             "suggest": "",
-            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
-            "line": 69,
+            "line": 70,
             "column": 1,
             "problem": "LimitedStdLibApi",
             "suggest": "",
@@ -309,112 +225,196 @@
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
-            "line": 78,
-            "column": 32,
-            "problem": "ObjectLiteralNoContextType",
-            "suggest": "",
-            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
-        },
-        {
-            "line": 79,
-            "column": 20,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 80,
-            "column": 24,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 81,
-            "column": 29,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 81,
-            "column": 63,
-            "problem": "ObjectLiteralNoContextType",
-            "suggest": "",
-            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
-        },
-        {
-            "line": 82,
-            "column": 29,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 83,
-            "column": 18,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 84,
-            "column": 39,
+            "line": 76,
+            "column": 1,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 85,
-            "column": 29,
+            "column": 1,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 86,
-            "column": 18,
+            "column": 1,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 86,
+            "column": 32,
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)"
+        },
+        {
+            "line": 87,
+            "column": 1,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 87,
-            "column": 27,
-            "problem": "LimitedStdLibApi",
+            "column": 32,
+            "problem": "ObjectLiteralNoContextType",
             "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
         {
             "line": 88,
-            "column": 22,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 89,
-            "column": 32,
+            "column": 1,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 90,
-            "column": 18,
+            "column": 1,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 91,
-            "column": 29,
+            "column": 1,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 92,
+            "column": 1,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 93,
+            "column": 1,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 94,
+            "column": 1,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 104,
+            "column": 32,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 105,
+            "column": 20,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 106,
+            "column": 24,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 107,
+            "column": 29,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 107,
+            "column": 63,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 108,
+            "column": 29,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 109,
+            "column": 18,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 110,
+            "column": 39,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 111,
+            "column": 29,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 112,
+            "column": 18,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 113,
+            "column": 27,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 114,
+            "column": 22,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 115,
+            "column": 32,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 116,
+            "column": 18,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 117,
+            "column": 29,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 120,
             "column": 1,
             "problem": "LimitedStdLibApi",
             "suggest": "",

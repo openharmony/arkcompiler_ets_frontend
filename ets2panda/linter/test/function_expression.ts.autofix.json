@@ -210,7 +210,14 @@
             "line": 60,
             "column": 18,
             "problem": "FunctionExpression",
-            "autofixable": false,
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1311,
+                    "end": 1354,
+                    "replacementText": "async () => {\n    console.log('baz!');\n}"
+                }
+            ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },

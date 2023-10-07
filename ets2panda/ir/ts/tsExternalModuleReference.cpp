@@ -18,6 +18,11 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void TSExternalModuleReference::TransformChildren(const NodeTransformer &cb)
+{
+    expr_ = cb(expr_)->AsExpression();
+}
+
 void TSExternalModuleReference::Iterate(const NodeTraverser &cb) const
 {
     cb(expr_);

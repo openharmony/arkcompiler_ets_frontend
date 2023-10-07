@@ -20,6 +20,19 @@
 #include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
+void TSTypeParameter::TransformChildren(const NodeTransformer &cb)
+{
+    name_ = cb(name_)->AsIdentifier();
+
+    if (constraint_ != nullptr) {
+        constraint_ = static_cast<TypeNode *>(cb(constraint_));
+    }
+
+    if (default_type_ != nullptr) {
+        default_type_ = static_cast<TypeNode *>(cb(default_type_));
+    }
+}
+
 void TSTypeParameter::Iterate(const NodeTraverser &cb) const
 {
     cb(name_);

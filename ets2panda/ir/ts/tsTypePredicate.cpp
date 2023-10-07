@@ -20,6 +20,14 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
+void TSTypePredicate::TransformChildren(const NodeTransformer &cb)
+{
+    parameter_name_ = cb(parameter_name_)->AsExpression();
+    if (type_annotation_ != nullptr) {
+        type_annotation_ = static_cast<TypeNode *>(cb(type_annotation_));
+    }
+}
+
 void TSTypePredicate::Iterate(const NodeTraverser &cb) const
 {
     cb(parameter_name_);

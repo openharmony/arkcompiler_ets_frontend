@@ -23,6 +23,7 @@ class TSThisType : public TypeNode {
 public:
     explicit TSThisType() : TypeNode(AstNodeType::TS_THIS_TYPE) {}
 
+    void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;

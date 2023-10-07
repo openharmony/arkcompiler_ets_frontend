@@ -67,6 +67,37 @@ bool ClassDefinition::HasMatchingPrivateKey(const util::StringView &name) const
     });
 }
 
+void ClassDefinition::TransformChildren(const NodeTransformer &cb)
+{
+    if (ident_ != nullptr) {
+        ident_ = cb(ident_)->AsIdentifier();
+    }
+
+    if (type_params_ != nullptr) {
+        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
+    }
+
+    if (super_class_ != nullptr) {
+        super_class_ = cb(super_class_)->AsExpression();
+    }
+
+    if (super_type_params_ != nullptr) {
+        super_type_params_ = cb(super_type_params_)->AsTSTypeParameterInstantiation();
+    }
+
+    for (auto *&it : implements_) {
+        it = cb(it)->AsTSClassImplements();
+    }
+
+    if (ctor_ != nullptr) {
+        ctor_ = cb(ctor_)->AsMethodDefinition();
+    }
+
+    for (auto *&it : body_) {
+        it = cb(it);
+    }
+}
+
 void ClassDefinition::Iterate(const NodeTraverser &cb) const
 {
     if (ident_ != nullptr) {

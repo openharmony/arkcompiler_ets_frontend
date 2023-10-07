@@ -21,6 +21,11 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
+void ThrowStatement::TransformChildren(const NodeTransformer &cb)
+{
+    argument_ = cb(argument_)->AsExpression();
+}
+
 void ThrowStatement::Iterate(const NodeTraverser &cb) const
 {
     cb(argument_);

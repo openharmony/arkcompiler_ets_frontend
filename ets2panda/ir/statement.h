@@ -28,6 +28,8 @@ public:
         return true;
     }
 
+    virtual void SetReturnType([[maybe_unused]] checker::ETSChecker *checker, [[maybe_unused]] checker::Type *type) {}
+
 protected:
     explicit Statement(AstNodeType type) : AstNode(type) {}
     explicit Statement(AstNodeType type, ModifierFlags flags) : AstNode(type, flags) {}

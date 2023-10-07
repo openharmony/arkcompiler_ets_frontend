@@ -135,10 +135,6 @@ public:
     template <typename... Elements>
     static std::string AppendAll(Elements &&...elems);
 
-    static bool IsDynamicModuleVariable(const binder::Variable *var);
-    static bool IsDynamicNamespaceVariable(const binder::Variable *var);
-    static const ir::ETSImportDeclaration *ImportDeclarationForDynamicVar(const binder::Variable *var);
-
     static std::pair<std::string_view, std::string_view> SplitSignature(std::string_view signature);
 
 private:

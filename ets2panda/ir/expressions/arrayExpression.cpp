@@ -133,6 +133,21 @@ ValidationInfo ArrayExpression::ValidateExpression()
     return info;
 }
 
+void ArrayExpression::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : decorators_) {
+        it = cb(it)->AsDecorator();
+    }
+
+    for (auto *&it : elements_) {
+        it = cb(it)->AsExpression();
+    }
+
+    if (TypeAnnotation() != nullptr) {
+        SetTsTypeAnnotation(static_cast<TypeNode *>(cb(TypeAnnotation())));
+    }
+}
+
 void ArrayExpression::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : decorators_) {
@@ -432,6 +447,10 @@ checker::Type *ArrayExpression::CheckPattern(checker::TSChecker *checker)
 
 checker::Type *ArrayExpression::Check(checker::ETSChecker *checker)
 {
+    if (TsType() != nullptr) {
+        return TsType();
+    }
+
     if (!elements_.empty()) {
         if (preferred_type_ == nullptr) {
             preferred_type_ = elements_[0]->Check(checker);

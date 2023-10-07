@@ -22,6 +22,14 @@
 #include "ir/module/importDeclaration.h"
 
 namespace panda::es2panda::ir {
+void ImportSpecifier::TransformChildren(const NodeTransformer &cb)
+{
+    if (local_ != nullptr) {
+        local_ = cb(local_)->AsIdentifier();
+    }
+    imported_ = cb(imported_)->AsIdentifier();
+}
+
 void ImportSpecifier::Iterate(const NodeTraverser &cb) const
 {
     if (local_ != nullptr) {

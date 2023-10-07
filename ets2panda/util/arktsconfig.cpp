@@ -257,7 +257,8 @@ bool ArkTsConfig::Parse()
                 auto has_decl_value = data->get()->GetValue<JsonObject::BoolT>(HAS_DECL);
                 CHECK(has_decl_value, false, "Invalid 'hasDecl' value for dynamic path with key '" << key << "'");
 
-                auto res = dynamic_paths_.insert({key, DynamicImportData(*lang, *has_decl_value)});
+                auto normalized_key = panda::os::NormalizePath(key);
+                auto res = dynamic_paths_.insert({normalized_key, DynamicImportData(*lang, *has_decl_value)});
                 CHECK(res.second, false, "Duplicated dynamic path '" << key << "' for key '" << key << "'");
             }
         }
@@ -308,6 +309,32 @@ void ArkTsConfig::Inherit(const ArkTsConfig &base)
     include_ = base.include_;
     exclude_ = base.exclude_;
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
+}
+
+// Remove '/' and '*' from the end of path
+static std::string TrimPath(const std::string &path)
+{
+    std::string trimmed_path = path;
+    while (!trimmed_path.empty() && (trimmed_path.back() == '*' || trimmed_path.back() == '/')) {
+        trimmed_path.pop_back();
+    }
+    return trimmed_path;
+}
+
+std::string ArkTsConfig::ResolvePath(const std::string &path)
+{
+    for (const auto &[alias, paths] : paths_) {
+        auto trimmed_alias = TrimPath(alias);
+        size_t pos = path.rfind(trimmed_alias, 0);
+        if (pos == 0) {
+            std::string resolved = path;
+            // TODO(ivagin): arktsconfig contains array of paths for each prefix, for now just get first one
+            std::string new_prefix = TrimPath(paths[0]);
+            resolved.replace(pos, trimmed_alias.length(), new_prefix);
+            return resolved;
+        }
+    }
+    return "";
 }
 
 #ifdef ARKTSCONFIG_USE_FILESYSTEM

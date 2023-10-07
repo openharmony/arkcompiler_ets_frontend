@@ -19,6 +19,11 @@
 #include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
+void TSLiteralType::TransformChildren(const NodeTransformer &cb)
+{
+    literal_ = cb(literal_)->AsExpression();
+}
+
 void TSLiteralType::Iterate(const NodeTraverser &cb) const
 {
     cb(literal_);

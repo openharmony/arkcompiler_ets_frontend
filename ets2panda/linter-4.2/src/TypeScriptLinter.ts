@@ -857,12 +857,11 @@ export class TypeScriptLinter {
     const isGeneric =
       funcExpr.typeParameters !== undefined &&
       funcExpr.typeParameters.length > 0;
-    const isAsync = this.tsUtils.hasModifier(funcExpr.modifiers, ts.SyntaxKind.AsyncKeyword);
     const isCalledRecursively = this.tsUtils.isFunctionCalledRecursively(funcExpr);
     const [hasUnfixableReturnType, newRetTypeNode] =
       this.handleMissingReturnType(funcExpr);
     const autofixable = !isGeneric && !isGenerator && !containsThis && !hasUnfixableReturnType &&
-      !isAsync && !isCalledRecursively;
+      !isCalledRecursively;
     let autofix: Autofix[] | undefined;
     if (
       autofixable &&
@@ -872,7 +871,8 @@ export class TypeScriptLinter {
         Autofixer.fixFunctionExpression(
           funcExpr,
           funcExpr.parameters,
-          newRetTypeNode
+          newRetTypeNode,
+          funcExpr.modifiers
         ),
       ];
     }

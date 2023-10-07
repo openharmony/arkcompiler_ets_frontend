@@ -21,6 +21,19 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
+void TSModuleDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : decorators_) {
+        it = cb(it)->AsDecorator();
+    }
+
+    name_ = cb(name_)->AsExpression();
+
+    if (body_ != nullptr) {
+        body_ = cb(body_)->AsStatement();
+    }
+}
+
 void TSModuleDeclaration::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : decorators_) {

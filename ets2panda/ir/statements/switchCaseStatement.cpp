@@ -19,6 +19,17 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
+void SwitchCaseStatement::TransformChildren(const NodeTransformer &cb)
+{
+    if (test_ != nullptr) {
+        test_ = cb(test_)->AsExpression();
+    }
+
+    for (auto *&it : consequent_) {
+        it = cb(it)->AsStatement();
+    }
+}
+
 void SwitchCaseStatement::Iterate(const NodeTraverser &cb) const
 {
     if (test_ != nullptr) {

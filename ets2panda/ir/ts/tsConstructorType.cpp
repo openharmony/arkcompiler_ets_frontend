@@ -23,6 +23,19 @@
 #include "ir/ts/tsTypeParameterDeclaration.h"
 
 namespace panda::es2panda::ir {
+void TSConstructorType::TransformChildren(const NodeTransformer &cb)
+{
+    if (type_params_ != nullptr) {
+        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
+    }
+
+    for (auto *&it : params_) {
+        it = cb(it)->AsExpression();
+    }
+
+    return_type_ = static_cast<TypeNode *>(cb(return_type_));
+}
+
 void TSConstructorType::Iterate(const NodeTraverser &cb) const
 {
     if (type_params_ != nullptr) {

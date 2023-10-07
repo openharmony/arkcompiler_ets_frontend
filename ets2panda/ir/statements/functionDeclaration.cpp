@@ -29,6 +29,15 @@
 #include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
+void FunctionDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : decorators_) {
+        it = cb(it)->AsDecorator();
+    }
+
+    func_ = cb(func_)->AsScriptFunction();
+}
+
 void FunctionDeclaration::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : decorators_) {

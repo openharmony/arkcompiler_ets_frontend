@@ -27,6 +27,12 @@ void TSQualifiedName::Iterate(const NodeTraverser &cb) const
     cb(right_);
 }
 
+void TSQualifiedName::TransformChildren(const NodeTransformer &cb)
+{
+    left_ = cb(left_)->AsExpression();
+    right_ = cb(right_)->AsIdentifier();
+}
+
 void TSQualifiedName::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSQualifiedName"}, {"left", left_}, {"right", right_}});

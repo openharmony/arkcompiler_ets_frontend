@@ -18,6 +18,14 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void TSConditionalType::TransformChildren(const NodeTransformer &cb)
+{
+    check_type_ = cb(check_type_)->AsExpression();
+    extends_type_ = cb(extends_type_)->AsExpression();
+    true_type_ = cb(true_type_)->AsExpression();
+    false_type_ = cb(false_type_)->AsExpression();
+}
+
 void TSConditionalType::Iterate(const NodeTraverser &cb) const
 {
     cb(check_type_);

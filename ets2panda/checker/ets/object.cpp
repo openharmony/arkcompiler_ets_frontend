@@ -697,9 +697,11 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *class_def)
         return;
     }
 
-    for (auto *it : class_type->ConstructSignatures()) {
-        CheckCyclicConstructorCall(it);
-        CheckImplicitSuper(class_type, it);
+    if (!class_def->IsDeclare()) {
+        for (auto *it : class_type->ConstructSignatures()) {
+            CheckCyclicConstructorCall(it);
+            CheckImplicitSuper(class_type, it);
+        }
     }
 
     ValidateOverriding(class_type, class_def->Start());
@@ -915,6 +917,10 @@ Type *ETSChecker::CheckArrayElementAccess(ir::MemberExpression *expr)
 
 ETSObjectType *ETSChecker::CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *class_type, std::string_view msg)
 {
+    if ((Context().Status() & CheckerStatus::IGNORE_VISIBILITY) != 0U) {
+        return class_type;
+    }
+
     if (node->Parent()->IsCallExpression() && (node->Parent()->AsCallExpression()->Callee() == node)) {
         if (Context().ContainingSignature() == nullptr) {
             ThrowTypeError({"Call to '", msg, "' must be first statement in constructor"}, node->Start());
@@ -1029,26 +1035,11 @@ void ETSChecker::ValidateResolvedProperty(const binder::LocalVariable *const pro
     }
 }
 
-void ETSChecker::CreateBinaryExpressionForSetter(ir::Expression *member)
-{
-    ASSERT(member->Parent()->IsAssignmentExpression());
-
-    auto *assignment_expr = member->Parent()->AsAssignmentExpression();
-    if (GetOperatorForSetterGetter(assignment_expr)) {
-        assignment_expr->CreateBinaryExpressionForRight(this);
-
-        if (member->IsMemberExpression() &&
-            member->AsMemberExpression()->HasMemberKind(ir::MemberExpressionKind::GETTER)) {
-            member->AsMemberExpression()->RemoveMemberKind(ir::MemberExpressionKind::GETTER);
-        }
-    }
-}
-
 // NOLINTNEXTLINE(readability-function-size)
 binder::LocalVariable *ETSChecker::ResolveMemberReference(const ir::MemberExpression *const member_expr,
                                                           const ETSObjectType *const target)
 {
-    if (target->IsETSDynamicType()) {
+    if (target->IsETSDynamicType() && !target->AsETSDynamicType()->HasDecl()) {
         auto prop_name = member_expr->Property()->AsIdentifier()->Name();
         binder::LocalVariable *prop_var = target->AsETSDynamicType()->GetPropertyDynamic(prop_name, this);
         return prop_var;

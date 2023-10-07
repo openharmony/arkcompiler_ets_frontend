@@ -22,6 +22,13 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void ConditionalExpression::TransformChildren(const NodeTransformer &cb)
+{
+    test_ = cb(test_)->AsExpression();
+    consequent_ = cb(consequent_)->AsExpression();
+    alternate_ = cb(alternate_)->AsExpression();
+}
+
 void ConditionalExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(test_);
@@ -84,6 +91,10 @@ checker::Type *ConditionalExpression::Check(checker::TSChecker *checker)
 
 checker::Type *ConditionalExpression::Check(checker::ETSChecker *checker)
 {
+    if (TsType() != nullptr) {
+        return TsType();
+    }
+
     checker->CheckTruthinessOfType(test_);
 
     checker::Type *consequent_type = consequent_->Check(checker);

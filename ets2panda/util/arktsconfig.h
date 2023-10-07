@@ -78,8 +78,9 @@ public:
     };
 
     explicit ArkTsConfig(std::string config_path) : config_path_(std::move(config_path)) {}
-    // Argument is only needed to check the consistency between arktsconfig and CLI options
     bool Parse();
+
+    std::string ResolvePath(const std::string &path);
 
     std::string ConfigPath() const
     {

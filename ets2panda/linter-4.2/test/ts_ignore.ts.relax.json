@@ -30,6 +30,46 @@
             "problem": "ErrorSuppression"
         },
         {
+            "line": 30,
+            "column": 9,
+            "problem": "ErrorSuppression"
+        },
+        {
+            "line": 33,
+            "column": 2,
+            "problem": "ErrorSuppression"
+        },
+        {
+            "line": 43,
+            "column": 9,
+            "problem": "ErrorSuppression"
+        },
+        {
+            "line": 52,
+            "column": 3,
+            "problem": "ErrorSuppression"
+        },
+        {
+            "line": 53,
+            "column": 3,
+            "problem": "AnyType"
+        },
+        {
+            "line": 55,
+            "column": 22,
+            "problem": "AnyType"
+        },
+        {
+            "line": 56,
+            "column": 9,
+            "problem": "ErrorSuppression"
+        },
+        {
+            "line": 58,
+            "column": 9,
+            "problem": "ErrorSuppression"
+        },
+        {
             "line": 18,
             "column": 5,
             "problem": "StrictDiagnostic"

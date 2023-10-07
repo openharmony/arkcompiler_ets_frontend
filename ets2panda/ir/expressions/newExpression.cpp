@@ -23,6 +23,15 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void NewExpression::TransformChildren(const NodeTransformer &cb)
+{
+    callee_ = cb(callee_)->AsExpression();
+
+    for (auto *&it : arguments_) {
+        it = cb(it)->AsExpression();
+    }
+}
+
 void NewExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(callee_);

@@ -28,6 +28,11 @@
 #include "ir/expressions/memberExpression.h"
 
 namespace panda::es2panda::ir {
+void UpdateExpression::TransformChildren(const NodeTransformer &cb)
+{
+    argument_ = cb(argument_)->AsExpression();
+}
+
 void UpdateExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(argument_);
@@ -113,6 +118,10 @@ checker::Type *UpdateExpression::Check(checker::TSChecker *checker)
 
 checker::Type *UpdateExpression::Check(checker::ETSChecker *checker)
 {
+    if (TsType() != nullptr) {
+        return TsType();
+    }
+
     checker::Type *operand_type = argument_->Check(checker);
     if (argument_->IsIdentifier()) {
         checker->ValidateUnaryOperatorOperand(argument_->AsIdentifier()->Variable());

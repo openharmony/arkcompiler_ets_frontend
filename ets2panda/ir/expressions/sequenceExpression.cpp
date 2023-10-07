@@ -19,6 +19,13 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void SequenceExpression::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : sequence_) {
+        it = cb(it)->AsExpression();
+    }
+}
+
 void SequenceExpression::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : sequence_) {
@@ -53,6 +60,10 @@ checker::Type *SequenceExpression::Check([[maybe_unused]] checker::TSChecker *ch
 
 checker::Type *SequenceExpression::Check(checker::ETSChecker *checker)
 {
+    if (TsType() != nullptr) {
+        return TsType();
+    }
+
     for (auto *it : sequence_) {
         it->Check(checker);
     }

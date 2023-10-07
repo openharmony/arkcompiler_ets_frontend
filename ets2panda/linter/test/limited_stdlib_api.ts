@@ -30,9 +30,22 @@ unescape('');
 
 global.eval('console.log("foo")');
 globalThis.eval('console.log("foo")');
+const evl = "eval('console.log(1)')";
+const res: void = Function(evl)();
+const arr1 = ['foo', 'foo', 'foo'];
 
 class C {}
 let c = new C();
+interface Obj {
+    a: string;
+    b: number;
+    c: boolean;
+}
+const object1: Obj = {
+    a: 'somestring',
+    b: 42,
+    c: false,
+};
 
 /// Object
 //Object.__proto__(),
@@ -44,7 +57,7 @@ Object.assign<C, C>(c, c);
 Object.create(c);
 Object.defineProperties<C>(c, {});
 Object.defineProperty<C>(c, 'p', c);
-// Object.entries<C>([]);
+Object.entries<C>([]);
 Object.freeze(() => {});
 Object.fromEntries<number>([]);
 Object.getOwnPropertyDescriptor(c, 'p');
@@ -61,6 +74,12 @@ Object.preventExtensions<C>(c);
 Object.propertyIsEnumerable('p');
 Object.seal<C>(c);
 Object.setPrototypeOf(c, c);
+console.log(Object.getOwnPropertyNames(object1));
+console.log(Object.hasOwn(object1, 'a'));
+console.log(Object.hasOwn(object1, 'toString'));
+console.log(Object.keys(object1));
+console.log(Object.values(object1));
+console.log(Object.entries(object1));
 
 /// Reflect
 Reflect.apply<C, number[], void>(() => {}, c, []);
@@ -73,6 +92,13 @@ Reflect.getPrototypeOf(c);
 Reflect.isExtensible(c);
 Reflect.preventExtensions(c);
 Reflect.setPrototypeOf(c, c);
+console.log(Reflect.has(object1, 'a'));
+console.log(Reflect.has(object1, 'toString'));
+console.log(Reflect.get(object1, 'a'));
+console.log(Reflect.get(object1, 'd'));
+console.log(Reflect.ownKeys(object1));
+Reflect.set(object1, 'b', 43);
+Reflect.set(arr1, 2, 'bar');
 
 /// Proxy
 let handler: ProxyHandler<C> = {};
@@ -92,3 +118,6 @@ if (handler.setPrototypeOf) handler.setPrototypeOf(c, null);
 
 /// Array
 ArrayBuffer.isView({});
+let a: number[] = [];
+let b = new ArrayBuffer(1);
+Array.isArray(a);

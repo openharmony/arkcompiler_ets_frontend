@@ -24,6 +24,21 @@
 #include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
+void TSSignatureDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    if (type_params_ != nullptr) {
+        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
+    }
+
+    for (auto *&it : params_) {
+        it = cb(it)->AsExpression();
+    }
+
+    if (return_type_annotation_ != nullptr) {
+        return_type_annotation_ = static_cast<TypeNode *>(cb(return_type_annotation_));
+    }
+}
+
 void TSSignatureDeclaration::Iterate(const NodeTraverser &cb) const
 {
     if (type_params_ != nullptr) {

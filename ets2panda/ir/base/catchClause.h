@@ -16,11 +16,8 @@
 #ifndef ES2PANDA_IR_BASE_CATCH_CLAUSE_H
 #define ES2PANDA_IR_BASE_CATCH_CLAUSE_H
 
+#include "binder/scope.h"
 #include "ir/statement.h"
-
-namespace panda::es2panda::binder {
-class CatchScope;
-}  // namespace panda::es2panda::binder
 
 namespace panda::es2panda::ir {
 class BlockStatement;
@@ -53,12 +50,18 @@ public:
         return body_;
     }
 
-    binder::CatchScope *Scope() const
+    bool IsScopeBearer() const override
+    {
+        return true;
+    }
+
+    binder::CatchScope *Scope() const override
     {
         return scope_;
     }
 
     bool IsDefaultCatchClause() const;
+    void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;

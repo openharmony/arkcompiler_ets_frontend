@@ -22,6 +22,11 @@
 #include "compiler/core/ETSGen.h"
 
 namespace panda::es2panda::ir {
+void ETSClassLiteral::TransformChildren(const NodeTransformer &cb)
+{
+    expr_ = static_cast<TypeNode *>(cb(expr_));
+}
+
 void ETSClassLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const
 {
     cb(expr_);

@@ -20,6 +20,11 @@
 #include "ir/ts/tsTypeParameterInstantiation.h"
 
 namespace panda::es2panda::ir {
+void TSClassImplements::TransformChildren(const NodeTransformer &cb)
+{
+    expression_ = cb(expression_)->AsExpression();
+}
+
 void TSClassImplements::Iterate(const NodeTraverser &cb) const
 {
     cb(expression_);

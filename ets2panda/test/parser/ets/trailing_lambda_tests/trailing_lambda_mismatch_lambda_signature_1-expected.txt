@@ -511,4 +511,4 @@
     }
   }
 }
-TypeError: Return statements return type is not compatible with the containing functions return type [trailing_lambda_mismatch_lambda_signature_1.ets:22:16]
+TypeError: Unexpected return value, enclosing method return type is void. [trailing_lambda_mismatch_lambda_signature_1.ets:22:16]

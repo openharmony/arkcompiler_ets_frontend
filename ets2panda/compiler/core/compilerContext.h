@@ -90,6 +90,11 @@ public:
         return buff_storage_;
     }
 
+    const CompilerOptions *Options() const
+    {
+        return &options_;
+    }
+
     bool IsDebug() const
     {
         return options_.is_debug;

@@ -23,6 +23,8 @@
 #include "ir/expression.h"
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/identifier.h"
+#include "ir/statements/blockStatement.h"
+#include "ir/statements/returnStatement.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/typeNode.h"
 #include "checker/ETSchecker.h"
@@ -70,6 +72,20 @@ void MethodDefinition::Iterate(const NodeTraverser &cb) const
 
     for (auto *it : decorators_) {
         cb(it);
+    }
+}
+
+void MethodDefinition::TransformChildren(const NodeTransformer &cb)
+{
+    key_ = cb(key_)->AsExpression();
+    value_ = cb(value_)->AsExpression();
+
+    for (auto *&it : overloads_) {
+        it = cb(it)->AsMethodDefinition();
+    }
+
+    for (auto *&it : decorators_) {
+        it = cb(it)->AsDecorator();
     }
 }
 
@@ -130,8 +146,12 @@ checker::Type *MethodDefinition::Check(checker::ETSChecker *checker)
 
     // TODO(aszilagyi): make it correctly check for open function not have body
     if (!script_func->HasBody() &&
-        !(IsAbstract() || IsNative() || checker->HasStatus(checker::CheckerStatus::IN_INTERFACE))) {
-        checker->ThrowTypeError("Only abstract or native methods can't have body", script_func->Start());
+        !(IsAbstract() || IsNative() || IsDeclare() || checker->HasStatus(checker::CheckerStatus::IN_INTERFACE))) {
+        checker->ThrowTypeError("Only abstract or native methods can't have body.", script_func->Start());
+    }
+
+    if (script_func->ReturnTypeAnnotation() == nullptr && (IsNative() || (IsDeclare() && !IsConstructor()))) {
+        checker->ThrowTypeError("Native and Declare methods should have explicit return type.", script_func->Start());
     }
 
     if (TsType() == nullptr) {
@@ -148,16 +168,16 @@ checker::Type *MethodDefinition::Check(checker::ETSChecker *checker)
         checker->ThrowTypeError("'Native' modifier is invalid for Accessors", script_func->Start());
     }
 
+    if (script_func->HasBody() && (IsNative() || IsAbstract() || IsDeclare())) {
+        checker->ThrowTypeError("Native, Abstract and Declare methods cannot have body.", script_func->Body()->Start());
+    }
+
     if (script_func->IsAsyncFunc()) {
         auto *ret_type = static_cast<checker::ETSObjectType *>(script_func->Signature()->ReturnType());
         if (ret_type->AssemblerName() != checker->GlobalBuiltinPromiseType()->AssemblerName()) {
-            checker->ThrowTypeError("Return type of async function must be 'Promise'", script_func->Start());
+            checker->ThrowTypeError("Return type of async function must be 'Promise'.", script_func->Start());
         }
     } else if (script_func->HasBody() && !script_func->IsExternal()) {
-        if (IsNative() || IsAbstract()) {
-            checker->ThrowTypeError("Native or Abstract methods cannot have body.", script_func->Body()->Start());
-        }
-
         checker::ScopeContext scope_ctx(checker, script_func->Scope());
         checker::SavedCheckerContext saved_context(checker, checker->Context().Status(),
                                                    checker->Context().ContainingClass());
@@ -173,6 +193,14 @@ checker::Type *MethodDefinition::Check(checker::ETSChecker *checker)
         }
 
         script_func->Body()->Check(checker);
+
+        // In case of inferred function's return type set it forcedly to all return statements;
+        if (script_func->Signature()->HasSignatureFlag(checker::SignatureFlags::INFERRED_RETURN_TYPE) &&
+            script_func->ReturnTypeAnnotation() == nullptr && script_func->Body() != nullptr &&
+            script_func->Body()->IsStatement()) {
+            script_func->Body()->AsStatement()->SetReturnType(checker, script_func->Signature()->ReturnType());
+        }
+
         checker->Context().SetContainingSignature(nullptr);
     }
 
@@ -202,7 +230,7 @@ void MethodDefinition::CheckMethodModifiers(checker::ETSChecker *checker)
             Start());
     }
 
-    if ((IsAbstract() || (!Function()->HasBody() && !IsNative())) &&
+    if ((IsAbstract() || (!Function()->HasBody() && !IsNative() && !IsDeclare())) &&
         !(checker->HasStatus(checker::CheckerStatus::IN_ABSTRACT) ||
           checker->HasStatus(checker::CheckerStatus::IN_INTERFACE))) {
         checker->ThrowTypeError("Non abstract class has abstract method.", Start());

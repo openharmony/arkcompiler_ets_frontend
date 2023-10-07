@@ -29,6 +29,7 @@
 #include "ir/expressions/callExpression.h"
 
 namespace panda::es2panda::ir {
+void ThisExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void ThisExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void ThisExpression::Dump(ir::AstDumper *dumper) const
@@ -63,6 +64,10 @@ checker::Type *ThisExpression::Check(checker::TSChecker *checker)
 
 checker::Type *ThisExpression::Check(checker::ETSChecker *checker)
 {
+    if (TsType() != nullptr) {
+        return TsType();
+    }
+
     SetTsType(checker->CheckThisOrSuperAccess(this, checker->Context().ContainingClass(), "this"));
 
     if (checker->HasStatus(checker::CheckerStatus::IN_LAMBDA)) {

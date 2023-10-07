@@ -410,4 +410,3 @@
     }
   }
 }
-TypeError: Return statements return type is not compatible with the containing functions return type [function_implicit_return_type5.ets:18:24]

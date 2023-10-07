@@ -103,12 +103,12 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allow_dynamic_na
             break;
         }
 
-        if (util::Helpers::IsDynamicModuleVariable(res.variable)) {
+        if (IsDynamicModuleVariable(res.variable)) {
             ident->SetVariable(res.variable);
             return;
         }
 
-        if (allow_dynamic_namespaces && util::Helpers::IsDynamicNamespaceVariable(res.variable)) {
+        if (allow_dynamic_namespaces && IsDynamicNamespaceVariable(res.variable)) {
             ident->SetVariable(res.variable);
             return;
         }
@@ -381,7 +381,8 @@ void ETSBinder::BuildFunctionType(ir::ETSFunctionType *func_type)
     GetGlobalRecordTable()->Signatures().push_back(func_scope);
 }
 
-void ETSBinder::AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier)
+void ETSBinder::AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier,
+                                                  const ir::ETSImportDeclaration *const import)
 {
     const auto name = [specifier]() {
         if (specifier->IsImportNamespaceSpecifier()) {
@@ -395,7 +396,7 @@ void ETSBinder::AddDynamicSpecifiersToTopBindings(ir::AstNode *const specifier)
     auto *const var = Allocator()->New<binder::LocalVariable>(decl, binder::VariableFlags::STATIC);
     var->AddFlag(VariableFlags::INITIALIZED);
 
-    dynamic_import_vars_.push_back(var);
+    dynamic_import_vars_.emplace(var, DynamicImportData {import, specifier, var});
 
     TopScope()->InsertDynamicBinding(name, var);
 }
@@ -405,7 +406,7 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
     const ir::StringLiteral *const import_path = import->Source();
 
     if (import->IsPureDynamic()) {
-        AddDynamicSpecifiersToTopBindings(specifier);
+        AddDynamicSpecifiersToTopBindings(specifier, import);
         return;
     }
 
@@ -425,6 +426,14 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
     const auto *const import_global_scope = import_program->GlobalScope();
     const auto &global_bindings = import_global_scope->Bindings();
 
+    auto insert_foreign_binding = [this, specifier, import](const util::StringView &name, Variable *var) {
+        if (import->Language().IsDynamic()) {
+            dynamic_import_vars_.emplace(var, DynamicImportData {import, specifier, var});
+        }
+
+        TopScope()->InsertForeignBinding(name, var);
+    };
+
     if (specifier->IsImportNamespaceSpecifier()) {
         const auto *const namespace_specifier = specifier->AsImportNamespaceSpecifier();
 
@@ -438,19 +447,19 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
 
                 if (!import_global_scope->IsForeignBinding(bindingName) &&
                     !var->Declaration()->Node()->IsDefaultExported()) {
-                    TopScope()->InsertForeignBinding(bindingName, var);
+                    insert_foreign_binding(bindingName, var);
                 }
             }
 
             for (const auto [bindingName, var] : import_program->GlobalClassScope()->StaticMethodScope()->Bindings()) {
                 if (!var->Declaration()->Node()->IsDefaultExported()) {
-                    TopScope()->InsertForeignBinding(bindingName, var);
+                    insert_foreign_binding(bindingName, var);
                 }
             }
 
             for (const auto [bindingName, var] : import_program->GlobalClassScope()->StaticFieldScope()->Bindings()) {
                 if (!var->Declaration()->Node()->IsDefaultExported()) {
-                    TopScope()->InsertForeignBinding(bindingName, var);
+                    insert_foreign_binding(bindingName, var);
                 }
             }
         } else {
@@ -459,7 +468,7 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
             var->AddFlag(VariableFlags::INITIALIZED);
 
             if (!var->Declaration()->Node()->IsDefaultExported()) {
-                TopScope()->InsertForeignBinding(namespace_specifier->Local()->Name(), var);
+                insert_foreign_binding(namespace_specifier->Local()->Name(), var);
             }
         }
         return;
@@ -522,7 +531,7 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
             ThrowError(import_path->Start(), "Use the default import syntax to import a default exported element");
         }
 
-        TopScope()->InsertForeignBinding(local_name, var);
+        insert_foreign_binding(local_name, var);
         return;
     }
 
@@ -547,7 +556,7 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
         }
     }
 
-    TopScope()->InsertForeignBinding(specifier->AsImportDefaultSpecifier()->Local()->Name(), item->second);
+    insert_foreign_binding(specifier->AsImportDefaultSpecifier()->Local()->Name(), item->second);
 }
 
 void ETSBinder::HandleCustomNodes(ir::AstNode *child_node)
@@ -891,6 +900,36 @@ void ETSBinder::ImportGlobalProperties(const ir::ClassDefinition *const class_de
             }
         }
     }
+}
+
+const DynamicImportData *ETSBinder::DynamicImportDataForVar(const Variable *var) const
+{
+    auto it = dynamic_import_vars_.find(var);
+    if (it == dynamic_import_vars_.cend()) {
+        return nullptr;
+    }
+
+    return &it->second;
+}
+
+bool ETSBinder::IsDynamicModuleVariable(const Variable *var) const
+{
+    auto *data = DynamicImportDataForVar(var);
+    if (data == nullptr) {
+        return false;
+    }
+
+    return data->specifier->IsImportSpecifier();
+}
+
+bool ETSBinder::IsDynamicNamespaceVariable(const Variable *var) const
+{
+    auto *data = DynamicImportDataForVar(var);
+    if (data == nullptr) {
+        return false;
+    }
+
+    return data->specifier->IsImportNamespaceSpecifier();
 }
 
 }  // namespace panda::es2panda::binder

@@ -51,3 +51,28 @@ const fc = 3 instanceof Object; // Compile-time error
 const fd = "s" instanceof Object; // Compile-time error
 
 const ff = new String("d") instanceof Number;
+
+var le = () => { return String instanceof Object };
+
+class SomeClass {
+    static readonly field = SomeClass instanceof Object;
+
+    methodRet() {
+        return SomeClass instanceof Object;
+    }
+
+    methodTestCondition(): boolean {
+        if (SomeClass instanceof SomeClass) return true;
+        return false;
+    }
+
+    methodWhileCondition() {
+        while (SomeClass instanceof SomeClass) {
+        }
+    }
+
+    methodDoWhileNegativeCondition() {
+        do {
+        } while (!SomeClass instanceof SomeClass)
+    }
+}

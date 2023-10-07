@@ -33,6 +33,19 @@
 #include "checker/ETSchecker.h"
 
 namespace panda::es2panda::ir {
+void TSEnumDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : decorators_) {
+        it = cb(it)->AsDecorator();
+    }
+
+    key_ = cb(key_)->AsIdentifier();
+
+    for (auto *&it : members_) {
+        it = cb(it);
+    }
+}
+
 void TSEnumDeclaration::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : decorators_) {

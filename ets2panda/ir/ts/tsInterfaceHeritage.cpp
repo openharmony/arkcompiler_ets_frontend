@@ -23,6 +23,11 @@
 #include "ir/ts/tsTypeReference.h"
 
 namespace panda::es2panda::ir {
+void TSInterfaceHeritage::TransformChildren(const NodeTransformer &cb)
+{
+    expr_ = static_cast<TypeNode *>(cb(expr_));
+}
+
 void TSInterfaceHeritage::Iterate(const NodeTraverser &cb) const
 {
     cb(expr_);

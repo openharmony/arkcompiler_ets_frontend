@@ -22,6 +22,7 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void BooleanLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void BooleanLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void BooleanLiteral::Dump(ir::AstDumper *dumper) const

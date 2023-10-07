@@ -22,6 +22,12 @@
 #include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
+void LabelledStatement::TransformChildren(const NodeTransformer &cb)
+{
+    ident_ = cb(ident_)->AsIdentifier();
+    body_ = cb(body_)->AsStatement();
+}
+
 void LabelledStatement::Iterate(const NodeTraverser &cb) const
 {
     cb(ident_);

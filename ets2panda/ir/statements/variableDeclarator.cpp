@@ -33,6 +33,15 @@
 #include "checker/ts/destructuringContext.h"
 
 namespace panda::es2panda::ir {
+void VariableDeclarator::TransformChildren(const NodeTransformer &cb)
+{
+    id_ = cb(id_)->AsExpression();
+
+    if (init_ != nullptr) {
+        init_ = cb(init_)->AsExpression();
+    }
+}
+
 void VariableDeclarator::Iterate(const NodeTraverser &cb) const
 {
     cb(id_);

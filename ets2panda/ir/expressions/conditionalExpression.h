@@ -51,6 +51,7 @@ public:
         test_ = test;
     }
 
+    void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile(compiler::PandaGen *pg) const override;

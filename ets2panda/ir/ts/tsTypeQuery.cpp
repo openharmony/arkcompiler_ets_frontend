@@ -19,6 +19,11 @@
 #include "checker/TSchecker.h"
 
 namespace panda::es2panda::ir {
+void TSTypeQuery::TransformChildren(const NodeTransformer &cb)
+{
+    expr_name_ = cb(expr_name_)->AsExpression();
+}
+
 void TSTypeQuery::Iterate(const NodeTraverser &cb) const
 {
     cb(expr_name_);

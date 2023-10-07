@@ -29,6 +29,11 @@
 #include <string>
 
 namespace panda::es2panda::ir {
+void ClassStaticBlock::TransformChildren(const NodeTransformer &cb)
+{
+    value_ = cb(value_)->AsExpression();
+}
+
 void ClassStaticBlock::Iterate(const NodeTraverser &cb) const
 {
     cb(value_);

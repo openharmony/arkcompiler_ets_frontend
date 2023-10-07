@@ -18,6 +18,12 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void TSNamedTupleMember::TransformChildren(const NodeTransformer &cb)
+{
+    label_ = cb(label_)->AsExpression();
+    element_type_ = static_cast<TypeNode *>(cb(element_type_));
+}
+
 void TSNamedTupleMember::Iterate(const NodeTraverser &cb) const
 {
     cb(label_);

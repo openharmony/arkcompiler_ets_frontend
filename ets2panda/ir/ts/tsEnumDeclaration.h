@@ -16,11 +16,11 @@
 #ifndef ES2PANDA_IR_TS_ENUM_DECLARATION_H
 #define ES2PANDA_IR_TS_ENUM_DECLARATION_H
 
+#include "binder/scope.h"
 #include "ir/statement.h"
 #include "binder/enumMemberResult.h"
 
 namespace panda::es2panda::binder {
-class LocalScope;
 class EnumVariable;
 }  // namespace panda::es2panda::binder
 
@@ -44,7 +44,12 @@ public:
         }
     }
 
-    binder::LocalScope *Scope() const
+    bool IsScopeBearer() const override
+    {
+        return true;
+    }
+
+    binder::LocalScope *Scope() const override
     {
         return scope_;
     }
@@ -98,6 +103,7 @@ public:
                                                        const ir::AstNode *expr);
     checker::Type *InferType(checker::TSChecker *checker, bool is_const) const;
 
+    void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;

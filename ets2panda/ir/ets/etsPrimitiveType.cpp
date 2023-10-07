@@ -21,6 +21,7 @@
 #include "compiler/core/ETSGen.h"
 
 namespace panda::es2panda::ir {
+void ETSPrimitiveType::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void ETSPrimitiveType::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 
 void ETSPrimitiveType::Dump(ir::AstDumper *dumper) const

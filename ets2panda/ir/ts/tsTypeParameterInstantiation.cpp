@@ -20,6 +20,13 @@
 #include "ir/typeNode.h"
 
 namespace panda::es2panda::ir {
+void TSTypeParameterInstantiation::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : params_) {
+        it = static_cast<TypeNode *>(cb(it));
+    }
+}
+
 void TSTypeParameterInstantiation::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : params_) {

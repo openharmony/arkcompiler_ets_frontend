@@ -19,6 +19,11 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+void ExportDefaultDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    decl_ = cb(decl_);
+}
+
 void ExportDefaultDeclaration::Iterate(const NodeTraverser &cb) const
 {
     cb(decl_);

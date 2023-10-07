@@ -22,6 +22,7 @@
 #include "compiler/core/regScope.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
+#include "checker/types/ets/etsDynamicFunctionType.h"
 #include "checker/types/ts/objectType.h"
 #include "checker/types/signature.h"
 #include "ir/base/scriptFunction.h"
@@ -37,6 +38,19 @@
 #include "ir/ts/tsEnumMember.h"
 
 namespace panda::es2panda::ir {
+void CallExpression::TransformChildren(const NodeTransformer &cb)
+{
+    callee_ = cb(callee_)->AsExpression();
+
+    if (type_params_ != nullptr) {
+        type_params_ = cb(type_params_)->AsTSTypeParameterInstantiation();
+    }
+
+    for (auto *&it : arguments_) {
+        it = cb(it)->AsExpression();
+    }
+}
+
 void CallExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(callee_);
@@ -196,7 +210,7 @@ void CallExpression::Compile(compiler::ETSGen *etsg) const
 
     bool is_static = signature_->HasSignatureFlag(checker::SignatureFlags::STATIC);
     bool is_reference = signature_->HasSignatureFlag(checker::SignatureFlags::TYPE);
-    bool is_dynamic = callee_->TsType()->IsETSDynamicType();
+    bool is_dynamic = callee_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG);
 
     compiler::VReg dyn_param2;
 
@@ -216,7 +230,7 @@ void CallExpression::Compile(compiler::ETSGen *etsg) const
         if (GetBoxingUnboxingFlags() != ir::BoxingUnboxingFlags::NONE) {
             etsg->ApplyConversion(this, nullptr);
         } else {
-            etsg->SetAccumulatorType(TsType());
+            etsg->SetAccumulatorType(signature_->ReturnType());
         }
     };
 
@@ -234,14 +248,14 @@ void CallExpression::Compile(compiler::ETSGen *etsg) const
 
         if (!obj->IsMemberExpression() && obj->IsIdentifier()) {
             auto *var = obj->AsIdentifier()->Variable();
-            auto *import = util::Helpers::ImportDeclarationForDynamicVar(var);
-            if (import != nullptr) {
+            auto *data = etsg->Binder()->DynamicImportDataForVar(var);
+            if (data != nullptr) {
+                auto *import = data->import;
+                auto *specifier = data->specifier;
                 ASSERT(import->Language().IsDynamic());
                 etsg->LoadAccumulatorDynamicModule(this, import);
-
-                auto *decl = var->Declaration()->Node();
-                if (decl->IsImportSpecifier()) {
-                    parts.push_back(decl->AsImportSpecifier()->Imported()->Name());
+                if (specifier->IsImportSpecifier()) {
+                    parts.push_back(specifier->AsImportSpecifier()->Imported()->Name());
                 }
             } else {
                 obj->Compile(etsg);
@@ -258,12 +272,20 @@ void CallExpression::Compile(compiler::ETSGen *etsg) const
 
             etsg->LoadAccumulatorString(this, util::UString(ss.str(), etsg->Allocator()).View());
         } else {
-            etsg->LoadUndefinedDynamic(this, callee_->TsType()->AsETSDynamicType()->Language());
+            auto lang = callee_->TsType()->IsETSDynamicFunctionType()
+                            ? callee_->TsType()->AsETSDynamicFunctionType()->Language()
+                            : callee_->TsType()->AsETSDynamicType()->Language();
+
+            etsg->LoadUndefinedDynamic(this, lang);
         }
 
         etsg->StoreAccumulator(this, dyn_param2);
 
         emit_arguments();
+
+        if (signature_->ReturnType() != TsType()) {
+            etsg->ApplyConversion(this, TsType());
+        }
     } else if (!is_reference && callee_->IsIdentifier()) {
         if (!is_static) {
             etsg->LoadThis(this);
@@ -311,11 +333,17 @@ bool CallExpression::IsETSConstructorCall() const
 
 checker::Type *CallExpression::Check(checker::ETSChecker *checker)
 {
+    if (TsType() != nullptr) {
+        return TsType();
+    }
     checker::Type *callee_type = callee_->Check(checker);
-    if (callee_type->IsETSDynamicType()) {
+    checker::Type *return_type;
+    if (callee_type->IsETSDynamicType() && !callee_type->AsETSDynamicType()->HasDecl()) {
         // Trailing lambda for js function call is not supported, check the correctness of `foo() {}`
         checker->EnsureValidCurlyBrace(this);
-        signature_ = checker->ResolveDynamicCallExpression(callee_, arguments_, false);
+        auto lang = callee_type->AsETSDynamicType()->Language();
+        signature_ = checker->ResolveDynamicCallExpression(callee_, arguments_, lang, false);
+        return_type = signature_->ReturnType();
     } else {
         bool constructor_call = IsETSConstructorCall();
         bool functional_interface =
@@ -340,11 +368,11 @@ checker::Type *CallExpression::Check(checker::ETSChecker *checker)
                                      ->CallSignatures()
                                : callee_type->AsETSFunctionType()->CallSignatures();
 
-        signature_ = checker->ResolveCallExpressionAndTrailingLambda(signatures, this, Start());
+        auto *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, this, Start());
 
-        checker->CheckObjectLiteralArguments(signature_, arguments_);
+        checker->CheckObjectLiteralArguments(signature, arguments_);
 
-        checker->AddNullParamsForDefaultParams(signature_, arguments_, checker);
+        checker->AddNullParamsForDefaultParams(signature, arguments_, checker);
 
         if (!functional_interface) {
             checker::ETSObjectType *callee_obj {};
@@ -357,17 +385,28 @@ checker::Type *CallExpression::Check(checker::ETSChecker *checker)
                 callee_obj = callee_->AsMemberExpression()->ObjType();
             }
 
-            checker->ValidateSignatureAccessibility(callee_obj, signature_, Start());
+            checker->ValidateSignatureAccessibility(callee_obj, signature, Start());
         }
 
-        ASSERT(signature_->Function() != nullptr);
+        ASSERT(signature->Function() != nullptr);
 
-        if (signature_->Function()->IsThrowing() || signature_->Function()->IsRethrowing()) {
+        if (signature->Function()->IsThrowing() || signature->Function()->IsRethrowing()) {
             checker->CheckThrowingStatements(this);
         }
+
+        if (signature->Function()->IsDynamic()) {
+            ASSERT(signature->Function()->IsDynamic());
+            auto lang = signature->Function()->Language();
+            signature_ = checker->ResolveDynamicCallExpression(callee_, signature->Params(), lang, false);
+        } else {
+            ASSERT(!signature->Function()->IsDynamic());
+            signature_ = signature;
+        }
+
+        return_type = signature->ReturnType();
     }
 
-    SetTsType(signature_->ReturnType());
+    SetTsType(return_type);
     return TsType();
 }
 

@@ -28,6 +28,23 @@
 #include <string>
 
 namespace panda::es2panda::ir {
+void ClassProperty::TransformChildren(const NodeTransformer &cb)
+{
+    key_ = cb(key_)->AsExpression();
+
+    if (value_ != nullptr) {
+        value_ = cb(value_)->AsExpression();
+    }
+
+    if (type_annotation_ != nullptr) {
+        type_annotation_ = static_cast<TypeNode *>(cb(type_annotation_));
+    }
+
+    for (auto *&it : decorators_) {
+        it = cb(it)->AsDecorator();
+    }
+}
+
 void ClassProperty::Iterate(const NodeTraverser &cb) const
 {
     cb(key_);

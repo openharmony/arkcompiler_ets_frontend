@@ -23,6 +23,16 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
+void IfStatement::TransformChildren(const NodeTransformer &cb)
+{
+    test_ = cb(test_)->AsExpression();
+    consequent_ = cb(consequent_)->AsStatement();
+
+    if (alternate_ != nullptr) {
+        alternate_ = cb(alternate_)->AsStatement();
+    }
+}
+
 void IfStatement::Iterate(const NodeTraverser &cb) const
 {
     cb(test_);

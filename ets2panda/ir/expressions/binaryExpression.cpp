@@ -27,6 +27,12 @@
 #include "lexer/token/tokenType.h"
 
 namespace panda::es2panda::ir {
+void BinaryExpression::TransformChildren(const NodeTransformer &cb)
+{
+    left_ = cb(left_)->AsExpression();
+    right_ = cb(right_)->AsExpression();
+}
+
 void BinaryExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(left_);
@@ -229,6 +235,9 @@ checker::Type *BinaryExpression::Check(checker::TSChecker *checker)
 
 checker::Type *BinaryExpression::Check(checker::ETSChecker *checker)
 {
+    if (TsType() != nullptr) {
+        return TsType();
+    }
     checker::Type *new_ts_type {nullptr};
     std::tie(new_ts_type, operation_type_) = checker->CheckBinaryOperator(left_, right_, operator_, Start());
     SetTsType(new_ts_type);

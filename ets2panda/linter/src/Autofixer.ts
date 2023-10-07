@@ -76,9 +76,10 @@ export function fixPropertyAccessByIndex(node: ts.Node): Autofix[] | undefined {
 
 export function fixFunctionExpression(funcExpr: ts.FunctionExpression, 
   params: ts.NodeArray<ts.ParameterDeclaration> = funcExpr.parameters, 
-  retType: ts.TypeNode | undefined = funcExpr.type): Autofix {
+  retType: ts.TypeNode | undefined = funcExpr.type,
+  modifiers: readonly ts.Modifier[] | undefined): Autofix {
   let arrowFunc = ts.factory.createArrowFunction(
-    undefined, undefined, params, retType, ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken), 
+    modifiers, undefined, params, retType, ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken), 
     funcExpr.body
   );
   let text = printer.printNode(ts.EmitHint.Unspecified, arrowFunc, funcExpr.getSourceFile());

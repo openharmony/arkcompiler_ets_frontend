@@ -19,6 +19,13 @@
 #include "checker/ETSchecker.h"
 
 namespace panda::es2panda::ir {
+void TSIntersectionType::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : types_) {
+        it = cb(it)->AsExpression();
+    }
+}
+
 void TSIntersectionType::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : types_) {

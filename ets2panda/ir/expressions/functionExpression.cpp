@@ -24,6 +24,11 @@
 #include "ir/statements/variableDeclarator.h"
 
 namespace panda::es2panda::ir {
+void FunctionExpression::TransformChildren(const NodeTransformer &cb)
+{
+    func_ = cb(func_)->AsScriptFunction();
+}
+
 void FunctionExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(func_);

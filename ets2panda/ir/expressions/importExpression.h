@@ -23,6 +23,7 @@ class ImportExpression : public Expression {
 public:
     explicit ImportExpression(Expression *source) : Expression(AstNodeType::IMPORT_EXPRESSION), source_(source) {}
 
+    void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;

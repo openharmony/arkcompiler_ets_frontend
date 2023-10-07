@@ -25,6 +25,14 @@ namespace panda::es2panda::binder {
 using ComputedLambdaObjects =
     ArenaUnorderedMap<const ir::AstNode *, std::pair<ir::ClassDefinition *, checker::Signature *>>;
 
+struct DynamicImportData {
+    const ir::ETSImportDeclaration *import;
+    const ir::AstNode *specifier;
+    Variable *variable;
+};
+
+using DynamicImportVariables = ArenaUnorderedMap<const Variable *, DynamicImportData>;
+
 class ETSBinder : public TypedBinder {
 public:
     explicit ETSBinder(ArenaAllocator *allocator)
@@ -113,7 +121,7 @@ public:
     void BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *class_instance);
     void BuildMethodReferenceExpression(ir::ETSMethodReferenceExpression *method_ref);
     void AddSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
-    void AddDynamicSpecifiersToTopBindings(ir::AstNode *specifier);
+    void AddDynamicSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
 
     void ResolveInterfaceDeclaration(ir::TSInterfaceDeclaration *decl);
     void ResolveMethodDefinition(ir::MethodDefinition *method_def);
@@ -141,7 +149,7 @@ public:
 
     void AddDynamicImport(ir::ETSImportDeclaration *import)
     {
-        ASSERT(import->IsPureDynamic());
+        ASSERT(import->Language().IsDynamic());
         dynamic_imports_.push_back(import);
     }
 
@@ -150,7 +158,7 @@ public:
         return dynamic_imports_;
     }
 
-    const ArenaVector<Variable *> &DynamicImportVars() const
+    const DynamicImportVariables &DynamicImportVars() const
     {
         return dynamic_import_vars_;
     }
@@ -164,6 +172,10 @@ public:
     {
         default_export_ = default_export;
     }
+
+    bool IsDynamicModuleVariable(const Variable *var) const;
+    bool IsDynamicNamespaceVariable(const Variable *var) const;
+    const DynamicImportData *DynamicImportDataForVar(const Variable *var) const;
 
     static constexpr std::string_view DEFAULT_IMPORT_SOURCE_FILE = "<default_import>.ets";
     static constexpr std::string_view DEFAULT_IMPORT_SOURCE = R"(
@@ -187,7 +199,7 @@ private:
     ArenaVector<ir::ETSImportDeclaration *> default_imports_;
     ArenaVector<ir::ETSImportDeclaration *> dynamic_imports_;
     ComputedLambdaObjects lambda_objects_;
-    ArenaVector<Variable *> dynamic_import_vars_;
+    DynamicImportVariables dynamic_import_vars_;
     ir::Identifier *this_param_ {};
     ArenaVector<std::pair<util::StringView, util::StringView>> import_specifiers_;
     ir::AstNode *default_export_ {};

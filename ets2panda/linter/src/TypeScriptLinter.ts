@@ -746,14 +746,13 @@ export class TypeScriptLinter {
     const hasValidContext = hasPredecessor(funcExpr, ts.isClassLike) ||
                             hasPredecessor(funcExpr, ts.isInterfaceDeclaration);
     const isGeneric = funcExpr.typeParameters !== undefined && funcExpr.typeParameters.length > 0;
-    const isAsync = this.tsUtils.hasModifier(ts.getModifiers(funcExpr), ts.SyntaxKind.AsyncKeyword);
     const isCalledRecursively = this.tsUtils.isFunctionCalledRecursively(funcExpr);
     const [hasUnfixableReturnType, newRetTypeNode] = this.handleMissingReturnType(funcExpr);
     const autofixable = !isGeneric && !isGenerator && !containsThis && !hasUnfixableReturnType &&
-      !isAsync && !isCalledRecursively;
+      !isCalledRecursively;
     let autofix: Autofix[] | undefined;
     if (autofixable && this.autofixesInfo.shouldAutofix(node, FaultID.FunctionExpression)) {
-      autofix = [ Autofixer.fixFunctionExpression(funcExpr, funcExpr.parameters, newRetTypeNode) ];
+      autofix = [ Autofixer.fixFunctionExpression(funcExpr, funcExpr.parameters, newRetTypeNode, ts.getModifiers(funcExpr)) ];
     }
     this.incrementCounters(node, FaultID.FunctionExpression, autofixable, autofix);
     if (isGeneric) {

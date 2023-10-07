@@ -16,11 +16,8 @@
 #ifndef ES2PANDA_IR_TS_TYPE_PARAMETER_DECLARATION_H
 #define ES2PANDA_IR_TS_TYPE_PARAMETER_DECLARATION_H
 
+#include "binder/scope.h"
 #include "ir/expression.h"
-
-namespace panda::es2panda::binder {
-class LocalScope;
-}  // namespace panda::es2panda::binder
 
 namespace panda::es2panda::ir {
 class TSTypeParameter;
@@ -36,7 +33,12 @@ public:
     {
     }
 
-    binder::LocalScope *Scope() const
+    bool IsScopeBearer() const override
+    {
+        return true;
+    }
+
+    binder::LocalScope *Scope() const override
     {
         return scope_;
     }
@@ -51,6 +53,7 @@ public:
         return required_params_;
     }
 
+    void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;

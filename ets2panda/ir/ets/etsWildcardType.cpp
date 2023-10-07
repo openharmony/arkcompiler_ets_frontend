@@ -22,7 +22,14 @@
 #include "compiler/core/ETSGen.h"
 
 namespace panda::es2panda::ir {
-void ETSWildcardType::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+void ETSWildcardType::TransformChildren(const NodeTransformer &cb)
+{
+    if (type_reference_ != nullptr) {
+        type_reference_ = cb(type_reference_)->AsETSTypeReference();
+    }
+}
+
+void ETSWildcardType::Iterate(const NodeTraverser &cb) const
 {
     if (type_reference_ != nullptr) {
         cb(type_reference_);

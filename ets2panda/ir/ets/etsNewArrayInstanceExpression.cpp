@@ -21,7 +21,13 @@
 #include "checker/ETSchecker.h"
 
 namespace panda::es2panda::ir {
-void ETSNewArrayInstanceExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const
+void ETSNewArrayInstanceExpression::TransformChildren(const NodeTransformer &cb)
+{
+    type_reference_ = static_cast<TypeNode *>(cb(type_reference_));
+    dimension_ = cb(dimension_)->AsExpression();
+}
+
+void ETSNewArrayInstanceExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(type_reference_);
     cb(dimension_);

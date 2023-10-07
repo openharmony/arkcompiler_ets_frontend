@@ -23,6 +23,11 @@
 #include "ir/expressions/literals/stringLiteral.h"
 
 namespace panda::es2panda::ir {
+void ImportNamespaceSpecifier::TransformChildren(const NodeTransformer &cb)
+{
+    local_ = cb(local_)->AsIdentifier();
+}
+
 void ImportNamespaceSpecifier::Iterate(const NodeTraverser &cb) const
 {
     cb(local_);

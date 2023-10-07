@@ -20,7 +20,7 @@ config("libes2panda_public_config") {
     "$ark_third_party_root/icu/icu4c/source/common",
     "$ark_third_party_root/icu/icu4c/source/i18n",
     "$ark_third_party_root/icu/icu4c/source/",
-    ".",
+    "$ark_es2panda_root",
   ]
 }
 
@@ -156,6 +156,9 @@ libes2panda_sources = [
   "compiler/function/asyncGeneratorFunctionBuilder.cpp",
   "compiler/function/functionBuilder.cpp",
   "compiler/function/generatorFunctionBuilder.cpp",
+  "compiler/lowering/ets/opAssignment.cpp",
+  "compiler/lowering/phase.cpp",
+  "compiler/lowering/util.cpp",
   "es2panda.cpp",
   "ir/as/namedType.cpp",
   "ir/as/prefixAssertionExpression.cpp",
@@ -235,6 +238,7 @@ libes2panda_sources = [
   "ir/module/importDefaultSpecifier.cpp",
   "ir/module/importNamespaceSpecifier.cpp",
   "ir/module/importSpecifier.cpp",
+  "ir/opaqueTypeNode.cpp",
   "ir/statement.cpp",
   "ir/statements/assertStatement.cpp",
   "ir/statements/blockStatement.cpp",

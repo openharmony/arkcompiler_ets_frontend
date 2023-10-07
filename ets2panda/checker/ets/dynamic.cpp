@@ -19,6 +19,7 @@
 #include "binder/declaration.h"
 #include "binder/binder.h"
 #include "binder/ETSBinder.h"
+#include "checker/types/ets/etsDynamicFunctionType.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/classStaticBlock.h"
 #include "ir/base/methodDefinition.h"
@@ -39,6 +40,7 @@
 #include "ir/statements/variableDeclarator.h"
 #include "parser/program/program.h"
 #include "util/helpers.h"
+#include "util/language.h"
 #include "generated/signatures.h"
 #include "ir/ets/etsParameterExpression.h"
 
@@ -57,7 +59,7 @@ ir::ETSParameterExpression *ETSChecker::AddParam(binder::FunctionParamScope *par
     return param;
 }
 
-static bool IsByValueCall(ir::Expression *callee)
+static bool IsByValueCall(binder::ETSBinder *binder, ir::Expression *callee)
 {
     if (callee->IsMemberExpression()) {
         return !callee->AsMemberExpression()->ObjType()->IsETSDynamicType();
@@ -68,10 +70,10 @@ static bool IsByValueCall(ir::Expression *callee)
     }
 
     auto *var = callee->AsIdentifier()->Variable();
-    auto *import = util::Helpers::ImportDeclarationForDynamicVar(var);
-    if (import != nullptr) {
-        auto *decl = var->Declaration()->Node();
-        if (decl->IsImportSpecifier()) {
+    auto *data = binder->DynamicImportDataForVar(var);
+    if (data != nullptr) {
+        auto *specifier = data->specifier;
+        if (specifier->IsImportSpecifier()) {
             return false;
         }
     }
@@ -79,8 +81,9 @@ static bool IsByValueCall(ir::Expression *callee)
     return true;
 }
 
-ir::ScriptFunction *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *callee,
-                                                           const ArenaVector<ir::Expression *> &arguments)
+template <typename T>
+ir::ScriptFunction *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *callee, const ArenaVector<T *> &arguments,
+                                                           Language lang)
 {
     auto *name = AllocNode<ir::Identifier>("invoke", Allocator());
     auto *param_scope = Allocator()->New<binder::FunctionParamScope>(Allocator(), nullptr);
@@ -91,16 +94,17 @@ ir::ScriptFunction *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *calle
     auto *info = CreateSignatureInfo();
     info->min_arg_count = arguments.size() + 2;
 
-    auto *obj_param = AddParam(param_scope, "obj", callee->TsType());
+    auto dynamic_type = GlobalBuiltinDynamicType(lang);
+
+    auto *obj_param = AddParam(param_scope, "obj", dynamic_type);
     params.push_back(obj_param);
     info->params.push_back(obj_param->Ident()->Variable()->AsLocalVariable());
 
     ir::ETSParameterExpression *param2;
-    if (!IsByValueCall(callee)) {
+    if (!IsByValueCall(Binder()->AsETSBinder(), callee)) {
         param2 = AddParam(param_scope, "qname", GlobalETSStringLiteralType());
     } else {
-        auto lang = callee->TsType()->AsETSDynamicType()->Language();
-        param2 = AddParam(param_scope, "this", GlobalBuiltinDynamicType(lang));
+        param2 = AddParam(param_scope, "this", dynamic_type);
     }
 
     params.push_back(param2);
@@ -116,7 +120,8 @@ ir::ScriptFunction *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *calle
     }
 
     auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, nullptr, nullptr,
-                                               ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::NONE, false);
+                                               ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::NONE, false,
+                                               Language(Language::Id::ETS));
 
     scope->BindNode(func);
     param_scope->BindNode(func);
@@ -125,7 +130,7 @@ ir::ScriptFunction *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *calle
 
     func->SetIdent(name);
 
-    auto *signature = CreateSignature(info, callee->TsType(), func);
+    auto *signature = CreateSignature(info, dynamic_type, func);
     signature->AddSignatureFlag(SignatureFlags::STATIC);
 
     func->SetSignature(signature);
@@ -133,14 +138,31 @@ ir::ScriptFunction *ETSChecker::CreateDynamicCallIntrinsic(ir::Expression *calle
     return func;
 }
 
-Signature *ETSChecker::ResolveDynamicCallExpression(ir::Expression *callee,
-                                                    const ArenaVector<ir::Expression *> &arguments, bool is_construct)
+static void ToString(ETSChecker *checker, const ArenaVector<ir::Expression *> &arguments, std::stringstream &ss)
 {
-    ASSERT(callee->TsType()->IsETSDynamicType());
+    for (auto *arg : arguments) {
+        auto *type = arg->Check(checker);
+        ss << "-";
+        type->ToString(ss);
+    }
+}
 
+static void ToString([[maybe_unused]] ETSChecker *checker, const ArenaVector<binder::LocalVariable *> &arguments,
+                     std::stringstream &ss)
+{
+    for (auto *arg : arguments) {
+        auto *type = arg->TsType();
+        ss << "-";
+        type->ToString(ss);
+    }
+}
+
+template <typename T>
+Signature *ETSChecker::ResolveDynamicCallExpression(ir::Expression *callee, const ArenaVector<T *> &arguments,
+                                                    Language lang, bool is_construct)
+{
     auto &dynamic_intrinsics = *DynamicCallIntrinsics(is_construct);
 
-    auto lang = callee->TsType()->AsETSDynamicType()->Language();
     auto map_it = dynamic_intrinsics.find(lang);
 
     if (map_it == dynamic_intrinsics.cend()) {
@@ -151,25 +173,28 @@ Signature *ETSChecker::ResolveDynamicCallExpression(ir::Expression *callee,
 
     std::stringstream ss;
     ss << "dyncall";
-    if (IsByValueCall(callee)) {
+    if (IsByValueCall(Binder()->AsETSBinder(), callee)) {
         ss << "-byvalue";
     }
-    for (auto *arg : arguments) {
-        auto *type = arg->Check(this);
-        ss << "-";
-        type->ToString(ss);
-    }
+
+    ToString(this, arguments, ss);
 
     auto key = ss.str();
     auto it = map.find(util::StringView(key));
     if (it == map.end()) {
-        auto *func = CreateDynamicCallIntrinsic(callee, arguments);
+        auto *func = CreateDynamicCallIntrinsic(callee, arguments, lang);
         map.emplace(util::UString(key, Allocator()).View(), func);
         return func->Signature();
     }
 
     return it->second->Signature();
 }
+
+template Signature *ETSChecker::ResolveDynamicCallExpression<ir::Expression>(
+    ir::Expression *callee, const ArenaVector<ir::Expression *> &arguments, Language lang, bool is_construct);
+
+template Signature *ETSChecker::ResolveDynamicCallExpression<binder::LocalVariable>(
+    ir::Expression *callee, const ArenaVector<binder::LocalVariable *> &arguments, Language lang, bool is_construct);
 
 template <bool IS_STATIC>
 std::conditional_t<IS_STATIC, ir::ClassStaticBlock *, ir::MethodDefinition *> ETSChecker::CreateClassInitializer(
@@ -200,14 +225,14 @@ std::conditional_t<IS_STATIC, ir::ClassStaticBlock *, ir::MethodDefinition *> ET
         func =
             AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, body, nullptr,
                                           ir::ScriptFunctionFlags::STATIC_BLOCK | ir::ScriptFunctionFlags::EXPRESSION,
-                                          ir::ModifierFlags::STATIC, false);
+                                          ir::ModifierFlags::STATIC, false, Language(Language::Id::ETS));
     } else {
         builder(scope, &statements, &params);
         auto *body = AllocNode<ir::BlockStatement>(Allocator(), scope, std::move(statements));
         id = AllocNode<ir::Identifier>(compiler::Signatures::CTOR, Allocator());
         func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, body, nullptr,
                                              ir::ScriptFunctionFlags::CONSTRUCTOR | ir::ScriptFunctionFlags::EXPRESSION,
-                                             ir::ModifierFlags::PUBLIC, false);
+                                             ir::ModifierFlags::PUBLIC, false, Language(Language::Id::ETS));
     }
 
     scope->BindNode(func);
@@ -296,9 +321,9 @@ void ETSChecker::BuildClass(util::StringView name, const ClassBuilder &builder)
 
     auto class_ctx = binder::LexicalScope<binder::ClassScope>(Binder());
 
-    auto *class_def =
-        AllocNode<ir::ClassDefinition>(Allocator(), class_ctx.GetScope(), class_id,
-                                       ir::ClassDefinitionModifiers::DECLARATION, ir::ModifierFlags::NONE);
+    auto *class_def = AllocNode<ir::ClassDefinition>(Allocator(), class_ctx.GetScope(), class_id,
+                                                     ir::ClassDefinitionModifiers::DECLARATION, ir::ModifierFlags::NONE,
+                                                     Language(Language::Id::ETS));
 
     auto *class_def_type = Allocator()->New<checker::ETSObjectType>(
         Allocator(), class_def->Ident()->Name(), class_def->Ident()->Name(), class_def, checker::ETSObjectFlags::CLASS);
@@ -415,8 +440,9 @@ ir::MethodDefinition *ETSChecker::CreateClassMethod(binder::ClassScope *class_sc
 
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), scope, std::move(statements));
 
-    auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, body, nullptr,
-                                               ir::ScriptFunctionFlags::METHOD, modifier_flags, false);
+    auto *func =
+        AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, body, nullptr, ir::ScriptFunctionFlags::METHOD,
+                                      modifier_flags, false, Language(Language::Id::ETS));
     scope->BindNode(func);
     func->SetIdent(id);
     param_scope->BindNode(func);

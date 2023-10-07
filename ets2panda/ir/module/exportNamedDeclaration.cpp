@@ -23,6 +23,25 @@
 #include "ir/module/exportSpecifier.h"
 
 namespace panda::es2panda::ir {
+void ExportNamedDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : decorators_) {
+        it = cb(it)->AsDecorator();
+    }
+
+    if (decl_ != nullptr) {
+        decl_ = cb(decl_);
+    } else {
+        if (source_ != nullptr) {
+            source_ = cb(source_)->AsStringLiteral();
+        }
+
+        for (auto *&it : specifiers_) {
+            it = cb(it)->AsExportSpecifier();
+        }
+    }
+}
+
 void ExportNamedDeclaration::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : decorators_) {

@@ -39,4 +39,41 @@ const ir::BlockStatement *AstNode::GetTopStatement() const
     return GetTopStatementImpl<const ir::BlockStatement *>(this);
 }
 
+void AstNode::TransformChildrenRecursively(const NodeTransformer &cb)
+{
+    TransformChildren([=](AstNode *child) {
+        child->TransformChildrenRecursively(cb);
+        return cb(child);
+    });
+}
+
+void AstNode::IterateRecursively(const NodeTraverser &cb) const
+{
+    Iterate([=](AstNode *child) {
+        cb(child);
+        child->IterateRecursively(cb);
+    });
+}
+
+void AnyChildHelper(bool *found, const NodePredicate &cb, AstNode *ast)
+{
+    if (*found) {
+        return;
+    }
+
+    if (cb(ast)) {
+        *found = true;
+        return;
+    }
+
+    ast->Iterate([=](AstNode *child) { AnyChildHelper(found, cb, child); });
+}
+
+bool AstNode::IsAnyChild(const NodePredicate &cb) const
+{
+    bool found = false;
+    Iterate([&found, cb](AstNode *child) { AnyChildHelper(&found, cb, child); });
+    return found;
+}
+
 }  // namespace panda::es2panda::ir

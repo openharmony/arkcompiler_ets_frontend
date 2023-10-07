@@ -154,6 +154,7 @@ public:
     [[noreturn]] void ThrowTypeError(std::string_view message, const lexer::SourcePosition &pos);
     [[noreturn]] void ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list,
                                      const lexer::SourcePosition &pos);
+    void Warning(std::string_view message, const lexer::SourcePosition &pos) const;
 
     bool IsTypeIdenticalTo(Type *source, Type *target);
     bool IsTypeIdenticalTo(Type *source, Type *target, const std::string &err_msg,

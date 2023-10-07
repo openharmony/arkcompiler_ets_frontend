@@ -27,6 +27,17 @@
 #include "ir/statements/variableDeclarator.h"
 
 namespace panda::es2panda::ir {
+void VariableDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : decorators_) {
+        it = cb(it)->AsDecorator();
+    }
+
+    for (auto *&it : declarators_) {
+        it = cb(it)->AsVariableDeclarator();
+    }
+}
+
 void VariableDeclaration::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : decorators_) {

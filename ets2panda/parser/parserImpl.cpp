@@ -580,9 +580,10 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
     ArenaVector<ir::Statement *> statements = ParseStatementList();
 
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), func_scope, std::move(statements));
-    auto *func = AllocNode<ir::ScriptFunction>(
-        func_scope, std::move(params), nullptr, body, nullptr,
-        ir::ScriptFunctionFlags::EXPRESSION | ir::ScriptFunctionFlags::STATIC_BLOCK, ir::ModifierFlags::STATIC, false);
+    auto *func =
+        AllocNode<ir::ScriptFunction>(func_scope, std::move(params), nullptr, body, nullptr,
+                                      ir::ScriptFunctionFlags::EXPRESSION | ir::ScriptFunctionFlags::STATIC_BLOCK,
+                                      ir::ModifierFlags::STATIC, false, context_.GetLanguge());
     func_scope->BindNode(func);
     func_param_scope->BindNode(func);
 
@@ -671,9 +672,10 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
     }
 
     auto *body = AllocNode<ir::BlockStatement>(Allocator(), scope, std::move(statements));
-    auto *func = AllocNode<ir::ScriptFunction>(
-        scope, std::move(params), nullptr, body, nullptr,
-        ir::ScriptFunctionFlags::CONSTRUCTOR | ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED, false);
+    auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, body, nullptr,
+                                               ir::ScriptFunctionFlags::CONSTRUCTOR |
+                                                   ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED,
+                                               false, context_.GetLanguge());
 
     scope->BindNode(func);
     param_scope->BindNode(func);
@@ -798,9 +800,9 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifie
 
     ArenaVector<ir::TSClassImplements *> implements(Allocator()->Adapter());
     auto *class_scope = class_ctx.GetScope();
-    auto *class_definition = AllocNode<ir::ClassDefinition>(class_scope, private_binding.View(), ident_node, nullptr,
-                                                            superTypeParams, std::move(implements), ctor, superClass,
-                                                            std::move(properties), modifiers, flags);
+    auto *class_definition = AllocNode<ir::ClassDefinition>(
+        class_scope, private_binding.View(), ident_node, nullptr, superTypeParams, std::move(implements), ctor,
+        superClass, std::move(properties), modifiers, flags, GetContext().GetLanguge());
 
     class_definition->SetRange(bodyRange);
     class_scope->BindNode(class_definition);
@@ -952,7 +954,7 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus new_status)
 
     auto *func_node =
         AllocNode<ir::ScriptFunction>(function_scope, std::move(params), typeParamDecl, body, returnTypeAnnotation,
-                                      function_context.Flags(), is_declare && letDeclare);
+                                      function_context.Flags(), is_declare && letDeclare, context_.GetLanguge());
     function_scope->BindNode(func_node);
     funcParamScope->BindNode(func_node);
     func_node->SetRange({start_loc, endLoc});

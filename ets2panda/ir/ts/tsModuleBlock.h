@@ -16,11 +16,8 @@
 #ifndef ES2PANDA_IR_TS_MODULE_BLOCK_H
 #define ES2PANDA_IR_TS_MODULE_BLOCK_H
 
+#include "binder/scope.h"
 #include "ir/statement.h"
-
-namespace panda::es2panda::binder {
-class LocalScope;
-}  // namespace panda::es2panda::binder
 
 namespace panda::es2panda::ir {
 class TSModuleBlock : public Statement {
@@ -30,7 +27,12 @@ public:
     {
     }
 
-    binder::LocalScope *Scope() const
+    bool IsScopeBearer() const override
+    {
+        return true;
+    }
+
+    binder::LocalScope *Scope() const override
     {
         return scope_;
     }
@@ -40,6 +42,7 @@ public:
         return statements_;
     }
 
+    void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;

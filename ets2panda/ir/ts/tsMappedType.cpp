@@ -20,6 +20,14 @@
 #include "ir/ts/tsTypeParameter.h"
 
 namespace panda::es2panda::ir {
+void TSMappedType::TransformChildren(const NodeTransformer &cb)
+{
+    type_parameter_ = cb(type_parameter_)->AsTSTypeParameter();
+    if (type_annotation_ != nullptr) {
+        type_annotation_ = static_cast<TypeNode *>(cb(type_annotation_));
+    }
+}
+
 void TSMappedType::Iterate(const NodeTraverser &cb) const
 {
     cb(type_parameter_);

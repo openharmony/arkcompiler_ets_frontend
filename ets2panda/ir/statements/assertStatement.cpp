@@ -25,6 +25,15 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
+void AssertStatement::TransformChildren(const NodeTransformer &cb)
+{
+    test_ = cb(test_)->AsExpression();
+
+    if (second_ != nullptr) {
+        second_ = cb(second_)->AsExpression();
+    }
+}
+
 void AssertStatement::Iterate(const NodeTraverser &cb) const
 {
     cb(test_);

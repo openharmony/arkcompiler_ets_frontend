@@ -19,6 +19,12 @@
 #include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
+void ExportSpecifier::TransformChildren(const NodeTransformer &cb)
+{
+    local_ = cb(local_)->AsIdentifier();
+    exported_ = cb(exported_)->AsIdentifier();
+}
+
 void ExportSpecifier::Iterate(const NodeTraverser &cb) const
 {
     cb(local_);

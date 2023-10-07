@@ -23,6 +23,17 @@
 #include "ir/base/templateElement.h"
 
 namespace panda::es2panda::ir {
+void TemplateLiteral::TransformChildren(const NodeTransformer &cb)
+{
+    for (auto *&it : expressions_) {
+        it = cb(it)->AsExpression();
+    }
+
+    for (auto *&it : quasis_) {
+        it = cb(it)->AsTemplateElement();
+    }
+}
+
 void TemplateLiteral::Iterate(const NodeTraverser &cb) const
 {
     for (auto *it : expressions_) {
@@ -93,6 +104,10 @@ void TemplateLiteral::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 
 checker::Type *TemplateLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
+    if (TsType() != nullptr) {
+        return TsType();
+    }
+
     if (quasis_.size() != expressions_.size() + 1U) {
         checker->ThrowTypeError("Invalid string template expression", this->Start());
     }

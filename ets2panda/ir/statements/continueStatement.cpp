@@ -21,6 +21,13 @@
 #include "checker/ETSchecker.h"
 
 namespace panda::es2panda::ir {
+void ContinueStatement::TransformChildren(const NodeTransformer &cb)
+{
+    if (ident_ != nullptr) {
+        ident_ = cb(ident_)->AsIdentifier();
+    }
+}
+
 void ContinueStatement::Iterate(const NodeTraverser &cb) const
 {
     if (ident_ != nullptr) {

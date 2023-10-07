@@ -97,22 +97,10 @@ bool AssignmentExpression::ConvertibleToAssignmentPattern(bool must_be_pattern)
     return conv_result;
 }
 
-void AssignmentExpression::CreateBinaryExpressionForRight(checker::ETSChecker *checker)
+void AssignmentExpression::TransformChildren(const NodeTransformer &cb)
 {
-    auto *binary_left_node = left_;
-
-    if (left_->IsMemberExpression()) {
-        auto *left = left_->AsMemberExpression();
-        binary_left_node = checker->Allocator()->New<ir::MemberExpression>(
-            left->Object(), left->Property(), left->Kind(), left->IsComputed(), left->IsOptional());
-    }
-
-    auto *right_expr = checker->Allocator()->New<ir::BinaryExpression>(binary_left_node, right_, operator_);
-    right_expr->SetRange({right_->Start(), right_->End()});
-    binary_left_node->SetRange({right_->Start(), right_->End()});
-    binary_left_node->SetParent(right_expr);
-    right_->SetParent(right_expr);
-    right_ = right_expr;
+    left_ = cb(left_)->AsExpression();
+    right_ = cb(right_)->AsExpression();
 }
 
 void AssignmentExpression::Iterate(const NodeTraverser &cb) const
@@ -158,6 +146,8 @@ void AssignmentExpression::Compile(compiler::PandaGen *pg) const
 
 void AssignmentExpression::Compile(compiler::ETSGen *etsg) const
 {
+    // All other operations are handled in OpAssignmentLowering
+    ASSERT(operator_ == lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     compiler::RegScope rs(etsg);
 
     if (left_->IsMemberExpression() && left_->AsMemberExpression()->TsType()->IsETSFunctionType() &&
@@ -169,43 +159,12 @@ void AssignmentExpression::Compile(compiler::ETSGen *etsg) const
     auto lref = compiler::ETSLReference::Create(etsg, left_, false);
     auto ttctx = compiler::TargetTypeContext(etsg, TsType());
 
-    if (operator_ == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-        if (right_->IsNullLiteral()) {
-            etsg->LoadAccumulatorNull(this, left_->TsType());
-        } else {
-            right_->Compile(etsg);
-            etsg->ApplyConversion(right_, TsType());
-        }
-        lref.SetValue();
-        return;
-    }
-
-    auto ttctx2 = compiler::TargetTypeContext(etsg, operation_type_);
-    lref.GetValue();
-
-    if (operator_ == lexer::TokenType::PUNCTUATOR_PLUS_EQUAL &&
-        (left_->TsType()->IsETSStringType() || right_->TsType()->IsETSStringType())) {
-        etsg->BuildString(this);
+    if (right_->IsNullLiteral()) {
+        etsg->LoadAccumulatorNull(this, left_->TsType());
     } else {
-        compiler::VReg lhs_reg = etsg->AllocReg();
-
-        etsg->ApplyConversionAndStoreAccumulator(left_, lhs_reg, TsType());
-        if (right_->IsNullLiteral()) {
-            etsg->LoadAccumulatorNull(this, left_->TsType());
-        } else {
-            right_->Compile(etsg);
-            etsg->ApplyConversion(right_, operation_type_);
-            if (operator_ >= lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL &&
-                operator_ <= lexer::TokenType::PUNCTUATOR_LEFT_SHIFT_EQUAL) {
-                etsg->ApplyCast(right_, operation_type_);
-            }
-        }
-
-        etsg->Binary(this, operator_, lhs_reg);
-
-        etsg->ApplyCast(right_, Left()->TsType());
+        right_->Compile(etsg);
+        etsg->ApplyConversion(right_, TsType());
     }
-
     lref.SetValue();
 }
 
@@ -284,35 +243,17 @@ checker::Type *AssignmentExpression::Check(checker::TSChecker *checker)
 
 checker::Type *AssignmentExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    auto *left_type = left_->Check(checker);
-
-    if (left_->IsMemberExpression() && left_->AsMemberExpression()->HasMemberKind(ir::MemberExpressionKind::SETTER) &&
-        OperatorType() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-        checker->CreateBinaryExpressionForSetter(right_);
+    if (TsType() != nullptr) {
+        return TsType();
     }
+
+    auto *left_type = left_->Check(checker);
 
     if (left_->IsIdentifier()) {
         target_ = left_->AsIdentifier()->Variable();
     } else if (left_type->IsETSFunctionType() &&
                left_type->AsETSFunctionType()->HasTypeFlag(checker::TypeFlag::SETTER)) {
         if (right_->IsBinaryExpression()) {
-            auto *binary_expr = right_->AsBinaryExpression();
-            const auto correct_flags_getter_setter = [](ir::Expression *expr) {
-                if (expr->IsMemberExpression()) {
-                    auto *member = expr->AsMemberExpression();
-                    if (member->HasMemberKind(ir::MemberExpressionKind::SETTER)) {
-                        member->RemoveMemberKind(ir::MemberExpressionKind::SETTER);
-                    }
-
-                    if (!member->HasMemberKind(ir::MemberExpressionKind::GETTER)) {
-                        member->AddMemberKind(ir::MemberExpressionKind::GETTER);
-                    }
-                }
-            };
-
-            correct_flags_getter_setter(binary_expr->Left());
-            correct_flags_getter_setter(binary_expr->Right());
-
             right_->Check(checker);
         }
 

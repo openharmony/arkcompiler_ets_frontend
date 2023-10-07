@@ -20,6 +20,12 @@
 #include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
+void TSImportEqualsDeclaration::TransformChildren(const NodeTransformer &cb)
+{
+    id_ = cb(id_)->AsIdentifier();
+    module_reference_ = cb(module_reference_)->AsExpression();
+}
+
 void TSImportEqualsDeclaration::Iterate(const NodeTraverser &cb) const
 {
     cb(id_);

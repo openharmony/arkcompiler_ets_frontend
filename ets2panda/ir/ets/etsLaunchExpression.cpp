@@ -30,6 +30,11 @@ ETSLaunchExpression::ETSLaunchExpression(CallExpression *expr)
 {
 }
 
+void ETSLaunchExpression::TransformChildren(const NodeTransformer &cb)
+{
+    expr_ = cb(expr_)->AsCallExpression();
+}
+
 void ETSLaunchExpression::Iterate(const NodeTraverser &cb) const
 {
     cb(expr_);

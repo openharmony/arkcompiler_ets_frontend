@@ -109,7 +109,7 @@ binder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(const
 {
     binder::LocalVariable *res =
         allocator_->New<binder::LocalVariable>(binder::VariableFlags::SYNTHETIC | binder::VariableFlags::METHOD);
-    ETSFunctionType *func_type = allocator_->New<ETSFunctionType>(name, allocator_);
+    ETSFunctionType *func_type = CreateETSFunctionType(name);
     func_type->AddTypeFlag(TypeFlag::SYNTHETIC);
 
     binder::LocalVariable *functional_interface = CollectSignaturesForSyntheticType(func_type, name, flags);
@@ -124,6 +124,11 @@ binder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(const
     res->SetTsType(func_type);
     func_type->SetVariable(res);
     return res;
+}
+
+ETSFunctionType *ETSObjectType::CreateETSFunctionType(const util::StringView &name) const
+{
+    return allocator_->New<ETSFunctionType>(name, allocator_);
 }
 
 binder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFunctionType *func_type,
@@ -303,6 +308,16 @@ std::unordered_map<util::StringView, const binder::LocalVariable *> ETSObjectTyp
 void ETSObjectType::ToString(std::stringstream &ss) const
 {
     ss << name_;
+    if (IsGeneric()) {
+        auto const type_arguments_size = type_arguments_.size();
+        ss << compiler::Signatures::GENERIC_BEGIN;
+        type_arguments_[0]->ToString(ss);
+        for (std::size_t i = 1U; i < type_arguments_size; ++i) {
+            ss << ", ";
+            type_arguments_[i]->ToString(ss);
+        }
+        ss << compiler::Signatures::GENERIC_END;
+    }
 }
 
 void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other)

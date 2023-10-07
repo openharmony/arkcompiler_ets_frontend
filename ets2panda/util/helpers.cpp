@@ -652,55 +652,6 @@ std::string Helpers::UTF16toUTF8(const char16_t c)
     return convert.to_bytes(c);
 }
 
-template <class F>
-static const ir::ETSImportDeclaration *ImportDeclarationForDynamicVarInternal(const binder::Variable *var, F pred)
-{
-    auto *decl_node = var->Declaration()->Node();
-    if (!decl_node) {
-        return nullptr;
-    }
-
-    if (!decl_node->IsImportNamespaceSpecifier() && !decl_node->IsImportSpecifier()) {
-        return nullptr;
-    }
-
-    if (!pred(decl_node)) {
-        return nullptr;
-    }
-
-    auto *parent = decl_node->Parent();
-    if (!parent || !parent->IsETSImportDeclaration()) {
-        return nullptr;
-    }
-
-    return parent->AsETSImportDeclaration();
-}
-
-bool Helpers::IsDynamicModuleVariable(const binder::Variable *var)
-{
-    auto *import = ImportDeclarationForDynamicVarInternal(
-        var, [](const ir::AstNode *decl_node) { return decl_node->IsImportSpecifier(); });
-    if (import == nullptr) {
-        return false;
-    }
-    return import->IsPureDynamic();
-}
-
-bool Helpers::IsDynamicNamespaceVariable(const binder::Variable *var)
-{
-    auto *import = ImportDeclarationForDynamicVarInternal(
-        var, [](const ir::AstNode *decl_node) { return decl_node->IsImportNamespaceSpecifier(); });
-    if (import == nullptr) {
-        return false;
-    }
-    return import->IsPureDynamic();
-}
-
-const ir::ETSImportDeclaration *Helpers::ImportDeclarationForDynamicVar(const binder::Variable *var)
-{
-    return ImportDeclarationForDynamicVarInternal(var, [](const ir::AstNode *) { return true; });
-}
-
 std::pair<std::string_view, std::string_view> Helpers::SplitSignature(std::string_view signature)
 {
     auto idx = signature.find_last_of(':');
