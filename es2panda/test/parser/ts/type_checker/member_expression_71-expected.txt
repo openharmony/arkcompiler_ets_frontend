@@ -55,6 +55,7 @@
                     }
                   },
                   "readonly": false,
+                  "static": false,
                   "loc": {
                     "start": {
                       "line": 17,
@@ -109,6 +110,7 @@
                     }
                   },
                   "readonly": true,
+                  "static": false,
                   "loc": {
                     "start": {
                       "line": 17,

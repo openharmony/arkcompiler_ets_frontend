@@ -2527,7 +2527,7 @@ void ParserImpl::CheckClassPrivateIdentifier(ClassElmentDescriptor *desc)
         return;
     }
 
-    if (desc->modifiers & ~ir::ModifierFlags::READONLY && desc->modifiers & ~ir::ModifierFlags::STATIC) {
+    if ((desc->modifiers & ~ir::ModifierFlags::READONLY) && (desc->modifiers & ~ir::ModifierFlags::STATIC)) {
         ThrowSyntaxError("Unexpected modifier on private identifier");
     }
 
@@ -2651,9 +2651,10 @@ ir::Statement *ParserImpl::ParseClassElement(const ArenaVector<ir::Statement *> 
         }
 
         auto *indexSignature =
-            AllocNode<ir::TSIndexSignature>(propName, typeAnnotation, desc.modifiers & ir::ModifierFlags::READONLY);
+            AllocNode<ir::TSIndexSignature>(propName, typeAnnotation, desc.modifiers & ir::ModifierFlags::READONLY,
+                                            desc.modifiers & ir::ModifierFlags::STATIC);
 
-        indexSignature->SetRange({indexSignature->Param()->Start(), indexSignature->TypeAnnotation()->End()});
+        indexSignature->SetRange({desc.propStart, indexSignature->TypeAnnotation()->End()});
 
         indexSignatures->push_back(indexSignature);
 

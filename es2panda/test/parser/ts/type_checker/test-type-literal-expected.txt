@@ -1509,6 +1509,7 @@
                     }
                   },
                   "readonly": false,
+                  "static": false,
                   "loc": {
                     "start": {
                       "line": 26,
@@ -1693,6 +1694,7 @@
                     }
                   },
                   "readonly": true,
+                  "static": false,
                   "loc": {
                     "start": {
                       "line": 27,

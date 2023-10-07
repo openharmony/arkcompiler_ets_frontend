@@ -4344,6 +4344,7 @@
                     }
                   },
                   "readonly": false,
+                  "static": false,
                   "loc": {
                     "start": {
                       "line": 44,
@@ -4398,6 +4399,7 @@
                     }
                   },
                   "readonly": false,
+                  "static": false,
                   "loc": {
                     "start": {
                       "line": 44,

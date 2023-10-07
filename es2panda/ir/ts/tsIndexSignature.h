@@ -33,11 +33,12 @@ class TSIndexSignature : public Expression {
 public:
     enum class TSIndexSignatureKind { NUMBER, STRING };
 
-    explicit TSIndexSignature(Expression *param, Expression *typeAnnotation, bool readonly)
+    explicit TSIndexSignature(Expression *param, Expression *typeAnnotation, bool readonly, bool isStatic = false)
         : Expression(AstNodeType::TS_INDEX_SIGNATURE),
           param_(param),
           typeAnnotation_(typeAnnotation),
-          readonly_(readonly)
+          readonly_(readonly),
+          static_(isStatic)
     {
     }
 
@@ -66,6 +67,11 @@ public:
         return readonly_;
     }
 
+    bool Static() const
+    {
+        return static_;
+    }
+
     TSIndexSignatureKind Kind() const;
 
     void Iterate(const NodeTraverser &cb) const override;
@@ -77,7 +83,8 @@ public:
 private:
     Expression *param_;
     Expression *typeAnnotation_;
-    bool readonly_;
+    bool readonly_ = false;
+    bool static_ = false;
 };
 }  // namespace panda::es2panda::ir
 

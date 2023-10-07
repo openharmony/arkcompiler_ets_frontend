@@ -1,0 +1,1 @@
+SyntaxError: Unexpected modifier [test-ts-index-signature-6.ts:23:12]

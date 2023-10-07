@@ -1,0 +1,1 @@
+SyntaxError: ',' expected [test-ts-index-signature-2.ts:18:10]
