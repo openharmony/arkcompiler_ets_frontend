@@ -1320,11 +1320,7 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceKey(bool *computed, boo
             TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
             ir::Expression *typeAnnotation = ParseTsTypeAnnotation(&options);
 
-            if (!typeAnnotation->IsTSNumberKeyword() && !typeAnnotation->IsTSStringKeyword()) {
-                ThrowSyntaxError(
-                    "An index signature parameter type must be either "
-                    "'string' or 'number'");
-            }
+            ValidateIndexSignatureParameterType(typeAnnotation);
 
             key->SetTsTypeAnnotation(typeAnnotation);
         } else {
@@ -1345,6 +1341,29 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceKey(bool *computed, boo
     }
 
     return key;
+}
+
+void ParserImpl::ValidateIndexSignatureParameterType(ir::Expression *typeAnnotation)
+{
+    // The verification of TSTypeReference is wide-ranging because the specific type it refers to cannot be determined.
+    if (!typeAnnotation->IsTSStringKeyword() && !typeAnnotation->IsTSNumberKeyword() &&
+        !typeAnnotation->IsTSSymbolKeyword() && !typeAnnotation->IsTSTemplateLiteralType() &&
+        !typeAnnotation->IsTSUnionType() && !typeAnnotation->IsTSTypeReference()) {
+        ThrowSyntaxError(
+            "An index signature parameter type must be 'string', 'number', 'symbol', "
+            "or a template literal type.");
+    }
+
+    if (typeAnnotation->IsTSUnionType()) {
+        for (auto *it : typeAnnotation->AsTSUnionType()->Types()) {
+            if (!it->IsTSStringKeyword() && !it->IsTSNumberKeyword() && !it->IsTSSymbolKeyword() &&
+                !it->IsTSTemplateLiteralType() && !it->IsTSTypeReference()) {
+                ThrowSyntaxError(
+                    "An index signature parameter type must be 'string', 'number', 'symbol', "
+                    "or a template literal type.");
+            }
+        }
+    }
 }
 
 void ParserImpl::CreateTSVariableForProperty(ir::AstNode *node, const ir::Expression *key, binder::VariableFlags flags)
@@ -2283,11 +2302,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDe
                 TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
                 ir::Expression *typeAnnotation = ParseTsTypeAnnotation(&options);
 
-                if (!typeAnnotation->IsTSNumberKeyword() && !typeAnnotation->IsTSStringKeyword()) {
-                    ThrowSyntaxError(
-                        "An index signature parameter type must be either "
-                        "'string' or 'number'");
-                }
+                ValidateIndexSignatureParameterType(typeAnnotation);
 
                 propName->SetTsTypeAnnotation(typeAnnotation);
 
