@@ -69,7 +69,8 @@ function runTestsInDirectory(directoryPath) {
           failedFiles.push(filePath);
         }
       }
-    } else if (path.extname(filePath) === '.ts' || path.extname(filePath) === '.js') {
+    } else if ((path.extname(filePath) === '.ts' || path.extname(filePath) === '.js') && (!filePath.endsWith('.d.ets') &&
+      !filePath.endsWith('.d.ts'))) {
       const isSuccess = runTest(filePath);
       if (isSuccess) {
         successCount++;

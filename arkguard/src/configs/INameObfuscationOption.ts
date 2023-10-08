@@ -31,3 +31,12 @@ export interface INameObfuscationOption {
 
   readonly mKeepStringProperty?: boolean;
 }
+
+export interface IFileNameObfuscationOption {
+
+  readonly mEnable: boolean;
+
+  readonly mNameGeneratorType: NameGeneratorType;
+
+  mReservedFileNames: string[];
+}

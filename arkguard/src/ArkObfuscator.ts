@@ -56,13 +56,16 @@ import es6Info from './configs/preset/es6_reserved_properties.json';
 
 export const renameIdentifierModule = require('./transformers/rename/RenameIdentifierTransformer');
 export const renamePropertyModule = require('./transformers/rename/RenamePropertiesTransformer');
+export const renameFileNameModule = require('./transformers/rename/RenameFileNameTransformer');
 
 export {getMapFromJson, readProjectProperties};
+export let orignalFilePathForSearching: string | undefined;
 
 type ObfuscationResultType = {
   content: string,
   sourceMap?: RawSourceMap,
-  nameCache?: { [k: string]: string }
+  nameCache?: { [k: string]: string },
+  filePath?: string
 };
 
 const JSON_TEXT_INDENT_LENGTH: number = 2;
@@ -168,9 +171,13 @@ export class ArkObfuscator {
    */
   private async obfuscateDir(dirName: string, dirPrefix: string): Promise<void> {
     const currentDir: string = FileUtils.getPathWithoutPrefix(dirName, dirPrefix);
-    const newDir: string = path.join(this.mCustomProfiles.mOutputDir, currentDir);
-    if (!fs.existsSync(newDir)) {
-      fs.mkdirSync(newDir);
+    let newDir: string = this.mCustomProfiles.mOutputDir;
+    // there is no need to create directory because the directory names will be obfuscated.
+    if (!this.mCustomProfiles.mRenameFileName?.mEnable) {
+      newDir = path.join(this.mCustomProfiles.mOutputDir, currentDir);
+      if (!fs.existsSync(newDir)) {
+        fs.mkdirSync(newDir);
+      }
     }
 
     const fileNames: string[] = fs.readdirSync(dirName);
@@ -214,8 +221,8 @@ export class ArkObfuscator {
     renamePropertyModule.historyMangledTable = getMapFromJson(propertyCache);
   }
 
-  private produceNameCache(namecache: { [k: string]: string }, sourceFile: string, outputDir: string): void {
-    const nameCachePath: string = path.join(outputDir, FileUtils.getFileName(sourceFile) + NAME_CACHE_SUFFIX);
+  private produceNameCache(namecache: { [k: string]: string }, resultPath: string): void {
+    const nameCachePath: string = resultPath + NAME_CACHE_SUFFIX;
     fs.writeFileSync(nameCachePath, JSON.stringify(namecache, null, JSON_TEXT_INDENT_LENGTH));
   }
 
@@ -266,10 +273,10 @@ export class ArkObfuscator {
   /**
    * A Printer to output obfuscated codes.
    */
-  public createObfsPrinter(): Printer {
+  public createObfsPrinter(isDeclarationFile: boolean): Printer {
     // set print options
     let printerOptions: PrinterOptions = {};
-    if (this.mCustomProfiles.mRemoveComments) {
+    if (this.mCustomProfiles.mRemoveComments && !isDeclarationFile) {
       printerOptions.removeComments = true;
     }
 
@@ -279,7 +286,7 @@ export class ArkObfuscator {
   private isObfsIgnoreFile(fileName: string): boolean {
     let suffix: string = FileUtils.getFileExtension(fileName);
 
-    return (suffix !== 'js' && suffix !== 'ts') || fileName.endsWith('.d.ts');
+    return (suffix !== 'js' && suffix !== 'ts' && suffix !== 'ets');
   }
 
   /**
@@ -295,18 +302,35 @@ export class ArkObfuscator {
       return;
     }
 
+    // Add the whitelist of file name obfuscation for ut.
+    if (this.mCustomProfiles.mRenameFileName?.mEnable) {
+      this.mCustomProfiles.mRenameFileName.mReservedFileNames.push(this.mConfigPath);
+    }
     let content: string = FileUtils.readFile(sourceFilePath);
     this.readNameCache(sourceFilePath, outputDir);
     const mixedInfo: ObfuscationResultType = await this.obfuscate(content, sourceFilePath);
 
     if (outputDir && mixedInfo) {
-      fs.writeFileSync(path.join(outputDir, FileUtils.getFileName(sourceFilePath)), mixedInfo.content);
+      // the writing file is for the ut.
+      const testCasesRootPath = path.join(__dirname, '../', 'test/grammar');
+      let relativePath = '';
+      let resultPath = '';
+      if (this.mCustomProfiles.mRenameFileName?.mEnable && mixedInfo.filePath) {
+        relativePath = mixedInfo.filePath.replace(testCasesRootPath, '');
+      } else {
+        relativePath = sourceFilePath.replace(testCasesRootPath, '');
+      }
+      resultPath = path.join(outputDir, relativePath);
+      fs.mkdirSync(path.dirname(resultPath), {recursive: true});
+      fs.writeFileSync(resultPath, mixedInfo.content);
+
       if (this.mCustomProfiles.mEnableSourceMap && mixedInfo.sourceMap) {
-        fs.writeFileSync(path.join(outputDir, FileUtils.getFileName(sourceFilePath) + '.map'),
+        fs.writeFileSync(path.join(resultPath + '.map'),
           JSON.stringify(mixedInfo.sourceMap, null, JSON_TEXT_INDENT_LENGTH));
       }
+
       if (this.mCustomProfiles.mEnableNameCache && this.mCustomProfiles.mEnableNameCache) {
-        this.produceNameCache(mixedInfo.nameCache, sourceFilePath, outputDir);
+        this.produceNameCache(mixedInfo.nameCache, resultPath);
       }
     }
   }
@@ -317,9 +341,10 @@ export class ArkObfuscator {
    * @param sourceFilePath
    * @param previousStageSourceMap
    * @param historyNameCache
+   * @param originalFilePath When filename obfuscation is enabled, it is used as the source code path.
    */
   public async obfuscate(content: SourceFile | string, sourceFilePath: string, previousStageSourceMap?: sourceMap.RawSourceMap, 
-    historyNameCache?: Map<string, string>): Promise<ObfuscationResultType> {
+    historyNameCache?: Map<string, string>, originalFilePath?: string): Promise<ObfuscationResultType> {
     let ast: SourceFile;
     let result: ObfuscationResultType = { content: undefined };
     if (this.isObfsIgnoreFile(sourceFilePath)) {
@@ -341,6 +366,10 @@ export class ArkObfuscator {
       renameIdentifierModule.historyNameCache = historyNameCache;
     }
 
+    if (this.mCustomProfiles.mRenameFileName?.mEnable ) {
+      orignalFilePathForSearching = originalFilePath ? originalFilePath : ast.fileName;
+    }
+
     let transformedResult: TransformationResult<Node> = transform(ast, this.mTransformers, this.mCompilerOptions);
     ast = transformedResult.transformed[0] as SourceFile;
 
@@ -350,8 +379,9 @@ export class ArkObfuscator {
       sourceMapGenerator = getSourceMapGenerator(sourceFilePath);
     }
 
-    this.createObfsPrinter().writeFile(ast, this.mTextWriter, sourceMapGenerator);
+    this.createObfsPrinter(ast.isDeclarationFile).writeFile(ast, this.mTextWriter, sourceMapGenerator);
 
+    result.filePath = ast.fileName;
     result.content = this.mTextWriter.getText();
 
     if (this.mCustomProfiles.mEnableSourceMap && sourceMapGenerator) {
@@ -364,7 +394,7 @@ export class ArkObfuscator {
       result.sourceMap = sourceMapJson;
     }
 
-    if (this.mCustomProfiles.mEnableNameCache) {
+    if (this.mCustomProfiles.mEnableNameCache && renameIdentifierModule.nameCache) {
       result.nameCache = Object.fromEntries(renameIdentifierModule.nameCache);
     }
 

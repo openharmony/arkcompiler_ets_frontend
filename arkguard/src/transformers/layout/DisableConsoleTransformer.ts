@@ -40,12 +40,13 @@ import type {
 
 import type {IOptions} from '../../configs/IOptions';
 import type {TransformPlugin} from '../TransformPlugin';
+import {TransformerOrder} from '../TransformPlugin';
+import { NodeUtils } from '../../utils/NodeUtils';
 
 namespace secharmony {
-  const TRANSFORMER_ORDER: number = 1;
   export let transformerPlugin: TransformPlugin = {
     'name': 'disableConsolePlugin',
-    'order': (1 << TRANSFORMER_ORDER),
+    'order': (1 << TransformerOrder.DISABLE_CONSOLE_TRANSFORMER),
     'createTransformerFactory': createDisableConsoleFactory
   };
 
@@ -60,7 +61,7 @@ namespace secharmony {
       return transformer;
 
       function transformer(node: Node): Node {
-        if (!isSourceFile(node) || node.fileName.endsWith('.d.ts')) {
+        if (!isSourceFile(node) || NodeUtils.isDeclarationFile(node)) {
           return node;
         }
 

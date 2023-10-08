@@ -13,21 +13,21 @@
  * limitations under the License.
  */
 
-import type {IOptions} from '../configs/IOptions';
-import type {Node, TransformerFactory} from 'typescript';
+export let value01 = 1, value02 = 2;
 
-export interface TransformPlugin {
-  name: string;
-  order: number
-  createTransformerFactory: (option: IOptions) => TransformerFactory<Node>;
+export const value03 = 3, value04 = 4/*, … */; // also var, let
+
+export function function01() { 
+    return 10;
 }
 
-export enum TransformerOrder {
-  SHORTHAND_PROPERTY_TRANSFORMER = 0,
-  DISABLE_CONSOLE_TRANSFORMER = 1,
-  DISABLE_HILOG_TRANSFORMER = 2,
-  SIMPLIFY_TRANSFORMER = 3,
-  RENAME_PROPERTIES_TRANSFORMER = 4,
-  RENAME_IDENTIFIER_TRANSFORMER = 5,
-  RENAME_FILE_NAME_TRANSFORMER = 6,
+export class Actor { 
+    name = 'asuss';
+    age = 19;
+}
+
+export function* generatorFunctionName01() { 
+    let acator = new Actor();
+    acator.age += 1;
+    yield acator;
 }

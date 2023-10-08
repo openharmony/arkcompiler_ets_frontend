@@ -54,6 +54,7 @@ import type {INameGenerator, NameGeneratorOptions} from '../../generator/INameGe
 import type {IOptions} from '../../configs/IOptions';
 import type {INameObfuscationOption} from '../../configs/INameObfuscationOption';
 import type {TransformPlugin} from '../TransformPlugin';
+import {TransformerOrder} from '../TransformPlugin';
 import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import {TypeUtils} from '../../utils/TypeUtils';
 import {collectIdentifiers} from '../../utils/TransformUtil';
@@ -112,7 +113,7 @@ namespace secharmony {
        * @param node ast node of a file.
        */
       function renameTransformer(node: Node): Node {
-        if (!isSourceFile(node)) {
+        if (!isSourceFile(node) || NodeUtils.isDeclarationFile(node)) {
           return node;
         }
 
@@ -383,10 +384,9 @@ namespace secharmony {
     return !enableTopLevel && isGlobalScope(scope);
   }
 
-  const TRANSFORMER_ORDER: number = 9;
   export let transformerPlugin: TransformPlugin = {
     'name': 'renameIdentifierPlugin',
-    'order': (1 << TRANSFORMER_ORDER),
+    'order': (1 << TransformerOrder.RENAME_IDENTIFIER_TRANSFORMER),
     'createTransformerFactory': createRenameIdentifierFactory
   };
 
