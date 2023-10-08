@@ -116,6 +116,11 @@ public:
         return body_;
     }
 
+    void AddToBody(Statement *statement)
+    {
+        body_.push_back(statement);
+    }
+
     TSTypeParameterDeclaration *TypeParams()
     {
         return typeParams_;

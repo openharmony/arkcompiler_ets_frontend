@@ -1,0 +1,1 @@
+SyntaxError: Unexpected modifier [test-class-auto-accessor-6.ts:18:13]

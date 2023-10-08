@@ -26,6 +26,7 @@ keywords = [
         "asserts" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_ASSERTS"],
         "async" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_ASYNC"],
         "await" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_AWAIT"],
+        "accessor" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_ACCESSOR"],
     },
 
     # keywords start with 'b'

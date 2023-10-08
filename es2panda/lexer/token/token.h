@@ -111,6 +111,7 @@ public:
     bool IsStaticModifier() const;
     bool IsDeclareModifier() const;
     bool IsReadonlyModifier() const;
+    bool IsAccessorModifier() const;
     bool IsUpdate() const;
     bool IsUnary() const;
     bool IsPropNameLiteral() const;

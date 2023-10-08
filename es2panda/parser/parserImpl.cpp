@@ -1961,6 +1961,7 @@ static bool IsModifierKind(const lexer::Token &token)
             case lexer::TokenType::KEYW_ABSTRACT:
             case lexer::TokenType::KEYW_DECLARE:
             case lexer::TokenType::KEYW_READONLY:
+            case lexer::TokenType::KEYW_ACCESSOR:
                 return true;
             default:
                 return false;
@@ -1995,25 +1996,25 @@ ir::ModifierFlags ParserImpl::ParseModifiers()
             case lexer::TokenType::KEYW_PUBLIC: {
                 actualStatus = ir::ModifierFlags::PUBLIC;
                 nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC | ir::ModifierFlags::READONLY |
-                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT;
+                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::ACCESSOR;
                 break;
             }
             case lexer::TokenType::KEYW_PRIVATE: {
                 actualStatus = ir::ModifierFlags::PRIVATE;
                 nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC | ir::ModifierFlags::READONLY |
-                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT;
+                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::ACCESSOR;
                 break;
             }
             case lexer::TokenType::KEYW_PROTECTED: {
                 actualStatus = ir::ModifierFlags::PROTECTED;
                 nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::STATIC | ir::ModifierFlags::READONLY |
-                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT;
+                             ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::ACCESSOR;
                 break;
             }
             case lexer::TokenType::KEYW_STATIC: {
                 actualStatus = ir::ModifierFlags::STATIC;
                 nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::READONLY | ir::ModifierFlags::DECLARE |
-                             ir::ModifierFlags::ABSTRACT;
+                             ir::ModifierFlags::ABSTRACT | ir::ModifierFlags::ACCESSOR;
                 break;
             }
             case lexer::TokenType::KEYW_ASYNC: {
@@ -2036,6 +2037,11 @@ ir::ModifierFlags ParserImpl::ParseModifiers()
             case lexer::TokenType::KEYW_READONLY: {
                 actualStatus = ir::ModifierFlags::READONLY;
                 nextStatus = ir::ModifierFlags::ASYNC | ir::ModifierFlags::DECLARE | ir::ModifierFlags::ABSTRACT;
+                break;
+            }
+            case lexer::TokenType::KEYW_ACCESSOR: {
+                actualStatus = ir::ModifierFlags::ACCESSOR;
+                nextStatus = ir::ModifierFlags::NONE;
                 break;
             }
             default: {
@@ -2602,6 +2608,9 @@ ir::Statement *ParserImpl::ParseClassElement(const ArenaVector<ir::Statement *> 
     if ((desc.modifiers & ir::ModifierFlags::ABSTRACT) && !isAbstractClass) {
         ThrowSyntaxError("Abstract methods can only appear within an abstract class.");
     }
+    if (!decorators.empty() && (desc.modifiers & ir::ModifierFlags::ACCESSOR)) {
+        ThrowSyntaxError("Decorators are not available for auto accessor property now.");
+    }
 
     CheckClassPrivateIdentifier(&desc);
     CheckClassGeneratorMethod(&desc);
@@ -2624,6 +2633,10 @@ ir::Statement *ParserImpl::ParseClassElement(const ArenaVector<ir::Statement *> 
 
         if (desc.methodKind == ir::MethodDefinitionKind::CONSTRUCTOR) {
             ThrowSyntaxError("'(' expected");
+        }
+
+        if (desc.modifiers & ir::ModifierFlags::ACCESSOR) {
+            ThrowSyntaxError("An auto accessor property can't be declared optional.");
         }
 
         desc.modifiers |= ir::ModifierFlags::OPTIONAL;

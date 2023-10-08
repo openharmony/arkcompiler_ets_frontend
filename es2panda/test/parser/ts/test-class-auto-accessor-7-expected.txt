@@ -1,0 +1,1 @@
+SyntaxError: Decorators are not available for auto accessor property now. [test-class-auto-accessor-7.ts:22:14]

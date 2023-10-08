@@ -52,6 +52,7 @@
 #include "ir/statements/forOfStatement.h"
 #include "ir/statements/forUpdateStatement.h"
 #include "ir/statements/functionDeclaration.h"
+#include "ir/statements/returnStatement.h"
 #include "ir/statements/switchStatement.h"
 #include "ir/statements/variableDeclaration.h"
 #include "ir/statements/variableDeclarator.h"
@@ -322,6 +323,8 @@ ir::UpdateNodes Transformer::VisitTSNode(ir::AstNode *childNode)
             auto *node = childNode->AsClassDefinition();
             VisitPrivateElement(node);
             VisitComputedProperty(node);
+            // Process auto accessor properties
+            VisitAutoAccessorProperty(node);
             auto res = VisitTSNodes(childNode);
             SetOriginalNode(res, childNode);
             return res;
@@ -474,6 +477,10 @@ void Transformer::VisitComputedProperty(ir::ClassDefinition *node)
         if (it->IsClassProperty()) {
             auto *classProperty = it->AsClassProperty();
             if (!classProperty->IsComputed()) {
+                continue;
+            }
+            if (classProperty->IsAutoAccessor()) {
+                // Left to processing in auto aceessor process procedure.
                 continue;
             }
             auto *key = classProperty->Key();
@@ -673,6 +680,224 @@ void Transformer::VisitTSParameterProperty(ir::ClassDefinition *node)
         blockStatement->AddStatementAtPos(insertPos, AllocNode<ir::ExpressionStatement>(assignment));
         insertPos++;
     }
+}
+
+void Transformer::VisitAutoAccessorProperty(ir::ClassDefinition *node)
+{
+    ASSERT(node != nullptr);
+    std::vector<ir::ClassProperty *> autoAccessorPropertyList;
+    for (auto *it : node->Body()) {
+        if (!it->IsClassProperty()) {
+            continue;
+        }
+        auto* prop = it->AsClassProperty();
+        if (prop->IsAutoAccessor()) {
+            autoAccessorPropertyList.push_back(prop);
+        }
+    }
+    // Must process after iterating complete(can't add node during iterating).
+    for (auto *prop : autoAccessorPropertyList) {
+        ProcessAutoAccessorProperty(prop, node);
+    }
+}
+
+ir::Expression *Transformer::CopyClassKeyExpression(ir::Expression *orginalExpr)
+{
+    ir::Expression *newExpr = nullptr;
+    switch (orginalExpr->Type()) {
+        case ir::AstNodeType::IDENTIFIER: {
+            ir::Identifier *ident = orginalExpr->AsIdentifier();
+            newExpr = AllocNode<ir::Identifier>(ident->Name());
+            break;
+        }
+        case ir::AstNodeType::STRING_LITERAL: {
+            ir::StringLiteral *stringLiteral = orginalExpr->AsStringLiteral();
+            newExpr = AllocNode<ir::StringLiteral>(stringLiteral->Str());
+            break;
+        }
+        case ir::AstNodeType::BIGINT_LITERAL: {
+            ir::BigIntLiteral *bigIntLiteral = orginalExpr->AsBigIntLiteral();
+            newExpr = AllocNode<ir::BigIntLiteral>(bigIntLiteral->Str());
+            break;
+        }
+        case ir::AstNodeType::NUMBER_LITERAL: {
+            auto *numberLiteral = orginalExpr->AsNumberLiteral();
+            newExpr = AllocNode<ir::NumberLiteral>(numberLiteral->Number(), numberLiteral->Str());
+            break;
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+    newExpr->SetRange(orginalExpr->Range());
+    return newExpr;
+}
+
+void Transformer::ProcessAutoAccessorProperty(ir::ClassProperty *node, ir::ClassDefinition *classDefinition)
+{
+    /*
+     * Transform for auto accessor
+     *  class A {
+     *    accessor name:string;
+     *  }
+     *
+     * To:
+     *
+     * class A {
+     *   #__name:string;
+     *   get name() {
+     *      return this.#__name;
+     *   }
+     *   set name(value: string) {
+     *      this.#__name == value;
+     *   }
+     * }
+     *
+     * For computed auto accessor property:
+     *  class A {
+     *    accessor [name]:string;
+     *  }
+     *
+     * To:
+     * var #var_1; // unique name
+     * class A {
+     *   #__name:string;
+     *   get [#var_1 = name]() {
+     *      return this.#__name;
+     *   }
+     *   set [#var_1](value: string) {
+     *      this.#__name == value;
+     *   }
+     * }
+     */
+
+    // 1. Create a private property
+    ASSERT(node->Key() != nullptr);
+    auto *originKeyNode = node->Key();
+    auto transformedName = CreatePrivateElementBindName(AUTO_ACCESSOR_STORAGE_NAME);
+    auto *internalIdentifier = AllocNode<ir::Identifier>(transformedName);
+    internalIdentifier->SetRange(originKeyNode->Range());
+    internalIdentifier->SetParent(originKeyNode->Parent());
+    node->SetKey(internalIdentifier);
+
+    util::StringView backupVarName;
+    bool computed = node->IsComputed();
+    if (computed) {
+        backupVarName = CreateNewVariable(true);
+        node->SetComputed(false); // Transform this property to internal property, and removed the computed type.
+    }
+    // 2. Add get and set accessor
+    ir::ModifierFlags modifierMask = ir::ModifierFlags::ACCESS | ir::ModifierFlags::STATIC;
+    ir::ModifierFlags modifiers = static_cast<ir::ModifierFlags>(node->Modifiers() & modifierMask);
+
+    MethodInfo getMethodInfo = {CopyClassKeyExpression(originKeyNode), backupVarName, ir::MethodDefinitionKind::GET,
+                                modifiers, computed};
+    AddGeneratedSetOrGetMethodToClass(classDefinition, node, getMethodInfo);
+    MethodInfo setMethodInfo = {CopyClassKeyExpression(originKeyNode), backupVarName, ir::MethodDefinitionKind::SET,
+                                modifiers, computed};
+    AddGeneratedSetOrGetMethodToClass(classDefinition, node, setMethodInfo);
+}
+
+ir::MethodDefinition* Transformer::AddMethodToClass(ir::ClassDefinition *classDefinition,
+                                                    const MethodInfo& methodInfo,
+                                                    ArenaVector<ir::Expression *> &params,
+                                                    ArenaVector<ir::Statement *> &statements)
+{
+    ASSERT(classDefinition != nullptr);
+    ASSERT((methodInfo.kind == ir::MethodDefinitionKind::GET) || (methodInfo.kind == ir::MethodDefinitionKind::SET));
+
+    auto *paramScope = Binder()->Allocator()->New<binder::FunctionParamScope>(Allocator(), Binder()->GetScope());
+    for (auto &param : params) {
+        paramScope->AddParamDecl(Allocator(), param);
+    }
+    auto *scope = Binder()->Allocator()->New<binder::FunctionScope>(Allocator(), paramScope);
+    paramScope->BindFunctionScope(scope);
+    auto *body = AllocNode<ir::BlockStatement>(scope, std::move(statements));
+    auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, body, nullptr,
+                                               ir::ScriptFunctionFlags::METHOD, false, false);
+    scope->BindNode(func);
+    scope->BindParamScope(paramScope);
+    paramScope->BindNode(func);
+
+    auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
+    ir::Expression *keyNode = nullptr;
+    if (!methodInfo.isComputed) {
+        keyNode = methodInfo.key;
+    } else {
+        if (methodInfo.kind == ir::MethodDefinitionKind::GET) {
+            auto *backupNode = CreateReferenceIdentifier(methodInfo.backupName);
+            keyNode = AllocNode<ir::AssignmentExpression>(backupNode, methodInfo.key,
+                                                          lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+        } else {
+            auto *backupNode = CreateReferenceIdentifier(methodInfo.backupName);
+            keyNode = backupNode;
+        }
+    }
+
+    ArenaVector<ir::Decorator *> decorators(Allocator()->Adapter());
+    ArenaVector<ir::ParamDecorators> paramDecorators(Allocator()->Adapter());
+    auto *method = AllocNode<ir::MethodDefinition>(methodInfo.kind, keyNode, funcExpr,
+                                                   methodInfo.modifiers, Allocator(), std::move(decorators),
+                                                   std::move(paramDecorators), methodInfo.isComputed);
+    classDefinition->AddToBody(method);
+    if (methodInfo.isComputed) {
+        AddComputedPropertyBinding(method, methodInfo.backupName);
+    }
+    return method;
+}
+
+ir::MethodDefinition* Transformer::AddGeneratedMethodToClass(ir::ClassDefinition *classDefinition,
+                                                             const MethodInfo &methodInfo,
+                                                             util::StringView propName)
+{
+    ASSERT(classDefinition != nullptr);
+    ArenaVector<ir::Expression *> params(Allocator()->Adapter());
+    ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
+
+    if (methodInfo.kind == ir::MethodDefinitionKind::GET) {
+        /*
+         * Add `return this.prop` to function body.
+         */
+        auto *identNode = AllocNode<ir::Identifier>(propName);
+        auto *returnExpr = AllocNode<ir::MemberExpression>(AllocNode<ir::ThisExpression>(), identNode,
+            ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        ir::ReturnStatement *returnStatement = AllocNode<ir::ReturnStatement>(returnExpr);
+        statements.push_back(returnStatement);
+    } else if (methodInfo.kind == ir::MethodDefinitionKind::SET) {
+        /*
+        * 1. Add `value` to params
+        * 2. Add `this.prop = value` to function body
+        */
+        util::StringView paramName = util::UString("value", Allocator()).View();
+        auto *identNode = AllocNode<ir::Identifier>(paramName);
+        params.push_back(identNode);
+
+        auto *identNodeProp = AllocNode<ir::Identifier>(propName);
+        auto *propAccessExpr = AllocNode<ir::MemberExpression>(AllocNode<ir::ThisExpression>(), identNodeProp,
+            ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+        auto *identNodeRight = AllocNode<ir::Identifier>(paramName);
+        auto *setExpr = AllocNode<ir::AssignmentExpression>(propAccessExpr, identNodeRight,
+                                                            lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+        auto *exprStatementNode = AllocNode<ir::ExpressionStatement>(setExpr);
+        statements.push_back(exprStatementNode);
+    } else {
+        UNREACHABLE();
+    }
+    auto *method = AddMethodToClass(classDefinition, methodInfo, params, statements);
+    return method;
+}
+
+void Transformer::AddGeneratedSetOrGetMethodToClass(ir::ClassDefinition *classDefinition,
+                                                    ir::ClassProperty *propertyNode,
+                                                    const MethodInfo &methodInfo)
+{
+    ASSERT(classDefinition != nullptr);
+    ASSERT(propertyNode != nullptr);
+    // The key of the property can only be Idetifier here.
+    auto propName = propertyNode->Key()->AsIdentifier()->Name();
+    auto *method = AddGeneratedMethodToClass(classDefinition, methodInfo, propName);
+    method->SetOriginal(propertyNode);
+    method->SetRange(propertyNode->Range());
 }
 
 std::vector<ir::ExpressionStatement *> Transformer::VisitStaticProperty(ir::ClassDefinition *node,
