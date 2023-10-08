@@ -1,6 +1,6 @@
 {
   "name": "arkguard",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "An obfuscator tools for open harmony apps.",
   "bin": {
     "arkguard": "bin/secharmony"

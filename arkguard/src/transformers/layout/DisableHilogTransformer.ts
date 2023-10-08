@@ -40,14 +40,14 @@ import type {
 
 import type {IOptions} from '../../configs/IOptions';
 import type {TransformPlugin} from '../TransformPlugin';
+import {TransformerOrder} from '../TransformPlugin';
 import {OhPackType, isCommentedNode} from '../../utils/TransformUtil';
 import {findOhImportStatement} from '../../utils/OhsUtil';
 
 namespace secharmony {
-  const TRANSFORMER_ORDER: number = 2;
   export let transformerPlugin: TransformPlugin = {
     'name': 'disableHilogPlugin',
-    'order': (1 << TRANSFORMER_ORDER),
+    'order': (1 << TransformerOrder.DISABLE_HILOG_TRANSFORMER),
     'createTransformerFactory': createDisableHilogFactory
   };
 
