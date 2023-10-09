@@ -34,6 +34,10 @@ void ExportNamedDeclaration::Iterate(const NodeTraverser &cb) const
         for (auto *it : specifiers_) {
             cb(it);
         }
+
+        if (assertClause_) {
+            cb(assertClause_);
+        }
     }
 }
 
@@ -43,6 +47,7 @@ void ExportNamedDeclaration::Dump(ir::AstDumper *dumper) const
                  {"declaration", AstDumper::Nullable(decl_)},
                  {"source", AstDumper::Nullable(source_)},
                  {"specifiers", specifiers_},
+                 {"assertClause", AstDumper::Optional(assertClause_)},
                  {"isType", AstDumper::Optional(IsType())}});
 }
 
@@ -68,9 +73,13 @@ void ExportNamedDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] 
         if (source_) {
             source_ = std::get<ir::AstNode *>(cb(source_))->AsStringLiteral();
         }
-        
+
         for (auto iter = specifiers_.begin(); iter != specifiers_.end(); iter++) {
             *iter = std::get<ir::AstNode *>(cb(*iter))->AsExportSpecifier();
+        }
+
+        if (assertClause_) {
+            assertClause_ = std::get<ir::AstNode *>(cb(assertClause_))->AsAssertClause();
         }
     }
 }

@@ -1,0 +1,477 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "ImportDeclaration",
+      "source": {
+        "type": "StringLiteral",
+        "value": "test",
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 20
+          },
+          "end": {
+            "line": 17,
+            "column": 26
+          }
+        }
+      },
+      "specifiers": [
+        {
+          "type": "ImportSpecifier",
+          "local": {
+            "type": "Identifier",
+            "name": "a0",
+            "loc": {
+              "start": {
+                "line": 17,
+                "column": 10
+              },
+              "end": {
+                "line": 17,
+                "column": 12
+              }
+            }
+          },
+          "imported": {
+            "type": "Identifier",
+            "name": "a0",
+            "loc": {
+              "start": {
+                "line": 17,
+                "column": 10
+              },
+              "end": {
+                "line": 17,
+                "column": 12
+              }
+            }
+          },
+          "isType": false,
+          "loc": {
+            "start": {
+              "line": 17,
+              "column": 10
+            },
+            "end": {
+              "line": 17,
+              "column": 12
+            }
+          }
+        }
+      ],
+      "assertClause": {
+        "type": "AssertClause",
+        "elements": [],
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 27
+          },
+          "end": {
+            "line": 17,
+            "column": 37
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 17,
+          "column": 1
+        },
+        "end": {
+          "line": 17,
+          "column": 37
+        }
+      }
+    },
+    {
+      "type": "ImportDeclaration",
+      "source": {
+        "type": "StringLiteral",
+        "value": "test",
+        "loc": {
+          "start": {
+            "line": 19,
+            "column": 20
+          },
+          "end": {
+            "line": 19,
+            "column": 26
+          }
+        }
+      },
+      "specifiers": [
+        {
+          "type": "ImportSpecifier",
+          "local": {
+            "type": "Identifier",
+            "name": "a1",
+            "loc": {
+              "start": {
+                "line": 19,
+                "column": 10
+              },
+              "end": {
+                "line": 19,
+                "column": 12
+              }
+            }
+          },
+          "imported": {
+            "type": "Identifier",
+            "name": "a1",
+            "loc": {
+              "start": {
+                "line": 19,
+                "column": 10
+              },
+              "end": {
+                "line": 19,
+                "column": 12
+              }
+            }
+          },
+          "isType": false,
+          "loc": {
+            "start": {
+              "line": 19,
+              "column": 10
+            },
+            "end": {
+              "line": 19,
+              "column": 12
+            }
+          }
+        }
+      ],
+      "assertClause": {
+        "type": "AssertClause",
+        "elements": [
+          {
+            "type": "AssertEntry",
+            "key": {
+              "type": "Identifier",
+              "name": "key1",
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 35
+                },
+                "end": {
+                  "line": 19,
+                  "column": 39
+                }
+              }
+            },
+            "value": {
+              "type": "StringLiteral",
+              "value": "value1",
+              "loc": {
+                "start": {
+                  "line": 19,
+                  "column": 41
+                },
+                "end": {
+                  "line": 19,
+                  "column": 49
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 19,
+                "column": 35
+              },
+              "end": {
+                "line": 19,
+                "column": 49
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 19,
+            "column": 26
+          },
+          "end": {
+            "line": 19,
+            "column": 51
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 19,
+          "column": 1
+        },
+        "end": {
+          "line": 19,
+          "column": 51
+        }
+      }
+    },
+    {
+      "type": "ImportDeclaration",
+      "source": {
+        "type": "StringLiteral",
+        "value": "test",
+        "loc": {
+          "start": {
+            "line": 21,
+            "column": 20
+          },
+          "end": {
+            "line": 21,
+            "column": 26
+          }
+        }
+      },
+      "specifiers": [
+        {
+          "type": "ImportSpecifier",
+          "local": {
+            "type": "Identifier",
+            "name": "a2",
+            "loc": {
+              "start": {
+                "line": 21,
+                "column": 10
+              },
+              "end": {
+                "line": 21,
+                "column": 12
+              }
+            }
+          },
+          "imported": {
+            "type": "Identifier",
+            "name": "a2",
+            "loc": {
+              "start": {
+                "line": 21,
+                "column": 10
+              },
+              "end": {
+                "line": 21,
+                "column": 12
+              }
+            }
+          },
+          "isType": false,
+          "loc": {
+            "start": {
+              "line": 21,
+              "column": 10
+            },
+            "end": {
+              "line": 21,
+              "column": 12
+            }
+          }
+        }
+      ],
+      "assertClause": {
+        "type": "AssertClause",
+        "elements": [
+          {
+            "type": "AssertEntry",
+            "key": {
+              "type": "Identifier",
+              "name": "key1",
+              "loc": {
+                "start": {
+                  "line": 21,
+                  "column": 36
+                },
+                "end": {
+                  "line": 21,
+                  "column": 40
+                }
+              }
+            },
+            "value": {
+              "type": "StringLiteral",
+              "value": "value1",
+              "loc": {
+                "start": {
+                  "line": 21,
+                  "column": 42
+                },
+                "end": {
+                  "line": 21,
+                  "column": 50
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 21,
+                "column": 36
+              },
+              "end": {
+                "line": 21,
+                "column": 50
+              }
+            }
+          },
+          {
+            "type": "AssertEntry",
+            "key": {
+              "type": "StringLiteral",
+              "value": "key2",
+              "loc": {
+                "start": {
+                  "line": 22,
+                  "column": 7
+                },
+                "end": {
+                  "line": 22,
+                  "column": 13
+                }
+              }
+            },
+            "value": {
+              "type": "StringLiteral",
+              "value": "value2",
+              "loc": {
+                "start": {
+                  "line": 23,
+                  "column": 7
+                },
+                "end": {
+                  "line": 23,
+                  "column": 15
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 22,
+                "column": 7
+              },
+              "end": {
+                "line": 23,
+                "column": 15
+              }
+            }
+          },
+          {
+            "type": "AssertEntry",
+            "key": {
+              "type": "Identifier",
+              "name": "key3",
+              "loc": {
+                "start": {
+                  "line": 24,
+                  "column": 5
+                },
+                "end": {
+                  "line": 24,
+                  "column": 9
+                }
+              }
+            },
+            "value": {
+              "type": "StringLiteral",
+              "value": "value3",
+              "loc": {
+                "start": {
+                  "line": 24,
+                  "column": 11
+                },
+                "end": {
+                  "line": 24,
+                  "column": 19
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 24,
+                "column": 5
+              },
+              "end": {
+                "line": 24,
+                "column": 19
+              }
+            }
+          },
+          {
+            "type": "AssertEntry",
+            "key": {
+              "type": "Identifier",
+              "name": "key4",
+              "loc": {
+                "start": {
+                  "line": 24,
+                  "column": 21
+                },
+                "end": {
+                  "line": 24,
+                  "column": 25
+                }
+              }
+            },
+            "value": {
+              "type": "StringLiteral",
+              "value": "value4",
+              "loc": {
+                "start": {
+                  "line": 24,
+                  "column": 27
+                },
+                "end": {
+                  "line": 24,
+                  "column": 35
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 24,
+                "column": 21
+              },
+              "end": {
+                "line": 24,
+                "column": 35
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 21,
+            "column": 27
+          },
+          "end": {
+            "line": 24,
+            "column": 37
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 21,
+          "column": 1
+        },
+        "end": {
+          "line": 24,
+          "column": 37
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1
+    },
+    "end": {
+      "line": 25,
+      "column": 1
+    }
+  }
+}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_IR_EXPRESSION_IMPORT_EXPRESSION_H
-#define ES2PANDA_IR_EXPRESSION_IMPORT_EXPRESSION_H
+#ifndef ES2PANDA_IR_MODULE_ASSERT_CLAUSE_H
+#define ES2PANDA_IR_MODULE_ASSERT_CLAUSE_H
 
-#include <ir/expression.h>
-#include <ir/expressions/objectExpression.h>
+#include <ir/astNode.h>
+#include <ir/module/assertEntry.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -30,21 +30,26 @@ class Type;
 
 namespace panda::es2panda::ir {
 
-class ImportExpression : public Expression {
+class AssertClause : public AstNode {
 public:
-    explicit ImportExpression(Expression *source, ObjectExpression *importAssertion)
-        : Expression(AstNodeType::IMPORT_EXPRESSION),
-          source_(source), importAssertion_(importAssertion) {}
+    explicit AssertClause(ArenaVector<AssertEntry *> &&elements)
+        : AstNode(AstNodeType::ASSERT_CLAUSE), elements_(std::move(elements))
+    {
+    }
+
+    const ArenaVector<AssertEntry *> &Elements() const
+    {
+        return elements_;
+    }
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
-    void Compile(compiler::PandaGen *pg) const override;
+    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::Checker *checker) const override;
     void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
 
 private:
-    Expression *source_;
-    ObjectExpression *importAssertion_;
+    ArenaVector<AssertEntry *> elements_;
 };
 
 }  // namespace panda::es2panda::ir

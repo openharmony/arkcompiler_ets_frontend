@@ -96,6 +96,8 @@ es2panda_src = [
   "ir/expressions/unaryExpression.cpp",
   "ir/expressions/updateExpression.cpp",
   "ir/expressions/yieldExpression.cpp",
+  "ir/module/assertClause.cpp",
+  "ir/module/assertEntry.cpp",
   "ir/module/exportAllDeclaration.cpp",
   "ir/module/exportDefaultDeclaration.cpp",
   "ir/module/exportNamedDeclaration.cpp",

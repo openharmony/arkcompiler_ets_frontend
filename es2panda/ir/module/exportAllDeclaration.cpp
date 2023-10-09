@@ -28,11 +28,18 @@ void ExportAllDeclaration::Iterate(const NodeTraverser &cb) const
     if (exported_) {
         cb(exported_);
     }
+
+    if (assertClause_) {
+        cb(assertClause_);
+    }
 }
 
 void ExportAllDeclaration::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ExportAllDeclaration"}, {"source", source_}, {"exported", AstDumper::Nullable(exported_)}});
+    dumper->Add({{"type", "ExportAllDeclaration"},
+                 {"source", source_},
+                 {"exported", AstDumper::Nullable(exported_)},
+                 {"assertClause", AstDumper::Optional(assertClause_)}});
 }
 
 void ExportAllDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
@@ -48,6 +55,10 @@ void ExportAllDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] bi
 
     if (exported_) {
         exported_ = std::get<ir::AstNode *>(cb(exported_))->AsIdentifier();
+    }
+
+    if (assertClause_) {
+        assertClause_ = std::get<ir::AstNode *>(cb(assertClause_))->AsAssertClause();
     }
 }
 

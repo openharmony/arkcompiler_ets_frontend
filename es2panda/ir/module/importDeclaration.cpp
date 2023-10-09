@@ -27,6 +27,10 @@ void ImportDeclaration::Iterate(const NodeTraverser &cb) const
     for (auto *it : specifiers_) {
         cb(it);
     }
+
+    if (assertClause_) {
+        cb(assertClause_);
+    }
 }
 
 void ImportDeclaration::Dump(ir::AstDumper *dumper) const
@@ -34,6 +38,7 @@ void ImportDeclaration::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ImportDeclaration"},
                  {"source", source_},
                  {"specifiers", specifiers_},
+                 {"assertClause", AstDumper::Optional(assertClause_)},
                  {"isType", AstDumper::Optional(IsType())}});
 }
 
@@ -50,6 +55,10 @@ void ImportDeclaration::UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binde
 
     for (auto iter = specifiers_.begin(); iter != specifiers_.end(); iter++) {
         *iter = std::get<ir::AstNode *>(cb(*iter));
+    }
+
+    if (assertClause_) {
+        assertClause_ = std::get<ir::AstNode *>(cb(assertClause_))->AsAssertClause();
     }
 }
 

@@ -414,6 +414,10 @@ private:
                                         bool allowDefault = true, bool isDeclare = false);
     ir::TemplateLiteral *ParseTemplateLiteral();
     ir::Expression *ParseImportExpression();
+    ir::ObjectExpression *ParseImportAssertionForDynamicImport();
+    void ValidateImportAssertionForDynamicImport(ir::ObjectExpression *importAssertion);
+    ir::AssertClause *ParseAssertClause();
+    ir::AssertEntry *ParseAssertEntry();
     ir::FunctionExpression *ParseFunctionExpression(ParserStatus newStatus = ParserStatus::NO_OPTS);
     ir::Expression *ParseOptionalChain(ir::Expression *leftSideExpr);
     void ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers, bool isType);
