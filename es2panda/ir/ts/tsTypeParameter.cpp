@@ -40,6 +40,8 @@ void TSTypeParameter::Dump(ir::AstDumper *dumper) const
         {"name", name_},
         {"constraint", AstDumper::Optional(constraint_)},
         {"default", AstDumper::Optional(defaultType_)},
+        {"in", isTypeIn_},
+        {"out", isTypeOut_},
     });
 }
 

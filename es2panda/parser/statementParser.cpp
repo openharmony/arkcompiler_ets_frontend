@@ -708,7 +708,7 @@ ir::TSTypeAliasDeclaration *ParserImpl::ParseTsTypeAliasDeclaration(bool isDecla
 
     ir::TSTypeParameterDeclaration *typeParamDecl = nullptr;
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        typeParamDecl = ParseTsTypeParameterDeclaration();
+        typeParamDecl = ParseTsTypeParameterDeclaration(true, true);
     }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
@@ -771,7 +771,7 @@ ir::TSInterfaceDeclaration *ParserImpl::ParseTsInterfaceDeclaration(bool isDecla
 
     ir::TSTypeParameterDeclaration *typeParamDecl = nullptr;
     if (Extension() == ScriptExtension::TS && lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        typeParamDecl = ParseTsTypeParameterDeclaration();
+        typeParamDecl = ParseTsTypeParameterDeclaration(true, true);
     }
 
     ArenaVector<ir::TSInterfaceHeritage *> extends(Allocator()->Adapter());

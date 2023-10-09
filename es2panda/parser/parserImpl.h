@@ -338,8 +338,9 @@ private:
     bool ParsePropertyEnd();
 
     ir::Expression *ParsePropertyDefinition(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
-    ir::TSTypeParameter *ParseTsTypeParameter(bool throwError, bool addBinding = false);
-    ir::TSTypeParameterDeclaration *ParseTsTypeParameterDeclaration(bool throwError = true);
+    bool CheckOutIsIdentInTypeParameter();
+    ir::TSTypeParameter *ParseTsTypeParameter(bool throwError, bool addBinding = false, bool isAllowInOut = false);
+    ir::TSTypeParameterDeclaration *ParseTsTypeParameterDeclaration(bool throwError = true, bool isAllowInOut = false);
     ir::TSTypeParameterInstantiation *ParseTsTypeParameterInstantiation(bool throwError = true);
     ir::ScriptFunction *ParseFunction(ParserStatus newStatus = ParserStatus::NO_OPTS,
                                       bool isDeclare = false,

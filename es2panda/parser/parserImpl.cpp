@@ -2856,7 +2856,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
 
     ir::TSTypeParameterDeclaration *typeParamDecl = nullptr;
     if (Extension() == ScriptExtension::TS && lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        typeParamDecl = ParseTsTypeParameterDeclaration();
+        typeParamDecl = ParseTsTypeParameterDeclaration(true, true);
     }
 
     // Parse SuperClass
@@ -3302,9 +3302,61 @@ bool ParserImpl::CheckTypeNameIsReserved(const util::StringView &paramName)
            paramName.Is("void") || paramName.Is("object");
 }
 
-ir::TSTypeParameter *ParserImpl::ParseTsTypeParameter(bool throwError, bool addBinding)
+bool ParserImpl::CheckOutIsIdentInTypeParameter()
+{
+    auto pos = lexer_->Save();
+    lexer_->NextToken();
+
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_GREATER_THAN ||
+        lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
+        lexer_->Rewind(pos);
+        return true;
+    }
+
+    lexer_->Rewind(pos);
+    return false;
+}
+
+ir::TSTypeParameter *ParserImpl::ParseTsTypeParameter(bool throwError, bool addBinding, bool isAllowInOut)
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
+
+    bool isTypeIn = false;
+    bool isTypeOut = false;
+
+    if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_IN) {
+        if (!isAllowInOut) {
+            ThrowSyntaxError("'in' modifier can only appear on a type parameter of a class, interface or type alias");
+        }
+        isTypeIn = true;
+        lexer_->NextToken();
+        if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_IN) {
+            ThrowSyntaxError("'in' modifier already seen.");
+        }
+
+        if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_OUT && !CheckOutIsIdentInTypeParameter()) {
+            isTypeOut = true;
+            lexer_->NextToken();
+            if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_OUT && !CheckOutIsIdentInTypeParameter()) {
+                ThrowSyntaxError("'out' modifier already seen.");
+            }
+        }
+    } else if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_OUT && !CheckOutIsIdentInTypeParameter()) {
+        if (!isAllowInOut) {
+            ThrowSyntaxError("'out' modifier can only appear on a type parameter of a class, interface or type alias");
+        }
+
+        isTypeOut = true;
+        lexer_->NextToken();
+
+        if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_IN) {
+            ThrowSyntaxError("'in' modifier must precede 'out' modifier.");
+        }
+
+        if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_OUT && !CheckOutIsIdentInTypeParameter()) {
+            ThrowSyntaxError("'out' modifier already seen.");
+        }
+    }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         if (!throwError) {
@@ -3352,14 +3404,14 @@ ir::TSTypeParameter *ParserImpl::ParseTsTypeParameter(bool throwError, bool addB
         defaultType = ParseTsTypeAnnotation(&options);
     }
 
-    auto *typeParam = AllocNode<ir::TSTypeParameter>(paramIdent, constraint, defaultType);
+    auto *typeParam = AllocNode<ir::TSTypeParameter>(paramIdent, constraint, defaultType, isTypeIn, isTypeOut);
 
     typeParam->SetRange({startLoc, lexer_->GetToken().End()});
 
     return typeParam;
 }
 
-ir::TSTypeParameterDeclaration *ParserImpl::ParseTsTypeParameterDeclaration(bool throwError)
+ir::TSTypeParameterDeclaration *ParserImpl::ParseTsTypeParameterDeclaration(bool throwError, bool isAllowInOut)
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
 
@@ -3372,7 +3424,7 @@ ir::TSTypeParameterDeclaration *ParserImpl::ParseTsTypeParameterDeclaration(bool
     lexer_->NextToken();  // eat '<'
 
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_GREATER_THAN) {
-        ir::TSTypeParameter *currentParam = ParseTsTypeParameter(throwError, true);
+        ir::TSTypeParameter *currentParam = ParseTsTypeParameter(throwError, true, isAllowInOut);
 
         if (!currentParam) {
             ASSERT(!throwError);

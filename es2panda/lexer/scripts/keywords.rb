@@ -119,6 +119,7 @@ keywords = [
     {
         "object" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_OBJECT"],
         "of" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_OF"],
+        "out" => ["TokenType::LITERAL_IDENT", "TokenType::KEYW_OUT"],
     },
 
     # keywords start with 'p'

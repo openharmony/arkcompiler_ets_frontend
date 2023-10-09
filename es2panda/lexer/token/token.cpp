@@ -265,6 +265,9 @@ const char *TokenToString(TokenType type)
             return "typeof";
         case TokenType::KEYW_DELETE:
             return "delete";
+        case TokenType::KEYW_OUT:
+            return "out";
+
         default:
             UNREACHABLE();
     }

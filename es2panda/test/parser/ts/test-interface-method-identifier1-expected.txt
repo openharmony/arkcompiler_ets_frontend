@@ -143,6 +143,8 @@
                       }
                     }
                   },
+                  "in": false,
+                  "out": false,
                   "loc": {
                     "start": {
                       "line": 18,
@@ -425,6 +427,8 @@
                       }
                     }
                   },
+                  "in": false,
+                  "out": false,
                   "loc": {
                     "start": {
                       "line": 19,
@@ -631,6 +635,8 @@
                 }
               }
             },
+            "in": false,
+            "out": false,
             "loc": {
               "start": {
                 "line": 17,

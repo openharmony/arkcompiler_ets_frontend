@@ -166,6 +166,7 @@ enum class TokenType {
     KEYW_DECLARE,
     KEYW_IS,
     KEYW_ASSERTS,
+    KEYW_OUT,
     KEYW_ARGUMENTS,
     KEYW_EVAL,
     KEYW_STATIC,
