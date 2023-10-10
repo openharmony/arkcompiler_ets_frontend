@@ -1,0 +1,1 @@
+TypeError: Initializers type is not assignable to the target type [dynamic_class_field_decl_import_bad_1.ets:23:12]

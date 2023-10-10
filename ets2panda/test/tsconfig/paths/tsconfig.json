@@ -1,0 +1,12 @@
+{
+   "compilerOptions": {
+        "outDir": "build",
+        "paths": {
+            "@package/component1/*": ["./lib/module1/*"],
+            "@package/component2": ["./lib/module2/"]
+        }
+    },
+    "include": [
+        "*"
+    ]
+}

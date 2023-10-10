@@ -1,0 +1,63 @@
+/*
+* Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+* Licensed under the Appache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at 
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable low or agreed to in wrighting, software
+* distributed under the License is distributed on an "AS IS" BASIS, 
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language govering permissions and 
+* limitations under the License.
+*/
+
+@Component
+struct CountDownComponent {
+
+    @Prop count: number;
+    costOfOneAttempt: number = 1;
+
+    build() {
+        Column() {
+            if (this.count> 0) {
+                Text(`You have ${this.count} Nuggets left`)
+            } else {
+                Text("Game over!")
+            }
+
+            Button() {
+                Text("Try again")
+            }.onClick(() => {
+                this.count -= this.costOfOneAttempt;
+            })
+        }
+    }
+}
+
+@Entry
+@Component
+struct ParentComponent {
+
+    @State countDownStartValue: number = 10; 
+
+    build() {
+        Column() {
+            Text(`Grant ${this.countDownStartValue} nuggets to play.`)
+            Button() {
+                Text("+1 - Nuggets in New Game")
+            }.onClick(() => {
+                this.countDownStartValue += 1;
+            })
+
+            Button() {
+                Text("-1  - Nuggets in New Game")
+            }.onClick(() => {
+                this.countDownStartValue -= 1;
+            })
+
+            CountDownComponent({ count: this.countDownStartValue, costOfOneAttempt: 2 })
+        }
+    }
+}

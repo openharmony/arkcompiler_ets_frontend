@@ -1,0 +1,11 @@
+{
+    "nodes": [
+        {
+            "line": 34,
+            "column": 1,
+            "problem": "StructuralIdentity",
+            "suggest": "",
+            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
+        }
+    ]
+}
