@@ -190,7 +190,7 @@ void ETSBinder::LookupIdentReference(ir::Identifier *ident)
         auto *outerFunction = GetScope()->EnclosingVariableScope()->Node();
 
         if ((!outerFunction->IsScriptFunction() || !outerFunction->AsScriptFunction()->IsArrow()) &&
-            !res.variable->IsGlobalVariable() && res.level > 1) {
+            !res.variable->IsGlobalVariable() && res.variable->HasFlag(VariableFlags::LOCAL) && res.level > 1) {
             ThrowInvalidCapture(ident->Start(), name);
         }
     }

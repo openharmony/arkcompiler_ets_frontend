@@ -155,12 +155,12 @@
                 "type": "ETSPrimitiveType",
                 "loc": {
                   "start": {
-                    "line": 21,
-                    "column": 9
+                    "line": 1,
+                    "column": 1
                   },
                   "end": {
-                    "line": 21,
-                    "column": 12
+                    "line": 1,
+                    "column": 1
                   }
                 }
               },
@@ -192,12 +192,12 @@
                     "type": "ETSPrimitiveType",
                     "loc": {
                       "start": {
-                        "line": 21,
-                        "column": 9
+                        "line": 1,
+                        "column": 1
                       },
                       "end": {
-                        "line": 21,
-                        "column": 12
+                        "line": 1,
+                        "column": 1
                       }
                     }
                   },
@@ -263,12 +263,12 @@
                     "type": "ETSPrimitiveType",
                     "loc": {
                       "start": {
-                        "line": 21,
-                        "column": 9
+                        "line": 1,
+                        "column": 1
                       },
                       "end": {
-                        "line": 21,
-                        "column": 12
+                        "line": 1,
+                        "column": 1
                       }
                     }
                   },
@@ -300,12 +300,12 @@
                         "type": "ETSPrimitiveType",
                         "loc": {
                           "start": {
-                            "line": 21,
-                            "column": 9
+                            "line": 1,
+                            "column": 1
                           },
                           "end": {
-                            "line": 21,
-                            "column": 12
+                            "line": 1,
+                            "column": 1
                           }
                         }
                       },
@@ -334,12 +334,12 @@
                             "type": "ETSPrimitiveType",
                             "loc": {
                               "start": {
-                                "line": 21,
-                                "column": 9
+                                "line": 1,
+                                "column": 1
                               },
                               "end": {
-                                "line": 21,
-                                "column": 12
+                                "line": 1,
+                                "column": 1
                               }
                             }
                           },
@@ -425,12 +425,12 @@
                 "type": "ETSPrimitiveType",
                 "loc": {
                   "start": {
-                    "line": 21,
-                    "column": 9
+                    "line": 1,
+                    "column": 1
                   },
                   "end": {
-                    "line": 21,
-                    "column": 12
+                    "line": 1,
+                    "column": 1
                   }
                 }
               },
@@ -462,12 +462,12 @@
                     "type": "ETSPrimitiveType",
                     "loc": {
                       "start": {
-                        "line": 21,
-                        "column": 9
+                        "line": 1,
+                        "column": 1
                       },
                       "end": {
-                        "line": 21,
-                        "column": 12
+                        "line": 1,
+                        "column": 1
                       }
                     }
                   },
@@ -496,12 +496,12 @@
                         "type": "ETSPrimitiveType",
                         "loc": {
                           "start": {
-                            "line": 21,
-                            "column": 9
+                            "line": 1,
+                            "column": 1
                           },
                           "end": {
-                            "line": 21,
-                            "column": 12
+                            "line": 1,
+                            "column": 1
                           }
                         }
                       },
@@ -574,12 +574,12 @@
                 "type": "ETSPrimitiveType",
                 "loc": {
                   "start": {
-                    "line": 22,
-                    "column": 10
+                    "line": 1,
+                    "column": 1
                   },
                   "end": {
-                    "line": 22,
-                    "column": 16
+                    "line": 1,
+                    "column": 1
                   }
                 }
               },
@@ -611,12 +611,12 @@
                     "type": "ETSPrimitiveType",
                     "loc": {
                       "start": {
-                        "line": 22,
-                        "column": 10
+                        "line": 1,
+                        "column": 1
                       },
                       "end": {
-                        "line": 22,
-                        "column": 16
+                        "line": 1,
+                        "column": 1
                       }
                     }
                   },
@@ -682,12 +682,12 @@
                     "type": "ETSPrimitiveType",
                     "loc": {
                       "start": {
-                        "line": 22,
-                        "column": 10
+                        "line": 1,
+                        "column": 1
                       },
                       "end": {
-                        "line": 22,
-                        "column": 16
+                        "line": 1,
+                        "column": 1
                       }
                     }
                   },
@@ -719,12 +719,12 @@
                         "type": "ETSPrimitiveType",
                         "loc": {
                           "start": {
-                            "line": 22,
-                            "column": 10
+                            "line": 1,
+                            "column": 1
                           },
                           "end": {
-                            "line": 22,
-                            "column": 16
+                            "line": 1,
+                            "column": 1
                           }
                         }
                       },
@@ -753,12 +753,12 @@
                             "type": "ETSPrimitiveType",
                             "loc": {
                               "start": {
-                                "line": 22,
-                                "column": 10
+                                "line": 1,
+                                "column": 1
                               },
                               "end": {
-                                "line": 22,
-                                "column": 16
+                                "line": 1,
+                                "column": 1
                               }
                             }
                           },
@@ -844,12 +844,12 @@
                 "type": "ETSPrimitiveType",
                 "loc": {
                   "start": {
-                    "line": 22,
-                    "column": 10
+                    "line": 1,
+                    "column": 1
                   },
                   "end": {
-                    "line": 22,
-                    "column": 16
+                    "line": 1,
+                    "column": 1
                   }
                 }
               },
@@ -881,12 +881,12 @@
                     "type": "ETSPrimitiveType",
                     "loc": {
                       "start": {
-                        "line": 22,
-                        "column": 10
+                        "line": 1,
+                        "column": 1
                       },
                       "end": {
-                        "line": 22,
-                        "column": 16
+                        "line": 1,
+                        "column": 1
                       }
                     }
                   },
@@ -915,12 +915,12 @@
                         "type": "ETSPrimitiveType",
                         "loc": {
                           "start": {
-                            "line": 22,
-                            "column": 10
+                            "line": 1,
+                            "column": 1
                           },
                           "end": {
-                            "line": 22,
-                            "column": 16
+                            "line": 1,
+                            "column": 1
                           }
                         }
                       },

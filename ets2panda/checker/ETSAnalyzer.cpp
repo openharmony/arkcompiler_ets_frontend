@@ -554,13 +554,18 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
     return expr->TsType();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
+void ETSAnalyzer::CheckLocalClassInstantiation(ir::ETSNewClassInstanceExpression *expr, ETSObjectType *calleeObj) const
 {
     ETSChecker *checker = GetETSChecker();
-    auto *calleeType = GetCalleeType(checker, expr);
-    auto *calleeObj = calleeType->AsETSObjectType();
-    expr->SetTsType(calleeObj);
+    ASSERT(calleeObj->GetDeclNode()->IsClassDefinition());
+    if (calleeObj->GetDeclNode()->AsClassDefinition()->IsLocal()) {
+        checker->AddToLocalClassInstantiationList(expr);
+    }
+}
 
+void ETSAnalyzer::CheckInstantatedClass(ir::ETSNewClassInstanceExpression *expr, ETSObjectType *&calleeObj) const
+{
+    ETSChecker *checker = GetETSChecker();
     if (expr->ClassDefinition() != nullptr) {
         if (!calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT) && calleeObj->GetDeclNode()->IsFinal()) {
             checker->ThrowTypeError({"Class ", calleeObj->Name(), " cannot be both 'abstract' and 'final'."},
@@ -581,6 +586,17 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
     } else if (calleeObj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
         checker->ThrowTypeError({calleeObj->Name(), " is abstract therefore cannot be instantiated."}, expr->Start());
     }
+}
+
+checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
+{
+    ETSChecker *checker = GetETSChecker();
+    auto *calleeType = GetCalleeType(checker, expr);
+    auto *calleeObj = calleeType->AsETSObjectType();
+    expr->SetTsType(calleeObj);
+
+    CheckLocalClassInstantiation(expr, calleeObj);
+    CheckInstantatedClass(expr, calleeObj);
 
     if (calleeType->IsETSDynamicType() && !calleeType->AsETSDynamicType()->HasDecl()) {
         auto lang = calleeType->AsETSDynamicType()->Language();

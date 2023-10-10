@@ -814,12 +814,22 @@ void ETSChecker::AddImplementedSignature(std::vector<Signature *> *implementedSi
     }
 }
 
+void ETSChecker::CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &checkerStatus)
+{
+    if (classDef->IsLocal()) {
+        checkerStatus |= CheckerStatus::IN_LOCAL_CLASS;
+        if (!classDef->Parent()->Parent()->IsBlockStatement()) {
+            ThrowTypeError("Local classes must be defined between balanced braces", classDef->Start());
+        }
+        localClasses_.push_back(classDef);
+    }
+}
+
 void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
 {
     auto *classType = classDef->TsType()->AsETSObjectType();
-    auto *enclosingClass = Context().ContainingClass();
     auto newStatus = checker::CheckerStatus::IN_CLASS;
-    classType->SetEnclosingType(enclosingClass);
+    classType->SetEnclosingType(Context().ContainingClass());
 
     if (classDef->IsInner()) {
         newStatus |= CheckerStatus::INNER_CLASS;
@@ -828,6 +838,8 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *classDef)
 
     if (classDef->IsGlobal()) {
         classType->AddObjectFlag(checker::ETSObjectFlags::GLOBAL);
+    } else {
+        CheckLocalClass(classDef, newStatus);
     }
 
     checker::ScopeContext scopeCtx(this, classDef->Scope());

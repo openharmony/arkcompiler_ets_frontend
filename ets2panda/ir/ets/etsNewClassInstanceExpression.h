@@ -85,6 +85,11 @@ public:
         signature_ = signature;
     }
 
+    void AddToArgumentsFront(ir::Expression *expr)
+    {
+        arguments_.insert(arguments_.begin(), expr);
+    }
+
     [[nodiscard]] ETSNewClassInstanceExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;

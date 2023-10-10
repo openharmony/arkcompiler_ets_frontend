@@ -321,7 +321,7 @@ void ETSGen::LoadVar(const ir::AstNode *node, varbinder::Variable const *const v
         }
         case ReferenceKind::LOCAL: {
             LoadAccumulator(node, local->Vreg());
-            SetAccumulatorType(var->TsType());
+            SetAccumulatorType(TypeForVar(var));
             break;
         }
         default: {
@@ -346,7 +346,11 @@ void ETSGen::StoreVar(const ir::AstNode *node, const varbinder::ConstScopeFindRe
             break;
         }
         case ReferenceKind::FIELD: {
-            StoreProperty(node, result.variable->TsType(), GetThisReg(), result.name);
+            if (local->HasFlag(varbinder::VariableFlags::BOXED)) {
+                EmitPropertyBoxSet(node, result.variable->TsType(), GetThisReg(), result.name);
+            } else {
+                StoreProperty(node, result.variable->TsType(), GetThisReg(), result.name);
+            }
             break;
         }
         case ReferenceKind::LOCAL: {
@@ -372,7 +376,9 @@ util::StringView ETSGen::FormClassPropReference(const checker::ETSObjectType *cl
     std::string fullName = classType->AssemblerName().Mutf8();
     while (iter->EnclosingType() != nullptr) {
         auto enclosingName = iter->EnclosingType()->Name().Mutf8().append(".").append(fullName);
-        fullName = enclosingName;
+        if (iter->EnclosingType()->GetDeclNode()->Type() == ir::AstNodeType::IDENTIFIER) {
+            fullName = enclosingName;
+        }
         iter = iter->EnclosingType();
     }
 
@@ -1407,6 +1413,54 @@ void ETSGen::EmitLocalBoxSet(ir::AstNode const *node, varbinder::LocalVariable *
     SetAccumulatorType(Checker()->GetGlobalTypesHolder()->GlobalVoidType());
 }
 
+void ETSGen::EmitPropertyBoxSet(const ir::AstNode *const node, const checker::Type *propType, const VReg objectReg,
+                                const util::StringView &name)
+{
+    const auto fullName = FormClassPropReference(GetVRegType(objectReg)->AsETSObjectType(), name);
+    const RegScope rs(this);
+
+    auto inputValue = AllocReg();
+    StoreAccumulator(node, inputValue);
+
+    Ra().Emit<LdobjObj>(node, objectReg, fullName);
+    SetAccumulatorType(Checker()->GetGlobalTypesHolder()->GlobalETSObjectType());
+
+    auto field = AllocReg();
+    StoreAccumulator(node, field);
+    LoadAccumulator(node, inputValue);
+
+    switch (checker::ETSChecker::TypeKind(propType)) {
+        case checker::TypeFlag::ETS_BOOLEAN:
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_BOOLEAN_BOX_SET, field, 1);
+            break;
+        case checker::TypeFlag::BYTE:
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_BYTE_BOX_SET, field, 1);
+            break;
+        case checker::TypeFlag::CHAR:
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_CHAR_BOX_SET, field, 1);
+            break;
+        case checker::TypeFlag::SHORT:
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_SHORT_BOX_SET, field, 1);
+            break;
+        case checker::TypeFlag::INT:
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_INT_BOX_SET, field, 1);
+            break;
+        case checker::TypeFlag::LONG:
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_LONG_BOX_SET, field, 1);
+            break;
+        case checker::TypeFlag::FLOAT:
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_FLOAT_BOX_SET, field, 1);
+            break;
+        case checker::TypeFlag::DOUBLE:
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_DOUBLE_BOX_SET, field, 1);
+            break;
+        default:
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_BOX_SET, field, 1);
+            break;
+    }
+    SetAccumulatorType(Checker()->GetGlobalTypesHolder()->GlobalVoidType());
+}
+
 void ETSGen::CastToBoolean([[maybe_unused]] const ir::AstNode *node)
 {
     auto typeKind = checker::ETSChecker::TypeKind(GetAccumulatorType());
@@ -1777,6 +1831,7 @@ void ETSGen::CastDynamicToObject(const ir::AstNode *node, const checker::Type *t
 
     // NOTE(vpukhov): #14626 remove, replace targetType with interface
     if (targetType->IsLambdaObject()) {
+        RegScope rs(this);
         VReg dynObjReg = AllocReg();
         StoreAccumulator(node, dynObjReg);
         Ra().Emit<InitobjShort>(node, targetType->AsETSObjectType()->ConstructSignatures()[0]->InternalName(),

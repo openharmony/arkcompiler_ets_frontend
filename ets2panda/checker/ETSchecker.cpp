@@ -136,6 +136,21 @@ void ETSChecker::InitializeBuiltin(varbinder::Variable *var, const util::StringV
     GetGlobalTypesHolder()->InitializeBuiltin(name, type);
 }
 
+const ArenaList<ir::ClassDefinition *> &ETSChecker::GetLocalClasses() const
+{
+    return localClasses_;
+}
+
+const ArenaList<ir::ETSNewClassInstanceExpression *> &ETSChecker::GetLocalClassInstantiations() const
+{
+    return localClassInstantiations_;
+}
+
+void ETSChecker::AddToLocalClassInstantiationList(ir::ETSNewClassInstanceExpression *newExpr)
+{
+    localClassInstantiations_.push_back(newExpr);
+}
+
 bool ETSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options)
 {
     Initialize(varbinder);
@@ -167,7 +182,6 @@ bool ETSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, 
     }
 
     CheckProgram(Program(), true);
-
     BuildDynamicCallClass(true);
     BuildDynamicCallClass(false);
 

@@ -510,6 +510,12 @@ std::tuple<ir::ModifierFlags, bool> ETSParser::ParseClassMemberAccessModifiers()
                 UNREACHABLE();
             }
         }
+        if (((GetContext().Status() & ParserStatus::FUNCTION) != 0) &&
+            (accessFlag == ir::ModifierFlags::PUBLIC || accessFlag == ir::ModifierFlags::PRIVATE ||
+             accessFlag == ir::ModifierFlags::PROTECTED)) {
+            ThrowSyntaxError("Local class declaration members can not have access modifies",
+                             Lexer()->GetToken().Start());
+        }
 
         Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);
         return {accessFlag, true};
@@ -1267,10 +1273,6 @@ ir::TSInterfaceDeclaration *ETSParser::ParseInterfaceBody(ir::Identifier *name, 
 
 ir::Statement *ETSParser::ParseInterfaceDeclaration(bool isStatic)
 {
-    if ((GetContext().Status() & parser::ParserStatus::FUNCTION) != 0U) {
-        ThrowSyntaxError("Local interface declaration support is not yet implemented.");
-    }
-
     lexer::SourcePosition interfaceStart = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat interface keyword
 
@@ -1368,7 +1370,9 @@ ir::ClassDefinition *ETSParser::ParseClassDefinition(ir::ClassDefinitionModifier
 
 static bool IsInterfaceMethodModifier(lexer::TokenType type)
 {
-    return type == lexer::TokenType::KEYW_STATIC || type == lexer::TokenType::KEYW_PRIVATE;
+    // NOTE (psiket) Rewrite this
+    return type == lexer::TokenType::KEYW_STATIC || type == lexer::TokenType::KEYW_PRIVATE ||
+           type == lexer::TokenType::KEYW_PROTECTED || type == lexer::TokenType::KEYW_PUBLIC;
 }
 
 ir::ModifierFlags ETSParser::ParseInterfaceMethodModifiers()
@@ -1378,6 +1382,17 @@ ir::ModifierFlags ETSParser::ParseInterfaceMethodModifiers()
     while (IsInterfaceMethodModifier(Lexer()->GetToken().Type())) {
         ir::ModifierFlags currentFlag = ir::ModifierFlags::NONE;
 
+        if ((GetContext().Status() & ParserStatus::FUNCTION) != 0) {
+            if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_PUBLIC ||
+                Lexer()->GetToken().Type() == lexer::TokenType::KEYW_PROTECTED ||
+                Lexer()->GetToken().Type() == lexer::TokenType::KEYW_PRIVATE) {
+                ThrowSyntaxError("Local interface declaration members can not have access modifies",
+                                 Lexer()->GetToken().Start());
+            }
+        } else if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_PUBLIC ||
+                   Lexer()->GetToken().Type() == lexer::TokenType::KEYW_PROTECTED) {
+            break;
+        }
         switch (Lexer()->GetToken().Type()) {
             case lexer::TokenType::KEYW_STATIC: {
                 currentFlag = ir::ModifierFlags::STATIC;
@@ -3788,7 +3803,9 @@ ir::ClassDeclaration *ETSParser::ParseClassStatement([[maybe_unused]] StatementP
                                                      [[maybe_unused]] ir::ClassDefinitionModifiers modifiers,
                                                      [[maybe_unused]] ir::ModifierFlags modFlags)
 {
-    ThrowSyntaxError("Illegal start of expression", Lexer()->GetToken().Start());
+    return ParseClassDeclaration(modifiers | ir::ClassDefinitionModifiers::ID_REQUIRED |
+                                     ir::ClassDefinitionModifiers::CLASS_DECL | ir::ClassDefinitionModifiers::LOCAL,
+                                 modFlags);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

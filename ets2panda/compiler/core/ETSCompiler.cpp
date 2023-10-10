@@ -327,6 +327,7 @@ void ETSCompiler::Compile(const ir::ETSNewClassInstanceExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
     if (expr->TsType()->IsETSDynamicType()) {
+        compiler::RegScope rs(etsg);
         auto objReg = etsg->AllocReg();
         auto *name = expr->GetTypeRef()->AsETSTypeReference()->Part()->Name();
         CreateDynamicObject(expr, etsg, objReg, name, expr->signature_, expr->GetArguments());
@@ -1573,10 +1574,7 @@ void ETSCompiler::Compile(const ir::BreakStatement *st) const
     CompileImpl(st, etsg);
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::ClassDeclaration *st) const
-{
-    UNREACHABLE();
-}
+void ETSCompiler::Compile([[maybe_unused]] const ir::ClassDeclaration *st) const {}
 
 static void CompileImpl(const ir::ContinueStatement *self, ETSGen *etsg)
 {
@@ -2195,10 +2193,7 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceBody *expr) cons
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceDeclaration *st) const
-{
-    UNREACHABLE();
-}
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceDeclaration *st) const {}
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceHeritage *expr) const
 {

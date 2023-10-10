@@ -134,6 +134,9 @@ public:
 
     const VariableScope *EnclosingVariableScope() const;
 
+    ClassScope *EnclosingClassScope();
+    const ClassScope *EnclosingClassScope() const;
+
     void AddFlag(ScopeFlags flag)
     {
         flags_ |= flag;

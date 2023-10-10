@@ -619,6 +619,18 @@ ir::Statement *ParserImpl::ParseExpressionStatement(StatementParsingFlags flags)
     const auto startPos = lexer_->Save();
     ParserStatus savedStatus = context_.Status();
 
+    auto tokenType = lexer_->GetToken().Type();
+    if (tokenType == lexer::TokenType::KEYW_PUBLIC || tokenType == lexer::TokenType::KEYW_PRIVATE ||
+        tokenType == lexer::TokenType::KEYW_PROTECTED) {
+        lexer_->NextToken();
+        if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_CLASS ||
+            lexer_->GetToken().Type() == lexer::TokenType::KEYW_INTERFACE) {
+            ThrowSyntaxError("A local class or interface declaration can not have access modifier",
+                             startPos.GetToken().Start());
+        }
+        lexer_->Rewind(startPos);
+    }
+
     if (lexer_->GetToken().IsAsyncModifier()) {
         lexer_->NextToken();
 

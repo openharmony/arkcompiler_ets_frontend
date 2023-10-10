@@ -520,16 +520,16 @@ void ETSChecker::CheckEtsFunctionType(ir::Identifier *const ident, ir::Identifie
     }
 }
 
-void ETSChecker::NotResolvedError(ir::Identifier *const ident)
+void ETSChecker::NotResolvedError(ir::Identifier *const ident, const varbinder::Variable *classVar,
+                                  const ETSObjectType *classType)
 {
-    const auto [class_var, class_type] = FindVariableInClassOrEnclosing(ident->Name(), Context().ContainingClass());
-    if (class_var == nullptr) {
+    if (classVar == nullptr) {
         ThrowError(ident);
     }
 
-    if (IsVariableStatic(class_var)) {
+    if (IsVariableStatic(classVar)) {
         ThrowTypeError(
-            {"Static property '", ident->Name(), "' must be accessed through it's class '", class_type->Name(), "'"},
+            {"Static property '", ident->Name(), "' must be accessed through it's class '", classType->Name(), "'"},
             ident->Start());
     } else {
         ThrowTypeError({"Property '", ident->Name(), "' must be accessed through 'this'"}, ident->Start());
@@ -645,10 +645,25 @@ bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident,
     return isFinished;
 }
 
+void ETSChecker::ExtraCheckForResolvedError(ir::Identifier *const ident)
+{
+    const auto [class_var, class_type] = FindVariableInClassOrEnclosing(ident->Name(), Context().ContainingClass());
+    auto *parentClass = FindAncestorGivenByType(ident, ir::AstNodeType::CLASS_DEFINITION);
+    if (parentClass != nullptr && parentClass->AsClassDefinition()->IsLocal()) {
+        if (parentClass != class_type->GetDeclNode()) {
+            ThrowTypeError({"Property '", ident->Name(), "' of enclosing class '", class_type->Name(),
+                            "' is not allowed to be captured from the local class '",
+                            parentClass->AsClassDefinition()->Ident()->Name(), "'"},
+                           ident->Start());
+        }
+    }
+    NotResolvedError(ident, class_var, class_type);
+}
+
 void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved)
 {
     if (resolved == nullptr) {
-        NotResolvedError(ident);
+        ExtraCheckForResolvedError(ident);
     }
 
     auto *const resolvedType = GetApparentType(GetTypeOfVariable(resolved));
@@ -698,8 +713,77 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbind
     }
 }
 
-void ETSChecker::SaveCapturedVariable(varbinder::Variable *const var, const lexer::SourcePosition &pos)
+bool ETSChecker::SaveCapturedVariableInLocalClass(varbinder::Variable *const var, ir::Identifier *ident)
 {
+    const auto &pos = ident->Start();
+
+    if (!HasStatus(CheckerStatus::IN_LOCAL_CLASS)) {
+        return false;
+    }
+
+    if (!var->HasFlag(varbinder::VariableFlags::LOCAL)) {
+        return false;
+    }
+
+    LOG(DEBUG, ES2PANDA) << "Checking variable (line:" << pos.line << "): " << var->Name();
+    auto *scopeIter = Scope();
+    bool inStaticMethod = false;
+
+    auto captureVariable = [this, var, ident, &scopeIter, &inStaticMethod, &pos]() {
+        if (inStaticMethod) {
+            ThrowTypeError({"Not allowed to capture variable '", var->Name(), "' in static method"}, pos);
+        }
+        if (scopeIter->Node()->AsClassDefinition()->CaptureVariable(var)) {
+            LOG(DEBUG, ES2PANDA) << "  Captured in class:" << scopeIter->Node()->AsClassDefinition()->Ident()->Name();
+        }
+
+        auto *parent = ident->Parent();
+
+        if (parent->IsVariableDeclarator()) {
+            parent = parent->Parent()->Parent();
+        }
+
+        if (!(parent->IsUpdateExpression() ||
+              (parent->IsAssignmentExpression() && parent->AsAssignmentExpression()->Left() == ident)) ||
+            var->Declaration() == nullptr) {
+            return;
+        }
+
+        if (var->Declaration()->IsParameterDecl()) {
+            LOG(DEBUG, ES2PANDA) << "    - Modified parameter ";
+            if (!var->HasFlag(varbinder::VariableFlags::BOXED)) {
+                scopeIter->Node()->AsClassDefinition()->AddToLocalVariableIsNeeded(var);
+            }
+        } else {
+            var->AddFlag(varbinder::VariableFlags::BOXED);
+        }
+    };
+
+    while (scopeIter != var->GetScope()) {
+        if (scopeIter->Node() != nullptr) {
+            if (scopeIter->Node()->IsScriptFunction() && scopeIter->Node()->AsScriptFunction()->IsStatic()) {
+                inStaticMethod = true;
+            }
+
+            if (scopeIter->Node()->IsClassDefinition()) {
+                captureVariable();
+                return true;
+            }
+        }
+        scopeIter = scopeIter->Parent();
+    }
+
+    return false;
+}
+
+void ETSChecker::SaveCapturedVariable(varbinder::Variable *const var, ir::Identifier *ident)
+{
+    const auto &pos = ident->Start();
+
+    if (SaveCapturedVariableInLocalClass(var, ident)) {
+        return;
+    }
+
     if (!HasStatus(CheckerStatus::IN_LAMBDA)) {
         return;
     }
@@ -728,7 +812,7 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *const ident)
 {
     if (ident->Variable() != nullptr) {
         auto *const resolved = ident->Variable();
-        SaveCapturedVariable(resolved, ident->Start());
+        SaveCapturedVariable(resolved, ident);
         return GetTypeOfVariable(resolved);
     }
 
@@ -742,7 +826,7 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *const ident)
     ValidateResolvedIdentifier(ident, resolved);
 
     ValidatePropertyAccess(resolved, Context().ContainingClass(), ident->Start());
-    SaveCapturedVariable(resolved, ident->Start());
+    SaveCapturedVariable(resolved, ident);
 
     ident->SetVariable(resolved);
     return GetTypeOfVariable(resolved);
@@ -2664,6 +2748,18 @@ void ETSChecker::ModifyPreferredType(ir::ArrayExpression *const arrayExpr, Type 
             ModifyPreferredType(element->AsArrayExpression(), nullptr);
         }
     }
+}
+
+bool ETSChecker::IsInLocalClass(const ir::AstNode *node) const
+{
+    while (node != nullptr) {
+        if (node->Type() == ir::AstNodeType::CLASS_DEFINITION) {
+            return node->AsClassDefinition()->IsLocal();
+        }
+        node = node->Parent();
+    }
+
+    return false;
 }
 
 ir::Expression *ETSChecker::GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiateMethod,

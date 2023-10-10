@@ -396,6 +396,8 @@ public:
     void EmitLocalBoxCtor(ir::AstNode const *node);
     void EmitLocalBoxGet(ir::AstNode const *node, checker::Type const *contentType);
     void EmitLocalBoxSet(ir::AstNode const *node, varbinder::LocalVariable *lhsVar);
+    void EmitPropertyBoxSet(const ir::AstNode *node, const checker::Type *propType, VReg objectReg,
+                            const util::StringView &name);
 
     void LoadArrayLength(const ir::AstNode *node, VReg arrayReg);
     void LoadArrayElement(const ir::AstNode *node, VReg objectReg);
@@ -729,6 +731,7 @@ private:
     void BinaryDynamicStrictEquality(const ir::AstNode *node, VReg lhs, Label *ifFalse)
     {
         ASSERT(GetAccumulatorType()->IsETSDynamicType() && GetVRegType(lhs)->IsETSDynamicType());
+        RegScope scope(this);
         Ra().Emit<CallShort, 2U>(node, Signatures::BUILTIN_JSRUNTIME_STRICT_EQUAL, lhs, MoveAccToReg(node));
         Ra().Emit<DynCompare>(node, ifFalse);
     }
@@ -1015,18 +1018,18 @@ private:
 
         switch (arguments.size()) {
             case 0U: {
-                Ra().Emit<Short, 0>(node, signature->InternalName(), dummyReg_, dummyReg_);
+                Ra().Emit<Short, 0U>(node, signature->InternalName(), dummyReg_, dummyReg_);
                 break;
             }
             case 1U: {
                 COMPILE_ARG(0);
-                Ra().Emit<Short, 1>(node, signature->InternalName(), arg0, dummyReg_);
+                Ra().Emit<Short, 1U>(node, signature->InternalName(), arg0, dummyReg_);
                 break;
             }
             case 2U: {
                 COMPILE_ARG(0);
                 COMPILE_ARG(1);
-                Ra().Emit<Short>(node, signature->InternalName(), arg0, arg1);
+                Ra().Emit<Short, 2U>(node, signature->InternalName(), arg0, arg1);
                 break;
             }
             case 3U: {
@@ -1041,7 +1044,7 @@ private:
                 COMPILE_ARG(1);
                 COMPILE_ARG(2);
                 COMPILE_ARG(3);
-                Ra().Emit<General>(node, signature->InternalName(), arg0, arg1, arg2, arg3);
+                Ra().Emit<General, 4U>(node, signature->InternalName(), arg0, arg1, arg2, arg3);
                 break;
             }
             default: {

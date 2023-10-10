@@ -62,6 +62,8 @@ public:
         // NOLINTNEXTLINE(readability-redundant-member-init)
         : Checker(),
           arrayTypes_(Allocator()->Adapter()),
+          localClasses_(Allocator()->Adapter()),
+          localClassInstantiations_(Allocator()->Adapter()),
           globalArraySignatures_(Allocator()->Adapter()),
           primitiveWrappers_(Allocator()),
           cachedComputedAbstracts_(Allocator()->Adapter()),
@@ -160,6 +162,7 @@ public:
     void AddImplementedSignature(std::vector<Signature *> *implementedSignatures, varbinder::LocalVariable *function,
                                  ETSFunctionType *it);
     void CheckInnerClassMembers(const ETSObjectType *classType);
+    void CheckLocalClass(ir::ClassDefinition *classDef, CheckerStatus &checkerStatus);
     void CheckClassDefinition(ir::ClassDefinition *classDef);
     void FindAssignment(const ir::AstNode *node, const varbinder::LocalVariable *classVar, bool &initialized);
     void FindAssignments(const ir::AstNode *node, const varbinder::LocalVariable *classVar, bool &initialized);
@@ -507,11 +510,13 @@ public:
     std::pair<const varbinder::Variable *, const ETSObjectType *> FindVariableInClassOrEnclosing(
         util::StringView name, const ETSObjectType *classType);
     varbinder::Variable *FindVariableInGlobal(const ir::Identifier *identifier);
+    void ExtraCheckForResolvedError(ir::Identifier *ident);
     void ValidateResolvedIdentifier(ir::Identifier *ident, varbinder::Variable *resolved);
     static bool IsVariableStatic(const varbinder::Variable *var);
     static bool IsVariableGetterSetter(const varbinder::Variable *var);
     bool IsSameDeclarationType(varbinder::LocalVariable *target, varbinder::LocalVariable *compare);
-    void SaveCapturedVariable(varbinder::Variable *var, const lexer::SourcePosition &pos);
+    void SaveCapturedVariable(varbinder::Variable *var, ir::Identifier *ident);
+    bool SaveCapturedVariableInLocalClass(varbinder::Variable *var, ir::Identifier *ident);
     void AddBoxingFlagToPrimitiveType(TypeRelation *relation, Type *target);
     void AddUnboxingFlagToPrimitiveType(TypeRelation *relation, Type *source, Type *self);
     void CheckUnboxedTypeWidenable(TypeRelation *relation, Type *target, Type *self);
@@ -548,6 +553,7 @@ public:
     static ir::MethodDefinition *GenerateDefaultGetterSetter(ir::ClassProperty *field, varbinder::ClassScope *scope,
                                                              bool isSetter, ETSChecker *checker);
 
+    bool IsInLocalClass(const ir::AstNode *node) const;
     // Exception
     ETSObjectType *CheckExceptionOrErrorType(checker::Type *type, lexer::SourcePosition pos);
 
@@ -615,6 +621,12 @@ public:
 
     ETSObjectType *GetCachedFunctionlInterface(ir::ETSFunctionType *type);
     void CacheFunctionalInterface(ir::ETSFunctionType *type, ETSObjectType *ifaceType);
+    const ArenaList<ir::ClassDefinition *> &GetLocalClasses() const;
+    const ArenaList<ir::ETSNewClassInstanceExpression *> &GetLocalClassInstantiations() const;
+    void AddToLocalClassInstantiationList(ir::ETSNewClassInstanceExpression *newExpr);
+
+    ir::ETSParameterExpression *AddParam(varbinder::FunctionParamScope *paramScope, util::StringView name,
+                                         checker::Type *type);
 
 private:
     using ClassBuilder = std::function<void(varbinder::ClassScope *, ArenaVector<ir::AstNode *> *)>;
@@ -624,10 +636,11 @@ private:
                                              ArenaVector<ir::Expression *> *, Type **)>;
 
     std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
-    void ThrowError(ir::Identifier *ident);
+    [[noreturn]] void ThrowError(ir::Identifier *ident);
     void WrongContextErrorClassifyByType(ir::Identifier *ident, varbinder::Variable *resolved);
     void CheckEtsFunctionType(ir::Identifier *ident, ir::Identifier const *id, ir::TypeNode const *annotation);
-    void NotResolvedError(ir::Identifier *ident);
+    [[noreturn]] void NotResolvedError(ir::Identifier *ident, const varbinder::Variable *classVar,
+                                       const ETSObjectType *classType);
     void ValidateCallExpressionIdentifier(ir::Identifier *ident, Type *type);
     void ValidateNewClassInstanceIdentifier(ir::Identifier *ident, varbinder::Variable *resolved);
     void ValidateMemberIdentifier(ir::Identifier *ident, varbinder::Variable *resolved, Type *type);
@@ -652,9 +665,6 @@ private:
     template <bool IS_STATIC>
     std::conditional_t<IS_STATIC, ir::ClassStaticBlock *, ir::MethodDefinition *> CreateClassInitializer(
         varbinder::ClassScope *classScope, const ClassInitializerBuilder &builder, ETSObjectType *type = nullptr);
-
-    ir::ETSParameterExpression *AddParam(varbinder::FunctionParamScope *paramScope, util::StringView name,
-                                         checker::Type *type);
 
     template <bool IS_STATIC>
     ir::MethodDefinition *CreateClassMethod(varbinder::ClassScope *classScope, std::string_view name,
@@ -722,6 +732,8 @@ private:
     bool TryTransformingToStaticInvoke(ir::Identifier *ident, const Type *resolvedType);
 
     ArrayMap arrayTypes_;
+    ArenaList<ir::ClassDefinition *> localClasses_;
+    ArenaList<ir::ETSNewClassInstanceExpression *> localClassInstantiations_;
     GlobalArraySignatureMap globalArraySignatures_;
     PrimitiveWrappers primitiveWrappers_;
     ComputedAbstracts cachedComputedAbstracts_;

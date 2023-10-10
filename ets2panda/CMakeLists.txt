@@ -155,6 +155,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/topLevelStmts/globalDeclTransformer.cpp
   compiler/lowering/ets/topLevelStmts/topLevelStmts.cpp
   compiler/lowering/ets/lambdaLowering.cpp
+  compiler/lowering/ets/localClassLowering.cpp
   compiler/lowering/ets/generateDeclarations.cpp
   compiler/lowering/ets/objectIndexAccess.cpp
   compiler/lowering/ets/objectIterator.cpp
