@@ -86,8 +86,7 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
        data: string;
     }
     ```
-对于间接导出的场景，比如`export MyClass`和`let a = MyClass; export a;`，如果你不想混淆它们的属性名，
-那么你需要使用[保留选项](#保留选项)来保留这些属性名。另外，对于直接导出的类或对象的属性的属性名，比如下面例子中的`name`和`age`, 如果你不想混淆它们，那么你也需要使用[保留选项](#保留选项)来保留这些属性名。
+    对于间接导出的场景，比如`export MyClass`和`let a = MyClass; export {a};`，如果你不想混淆它们的属性名，那么你需要使用[保留选项](#保留选项)来保留这些属性名。另外，对于直接导出的类或对象的属性的属性名，比如下面例子中的`name`和`age`, 如果你不想混淆它们，那么你也需要使用[保留选项](#保留选项)来保留这些属性名。
     ```
     export class MyClass {
        person = {name: "123", age: 100};
@@ -103,6 +102,7 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
     ```
 * 被[保留选项](#保留选项)指定的属性名不会被混淆。
 * 系统API列表中的属性名不会被混淆。系统API列表是构建时从SDK中自动提取出来的一个名称列表。
+* 在Native API场景中，在so的d.ts文件中声明的API不会被混淆。
 * 字符串字面量属性名不会被混淆。比如下面例子中的`"name"`和`"age"`不会被混淆。
     ```
     let person = {"name": "abc"};
@@ -148,7 +148,7 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
 
 保留选项只有在使用`enable-property-obfuscation`或`enable-toplevel-obfuscation`选项时发挥作用。
 
-`-keep-property-name` [,modifiers,...]
+`-keep-property-name` [,identifiers,...]
 
 指定你想保留的属性名。比如下面的例子:
 ```
@@ -185,8 +185,10 @@ console.log(obj['t']);        // 在开启字符串字面量属性名混淆时t�
 obj['v'] = 0;
 console.log(obj['v']);        // 在开启字符串字面量属性名混淆时'v'会被正确地混淆，但是我们建议保留
 ```
+在Native API场景中，没有在so的d.ts文件中声明的API，如果要在ets/ts/js文件中使用需要手动保留。
 
-`-keep-global-name` [,modifiers,...]
+
+`-keep-global-name` [,identifiers,...]
 
 指定要保留的顶层作用域的名称。比如，
 ```
