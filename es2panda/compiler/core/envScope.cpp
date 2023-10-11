@@ -81,13 +81,4 @@ void LoopEnvScope::CopyPerIterationCtx()
     }
 }
 
-void LoopEnvScope::PopLexEnvBeforeTheNextIter()
-{
-    if (!HasEnv()) {
-        return;
-    }
-
-    pg_->PopLexEnv(scope_->Node());
-}
-
 }  // namespace panda::es2panda::compiler
