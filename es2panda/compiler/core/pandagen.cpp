@@ -1903,6 +1903,13 @@ void PandaGen::PopLexEnv(const ir::AstNode *node)
     ra_.Emit<Poplexenv>(node);
 }
 
+void PandaGen::GenDebugger(const ir::AstNode *node)
+{
+    if (IsDebug()) {
+        ra_.Emit<Debugger>(node);
+    }
+}
+
 void PandaGen::CopyLexEnv(const ir::AstNode *node)
 {
     /*
