@@ -246,6 +246,10 @@ void ClassDefinition::CompileMissingProperties(compiler::PandaGen *pg, const uti
             continue;
         }
 
+        if (prop->IsAbstract()) {
+            continue;
+        }
+
         compiler::VReg dest = prop->IsStatic() ? classReg : protoReg;
         compiler::RegScope rs(pg);
 
