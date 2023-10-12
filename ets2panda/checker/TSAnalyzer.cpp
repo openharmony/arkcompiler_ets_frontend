@@ -668,22 +668,115 @@ checker::Type *TSAnalyzer::Check(ir::TaggedTemplateExpression *expr) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::TemplateLiteral *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TemplateLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    // TODO(aszilagyi)
+    return checker->GlobalAnyType();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ThisExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ThisExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    // NOTE: aszilagyi
+    return checker->GlobalAnyType();
+}
+
+checker::Type *TSAnalyzer::CheckDeleteKeyword([[maybe_unused]] checker::TSChecker *checker,
+                                              ir::UnaryExpression *expr) const
+{
+    checker::Type *prop_type = expr->argument_->Check(checker);
+    if (!expr->Argument()->IsMemberExpression()) {
+        checker->ThrowTypeError("The operand of a delete operator must be a property reference.",
+                                expr->Argument()->Start());
+    }
+    if (prop_type->Variable()->HasFlag(varbinder::VariableFlags::READONLY)) {
+        checker->ThrowTypeError("The operand of a delete operator cannot be a readonly property.",
+                                expr->Argument()->Start());
+    }
+    if (!prop_type->Variable()->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
+        checker->ThrowTypeError("The operand of a delete operator must be a optional.", expr->Argument()->Start());
+    }
+    return checker->GlobalBooleanType();
+}
+
+checker::Type *TSAnalyzer::CheckLiteral([[maybe_unused]] checker::TSChecker *checker, ir::UnaryExpression *expr) const
+{
+    if (!expr->Argument()->IsLiteral()) {
+        return nullptr;
+    }
+
+    const ir::Literal *lit = expr->Argument()->AsLiteral();
+    if (lit->IsNumberLiteral()) {
+        auto number_value = lit->AsNumberLiteral()->Number().GetDouble();
+        if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_PLUS) {
+            return checker->CreateNumberLiteralType(number_value);
+        }
+        if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_MINUS) {
+            return checker->CreateNumberLiteralType(-number_value);
+        }
+    } else if (lit->IsBigIntLiteral() && expr->OperatorType() == lexer::TokenType::PUNCTUATOR_MINUS) {
+        return checker->CreateBigintLiteralType(lit->AsBigIntLiteral()->Str(), true);
+    }
+
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::UnaryExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::Type *operand_type = expr->argument_->Check(checker);
+
+    if (expr->operator_ == lexer::TokenType::KEYW_TYPEOF) {
+        return operand_type;
+    }
+
+    if (expr->operator_ == lexer::TokenType::KEYW_DELETE) {
+        return CheckDeleteKeyword(checker, expr);
+    }
+
+    auto *res = CheckLiteral(checker, expr);
+    if (res != nullptr) {
+        return res;
+    }
+
+    switch (expr->operator_) {
+        case lexer::TokenType::PUNCTUATOR_PLUS:
+        case lexer::TokenType::PUNCTUATOR_MINUS:
+        case lexer::TokenType::PUNCTUATOR_TILDE: {
+            checker->CheckNonNullType(operand_type, expr->Start());
+            // NOTE: aszilagyi. check Symbol like types
+
+            if (expr->operator_ == lexer::TokenType::PUNCTUATOR_PLUS) {
+                if (checker::TSChecker::MaybeTypeOfKind(operand_type, checker::TypeFlag::BIGINT_LIKE)) {
+                    checker->ThrowTypeError({"Operator '+' cannot be applied to type '", operand_type, "'"},
+                                            expr->Start());
+                }
+
+                return checker->GlobalNumberType();
+            }
+
+            return checker->GetUnaryResultType(operand_type);
+        }
+        case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
+            checker->CheckTruthinessOfType(operand_type, expr->Start());
+            auto facts = operand_type->GetTypeFacts();
+            if ((facts & checker::TypeFacts::TRUTHY) != 0) {
+                return checker->GlobalFalseType();
+            }
+
+            if ((facts & checker::TypeFacts::FALSY) != 0) {
+                return checker->GlobalTrueType();
+            }
+
+            return checker->GlobalBooleanType();
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::UpdateExpression *expr) const
@@ -1016,16 +1109,27 @@ checker::Type *TSAnalyzer::Check(ir::SwitchStatement *st) const
     return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check(ir::ThrowStatement *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ThrowStatement *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::TryStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    st->Block()->Check(checker);
+
+    for (auto *catch_clause : st->CatchClauses()) {
+        if (catch_clause != nullptr) {
+            catch_clause->Check(checker);
+        }
+    }
+
+    if (st->HasFinalizer()) {
+        st->finalizer_->Check(checker);
+    }
+
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::VariableDeclarator *st) const

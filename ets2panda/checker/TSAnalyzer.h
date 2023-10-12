@@ -35,6 +35,9 @@ public:
     AST_NODE_REINTERPRET_MAPPING(DECLARE_TSANALYZER_CHECK_METHOD)
 #undef DECLARE_TSANALYZER_CHECK_METHOD
 
+    checker::Type *CheckDeleteKeyword([[maybe_unused]] checker::TSChecker *checker, ir::UnaryExpression *expr) const;
+    checker::Type *CheckLiteral([[maybe_unused]] checker::TSChecker *checker, ir::UnaryExpression *expr) const;
+
 private:
     TSChecker *GetTSChecker() const;
 

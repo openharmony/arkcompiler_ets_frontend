@@ -19,7 +19,14 @@
 #include "compiler/core/labelPair.h"
 #include "ir/statement.h"
 
+namespace panda::es2panda::checker {
+class TSAnalyzer;
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
+
 namespace panda::es2panda::compiler {
+class JSCompiler;
+class ETSCompiler;
 class PandaGen;
 class TryLabelSet;
 class TryContext;
@@ -40,6 +47,11 @@ public:
           finalizer_insertions_(std::move(finalizer_insertions))
     {
     }
+
+    friend class checker::TSAnalyzer;
+    friend class checker::ETSAnalyzer;
+    friend class compiler::JSCompiler;
+    friend class compiler::ETSCompiler;
 
     const BlockStatement *FinallyBlock() const
     {
@@ -81,12 +93,6 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
 private:
-    void CompileTryCatch(compiler::PandaGen *pg) const;
-    void CompileTryFinally(compiler::PandaGen *pg) const;
-    void CompileTryCatchFinally(compiler::PandaGen *pg) const;
-    void CompileFinally(compiler::PandaGen *pg, compiler::TryContext *try_ctx,
-                        const compiler::TryLabelSet &label_set) const;
-
     BlockStatement *block_;
     ArenaVector<CatchClause *> catch_clauses_;
     BlockStatement *finalizer_;

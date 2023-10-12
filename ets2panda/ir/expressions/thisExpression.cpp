@@ -39,73 +39,22 @@ void ThisExpression::Dump(ir::AstDumper *dumper) const
 
 void ThisExpression::Compile(compiler::PandaGen *pg) const
 {
-    auto res = pg->Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS);
-
-    ASSERT(res.variable && res.variable->IsLocalVariable());
-    pg->LoadAccFromLexEnv(this, res);
-
-    const ir::ScriptFunction *func = util::Helpers::GetContainingConstructor(this);
-
-    if (func != nullptr) {
-        pg->ThrowIfSuperNotCorrectCall(this, 0);
-    }
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void ThisExpression::Compile(compiler::ETSGen *etsg) const
 {
-    etsg->LoadThis(this);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *ThisExpression::Check(checker::TSChecker *checker)
 {
-    // NOTE: aszilagyi
-    return checker->GlobalAnyType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *ThisExpression::Check(checker::ETSChecker *checker)
 {
-    if (TsType() != nullptr) {
-        return TsType();
-    }
-
-    /*
-    example code:
-    ```
-        class A {
-            prop
-        }
-        function A.method() {
-            let a = () => {
-                console.println(this.prop)
-            }
-        }
-        is identical to
-        function method(this: A) {
-            let a = () => {
-                console.println(this.prop)
-            }
-        }
-    ```
-    here when "this" is used inside an extension function, we need to bind "this" to the first
-    parameter(MANDATORY_PARAM_THIS), and capture the paramter's variable other than containing class's variable
-    */
-    auto *variable = checker->AsETSChecker()->Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS).variable;
-    if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
-        ASSERT(variable != nullptr);
-        SetTsType(variable->TsType());
-    } else {
-        SetTsType(checker->CheckThisOrSuperAccess(this, checker->Context().ContainingClass(), "this"));
-    }
-
-    if (checker->HasStatus(checker::CheckerStatus::IN_LAMBDA)) {
-        if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
-            checker->Context().AddCapturedVar(variable, this->Start());
-        } else {
-            checker->Context().AddCapturedVar(checker->Context().ContainingClass()->Variable(), this->Start());
-        }
-    }
-
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

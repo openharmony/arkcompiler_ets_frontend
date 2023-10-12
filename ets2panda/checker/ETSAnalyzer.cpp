@@ -1276,20 +1276,159 @@ checker::Type *ETSAnalyzer::Check(ir::TaggedTemplateExpression *expr) const
 
 checker::Type *ETSAnalyzer::Check(ir::TemplateLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+
+    if (expr->Quasis().size() != expr->Expressions().size() + 1U) {
+        checker->ThrowTypeError("Invalid string template expression", expr->Start());
+    }
+
+    for (auto *it : expr->Expressions()) {
+        it->Check(checker);
+    }
+
+    for (auto *it : expr->Quasis()) {
+        it->Check(checker);
+    }
+
+    expr->SetTsType(checker->GlobalBuiltinETSStringType());
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ThisExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+
+    /*
+    example code:
+    ```
+        class A {
+            prop
+        }
+        function A.method() {
+            let a = () => {
+                console.println(this.prop)
+            }
+        }
+        is identical to
+        function method(this: A) {
+            let a = () => {
+                console.println(this.prop)
+            }
+        }
+    ```
+    here when "this" is used inside an extension function, we need to bind "this" to the first
+    parameter(MANDATORY_PARAM_THIS), and capture the paramter's variable other than containing class's variable
+    */
+    auto *variable = checker->AsETSChecker()->Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS).variable;
+    if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
+        ASSERT(variable != nullptr);
+        expr->SetTsType(variable->TsType());
+    } else {
+        expr->SetTsType(checker->CheckThisOrSuperAccess(expr, checker->Context().ContainingClass(), "this"));
+    }
+
+    if (checker->HasStatus(checker::CheckerStatus::IN_LAMBDA)) {
+        if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
+            checker->Context().AddCapturedVar(variable, expr->Start());
+        } else {
+            checker->Context().AddCapturedVar(checker->Context().ContainingClass()->Variable(), expr->Start());
+        }
+    }
+
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+
+    auto arg_type = expr->argument_->Check(checker);
+    const auto is_cond_expr = expr->OperatorType() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK;
+    checker::Type *operand_type = checker->ApplyUnaryOperatorPromotion(arg_type, true, true, is_cond_expr);
+    auto unboxed_operand_type = is_cond_expr ? checker->ETSBuiltinTypeAsConditionalType(arg_type)
+                                             : checker->ETSBuiltinTypeAsPrimitiveType(arg_type);
+
+    switch (expr->OperatorType()) {
+        case lexer::TokenType::PUNCTUATOR_MINUS:
+        case lexer::TokenType::PUNCTUATOR_PLUS: {
+            if (operand_type == nullptr || !operand_type->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
+                checker->ThrowTypeError("Bad operand type, the type of the operand must be numeric type.",
+                                        expr->Argument()->Start());
+            }
+
+            if (operand_type->HasTypeFlag(checker::TypeFlag::CONSTANT) &&
+                expr->OperatorType() == lexer::TokenType::PUNCTUATOR_MINUS) {
+                expr->SetTsType(checker->NegateNumericType(operand_type, expr));
+                break;
+            }
+
+            expr->SetTsType(operand_type);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_TILDE: {
+            if (operand_type == nullptr || !operand_type->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL)) {
+                checker->ThrowTypeError("Bad operand type, the type of the operand must be integral type.",
+                                        expr->Argument()->Start());
+            }
+
+            if (operand_type->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
+                expr->SetTsType(checker->BitwiseNegateIntegralType(operand_type, expr));
+                break;
+            }
+
+            expr->SetTsType(operand_type);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
+            if (checker->IsNullLikeOrVoidExpression(expr->Argument())) {
+                auto ts_type = checker->CreateETSBooleanType(true);
+                ts_type->AddTypeFlag(checker::TypeFlag::CONSTANT);
+                expr->SetTsType(ts_type);
+                break;
+            }
+
+            if (operand_type == nullptr || !operand_type->IsConditionalExprType()) {
+                checker->ThrowTypeError("Bad operand type, the type of the operand must be boolean type.",
+                                        expr->Argument()->Start());
+            }
+
+            auto expr_res = operand_type->ResolveConditionExpr();
+            if (std::get<0>(expr_res)) {
+                auto ts_type = checker->CreateETSBooleanType(!std::get<1>(expr_res));
+                ts_type->AddTypeFlag(checker::TypeFlag::CONSTANT);
+                expr->SetTsType(ts_type);
+                break;
+            }
+
+            expr->SetTsType(checker->GlobalETSBooleanType());
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR: {
+            expr->SetTsType(arg_type);
+            break;
+        }
+        default: {
+            UNREACHABLE();
+            break;
+        }
+    }
+
+    if (arg_type->IsETSObjectType() && (unboxed_operand_type != nullptr) &&
+        unboxed_operand_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        expr->Argument()->AddBoxingUnboxingFlag(checker->GetUnboxingFlag(unboxed_operand_type));
+    }
+
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
@@ -1994,14 +2133,55 @@ checker::Type *ETSAnalyzer::Check(ir::SwitchStatement *st) const
 
 checker::Type *ETSAnalyzer::Check(ir::ThrowStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    auto *arg_type = st->argument_->Check(checker);
+    checker->CheckExceptionOrErrorType(arg_type, st->Start());
+
+    if (checker->Relation()->IsAssignableTo(arg_type, checker->GlobalBuiltinExceptionType())) {
+        checker->CheckThrowingStatements(st);
+    }
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::TryStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    std::vector<checker::ETSObjectType *> exceptions;
+    st->Block()->Check(checker);
+
+    for (auto *catch_clause : st->CatchClauses()) {
+        auto exception_type = catch_clause->Check(checker);
+
+        if ((exception_type != nullptr) && (catch_clause->Param() != nullptr)) {
+            auto *clause_type = exception_type->AsETSObjectType();
+
+            for (auto *exception : exceptions) {
+                checker->Relation()->IsIdenticalTo(clause_type, exception);
+                if (checker->Relation()->IsTrue()) {
+                    checker->ThrowTypeError("Redeclaration of exception type", catch_clause->Start());
+                }
+            }
+
+            exceptions.push_back(clause_type);
+        }
+    }
+
+    bool default_catch_found = false;
+
+    for (auto *catch_clause : st->CatchClauses()) {
+        if (default_catch_found) {
+            checker->ThrowTypeError("Default catch clause should be the last in the try statement",
+                                    catch_clause->Start());
+        }
+
+        default_catch_found = catch_clause->IsDefaultCatchClause();
+    }
+
+    if (st->HasFinalizer()) {
+        st->finalizer_->Check(checker);
+    }
+
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::VariableDeclarator *st) const

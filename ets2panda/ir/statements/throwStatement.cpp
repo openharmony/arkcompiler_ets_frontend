@@ -15,6 +15,7 @@
 
 #include "throwStatement.h"
 
+#include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "ir/astDump.h"
@@ -38,28 +39,21 @@ void ThrowStatement::Dump(ir::AstDumper *dumper) const
 
 void ThrowStatement::Compile(compiler::PandaGen *pg) const
 {
-    argument_->Compile(pg);
-    pg->EmitThrow(this);
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void ThrowStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 {
-    etsg->ThrowException(argument_);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *ThrowStatement::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *ThrowStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    auto *arg_type = argument_->Check(checker);
-    checker->CheckExceptionOrErrorType(arg_type, Start());
-
-    if (checker->Relation()->IsAssignableTo(arg_type, checker->GlobalBuiltinExceptionType())) {
-        checker->CheckThrowingStatements(this);
-    }
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

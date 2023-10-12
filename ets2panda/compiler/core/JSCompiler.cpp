@@ -15,6 +15,8 @@
 
 #include "JSCompiler.h"
 
+#include "varbinder/varbinder.h"
+#include "compiler/base/catchTable.h"
 #include "compiler/base/condition.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
@@ -940,20 +942,134 @@ void JSCompiler::Compile(const ir::TaggedTemplateExpression *expr) const
 
 void JSCompiler::Compile(const ir::TemplateLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    auto quasis_it = expr->Quasis().begin();
+    auto expression_it = expr->Expressions().begin();
+
+    pg->LoadAccumulatorString(expr, (*quasis_it)->Raw());
+
+    quasis_it++;
+
+    bool is_quais = false;
+    size_t total = expr->Quasis().size() + expr->Expressions().size();
+
+    compiler::RegScope rs(pg);
+    compiler::VReg lhs = pg->AllocReg();
+
+    while (total != 1) {
+        const ir::AstNode *node = nullptr;
+
+        if (is_quais) {
+            pg->StoreAccumulator(*quasis_it, lhs);
+            pg->LoadAccumulatorString(expr, (*quasis_it)->Raw());
+
+            node = *quasis_it;
+            quasis_it++;
+        } else {
+            const ir::Expression *element = *expression_it;
+            pg->StoreAccumulator(element, lhs);
+
+            element->Compile(pg);
+
+            node = element;
+            expression_it++;
+        }
+
+        pg->Binary(node, lexer::TokenType::PUNCTUATOR_PLUS, lhs);
+
+        is_quais = !is_quais;
+        total--;
+    }
 }
 
 void JSCompiler::Compile(const ir::ThisExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    auto res = pg->Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS);
+
+    ASSERT(res.variable && res.variable->IsLocalVariable());
+    pg->LoadAccFromLexEnv(expr, res);
+
+    const ir::ScriptFunction *func = util::Helpers::GetContainingConstructor(expr);
+
+    if (func != nullptr) {
+        pg->ThrowIfSuperNotCorrectCall(expr, 0);
+    }
 }
 
 void JSCompiler::Compile(const ir::UnaryExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    switch (expr->OperatorType()) {
+        case lexer::TokenType::KEYW_DELETE: {
+            if (expr->Argument()->IsIdentifier()) {
+                auto result = pg->Scope()->Find(expr->Argument()->AsIdentifier()->Name());
+                if (result.variable == nullptr ||
+                    (result.scope->IsGlobalScope() && result.variable->IsGlobalVariable())) {
+                    compiler::RegScope rs(pg);
+                    compiler::VReg variable = pg->AllocReg();
+                    compiler::VReg global = pg->AllocReg();
+
+                    pg->LoadConst(expr, compiler::Constant::JS_GLOBAL);
+                    pg->StoreAccumulator(expr, global);
+
+                    pg->LoadAccumulatorString(expr, expr->Argument()->AsIdentifier()->Name());
+                    pg->StoreAccumulator(expr, variable);
+
+                    pg->DeleteObjProperty(expr, global, variable);
+                } else {
+                    // Otherwise it is a local variable which can't be deleted and we just
+                    // return false.
+                    pg->LoadConst(expr, compiler::Constant::JS_FALSE);
+                }
+            } else if (expr->Argument()->IsMemberExpression()) {
+                compiler::RegScope rs(pg);
+                compiler::VReg object = pg->AllocReg();
+                compiler::VReg property = pg->AllocReg();
+
+                expr->Argument()->AsMemberExpression()->CompileToRegs(pg, object, property);
+                pg->DeleteObjProperty(expr, object, property);
+            } else {
+                // compile the delete operand.
+                expr->Argument()->Compile(pg);
+                // Deleting any value or a result of an expression returns True.
+                pg->LoadConst(expr, compiler::Constant::JS_TRUE);
+            }
+            break;
+        }
+        case lexer::TokenType::KEYW_TYPEOF: {
+            if (expr->Argument()->IsIdentifier()) {
+                const auto *ident = expr->Argument()->AsIdentifier();
+
+                auto res = pg->Scope()->Find(ident->Name());
+                if (res.variable == nullptr) {
+                    pg->LoadConst(expr, compiler::Constant::JS_GLOBAL);
+                    pg->LoadObjByName(expr, ident->Name());
+                } else {
+                    pg->LoadVar(ident, res);
+                }
+            } else {
+                expr->Argument()->Compile(pg);
+            }
+
+            pg->TypeOf(expr);
+            break;
+        }
+        case lexer::TokenType::KEYW_VOID: {
+            expr->Argument()->Compile(pg);
+            pg->LoadConst(expr, compiler::Constant::JS_UNDEFINED);
+            break;
+        }
+        default: {
+            expr->Argument()->Compile(pg);
+
+            compiler::RegScope rs(pg);
+            compiler::VReg operand_reg = pg->AllocReg();
+            pg->StoreAccumulator(expr, operand_reg);
+            pg->Unary(expr, expr->OperatorType(), operand_reg);
+            break;
+        }
+    }
 }
 
 void JSCompiler::Compile(const ir::UpdateExpression *expr) const
@@ -1363,14 +1479,122 @@ void JSCompiler::Compile(const ir::SwitchStatement *st) const
 
 void JSCompiler::Compile(const ir::ThrowStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    st->Argument()->Compile(pg);
+    pg->EmitThrow(st);
+}
+
+static void CompileTryCatch(compiler::PandaGen *pg, const ir::TryStatement *st)
+{
+    ASSERT(st->CatchClauses().size() == 1);
+    ASSERT(st->CatchClauses().front() && !st->FinallyBlock());
+
+    compiler::TryContext try_ctx(pg, st);
+    const auto &label_set = try_ctx.LabelSet();
+
+    pg->SetLabel(st, label_set.TryBegin());
+    st->Block()->Compile(pg);
+    pg->SetLabel(st, label_set.TryEnd());
+
+    pg->Branch(st, label_set.CatchEnd());
+
+    pg->SetLabel(st, label_set.CatchBegin());
+    st->CatchClauses().front()->Compile(pg);
+    pg->SetLabel(st, label_set.CatchEnd());
+}
+
+static void CompileFinally(compiler::PandaGen *pg, compiler::TryContext *try_ctx,
+                           const compiler::TryLabelSet &label_set, const ir::TryStatement *st)
+{
+    compiler::RegScope rs(pg);
+    compiler::VReg exception = pg->AllocReg();
+    pg->StoreConst(st, exception, compiler::Constant::JS_HOLE);
+    pg->Branch(st, label_set.CatchEnd());
+
+    pg->SetLabel(st, label_set.CatchBegin());
+    pg->StoreAccumulator(st, exception);
+
+    pg->SetLabel(st, label_set.CatchEnd());
+
+    compiler::Label *label = pg->AllocLabel();
+    pg->LoadAccumulator(st, try_ctx->FinalizerRun());
+
+    pg->BranchIfNotUndefined(st, label);
+    pg->StoreAccumulator(st, try_ctx->FinalizerRun());
+    try_ctx->EmitFinalizer();
+    pg->SetLabel(st, label);
+
+    pg->LoadAccumulator(st, exception);
+    pg->EmitRethrow(st);
+}
+
+static void CompileTryCatchFinally(compiler::PandaGen *pg, const ir::TryStatement *st)
+{
+    ASSERT(st->CatchClauses().size() == 1);
+    ASSERT(st->CatchClauses().front() && st->FinallyBlock());
+
+    compiler::TryContext try_ctx(pg, st);
+    const auto &label_set = try_ctx.LabelSet();
+
+    pg->SetLabel(st, label_set.TryBegin());
+    {
+        compiler::TryContext inner_try_ctx(pg, st, false);
+        const auto &inner_label_set = inner_try_ctx.LabelSet();
+
+        pg->SetLabel(st, inner_label_set.TryBegin());
+        st->Block()->Compile(pg);
+        pg->SetLabel(st, inner_label_set.TryEnd());
+
+        pg->Branch(st, inner_label_set.CatchEnd());
+
+        pg->SetLabel(st, inner_label_set.CatchBegin());
+        st->CatchClauses().front()->Compile(pg);
+        pg->SetLabel(st, inner_label_set.CatchEnd());
+    }
+    pg->SetLabel(st, label_set.TryEnd());
+
+    CompileFinally(pg, &try_ctx, label_set, st);
+}
+
+static void CompileTryFinally(compiler::PandaGen *pg, const ir::TryStatement *st)
+{
+    ASSERT(st->CatchClauses().empty() && st->FinallyBlock());
+
+    compiler::TryContext try_ctx(pg, st);
+    const auto &label_set = try_ctx.LabelSet();
+
+    pg->SetLabel(st, label_set.TryBegin());
+    {
+        compiler::TryContext inner_try_ctx(pg, st, false);
+        const auto &inner_label_set = inner_try_ctx.LabelSet();
+
+        pg->SetLabel(st, inner_label_set.TryBegin());
+        st->Block()->Compile(pg);
+        pg->SetLabel(st, inner_label_set.TryEnd());
+
+        pg->Branch(st, inner_label_set.CatchEnd());
+
+        pg->SetLabel(st, inner_label_set.CatchBegin());
+        pg->EmitThrow(st);
+        pg->SetLabel(st, inner_label_set.CatchEnd());
+    }
+    pg->SetLabel(st, label_set.TryEnd());
+
+    CompileFinally(pg, &try_ctx, label_set, st);
 }
 
 void JSCompiler::Compile(const ir::TryStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    if (st->finalizer_ != nullptr) {
+        if (!st->CatchClauses().empty()) {
+            CompileTryCatchFinally(pg, st);
+        } else {
+            CompileTryFinally(pg, st);
+        }
+    } else {
+        CompileTryCatch(pg, st);
+    }
 }
 
 void JSCompiler::Compile(const ir::VariableDeclarator *st) const

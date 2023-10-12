@@ -16,12 +16,12 @@
 #include "ETSCompiler.h"
 
 #include "checker/types/ets/etsDynamicFunctionType.h"
+#include "compiler/base/catchTable.h"
 #include "compiler/base/condition.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/switchBuilder.h"
 #include "compiler/function/functionBuilder.h"
-
 namespace panda::es2panda::compiler {
 
 ETSGen *ETSCompiler::GetETSGen() const
@@ -928,20 +928,25 @@ void ETSCompiler::Compile(const ir::TaggedTemplateExpression *expr) const
 
 void ETSCompiler::Compile(const ir::TemplateLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    etsg->BuildTemplateString(expr);
 }
 
 void ETSCompiler::Compile(const ir::ThisExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    etsg->LoadThis(expr);
 }
 
 void ETSCompiler::Compile(const ir::UnaryExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
+    if (!etsg->TryLoadConstantExpression(expr->Argument())) {
+        expr->Argument()->Compile(etsg);
+    }
+    etsg->ApplyConversion(expr->Argument(), nullptr);
+    etsg->Unary(expr, expr->OperatorType());
 }
 
 void ETSCompiler::Compile(const ir::UpdateExpression *expr) const
@@ -1430,14 +1435,45 @@ void ETSCompiler::Compile(const ir::SwitchStatement *st) const
 
 void ETSCompiler::Compile(const ir::ThrowStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    etsg->ThrowException(st->Argument());
 }
 
 void ETSCompiler::Compile(const ir::TryStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+
+    compiler::ETSTryContext try_ctx(etsg, etsg->Allocator(), st, st->FinallyBlock() != nullptr);
+
+    compiler::LabelPair try_label_pair(etsg->AllocLabel(), etsg->AllocLabel());
+
+    for (ir::CatchClause *clause : st->CatchClauses()) {
+        try_ctx.AddNewCathTable(clause->TsType()->AsETSObjectType()->AssemblerName(), try_label_pair);
+    }
+
+    compiler::Label *statement_end = etsg->AllocLabel();
+    auto catch_tables = try_ctx.GetETSCatchTable();
+
+    etsg->SetLabel(st, try_label_pair.Begin());
+    st->Block()->Compile(etsg);
+    etsg->Branch(st, statement_end);
+    etsg->SetLabel(st, try_label_pair.End());
+
+    ASSERT(st->CatchClauses().size() == catch_tables.size());
+
+    for (uint32_t i = 0; i < st->CatchClauses().size(); i++) {
+        etsg->SetLabel(st, catch_tables.at(i)->LabelSet().CatchBegin());
+
+        st->CatchClauses().at(i)->Compile(etsg);
+
+        etsg->Branch(st, statement_end);
+    }
+
+    etsg->SetLabel(st, statement_end);
+
+    auto trycatch_label_pair = compiler::LabelPair(try_label_pair.Begin(), statement_end);
+
+    try_ctx.EmitFinalizer(trycatch_label_pair, st->finalizer_insertions_);
 }
 
 void ETSCompiler::Compile(const ir::VariableDeclarator *st) const
