@@ -15,6 +15,9 @@
 
 #include "tsInterfaceBody.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
@@ -37,19 +40,23 @@ void TSInterfaceBody::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSInterfaceBody"}, {"body", body_}});
 }
 
-void TSInterfaceBody::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSInterfaceBody::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+
+void TSInterfaceBody::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSInterfaceBody::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    for (auto *it : body_) {
-        it->Check(checker);
-    }
-
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSInterfaceBody::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

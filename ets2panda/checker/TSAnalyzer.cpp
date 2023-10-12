@@ -662,10 +662,11 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::SuperExpression *expr) con
     return checker->GlobalAnyType();
 }
 
-checker::Type *TSAnalyzer::Check(ir::TaggedTemplateExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TaggedTemplateExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    // NOTE: aszilagyi.
+    return checker->GlobalAnyType();
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TemplateLiteral *expr) const
@@ -781,8 +782,20 @@ checker::Type *TSAnalyzer::Check(ir::UnaryExpression *expr) const
 
 checker::Type *TSAnalyzer::Check(ir::UpdateExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::Type *operand_type = expr->argument_->Check(checker);
+    checker->CheckNonNullType(operand_type, expr->Start());
+
+    if (!operand_type->HasTypeFlag(checker::TypeFlag::VALID_ARITHMETIC_TYPE)) {
+        checker->ThrowTypeError("An arithmetic operand must be of type 'any', 'number', 'bigint' or an enum type.",
+                                expr->Start());
+    }
+
+    checker->CheckReferenceExpression(
+        expr->argument_, "The operand of an increment or decrement operator must be a variable or a property access",
+        "The operand of an increment or decrement operator may not be an optional property access");
+
+    return checker->GetUnaryResultType(operand_type);
 }
 
 checker::Type *TSAnalyzer::Check(ir::YieldExpression *expr) const
@@ -1140,8 +1153,12 @@ checker::Type *TSAnalyzer::Check(ir::VariableDeclarator *st) const
 
 checker::Type *TSAnalyzer::Check(ir::VariableDeclaration *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    for (auto *it : st->Declarators()) {
+        it->Check(checker);
+    }
+
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::WhileStatement *st) const
@@ -1162,10 +1179,76 @@ checker::Type *TSAnalyzer::Check(ir::TSArrayType *node) const
     return nullptr;
 }
 
+static bool IsValidConstAssertionArgument(checker::Checker *checker, const ir::AstNode *arg)
+{
+    switch (arg->Type()) {
+        case ir::AstNodeType::NUMBER_LITERAL:
+        case ir::AstNodeType::STRING_LITERAL:
+        case ir::AstNodeType::BIGINT_LITERAL:
+        case ir::AstNodeType::BOOLEAN_LITERAL:
+        case ir::AstNodeType::ARRAY_EXPRESSION:
+        case ir::AstNodeType::OBJECT_EXPRESSION:
+        case ir::AstNodeType::TEMPLATE_LITERAL: {
+            return true;
+        }
+        case ir::AstNodeType::UNARY_EXPRESSION: {
+            const ir::UnaryExpression *unary_expr = arg->AsUnaryExpression();
+            lexer::TokenType op = unary_expr->OperatorType();
+            const ir::Expression *unary_arg = unary_expr->Argument();
+            return (op == lexer::TokenType::PUNCTUATOR_MINUS && unary_arg->IsLiteral() &&
+                    (unary_arg->AsLiteral()->IsNumberLiteral() || unary_arg->AsLiteral()->IsBigIntLiteral())) ||
+                   (op == lexer::TokenType::PUNCTUATOR_PLUS && unary_arg->IsLiteral() &&
+                    unary_arg->AsLiteral()->IsNumberLiteral());
+        }
+        case ir::AstNodeType::MEMBER_EXPRESSION: {
+            const ir::MemberExpression *member_expr = arg->AsMemberExpression();
+            if (member_expr->Object()->IsIdentifier()) {
+                auto result = checker->Scope()->Find(member_expr->Object()->AsIdentifier()->Name());
+                constexpr auto ENUM_LITERAL_TYPE = checker::EnumLiteralType::EnumLiteralTypeKind::LITERAL;
+                if (result.variable != nullptr &&
+                    result.variable->TsType()->HasTypeFlag(checker::TypeFlag::ENUM_LITERAL) &&
+                    result.variable->TsType()->AsEnumLiteralType()->Kind() == ENUM_LITERAL_TYPE) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        default:
+            return false;
+    }
+}
+
 checker::Type *TSAnalyzer::Check(ir::TSAsExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    if (expr->IsConst()) {
+        auto context = checker::SavedCheckerContext(checker, checker::CheckerStatus::IN_CONST_CONTEXT);
+        checker::Type *expr_type = expr->Expr()->Check(checker);
+
+        if (!IsValidConstAssertionArgument(checker, expr->Expr())) {
+            checker->ThrowTypeError(
+                "A 'const' assertions can only be applied to references to enum members, or string, number, "
+                "boolean, array, or object literals.",
+                expr->Expr()->Start());
+        }
+
+        return expr_type;
+    }
+
+    auto context = checker::SavedCheckerContext(checker, checker::CheckerStatus::NO_OPTS);
+
+    expr->TypeAnnotation()->Check(checker);
+    checker::Type *expr_type = checker->GetBaseTypeOfLiteralType(expr->Expr()->Check(checker));
+    checker::Type *target_type = expr->TypeAnnotation()->GetType(checker);
+
+    checker->IsTypeComparableTo(
+        target_type, expr_type,
+        {"Conversion of type '", expr_type, "' to type '", target_type,
+         "' may be a mistake because neither type sufficiently overlaps with the other. If this was ",
+         "intentional, convert the expression to 'unknown' first."},
+        expr->Start());
+
+    return target_type;
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSBigintKeyword *node) const
@@ -1178,9 +1261,8 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSBooleanKeyword *node) co
     return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check(ir::TSClassImplements *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSClassImplements *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1599,8 +1681,12 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSInferType *node) const
 
 checker::Type *TSAnalyzer::Check(ir::TSInterfaceBody *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    for (auto *it : expr->Body()) {
+        it->Check(checker);
+    }
+
+    return nullptr;
 }
 
 static void CheckInheritedPropertiesAreIdentical(checker::TSChecker *checker, checker::InterfaceType *type,
@@ -1677,9 +1763,8 @@ checker::Type *TSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
     return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check(ir::TSInterfaceHeritage *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSInterfaceHeritage *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1712,8 +1797,9 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSModuleDeclaration *st) c
 
 checker::Type *TSAnalyzer::Check(ir::TSNamedTupleMember *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    node->ElementType()->Check(checker);
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSNeverKeyword *node) const
@@ -1788,8 +1874,13 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSThisType *node) const
 
 checker::Type *TSAnalyzer::Check(ir::TSTupleType *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    for (auto *it : node->ElementType()) {
+        it->Check(checker);
+    }
+
+    node->GetType(checker);
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
@@ -1799,9 +1890,8 @@ checker::Type *TSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
     return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check(ir::TSTypeAssertion *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSTypeAssertion *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1846,8 +1936,13 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSTypePredicate *node) con
 
 checker::Type *TSAnalyzer::Check(ir::TSTypeQuery *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    if (node->TsType() != nullptr) {
+        return node->TsType();
+    }
+
+    node->SetTsType(node->expr_name_->Check(checker));
+    return node->TsType();
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSTypeReference *node) const

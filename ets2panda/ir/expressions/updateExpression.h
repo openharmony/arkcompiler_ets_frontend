@@ -18,7 +18,10 @@
 
 #include "ir/expression.h"
 #include "lexer/token/tokenType.h"
-
+namespace panda::es2panda::checker {
+class TSAnalyzer;
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
 namespace panda::es2panda::ir {
 class UpdateExpression : public Expression {
 public:
@@ -37,6 +40,10 @@ public:
         ASSERT(update_operator == lexer::TokenType::PUNCTUATOR_PLUS_PLUS ||
                update_operator == lexer::TokenType::PUNCTUATOR_MINUS_MINUS);
     }
+
+    // TODO (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    friend class checker::TSAnalyzer;
+    friend class checker::ETSAnalyzer;
 
     [[nodiscard]] lexer::TokenType OperatorType() const noexcept
     {

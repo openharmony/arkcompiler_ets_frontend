@@ -17,11 +17,15 @@
 #define ES2PANDA_IR_TS_TYPE_QUERY_H
 
 #include "ir/typeNode.h"
-
+namespace panda::es2panda::checker {
+class TSAnalyzer;
+}  // namespace panda::es2panda::checker
 namespace panda::es2panda::ir {
 class TSTypeQuery : public TypeNode {
 public:
     explicit TSTypeQuery(Expression *expr_name) : TypeNode(AstNodeType::TS_TYPE_QUERY), expr_name_(expr_name) {}
+
+    friend class checker::TSAnalyzer;
 
     const Expression *ExprName() const
     {
@@ -32,6 +36,7 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;

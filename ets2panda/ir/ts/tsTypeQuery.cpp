@@ -15,6 +15,9 @@
 
 #include "tsTypeQuery.h"
 
+#include "checker/ETSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "checker/TSchecker.h"
 
@@ -34,26 +37,28 @@ void TSTypeQuery::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSTypeQuery"}, {"exprName", expr_name_}});
 }
 
-void TSTypeQuery::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSTypeQuery::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+
+void TSTypeQuery::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSTypeQuery::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    GetType(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSTypeQuery::GetType([[maybe_unused]] checker::TSChecker *checker)
 {
-    if (TsType() != nullptr) {
-        return TsType();
-    }
-
-    SetTsType(expr_name_->Check(checker));
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSTypeQuery::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

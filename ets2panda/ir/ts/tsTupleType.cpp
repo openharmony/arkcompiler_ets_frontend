@@ -15,6 +15,8 @@
 
 #include "tsTupleType.h"
 
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "util/helpers.h"
 #include "varbinder/scope.h"
 #include "checker/TSchecker.h"
@@ -43,7 +45,15 @@ void TSTupleType::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSTupleType"}, {"elementTypes", element_types_}});
 }
 
-void TSTupleType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSTupleType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+
+void TSTupleType::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSTupleType::GetType(checker::TSChecker *checker)
 {
@@ -118,16 +128,11 @@ checker::Type *TSTupleType::GetType(checker::TSChecker *checker)
 
 checker::Type *TSTupleType::Check(checker::TSChecker *checker)
 {
-    for (auto *it : element_types_) {
-        it->Check(checker);
-    }
-
-    GetType(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSTupleType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

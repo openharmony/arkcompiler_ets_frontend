@@ -17,6 +17,7 @@
 
 #include "varbinder/variable.h"
 #include "compiler/base/literals.h"
+#include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/regScope.h"
 #include "checker/TSchecker.h"
@@ -56,30 +57,22 @@ void TaggedTemplateExpression::Dump(ir::AstDumper *dumper) const
 
 void TaggedTemplateExpression::Compile(compiler::PandaGen *pg) const
 {
-    compiler::RegScope rs(pg);
-    compiler::VReg callee = pg->AllocReg();
-    compiler::VReg this_reg = compiler::VReg::Invalid();
+    pg->GetAstCompiler()->Compile(this);
+}
 
-    if (tag_->IsMemberExpression()) {
-        this_reg = pg->AllocReg();
-        compiler::RegScope mrs(pg);
-        tag_->AsMemberExpression()->CompileToReg(pg, this_reg);
-    } else {
-        tag_->Compile(pg);
-    }
-
-    pg->CallTagged(this, callee, this_reg, quasi_->Expressions());
+void TaggedTemplateExpression::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *TaggedTemplateExpression::Check(checker::TSChecker *checker)
 {
-    // NOTE: aszilagyi.
-    return checker->GlobalAnyType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TaggedTemplateExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

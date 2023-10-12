@@ -46,111 +46,22 @@ void UpdateExpression::Dump(ir::AstDumper *dumper) const
 
 void UpdateExpression::Compile(compiler::PandaGen *pg) const
 {
-    compiler::RegScope rs(pg);
-    compiler::VReg operand_reg = pg->AllocReg();
-
-    auto lref = compiler::JSLReference::Create(pg, argument_, false);
-    lref.GetValue();
-
-    pg->StoreAccumulator(this, operand_reg);
-    pg->Unary(this, operator_, operand_reg);
-
-    lref.SetValue();
-
-    if (!IsPrefix()) {
-        pg->ToNumber(this, operand_reg);
-    }
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void UpdateExpression::Compile(compiler::ETSGen *etsg) const
 {
-    auto lref = compiler::ETSLReference::Create(etsg, argument_, false);
-
-    const auto argument_boxing_flags =
-        static_cast<BoxingUnboxingFlags>(argument_->GetBoxingUnboxingFlags() & BoxingUnboxingFlags::BOXING_FLAG);
-    const auto argument_unboxing_flags =
-        static_cast<BoxingUnboxingFlags>(argument_->GetBoxingUnboxingFlags() & BoxingUnboxingFlags::UNBOXING_FLAG);
-
-    if (prefix_) {
-        lref.GetValue();
-        argument_->SetBoxingUnboxingFlags(argument_unboxing_flags);
-        etsg->ApplyConversion(argument_, nullptr);
-        etsg->Update(this, operator_);
-        argument_->SetBoxingUnboxingFlags(argument_boxing_flags);
-        etsg->ApplyConversion(argument_, argument_->TsType());
-        lref.SetValue();
-        return;
-    }
-
-    // workaround so argument_ does not get auto unboxed by lref.GetValue()
-    argument_->SetBoxingUnboxingFlags(BoxingUnboxingFlags::NONE);
-    lref.GetValue();
-
-    compiler::RegScope rs(etsg);
-    compiler::VReg original_value_reg = etsg->AllocReg();
-    etsg->StoreAccumulator(argument_, original_value_reg);
-
-    argument_->SetBoxingUnboxingFlags(argument_unboxing_flags);
-    etsg->ApplyConversion(argument_, nullptr);
-    etsg->Update(this, operator_);
-
-    argument_->SetBoxingUnboxingFlags(argument_boxing_flags);
-    etsg->ApplyConversion(argument_, argument_->TsType());
-    lref.SetValue();
-
-    etsg->LoadAccumulator(argument_, original_value_reg);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *UpdateExpression::Check(checker::TSChecker *checker)
 {
-    checker::Type *operand_type = argument_->Check(checker);
-    checker->CheckNonNullType(operand_type, Start());
-
-    if (!operand_type->HasTypeFlag(checker::TypeFlag::VALID_ARITHMETIC_TYPE)) {
-        checker->ThrowTypeError("An arithmetic operand must be of type 'any', 'number', 'bigint' or an enum type.",
-                                Start());
-    }
-
-    checker->CheckReferenceExpression(
-        argument_, "The operand of an increment or decrement operator must be a variable or a property access",
-        "The operand of an increment or decrement operator may not be an optional property access");
-
-    return checker->GetUnaryResultType(operand_type);
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *UpdateExpression::Check(checker::ETSChecker *checker)
 {
-    if (TsType() != nullptr) {
-        return TsType();
-    }
-
-    checker::Type *operand_type = argument_->Check(checker);
-    if (argument_->IsIdentifier()) {
-        checker->ValidateUnaryOperatorOperand(argument_->AsIdentifier()->Variable());
-    } else if (argument_->IsTSAsExpression()) {
-        if (auto *const as_expr_var = argument_->AsTSAsExpression()->Variable(); as_expr_var != nullptr) {
-            checker->ValidateUnaryOperatorOperand(as_expr_var);
-        }
-    } else {
-        ASSERT(argument_->IsMemberExpression());
-        varbinder::LocalVariable *prop_var = argument_->AsMemberExpression()->PropVar();
-        if (prop_var != nullptr) {
-            checker->ValidateUnaryOperatorOperand(prop_var);
-        }
-    }
-
-    auto unboxed_type = checker->ETSBuiltinTypeAsPrimitiveType(operand_type);
-
-    if (unboxed_type == nullptr || !unboxed_type->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
-        checker->ThrowTypeError("Bad operand type, the type of the operand must be numeric type.", argument_->Start());
-    }
-
-    if (operand_type->IsETSObjectType()) {
-        argument_->AddBoxingUnboxingFlag(checker->GetUnboxingFlag(unboxed_type) | checker->GetBoxingFlag(unboxed_type));
-    }
-
-    SetTsType(operand_type);
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

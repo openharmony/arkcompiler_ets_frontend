@@ -936,8 +936,20 @@ void JSCompiler::Compile(const ir::SuperExpression *expr) const
 
 void JSCompiler::Compile(const ir::TaggedTemplateExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::RegScope rs(pg);
+    compiler::VReg callee = pg->AllocReg();
+    compiler::VReg this_reg = compiler::VReg::Invalid();
+
+    if (expr->Tag()->IsMemberExpression()) {
+        this_reg = pg->AllocReg();
+        compiler::RegScope mrs(pg);
+        expr->Tag()->AsMemberExpression()->CompileToReg(pg, this_reg);
+    } else {
+        expr->Tag()->Compile(pg);
+    }
+
+    pg->CallTagged(expr, callee, this_reg, expr->Quasi()->Expressions());
 }
 
 void JSCompiler::Compile(const ir::TemplateLiteral *expr) const
@@ -1074,8 +1086,21 @@ void JSCompiler::Compile(const ir::UnaryExpression *expr) const
 
 void JSCompiler::Compile(const ir::UpdateExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::RegScope rs(pg);
+    compiler::VReg operand_reg = pg->AllocReg();
+
+    auto lref = compiler::JSLReference::Create(pg, expr->Argument(), false);
+    lref.GetValue();
+
+    pg->StoreAccumulator(expr, operand_reg);
+    pg->Unary(expr, expr->OperatorType(), operand_reg);
+
+    lref.SetValue();
+
+    if (!expr->IsPrefix()) {
+        pg->ToNumber(expr, operand_reg);
+    }
 }
 
 void JSCompiler::Compile(const ir::YieldExpression *expr) const
@@ -1605,8 +1630,10 @@ void JSCompiler::Compile(const ir::VariableDeclarator *st) const
 
 void JSCompiler::Compile(const ir::VariableDeclaration *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    for (const auto *it : st->Declarators()) {
+        it->Compile(pg);
+    }
 }
 
 void JSCompiler::Compile(const ir::WhileStatement *st) const
@@ -1625,9 +1652,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSArrayType *node) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSAsExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSAsExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1641,9 +1667,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSBooleanKeyword *node) cons
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSClassImplements *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSClassImplements *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1697,9 +1722,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSInferType *node) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSInterfaceBody *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceBody *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1708,9 +1732,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceDeclaration *st) 
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSInterfaceHeritage *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceHeritage *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1739,9 +1762,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSModuleDeclaration *st) con
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSNamedTupleMember *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSNamedTupleMember *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1795,9 +1817,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSThisType *node) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTupleType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTupleType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1806,9 +1827,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeAliasDeclaration *st) 
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeAssertion *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeAssertion *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1842,9 +1862,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSTypePredicate *node) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeQuery *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeQuery *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
