@@ -20,8 +20,13 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::checker {
+class ETSAnalyzer;
 class Signature;
 }  // namespace panda::es2panda::checker
+
+namespace panda::es2panda::compiler {
+class ETSCompiler;
+}  // namespace panda::es2panda::compiler
 
 namespace panda::es2panda::ir {
 
@@ -44,6 +49,9 @@ public:
           class_def_(class_definition)
     {
     }
+    // TODO (csabahurton): these friend relationships can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
+    friend class compiler::ETSCompiler;
 
     explicit ETSNewClassInstanceExpression(ETSNewClassInstanceExpression const &other, ArenaAllocator *allocator);
 
@@ -72,10 +80,6 @@ public:
         signature_ = signature;
     }
 
-    static void CreateDynamicObject(const ir::AstNode *node, compiler::ETSGen *etsg, compiler::VReg &obj_reg,
-                                    ir::Expression *name, checker::Signature *signature,
-                                    const ArenaVector<ir::Expression *> &arguments);
-
     // NOLINTNEXTLINE(google-default-arguments)
     [[nodiscard]] ETSNewClassInstanceExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
@@ -84,10 +88,10 @@ public:
 
     void Dump(ir::AstDumper *dumper) const override;
 
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    void Compile(compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     ir::Expression *type_reference_;

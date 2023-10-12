@@ -366,58 +366,215 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSPropertySignature *node
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSSignatureDeclaration *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSSignatureDeclaration *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 // from ets folder
 checker::Type *ETSAnalyzer::Check(ir::ETSClassLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    checker->ThrowTypeError("Class literal is not yet supported.", expr->expr_->Start());
+
+    expr->expr_->Check(checker);
+    auto *expr_type = expr->expr_->GetType(checker);
+
+    if (expr_type->IsETSVoidType()) {
+        checker->ThrowTypeError("Invalid .class reference", expr->expr_->Start());
+    }
+
+    ArenaVector<checker::Type *> type_arg_types(checker->Allocator()->Adapter());
+    type_arg_types.push_back(expr_type);  // NOTE: Box it if it's a primitive type
+
+    checker::InstantiationContext ctx(checker, checker->GlobalBuiltinTypeType(), type_arg_types, expr->range_.start);
+    expr->SetTsType(ctx.Result());
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    checker->CreateFunctionalInterfaceForFunctionType(node);
+    auto *interface_type =
+        checker->CreateETSObjectType(node->FunctionalInterface()->Id()->Name(), node->FunctionalInterface(),
+                                     checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
+    interface_type->SetSuperType(checker->GlobalETSObjectType());
+
+    auto *invoke_func = node->FunctionalInterface()->Body()->Body()[0]->AsMethodDefinition()->Function();
+    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+
+    for (auto *it : invoke_func->Params()) {
+        auto *const param = it->AsETSParameterExpression();
+        if (param->IsRestParameter()) {
+            auto *rest_ident = param->Ident();
+
+            ASSERT(rest_ident->Variable());
+            signature_info->rest_var = rest_ident->Variable()->AsLocalVariable();
+
+            ASSERT(param->TypeAnnotation());
+            signature_info->rest_var->SetTsType(checker->GetTypeFromTypeAnnotation(param->TypeAnnotation()));
+
+            auto array_type = signature_info->rest_var->TsType()->AsETSArrayType();
+            checker->CreateBuiltinArraySignature(array_type, array_type->Rank());
+        } else {
+            auto *param_ident = param->Ident();
+
+            ASSERT(param_ident->Variable());
+            varbinder::Variable *param_var = param_ident->Variable();
+
+            ASSERT(param->TypeAnnotation());
+            param_var->SetTsType(checker->GetTypeFromTypeAnnotation(param->TypeAnnotation()));
+            signature_info->params.push_back(param_var->AsLocalVariable());
+            ++signature_info->min_arg_count;
+        }
+    }
+
+    invoke_func->ReturnTypeAnnotation()->Check(checker);
+    auto *signature = checker->Allocator()->New<checker::Signature>(signature_info,
+                                                                    node->ReturnType()->GetType(checker), invoke_func);
+    signature->SetOwnerVar(invoke_func->Id()->Variable()->AsLocalVariable());
+    signature->AddSignatureFlag(checker::SignatureFlags::FUNCTIONAL_INTERFACE_SIGNATURE);
+    signature->SetOwner(interface_type);
+
+    auto *func_type = checker->CreateETSFunctionType(signature);
+    invoke_func->SetSignature(signature);
+    invoke_func->Id()->Variable()->SetTsType(func_type);
+    interface_type->AddProperty<checker::PropertyType::INSTANCE_METHOD>(
+        invoke_func->Id()->Variable()->AsLocalVariable());
+    node->FunctionalInterface()->SetTsType(interface_type);
+
+    auto *this_var = invoke_func->Scope()->ParamScope()->Params().front();
+    this_var->SetTsType(interface_type);
+    checker->BuildFunctionalInterfaceName(node);
+
+    node->SetTsType(interface_type);
+    return interface_type;
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ETSImportDeclaration *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSImportDeclaration *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSLaunchExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    expr->expr_->Check(checker);
+    auto *const launch_promise_type =
+        checker->GlobalBuiltinPromiseType()
+            ->Instantiate(checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder())
+            ->AsETSObjectType();
+    launch_promise_type->AddTypeFlag(checker::TypeFlag::GENERIC);
+
+    // Launch expression returns a Promise<T> type, so we need to insert the expression's type
+    // as type parameter for the Promise class.
+
+    auto *expr_type =
+        expr->expr_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) && !expr->expr_->TsType()->IsETSVoidType()
+            ? checker->PrimitiveTypeAsETSBuiltinType(expr->expr_->TsType())
+            : expr->expr_->TsType();
+    checker::Substitution *substitution = checker->NewSubstitution();
+    ASSERT(launch_promise_type->TypeArguments().size() == 1);
+    substitution->emplace(checker->GetOriginalBaseType(launch_promise_type->TypeArguments()[0]), expr_type);
+
+    expr->SetTsType(launch_promise_type->Substitute(checker->Relation(), substitution));
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+
+    auto *element_type = expr->type_reference_->GetType(checker);
+    checker->ValidateArrayIndex(expr->dimension_);
+
+    expr->SetTsType(checker->CreateETSArrayType(element_type));
+    checker->CreateBuiltinArraySignature(expr->TsType()->AsETSArrayType(), 1);
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    checker::Type *callee_type = expr->GetTypeRef()->Check(checker);
+
+    if (!callee_type->IsETSObjectType()) {
+        checker->ThrowTypeError("This expression is not constructible.", expr->Start());
+    }
+
+    auto *callee_obj = callee_type->AsETSObjectType();
+    expr->SetTsType(callee_obj);
+
+    if (expr->ClassDefinition() != nullptr) {
+        if (!callee_obj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT) && callee_obj->GetDeclNode()->IsFinal()) {
+            checker->ThrowTypeError({"Class ", callee_obj->Name(), " cannot be both 'abstract' and 'final'."},
+                                    callee_obj->GetDeclNode()->Start());
+        }
+
+        bool from_interface = callee_obj->HasObjectFlag(checker::ETSObjectFlags::INTERFACE);
+        auto *class_type = checker->BuildAnonymousClassProperties(
+            expr->ClassDefinition(), from_interface ? checker->GlobalETSObjectType() : callee_obj);
+        if (from_interface) {
+            class_type->AddInterface(callee_obj);
+            callee_obj = checker->GlobalETSObjectType();
+        }
+        expr->ClassDefinition()->SetTsType(class_type);
+        checker->CheckClassDefinition(expr->ClassDefinition());
+        checker->CheckInnerClassMembers(class_type);
+        expr->SetTsType(class_type);
+    } else if (callee_obj->HasObjectFlag(checker::ETSObjectFlags::ABSTRACT)) {
+        checker->ThrowTypeError({callee_obj->Name(), " is abstract therefore cannot be instantiated."}, expr->Start());
+    }
+
+    if (callee_type->IsETSDynamicType() && !callee_type->AsETSDynamicType()->HasDecl()) {
+        auto lang = callee_type->AsETSDynamicType()->Language();
+        expr->SetSignature(checker->ResolveDynamicCallExpression(expr->GetTypeRef(), expr->GetArguments(), lang, true));
+    } else {
+        auto *signature = checker->ResolveConstructExpression(callee_obj, expr->GetArguments(), expr->Start());
+
+        checker->CheckObjectLiteralArguments(signature, expr->GetArguments());
+        checker->AddUndefinedParamsForDefaultParams(signature, expr->arguments_, checker);
+
+        checker->ValidateSignatureAccessibility(callee_obj, signature, expr->Start());
+
+        ASSERT(signature->Function() != nullptr);
+
+        if (signature->Function()->IsThrowing() || signature->Function()->IsRethrowing()) {
+            checker->CheckThrowingStatements(expr);
+        }
+
+        if (callee_type->IsETSDynamicType()) {
+            ASSERT(signature->Function()->IsDynamic());
+            auto lang = callee_type->AsETSDynamicType()->Language();
+            expr->SetSignature(
+                checker->ResolveDynamicCallExpression(expr->GetTypeRef(), signature->Params(), lang, true));
+        } else {
+            ASSERT(!signature->Function()->IsDynamic());
+            expr->SetSignature(signature);
+        }
+    }
+
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSNewMultiDimArrayInstanceExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    auto *element_type = expr->type_reference_->GetType(checker);
+
+    for (auto *dim : expr->dimensions_) {
+        checker->ValidateArrayIndex(dim);
+        element_type = checker->CreateETSArrayType(element_type);
+    }
+
+    expr->SetTsType(element_type);
+    expr->signature_ = checker->CreateBuiltinArraySignature(element_type->AsETSArrayType(), expr->dimensions_.size());
+    return expr->TsType();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ETSPackageDeclaration *st) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSPackageDeclaration *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSParameterExpression *expr) const

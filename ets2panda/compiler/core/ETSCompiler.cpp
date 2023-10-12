@@ -134,21 +134,26 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSPropertySignature *node) 
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSSignatureDeclaration *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSSignatureDeclaration *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 // from ets folder
 void ETSCompiler::Compile(const ir::ETSClassLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    if (expr->expr_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+        expr->expr_->Compile(etsg);
+        etsg->GetType(expr, false);
+    } else {
+        ASSERT(expr->expr_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE));
+        etsg->SetAccumulatorType(expr->expr_->TsType());
+        etsg->GetType(expr, true);
+    }
 }
 
-void ETSCompiler::Compile(const ir::ETSFunctionType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ETSFunctionType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -158,39 +163,128 @@ void ETSCompiler::Compile(const ir::ETSTuple *node) const
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ETSImportDeclaration *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ETSImportDeclaration *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ETSLaunchExpression *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+#ifdef PANDA_WITH_ETS
+    ETSGen *etsg = GetETSGen();
+    compiler::RegScope rs(etsg);
+    compiler::VReg callee_reg = etsg->AllocReg();
+    checker::Signature *signature = expr->expr_->Signature();
+    bool is_static = signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
+    bool is_reference = signature->HasSignatureFlag(checker::SignatureFlags::TYPE);
+
+    if (!is_reference && expr->expr_->Callee()->IsIdentifier()) {
+        if (!is_static) {
+            etsg->LoadThis(expr->expr_);
+            etsg->StoreAccumulator(expr, callee_reg);
+        }
+    } else if (!is_reference && expr->expr_->Callee()->IsMemberExpression()) {
+        if (!is_static) {
+            expr->expr_->Callee()->AsMemberExpression()->Object()->Compile(etsg);
+            etsg->StoreAccumulator(expr, callee_reg);
+        }
+    } else {
+        expr->expr_->Callee()->Compile(etsg);
+        etsg->StoreAccumulator(expr, callee_reg);
+    }
+
+    if (is_static) {
+        etsg->LaunchStatic(expr, signature, expr->expr_->Arguments());
+    } else if (signature->HasSignatureFlag(checker::SignatureFlags::PRIVATE)) {
+        etsg->LaunchThisStatic(expr, callee_reg, signature, expr->expr_->Arguments());
+    } else {
+        etsg->LaunchThisVirtual(expr, callee_reg, signature, expr->expr_->Arguments());
+    }
+
+    etsg->SetAccumulatorType(expr->TsType());
+#endif  // PANDA_WITH_ETS
 }
 
 void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    compiler::RegScope rs(etsg);
+    compiler::TargetTypeContext ttctx(etsg, etsg->Checker()->GlobalIntType());
+
+    expr->dimension_->Compile(etsg);
+
+    compiler::VReg arr = etsg->AllocReg();
+    compiler::VReg dim = etsg->AllocReg();
+    etsg->ApplyConversionAndStoreAccumulator(expr, dim, expr->dimension_->TsType());
+    etsg->NewArray(expr, arr, dim, expr->TsType());
+    etsg->SetVRegType(arr, expr->TsType());
+    etsg->LoadAccumulator(expr, arr);
+}
+
+static void CreateDynamicObject(const ir::AstNode *node, compiler::ETSGen *etsg, compiler::VReg &obj_reg,
+                                ir::Expression *name, checker::Signature *signature,
+                                const ArenaVector<ir::Expression *> &arguments)
+{
+    auto qname_reg = etsg->AllocReg();
+
+    std::vector<util::StringView> parts;
+
+    while (name->IsTSQualifiedName()) {
+        auto *qname = name->AsTSQualifiedName();
+        name = qname->Left();
+        parts.push_back(qname->Right()->AsIdentifier()->Name());
+    }
+
+    auto *var = name->AsIdentifier()->Variable();
+    auto *data = etsg->VarBinder()->DynamicImportDataForVar(var);
+    if (data != nullptr) {
+        auto *import = data->import;
+        auto *specifier = data->specifier;
+        ASSERT(import->Language().IsDynamic());
+        etsg->LoadAccumulatorDynamicModule(node, import);
+        if (specifier->IsImportSpecifier()) {
+            parts.push_back(specifier->AsImportSpecifier()->Imported()->Name());
+        }
+    } else {
+        name->Compile(etsg);
+    }
+
+    etsg->StoreAccumulator(node, obj_reg);
+
+    std::stringstream ss;
+    std::for_each(parts.rbegin(), parts.rend(), [&ss](util::StringView sv) { ss << "." << sv; });
+
+    etsg->LoadAccumulatorString(node, util::UString(ss.str(), etsg->Allocator()).View());
+    etsg->StoreAccumulator(node, qname_reg);
+
+    etsg->CallDynamic(node, obj_reg, qname_reg, signature, arguments);
 }
 
 void ETSCompiler::Compile(const ir::ETSNewClassInstanceExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    if (expr->TsType()->IsETSDynamicType()) {
+        auto obj_reg = etsg->AllocReg();
+        auto *name = expr->GetTypeRef()->AsETSTypeReference()->Part()->Name();
+        CreateDynamicObject(expr, etsg, obj_reg, name, expr->signature_, expr->GetArguments());
+    } else {
+        etsg->InitObject(expr, expr->signature_, expr->GetArguments());
+    }
+
+    if (expr->GetBoxingUnboxingFlags() == ir::BoxingUnboxingFlags::NONE) {
+        etsg->SetAccumulatorType(expr->TsType());
+    }
 }
 
 void ETSCompiler::Compile(const ir::ETSNewMultiDimArrayInstanceExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    etsg->InitObject(expr, expr->signature_, expr->dimensions_);
+    etsg->SetAccumulatorType(expr->TsType());
 }
 
-void ETSCompiler::Compile(const ir::ETSPackageDeclaration *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ETSPackageDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 

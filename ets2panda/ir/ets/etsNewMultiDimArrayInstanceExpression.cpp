@@ -16,11 +16,9 @@
 #include "etsNewMultiDimArrayInstanceExpression.h"
 
 #include "varbinder/ETSBinder.h"
-#include "ir/astDump.h"
-#include "ir/typeNode.h"
+#include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
-#include "checker/ETSchecker.h"
-#include "checker/types/signature.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void ETSNewMultiDimArrayInstanceExpression::TransformChildren(const NodeTransformer &cb)
@@ -46,30 +44,23 @@ void ETSNewMultiDimArrayInstanceExpression::Dump(ir::AstDumper *dumper) const
                  {"dimensions", dimensions_}});
 }
 
-void ETSNewMultiDimArrayInstanceExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-void ETSNewMultiDimArrayInstanceExpression::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ETSNewMultiDimArrayInstanceExpression::Compile(compiler::PandaGen *pg) const
 {
-    etsg->InitObject(this, signature_, dimensions_);
-    etsg->SetAccumulatorType(TsType());
+    pg->GetAstCompiler()->Compile(this);
+}
+void ETSNewMultiDimArrayInstanceExpression::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ETSNewMultiDimArrayInstanceExpression::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *ETSNewMultiDimArrayInstanceExpression::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSNewMultiDimArrayInstanceExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ETSNewMultiDimArrayInstanceExpression::Check(checker::ETSChecker *checker)
 {
-    auto *element_type = type_reference_->GetType(checker);
-
-    for (auto *dim : dimensions_) {
-        checker->ValidateArrayIndex(dim);
-        element_type = checker->CreateETSArrayType(element_type);
-    }
-
-    SetTsType(element_type);
-    signature_ = checker->CreateBuiltinArraySignature(element_type->AsETSArrayType(), dimensions_.size());
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 ETSNewMultiDimArrayInstanceExpression::ETSNewMultiDimArrayInstanceExpression(

@@ -463,21 +463,18 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSPropertySignature *node) c
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSSignatureDeclaration *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSSignatureDeclaration *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 // from ets folder
-void JSCompiler::Compile(const ir::ETSClassLiteral *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSClassLiteral *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSFunctionType *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSFunctionType *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -487,39 +484,33 @@ void JSCompiler::Compile(const ir::ETSTuple *expr) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSImportDeclaration *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSImportDeclaration *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSLaunchExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSNewArrayInstanceExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSNewClassInstanceExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSNewClassInstanceExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSNewMultiDimArrayInstanceExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSNewMultiDimArrayInstanceExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSPackageDeclaration *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSPackageDeclaration *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 

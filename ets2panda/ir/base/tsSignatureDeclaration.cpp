@@ -16,12 +16,10 @@
 #include "tsSignatureDeclaration.h"
 
 #include "varbinder/scope.h"
-#include "ir/typeNode.h"
-#include "ir/astDump.h"
-#include "ir/ts/tsTypeParameter.h"
-#include "ir/ts/tsTypeParameterDeclaration.h"
-
+#include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void TSSignatureDeclaration::TransformChildren(const NodeTransformer &cb)
@@ -64,50 +62,23 @@ void TSSignatureDeclaration::Dump(ir::AstDumper *dumper) const
                  {"returnType", AstDumper::Optional(return_type_annotation_)}});
 }
 
-void TSSignatureDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSSignatureDeclaration::Check([[maybe_unused]] checker::TSChecker *checker)
+void TSSignatureDeclaration::Compile(compiler::PandaGen *pg) const
 {
-    if (TsType() != nullptr) {
-        return TsType();
-    }
-
-    checker::ScopeContext scope_ctx(checker, scope_);
-
-    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(params_, signature_info);
-
-    bool is_call_signature = (Kind() == ir::TSSignatureDeclaration::TSSignatureDeclarationKind::CALL_SIGNATURE);
-
-    if (return_type_annotation_ == nullptr) {
-        if (is_call_signature) {
-            checker->ThrowTypeError(
-                "Call signature, which lacks return-type annotation, implicitly has an 'any' return type.", Start());
-        }
-
-        checker->ThrowTypeError(
-            "Construct signature, which lacks return-type annotation, implicitly has an 'any' return type.", Start());
-    }
-
-    return_type_annotation_->Check(checker);
-    checker::Type *return_type = return_type_annotation_->GetType(checker);
-
-    auto *signature = checker->Allocator()->New<checker::Signature>(signature_info, return_type);
-
-    checker::Type *placeholder_obj = nullptr;
-
-    if (is_call_signature) {
-        placeholder_obj = checker->CreateObjectTypeWithCallSignature(signature);
-    } else {
-        placeholder_obj = checker->CreateObjectTypeWithConstructSignature(signature);
-    }
-
-    SetTsType(placeholder_obj);
-    return placeholder_obj;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *TSSignatureDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
+void TSSignatureDeclaration::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *TSSignatureDeclaration::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *TSSignatureDeclaration::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

@@ -15,10 +15,12 @@
 
 #include "etsNewArrayInstanceExpression.h"
 
+#include "checker/ETSchecker.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/typeNode.h"
-#include "compiler/core/ETSGen.h"
-#include "checker/ETSchecker.h"
 
 namespace panda::es2panda::ir {
 void ETSNewArrayInstanceExpression::TransformChildren(const NodeTransformer &cb)
@@ -39,35 +41,23 @@ void ETSNewArrayInstanceExpression::Dump(ir::AstDumper *dumper) const
         {{"type", "ETSNewArrayInstanceExpression"}, {"typeReference", type_reference_}, {"dimension", dimension_}});
 }
 
-void ETSNewArrayInstanceExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-void ETSNewArrayInstanceExpression::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ETSNewArrayInstanceExpression::Compile(compiler::PandaGen *pg) const
 {
-    compiler::RegScope rs(etsg);
-    compiler::TargetTypeContext ttctx(etsg, etsg->Checker()->GlobalIntType());
-
-    dimension_->Compile(etsg);
-
-    compiler::VReg arr = etsg->AllocReg();
-    compiler::VReg dim = etsg->AllocReg();
-    etsg->ApplyConversionAndStoreAccumulator(this, dim, dimension_->TsType());
-    etsg->NewArray(this, arr, dim, TsType());
-    etsg->SetVRegType(arr, TsType());
-    etsg->LoadAccumulator(this, arr);
+    pg->GetAstCompiler()->Compile(this);
+}
+void ETSNewArrayInstanceExpression::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ETSNewArrayInstanceExpression::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *ETSNewArrayInstanceExpression::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ETSNewArrayInstanceExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ETSNewArrayInstanceExpression::Check(checker::ETSChecker *checker)
 {
-    auto *element_type = type_reference_->GetType(checker);
-    checker->ValidateArrayIndex(dimension_);
-
-    SetTsType(checker->CreateETSArrayType(element_type));
-    checker->CreateBuiltinArraySignature(TsType()->AsETSArrayType(), 1);
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

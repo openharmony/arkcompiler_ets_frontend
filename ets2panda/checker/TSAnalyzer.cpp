@@ -184,55 +184,84 @@ checker::Type *TSAnalyzer::Check(ir::TSPropertySignature *node) const
 
 checker::Type *TSAnalyzer::Check(ir::TSSignatureDeclaration *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    if (node->TsType() != nullptr) {
+        return node->TsType();
+    }
+
+    checker::ScopeContext scope_ctx(checker, node->Scope());
+
+    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(node->Params(), signature_info);
+
+    bool is_call_signature = (node->Kind() == ir::TSSignatureDeclaration::TSSignatureDeclarationKind::CALL_SIGNATURE);
+
+    if (node->ReturnTypeAnnotation() == nullptr) {
+        if (is_call_signature) {
+            checker->ThrowTypeError(
+                "Call signature, which lacks return-type annotation, implicitly has an 'any' return type.",
+                node->Start());
+        }
+
+        checker->ThrowTypeError(
+            "Construct signature, which lacks return-type annotation, implicitly has an 'any' return type.",
+            node->Start());
+    }
+
+    node->return_type_annotation_->Check(checker);
+    checker::Type *return_type = node->return_type_annotation_->GetType(checker);
+
+    auto *signature = checker->Allocator()->New<checker::Signature>(signature_info, return_type);
+
+    checker::Type *placeholder_obj = nullptr;
+
+    if (is_call_signature) {
+        placeholder_obj = checker->CreateObjectTypeWithCallSignature(signature);
+    } else {
+        placeholder_obj = checker->CreateObjectTypeWithConstructSignature(signature);
+    }
+
+    node->SetTsType(placeholder_obj);
+    return placeholder_obj;
 }
 // from ets folder
-checker::Type *TSAnalyzer::Check(ir::ETSClassLiteral *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSClassLiteral *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ETSFunctionType *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSFunctionType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ETSImportDeclaration *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSImportDeclaration *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ETSLaunchExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSLaunchExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ETSNewArrayInstanceExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSNewArrayInstanceExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSNewClassInstanceExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ETSNewMultiDimArrayInstanceExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSNewMultiDimArrayInstanceExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ETSPackageDeclaration *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSPackageDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
