@@ -571,8 +571,8 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationSignature(const ir::ClassDefini
     }
     parts.emplace_back(pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(ss.str()));
 
-    GenAnnotationRecord(Signatures::DALVIK_ANNOTATION_SIGNATURE);
-    pandasm::AnnotationData signature(Signatures::DALVIK_ANNOTATION_SIGNATURE);
+    GenAnnotationRecord(Signatures::ETS_ANNOTATION_SIGNATURE);
+    pandasm::AnnotationData signature(Signatures::ETS_ANNOTATION_SIGNATURE);
     pandasm::AnnotationElement value(
         Signatures::ANNOTATION_KEY_VALUE,
         std::make_unique<pandasm::ArrayValue>(pandasm::Value::Type::STRING, std::move(parts)));
@@ -582,8 +582,8 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationSignature(const ir::ClassDefini
 
 pandasm::AnnotationData ETSEmitter::GenAnnotationEnclosingMethod(const ir::MethodDefinition *method_def)
 {
-    GenAnnotationRecord(Signatures::DALVIK_ANNOTATION_ENCLOSING_METHOD);
-    pandasm::AnnotationData enclosing_method(Signatures::DALVIK_ANNOTATION_ENCLOSING_METHOD);
+    GenAnnotationRecord(Signatures::ETS_ANNOTATION_ENCLOSING_METHOD);
+    pandasm::AnnotationData enclosing_method(Signatures::ETS_ANNOTATION_ENCLOSING_METHOD);
     pandasm::AnnotationElement value(
         Signatures::ANNOTATION_KEY_VALUE,
         std::make_unique<pandasm::ScalarValue>(pandasm::ScalarValue::Create<pandasm::Value::Type::METHOD>(
@@ -594,8 +594,8 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationEnclosingMethod(const ir::Metho
 
 pandasm::AnnotationData ETSEmitter::GenAnnotationEnclosingClass(std::string_view class_name)
 {
-    GenAnnotationRecord(Signatures::DALVIK_ANNOTATION_ENCLOSING_CLASS);
-    pandasm::AnnotationData enclosing_class(Signatures::DALVIK_ANNOTATION_ENCLOSING_CLASS);
+    GenAnnotationRecord(Signatures::ETS_ANNOTATION_ENCLOSING_CLASS);
+    pandasm::AnnotationData enclosing_class(Signatures::ETS_ANNOTATION_ENCLOSING_CLASS);
     pandasm::AnnotationElement value(
         Signatures::ANNOTATION_KEY_VALUE,
         std::make_unique<pandasm::ScalarValue>(
@@ -607,8 +607,8 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationEnclosingClass(std::string_view
 pandasm::AnnotationData ETSEmitter::GenAnnotationInnerClass(const ir::ClassDefinition *class_def,
                                                             const ir::AstNode *parent)
 {
-    GenAnnotationRecord(Signatures::DALVIK_ANNOTATION_INNER_CLASS);
-    pandasm::AnnotationData inner_class(Signatures::DALVIK_ANNOTATION_INNER_CLASS);
+    GenAnnotationRecord(Signatures::ETS_ANNOTATION_INNER_CLASS);
+    pandasm::AnnotationData inner_class(Signatures::ETS_ANNOTATION_INNER_CLASS);
     const bool is_anonymous = (class_def->Modifiers() & ir::ClassDefinitionModifiers::ANONYMOUS) != 0;
     pandasm::AnnotationElement name(Signatures::ANNOTATION_KEY_NAME,
                                     std::make_unique<pandasm::ScalarValue>(

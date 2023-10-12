@@ -25,8 +25,8 @@
 
 // TODO(ivagin): If ARKTSCONFIG_USE_FILESYSTEM is not defined part of ArkTsConfig functionality is disabled.
 //       Only build configuration which prevents us from usage of std::filesystem is "MOBILE" build
-//       because of lack of std::filesystem in our current version of mobile NDK.
-//       NDK version should be updated and ARKTSCONFIG_USE_FILESYSTEM removed
+//       because of lack of std::filesystem in our current version of mobile nativ development kit.
+//       nativ development kit version should be updated and ARKTSCONFIG_USE_FILESYSTEM removed
 #if not defined PANDA_TARGET_MOBILE
 #define ARKTSCONFIG_USE_FILESYSTEM
 #endif

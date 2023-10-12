@@ -68,18 +68,18 @@ defines:
   - name: runtime_type
     ref: RUNTIME_TYPE_ANNOTATION
     comment: Annotation retention type
-  - name: dalvik/annotation/InnerClass
-    ref: DALVIK_ANNOTATION_INNER_CLASS
-    comment: Dalvik record
-  - name: dalvik/annotation/EnclosingClass
-    ref: DALVIK_ANNOTATION_ENCLOSING_CLASS
-    comment: Dalvik record
-  - name: dalvik/annotation/EnclosingMethod
-    ref: DALVIK_ANNOTATION_ENCLOSING_METHOD
-    comment: Dalvik record
-  - name: dalvik/annotation/Signature
-    ref: DALVIK_ANNOTATION_SIGNATURE
-    comment: Dalvik record
+  - name: ets/annotation/InnerClass
+    ref: ETS_ANNOTATION_INNER_CLASS
+    comment: Ets record
+  - name: ets/annotation/EnclosingClass
+    ref: ETS_ANNOTATION_ENCLOSING_CLASS
+    comment: Ets record
+  - name: ets/annotation/EnclosingMethod
+    ref: ETS_ANNOTATION_ENCLOSING_METHOD
+    comment: Ets record
+  - name: ets/annotation/Signature
+    ref: ETS_ANNOTATION_SIGNATURE
+    comment: Ets record
   - name: ets/coroutine/Async
     ref: ETS_COROUTINE_ASYNC
   - name: 'L'
