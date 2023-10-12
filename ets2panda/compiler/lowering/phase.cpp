@@ -15,6 +15,7 @@
 
 #include "phase.h"
 #include "checker/checker.h"
+#include "compiler/core/ASTVerifier.h"
 #include "compiler/core/compilerContext.h"
 #include "lexer/token/sourceLocation.h"
 #include "compiler/lowering/checkerPhase.h"
@@ -57,6 +58,10 @@ bool Phase::Apply(CompilerContext *ctx, parser::Program *program)
     }
 
 #ifndef NDEBUG
+    ASTVerifier ast_before;
+    if (!ast_before.IsCorrectProgram(program)) {
+        // TODO(tatiana): Add some error processing
+    }
     if (!Precondition(ctx, program)) {
         ctx->Checker()->ThrowTypeError({"Precondition check failed for ", Name()}, lexer::SourcePosition {});
     }
@@ -72,6 +77,10 @@ bool Phase::Apply(CompilerContext *ctx, parser::Program *program)
     }
 
 #ifndef NDEBUG
+    ASTVerifier ast_after;
+    if (!ast_after.IsCorrectProgram(program)) {
+        // TODO(tatiana): Add some error processing
+    }
     if (!Postcondition(ctx, program)) {
         ctx->Checker()->ThrowTypeError({"Postcondition check failed for ", Name()}, lexer::SourcePosition {});
     }

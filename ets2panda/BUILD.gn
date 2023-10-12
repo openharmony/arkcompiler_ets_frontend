@@ -138,6 +138,7 @@ libes2panda_sources = [
   "compiler/core/JSCompiler.cpp",
   "compiler/core/JSemitter.cpp",
   "compiler/core/codeGen.cpp",
+  "compiler/core/ASTVerifier.cpp",
   "compiler/core/compileJob.cpp",
   "compiler/core/compileQueue.cpp",
   "compiler/core/compilerContext.cpp",

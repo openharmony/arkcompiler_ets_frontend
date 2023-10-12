@@ -227,6 +227,11 @@ public:
         return false;
     }
 
+    virtual bool IsTyped() const
+    {
+        return false;
+    }
+
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_AS_CASTS(nodeType, className)             \
     className *As##className()                            \
@@ -585,6 +590,11 @@ public:
     void SetTsType(checker::Type *ts_type) noexcept
     {
         ts_type_ = ts_type;
+    }
+
+    bool IsTyped() const override
+    {
+        return true;
     }
 
 protected:
