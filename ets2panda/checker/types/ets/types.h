@@ -30,6 +30,7 @@
 #include "etsUnionType.h"
 #include "etsVoidType.h"
 #include "etsStringType.h"
+#include "etsBigIntType.h"
 #include "etsObjectType.h"
 #include "etsDynamicType.h"
 #include "etsArrayType.h"

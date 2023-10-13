@@ -396,6 +396,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/etsFunctionType.cpp
   checker/types/ets/etsObjectType.cpp
   checker/types/ets/etsStringType.cpp
+  checker/types/ets/etsBigIntType.cpp
   checker/types/ets/etsTupleType.cpp
   checker/types/ets/etsTypeParameter.cpp
   checker/types/ets/etsUnionType.cpp

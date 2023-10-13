@@ -226,6 +226,11 @@ Type *ETSChecker::GlobalETSStringLiteralType() const
     return GetGlobalTypesHolder()->GlobalETSStringLiteralType();
 }
 
+Type *ETSChecker::GlobalETSBigIntType() const
+{
+    return GetGlobalTypesHolder()->GlobalETSBigIntBuiltinType();
+}
+
 Type *ETSChecker::GlobalWildcardType() const
 {
     return GetGlobalTypesHolder()->GlobalWildcardType();
@@ -244,6 +249,11 @@ ETSObjectType *ETSChecker::GlobalETSNullishObjectType() const
 ETSObjectType *ETSChecker::GlobalBuiltinETSStringType() const
 {
     return AsETSObjectType(&GlobalTypesHolder::GlobalETSStringBuiltinType);
+}
+
+ETSObjectType *ETSChecker::GlobalBuiltinETSBigIntType() const
+{
+    return AsETSObjectType(&GlobalTypesHolder::GlobalETSBigIntBuiltinType);
 }
 
 ETSObjectType *ETSChecker::GlobalBuiltinTypeType() const

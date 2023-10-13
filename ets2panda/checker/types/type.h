@@ -43,6 +43,7 @@ class ETSTypeParameter;
 TYPE_MAPPING(DECLARE_TYPENAMES)
 #undef DECLARE_TYPENAMES
 class ETSStringType;
+class ETSBigIntType;
 
 using Substitution = ArenaMap<ETSTypeParameter *, Type *>;
 
@@ -84,6 +85,7 @@ public:
 #undef TYPE_AS_CASTS
 
     bool IsETSStringType() const;
+    bool IsETSBigIntType() const;
     bool IsETSNullType() const;
     bool IsETSUndefinedType() const;
     bool IsETSNullLike() const;
@@ -103,6 +105,12 @@ public:
     {
         ASSERT(IsETSObjectType());
         return reinterpret_cast<const ETSStringType *>(this);
+    }
+
+    const ETSBigIntType *AsETSBigIntType() const
+    {
+        ASSERT(IsETSObjectType());
+        return reinterpret_cast<const ETSBigIntType *>(this);
     }
 
     bool IsETSDynamicType() const

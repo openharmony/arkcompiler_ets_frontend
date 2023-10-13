@@ -16,6 +16,7 @@
 #include "unaryExpression.h"
 
 #include "varbinder/variable.h"
+#include "checker/types/typeFlag.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"

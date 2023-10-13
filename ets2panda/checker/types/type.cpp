@@ -61,6 +61,11 @@ bool Type::IsETSStringType() const
     return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::STRING);
 }
 
+bool Type::IsETSBigIntType() const
+{
+    return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_BIGINT);
+}
+
 bool Type::IsETSAsyncFuncReturnType() const
 {
     return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::ASYNC_FUNC_RETURN_TYPE);

@@ -1535,6 +1535,38 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
     auto unboxedOperandType = isCondExpr ? checker->ETSBuiltinTypeAsConditionalType(argType)
                                          : checker->ETSBuiltinTypeAsPrimitiveType(argType);
 
+    if (argType != nullptr && argType->IsETSBigIntType() &&
+        argType->HasTypeFlag(checker::TypeFlag::BIGINT_LITERAL)) {
+        switch (expr->OperatorType()) {
+            case lexer::TokenType::PUNCTUATOR_MINUS: {
+                checker::Type *type = checker->CreateETSBigIntLiteralType(argType->AsETSBigIntType()->GetValue());
+
+                // We do not need this const anymore as we are negating the bigint object in runtime
+                type->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
+                expr->argument_->SetTsType(type);
+                expr->SetTsType(type);
+                return expr->TsType();
+            }
+            default:
+                // Handled below
+                // NOTE(kkonsw): handle other unary operators for bigint literals
+                break;
+        }
+    }
+
+    if (argType != nullptr && argType->IsETSBigIntType()) {
+        switch (expr->OperatorType()) {
+            case lexer::TokenType::PUNCTUATOR_MINUS:
+            case lexer::TokenType::PUNCTUATOR_PLUS:
+            case lexer::TokenType::PUNCTUATOR_TILDE: {
+                expr->SetTsType(argType);
+                return expr->TsType();
+            }
+            default:
+                break;
+        }
+    }
+
     switch (expr->OperatorType()) {
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::PUNCTUATOR_PLUS: {
@@ -1600,7 +1632,7 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
         }
     }
 
-    if (argType->IsETSObjectType() && (unboxedOperandType != nullptr) &&
+    if ((argType != nullptr) && argType->IsETSObjectType() && (unboxedOperandType != nullptr) &&
         unboxedOperandType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
         expr->Argument()->AddBoxingUnboxingFlags(checker->GetUnboxingFlag(unboxedOperandType));
     }
@@ -1630,6 +1662,11 @@ checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
         }
     }
 
+    if (operandType->IsETSBigIntType()) {
+        expr->SetTsType(operandType);
+        return expr->TsType();
+    }
+
     auto unboxedType = checker->ETSBuiltinTypeAsPrimitiveType(operandType);
     if (unboxedType == nullptr || !unboxedType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
         checker->ThrowTypeError("Bad operand type, the type of the operand must be numeric type.",
@@ -1652,7 +1689,9 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::YieldExpression *expr) co
 // compile methods for LITERAL EXPRESSIONS in alphabetical order
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::BigIntLiteral *expr) const
 {
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    expr->SetTsType(checker->CreateETSBigIntLiteralType(expr->Str()));
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::BooleanLiteral *expr) const

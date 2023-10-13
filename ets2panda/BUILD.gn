@@ -65,6 +65,7 @@ libes2panda_sources = [
   "checker/types/ets/doubleType.cpp",
   "checker/types/ets/etsArrayType.cpp",
   "checker/types/ets/etsAsyncFuncReturnType.cpp",
+  "checker/types/ets/etsBigIntType.cpp",
   "checker/types/ets/etsBooleanType.cpp",
   "checker/types/ets/etsDynamicType.cpp",
   "checker/types/ets/etsEnumType.cpp",

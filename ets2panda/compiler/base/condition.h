@@ -42,6 +42,7 @@ private:
     static bool CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
     static void CompileLogicalAndExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
     static void CompileLogicalOrExpr(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
+    static bool CompileBinaryExprForBigInt(ETSGen *etsg, const ir::BinaryExpression *binExpr, Label *falseLabel);
 };
 }  // namespace panda::es2panda::compiler
 

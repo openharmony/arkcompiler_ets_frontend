@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "checker/ETSchecker.h"
 #include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {

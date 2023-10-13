@@ -257,6 +257,9 @@ builtins:
   - name: Error
     package: PKG_ESCOMPAT
     ref: BUILTIN_ERROR
+  - name: BigInt
+    package: PKG_ESCOMPAT
+    ref: BUILTIN_BIGINT
   - name: AssertionError
     package: PKG_ESCOMPAT
     ref: BUILTIN_ASSERTION_ERROR
@@ -336,6 +339,132 @@ signatures:
     params: [BUILTIN_STRING]
     return_type: PRIMITIVE_VOID
     ref: BUILTIN_ASSERTION_ERROR_CTOR
+
+  - callee: BUILTIN_BIGINT
+    method_name: $CTOR
+    params: [BUILTIN_STRING]
+    return_type: PRIMITIVE_VOID
+    ref: BUILTIN_BIGINT_CTOR
+
+  - callee: BUILTIN_BIGINT
+    method_name: $CTOR
+    params: []
+    return_type: PRIMITIVE_VOID
+    ref: BUILTIN_BIGINT_CTOR_EMPTY
+
+  - callee: BUILTIN_BIGINT
+    method_name: equals
+    params: [BUILTIN_BIGINT]
+    return_type: PRIMITIVE_BOOLEAN
+    ref: BUILTIN_BIGINT_EQUALS
+
+  - callee: BUILTIN_BIGINT
+    method_name: negate
+    params: []
+    return_type: BUILTIN_BIGINT
+    ref: BUILTIN_BIGINT_NEGATE
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorAdd
+    params: [BUILTIN_BIGINT]
+    return_type: BUILTIN_BIGINT
+    ref: BUILTIN_BIGINT_OPERATOR_ADD
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorSubtract
+    params: [BUILTIN_BIGINT]
+    return_type: BUILTIN_BIGINT
+    ref: BUILTIN_BIGINT_OPERATOR_SUBTRACT
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorMultiply
+    params: [BUILTIN_BIGINT]
+    return_type: BUILTIN_BIGINT
+    ref: BUILTIN_BIGINT_OPERATOR_MULTIPLY
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorDivide
+    params: [BUILTIN_BIGINT]
+    return_type: BUILTIN_BIGINT
+    ref: BUILTIN_BIGINT_OPERATOR_DIVIDE
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorModule
+    params: [BUILTIN_BIGINT]
+    return_type: BUILTIN_BIGINT
+    ref: BUILTIN_BIGINT_OPERATOR_MODULE
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorBitwiseOr
+    params: [BUILTIN_BIGINT]
+    return_type: BUILTIN_BIGINT
+    ref: BUILTIN_BIGINT_OPERATOR_BITWISE_OR
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorBitwiseAnd
+    params: [BUILTIN_BIGINT]
+    return_type: BUILTIN_BIGINT
+    ref: BUILTIN_BIGINT_OPERATOR_BITWISE_AND
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorBitwiseXor
+    params: [BUILTIN_BIGINT]
+    return_type: BUILTIN_BIGINT
+    ref: BUILTIN_BIGINT_OPERATOR_BITWISE_XOR
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorGreaterThan
+    params: [BUILTIN_BIGINT]
+    return_type: PRIMITIVE_BOOLEAN
+    ref: BUILTIN_BIGINT_OPERATOR_GREATER_THAN
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorLessThan
+    params: [BUILTIN_BIGINT]
+    return_type: PRIMITIVE_BOOLEAN
+    ref: BUILTIN_BIGINT_OPERATOR_LESS_THAN
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorGreaterThanEqual
+    params: [BUILTIN_BIGINT]
+    return_type: PRIMITIVE_BOOLEAN
+    ref: BUILTIN_BIGINT_OPERATOR_GREATER_THAN_EQUAL
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorLessThanEqual
+    params: [BUILTIN_BIGINT]
+    return_type: PRIMITIVE_BOOLEAN
+    ref: BUILTIN_BIGINT_OPERATOR_LESS_THAN_EQUAL
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorLeftShift
+    params: [BUILTIN_BIGINT]
+    return_type: BUILTIN_BIGINT
+    ref: BUILTIN_BIGINT_OPERATOR_LEFT_SHIFT
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorRightShift
+    params: [BUILTIN_BIGINT]
+    return_type: BUILTIN_BIGINT
+    ref: BUILTIN_BIGINT_OPERATOR_RIGHT_SHIFT
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorIncrement
+    params: []
+    return_type: BUILTIN_BIGINT
+    ref: BUILTIN_BIGINT_OPERATOR_INCREMENT
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorDecrement
+    params: []
+    return_type: BUILTIN_BIGINT
+    ref: BUILTIN_BIGINT_OPERATOR_DECREMENT
+
+  - callee: BUILTIN_BIGINT
+    method_name: operatorBitwiseNot
+    params: []
+    return_type: BUILTIN_BIGINT
+    ref: BUILTIN_BIGINT_OPERATOR_BITWISE_NOT
 
   - callee: BUILTIN_THROWABLE
     method_name: $CTOR

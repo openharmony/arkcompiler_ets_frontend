@@ -136,6 +136,44 @@ Type *ETSChecker::HandleRelationOperationOnTypes(Type *left, Type *right, lexer:
     return PerformRelationOperationOnTypes<IntType>(left, right, operationType);
 }
 
+bool ETSChecker::CheckBinaryOperatorForBigInt(Type *left, Type *right, ir::Expression *expr, lexer::TokenType op)
+{
+    if ((left == nullptr) || (right == nullptr)) {
+        return false;
+    }
+
+    if (!left->IsETSBigIntType()) {
+        return false;
+    }
+
+    if (!right->IsETSBigIntType()) {
+        return false;
+    }
+
+    if (expr->IsBinaryExpression()) {
+        ir::BinaryExpression *be = expr->AsBinaryExpression();
+        if (be->OperatorType() == lexer::TokenType::PUNCTUATOR_STRICT_EQUAL) {
+            // Handle strict comparison as normal comparison for bigint objects
+            be->SetOperator(lexer::TokenType::PUNCTUATOR_EQUAL);
+        }
+    }
+
+    switch (op) {
+        case lexer::TokenType::PUNCTUATOR_EQUAL:
+        case lexer::TokenType::KEYW_INSTANCEOF:
+            // This is handled in the main CheckBinaryOperator function
+            return false;
+        default:
+            break;
+    }
+
+    // Remove const flag - currently there are no compile time operations for bigint
+    left->RemoveTypeFlag(TypeFlag::CONSTANT);
+    right->RemoveTypeFlag(TypeFlag::CONSTANT);
+
+    return true;
+}
+
 checker::Type *ETSChecker::CheckBinaryOperatorMulDivMod(ir::Expression *left, ir::Expression *right,
                                                         lexer::TokenType operationType, lexer::SourcePosition pos,
                                                         bool isEqualOp, checker::Type *const leftType,
@@ -174,6 +212,11 @@ checker::Type *ETSChecker::CheckBinaryOperatorPlus(ir::Expression *left, ir::Exp
     }
 
     if (leftType->IsETSStringType() || rightType->IsETSStringType()) {
+        if (operationType == lexer::TokenType::PUNCTUATOR_MINUS ||
+            operationType == lexer::TokenType::PUNCTUATOR_MINUS_EQUAL) {
+            ThrowTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
+        }
+
         return HandleStringConcatenation(leftType, rightType);
     }
 
@@ -487,83 +530,87 @@ Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *right, le
     return FindLeastUpperBound(nonNullishLeftType, rightType);
 }
 
-// NOLINTNEXTLINE(readability-function-size)
-std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left, ir::Expression *right,
-                                                           ir::Expression *expr, lexer::TokenType operationType,
-                                                           lexer::SourcePosition pos, bool forcePromotion)
+using CheckBinaryFunction = std::function<checker::Type *(
+    ETSChecker *, ir::Expression *left, ir::Expression *right, lexer::TokenType operationType,
+    lexer::SourcePosition pos, bool isEqualOp, checker::Type *const leftType, checker::Type *const rightType,
+    Type *unboxedL, Type *unboxedR)>;
+
+std::map<lexer::TokenType, CheckBinaryFunction> &GetCheckMap()
 {
-    checker::Type *const leftType = left->Check(this);
-    checker::Type *const rightType = right->Check(this);
-    const bool isLogicalExtendedOperator = (operationType == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) ||
-                                           (operationType == lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
-    Type *unboxedL =
-        isLogicalExtendedOperator ? ETSBuiltinTypeAsConditionalType(leftType) : ETSBuiltinTypeAsPrimitiveType(leftType);
-    Type *unboxedR = isLogicalExtendedOperator ? ETSBuiltinTypeAsConditionalType(rightType)
-                                               : ETSBuiltinTypeAsPrimitiveType(rightType);
+    static std::map<lexer::TokenType, CheckBinaryFunction> checkMap = {
+        {lexer::TokenType::PUNCTUATOR_MULTIPLY, &ETSChecker::CheckBinaryOperatorMulDivMod},
+        {lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL, &ETSChecker::CheckBinaryOperatorMulDivMod},
+        {lexer::TokenType::PUNCTUATOR_DIVIDE, &ETSChecker::CheckBinaryOperatorMulDivMod},
+        {lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL, &ETSChecker::CheckBinaryOperatorMulDivMod},
+        {lexer::TokenType::PUNCTUATOR_MOD, &ETSChecker::CheckBinaryOperatorMulDivMod},
+        {lexer::TokenType::PUNCTUATOR_MOD_EQUAL, &ETSChecker::CheckBinaryOperatorMulDivMod},
 
+        {lexer::TokenType::PUNCTUATOR_MINUS, &ETSChecker::CheckBinaryOperatorPlus},
+        {lexer::TokenType::PUNCTUATOR_MINUS_EQUAL, &ETSChecker::CheckBinaryOperatorPlus},
+        {lexer::TokenType::PUNCTUATOR_PLUS, &ETSChecker::CheckBinaryOperatorPlus},
+        {lexer::TokenType::PUNCTUATOR_PLUS_EQUAL, &ETSChecker::CheckBinaryOperatorPlus},
+
+        {lexer::TokenType::PUNCTUATOR_LEFT_SHIFT, &ETSChecker::CheckBinaryOperatorShift},
+        {lexer::TokenType::PUNCTUATOR_LEFT_SHIFT_EQUAL, &ETSChecker::CheckBinaryOperatorShift},
+        {lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT, &ETSChecker::CheckBinaryOperatorShift},
+        {lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL, &ETSChecker::CheckBinaryOperatorShift},
+        {lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT, &ETSChecker::CheckBinaryOperatorShift},
+        {lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL, &ETSChecker::CheckBinaryOperatorShift},
+
+        {lexer::TokenType::PUNCTUATOR_BITWISE_OR, &ETSChecker::CheckBinaryOperatorBitwise},
+        {lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL, &ETSChecker::CheckBinaryOperatorBitwise},
+        {lexer::TokenType::PUNCTUATOR_BITWISE_AND, &ETSChecker::CheckBinaryOperatorBitwise},
+        {lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL, &ETSChecker::CheckBinaryOperatorBitwise},
+        {lexer::TokenType::PUNCTUATOR_BITWISE_XOR, &ETSChecker::CheckBinaryOperatorBitwise},
+        {lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL, &ETSChecker::CheckBinaryOperatorBitwise},
+    };
+
+    return checkMap;
+}
+
+struct BinaryOperatorParams {
+    ir::Expression *left;
+    ir::Expression *right;
+    ir::Expression *expr;
+    lexer::TokenType operationType;
+    lexer::SourcePosition pos;
+    bool isEqualOp;
+};
+
+struct TypeParams {
+    checker::Type *leftType;
+    checker::Type *rightType;
+    Type *unboxedL;
+    Type *unboxedR;
+};
+
+static std::tuple<Type *, Type *> CheckBinaryOperatorHelper(ETSChecker *checker,
+                                                            const BinaryOperatorParams &binaryParams,
+                                                            const TypeParams &typeParams)
+{
+    ir::Expression *left = binaryParams.left;
+    ir::Expression *right = binaryParams.right;
+    lexer::SourcePosition pos = binaryParams.pos;
+    checker::Type *const leftType = typeParams.leftType;
+    checker::Type *const rightType = typeParams.rightType;
+    Type *unboxedL = typeParams.unboxedL;
+    Type *unboxedR = typeParams.unboxedR;
     checker::Type *tsType {};
-    bool isEqualOp = (operationType > lexer::TokenType::PUNCTUATOR_SUBSTITUTION &&
-                      operationType < lexer::TokenType::PUNCTUATOR_ARROW) &&
-                     !forcePromotion;
-
-    switch (operationType) {
-        case lexer::TokenType::PUNCTUATOR_MULTIPLY:
-        case lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_DIVIDE:
-        case lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_MOD:
-        case lexer::TokenType::PUNCTUATOR_MOD_EQUAL: {
-            tsType = CheckBinaryOperatorMulDivMod(left, right, operationType, pos, isEqualOp, leftType, rightType,
-                                                  unboxedL, unboxedR);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_MINUS:
-        case lexer::TokenType::PUNCTUATOR_MINUS_EQUAL: {
-            if (leftType->IsETSStringType() || rightType->IsETSStringType()) {
-                ThrowTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
-            }
-
-            [[fallthrough]];
-        }
-        case lexer::TokenType::PUNCTUATOR_PLUS:
-        case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL: {
-            tsType = CheckBinaryOperatorPlus(left, right, operationType, pos, isEqualOp, leftType, rightType, unboxedL,
-                                             unboxedR);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT:
-        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT:
-        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT:
-        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL: {
-            tsType = CheckBinaryOperatorShift(left, right, operationType, pos, isEqualOp, leftType, rightType, unboxedL,
-                                              unboxedR);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_BITWISE_OR:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_AND:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_XOR: {
-            tsType = CheckBinaryOperatorBitwise(left, right, operationType, pos, isEqualOp, leftType, rightType,
-                                                unboxedL, unboxedR);
-            break;
-        }
+    switch (binaryParams.operationType) {
         case lexer::TokenType::PUNCTUATOR_LOGICAL_AND:
         case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-            tsType = CheckBinaryOperatorLogical(left, right, expr, pos, leftType, rightType, unboxedL, unboxedR);
+            tsType = checker->CheckBinaryOperatorLogical(left, right, binaryParams.expr, pos, leftType, rightType,
+                                                          unboxedL, unboxedR);
             break;
         }
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL: {
-            return CheckBinaryOperatorStrictEqual(left, pos, leftType, rightType);
+            return checker->CheckBinaryOperatorStrictEqual(left, pos, leftType, rightType);
         }
         case lexer::TokenType::PUNCTUATOR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_EQUAL: {
-            std::tuple<Type *, Type *> res =
-                CheckBinaryOperatorEqual(left, right, operationType, pos, leftType, rightType, unboxedL, unboxedR);
+            std::tuple<Type *, Type *> res = checker->CheckBinaryOperatorEqual(
+                left, right, binaryParams.operationType, pos, leftType, rightType, unboxedL, unboxedR);
             if (!(std::get<0>(res) == nullptr && std::get<1>(res) == nullptr)) {
                 return res;
             }
@@ -573,24 +620,69 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
         case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
         case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
         case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL: {
-            return CheckBinaryOperatorLessGreater(left, right, operationType, pos, isEqualOp, leftType, rightType,
-                                                  unboxedL, unboxedR);
+            return checker->CheckBinaryOperatorLessGreater(left, right, binaryParams.operationType, pos,
+                                                           binaryParams.isEqualOp, leftType, rightType, unboxedL,
+                                                           unboxedR);
         }
         case lexer::TokenType::KEYW_INSTANCEOF: {
-            return CheckBinaryOperatorInstanceOf(pos, leftType, rightType);
+            return checker->CheckBinaryOperatorInstanceOf(pos, leftType, rightType);
         }
         case lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING: {
-            tsType = CheckBinaryOperatorNullishCoalescing(right, pos, leftType, rightType);
+            tsType = checker->CheckBinaryOperatorNullishCoalescing(right, pos, leftType, rightType);
             break;
         }
         default: {
-            // NOTE
             UNREACHABLE();
             break;
         }
     }
 
     return {tsType, tsType};
+}
+
+std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left, ir::Expression *right,
+                                                           ir::Expression *expr, lexer::TokenType op,
+                                                           lexer::SourcePosition pos, bool forcePromotion)
+{
+    checker::Type *const leftType = left->Check(this);
+    checker::Type *const rightType = right->Check(this);
+    if ((leftType == nullptr) || (rightType == nullptr)) {
+        ThrowTypeError("Unexpected type error in binary expression", pos);
+    }
+
+    const bool isLogicalExtendedOperator =
+        (op == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) || (op == lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
+    Type *unboxedL = isLogicalExtendedOperator ? ETSBuiltinTypeAsConditionalType(leftType)
+                                                   : ETSBuiltinTypeAsPrimitiveType(leftType);
+    Type *unboxedR = isLogicalExtendedOperator ? ETSBuiltinTypeAsConditionalType(rightType)
+                                                   : ETSBuiltinTypeAsPrimitiveType(rightType);
+
+    checker::Type *tsType {};
+    bool isEqualOp =
+        (op > lexer::TokenType::PUNCTUATOR_SUBSTITUTION && op < lexer::TokenType::PUNCTUATOR_ARROW) && !forcePromotion;
+
+    if (CheckBinaryOperatorForBigInt(leftType, rightType, expr, op)) {
+        switch (op) {
+            case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
+            case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+            case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
+            case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
+                return {GlobalETSBooleanType(), GlobalETSBooleanType()};
+            default:
+                return {leftType, rightType};
+        }
+    };
+
+    auto checkMap = GetCheckMap();
+    if (checkMap.find(op) != checkMap.end()) {
+        auto check = checkMap[op];
+        tsType = check(this, left, right, op, pos, isEqualOp, leftType, rightType, unboxedL, unboxedR);
+        return {tsType, tsType};
+    }
+
+    BinaryOperatorParams binaryParams {left, right, expr, op, pos, isEqualOp};
+    TypeParams typeParams {leftType, rightType, unboxedL, unboxedR};
+    return CheckBinaryOperatorHelper(this, binaryParams, typeParams);
 }
 
 Type *ETSChecker::HandleArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)
