@@ -18,6 +18,10 @@
 
 #include "ir/expression.h"
 
+namespace panda::es2panda::checker {
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
+
 namespace panda::es2panda::ir {
 class ETSParameterExpression final : public Expression {
 public:
@@ -28,6 +32,9 @@ public:
     NO_MOVE_SEMANTIC(ETSParameterExpression);
 
     explicit ETSParameterExpression(AnnotatedExpression *ident_or_spread, Expression *initializer);
+
+    // TODO (csabahurton): friend relationship can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
 
     [[nodiscard]] const Identifier *Ident() const noexcept;
     [[nodiscard]] Identifier *Ident() noexcept;

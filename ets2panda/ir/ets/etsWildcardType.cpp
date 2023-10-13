@@ -15,11 +15,12 @@
 
 #include "etsWildcardType.h"
 
+#include "checker/ETSchecker.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/ets/etsTypeReference.h"
-#include "checker/TSchecker.h"
-#include "checker/ETSchecker.h"
-#include "compiler/core/ETSGen.h"
 
 namespace panda::es2panda::ir {
 void ETSWildcardType::TransformChildren(const NodeTransformer &cb)
@@ -44,16 +45,19 @@ void ETSWildcardType::Dump(ir::AstDumper *dumper) const
                  {"out", AstDumper::Optional(IsOut())}});
 }
 
-void ETSWildcardType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-void ETSWildcardType::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ETSWildcardType::Compile(compiler::PandaGen *pg) const
 {
-    etsg->Unimplemented();
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ETSWildcardType::Check([[maybe_unused]] checker::TSChecker *checker)
+void ETSWildcardType::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *ETSWildcardType::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *ETSWildcardType::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -61,9 +65,9 @@ checker::Type *ETSWildcardType::GetType([[maybe_unused]] checker::TSChecker *che
     return nullptr;
 }
 
-checker::Type *ETSWildcardType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ETSWildcardType::Check(checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *ETSWildcardType::GetType([[maybe_unused]] checker::ETSChecker *checker)

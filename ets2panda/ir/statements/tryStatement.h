@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_STATEMENT_TRY_STATEMENT_H
 #define ES2PANDA_IR_STATEMENT_TRY_STATEMENT_H
 
-#include "compiler/core/ETSGen.h"
+#include "compiler/core/labelPair.h"
 #include "ir/statement.h"
 
 namespace panda::es2panda::compiler {

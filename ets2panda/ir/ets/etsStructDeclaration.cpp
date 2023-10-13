@@ -15,6 +15,7 @@
 
 #include "etsStructDeclaration.h"
 
+#include "checker/TSchecker.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
@@ -48,24 +49,23 @@ void ETSStructDeclaration::Dump(ir::AstDumper *dumper) const
         {{"type", "ETSStructDeclaration"}, {"definition", def_}, {"decorators", AstDumper::Optional(decorators_)}});
 }
 
-void ETSStructDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ETSStructDeclaration::Compile(compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    pg->GetAstCompiler()->Compile(this);
 }
 
-void ETSStructDeclaration::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ETSStructDeclaration::Compile(compiler::ETSGen *etsg) const
 {
-    UNREACHABLE();
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ETSStructDeclaration::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *ETSStructDeclaration::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *ETSStructDeclaration::Check(checker::ETSChecker *checker)
 {
-    def_->Check(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

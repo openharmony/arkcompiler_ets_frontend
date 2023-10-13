@@ -15,18 +15,10 @@
 
 #include "JSCompiler.h"
 
+#include "compiler/base/condition.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
-#include "ir/base/catchClause.h"
-#include "ir/base/classDefinition.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/classStaticBlock.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/expressions/functionExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/statements/returnStatement.h"
+#include "compiler/function/functionBuilder.h"
 #include "util/helpers.h"
 
 namespace panda::es2panda::compiler {
@@ -523,39 +515,33 @@ void JSCompiler::Compile(const ir::ETSPackageDeclaration *expr) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSParameterExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSParameterExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSPrimitiveType *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSPrimitiveType *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSStructDeclaration *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSStructDeclaration *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSTypeReference *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSTypeReference *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSTypeReferencePart *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSTypeReferencePart *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSWildcardType *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSWildcardType *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -568,8 +554,8 @@ void JSCompiler::Compile(const ir::ArrayExpression *expr) const
 
 void JSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    pg->DefineFunction(expr->Function(), expr->Function(), expr->Function()->Scope()->InternalName());
 }
 
 void JSCompiler::Compile(const ir::AssignmentExpression *expr) const

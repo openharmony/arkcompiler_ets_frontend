@@ -18,6 +18,10 @@
 
 #include "ir/expression.h"
 
+namespace panda::es2panda::compiler {
+class ETSCompiler;
+}  // namespace panda::es2panda::compiler
+
 namespace panda::es2panda::ir {
 class ScriptFunction;
 
@@ -27,6 +31,8 @@ public:
         : Expression(AstNodeType::ARROW_FUNCTION_EXPRESSION), func_(func), captured_vars_(allocator->Adapter())
     {
     }
+    // TODO (csabahurton): friend relationship can be removed once there are getters for private fields
+    friend class compiler::ETSCompiler;
 
     const ScriptFunction *Function() const
     {
@@ -71,10 +77,10 @@ public:
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
+    void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     ScriptFunction *func_;

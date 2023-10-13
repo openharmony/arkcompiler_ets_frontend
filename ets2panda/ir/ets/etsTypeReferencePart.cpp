@@ -15,13 +15,12 @@
 
 #include "etsTypeReferencePart.h"
 
-#include "ir/astDump.h"
-#include "ir/expressions/identifier.h"
-#include "ir/ts/tsTypeParameterInstantiation.h"
-#include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/typeRelationContext.h"
+#include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void ETSTypeReferencePart::TransformChildren(const NodeTransformer &cb)
@@ -58,20 +57,23 @@ void ETSTypeReferencePart::Dump(ir::AstDumper *dumper) const
                  {"previous", AstDumper::Optional(prev_)}});
 }
 
-void ETSTypeReferencePart::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-void ETSTypeReferencePart::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ETSTypeReferencePart::Compile(compiler::PandaGen *pg) const
 {
-    name_->Compile(etsg);
+    pg->GetAstCompiler()->Compile(this);
+}
+void ETSTypeReferencePart::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ETSTypeReferencePart::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *ETSTypeReferencePart::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *ETSTypeReferencePart::Check(checker::ETSChecker *checker)
 {
-    return GetType(checker);
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)

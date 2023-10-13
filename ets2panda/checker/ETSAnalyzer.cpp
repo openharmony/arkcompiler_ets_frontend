@@ -16,6 +16,8 @@
 
 #include "binder/binder.h"
 #include "binder/ETSBinder.h"
+#include "checker/ETSchecker.h"
+#include "checker/ets/castingContext.h"
 #include "checker/ets/typeRelationContext.h"
 #include "ir/base/catchClause.h"
 #include "ir/base/classProperty.h"
@@ -233,37 +235,55 @@ checker::Type *ETSAnalyzer::Check(ir::ETSPackageDeclaration *st) const
 
 checker::Type *ETSAnalyzer::Check(ir::ETSParameterExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    if (expr->TsType() == nullptr) {
+        checker::Type *param_type;
+
+        if (expr->Ident()->TsType() != nullptr) {
+            param_type = expr->Ident()->TsType();
+        } else {
+            param_type = !expr->IsRestParameter() ? expr->Ident()->Check(checker) : expr->spread_->Check(checker);
+            if (expr->IsDefault()) {
+                [[maybe_unused]] auto *const init_type = expr->Initializer()->Check(checker);
+                // TODO(ttamas) : fix this aftet nullable fix
+                // const checker::AssignmentContext ctx(checker->Relation(), initializer_, init_type, name_type,
+                //                                      initializer_->Start(),
+                //                                      {"Initializers type is not assignable to the target type"});
+            }
+        }
+
+        expr->SetTsType(param_type);
+    }
+
+    return expr->TsType();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ETSPrimitiveType *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSPrimitiveType *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSStructDeclaration *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    node->Definition()->Check(checker);
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSTypeReference *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    return node->GetType(checker);
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSTypeReferencePart *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    return node->GetType(checker);
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ETSWildcardType *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSWildcardType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 // compile methods for EXPRESSIONS in alphabetical order
@@ -275,8 +295,70 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
 
 checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+
+    auto *func_type = checker->BuildFunctionSignature(expr->Function(), false);
+
+    if (expr->Function()->IsAsyncFunc()) {
+        auto *ret_type = static_cast<checker::ETSObjectType *>(expr->Function()->Signature()->ReturnType());
+        if (ret_type->AssemblerName() != checker->GlobalBuiltinPromiseType()->AssemblerName()) {
+            checker->ThrowTypeError("Return type of async lambda must be 'Promise'", expr->Function()->Start());
+        }
+    }
+
+    checker::ScopeContext scope_ctx(checker, expr->Function()->Scope());
+
+    if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
+        /*
+        example code:
+        ```
+            class A {
+                prop:number
+            }
+            function A.method() {
+                let a = () => {
+                    console.println(this.prop)
+                }
+            }
+        ```
+        here the enclosing class of arrow function should be Class A
+        */
+        checker->Context().SetContainingClass(
+            checker->Scope()->Find(binder::Binder::MANDATORY_PARAM_THIS).variable->TsType()->AsETSObjectType());
+    }
+
+    checker::SavedCheckerContext saved_context(checker, checker->Context().Status(),
+                                               checker->Context().ContainingClass());
+    checker->AddStatus(checker::CheckerStatus::IN_LAMBDA);
+    checker->Context().SetContainingSignature(func_type->CallSignatures()[0]);
+
+    auto *body_type = expr->Function()->Body()->Check(checker);
+
+    if (expr->Function()->Body()->IsExpression()) {
+        if (expr->Function()->ReturnTypeAnnotation() == nullptr) {
+            func_type->CallSignatures()[0]->SetReturnType(body_type);
+        }
+
+        checker::AssignmentContext(
+            checker->Relation(), expr->Function()->Body()->AsExpression(), body_type,
+            func_type->CallSignatures()[0]->ReturnType(), expr->Function()->Start(),
+            {"Return statements return type is not compatible with the containing functions return type"},
+            checker::TypeRelationFlag::DIRECT_RETURN);
+    }
+
+    checker->Context().SetContainingSignature(nullptr);
+    checker->CheckCapturedVariables();
+
+    for (auto [var, _] : checker->Context().CapturedVars()) {
+        (void)_;
+        expr->CapturedVars().push_back(var);
+    }
+
+    expr->SetTsType(func_type);
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *expr) const
