@@ -188,6 +188,7 @@
                   "type": "TSParameterProperty",
                   "accessibility": "public",
                   "readonly": false,
+                  "override": false,
                   "static": false,
                   "export": false,
                   "parameter": {

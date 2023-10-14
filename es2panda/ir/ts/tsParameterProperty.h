@@ -34,11 +34,12 @@ enum class AccessibilityOption { NO_OPTS, PUBLIC, PRIVATE, PROTECTED };
 class TSParameterProperty : public Expression {
 public:
     explicit TSParameterProperty(AccessibilityOption accessibility, Expression *parameter, bool readonly,
-                                 bool isStatic, bool isExport)
+                                 bool isOverride, bool isStatic, bool isExport)
         : Expression(AstNodeType::TS_PARAMETER_PROPERTY),
           accessibility_(accessibility),
           parameter_(parameter),
           readonly_(readonly),
+          override_(isOverride),
           static_(isStatic),
           export_(isExport)
     {
@@ -52,6 +53,11 @@ public:
     bool Readonly() const
     {
         return readonly_;
+    }
+
+    bool IsOverride() const
+    {
+        return override_;
     }
 
     bool IsStatic() const
@@ -84,6 +90,7 @@ private:
     AccessibilityOption accessibility_;
     Expression *parameter_;
     bool readonly_;
+    bool override_;
     bool static_;
     bool export_;
 };

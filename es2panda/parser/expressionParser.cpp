@@ -840,15 +840,15 @@ ir::Expression *ParserImpl::ParseAssignmentExpression(ir::Expression *lhsExpress
             return binaryAssignmentExpression;
         }
         case lexer::TokenType::LITERAL_IDENT: {
-            if (Extension() == ScriptExtension::TS && !lexer_->GetToken().NewLine()) {
-                lexer::TokenType keywordType = lexer_->GetToken().KeywordType();
-                if (keywordType == lexer::TokenType::KEYW_AS && !(flags & ExpressionParseFlags::EXP_DISALLOW_AS)) {
-                    ir::Expression *asExpression = ParseTsAsExpression(lhsExpression, flags);
-                    return ParseAssignmentExpression(asExpression);
-                } else if (keywordType == lexer::TokenType::KEYW_SATISFIES) {
-                    ir::Expression *satisfiesExpression = ParseTsSatisfiesExpression(lhsExpression);
-                    return ParseAssignmentExpression(satisfiesExpression);
-                }
+            lexer::TokenType keywordType = lexer_->GetToken().KeywordType();
+            if (Extension() == ScriptExtension::TS && keywordType == lexer::TokenType::KEYW_AS &&
+                !(flags & ExpressionParseFlags::EXP_DISALLOW_AS) && !lexer_->GetToken().NewLine()) {
+                ir::Expression *asExpression = ParseTsAsExpression(lhsExpression, flags);
+                return ParseAssignmentExpression(asExpression);
+            } else if (Extension() == ScriptExtension::TS && keywordType == lexer::TokenType::KEYW_SATISFIES &&
+                !lexer_->GetToken().NewLine()) {
+                ir::Expression *satisfiesExpression = ParseTsSatisfiesExpression(lhsExpression);
+                return ParseAssignmentExpression(satisfiesExpression);
             }
             break;
         }

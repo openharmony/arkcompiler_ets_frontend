@@ -34,6 +34,7 @@ void TSParameterProperty::Dump(ir::AstDumper *dumper) const
                                      ? "private"
                                      : accessibility_ == AccessibilityOption::PROTECTED ? "protected" : "undefined"},
          {"readonly", readonly_},
+         {"override", override_},
          {"static", static_},
          {"export", export_},
          {"parameter", parameter_}});

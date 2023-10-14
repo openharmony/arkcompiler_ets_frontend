@@ -105,6 +105,7 @@ enum class TokenType {
     KEYW_REQUIRE,
     KEYW_ABSTRACT,
     KEYW_SATISFIES,
+    KEYW_OVERRIDE,
 
     /* reserved keywords */
     FIRST_KEYW,
