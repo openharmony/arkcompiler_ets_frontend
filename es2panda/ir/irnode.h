@@ -122,6 +122,10 @@ public:
     virtual size_t Registers([[maybe_unused]] std::array<const VReg *, MAX_REG_OPERAND> *regs) const = 0;
     virtual void Transform(panda::pandasm::Ins *ins) const = 0;
     virtual ICSlot SetIcSlot(IcSizeType currentSlot) = 0;
+    virtual bool InlineCacheEnabled() = 0;
+    virtual ICSlot GetIcSlot() = 0;
+    virtual bool oneByteSlotOnly() = 0;
+    virtual uint8_t IcSlots() = 0;
 
     virtual bool IsRangeInst() const
     {

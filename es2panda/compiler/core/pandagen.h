@@ -472,6 +472,8 @@ public:
     Operand ToPropertyKey(const ir::Expression *prop, bool isComputed);
     VReg LoadPropertyKey(const ir::Expression *prop, bool isComputed);
 
+    void ReArrangeIc();
+
     /*
      * Since the [Function] is not implemented yet, We compile the test262's framework code
      * which obtains the [global] Object as following into [LoadConst.Global] directly.
@@ -500,6 +502,21 @@ public:
     void IncreaseCurrentSlot(ICSlot inc)
     {
         currentSlot_ += inc;
+    }
+
+    void ResetCurrentSlot(IcSizeType slotSize)
+    {
+        currentSlot_ = slotSize;
+    }
+
+    void SetIcOverFlow()
+    {
+        icOverFlow_ = true;
+    }
+
+    bool IsIcOverFlow() const
+    {
+        return icOverFlow_;
     }
 
 private:
@@ -538,6 +555,7 @@ private:
     friend class OptionalChain;
     size_t labelId_ {0};
     panda::panda_file::FunctionKind funcKind_ {panda::panda_file::FunctionKind::NONE};
+    bool icOverFlow_ {false};
 };
 }  // namespace panda::es2panda::compiler
 

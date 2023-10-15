@@ -69,6 +69,26 @@ public:
         return 0;
     }
 
+    bool InlineCacheEnabled() override
+    {
+        return false;
+    }
+
+    ICSlot GetIcSlot() override
+    {
+        return 0;
+    }
+
+    bool oneByteSlotOnly() override
+    {
+        return false;
+    }
+
+    uint8_t IcSlots() override
+    {
+        return 0;
+    }
+
 private:
     std::string id_;
 };
@@ -284,6 +304,50 @@ public:
         <%= op_map['imm'][0] %> = invalid;
         return 0;
 %   end
+% end
+    }
+
+    bool InlineCacheEnabled() override
+    {
+% is_jit_ic = insn.properties.include?("jit_ic_slot")
+% is_ic = (!is_jit_ic) && insn.properties.include?("ic_slot")
+% if (!is_jit_ic && !is_ic)
+        return false;
+% else
+        return true;
+% end
+    }
+
+    ICSlot GetIcSlot() override
+    {
+% is_jit_ic = insn.properties.include?("jit_ic_slot")
+% is_ic = (!is_jit_ic) && insn.properties.include?("ic_slot")
+% if (!is_jit_ic && !is_ic)
+        return 0;
+% else
+        return <%= op_map['imm'][0] %>;
+% end
+    }
+
+    bool oneByteSlotOnly() override
+    {
+% is_jit_ic = insn.properties.include?("jit_ic_slot")
+% if (is_jit_ic)
+        return true;
+% else
+        return false;
+% end
+    }
+
+    uint8_t IcSlots() override
+    {
+% is_jit_ic = insn.properties.include?("jit_ic_slot")
+% is_ic = (!is_jit_ic) && insn.properties.include?("ic_slot")
+% if (!is_jit_ic && !is_ic)
+        return 0;
+% else
+%   ret = insn.properties.include?("one_slot") ? 1 : 2;
+        return <%= ret %>;
 % end
     }
 
