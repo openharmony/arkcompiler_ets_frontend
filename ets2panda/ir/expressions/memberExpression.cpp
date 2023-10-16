@@ -165,9 +165,10 @@ void MemberExpression::Compile(compiler::ETSGen *etsg) const
     }
 
     auto &prop_name = property_->AsIdentifier()->Name();
+    auto const *const object_type = object_->TsType();
 
-    if (object_->TsType()->IsETSArrayType() && prop_name.Is("length")) {
-        auto ottctx = compiler::TargetTypeContext(etsg, object_->TsType());
+    if (object_type->IsETSArrayType() && prop_name.Is("length")) {
+        auto ottctx = compiler::TargetTypeContext(etsg, object_type);
         object_->Compile(etsg);
         compiler::VReg obj_reg = etsg->AllocReg();
         etsg->StoreAccumulator(this, obj_reg);
@@ -178,61 +179,34 @@ void MemberExpression::Compile(compiler::ETSGen *etsg) const
         return;
     }
 
-    if (object_->TsType()->IsETSEnumType()) {
-        ASSERT(TsType()->IsETSEnumType());
-        auto ottctx = compiler::TargetTypeContext(etsg, object_->TsType());
+    if (object_type->IsETSEnumType() || object_type->IsETSStringEnumType()) {
+        auto const *const enum_interface = [object_type, this]() -> checker::ETSEnumInterface const * {
+            if (object_type->IsETSEnumType()) {
+                return TsType()->AsETSEnumType();
+            }
+            return TsType()->AsETSStringEnumType();
+        }();
+
+        auto ottctx = compiler::TargetTypeContext(etsg, object_type);
         auto ttctx = compiler::TargetTypeContext(etsg, TsType());
-        etsg->LoadAccumulatorInt(this, TsType()->AsETSEnumType()->GetOrdinal());
+        etsg->LoadAccumulatorInt(this, enum_interface->GetOrdinal());
         return;
     }
 
-    if (prop_var_->HasFlag(binder::VariableFlags::STATIC)) {
+    if (etsg->Checker()->IsVariableStatic(prop_var_)) {
         auto ttctx = compiler::TargetTypeContext(etsg, TsType());
+
+        if (prop_var_->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
+            checker::Signature *sig = prop_var_->TsType()->AsETSFunctionType()->FindGetter();
+            etsg->CallStatic0(this, sig->InternalName());
+            etsg->SetAccumulatorType(sig->ReturnType());
+            return;
+        }
 
         util::StringView full_name = etsg->FormClassPropReference(object_->TsType()->AsETSObjectType(), prop_name);
         etsg->LoadStaticProperty(this, TsType(), full_name);
         etsg->ApplyConversion(this);
         return;
-    }
-
-    if (object_->TsType()->IsETSObjectType() &&
-        HasMemberKind(MemberExpressionKind::GETTER | MemberExpressionKind::SETTER)) {
-        const auto &get_set = object_->TsType()->AsETSObjectType()->InstanceMethods();
-        const auto res = get_set.find(prop_name);
-        if (res != get_set.end()) {
-            auto *decl = res->second->Declaration();
-            ASSERT(decl != nullptr);
-            if (decl->Node()->IsMethodDefinition()) {
-                compiler::VReg callee_reg = etsg->AllocReg();
-                auto ottctx = compiler::TargetTypeContext(etsg, object_->TsType());
-                object_->Compile(etsg);
-                etsg->StoreAccumulator(this, callee_reg);
-
-                if (decl->Node()->AsMethodDefinition()->Kind() == ir::MethodDefinitionKind::GET) {
-                    etsg->EmitGetter(this, callee_reg, decl->Node()->AsMethodDefinition()->Function());
-                } else {
-                    etsg->EmitGetter(this, callee_reg, decl->Node()->AsMethodDefinition()->Overloads()[0]->Function());
-                }
-                return;
-            }
-        } else {
-            const auto &static_get_set = object_->TsType()->AsETSObjectType()->StaticMethods();
-            const auto static_res = static_get_set.find(prop_name);
-            if (static_res != static_get_set.end()) {
-                auto *decl = static_res->second->Declaration();
-                ASSERT(decl != nullptr);
-                if (decl->Node()->IsMethodDefinition()) {
-                    auto *script = decl->Node()->AsMethodDefinition()->Function();
-                    if (decl->Node()->AsMethodDefinition()->Kind() == ir::MethodDefinitionKind::SET) {
-                        script = decl->Node()->AsMethodDefinition()->Overloads()[0]->AsMethodDefinition()->Function();
-                    }
-
-                    etsg->CallStatic(this, script->Signature(), script->Params());
-                    etsg->SetAccumulatorType(script->Signature()->ReturnType());
-                    return;
-                }
-            }
-        }
     }
 
     auto ottctx = compiler::TargetTypeContext(etsg, object_->TsType());
@@ -258,7 +232,11 @@ void MemberExpression::Compile(compiler::ETSGen *etsg) const
     auto ttctx = compiler::TargetTypeContext(etsg, TsType());
 
     auto load_property = [this, etsg, obj_reg, prop_name]() {
-        if (object_->TsType()->IsETSDynamicType()) {
+        if (prop_var_->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
+            checker::Signature *sig = prop_var_->TsType()->AsETSFunctionType()->FindGetter();
+            etsg->CallThisVirtual0(this, obj_reg, sig->InternalName());
+            etsg->SetAccumulatorType(sig->ReturnType());
+        } else if (object_->TsType()->IsETSDynamicType()) {
             auto lang = object_->TsType()->AsETSDynamicType()->Language();
             etsg->LoadPropertyDynamic(this, TsType(), obj_reg, prop_name, lang);
         } else {
@@ -379,16 +357,22 @@ checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
             return TsType();
         }
 
-        if (base_type->IsETSEnumType()) {
-            const auto *const enum_type = base_type->AsETSEnumType();
+        if (base_type->IsETSEnumType() || base_type->IsETSStringEnumType()) {
+            auto const *const enum_interface = [base_type]() -> checker::ETSEnumInterface const * {
+                if (base_type->IsETSEnumType()) {
+                    return base_type->AsETSEnumType();
+                }
+                return base_type->AsETSStringEnumType();
+            }();
 
             if (parent_->Type() == ir::AstNodeType::CALL_EXPRESSION && parent_->AsCallExpression()->Callee() == this) {
-                auto *const enum_method_type = enum_type->LookupMethod(checker, object_, property_->AsIdentifier());
+                auto *const enum_method_type =
+                    enum_interface->LookupMethod(checker, object_, property_->AsIdentifier());
                 SetTsType(enum_method_type);
                 return TsType();
             }
 
-            auto *const enum_literal_type = enum_type->LookupConstant(checker, object_, property_->AsIdentifier());
+            auto *const enum_literal_type = enum_interface->LookupConstant(checker, object_, property_->AsIdentifier());
             SetTsType(enum_literal_type);
             SetPropVar(enum_literal_type->GetMemberVar());
             return TsType();
@@ -398,27 +382,6 @@ checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
     }
 
     obj_type_ = base_type->AsETSObjectType();
-
-    if (Property()->IsIdentifier()) {
-        const auto *prop = ObjType()->GetProperty(Property()->AsIdentifier()->Name(),
-                                                  checker::PropertySearchFlags::SEARCH_INSTANCE_METHOD |
-                                                      checker::PropertySearchFlags::SEARCH_STATIC_METHOD);
-
-        if (prop != nullptr && prop->TsType() != nullptr && prop->TsType()->IsETSFunctionType()) {
-            const auto &func_type = prop->TsType()->AsETSFunctionType();
-
-            for (auto *sig : func_type->CallSignatures()) {
-                if (sig->Function()->IsSetter()) {
-                    AddMemberKind(ir::MemberExpressionKind::SETTER);
-                    checker->ValidateSignatureAccessibility(obj_type_, sig, Start());
-                } else if (sig->Function()->IsGetter()) {
-                    AddMemberKind(ir::MemberExpressionKind::GETTER);
-                    checker->ValidateSignatureAccessibility(obj_type_, sig, Start());
-                }
-            }
-        }
-    }
-
     prop_var_ = checker->ResolveMemberReference(this, obj_type_);
     checker->ValidatePropertyAccess(prop_var_, obj_type_, property_->Start());
     SetTsType(checker->GetTypeOfVariable(prop_var_));

@@ -348,4 +348,8 @@ const CodeGen::TypeMap &CodeGen::GetTypeMap() const noexcept
     return type_map_;
 }
 
+compiler::AstCompiler *CodeGen::GetAstCompiler() const
+{
+    return ast_compiler_;
+}
 }  // namespace panda::es2panda::compiler

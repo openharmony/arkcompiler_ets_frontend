@@ -27,7 +27,7 @@ Number::Number(util::StringView str, const std::string &utf8, NumberFlags flags)
 {
     Lexer::ConversionResult res;
     if ((flags & (NumberFlags::DECIMAL_POINT | NumberFlags::EXPONENT)) == 0) {
-        const int64_t temp = Lexer::StrToNumeric(&std::strtol, utf8.c_str(), res, 10);
+        const int64_t temp = Lexer::StrToNumeric(&std::strtoll, utf8.c_str(), res, 10);
 
         if (res == Lexer::ConversionResult::SUCCESS) {
             if (temp <= std::numeric_limits<int32_t>::max() && temp >= std::numeric_limits<int32_t>::min()) {

@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/regScope.h"
 #include "ir/astDump.h"
+#include "ir/base/scriptFunction.h"
 #include "ir/base/spreadElement.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/arrayExpression.h"
@@ -149,13 +150,6 @@ void AssignmentExpression::Compile(compiler::ETSGen *etsg) const
     // All other operations are handled in OpAssignmentLowering
     ASSERT(operator_ == lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
     compiler::RegScope rs(etsg);
-
-    if (left_->IsMemberExpression() && left_->AsMemberExpression()->TsType()->IsETSFunctionType() &&
-        left_->AsMemberExpression()->TsType()->AsETSFunctionType()->HasTypeFlag(checker::TypeFlag::SETTER)) {
-        etsg->EmitSetter(left_->AsMemberExpression(), right_);
-        return;
-    }
-
     auto lref = compiler::ETSLReference::Create(etsg, left_, false);
     auto ttctx = compiler::TargetTypeContext(etsg, TsType());
 
@@ -251,20 +245,7 @@ checker::Type *AssignmentExpression::Check([[maybe_unused]] checker::ETSChecker 
 
     if (left_->IsIdentifier()) {
         target_ = left_->AsIdentifier()->Variable();
-    } else if (left_type->IsETSFunctionType() &&
-               left_type->AsETSFunctionType()->HasTypeFlag(checker::TypeFlag::SETTER)) {
-        if (right_->IsBinaryExpression()) {
-            right_->Check(checker);
-        }
-
-        ArenaVector<ir::Expression *> arguments(checker->Allocator()->Adapter());
-        arguments.push_back(right_);
-        auto *signature = checker->ResolveCallExpression(left_type->AsETSFunctionType()->CallSignatures(), nullptr,
-                                                         arguments, Start());
-        SetTsType(signature->ReturnType());
-        return TsType();
     } else {
-        ASSERT(left_->IsMemberExpression());
         target_ = left_->AsMemberExpression()->PropVar();
     }
 

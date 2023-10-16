@@ -656,12 +656,15 @@ void ETSBinder::BuildFunctionName(const ir::ScriptFunction *func) const
 
     if (func->IsStaticBlock()) {
         ss << compiler::Signatures::CCTOR;
+    } else if (func->IsConstructor()) {
+        ss << compiler::Signatures::CTOR;
     } else {
-        if (func->IsConstructor()) {
-            ss << compiler::Signatures::CTOR;
-        } else {
-            ss << util::Helpers::FunctionName(Allocator(), func);
+        if (func->IsGetter()) {
+            ss << compiler::Signatures::GETTER_BEGIN;
+        } else if (func->IsSetter()) {
+            ss << compiler::Signatures::SETTER_BEGIN;
         }
+        ss << util::Helpers::FunctionName(Allocator(), func);
     }
 
     signature->ToAssemblerType(GetCompilerContext(), ss);

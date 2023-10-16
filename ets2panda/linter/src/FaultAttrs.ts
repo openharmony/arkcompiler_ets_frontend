@@ -65,7 +65,6 @@ faultsAttrs[FaultID.CommaOperator] = {cookBookRef: '71',};
 faultsAttrs[FaultID.DestructuringDeclaration] = {migratable: true, cookBookRef: '74',};
 faultsAttrs[FaultID.CatchWithUnsupportedType] = {migratable: true, cookBookRef: '79',};
 faultsAttrs[FaultID.ForInStatement] = {cookBookRef: '80',};
-faultsAttrs[FaultID.ForOfNonArray] = {migratable: true, cookBookRef: '82',};
 faultsAttrs[FaultID.MappedType] = {cookBookRef: '83',};
 faultsAttrs[FaultID.WithStatement] = {cookBookRef: '84',};
 faultsAttrs[FaultID.ThrowStatement] = {migratable: true, cookBookRef: '87',};

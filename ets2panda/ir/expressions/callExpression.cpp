@@ -171,41 +171,53 @@ void CallExpression::Compile(compiler::ETSGen *etsg) const
 
     const auto is_proxy = signature_->HasSignatureFlag(checker::SignatureFlags::PROXY);
 
-    if (is_proxy && callee_->IsMemberExpression() &&
-        callee_->AsMemberExpression()->Object()->TsType()->IsETSEnumType()) {
-        ArenaVector<ir::Expression *> arguments(etsg->Allocator()->Adapter());
+    if (is_proxy && callee_->IsMemberExpression()) {
+        auto *const callee_object = callee_->AsMemberExpression()->Object();
 
-        checker::Signature *const signature = [this, &arguments]() {
-            auto *const callee_obj = callee_->AsMemberExpression()->Object();
-            const auto *const enum_type = callee_obj->TsType()->AsETSEnumType();
-            const auto &member_proxy_method_name = signature_->InternalName();
-
-            if (member_proxy_method_name == checker::ETSEnumType::TO_STRING_METHOD_NAME) {
-                arguments.push_back(callee_obj);
-                return enum_type->ToStringMethod().global_signature;
+        auto const *const enum_interface = [callee_type =
+                                                callee_object->TsType()]() -> checker::ETSEnumInterface const * {
+            if (callee_type->IsETSEnumType()) {
+                return callee_type->AsETSEnumType();
             }
-            if (member_proxy_method_name == checker::ETSEnumType::GET_VALUE_METHOD_NAME) {
-                arguments.push_back(callee_obj);
-                return enum_type->GetValueMethod().global_signature;
+            if (callee_type->IsETSStringEnumType()) {
+                return callee_type->AsETSStringEnumType();
             }
-            if (member_proxy_method_name == checker::ETSEnumType::GET_NAME_METHOD_NAME) {
-                arguments.push_back(callee_obj);
-                return enum_type->GetNameMethod().global_signature;
-            }
-            if (member_proxy_method_name == checker::ETSEnumType::VALUES_METHOD_NAME) {
-                return enum_type->ValuesMethod().global_signature;
-            }
-            if (member_proxy_method_name == checker::ETSEnumType::VALUE_OF_METHOD_NAME) {
-                arguments.push_back(arguments_.front());
-                return enum_type->ValueOfMethod().global_signature;
-            }
-            UNREACHABLE();
+            return nullptr;
         }();
 
-        ASSERT(signature->ReturnType() == signature_->ReturnType());
-        etsg->CallStatic(this, signature, arguments);
-        etsg->SetAccumulatorType(TsType());
-        return;
+        if (enum_interface != nullptr) {
+            ArenaVector<ir::Expression *> arguments(etsg->Allocator()->Adapter());
+
+            checker::Signature *const signature = [this, callee_object, enum_interface, &arguments]() {
+                const auto &member_proxy_method_name = signature_->InternalName();
+
+                if (member_proxy_method_name == checker::ETSEnumType::TO_STRING_METHOD_NAME) {
+                    arguments.push_back(callee_object);
+                    return enum_interface->ToStringMethod().global_signature;
+                }
+                if (member_proxy_method_name == checker::ETSEnumType::GET_VALUE_METHOD_NAME) {
+                    arguments.push_back(callee_object);
+                    return enum_interface->GetValueMethod().global_signature;
+                }
+                if (member_proxy_method_name == checker::ETSEnumType::GET_NAME_METHOD_NAME) {
+                    arguments.push_back(callee_object);
+                    return enum_interface->GetNameMethod().global_signature;
+                }
+                if (member_proxy_method_name == checker::ETSEnumType::VALUES_METHOD_NAME) {
+                    return enum_interface->ValuesMethod().global_signature;
+                }
+                if (member_proxy_method_name == checker::ETSEnumType::VALUE_OF_METHOD_NAME) {
+                    arguments.push_back(arguments_.front());
+                    return enum_interface->ValueOfMethod().global_signature;
+                }
+                UNREACHABLE();
+            }();
+
+            ASSERT(signature->ReturnType() == signature_->ReturnType());
+            etsg->CallStatic(this, signature, arguments);
+            etsg->SetAccumulatorType(TsType());
+            return;
+        }
     }
 
     bool is_static = signature_->HasSignatureFlag(checker::SignatureFlags::STATIC);

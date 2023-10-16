@@ -76,7 +76,6 @@
     _(SEQUENCE_EXPRESSION, SequenceExpression)                                            \
     _(STRING_LITERAL, StringLiteral)                                                      \
     _(ETS_FUNCTION_TYPE, ETSFunctionType)                                                 \
-    _(ETS_METHOD_REFERENCE_EXPRESSION, ETSMethodReferenceExpression)                      \
     _(ETS_WILDCARD_TYPE, ETSWildcardType)                                                 \
     _(ETS_PRIMITIVE_TYPE, ETSPrimitiveType)                                               \
     _(ETS_PACKAGE_DECLARATION, ETSPackageDeclaration)                                     \
@@ -96,7 +95,6 @@
     _(TS_ENUM_DECLARATION, TSEnumDeclaration)                                             \
     _(TS_ENUM_MEMBER, TSEnumMember)                                                       \
     _(TS_EXTERNAL_MODULE_REFERENCE, TSExternalModuleReference)                            \
-    _(TS_PRIVATE_IDENTIFIER, TSPrivateIdentifier)                                         \
     _(TS_NUMBER_KEYWORD, TSNumberKeyword)                                                 \
     _(TS_ANY_KEYWORD, TSAnyKeyword)                                                       \
     _(TS_STRING_KEYWORD, TSStringKeyword)                                                 \
@@ -159,7 +157,6 @@
     _(VARIABLE_DECLARATION, VariableDeclaration)                                          \
     _(VARIABLE_DECLARATOR, VariableDeclarator)                                            \
     _(WHILE_STATEMENT, WhileStatement)                                                    \
-    _(WITH_STATEMENT, WithStatement)                                                      \
     _(YIELD_EXPRESSION, YieldExpression)                                                  \
     _(OPAQUE_TYPE_NODE, OpaqueTypeNode)
 

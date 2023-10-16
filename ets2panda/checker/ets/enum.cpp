@@ -79,7 +79,7 @@ void AppendParentNames(util::UString &qualified_name, const ir::AstNode *const n
 
 template <typename ElementMaker>
 [[nodiscard]] ir::Identifier *MakeArray(ETSChecker *const checker, binder::ETSBinder *const binder,
-                                        const ETSEnumType *const enum_type, const util::StringView &name,
+                                        const ETSEnumInterface *const enum_type, const util::StringView &name,
                                         Type *const element_type, ElementMaker &&element_maker)
 {
     ArenaVector<ir::Expression *> elements(checker->Allocator()->Adapter());
@@ -209,7 +209,7 @@ void MakeMethodDef(ETSChecker *const checker, binder::ETSBinder *const binder, i
 }
 }  // namespace
 
-ir::Identifier *ETSChecker::CreateEnumNamesArray(ETSEnumType *const enum_type)
+ir::Identifier *ETSChecker::CreateEnumNamesArray(ETSEnumInterface const *const enum_type)
 {
     return MakeArray(this, Binder()->AsETSBinder(), enum_type, "NamesArray", GlobalBuiltinETSStringType(),
                      [this](const ir::TSEnumMember *const member) {
@@ -218,7 +218,6 @@ ir::Identifier *ETSChecker::CreateEnumNamesArray(ETSEnumType *const enum_type)
                          enum_name_string_literal->SetTsType(GlobalBuiltinETSStringType());
                          return enum_name_string_literal;
                      });
-    ;
 }
 
 ir::Identifier *ETSChecker::CreateEnumValuesArray(ETSEnumType *const enum_type)
@@ -233,21 +232,26 @@ ir::Identifier *ETSChecker::CreateEnumValuesArray(ETSEnumType *const enum_type)
         });
 }
 
-ir::Identifier *ETSChecker::CreateEnumStringValuesArray(ETSEnumType *const enum_type)
+ir::Identifier *ETSChecker::CreateEnumStringValuesArray(ETSEnumInterface *const enum_type)
 {
-    return MakeArray(
-        this, Binder()->AsETSBinder(), enum_type, "StringValuesArray", GlobalETSStringLiteralType(),
-        [this](const ir::TSEnumMember *const member) {
-            auto const string_value = std::to_string(
-                member->AsTSEnumMember()->Init()->AsNumberLiteral()->Number().GetValue<ETSEnumType::ValueType>());
-            auto *const enum_value_string_literal =
-                Allocator()->New<ir::StringLiteral>(util::UString(string_value, Allocator()).View());
-            enum_value_string_literal->SetTsType(GlobalETSStringLiteralType());
-            return enum_value_string_literal;
-        });
+    return MakeArray(this, Binder()->AsETSBinder(), enum_type, "StringValuesArray", GlobalETSStringLiteralType(),
+                     [this, is_string_enum = enum_type->IsETSStringEnumType()](const ir::TSEnumMember *const member) {
+                         auto const string_value =
+                             is_string_enum ? member->AsTSEnumMember()->Init()->AsStringLiteral()->Str()
+                                            : util::UString(std::to_string(member->AsTSEnumMember()
+                                                                               ->Init()
+                                                                               ->AsNumberLiteral()
+                                                                               ->Number()
+                                                                               .GetValue<ETSEnumType::ValueType>()),
+                                                            Allocator())
+                                                  .View();
+                         auto *const enum_value_string_literal = Allocator()->New<ir::StringLiteral>(string_value);
+                         enum_value_string_literal->SetTsType(GlobalETSStringLiteralType());
+                         return enum_value_string_literal;
+                     });
 }
 
-ir::Identifier *ETSChecker::CreateEnumItemsArray(ETSEnumType *const enum_type)
+ir::Identifier *ETSChecker::CreateEnumItemsArray(ETSEnumInterface *const enum_type)
 {
     auto *const enum_type_ident = Allocator()->New<ir::Identifier>(enum_type->GetName(), Allocator());
     enum_type_ident->SetTsType(enum_type);
@@ -264,8 +268,8 @@ ir::Identifier *ETSChecker::CreateEnumItemsArray(ETSEnumType *const enum_type)
         });
 }
 
-ETSEnumType::Method ETSChecker::CreateEnumFromIntMethod(ir::Identifier *const values_array_ident,
-                                                        ETSEnumType *const enum_type)
+ETSEnumType::Method ETSChecker::CreateEnumFromIntMethod(ir::Identifier *const names_array_ident,
+                                                        ETSEnumInterface *const enum_type)
 {
     auto *const param_scope =
         Binder()->Allocator()->New<binder::FunctionParamScope>(Allocator(), Program()->GlobalScope());
@@ -273,10 +277,10 @@ ETSEnumType::Method ETSChecker::CreateEnumFromIntMethod(ir::Identifier *const va
     auto *const input_ordinal_ident =
         MakeFunctionParam(this, Binder()->AsETSBinder(), param_scope, "ordinal", GlobalIntType());
 
-    auto *const in_array_size_expr = [this, values_array_ident, input_ordinal_ident]() {
+    auto *const in_array_size_expr = [this, names_array_ident, input_ordinal_ident]() {
         auto *const length_ident = Allocator()->New<ir::Identifier>("length", Allocator());
         auto *const values_array_length_expr = Allocator()->New<ir::MemberExpression>(
-            values_array_ident, length_ident, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+            names_array_ident, length_ident, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
         auto *const expr = Allocator()->New<ir::BinaryExpression>(input_ordinal_ident, values_array_length_expr,
                                                                   lexer::TokenType::PUNCTUATOR_LESS_THAN);
         expr->SetOperationType(GlobalIntType());
@@ -340,7 +344,7 @@ ETSEnumType::Method ETSChecker::CreateEnumFromIntMethod(ir::Identifier *const va
 }
 
 ETSEnumType::Method ETSChecker::CreateEnumToStringMethod(ir::Identifier *const string_values_array_ident,
-                                                         ETSEnumType *const enum_type)
+                                                         ETSEnumInterface *const enum_type)
 {
     auto *const param_scope =
         Binder()->Allocator()->New<binder::FunctionParamScope>(Allocator(), Program()->GlobalClassScope());
@@ -415,12 +419,12 @@ ETSEnumType::Method ETSChecker::CreateEnumGetValueMethod(ir::Identifier *const v
 }
 
 ETSEnumType::Method ETSChecker::CreateEnumGetNameMethod(ir::Identifier *const names_array_ident,
-                                                        ETSEnumType *const enum_type)
+                                                        ETSEnumInterface *const enum_type)
 {
     auto *const param_scope =
         Binder()->Allocator()->New<binder::FunctionParamScope>(Allocator(), Program()->GlobalScope());
 
-    auto *const input_enum_ident = MakeFunctionParam(this, Binder()->AsETSBinder(), param_scope, "e", enum_type);
+    auto *const input_enum_ident = MakeFunctionParam(this, Binder()->AsETSBinder(), param_scope, "ordinal", enum_type);
 
     auto *const return_stmt = [this, input_enum_ident, names_array_ident]() {
         auto *const array_access_expr = Allocator()->New<ir::MemberExpression>(
@@ -453,7 +457,7 @@ ETSEnumType::Method ETSChecker::CreateEnumGetNameMethod(ir::Identifier *const na
 }
 
 ETSEnumType::Method ETSChecker::CreateEnumValueOfMethod(ir::Identifier *const names_array_ident,
-                                                        ETSEnumType *const enum_type)
+                                                        ETSEnumInterface *const enum_type)
 {
     auto *const param_scope =
         Binder()->Allocator()->New<binder::FunctionParamScope>(Allocator(), Program()->GlobalScope());
@@ -578,7 +582,7 @@ ETSEnumType::Method ETSChecker::CreateEnumValueOfMethod(ir::Identifier *const na
 }
 
 ETSEnumType::Method ETSChecker::CreateEnumValuesMethod(ir::Identifier *const items_array_ident,
-                                                       ETSEnumType *const enum_type)
+                                                       ETSEnumInterface *const enum_type)
 {
     auto *const param_scope =
         Binder()->Allocator()->New<binder::FunctionParamScope>(Allocator(), Program()->GlobalScope());

@@ -49,6 +49,7 @@ void ArrowFunctionExpression::Compile(compiler::PandaGen *pg) const
 
 void ArrowFunctionExpression::Compile(compiler::ETSGen *etsg) const
 {
+    ASSERT(resolved_lambda_ != nullptr);
     auto *ctor = resolved_lambda_->TsType()->AsETSObjectType()->ConstructSignatures()[0];
     std::vector<compiler::VReg> arguments;
 

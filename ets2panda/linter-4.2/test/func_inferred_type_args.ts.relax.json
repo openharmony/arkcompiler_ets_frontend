@@ -130,6 +130,20 @@
             "problem": "ObjectTypeLiteral"
         },
         {
+            "line": 67,
+            "column": 11,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 72,
+            "column": 3,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)"
+        },
+        {
             "line": 61,
             "column": 1,
             "problem": "StrictDiagnostic"

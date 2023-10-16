@@ -10,8 +10,7 @@ dynamic manner, which is not compatible with static typing. The usage of
 the following APIs is prohibited:
 
 Properties and functions of the global object: ``eval``,
-``Infinity``, ``NaN``, ``isFinite``, ``isNaN``, ``parseFloat``, ``parseInt``,
-``Encode``, ``Decode``, ``ParseHexOctet``
+``Infinity``, ``NaN``, ``isFinite``, ``isNaN``, ``parseFloat``, ``parseInt``
 
 ``Object``: ``__proto__``, ``__defineGetter__``, ``__defineSetter__``,
 ``__lookupGetter__``, ``__lookupSetter__``, ``assign``, ``create``,

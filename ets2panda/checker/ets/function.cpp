@@ -27,6 +27,7 @@
 #include "checker/types/typeFlag.h"
 #include "ir/astNode.h"
 #include "ir/typeNode.h"
+#include "ir/base/catchClause.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/methodDefinition.h"
@@ -46,8 +47,14 @@
 #include "ir/expressions/objectExpression.h"
 #include "ir/expressions/thisExpression.h"
 #include "ir/statements/blockStatement.h"
+#include "ir/statements/doWhileStatement.h"
 #include "ir/statements/expressionStatement.h"
+#include "ir/statements/forInStatement.h"
+#include "ir/statements/forOfStatement.h"
+#include "ir/statements/forUpdateStatement.h"
 #include "ir/statements/returnStatement.h"
+#include "ir/statements/switchStatement.h"
+#include "ir/statements/whileStatement.h"
 #include "ir/ts/tsArrayType.h"
 #include "ir/ts/tsInterfaceBody.h"
 #include "ir/ts/tsTypeAliasDeclaration.h"
@@ -239,6 +246,12 @@ Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeP
         }
     }
 
+    if (substituted_sig->ReturnType()->IsETSObjectType() && signature->ReturnType()->IsETSObjectType() &&
+        substituted_sig->ReturnType()->AsETSObjectType()->AssemblerName() !=
+            signature->ReturnType()->AsETSObjectType()->AssemblerName()) {
+        substituted_sig->AddSignatureFlag(SignatureFlags::SUBSTITUTED_RETURN_TYPE);
+    }
+
     uint32_t index = 0;
     bool validate_rest = false;
 
@@ -255,6 +268,11 @@ Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeP
                 continue;
             }
             return nullptr;
+        }
+
+        if (arguments[index]->IsMemberExpression()) {
+            SetArrayPreferredTypeForNestedMemberExpressions(arguments[index]->AsMemberExpression(),
+                                                            substituted_sig->Params()[index]->TsType());
         }
 
         if (arg_type_inference_required[index]) {
@@ -1974,8 +1992,9 @@ binder::FunctionParamScope *ETSChecker::CreateLambdaCtorImplicitParams(ArenaVect
         auto *param = Allocator()->New<ir::ETSParameterExpression>(param_field, nullptr);
         auto [_, var] = Binder()->AddParamDecl(param);
         (void)_;
-        var->SetTsType(field->Variable()->TsType());
-        param->Ident()->SetTsType(field->Variable()->TsType());
+        auto *type = MaybeBoxedType(field->Variable());
+        var->SetTsType(type);
+        param->Ident()->SetTsType(type);
         param->Ident()->SetVariable(var);
         params.push_back(param);
     }
@@ -2409,7 +2428,7 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
     // type R2 if any of the following is true:
 
     // - If R1 is a primitive type then R2 is identical to R1.
-    if (r1->HasTypeFlag(TypeFlag::ETS_PRIMITIVE | TypeFlag::ETS_ENUM)) {
+    if (r1->HasTypeFlag(TypeFlag::ETS_PRIMITIVE | TypeFlag::ETS_ENUM | TypeFlag::ETS_STRING_ENUM)) {
         return Relation()->IsIdenticalTo(r2, r1);
     }
 
@@ -2554,25 +2573,53 @@ binder::FunctionParamScope *ETSChecker::CopyParams(const ArenaVector<ir::Express
     return param_ctx.GetScope();
 }
 
+static binder::Scope *NodeScope(ir::AstNode *ast)
+{
+    if (ast->IsBlockStatement()) {
+        return ast->AsBlockStatement()->Scope();
+    }
+    if (ast->IsDoWhileStatement()) {
+        return ast->AsDoWhileStatement()->Scope();
+    }
+    if (ast->IsForInStatement()) {
+        return ast->AsForInStatement()->Scope();
+    }
+    if (ast->IsForOfStatement()) {
+        return ast->AsForOfStatement()->Scope();
+    }
+    if (ast->IsForUpdateStatement()) {
+        return ast->AsForUpdateStatement()->Scope();
+    }
+    if (ast->IsSwitchStatement()) {
+        return ast->AsSwitchStatement()->Scope();
+    }
+    if (ast->IsWhileStatement()) {
+        return ast->AsWhileStatement()->Scope();
+    }
+    if (ast->IsCatchClause()) {
+        return ast->AsCatchClause()->Scope();
+    }
+    if (ast->IsClassDefinition()) {
+        return ast->AsClassDefinition()->Scope();
+    }
+    if (ast->IsScriptFunction()) {
+        return ast->AsScriptFunction()->Scope()->ParamScope();
+    }
+    return nullptr;
+}
+
 void ETSChecker::ReplaceScope(ir::AstNode *root, ir::AstNode *old_node, binder::Scope *new_scope)
 {
     root->Iterate([this, old_node, new_scope](ir::AstNode *child) {
-        binder::Scope *scope = nullptr;
-
-        if (child->IsScriptFunction()) {
-            auto *script_func = child->AsScriptFunction();
-            scope = script_func->Scope()->ParamScope();
-        } else if (child->IsBlockStatement()) {
-            scope = child->AsBlockStatement()->Scope();
+        auto *scope = NodeScope(child);
+        if (scope != nullptr) {
+            while (scope->Parent()->Node() != old_node) {
+                scope = scope->Parent();
+            }
+            scope->SetParent(new_scope);
         } else {
             ReplaceScope(child, old_node, new_scope);
-            return;
         }
-
-        while (scope->Parent()->Node() != old_node) {
-            scope = scope->Parent();
-        }
-        scope->SetParent(new_scope);
     });
 }
 

@@ -64,13 +64,24 @@ checker::Type *ImportNamespaceSpecifier::Check([[maybe_unused]] checker::ETSChec
         return type;
     }
 
-    std::string package_name = import_path.Mutf8();
+    std::string package_name =
+        (import_decl->Module() == nullptr) ? import_path.Mutf8() : import_decl->Module()->Str().Mutf8();
+
     std::replace(package_name.begin(), package_name.end(), '/', '.');
     util::UString package_path(package_name, checker->Allocator());
     std::vector<util::StringView> synthetic_names = checker->GetNameForSynteticObjectType(package_path.View());
 
+    ASSERT(!synthetic_names.empty());
+
+    auto assembler_name = synthetic_names[0];
+    if (import_decl->Module() != nullptr) {
+        assembler_name = util::UString(assembler_name.Mutf8().append(".").append(compiler::Signatures::ETS_GLOBAL),
+                                       checker->Allocator())
+                             .View();
+    }
+
     auto *module_object_type =
-        checker->Allocator()->New<checker::ETSObjectType>(checker->Allocator(), synthetic_names[0], synthetic_names[0],
+        checker->Allocator()->New<checker::ETSObjectType>(checker->Allocator(), synthetic_names[0], assembler_name,
                                                           local_->AsIdentifier(), checker::ETSObjectFlags::CLASS);
 
     auto *root_decl = checker->Allocator()->New<binder::ClassDecl>(synthetic_names[0]);
@@ -95,7 +106,11 @@ checker::Type *ImportNamespaceSpecifier::Check([[maybe_unused]] checker::ETSChec
         last_object_type = synthetic_obj_type;
     }
 
-    checker->SetPropertiesForModuleObject(last_object_type, import_path);
+    checker->SetPropertiesForModuleObject(
+        last_object_type,
+        (import_decl->Module() != nullptr)
+            ? util::UString(import_path.Mutf8() + import_decl->Module()->Str().Mutf8(), checker->Allocator()).View()
+            : import_path);
     checker->SetrModuleObjectTsType(local_, last_object_type);
 
     return module_object_type;

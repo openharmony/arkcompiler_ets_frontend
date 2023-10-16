@@ -50,7 +50,7 @@ class DynamicContext;
 class PandaGen final : public CodeGen {
 public:
     explicit PandaGen(ArenaAllocator *allocator, RegSpiller *spiller, CompilerContext *context,
-                      binder::FunctionScope *scope, ProgramElement *program_element);
+                      binder::FunctionScope *scope, ProgramElement *program_element, AstCompiler *astcompiler);
 
     ~PandaGen() override = default;
     NO_COPY_SEMANTIC(PandaGen);

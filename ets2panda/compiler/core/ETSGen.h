@@ -29,7 +29,7 @@ namespace panda::es2panda::compiler {
 class ETSGen final : public CodeGen {
 public:
     explicit ETSGen(ArenaAllocator *allocator, RegSpiller *spiller, CompilerContext *context,
-                    binder::FunctionScope *scope, ProgramElement *program_element) noexcept;
+                    binder::FunctionScope *scope, ProgramElement *program_element, AstCompiler *astcompiler) noexcept;
 
     [[nodiscard]] const checker::ETSChecker *Checker() const noexcept;
     [[nodiscard]] const binder::ETSBinder *Binder() const noexcept;
@@ -65,8 +65,6 @@ public:
     [[nodiscard]] util::StringView FormClassPropReference(const checker::ETSObjectType *class_type,
                                                           const util::StringView &name);
 
-    void EmitGetter(const ir::AstNode *node, VReg vreg, ir::ScriptFunction *script_func);
-
     void StoreProperty(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
                        const util::StringView &name);
     void LoadProperty(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
@@ -88,7 +86,6 @@ public:
     void EmitReturnVoid(const ir::AstNode *node);
     void LoadBuiltinVoid(const ir::AstNode *node);
     void ReturnAcc(const ir::AstNode *node);
-    void EmitSetter(const ir::MemberExpression *member, ir::Expression *right);
 
     void EmitIsInstance(const ir::AstNode *node, VReg lhs);
 
@@ -365,6 +362,11 @@ public:
         Ra().Emit<CallVirtShort>(node, name, ctor, arg0);
     }
 
+    void CallStatic0(const ir::AstNode *const node, const util::StringView name)
+    {
+        Ra().Emit<CallShort, 0>(node, name, dummy_reg_, dummy_reg_);
+    }
+
     void CallThisStatic0(const ir::AstNode *const node, const VReg ctor, const util::StringView name)
     {
         Ra().Emit<CallShort, 1>(node, name, ctor, dummy_reg_);
@@ -572,6 +574,7 @@ private:
                 break;
             }
             case checker::TypeFlag::ETS_ENUM:
+            case checker::TypeFlag::ETS_STRING_ENUM:
             case checker::TypeFlag::ETS_BOOLEAN:
             case checker::TypeFlag::BYTE:
             case checker::TypeFlag::CHAR:
@@ -759,6 +762,11 @@ private:
                 break;
             }
         }
+
+        // To avoid verifier error checkcast is needed
+        if (signature->HasSignatureFlag(checker::SignatureFlags::SUBSTITUTED_RETURN_TYPE)) {
+            Ra().Emit<Checkcast>(node, signature->ReturnType()->AsETSObjectType()->AssemblerName());
+        }
     }
 
     template <typename Short, typename General, typename Range>
@@ -813,6 +821,11 @@ private:
                 break;
             }
         }
+
+        // To avoid verifier error checkcast is needed
+        if (signature->HasSignatureFlag(checker::SignatureFlags::SUBSTITUTED_RETURN_TYPE)) {
+            Ra().Emit<Checkcast>(node, signature->ReturnType()->AsETSObjectType()->AssemblerName());
+        }
     }
 #undef COMPILE_ARG
 
@@ -863,6 +876,11 @@ private:
                 Rra().Emit<Range>(node, obj, arguments.size() + 2, name, obj);
                 break;
             }
+        }
+
+        // To avoid verifier error checkcast is needed
+        if (signature->HasSignatureFlag(checker::SignatureFlags::SUBSTITUTED_RETURN_TYPE)) {
+            Ra().Emit<Checkcast>(node, signature->ReturnType()->AsETSObjectType()->AssemblerName());
         }
     }
 
@@ -928,8 +946,10 @@ void ETSGen::LoadAccumulatorNumber(const ir::AstNode *node, T number, checker::T
             SetAccumulatorType(Checker()->GlobalDoubleType());
             break;
         }
+        case checker::TypeFlag::ETS_STRING_ENUM:
+            [[fallthrough]];
         case checker::TypeFlag::ETS_ENUM: {
-            Sa().Emit<Ldai>(node, static_cast<checker::ETSEnumType::UType>(number));
+            Sa().Emit<Ldai>(node, static_cast<checker::ETSEnumInterface::UType>(number));
             SetAccumulatorType(Checker()->GlobalIntType());
             break;
         }

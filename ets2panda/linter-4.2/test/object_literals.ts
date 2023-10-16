@@ -184,3 +184,49 @@ let f1: 0|1|2|3 = 3
 let ff : CondI = {
     a: f1
 }
+let dict = new Map<string, string | number>();
+dict.set('1', 123)
+
+interface III {
+  param?: string | number | boolean
+}
+
+let test1: III = { param: dict.get('1') } as III
+let test2: III = { param: dict.get('1')! } as III
+let test3: III = { param: dict.get('1') as number } as III
+let test4: III = { param: dict.get('1') as (number | string) } as III
+export interface Style {
+}
+export class SwitchMenuStyle implements Style {
+}
+export class ProfileOneLineSwitchMenuStyle extends SwitchMenuStyle {
+}
+export class ProfileSwitchMenuStyle extends SwitchMenuStyle {
+}
+export let hfpProfileSwitchMenuStyle = new ProfileSwitchMenuStyle();
+export let hfpProfileOneLineSwitchMenuStyle = new ProfileOneLineSwitchMenuStyle();
+
+export interface SettingsBaseMenuData {
+  style?: Style;
+}
+
+function test(isDisConnected:boolean){
+  let a={style: isDisConnected ? hfpProfileOneLineSwitchMenuStyle: hfpProfileSwitchMenuStyle} as SettingsBaseMenuData
+}
+
+interface PPP {
+  x: number
+  y: number | undefined
+  z?: number
+}
+
+let p1: PPP = {x: 10, y: 10}
+let p2: PPP = {x: 10, y: undefined}
+let p3: PPP = {x: 10, y: undefined, z: undefined}
+let p4: PPP = {x: 10, y: undefined, z: 10}
+let p5: PPP = {x: 10, y: 10, z: 10}
+const cp1: PPP = {x: 10, y: 10}
+const cp2: PPP = {x: 10, y: undefined}
+const cp3: PPP = {x: 10, y: undefined, z: undefined}
+const cp4: PPP = {x: 10, y: undefined, z: 10}
+const cp5: PPP = {x: 10, y: 10, z: 10}

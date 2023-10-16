@@ -56,7 +56,8 @@
     _(TypeFlag::NON_PRIMITIVE, NonPrimitiveType)      \
     _(TypeFlag::WILDCARD, WildcardType)               \
     _(TypeFlag::ETS_TYPE_PARAMETER, ETSTypeParameter) \
-    _(TypeFlag::ETS_ENUM, ETSEnumType)
+    _(TypeFlag::ETS_ENUM, ETSEnumType)                \
+    _(TypeFlag::ETS_STRING_ENUM, ETSStringEnumType)
 
 #define OBJECT_TYPE_MAPPING(_)                                \
     _(ObjectType::ObjectTypeKind::FUNCTION, FunctionType)     \

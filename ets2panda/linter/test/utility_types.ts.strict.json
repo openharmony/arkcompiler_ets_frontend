@@ -30,26 +30,6 @@
             "problem": "UtilityType"
         },
         {
-            "line": 31,
-            "column": 15,
-            "problem": "UtilityType"
-        },
-        {
-            "line": 31,
-            "column": 33,
-            "problem": "ObjectLiteralNoContextType"
-        },
-        {
-            "line": 39,
-            "column": 15,
-            "problem": "UtilityType"
-        },
-        {
-            "line": 39,
-            "column": 32,
-            "problem": "ObjectLiteralNoContextType"
-        },
-        {
             "line": 53,
             "column": 22,
             "problem": "UtilityType"

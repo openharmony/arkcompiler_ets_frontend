@@ -135,6 +135,8 @@ namespace fs = std::experimental::filesystem;
 #endif
 
 namespace panda::es2panda::parser {
+using namespace std::literals::string_literals;
+
 std::unique_ptr<lexer::Lexer> ETSParser::InitLexer(const SourceFile &source_file)
 {
     GetProgram()->SetSource(source_file);
@@ -2106,10 +2108,6 @@ void ETSParser::CreateClassFunctionDeclaration(ir::MethodDefinition *method)
         ThrowSyntaxError("Main overload is not enabled", method_name->Start());
     }
 
-    if (method_name->IsMutator()) {
-        method_name->SetMutator();
-    }
-
     auto *current_node = found->Declaration()->Node();
 
     if (current_node->AsMethodDefinition()->Function()->IsDefaultParamProxy()) {
@@ -3881,6 +3879,14 @@ ir::TSTypeParameter *ETSParser::ParseTypeParameter([[maybe_unused]] TypeAnnotati
     return type_param;
 }
 
+// NOLINTBEGIN(cert-err58-cpp)
+static std::string const DUPLICATE_ENUM_VALUE = "Duplicate enum initialization value "s;
+static std::string const INVALID_ENUM_TYPE = "Invalid enum initialization type"s;
+static std::string const INVALID_ENUM_VALUE = "Invalid enum initialization value"s;
+static std::string const MISSING_COMMA_IN_ENUM = "Missing comma between enum constants"s;
+static std::string const TRAILING_COMMA_IN_ENUM = "Trailing comma is not allowed in enum constant list"s;
+// NOLINTEND(cert-err58-cpp)
+
 ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, const lexer::SourcePosition &enum_start,
                                                    const bool is_const, const bool is_static)
 {
@@ -3894,11 +3900,53 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
         ThrowSyntaxError("An enum must have at least one enum constant");
     }
 
+    // Lambda to check if enum underlying type is string:
+    auto const is_string_enum = [this]() -> bool {
+        Lexer()->NextToken();
+        auto token_type = Lexer()->GetToken().Type();
+        while (token_type != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE &&
+               token_type != lexer::TokenType::PUNCTUATOR_COMMA) {
+            if (token_type == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+                Lexer()->NextToken();
+                if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING) {
+                    return true;
+                }
+            }
+            Lexer()->NextToken();
+            token_type = Lexer()->GetToken().Type();
+        }
+        return false;
+    };
+
+    // Get the underlying type of enum (number or string). It is defined from the first element ONLY!
+    auto const pos = Lexer()->Save();
+    auto const string_type_enum = is_string_enum();
+    Lexer()->Rewind(pos);
+
     ArenaVector<ir::AstNode *> members(Allocator()->Adapter());
     const auto enum_ctx = binder::LexicalScope<binder::LocalScope>(Binder());
+
+    if (string_type_enum) {
+        ParseStringEnum(members);
+    } else {
+        ParseNumberEnum(members);
+    }
+
+    auto *const enum_declaration = AllocNode<ir::TSEnumDeclaration>(Allocator(), Binder()->GetScope()->AsLocalScope(),
+                                                                    key, std::move(members), is_const, is_static);
+    enum_declaration->SetRange({enum_start, Lexer()->GetToken().End()});
+
+    Lexer()->NextToken();  // eat '}'
+
+    return enum_declaration;
+}
+
+void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
+{
     std::unordered_set<checker::ETSEnumType::ValueType> enum_values {};
     checker::ETSEnumType::ValueType current_value {};
 
+    // Lambda to parse enum member (maybe with initializer)
     auto const parse_member = [this, &members, &enum_values, &current_value]() {
         auto *const ident = ExpectIdentifier();
         auto [decl, var] = Binder()->NewVarDecl<binder::LetDecl>(ident->Start(), ident->Name());
@@ -3908,7 +3956,7 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
 
         auto const add_value = [this, &enum_values](checker::ETSEnumType::ValueType const new_value) {
             if (auto const rc = enum_values.emplace(new_value); !rc.second) {
-                ThrowSyntaxError("Duplicate enum initialization value " + std::to_string(new_value));
+                ThrowSyntaxError(DUPLICATE_ENUM_VALUE + std::to_string(new_value));
             }
         };
 
@@ -3929,12 +3977,12 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
             }
 
             if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_NUMBER) {
-                ThrowSyntaxError("Invalid enum initialization type");
+                ThrowSyntaxError(INVALID_ENUM_TYPE);
             }
 
             ordinal = ParseNumberLiteral()->AsNumberLiteral();
             if (!ordinal->Number().CanGetValue<checker::ETSEnumType::ValueType>()) {
-                ThrowSyntaxError("Invalid enum initialization value");
+                ThrowSyntaxError(INVALID_ENUM_VALUE);
             } else if (minus_sign) {
                 ordinal->Number().Negate();
             }
@@ -3965,7 +4013,7 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
-            ThrowSyntaxError("Missing comma between enum constants");
+            ThrowSyntaxError(MISSING_COMMA_IN_ENUM);
         }
 
         Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
@@ -3976,14 +4024,60 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
 
         parse_member();
     }
+}
 
-    auto *const enum_declaration = AllocNode<ir::TSEnumDeclaration>(Allocator(), Binder()->GetScope()->AsLocalScope(),
-                                                                    key, std::move(members), is_const, is_static);
-    enum_declaration->SetRange({enum_start, Lexer()->GetToken().End()});
+void ETSParser::ParseStringEnum(ArenaVector<ir::AstNode *> &members)
+{
+    std::unordered_set<util::StringView> enum_values {};
 
-    Lexer()->NextToken();  // eat '}'
+    // Lambda to parse enum member (maybe with initializer)
+    auto const parse_member = [this, &members, &enum_values]() {
+        auto *const ident = ExpectIdentifier();
+        auto [decl, var] = Binder()->NewVarDecl<binder::LetDecl>(ident->Start(), ident->Name());
+        var->SetScope(Binder()->GetScope());
+        var->AddFlag(binder::VariableFlags::STATIC);
+        ident->SetVariable(var);
 
-    return enum_declaration;
+        ir::StringLiteral *item_value;
+
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+            // Case when user explicitly set the value for enumeration constant
+
+            Lexer()->NextToken();
+            if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_STRING) {
+                ThrowSyntaxError(INVALID_ENUM_TYPE);
+            }
+
+            item_value = ParseStringLiteral();
+            if (auto const rc = enum_values.emplace(item_value->Str()); !rc.second) {
+                ThrowSyntaxError(DUPLICATE_ENUM_VALUE + '\'' + std::string {item_value->Str()} + '\'');
+            }
+        } else {
+            // Default item value is not allowed for string type enumerations!
+            ThrowSyntaxError("All items of string-type enumeration should be explicitly initialized.");
+        }
+
+        auto *const member = AllocNode<ir::TSEnumMember>(ident, item_value);
+        member->SetRange({ident->Start(), item_value->End()});
+        decl->BindNode(member);
+        members.emplace_back(member);
+    };
+
+    parse_member();
+
+    while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
+            ThrowSyntaxError(MISSING_COMMA_IN_ENUM);
+        }
+
+        Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
+
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+            ThrowSyntaxError(TRAILING_COMMA_IN_ENUM);
+        }
+
+        parse_member();
+    }
 }
 
 ir::ThisExpression *ETSParser::ParseThisExpression()

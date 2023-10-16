@@ -101,10 +101,7 @@ Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, Gl
         auto *const param_type = signature_info_->params[idx]->TsType();
         if (param_type->HasTypeFlag(TypeFlag::GENERIC) && param_type->IsETSObjectType()) {
             copied_info->params[idx]->SetTsType(param_type->Instantiate(allocator, relation, global_types));
-            auto original_type_args = relation->GetChecker()
-                                          ->AsETSChecker()
-                                          ->GetOriginalBaseType(param_type->AsETSObjectType())
-                                          ->TypeArguments();
+            auto original_type_args = param_type->AsETSObjectType()->GetOriginalBaseType()->TypeArguments();
             copied_info->params[idx]->TsType()->AsETSObjectType()->SetTypeArguments(std::move(original_type_args));
         } else {
             copied_info->params[idx]->SetTsType(

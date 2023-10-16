@@ -164,8 +164,12 @@ private:
     ir::Expression *ParseAsyncExpression();
     ir::Expression *ParseAwaitExpression();
     ir::TSTypeParameter *ParseTypeParameter(TypeAnnotationParsingOptions *options) override;
+
     ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enum_start, bool is_const,
                                             bool is_static) override;
+    void ParseNumberEnum(ArenaVector<ir::AstNode *> &members);
+    void ParseStringEnum(ArenaVector<ir::AstNode *> &members);
+
     ir::Statement *ParseInterfaceDeclaration(bool is_static) override;
     ir::ThisExpression *ParseThisExpression() override;
     ir::Statement *ParseFunctionStatement(StatementParsingFlags flags) override;

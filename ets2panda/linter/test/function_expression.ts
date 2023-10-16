@@ -74,3 +74,40 @@ const noRecursiveCall = function f(p: () => number): void { // Doesn't have recu
   let c = new C()
   c.m();
 };
+
+let iife = function() {
+  console.log('called immediately');
+}();
+
+let indexAccess = function() {
+  console.log('index access');
+}[0];
+
+void function() {
+  console.log('void');
+};
+
+async function awaitFun() { 
+  await function() {
+    console.log('async');
+  };
+}
+
+let typeofFunc = typeof function() {
+  console.log('typeof');
+}
+
+class BindFuncExpr {
+  foo() {
+    let bar = function(p: boolean) {
+      console.log('Function.bind(this)');
+    }.bind(this);
+  }
+}
+
+let callback = function() { console.log('callback'); }
+callback = callback || function() { console.log('expr || function(){}'); };
+
+let ternaryExpr = !!callback
+  ? function() { console.log('ternary 1'); } || 2
+  : 3 && function() { console.log('ternary 2'); };

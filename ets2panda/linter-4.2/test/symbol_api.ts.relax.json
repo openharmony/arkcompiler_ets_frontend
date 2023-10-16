@@ -17,112 +17,142 @@
         {
             "line": 16,
             "column": 9,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 17,
             "column": 9,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 18,
             "column": 9,
-            "problem": "SymbolType"
-        },
-        {
-            "line": 19,
-            "column": 9,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 20,
             "column": 9,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 21,
             "column": 9,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 22,
             "column": 9,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 23,
             "column": 9,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 24,
             "column": 9,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 25,
             "column": 9,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 26,
             "column": 9,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 27,
             "column": 9,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 29,
             "column": 9,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 31,
             "column": 12,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 33,
             "column": 10,
-            "problem": "SymbolType"
-        },
-        {
-            "line": 33,
-            "column": 10,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 35,
             "column": 20,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 38,
             "column": 44,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 39,
             "column": 22,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 42,
             "column": 14,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 46,
             "column": 14,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         },
         {
             "line": 50,
             "column": 12,
-            "problem": "SymbolType"
+            "problem": "SymbolType",
+            "suggest": "",
+            "rule": "\"Symbol()\" API is not supported (arkts-no-symbol)"
         }
     ]
 }

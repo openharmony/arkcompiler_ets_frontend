@@ -204,6 +204,14 @@ checker::Type *MethodDefinition::Check(checker::ETSChecker *checker)
         checker->Context().SetContainingSignature(nullptr);
     }
 
+    if (script_func->IsSetter() && (script_func->Signature()->ReturnType() != checker->GlobalBuiltinVoidType())) {
+        checker->ThrowTypeError("Setter must have void return type", script_func->Start());
+    }
+
+    if (script_func->IsGetter() && (script_func->Signature()->ReturnType() == checker->GlobalBuiltinVoidType())) {
+        checker->ThrowTypeError("Getter must return a value", script_func->Start());
+    }
+
     checker->CheckOverride(TsType()->AsETSFunctionType()->FindSignature(Function()));
 
     for (auto *it : overloads_) {

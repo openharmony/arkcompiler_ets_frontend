@@ -18,10 +18,12 @@
 
 #include "binder/enumMemberResult.h"
 #include "checker/checkerContext.h"
+#include "checker/SemanticAnalyzer.h"
 #include "checker/types/typeRelation.h"
 #include "util/enumbitops.h"
 #include "util/ustring.h"
 #include "es2panda.h"
+
 #include "macros.h"
 
 #include <cstdint>
@@ -174,6 +176,8 @@ public:
     bool AreTypesComparable(Type *source, Type *target);
     bool IsTypeEqualityComparableTo(Type *source, Type *target);
     bool IsAllTypesAssignableTo(Type *source, Type *target);
+    void SetAnalyzer(SemanticAnalyzer *analyzer);
+    checker::SemanticAnalyzer *GetAnalyzer() const;
 
     friend class ScopeContext;
     friend class TypeStackElement;
@@ -190,6 +194,7 @@ private:
     CheckerContext context_;
     GlobalTypesHolder *global_types_;
     TypeRelation *relation_;
+    SemanticAnalyzer *analyzer_ {};
     binder::Binder *binder_ {};
     parser::Program *program_ {};
     binder::Scope *scope_ {};

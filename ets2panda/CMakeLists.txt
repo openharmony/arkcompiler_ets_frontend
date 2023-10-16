@@ -107,6 +107,7 @@ set(ES2PANDA_LIB_SRC
   compiler/core/compilerImpl.cpp
   compiler/core/dynamicContext.cpp
   compiler/core/emitter.cpp
+  compiler/core/JSCompiler.cpp
   compiler/core/JSemitter.cpp
   compiler/core/envScope.cpp
   compiler/core/function.cpp
@@ -117,6 +118,7 @@ set(ES2PANDA_LIB_SRC
   compiler/core/regAllocator.cpp
   compiler/core/regScope.cpp
   compiler/core/regSpiller.cpp
+  compiler/core/ETSCompiler.cpp
   compiler/core/ETSemitter.cpp
   compiler/core/ETSGen.cpp
   compiler/core/ETSfunction.cpp
@@ -308,9 +310,11 @@ set(ES2PANDA_LIB_SRC
   parser/statementParser.cpp
   checker/checker.cpp
   checker/checkerContext.cpp
+  checker/ETSAnalyzer.cpp
   checker/ETSchecker.cpp
   checker/TSchecker.cpp
   checker/ASchecker.cpp
+  checker/TSAnalyzer.cpp
   checker/JSchecker.cpp
   checker/ets/aliveAnalyzer.cpp
   checker/ets/arithmetic.cpp

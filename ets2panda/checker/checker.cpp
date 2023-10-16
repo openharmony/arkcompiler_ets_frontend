@@ -207,4 +207,14 @@ binder::Binder *Checker::Binder() const
     return binder_;
 }
 
+void Checker::SetAnalyzer(SemanticAnalyzer *analyzer)
+{
+    analyzer_ = analyzer;
+}
+
+checker::SemanticAnalyzer *Checker::GetAnalyzer() const
+{
+    return analyzer_;
+}
+
 }  // namespace panda::es2panda::checker

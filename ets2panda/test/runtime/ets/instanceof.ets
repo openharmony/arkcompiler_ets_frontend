@@ -19,6 +19,11 @@ function main(): void {
   assert (obj instanceof Boolean)
   assert (!(obj instanceof Long))
 
+  let nobj: Object|null = null;
+  assert (null instanceof null)
+  assert (nobj instanceof null)
+  assert (!(obj instanceof null))
+
   let arr: int[] = [1, 2, 3];
   assert (arr instanceof Object)
   assert (!(arr instanceof Long))

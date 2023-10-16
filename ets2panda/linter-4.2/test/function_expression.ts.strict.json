@@ -153,6 +153,97 @@
             "problem": "FunctionExpression",
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 78,
+            "column": 12,
+            "problem": "FunctionExpression",
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 82,
+            "column": 5,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 82,
+            "column": 19,
+            "problem": "FunctionExpression",
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 86,
+            "column": 6,
+            "problem": "FunctionExpression",
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 91,
+            "column": 9,
+            "problem": "FunctionExpression",
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 96,
+            "column": 25,
+            "problem": "FunctionExpression",
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 102,
+            "column": 9,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 102,
+            "column": 15,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 102,
+            "column": 15,
+            "problem": "FunctionExpression",
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 108,
+            "column": 16,
+            "problem": "FunctionExpression",
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 109,
+            "column": 24,
+            "problem": "FunctionExpression",
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 112,
+            "column": 5,
+            "problem": "FunctionExpression",
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 113,
+            "column": 10,
+            "problem": "FunctionExpression",
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         }
     ]
 }

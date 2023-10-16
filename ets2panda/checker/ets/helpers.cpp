@@ -132,6 +132,14 @@ Type *ETSChecker::GetNonConstantTypeFromPrimitiveType(Type *type)
 
 Type *ETSChecker::GetTypeOfVariable(binder::Variable *const var)
 {
+    if (IsVariableGetterSetter(var)) {
+        auto *prop_type = var->TsType()->AsETSFunctionType();
+        if (prop_type->HasTypeFlag(checker::TypeFlag::GETTER)) {
+            return prop_type->FindGetter()->ReturnType();
+        }
+        return prop_type->FindSetter()->Params()[0]->TsType();
+    }
+
     if (var->TsType() != nullptr) {
         return var->TsType();
     }
@@ -269,12 +277,17 @@ binder::Variable *ETSChecker::FindVariableInGlobal(const ir::Identifier *const i
     return Scope()->FindInGlobal(identifier->Name(), binder::ResolveBindingOptions::ALL).variable;
 }
 
-bool ETSChecker::IsVariableStatic(const binder::Variable *var)
+bool ETSChecker::IsVariableStatic(const binder::Variable *var) const
 {
     if (var->HasFlag(binder::VariableFlags::METHOD)) {
         return var->TsType()->AsETSFunctionType()->CallSignatures()[0]->HasSignatureFlag(SignatureFlags::STATIC);
     }
     return var->HasFlag(binder::VariableFlags::STATIC);
+}
+
+bool ETSChecker::IsVariableGetterSetter(const binder::Variable *var) const
+{
+    return var->TsType() != nullptr && var->TsType()->HasTypeFlag(TypeFlag::GETTER_SETTER);
 }
 
 void ETSChecker::ValidateResolvedIdentifier(const ir::Identifier *const ident, binder::Variable *const resolved)
@@ -329,7 +342,7 @@ void ETSChecker::ValidateResolvedIdentifier(const ir::Identifier *const ident, b
             }
 
             if (!resolved_type->IsETSObjectType() && !resolved_type->IsETSArrayType() &&
-                !resolved_type->IsETSEnumType()) {
+                !resolved_type->IsETSEnumType() && !resolved_type->IsETSStringEnumType()) {
                 throw_error();
             }
 
@@ -498,6 +511,10 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *const ident)
 
 void ETSChecker::ValidateUnaryOperatorOperand(binder::Variable *variable)
 {
+    if (IsVariableGetterSetter(variable)) {
+        return;
+    }
+
     if (variable->Declaration()->IsConstDecl()) {
         if (HasStatus(CheckerStatus::IN_CONSTRUCTOR | CheckerStatus::IN_STATIC_BLOCK) &&
             !variable->HasFlag(binder::VariableFlags::EXPLICIT_INIT_REQUIRED)) {
@@ -714,6 +731,10 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
                        ident->Start());
     }
 
+    if ((init->IsMemberExpression()) && (annotation_type != nullptr)) {
+        SetArrayPreferredTypeForNestedMemberExpressions(init->AsMemberExpression(), annotation_type);
+    }
+
     if (init->IsArrayExpression() && annotation_type->IsETSArrayType()) {
         init->AsArrayExpression()->SetPreferredType(annotation_type->AsETSArrayType()->ElementType());
     }
@@ -752,6 +773,36 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
 
     return binding_var->TsType();
+}
+
+void ETSChecker::SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpression *expr, Type *annotation_type)
+{
+    if ((expr == nullptr) || (annotation_type == nullptr)) {
+        return;
+    }
+
+    if (expr->Kind() != ir::MemberExpressionKind::ELEMENT_ACCESS) {
+        return;
+    }
+
+    // Expand all member expressions
+    Type *element_type = annotation_type;
+    ir::Expression *object = expr->Object();
+    while ((object != nullptr) && (object->IsMemberExpression())) {
+        ir::MemberExpression *member_expr = object->AsMemberExpression();
+        if (member_expr->Kind() != ir::MemberExpressionKind::ELEMENT_ACCESS) {
+            return;
+        }
+
+        object = member_expr->Object();
+        element_type = CreateETSArrayType(element_type);
+    }
+
+    // Set explicit target type for array
+    if ((object != nullptr) && (object->IsArrayExpression())) {
+        ir::ArrayExpression *array = object->AsArrayExpression();
+        array->SetPreferredType(element_type);
+    }
 }
 
 Type *ETSChecker::GetTypeFromTypeAliasReference(binder::Variable *var)
@@ -796,7 +847,14 @@ Type *ETSChecker::GetTypeFromEnumReference([[maybe_unused]] binder::Variable *va
         return var->TsType();
     }
 
-    return CreateETSEnumType(var->Declaration()->Node()->AsTSEnumDeclaration());
+    auto const *const enum_decl = var->Declaration()->Node()->AsTSEnumDeclaration();
+    if (auto *const item_init = enum_decl->Members().front()->AsTSEnumMember()->Init(); item_init->IsNumberLiteral()) {
+        return CreateETSEnumType(enum_decl);
+    } else if (item_init->IsStringLiteral()) {  // NOLINT(readability-else-after-return)
+        return CreateETSStringEnumType(enum_decl);
+    } else {  // NOLINT(readability-else-after-return)
+        ThrowTypeError("Invalid enumeration value type.", enum_decl->Start());
+    }
 }
 
 Type *ETSChecker::GetTypeFromTypeParameterReference(binder::LocalVariable *var, const lexer::SourcePosition &pos)
@@ -1197,7 +1255,8 @@ Type *ETSChecker::ETSBuiltinTypeAsPrimitiveType(Type *object_type)
         return nullptr;
     }
 
-    if (object_type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) || object_type->HasTypeFlag(TypeFlag::ETS_ENUM)) {
+    if (object_type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE) || object_type->HasTypeFlag(TypeFlag::ETS_ENUM) ||
+        object_type->HasTypeFlag(TypeFlag::ETS_STRING_ENUM)) {
         return object_type;
     }
 
@@ -1576,6 +1635,17 @@ void ETSChecker::CheckUnboxedSourceTypeWithWideningAssignable(TypeRelation *rela
     }
 }
 
+bool ETSChecker::CheckRethrowingParams(const ir::AstNode *ancestor_function, const ir::AstNode *node)
+{
+    for (const auto param : ancestor_function->AsScriptFunction()->Signature()->Function()->Params()) {
+        if (node->AsCallExpression()->Callee()->AsIdentifier()->Name().Is(
+                param->AsETSParameterExpression()->Ident()->Name().Mutf8())) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void ETSChecker::CheckThrowingStatements(ir::AstNode *node)
 {
     ir::AstNode *ancestor_function = FindAncestorGivenByType(node, ir::AstNodeType::SCRIPT_FUNCTION);
@@ -1588,11 +1658,19 @@ void ETSChecker::CheckThrowingStatements(ir::AstNode *node)
     }
 
     if (ancestor_function->AsScriptFunction()->IsThrowing() ||
-        (ancestor_function->AsScriptFunction()->IsRethrowing() && !node->IsThrowStatement())) {
+        (ancestor_function->AsScriptFunction()->IsRethrowing() &&
+         (!node->IsThrowStatement() && CheckRethrowingParams(ancestor_function, node)))) {
         return;
     }
 
     if (!CheckThrowingPlacement(node, ancestor_function)) {
+        if (ancestor_function->AsScriptFunction()->IsRethrowing() && !node->IsThrowStatement()) {
+            ThrowTypeError(
+                "This statement can cause an exception, re-throwing functions can throw exception only by their "
+                "parameters.",
+                node->Start());
+        }
+
         ThrowTypeError(
             "This statement can cause an exception, therefore it must be enclosed in a try statement with a default "
             "catch clause",
@@ -1704,7 +1782,11 @@ static void TypeToString(std::stringstream &ss, Type *tp)
         ss << tp->AsETSObjectType()->GetDeclNode()->Start().index;
         ss << ".";
     }
-    tp->ToString(ss);
+    if (tp->IsETSObjectType()) {
+        ss << tp->AsETSObjectType()->Name();
+    } else {
+        tp->ToString(ss);
+    }
     if (tp->IsETSObjectType() && !tp->AsETSObjectType()->TypeArguments().empty()) {
         auto type_args = tp->AsETSObjectType()->TypeArguments();
         ss << "<";
@@ -1750,26 +1832,11 @@ util::StringView ETSChecker::GetHashFromSubstitution(const Substitution *substit
 
 ETSObjectType *ETSChecker::GetOriginalBaseType(Type *const object)
 {
-    if ((object == nullptr) || (!object->IsETSObjectType())) {
+    if (object == nullptr || !object->IsETSObjectType()) {
         return nullptr;
     }
 
-    auto *const ets_object = object->AsETSObjectType();
-
-    if (ets_object->GetBaseType() == nullptr) {
-        return ets_object;
-    }
-
-    auto *base_iter = ets_object->GetBaseType();
-
-    while (true) {
-        if ((base_iter->GetBaseType() == nullptr) || (base_iter->GetBaseType() == base_iter)) {
-            break;
-        }
-        base_iter = base_iter->GetBaseType();
-    }
-
-    return base_iter;
+    return object->AsETSObjectType()->GetOriginalBaseType();
 }
 
 Type *ETSChecker::GetTypeFromTypeAnnotation(ir::TypeNode *const type_annotation)
@@ -1793,7 +1860,7 @@ Type *ETSChecker::GetTypeFromTypeAnnotation(ir::TypeNode *const type_annotation)
 
 void ETSChecker::CheckValidGenericTypeParameter(Type *const arg_type, const lexer::SourcePosition &pos)
 {
-    if (!arg_type->IsETSEnumType()) {
+    if (!arg_type->IsETSEnumType() && !arg_type->IsETSStringEnumType()) {
         return;
     }
     std::stringstream ss;

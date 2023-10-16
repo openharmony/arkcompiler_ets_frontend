@@ -62,7 +62,6 @@ function formTscOptions(cmdOptions: CommandLineOptions, extraOptions?: any): ts.
       module: ts.ModuleKind.CommonJS,
       allowJs: true,
       checkJs: true,
-      maxNodeModuleJsDepth: 2
     },
   };
 

@@ -14,7 +14,7 @@
  */
 
 export const LIMITED_STANDARD_UTILITY_TYPES = [
-  'Awaited', 'Required', 'Readonly', 'Pick', 'Omit', 'Exclude', 'Extract', 'NonNullable', 'Parameters',
+  'Awaited', 'Pick', 'Omit', 'Exclude', 'Extract', 'NonNullable', 'Parameters',
   'ConstructorParameters', 'ReturnType', 'InstanceType', 'ThisParameterType', 'OmitThisParameter',
   'ThisType', 'Uppercase', 'Lowercase', 'Capitalize', 'Uncapitalize',
 ];

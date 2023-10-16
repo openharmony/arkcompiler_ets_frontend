@@ -588,7 +588,13 @@ void TypedParser::CheckObjectTypeForDuplicatedProperties(ir::Expression *key, Ar
 
 ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterface()
 {
-    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
+    if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_IMPLEMENTS) {
+        ThrowSyntaxError("Interface declaration cannot have 'implements' clause.");
+    }
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+        ThrowSyntaxError("Unexpected token, expected '{'");
+    }
 
     Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat '{'
 

@@ -257,8 +257,8 @@ using EcmaDirecteval = EcmaDisabled;
 #endif
 
 PandaGen::PandaGen(ArenaAllocator *const allocator, RegSpiller *const spiller, CompilerContext *const context,
-                   binder::FunctionScope *const scope, ProgramElement *const program_element)
-    : CodeGen(allocator, spiller, context, scope, program_element)
+                   binder::FunctionScope *const scope, ProgramElement *const program_element, AstCompiler *astcompiler)
+    : CodeGen(allocator, spiller, context, scope, program_element, astcompiler)
 {
     Function::Compile(this);
 }

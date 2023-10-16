@@ -19,7 +19,9 @@
 #include "compiler/core/compileQueue.h"
 #include "compiler/core/compilerImpl.h"
 #include "compiler/core/pandagen.h"
+#include "compiler/core/ETSCompiler.h"
 #include "compiler/core/ETSGen.h"
+#include "compiler/core/JSCompiler.h"
 #include "compiler/core/JSemitter.h"
 #include "compiler/core/ETSemitter.h"
 #include "compiler/lowering/phase.h"
@@ -39,6 +41,8 @@
 #include "checker/JSchecker.h"
 #include "es2panda.h"
 #include "util/declgenEts2Ts.h"
+#include "checker/ETSAnalyzer.h"
+#include "checker/TSAnalyzer.h"
 
 #include <iostream>
 #include <thread>
@@ -71,15 +75,15 @@ panda::pandasm::Program *CompilerImpl::Emit(CompilerContext *context)
     return emitter->Finalize(context->DumpDebugInfo(), Signatures::ETS_GLOBAL);
 }
 
-template <typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
+template <typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter, typename AstCompiler>
 static CompilerContext::CodeGenCb MakeCompileJob()
 {
     return
         [](CompilerContext *context, binder::FunctionScope *scope, compiler::ProgramElement *program_element) -> void {
             RegSpiller reg_spiller;
             ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
-            CodeGen cg(&allocator, &reg_spiller, context, scope, program_element);
-
+            AstCompiler astcompiler;
+            CodeGen cg(&allocator, &reg_spiller, context, scope, program_element, &astcompiler);
             FunctionEmitter func_emitter(&cg, program_element);
             func_emitter.Generate();
         };
@@ -88,8 +92,8 @@ static CompilerContext::CodeGenCb MakeCompileJob()
 using EmitCb = std::function<pandasm::Program *(compiler::CompilerContext *)>;
 using PhaseListGetter = std::function<std::vector<compiler::Phase *>()>;
 
-template <typename Parser, typename Binder, typename Checker, typename CodeGen, typename RegSpiller,
-          typename FunctionEmitter, typename Emitter>
+template <typename Parser, typename Binder, typename Checker, typename Analyzer, typename AstCompiler, typename CodeGen,
+          typename RegSpiller, typename FunctionEmitter, typename Emitter>
 static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const PhaseListGetter &get_phases,
                                         const EmitCb &emit_cb)
 {
@@ -98,12 +102,14 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
     program.MarkEntry();
     auto parser = Parser(&program, unit.options, static_cast<parser::ParserStatus>(unit.raw_parser_status));
     auto checker = Checker();
+    auto analyzer = Analyzer(&checker);
+    checker.SetAnalyzer(&analyzer);
 
     auto *binder = program.Binder();
     binder->SetProgram(&program);
 
     CompilerContext context(binder, &checker, unit.options,
-                            MakeCompileJob<CodeGen, RegSpiller, FunctionEmitter, Emitter>());
+                            MakeCompileJob<CodeGen, RegSpiller, FunctionEmitter, Emitter, AstCompiler>());
     binder->SetCompilerContext(&context);
 
     auto emitter = Emitter(&context);
@@ -137,24 +143,28 @@ pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit)
 
     switch (unit.ext) {
         case ScriptExtension::TS: {
-            return CreateCompiler<parser::TSParser, binder::TSBinder, checker::TSChecker, compiler::PandaGen,
-                                  compiler::DynamicRegSpiller, compiler::JSFunctionEmitter, compiler::JSEmitter>(
-                unit, compiler::GetEmptyPhaseList, emit_cb);
+            return CreateCompiler<parser::TSParser, binder::TSBinder, checker::TSChecker, checker::TSAnalyzer,
+                                  compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
+                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetEmptyPhaseList,
+                                                                                    emit_cb);
         }
         case ScriptExtension::AS: {
-            return CreateCompiler<parser::ASParser, binder::ASBinder, checker::ASChecker, compiler::PandaGen,
-                                  compiler::DynamicRegSpiller, compiler::JSFunctionEmitter, compiler::JSEmitter>(
-                unit, compiler::GetEmptyPhaseList, emit_cb);
+            return CreateCompiler<parser::ASParser, binder::ASBinder, checker::ASChecker, checker::TSAnalyzer,
+                                  compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
+                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetEmptyPhaseList,
+                                                                                    emit_cb);
         }
         case ScriptExtension::ETS: {
-            return CreateCompiler<parser::ETSParser, binder::ETSBinder, checker::ETSChecker, compiler::ETSGen,
-                                  compiler::StaticRegSpiller, compiler::ETSFunctionEmitter, compiler::ETSEmitter>(
-                unit, compiler::GetETSPhaseList, emit_cb);
+            return CreateCompiler<parser::ETSParser, binder::ETSBinder, checker::ETSChecker, checker::ETSAnalyzer,
+                                  compiler::ETSCompiler, compiler::ETSGen, compiler::StaticRegSpiller,
+                                  compiler::ETSFunctionEmitter, compiler::ETSEmitter>(unit, compiler::GetETSPhaseList,
+                                                                                      emit_cb);
         }
         case ScriptExtension::JS: {
-            return CreateCompiler<parser::JSParser, binder::JSBinder, checker::JSChecker, compiler::PandaGen,
-                                  compiler::DynamicRegSpiller, compiler::JSFunctionEmitter, compiler::JSEmitter>(
-                unit, compiler::GetEmptyPhaseList, emit_cb);
+            return CreateCompiler<parser::JSParser, binder::JSBinder, checker::JSChecker, checker::TSAnalyzer,
+                                  compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
+                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetEmptyPhaseList,
+                                                                                    emit_cb);
         }
         default: {
             UNREACHABLE();

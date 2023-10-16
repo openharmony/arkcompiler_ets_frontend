@@ -21,7 +21,7 @@ export enum FaultID {
   ImportFromPath, FunctionExpression, IntersectionType,
   ObjectTypeLiteral, CommaOperator, LimitedReturnTypeInference, 
   LambdaWithTypeParameters, ClassExpression, DestructuringAssignment,
-  DestructuringDeclaration, ForOfNonArray, VarDeclaration, CatchWithUnsupportedType, DeleteOperator,
+  DestructuringDeclaration, VarDeclaration, CatchWithUnsupportedType, DeleteOperator,
   DeclWithDuplicateName, UnaryArithmNotNumber, ConstructorType, ConstructorIface, ConstructorFuncs, CallSignature,
   TypeAssertion, PrivateIdentifier, LocalFunction,
   ConditionalType, MappedType, NamespaceAsObject, ClassAsObject,

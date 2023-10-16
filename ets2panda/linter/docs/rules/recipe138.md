@@ -5,7 +5,7 @@ Rule ``arkts-no-utility-types``
 **Severity: error**
 
 Currently ArkTS does not support utility types from TypeScript extensions to the
-standard library, except following: ``Partial``, ``Record``.
+standard library, except following: ``Partial``, ``Required``, ``Readonly``, ``Record``.
 
 For the type *Record<K, V>*, the type of an indexing expression *rec[index]* is
 of the type *V | undefined*.

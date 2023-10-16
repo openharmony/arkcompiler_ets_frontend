@@ -183,7 +183,7 @@ public:
     binder::LocalVariable *ResolveMemberReference(const ir::MemberExpression *member_expr, const ETSObjectType *target);
     void CheckImplicitSuper(ETSObjectType *class_type, Signature *ctor_sig);
     void CheckValidInheritance(ETSObjectType *class_type, ir::ClassDefinition *class_def);
-    void CheckGetterSetterModifiers(const ir::ClassDefinition *class_def);
+    void CheckGetterSetterProperties(ETSObjectType *class_type);
     void AddElementsToModuleObject(ETSObjectType *module_obj, const util::StringView &str);
     Type *FindLeastUpperBound(Type *source, Type *target);
     Type *GetCommonClass(Type *source, Type *target);
@@ -208,7 +208,8 @@ public:
     ETSFunctionType *CreateETSFunctionType(ArenaVector<Signature *> &signatures);
     ETSTypeParameter *CreateTypeParameter(Type *assembler_type);
     ETSObjectType *CreateETSObjectType(util::StringView name, ir::AstNode *decl_node, ETSObjectFlags flags);
-    ETSEnumType *CreateETSEnumType(ir::TSEnumDeclaration *enum_decl);
+    ETSEnumType *CreateETSEnumType(ir::TSEnumDeclaration const *enum_decl);
+    ETSStringEnumType *CreateETSStringEnumType(ir::TSEnumDeclaration const *enum_decl);
     std::tuple<util::StringView, SignatureInfo *> CreateBuiltinArraySignatureInfo(ETSArrayType *array_type, size_t dim);
     Signature *CreateBuiltinArraySignature(ETSArrayType *array_type, size_t dim);
     IntType *CreateIntTypeFromType(Type *type);
@@ -418,7 +419,8 @@ public:
         util::StringView name, const ETSObjectType *class_type);
     binder::Variable *FindVariableInGlobal(const ir::Identifier *identifier);
     void ValidateResolvedIdentifier(const ir::Identifier *ident, binder::Variable *resolved);
-    bool IsVariableStatic(const binder::Variable *var);
+    bool IsVariableStatic(const binder::Variable *var) const;
+    bool IsVariableGetterSetter(const binder::Variable *var) const;
     bool IsSameDeclarationType(binder::LocalVariable *target, binder::LocalVariable *compare);
     void SaveCapturedVariable(binder::Variable *var, const lexer::SourcePosition &pos);
     void AddBoxingFlagToPrimitiveType(TypeRelation *relation, Type *target);
@@ -431,6 +433,7 @@ public:
     void ValidateResolvedProperty(const binder::LocalVariable *property, const ETSObjectType *target,
                                   const ir::Identifier *ident, PropertySearchFlags flags);
     bool IsValidSetterLeftSide(const ir::MemberExpression *member);
+    bool CheckRethrowingParams(const ir::AstNode *ancestor_function, const ir::AstNode *node);
     void CheckThrowingStatements(ir::AstNode *node);
     bool CheckThrowingPlacement(ir::AstNode *node, const ir::AstNode *ancestor_function);
     ir::BlockStatement *FindFinalizerOfTryStatement(ir::AstNode *start_from, const ir::AstNode *p);
@@ -442,6 +445,7 @@ public:
     Type *GetTypeFromTypeAnnotation(ir::TypeNode *type_annotation);
     void AddNullParamsForDefaultParams(const Signature *signature,
                                        ArenaVector<panda::es2panda::ir::Expression *> &arguments, ETSChecker *checker);
+    void SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpression *expr, Type *annotation_type);
 
     // Exception
     ETSObjectType *CheckExceptionOrErrorType(checker::Type *type, lexer::SourcePosition pos);
@@ -449,21 +453,22 @@ public:
     static Type *TryToInstantiate(Type *type, ArenaAllocator *allocator, TypeRelation *relation,
                                   GlobalTypesHolder *global_types);
     // Enum
-    [[nodiscard]] ir::Identifier *CreateEnumNamesArray(ETSEnumType *enum_type);
+    [[nodiscard]] ir::Identifier *CreateEnumNamesArray(ETSEnumInterface const *enum_type);
     [[nodiscard]] ir::Identifier *CreateEnumValuesArray(ETSEnumType *enum_type);
-    [[nodiscard]] ir::Identifier *CreateEnumStringValuesArray(ETSEnumType *enum_type);
-    [[nodiscard]] ir::Identifier *CreateEnumItemsArray(ETSEnumType *enum_type);
-    [[nodiscard]] ETSEnumType::Method CreateEnumFromIntMethod(ir::Identifier *values_array_ident,
-                                                              ETSEnumType *enum_type);
+    [[nodiscard]] ir::Identifier *CreateEnumStringValuesArray(ETSEnumInterface *enum_type);
+    [[nodiscard]] ir::Identifier *CreateEnumItemsArray(ETSEnumInterface *enum_type);
+    [[nodiscard]] ETSEnumType::Method CreateEnumFromIntMethod(ir::Identifier *names_array_ident,
+                                                              ETSEnumInterface *enum_type);
     [[nodiscard]] ETSEnumType::Method CreateEnumGetValueMethod(ir::Identifier *values_array_ident,
                                                                ETSEnumType *enum_type);
     [[nodiscard]] ETSEnumType::Method CreateEnumToStringMethod(ir::Identifier *string_values_array_ident,
-                                                               ETSEnumType *enum_type);
+                                                               ETSEnumInterface *enum_type);
     [[nodiscard]] ETSEnumType::Method CreateEnumGetNameMethod(ir::Identifier *names_array_ident,
-                                                              ETSEnumType *enum_type);
+                                                              ETSEnumInterface *enum_type);
     [[nodiscard]] ETSEnumType::Method CreateEnumValueOfMethod(ir::Identifier *names_array_ident,
-                                                              ETSEnumType *enum_type);
-    [[nodiscard]] ETSEnumType::Method CreateEnumValuesMethod(ir::Identifier *items_array_ident, ETSEnumType *enum_type);
+                                                              ETSEnumInterface *enum_type);
+    [[nodiscard]] ETSEnumType::Method CreateEnumValuesMethod(ir::Identifier *items_array_ident,
+                                                             ETSEnumInterface *enum_type);
 
     // Dynamic interop
     template <typename T>

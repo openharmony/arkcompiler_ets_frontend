@@ -17,22 +17,23 @@
         {
             "line": 19,
             "column": 7,
-            "problem": "NamespaceAsObject"
-        },
-        {
-            "line": 19,
-            "column": 7,
-            "problem": "GlobalThis"
+            "problem": "GlobalThis",
+            "suggest": "",
+            "rule": "\"globalThis\" is not supported (arkts-no-globalthis)"
         },
         {
             "line": 21,
             "column": 10,
-            "problem": "GlobalThis"
+            "problem": "GlobalThis",
+            "suggest": "",
+            "rule": "\"globalThis\" is not supported (arkts-no-globalthis)"
         },
         {
             "line": 24,
             "column": 17,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         }
     ]
 }

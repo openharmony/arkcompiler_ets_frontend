@@ -29,13 +29,23 @@ class LocalVariable;
 }  // namespace panda::es2panda::binder
 
 namespace panda::es2panda::checker {
-class ETSEnumType : public Type {
+template <typename T>
+struct ETSEnumValueType {
+    using ValueType = T;
+};
+
+class ETSEnumInterface : public Type {
 public:
     using UType = std::int32_t;
-    using ValueType = std::int32_t;
 
-    explicit ETSEnumType(const ir::TSEnumDeclaration *enum_decl, UType ordinal,
-                         const ir::TSEnumMember *member = nullptr);
+    explicit ETSEnumInterface(const ir::TSEnumDeclaration *enum_decl, UType ordinal, const ir::TSEnumMember *member,
+                              TypeFlag type_flag);
+
+    NO_COPY_SEMANTIC(ETSEnumInterface);
+    NO_MOVE_SEMANTIC(ETSEnumInterface);
+
+    ETSEnumInterface() = delete;
+    ~ETSEnumInterface() override = default;
 
     [[nodiscard]] bool AssignmentSource(TypeRelation *relation, Type *target) override;
 
@@ -62,17 +72,17 @@ public:
 
     [[nodiscard]] UType GetOrdinal() const noexcept;
 
-    [[nodiscard]] ETSEnumType *LookupConstant(ETSChecker *checker, const ir::Expression *expression,
-                                              const ir::Identifier *prop) const;
+    [[nodiscard]] ETSEnumInterface *LookupConstant(ETSChecker *checker, const ir::Expression *expression,
+                                                   const ir::Identifier *prop) const;
 
     [[nodiscard]] ETSFunctionType *LookupMethod(ETSChecker *checker, const ir::Expression *expression,
                                                 const ir::Identifier *prop) const;
 
     [[nodiscard]] bool IsLiteralType() const noexcept;
 
-    [[nodiscard]] bool IsSameEnumType(const ETSEnumType *other) const noexcept;
+    [[nodiscard]] bool IsSameEnumType(const ETSEnumInterface *other) const noexcept;
 
-    [[nodiscard]] bool IsSameEnumLiteralType(const ETSEnumType *other) const noexcept;
+    [[nodiscard]] bool IsSameEnumLiteralType(const ETSEnumInterface *other) const noexcept;
 
     [[nodiscard]] bool IsEnumInstanceExpression(const ir::Expression *expression) const noexcept;
 
@@ -169,6 +179,36 @@ private:
             static_assert(dependent_false_v<T>, "Invalid underlying type for enumeration.");
         }
     }
+};
+
+class ETSEnumType : public ETSEnumInterface, public ETSEnumValueType<std::int32_t> {
+public:
+    explicit ETSEnumType(const ir::TSEnumDeclaration *enum_decl, UType ordinal,
+                         const ir::TSEnumMember *member = nullptr)
+        : ETSEnumInterface(enum_decl, ordinal, member, TypeFlag::ETS_ENUM)
+    {
+    }
+
+    NO_COPY_SEMANTIC(ETSEnumType);
+    NO_MOVE_SEMANTIC(ETSEnumType);
+
+    ETSEnumType() = delete;
+    ~ETSEnumType() override = default;
+};
+
+class ETSStringEnumType : public ETSEnumInterface, public ETSEnumValueType<std::string> {
+public:
+    explicit ETSStringEnumType(const ir::TSEnumDeclaration *enum_decl, UType ordinal,
+                               const ir::TSEnumMember *member = nullptr)
+        : ETSEnumInterface(enum_decl, ordinal, member, TypeFlag::ETS_STRING_ENUM)
+    {
+    }
+
+    NO_COPY_SEMANTIC(ETSStringEnumType);
+    NO_MOVE_SEMANTIC(ETSStringEnumType);
+
+    ETSStringEnumType() = delete;
+    ~ETSStringEnumType() override = default;
 };
 }  // namespace panda::es2panda::checker
 

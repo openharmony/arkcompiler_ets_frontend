@@ -119,7 +119,6 @@ public:
     void BuildMethodDefinition(ir::MethodDefinition *method_def);
     void BuildImportDeclaration(ir::ETSImportDeclaration *decl);
     void BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *class_instance);
-    void BuildMethodReferenceExpression(ir::ETSMethodReferenceExpression *method_ref);
     void AddSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
     void AddDynamicSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
 

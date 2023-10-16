@@ -45,8 +45,8 @@
 namespace panda::es2panda::compiler {
 
 ETSGen::ETSGen(ArenaAllocator *allocator, RegSpiller *spiller, CompilerContext *context, binder::FunctionScope *scope,
-               ProgramElement *program_element) noexcept
-    : CodeGen(allocator, spiller, context, scope, program_element),
+               ProgramElement *program_element, AstCompiler *astcompiler) noexcept
+    : CodeGen(allocator, spiller, context, scope, program_element, astcompiler),
       containing_object_type_(util::Helpers::GetContainingObjectType(RootNode()))
 {
     ETSFunction::Compile(this);
@@ -329,13 +329,6 @@ void ETSGen::StoreVar(const ir::AstNode *node, const binder::ConstScopeFindResul
             UNREACHABLE();
         }
     }
-}
-
-void ETSGen::EmitGetter(const ir::AstNode *node, const VReg vreg, ir::ScriptFunction *script_func)
-{
-    auto *signature = script_func->Signature();
-    CallThisVirtual(node, vreg, signature, script_func->Params());
-    SetAccumulatorType(signature->ReturnType());
 }
 
 util::StringView ETSGen::FormClassPropReference(const checker::ETSObjectType *class_type, const util::StringView &name)
@@ -705,34 +698,15 @@ void ETSGen::EmitIsInstance(const ir::AstNode *const node, const VReg lhs)
         Ra().Emit<CallShort, 2>(node, Signatures::BUILTIN_JSRUNTIME_INSTANCE_OF, lhs, MoveAccToReg(node));
     } else {
         SwapBinaryOpArgs(node, lhs);
-        Sa().Emit<Isinstance>(node, GetVRegType(lhs)->AsETSObjectType()->AssemblerName());
+        if (!GetVRegType(lhs)->IsETSNullType()) {
+            Sa().Emit<Isinstance>(node, GetVRegType(lhs)->AsETSObjectType()->AssemblerName());
+        } else {
+            Label *if_false = AllocLabel();
+            Ra().Emit<JneObj>(node, lhs, if_false);
+            ToBinaryResult(node, if_false);
+        }
     }
     SetAccumulatorType(Checker()->GlobalETSBooleanType());
-}
-
-void ETSGen::EmitSetter(const ir::MemberExpression *member, ir::Expression *right)
-{
-    compiler::VReg callee_reg = AllocReg();
-    auto ottctx = compiler::TargetTypeContext(this, member->Object()->TsType());
-    ArenaVector<ir::Expression *> args(Allocator()->Adapter());
-    args.push_back(right);
-
-    const auto &func_type = member->TsType()->AsETSFunctionType();
-    for (const auto &sig : func_type->CallSignatures()) {
-        if (!sig->Function()->IsSetter()) {
-            continue;
-        }
-
-        if (!sig->Function()->IsStatic()) {
-            member->Object()->Compile(this);
-            StoreAccumulator(member, callee_reg);
-            CallThisVirtual(member, callee_reg, sig, args);
-        } else {
-            CallStatic(member, sig, args);
-        }
-
-        SetAccumulatorType(sig->ReturnType());
-    }
 }
 
 bool ETSGen::TryLoadConstantExpression(const ir::Expression *node)
@@ -1416,6 +1390,7 @@ void ETSGen::CastToInt(const ir::AstNode *node)
         case checker::TypeFlag::ETS_BOOLEAN:
         case checker::TypeFlag::CHAR:
         case checker::TypeFlag::ETS_ENUM:
+        case checker::TypeFlag::ETS_STRING_ENUM:
         case checker::TypeFlag::BYTE:
         case checker::TypeFlag::SHORT: {
             break;
@@ -2163,6 +2138,8 @@ void ETSGen::LoadArrayElement(const ir::AstNode *node, VReg object_reg)
             Ra().Emit<Ldarr16>(node, object_reg);
             break;
         }
+        case checker::TypeFlag::ETS_STRING_ENUM:
+            [[fallthrough]];
         case checker::TypeFlag::ETS_ENUM:
         case checker::TypeFlag::INT: {
             Ra().Emit<Ldarr>(node, object_reg);
@@ -2208,6 +2185,8 @@ void ETSGen::StoreArrayElement(const ir::AstNode *node, VReg object_reg, VReg in
             Ra().Emit<Starr16>(node, object_reg, index);
             break;
         }
+        case checker::TypeFlag::ETS_STRING_ENUM:
+            [[fallthrough]];
         case checker::TypeFlag::ETS_ENUM:
         case checker::TypeFlag::INT: {
             Ra().Emit<Starr>(node, object_reg, index);

@@ -90,6 +90,10 @@ defines:
     ref: GENERIC_END
   - name: ctor
     ref: CONSTRUCTOR
+  - name: <get>
+    ref: GETTER_BEGIN
+  - name: <set>
+    ref: SETTER_BEGIN
   - name: param0
     ref: CTOR_PARAM0
   - name: param1

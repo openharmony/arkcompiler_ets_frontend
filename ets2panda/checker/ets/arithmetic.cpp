@@ -322,6 +322,15 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
                 return {ts_type, left_type};
             }
 
+            if (left_type->IsETSStringEnumType() && right_type->IsETSStringEnumType()) {
+                if (!left_type->AsETSStringEnumType()->IsSameEnumType(right_type->AsETSStringEnumType())) {
+                    ThrowTypeError("Bad operand type, the types of the operands must be the same enum type.", pos);
+                }
+
+                ts_type = GlobalETSBooleanType();
+                return {ts_type, left_type};
+            }
+
             if (IsReferenceType(left_type) && IsReferenceType(right_type)) {
                 ts_type = GlobalETSBooleanType();
                 auto *op_type = GlobalETSObjectType();

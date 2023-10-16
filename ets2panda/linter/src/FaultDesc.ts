@@ -48,7 +48,6 @@ faultDesc[FaultID.LambdaWithTypeParameters] = 'Lambda function with type paramet
 faultDesc[FaultID.ClassExpression] = 'Class expressions';
 faultDesc[FaultID.DestructuringAssignment] = 'Destructuring assignments';
 faultDesc[FaultID.DestructuringDeclaration] = 'Destructuring variable declarations';
-faultDesc[FaultID.ForOfNonArray] = '"for-of" statement for non-array object';
 faultDesc[FaultID.VarDeclaration] = '"var" declarations';
 faultDesc[FaultID.CatchWithUnsupportedType] = '"catch" clause with unsupported exception type';
 faultDesc[FaultID.DeleteOperator] = '"delete" operations';
