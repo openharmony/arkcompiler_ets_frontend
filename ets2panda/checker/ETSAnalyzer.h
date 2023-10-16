@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_CHECKER_ETSANALYZER_H
 #define ES2PANDA_CHECKER_ETSANALYZER_H
 
-#include "plugins/ecmascript/es2panda/checker/SemanticAnalyzer.h"
+#include "checker/SemanticAnalyzer.h"
 
 namespace panda::es2panda::checker {
 

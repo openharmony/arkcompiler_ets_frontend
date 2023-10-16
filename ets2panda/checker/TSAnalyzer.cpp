@@ -15,12 +15,12 @@
 
 #include "TSAnalyzer.h"
 
-#include "plugins/ecmascript/es2panda/checker/TSchecker.h"
-#include "plugins/ecmascript/es2panda/ir/base/methodDefinition.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/statements/returnStatement.h"
-#include "plugins/ecmascript/es2panda/ir/typeNode.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
+#include "checker/TSchecker.h"
+#include "ir/base/methodDefinition.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/statements/returnStatement.h"
+#include "ir/typeNode.h"
+#include "util/helpers.h"
 
 namespace panda::es2panda::checker {
 

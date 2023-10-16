@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CORE_JSCOMPILER_H
 #define ES2PANDA_COMPILER_CORE_JSCOMPILER_H
 
-#include "plugins/ecmascript/es2panda/compiler/core/ASTCompiler.h"
+#include "compiler/core/ASTCompiler.h"
 
 namespace panda::es2panda::compiler {
 

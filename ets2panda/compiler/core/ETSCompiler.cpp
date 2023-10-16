@@ -15,8 +15,8 @@
 
 #include "ETSCompiler.h"
 
-#include "plugins/ecmascript/es2panda/compiler/core/ETSGen.h"
-#include "plugins/ecmascript/es2panda/ir/statements/returnStatement.h"
+#include "compiler/core/ETSGen.h"
+#include "ir/statements/returnStatement.h"
 
 namespace panda::es2panda::compiler {
 

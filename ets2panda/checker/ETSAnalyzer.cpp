@@ -14,12 +14,12 @@
  */
 #include "ETSAnalyzer.h"
 
-#include "plugins/ecmascript/es2panda/checker/ETSchecker.h"
-#include "plugins/ecmascript/es2panda/checker/ets/typeRelationContext.h"
-#include "plugins/ecmascript/es2panda/ir/base/scriptFunction.h"
-#include "plugins/ecmascript/es2panda/ir/expressions/objectExpression.h"
-#include "plugins/ecmascript/es2panda/ir/statements/returnStatement.h"
-#include "plugins/ecmascript/es2panda/util/helpers.h"
+#include "checker/ETSchecker.h"
+#include "checker/ets/typeRelationContext.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/expressions/objectExpression.h"
+#include "ir/statements/returnStatement.h"
+#include "util/helpers.h"
 
 namespace panda::es2panda::checker {
 
