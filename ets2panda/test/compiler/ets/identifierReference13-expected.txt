@@ -973,4 +973,4 @@
     }
   }
 }
-TypeError: Method used in wrong context [identifierReference13.ets:24:20]
+TypeError: Property 'foo' does not exist on type 'B' [identifierReference13.ets:24:20]
