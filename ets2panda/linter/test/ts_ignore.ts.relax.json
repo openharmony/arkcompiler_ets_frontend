@@ -43,13 +43,6 @@
             "rule": "Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)"
         },
         {
-            "line": 33,
-            "column": 2,
-            "problem": "ErrorSuppression",
-            "suggest": "",
-            "rule": "Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)"
-        },
-        {
             "line": 43,
             "column": 9,
             "problem": "ErrorSuppression",

@@ -595,7 +595,7 @@ export class TypeScriptLinter {
     const baseExprSym = this.tsUtils.trueSymbolAtLocation(propertyAccessNode.expression);
     const baseExprType = this.tsTypeChecker.getTypeAtLocation(propertyAccessNode.expression);
 
-    if (this.isPrototypePropertyAccess(propertyAccessNode, exprSym, baseExprSym, baseExprType)) { 
+    if (this.isPrototypePropertyAccess(propertyAccessNode, exprSym, baseExprSym, baseExprType)) {
       this.incrementCounters(propertyAccessNode.name, FaultID.Prototype);
     }
     if (!!exprSym && this.tsUtils.isSymbolAPI(exprSym) && !ALLOWED_STD_SYMBOL_API.includes(exprSym.getName())) {
@@ -636,7 +636,7 @@ export class TypeScriptLinter {
       this.handleDecorators(decorators);
       this.filterOutDecoratorsDiagnostics(decorators, NON_INITIALIZABLE_PROPERTY_DECORATORS,
         {begin: propName.getStart(), end: propName.getStart()}, PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE);
-      
+
       const classDecorators = ts.getDecorators(node.parent);
       const propType = (node as ts.PropertyDeclaration).type?.getText();
       this.filterOutDecoratorsDiagnostics(classDecorators, NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
@@ -1294,7 +1294,7 @@ export class TypeScriptLinter {
   private handleRestrictedValues(tsIdentifier: ts.Identifier, tsIdentSym: ts.Symbol) {
     const illegalValues = ts.SymbolFlags.ConstEnum | ts.SymbolFlags.RegularEnum | ts.SymbolFlags.ValueModule |
       (TypeScriptLinter.advancedClassChecks? 0 : ts.SymbolFlags.Class);
-    
+
     // If module name is duplicated by another declaration, this increases the possibility
     // of finding a lot of false positives. Thus, do not check further in that case.
     if ((tsIdentSym.flags & ts.SymbolFlags.ValueModule) != 0) {
@@ -1328,7 +1328,7 @@ export class TypeScriptLinter {
 
     const checkClassOrInterface = tsElemAccessBaseExprType.isClassOrInterface() &&
                                   !this.tsUtils.isGenericArrayType(tsElemAccessBaseExprType) &&
-                                  !this.tsUtils.isDerivedFrom(tsElemAccessBaseExprType, CheckType.Array); 
+                                  !this.tsUtils.isDerivedFrom(tsElemAccessBaseExprType, CheckType.Array);
     const checkThisOrSuper = this.tsUtils.isThisOrSuperExpr(tsElementAccessExpr.expression) &&
                              !this.tsUtils.isDerivedFrom(tsElemAccessBaseExprType, CheckType.Array);
 
@@ -1427,7 +1427,7 @@ export class TypeScriptLinter {
       this.handleStructIdentAndUndefinedInArgs(tsCallExpr, callSignature);
     }
     this.handleLibraryTypeCall(tsCallExpr, calleeType);
-    
+
     if (ts.isPropertyAccessExpression(tsCallExpr.expression) && this.tsUtils.hasEsObjectType(tsCallExpr.expression.expression)) {
       this.incrementCounters(node, FaultID.EsObjectAccess);
     }
@@ -1466,8 +1466,8 @@ export class TypeScriptLinter {
   private handleGenericCallWithNoTypeArgs(callLikeExpr: ts.CallExpression | ts.NewExpression, callSignature: ts.Signature) {
     // Note: The PR!716 has led to a significant performance degradation.
     // Since initial problem was fixed in a more general way, this change
-    // became redundant. Therefore, it was reverted. See #13721 comments 
-    // for a detailed analysis. 
+    // became redundant. Therefore, it was reverted. See #13721 comments
+    // for a detailed analysis.
     const tsSyntaxKind = ts.isNewExpression(callLikeExpr) ? ts.SyntaxKind.Constructor : ts.SyntaxKind.FunctionDeclaration;
     const signFlags = ts.NodeBuilderFlags.WriteTypeArgumentsOfSignature | ts.NodeBuilderFlags.IgnoreErrors;
 
@@ -1767,9 +1767,12 @@ export class TypeScriptLinter {
     const commentContent = comment.kind === ts.SyntaxKind.MultiLineCommentTrivia
       ? srcText.slice(comment.pos + 2, comment.end - 2)
       : srcText.slice(comment.pos + 2, comment.end);
-    const trimmedContent = commentContent.trim()
+    //if comment is multiline end closing '*/' is not at the same line as '@ts-xxx' - do nothing (see #13851)
+    if (commentContent.endsWith('\n'))
+      return;
+    const trimmedContent = commentContent.trim();
     if (trimmedContent.startsWith('@ts-ignore') ||
-        trimmedContent.startsWith('@ts-nocheck') || 
+        trimmedContent.startsWith('@ts-nocheck') ||
         trimmedContent.startsWith('@ts-expect-error'))
       this.incrementCounters(comment, FaultID.ErrorSuppression);
   }
