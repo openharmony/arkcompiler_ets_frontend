@@ -227,6 +227,7 @@ void Function::Compile(PandaGen *pg)
     pg->SetSourceLocationFlag(lexer::SourceLocationFlag::VALID_SOURCE_LOCATION);
     pg->AdjustSpillInsns();
     pg->SortCatchTables();
+    pg->ReArrangeIc();
 }
 
 }  // namespace panda::es2panda::compiler
