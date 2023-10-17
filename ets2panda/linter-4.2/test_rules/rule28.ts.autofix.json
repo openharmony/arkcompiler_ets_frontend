@@ -1,0 +1,20 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 14,
+            "problem": "ObjectTypeLiteral",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
+        },
+        {
+            "line": 2,
+            "column": 10,
+            "problem": "IndexedAccessType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Indexed access types are not supported (arkts-no-aliases-by-index)"
+        }
+    ]
+}

@@ -1,0 +1,1 @@
+SyntaxError: ':' expected. [test_interface4.ts:18:9]

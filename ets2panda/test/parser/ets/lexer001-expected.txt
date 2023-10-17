@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token: ''. [lexer001.ets:16:1]

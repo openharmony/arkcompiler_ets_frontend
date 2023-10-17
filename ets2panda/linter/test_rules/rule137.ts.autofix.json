@@ -1,0 +1,20 @@
+{
+    "nodes": [
+        {
+            "line": 2,
+            "column": 5,
+            "problem": "VarDeclaration",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use \"let\" instead of \"var\" (arkts-no-var)"
+        },
+        {
+            "line": 5,
+            "column": 5,
+            "problem": "GlobalThis",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"globalThis\" is not supported (arkts-no-globalthis)"
+        }
+    ]
+}

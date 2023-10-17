@@ -1,0 +1,12 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 38,
+            "problem": "ImportAssertion",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Import assertions are not supported (arkts-no-import-assertions)"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "nodes": [
+        {
+            "line": 3,
+            "column": 24,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
+        },
+        {
+            "line": 4,
+            "column": 5,
+            "problem": "ConstructorType",
+            "suggest": "",
+            "rule": "Use \"class\" instead of a type with constructor signature (arkts-no-ctor-signatures-type)"
+        }
+    ]
+}

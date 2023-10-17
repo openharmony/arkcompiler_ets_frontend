@@ -1,0 +1,11 @@
+{
+    "nodes": [
+        {
+            "line": 15,
+            "column": 1,
+            "problem": "MethodReassignment",
+            "suggest": "",
+            "rule": "Reassigning object methods is not supported (arkts-no-method-reassignment)"
+        }
+    ]
+}

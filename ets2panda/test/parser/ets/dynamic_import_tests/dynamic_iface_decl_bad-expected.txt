@@ -1,0 +1,1 @@
+TypeError: A is not abstract and does not override abstract method f1(p: String): double in I [dynamic_iface_decl_bad.ets:22:22]

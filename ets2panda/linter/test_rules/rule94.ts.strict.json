@@ -1,0 +1,25 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 1,
+            "problem": "GeneratorFunction",
+            "suggest": "",
+            "rule": "Generator functions are not supported (arkts-no-generators)"
+        },
+        {
+            "line": 3,
+            "column": 9,
+            "problem": "YieldExpression",
+            "suggest": "",
+            "rule": "Generator functions are not supported (arkts-no-generators)"
+        },
+        {
+            "line": 7,
+            "column": 1,
+            "problem": "ForOfNonArray",
+            "suggest": "",
+            "rule": "\"for-of\" is supported only for arrays, strings, sets, maps and classes derived from them (arkts-for-of-str-arr)"
+        }
+    ]
+}

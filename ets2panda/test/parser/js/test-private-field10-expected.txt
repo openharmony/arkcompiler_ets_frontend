@@ -1,0 +1,1 @@
+SyntaxError: Unexpected private identifier [test-private-field10.js:19:15]

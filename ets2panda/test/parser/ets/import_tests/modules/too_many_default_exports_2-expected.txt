@@ -1,0 +1,1 @@
+SyntaxError: Only one default export is allowed in a module [too_many_default_exports_2.ets:16:32]

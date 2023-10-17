@@ -1,0 +1,25 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 1,
+            "problem": "EnumMerging",
+            "suggest": "",
+            "rule": "\"enum\" declaration merging is not supported (arkts-no-enum-merging)"
+        },
+        {
+            "line": 5,
+            "column": 1,
+            "problem": "EnumMerging",
+            "suggest": "",
+            "rule": "\"enum\" declaration merging is not supported (arkts-no-enum-merging)"
+        },
+        {
+            "line": 8,
+            "column": 1,
+            "problem": "EnumMerging",
+            "suggest": "",
+            "rule": "\"enum\" declaration merging is not supported (arkts-no-enum-merging)"
+        }
+    ]
+}

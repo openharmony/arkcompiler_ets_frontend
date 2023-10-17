@@ -1,0 +1,11 @@
+{
+    "nodes": [
+        {
+            "line": 7,
+            "column": 6,
+            "problem": "CommaOperator",
+            "suggest": "",
+            "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
+        }
+    ]
+}

@@ -1,0 +1,138 @@
+{
+    "copyright": [
+        "Copyright (c) 2023-2023 Huawei Device Co., Ltd.",
+        "Licensed under the Apache License, Version 2.0 (the 'License');",
+        "you may not use this file except in compliance with the License.",
+        "You may obtain a copy of the License at",
+        "",
+        "http://www.apache.org/licenses/LICENSE-2.0",
+        "",
+        "Unless required by applicable law or agreed to in writing, software",
+        "distributed under the License is distributed on an 'AS IS' BASIS,",
+        "WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.",
+        "See the License for the specific language governing permissions and",
+        "limitations under the License."
+    ],
+    "nodes": [
+        {
+            "line": 24,
+            "column": 5,
+            "problem": "UnknownType"
+        },
+        {
+            "line": 24,
+            "column": 9,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 26,
+            "column": 21,
+            "problem": "AnyType"
+        },
+        {
+            "line": 29,
+            "column": 1,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 30,
+            "column": 1,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 36,
+            "column": 1,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 40,
+            "column": 1,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 44,
+            "column": 8,
+            "problem": "AnyType"
+        },
+        {
+            "line": 45,
+            "column": 1,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 45,
+            "column": 16,
+            "problem": "AnyType"
+        },
+        {
+            "line": 46,
+            "column": 1,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 47,
+            "column": 1,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 47,
+            "column": 8,
+            "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 49,
+            "column": 5,
+            "problem": "UnknownType"
+        },
+        {
+            "line": 49,
+            "column": 11,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 54,
+            "column": 5,
+            "problem": "UnknownType"
+        },
+        {
+            "line": 54,
+            "column": 9,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 56,
+            "column": 5,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 56,
+            "column": 11,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 57,
+            "column": 5,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 58,
+            "column": 5,
+            "problem": "GenericCallNoTypeArgs"
+        },
+        {
+            "line": 58,
+            "column": 19,
+            "problem": "AnyType"
+        },
+        {
+            "line": 60,
+            "column": 10,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 61,
+            "column": 1,
+            "problem": "StrictDiagnostic"
+        }
+    ]
+}

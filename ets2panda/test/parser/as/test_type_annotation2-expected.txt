@@ -1,0 +1,1 @@
+SyntaxError: ']' expected [test_type_annotation2.ts:18:1]

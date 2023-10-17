@@ -1,0 +1,32 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 1,
+            "problem": "InterfaceMerging",
+            "suggest": "",
+            "rule": "Declaration merging is not supported (arkts-no-decl-merging)"
+        },
+        {
+            "line": 2,
+            "column": 28,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 5,
+            "column": 1,
+            "problem": "InterfaceMerging",
+            "suggest": "",
+            "rule": "Declaration merging is not supported (arkts-no-decl-merging)"
+        },
+        {
+            "line": 9,
+            "column": 1,
+            "problem": "InterfaceMerging",
+            "suggest": "",
+            "rule": "Declaration merging is not supported (arkts-no-decl-merging)"
+        }
+    ]
+}

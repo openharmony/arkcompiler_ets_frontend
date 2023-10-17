@@ -1,0 +1,28 @@
+{
+    "nodes": [
+        {
+            "line": 2,
+            "column": 5,
+            "problem": "ExportAssignment",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"export = ...\" assignment is not supported (arkts-no-export-assignment)"
+        },
+        {
+            "line": 10,
+            "column": 5,
+            "problem": "ImportAssignment",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"require\" and \"import\" assignment are not supported (arkts-no-require)"
+        },
+        {
+            "line": 12,
+            "column": 9,
+            "problem": "AnyType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        }
+    ]
+}

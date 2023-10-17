@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token: ''. [global_scope_string.ets:16:1]

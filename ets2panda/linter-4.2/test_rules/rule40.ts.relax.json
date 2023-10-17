@@ -1,0 +1,25 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 8,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
+        },
+        {
+            "line": 1,
+            "column": 33,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 6,
+            "column": 14,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
+        }
+    ]
+}

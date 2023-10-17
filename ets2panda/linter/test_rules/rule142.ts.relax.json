@@ -1,0 +1,32 @@
+{
+    "nodes": [
+        {
+            "line": 2,
+            "column": 13,
+            "problem": "ConstAssertion",
+            "suggest": "",
+            "rule": "\"as const\" assertions are not supported (arkts-no-as-const)"
+        },
+        {
+            "line": 5,
+            "column": 13,
+            "problem": "ConstAssertion",
+            "suggest": "",
+            "rule": "\"as const\" assertions are not supported (arkts-no-as-const)"
+        },
+        {
+            "line": 8,
+            "column": 13,
+            "problem": "ConstAssertion",
+            "suggest": "",
+            "rule": "\"as const\" assertions are not supported (arkts-no-as-const)"
+        },
+        {
+            "line": 8,
+            "column": 13,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        }
+    ]
+}

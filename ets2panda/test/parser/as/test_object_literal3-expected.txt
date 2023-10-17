@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token, expected ',' or '}' [test_object_literal3.ts:17:12]

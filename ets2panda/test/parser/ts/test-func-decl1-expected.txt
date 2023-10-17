@@ -1,0 +1,1 @@
+SyntaxError: Private field 'bar' must be declared in an enclosing class [test-func-decl1.ts:18:10]

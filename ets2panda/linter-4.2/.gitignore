@@ -1,0 +1,12 @@
+build
+dist
+bundle
+node_modules
+cookbook_convertor/md
+*.tsbuildinfo
+.vs
+.vscode
+.cache
+test/**/results
+test_rules/**/results
+package-lock.json

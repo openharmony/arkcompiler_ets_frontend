@@ -1,0 +1,1 @@
+SyntaxError: struct declaration is not allowed to use 'abstract' modifiers. [struct_invalid_abstract.ets:16:10]

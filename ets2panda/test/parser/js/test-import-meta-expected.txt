@@ -1,0 +1,82 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "ExpressionStatement",
+      "expression": {
+        "type": "ImportExpression",
+        "source": {
+          "type": "MetaProperty",
+          "kind": "import.Meta",
+          "loc": {
+            "start": {
+              "line": 21,
+              "column": 8
+            },
+            "end": {
+              "line": 21,
+              "column": 14
+            }
+          }
+        },
+        "loc": {
+          "start": {
+            "line": 21,
+            "column": 1
+          },
+          "end": {
+            "line": 21,
+            "column": 20
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 21,
+          "column": 1
+        },
+        "end": {
+          "line": 21,
+          "column": 20
+        }
+      }
+    },
+    {
+      "type": "ExpressionStatement",
+      "expression": {
+        "type": "MetaProperty",
+        "kind": "import.Meta",
+        "loc": {
+          "start": {
+            "line": 22,
+            "column": 1
+          },
+          "end": {
+            "line": 22,
+            "column": 7
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 22,
+          "column": 1
+        },
+        "end": {
+          "line": 22,
+          "column": 7
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1
+    },
+    "end": {
+      "line": 22,
+      "column": 12
+    }
+  }
+}

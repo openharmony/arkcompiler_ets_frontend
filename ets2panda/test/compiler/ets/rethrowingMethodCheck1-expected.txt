@@ -1,0 +1,972 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "TestClass",
+          "decorators": [],
+          "loc": {
+            "start": {
+              "line": 16,
+              "column": 7
+            },
+            "end": {
+              "line": 16,
+              "column": 16
+            }
+          }
+        },
+        "superClass": null,
+        "implements": [],
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "testMethod",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 17,
+                  "column": 3
+                },
+                "end": {
+                  "line": 17,
+                  "column": 13
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": false,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "testMethod",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 17,
+                      "column": 3
+                    },
+                    "end": {
+                      "line": 17,
+                      "column": 13
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [
+                  {
+                    "type": "ETSParameterExpression",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "f",
+                      "typeAnnotation": {
+                        "type": "ETSFunctionType",
+                        "params": [],
+                        "returnType": {
+                          "type": "ETSTypeReference",
+                          "part": {
+                            "type": "ETSTypeReferencePart",
+                            "name": {
+                              "type": "Identifier",
+                              "name": "void",
+                              "decorators": [],
+                              "loc": {
+                                "start": {
+                                  "line": 17,
+                                  "column": 23
+                                },
+                                "end": {
+                                  "line": 17,
+                                  "column": 27
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 23
+                              },
+                              "end": {
+                                "line": 17,
+                                "column": 34
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 23
+                            },
+                            "end": {
+                              "line": 17,
+                              "column": 34
+                            }
+                          }
+                        }
+                        "throwMarker": "throws",
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 17
+                          },
+                          "end": {
+                            "line": 17,
+                            "column": 34
+                          }
+                        }
+                      },
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 17,
+                          "column": 14
+                        },
+                        "end": {
+                          "line": 17,
+                          "column": 34
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 17,
+                        "column": 14
+                      },
+                      "end": {
+                        "line": 17,
+                        "column": 34
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "void",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 17,
+                          "column": 37
+                        },
+                        "end": {
+                          "line": 17,
+                          "column": 41
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 17,
+                        "column": 37
+                      },
+                      "end": {
+                        "line": 17,
+                        "column": 50
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 17,
+                      "column": 37
+                    },
+                    "end": {
+                      "line": 17,
+                      "column": 50
+                    }
+                  }
+                },
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 17,
+                      "column": 51
+                    },
+                    "end": {
+                      "line": 17,
+                      "column": 53
+                    }
+                  }
+                }
+                "throwMarker": "rethrows",
+                "loc": {
+                  "start": {
+                    "line": 17,
+                    "column": 13
+                  },
+                  "end": {
+                    "line": 17,
+                    "column": 53
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 17,
+                  "column": 13
+                },
+                "end": {
+                  "line": 17,
+                  "column": 53
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 17,
+                "column": 3
+              },
+              "end": {
+                "line": 17,
+                "column": 53
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "constructor",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1
+                }
+              }
+            },
+            "kind": "constructor",
+            "static": false,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "constructor",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 18,
+                "column": 2
+              },
+              "end": {
+                "line": 18,
+                "column": 2
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 16,
+            "column": 17
+          },
+          "end": {
+            "line": 18,
+            "column": 2
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 1
+        },
+        "end": {
+          "line": 18,
+          "column": 2
+        }
+      }
+    },
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "ETSGLOBAL",
+          "decorators": [],
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 1
+            },
+            "end": {
+              "line": 1,
+              "column": 1
+            }
+          }
+        },
+        "superClass": null,
+        "implements": [],
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "_$init$_",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "_$init$_",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1
+              },
+              "end": {
+                "line": 1,
+                "column": 1
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "TestFunction",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 20,
+                  "column": 10
+                },
+                "end": {
+                  "line": 20,
+                  "column": 22
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "TestFunction",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 20,
+                      "column": 10
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 22
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "returnType": {
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "void",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 20,
+                          "column": 26
+                        },
+                        "end": {
+                          "line": 20,
+                          "column": 30
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 20,
+                        "column": 26
+                      },
+                      "end": {
+                        "line": 20,
+                        "column": 37
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 20,
+                      "column": 26
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 37
+                    }
+                  }
+                },
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 20,
+                      "column": 38
+                    },
+                    "end": {
+                      "line": 20,
+                      "column": 40
+                    }
+                  }
+                }
+                "throwMarker": "throws",
+                "loc": {
+                  "start": {
+                    "line": 20,
+                    "column": 22
+                  },
+                  "end": {
+                    "line": 20,
+                    "column": 40
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 20,
+                  "column": 22
+                },
+                "end": {
+                  "line": 20,
+                  "column": 40
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 20,
+                "column": 1
+              },
+              "end": {
+                "line": 20,
+                "column": 40
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 22,
+                  "column": 10
+                },
+                "end": {
+                  "line": 22,
+                  "column": 14
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 22,
+                      "column": 10
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 14
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "returnType": {
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "void",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 22,
+                          "column": 18
+                        },
+                        "end": {
+                          "line": 22,
+                          "column": 22
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 22,
+                        "column": 18
+                      },
+                      "end": {
+                        "line": 22,
+                        "column": 24
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 22,
+                      "column": 18
+                    },
+                    "end": {
+                      "line": 22,
+                      "column": 24
+                    }
+                  }
+                },
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [
+                    {
+                      "type": "VariableDeclaration",
+                      "declarations": [
+                        {
+                          "type": "VariableDeclarator",
+                          "id": {
+                            "type": "Identifier",
+                            "name": "testClass",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 7
+                              },
+                              "end": {
+                                "line": 23,
+                                "column": 16
+                              }
+                            }
+                          },
+                          "init": {
+                            "type": "ETSNewClassInstanceExpression",
+                            "typeReference": {
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "TestClass",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 23,
+                                      "column": 23
+                                    },
+                                    "end": {
+                                      "line": 23,
+                                      "column": 32
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 23,
+                                    "column": 23
+                                  },
+                                  "end": {
+                                    "line": 23,
+                                    "column": 33
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 23,
+                                  "column": 23
+                                },
+                                "end": {
+                                  "line": 23,
+                                  "column": 33
+                                }
+                              }
+                            },
+                            "arguments": [],
+                            "loc": {
+                              "start": {
+                                "line": 23,
+                                "column": 19
+                              },
+                              "end": {
+                                "line": 23,
+                                "column": 35
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 23,
+                              "column": 7
+                            },
+                            "end": {
+                              "line": 23,
+                              "column": 35
+                            }
+                          }
+                        }
+                      ],
+                      "kind": "let",
+                      "loc": {
+                        "start": {
+                          "line": 23,
+                          "column": 3
+                        },
+                        "end": {
+                          "line": 23,
+                          "column": 35
+                        }
+                      }
+                    },
+                    {
+                      "type": "ExpressionStatement",
+                      "expression": {
+                        "type": "CallExpression",
+                        "callee": {
+                          "type": "MemberExpression",
+                          "object": {
+                            "type": "Identifier",
+                            "name": "testClass",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 25,
+                                "column": 3
+                              },
+                              "end": {
+                                "line": 25,
+                                "column": 12
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "testMethod",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 25,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 25,
+                                "column": 23
+                              }
+                            }
+                          },
+                          "computed": false,
+                          "optional": false,
+                          "loc": {
+                            "start": {
+                              "line": 25,
+                              "column": 3
+                            },
+                            "end": {
+                              "line": 25,
+                              "column": 23
+                            }
+                          }
+                        },
+                        "arguments": [
+                          {
+                            "type": "Identifier",
+                            "name": "TestFunction",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 25,
+                                "column": 24
+                              },
+                              "end": {
+                                "line": 25,
+                                "column": 36
+                              }
+                            }
+                          }
+                        ],
+                        "optional": false,
+                        "loc": {
+                          "start": {
+                            "line": 25,
+                            "column": 3
+                          },
+                          "end": {
+                            "line": 25,
+                            "column": 37
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 25,
+                          "column": 3
+                        },
+                        "end": {
+                          "line": 25,
+                          "column": 38
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 22,
+                      "column": 23
+                    },
+                    "end": {
+                      "line": 26,
+                      "column": 2
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 22,
+                    "column": 14
+                  },
+                  "end": {
+                    "line": 26,
+                    "column": 2
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 22,
+                  "column": 14
+                },
+                "end": {
+                  "line": 26,
+                  "column": 2
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 22,
+                "column": 1
+              },
+              "end": {
+                "line": 26,
+                "column": 2
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 1,
+            "column": 1
+          },
+          "end": {
+            "line": 1,
+            "column": 1
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 1
+        },
+        "end": {
+          "line": 1,
+          "column": 1
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1
+    },
+    "end": {
+      "line": 27,
+      "column": 1
+    }
+  }
+}
+TypeError: This statement can cause an exception, therefore it must be enclosed in a try statement with a default catch clause [rethrowingMethodCheck1.ets:25:3]

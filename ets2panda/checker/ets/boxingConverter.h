@@ -1,0 +1,62 @@
+/**
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#ifndef ES2PANDA_COMPILER_CHECKER_ETS_BOXING_CONVERTER_H
+#define ES2PANDA_COMPILER_CHECKER_ETS_BOXING_CONVERTER_H
+
+#include "checker/ets/typeConverter.h"
+#include "checker/types/ets/etsObjectType.h"
+
+namespace panda::es2panda::checker {
+class BoxingConverter : public TypeConverter {
+public:
+    BoxingConverter(ETSChecker *checker, TypeRelation *relation, Type *source)
+        : TypeConverter(checker, relation, nullptr, source)
+    {
+        ASSERT(relation->GetNode());
+
+        if (!source->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+            Relation()->Result(false);
+            return;
+        }
+
+        ETSTypeFromSource(source);
+        Relation()->Result(true);
+    }
+
+    BoxingConverter(ETSChecker *checker, TypeRelation *relation, Type *source, Type *target)
+        : TypeConverter(checker, relation, target, source)
+    {
+        ASSERT(relation->GetNode());
+
+        if (!target->IsETSObjectType() || relation->IsTrue()) {
+            return;
+        }
+
+        if (!source->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+            Relation()->Result(false);
+            return;
+        }
+
+        ETSTypeFromSource(source);
+
+        Relation()->Result(relation->IsAssignableTo(Result(), target));
+    }
+
+    void ETSTypeFromSource(Type *source);
+};
+}  // namespace panda::es2panda::checker
+
+#endif

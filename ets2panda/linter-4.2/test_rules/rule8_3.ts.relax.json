@@ -1,0 +1,67 @@
+{
+    "nodes": [
+        {
+            "line": 2,
+            "column": 20,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 9,
+            "column": 27,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 10,
+            "column": 16,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 17,
+            "column": 23,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 24,
+            "column": 27,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 25,
+            "column": 16,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 32,
+            "column": 21,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 39,
+            "column": 27,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 40,
+            "column": 16,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        }
+    ]
+}

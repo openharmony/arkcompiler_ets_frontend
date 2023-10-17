@@ -1,0 +1,2 @@
+./build/hello.abc
+./build/packages/world.abc

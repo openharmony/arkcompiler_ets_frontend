@@ -1,0 +1,27 @@
+{
+    "nodes": [
+        {
+            "line": 9,
+            "column": 10,
+            "problem": "TypeAssertion",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 172,
+                    "end": 194,
+                    "replacementText": "createShape() as Circle"
+                }
+            ],
+            "suggest": "",
+            "rule": "Only \"as T\" syntax is supported for type casts (arkts-as-casts)"
+        },
+        {
+            "line": 21,
+            "column": 11,
+            "problem": "TypeAssertion",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Only \"as T\" syntax is supported for type casts (arkts-as-casts)"
+        }
+    ]
+}

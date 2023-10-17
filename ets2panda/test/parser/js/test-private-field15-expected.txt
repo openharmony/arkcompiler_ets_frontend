@@ -1,0 +1,1 @@
+SyntaxError: Private field has already been declared [test-private-field15.js:20:1]

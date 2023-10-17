@@ -1,0 +1,18 @@
+{
+    "nodes": [
+        {
+            "line": 2,
+            "column": 9,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 10,
+            "column": 9,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        }
+    ]
+}

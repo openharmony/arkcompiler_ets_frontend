@@ -1,0 +1,1 @@
+SyntaxError: Unexpected strict mode reserved keyword [test-class-static-block6.js:19:18]

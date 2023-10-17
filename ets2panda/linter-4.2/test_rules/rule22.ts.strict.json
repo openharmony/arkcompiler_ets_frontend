@@ -1,0 +1,18 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 13,
+            "problem": "ConditionalType",
+            "suggest": "",
+            "rule": "Conditional types are not supported (arkts-no-conditional-types)"
+        },
+        {
+            "line": 3,
+            "column": 13,
+            "problem": "ConditionalType",
+            "suggest": "",
+            "rule": "Conditional types are not supported (arkts-no-conditional-types)"
+        }
+    ]
+}

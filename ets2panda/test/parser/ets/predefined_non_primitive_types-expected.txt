@@ -1,0 +1,1 @@
+SyntaxError: Variable 'non_prim_b' has already been declared. [predefined_non_primitive_types.ets:27:5]

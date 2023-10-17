@@ -1,0 +1,1 @@
+SyntaxError: Local enum declaration support is not yet implemented. [class_interface_enum_only_top_level_5.ets:18:3]

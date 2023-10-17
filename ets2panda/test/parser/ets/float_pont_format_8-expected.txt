@@ -1,0 +1,782 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "ETSGLOBAL",
+          "decorators": [],
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 1
+            },
+            "end": {
+              "line": 1,
+              "column": 1
+            }
+          }
+        },
+        "superClass": null,
+        "implements": [],
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "_$init$_",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "_$init$_",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1
+              },
+              "end": {
+                "line": 1,
+                "column": 1
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 16,
+                  "column": 10
+                },
+                "end": {
+                  "line": 16,
+                  "column": 14
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 10
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 14
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [
+                    {
+                      "type": "VariableDeclaration",
+                      "declarations": [
+                        {
+                          "type": "VariableDeclarator",
+                          "id": {
+                            "type": "Identifier",
+                            "name": "a",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 9
+                              },
+                              "end": {
+                                "line": 17,
+                                "column": 10
+                              }
+                            }
+                          },
+                          "init": {
+                            "type": "BinaryExpression",
+                            "operator": "+",
+                            "left": {
+                              "type": "BinaryExpression",
+                              "operator": "-",
+                              "left": {
+                                "type": "BinaryExpression",
+                                "operator": "+",
+                                "left": {
+                                  "type": "NumberLiteral",
+                                  "value": 0.5,
+                                  "loc": {
+                                    "start": {
+                                      "line": 17,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 17,
+                                      "column": 15
+                                    }
+                                  }
+                                },
+                                "right": {
+                                  "type": "NumberLiteral",
+                                  "value": 0.7,
+                                  "loc": {
+                                    "start": {
+                                      "line": 17,
+                                      "column": 18
+                                    },
+                                    "end": {
+                                      "line": 17,
+                                      "column": 20
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 17,
+                                    "column": 13
+                                  },
+                                  "end": {
+                                    "line": 17,
+                                    "column": 20
+                                  }
+                                }
+                              },
+                              "right": {
+                                "type": "BinaryExpression",
+                                "operator": "%",
+                                "left": {
+                                  "type": "BinaryExpression",
+                                  "operator": "*",
+                                  "left": {
+                                    "type": "NumberLiteral",
+                                    "value": 0.4,
+                                    "loc": {
+                                      "start": {
+                                        "line": 17,
+                                        "column": 23
+                                      },
+                                      "end": {
+                                        "line": 17,
+                                        "column": 25
+                                      }
+                                    }
+                                  },
+                                  "right": {
+                                    "type": "BinaryExpression",
+                                    "operator": "/",
+                                    "left": {
+                                      "type": "NumberLiteral",
+                                      "value": 0.2,
+                                      "loc": {
+                                        "start": {
+                                          "line": 17,
+                                          "column": 29
+                                        },
+                                        "end": {
+                                          "line": 17,
+                                          "column": 31
+                                        }
+                                      }
+                                    },
+                                    "right": {
+                                      "type": "NumberLiteral",
+                                      "value": 0.1,
+                                      "loc": {
+                                        "start": {
+                                          "line": 17,
+                                          "column": 34
+                                        },
+                                        "end": {
+                                          "line": 17,
+                                          "column": 36
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 17,
+                                        "column": 28
+                                      },
+                                      "end": {
+                                        "line": 17,
+                                        "column": 37
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 17,
+                                      "column": 23
+                                    },
+                                    "end": {
+                                      "line": 17,
+                                      "column": 37
+                                    }
+                                  }
+                                },
+                                "right": {
+                                  "type": "NumberLiteral",
+                                  "value": 0.2,
+                                  "loc": {
+                                    "start": {
+                                      "line": 17,
+                                      "column": 40
+                                    },
+                                    "end": {
+                                      "line": 17,
+                                      "column": 42
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 17,
+                                    "column": 23
+                                  },
+                                  "end": {
+                                    "line": 17,
+                                    "column": 42
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 17,
+                                  "column": 13
+                                },
+                                "end": {
+                                  "line": 17,
+                                  "column": 42
+                                }
+                              }
+                            },
+                            "right": {
+                              "type": "BinaryExpression",
+                              "operator": "-",
+                              "left": {
+                                "type": "BinaryExpression",
+                                "operator": "+",
+                                "left": {
+                                  "type": "BinaryExpression",
+                                  "operator": "*",
+                                  "left": {
+                                    "type": "BinaryExpression",
+                                    "operator": "-",
+                                    "left": {
+                                      "type": "BinaryExpression",
+                                      "operator": "+",
+                                      "left": {
+                                        "type": "NumberLiteral",
+                                        "value": 0.5,
+                                        "loc": {
+                                          "start": {
+                                            "line": 17,
+                                            "column": 47
+                                          },
+                                          "end": {
+                                            "line": 17,
+                                            "column": 49
+                                          }
+                                        }
+                                      },
+                                      "right": {
+                                        "type": "NumberLiteral",
+                                        "value": 0.7,
+                                        "loc": {
+                                          "start": {
+                                            "line": 17,
+                                            "column": 52
+                                          },
+                                          "end": {
+                                            "line": 17,
+                                            "column": 54
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 17,
+                                          "column": 47
+                                        },
+                                        "end": {
+                                          "line": 17,
+                                          "column": 54
+                                        }
+                                      }
+                                    },
+                                    "right": {
+                                      "type": "BinaryExpression",
+                                      "operator": "%",
+                                      "left": {
+                                        "type": "BinaryExpression",
+                                        "operator": "*",
+                                        "left": {
+                                          "type": "NumberLiteral",
+                                          "value": 0.4,
+                                          "loc": {
+                                            "start": {
+                                              "line": 17,
+                                              "column": 57
+                                            },
+                                            "end": {
+                                              "line": 17,
+                                              "column": 59
+                                            }
+                                          }
+                                        },
+                                        "right": {
+                                          "type": "BinaryExpression",
+                                          "operator": "/",
+                                          "left": {
+                                            "type": "NumberLiteral",
+                                            "value": 0.2,
+                                            "loc": {
+                                              "start": {
+                                                "line": 17,
+                                                "column": 63
+                                              },
+                                              "end": {
+                                                "line": 17,
+                                                "column": 65
+                                              }
+                                            }
+                                          },
+                                          "right": {
+                                            "type": "NumberLiteral",
+                                            "value": 0.1,
+                                            "loc": {
+                                              "start": {
+                                                "line": 17,
+                                                "column": 68
+                                              },
+                                              "end": {
+                                                "line": 17,
+                                                "column": 70
+                                              }
+                                            }
+                                          },
+                                          "loc": {
+                                            "start": {
+                                              "line": 17,
+                                              "column": 62
+                                            },
+                                            "end": {
+                                              "line": 17,
+                                              "column": 71
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 17,
+                                            "column": 57
+                                          },
+                                          "end": {
+                                            "line": 17,
+                                            "column": 71
+                                          }
+                                        }
+                                      },
+                                      "right": {
+                                        "type": "NumberLiteral",
+                                        "value": 0.2,
+                                        "loc": {
+                                          "start": {
+                                            "line": 17,
+                                            "column": 74
+                                          },
+                                          "end": {
+                                            "line": 17,
+                                            "column": 76
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 17,
+                                          "column": 57
+                                        },
+                                        "end": {
+                                          "line": 17,
+                                          "column": 76
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 17,
+                                        "column": 46
+                                      },
+                                      "end": {
+                                        "line": 17,
+                                        "column": 77
+                                      }
+                                    }
+                                  },
+                                  "right": {
+                                    "type": "NumberLiteral",
+                                    "value": 0.5,
+                                    "loc": {
+                                      "start": {
+                                        "line": 17,
+                                        "column": 80
+                                      },
+                                      "end": {
+                                        "line": 17,
+                                        "column": 82
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 17,
+                                      "column": 46
+                                    },
+                                    "end": {
+                                      "line": 17,
+                                      "column": 82
+                                    }
+                                  }
+                                },
+                                "right": {
+                                  "type": "NumberLiteral",
+                                  "value": 0.7,
+                                  "loc": {
+                                    "start": {
+                                      "line": 17,
+                                      "column": 85
+                                    },
+                                    "end": {
+                                      "line": 17,
+                                      "column": 87
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 17,
+                                    "column": 46
+                                  },
+                                  "end": {
+                                    "line": 17,
+                                    "column": 87
+                                  }
+                                }
+                              },
+                              "right": {
+                                "type": "BinaryExpression",
+                                "operator": "%",
+                                "left": {
+                                  "type": "BinaryExpression",
+                                  "operator": "*",
+                                  "left": {
+                                    "type": "NumberLiteral",
+                                    "value": 0.4,
+                                    "loc": {
+                                      "start": {
+                                        "line": 17,
+                                        "column": 90
+                                      },
+                                      "end": {
+                                        "line": 17,
+                                        "column": 92
+                                      }
+                                    }
+                                  },
+                                  "right": {
+                                    "type": "BinaryExpression",
+                                    "operator": "/",
+                                    "left": {
+                                      "type": "NumberLiteral",
+                                      "value": 0.2,
+                                      "loc": {
+                                        "start": {
+                                          "line": 17,
+                                          "column": 96
+                                        },
+                                        "end": {
+                                          "line": 17,
+                                          "column": 98
+                                        }
+                                      }
+                                    },
+                                    "right": {
+                                      "type": "NumberLiteral",
+                                      "value": 0.1,
+                                      "loc": {
+                                        "start": {
+                                          "line": 17,
+                                          "column": 101
+                                        },
+                                        "end": {
+                                          "line": 17,
+                                          "column": 103
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 17,
+                                        "column": 95
+                                      },
+                                      "end": {
+                                        "line": 17,
+                                        "column": 104
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 17,
+                                      "column": 90
+                                    },
+                                    "end": {
+                                      "line": 17,
+                                      "column": 104
+                                    }
+                                  }
+                                },
+                                "right": {
+                                  "type": "NumberLiteral",
+                                  "value": 0.2,
+                                  "loc": {
+                                    "start": {
+                                      "line": 17,
+                                      "column": 107
+                                    },
+                                    "end": {
+                                      "line": 17,
+                                      "column": 109
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 17,
+                                    "column": 90
+                                  },
+                                  "end": {
+                                    "line": 17,
+                                    "column": 109
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 17,
+                                  "column": 45
+                                },
+                                "end": {
+                                  "line": 17,
+                                  "column": 110
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 17,
+                                "column": 110
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 9
+                            },
+                            "end": {
+                              "line": 17,
+                              "column": 110
+                            }
+                          }
+                        }
+                      ],
+                      "kind": "let",
+                      "loc": {
+                        "start": {
+                          "line": 17,
+                          "column": 5
+                        },
+                        "end": {
+                          "line": 17,
+                          "column": 110
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 17
+                    },
+                    "end": {
+                      "line": 18,
+                      "column": 2
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 16,
+                    "column": 14
+                  },
+                  "end": {
+                    "line": 18,
+                    "column": 2
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 16,
+                  "column": 14
+                },
+                "end": {
+                  "line": 18,
+                  "column": 2
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 1
+              },
+              "end": {
+                "line": 18,
+                "column": 2
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 1,
+            "column": 1
+          },
+          "end": {
+            "line": 1,
+            "column": 1
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 1
+        },
+        "end": {
+          "line": 1,
+          "column": 1
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1
+    },
+    "end": {
+      "line": 19,
+      "column": 1
+    }
+  }
+}

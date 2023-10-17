@@ -1,0 +1,1 @@
+SyntaxError: 'async' flags must be used for functions at top-level. [async_function_bad.ets:16:7]

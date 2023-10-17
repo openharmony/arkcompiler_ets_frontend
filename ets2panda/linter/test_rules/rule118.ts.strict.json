@@ -1,0 +1,11 @@
+{
+    "nodes": [
+        {
+            "line": 5,
+            "column": 12,
+            "problem": "TypeOnlyImport",
+            "suggest": "",
+            "rule": "Special import type declarations are not supported (arkts-no-special-imports)"
+        }
+    ]
+}

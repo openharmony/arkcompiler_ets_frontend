@@ -1,0 +1,1 @@
+SyntaxError: Classes may not have a field named 'constructor' [test-class-constructor3.ts:18:5]

@@ -1,0 +1,10 @@
+./build/file1.abc
+./build/file2.abc
+./build/main.abc
+./build/src/component1/exampleComponent.abc
+./build/src/component1/exampleComponent1.abc
+./build/src/component1/exampleUtil11.abc
+./build/src/component2/exampleComponent1.abc
+./build/src/component2/exampleUtil1.abc
+./build/src/component2/exampleUtil2.abc
+./build/test/index.abc

@@ -1,0 +1,28 @@
+{
+    "nodes": [
+        {
+            "line": 2,
+            "column": 20,
+            "problem": "AnyType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 12,
+            "column": 23,
+            "problem": "AnyType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 22,
+            "column": 21,
+            "problem": "AnyType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        }
+    ]
+}

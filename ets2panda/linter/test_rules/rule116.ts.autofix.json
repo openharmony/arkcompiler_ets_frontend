@@ -1,0 +1,12 @@
+{
+    "nodes": [
+        {
+            "line": 3,
+            "column": 5,
+            "problem": "NonDeclarationInNamespace",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Non-declaration statements in namespaces are not supported (arkts-no-ns-statements)"
+        }
+    ]
+}

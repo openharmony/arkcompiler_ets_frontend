@@ -1,0 +1,11 @@
+{
+    "nodes": [
+        {
+            "line": 11,
+            "column": 17,
+            "problem": "IntersectionType",
+            "suggest": "",
+            "rule": "Use inheritance instead of intersection types (arkts-no-intersection-types)"
+        }
+    ]
+}

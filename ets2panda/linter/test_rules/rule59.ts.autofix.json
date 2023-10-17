@@ -1,0 +1,20 @@
+{
+    "nodes": [
+        {
+            "line": 7,
+            "column": 1,
+            "problem": "DeleteOperator",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"delete\" operator is not supported (arkts-no-delete)"
+        },
+        {
+            "line": 15,
+            "column": 1,
+            "problem": "StrictDiagnostic",
+            "autofixable": false,
+            "suggest": "Type 'null' is not assignable to type 'number | undefined'.",
+            "rule": "Type 'null' is not assignable to type 'number | undefined'."
+        }
+    ]
+}

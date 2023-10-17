@@ -1,0 +1,1 @@
+SyntaxError: Invalid enum initialization type [enum15.ets:18:11]

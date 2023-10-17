@@ -1,0 +1,10 @@
+{
+    "nodes": [
+        {
+            "line": 7,
+            "column": 5,
+            "problem": "ImportAfterStatement",
+            "rule": "\"import\" statements after other statements are not allowed (arkts-no-misplaced-imports)"
+        }
+    ]
+}

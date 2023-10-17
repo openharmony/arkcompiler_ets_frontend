@@ -1,0 +1,1 @@
+SyntaxError: Variance modifier is not allowed here. [type_variance4.ets:18:13]

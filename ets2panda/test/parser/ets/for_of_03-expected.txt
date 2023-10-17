@@ -1,0 +1,1 @@
+SyntaxError: Invalid left-hand side in 'for' statement: must have a single binding. [for_of_03.ets:20:15]

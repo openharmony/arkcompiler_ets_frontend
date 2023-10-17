@@ -1,0 +1,1 @@
+SyntaxError: Illegal start of expression [localClassIsPermitted.ets:18:9]

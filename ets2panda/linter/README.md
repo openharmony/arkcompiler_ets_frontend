@@ -1,0 +1,61 @@
+# TypeScript linter
+Typescript linter ( further mentioned as 'linter' ) is a tool to check typescript sources and find language elements 
+and constructions which are deprecated to use in a purpose to migrate sources to STS. 
+The linter is currently under development.
+
+## Prerequisits
+
+### Visual Studio Code
+For development, it's recommended to use `VS Code`, as it has a full built-in support for TypeScript language.
+
+### NodeJS and NPM
+Install the latest stable version of `NodeJS` and `NPM`. It is recommended using a `Node version manager` to install Node and NPM ([nvm](https://github.com/nvm-sh/nvm) for Linux; [nvm-windows](https://github.com/coreybutler/nvm-windows) for windows - v1.1.9 is the most stable). You can also follow the [official guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm).
+
+## Building
+
+Run the following command to install all project dependencies and build the project:
+
+```bash
+npm install
+```
+
+Run the following command to only build project sources:
+
+```bash
+npm run build
+```
+
+## Running
+Run the following command from the same directory:
+```bash
+node dist/tslinter.js [options] [input files]
+```
+
+Note: Before linting a project, it is highly recommended to install all project dependencies (with `npm install` or any other methods -- depends on the concrete project).
+
+You can also use command files `tslinter.sh` or `tslinter.cmd` with same arguments as for direct launch.
+
+Possible command options:
+
+`--deveco-plugin-mode` - this options defines special mode to launch from IDE and should NOT be used when running from command line.
+
+`--relax` - defines 'relax' mode in which only problematic TypeScript language elements that cannot be transpiled by TypeScript migrator are counted.
+
+`--project-folder <path>` - defines path to folder with TypeScript sources and subfolders which linter walks recurscevely. This option may be repeated in command line with different paths.
+
+`-p, --project <path>` - defines path to TS project configuration file (commonly known as tsconfig.json). If no input file is defined directly as command-line argument, then all source files from tsconfig.json will be processed by linter. Otherwise, linter will only process input files from command-line, that are included into project (i.e. files that belong to intersection of input files from command-line and tsconfig.json file).
+
+`-E, --TSC_Errors` - enables logging messages about compilation errors and unresolved symbols.
+
+`--warnings-as-errors` - linter detects two kinds of problems: warnings and errors. This parameter make treatment of warnings as errors.
+
+All other command line arguments are considered as paths to TypeScript files.
+
+To prevent command line buffer overflow, response file may be used. It is specified by adding `@` prefix to file name (e.g.: `tslinter.sh @response-file.txt` ). Response file should contain TypeScript source paths (one at each line). The response file argument should be the last command argument (any following argument will be ignored).
+
+## Running tests
+
+Run the following command:
+```bash
+npm test
+```

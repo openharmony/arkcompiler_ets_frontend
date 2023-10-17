@@ -1,0 +1,36 @@
+{
+    "nodes": [
+        {
+            "line": 2,
+            "column": 5,
+            "problem": "StrictDiagnostic",
+            "autofixable": false,
+            "suggest": "Property 'n' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 'n' has no initializer and is not definitely assigned in the constructor."
+        },
+        {
+            "line": 3,
+            "column": 5,
+            "problem": "StrictDiagnostic",
+            "autofixable": false,
+            "suggest": "Property 's' has no initializer and is not definitely assigned in the constructor.",
+            "rule": "Property 's' has no initializer and is not definitely assigned in the constructor."
+        },
+        {
+            "line": 7,
+            "column": 26,
+            "problem": "StrictDiagnostic",
+            "autofixable": false,
+            "suggest": "Function lacks ending return statement and return type does not include 'undefined'.",
+            "rule": "Function lacks ending return statement and return type does not include 'undefined'."
+        },
+        {
+            "line": 16,
+            "column": 5,
+            "problem": "StrictDiagnostic",
+            "autofixable": false,
+            "suggest": "Type 'null' is not assignable to type 'number'.",
+            "rule": "Type 'null' is not assignable to type 'number'."
+        }
+    ]
+}

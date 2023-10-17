@@ -1,0 +1,1 @@
+SyntaxError: Private identifier can not be constructor [test-private-field9.js:17:6]

@@ -1,0 +1,19 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 9,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 8,
+                    "end": 51,
+                    "replacementText": "(s: string) => {\n    console.log(s);\n}"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        }
+    ]
+}

@@ -1,0 +1,281 @@
+Warning: ../../../openharmony/applications_photos/features/album/hvigorfile.ts (2, 1): statement at top level
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetDeleteMenuOperation.ts (48, 32): Invoking methods of function objects
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetDeleteMenuOperation.ts (49, 31): Invoking methods of function objects
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetDeleteMenuOperation.ts (52, 9): Generic calls without type arguments
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetDeleteMenuOperation.ts (52, 36): Arrow functions with omitted parameter types
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetDeleteMenuOperation.ts (53, 84): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetDeleteMenuOperation.ts (94, 81): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetDeleteMenuOperation.ts (107, 9): "&&" or "||" with non-boolean operand
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetDeleteMenuOperation.ts (109, 84): Array literals with no context Array type
+../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetDeleteMenuOperation.ts :  
+	Error lines:  48, 49, 52, 107,  
+../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetDeleteMenuOperation.ts :  
+	Warning lines:  52, 53, 94, 109,  
+
+	Error constructs (%):  0.69 	[ of  577  constructs ], 	 4  lines 
+
+	Warning constructs (%):  0.69 	[ of  577  constructs ], 	 4  lines 
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetRenameMenuOperation.ts (21, 8): Type-only imports
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetRenameMenuOperation.ts (22, 8): Type-only imports
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetRenameMenuOperation.ts (61, 32): Invoking methods of function objects
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetRenameMenuOperation.ts (62, 31): Invoking methods of function objects
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetRenameMenuOperation.ts (67, 13): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetRenameMenuOperation.ts (75, 9): "&&" or "||" with non-boolean operand
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetRenameMenuOperation.ts (107, 9): "&&" or "||" with non-boolean operand
+Warning: ../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetRenameMenuOperation.ts (112, 9): "&&" or "||" with non-boolean operand
+../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetRenameMenuOperation.ts :  
+	Error lines:  21, 22, 61, 62, 75, 107, 112,  
+../../../openharmony/applications_photos/features/album/src/main/ets/operation/AlbumSetRenameMenuOperation.ts :  
+	Warning lines:  67,  
+
+	Error constructs (%):  1.33 	[ of  527  constructs ], 	 7  lines 
+
+	Warning constructs (%):  0.19 	[ of  527  constructs ], 	 1  lines 
+Warning: ../../../openharmony/applications_photos/features/browser/hvigorfile.ts (2, 1): statement at top level
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/operation/GotoPhotosMenuOperation.ts (18, 8): Type-only imports
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/operation/GotoPhotosMenuOperation.ts (45, 24): Object literals with no context Class or Interface type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/operation/GotoPhotosMenuOperation.ts (47, 21): Object literals with no context Class or Interface type
+../../../openharmony/applications_photos/features/browser/src/main/ets/operation/GotoPhotosMenuOperation.ts :  
+	Error lines:  18,  
+../../../openharmony/applications_photos/features/browser/src/main/ets/operation/GotoPhotosMenuOperation.ts :  
+	Warning lines:  45, 47,  
+
+	Error constructs (%):  0.60 	[ of  166  constructs ], 	 1  lines 
+
+	Warning constructs (%):  1.20 	[ of  166  constructs ], 	 2  lines 
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/operation/RenameMenuOperation.ts (17, 8): Type-only imports
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/operation/RenameMenuOperation.ts (18, 8): Type-only imports
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/operation/RenameMenuOperation.ts (48, 32): Invoking methods of function objects
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/operation/RenameMenuOperation.ts (49, 31): Invoking methods of function objects
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/operation/RenameMenuOperation.ts (59, 13): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/operation/RenameMenuOperation.ts (89, 63): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/operation/RenameMenuOperation.ts (102, 16): Array literals with no context Array type
+../../../openharmony/applications_photos/features/browser/src/main/ets/operation/RenameMenuOperation.ts :  
+	Error lines:  17, 18, 48, 49,  
+../../../openharmony/applications_photos/features/browser/src/main/ets/operation/RenameMenuOperation.ts :  
+	Warning lines:  59, 89, 102,  
+
+	Error constructs (%):  0.68 	[ of  591  constructs ], 	 4  lines 
+
+	Warning constructs (%):  0.51 	[ of  591  constructs ], 	 3  lines 
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (168, 25): bit operation with wrong operand
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (170, 25): bit operation with wrong operand
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (181, 65): bit operation with wrong operand
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (182, 23): bit operation with wrong operand
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (183, 62): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (185, 62): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (187, 90): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (223, 20): Object literals with no context Class or Interface type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (227, 24): Object literals with no context Class or Interface type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (330, 63): binary "+" with wrong operand
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (360, 54): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (366, 57): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (379, 54): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (383, 60): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (434, 58): Object literals with no context Class or Interface type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (452, 50): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (533, 59): Object literals with no context Class or Interface type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (545, 22): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (569, 20): Object literals with no context Class or Interface type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (573, 24): Object literals with no context Class or Interface type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (596, 50): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (601, 47): Object literals with no context Class or Interface type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (648, 89): Array literals with no context Array type
+Warning: ../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts (659, 9): "if" statement with non-boolean condition
+../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts :  
+	Error lines:  168, 170, 181, 182, 330,  
+../../../openharmony/applications_photos/features/browser/src/main/ets/utils/EventPipeline.ts :  
+	Warning lines:  183, 185, 187, 223, 227, 360, 366, 379, 383, 434, 452, 533, 545, 569, 573, 596, 601, 648, 659,  
+
+	Error constructs (%):  0.12 	[ of  4214  constructs ], 	 5  lines 
+
+	Warning constructs (%):  0.45 	[ of  4214  constructs ], 	 19  lines 
+Warning: ../../../openharmony/applications_photos/features/distributed/hvigorfile.ts (2, 1): statement at top level
+Warning: ../../../openharmony/applications_photos/features/formEditor/hvigorfile.ts (2, 1): statement at top level
+Warning: ../../../openharmony/applications_photos/features/grid/hvigorfile.ts (2, 1): statement at top level
+Warning: ../../../openharmony/applications_photos/features/mediaOperation/hvigorfile.ts (2, 1): statement at top level
+Warning: ../../../openharmony/applications_photos/features/selectAlbum/hvigorfile.ts (2, 1): statement at top level
+Warning: ../../../openharmony/applications_photos/features/third/hvigorfile.ts (2, 1): statement at top level
+Warning: ../../../openharmony/applications_photos/features/timeline/hvigorfile.ts (2, 1): statement at top level
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/data/TimelineDataItem.ts (30, 65): "Array<T>" type
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/data/TimelineDataItem.ts (33, 27): Generic calls without type arguments
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/data/TimelineDataItem.ts (33, 27): "Array<T>" type
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/data/TimelineDataItem.ts (35, 28): "Array<T>" type
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/data/TimelineDataItem.ts (39, 17): "if" statement with non-boolean condition
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/data/TimelineDataItem.ts (56, 17): Logical "not" operator with non-boolean operand
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/data/TimelineDataItem.ts (56, 18): Property-based runtime checks
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/data/TimelineDataItem.ts (73, 13): "if" statement with non-boolean condition
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/data/TimelineDataItem.ts (73, 17): Property-based runtime checks
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/data/TimelineDataItem.ts (83, 13): "if" statement with non-boolean condition
+../../../openharmony/applications_photos/features/timeline/src/main/ets/data/TimelineDataItem.ts :  
+	Error lines:  56, 73,  
+../../../openharmony/applications_photos/features/timeline/src/main/ets/data/TimelineDataItem.ts :  
+	Warning lines:  30, 33, 35, 39, 73, 83,  
+
+	Error constructs (%):  0.63 	[ of  474  constructs ], 	 2  lines 
+
+	Warning constructs (%):  1.48 	[ of  474  constructs ], 	 6  lines 
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/model/TimelineDataImpl.ts (28, 25): "Array<T>" type
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/model/TimelineDataImpl.ts (31, 29): "Array<T>" type
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/model/TimelineDataImpl.ts (47, 28): "Array<T>" type
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/model/TimelineDataImpl.ts (48, 55): Object literals with no context Class or Interface type
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/model/TimelineDataImpl.ts (59, 28): "Array<T>" type
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/model/TimelineDataImpl.ts (60, 55): Object literals with no context Class or Interface type
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/model/TimelineDataImpl.ts (72, 75): binary "+" with wrong operand
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/model/TimelineDataImpl.ts (72, 122): binary "+" with wrong operand
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/model/TimelineDataImpl.ts (74, 31): binary "+" with wrong operand
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/model/TimelineDataImpl.ts (74, 79): binary "+" with wrong operand
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/model/TimelineDataImpl.ts (88, 33): "Array<T>" type
+../../../openharmony/applications_photos/features/timeline/src/main/ets/model/TimelineDataImpl.ts :  
+	Error lines:  72, 74,  
+../../../openharmony/applications_photos/features/timeline/src/main/ets/model/TimelineDataImpl.ts :  
+	Warning lines:  28, 31, 47, 48, 59, 60, 88,  
+
+	Error constructs (%):  0.64 	[ of  627  constructs ], 	 2  lines 
+
+	Warning constructs (%):  1.12 	[ of  627  constructs ], 	 7  lines 
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/vm/TimelineItemDataSource.ts (113, 77): Invoking methods of function objects
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/vm/TimelineItemDataSource.ts (116, 94): Invoking methods of function objects
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/vm/TimelineItemDataSource.ts (175, 17): "if" statement with non-boolean condition
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/vm/TimelineItemDataSource.ts (175, 21): Property-based runtime checks
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/vm/TimelineItemDataSource.ts (187, 17): "if" statement with non-boolean condition
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/vm/TimelineItemDataSource.ts (187, 21): Property-based runtime checks
+Warning: ../../../openharmony/applications_photos/features/timeline/src/main/ets/vm/TimelineItemDataSource.ts (227, 9): Generic calls without type arguments
+../../../openharmony/applications_photos/features/timeline/src/main/ets/vm/TimelineItemDataSource.ts :  
+	Error lines:  113, 116, 175, 187,  
+../../../openharmony/applications_photos/features/timeline/src/main/ets/vm/TimelineItemDataSource.ts :  
+	Warning lines:  175, 187, 227,  
+
+	Error constructs (%):  0.32 	[ of  1261  constructs ], 	 4  lines 
+
+	Warning constructs (%):  0.24 	[ of  1261  constructs ], 	 3  lines 
+
+
+
+Files scanned:  22 
+
+Files with problems:  8 
+
+Total error constructs (%):  0.35 
+
+Total warning constructs (%):  0.60 
+
+Total error lines: 29  lines
+ 
+
+Total warning lines: 54  lines
+ 
+
+Percent by features:  
+"any" type                                              0.00    [ 0  constructs /  0  lines] 
+"symbol" type                                           0.00    [ 0  constructs /  0  lines] 
+Union type                                              0.00    [ 0  constructs /  0  lines] 
+Tuple type                                              0.00    [ 0  constructs /  0  lines] 
+Object literals with no context Class or Interface type 0.12    [ 11  constructs /  11  lines] 
+Array literals with no context Array type               0.20    [ 18  constructs /  18  lines] 
+Computed properties                                     0.00    [ 0  constructs /  0  lines] 
+String or integer literal as property name              0.00    [ 0  constructs /  0  lines] 
+"typeof" operations                                     0.00    [ 0  constructs /  0  lines] 
+tuple literals                                          0.00    [ 0  constructs /  0  lines] 
+union type literals                                     0.00    [ 0  constructs /  0  lines] 
+regex literals                                          0.00    [ 0  constructs /  0  lines] 
+"is" operations                                         0.00    [ 0  constructs /  0  lines] 
+destructuring parameters                                0.00    [ 0  constructs /  0  lines] 
+"yield" operations                                      0.00    [ 0  constructs /  0  lines] 
+merging interfaces or enums                             0.00    [ 0  constructs /  0  lines] 
+interfaces inherited from classes                       0.00    [ 0  constructs /  0  lines] 
+index members                                           0.00    [ 0  constructs /  0  lines] 
+"with" statements                                       0.00    [ 0  constructs /  0  lines] 
+"throw" statements with expression of wrong type        0.00    [ 0  constructs /  0  lines] 
+Indexed access type                                     0.00    [ 0  constructs /  0  lines] 
+"unknown" type                                          0.00    [ 0  constructs /  0  lines] 
+"for-In" statements                                     0.00    [ 0  constructs /  0  lines] 
+"in" operations                                         0.00    [ 0  constructs /  0  lines] 
+"spread" operations                                     0.00    [ 0  constructs /  0  lines] 
+"keyof" operations                                      0.00    [ 0  constructs /  0  lines] 
+imports from path                                       0.00    [ 0  constructs /  0  lines] 
+function expressions                                    0.00    [ 0  constructs /  0  lines] 
+type parameters with default value                      0.00    [ 0  constructs /  0  lines] 
+intersection types and type literals                    0.00    [ 0  constructs /  0  lines] 
+Object type literals                                    0.00    [ 0  constructs /  0  lines] 
+"&&" or "||" with non-boolean operand                   0.04    [ 4  constructs /  4  lines] 
+binary "+" with wrong operand                           0.05    [ 5  constructs /  5  lines] 
+bit operation with wrong operand                        0.04    [ 4  constructs /  4  lines] 
+comma operator                                          0.00    [ 0  constructs /  0  lines] 
+statement at top level                                  0.10    [ 9  constructs /  9  lines] 
+"if" statement with non-boolean condition               0.07    [ 6  constructs /  6  lines] 
+"do" loop with non-boolean"condition                    0.00    [ 0  constructs /  0  lines] 
+"while" loop with non-boolean condition                 0.00    [ 0  constructs /  0  lines] 
+Functions without return type                           0.00    [ 0  constructs /  0  lines] 
+Arrow function without return type                      0.00    [ 0  constructs /  0  lines] 
+Arrow functions with omitted parameter types            0.01    [ 1  constructs /  1  lines] 
+Lambda function with type parameters                    0.00    [ 0  constructs /  0  lines] 
+Class expressions                                       0.00    [ 0  constructs /  0  lines] 
+Destructuring assignments                               0.00    [ 0  constructs /  0  lines] 
+Destructuring variable declarations                     0.00    [ 0  constructs /  0  lines] 
+"for-of" statement for non-array object                 0.00    [ 0  constructs /  0  lines] 
+"var" declarations                                      0.00    [ 0  constructs /  0  lines] 
+"catch" clause with unsupported exception type          0.00    [ 0  constructs /  0  lines] 
+"delete" operations                                     0.00    [ 0  constructs /  0  lines] 
+Declarations with duplicate name                        0.00    [ 0  constructs /  0  lines] 
+Optional parameters in function                         0.00    [ 0  constructs /  0  lines] 
+Unary arithmetics with not-numeric values               0.00    [ 0  constructs /  0  lines] 
+Logical "not" operator with non-boolean operand         0.01    [ 1  constructs /  1  lines] 
+Constructor type                                        0.00    [ 0  constructs /  0  lines] 
+Call signatures                                         0.00    [ 0  constructs /  0  lines] 
+Template literals                                       0.00    [ 0  constructs /  0  lines] 
+Type assertion expressions                              0.00    [ 0  constructs /  0  lines] 
+Function overload in TS style                           0.00    [ 0  constructs /  0  lines] 
+Constructor overload in TS style                        0.00    [ 0  constructs /  0  lines] 
+Private identifiers (with "#" prefix)                   0.00    [ 0  constructs /  0  lines] 
+Local function declarations                             0.00    [ 0  constructs /  0  lines] 
+Switch selectors with invalid type                      0.00    [ 0  constructs /  0  lines] 
+"case" clause with non-constant expression              0.00    [ 0  constructs /  0  lines] 
+Conditional type                                        0.00    [ 0  constructs /  0  lines] 
+Mapped type                                             0.00    [ 0  constructs /  0  lines] 
+Namespaces used as objects                              0.00    [ 0  constructs /  0  lines] 
+Non-declaration statements in namespaces                0.00    [ 0  constructs /  0  lines] 
+Generator functions                                     0.00    [ 0  constructs /  0  lines] 
+Functions containing "this"                             0.00    [ 0  constructs /  0  lines] 
+property access by index                                0.00    [ 0  constructs /  0  lines] 
+JSX Elements                                            0.00    [ 0  constructs /  0  lines] 
+Enum members with non-constant initializer              0.00    [ 0  constructs /  0  lines] 
+Class type mentioned in "implements" clause             0.00    [ 0  constructs /  0  lines] 
+Multiple static blocks                                  0.00    [ 0  constructs /  0  lines] 
+"this" type                                             0.00    [ 0  constructs /  0  lines] 
+Infer type                                              0.00    [ 0  constructs /  0  lines] 
+Spread assignment                                       0.00    [ 0  constructs /  0  lines] 
+Extends same properties with different types            0.00    [ 0  constructs /  0  lines] 
+Use of type structural identity                         0.00    [ 0  constructs /  0  lines] 
+Type-only imports                                       0.05    [ 5  constructs /  5  lines] 
+Type-only exports                                       0.00    [ 0  constructs /  0  lines] 
+Default import declarations                             0.00    [ 0  constructs /  0  lines] 
+Default export declarations                             0.00    [ 0  constructs /  0  lines] 
+Renaming in export declarations                         0.00    [ 0  constructs /  0  lines] 
+Export list declarations                                0.00    [ 0  constructs /  0  lines] 
+Re-exporting declarations                               0.00    [ 0  constructs /  0  lines] 
+Export assignments (export = ..)                        0.00    [ 0  constructs /  0  lines] 
+Import assignments (import = ..)                        0.00    [ 0  constructs /  0  lines] 
+Property-based runtime checks                           0.04    [ 4  constructs /  4  lines] 
+Generic calls without type arguments                    0.03    [ 3  constructs /  3  lines] 
+string literal type                                     0.00    [ 0  constructs /  0  lines] 
+Interface optional property                             0.00    [ 0  constructs /  0  lines] 
+Parameter properties in constructor                     0.00    [ 0  constructs /  0  lines] 
+Left-hand side of "instanceof" is wrong                 0.00    [ 0  constructs /  0  lines] 
+"Array<T>" type                                         0.09    [ 8  constructs /  8  lines] 
+Shorthand ambient module declaration                    0.00    [ 0  constructs /  0  lines] 
+Wildcards in module name                                0.00    [ 0  constructs /  0  lines] 
+UMD module definition                                   0.00    [ 0  constructs /  0  lines] 
+.js extension in module identifier                      0.00    [ 0  constructs /  0  lines] 
+"new.target" meta-property                              0.00    [ 0  constructs /  0  lines] 
+Dynamic import expression                               0.00    [ 0  constructs /  0  lines] 
+Definite assignment assertion                           0.00    [ 0  constructs /  0  lines] 
+IIFEs as namespace declarations                         0.00    [ 0  constructs /  0  lines] 
+Prototype assignment                                    0.00    [ 0  constructs /  0  lines] 
+Use of globalThis                                       0.00    [ 0  constructs /  0  lines] 
+Standard Utility types                                  0.00    [ 0  constructs /  0  lines] 
+Property declaration on function                        0.00    [ 0  constructs /  0  lines] 
+Invoking methods of function objects                    0.09    [ 8  constructs /  8  lines] 
+"readonly" array or tuple                               0.00    [ 0  constructs /  0  lines] 
+"as const" assertion                                    0.00    [ 0  constructs /  0  lines] 
+Import assertion                                        0.00    [ 0  constructs /  0  lines] 

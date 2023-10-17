@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token in private field [test-private-field3.js:17:7]

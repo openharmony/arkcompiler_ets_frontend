@@ -1,0 +1,11 @@
+{
+    "nodes": [
+        {
+            "line": 5,
+            "column": 23,
+            "problem": "ImplementsClass",
+            "suggest": "",
+            "rule": "Classes cannot be specified in \"implements\" clause (arkts-implements-only-iface)"
+        }
+    ]
+}

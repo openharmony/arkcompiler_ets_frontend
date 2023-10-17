@@ -1,0 +1,1 @@
+SyntaxError: Expected a ')' [lambda-type-inference-bad-arrow.ets:23:1]

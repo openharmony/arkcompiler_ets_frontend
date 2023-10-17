@@ -1,0 +1,1 @@
+SyntaxError: Identifier expected. [test_interface5.ts:18:6]

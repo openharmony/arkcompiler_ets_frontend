@@ -1,0 +1,1 @@
+SyntaxError: struct declaration cannot extends form other class [struct_invalid_extends3.ets:25:1]

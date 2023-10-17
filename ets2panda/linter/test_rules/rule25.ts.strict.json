@@ -1,0 +1,32 @@
+{
+    "nodes": [
+        {
+            "line": 3,
+            "column": 9,
+            "problem": "ParameterProperties",
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
+        },
+        {
+            "line": 4,
+            "column": 9,
+            "problem": "ParameterProperties",
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
+        },
+        {
+            "line": 5,
+            "column": 9,
+            "problem": "ParameterProperties",
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
+        },
+        {
+            "line": 34,
+            "column": 17,
+            "problem": "ParameterProperties",
+            "suggest": "",
+            "rule": "Declaring fields in \"constructor\" is not supported (arkts-no-ctor-prop-decls)"
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "nodes": [
+        {
+            "line": 10,
+            "column": 5,
+            "problem": "DestructuringDeclaration",
+            "suggest": "",
+            "rule": "Destructuring variable declarations are not supported (arkts-no-destruct-decls)"
+        }
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 9,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"
+        },
+        {
+            "line": 5,
+            "column": 3,
+            "problem": "Prototype",
+            "suggest": "",
+            "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)"
+        },
+        {
+            "line": 11,
+            "column": 3,
+            "problem": "Prototype",
+            "suggest": "",
+            "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)"
+        },
+        {
+            "line": 11,
+            "column": 17,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"
+        }
+    ]
+}

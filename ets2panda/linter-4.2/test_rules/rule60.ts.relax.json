@@ -1,0 +1,18 @@
+{
+    "nodes": [
+        {
+            "line": 5,
+            "column": 9,
+            "problem": "TypeQuery",
+            "suggest": "",
+            "rule": "\"typeof\" operator is allowed only in expression contexts (arkts-no-type-query)"
+        },
+        {
+            "line": 6,
+            "column": 9,
+            "problem": "TypeQuery",
+            "suggest": "",
+            "rule": "\"typeof\" operator is allowed only in expression contexts (arkts-no-type-query)"
+        }
+    ]
+}

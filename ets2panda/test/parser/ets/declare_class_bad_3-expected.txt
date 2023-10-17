@@ -1,0 +1,1 @@
+SyntaxError: Initializers are not allowed in ambient contexts. [declare_class_bad_3.ets:18:5]

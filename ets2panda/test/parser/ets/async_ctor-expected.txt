@@ -1,0 +1,1 @@
+SyntaxError: Constructor should not be async. [async_ctor.ets:17:11]

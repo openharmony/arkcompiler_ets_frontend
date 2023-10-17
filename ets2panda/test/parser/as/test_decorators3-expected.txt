@@ -1,0 +1,1 @@
+SyntaxError: Identifier expected [test_decorators3.ts:18:17]

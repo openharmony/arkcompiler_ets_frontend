@@ -1,0 +1,256 @@
+{
+    "nodes": [
+        {
+            "line": 29,
+            "column": 5,
+            "problem": "MethodReassignment",
+            "suggest": "",
+            "rule": "Reassigning object methods is not supported (arkts-no-method-reassignment)"
+        },
+        {
+            "line": 29,
+            "column": 21,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 30,
+            "column": 5,
+            "problem": "MethodReassignment",
+            "suggest": "",
+            "rule": "Reassigning object methods is not supported (arkts-no-method-reassignment)"
+        },
+        {
+            "line": 30,
+            "column": 26,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 34,
+            "column": 29,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 37,
+            "column": 23,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 38,
+            "column": 21,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 68,
+            "column": 9,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 68,
+            "column": 22,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 70,
+            "column": 9,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 70,
+            "column": 13,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 75,
+            "column": 26,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 78,
+            "column": 26,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 81,
+            "column": 9,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 82,
+            "column": 9,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 87,
+            "column": 16,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 94,
+            "column": 9,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 94,
+            "column": 20,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 96,
+            "column": 9,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 96,
+            "column": 13,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 101,
+            "column": 25,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 104,
+            "column": 25,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 107,
+            "column": 3,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 108,
+            "column": 3,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 113,
+            "column": 10,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 116,
+            "column": 16,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 118,
+            "column": 7,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"
+        },
+        {
+            "line": 121,
+            "column": 7,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"
+        },
+        {
+            "line": 124,
+            "column": 7,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"
+        },
+        {
+            "line": 127,
+            "column": 7,
+            "problem": "FunctionContainsThis",
+            "suggest": "",
+            "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"
+        },
+        {
+            "line": 132,
+            "column": 17,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 136,
+            "column": 13,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 137,
+            "column": 13,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 138,
+            "column": 13,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 139,
+            "column": 13,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 141,
+            "column": 1,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        }
+    ]
+}

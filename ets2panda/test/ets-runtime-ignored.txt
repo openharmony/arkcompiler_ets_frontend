@@ -1,0 +1,36 @@
+# SyntaxError: Cannot find type 'Class'.
+# panda#10421
+ClassNewInstance.ets
+
+# SyntaxError: Cannot find type 'HashMap'.
+# panda#10422
+StringFasta.ets
+
+# SyntaxError: Cannot find type 'Class'.
+# panda#10423
+generics_1.ets
+
+# panda#10623
+generic-set.ets
+
+# panda#11502
+nullCoalesc.ets
+
+# panda#13365
+non-const-capture.ets
+
+# panda#11104
+unboxing.ets
+
+# panda#11326
+GenericsTest.ets
+
+# panda#11327
+objectEquality.ets
+
+# FailKind.ES2PANDA_FAIL
+CastReference3.ets
+conditionalExpressionGenericLUB.ets
+
+# Failed due to lambda captures
+trailing-lambda-with-capture.ets

@@ -1,0 +1,27 @@
+{
+    "nodes": [
+        {
+            "line": 4,
+            "column": 1,
+            "problem": "CatchWithUnsupportedType",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 32,
+                    "end": 42,
+                    "replacementText": "a"
+                }
+            ],
+            "suggest": "",
+            "rule": "Type annotation in catch clause is not supported (arkts-no-types-in-catch)"
+        },
+        {
+            "line": 4,
+            "column": 11,
+            "problem": "UnknownType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        }
+    ]
+}

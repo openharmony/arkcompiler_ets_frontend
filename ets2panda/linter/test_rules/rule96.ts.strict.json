@@ -1,0 +1,18 @@
+{
+    "nodes": [
+        {
+            "line": 11,
+            "column": 21,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 11,
+            "column": 27,
+            "problem": "IsOperator",
+            "suggest": "",
+            "rule": "Type guarding is supported with \"instanceof\" and \"as\" (arkts-no-is)"
+        }
+    ]
+}

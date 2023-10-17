@@ -1,0 +1,12 @@
+{
+    "nodes": [
+        {
+            "line": 1,
+            "column": 1,
+            "problem": "ShorthandAmbientModuleDecl",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Ambient module declaration is not supported (arkts-no-ambient-decls)"
+        }
+    ]
+}

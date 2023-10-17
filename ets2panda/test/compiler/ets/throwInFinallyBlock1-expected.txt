@@ -1,0 +1,813 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "ClassDeclaration",
+      "definition": {
+        "id": {
+          "type": "Identifier",
+          "name": "ETSGLOBAL",
+          "decorators": [],
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 1
+            },
+            "end": {
+              "line": 1,
+              "column": 1
+            }
+          }
+        },
+        "superClass": null,
+        "implements": [],
+        "body": [
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "_$init$_",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "_$init$_",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [],
+                  "loc": {
+                    "start": {
+                      "line": 1,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 1,
+                      "column": 1
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 1
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 1,
+                  "column": 1
+                },
+                "end": {
+                  "line": 1,
+                  "column": 1
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 1
+              },
+              "end": {
+                "line": 1,
+                "column": 1
+              }
+            }
+          },
+          {
+            "type": "MethodDefinition",
+            "key": {
+              "type": "Identifier",
+              "name": "main",
+              "decorators": [],
+              "loc": {
+                "start": {
+                  "line": 16,
+                  "column": 10
+                },
+                "end": {
+                  "line": 16,
+                  "column": 14
+                }
+              }
+            },
+            "kind": "method",
+            "accessibility": "public",
+            "static": true,
+            "optional": false,
+            "computed": false,
+            "value": {
+              "type": "FunctionExpression",
+              "function": {
+                "type": "ScriptFunction",
+                "id": {
+                  "type": "Identifier",
+                  "name": "main",
+                  "decorators": [],
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 10
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 14
+                    }
+                  }
+                },
+                "generator": false,
+                "async": false,
+                "expression": false,
+                "params": [],
+                "returnType": {
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "void",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 16,
+                          "column": 18
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 22
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 16,
+                        "column": 18
+                      },
+                      "end": {
+                        "line": 16,
+                        "column": 24
+                      }
+                    }
+                  },
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 18
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 24
+                    }
+                  }
+                },
+                "body": {
+                  "type": "BlockStatement",
+                  "statements": [
+                    {
+                      "type": "TryStatement",
+                      "block": {
+                        "type": "BlockStatement",
+                        "statements": [
+                          {
+                            "type": "ThrowStatement",
+                            "argument": {
+                              "type": "ETSNewClassInstanceExpression",
+                              "typeReference": {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "Exception",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 18,
+                                        "column": 15
+                                      },
+                                      "end": {
+                                        "line": 18,
+                                        "column": 24
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 18,
+                                      "column": 15
+                                    },
+                                    "end": {
+                                      "line": 18,
+                                      "column": 25
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 18,
+                                    "column": 15
+                                  },
+                                  "end": {
+                                    "line": 18,
+                                    "column": 25
+                                  }
+                                }
+                              },
+                              "arguments": [],
+                              "loc": {
+                                "start": {
+                                  "line": 18,
+                                  "column": 11
+                                },
+                                "end": {
+                                  "line": 19,
+                                  "column": 4
+                                }
+                              }
+                            },
+                            "loc": {
+                              "start": {
+                                "line": 18,
+                                "column": 5
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 4
+                              }
+                            }
+                          }
+                        ],
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 7
+                          },
+                          "end": {
+                            "line": 19,
+                            "column": 4
+                          }
+                        }
+                      },
+                      "handler": [
+                        {
+                          "type": "CatchClause",
+                          "body": {
+                            "type": "BlockStatement",
+                            "statements": [
+                              {
+                                "type": "TryStatement",
+                                "block": {
+                                  "type": "BlockStatement",
+                                  "statements": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 20,
+                                      "column": 9
+                                    },
+                                    "end": {
+                                      "line": 20,
+                                      "column": 11
+                                    }
+                                  }
+                                },
+                                "handler": [
+                                  {
+                                    "type": "CatchClause",
+                                    "body": {
+                                      "type": "BlockStatement",
+                                      "statements": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 21,
+                                          "column": 15
+                                        },
+                                        "end": {
+                                          "line": 21,
+                                          "column": 17
+                                        }
+                                      }
+                                    },
+                                    "param": {
+                                      "type": "Identifier",
+                                      "name": "e",
+                                      "decorators": [],
+                                      "loc": {
+                                        "start": {
+                                          "line": 21,
+                                          "column": 12
+                                        },
+                                        "end": {
+                                          "line": 21,
+                                          "column": 13
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 21,
+                                        "column": 5
+                                      },
+                                      "end": {
+                                        "line": 21,
+                                        "column": 17
+                                      }
+                                    }
+                                  }
+                                ],
+                                "finalizer": {
+                                  "type": "BlockStatement",
+                                  "statements": [
+                                    {
+                                      "type": "TryStatement",
+                                      "block": {
+                                        "type": "BlockStatement",
+                                        "statements": [
+                                          {
+                                            "type": "ThrowStatement",
+                                            "argument": {
+                                              "type": "ETSNewClassInstanceExpression",
+                                              "typeReference": {
+                                                "type": "ETSTypeReference",
+                                                "part": {
+                                                  "type": "ETSTypeReferencePart",
+                                                  "name": {
+                                                    "type": "Identifier",
+                                                    "name": "Exception",
+                                                    "decorators": [],
+                                                    "loc": {
+                                                      "start": {
+                                                        "line": 24,
+                                                        "column": 19
+                                                      },
+                                                      "end": {
+                                                        "line": 24,
+                                                        "column": 28
+                                                      }
+                                                    }
+                                                  },
+                                                  "loc": {
+                                                    "start": {
+                                                      "line": 24,
+                                                      "column": 19
+                                                    },
+                                                    "end": {
+                                                      "line": 24,
+                                                      "column": 29
+                                                    }
+                                                  }
+                                                },
+                                                "loc": {
+                                                  "start": {
+                                                    "line": 24,
+                                                    "column": 19
+                                                  },
+                                                  "end": {
+                                                    "line": 24,
+                                                    "column": 29
+                                                  }
+                                                }
+                                              },
+                                              "arguments": [],
+                                              "loc": {
+                                                "start": {
+                                                  "line": 24,
+                                                  "column": 15
+                                                },
+                                                "end": {
+                                                  "line": 25,
+                                                  "column": 8
+                                                }
+                                              }
+                                            },
+                                            "loc": {
+                                              "start": {
+                                                "line": 24,
+                                                "column": 9
+                                              },
+                                              "end": {
+                                                "line": 25,
+                                                "column": 8
+                                              }
+                                            }
+                                          }
+                                        ],
+                                        "loc": {
+                                          "start": {
+                                            "line": 23,
+                                            "column": 11
+                                          },
+                                          "end": {
+                                            "line": 25,
+                                            "column": 8
+                                          }
+                                        }
+                                      },
+                                      "handler": [
+                                        {
+                                          "type": "CatchClause",
+                                          "body": {
+                                            "type": "BlockStatement",
+                                            "statements": [],
+                                            "loc": {
+                                              "start": {
+                                                "line": 25,
+                                                "column": 19
+                                              },
+                                              "end": {
+                                                "line": 25,
+                                                "column": 21
+                                              }
+                                            }
+                                          },
+                                          "param": {
+                                            "type": "Identifier",
+                                            "name": "e",
+                                            "decorators": [],
+                                            "loc": {
+                                              "start": {
+                                                "line": 25,
+                                                "column": 16
+                                              },
+                                              "end": {
+                                                "line": 25,
+                                                "column": 17
+                                              }
+                                            }
+                                          },
+                                          "loc": {
+                                            "start": {
+                                              "line": 25,
+                                              "column": 9
+                                            },
+                                            "end": {
+                                              "line": 25,
+                                              "column": 21
+                                            }
+                                          }
+                                        }
+                                      ],
+                                      "finalizer": null,
+                                      "loc": {
+                                        "start": {
+                                          "line": 23,
+                                          "column": 7
+                                        },
+                                        "end": {
+                                          "line": 25,
+                                          "column": 21
+                                        }
+                                      }
+                                    }
+                                  ],
+                                  "loc": {
+                                    "start": {
+                                      "line": 22,
+                                      "column": 13
+                                    },
+                                    "end": {
+                                      "line": 26,
+                                      "column": 6
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 20,
+                                    "column": 5
+                                  },
+                                  "end": {
+                                    "line": 26,
+                                    "column": 6
+                                  }
+                                }
+                              }
+                            ],
+                            "loc": {
+                              "start": {
+                                "line": 19,
+                                "column": 15
+                              },
+                              "end": {
+                                "line": 27,
+                                "column": 4
+                              }
+                            }
+                          },
+                          "param": {
+                            "type": "Identifier",
+                            "name": "e",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 19,
+                                "column": 12
+                              },
+                              "end": {
+                                "line": 19,
+                                "column": 13
+                              }
+                            }
+                          },
+                          "loc": {
+                            "start": {
+                              "line": 19,
+                              "column": 5
+                            },
+                            "end": {
+                              "line": 27,
+                              "column": 4
+                            }
+                          }
+                        }
+                      ],
+                      "finalizer": {
+                        "type": "BlockStatement",
+                        "statements": [
+                          {
+                            "type": "TryStatement",
+                            "block": {
+                              "type": "BlockStatement",
+                              "statements": [
+                                {
+                                  "type": "ThrowStatement",
+                                  "argument": {
+                                    "type": "ETSNewClassInstanceExpression",
+                                    "typeReference": {
+                                      "type": "ETSTypeReference",
+                                      "part": {
+                                        "type": "ETSTypeReferencePart",
+                                        "name": {
+                                          "type": "Identifier",
+                                          "name": "Exception",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 30,
+                                              "column": 17
+                                            },
+                                            "end": {
+                                              "line": 30,
+                                              "column": 26
+                                            }
+                                          }
+                                        },
+                                        "loc": {
+                                          "start": {
+                                            "line": 30,
+                                            "column": 17
+                                          },
+                                          "end": {
+                                            "line": 30,
+                                            "column": 27
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 30,
+                                          "column": 17
+                                        },
+                                        "end": {
+                                          "line": 30,
+                                          "column": 27
+                                        }
+                                      }
+                                    },
+                                    "arguments": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 30,
+                                        "column": 13
+                                      },
+                                      "end": {
+                                        "line": 31,
+                                        "column": 6
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 30,
+                                      "column": 7
+                                    },
+                                    "end": {
+                                      "line": 31,
+                                      "column": 6
+                                    }
+                                  }
+                                }
+                              ],
+                              "loc": {
+                                "start": {
+                                  "line": 29,
+                                  "column": 9
+                                },
+                                "end": {
+                                  "line": 31,
+                                  "column": 6
+                                }
+                              }
+                            },
+                            "handler": [
+                              {
+                                "type": "CatchClause",
+                                "body": {
+                                  "type": "BlockStatement",
+                                  "statements": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 31,
+                                      "column": 17
+                                    },
+                                    "end": {
+                                      "line": 31,
+                                      "column": 19
+                                    }
+                                  }
+                                },
+                                "param": {
+                                  "type": "Identifier",
+                                  "name": "e",
+                                  "decorators": [],
+                                  "loc": {
+                                    "start": {
+                                      "line": 31,
+                                      "column": 14
+                                    },
+                                    "end": {
+                                      "line": 31,
+                                      "column": 15
+                                    }
+                                  }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 31,
+                                    "column": 7
+                                  },
+                                  "end": {
+                                    "line": 31,
+                                    "column": 19
+                                  }
+                                }
+                              }
+                            ],
+                            "finalizer": null,
+                            "loc": {
+                              "start": {
+                                "line": 29,
+                                "column": 5
+                              },
+                              "end": {
+                                "line": 31,
+                                "column": 19
+                              }
+                            }
+                          }
+                        ],
+                        "loc": {
+                          "start": {
+                            "line": 28,
+                            "column": 11
+                          },
+                          "end": {
+                            "line": 32,
+                            "column": 4
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 17,
+                          "column": 3
+                        },
+                        "end": {
+                          "line": 32,
+                          "column": 4
+                        }
+                      }
+                    }
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 23
+                    },
+                    "end": {
+                      "line": 33,
+                      "column": 2
+                    }
+                  }
+                },
+                "loc": {
+                  "start": {
+                    "line": 16,
+                    "column": 14
+                  },
+                  "end": {
+                    "line": 33,
+                    "column": 2
+                  }
+                }
+              },
+              "loc": {
+                "start": {
+                  "line": 16,
+                  "column": 14
+                },
+                "end": {
+                  "line": 33,
+                  "column": 2
+                }
+              }
+            },
+            "overloads": [],
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 1
+              },
+              "end": {
+                "line": 33,
+                "column": 2
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 1,
+            "column": 1
+          },
+          "end": {
+            "line": 1,
+            "column": 1
+          }
+        }
+      },
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 1
+        },
+        "end": {
+          "line": 1,
+          "column": 1
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1
+    },
+    "end": {
+      "line": 34,
+      "column": 1
+    }
+  }
+}

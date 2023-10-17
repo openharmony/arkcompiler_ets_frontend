@@ -1,0 +1,11 @@
+{
+    "nodes": [
+        {
+            "line": 12,
+            "column": 5,
+            "problem": "TypeOnlyExport",
+            "suggest": "",
+            "rule": "Special \"export type\" declarations are not supported (arkts-no-special-exports)"
+        }
+    ]
+}
