@@ -18,6 +18,11 @@
 
 #include "ir/expression.h"
 
+namespace panda::es2panda::checker {
+class TSAnalyzer;
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
+
 namespace panda::es2panda::ir {
 class ConditionalExpression : public Expression {
 public:
@@ -31,6 +36,10 @@ public:
         : Expression(AstNodeType::CONDITIONAL_EXPRESSION), test_(test), consequent_(consequent), alternate_(alternate)
     {
     }
+
+    // TODO (csabahurton): these friend relationships can be removed once there are getters for private fields
+    friend class checker::TSAnalyzer;
+    friend class checker::ETSAnalyzer;
 
     [[nodiscard]] const Expression *Test() const noexcept
     {

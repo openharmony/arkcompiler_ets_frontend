@@ -21,8 +21,15 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::checker {
+class ETSAnalyzer;
+class TSAnalyzer;
 class Signature;
 }  // namespace panda::es2panda::checker
+
+namespace panda::es2panda::compiler {
+class JSCompiler;
+class ETSCompiler;
+}  // namespace panda::es2panda::compiler
 
 namespace panda::es2panda::ir {
 class TSTypeParameterInstantiation;
@@ -48,7 +55,13 @@ public:
 
     explicit CallExpression(CallExpression const &other, ArenaAllocator *allocator);
 
-    [[nodiscard]] const Expression *Callee() const noexcept
+    // TODO (csabahurton): these friend relationships can be removed once there are getters for private fields
+    friend class checker::TSAnalyzer;
+    friend class checker::ETSAnalyzer;
+    friend class compiler::JSCompiler;
+    friend class compiler::ETSCompiler;
+
+    const Expression *Callee() const
     {
         return callee_;
     }
@@ -135,20 +148,12 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
 
     void Dump(ir::AstDumper *dumper) const override;
-
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
-
-    checker::Signature *ResolveCallExtensionFunction(checker::ETSFunctionType *function_type,
-                                                     checker::ETSChecker *checker);
-    checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensionFuncHelperType *type,
-                                                                 checker::ETSChecker *checker);
+    void Compile(compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 protected:
-    compiler::VReg CreateSpreadArguments(compiler::PandaGen *pg) const;
-
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     Expression *callee_;
     ArenaVector<Expression *> arguments_;
@@ -164,7 +169,6 @@ private:
     bool IsETSConstructorCall() const;
     checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, Expression *callee,
                                              checker::Type *callee_type);
-    void ConvertRestArguments(checker::ETSChecker *checker) const;
 };
 }  // namespace panda::es2panda::ir
 

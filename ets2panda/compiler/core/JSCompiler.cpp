@@ -573,14 +573,89 @@ void JSCompiler::Compile(const ir::AssignmentExpression *expr) const
 
 void JSCompiler::Compile(const ir::AwaitExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::RegScope rs(pg);
+
+    if (expr->Argument() != nullptr) {
+        expr->Argument()->Compile(pg);
+    } else {
+        pg->LoadConst(expr, compiler::Constant::JS_UNDEFINED);
+    }
+
+    pg->EmitAwait(expr);
+}
+
+static void CompileLogical(compiler::PandaGen *pg, const ir::BinaryExpression *expr)
+{
+    compiler::RegScope rs(pg);
+    compiler::VReg lhs = pg->AllocReg();
+
+    ASSERT(expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND ||
+           expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_OR ||
+           expr->OperatorType() == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING);
+
+    auto *skip_right = pg->AllocLabel();
+    auto *end_label = pg->AllocLabel();
+
+    // left -> acc -> lhs -> toboolean -> acc -> bool_lhs
+    expr->Left()->Compile(pg);
+    pg->StoreAccumulator(expr, lhs);
+
+    if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
+        pg->ToBoolean(expr);
+        pg->BranchIfFalse(expr, skip_right);
+    } else if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_OR) {
+        pg->ToBoolean(expr);
+        pg->BranchIfTrue(expr, skip_right);
+    } else if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING) {
+        pg->BranchIfCoercible(expr, skip_right);
+    }
+
+    // left is true/false(and/or) then right -> acc
+    expr->Right()->Compile(pg);
+    pg->Branch(expr, end_label);
+
+    // left is false/true(and/or) then lhs -> acc
+    pg->SetLabel(expr, skip_right);
+    pg->LoadAccumulator(expr, lhs);
+    pg->SetLabel(expr, end_label);
 }
 
 void JSCompiler::Compile(const ir::BinaryExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    if (expr->IsLogical()) {
+        CompileLogical(pg, expr);
+        return;
+    }
+
+    if (expr->OperatorType() == lexer::TokenType::KEYW_IN && expr->Left()->IsIdentifier() &&
+        expr->Left()->AsIdentifier()->IsPrivateIdent()) {
+        compiler::RegScope rs(pg);
+        compiler::VReg ctor = pg->AllocReg();
+        const auto &name = expr->Left()->AsIdentifier()->Name();
+        compiler::Function::LoadClassContexts(expr, pg, ctor, name);
+        expr->Right()->Compile(pg);
+        pg->ClassPrivateFieldIn(expr, ctor, name);
+        return;
+    }
+
+    compiler::RegScope rs(pg);
+    compiler::VReg lhs = pg->AllocReg();
+
+    expr->Left()->Compile(pg);
+    pg->StoreAccumulator(expr, lhs);
+    expr->Right()->Compile(pg);
+
+    pg->Binary(expr, expr->OperatorType(), lhs);
+}
+
+static compiler::VReg CreateSpreadArguments(compiler::PandaGen *pg, const ir::CallExpression *expr)
+{
+    compiler::VReg args_obj = pg->AllocReg();
+    pg->CreateArray(expr, expr->Arguments(), args_obj);
+
+    return args_obj;
 }
 
 void JSCompiler::Compile(const ir::BlockExpression *expr) const
@@ -591,38 +666,150 @@ void JSCompiler::Compile(const ir::BlockExpression *expr) const
 
 void JSCompiler::Compile(const ir::CallExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::RegScope rs(pg);
+    bool contains_spread = util::Helpers::ContainSpreadElement(expr->Arguments());
+
+    if (expr->Callee()->IsSuperExpression()) {
+        if (contains_spread) {
+            compiler::RegScope param_scope(pg);
+            compiler::VReg args_obj = CreateSpreadArguments(pg, expr);
+
+            pg->GetFunctionObject(expr);
+            pg->SuperCallSpread(expr, args_obj);
+        } else {
+            compiler::RegScope param_scope(pg);
+            compiler::VReg arg_start {};
+
+            if (expr->Arguments().empty()) {
+                arg_start = pg->AllocReg();
+                pg->StoreConst(expr, arg_start, compiler::Constant::JS_UNDEFINED);
+            } else {
+                arg_start = pg->NextReg();
+            }
+
+            for (const auto *it : expr->Arguments()) {
+                compiler::VReg arg = pg->AllocReg();
+                it->Compile(pg);
+                pg->StoreAccumulator(it, arg);
+            }
+
+            pg->GetFunctionObject(expr);
+            pg->SuperCall(expr, arg_start, expr->Arguments().size());
+        }
+
+        compiler::VReg new_this = pg->AllocReg();
+        pg->StoreAccumulator(expr, new_this);
+
+        pg->GetThis(expr);
+        pg->ThrowIfSuperNotCorrectCall(expr, 1);
+
+        pg->LoadAccumulator(expr, new_this);
+        pg->SetThis(expr);
+
+        compiler::Function::CompileInstanceFields(pg, pg->RootNode()->AsScriptFunction());
+        return;
+    }
+
+    compiler::VReg callee = pg->AllocReg();
+    compiler::VReg this_reg = compiler::VReg::Invalid();
+
+    if (expr->Callee()->IsMemberExpression()) {
+        this_reg = pg->AllocReg();
+
+        compiler::RegScope mrs(pg);
+        expr->Callee()->AsMemberExpression()->CompileToReg(pg, this_reg);
+    } else if (expr->Callee()->IsChainExpression()) {
+        this_reg = pg->AllocReg();
+
+        compiler::RegScope mrs(pg);
+        expr->Callee()->AsChainExpression()->CompileToReg(pg, this_reg);
+    } else {
+        expr->Callee()->Compile(pg);
+    }
+
+    pg->StoreAccumulator(expr, callee);
+    pg->OptionalChainCheck(expr->IsOptional(), callee);
+
+    if (contains_spread || expr->Arguments().size() >= compiler::PandaGen::MAX_RANGE_CALL_ARG) {
+        if (this_reg.IsInvalid()) {
+            this_reg = pg->AllocReg();
+            pg->StoreConst(expr, this_reg, compiler::Constant::JS_UNDEFINED);
+        }
+
+        compiler::VReg args_obj = CreateSpreadArguments(pg, expr);
+        pg->CallSpread(expr, callee, this_reg, args_obj);
+    } else {
+        pg->Call(expr, callee, this_reg, expr->Arguments());
+    }
 }
 
 void JSCompiler::Compile(const ir::ChainExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::OptionalChain chain(pg, expr);
+    expr->GetExpression()->Compile(pg);
 }
 
 void JSCompiler::Compile(const ir::ClassExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    expr->Definition()->Compile(pg);
+}
+
+template <typename CodeGen>
+static void CompileImpl(const ir::ConditionalExpression *self, CodeGen *cg)
+{
+    auto *false_label = cg->AllocLabel();
+    auto *end_label = cg->AllocLabel();
+
+    compiler::Condition::Compile(cg, self->Test(), false_label);
+    self->Consequent()->Compile(cg);
+    cg->Branch(self, end_label);
+    cg->SetLabel(self, false_label);
+    self->Alternate()->Compile(cg);
+    cg->SetLabel(self, end_label);
 }
 
 void JSCompiler::Compile(const ir::ConditionalExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    CompileImpl(expr, pg);
 }
 
 void JSCompiler::Compile(const ir::DirectEvalExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    if (expr->Arguments().empty()) {
+        pg->LoadConst(expr, compiler::Constant::JS_UNDEFINED);
+        return;
+    }
+
+    compiler::RegScope rs(pg);
+    bool contains_spread = util::Helpers::ContainSpreadElement(expr->Arguments());
+    if (contains_spread) {
+        [[maybe_unused]] compiler::VReg args_obj = CreateSpreadArguments(pg, expr);
+        pg->LoadObjByIndex(expr, 0);
+    } else {
+        compiler::VReg arg0 = pg->AllocReg();
+        auto iter = expr->Arguments().cbegin();
+        (*iter++)->Compile(pg);
+        pg->StoreAccumulator(expr, arg0);
+
+        while (iter != expr->Arguments().cend()) {
+            (*iter++)->Compile(pg);
+        }
+
+        pg->LoadAccumulator(expr, arg0);
+    }
+
+    pg->DirectEval(expr, expr->parser_status_);
 }
 
 void JSCompiler::Compile(const ir::FunctionExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    pg->DefineFunction(expr->Function(), expr->Function(), expr->Function()->Scope()->InternalName());
 }
 
 void JSCompiler::Compile(const ir::Identifier *expr) const

@@ -15,24 +15,9 @@
 
 #include "memberExpression.h"
 
-#include "checker/types/typeRelation.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "compiler/core/function.h"
 #include "checker/TSchecker.h"
-#include "checker/ETSchecker.h"
-#include "checker/types/ets/etsExtensionFuncHelperType.h"
-#include "checker/types/ets/etsFunctionType.h"
-#include "checker/types/signature.h"
-#include "ir/astDump.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/expressions/callExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/literals/numberLiteral.h"
-#include "ir/expressions/literals/stringLiteral.h"
-#include "ir/ts/tsEnumMember.h"
-#include "util/helpers.h"
 
 namespace panda::es2panda::ir {
 MemberExpression::MemberExpression([[maybe_unused]] Tag const tag, MemberExpression const &other,

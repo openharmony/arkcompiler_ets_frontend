@@ -15,12 +15,11 @@
 
 #include "chainExpression.h"
 
-#include "ir/expressions/callExpression.h"
-#include "ir/expressions/memberExpression.h"
-#include "compiler/base/optionalChain.h"
-#include "compiler/core/regScope.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/expressions/memberExpression.h"
 
 namespace panda::es2panda::ir {
 void ChainExpression::TransformChildren(const NodeTransformer &cb)
@@ -38,10 +37,9 @@ void ChainExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ChainExpression"}, {"expression", expression_}});
 }
 
-void ChainExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ChainExpression::Compile(compiler::PandaGen *pg) const
 {
-    compiler::OptionalChain chain(pg, this);
-    expression_->Compile(pg);
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void ChainExpression::CompileToReg(compiler::PandaGen *pg, compiler::VReg &obj_reg) const
@@ -57,14 +55,19 @@ void ChainExpression::CompileToReg(compiler::PandaGen *pg, compiler::VReg &obj_r
     }
 }
 
-checker::Type *ChainExpression::Check([[maybe_unused]] checker::TSChecker *checker)
+void ChainExpression::Compile(compiler::ETSGen *etsg) const
 {
-    return expression_->Check(checker);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ChainExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ChainExpression::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *ChainExpression::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

@@ -266,16 +266,81 @@ checker::Type *TSAnalyzer::Check(ir::AssignmentExpression *expr) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::AwaitExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::AwaitExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    // NOTE(aszilagyi)
+    return checker->GlobalAnyType();
 }
 
 checker::Type *TSAnalyzer::Check(ir::BinaryExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    auto *left_type = expr->Left()->Check(checker);
+    auto *right_type = expr->Right()->Check(checker);
+
+    switch (expr->OperatorType()) {
+        case lexer::TokenType::PUNCTUATOR_MULTIPLY:
+        case lexer::TokenType::PUNCTUATOR_EXPONENTIATION:
+        case lexer::TokenType::PUNCTUATOR_DIVIDE:
+        case lexer::TokenType::PUNCTUATOR_MOD:
+        case lexer::TokenType::PUNCTUATOR_MINUS:
+        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT:
+        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT:
+        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT:
+        case lexer::TokenType::PUNCTUATOR_BITWISE_AND:
+        case lexer::TokenType::PUNCTUATOR_BITWISE_XOR:
+        case lexer::TokenType::PUNCTUATOR_BITWISE_OR: {
+            return checker->CheckBinaryOperator(left_type, right_type, expr->Left(), expr->Right(), expr,
+                                                expr->OperatorType());
+        }
+        case lexer::TokenType::PUNCTUATOR_PLUS: {
+            return checker->CheckPlusOperator(left_type, right_type, expr->Left(), expr->Right(), expr,
+                                              expr->OperatorType());
+        }
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN: {
+            return checker->CheckCompareOperator(left_type, right_type, expr->Left(), expr->Right(), expr,
+                                                 expr->OperatorType());
+        }
+        case lexer::TokenType::PUNCTUATOR_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL: {
+            if (checker->IsTypeEqualityComparableTo(left_type, right_type) ||
+                checker->IsTypeEqualityComparableTo(right_type, left_type)) {
+                return checker->GlobalBooleanType();
+            }
+
+            checker->ThrowBinaryLikeError(expr->OperatorType(), left_type, right_type, expr->Start());
+        }
+        case lexer::TokenType::KEYW_INSTANCEOF: {
+            return checker->CheckInstanceofExpression(left_type, right_type, expr->Right(), expr);
+        }
+        case lexer::TokenType::KEYW_IN: {
+            return checker->CheckInExpression(left_type, right_type, expr->Left(), expr->Right(), expr);
+        }
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
+            return checker->CheckAndOperator(left_type, right_type, expr->Left());
+        }
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
+            return checker->CheckOrOperator(left_type, right_type, expr->Left());
+        }
+        case lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING: {
+            // NOTE: Csaba Repasi. Implement checker for nullish coalescing
+            return checker->GlobalAnyType();
+        }
+        case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
+            checker->CheckAssignmentOperator(expr->OperatorType(), expr->Left(), left_type, right_type);
+            return right_type;
+        }
+        default: {
+            UNREACHABLE();
+            break;
+        }
+    }
+
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::BlockExpression *st) const
@@ -286,38 +351,78 @@ checker::Type *TSAnalyzer::Check(ir::BlockExpression *st) const
 
 checker::Type *TSAnalyzer::Check(ir::CallExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::Type *callee_type = expr->callee_->Check(checker);
+
+    // NOTE: aszilagyi. handle optional chain
+    if (callee_type->IsObjectType()) {
+        checker::ObjectType *callee_obj = callee_type->AsObjectType();
+        return checker->ResolveCallOrNewExpression(callee_obj->CallSignatures(), expr->Arguments(), expr->Start());
+    }
+
+    checker->ThrowTypeError("This expression is not callable.", expr->Start());
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::ChainExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    return expr->expression_->Check(checker);
 }
 
-checker::Type *TSAnalyzer::Check(ir::ClassExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ClassExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::ConditionalExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::Type *test_type = expr->Test()->Check(checker);
+
+    checker->CheckTruthinessOfType(test_type, expr->Test()->Start());
+    checker->CheckTestingKnownTruthyCallableOrAwaitableType(expr->Test(), test_type, expr->consequent_);
+
+    checker::Type *consequent_type = expr->consequent_->Check(checker);
+    checker::Type *alternate_type = expr->alternate_->Check(checker);
+
+    return checker->CreateUnionType({consequent_type, alternate_type});
 }
 
-checker::Type *TSAnalyzer::Check(ir::DirectEvalExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::DirectEvalExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::FunctionExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    varbinder::Variable *func_var = nullptr;
+
+    if (expr->Function()->Parent()->Parent() != nullptr &&
+        expr->Function()->Parent()->Parent()->IsVariableDeclarator() &&
+        expr->Function()->Parent()->Parent()->AsVariableDeclarator()->Id()->IsIdentifier()) {
+        func_var = expr->Function()->Parent()->Parent()->AsVariableDeclarator()->Id()->AsIdentifier()->Variable();
+    }
+
+    checker::ScopeContext scope_ctx(checker, expr->Function()->Scope());
+
+    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(expr->Function()->Params(), signature_info);
+
+    auto *signature = checker->Allocator()->New<checker::Signature>(
+        signature_info, checker->GlobalResolvingReturnType(), expr->Function());
+    checker::Type *func_type = checker->CreateFunctionTypeWithSignature(signature);
+
+    if (func_var != nullptr && func_var->TsType() == nullptr) {
+        func_var->SetTsType(func_type);
+    }
+
+    signature->SetReturnType(checker->HandleFunctionReturn(expr->Function()));
+
+    expr->Function()->Body()->Check(checker);
+
+    return func_type;
 }
 
 checker::Type *TSAnalyzer::Check(ir::Identifier *expr) const
@@ -450,7 +555,7 @@ checker::Type *TSAnalyzer::Check(ir::NumberLiteral *expr) const
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::RegExpLiteral *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    // TODO(aszilagyi);
+    // NOTE(aszilagyi);
     return checker->GlobalAnyType();
 }
 

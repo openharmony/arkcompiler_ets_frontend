@@ -15,8 +15,10 @@
 
 #include "classExpression.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
-#include "ir/base/classDefinition.h"
 
 namespace panda::es2panda::ir {
 void ClassExpression::TransformChildren(const NodeTransformer &cb)
@@ -34,19 +36,24 @@ void ClassExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ClassExpression"}, {"definition", def_}});
 }
 
-void ClassExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ClassExpression::Compile(compiler::PandaGen *pg) const
 {
-    def_->Compile(pg);
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ClassExpression::Check([[maybe_unused]] checker::TSChecker *checker)
+void ClassExpression::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ClassExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ClassExpression::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *ClassExpression::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
