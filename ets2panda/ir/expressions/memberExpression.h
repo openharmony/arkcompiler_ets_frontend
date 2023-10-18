@@ -57,7 +57,7 @@ public:
     {
     }
 
-    explicit MemberExpression(Tag tag, Expression *object, Expression *property);
+    explicit MemberExpression(Tag tag, MemberExpression const &other, Expression *object, Expression *property);
 
     [[nodiscard]] Expression *Object() noexcept
     {

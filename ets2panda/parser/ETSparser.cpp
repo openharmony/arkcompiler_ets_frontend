@@ -14,6 +14,7 @@
  */
 
 #include "ETSparser.h"
+#include <utility>
 
 #include "parser/parserFlags.h"
 #include "util/arktsconfig.h"
@@ -46,6 +47,7 @@
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/sequenceExpression.h"
 #include "ir/expressions/callExpression.h"
+#include "ir/expressions/blockExpression.h"
 #include "ir/expressions/thisExpression.h"
 #include "ir/expressions/superExpression.h"
 #include "ir/expressions/newExpression.h"
@@ -2236,7 +2238,7 @@ std::string ETSParser::CreateProxyMethodName(const ir::ScriptFunction *const fun
 void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *ident_node)
 {
     if (method->IsConstructor()) {
-        return;  // TODO(szd): Fix constructors not working with default params
+        return;  // NOTE(szd): Fix constructors not working with default params
     }
 
     const auto *const function = method->Function();
@@ -2616,10 +2618,10 @@ ir::TypeNode *ETSParser::ParseFunctionType()
     return func_type;
 }
 
-ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
+// Just to reduce the size of ParseTypeAnnotation(...) method
+std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options)
 {
     ir::TypeNode *type_annotation = nullptr;
-    bool throw_error = ((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0;
 
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::LITERAL_IDENT: {
@@ -2632,7 +2634,7 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
 
             if (((*options) & TypeAnnotationParsingOptions::POTENTIAL_CLASS_LITERAL) != 0 &&
                 (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword())) {
-                return type_annotation;
+                return std::make_pair(type_annotation, false);
             }
             break;
         }
@@ -2678,14 +2680,14 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
                  Lexer()->Lookahead() == lexer::LEX_CHAR_COLON)) {
                 type_annotation = ParseFunctionType();
                 type_annotation->SetStart(start_loc);
-                return type_annotation;
+                return std::make_pair(type_annotation, false);
             }
 
             type_annotation = ParseTypeAnnotation(options);
             type_annotation->SetStart(start_loc);
 
             if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-                if (throw_error) {
+                if (((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0) {
                     ThrowExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
                 }
 
@@ -2697,17 +2699,33 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
 
             break;
         }
+        case lexer::TokenType::PUNCTUATOR_FORMAT: {
+            type_annotation = ParseTypeFormatPlaceholder();
+            break;
+        }
         default: {
             break;
         }
     }
 
+    return std::make_pair(type_annotation, true);
+}
+
+ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)
+{
+    bool const throw_error = ((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0;
+
+    auto [type_annotation, need_further_processing] = GetTypeAnnotationFromToken(options);
+
     if (type_annotation == nullptr) {
         if (throw_error) {
             ThrowSyntaxError("Invalid Type");
         }
-
         return nullptr;
+    }
+
+    if (!need_further_processing) {
+        return type_annotation;
     }
 
     const lexer::SourcePosition &start_pos = Lexer()->GetToken().Start();
@@ -2715,7 +2733,10 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
     if (((*options) & TypeAnnotationParsingOptions::ALLOW_INTERSECTION) != 0 &&
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_AND) {
         if (type_annotation->IsETSPrimitiveType()) {
-            ThrowSyntaxError("Invalid intersection type.");
+            if (throw_error) {
+                ThrowSyntaxError("Invalid intersection type.");
+            }
+            return nullptr;
         }
 
         return ParseIntersectionType(type_annotation);
@@ -2728,7 +2749,6 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
             if (throw_error) {
                 ThrowExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET);
             }
-
             return nullptr;
         }
 
@@ -3653,6 +3673,9 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
         case lexer::TokenType::KEYW_TYPE: {
             ThrowSyntaxError("Type alias is allowed only as top-level declaration");
         }
+        case lexer::TokenType::PUNCTUATOR_FORMAT: {
+            return ParseExpressionFormatPlaceholder();
+        }
         default: {
             return ParseDefaultPrimaryExpression(flags);
         }
@@ -3847,6 +3870,9 @@ ir::Expression *ETSParser::ParsePostPrimaryExpression(ir::Expression *primary_ex
 
                 continue;
             }
+            case lexer::TokenType::PUNCTUATOR_FORMAT: {
+                ThrowUnexpectedToken(lexer::TokenType::PUNCTUATOR_FORMAT);
+            }
             default: {
                 break;
             }
@@ -3861,11 +3887,12 @@ ir::Expression *ETSParser::ParsePostPrimaryExpression(ir::Expression *primary_ex
 ir::Expression *ETSParser::ParsePotentialAsExpression(ir::Expression *primary_expr)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_AS);
+    Lexer()->NextToken();
 
     TypeAnnotationParsingOptions options =
         TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::ALLOW_INTERSECTION;
-    Lexer()->NextToken();
     ir::TypeNode *type = ParseTypeAnnotation(&options);
+
     auto *as_expression = AllocNode<ir::TSAsExpression>(primary_expr, type, false);
     as_expression->SetRange(primary_expr->Range());
     return as_expression;
@@ -4454,6 +4481,148 @@ void ETSParser::CheckDeclare()
 //  Methods to create AST node(s) from the specified string (part of valid ETS-code!)
 //================================================================================================//
 
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+static constexpr char const INVALID_NUMBER_NODE[] = "Invalid node number in format expression.";
+static constexpr char const INVALID_FORMAT_NODE[] = "Invalid node type in format expression.";
+static constexpr char const INSERT_NODE_ABSENT[] = "There is no any node to insert at the placeholder position.";
+static constexpr char const INVALID_INSERT_NODE[] =
+    "Inserting node type differs from that required by format specification.";
+// NOLINTEND(modernize-avoid-c-arrays)
+
+ParserImpl::NodeFormatType ETSParser::GetFormatPlaceholderIdent() const
+{
+    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT);
+    Lexer()->NextToken();
+    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT);
+
+    char const *const ident_data = Lexer()->GetToken().Ident().Bytes();
+
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cert-err34-c)
+    auto ident_number = std::atoi(ident_data + 1U);
+    if (ident_number <= 0) {
+        ThrowSyntaxError(INVALID_NUMBER_NODE, Lexer()->GetToken().Start());
+    }
+
+    return {*ident_data, static_cast<decltype(std::declval<ParserImpl::NodeFormatType>().second)>(ident_number - 1)};
+}
+
+ir::AstNode *ETSParser::ParseFormatPlaceholder()
+{
+    if (inserting_nodes_.empty()) {
+        ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+    }
+
+    if (auto node_format = GetFormatPlaceholderIdent(); node_format.first == EXPRESSION_FORMAT_NODE) {
+        return ParseExpressionFormatPlaceholder(std::make_optional(node_format));
+    } else if (node_format.first == IDENTIFIER_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
+        return ParseIdentifierFormatPlaceholder(std::make_optional(node_format));
+    } else if (node_format.first == TYPE_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
+        return ParseTypeFormatPlaceholder(std::make_optional(node_format));
+    } else if (node_format.first == STATEMENT_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
+        return ParseStatementFormatPlaceholder(std::make_optional(node_format));
+    }
+
+    ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+}
+
+ir::Expression *ETSParser::ParseExpressionFormatPlaceholder(std::optional<ParserImpl::NodeFormatType> node_format)
+{
+    if (!node_format.has_value()) {
+        if (inserting_nodes_.empty()) {
+            ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        }
+
+        if (node_format = GetFormatPlaceholderIdent(); node_format->first == TYPE_FORMAT_NODE) {
+            return ParseTypeFormatPlaceholder(std::move(node_format));
+        } else if (node_format->first == IDENTIFIER_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
+            return ParseIdentifierFormatPlaceholder(std::move(node_format));
+        } else if (node_format->first != EXPRESSION_FORMAT_NODE) {  // NOLINT(readability-else-after-return)
+            ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        }
+    }
+
+    auto *const inserting_node =
+        node_format->second < inserting_nodes_.size() ? inserting_nodes_[node_format->second] : nullptr;
+    if (inserting_node == nullptr || !inserting_node->IsExpression()) {
+        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+    }
+
+    auto *const insert_expression = inserting_node->AsExpression();
+    Lexer()->NextToken();
+    return insert_expression;
+}
+
+ir::TypeNode *ETSParser::ParseTypeFormatPlaceholder(std::optional<ParserImpl::NodeFormatType> node_format)
+{
+    if (!node_format.has_value()) {
+        if (inserting_nodes_.empty()) {
+            ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        }
+
+        if (node_format = GetFormatPlaceholderIdent(); node_format->first != TYPE_FORMAT_NODE) {
+            ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        }
+    }
+
+    auto *const inserting_node =
+        node_format->second < inserting_nodes_.size() ? inserting_nodes_[node_format->second] : nullptr;
+    if (inserting_node == nullptr || !inserting_node->IsExpression() || !inserting_node->AsExpression()->IsTypeNode()) {
+        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+    }
+
+    auto *const insert_type = inserting_node->AsExpression()->AsTypeNode();
+    Lexer()->NextToken();
+    return insert_type;
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+ir::Identifier *ETSParser::ParseIdentifierFormatPlaceholder(std::optional<ParserImpl::NodeFormatType> node_format)
+{
+    if (!node_format.has_value()) {
+        if (inserting_nodes_.empty()) {
+            ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        }
+
+        if (node_format = GetFormatPlaceholderIdent(); node_format->first != IDENTIFIER_FORMAT_NODE) {
+            ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        }
+    }
+
+    auto *const inserting_node =
+        node_format->second < inserting_nodes_.size() ? inserting_nodes_[node_format->second] : nullptr;
+    if (inserting_node == nullptr || !inserting_node->IsExpression() ||
+        !inserting_node->AsExpression()->IsIdentifier()) {
+        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+    }
+
+    auto *const insert_identifier = inserting_node->AsExpression()->AsIdentifier();
+    Lexer()->NextToken();
+    return insert_identifier;
+}
+
+ir::Statement *ETSParser::ParseStatementFormatPlaceholder(std::optional<ParserImpl::NodeFormatType> node_format)
+{
+    if (!node_format.has_value()) {
+        if (inserting_nodes_.empty()) {
+            ThrowSyntaxError(INSERT_NODE_ABSENT, Lexer()->GetToken().Start());
+        }
+
+        if (node_format = GetFormatPlaceholderIdent(); node_format->first != STATEMENT_FORMAT_NODE) {
+            ThrowSyntaxError(INVALID_FORMAT_NODE, Lexer()->GetToken().Start());
+        }
+    }
+
+    auto *const inserting_node =
+        node_format->second < inserting_nodes_.size() ? inserting_nodes_[node_format->second] : nullptr;
+    if (inserting_node == nullptr || !inserting_node->IsStatement()) {
+        ThrowSyntaxError(INVALID_INSERT_NODE, Lexer()->GetToken().Start());
+    }
+
+    auto *const insert_statement = inserting_node->AsStatement();
+    Lexer()->NextToken();
+    return insert_statement;
+}
+
 ir::Statement *ETSParser::CreateStatement(std::string_view const source_code, std::string_view const file_name)
 {
     util::UString source {source_code, Allocator()};
@@ -4484,6 +4653,16 @@ ir::Statement *ETSParser::CreateStatement(std::string_view const source_code, st
     return block_stmt;
 }
 
+ir::Statement *ETSParser::CreateFormattedStatement(std::string_view const source_code,
+                                                   std::vector<ir::AstNode *> &inserting_nodes,
+                                                   std::string_view const file_name)
+{
+    inserting_nodes_.swap(inserting_nodes);
+    auto const statement = CreateStatement(source_code, file_name);
+    inserting_nodes_.swap(inserting_nodes);
+    return statement;
+}
+
 ArenaVector<ir::Statement *> ETSParser::CreateStatements(std::string_view const source_code,
                                                          std::string_view const file_name)
 {
@@ -4493,6 +4672,16 @@ ArenaVector<ir::Statement *> ETSParser::CreateStatements(std::string_view const 
 
     lexer->NextToken();
     return ParseStatementList(StatementParsingFlags::STMT_GLOBAL_LEXICAL);
+}
+
+ArenaVector<ir::Statement *> ETSParser::CreateFormattedStatements(std::string_view const source_code,
+                                                                  std::vector<ir::AstNode *> &inserting_nodes,
+                                                                  std::string_view const file_name)
+{
+    inserting_nodes_.swap(inserting_nodes);
+    auto statements = CreateStatements(source_code, file_name);
+    inserting_nodes_.swap(inserting_nodes);
+    return statements;
 }
 
 ir::MethodDefinition *ETSParser::CreateMethodDefinition(ir::ModifierFlags modifiers, std::string_view const source_code,
@@ -4521,15 +4710,38 @@ ir::MethodDefinition *ETSParser::CreateMethodDefinition(ir::ModifierFlags modifi
     return method_definition;
 }
 
-ir::Expression *ETSParser::CreateExpression(ExpressionParseFlags const flags, std::string_view const source_code,
+ir::Expression *ETSParser::CreateExpression(std::string_view const source_code, ExpressionParseFlags const flags,
                                             std::string_view const file_name)
 {
     util::UString source {source_code, Allocator()};
     auto const isp = InnerSourceParser(this);
     auto const lexer = InitLexer({file_name, source.View().Utf8()});
 
+    lexer::SourcePosition const start_loc = lexer->GetToken().Start();
     lexer->NextToken();
-    return ParseExpression(flags);
+
+    ir::Expression *return_expression = ParseExpression(flags);
+    return_expression->SetRange({start_loc, lexer->GetToken().End()});
+
+    return return_expression;
+}
+
+ir::Expression *ETSParser::CreateFormattedExpression(std::string_view const source_code,
+                                                     std::vector<ir::AstNode *> &inserting_nodes,
+                                                     std::string_view const file_name)
+{
+    ir::Expression *return_expression;
+    inserting_nodes_.swap(inserting_nodes);
+
+    if (auto statements = CreateStatements(source_code, file_name);
+        statements.size() == 1U && statements.back()->IsExpressionStatement()) {
+        return_expression = statements.back()->AsExpressionStatement()->GetExpression();
+    } else {
+        return_expression = AllocNode<ir::BlockExpression>(std::move(statements));
+    }
+
+    inserting_nodes_.swap(inserting_nodes);
+    return return_expression;
 }
 
 ir::TypeNode *ETSParser::CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view const source_code,

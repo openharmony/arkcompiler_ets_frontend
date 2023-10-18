@@ -20,6 +20,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/ets/castingContext.h"
 #include "checker/ets/typeRelationContext.h"
+#include "ir/astNode.h"
 #include "ir/base/catchClause.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/classStaticBlock.h"
@@ -378,6 +379,12 @@ checker::Type *ETSAnalyzer::Check(ir::AwaitExpression *expr) const
 checker::Type *ETSAnalyzer::Check(ir::BinaryExpression *expr) const
 {
     (void)expr;
+    UNREACHABLE();
+}
+
+checker::Type *ETSAnalyzer::Check(ir::BlockExpression *st) const
+{
+    (void)st;
     UNREACHABLE();
 }
 

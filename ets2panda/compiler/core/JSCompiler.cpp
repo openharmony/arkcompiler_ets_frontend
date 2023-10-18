@@ -582,6 +582,12 @@ void JSCompiler::Compile(const ir::BinaryExpression *expr) const
     UNREACHABLE();
 }
 
+void JSCompiler::Compile(const ir::BlockExpression *expr) const
+{
+    (void)expr;
+    UNREACHABLE();
+}
+
 void JSCompiler::Compile(const ir::CallExpression *expr) const
 {
     (void)expr;

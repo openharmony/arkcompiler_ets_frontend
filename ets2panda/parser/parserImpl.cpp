@@ -1137,6 +1137,10 @@ void ParserImpl::ThrowParameterModifierError(ir::ModifierFlags status) const
 
 ir::Identifier *ParserImpl::ExpectIdentifier(bool is_reference)
 {
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT) {
+        return ParseIdentifierFormatPlaceholder();
+    }
+
     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         ThrowSyntaxError("Identifier expected.");
     }

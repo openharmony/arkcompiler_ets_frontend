@@ -50,7 +50,7 @@ public:
     {
     }
 
-    explicit Property(Tag tag, Expression *key, Expression *value);
+    explicit Property(Tag tag, Property const &other, Expression *key, Expression *value);
 
     [[nodiscard]] Expression *Key() noexcept
     {

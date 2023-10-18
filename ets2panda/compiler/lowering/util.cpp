@@ -31,17 +31,18 @@ varbinder::Scope *NearestScope(const ir::AstNode *ast)
     return ast->Scope();
 }
 
-static size_t GENSYM_COUNTER = 0;
-
-ir::Identifier *Gensym(ArenaAllocator *allocator)
+ir::Identifier *Gensym(ArenaAllocator *const allocator)
 {
-    std::stringstream ss;
-    ss << "gensym$" << (GENSYM_COUNTER++);
-    const ArenaString s {allocator->Adapter()};
-    const auto str = ss.str();
-    auto *arena_pointer = allocator->Alloc(str.size() + 1);
-    std::memmove(arena_pointer, reinterpret_cast<const void *>(str.c_str()), str.size() + 1);
-    return allocator->New<ir::Identifier>(util::StringView(reinterpret_cast<const char *>(arena_pointer)), allocator);
+    util::UString const s = GenName(allocator);
+    return allocator->New<ir::Identifier>(s.View(), allocator);
+}
+
+util::UString GenName(ArenaAllocator *const allocator)
+{
+    static std::string const GENSYM_CORE = "gensym$_";
+    static std::size_t gensym_counter = 0U;
+
+    return util::UString {GENSYM_CORE + std::to_string(++gensym_counter), allocator};
 }
 
 }  // namespace panda::es2panda::compiler

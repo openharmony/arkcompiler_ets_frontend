@@ -16,13 +16,11 @@
 #ifndef ES2PANDA_COMPILER_CORE_COMPILER_CONTEXT_H
 #define ES2PANDA_COMPILER_CORE_COMPILER_CONTEXT_H
 
-#include "macros.h"
-#include "mem/arena_allocator.h"
+#include <mutex>
+
 #include "es2panda.h"
 #include "compiler/base/literals.h"
-
-#include <cstdint>
-#include <mutex>
+#include "parser/parserImpl.h"
 
 namespace panda::es2panda::varbinder {
 class VarBinder;
@@ -41,7 +39,7 @@ class CodeGen;
 class ProgramElement;
 class AstCompiler;
 
-class CompilerContext {
+class CompilerContext final {
 public:
     using CodeGenCb =
         std::function<void(compiler::CompilerContext *context, varbinder::FunctionScope *, compiler::ProgramElement *)>;
@@ -52,72 +50,83 @@ public:
     {
     }
 
+    CompilerContext() = delete;
     NO_COPY_SEMANTIC(CompilerContext);
     NO_MOVE_SEMANTIC(CompilerContext);
     ~CompilerContext() = default;
 
-    varbinder::VarBinder *VarBinder() const
+    [[nodiscard]] varbinder::VarBinder *VarBinder() const noexcept
     {
         return varbinder_;
     }
 
-    checker::Checker *Checker() const
+    [[nodiscard]] checker::Checker *Checker() const noexcept
     {
         return checker_;
     }
 
-    Emitter *GetEmitter() const
+    [[nodiscard]] parser::ParserImpl *GetParser() const noexcept
+    {
+        return parser_;
+    }
+
+    void SetParser(parser::ParserImpl *const parser) noexcept
+    {
+        parser_ = parser;
+    }
+
+    [[nodiscard]] Emitter *GetEmitter() const noexcept
     {
         return emitter_;
     }
 
-    void SetEmitter(Emitter *emitter)
+    void SetEmitter(Emitter *emitter) noexcept
     {
         emitter_ = emitter;
     }
 
-    const CodeGenCb &GetCodeGenCb() const
+    [[nodiscard]] const CodeGenCb &GetCodeGenCb() const noexcept
     {
         return code_gen_cb_;
     }
 
-    int32_t AddContextLiteral(LiteralBuffer &&literals)
+    [[nodiscard]] int32_t AddContextLiteral(LiteralBuffer &&literals)
     {
         buff_storage_.emplace_back(std::move(literals));
         return buff_storage_.size() - 1;
     }
 
-    const std::vector<LiteralBuffer> &ContextLiterals() const
+    [[nodiscard]] const std::vector<LiteralBuffer> &ContextLiterals() const noexcept
     {
         return buff_storage_;
     }
 
-    const CompilerOptions *Options() const
+    [[nodiscard]] const CompilerOptions *Options() const noexcept
     {
         return &options_;
     }
 
-    bool IsDebug() const
+    [[nodiscard]] bool IsDebug() const noexcept
     {
         return options_.is_debug;
     }
 
-    bool DumpDebugInfo() const
+    [[nodiscard]] bool DumpDebugInfo() const noexcept
     {
         return options_.dump_debug_info;
     }
 
-    bool IsDirectEval() const
+    [[nodiscard]] bool IsDirectEval() const noexcept
     {
         return options_.is_direct_eval;
     }
 
-    bool IsFunctionEval() const
+    [[nodiscard]] bool IsFunctionEval() const noexcept
     {
         return options_.is_function_eval;
     }
 
-    bool IsEval() const
+    [[nodiscard]] bool IsEval() const noexcept
     {
         return options_.is_eval;
     }
@@ -125,6 +134,7 @@ public:
 private:
     varbinder::VarBinder *varbinder_;
     checker::Checker *checker_;
+    parser::ParserImpl *parser_ = nullptr;
     Emitter *emitter_ {};
     std::vector<LiteralBuffer> buff_storage_;
     CompilerOptions options_;

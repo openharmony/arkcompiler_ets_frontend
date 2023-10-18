@@ -35,8 +35,9 @@
 #include "util/helpers.h"
 
 namespace panda::es2panda::ir {
-MemberExpression::MemberExpression([[maybe_unused]] Tag const tag, Expression *const object, Expression *const property)
-    : MemberExpression(*this)
+MemberExpression::MemberExpression([[maybe_unused]] Tag const tag, MemberExpression const &other,
+                                   Expression *const object, Expression *const property)
+    : MemberExpression(other)
 {
     object_ = object;
     if (object_ != nullptr) {
@@ -474,7 +475,7 @@ MemberExpression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNo
     auto *const object = object_ != nullptr ? object_->Clone(allocator)->AsExpression() : nullptr;
     auto *const property = property_ != nullptr ? property_->Clone(allocator)->AsExpression() : nullptr;
 
-    if (auto *const clone = allocator->New<MemberExpression>(Tag {}, object, property); clone != nullptr) {
+    if (auto *const clone = allocator->New<MemberExpression>(Tag {}, *this, object, property); clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);
         }

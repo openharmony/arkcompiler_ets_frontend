@@ -230,6 +230,7 @@ protected:
     void ScanDotPunctuator();
     void ScanColonPunctuator();
     virtual bool ScanDollarPunctuator();
+    void ScanAtPunctuator();
 
     virtual void SkipMultiLineComment();
     virtual void ScanHashMark();

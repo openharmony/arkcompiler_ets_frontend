@@ -13,17 +13,31 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_COMPILER_LOWERING_UTIL_H
-#define ES2PANDA_COMPILER_LOWERING_UTIL_H
+class B   {
+    c: int = 11;
+    d: int = 33;
+    public constructor() {
+        this.c += 22;
+        this.d -= 44;
+    }
+}
 
-#include "ir/astNode.h"
+function main(): void {
 
-namespace panda::es2panda::compiler {
+  let b = new B();
+  assert (b.c == 33);
+  assert (b.d == -11);
 
-varbinder::Scope *NearestScope(const ir::AstNode *ast);
-ir::Identifier *Gensym(ArenaAllocator *allocator);
-util::UString GenName(ArenaAllocator *allocator);
+  let x: int[] = [1, 2, 3];
 
-}  // namespace panda::es2panda::compiler
+  for (let i: int = 0; i < 3; ++i) {
+    i <<= 2;
 
-#endif  // ES2PANDA_COMPILER_LOWERING_UTIL_H
+    x[i >> 2] *= 2;
+    i >>= 2;
+  }
+
+  for (let i: int = 0; i < 3; ++i) {
+    assert (x[i] == (i + 1) * 2);
+  }
+}

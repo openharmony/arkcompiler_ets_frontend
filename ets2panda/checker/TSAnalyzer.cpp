@@ -279,6 +279,12 @@ checker::Type *TSAnalyzer::Check(ir::BinaryExpression *expr) const
     UNREACHABLE();
 }
 
+checker::Type *TSAnalyzer::Check(ir::BlockExpression *st) const
+{
+    (void)st;
+    UNREACHABLE();
+}
+
 checker::Type *TSAnalyzer::Check(ir::CallExpression *expr) const
 {
     (void)expr;

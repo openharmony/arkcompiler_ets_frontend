@@ -26,7 +26,9 @@
 #include "ir/validationInfo.h"
 
 namespace panda::es2panda::ir {
-Property::Property([[maybe_unused]] Tag const tag, Expression *const key, Expression *const value) : Property(*this)
+Property::Property([[maybe_unused]] Tag const tag, Property const &other, Expression *const key,
+                   Expression *const value)
+    : Property(other)
 {
     key_ = key;
     value_ = value;
@@ -38,7 +40,7 @@ Property *Property::Clone(ArenaAllocator *const allocator, AstNode *const parent
     auto *const key = key_ != nullptr ? key_->Clone(allocator)->AsExpression() : nullptr;
     auto *const value = value_ != nullptr ? value_->Clone(allocator)->AsExpression() : nullptr;
 
-    if (auto *const clone = allocator->New<Property>(Tag {}, key, value); clone != nullptr) {
+    if (auto *const clone = allocator->New<Property>(Tag {}, *this, key, value); clone != nullptr) {
         if (key != nullptr) {
             key->SetParent(clone);
         }

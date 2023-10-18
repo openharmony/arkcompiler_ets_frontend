@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -101,6 +101,8 @@ enum class CatchClauseType;
 
 namespace panda::es2panda::parser {
 
+class ETSParser;
+
 using FunctionSignature = std::tuple<ir::TSTypeParameterDeclaration *, ArenaVector<ir::Expression *>, ir::TypeNode *,
                                      varbinder::FunctionParamScope *, panda::es2panda::ir::ScriptFunctionFlags>;
 
@@ -180,6 +182,23 @@ public:
     void ParseScript(const SourceFile &source_file, bool gen_std_lib);
 
     ScriptExtension Extension() const;
+
+    [[nodiscard]] virtual bool IsETSParser() const noexcept
+    {
+        return false;
+    }
+
+    ETSParser *AsETSParser()
+    {
+        ASSERT(IsETSParser());
+        return reinterpret_cast<ETSParser *>(this);
+    }
+
+    const ETSParser *AsETSParser() const
+    {
+        ASSERT(IsETSParser());
+        return reinterpret_cast<const ETSParser *>(this);
+    }
 
 protected:
     virtual void ParseProgram(ScriptKind kind);
@@ -500,6 +519,14 @@ protected:
     virtual ir::ScriptFunctionFlags ParseFunctionThrowMarker([[maybe_unused]] const bool is_rethrows_allowed)
     {
         return ir::ScriptFunctionFlags::NONE;
+    }
+
+    using NodeFormatType = std::pair<char, std::size_t>;
+    // NOLINTNEXTLINE(google-default-arguments)
+    virtual ir::Identifier *ParseIdentifierFormatPlaceholder(
+        [[maybe_unused]] std::optional<NodeFormatType> node_format = std::nullopt)
+    {
+        ThrowSyntaxError("Identifier expected");
     }
 
     virtual std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(

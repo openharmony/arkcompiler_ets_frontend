@@ -44,9 +44,6 @@
 #include "es2panda.h"
 #include "util/declgenEts2Ts.h"
 
-#include <iostream>
-#include <thread>
-
 namespace panda::es2panda::compiler {
 
 void CompilerImpl::HandleContextLiterals(CompilerContext *context)
@@ -114,6 +111,8 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
 
     auto emitter = Emitter(&context);
     context.SetEmitter(&emitter);
+
+    context.SetParser(&parser);
 
     parser.ParseScript(unit.input, unit.options.compilation_mode == CompilationMode::GEN_STD_LIB);
 

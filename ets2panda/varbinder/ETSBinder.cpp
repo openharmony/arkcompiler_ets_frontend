@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -131,6 +131,40 @@ void ETSBinder::LookupTypeReference(ir::Identifier *ident, bool allow_dynamic_na
     }
 
     ThrowUnresolvableType(ident->Start(), name);
+}
+
+void ETSBinder::ResolveReferencesForScope(ir::AstNode const *const parent, Scope *const scope)
+{
+    parent->Iterate([this, scope](auto *node) { ResolveReferenceForScope(node, scope); });
+}
+
+void ETSBinder::ResolveReferenceForScope(ir::AstNode *const node, Scope *const scope)
+{
+    switch (node->Type()) {
+        case ir::AstNodeType::IDENTIFIER: {
+            auto *ident = node->AsIdentifier();
+            if (auto const res = scope->Find(ident->Name(), ResolveBindingOptions::ALL); res.variable != nullptr) {
+                ident->SetVariable(res.variable);
+            }
+            break;
+        }
+        case ir::AstNodeType::VARIABLE_DECLARATOR: {
+            auto scope_ctx = LexicalScope<Scope>::Enter(this, scope);
+            BuildVarDeclarator(node->AsVariableDeclarator());
+            break;
+        }
+        /* Maybe will be used
+        case ir::AstNodeType::BLOCK_STATEMENT: {
+            auto scope_ctx = LexicalScope<Scope>::Enter(this, node->AsBlockStatement()->Scope());
+            ResolveReferences(node);
+            break;
+        }
+        */
+        default: {
+            ResolveReferencesForScope(node, scope);
+            break;
+        }
+    }
 }
 
 void ETSBinder::LookupIdentReference(ir::Identifier *ident)
