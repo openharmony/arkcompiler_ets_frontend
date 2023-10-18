@@ -15,5 +15,23 @@
 
 
 interface I1 {
-    [k: boolean]: boolean;
-}
+    [key: (string | (number | number))]: boolean
+  }
+
+  interface I2 {
+    [key: boolean & number extends string ? number : symbol]: boolean
+  }
+
+  type A = { a: number }
+
+  interface I3 {
+    [key: A["a"]]: boolean
+  }
+
+  interface I4 {
+    [key: string & string]: boolean
+  }
+
+  interface I5 {
+    [key: string | & string]: boolean
+  }

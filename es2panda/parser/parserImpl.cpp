@@ -1345,24 +1345,15 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceKey(bool *computed, boo
 
 void ParserImpl::ValidateIndexSignatureParameterType(ir::Expression *typeAnnotation)
 {
-    // The verification of TSTypeReference is wide-ranging because the specific type it refers to cannot be determined.
+    // Validation of IndexSignatureParameterType is coarse-grained.
     if (!typeAnnotation->IsTSStringKeyword() && !typeAnnotation->IsTSNumberKeyword() &&
         !typeAnnotation->IsTSSymbolKeyword() && !typeAnnotation->IsTSTemplateLiteralType() &&
-        !typeAnnotation->IsTSUnionType() && !typeAnnotation->IsTSTypeReference()) {
+        !typeAnnotation->IsTSUnionType() && !typeAnnotation->IsTSTypeReference() &&
+        !typeAnnotation->IsTSParenthesizedType() && !typeAnnotation->IsTSConditionalType() &&
+        !typeAnnotation->IsTSIndexedAccessType() && !typeAnnotation->IsTSIntersectionType()) {
         ThrowSyntaxError(
             "An index signature parameter type must be 'string', 'number', 'symbol', "
             "or a template literal type.");
-    }
-
-    if (typeAnnotation->IsTSUnionType()) {
-        for (auto *it : typeAnnotation->AsTSUnionType()->Types()) {
-            if (!it->IsTSStringKeyword() && !it->IsTSNumberKeyword() && !it->IsTSSymbolKeyword() &&
-                !it->IsTSTemplateLiteralType() && !it->IsTSTypeReference()) {
-                ThrowSyntaxError(
-                    "An index signature parameter type must be 'string', 'number', 'symbol', "
-                    "or a template literal type.");
-            }
-        }
     }
 }
 
