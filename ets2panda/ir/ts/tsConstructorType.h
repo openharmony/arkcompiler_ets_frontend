@@ -18,6 +18,9 @@
 
 #include "ir/typeNode.h"
 
+namespace panda::es2panda::checker {
+class TSAnalyzer;
+}  // namespace panda::es2panda::checker
 namespace panda::es2panda::ir {
 class TSTypeParameterDeclaration;
 
@@ -33,6 +36,8 @@ public:
           abstract_(abstract)
     {
     }
+    // TODO (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    friend class checker::TSAnalyzer;
 
     bool IsScopeBearer() const override
     {
@@ -68,6 +73,7 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;

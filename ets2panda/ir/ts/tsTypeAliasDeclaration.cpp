@@ -17,6 +17,8 @@
 
 #include "varbinder/scope.h"
 #include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/typeNode.h"
 #include "ir/base/decorator.h"
@@ -69,17 +71,23 @@ void TSTypeAliasDeclaration::Dump(ir::AstDumper *dumper) const
                  {"declare", AstDumper::Optional(declare_)}});
 }
 
-void TSTypeAliasDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSTypeAliasDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+
+void TSTypeAliasDeclaration::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSTypeAliasDeclaration::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    TypeAnnotation()->Check(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSTypeAliasDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    TypeAnnotation()->Check(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

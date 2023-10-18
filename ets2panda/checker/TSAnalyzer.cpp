@@ -1191,8 +1191,16 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSConditionalType *node) c
 
 checker::Type *TSAnalyzer::Check(ir::TSConstructorType *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::ScopeContext scope_ctx(checker, node->Scope());
+
+    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(node->Params(), signature_info);
+    node->return_type_->Check(checker);
+    auto *construct_signature =
+        checker->Allocator()->New<checker::Signature>(signature_info, node->return_type_->GetType(checker));
+
+    return checker->CreateConstructorTypeWithSignature(construct_signature);
 }
 
 static varbinder::EnumMemberResult EvaluateIdentifier(checker::TSChecker *checker, varbinder::EnumVariable *enum_var,
@@ -1537,13 +1545,20 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSExternalModuleReference 
 
 checker::Type *TSAnalyzer::Check(ir::TSFunctionType *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::ScopeContext scope_ctx(checker, node->Scope());
+
+    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(node->Params(), signature_info);
+    node->return_type_->Check(checker);
+    auto *call_signature =
+        checker->Allocator()->New<checker::Signature>(signature_info, node->return_type_->GetType(checker));
+
+    return checker->CreateFunctionTypeWithSignature(call_signature);
 }
 
-checker::Type *TSAnalyzer::Check(ir::TSImportEqualsDeclaration *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSImportEqualsDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
@@ -1554,8 +1569,27 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSImportType *node) const
 
 checker::Type *TSAnalyzer::Check(ir::TSIndexedAccessType *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    node->object_type_->Check(checker);
+    node->index_type_->Check(checker);
+    checker::Type *resolved = node->GetType(checker);
+
+    if (resolved != nullptr) {
+        return nullptr;
+    }
+
+    checker::Type *index_type = checker->CheckTypeCached(node->index_type_);
+
+    if (!index_type->HasTypeFlag(checker::TypeFlag::STRING_LIKE | checker::TypeFlag::NUMBER_LIKE)) {
+        checker->ThrowTypeError({"Type ", index_type, " cannot be used as index type"}, node->IndexType()->Start());
+    }
+
+    if (index_type->IsNumberType()) {
+        checker->ThrowTypeError("Type has no matching signature for type 'number'", node->Start());
+    }
+
+    checker->ThrowTypeError("Type has no matching signature for type 'string'", node->Start());
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSInferType *node) const
@@ -1569,10 +1603,78 @@ checker::Type *TSAnalyzer::Check(ir::TSInterfaceBody *expr) const
     UNREACHABLE();
 }
 
+static void CheckInheritedPropertiesAreIdentical(checker::TSChecker *checker, checker::InterfaceType *type,
+                                                 const lexer::SourcePosition &loc_info)
+{
+    checker->GetBaseTypes(type);
+
+    size_t constexpr BASE_SIZE_LIMIT = 2;
+    if (type->Bases().size() < BASE_SIZE_LIMIT) {
+        return;
+    }
+
+    checker->ResolveDeclaredMembers(type);
+
+    checker::InterfacePropertyMap properties;
+
+    for (auto *it : type->Properties()) {
+        properties.insert({it->Name(), {it, type}});
+    }
+
+    for (auto *base : type->Bases()) {
+        checker->ResolveStructuredTypeMembers(base);
+        ArenaVector<varbinder::LocalVariable *> inherited_properties(checker->Allocator()->Adapter());
+        base->AsInterfaceType()->CollectProperties(&inherited_properties);
+
+        for (auto *inherited_prop : inherited_properties) {
+            auto res = properties.find(inherited_prop->Name());
+            if (res == properties.end()) {
+                properties.insert({inherited_prop->Name(), {inherited_prop, base->AsInterfaceType()}});
+            } else if (res->second.second != type) {
+                checker::Type *source_type = checker->GetTypeOfVariable(inherited_prop);
+                checker::Type *target_type = checker->GetTypeOfVariable(res->second.first);
+                checker->IsTypeIdenticalTo(source_type, target_type,
+                                           {"Interface '", type, "' cannot simultaneously extend types '",
+                                            res->second.second, "' and '", base->AsInterfaceType(), "'."},
+                                           loc_info);
+            }
+        }
+    }
+}
+
 checker::Type *TSAnalyzer::Check(ir::TSInterfaceDeclaration *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    varbinder::Variable *var = st->Id()->Variable();
+    ASSERT(var->Declaration()->Node() && var->Declaration()->Node()->IsTSInterfaceDeclaration());
+
+    if (st == var->Declaration()->Node()) {
+        checker::Type *resolved_type = var->TsType();
+
+        if (resolved_type == nullptr) {
+            checker::ObjectDescriptor *desc =
+                checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
+            resolved_type =
+                checker->Allocator()->New<checker::InterfaceType>(checker->Allocator(), st->Id()->Name(), desc);
+            resolved_type->SetVariable(var);
+            var->SetTsType(resolved_type);
+        }
+
+        checker::InterfaceType *resolved_interface = resolved_type->AsObjectType()->AsInterfaceType();
+        CheckInheritedPropertiesAreIdentical(checker, resolved_interface, st->Id()->Start());
+
+        for (auto *base : resolved_interface->Bases()) {
+            checker->IsTypeAssignableTo(
+                resolved_interface, base,
+                {"Interface '", st->Id()->Name(), "' incorrectly extends interface '", base, "'"}, st->Id()->Start());
+        }
+
+        checker->CheckIndexConstraints(resolved_interface);
+    }
+
+    st->Body()->Check(checker);
+
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSInterfaceHeritage *expr) const
@@ -1653,8 +1755,25 @@ checker::Type *TSAnalyzer::Check(ir::TSParenthesizedType *node) const
 
 checker::Type *TSAnalyzer::Check(ir::TSQualifiedName *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::Type *base_type = checker->CheckNonNullType(expr->Left()->Check(checker), expr->Left()->Start());
+    varbinder::Variable *prop = checker->GetPropertyOfType(base_type, expr->Right()->Name());
+
+    if (prop != nullptr) {
+        return checker->GetTypeOfVariable(prop);
+    }
+
+    if (base_type->IsObjectType()) {
+        checker::ObjectType *obj_type = base_type->AsObjectType();
+
+        if (obj_type->StringIndexInfo() != nullptr) {
+            return obj_type->StringIndexInfo()->GetType();
+        }
+    }
+
+    checker->ThrowTypeError({"Property ", expr->Right()->Name(), " does not exist on this type."},
+                            expr->Right()->Start());
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSStringKeyword *node) const
@@ -1675,8 +1794,9 @@ checker::Type *TSAnalyzer::Check(ir::TSTupleType *node) const
 
 checker::Type *TSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    st->TypeAnnotation()->Check(checker);
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSTypeAssertion *expr) const
@@ -1732,8 +1852,9 @@ checker::Type *TSAnalyzer::Check(ir::TSTypeQuery *node) const
 
 checker::Type *TSAnalyzer::Check(ir::TSTypeReference *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    node->GetType(checker);
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSUndefinedKeyword *node) const
