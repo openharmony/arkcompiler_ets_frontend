@@ -1739,9 +1739,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSModuleBlock *st) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSModuleDeclaration *st) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSModuleDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
@@ -1776,9 +1775,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSObjectKeyword *node) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSParameterProperty *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSParameterProperty *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1826,33 +1824,28 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeLiteral *node) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeOperator *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeOperator *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeParameter *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameter *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeParameterDeclaration *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameterDeclaration *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeParameterInstantiation *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameterInstantiation *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypePredicate *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypePredicate *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
