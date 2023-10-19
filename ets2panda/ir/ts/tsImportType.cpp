@@ -15,6 +15,9 @@
 
 #include "tsImportType.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
@@ -55,11 +58,19 @@ void TSImportType::Dump(ir::AstDumper *dumper) const
                  {"isTypeOf", is_typeof_}});
 }
 
-void TSImportType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSImportType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+
+void TSImportType::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSImportType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSImportType::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -69,6 +80,6 @@ checker::Type *TSImportType::GetType([[maybe_unused]] checker::TSChecker *checke
 
 checker::Type *TSImportType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

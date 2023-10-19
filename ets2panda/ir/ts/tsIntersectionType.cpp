@@ -15,6 +15,9 @@
 
 #include "tsIntersectionType.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "checker/ETSchecker.h"
 
@@ -38,11 +41,18 @@ void TSIntersectionType::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSIntersectionType"}, {"types", types_}});
 }
 
-void TSIntersectionType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSIntersectionType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void TSIntersectionType::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSIntersectionType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSIntersectionType::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -58,6 +68,6 @@ checker::Type *TSIntersectionType::GetType([[maybe_unused]] checker::ETSChecker 
 
 checker::Type *TSIntersectionType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir
