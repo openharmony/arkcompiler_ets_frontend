@@ -1017,25 +1017,213 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::FunctionExpression *expr)
 
 checker::Type *ETSAnalyzer::Check(ir::Identifier *expr) const
 {
-    (void)expr;
+    ETSChecker *checker = GetETSChecker();
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+
+    expr->SetTsType(checker->ResolveIdentifier(expr));
+    return expr->TsType();
+}
+
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ImportExpression *expr) const
+{
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ImportExpression *expr) const
+static std::pair<checker::Type *, varbinder::LocalVariable *> ResolveEnumMember(checker::ETSChecker *checker,
+                                                                                checker::Type *type,
+                                                                                ir::MemberExpression *expr)
 {
-    (void)expr;
-    UNREACHABLE();
+    auto const *const enum_interface = [type]() -> checker::ETSEnumInterface const * {
+        if (type->IsETSEnumType()) {
+            return type->AsETSEnumType();
+        }
+        return type->AsETSStringEnumType();
+    }();
+
+    if (expr->Parent()->Type() == ir::AstNodeType::CALL_EXPRESSION &&
+        expr->Parent()->AsCallExpression()->Callee() == expr) {
+        return {enum_interface->LookupMethod(checker, expr->Object(), expr->Property()->AsIdentifier()), nullptr};
+    }
+
+    auto *const literal_type =
+        enum_interface->LookupConstant(checker, expr->Object(), expr->Property()->AsIdentifier());
+    return {literal_type, literal_type->GetMemberVar()};
+}
+
+static std::pair<checker::Type *, varbinder::LocalVariable *> ResolveObjectMember(checker::ETSChecker *checker,
+                                                                                  ir::MemberExpression *expr)
+{
+    auto resolve_res = checker->ResolveMemberReference(expr, expr->ObjType());
+    switch (resolve_res.size()) {
+        case 1U: {
+            if (resolve_res[0]->Kind() == checker::ResolvedKind::PROPERTY) {
+                auto var = resolve_res[0]->Variable()->AsLocalVariable();
+                checker->ValidatePropertyAccess(var, expr->ObjType(), expr->Property()->Start());
+                return {checker->GetTypeOfVariable(var), var};
+            }
+            return {checker->GetTypeOfVariable(resolve_res[0]->Variable()), nullptr};
+        }
+        case 2U: {
+            // ETSExtensionFuncHelperType(class_method_type, extension_method_type)
+            auto *resolved_type = checker->CreateETSExtensionFuncHelperType(
+                checker->GetTypeOfVariable(resolve_res[1]->Variable())->AsETSFunctionType(),
+                checker->GetTypeOfVariable(resolve_res[0]->Variable())->AsETSFunctionType());
+            return {resolved_type, nullptr};
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+}
+
+static checker::Type *CheckUnionMember(checker::ETSChecker *checker, checker::Type *base_type,
+                                       ir::MemberExpression *expr)
+{
+    auto *const union_type = base_type->AsETSUnionType();
+    checker::Type *common_prop_type = nullptr;
+    auto const add_prop_type = [expr, checker, &common_prop_type](checker::Type *member_type) {
+        if (common_prop_type != nullptr && common_prop_type != member_type) {
+            checker->ThrowTypeError("Member type must be the same for all union objects.", expr->Start());
+        }
+        common_prop_type = member_type;
+    };
+    for (auto *const type : union_type->ConstituentTypes()) {
+        if (type->IsETSObjectType()) {
+            expr->SetObjectType(type->AsETSObjectType());
+            add_prop_type(ResolveObjectMember(checker, expr).first);
+        } else if (type->IsETSEnumType() || base_type->IsETSStringEnumType()) {
+            add_prop_type(ResolveEnumMember(checker, type, expr).first);
+        } else {
+            UNREACHABLE();
+        }
+    }
+    expr->SetObjectType(union_type->GetLeastUpperBoundType(checker)->AsETSObjectType());
+    return common_prop_type;
+}
+
+static checker::Type *CheckComputed(checker::ETSChecker *checker, checker::Type *base_type, ir::MemberExpression *expr)
+{
+    if (!base_type->IsETSArrayType() && !base_type->IsETSDynamicType()) {
+        checker->ThrowTypeError("Indexed access expression can only be used in array type.", expr->Object()->Start());
+    }
+
+    checker->ValidateArrayIndex(expr->Property());
+
+    if (base_type->IsETSTupleType()) {
+        checker->ValidateTupleIndex(base_type->AsETSTupleType(), expr);
+    }
+
+    if (expr->Property()->IsIdentifier()) {
+        expr->SetPropVar(expr->Property()->AsIdentifier()->Variable()->AsLocalVariable());
+    } else if (auto var = expr->Property()->Variable(); (var != nullptr) && var->IsLocalVariable()) {
+        expr->SetPropVar(var->AsLocalVariable());
+    }
+
+    // NOTE: apply capture conversion on this type
+    if (base_type->IsETSArrayType()) {
+        if (!base_type->IsETSTupleType()) {
+            return base_type->AsETSArrayType()->ElementType();
+        }
+
+        auto *const tuple_type_at_idx = base_type->AsETSTupleType()->GetTypeAtIndex(
+            checker->GetTupleElementAccessValue(expr->Property()->TsType()));
+
+        if ((!expr->Parent()->IsAssignmentExpression() || expr->Parent()->AsAssignmentExpression()->Left() != expr) &&
+            (!expr->Parent()->IsUpdateExpression())) {
+            // Error never should be thrown by this call, because LUB of types can be converted to any type which LUB
+            // was calculated by casting
+            const checker::CastingContext cast(checker->Relation(), expr, base_type->AsETSArrayType()->ElementType(),
+                                               tuple_type_at_idx, expr->Start(), {"Tuple type couldn't be converted "});
+
+            // TODO(mmartin): this can be replaced with the general type mapper, once implemented
+            if ((expr->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
+                auto *const saved_node = checker->Relation()->GetNode();
+                if (saved_node == nullptr) {
+                    checker->Relation()->SetNode(expr);
+                }
+
+                expr->SetTupleConvertedType(checker->PrimitiveTypeAsETSBuiltinType(tuple_type_at_idx));
+
+                checker->Relation()->SetNode(saved_node);
+            }
+
+            if (tuple_type_at_idx->IsETSObjectType() && base_type->AsETSArrayType()->ElementType()->IsETSObjectType()) {
+                expr->SetTupleConvertedType(tuple_type_at_idx);
+            }
+        }
+
+        return tuple_type_at_idx;
+    }
+
+    // Dynamic
+    return checker->GlobalBuiltinDynamicType(base_type->AsETSDynamicType()->Language());
+}
+
+static checker::Type *AdjustOptional(checker::ETSChecker *checker, checker::Type *type, ir::MemberExpression *expr)
+{
+    expr->SetOptionalType(type);
+    if (expr->IsOptional() && expr->Object()->TsType()->IsNullishOrNullLike()) {
+        checker->Relation()->SetNode(expr);
+        type = checker->CreateOptionalResultType(type);
+        checker->Relation()->SetNode(nullptr);
+    }
+    expr->SetTsType(type);
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+    auto *const left_type = expr->Object()->Check(checker);
+    auto *const base_type = expr->IsOptional() ? checker->GetNonNullishType(left_type) : left_type;
+    if (!expr->IsOptional()) {
+        checker->CheckNonNullishType(left_type, expr->Object()->Start());
+    }
+
+    if (expr->IsComputed()) {
+        return AdjustOptional(checker, CheckComputed(checker, base_type, expr), expr);
+    }
+
+    if (base_type->IsETSArrayType() && expr->Property()->AsIdentifier()->Name().Is("length")) {
+        return AdjustOptional(checker, checker->GlobalIntType(), expr);
+    }
+
+    if (base_type->IsETSObjectType()) {
+        expr->SetObjectType(base_type->AsETSObjectType());
+        auto [res_type, res_var] = ResolveObjectMember(checker, expr);
+        expr->SetPropVar(res_var);
+        return AdjustOptional(checker, res_type, expr);
+    }
+
+    if (base_type->IsETSEnumType() || base_type->IsETSStringEnumType()) {
+        auto [member_type, member_var] = ResolveEnumMember(checker, base_type, expr);
+        expr->SetPropVar(member_var);
+        return AdjustOptional(checker, member_type, expr);
+    }
+
+    if (base_type->IsETSUnionType()) {
+        return AdjustOptional(checker, CheckUnionMember(checker, base_type, expr), expr);
+    }
+
+    if (base_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        checker->Relation()->SetNode(expr);
+        expr->SetObjectType(checker->PrimitiveTypeAsETSBuiltinType(base_type)->AsETSObjectType());
+        checker->AddBoxingUnboxingFlagToNode(expr, expr->ObjType());
+        auto [res_type, res_var] = ResolveObjectMember(checker, expr);
+        expr->SetPropVar(res_var);
+        return AdjustOptional(checker, res_type, expr);
+    }
+
+    checker->ThrowTypeError({"Cannot access property of non-object or non-enum type"}, expr->Object()->Start());
 }
 
-checker::Type *ETSAnalyzer::Check(ir::NewExpression *expr) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::NewExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1045,9 +1233,8 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::OmittedExpression *expr) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::OmittedExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1059,14 +1246,26 @@ checker::Type *ETSAnalyzer::Check(ir::OpaqueTypeNode *expr) const
 
 checker::Type *ETSAnalyzer::Check(ir::SequenceExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+
+    for (auto *it : expr->Sequence()) {
+        it->Check(checker);
+    }
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::SuperExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+
+    expr->SetTsType(checker->CheckThisOrSuperAccess(expr, checker->Context().ContainingClass()->SuperType(), "super"));
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::TaggedTemplateExpression *expr) const
@@ -1105,9 +1304,8 @@ checker::Type *ETSAnalyzer::Check(ir::YieldExpression *expr) const
     UNREACHABLE();
 }
 // compile methods for LITERAL EXPRESSIONS in alphabetical order
-checker::Type *ETSAnalyzer::Check(ir::BigIntLiteral *expr) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::BigIntLiteral *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 

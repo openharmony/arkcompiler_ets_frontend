@@ -817,26 +817,83 @@ void JSCompiler::Compile(const ir::FunctionExpression *expr) const
 
 void JSCompiler::Compile(const ir::Identifier *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    auto res = pg->Scope()->Find(expr->Name());
+    if (res.variable != nullptr) {
+        pg->LoadVar(expr, res);
+        return;
+    }
+
+    if (pg->IsDirectEval()) {
+        pg->LoadEvalVariable(expr, expr->Name());
+        return;
+    }
+
+    if (expr->Name().Is("NaN")) {
+        pg->LoadConst(expr, compiler::Constant::JS_NAN);
+        return;
+    }
+
+    if (expr->Name().Is("Infinity")) {
+        pg->LoadConst(expr, compiler::Constant::JS_INFINITY);
+        return;
+    }
+
+    if (expr->Name().Is("globalThis")) {
+        pg->LoadConst(expr, compiler::Constant::JS_GLOBAL);
+        return;
+    }
+
+    if (expr->Name().Is("undefined")) {
+        pg->LoadConst(expr, compiler::Constant::JS_UNDEFINED);
+        return;
+    }
+
+    pg->TryLoadGlobalByName(expr, expr->Name());
 }
 
-void JSCompiler::Compile(const ir::ImportExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ImportExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    pg->Unimplemented();
 }
 
 void JSCompiler::Compile(const ir::MemberExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    expr->Object()->Compile(pg);
+    pg->OptionalChainCheck(expr->IsOptional(), compiler::VReg::Invalid());
+    expr->LoadRhs(pg);
 }
 
 void JSCompiler::Compile(const ir::NewExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::RegScope rs(pg);
+    compiler::VReg ctor = pg->AllocReg();
+    compiler::VReg new_target = pg->AllocReg();
+
+    expr->Callee()->Compile(pg);
+    pg->StoreAccumulator(expr, ctor);
+
+    // new.Target will be the same as ctor
+    pg->StoreAccumulator(expr, new_target);
+
+    if (!util::Helpers::ContainSpreadElement(expr->Arguments()) &&
+        expr->Arguments().size() < compiler::PandaGen::MAX_RANGE_CALL_ARG) {
+        for (const auto *it : expr->Arguments()) {
+            compiler::VReg arg = pg->AllocReg();
+            it->Compile(pg);
+            pg->StoreAccumulator(expr, arg);
+        }
+
+        pg->NewObject(expr, ctor, expr->Arguments().size() + 2);
+    } else {
+        compiler::VReg args_obj = pg->AllocReg();
+
+        pg->CreateArray(expr, expr->Arguments(), args_obj);
+        pg->NewObjSpread(expr, ctor, new_target);
+    }
 }
 
 void JSCompiler::Compile(const ir::ObjectExpression *expr) const
@@ -851,22 +908,29 @@ void JSCompiler::Compile(const ir::OpaqueTypeNode *node) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::OmittedExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::OmittedExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
 void JSCompiler::Compile(const ir::SequenceExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    for (const auto *it : expr->Sequence()) {
+        it->Compile(pg);
+    }
 }
 
 void JSCompiler::Compile(const ir::SuperExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    pg->GetThis(expr);
+
+    const ir::ScriptFunction *func = util::Helpers::GetContainingConstructor(expr);
+
+    if (func != nullptr) {
+        pg->ThrowIfSuperNotCorrectCall(expr, 0);
+    }
 }
 
 void JSCompiler::Compile(const ir::TaggedTemplateExpression *expr) const
@@ -907,8 +971,8 @@ void JSCompiler::Compile(const ir::YieldExpression *expr) const
 // Compile methods for LITERAL EXPRESSIONS in alphabetical order
 void JSCompiler::Compile(const ir::BigIntLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    pg->LoadAccumulatorBigInt(expr, expr->Str());
 }
 
 void JSCompiler::Compile(const ir::BooleanLiteral *expr) const

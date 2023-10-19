@@ -15,8 +15,10 @@
 
 #include "omittedExpression.h"
 
-#include "ir/astDump.h"
 #include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
+// #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void OmittedExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -27,16 +29,24 @@ void OmittedExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "OmittedExpression"}});
 }
 
-void OmittedExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *OmittedExpression::Check([[maybe_unused]] checker::TSChecker *checker)
+void OmittedExpression::Compile(compiler::PandaGen *pg) const
 {
-    return checker->GlobalUndefinedType();
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *OmittedExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+void OmittedExpression::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *OmittedExpression::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *OmittedExpression::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

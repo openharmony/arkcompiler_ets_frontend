@@ -15,8 +15,10 @@
 
 #include "sequenceExpression.h"
 
+#include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
-#include "ir/astDump.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 SequenceExpression::SequenceExpression([[maybe_unused]] Tag const tag, SequenceExpression const &other,
@@ -59,35 +61,23 @@ void SequenceExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "SequenceExpression"}, {"expressions", sequence_}});
 }
 
-void SequenceExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void SequenceExpression::Compile(compiler::PandaGen *pg) const
 {
-    for (const auto *it : sequence_) {
-        it->Compile(pg);
-    }
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void SequenceExpression::Compile(compiler::ETSGen *etsg) const
 {
-    for (const auto *it : sequence_) {
-        it->Compile(etsg);
-    }
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *SequenceExpression::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *SequenceExpression::Check(checker::TSChecker *checker)
 {
-    // NOTE: aszilagyi.
-    return checker->GlobalAnyType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *SequenceExpression::Check(checker::ETSChecker *checker)
 {
-    if (TsType() != nullptr) {
-        return TsType();
-    }
-
-    for (auto *it : sequence_) {
-        it->Check(checker);
-    }
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

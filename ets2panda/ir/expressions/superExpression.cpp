@@ -15,12 +15,11 @@
 
 #include "superExpression.h"
 
-#include "util/helpers.h"
-#include "compiler/core/pandagen.h"
-#include "compiler/core/ETSGen.h"
-#include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
-#include "ir/astDump.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
+#include "util/helpers.h"
 
 namespace panda::es2panda::ir {
 void SuperExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -33,35 +32,22 @@ void SuperExpression::Dump(ir::AstDumper *dumper) const
 
 void SuperExpression::Compile(compiler::PandaGen *pg) const
 {
-    pg->GetThis(this);
-
-    const ir::ScriptFunction *func = util::Helpers::GetContainingConstructor(this);
-
-    if (func != nullptr) {
-        pg->ThrowIfSuperNotCorrectCall(this, 0);
-    }
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void SuperExpression::Compile(compiler::ETSGen *etsg) const
 {
-    etsg->LoadThis(this);  // remains as long as we consider super 'super' expression
-    etsg->SetAccumulatorType(etsg->GetAccumulatorType()->AsETSObjectType()->SuperType());
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *SuperExpression::Check(checker::TSChecker *checker)
 {
-    // NOTE: aszilagyi.
-    return checker->GlobalAnyType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *SuperExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    if (TsType() != nullptr) {
-        return TsType();
-    }
-
-    SetTsType(checker->CheckThisOrSuperAccess(this, checker->Context().ContainingClass()->SuperType(), "super"));
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

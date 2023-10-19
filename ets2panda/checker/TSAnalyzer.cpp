@@ -513,26 +513,121 @@ checker::Type *TSAnalyzer::Check(ir::FunctionExpression *expr) const
 
 checker::Type *TSAnalyzer::Check(ir::Identifier *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    if (expr->Variable() == nullptr) {
+        if (expr->Name().Is("undefined")) {
+            return checker->GlobalUndefinedType();
+        }
+
+        checker->ThrowTypeError({"Cannot find name ", expr->Name()}, expr->Start());
+    }
+
+    const varbinder::Decl *decl = expr->Variable()->Declaration();
+
+    if (decl->IsTypeAliasDecl() || decl->IsInterfaceDecl()) {
+        checker->ThrowTypeError({expr->Name(), " only refers to a type, but is being used as a value here."},
+                                expr->Start());
+    }
+
+    expr->SetTsType(checker->GetTypeOfVariable(expr->Variable()));
+    return expr->TsType();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ImportExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ImportExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::MemberExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::Type *base_type = checker->CheckNonNullType(expr->Object()->Check(checker), expr->Object()->Start());
+
+    if (expr->IsComputed()) {
+        checker::Type *index_type = expr->Property()->Check(checker);
+        checker::Type *indexed_access_type = checker->GetPropertyTypeForIndexType(base_type, index_type);
+
+        if (indexed_access_type != nullptr) {
+            return indexed_access_type;
+        }
+
+        if (!index_type->HasTypeFlag(checker::TypeFlag::STRING_LIKE | checker::TypeFlag::NUMBER_LIKE)) {
+            checker->ThrowTypeError({"Type ", index_type, " cannot be used as index type"}, expr->Property()->Start());
+        }
+
+        if (index_type->IsNumberType()) {
+            checker->ThrowTypeError("No index signature with a parameter of type 'string' was found on type this type",
+                                    expr->Start());
+        }
+
+        if (index_type->IsStringType()) {
+            checker->ThrowTypeError("No index signature with a parameter of type 'number' was found on type this type",
+                                    expr->Start());
+        }
+
+        switch (expr->Property()->Type()) {
+            case ir::AstNodeType::IDENTIFIER: {
+                checker->ThrowTypeError(
+                    {"Property ", expr->Property()->AsIdentifier()->Name(), " does not exist on this type."},
+                    expr->Property()->Start());
+            }
+            case ir::AstNodeType::NUMBER_LITERAL: {
+                checker->ThrowTypeError(
+                    {"Property ", expr->Property()->AsNumberLiteral()->Str(), " does not exist on this type."},
+                    expr->Property()->Start());
+            }
+            case ir::AstNodeType::STRING_LITERAL: {
+                checker->ThrowTypeError(
+                    {"Property ", expr->Property()->AsStringLiteral()->Str(), " does not exist on this type."},
+                    expr->Property()->Start());
+            }
+            default: {
+                UNREACHABLE();
+            }
+        }
+    }
+
+    varbinder::Variable *prop = checker->GetPropertyOfType(base_type, expr->Property()->AsIdentifier()->Name());
+
+    if (prop != nullptr) {
+        checker::Type *prop_type = checker->GetTypeOfVariable(prop);
+        if (prop->HasFlag(varbinder::VariableFlags::READONLY)) {
+            prop_type->AddTypeFlag(checker::TypeFlag::READONLY);
+        }
+
+        return prop_type;
+    }
+
+    if (base_type->IsObjectType()) {
+        checker::ObjectType *obj_type = base_type->AsObjectType();
+
+        if (obj_type->StringIndexInfo() != nullptr) {
+            checker::Type *index_type = obj_type->StringIndexInfo()->GetType();
+            if (obj_type->StringIndexInfo()->Readonly()) {
+                index_type->AddTypeFlag(checker::TypeFlag::READONLY);
+            }
+
+            return index_type;
+        }
+    }
+
+    checker->ThrowTypeError({"Property ", expr->Property()->AsIdentifier()->Name(), " does not exist on this type."},
+                            expr->Property()->Start());
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::NewExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::Type *callee_type = expr->callee_->Check(checker);
+
+    if (callee_type->IsObjectType()) {
+        checker::ObjectType *callee_obj = callee_type->AsObjectType();
+        return checker->ResolveCallOrNewExpression(callee_obj->ConstructSignatures(), expr->Arguments(), expr->Start());
+    }
+
+    checker->ThrowTypeError("This expression is not callable.", expr->Start());
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::ObjectExpression *expr) const
@@ -541,10 +636,10 @@ checker::Type *TSAnalyzer::Check(ir::ObjectExpression *expr) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::OmittedExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::OmittedExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    return checker->GlobalUndefinedType();
 }
 
 checker::Type *TSAnalyzer::Check(ir::OpaqueTypeNode *expr) const
@@ -553,16 +648,18 @@ checker::Type *TSAnalyzer::Check(ir::OpaqueTypeNode *expr) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::SequenceExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::SequenceExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    // NOTE: aszilagyi.
+    return checker->GlobalAnyType();
 }
 
-checker::Type *TSAnalyzer::Check(ir::SuperExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::SuperExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    // NOTE: aszilagyi.
+    return checker->GlobalAnyType();
 }
 
 checker::Type *TSAnalyzer::Check(ir::TaggedTemplateExpression *expr) const
@@ -603,8 +700,15 @@ checker::Type *TSAnalyzer::Check(ir::YieldExpression *expr) const
 // compile methods for LITERAL EXPRESSIONS in alphabetical order
 checker::Type *TSAnalyzer::Check(ir::BigIntLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    auto search = checker->BigintLiteralMap().find(expr->Str());
+    if (search != checker->BigintLiteralMap().end()) {
+        return search->second;
+    }
+
+    auto *new_bigint_literal_type = checker->Allocator()->New<checker::BigintLiteralType>(expr->Str(), false);
+    checker->BigintLiteralMap().insert({expr->Str(), new_bigint_literal_type});
+    return new_bigint_literal_type;
 }
 
 checker::Type *TSAnalyzer::Check(ir::BooleanLiteral *expr) const
