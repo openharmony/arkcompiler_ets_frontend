@@ -245,7 +245,7 @@
                   },
                   {
                     "type": "ETSParameterExpression",
-                    "spread": {
+                    "rest parameter": {
                       "type": "RestElement",
                       "argument": {
                         "type": "Identifier",

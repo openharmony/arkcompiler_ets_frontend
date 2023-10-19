@@ -15,7 +15,12 @@
 
 #include "ETSCompiler.h"
 
+#include "compiler/base/lreference.h"
 #include "compiler/core/ETSGen.h"
+#include "ir/base/catchClause.h"
+#include "ir/base/classProperty.h"
+#include "ir/expressions/identifier.h"
+#include "ir/statements/blockStatement.h"
 #include "ir/statements/returnStatement.h"
 
 namespace panda::es2panda::compiler {
@@ -26,45 +31,60 @@ ETSGen *ETSCompiler::GetETSGen() const
 }
 
 // from as folder
-void ETSCompiler::Compile(const ir::NamedType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::NamedType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::PrefixAssertionExpression *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::PrefixAssertionExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 // from base folder
 void ETSCompiler::Compile(const ir::CatchClause *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    compiler::LocalRegScope lrs(etsg, st->Scope()->ParamScope());
+    etsg->SetAccumulatorType(etsg->Checker()->GlobalETSObjectType());
+    auto lref = compiler::ETSLReference::Create(etsg, st->Param(), true);
+    lref.SetValue();
+    st->Body()->Compile(etsg);
 }
 
-void ETSCompiler::Compile(const ir::ClassDefinition *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ClassDefinition *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::ClassProperty *st) const
 {
-    (void)st;
+    ETSGen *etsg = GetETSGen();
+    if (st->Value() == nullptr || (st->IsStatic() && st->TsType()->HasTypeFlag(checker::TypeFlag::CONSTANT))) {
+        return;
+    }
+
+    auto ttctx = compiler::TargetTypeContext(etsg, st->TsType());
+    compiler::RegScope rs(etsg);
+
+    if (!etsg->TryLoadConstantExpression(st->Value())) {
+        st->Value()->Compile(etsg);
+        etsg->ApplyConversion(st->Value(), nullptr);
+    }
+
+    if (st->IsStatic()) {
+        etsg->StoreStaticOwnProperty(st, st->TsType(), st->Key()->AsIdentifier()->Name());
+    } else {
+        etsg->StoreProperty(st, st->TsType(), etsg->GetThisReg(), st->Key()->AsIdentifier()->Name());
+    }
+}
+
+void ETSCompiler::Compile([[maybe_unused]] const ir::ClassStaticBlock *st) const
+{
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ClassStaticBlock *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::Decorator *st) const
 {
-    (void)st;
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile(const ir::Decorator *st) const
-{
-    (void)st;
     UNREACHABLE();
 }
 
@@ -551,8 +571,8 @@ void ETSCompiler::Compile(const ir::LabelledStatement *st) const
 void ETSCompiler::Compile(const ir::ReturnStatement *st) const
 {
     ETSGen *etsg = GetETSGen();
-    if (st->argument_ == nullptr) {
-        if (st->return_type_ == nullptr || st->return_type_->IsETSVoidType()) {
+    if (st->Argument() == nullptr) {
+        if (st->ReturnType() == nullptr || st->ReturnType()->IsETSVoidType()) {
             if (etsg->ExtendWithFinalizer(st->parent_, st)) {
                 return;
             }
@@ -569,8 +589,8 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
     } else {
         auto ttctx = compiler::TargetTypeContext(etsg, etsg->ReturnType());
 
-        if (!etsg->TryLoadConstantExpression(st->argument_)) {
-            st->argument_->Compile(etsg);
+        if (!etsg->TryLoadConstantExpression(st->Argument())) {
+            st->Argument()->Compile(etsg);
         }
     }
 
@@ -587,7 +607,7 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
         etsg->LoadAccumulator(st, res);
     }
 
-    etsg->ApplyConversion(st, st->return_type_);
+    etsg->ApplyConversion(st, st->ReturnType());
     etsg->ReturnAcc(st);
 }
 

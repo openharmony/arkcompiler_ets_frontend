@@ -25,9 +25,11 @@
 #include "checker/types/ets/etsDynamicFunctionType.h"
 #include "checker/types/ts/objectType.h"
 #include "checker/types/signature.h"
-#include "ir/base/scriptFunction.h"
 #include "ir/astDump.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/base/spreadElement.h"
 #include "ir/ets/etsFunctionType.h"
+#include "ir/expressions/arrayExpression.h"
 #include "ir/expressions/chainExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/memberExpression.h"
@@ -83,6 +85,32 @@ compiler::VReg CallExpression::CreateSpreadArguments(compiler::PandaGen *pg) con
     pg->CreateArray(this, arguments_, args_obj);
 
     return args_obj;
+}
+
+void CallExpression::ConvertRestArguments(checker::ETSChecker *const checker) const
+{
+    if (signature_->RestVar() != nullptr) {
+        std::size_t const argument_count = arguments_.size();
+        std::size_t const parameter_count = signature_->MinArgCount();
+        ASSERT(argument_count >= parameter_count);
+
+        auto &arguments = const_cast<ArenaVector<Expression *> &>(arguments_);
+        std::size_t i = parameter_count;
+
+        if (i < argument_count && arguments_[i]->IsSpreadElement()) {
+            arguments[i] = arguments_[i]->AsSpreadElement()->Argument();
+        } else {
+            ArenaVector<ir::Expression *> elements(checker->Allocator()->Adapter());
+            for (; i < argument_count; ++i) {
+                elements.emplace_back(arguments_[i]);
+            }
+            auto *array_expression = checker->AllocNode<ir::ArrayExpression>(std::move(elements), checker->Allocator());
+            array_expression->SetParent(const_cast<CallExpression *>(this));
+            array_expression->SetTsType(signature_->RestVar()->TsType());
+            arguments.erase(arguments_.begin() + parameter_count, arguments_.end());
+            arguments.emplace_back(array_expression);
+        }
+    }
 }
 
 void CallExpression::Compile(compiler::PandaGen *pg) const
@@ -223,6 +251,8 @@ void CallExpression::Compile(compiler::ETSGen *etsg) const
     bool is_static = signature_->HasSignatureFlag(checker::SignatureFlags::STATIC);
     bool is_reference = signature_->HasSignatureFlag(checker::SignatureFlags::TYPE);
     bool is_dynamic = callee_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG);
+
+    ConvertRestArguments(const_cast<checker::ETSChecker *>(etsg->Checker()->AsETSChecker()));
 
     compiler::VReg dyn_param2;
 
@@ -416,6 +446,12 @@ checker::Type *CallExpression::Check(checker::ETSChecker *checker)
         }
 
         return_type = signature->ReturnType();
+    }
+
+    if (signature_->RestVar() != nullptr) {
+        auto *const element_type = signature_->RestVar()->TsType()->AsETSArrayType()->ElementType();
+        auto *const array_type = checker->CreateETSArrayType(element_type)->AsETSArrayType();
+        checker->CreateBuiltinArraySignature(array_type, array_type->Rank());
     }
 
     SetTsType(return_type);

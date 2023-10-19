@@ -1,1 +1,1 @@
-TypeError: Call argument at index 0 is not compatible with the signature's type at that index [dynamic_class_method_decl_import_bad_1.ets:23:11]
+TypeError: Call argument at index 0 is not compatible with the signature's type at that index. [dynamic_class_method_decl_import_bad_1.ets:23:11]

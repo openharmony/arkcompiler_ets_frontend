@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -857,7 +857,7 @@ void ParserImpl::ValidateRestParameter(ir::Expression *param)
         }
 
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-            ThrowSyntaxError("Rest parameter must be last formal parameter");
+            ThrowSyntaxError("Rest parameter must be last formal parameter.");
         }
     }
 }
@@ -876,19 +876,15 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
 
         params.push_back(parameter);
 
-        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA &&
-            lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-            ThrowSyntaxError(", expected");
-        }
-
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
             lexer_->NextToken();
+        } else if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+            ThrowSyntaxError("Invalid token: comma or right parenthesis expected.");
         }
     }
 
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
     lexer_->NextToken();
-
     return params;
 }
 

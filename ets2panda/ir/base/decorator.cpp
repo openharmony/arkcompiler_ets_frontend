@@ -15,6 +15,10 @@
 
 #include "decorator.h"
 
+#include "checker/ETSchecker.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/expression.h"
 #include "ir/astDump.h"
 
@@ -34,15 +38,23 @@ void Decorator::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "Decorator"}, {"expression", expr_}});
 }
 
-void Decorator::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *Decorator::Check([[maybe_unused]] checker::TSChecker *checker)
+void Decorator::Compile(compiler::PandaGen *pg) const
 {
-    return nullptr;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *Decorator::Check([[maybe_unused]] checker::ETSChecker *checker)
+void Decorator::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *Decorator::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *Decorator::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

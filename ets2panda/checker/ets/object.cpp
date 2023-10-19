@@ -227,12 +227,10 @@ Type *ETSChecker::CreateTypeParameterType(ir::TSTypeParameter *const param)
         }
         if (constraint_obj_type->IsNullableType()) {
             param_type->SuperType()->AddTypeFlag(TypeFlag::NULLABLE);
-            param_type->AddTypeFlag(TypeFlag::NULLABLE);
         }
     } else {
         // No constraint, so it's Object|null
         param_type->SuperType()->AddTypeFlag(TypeFlag::NULLABLE);
-        param_type->AddTypeFlag(TypeFlag::NULLABLE);
     }
 
     SetTypeParameterType(param, param_type);

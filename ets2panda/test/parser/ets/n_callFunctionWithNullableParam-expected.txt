@@ -828,4 +828,4 @@
     }
   }
 }
-TypeError: Call argument at index 0 is not compatible with the signature's type at that index [n_callFunctionWithNullableParam.ets:23:9]
+TypeError: Call argument at index 0 is not compatible with the signature's type at that index. [n_callFunctionWithNullableParam.ets:23:9]

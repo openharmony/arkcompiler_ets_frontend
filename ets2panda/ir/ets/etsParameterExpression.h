@@ -19,23 +19,37 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
-class ETSParameterExpression : public Expression {
+class ETSParameterExpression final : public Expression {
 public:
     explicit ETSParameterExpression(AnnotatedExpression *ident_or_spread, Expression *initializer);
 
-    const Identifier *Ident() const;
-    Identifier *Ident();
-    const SpreadElement *Spread() const;
-    SpreadElement *Spread();
-    const Expression *Initializer() const;
-    Expression *Initializer();
+    [[nodiscard]] const Identifier *Ident() const noexcept;
+    [[nodiscard]] Identifier *Ident() noexcept;
 
-    void SetLexerSaved(util::StringView s);
-    util::StringView LexerSaved() const;
+    [[nodiscard]] const SpreadElement *RestParameter() const noexcept;
+    [[nodiscard]] SpreadElement *RestParameter() noexcept;
 
-    binder::Variable *Variable() const;
-    void SetVariable(binder::Variable *variable);
-    bool IsDefault() const;
+    [[nodiscard]] const Expression *Initializer() const noexcept;
+    [[nodiscard]] Expression *Initializer() noexcept;
+
+    void SetLexerSaved(util::StringView s) noexcept;
+    [[nodiscard]] util::StringView LexerSaved() const noexcept;
+
+    [[nodiscard]] binder::Variable *Variable() const noexcept;
+    void SetVariable(binder::Variable *variable) noexcept;
+
+    [[nodiscard]] TypeNode const *TypeAnnotation() const noexcept;
+    [[nodiscard]] TypeNode *TypeAnnotation() noexcept;
+
+    [[nodiscard]] bool IsDefault() const noexcept
+    {
+        return initializer_ != nullptr;
+    }
+
+    [[nodiscard]] bool IsRestParameter() const noexcept
+    {
+        return spread_ != nullptr;
+    }
 
     void Iterate(const NodeTraverser &cb) const override;
     void TransformChildren(const NodeTransformer &cb) override;
@@ -48,8 +62,8 @@ public:
 private:
     Identifier *ident_;
     Expression *initializer_;
-    SpreadElement *spread_;
-    util::StringView saved_lexer_;
+    SpreadElement *spread_ = nullptr;
+    util::StringView saved_lexer_ = "";
 };
 }  // namespace panda::es2panda::ir
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -221,6 +221,12 @@ static Signature *MaybeSubstituteTypeParameters(ETSChecker *checker, Signature *
     return (substitution == nullptr) ? nullptr : signature->Substitute(checker->Relation(), substitution);
 }
 
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+static constexpr char const INVALID_CALL_ARGUMENT_1[] = "Call argument at index ";
+static constexpr char const INVALID_CALL_ARGUMENT_2[] = " is not compatible with the signature's type at that index.";
+static constexpr char const INVALID_CALL_ARGUMENT_3[] = " is not compatible with the signature's rest parameter type.";
+// NOLINTEND(modernize-avoid-c-arrays)
+
 Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeParameterInstantiation *type_arguments,
                                          const ArenaVector<ir::Expression *> &arguments,
                                          const lexer::SourcePosition &pos, TypeRelationFlag flags,
@@ -234,14 +240,17 @@ Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeP
     if (substituted_sig == nullptr) {
         return nullptr;
     }
-    if ((arguments.size() < substituted_sig->MinArgCount()) ||
-        (arguments.size() > substituted_sig->MinArgCount() && substituted_sig->RestVar() == nullptr)) {
-        if ((flags & TypeRelationFlag::NO_THROW) == 0) {
-            ThrowTypeError({"Expected ", substituted_sig->MinArgCount(), " arguments, got ", arguments.size(), " ."},
-                           pos);
-        }
 
-        if (!signature->Function()->IsDefaultParamProxy()) {
+    auto const has_rest_parameter = substituted_sig->RestVar() != nullptr;
+    std::size_t const argument_count = arguments.size();
+    std::size_t const parameter_count = substituted_sig->MinArgCount();
+    auto const throw_error = (flags & TypeRelationFlag::NO_THROW) == 0;
+
+    if (!signature->Function()->IsDefaultParamProxy()) {
+        if (argument_count < parameter_count || (argument_count > parameter_count && !has_rest_parameter)) {
+            if (throw_error) {
+                ThrowTypeError({"Expected ", parameter_count, " arguments, got ", argument_count, "."}, pos);
+            }
             return nullptr;
         }
     }
@@ -252,17 +261,13 @@ Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeP
         substituted_sig->AddSignatureFlag(SignatureFlags::SUBSTITUTED_RETURN_TYPE);
     }
 
-    uint32_t index = 0;
-    bool validate_rest = false;
+    // Check all required formal parameter(s) first
+    auto const count = std::min(parameter_count, argument_count);
+    std::size_t index = 0U;
+    for (; index < count; ++index) {
+        auto &argument = arguments[index];
 
-    for (; index < arguments.size(); index++) {
-        if (index >= substituted_sig->MinArgCount()) {
-            ASSERT(substituted_sig->RestVar());
-            validate_rest = true;
-            break;
-        }
-
-        if (arguments[index]->IsObjectExpression()) {
+        if (argument->IsObjectExpression()) {
             if (substituted_sig->Params()[index]->TsType()->IsETSObjectType()) {
                 // No chance to check the argument at this point
                 continue;
@@ -270,14 +275,19 @@ Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeP
             return nullptr;
         }
 
-        if (arguments[index]->IsMemberExpression()) {
+        if (argument->IsMemberExpression()) {
             SetArrayPreferredTypeForNestedMemberExpressions(arguments[index]->AsMemberExpression(),
                                                             substituted_sig->Params()[index]->TsType());
+        } else if (argument->IsSpreadElement()) {
+            if (throw_error) {
+                ThrowTypeError("Spread argument cannot be passed for ordinary parameter.", argument->Start());
+            }
+            return nullptr;
         }
 
         if (arg_type_inference_required[index]) {
-            ASSERT(arguments[index]->IsArrowFunctionExpression());
-            auto *const arrow_func_expr = arguments[index]->AsArrowFunctionExpression();
+            ASSERT(argument->IsArrowFunctionExpression());
+            auto *const arrow_func_expr = argument->AsArrowFunctionExpression();
             ir::ScriptFunction *const lambda = arrow_func_expr->Function();
             if (CheckLambdaAssignable(substituted_sig->Function()->Params()[index], lambda)) {
                 continue;
@@ -285,42 +295,53 @@ Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeP
             return nullptr;
         }
 
-        Type *const arg_type = arguments[index]->Check(this);
+        auto *const argument_type = argument->Check(this);
 
-        const auto invocation_ctx = checker::InvocationContext(
-            Relation(), arguments[index], arg_type, substituted_sig->Params()[index]->TsType(),
-            arguments[index]->Start(),
-            {"Call argument at index ", index, " is not compatible with the signature's type at that index"}, flags);
-
-        if (!invocation_ctx.IsInvocable()) {
+        if (auto const invocation_ctx = checker::InvocationContext(
+                Relation(), argument, argument_type, substituted_sig->Params()[index]->TsType(), argument->Start(),
+                {INVALID_CALL_ARGUMENT_1, index, INVALID_CALL_ARGUMENT_2}, flags);
+            !invocation_ctx.IsInvocable()) {
             return nullptr;
         }
     }
 
-    if (!validate_rest) {
-        return substituted_sig;
-    }
+    // Check rest parameter(s) if any exists
+    if (has_rest_parameter && index < argument_count) {
+        auto const rest_count = argument_count - index;
 
-    do {
-        if (arguments[index]->IsObjectExpression()) {
-            if (substituted_sig->RestVar()->TsType()->IsETSObjectType()) {
-                // No chance to check the argument at this point
-                index++;
-                continue;
+        for (; index < argument_count; ++index) {
+            auto &argument = arguments[index];
+
+            if (argument->IsSpreadElement()) {
+                if (rest_count > 1U) {
+                    if (throw_error) {
+                        ThrowTypeError("Spread argument for the rest parameter can be only one.", argument->Start());
+                    }
+                    return nullptr;
+                }
+
+                auto *const rest_argument = argument->AsSpreadElement()->Argument();
+                auto *const argument_type = rest_argument->Check(this);
+
+                if (auto const invocation_ctx = checker::InvocationContext(
+                        Relation(), rest_argument, argument_type, substituted_sig->RestVar()->TsType(),
+                        argument->Start(), {INVALID_CALL_ARGUMENT_1, index, INVALID_CALL_ARGUMENT_3}, flags);
+                    !invocation_ctx.IsInvocable()) {
+                    return nullptr;
+                }
+            } else {
+                auto *const argument_type = argument->Check(this);
+
+                if (auto const invocation_ctx = checker::InvocationContext(
+                        Relation(), argument, argument_type,
+                        substituted_sig->RestVar()->TsType()->AsETSArrayType()->ElementType(), argument->Start(),
+                        {INVALID_CALL_ARGUMENT_1, index, INVALID_CALL_ARGUMENT_3}, flags);
+                    !invocation_ctx.IsInvocable()) {
+                    return nullptr;
+                }
             }
-            return nullptr;
         }
-
-        Type *const arg_type = arguments[index]->Check(this);
-        const auto invocation_ctx = checker::InvocationContext(
-            Relation(), arguments[index], arg_type, substituted_sig->RestVar()->TsType(), arguments[index]->Start(),
-            {"Call argument at index ", index, " is not compatible with the signature's rest parameter type"}, flags);
-        index++;
-
-        if (!invocation_ctx.IsInvocable()) {
-            return nullptr;
-        }
-    } while (index < arguments.size());
+    }
 
     return substituted_sig;
 }
@@ -366,10 +387,12 @@ Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
 
     auto collect_signatures = [&](TypeRelationFlag relation_flags) {
         for (auto *sig : signatures) {
-            if (auto *concrete_sig =
-                    ValidateSignature(sig, type_arguments, arguments, pos, relation_flags, arg_type_inference_required);
-                concrete_sig != nullptr) {
-                compatible_signatures.push_back(concrete_sig);
+            if (!sig->Function()->IsDefaultParamProxy()) {
+                if (auto *concrete_sig = ValidateSignature(sig, type_arguments, arguments, pos, relation_flags,
+                                                           arg_type_inference_required);
+                    concrete_sig != nullptr) {
+                    compatible_signatures.push_back(concrete_sig);
+                }
             }
         }
     };
@@ -761,39 +784,34 @@ checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction 
         signature_info->type_params = CreateTypeForTypeParameters(func->TypeParams());
     }
 
-    for (auto *it : func->Params()) {
-        if (it->IsRestElement()) {
-            auto *rest_param = it->AsRestElement();
-            ASSERT(rest_param->Argument()->IsIdentifier());
+    for (auto *const it : func->Params()) {
+        auto *const param = it->AsETSParameterExpression();
 
-            auto *rest_ident = rest_param->Argument()->AsIdentifier();
+        if (param->IsRestParameter()) {
+            auto const *const rest_ident = param->Ident();
 
             ASSERT(rest_ident->Variable());
             signature_info->rest_var = rest_ident->Variable()->AsLocalVariable();
 
-            ASSERT(rest_param->TypeAnnotation());
-            signature_info->rest_var->SetTsType(rest_param->TypeAnnotation()->GetType(this));
-            break;
+            auto *const rest_param_type_annotation = param->TypeAnnotation();
+            ASSERT(rest_param_type_annotation);
+
+            signature_info->rest_var->SetTsType(GetTypeFromTypeAnnotation(rest_param_type_annotation));
+            auto array_type = signature_info->rest_var->TsType()->AsETSArrayType();
+            CreateBuiltinArraySignature(array_type, array_type->Rank());
+        } else {
+            auto const *const param_ident = param->Ident();
+
+            binder::Variable *const param_var = param_ident->Variable();
+            ASSERT(param_var);
+
+            auto *const param_type_annotation = param->TypeAnnotation();
+            ASSERT(param_type_annotation);
+
+            param_var->SetTsType(GetTypeFromTypeAnnotation(param_type_annotation));
+            signature_info->params.push_back(param_var->AsLocalVariable());
+            ++signature_info->min_arg_count;
         }
-
-        ASSERT(it->IsETSParameterExpression());
-        auto *const param_ident = it->AsETSParameterExpression()->Ident();
-
-        binder::Variable *param_var = param_ident->Variable();
-        auto *param_type_annotation = param_ident->TypeAnnotation();
-        if (it->AsETSParameterExpression()->Spread() != nullptr) {
-            param_var = it->AsETSParameterExpression()->Spread()->Variable();
-            param_type_annotation = it->AsETSParameterExpression()->Spread()->TypeAnnotation();
-        }
-
-        ASSERT(param_var);
-        ASSERT(param_type_annotation);
-
-        auto *const param_type = GetTypeFromTypeAnnotation(param_type_annotation);
-
-        param_var->SetTsType(param_type);
-        signature_info->params.push_back(param_var->AsLocalVariable());
-        signature_info->min_arg_count++;
     }
 
     if (func_name.Is(compiler::Signatures::MAIN) &&
@@ -807,17 +825,15 @@ checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction 
         }
 
         if (func->Params().size() == 1) {
-            bool is_invalid_type = true;
-            const auto param_type = func->Params()[0]->AsETSParameterExpression()->Variable()->TsType();
-            if (param_type->IsETSArrayType()) {
-                auto const element_type = param_type->AsETSArrayType()->ElementType();
-                if (element_type->IsETSStringType()) {
-                    is_invalid_type = false;
-                }
+            auto const *const param = func->Params()[0]->AsETSParameterExpression();
+
+            if (param->IsRestParameter()) {
+                ThrowTypeError("Rest parameter is not allowed in the 'main' function.", param->Start());
             }
 
-            if (is_invalid_type) {
-                ThrowTypeError("Only string[] type argument are allowed", func->Start());
+            const auto param_type = param->Variable()->TsType();
+            if (!param_type->IsETSArrayType() || !param_type->AsETSArrayType()->ElementType()->IsETSStringType()) {
+                ThrowTypeError("Only 'string[]' type argument is allowed.", param->Start());
             }
         }
     }
@@ -1559,11 +1575,11 @@ ir::Statement *ETSChecker::ResolveLambdaObjectInvokeFuncBody(ir::ClassDefinition
     }
 
     // Then we add the lambda functions parameters to the call
-    for (auto *it : invoke_func->Params()) {
-        auto *param_ident =
-            Allocator()->New<ir::Identifier>(it->AsETSParameterExpression()->Ident()->Name(), Allocator());
-        param_ident->SetVariable(it->AsETSParameterExpression()->Variable());
-        param_ident->SetTsType(it->AsETSParameterExpression()->Variable()->TsType());
+    for (auto const *const it : invoke_func->Params()) {
+        auto const *const param = it->AsETSParameterExpression();
+        auto *const param_ident = Allocator()->New<ir::Identifier>(param->Ident()->Name(), Allocator());
+        param_ident->SetVariable(param->Variable());
+        param_ident->SetTsType(param->Variable()->TsType());
         call_params.push_back(param_ident);
     }
 
@@ -1592,8 +1608,8 @@ void ETSChecker::ResolveLambdaObjectCtor(ir::ClassDefinition *lambda_object)
     auto *ctor_signature_info = CreateSignatureInfo();
     ctor_signature_info->rest_var = nullptr;
 
-    for (auto *it : ctor_func->Params()) {
-        ctor_signature_info->min_arg_count++;
+    for (auto const *const it : ctor_func->Params()) {
+        ++ctor_signature_info->min_arg_count;
         ctor_signature_info->params.push_back(it->AsETSParameterExpression()->Variable()->AsLocalVariable());
     }
 
@@ -1646,9 +1662,9 @@ void ETSChecker::ResolveProxyMethod(ir::MethodDefinition *proxy_method, ir::Arro
     auto *signature_info = signature->GetSignatureInfo();
     signature_info->rest_var = nullptr;
 
-    for (auto *it : proxy_method->Function()->Params()) {
+    for (auto const *const it : proxy_method->Function()->Params()) {
         signature_info->params.push_back(it->AsETSParameterExpression()->Variable()->AsLocalVariable());
-        signature_info->min_arg_count++;
+        ++signature_info->min_arg_count;
     }
 
     signature->SetReturnType(lambda->Function()->Signature()->ReturnType());
@@ -1791,7 +1807,7 @@ void ETSChecker::ReplaceIdentifierReferencesInProxyMethod(ir::AstNode *body,
         }
     }
 
-    for (auto *it : lambda_params) {
+    for (auto const *const it : lambda_params) {
         merged_target_references.insert({it->AsETSParameterExpression()->Variable(), idx});
         idx++;
     }
@@ -1864,7 +1880,7 @@ binder::FunctionParamScope *ETSChecker::CreateProxyMethodParams(ArenaVector<ir::
 
     // Then add the lambda function parameters to the proxy method's parameter vector, and set the type from the
     // already computed types for the lambda parameters
-    for (auto *it : params) {
+    for (auto const *const it : params) {
         auto *const old_param_expr_ident = it->AsETSParameterExpression()->Ident();
         auto *const param_ident = Allocator()->New<ir::Identifier>(old_param_expr_ident->Name(), Allocator());
         auto *param = Allocator()->New<ir::ETSParameterExpression>(param_ident, nullptr);

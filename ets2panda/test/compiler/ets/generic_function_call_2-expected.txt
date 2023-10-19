@@ -982,4 +982,4 @@
     }
   }
 }
-TypeError: Call argument at index 0 is not compatible with the signature's type at that index [generic_function_call_2.ets:24:9]
+TypeError: Call argument at index 0 is not compatible with the signature's type at that index. [generic_function_call_2.ets:24:9]

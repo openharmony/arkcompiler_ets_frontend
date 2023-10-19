@@ -74,3 +74,11 @@ export declare interface Resource {}
 export declare type ResourceStr = string | Resource;
 
 export declare function resourceFoo(p: ResourceStr): string;
+
+export declare interface Point {
+    x: string;
+    y: string;
+}
+
+export declare function myFoo(x: Point);
+export declare function myFoo2(x: any);

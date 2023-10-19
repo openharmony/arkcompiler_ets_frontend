@@ -35,14 +35,14 @@
 #include "binder/ASBinder.h"
 #include "binder/TSBinder.h"
 #include "binder/ETSBinder.h"
+#include "checker/TSAnalyzer.h"
 #include "checker/TSchecker.h"
+#include "checker/ETSAnalyzer.h"
 #include "checker/ETSchecker.h"
 #include "checker/ASchecker.h"
 #include "checker/JSchecker.h"
 #include "es2panda.h"
 #include "util/declgenEts2Ts.h"
-#include "checker/ETSAnalyzer.h"
-#include "checker/TSAnalyzer.h"
 
 #include <iostream>
 #include <thread>

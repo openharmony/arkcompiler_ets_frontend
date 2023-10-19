@@ -691,7 +691,7 @@ export class TsUtils {
     if (this.isTypeReference(typeA) && typeA.target !== typeA) typeA = typeA.target;
     if (this.isTypeReference(typeB) && typeB.target !== typeB) typeB = typeB.target;
 
-    if (typeA === typeB || this.isObjectType(typeB)) return true;
+    if (typeA === typeB || this.isObject(typeB)) return true;
     if (!typeA.symbol || !typeA.symbol.declarations) return false;
 
     for (let typeADecl of typeA.symbol.declarations) {
@@ -752,7 +752,7 @@ export class TsUtils {
     return false;
   }
 
-  public isObjectType(tsType: ts.Type): boolean {
+  public isObject(tsType: ts.Type): boolean {
     if (!tsType) {
       return false;
     }
@@ -1338,6 +1338,17 @@ export class TsUtils {
     return undefined;
   }
 
+  public isObjectType(type: ts.Type): type is ts.ObjectType {
+    return !!(type.flags & ts.TypeFlags.Object)
+  }
+
+  private isAnonymous(type: ts.Type): boolean {
+    if (this.isObjectType(type)) {
+      return !!(type.objectFlags & ts.ObjectFlags.Anonymous);
+    }
+    return false;
+  }
+
   public isDynamicLiteralInitializer(expr: ts.Expression): boolean {
     if (!ts.isObjectLiteralExpression(expr) && !ts.isArrayLiteralExpression(expr)) {
       return false;
@@ -1348,7 +1359,7 @@ export class TsUtils {
     let curNode: ts.Node = expr;
     while (ts.isObjectLiteralExpression(curNode) || ts.isArrayLiteralExpression(curNode)) {
       const exprType = this.tsTypeChecker.getContextualType(curNode);
-      if (exprType !== undefined) {
+      if (exprType !== undefined  && !this.isAnonymous(exprType)) {
         const res = this.isDynamicType(exprType)
         if (res !== undefined) {
           return res;

@@ -16,8 +16,10 @@
 #include "TSAnalyzer.h"
 
 #include "checker/TSchecker.h"
+#include "ir/base/catchClause.h"
 #include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
+#include "ir/statements/blockStatement.h"
 #include "ir/statements/returnStatement.h"
 #include "ir/typeNode.h"
 #include "util/helpers.h"
@@ -30,45 +32,54 @@ TSChecker *TSAnalyzer::GetTSChecker() const
 }
 
 // from as folder
-checker::Type *TSAnalyzer::Check(ir::NamedType *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::NamedType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::PrefixAssertionExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::PrefixAssertionExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 // from base folder
 checker::Type *TSAnalyzer::Check(ir::CatchClause *st) const
 {
-    (void)st;
+    TSChecker *checker = GetTSChecker();
+    ir::Expression *type_annotation = st->Param()->AsAnnotatedExpression()->TypeAnnotation();
+
+    if (type_annotation != nullptr) {
+        checker::Type *catch_param_type = type_annotation->Check(checker);
+
+        if (!catch_param_type->HasTypeFlag(checker::TypeFlag::ANY_OR_UNKNOWN)) {
+            checker->ThrowTypeError("Catch clause variable type annotation must be 'any' or 'unknown' if specified",
+                                    st->Start());
+        }
+    }
+
+    st->Body()->Check(checker);
+
+    return nullptr;
+}
+
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ClassDefinition *node) const
+{
+    TSChecker *checker = GetTSChecker();
+    // TODO(aszilagyi)
+    return checker->GlobalAnyType();
+}
+
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ClassProperty *st) const
+{
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ClassDefinition *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ClassStaticBlock *st) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ClassProperty *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::Decorator *st) const
 {
-    (void)st;
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check(ir::ClassStaticBlock *st) const
-{
-    (void)st;
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check(ir::Decorator *st) const
-{
-    (void)st;
     UNREACHABLE();
 }
 
@@ -570,9 +581,9 @@ checker::Type *TSAnalyzer::Check(ir::ReturnStatement *st) const
         checker::Type *return_type = checker->GlobalUndefinedType();
         checker::Type *func_return_type = containing_func->ReturnTypeAnnotation()->GetType(checker);
 
-        if (st->argument_ != nullptr) {
-            checker->ElaborateElementwise(func_return_type, st->argument_, st->Start());
-            return_type = checker->CheckTypeCached(st->argument_);
+        if (st->Argument() != nullptr) {
+            checker->ElaborateElementwise(func_return_type, st->Argument(), st->Start());
+            return_type = checker->CheckTypeCached(st->Argument());
         }
 
         checker->IsTypeAssignableTo(return_type, func_return_type,

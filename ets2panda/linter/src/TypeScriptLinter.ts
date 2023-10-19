@@ -52,6 +52,7 @@ import { ReportAutofixCallback } from './autofixes/ReportAutofixCallback';
 import { DiagnosticChecker } from './utils/functions/DiagnosticChecker';
 import {
   ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE,
+  TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE,
   LibraryTypeCallDiagnosticChecker
 } from './utils/functions/LibraryTypeCallDiagnosticChecker';
 
@@ -153,6 +154,7 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.NamespaceImport, this.handleNamespaceImport],
     [ts.SyntaxKind.TypeAssertionExpression, this.handleTypeAssertionExpression],
     [ts.SyntaxKind.MethodDeclaration, this.handleMethodDeclaration],
+    [ts.SyntaxKind.MethodSignature, this.handleMethodSignature],
     [ts.SyntaxKind.ClassStaticBlockDeclaration, this.handleClassStaticBlockDeclaration],
     [ts.SyntaxKind.Identifier, this.handleIdentifier],
     [ts.SyntaxKind.ElementAccessExpression, this.handleElementAccessExpression],
@@ -400,22 +402,10 @@ export class TypeScriptLinter {
         continue;
       }
       const decl: ts.Declaration = p.declarations[0];
-      if (decl.kind === ts.SyntaxKind.MethodSignature) {
-        this.countInterfaceExtendsDifferentPropertyTypes(
-          node, prop2type, p.name, (decl as ts.MethodSignature).type
-        );
-      } else if (decl.kind === ts.SyntaxKind.MethodDeclaration) {
-        this.countInterfaceExtendsDifferentPropertyTypes(
-          node, prop2type, p.name, (decl as ts.MethodDeclaration).type
-        );
-      } else if (decl.kind === ts.SyntaxKind.PropertyDeclaration) {
-        this.countInterfaceExtendsDifferentPropertyTypes(
-          node, prop2type, p.name, (decl as ts.PropertyDeclaration).type
-        );
-      } else if (decl.kind == ts.SyntaxKind.PropertySignature) {
-        this.countInterfaceExtendsDifferentPropertyTypes(
-          node, prop2type, p.name, (decl as ts.PropertySignature).type
-        );
+      const isPropertyDecl = ts.isPropertyDeclaration(decl) || ts.isPropertyDeclaration(decl);
+      const isMethodDecl = ts.isMethodSignature(decl) || ts.isMethodDeclaration(decl);
+      if (isMethodDecl || isPropertyDecl) {
+        this.countInterfaceExtendsDifferentPropertyTypes(node, prop2type, p.name, decl.type);
       }
     }
   }
@@ -702,7 +692,16 @@ export class TypeScriptLinter {
     }
   }
 
-  private filterStrictDiagnostics(range: { begin: number, end: number }, code: number,
+  private checkInRange(rangesToFilter: { begin: number, end: number }[], pos: number): boolean {
+    for (let i = 0; i < rangesToFilter.length; i++) {
+      if (pos >= rangesToFilter[i].begin && pos < rangesToFilter[i].end) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private filterStrictDiagnostics(filters: { [code: number]: (pos: number) => boolean },
     diagnosticChecker: DiagnosticChecker): boolean {
     if (!this.tscStrictDiagnostics || !this.sourceFile) {
       return false;
@@ -714,10 +713,11 @@ export class TypeScriptLinter {
     }
 
     const checkDiagnostic = (val: ts.Diagnostic) => {
-      if (val.code !== code) {
+      const checkInRange = filters[val.code];
+      if (!checkInRange) {
         return true;
       }
-      if (val.start === undefined || val.start < range.begin || val.start > range.end) {
+      if (val.start === undefined || checkInRange(val.start)) {
         return true;
       }
       return diagnosticChecker.checkDiagnosticMessage(val.messageText);
@@ -790,9 +790,12 @@ export class TypeScriptLinter {
     this.cancellationToken?.throwIfCancellationRequested();
 
     let tsFunctionDeclaration = node as ts.FunctionDeclaration;
-    if (!tsFunctionDeclaration.type) this.handleMissingReturnType(tsFunctionDeclaration);
-    if (tsFunctionDeclaration.name)
+    if (!tsFunctionDeclaration.type) {
+      this.handleMissingReturnType(tsFunctionDeclaration);
+    }
+    if (tsFunctionDeclaration.name) {
       this.countDeclarationsWithDuplicateName(tsFunctionDeclaration.name, tsFunctionDeclaration);
+    }
     if (tsFunctionDeclaration.body && scopeContainsThis(tsFunctionDeclaration.body)) {
       this.incrementCounters(node, FaultID.FunctionContainsThis);
     }
@@ -804,9 +807,15 @@ export class TypeScriptLinter {
     }
   }
 
-  private handleMissingReturnType(funcLikeDecl: ts.FunctionLikeDeclaration): [boolean, ts.TypeNode | undefined] {
+  private handleMissingReturnType(funcLikeDecl: ts.FunctionLikeDeclaration | ts.MethodSignature): [boolean, ts.TypeNode | undefined] {
     // Note: Return type can't be inferred for function without body.
-    if (!funcLikeDecl.body) {
+    const isSignature = ts.isMethodSignature(funcLikeDecl);
+    if (isSignature || !funcLikeDecl.body) {
+      // Ambient flag is not exposed, so we apply dirty hack to make it visible
+      const isAmbientDeclaration = !!(funcLikeDecl.flags & (ts.NodeFlags as any)['Ambient']);
+      if ((isSignature || isAmbientDeclaration) && !funcLikeDecl.type) {
+        this.incrementCounters(funcLikeDecl, FaultID.LimitedReturnTypeInference);
+      }
       return [false, undefined];
     }
     let autofixable = false;
@@ -1194,22 +1203,26 @@ export class TypeScriptLinter {
         }
       }
     }
-
     if (isStatic && hasThis) {
       this.incrementCounters(node, FaultID.FunctionContainsThis);
     }
-
-    if (!tsMethodDecl.type)
+    if (!tsMethodDecl.type) {
       this.handleMissingReturnType(tsMethodDecl);
-
-    if (tsMethodDecl.asteriskToken)
+    }
+    if (tsMethodDecl.asteriskToken) {
       this.incrementCounters(node, FaultID.GeneratorFunction);
-
+    }
     this.handleDecorators(ts.getDecorators(tsMethodDecl));
-
     this.filterOutDecoratorsDiagnostics(ts.getDecorators(tsMethodDecl), NON_RETURN_FUNCTION_DECORATORS,
       {begin: tsMethodDecl.parameters.end, end: tsMethodDecl.body?.getStart() ?? tsMethodDecl.parameters.end},
       FUNCTION_HAS_NO_RETURN_ERROR_CODE);
+  }
+
+  private handleMethodSignature(node: ts.MethodSignature) {
+    const tsMethodSign = node as ts.MethodSignature;
+    if (!tsMethodSign.type) {
+      this.handleMissingReturnType(tsMethodSign);
+    }
   }
 
   private handleClassStaticBlockDeclaration(node: ts.Node) {
@@ -1539,13 +1552,47 @@ export class TypeScriptLinter {
     }
   }
 
+  private findNonFilteringRangesFunctionCalls(callExpr: ts.CallExpression): { begin: number, end: number }[] {
+    let args = callExpr.arguments;
+    let result: { begin: number, end: number }[] = [];
+    for (const arg of args) {
+      if (ts.isArrowFunction(arg)) {
+        let arrowFuncExpr = arg as ts.ArrowFunction;
+        result.push({begin: arrowFuncExpr.body.pos, end: arrowFuncExpr.body.end});
+      } else if (ts.isCallExpression(arg)) {
+        result.push({begin: arg.arguments.pos, end: arg.arguments.end});
+      }
+      // there may be other cases
+    }
+    return result;
+  }
+
   private handleLibraryTypeCall(callExpr: ts.CallExpression, calleeType: ts.Type) {
     let inLibCall = this.tsUtils.isLibraryType(calleeType);
     const diagnosticMessages: Array<ts.DiagnosticMessageChain> = []
     this.libraryTypeCallDiagnosticChecker.configure(inLibCall, diagnosticMessages);
 
-    this.filterStrictDiagnostics({ begin: callExpr.pos, end: callExpr.end },
-      ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE,
+    let nonFilteringRanges = this.findNonFilteringRangesFunctionCalls(callExpr);
+    let rangesToFilter: { begin: number, end: number }[] = [];
+    if (nonFilteringRanges.length !== 0) {
+      let rangesSize = nonFilteringRanges.length;
+      rangesToFilter.push({ begin: callExpr.pos, end: nonFilteringRanges[0].begin })
+      rangesToFilter.push({ begin: nonFilteringRanges[rangesSize - 1].end, end: callExpr.end })
+      for (let i = 0; i < rangesSize - 1; i++) {
+        rangesToFilter.push({ begin: nonFilteringRanges[i].end, end: nonFilteringRanges[i + 1].begin })
+      }
+    } else {
+      rangesToFilter.push({ begin: callExpr.pos, end: callExpr.end })
+    }
+
+    this.filterStrictDiagnostics({
+        [ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE]: (pos: number) => {
+          return this.checkInRange(rangesToFilter, pos);
+        },
+        [TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE]: (pos: number) => {
+          return this.checkInRange(rangesToFilter, pos);
+        }
+      },
       this.libraryTypeCallDiagnosticChecker
     );
 

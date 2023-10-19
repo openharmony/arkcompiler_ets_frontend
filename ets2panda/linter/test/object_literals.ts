@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import {ohFunction1, ohFunction2, OhosI} from './oh_modules/ohos_lib'
 interface I {
   a: number;
   b: string;
@@ -228,3 +228,10 @@ const cp2: PPP = {x: 10, y: undefined}
 const cp3: PPP = {x: 10, y: undefined, z: undefined}
 const cp4: PPP = {x: 10, y: undefined, z: 10}
 const cp5: PPP = {x: 10, y: 10, z: 10}
+
+const oi: OhosI = { f: 1 };
+
+ohFunction1({d: oi})
+ohFunction1({d: {f: 1}})
+ohFunction2({d: oi})
+ohFunction2({d: {f: 1}})

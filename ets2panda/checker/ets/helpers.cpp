@@ -935,13 +935,14 @@ Type *ETSChecker::GetReferencedTypeBase(ir::Expression *name)
         return qualified->Check(this);
     }
 
+    ASSERT(name->IsIdentifier() && name->AsIdentifier()->Variable() != nullptr);
+
     // TODO(kbaladurin): forbid usage imported entities as types without declarations
     auto *import_data = Binder()->AsETSBinder()->DynamicImportDataForVar(name->AsIdentifier()->Variable());
     if (import_data != nullptr && import_data->import->IsPureDynamic()) {
         return GlobalBuiltinDynamicType(import_data->import->Language());
     }
 
-    ASSERT(name->IsIdentifier() && name->AsIdentifier()->Variable());
     auto *ref_var = name->AsIdentifier()->Variable()->AsLocalVariable();
 
     switch (ref_var->Declaration()->Node()->Type()) {
@@ -1738,7 +1739,7 @@ void ETSChecker::CheckRethrowingFunction(ir::ScriptFunction *func)
 
     // It doesn't support lambdas yet.
     for (auto item : func->Params()) {
-        ir::TypeNode *type = item->AsETSParameterExpression()->Ident()->TypeAnnotation();
+        auto const *type = item->AsETSParameterExpression()->Ident()->TypeAnnotation();
 
         if (type->IsETSTypeReference()) {
             auto *type_decl = type->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Variable()->Declaration();
@@ -1746,6 +1747,7 @@ void ETSChecker::CheckRethrowingFunction(ir::ScriptFunction *func)
                 type = type_decl->Node()->AsTSTypeAliasDeclaration()->TypeAnnotation();
             }
         }
+
         if (type->IsETSFunctionType() && type->AsETSFunctionType()->IsThrowing()) {
             found_throwing_param = true;
             break;
@@ -1947,8 +1949,13 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
                                TypeRelationFlag flags)
 {
     bool invocable = true;
-    for (size_t index = 0; index < arguments.size(); ++index) {
-        if (!arguments[index]->IsArrowFunctionExpression()) {
+    auto const argument_count = arguments.size();
+    auto const parameter_count = signature->Params().size();
+    auto const count = std::min(parameter_count, argument_count);
+
+    for (size_t index = 0U; index < count; ++index) {
+        auto const &argument = arguments[index];
+        if (!argument->IsArrowFunctionExpression()) {
             continue;
         }
 
@@ -1956,17 +1963,19 @@ bool ETSChecker::TypeInference(Signature *signature, const ArenaVector<ir::Expre
             continue;
         }
 
-        auto *const arrow_func_expr = arguments[index]->AsArrowFunctionExpression();
+        auto *const arrow_func_expr = argument->AsArrowFunctionExpression();
         ir::ScriptFunction *const lambda = arrow_func_expr->Function();
         if (!NeedTypeInference(lambda)) {
             continue;
         }
-        ir::Expression *const param = signature->Function()->Params()[index]->AsETSParameterExpression()->Ident();
-        ASSERT(param->IsIdentifier());
-        ir::AstNode *type_ann = param->AsIdentifier()->TypeAnnotation();
+
+        auto const *const param = signature->Function()->Params()[index]->AsETSParameterExpression()->Ident();
+        ir::AstNode *type_ann = param->TypeAnnotation();
+
         if (type_ann->IsETSTypeReference()) {
             type_ann = DerefETSTypeReference(type_ann);
         }
+
         ASSERT(type_ann->IsETSFunctionType());
         InferTypesForLambda(lambda, type_ann->AsETSFunctionType());
         Type *const arg_type = arrow_func_expr->Check(this);
@@ -1984,26 +1993,29 @@ void ETSChecker::AddNullParamsForDefaultParams(const Signature *const signature,
                                                ArenaVector<panda::es2panda::ir::Expression *> &arguments,
                                                ETSChecker *checker)
 {
-    if (!signature->Function()->IsDefaultParamProxy() || signature->Function()->Params().size() == arguments.size()) {
+    if (!signature->Function()->IsDefaultParamProxy() || signature->Function()->Params().size() <= arguments.size()) {
         return;
     }
 
     uint32_t num = 0;
     for (size_t i = arguments.size(); i != signature->Function()->Params().size() - 1; i++) {
-        auto type_ann = signature->Function()->Params()[i]->AsETSParameterExpression()->Ident()->TypeAnnotation();
-        if (type_ann->IsETSPrimitiveType()) {
-            if (type_ann->AsETSPrimitiveType()->GetPrimitiveType() == ir::PrimitiveType::BOOLEAN) {
-                arguments.push_back(checker->Allocator()->New<ir::BooleanLiteral>(false));
+        if (auto const *const param = signature->Function()->Params()[i]->AsETSParameterExpression();
+            !param->IsRestParameter()) {
+            auto const *const type_ann = param->Ident()->TypeAnnotation();
+            if (type_ann->IsETSPrimitiveType()) {
+                if (type_ann->AsETSPrimitiveType()->GetPrimitiveType() == ir::PrimitiveType::BOOLEAN) {
+                    arguments.push_back(checker->Allocator()->New<ir::BooleanLiteral>(false));
+                } else {
+                    arguments.push_back(checker->Allocator()->New<ir::NumberLiteral>(lexer::Number(0)));
+                }
             } else {
-                arguments.push_back(checker->Allocator()->New<ir::NumberLiteral>(lexer::Number(0)));
+                auto *const null_literal = checker->Allocator()->New<ir::NullLiteral>();
+                checker::Type *const ts_type = checker->GlobalETSNullType();
+                null_literal->SetTsType(ts_type);
+                arguments.push_back(null_literal);
             }
-        } else {
-            auto *const null_literal = checker->Allocator()->New<ir::NullLiteral>();
-            checker::Type *const ts_type = checker->GlobalETSNullType();
-            null_literal->SetTsType(ts_type);
-            arguments.push_back(null_literal);
+            num |= (1U << (arguments.size() - 1));
         }
-        num |= (1U << (arguments.size() - 1));
     }
     arguments.push_back(checker->Allocator()->New<ir::NumberLiteral>(lexer::Number(num)));
 }

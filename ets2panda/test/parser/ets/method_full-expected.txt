@@ -657,7 +657,7 @@
                   },
                   {
                     "type": "ETSParameterExpression",
-                    "spread": {
+                    "rest parameter": {
                       "type": "RestElement",
                       "argument": {
                         "type": "Identifier",
@@ -675,15 +675,28 @@
                         }
                       },
                       "typeAnnotation": {
-                        "type": "ETSPrimitiveType",
+                        "type": "TSArrayType",
+                        "elementType": {
+                          "type": "ETSPrimitiveType",
+                          "loc": {
+                            "start": {
+                              "line": 23,
+                              "column": 43
+                            },
+                            "end": {
+                              "line": 23,
+                              "column": 46
+                            }
+                          }
+                        },
                         "loc": {
                           "start": {
                             "line": 23,
-                            "column": 43
+                            "column": 48
                           },
                           "end": {
                             "line": 23,
-                            "column": 46
+                            "column": 49
                           }
                         }
                       },
@@ -694,7 +707,7 @@
                         },
                         "end": {
                           "line": 23,
-                          "column": 46
+                          "column": 49
                         }
                       }
                     },
@@ -705,7 +718,7 @@
                       },
                       "end": {
                         "line": 23,
-                        "column": 46
+                        "column": 49
                       }
                     }
                   }
@@ -715,11 +728,11 @@
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 50
+                      "column": 51
                     },
                     "end": {
                       "line": 23,
-                      "column": 57
+                      "column": 58
                     }
                   }
                 },
@@ -729,7 +742,7 @@
                   "loc": {
                     "start": {
                       "line": 23,
-                      "column": 58
+                      "column": 59
                     },
                     "end": {
                       "line": 24,

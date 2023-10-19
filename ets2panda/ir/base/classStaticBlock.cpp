@@ -16,14 +16,16 @@
 #include "classStaticBlock.h"
 
 #include "binder/scope.h"
+#include "checker/ETSchecker.h"
+#include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/base/decorator.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/expression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/functionExpression.h"
-#include "checker/ETSchecker.h"
 
 #include <cstdint>
 #include <string>
@@ -44,32 +46,24 @@ void ClassStaticBlock::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ClassStaticBlock"}, {"value", value_}});
 }
 
-void ClassStaticBlock::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-void ClassStaticBlock::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ClassStaticBlock::Compile(compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ClassStaticBlock::Check([[maybe_unused]] checker::TSChecker *checker)
+void ClassStaticBlock::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ClassStaticBlock::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ClassStaticBlock::Check(checker::TSChecker *checker)
 {
-    if (checker->HasStatus(checker::CheckerStatus::INNER_CLASS)) {
-        checker->ThrowTypeError("Static initializer is not allowed in inner class.", Start());
-    }
+    return checker->GetAnalyzer()->Check(this);
+}
 
-    auto *func = Function();
-    SetTsType(checker->BuildFunctionSignature(func));
-    checker::ScopeContext scope_ctx(checker, func->Scope());
-    checker::SavedCheckerContext saved_context(checker, checker->Context().Status(),
-                                               checker->Context().ContainingClass());
-    checker->AddStatus(checker::CheckerStatus::IN_STATIC_BLOCK | checker::CheckerStatus::IN_STATIC_CONTEXT);
-    func->Body()->Check(checker);
-    return TsType();
+checker::Type *ClassStaticBlock::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 
 ir::ScriptFunction *ClassStaticBlock::Function()

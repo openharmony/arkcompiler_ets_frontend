@@ -127,3 +127,16 @@ class C {
     return z(30);
   }
 }
+
+declare function fooImplicitDeclaration(); // CTE - no type in declaration
+function fooImplicitImplementation() {}; // OK - deduces void
+
+interface ImplicitTestIface {
+  bar1(); // CTE - no type in declaration
+  bar2(): number; // OK - type is specified explicitly
+}
+
+declare class ImplicitTestClass {
+  bar1(); // CTE - no type in declaration
+  bar2(): number; // OK - type is specified explicitly
+}

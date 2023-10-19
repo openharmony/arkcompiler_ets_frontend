@@ -14,7 +14,7 @@
  */
 
 import { ff } from "./oh_modules/ohos_lib";
-import { f, f2, bar, applyToUnknown, fooExecute, C1 } from "./dynamic_lib";
+import { f, f2, bar, applyToUnknown, fooExecute, C1, myFoo, myFoo2 } from "./dynamic_lib";
 
 let a1: C1 = new C1()
 
@@ -45,3 +45,16 @@ f(null);
 function inc(a: number) { return a + 1 }
 function neg2null(x: number) { return x > 0 ? x : null }
 inc(neg2null(-1));
+
+myFoo({x: "", y: null})
+
+class A2 {
+    public a: Object = null
+    f() {
+        myFoo2(
+            () => {
+                this.a = null;
+            }
+        )
+    }
+}

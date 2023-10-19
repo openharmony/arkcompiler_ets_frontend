@@ -711,13 +711,15 @@ private:
         }
     }
 // NOLINTBEGIN(cppcoreguidelines-macro-usage, readability-container-size-empty)
-#define COMPILE_ARG(idx)                                                                     \
-    ASSERT(idx < arguments.size());                                                          \
-    auto *paramType##idx = Checker()->MaybeBoxedType(signature->Params()[idx], Allocator()); \
-    auto ttctx##idx = TargetTypeContext(this, paramType##idx);                               \
-    arguments[idx]->Compile(this);                                                           \
-    VReg arg##idx = AllocReg();                                                              \
-    ApplyConversion(arguments[idx], nullptr);                                                \
+#define COMPILE_ARG(idx)                                                                                  \
+    ASSERT(idx < arguments.size());                                                                       \
+    ASSERT(idx < signature->Params().size() || signature->RestVar() != nullptr);                          \
+    auto *paramType##idx = Checker()->MaybeBoxedType(                                                     \
+        idx < signature->Params().size() ? signature->Params()[idx] : signature->RestVar(), Allocator()); \
+    auto ttctx##idx = TargetTypeContext(this, paramType##idx);                                            \
+    arguments[idx]->Compile(this);                                                                        \
+    VReg arg##idx = AllocReg();                                                                           \
+    ApplyConversion(arguments[idx], nullptr);                                                             \
     ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx);
 
     template <typename Short, typename General, typename Range>
@@ -829,12 +831,14 @@ private:
     }
 #undef COMPILE_ARG
 
-#define COMPILE_ARG(idx)                                            \
-    ASSERT(idx < arguments.size());                                 \
-    auto *paramType##idx = signature->Params()[idx + 2U]->TsType(); \
-    auto ttctx##idx = TargetTypeContext(this, paramType##idx);      \
-    VReg arg##idx = AllocReg();                                     \
-    arguments[idx]->Compile(this);                                  \
+#define COMPILE_ARG(idx)                                                                                   \
+    ASSERT(idx < arguments.size());                                                                        \
+    ASSERT(idx + 2U < signature->Params().size() || signature->RestVar() != nullptr);                      \
+    auto *paramType##idx = idx + 2U < signature->Params().size() ? signature->Params()[idx + 2U]->TsType() \
+                                                                 : signature->RestVar()->TsType();         \
+    auto ttctx##idx = TargetTypeContext(this, paramType##idx);                                             \
+    VReg arg##idx = AllocReg();                                                                            \
+    arguments[idx]->Compile(this);                                                                         \
     ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx);
 
     template <typename Short, typename General, typename Range>

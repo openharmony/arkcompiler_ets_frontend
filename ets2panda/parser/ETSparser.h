@@ -135,7 +135,7 @@ private:
     ir::AstNode *ParseTypeLiteralOrInterfaceMember() override;
     void ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers);
     bool CheckModuleAsModifier();
-    ir::ETSParameterExpression *ParseFunctionParameter() override;
+    ir::Expression *ParseFunctionParameter() override;
     ir::AnnotatedExpression *GetAnnotatedExpressionFromParam();
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseUnaryOrPrefixUpdateExpression(

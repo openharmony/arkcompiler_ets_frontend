@@ -18,6 +18,9 @@
 
 #include "compiler/core/ASTCompiler.h"
 
+namespace panda::es2panda::ir {
+class AstNode;
+}  // namespace panda::es2panda::ir
 namespace panda::es2panda::compiler {
 
 class JSCompiler final : public AstCompiler {

@@ -20,7 +20,6 @@
 #include "compiler/core/ASTCompiler.h"
 #include "compiler/core/regAllocator.h"
 #include "compiler/core/regScope.h"
-#include "compiler/core/dynamicContext.h"
 
 namespace panda::es2panda::compiler {
 class CatchTable;

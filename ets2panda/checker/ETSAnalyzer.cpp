@@ -14,10 +14,13 @@
  */
 #include "ETSAnalyzer.h"
 
-#include "checker/ETSchecker.h"
 #include "checker/ets/typeRelationContext.h"
-#include "ir/base/scriptFunction.h"
+#include "ir/base/catchClause.h"
+#include "ir/base/classProperty.h"
+#include "ir/base/classStaticBlock.h"
+#include "ir/expressions/identifier.h"
 #include "ir/expressions/objectExpression.h"
+#include "ir/statements/blockStatement.h"
 #include "ir/statements/returnStatement.h"
 #include "util/helpers.h"
 
@@ -29,45 +32,91 @@ ETSChecker *ETSAnalyzer::GetETSChecker() const
 }
 
 // from as folder
-checker::Type *ETSAnalyzer::Check(ir::NamedType *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::NamedType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::PrefixAssertionExpression *expr) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::PrefixAssertionExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 // from base folder
 checker::Type *ETSAnalyzer::Check(ir::CatchClause *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    checker::ETSObjectType *exception_type = checker->GlobalETSObjectType();
+
+    ir::Identifier *param_ident = st->Param()->AsIdentifier();
+
+    if (param_ident->TypeAnnotation() != nullptr) {
+        checker::Type *catch_param_annotation_type = param_ident->TypeAnnotation()->GetType(checker);
+
+        exception_type = checker->CheckExceptionOrErrorType(catch_param_annotation_type, st->Param()->Start());
+    }
+
+    param_ident->Variable()->SetTsType(exception_type);
+
+    st->Body()->Check(checker);
+
+    st->SetTsType(exception_type);
+    return exception_type;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ClassDefinition *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    if (node->TsType() == nullptr) {
+        checker->BuildClassProperties(node);
+    }
+
+    checker->CheckClassDefinition(node);
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ASSERT(st->Key()->IsIdentifier());
+    ETSChecker *checker = GetETSChecker();
+
+    if (st->TsType() != nullptr) {
+        return st->TsType();
+    }
+
+    checker::SavedCheckerContext saved_context(checker, checker->Context().Status(),
+                                               checker->Context().ContainingClass(),
+                                               checker->Context().ContainingSignature());
+
+    if (st->IsStatic()) {
+        checker->AddStatus(checker::CheckerStatus::IN_STATIC_CONTEXT);
+    }
+
+    st->SetTsType(
+        checker->CheckVariableDeclaration(st->Key()->AsIdentifier(), st->TypeAnnotation(), st->Value(), st->flags_));
+
+    return st->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ClassStaticBlock *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+
+    if (checker->HasStatus(checker::CheckerStatus::INNER_CLASS)) {
+        checker->ThrowTypeError("Static initializer is not allowed in inner class.", st->Start());
+    }
+
+    auto *func = st->Function();
+    st->SetTsType(checker->BuildFunctionSignature(func));
+    checker::ScopeContext scope_ctx(checker, func->Scope());
+    checker::SavedCheckerContext saved_context(checker, checker->Context().Status(),
+                                               checker->Context().ContainingClass());
+    checker->AddStatus(checker::CheckerStatus::IN_STATIC_BLOCK | checker::CheckerStatus::IN_STATIC_CONTEXT);
+    func->Body()->Check(checker);
+    return st->TsType();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::Decorator *st) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::Decorator *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
