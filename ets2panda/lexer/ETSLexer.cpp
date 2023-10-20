@@ -72,6 +72,21 @@ bool ETSLexer::ScanCharLiteral()
     return true;
 }
 
+void ETSLexer::CheckNumberLiteralEnd()
+{
+    if (Iterator().Peek() == LEX_CHAR_LOWERCASE_F) {
+        GetToken().flags_ |= TokenFlags::NUMBER_FLOAT;
+        GetToken().src_ = SourceView(GetToken().Start().index, Iterator().Index());
+        Iterator().Forward(1);
+        const auto next_cp = Iterator().PeekCp();
+        if (KeywordsUtil::IsIdentifierStart(next_cp) || IsDecimalDigit(next_cp)) {
+            ThrowError("Invalid numeric literal");
+        }
+    } else {
+        Lexer::CheckNumberLiteralEnd();
+    }
+}
+
 void ETSLexer::CheckUtf16Compatible(char32_t cp) const
 {
     if (cp >= util::StringView::Constants::CELESTIAL_OFFSET) {

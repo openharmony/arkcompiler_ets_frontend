@@ -140,6 +140,7 @@ private:
     ir::ClassProperty *ParseInterfaceField(const lexer::SourcePosition &start_loc);
     ir::Expression *ParseInitializer();
     ir::ArrayExpression *ParseArrayLiteral();
+    ir::Expression *ParseCoercedNumberLiteral();
     ir::MethodDefinition *ParseInterfaceMethod(ir::ModifierFlags flags);
     std::tuple<ir::ModifierFlags, bool> ParseClassMemberAccessModifiers();
     ir::ModifierFlags ParseClassFieldModifiers(bool seen_static);

@@ -3808,7 +3808,7 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
             return ParseUndefinedLiteral();
         }
         case lexer::TokenType::LITERAL_NUMBER: {
-            return ParseNumberLiteral();
+            return ParseCoercedNumberLiteral();
         }
         case lexer::TokenType::LITERAL_STRING: {
             return ParseStringLiteral();
@@ -4619,6 +4619,22 @@ void ETSParser::ParseTrailingBlock(ir::CallExpression *call_expr)
         call_expr->SetIsTrailingBlockInNewLine(Lexer()->GetToken().NewLine());
         call_expr->SetTrailingBlock(ParseBlockStatement());
     }
+}
+
+ir::Expression *ETSParser::ParseCoercedNumberLiteral()
+{
+    if ((Lexer()->GetToken().Flags() & lexer::TokenFlags::NUMBER_FLOAT) != 0U) {
+        auto *number = AllocNode<ir::NumberLiteral>(Lexer()->GetToken().GetNumber());
+        number->SetRange(Lexer()->GetToken().Loc());
+        auto *float_type = AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::FLOAT);
+        float_type->SetRange(Lexer()->GetToken().Loc());
+        auto *as_expression = AllocNode<ir::TSAsExpression>(number, float_type, true);
+        as_expression->SetRange(Lexer()->GetToken().Loc());
+
+        Lexer()->NextToken();
+        return as_expression;
+    }
+    return ParseNumberLiteral();
 }
 
 void ETSParser::CheckDeclare()

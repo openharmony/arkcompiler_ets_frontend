@@ -28,7 +28,12 @@ const lit10 = c'\u0061';
 const lit11 = true;
 const lit12 = false;
 const lit13 = null;
-const lit14 = [];
-const lit15 = [1,2,3];
-const lit16 = ["1","2","3"];
-const lit17 = [1.0,2.0,3.0];
+const lit14 = 123.45f; // equivalent to (123.45 as float)
+const lit15 = 123.45e10f;
+const lit16 = -123.45f; // equivalent to -(123.45 as float)
+const lit17 = -123.45e10f;
+const lit18 = [];
+const lit19 = [1,2,3];
+const lit20 = ["1","2","3"];
+const lit21 = [1.0,2.0,3.0];
+

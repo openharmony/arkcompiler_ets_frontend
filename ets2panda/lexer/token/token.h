@@ -29,7 +29,8 @@ enum class TokenFlags : uint32_t {
     NEW_LINE = 1U << 0U,
     HAS_ESCAPE = 1U << 2U,
     NUMBER_BIGINT = 1U << 3U,
-    NUMBER_HAS_UNDERSCORE = 1U << 4U,
+    NUMBER_FLOAT = 1U << 4U,
+    NUMBER_HAS_UNDERSCORE = 1U << 5U,
 };
 
 DEFINE_BITOPS(TokenFlags)
