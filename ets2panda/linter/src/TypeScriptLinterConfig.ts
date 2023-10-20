@@ -81,7 +81,7 @@ export class LinterConfig {
     [ts.SyntaxKind.TypePredicate, FaultID.IsOperator], [ts.SyntaxKind.YieldExpression, FaultID.YieldExpression],
     [ts.SyntaxKind.IndexSignature, FaultID.IndexMember], [ts.SyntaxKind.WithStatement, FaultID.WithStatement],
     [ts.SyntaxKind.IndexedAccessType, FaultID.IndexedAccessType], [ts.SyntaxKind.UnknownKeyword, FaultID.UnknownType],
-    [ts.SyntaxKind.InKeyword, FaultID.InOperator], [ts.SyntaxKind.CallSignature, FaultID.CallSignature],
+    [ts.SyntaxKind.CallSignature, FaultID.CallSignature],
     [ts.SyntaxKind.IntersectionType, FaultID.IntersectionType],
     [ts.SyntaxKind.TypeLiteral, FaultID.ObjectTypeLiteral], [ts.SyntaxKind.ConstructorType, FaultID.ConstructorFuncs],
     [ts.SyntaxKind.PrivateIdentifier, FaultID.PrivateIdentifier],

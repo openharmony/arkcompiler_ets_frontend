@@ -268,7 +268,13 @@ export class TypeScriptLinter {
           handler.call(self, node);
         }
       }
-      ts.forEachChild(node, visitTSNodeImpl);
+
+      // #13972: The 'ts.forEachChild' doesn't iterate over in-between punctuation tokens.
+      // As result, we can miss comment directives attached to those. Instead, use 'node.getChildren()'.
+      // to traverse child nodes.
+      for (const child of node.getChildren()) {
+        visitTSNodeImpl(child);
+      }
     }
   }
 
@@ -916,6 +922,9 @@ export class TypeScriptLinter {
         break;
       case ts.SyntaxKind.InstanceOfKeyword:
         this.processBinaryInstanceOf(node, tsLhsExpr, leftOperandType);
+        break;
+      case ts.SyntaxKind.InKeyword:
+        this.incrementCounters(tsBinaryExpr.operatorToken, FaultID.InOperator);
         break;
       case ts.SyntaxKind.EqualsToken:
         if (this.tsUtils.needToDeduceStructuralIdentity(leftOperandType, rightOperandType, tsRhsExpr)) {
