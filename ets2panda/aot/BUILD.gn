@@ -26,7 +26,7 @@ ohos_executable("es2panda") {
 
   cflags_cc = [
     # TODO(vpukhov): adjust es2panda path
-    "-DDEFAULT_ARKTSCONFIG=\"$build_gen_root/plugins/es2panda/generated/arktsconfig.json\"",
+    "-DDEFAULT_ARKTSCONFIG=\"$build_gen_root/tools/es2panda/generated/arktsconfig.json\"",
   ]
 
   configs = [
