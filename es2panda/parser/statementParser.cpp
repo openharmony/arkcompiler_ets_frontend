@@ -1074,6 +1074,7 @@ ir::ContinueStatement *ParserImpl::ParseContinueStatement()
 
 ir::DoWhileStatement *ParserImpl::ParseDoWhileStatement()
 {
+    auto *savedScope = Binder()->GetScope();
     IterationContext<binder::LoopScope> iterCtx(&context_, Binder());
 
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
@@ -1090,8 +1091,13 @@ ir::DoWhileStatement *ParserImpl::ParseDoWhileStatement()
     }
 
     lexer_->NextToken();
+    ir::Expression *test = nullptr;
 
-    ir::Expression *test = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
+    // The while expression should be included in the outer scope
+    {
+        auto outerScope = binder::LexicalScope<binder::Scope>::Enter(Binder(), savedScope);
+        test = ParseExpression(ExpressionParseFlags::ACCEPT_COMMA);
+    }
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
         ThrowSyntaxError("Missing right parenthesis in a 'DoWhileStatement'");
