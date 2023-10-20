@@ -22,6 +22,7 @@
 #include <ir/astNode.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/classProperty.h>
+#include <ir/base/classStaticBlock.h>
 #include <ir/base/decorator.h>
 #include <ir/base/methodDefinition.h>
 #include <ir/base/property.h>
@@ -2461,6 +2462,19 @@ ir::MethodDefinition *ParserImpl::ParseClassMethod(ClassElmentDescriptor *desc,
     return method;
 }
 
+ir::ClassStaticBlock *ParserImpl::ParseStaticBlock(ClassElmentDescriptor *desc)
+{
+    SavedParserContext ctx(this, desc->newStatus | ParserStatus::ALLOW_NEW_TARGET | ParserStatus::STATIC_BLOCK |
+                           ParserStatus::DISALLOW_ARGUMENTS);
+    context_.Status() &= ~ParserStatus::FUNCTION;
+    auto lexScope = binder::LexicalScope<binder::StaticBlockScope>(Binder());
+    auto *blockStatement = ParseBlockStatement(lexScope.GetScope());
+    lexer_->NextToken();
+    auto *staticBlock = AllocNode<ir::ClassStaticBlock>(blockStatement);
+    staticBlock->SetRange({desc->propStart, blockStatement->End()});
+    return staticBlock;
+}
+
 ir::Statement *ParserImpl::ParseClassProperty(ClassElmentDescriptor *desc,
                                               const ArenaVector<ir::Statement *> &properties, ir::Expression *propName,
                                               ir::Expression *typeAnnotation, ArenaVector<ir::Decorator *> &&decorators,
@@ -2601,7 +2615,8 @@ ArenaVector<ir::Decorator *> ParserImpl::ParseDecorators()
 
 ir::Statement *ParserImpl::ParseClassElement(const ArenaVector<ir::Statement *> &properties,
                                              ArenaVector<ir::TSIndexSignature *> *indexSignatures, bool hasSuperClass,
-                                             bool isDeclare, bool isAbstractClass, bool isExtendsFromNull)
+                                             bool isDeclare, bool isAbstractClass, bool isExtendsFromNull,
+                                             binder::Scope *scope)
 {
     ClassElmentDescriptor desc;
 
@@ -2624,6 +2639,18 @@ ir::Statement *ParserImpl::ParseClassElement(const ArenaVector<ir::Statement *> 
     if ((desc.modifiers & ir::ModifierFlags::OVERRIDE) && (!desc.hasSuperClass || isExtendsFromNull)) {
         ThrowSyntaxError({"This member cannot have an 'override' modifier because its containing class "
                           "does not extend another class."});
+    }
+
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+        if (!(desc.modifiers == ir::ModifierFlags::STATIC)) {
+            ThrowSyntaxError("Unexpected token '{'");
+        }
+
+        if (!decorators.empty()) {
+            ThrowSyntaxError("Decorators are not valid here.", decorators.front()->Start());
+        }
+        auto scopeCtx = binder::LexicalScope<binder::FunctionScope>::Enter(Binder(), scope->AsFunctionScope());
+        return ParseStaticBlock(&desc);
     }
 
     CheckClassPrivateIdentifier(&desc);
@@ -2718,8 +2745,8 @@ static bool IsConstructor(ir::Statement *stmt)
     return def->Kind() == ir::MethodDefinitionKind::CONSTRUCTOR;
 }
 
-ir::MethodDefinition *ParserImpl::CreateImplicitConstructor(ir::Expression *superClass,
-                                                            bool hasSuperClass, bool isDeclare)
+ir::MethodDefinition *ParserImpl::CreateImplicitMethod(ir::Expression *superClass, bool hasSuperClass,
+                                                       ir::ScriptFunctionFlags funcFlag, bool isDeclare)
 {
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
@@ -2727,7 +2754,8 @@ ir::MethodDefinition *ParserImpl::CreateImplicitConstructor(ir::Expression *supe
     auto *paramScope = Binder()->Allocator()->New<binder::FunctionParamScope>(Allocator(), Binder()->GetScope());
     auto *scope = Binder()->Allocator()->New<binder::FunctionScope>(Allocator(), paramScope);
 
-    if (hasSuperClass) {
+    bool isConstructor = (funcFlag == ir::ScriptFunctionFlags::CONSTRUCTOR);
+    if (isConstructor && hasSuperClass) {
         if (Extension() != ScriptExtension::TS || !superClass->IsNullLiteral()) {
             util::StringView argsStr = "args";
             params.push_back(AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT,
@@ -2746,23 +2774,36 @@ ir::MethodDefinition *ParserImpl::CreateImplicitConstructor(ir::Expression *supe
 
     auto *body = AllocNode<ir::BlockStatement>(scope, std::move(statements));
     auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, isDeclare ? nullptr : body, nullptr,
-                                               ir::ScriptFunctionFlags::CONSTRUCTOR, isDeclare,
-                                               Extension() == ScriptExtension::TS);
+                                               funcFlag, isDeclare, Extension() == ScriptExtension::TS);
     scope->BindNode(func);
     paramScope->BindNode(func);
     scope->BindParamScope(paramScope);
     paramScope->BindFunctionScope(scope);
 
     auto *funcExpr = AllocNode<ir::FunctionExpression>(func);
-    auto *key = AllocNode<ir::Identifier>("constructor");
+    ir::Identifier *key = nullptr;
+    switch (funcFlag) {
+        case ir::ScriptFunctionFlags::CONSTRUCTOR: {
+            key = AllocNode<ir::Identifier>("constructor");
+            break;
+        }
+        case ir::ScriptFunctionFlags::STATIC_INITIALIZER: {
+            key = AllocNode<ir::Identifier>("static_initializer");
+            break;
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+    auto methodKind = isConstructor ? ir::MethodDefinitionKind::CONSTRUCTOR : ir::MethodDefinitionKind::METHOD;
 
     ArenaVector<ir::Decorator *> decorators(Allocator()->Adapter());
     ArenaVector<ir::ParamDecorators> paramDecorators(Allocator()->Adapter());
-    auto *ctor = AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::CONSTRUCTOR, key, funcExpr,
+    auto *method = AllocNode<ir::MethodDefinition>(methodKind, key, funcExpr,
                                                  ir::ModifierFlags::NONE, Allocator(), std::move(decorators),
                                                  std::move(paramDecorators), false);
 
-    return ctor;
+    return method;
 }
 
 bool ParserImpl::IsPropertyKeysAreSame(const ir::Expression *exp1, const ir::Expression *exp2)
@@ -2958,10 +2999,13 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
     lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);
 
     ir::MethodDefinition *ctor = nullptr;
+    ir::MethodDefinition *staticInitializer = CreateImplicitMethod(superClass, hasSuperClass,
+        ir::ScriptFunctionFlags::STATIC_INITIALIZER, isDeclare);
     ArenaVector<ir::Statement *> properties(Allocator()->Adapter());
     ArenaVector<ir::TSIndexSignature *> indexSignatures(Allocator()->Adapter());
     bool hasConstructorFuncBody = false;
     bool isCtorContinuousDefined = true;
+    auto *scope = staticInitializer->Function()->Scope();
 
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
@@ -2970,7 +3014,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
         }
 
         ir::Statement *property = ParseClassElement(properties, &indexSignatures, hasSuperClass,
-                                                    isDeclare, isAbstract, isExtendsFromNull);
+                                                    isDeclare, isAbstract, isExtendsFromNull, scope);
 
         if (property->IsEmptyStatement()) {
             continue;
@@ -2996,17 +3040,18 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
 
     lexer::SourcePosition classBodyEndLoc = lexer_->GetToken().End();
     if (ctor == nullptr) {
-        ctor = CreateImplicitConstructor(superClass, hasSuperClass, isDeclare);
+        ctor = CreateImplicitMethod(superClass, hasSuperClass, ir::ScriptFunctionFlags::CONSTRUCTOR, isDeclare);
         ctor->SetRange({startLoc, classBodyEndLoc});
         hasConstructorFuncBody = !isDeclare;
     }
+
     lexer_->NextToken();
 
     ValidateClassConstructor(ctor, properties, superClass, isDeclare, hasConstructorFuncBody, hasSuperClass);
 
     auto *classDefinition = AllocNode<ir::ClassDefinition>(
-        classCtx.GetScope(), identNode, typeParamDecl, superTypeParams, std::move(implements), ctor, superClass,
-        std::move(properties), std::move(indexSignatures), isDeclare, isAbstract);
+        classCtx.GetScope(), identNode, typeParamDecl, superTypeParams, std::move(implements), ctor, staticInitializer,
+        superClass, std::move(properties), std::move(indexSignatures), isDeclare, isAbstract);
 
     classDefinition->SetRange({classBodyStartLoc, classBodyEndLoc});
     if (decl != nullptr) {

@@ -62,6 +62,9 @@ enum class ParserStatus {
     DISALLOW_CONTINUE = (1 << 27),
 
     TS_MODULE = (1 << 28),
+    DISALLOW_CONDITIONAL_TYPES = (1 << 29),
+    STATIC_BLOCK = (1 << 30),
+    DISALLOW_ARGUMENTS = (1 << 31),
 };
 
 DEFINE_BITOPS(ParserStatus)
@@ -130,6 +133,16 @@ public:
     bool IsTsModule() const
     {
         return (status_ & ParserStatus::TS_MODULE) != 0;
+    }
+
+    bool IsStaticBlock() const
+    {
+        return (status_ & ParserStatus::STATIC_BLOCK) != 0;
+    }
+
+    bool DisallowArguments() const
+    {
+        return (status_ & ParserStatus::DISALLOW_ARGUMENTS) != 0;
     }
 
     const ParserContext *FindLabel(const util::StringView &label) const;

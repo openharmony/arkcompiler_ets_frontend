@@ -299,6 +299,7 @@ private:
     ir::MethodDefinition *ParseClassMethod(ClassElmentDescriptor *desc, const ArenaVector<ir::Statement *> &properties,
                                            ir::Expression *propName, lexer::SourcePosition *propEnd,
                                            ArenaVector<ir::Decorator *> &&decorators, bool isDeclare);
+    ir::ClassStaticBlock *ParseStaticBlock(ClassElmentDescriptor *desc);
     ir::Statement *ParseClassProperty(ClassElmentDescriptor *desc, const ArenaVector<ir::Statement *> &properties,
                                       ir::Expression *propName, ir::Expression *typeAnnotation,
                                       ArenaVector<ir::Decorator *> &&decorators, bool isDeclare);
@@ -310,9 +311,10 @@ private:
     ArenaVector<ir::Decorator *> ParseDecorators();
     ir::Statement *ParseClassElement(const ArenaVector<ir::Statement *> &properties,
                                      ArenaVector<ir::TSIndexSignature *> *indexSignatures, bool hasSuperClass,
-                                     bool isDeclare, bool isAbstractClass, bool isExtendsFromNull);
-    ir::MethodDefinition *CreateImplicitConstructor(ir::Expression *superClass,
-                                                    bool hasSuperClass, bool isDeclare = false);
+                                     bool isDeclare, bool isAbstractClass, bool isExtendsFromNull,
+                                     binder::Scope *scope);
+    ir::MethodDefinition *CreateImplicitMethod(ir::Expression *superClass, bool hasSuperClass,
+                                               ir::ScriptFunctionFlags funcFlag, bool isDeclare = false);
     ir::MethodDefinition *CheckClassMethodOverload(ir::Statement *property, ir::MethodDefinition **ctor, bool isDeclare,
                                                    lexer::SourcePosition errorInfo, ir::MethodDefinition *lastOverload,
                                                    bool implExists, bool isAbstract = false);
@@ -724,7 +726,8 @@ private:
     static ParserStatus InitialFlags(ParserStatus currentStatus)
     {
         return ParserStatus::FUNCTION | ParserStatus::ARROW_FUNCTION |
-               static_cast<ParserStatus>(currentStatus & (ParserStatus::ALLOW_SUPER | ParserStatus::ALLOW_SUPER_CALL));
+               static_cast<ParserStatus>(currentStatus & (ParserStatus::ALLOW_SUPER | ParserStatus::ALLOW_SUPER_CALL |
+                                         ParserStatus::DISALLOW_ARGUMENTS));
     }
 };
 

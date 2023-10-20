@@ -55,6 +55,7 @@ enum class DeclType {
     /* Variable Scopes */                 \
     _(LOOP, LoopScope)                    \
     _(FUNCTION, FunctionScope)            \
+    _(STATIC_BLOCK, StaticBlockScope)     \
     _(GLOBAL, GlobalScope)                \
     _(MODULE, ModuleScope)                \
     _(TSMODULE, TSModuleScope)            \

@@ -572,6 +572,10 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
 
     ResolveReference(classDef, classDef->Ctor());
 
+    if (classDef->NeedStaticInitializer() && Program()->Extension() == ScriptExtension::JS) {
+        ResolveReference(classDef, classDef->StaticInitializer());
+    }
+
     for (auto *stmt : classDef->Body()) {
         ResolveReference(classDef, stmt);
     }

@@ -299,6 +299,21 @@ void ClassDefinition::CompileMissingProperties(compiler::PandaGen *pg, const uti
     pg->LoadAccumulator(this, classReg);
 }
 
+void ClassDefinition::StaticInitialize(compiler::PandaGen *pg, compiler::VReg classReg) const
+{
+    compiler::VReg callee = pg->AllocReg();
+    compiler::VReg thisReg = pg->AllocReg();
+
+    const ir::FunctionExpression *func = staticInitializer_->Value();
+    func->Compile(pg);
+    pg->StoreAccumulator(this, callee);
+
+    pg->MoveVreg(this, thisReg, classReg);
+    pg->CallThis(this, callee, 1);
+
+    pg->LoadAccumulator(this, classReg);
+}
+
 void ClassDefinition::Compile(compiler::PandaGen *pg) const
 {
     if (declare_) {
@@ -321,6 +336,10 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
     InitializeClassName(pg);
 
     CompileMissingProperties(pg, compiled, classReg);
+
+    if (NeedStaticInitializer() && pg->Binder()->Program()->Extension() == ScriptExtension::JS) {
+        StaticInitialize(pg, classReg);
+    }
 }
 
 checker::Type *ClassDefinition::Check(checker::Checker *checker) const

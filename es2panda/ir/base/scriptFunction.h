@@ -150,9 +150,14 @@ public:
         return (flags_ & ir::ScriptFunctionFlags::CONSTRUCTOR) != 0;
     }
 
+    bool IsStaticInitializer() const
+    {
+        return (flags_ & ir::ScriptFunctionFlags::STATIC_INITIALIZER) != 0;
+    }
+
     bool IsMethod() const
     {
-        return (flags_ & ir::ScriptFunctionFlags::METHOD) != 0;
+        return (flags_ & ir::ScriptFunctionFlags::METHOD) != 0 || IsStaticInitializer();
     }
 
     bool FunctionBodyIsExpression() const

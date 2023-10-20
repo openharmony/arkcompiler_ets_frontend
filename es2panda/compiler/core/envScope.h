@@ -106,6 +106,20 @@ private:
     LexEnvContext lexEnvCtx_;
 };
 
+class StaticBlockEnvScope : public EnvScope {
+public:
+    explicit StaticBlockEnvScope(PandaGen *pg, binder::StaticBlockScope *scope);
+    ~StaticBlockEnvScope();
+
+    bool HasEnv() const
+    {
+        return scope_ != nullptr;
+    }
+
+private:
+    binder::VariableScope *scope_ {};
+};
+
 }  // namespace panda::es2panda::compiler
 
 #endif

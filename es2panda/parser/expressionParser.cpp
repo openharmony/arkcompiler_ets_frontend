@@ -2429,6 +2429,7 @@ ir::FunctionExpression *ParserImpl::ParseFunctionExpression(ParserStatus newStat
 
     if (!(newStatus & ParserStatus::ARROW_FUNCTION)) {
         ParserStatus savedStatus = context_.Status();
+        context_.Status() &= ~ParserStatus::STATIC_BLOCK;
 
         if (newStatus & ParserStatus::ASYNC_FUNCTION) {
             context_.Status() |= (ParserStatus::DISALLOW_AWAIT | ParserStatus::ASYNC_FUNCTION);
