@@ -262,6 +262,7 @@ private:
     ir::TSMappedType *ParseTsMappedType();
     ir::TSTypePredicate *ParseTsTypePredicate();
     ir::Expression *ParseTsTypeLiteralOrInterfaceKey(bool *computed, bool *signature, bool *isIndexSignature);
+    void ValidateIndexSignatureParameterType(ir::Expression *typeAnnotation);
     ir::Expression *ParseTsConditionalType(ir::Expression *checkType, bool restrictExtends);
     ir::Expression *ParseTsTypeLiteralOrInterfaceMember();
     ArenaVector<ir::Expression *> ParseTsTypeLiteralOrInterface();
