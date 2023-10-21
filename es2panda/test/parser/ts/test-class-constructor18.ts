@@ -14,11 +14,13 @@
  */
 
 
-class Base { }
-class A extends Base {
-    prop: number = 1;
+class B {
+    a: number = 1;
+}
+
+class C extends B {
     constructor() {
-        print("hello");
-        if (true) { super() }
+        let a = { super: super.a }
+        super();
     }
 }

@@ -18,6 +18,9 @@ class Base { }
 class A extends Base {
     constructor(public prop: number) {
         print("hello");
-        super();
+        while(true) {
+            var a = super();
+        }
+
     }
 }

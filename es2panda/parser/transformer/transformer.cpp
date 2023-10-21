@@ -562,7 +562,8 @@ size_t Transformer::GetInsertPosForConstructor(ir::ClassDefinition *node)
 {
     size_t insertPos = 0;
     ir::BlockStatement *blockStat = node->Ctor()->Function()->Body()->AsBlockStatement();
-    for (auto iter = blockStat->Statements().begin(); iter != blockStat->Statements().end();) {
+    auto iter = blockStat->Statements().begin();
+    for (; iter != blockStat->Statements().end();) {
         if ((*iter)->IsExpressionStatement() &&
             (*iter)->AsExpressionStatement()->GetExpression()->IsStringLiteral()) {
             iter++;
@@ -572,7 +573,54 @@ size_t Transformer::GetInsertPosForConstructor(ir::ClassDefinition *node)
         }
     }
 
-    return (node->Super() == nullptr || node->Super()->IsNullLiteral()) ? insertPos : (insertPos + 1);
+    if (node->Super() == nullptr || node->Super()->IsNullLiteral()) {
+        return insertPos;
+    }
+
+    for (; iter != blockStat->Statements().end(); iter++) {
+        insertPos++;
+
+        bool hasSuperCall = false;
+        FindSuperCallInCtorChildNode(*iter, &hasSuperCall);
+        if (hasSuperCall) {
+            break;
+        }
+    }
+
+    return insertPos;
+}
+
+void Transformer::FindSuperCall(const ir::AstNode *parent, bool *hasSuperCall)
+{
+    parent->Iterate([this, hasSuperCall](auto *childNode) {
+        FindSuperCallInCtorChildNode(childNode, hasSuperCall);
+    });
+}
+
+void Transformer::FindSuperCallInCtorChildNode(const ir::AstNode *childNode, bool *hasSuperCall)
+{
+    if (*hasSuperCall) {
+        return;
+    }
+    switch (childNode->Type()) {
+        case ir::AstNodeType::CALL_EXPRESSION: {
+            if (childNode->AsCallExpression()->Callee()->IsSuperExpression()) {
+                *hasSuperCall = true;
+                return;
+            }
+            break;
+        }
+        case ir::AstNodeType::CLASS_DEFINITION:
+        case ir::AstNodeType::FUNCTION_DECLARATION:
+        case ir::AstNodeType::FUNCTION_EXPRESSION:
+        case ir::AstNodeType::ARROW_FUNCTION_EXPRESSION: {
+            break;
+        }
+        default: {
+            FindSuperCall(childNode, hasSuperCall);
+            break;
+        }
+    }
 }
 
 std::vector<ir::ExpressionStatement *> Transformer::VisitInstanceProperty(ir::ClassDefinition *node)

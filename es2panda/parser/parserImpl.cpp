@@ -3002,7 +3002,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
     }
     lexer_->NextToken();
 
-    ValidateClassConstructor(ctor, properties, superClass, isDeclare, hasConstructorFuncBody, hasSuperClass);
+    ValidateClassConstructor(ctor, properties, isDeclare, hasConstructorFuncBody, hasSuperClass, isExtendsFromNull);
 
     auto *classDefinition = AllocNode<ir::ClassDefinition>(
         classCtx.GetScope(), identNode, typeParamDecl, superTypeParams, std::move(implements), ctor, superClass,
@@ -3016,10 +3016,10 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
     return classDefinition;
 }
 
-void ParserImpl::ValidateClassConstructor(ir::MethodDefinition *ctor,
-                                          ArenaVector<ir::Statement *> &properties,
-                                          ir::Expression *superClass,
-                                          bool isDeclare, bool hasConstructorFuncBody, bool hasSuperClass)
+void ParserImpl::ValidateClassConstructor(const ir::MethodDefinition *ctor,
+                                          const ArenaVector<ir::Statement *> &properties,
+                                          bool isDeclare, bool hasConstructorFuncBody,
+                                          bool hasSuperClass, bool isExtendsFromNull)
 {
     if (!hasConstructorFuncBody) {
         if (isDeclare) {
@@ -3033,41 +3033,55 @@ void ParserImpl::ValidateClassConstructor(ir::MethodDefinition *ctor,
     }
 
     bool hasSuperCall = false;
-    FindSuperCallInConstructor(ctor, &hasSuperCall);
+    FindSuperCall(ctor->Function()->Body()->AsBlockStatement(), &hasSuperCall);
     if (hasSuperCall) {
-        if (superClass->IsNullLiteral()) {
+        if (isExtendsFromNull) {
             ThrowSyntaxError("A constructor cannot contain a super call when its class extends null.", ctor->Start());
         }
 
-        if (SuperCallShouldBeFirst(ctor, properties)) {
-            ir::Statement *firstStat = nullptr;
-            ASSERT(ctor->Function()->Body()->IsBlockStatement());
-            ir::BlockStatement *blockStat = ctor->Function()->Body()->AsBlockStatement();
-            for (auto iter = blockStat->Statements().begin(); iter != blockStat->Statements().end();) {
-                if ((*iter)->IsExpressionStatement() &&
-                    (*iter)->AsExpressionStatement()->GetExpression()->IsStringLiteral()) {
-                    iter++;
-                } else {
-                    firstStat = *iter;
-                    break;
-                }
-            }
-
-            if (firstStat == nullptr || !firstStat->IsExpressionStatement() ||
-                !firstStat->AsExpressionStatement()->GetExpression()->IsCallExpression() ||
-                !firstStat->AsExpressionStatement()->GetExpression()->AsCallExpression()
-                ->Callee()->IsSuperExpression()) {
-                ThrowSyntaxError("A super call must be the first statement in the constructor when a class contains "
-                                 "initialized properties, parameter properties, or private identifiers.",
-                                 ctor->Start());
-            }
+        ValidateSuperCallLocation(ctor, SuperCallShouldBeRootLevel(ctor, properties));
+    } else {
+        if (!isExtendsFromNull) {
+            ThrowSyntaxError("Constructors for derived classes must contain a super call.", ctor->Start());
         }
-    } else if (!superClass->IsNullLiteral()) {
-        ThrowSyntaxError("Constructors for derived classes must contain a super call.", ctor->Start());
     }
 }
 
-bool ParserImpl::SuperCallShouldBeFirst(ir::MethodDefinition *ctor, ArenaVector<ir::Statement *> &properties)
+void ParserImpl::FindSuperCall(const ir::AstNode *parent, bool *hasSuperCall)
+{
+    parent->Iterate([this, hasSuperCall](auto *childNode) {
+        FindSuperCallInCtorChildNode(childNode, hasSuperCall);
+    });
+}
+
+void ParserImpl::FindSuperCallInCtorChildNode(const ir::AstNode *childNode, bool *hasSuperCall)
+{
+    if (*hasSuperCall) {
+        return;
+    }
+    switch (childNode->Type()) {
+        case ir::AstNodeType::CALL_EXPRESSION: {
+            if (childNode->AsCallExpression()->Callee()->IsSuperExpression()) {
+                *hasSuperCall = true;
+                return;
+            }
+            break;
+        }
+        case ir::AstNodeType::CLASS_DEFINITION:
+        case ir::AstNodeType::FUNCTION_DECLARATION:
+        case ir::AstNodeType::FUNCTION_EXPRESSION:
+        case ir::AstNodeType::ARROW_FUNCTION_EXPRESSION: {
+            break;
+        }
+        default: {
+            FindSuperCall(childNode, hasSuperCall);
+            break;
+        }
+    }
+}
+
+bool ParserImpl::SuperCallShouldBeRootLevel(const ir::MethodDefinition *ctor,
+                                            const ArenaVector<ir::Statement *> &properties)
 {
     for (const auto *property : properties) {
         if (property->IsClassProperty() && (property->AsClassProperty()->Value() != nullptr ||
@@ -3086,30 +3100,76 @@ bool ParserImpl::SuperCallShouldBeFirst(ir::MethodDefinition *ctor, ArenaVector<
     return false;
 }
 
-void ParserImpl::FindSuperCallInConstructor(const ir::AstNode *parent, bool *hasSuperCall)
+void ParserImpl::ValidateSuperCallLocation(const ir::MethodDefinition *ctor, bool superCallShouldBeRootLevel)
 {
-    parent->Iterate([this, hasSuperCall](auto *childNode) {
-        FindSuperCallInConstructorChildNode(childNode, hasSuperCall);
+    bool hasThisOrSuperReferenceBeforeSuperCall = false;
+    const ir::BlockStatement *blockStat = ctor->Function()->Body()->AsBlockStatement();
+
+    if (superCallShouldBeRootLevel) {
+        bool superCallInRootLevel = false;
+        for (auto iter = blockStat->Statements().begin(); iter != blockStat->Statements().end(); iter++) {
+            if ((*iter)->IsExpressionStatement() &&
+                (*iter)->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
+                (*iter)->AsExpressionStatement()->GetExpression()->AsCallExpression()->Callee()->IsSuperExpression()) {
+                superCallInRootLevel = true;
+                break;
+            }
+            if (!hasThisOrSuperReferenceBeforeSuperCall) {
+                FindThisOrSuperReferenceInChildNode(*iter, &hasThisOrSuperReferenceBeforeSuperCall);
+            }
+        }
+
+        if (!superCallInRootLevel) {
+            ThrowSyntaxError("A super call must be a root-level statement within a constructor of a derived class "
+                             "that contains initialized properties, parameter properties, or private identifiers.",
+                             ctor->Start());
+        }
+    } else {
+        for (auto iter = blockStat->Statements().begin(); iter != blockStat->Statements().end(); iter++) {
+            bool superCallInStatement = false;
+            FindSuperCallInCtorChildNode(*iter, &superCallInStatement);
+            if (superCallInStatement) {
+                break;
+            }
+            if (!hasThisOrSuperReferenceBeforeSuperCall) {
+                FindThisOrSuperReferenceInChildNode(*iter, &hasThisOrSuperReferenceBeforeSuperCall);
+            }
+        }
+    }
+
+    if (hasThisOrSuperReferenceBeforeSuperCall) {
+        ThrowSyntaxError("super() must be called before this/super access.", ctor->Start());
+    }
+}
+
+void ParserImpl::FindThisOrSuperReference(const ir::AstNode *parent, bool *hasThisOrSuperReference)
+{
+    parent->Iterate([this, hasThisOrSuperReference](auto *childNode) {
+        FindThisOrSuperReferenceInChildNode(childNode, hasThisOrSuperReference);
     });
 }
 
-void ParserImpl::FindSuperCallInConstructorChildNode(const ir::AstNode *childNode, bool *hasSuperCall)
+void ParserImpl::FindThisOrSuperReferenceInChildNode(const ir::AstNode *childNode, bool *hasThisOrSuperReference)
 {
-    if (*hasSuperCall) {
+    if (*hasThisOrSuperReference) {
         return;
     }
+
+    // The logic for finding ThisOrSuperReference is coarse-grained and may miss some cases.
     switch (childNode->Type()) {
-        case ir::AstNodeType::CALL_EXPRESSION: {
-            if (childNode->AsCallExpression()->Callee()->IsSuperExpression()) {
-                *hasSuperCall = true;
-            }
+        case ir::AstNodeType::THIS_EXPRESSION:
+        case ir::AstNodeType::SUPER_EXPRESSION: {
+            *hasThisOrSuperReference = true;
             break;
         }
-        case ir::AstNodeType::CLASS_DEFINITION: {
+        case ir::AstNodeType::CLASS_DEFINITION:
+        case ir::AstNodeType::FUNCTION_DECLARATION:
+        case ir::AstNodeType::FUNCTION_EXPRESSION:
+        case ir::AstNodeType::ARROW_FUNCTION_EXPRESSION: {
             break;
         }
         default: {
-            FindSuperCallInConstructor(childNode, hasSuperCall);
+            FindThisOrSuperReference(childNode, hasThisOrSuperReference);
             break;
         }
     }
