@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,21 +20,35 @@
 
 namespace panda::es2panda::ir {
 class NewExpression : public Expression {
+private:
+    struct Tag {};
+
 public:
-    explicit NewExpression(Expression *callee, ArenaVector<Expression *> &&arguments)
+    NewExpression() = delete;
+    ~NewExpression() override = default;
+
+    NO_COPY_SEMANTIC(NewExpression);
+    NO_MOVE_SEMANTIC(NewExpression);
+
+    explicit NewExpression(Expression *const callee, ArenaVector<Expression *> &&arguments)
         : Expression(AstNodeType::NEW_EXPRESSION), callee_(callee), arguments_(std::move(arguments))
     {
     }
 
-    const Expression *Callee() const
+    explicit NewExpression(Tag tag, NewExpression const &other, ArenaAllocator *allocator);
+
+    [[nodiscard]] const Expression *Callee() const noexcept
     {
         return callee_;
     }
 
-    const ArenaVector<Expression *> &Arguments() const
+    [[nodiscard]] const ArenaVector<Expression *> &Arguments() const noexcept
     {
         return arguments_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -45,7 +59,7 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
 private:
-    Expression *callee_;
+    Expression *callee_ = nullptr;
     ArenaVector<Expression *> arguments_;
 };
 }  // namespace panda::es2panda::ir

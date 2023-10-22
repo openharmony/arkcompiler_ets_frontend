@@ -393,7 +393,7 @@ protected:
                                                      ir::ModifierFlags flags = ir::ModifierFlags::NONE);
     ir::ClassDeclaration *ParseClassDeclaration(ir::ClassDefinitionModifiers modifiers,
                                                 ir::ModifierFlags flags = ir::ModifierFlags::NONE);
-    FunctionSignature ParseFunctionSignature(ParserStatus status);
+    FunctionSignature ParseFunctionSignature(ParserStatus status, ir::Identifier *class_name = nullptr);
 
     [[nodiscard]] virtual std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &source_file);
     virtual void AddVariableDeclarationBindings(ir::Expression *init, lexer::SourcePosition start_loc,
@@ -425,6 +425,7 @@ protected:
     virtual void ValidateArrowFunctionRestParameter(ir::SpreadElement *rest_element);
     virtual ir::Statement *ParsePotentialExpressionStatement(StatementParsingFlags flags);
     virtual ArenaVector<ir::Expression *> ParseFunctionParams();
+    virtual ir::Expression *CreateParameterThis(util::StringView class_name);
     virtual ir::Expression *ParseFunctionParameter();
     virtual void ConvertThisKeywordToIdentIfNecessary() {}
     virtual void ParseCatchParamTypeAnnotation(ir::AnnotatedExpression *param);

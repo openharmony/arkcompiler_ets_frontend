@@ -39,44 +39,56 @@ enum class IdentifierFlags : uint32_t {
 DEFINE_BITOPS(IdentifierFlags)
 
 class Identifier : public AnnotatedExpression {
+private:
+    struct Tag {};
+
 public:
-    explicit Identifier(ArenaAllocator *allocator) : Identifier("", allocator) {}
-    explicit Identifier(util::StringView name, ArenaAllocator *allocator)
+    Identifier() = delete;
+    ~Identifier() override = default;
+
+    NO_COPY_SEMANTIC(Identifier);
+    NO_MOVE_SEMANTIC(Identifier);
+
+public:
+    explicit Identifier(ArenaAllocator *const allocator) : Identifier("", allocator) {}
+    explicit Identifier(util::StringView const name, ArenaAllocator *const allocator)
         : AnnotatedExpression(AstNodeType::IDENTIFIER), name_(name), decorators_(allocator->Adapter())
     {
     }
 
-    explicit Identifier(util::StringView name, TypeNode *type_annotation, ArenaAllocator *allocator)
+    explicit Identifier(util::StringView const name, TypeNode *const type_annotation, ArenaAllocator *const allocator)
         : AnnotatedExpression(AstNodeType::IDENTIFIER, type_annotation), name_(name), decorators_(allocator->Adapter())
     {
     }
 
-    const util::StringView &Name() const
+    explicit Identifier(Tag tag, Identifier const &other, ArenaAllocator *allocator);
+
+    [[nodiscard]] const util::StringView &Name() const noexcept
     {
         return name_;
     }
 
-    util::StringView &Name()
+    [[nodiscard]] util::StringView &Name() noexcept
     {
         return name_;
     }
 
-    void SetName(const util::StringView &new_name)
+    void SetName(const util::StringView &new_name) noexcept
     {
         name_ = new_name;
     }
 
-    const ArenaVector<Decorator *> &Decorators() const
+    [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const noexcept
     {
         return decorators_;
     }
 
-    bool IsOptional() const
+    [[nodiscard]] bool IsOptional() const noexcept
     {
         return (flags_ & IdentifierFlags::OPTIONAL) != 0;
     }
 
-    void SetOptional(bool optional)
+    void SetOptional(bool const optional) noexcept
     {
         if (optional) {
             flags_ |= IdentifierFlags::OPTIONAL;
@@ -85,12 +97,12 @@ public:
         }
     }
 
-    bool IsReference() const
+    [[nodiscard]] bool IsReference() const noexcept
     {
         return (flags_ & IdentifierFlags::REFERENCE) != 0;
     }
 
-    void SetReference(bool is_reference = true)
+    void SetReference(bool const is_reference = true) noexcept
     {
         if (is_reference) {
             flags_ |= IdentifierFlags::REFERENCE;
@@ -99,42 +111,42 @@ public:
         }
     }
 
-    bool IsTdz() const
+    [[nodiscard]] bool IsTdz() const noexcept
     {
         return (flags_ & IdentifierFlags::TDZ) != 0;
     }
 
-    void SetTdz()
+    void SetTdz() noexcept
     {
         flags_ |= IdentifierFlags::TDZ;
     }
 
-    void SetAccessor()
+    void SetAccessor() noexcept
     {
         flags_ |= IdentifierFlags::GET;
     }
 
-    bool IsAccessor() const
+    [[nodiscard]] bool IsAccessor() const noexcept
     {
         return (flags_ & IdentifierFlags::GET) != 0;
     }
 
-    void SetMutator()
+    void SetMutator() noexcept
     {
         flags_ |= IdentifierFlags::SET;
     }
 
-    bool IsMutator() const
+    [[nodiscard]] bool IsMutator() const noexcept
     {
         return (flags_ & IdentifierFlags::SET) != 0;
     }
 
-    bool IsPrivateIdent() const
+    [[nodiscard]] bool IsPrivateIdent() const noexcept
     {
         return (flags_ & IdentifierFlags::PRIVATE) != 0;
     }
 
-    void SetPrivate(bool is_private)
+    void SetPrivate(bool const is_private) noexcept
     {
         if (is_private) {
             flags_ |= IdentifierFlags::PRIVATE;
@@ -143,27 +155,27 @@ public:
         }
     }
 
-    bool IsIgnoreBox() const
+    [[nodiscard]] bool IsIgnoreBox() const noexcept
     {
         return (flags_ & IdentifierFlags::IGNORE_BOX) != 0;
     }
 
-    void SetIgnoreBox()
+    void SetIgnoreBox() noexcept
     {
         flags_ |= IdentifierFlags::IGNORE_BOX;
     }
 
-    binder::Variable *Variable() const
+    [[nodiscard]] binder::Variable *Variable() const noexcept
     {
         return variable_;
     }
 
-    void SetVariable(binder::Variable *variable)
+    void SetVariable(binder::Variable *const variable) noexcept
     {
         variable_ = variable;
     }
 
-    binder::Variable *Variable()
+    [[nodiscard]] binder::Variable *Variable() noexcept
     {
         return variable_;
     }
@@ -173,7 +185,10 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    ValidationInfo ValidateExpression();
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
+    [[nodiscard]] ValidationInfo ValidateExpression();
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

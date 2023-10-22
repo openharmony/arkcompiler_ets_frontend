@@ -23,27 +23,58 @@ class ClassElement;
 
 class Statement : public AstNode {
 public:
-    bool IsStatement() const override
+    Statement() = delete;
+    ~Statement() override = default;
+
+    NO_COPY_OPERATOR(Statement);
+    NO_MOVE_SEMANTIC(Statement);
+
+    [[nodiscard]] bool IsStatement() const noexcept override
     {
         return true;
     }
 
     virtual void SetReturnType([[maybe_unused]] checker::ETSChecker *checker, [[maybe_unused]] checker::Type *type) {}
 
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] virtual Statement *Clone([[maybe_unused]] ArenaAllocator *const allocator,
+                                           [[maybe_unused]] AstNode *const parent = nullptr)
+    {
+        UNREACHABLE();
+        return nullptr;
+    }
+
 protected:
     explicit Statement(AstNodeType type) : AstNode(type) {}
     explicit Statement(AstNodeType type, ModifierFlags flags) : AstNode(type, flags) {}
+    Statement(Statement const &other) : AstNode(static_cast<AstNode const &>(other)) {}
 };
 
 class TypedStatement : public Typed<Statement> {
+public:
+    TypedStatement() = delete;
+    ~TypedStatement() override = default;
+
+    NO_COPY_OPERATOR(TypedStatement);
+    NO_MOVE_SEMANTIC(TypedStatement);
+
 protected:
     explicit TypedStatement(AstNodeType type) : Typed<Statement>(type) {};
     explicit TypedStatement(AstNodeType type, ModifierFlags flags) : Typed<Statement>(type, flags) {};
+
+    TypedStatement(TypedStatement const &other) : Typed<Statement>(static_cast<Typed<Statement> const &>(other)) {}
 
     inline static checker::Type *const CHECKED = reinterpret_cast<checker::Type *>(0x01);
 };
 
 class AnnotatedStatement : public Annotated<Statement> {
+public:
+    AnnotatedStatement() = delete;
+    ~AnnotatedStatement() override = default;
+
+    NO_COPY_OPERATOR(AnnotatedStatement);
+    NO_MOVE_SEMANTIC(AnnotatedStatement);
+
 protected:
     explicit AnnotatedStatement(AstNodeType type, TypeNode *type_annotation)
         : Annotated<Statement>(type, type_annotation)
@@ -52,6 +83,13 @@ protected:
 
     explicit AnnotatedStatement(AstNodeType type) : Annotated<Statement>(type) {}
     explicit AnnotatedStatement(AstNodeType type, ModifierFlags flags) : Annotated<Statement>(type, flags) {}
+
+    AnnotatedStatement(AnnotatedStatement const &other)
+        : Annotated<Statement>(static_cast<Annotated<Statement> const &>(other))
+    {
+    }
+
+    void CloneTypeAnnotation(ArenaAllocator *allocator);
 };
 }  // namespace panda::es2panda::ir
 

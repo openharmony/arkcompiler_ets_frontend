@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,8 +14,21 @@
  */
 
 #include "astNode.h"
+#include "ir/astDump.h"
+#include "typeNode.h"
 
 namespace panda::es2panda::ir {
+
+AstNode::AstNode(AstNode const &other)
+{
+    range_ = other.range_;
+    type_ = other.type_;
+    if (other.variable_ != nullptr) {
+        variable_ = other.variable_;
+    }
+    flags_ = other.flags_;
+    // boxing_unboxing_flags_ {};  leave default value!
+}
 
 template <typename R, typename T>
 static R GetTopStatementImpl(T *self)
@@ -76,4 +89,16 @@ bool AstNode::IsAnyChild(const NodePredicate &cb) const
     return found;
 }
 
+void AnnotatedAstNode::CloneTypeAnnotation(ArenaAllocator *const allocator)
+{
+    if (auto *annotation = const_cast<TypeNode *>(TypeAnnotation()); annotation != nullptr) {
+        SetTsTypeAnnotation(annotation->Clone(allocator, this)->AsTypeNode());
+    }
+}
+
+std::string AstNode::DumpJSON() const
+{
+    ir::AstDumper dumper {this};
+    return dumper.Str();
+}
 }  // namespace panda::es2panda::ir

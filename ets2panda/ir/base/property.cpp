@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +15,7 @@
 
 #include "property.h"
 
+#include "es2panda.h"
 #include "ir/astDump.h"
 #include "ir/expression.h"
 #include "ir/expressions/arrayExpression.h"
@@ -25,6 +26,34 @@
 #include "ir/validationInfo.h"
 
 namespace panda::es2panda::ir {
+Property::Property([[maybe_unused]] Tag const tag, Expression *const key, Expression *const value) : Property(*this)
+{
+    key_ = key;
+    value_ = value;
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *Property::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const key = key_ != nullptr ? key_->Clone(allocator) : nullptr;
+    auto *const value = value_ != nullptr ? value_->Clone(allocator) : nullptr;
+
+    if (auto *const clone = allocator->New<Property>(Tag {}, key, value); clone != nullptr) {
+        if (key != nullptr) {
+            key->SetParent(clone);
+        }
+        if (value != nullptr) {
+            value->SetParent(clone);
+        }
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 bool Property::ConvertibleToPatternProperty()
 {
     // Object pattern can't contain getter or setter

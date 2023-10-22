@@ -78,4 +78,18 @@ function main(): void {
     assert fn(++a) == 52;
     assert a == 52;
   }
+
+  {
+    let b: byte = 127;
+    assert ++b as int == -128;
+    assert --b as int == 127;
+
+    let c: char = 65535;
+    assert ++c as int == 0;
+    assert --c as int == 65535;
+
+    let s: short = 32767;
+    assert ++s as int == -32768;
+    assert --s as int == 32767;
+  }
 }

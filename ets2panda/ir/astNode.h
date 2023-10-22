@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,6 +40,10 @@ class Scope;
 }  // namespace panda::es2panda::binder
 
 namespace panda::es2panda::ir {
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+inline constexpr char const CLONE_ALLOCATION_ERROR[] = "Unsuccessful allocation during cloning.";
+// NOLINTEND(modernize-avoid-c-arrays)
+
 class AstNode;
 class TypeNode;
 
@@ -123,7 +127,8 @@ enum class ScriptFunctionFlags : uint32_t {
     GETTER = 1U << 15U,
     SETTER = 1U << 16U,
     DEFAULT_PARAM_PROXY = 1U << 17U,
-    ENTRY_POINT = 1U << 18U
+    ENTRY_POINT = 1U << 18U,
+    INSTANCE_EXTENSION_METHOD = 1U << 19U,
 };
 
 DEFINE_BITOPS(ScriptFunctionFlags)
@@ -179,7 +184,9 @@ public:
     explicit AstNode(AstNodeType type) : type_(type) {};
     explicit AstNode(AstNodeType type, ModifierFlags flags) : type_(type), flags_(flags) {};
     virtual ~AstNode() = default;
-    NO_COPY_SEMANTIC(AstNode);
+
+    AstNode() = delete;
+    NO_COPY_OPERATOR(AstNode);
     NO_MOVE_SEMANTIC(AstNode);
 
     bool IsProgram() const
@@ -209,12 +216,12 @@ public:
     AST_NODE_REINTERPRET_MAPPING(DECLARE_IS_CHECKS)
 #undef DECLARE_IS_CHECKS
 
-    virtual bool IsStatement() const
+    [[nodiscard]] virtual bool IsStatement() const noexcept
     {
         return false;
     }
 
-    virtual bool IsExpression() const
+    [[nodiscard]] virtual bool IsExpression() const noexcept
     {
         return false;
     }
@@ -283,62 +290,62 @@ public:
         return reinterpret_cast<const Statement *>(this);
     }
 
-    void SetRange(const lexer::SourceRange &loc)
+    void SetRange(const lexer::SourceRange &loc) noexcept
     {
         range_ = loc;
     }
 
-    void SetStart(const lexer::SourcePosition &start)
+    void SetStart(const lexer::SourcePosition &start) noexcept
     {
         range_.start = start;
     }
 
-    void SetEnd(const lexer::SourcePosition &end)
+    void SetEnd(const lexer::SourcePosition &end) noexcept
     {
         range_.end = end;
     }
 
-    const lexer::SourcePosition &Start() const
+    [[nodiscard]] const lexer::SourcePosition &Start() const noexcept
     {
         return range_.start;
     }
 
-    const lexer::SourcePosition &End() const
+    [[nodiscard]] const lexer::SourcePosition &End() const noexcept
     {
         return range_.end;
     }
 
-    const lexer::SourceRange &Range() const
+    [[nodiscard]] const lexer::SourceRange &Range() const noexcept
     {
         return range_;
     }
 
-    AstNodeType Type() const
+    [[nodiscard]] AstNodeType Type() const noexcept
     {
         return type_;
     }
 
-    AstNode *Parent()
+    [[nodiscard]] AstNode *Parent() noexcept
     {
         return parent_;
     }
 
-    const AstNode *Parent() const
+    [[nodiscard]] const AstNode *Parent() const noexcept
     {
         return parent_;
     }
 
-    void SetParent(AstNode *parent)
+    void SetParent(AstNode *const parent) noexcept
     {
         parent_ = parent;
     }
 
-    binder::Variable *Variable() const
+    [[nodiscard]] binder::Variable *Variable() const noexcept
     {
         return variable_;
     }
 
-    void SetVariable(binder::Variable *variable)
+    void SetVariable(binder::Variable *const variable) noexcept
     {
         variable_ = variable;
     }
@@ -353,147 +360,147 @@ public:
         return false;
     }
 
-    bool IsReadonly() const
+    [[nodiscard]] bool IsReadonly() const noexcept
     {
         return (flags_ & ModifierFlags::READONLY) != 0;
     }
 
-    bool IsOptional() const
+    [[nodiscard]] bool IsOptional() const noexcept
     {
         return (flags_ & ModifierFlags::OPTIONAL) != 0;
     }
 
-    bool IsDefinite() const
+    [[nodiscard]] bool IsDefinite() const noexcept
     {
         return (flags_ & ModifierFlags::DEFINITE) != 0;
     }
 
-    bool IsConstructor() const
+    [[nodiscard]] bool IsConstructor() const noexcept
     {
         return (flags_ & ModifierFlags::CONSTRUCTOR) != 0;
     }
 
-    bool IsOverride() const
+    [[nodiscard]] bool IsOverride() const noexcept
     {
         return (flags_ & ModifierFlags::OVERRIDE) != 0;
     }
 
-    bool IsAsync() const
+    [[nodiscard]] bool IsAsync() const noexcept
     {
         return (flags_ & ModifierFlags::ASYNC) != 0;
     }
 
-    bool IsSynchronized() const
+    [[nodiscard]] bool IsSynchronized() const noexcept
     {
         return (flags_ & ModifierFlags::SYNCHRONIZED) != 0;
     }
 
-    bool IsNative() const
+    [[nodiscard]] bool IsNative() const noexcept
     {
         return (flags_ & ModifierFlags::NATIVE) != 0;
     }
 
-    bool IsNullable() const
+    [[nodiscard]] bool IsNullable() const noexcept
     {
         return (flags_ & ModifierFlags::NULLABLE) != 0;
     }
 
-    bool IsConst() const
+    [[nodiscard]] bool IsConst() const noexcept
     {
         return (flags_ & ModifierFlags::CONST) != 0;
     }
 
-    bool IsStatic() const
+    [[nodiscard]] bool IsStatic() const noexcept
     {
         return (flags_ & ModifierFlags::STATIC) != 0;
     }
 
-    bool IsFinal() const noexcept
+    [[nodiscard]] bool IsFinal() const noexcept
     {
         return (flags_ & ModifierFlags::FINAL) != 0U;
     }
 
-    bool IsAbstract() const
+    [[nodiscard]] bool IsAbstract() const noexcept
     {
         return (flags_ & ModifierFlags::ABSTRACT) != 0;
     }
 
-    bool IsPublic() const
+    [[nodiscard]] bool IsPublic() const noexcept
     {
         return (flags_ & ModifierFlags::PUBLIC) != 0;
     }
 
-    bool IsProtected() const
+    [[nodiscard]] bool IsProtected() const noexcept
     {
         return (flags_ & ModifierFlags::PROTECTED) != 0;
     }
 
-    bool IsPrivate() const
+    [[nodiscard]] bool IsPrivate() const noexcept
     {
         return (flags_ & ModifierFlags::PRIVATE) != 0;
     }
 
-    bool IsInternal() const
+    [[nodiscard]] bool IsInternal() const noexcept
     {
         return (flags_ & ModifierFlags::INTERNAL) != 0;
     }
 
-    bool IsExported() const
+    [[nodiscard]] bool IsExported() const noexcept
     {
         return (flags_ & ModifierFlags::EXPORT) != 0;
     }
 
-    bool IsDefaultExported() const
+    [[nodiscard]] bool IsDefaultExported() const noexcept
     {
         return (flags_ & ModifierFlags::DEFAULT_EXPORT) != 0;
     }
 
-    bool IsDeclare() const
+    [[nodiscard]] bool IsDeclare() const noexcept
     {
         return (flags_ & ModifierFlags::DECLARE) != 0;
     }
 
-    bool IsIn() const
+    [[nodiscard]] bool IsIn() const noexcept
     {
         return (flags_ & ModifierFlags::IN) != 0;
     }
 
-    bool IsOut() const
+    [[nodiscard]] bool IsOut() const noexcept
     {
         return (flags_ & ModifierFlags::OUT) != 0;
     }
 
-    bool IsSetter() const
+    [[nodiscard]] bool IsSetter() const noexcept
     {
         return (flags_ & ModifierFlags::SETTER) != 0;
     }
 
-    void AddModifier(ModifierFlags flags)
+    void AddModifier(ModifierFlags const flags) noexcept
     {
         flags_ |= flags;
     }
 
-    ModifierFlags Modifiers()
+    [[nodiscard]] ModifierFlags Modifiers() noexcept
     {
         return flags_;
     }
 
-    ModifierFlags Modifiers() const
+    [[nodiscard]] ModifierFlags Modifiers() const noexcept
     {
         return flags_;
     }
 
-    void SetBoxingUnboxingFlags(BoxingUnboxingFlags flags) const
+    void SetBoxingUnboxingFlags(BoxingUnboxingFlags const flags) const noexcept
     {
         boxing_unboxing_flags_ = flags;
     }
 
-    void AddBoxingUnboxingFlag(BoxingUnboxingFlags flag) const
+    void AddBoxingUnboxingFlag(BoxingUnboxingFlags const flag) const noexcept
     {
         boxing_unboxing_flags_ |= flag;
     }
 
-    BoxingUnboxingFlags GetBoxingUnboxingFlags() const
+    [[nodiscard]] BoxingUnboxingFlags GetBoxingUnboxingFlags() const noexcept
     {
         return boxing_unboxing_flags_;
     }
@@ -510,7 +517,7 @@ public:
         return reinterpret_cast<const ir::ClassElement *>(this);
     }
 
-    virtual bool IsScopeBearer() const
+    [[nodiscard]] virtual bool IsScopeBearer() const
     {
         return false;
     }
@@ -520,14 +527,16 @@ public:
         UNREACHABLE();
     }
 
-    ir::BlockStatement *GetTopStatement();
-    const ir::BlockStatement *GetTopStatement() const;
+    [[nodiscard]] ir::BlockStatement *GetTopStatement();
+    [[nodiscard]] const ir::BlockStatement *GetTopStatement() const;
 
     virtual void TransformChildren(const NodeTransformer &cb) = 0;
     virtual void Iterate(const NodeTraverser &cb) const = 0;
     void TransformChildrenRecursively(const NodeTransformer &cb);
     void IterateRecursively(const NodeTraverser &cb) const;
     bool IsAnyChild(const NodePredicate &cb) const;
+
+    std::string DumpJSON() const;
 
     virtual void Dump(ir::AstDumper *dumper) const = 0;
     virtual void Compile([[maybe_unused]] compiler::PandaGen *pg) const = 0;
@@ -536,7 +545,9 @@ public:
     virtual checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) = 0;
 
 protected:
-    void SetType(AstNodeType type)
+    AstNode(AstNode const &other);
+
+    void SetType(AstNodeType const type) noexcept
     {
         type_ = type;
     }
@@ -554,24 +565,33 @@ protected:
 template <typename T>
 class Typed : public T {
 public:
-    checker::Type *TsType()
+    Typed() = delete;
+    ~Typed() override = default;
+
+    NO_COPY_OPERATOR(Typed);
+    NO_MOVE_SEMANTIC(Typed);
+
+    [[nodiscard]] checker::Type *TsType() noexcept
     {
         return ts_type_;
     }
 
-    const checker::Type *TsType() const
+    [[nodiscard]] const checker::Type *TsType() const noexcept
     {
         return ts_type_;
     }
 
-    void SetTsType(checker::Type *ts_type)
+    void SetTsType(checker::Type *ts_type) noexcept
     {
         ts_type_ = ts_type;
     }
 
 protected:
-    explicit Typed(AstNodeType type) : T(type) {}
-    explicit Typed(AstNodeType type, ModifierFlags flags) : T(type, flags) {}
+    explicit Typed(AstNodeType const type) : T(type) {}
+    explicit Typed(AstNodeType const type, ModifierFlags const flags) : T(type, flags) {}
+
+    // NOTE: when cloning node its type is not copied but removed empty so that it can be re-checked further.
+    Typed(Typed const &other) : T(static_cast<T const &>(other)) {}
 
 private:
     checker::Type *ts_type_ {};
@@ -580,38 +600,72 @@ private:
 template <typename T>
 class Annotated : public T {
 public:
-    TypeNode *TypeAnnotation() const
+    Annotated() = delete;
+    ~Annotated() override = default;
+
+    NO_COPY_OPERATOR(Annotated);
+    NO_MOVE_SEMANTIC(Annotated);
+
+    [[nodiscard]] TypeNode *TypeAnnotation() const noexcept
     {
         return type_annotation_;
     }
 
-    void SetTsTypeAnnotation(TypeNode *type_annotation)
+    void SetTsTypeAnnotation(TypeNode *const type_annotation) noexcept
     {
         type_annotation_ = type_annotation;
     }
 
 protected:
-    explicit Annotated(AstNodeType type, TypeNode *type_annotation) : T(type), type_annotation_(type_annotation) {}
-    explicit Annotated(AstNodeType type) : T(type) {}
-    explicit Annotated(AstNodeType type, ModifierFlags flags) : T(type, flags) {}
+    explicit Annotated(AstNodeType const type, TypeNode *const type_annotation)
+        : T(type), type_annotation_(type_annotation)
+    {
+    }
+    explicit Annotated(AstNodeType const type) : T(type) {}
+    explicit Annotated(AstNodeType const type, ModifierFlags const flags) : T(type, flags) {}
+
+    Annotated(Annotated const &other) : T(static_cast<T const &>(other)) {}
 
 private:
     TypeNode *type_annotation_ {};
 };
 
 class TypedAstNode : public Typed<AstNode> {
+public:
+    TypedAstNode() = delete;
+    ~TypedAstNode() override = default;
+
+    NO_COPY_OPERATOR(TypedAstNode);
+    NO_MOVE_SEMANTIC(TypedAstNode);
+
 protected:
-    explicit TypedAstNode(AstNodeType type) : Typed<AstNode>(type) {};
-    explicit TypedAstNode(AstNodeType type, ModifierFlags flags) : Typed<AstNode>(type, flags) {};
+    explicit TypedAstNode(AstNodeType const type) : Typed<AstNode>(type) {}
+    explicit TypedAstNode(AstNodeType const type, ModifierFlags const flags) : Typed<AstNode>(type, flags) {}
+
+    TypedAstNode(TypedAstNode const &other) : Typed<AstNode>(static_cast<Typed<AstNode> const &>(other)) {}
 };
 
 class AnnotatedAstNode : public Annotated<AstNode> {
+public:
+    AnnotatedAstNode() = delete;
+    ~AnnotatedAstNode() override = default;
+
+    NO_COPY_OPERATOR(AnnotatedAstNode);
+    NO_MOVE_SEMANTIC(AnnotatedAstNode);
+
+    void CloneTypeAnnotation(ArenaAllocator *allocator);
+
 protected:
-    explicit AnnotatedAstNode(AstNodeType type, TypeNode *type_annotation) : Annotated<AstNode>(type, type_annotation)
+    explicit AnnotatedAstNode(AstNodeType const type, TypeNode *const type_annotation)
+        : Annotated<AstNode>(type, type_annotation)
     {
     }
-    explicit AnnotatedAstNode(AstNodeType type) : Annotated<AstNode>(type) {}
-    explicit AnnotatedAstNode(AstNodeType type, ModifierFlags flags) : Annotated<AstNode>(type, flags) {}
+    explicit AnnotatedAstNode(AstNodeType const type) : Annotated<AstNode>(type) {}
+    explicit AnnotatedAstNode(AstNodeType const type, ModifierFlags const flags) : Annotated<AstNode>(type, flags) {}
+
+    AnnotatedAstNode(AnnotatedAstNode const &other) : Annotated<AstNode>(static_cast<Annotated<AstNode> const &>(other))
+    {
+    }
 };
 }  // namespace panda::es2panda::ir
 #endif

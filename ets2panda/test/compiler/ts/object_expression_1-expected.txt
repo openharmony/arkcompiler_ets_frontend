@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token. [object_expression_1.ts:20:30]

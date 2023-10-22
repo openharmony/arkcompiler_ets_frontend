@@ -24,7 +24,17 @@ namespace panda::es2panda::ir {
 
 class OpaqueTypeNode : public TypeNode {
 public:
-    explicit OpaqueTypeNode(checker::Type *type) : TypeNode(AstNodeType::OPAQUE_TYPE_NODE), type_ {type} {}
+    OpaqueTypeNode() = delete;
+    ~OpaqueTypeNode() override = default;
+
+    NO_COPY_SEMANTIC(OpaqueTypeNode);
+    NO_MOVE_SEMANTIC(OpaqueTypeNode);
+
+    explicit OpaqueTypeNode(checker::Type *const type) : TypeNode(AstNodeType::OPAQUE_TYPE_NODE)
+    {
+        ASSERT(type != nullptr);
+        SetTsType(type);
+    }
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -35,9 +45,6 @@ public:
     checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
-
-private:
-    checker::Type *type_;
 };
 }  // namespace panda::es2panda::ir
 

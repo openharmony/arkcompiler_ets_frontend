@@ -125,7 +125,7 @@
               },
               "end": {
                 "line": 17,
-                "column": 23
+                "column": 24
               }
             }
           }

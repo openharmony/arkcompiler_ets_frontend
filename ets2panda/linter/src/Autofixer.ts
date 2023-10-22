@@ -15,7 +15,7 @@
 
 import * as ts from 'typescript';
 import { AutofixInfo } from './autofixes/AutofixInfo';
-import { FaultID } from './Problems';
+import { FaultID } from './utils/consts/Problems';
 import { isAssignmentOperator } from './utils/functions/isAssignmentOperator';
 
 export const AUTOFIX_ALL: AutofixInfo = {

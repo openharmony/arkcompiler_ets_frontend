@@ -20,6 +20,7 @@
 #include "ir/base/classStaticBlock.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/objectExpression.h"
+#include "ir/expressions/arrayExpression.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/statements/returnStatement.h"
 #include "util/helpers.h"
@@ -785,6 +786,11 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
                 relation->SetFlags(checker::TypeRelationFlag::NONE);
             }
         }
+    }
+
+    if ((st->argument_ != nullptr) && st->argument_->IsArrayExpression()) {
+        st->argument_->AsArrayExpression()->SetPreferredType(
+            func_return_type->IsETSArrayType() ? func_return_type->AsETSArrayType()->ElementType() : func_return_type);
     }
 
     st->return_type_ = func_return_type;

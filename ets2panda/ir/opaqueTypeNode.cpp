@@ -35,7 +35,7 @@ void OpaqueTypeNode::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 
 checker::Type *OpaqueTypeNode::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return type_;
+    return TsType();
 }
 
 checker::Type *OpaqueTypeNode::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -45,7 +45,7 @@ checker::Type *OpaqueTypeNode::GetType([[maybe_unused]] checker::TSChecker *chec
 
 checker::Type *OpaqueTypeNode::GetType([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return type_;
+    return TsType();
 }
 
 checker::Type *OpaqueTypeNode::Check([[maybe_unused]] checker::ETSChecker *checker)

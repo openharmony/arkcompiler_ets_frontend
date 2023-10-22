@@ -82,3 +82,14 @@ export declare interface Point {
 
 export declare function myFoo(x: Point);
 export declare function myFoo2(x: any);
+
+declare class A {
+    a: number;
+    b: string;
+}
+
+declare class B {
+    a: number;
+}
+
+export declare function bad_func(): A & B;

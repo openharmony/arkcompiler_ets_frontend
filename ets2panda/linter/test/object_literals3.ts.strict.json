@@ -13,20 +13,5 @@
         "See the License for the specific language governing permissions and",
         "limitations under the License."
     ],
-    "nodes": [
-        {
-            "line": 41,
-            "column": 44,
-            "problem": "ArrayLiteralNoContextType",
-            "suggest": "",
-            "rule": "Array literals must contain elements of only inferrable types (arkts-no-noninferrable-arr-literals)"
-        },
-        {
-            "line": 41,
-            "column": 45,
-            "problem": "ObjectLiteralNoContextType",
-            "suggest": "",
-            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
-        }
-    ]
+    "nodes": []
 }

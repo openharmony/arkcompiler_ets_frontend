@@ -19,6 +19,7 @@
 #include "util/arktsconfig.h"
 #include "util/helpers.h"
 #include "util/language.h"
+#include "binder/binder.h"
 #include "binder/privateBinding.h"
 #include "binder/scope.h"
 #include "binder/ETSBinder.h"
@@ -686,10 +687,17 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
             }
             case lexer::TokenType::KEYW_FUNCTION: {
                 Lexer()->NextToken();
+                // check whether it is an extension function
+                ir::Identifier *class_name = nullptr;
+                if (Lexer()->Lookahead() == lexer::LEX_CHAR_DOT) {
+                    class_name = ExpectIdentifier();
+                    Lexer()->NextToken();
+                }
+
                 auto *member_name = ExpectIdentifier();
                 auto class_ctx =
                     binder::LexicalScope<binder::ClassScope>::Enter(Binder(), GetProgram()->GlobalClassScope());
-                auto *class_method = ParseClassMethodDefinition(member_name, member_modifiers);
+                auto *class_method = ParseClassMethodDefinition(member_name, member_modifiers, class_name);
                 class_method->SetStart(start_loc);
                 if (!class_method->Function()->IsOverload()) {
                     global_properties.push_back(class_method);
@@ -1306,7 +1314,8 @@ void ETSParser::ParseClassFieldDefiniton(ir::Identifier *field_name, ir::Modifie
     }
 }
 
-ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *method_name, ir::ModifierFlags modifiers)
+ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *method_name, ir::ModifierFlags modifiers,
+                                                            ir::Identifier *class_name)
 {
     auto *cur_scope = Binder()->GetScope();
     auto res = cur_scope->Find(method_name->Name(), binder::ResolveBindingOptions::ALL);
@@ -1316,23 +1325,30 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
 
     auto new_status = ParserStatus::NEED_RETURN_TYPE | ParserStatus::ALLOW_SUPER;
     auto method_kind = ir::MethodDefinitionKind::METHOD;
-    auto script_function_flag = ir::ScriptFunctionFlags::METHOD;
+
+    if (class_name != nullptr) {
+        method_kind = ir::MethodDefinitionKind::EXTENSION_METHOD;
+        new_status |= ParserStatus::IN_EXTENSION_FUNCTION;
+    }
 
     if ((modifiers & ir::ModifierFlags::CONSTRUCTOR) != 0) {
         new_status = ParserStatus::CONSTRUCTOR_FUNCTION | ParserStatus::ALLOW_SUPER | ParserStatus::ALLOW_SUPER_CALL;
         method_kind = ir::MethodDefinitionKind::CONSTRUCTOR;
-        script_function_flag |= ir::ScriptFunctionFlags::CONSTRUCTOR;
     }
 
     if ((modifiers & ir::ModifierFlags::ASYNC) != 0) {
         new_status |= ParserStatus::ASYNC_FUNCTION;
     }
 
-    ir::ScriptFunction *func = ParseFunction(new_status);
+    ir::ScriptFunction *func = ParseFunction(new_status, class_name);
     func->SetIdent(method_name);
     auto *func_expr = AllocNode<ir::FunctionExpression>(func);
     func_expr->SetRange(func->Range());
     func->AddModifier(modifiers);
+
+    if (class_name != nullptr) {
+        func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD);
+    }
     auto *method = AllocNode<ir::MethodDefinition>(method_kind, method_name, func_expr, modifiers, Allocator(), false);
     method->SetRange(func_expr->Range());
 
@@ -1342,12 +1358,12 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
     return method;
 }
 
-ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus new_status)
+ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus new_status, ir::Identifier *class_name)
 {
     FunctionContext function_context(this, new_status | ParserStatus::FUNCTION);
     lexer::SourcePosition start_loc = Lexer()->GetToken().Start();
     auto [typeParamDecl, params, returnTypeAnnotation, funcParamScope, throw_marker] =
-        ParseFunctionSignature(new_status);
+        ParseFunctionSignature(new_status, class_name);
 
     auto param_ctx = binder::LexicalScope<binder::FunctionParamScope>::Enter(Binder(), funcParamScope, false);
     auto function_ctx = binder::LexicalScope<binder::FunctionScope>(Binder());
@@ -2042,10 +2058,6 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags)
         body = ParseBlockStatement(function_scope);
     } else if ((flags & (ir::ModifierFlags::PRIVATE | ir::ModifierFlags::STATIC)) != 0 && !is_declare) {
         ThrowSyntaxError("Private or static interface methods must have body", start_loc);
-    } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
-        Lexer()->NextToken();
-    } else {
-        ThrowUnexpectedToken(Lexer()->GetToken().Type());
     }
 
     function_context.AddFlag(throw_marker);
@@ -2070,6 +2082,9 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags)
     auto *method =
         AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, name, func_expr, flags, Allocator(), false);
     method->SetRange(func_expr->Range());
+
+    ConsumeSemicolon(method);
+
     return method;
 }
 
@@ -2173,10 +2188,11 @@ void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *
         proxy_method += param->Ident()->Name().Mutf8() + ": " + GetNameForTypeNode(param->TypeAnnotation()) + ", ";
     }
 
-    std::string return_type = method->Function()->ReturnTypeAnnotation() != nullptr
-                                  ? GetNameForTypeNode(method->Function()->ReturnTypeAnnotation())
-                                  : "void";
-    proxy_method += "proxy_int:int): " + return_type + " { ";
+    const bool has_function_return_type = method->Function()->ReturnTypeAnnotation() != nullptr;
+    const std::string return_type =
+        has_function_return_type ? GetNameForTypeNode(method->Function()->ReturnTypeAnnotation()) : "";
+
+    proxy_method += has_function_return_type ? "proxy_int:int):" + return_type + "{" : "proxy_int:int) {";
 
     auto const parameters_number = function->Params().size();
     for (size_t i = 0U; i < parameters_number; i++) {
@@ -3088,6 +3104,31 @@ ir::Expression *ETSParser::ParseFunctionParameter()
     return param_expression;
 }
 
+ir::Expression *ETSParser::CreateParameterThis(const util::StringView class_name)
+{
+    auto *param_ident = AllocNode<ir::Identifier>(binder::TypedBinder::MANDATORY_PARAM_THIS, Allocator());
+    param_ident->SetRange(Lexer()->GetToken().Loc());
+
+    ir::Expression *class_type_name = AllocNode<ir::Identifier>(class_name, Allocator());
+    class_type_name->AsIdentifier()->SetReference();
+    class_type_name->SetRange(Lexer()->GetToken().Loc());
+
+    auto type_ref_part = AllocNode<ir::ETSTypeReferencePart>(class_type_name, nullptr, nullptr);
+    ir::TypeNode *type_annotation = AllocNode<ir::ETSTypeReference>(type_ref_part);
+
+    type_annotation->SetParent(param_ident);
+    param_ident->SetTsTypeAnnotation(type_annotation);
+
+    auto *param_expression = AllocNode<ir::ETSParameterExpression>(param_ident, nullptr);
+    param_expression->SetRange({param_ident->Start(), param_ident->End()});
+
+    auto *const var = std::get<1>(Binder()->AddParamDecl(param_expression));
+    param_ident->AsIdentifier()->SetVariable(var);
+    var->SetScope(Binder()->GetScope());
+
+    return param_expression;
+}
+
 void ETSParser::AddVariableDeclarationBindings(ir::Expression *init, lexer::SourcePosition start_loc,
                                                VariableParsingFlags flags)
 {
@@ -3384,6 +3425,7 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         case lexer::TokenType::PUNCTUATOR_PLUS:
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::PUNCTUATOR_TILDE:
+        case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR:
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
             break;
         }
@@ -3405,6 +3447,7 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::PUNCTUATOR_TILDE:
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK:
+        case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR:
         case lexer::TokenType::PUNCTUATOR_PLUS_PLUS:
         case lexer::TokenType::PUNCTUATOR_MINUS_MINUS: {
             argument = ParseUnaryOrPrefixUpdateExpression();
@@ -4120,6 +4163,10 @@ void ETSParser::ParseStringEnum(ArenaVector<ir::AstNode *> &members)
 ir::ThisExpression *ETSParser::ParseThisExpression()
 {
     auto *this_expression = TypedParser::ParseThisExpression();
+
+    if (Lexer()->GetToken().NewLine()) {
+        return this_expression;
+    }
 
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_PERIOD:

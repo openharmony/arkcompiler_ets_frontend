@@ -28,7 +28,7 @@ decodeURIComponent('');
 escape('');
 unescape('');
 
-global.eval('console.log("foo")');
+// global and window are not portable, so they are excluded from test suite.
 globalThis.eval('console.log("foo")');
 const evl = "eval('console.log(1)')";
 const res: void = Function(evl)();
@@ -121,3 +121,9 @@ ArrayBuffer.isView({});
 let a: number[] = [];
 let b = new ArrayBuffer(1);
 Array.isArray(a);
+
+Number.NaN;
+Number.isFinite(1);
+Number.isNaN(2);
+Number.parseFloat('3');
+Number.parseInt('4', 10);

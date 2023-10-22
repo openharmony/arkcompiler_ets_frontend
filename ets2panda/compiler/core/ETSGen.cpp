@@ -1879,8 +1879,7 @@ void ETSGen::Negate(const ir::AstNode *node)
 void ETSGen::LogicalNot(const ir::AstNode *node)
 {
     ASSERT(GetAccumulatorType()->IsETSBooleanType());
-    Sa().Emit<Neg>(node);
-    Sa().Emit<Addi>(node, 1);
+    Sa().Emit<Xori>(node, 1);
 }
 
 void ETSGen::Unary(const ir::AstNode *node, lexer::TokenType op)
@@ -1899,6 +1898,10 @@ void ETSGen::Unary(const ir::AstNode *node, lexer::TokenType op)
         }
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
             LogicalNot(node);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR: {
+            UnaryDollarDollar(node);
             break;
         }
         default: {
@@ -1953,6 +1956,15 @@ void ETSGen::UnaryTilde(const ir::AstNode *node)
             UNREACHABLE();
         }
     }
+}
+
+void ETSGen::UnaryDollarDollar(const ir::AstNode *node)
+{
+    RegScope rs(this);
+    VReg exception = StoreException(node);
+    Sa().Emit<LdaStr>(node, "$$ operator can only be used with ARKUI plugin");
+    StoreAccumulator(node, exception);
+    EmitThrow(node, exception);
 }
 
 void ETSGen::Update(const ir::AstNode *node, lexer::TokenType op)

@@ -114,6 +114,26 @@ checker::Type *ArrowFunctionExpression::Check(checker::ETSChecker *checker)
     }
 
     checker::ScopeContext scope_ctx(checker, func_->Scope());
+
+    if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
+        /*
+        example code:
+        ```
+            class A {
+                prop:number
+            }
+            function A.method() {
+                let a = () => {
+                    console.println(this.prop)
+                }
+            }
+        ```
+        here the enclosing class of arrow function should be Class A
+        */
+        checker->Context().SetContainingClass(
+            checker->Scope()->Find(binder::Binder::MANDATORY_PARAM_THIS).variable->TsType()->AsETSObjectType());
+    }
+
     checker::SavedCheckerContext saved_context(checker, checker->Context().Status(),
                                                checker->Context().ContainingClass());
     checker->AddStatus(checker::CheckerStatus::IN_LAMBDA);
@@ -122,6 +142,10 @@ checker::Type *ArrowFunctionExpression::Check(checker::ETSChecker *checker)
     auto *body_type = func_->Body()->Check(checker);
 
     if (func_->Body()->IsExpression()) {
+        if (func_->ReturnTypeAnnotation() == nullptr) {
+            func_type->CallSignatures()[0]->SetReturnType(body_type);
+        }
+
         checker::AssignmentContext(
             checker->Relation(), func_->Body()->AsExpression(), body_type, func_type->CallSignatures()[0]->ReturnType(),
             func_->Start(),

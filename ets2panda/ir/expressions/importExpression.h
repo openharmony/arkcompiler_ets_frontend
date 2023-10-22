@@ -21,7 +21,16 @@
 namespace panda::es2panda::ir {
 class ImportExpression : public Expression {
 public:
+    ImportExpression() = delete;
+    ~ImportExpression() override = default;
+
+    NO_COPY_SEMANTIC(ImportExpression);
+    NO_MOVE_SEMANTIC(ImportExpression);
+
     explicit ImportExpression(Expression *source) : Expression(AstNodeType::IMPORT_EXPRESSION), source_(source) {}
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

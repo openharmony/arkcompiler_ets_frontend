@@ -439,6 +439,7 @@ private:
     util::StringView FormClassPropReference(binder::Variable const *var);
     void UnaryMinus(const ir::AstNode *node);
     void UnaryTilde(const ir::AstNode *node);
+    void UnaryDollarDollar(const ir::AstNode *node);
 
     template <typename T>
     void StoreValueIntoArray(const ir::AstNode *const node, const VReg arr, const VReg index)
@@ -457,11 +458,23 @@ private:
                 Ra().Emit<LongOp>(node, reg);
                 break;
             }
-            case checker::TypeFlag::INT:
-            case checker::TypeFlag::CHAR:
-            case checker::TypeFlag::SHORT:
+            case checker::TypeFlag::INT: {
+                Sa().Emit<IntOp>(node, 1);
+                break;
+            }
+            case checker::TypeFlag::CHAR: {
+                Sa().Emit<IntOp>(node, 1);
+                Sa().Emit<I32tou16>(node);
+                break;
+            }
+            case checker::TypeFlag::SHORT: {
+                Sa().Emit<IntOp>(node, 1);
+                Sa().Emit<I32toi16>(node);
+                break;
+            }
             case checker::TypeFlag::BYTE: {
                 Sa().Emit<IntOp>(node, 1);
+                Sa().Emit<I32toi8>(node);
                 break;
             }
             case checker::TypeFlag::DOUBLE: {

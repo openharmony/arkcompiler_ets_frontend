@@ -179,4 +179,24 @@ checker::Type *ETSParameterExpression::Check(checker::ETSChecker *const checker)
     return TsType();
 }
 
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *ETSParameterExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const ident_or_spread = spread_ != nullptr ? spread_->Clone(allocator)->AsAnnotatedExpression()
+                                                     : ident_->Clone(allocator)->AsAnnotatedExpression();
+    auto *const initializer = initializer_ != nullptr ? initializer_->Clone(allocator) : nullptr;
+
+    if (auto *const clone = allocator->New<ETSParameterExpression>(ident_or_spread, initializer); clone != nullptr) {
+        ident_or_spread->SetParent(clone);
+        if (initializer != nullptr) {
+            initializer->SetParent(clone);
+        }
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
 }  // namespace panda::es2panda::ir

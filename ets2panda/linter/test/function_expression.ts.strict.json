@@ -206,16 +206,16 @@
         {
             "line": 102,
             "column": 15,
-            "problem": "FunctionApplyBindCall",
-            "suggest": "",
-            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
-        },
-        {
-            "line": 102,
-            "column": 15,
             "problem": "FunctionExpression",
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 104,
+            "column": 7,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
         },
         {
             "line": 108,

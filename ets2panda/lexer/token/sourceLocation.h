@@ -106,7 +106,7 @@ public:
     NO_MOVE_SEMANTIC(LineIndex);
     ~LineIndex() = default;
 
-    SourceLocation GetLocation(SourcePosition pos) noexcept;
+    SourceLocation GetLocation(SourcePosition pos) const noexcept;
 
 private:
     std::vector<OffsetEntry> entries_;

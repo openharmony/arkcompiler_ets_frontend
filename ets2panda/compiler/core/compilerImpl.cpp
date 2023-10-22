@@ -117,19 +117,10 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
 
     parser.ParseScript(unit.input, unit.options.compilation_mode == CompilationMode::GEN_STD_LIB);
 
-    if (!checker.StartChecker(binder, unit.options)) {
-        return nullptr;
-    }
-
-    if constexpr (std::is_same_v<Checker, checker::ETSChecker>) {
-        if (!unit.options.ts_decl_out.empty() &&
-            !util::GenerateTsDeclarations(&checker, &program, unit.options.ts_decl_out)) {
+    for (auto *phase : get_phases()) {
+        if (!phase->Apply(&context, &program)) {
             return nullptr;
         }
-    }
-
-    for (auto *phase : get_phases()) {
-        phase->Apply(&context, &program);
     }
 
     emitter.GenAnnotation();
@@ -145,13 +136,13 @@ pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit)
         case ScriptExtension::TS: {
             return CreateCompiler<parser::TSParser, binder::TSBinder, checker::TSChecker, checker::TSAnalyzer,
                                   compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
-                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetEmptyPhaseList,
+                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetTrivialPhaseList,
                                                                                     emit_cb);
         }
         case ScriptExtension::AS: {
             return CreateCompiler<parser::ASParser, binder::ASBinder, checker::ASChecker, checker::TSAnalyzer,
                                   compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
-                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetEmptyPhaseList,
+                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetTrivialPhaseList,
                                                                                     emit_cb);
         }
         case ScriptExtension::ETS: {
@@ -163,7 +154,7 @@ pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit)
         case ScriptExtension::JS: {
             return CreateCompiler<parser::JSParser, binder::JSBinder, checker::JSChecker, checker::TSAnalyzer,
                                   compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
-                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetEmptyPhaseList,
+                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetTrivialPhaseList,
                                                                                     emit_cb);
         }
         default: {

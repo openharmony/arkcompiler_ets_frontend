@@ -48,7 +48,7 @@ void Checker::Initialize(binder::Binder *binder)
     program_ = binder_->Program();
 }
 
-void Checker::ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+std::string Checker::FormatMsg(std::initializer_list<TypeErrorMessageElement> list)
 {
     std::stringstream ss;
 
@@ -72,8 +72,12 @@ void Checker::ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list
         }
     }
 
-    std::string err = ss.str();
-    ThrowTypeError(err, pos);
+    return ss.str();
+}
+
+void Checker::ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+{
+    ThrowTypeError(FormatMsg(list), pos);
 }
 
 void Checker::ThrowTypeError(std::string_view message, const lexer::SourcePosition &pos)
@@ -93,6 +97,11 @@ void Checker::Warning(const std::string_view message, const lexer::SourcePositio
     auto file_name = program_->SourceFile().Utf8();
     file_name = file_name.substr(file_name.find_last_of(panda::os::file::File::GetPathDelim()) + 1);
     std::cout << "Warning: " << message << " [" << file_name << ":" << loc.line << ":" << loc.col << "]" << std::endl;
+}
+
+void Checker::ReportWarning(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos)
+{
+    Warning(FormatMsg(list), pos);
 }
 
 bool Checker::IsAllTypesAssignableTo(Type *source, Type *target)

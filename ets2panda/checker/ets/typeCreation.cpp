@@ -170,6 +170,12 @@ ETSFunctionType *ETSChecker::CreateETSFunctionType(util::StringView name)
     return Allocator()->New<ETSFunctionType>(name, Allocator());
 }
 
+ETSExtensionFuncHelperType *ETSChecker::CreateETSExtensionFuncHelperType(ETSFunctionType *class_method_type,
+                                                                         ETSFunctionType *extension_function_type)
+{
+    return Allocator()->New<ETSExtensionFuncHelperType>(class_method_type, extension_function_type);
+}
+
 ETSObjectType *ETSChecker::CreateETSObjectTypeCheckBuiltins(util::StringView name, ir::AstNode *decl_node,
                                                             ETSObjectFlags flags)
 {

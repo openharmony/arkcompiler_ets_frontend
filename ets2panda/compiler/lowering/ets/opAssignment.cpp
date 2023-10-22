@@ -245,12 +245,14 @@ ir::Expression *HandleOpAssignment(checker::ETSChecker *checker, ir::AssignmentE
     return res;
 }
 
-void OpAssignmentLowering::Perform(CompilerContext *ctx, parser::Program *program)
+bool OpAssignmentLowering::Perform(CompilerContext *ctx, parser::Program *program)
 {
-    for (auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *ext_prog : ext_programs) {
-            Perform(ctx, ext_prog);
+    if (ctx->Options()->compilation_mode == CompilationMode::GEN_STD_LIB) {
+        for (auto &[_, ext_programs] : program->ExternalSources()) {
+            (void)_;
+            for (auto *ext_prog : ext_programs) {
+                Perform(ctx, ext_prog);
+            }
         }
     }
 
@@ -264,15 +266,19 @@ void OpAssignmentLowering::Perform(CompilerContext *ctx, parser::Program *progra
 
         return ast;
     });
+
+    return true;
 }
 
 bool OpAssignmentLowering::Postcondition(CompilerContext *ctx, const parser::Program *program)
 {
-    for (auto &[_, ext_programs] : program->ExternalSources()) {
-        (void)_;
-        for (auto *ext_prog : ext_programs) {
-            if (!Postcondition(ctx, ext_prog)) {
-                return false;
+    if (ctx->Options()->compilation_mode == CompilationMode::GEN_STD_LIB) {
+        for (auto &[_, ext_programs] : program->ExternalSources()) {
+            (void)_;
+            for (auto *ext_prog : ext_programs) {
+                if (!Postcondition(ctx, ext_prog)) {
+                    return false;
+                }
             }
         }
     }

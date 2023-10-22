@@ -75,6 +75,18 @@ if(PANDA_WITH_ETS)
         add_dependencies(es2panda-regression-tests es2panda-regression-tests-${CURRENT_GROUP})
     endforeach()
 
+    panda_add_gtest(
+        NAME es2panda_public_tests
+        SOURCES
+            public/es2panda_public_test.cpp
+        LIBRARIES
+            es2panda-public es2panda-lib arkassembler arkbytecodeopt
+        INCLUDE_DIRS
+            ${CMAKE_CURRENT_SOURCE_DIR}/..
+        SANITIZERS
+            ${PANDA_SANITIZERS_LIST}
+    )
+
     add_dependencies(es2panda_tests es2panda-regression-tests)
     if(TARGET ets_tests)
         add_dependencies(ets_tests es2panda_tests)

@@ -621,12 +621,13 @@ Signature *ETSChecker::ResolveCallExpression(ArenaVector<Signature *> &signature
 
 Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signature *> &signatures,
                                                               ir::CallExpression *call_expr,
-                                                              const lexer::SourcePosition &pos)
+                                                              const lexer::SourcePosition &pos,
+                                                              const TypeRelationFlag throw_flag)
 {
     Signature *sig = nullptr;
+
     if (call_expr->TrailingBlock() == nullptr) {
-        sig = ValidateSignatures(signatures, call_expr->TypeParams(), call_expr->Arguments(), pos, "call");
-        ASSERT(sig);
+        sig = ValidateSignatures(signatures, call_expr->TypeParams(), call_expr->Arguments(), pos, "call", throw_flag);
         return sig;
     }
 
@@ -639,9 +640,11 @@ Signature *ETSChecker::ResolveCallExpressionAndTrailingLambda(ArenaVector<Signat
         return sig;
     }
 
-    sig = ValidateSignatures(signatures, call_expr->TypeParams(), call_expr->Arguments(), pos, "call");
-    EnsureValidCurlyBrace(call_expr);
-    ASSERT(sig);
+    sig = ValidateSignatures(signatures, call_expr->TypeParams(), call_expr->Arguments(), pos, "call", throw_flag);
+    if (sig != nullptr) {
+        EnsureValidCurlyBrace(call_expr);
+    }
+
     return sig;
 }
 
@@ -1700,7 +1703,7 @@ ir::MethodDefinition *ETSChecker::CreateProxyMethodForLambda(ir::ClassDefinition
 
     // Create the synthetic parameters for the proxy method
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
-    auto *func_param_scope = CreateProxyMethodParams(lambda->Function()->Params(), params, captured, is_static);
+    auto *func_param_scope = CreateProxyMethodParams(lambda, params, captured, is_static);
 
     // Create the scopes for the proxy method
     auto param_ctx = binder::LexicalScope<binder::FunctionParamScope>::Enter(Binder(), func_param_scope, false);
@@ -1716,7 +1719,25 @@ ir::MethodDefinition *ETSChecker::CreateProxyMethodForLambda(ir::ClassDefinition
 
     // Copy the lambda function body for the proxy method and replace the bodies scope to the proxy function
     auto *body = lambda->Function()->Body();
-    body->AsBlockStatement()->SetScope(scope);
+
+    if (body->IsBlockStatement()) {
+        body->AsBlockStatement()->SetScope(scope);
+    } else {
+        const auto lambda_return_type = lambda->Function()->ReturnTypeAnnotation() != nullptr
+                                            ? lambda->Function()->ReturnTypeAnnotation()->GetType(this)
+                                            : body->Check(this);
+
+        ASSERT(lambda_return_type != nullptr);
+        ArenaVector<ir::Statement *> lambda_block_statements(Allocator()->Adapter());
+
+        if (lambda_return_type->IsETSVoidType()) {
+            lambda_block_statements.push_back(AllocNode<ir::ExpressionStatement>(body->AsExpression()));
+        } else {
+            lambda_block_statements.push_back(AllocNode<ir::ReturnStatement>(body->AsExpression()));
+        }
+
+        body = AllocNode<ir::BlockStatement>(Allocator(), scope, std::move(lambda_block_statements));
+    }
 
     ir::ScriptFunctionFlags func_flags = ir::ScriptFunctionFlags::METHOD | ir::ScriptFunctionFlags::PROXY;
     if (lambda->Function()->IsAsyncFunc()) {
@@ -1850,10 +1871,11 @@ void ETSChecker::ReplaceIdentifierReferenceInProxyMethod(
     ReplaceIdentifierReferencesInProxyMethod(node, proxy_params, merged_target_references);
 }
 
-binder::FunctionParamScope *ETSChecker::CreateProxyMethodParams(ArenaVector<ir::Expression *> &params,
+binder::FunctionParamScope *ETSChecker::CreateProxyMethodParams(ir::ArrowFunctionExpression *lambda,
                                                                 ArenaVector<ir::Expression *> &proxy_params,
                                                                 ArenaVector<ir::AstNode *> &captured, bool is_static)
 {
+    const auto &params = lambda->Function()->Params();
     // Create a param scope for the proxy method parameters
     auto param_ctx = binder::LexicalScope<binder::FunctionParamScope>(Binder());
 
@@ -1864,7 +1886,17 @@ binder::FunctionParamScope *ETSChecker::CreateProxyMethodParams(ArenaVector<ir::
         size_t counter = is_static ? captured.size() : (captured.size() - 1);
         for (size_t i = 0; i < counter; i++) {
             auto *captured_var = captured[i]->AsClassProperty()->Key()->AsIdentifier()->Variable();
-            auto *param_ident = Allocator()->New<ir::Identifier>(captured_var->Name(), Allocator());
+            ir::Identifier *param_ident = nullptr;
+
+            // When a lambda is defined inside an instance extension function, if "this" is captured inside the lambda,
+            // "this" should be binded with the parameter of the proxy method
+            if (this->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD) &&
+                lambda->CapturedVars()[i]->Name() == binder::Binder::MANDATORY_PARAM_THIS) {
+                param_ident = Allocator()->New<ir::Identifier>(binder::Binder::MANDATORY_PARAM_THIS, Allocator());
+            } else {
+                param_ident = Allocator()->New<ir::Identifier>(captured_var->Name(), Allocator());
+            }
+
             auto *param = Allocator()->New<ir::ETSParameterExpression>(param_ident, nullptr);
             auto [_, var] = Binder()->AddParamDecl(param);
             (void)_;

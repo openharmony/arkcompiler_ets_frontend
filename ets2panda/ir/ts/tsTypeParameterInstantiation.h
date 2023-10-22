@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,16 +20,30 @@
 
 namespace panda::es2panda::ir {
 class TSTypeParameterInstantiation : public Expression {
+    struct Tag {};
+
 public:
+    TSTypeParameterInstantiation() = delete;
+    ~TSTypeParameterInstantiation() override = default;
+
+    NO_COPY_SEMANTIC(TSTypeParameterInstantiation);
+    NO_MOVE_SEMANTIC(TSTypeParameterInstantiation);
+
     explicit TSTypeParameterInstantiation(ArenaVector<TypeNode *> &&params)
         : Expression(AstNodeType::TS_TYPE_PARAMETER_INSTANTIATION), params_(std::move(params))
     {
     }
 
-    const ArenaVector<TypeNode *> &Params() const
+    explicit TSTypeParameterInstantiation(Tag tag, TSTypeParameterInstantiation const &other,
+                                          ArenaAllocator *allocator);
+
+    [[nodiscard]] const ArenaVector<TypeNode *> &Params() const noexcept
     {
         return params_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

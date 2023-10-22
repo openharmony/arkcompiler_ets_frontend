@@ -714,9 +714,30 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
         }
 
         if (init->IsArrayExpression()) {
-            ThrowTypeError(
-                {"Cannot infer type for ", ident->Name(), " because array literal needs an explicit target type"},
-                ident->Start());
+            auto elements = init->AsArrayExpression()->Elements();
+
+            if (elements.empty()) {
+                annotation_type = Allocator()->New<ETSArrayType>(GlobalETSObjectType());
+            } else {
+                auto type = elements[0]->Check(this);
+                auto const prim_type = ETSBuiltinTypeAsPrimitiveType(type);
+                for (auto element : elements) {
+                    auto const e_type = element->Check(this);
+                    auto const prim_e_type = ETSBuiltinTypeAsPrimitiveType(e_type);
+                    if (prim_e_type != nullptr && prim_type != nullptr &&
+                        prim_e_type->HasTypeFlag(TypeFlag::ETS_NUMERIC) &&
+                        prim_type->HasTypeFlag(TypeFlag::ETS_NUMERIC)) {
+                        type = GlobalDoubleType();
+                    } else if (IsTypeIdenticalTo(type, e_type)) {
+                        continue;
+                    } else {
+                        // TODO (): Create union type when implemented here
+                        ThrowTypeError({"Union type is not implemented yet!"}, ident->Start());
+                    }
+                }
+                annotation_type = Allocator()->New<ETSArrayType>(type);
+            }
+            binding_var->SetTsType(annotation_type);
         }
 
         if (init->IsObjectExpression()) {
@@ -744,6 +765,10 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
 
     checker::Type *init_type = init->Check(this);
+
+    if (init_type == nullptr) {
+        ThrowTypeError("Cannot get the expression type", init->Start());
+    }
 
     if (annotation_type != nullptr) {
         AssignmentContext(Relation(), init, init_type, annotation_type, init->Start(),
@@ -897,17 +922,25 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *module_obj
 
     for (auto [_, var] : res->second.front()->GlobalClassScope()->StaticFieldScope()->Bindings()) {
         (void)_;
-        module_obj_type->AddProperty<checker::PropertyType::STATIC_FIELD>(var->AsLocalVariable());
+        if (var->AsLocalVariable()->Declaration()->Node()->IsExported()) {
+            module_obj_type->AddProperty<checker::PropertyType::STATIC_FIELD>(var->AsLocalVariable());
+        }
     }
 
     for (auto [_, var] : res->second.front()->GlobalClassScope()->StaticMethodScope()->Bindings()) {
         (void)_;
-        module_obj_type->AddProperty<checker::PropertyType::STATIC_METHOD>(var->AsLocalVariable());
+        if (var->AsLocalVariable()->Declaration()->Node()->IsExported()) {
+            module_obj_type->AddProperty<checker::PropertyType::STATIC_METHOD>(var->AsLocalVariable());
+        }
     }
 
     for (auto [_, var] : res->second.front()->GlobalClassScope()->InstanceDeclScope()->Bindings()) {
         (void)_;
-        module_obj_type->AddProperty<checker::PropertyType::STATIC_DECL>(var->AsLocalVariable());
+        if (var->AsLocalVariable()->Declaration()->Node()->IsExported() ||
+            (var->AsLocalVariable()->Declaration()->Node()->IsClassDefinition() &&
+             var->AsLocalVariable()->Declaration()->Node()->Parent()->IsExported())) {
+            module_obj_type->AddProperty<checker::PropertyType::STATIC_DECL>(var->AsLocalVariable());
+        }
     }
 }
 
@@ -2018,5 +2051,20 @@ void ETSChecker::AddNullParamsForDefaultParams(const Signature *const signature,
         }
     }
     arguments.push_back(checker->Allocator()->New<ir::NumberLiteral>(lexer::Number(num)));
+}
+
+bool ETSChecker::ExtensionETSFunctionType(checker::Type *type)
+{
+    if (!type->IsETSFunctionType()) {
+        return false;
+    }
+
+    for (auto *signature : type->AsETSFunctionType()->CallSignatures()) {
+        if (signature->Function()->IsExtensionMethod()) {
+            return true;
+        }
+    }
+
+    return false;
 }
 }  // namespace panda::es2panda::checker

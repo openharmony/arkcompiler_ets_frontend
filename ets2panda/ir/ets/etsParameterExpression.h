@@ -21,6 +21,12 @@
 namespace panda::es2panda::ir {
 class ETSParameterExpression final : public Expression {
 public:
+    ETSParameterExpression() = delete;
+    ~ETSParameterExpression() override = default;
+
+    NO_COPY_SEMANTIC(ETSParameterExpression);
+    NO_MOVE_SEMANTIC(ETSParameterExpression);
+
     explicit ETSParameterExpression(AnnotatedExpression *ident_or_spread, Expression *initializer);
 
     [[nodiscard]] const Identifier *Ident() const noexcept;
@@ -50,6 +56,9 @@ public:
     {
         return spread_ != nullptr;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void Iterate(const NodeTraverser &cb) const override;
     void TransformChildren(const NodeTransformer &cb) override;

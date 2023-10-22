@@ -266,7 +266,7 @@
         },
         {
             "line": 178,
-            "column": 12,
+            "column": 18,
             "problem": "FunctionApplyBindCall"
         },
         {
@@ -286,7 +286,7 @@
         },
         {
             "line": 187,
-            "column": 54,
+            "column": 60,
             "problem": "FunctionApplyBindCall"
         },
         {
@@ -348,11 +348,6 @@
             "line": 201,
             "column": 39,
             "problem": "IntersectionType"
-        },
-        {
-            "line": 204,
-            "column": 15,
-            "problem": "GenericCallNoTypeArgs"
         },
         {
             "line": 204,

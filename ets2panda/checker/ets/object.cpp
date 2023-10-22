@@ -1033,14 +1033,31 @@ void ETSChecker::ValidateResolvedProperty(const binder::LocalVariable *const pro
     }
 }
 
-// NOLINTNEXTLINE(readability-function-size)
-binder::LocalVariable *ETSChecker::ResolveMemberReference(const ir::MemberExpression *const member_expr,
-                                                          const ETSObjectType *const target)
+binder::Variable *ETSChecker::ResolveInstanceExtension(const ir::MemberExpression *const member_expr)
 {
+    auto *global_function_var = Scope()
+                                    ->FindInGlobal(member_expr->Property()->AsIdentifier()->Name(),
+                                                   binder::ResolveBindingOptions::STATIC_METHODS)
+                                    .variable;
+
+    if (global_function_var == nullptr || !ExtensionETSFunctionType(this->GetTypeOfVariable(global_function_var))) {
+        return nullptr;
+    }
+
+    return global_function_var;
+}
+
+// NOLINTNEXTLINE(readability-function-size)
+std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::MemberExpression *const member_expr,
+                                                                const ETSObjectType *const target)
+{
+    std::vector<ResolveResult *> resolve_res {};
+
     if (target->IsETSDynamicType() && !target->AsETSDynamicType()->HasDecl()) {
         auto prop_name = member_expr->Property()->AsIdentifier()->Name();
         binder::LocalVariable *prop_var = target->AsETSDynamicType()->GetPropertyDynamic(prop_name, this);
-        return prop_var;
+        resolve_res.emplace_back(Allocator()->New<ResolveResult>(prop_var, ResolvedKind::PROPERTY));
+        return resolve_res;
     }
 
     auto search_flag = [member_expr]() -> PropertySearchFlags {
@@ -1122,7 +1139,40 @@ binder::LocalVariable *ETSChecker::ResolveMemberReference(const ir::MemberExpres
     }
 
     auto *const prop = target->GetProperty(member_expr->Property()->AsIdentifier()->Name(), search_flag);
-    ValidateResolvedProperty(prop, target, member_expr->Property()->AsIdentifier(), search_flag);
+    binder::Variable *global_function_var = nullptr;
+
+    if (member_expr->Parent()->IsCallExpression() &&
+        member_expr->Parent()->AsCallExpression()->Callee() == member_expr) {
+        global_function_var = ResolveInstanceExtension(member_expr);
+    }
+
+    if (global_function_var == nullptr ||
+        (target_ref != nullptr && target_ref->HasFlag(binder::VariableFlags::CLASS_OR_INTERFACE))) {
+        /*
+            Instance extension function can only be called by class instance, if a property is accessed by
+            CLASS or INTERFACE type, it couldn't be an instance extension function call
+
+            Example code:
+                class A {}
+                static function A.xxx() {}
+                function main() {
+                    A.xxx()
+                }
+
+            !NB: When supporting static extension function, the above code case would be supported
+        */
+        ValidateResolvedProperty(prop, target, member_expr->Property()->AsIdentifier(), search_flag);
+    } else {
+        resolve_res.emplace_back(
+            Allocator()->New<ResolveResult>(global_function_var, ResolvedKind::INSTANCE_EXTENSION_FUNCTION));
+
+        if (prop == nullptr) {
+            // No matched property, but have possible matched global extension function
+            return resolve_res;
+        }
+    }
+
+    resolve_res.emplace_back(Allocator()->New<ResolveResult>(prop, ResolvedKind::PROPERTY));
 
     if (prop->HasFlag(binder::VariableFlags::METHOD) && !IsVariableGetterSetter(prop) &&
         (search_flag & PropertySearchFlags::IS_FUNCTIONAL) == 0) {
@@ -1186,7 +1236,7 @@ binder::LocalVariable *ETSChecker::ResolveMemberReference(const ir::MemberExpres
         }
     }
 
-    return prop;
+    return resolve_res;
 }
 
 void ETSChecker::CheckValidInheritance(ETSObjectType *class_type, ir::ClassDefinition *class_def)

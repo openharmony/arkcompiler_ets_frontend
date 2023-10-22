@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { bad_func } from "./dynamic_lib"
+
 function choose<T>(x: T, y: T): T {
   return Math.random() < 0.5 ? x : y
 }
@@ -71,3 +73,5 @@ d.ddd.push([]);
   Boolean(c)
   Boolean(d)
 }
+
+Boolean(bad_func())

@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token '?'. [identifier_optional_negative.ts:19:9]

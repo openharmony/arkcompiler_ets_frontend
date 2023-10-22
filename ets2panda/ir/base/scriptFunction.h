@@ -233,6 +233,11 @@ public:
         return lang_.IsDynamic();
     }
 
+    bool IsExtensionMethod() const
+    {
+        return (func_flags_ & ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD) != 0;
+    }
+
     bool Declare() const
     {
         return declare_;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,21 +20,36 @@
 
 namespace panda::es2panda::ir {
 class SequenceExpression : public Expression {
+private:
+    struct Tag {};
+
 public:
+    SequenceExpression() = delete;
+    ~SequenceExpression() override = default;
+
+    NO_COPY_SEMANTIC(SequenceExpression);
+    NO_MOVE_SEMANTIC(SequenceExpression);
+
     explicit SequenceExpression(ArenaVector<Expression *> &&sequence)
         : Expression(AstNodeType::SEQUENCE_EXPRESSION), sequence_(std::move(sequence))
     {
     }
 
-    const ArenaVector<Expression *> &Sequence() const
+    explicit SequenceExpression(Tag tag, SequenceExpression const &other, ArenaAllocator *allocator);
+
+    [[nodiscard]] const ArenaVector<Expression *> &Sequence() const noexcept
     {
         return sequence_;
     }
 
-    ArenaVector<Expression *> &Sequence()
+    [[nodiscard]] ArenaVector<Expression *> &Sequence() noexcept
     {
         return sequence_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;

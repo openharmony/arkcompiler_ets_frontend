@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,13 +21,19 @@
 namespace panda::es2panda::ir {
 class Literal : public Expression {
 public:
-    bool IsLiteral() const override
+    Literal() = delete;
+    ~Literal() override = default;
+
+    NO_COPY_SEMANTIC(Literal);
+    NO_MOVE_SEMANTIC(Literal);
+
+    [[nodiscard]] bool IsLiteral() const noexcept override
     {
         return true;
     }
 
 protected:
-    explicit Literal(AstNodeType type) : Expression(type) {}
+    explicit Literal(AstNodeType const type) : Expression(type) {}
 };
 }  // namespace panda::es2panda::ir
 

@@ -16,7 +16,7 @@
 import * as ts from 'typescript';
 import { ProblemInfo } from './ProblemInfo';
 import { TypeScriptLinter, consoleLog } from './TypeScriptLinter';
-import { FaultID } from './Problems';
+import { FaultID } from './utils/consts/Problems';
 import { faultDesc } from './FaultDesc';
 import { faultsAttrs } from './FaultAttrs';
 import { LintRunResult } from './LintRunResult';

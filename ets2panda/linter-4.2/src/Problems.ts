@@ -34,8 +34,7 @@ export enum FaultID {
   NewTarget, DefiniteAssignment, Prototype, GlobalThis,
   UtilityType, PropertyDeclOnFunction, FunctionApplyBindCall, ConstAssertion, ImportAssertion, 
   SpreadOperator, LimitedStdLibApi, ErrorSuppression, StrictDiagnostic, UnsupportedDecorators, ImportAfterStatement,
-  EsObjectType, EsObjectAssignment, EsObjectAccess,
-  LAST_ID, // this should always be last enum`
+  EsObjectType, LAST_ID, // this should always be last enum
 }
 
 export class FaultAttributs {
@@ -131,6 +130,4 @@ faultsAttrs[FaultID.ErrorSuppression] = {cookBookRef: '146',};
 faultsAttrs[FaultID.UnsupportedDecorators] = {warning: true, cookBookRef: '148',};
 faultsAttrs[FaultID.ClassAsObject] = {cookBookRef: '149',};
 faultsAttrs[FaultID.ImportAfterStatement] = {cookBookRef: '150',};
-faultsAttrs[FaultID.EsObjectType] = {warning: true, cookBookRef: '8'};
-faultsAttrs[FaultID.EsObjectAssignment] = {warning: true, cookBookRef: '8'};
-faultsAttrs[FaultID.EsObjectAccess] = {warning: true, cookBookRef: '8'};
+faultsAttrs[FaultID.EsObjectType] = {warning: true, cookBookRef: '151',};

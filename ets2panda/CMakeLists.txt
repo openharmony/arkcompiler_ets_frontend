@@ -13,6 +13,8 @@
 
 cmake_minimum_required (VERSION 3.5.0)
 
+include(cmake/coverage.cmake)
+
 project (es2panda)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -130,12 +132,15 @@ set(ES2PANDA_LIB_SRC
   compiler/function/asyncGeneratorFunctionBuilder.cpp
   compiler/function/functionBuilder.cpp
   compiler/function/generatorFunctionBuilder.cpp
+  compiler/lowering/checkerPhase.cpp
   compiler/lowering/phase.cpp
   compiler/lowering/util.cpp
+  compiler/lowering/ets/generateDeclarations.cpp
   compiler/lowering/ets/opAssignment.cpp
   ir/astDump.cpp
   ir/astNode.cpp
   ir/irnode.cpp
+  ir/typeNode.cpp
   ir/opaqueTypeNode.cpp
   ir/base/catchClause.cpp
   ir/base/classElement.cpp
@@ -358,6 +363,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/etsBooleanType.cpp
   checker/types/ets/etsDynamicType.cpp
   checker/types/ets/etsEnumType.cpp
+  checker/types/ets/etsExtensionFuncHelperType.cpp
   checker/types/ets/etsFunctionType.cpp
   checker/types/ets/etsObjectType.cpp
   checker/types/ets/etsStringType.cpp
@@ -423,10 +429,6 @@ panda_target_compile_options(es2panda-lib
   PRIVATE -fexceptions -Werror=shadow
 )
 
-panda_target_compile_definitions(es2panda-lib
-  PRIVATE "DEFAULT_ARKTSCONFIG=\"${GENERATED_DIR}/arktsconfig.json\""
-)
-
 panda_target_link_libraries(es2panda-lib
   PUBLIC arkbase hmicuuc.z
   PRIVATE arkassembler
@@ -444,7 +446,41 @@ if (PANDA_FUZZILLI)
       PRIVATE -fPIC
   )
 endif()
-panda_add_sanitizers(TARGET es2panda-lib SANITIZERS ${PANDA_SANITIZERS_LIST})
+panda_add_sanitizers(TARGET es2panda-lib SANITIZERS
+  ${PANDA_SANITIZERS_LIST})
+
+# libes2panda does not include bytecode optimizer, because it is used in
+# libarkruntime, and conflict with JIT setup ensues
+set(ES2PANDA_PUBLIC_SOURCES
+  public/es2panda_lib.cpp
+  util/generateBin.cpp
+  util/options.cpp
+)
+
+
+panda_add_library(es2panda-public ${PANDA_DEFAULT_LIB_TYPE} ${ES2PANDA_PUBLIC_SOURCES})
+add_dependencies(es2panda-public es2panda-lib)
+
+panda_target_include_directories(es2panda-public
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+  PRIVATE ${OUTPUT_DIR}
+)
+
+panda_target_compile_definitions(es2panda-public
+  PRIVATE "DEFAULT_ARKTSCONFIG=\"${GENERATED_DIR}/arktsconfig.json\""
+)
+
+panda_target_compile_options(es2panda-public
+  PRIVATE -fexceptions -Werror=shadow
+)
+
+panda_target_link_libraries(es2panda-public
+  PUBLIC arkbase es2panda-lib
+  PRIVATE arkbytecodeopt
+)
+
+panda_add_sanitizers(TARGET es2panda-public SANITIZERS
+  ${PANDA_SANITIZERS_LIST})
 
 add_subdirectory(aot)
 

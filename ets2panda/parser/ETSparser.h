@@ -27,7 +27,7 @@ enum class PrimitiveType;
 }  // namespace panda::es2panda::ir
 
 namespace panda::es2panda::parser {
-class ETSParser : public TypedParser {
+class ETSParser final : public TypedParser {
 public:
     ETSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
         : TypedParser(program, options, status), global_program_(GetProgram()), parsed_sources_({})
@@ -85,8 +85,9 @@ private:
     std::tuple<ir::ModifierFlags, bool> ParseClassMemberAccessModifiers();
     ir::ModifierFlags ParseClassFieldModifiers(bool seen_static);
     ir::ModifierFlags ParseClassMethodModifiers(bool seen_static);
-    ir::MethodDefinition *ParseClassMethodDefinition(ir::Identifier *method_name, ir::ModifierFlags modifiers);
-    ir::ScriptFunction *ParseFunction(ParserStatus new_status);
+    ir::MethodDefinition *ParseClassMethodDefinition(ir::Identifier *method_name, ir::ModifierFlags modifiers,
+                                                     ir::Identifier *class_name = nullptr);
+    ir::ScriptFunction *ParseFunction(ParserStatus new_status, ir::Identifier *class_name = nullptr);
     ir::MethodDefinition *ParseClassMethod(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                            ir::Expression *prop_name, lexer::SourcePosition *prop_end) override;
     std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
@@ -94,6 +95,7 @@ private:
         binder::FunctionScope *func_scope) override;
     ir::TypeNode *ParseFunctionReturnType(ParserStatus status) override;
     ir::ScriptFunctionFlags ParseFunctionThrowMarker(bool is_rethrows_allowed) override;
+    ir::Expression *CreateParameterThis(util::StringView class_name) override;
 
     // NOLINTNEXTLINE(google-default-arguments)
     void ParseClassFieldDefiniton(ir::Identifier *field_name, ir::ModifierFlags modifiers,

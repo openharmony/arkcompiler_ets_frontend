@@ -592,6 +592,8 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
         if (!etsg->TryLoadConstantExpression(st->Argument())) {
             st->Argument()->Compile(etsg);
         }
+        etsg->ApplyConversion(st->Argument(), nullptr);
+        etsg->ApplyConversion(st->Argument(), st->ReturnType());
     }
 
     if (etsg->ExtendWithFinalizer(st->parent_, st)) {
@@ -607,7 +609,7 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
         etsg->LoadAccumulator(st, res);
     }
 
-    etsg->ApplyConversion(st, st->ReturnType());
+    // etsg->ApplyConversion(st, st->ReturnType());
     etsg->ReturnAcc(st);
 }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,22 +22,30 @@
 namespace panda::es2panda::ir {
 class TemplateElement : public Expression {
 public:
+    ~TemplateElement() override = default;
+
+    NO_COPY_SEMANTIC(TemplateElement);
+    NO_MOVE_SEMANTIC(TemplateElement);
+
     explicit TemplateElement() : Expression(AstNodeType::TEMPLATE_ELEMENT) {}
 
-    explicit TemplateElement(util::StringView raw, util::StringView cooked)
+    explicit TemplateElement(util::StringView const raw, util::StringView const cooked)
         : Expression(AstNodeType::TEMPLATE_ELEMENT), raw_(raw), cooked_(cooked)
     {
     }
 
-    const util::StringView &Raw() const
+    [[nodiscard]] const util::StringView &Raw() const noexcept
     {
         return raw_;
     }
 
-    const util::StringView &Cooked() const
+    [[nodiscard]] const util::StringView &Cooked() const noexcept
     {
         return cooked_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

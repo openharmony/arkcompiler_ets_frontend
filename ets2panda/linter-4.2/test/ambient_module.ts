@@ -35,4 +35,6 @@ declare module 'abc' {
 
 declare namespace abc2 {
   export function f(): void;
+  function foo(): void;
+  export { foo }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,11 +15,14 @@
 
 #include "memberExpression.h"
 
+#include "checker/types/typeRelation.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/function.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
+#include "checker/types/ets/etsExtensionFuncHelperType.h"
+#include "checker/types/ets/etsFunctionType.h"
 #include "checker/types/signature.h"
 #include "ir/astDump.h"
 #include "ir/base/methodDefinition.h"
@@ -32,7 +35,21 @@
 #include "util/helpers.h"
 
 namespace panda::es2panda::ir {
-bool MemberExpression::IsPrivateReference() const
+MemberExpression::MemberExpression([[maybe_unused]] Tag const tag, Expression *const object, Expression *const property)
+    : MemberExpression(*this)
+{
+    object_ = object;
+    if (object_ != nullptr) {
+        object_->SetParent(this);
+    }
+
+    property_ = property;
+    if (property_ != nullptr) {
+        property_->SetParent(this);
+    }
+}
+
+bool MemberExpression::IsPrivateReference() const noexcept
 {
     return property_->IsIdentifier() && property_->AsIdentifier()->IsPrivateIdent();
 }
@@ -382,9 +399,48 @@ checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
     }
 
     obj_type_ = base_type->AsETSObjectType();
-    prop_var_ = checker->ResolveMemberReference(this, obj_type_);
-    checker->ValidatePropertyAccess(prop_var_, obj_type_, property_->Start());
-    SetTsType(checker->GetTypeOfVariable(prop_var_));
-    return TsType();
+    auto resolve_res = checker->ResolveMemberReference(this, obj_type_);
+    ASSERT(!resolve_res.empty());
+
+    switch (resolve_res.size()) {
+        case 1: {
+            if (resolve_res[0]->Kind() == checker::ResolvedKind::PROPERTY) {
+                prop_var_ = resolve_res[0]->Variable()->AsLocalVariable();
+                checker->ValidatePropertyAccess(prop_var_, obj_type_, property_->Start());
+                SetTsType(checker->GetTypeOfVariable(prop_var_));
+            } else {
+                auto *member_type = checker->GetTypeOfVariable(resolve_res[0]->Variable());
+                SetTsType(member_type);
+            }
+            return TsType();
+        }
+        case 2: {
+            // ETSExtensionFuncHelperType(class_method_type, extension_method_type)
+            auto *ets_extension_func_helper_type = checker->CreateETSExtensionFuncHelperType(
+                checker->GetTypeOfVariable(resolve_res[1]->Variable())->AsETSFunctionType(),
+                checker->GetTypeOfVariable(resolve_res[0]->Variable())->AsETSFunctionType());
+            SetTsType(ets_extension_func_helper_type);
+            return TsType();
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const object = object_ != nullptr ? object_->Clone(allocator) : nullptr;
+    auto *const property = property_ != nullptr ? property_->Clone(allocator) : nullptr;
+
+    if (auto *const clone = allocator->New<MemberExpression>(Tag {}, object, property); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

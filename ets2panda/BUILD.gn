@@ -78,6 +78,7 @@ libes2panda_sources = [
   "checker/types/ets/etsBooleanType.cpp",
   "checker/types/ets/etsDynamicType.cpp",
   "checker/types/ets/etsEnumType.cpp",
+  "checker/types/ets/etsExtensionFuncHelperType.cpp",
   "checker/types/ets/etsFunctionType.cpp",
   "checker/types/ets/etsObjectType.cpp",
   "checker/types/ets/etsStringType.cpp",
@@ -160,14 +161,17 @@ libes2panda_sources = [
   "compiler/function/asyncGeneratorFunctionBuilder.cpp",
   "compiler/function/functionBuilder.cpp",
   "compiler/function/generatorFunctionBuilder.cpp",
-  "compiler/lowering/ets/opAssignment.cpp",
+  "compiler/lowering/checkerPhase.cpp",
   "compiler/lowering/phase.cpp",
   "compiler/lowering/util.cpp",
   "es2panda.cpp",
   "ir/as/namedType.cpp",
   "ir/as/prefixAssertionExpression.cpp",
+  "compiler/lowering/ets/generateDeclarations.cpp",
+  "compiler/lowering/ets/opAssignment.cpp",
   "ir/astDump.cpp",
   "ir/astNode.cpp",
+  "ir/typeNode.cpp",
   "ir/base/catchClause.cpp",
   "ir/base/classDefinition.cpp",
   "ir/base/classElement.cpp",
@@ -346,6 +350,14 @@ libes2panda_sources = [
   "util/ustring.cpp",
 ]
 
+# libes2panda does not include bytecode optimizer, because it is used in
+# libarkruntime, and conflict with JIT setup ensues
+libes2panda_public_sources = [
+  "public/es2panda_lib.cpp",
+  "util/generateBin.cpp",
+  "util/options.cpp",
+]
+
 build_gen_root = rebase_path(root_gen_dir)
 
 config("libes2panda_config") {
@@ -353,8 +365,7 @@ config("libes2panda_config") {
     "-fexceptions",
     "-Werror=shadow",
 
-    # TODO(vpukhov): adjust es2panda path
-    "-DDEFAULT_ARKTSCONFIG=\"$build_gen_root/plugins/es2panda/generated/arktsconfig.json\"",
+    "-DDEFAULT_ARKTSCONFIG=\"$build_gen_root/tools/es2panda/generated/arktsconfig.json\"",
   ]
 }
 
@@ -366,6 +377,19 @@ libes2panda_configs = [
   "$ark_root/libpandabase:arkbase_public_config",
   "$ark_root/assembler:arkassembler_public_config",
   "$ark_root/libpandafile:arkfile_public_config",
+]
+
+libes2panda_public_configs = [
+  sdk_libc_secshared_config,
+  "$ark_root:ark_config",
+  ":libes2panda_public_config",
+  ":libes2panda_config",
+  "$ark_root/libpandabase:arkbase_public_config",
+  "$ark_root/assembler:arkassembler_public_config",
+  "$ark_root/libpandafile:arkfile_public_config",
+  "$ark_root/bytecode_optimizer:bytecodeopt_public_config",
+  "$ark_root/compiler:arkcompiler_public_config",
+  "$ark_root/runtime:arkruntime_public_config",
 ]
 
 ohos_shared_library("libes2panda") {
@@ -385,6 +409,7 @@ ohos_shared_library("libes2panda") {
     "$ark_third_party_root/icu/icu4c:shared_icuuc",
   ]
 
+  relative_install_dir = "ark"
   output_extension = "so"
   part_name = "ets_frontend"
   subsystem_name = "arkcompiler"
@@ -407,6 +432,32 @@ ohos_static_library("libes2panda_frontend_static") {
   ]
   part_name = "ets_frontend"
   subsystem_name = "arkcompiler"
+}
+
+ohos_shared_library("libes2panda_public") {
+  sources = libes2panda_public_sources
+
+  configs = libes2panda_public_configs
+
+  deps = [
+    ":libes2panda",
+    "$ark_root/bytecode_optimizer:libarktsbytecodeopt",
+  ]
+
+  relative_install_dir = "ark"
+  output_extension = "so"
+  subsystem_name = "$ark_subsystem_name"
+}
+
+ohos_static_library("libes2panda_public_frontend_static") {
+  sources = libes2panda_public_sources
+
+  configs = libes2panda_public_configs
+
+  deps = [
+    ":libes2panda_frontend_static",
+    "$ark_root/bytecode_optimizer:libarkbytecodeopt_frontend_static",
+  ]
 }
 
 ark_isa_gen("isa_gen_es2panda") {

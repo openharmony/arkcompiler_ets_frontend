@@ -63,6 +63,7 @@ enum class ParserStatus : uint32_t {
     IN_EXTERNAL = 1U << 27U,
     IN_IMPORT = 1U << 28U,
     IN_DEFAULT_IMPORTS = 1U << 29U,
+    IN_EXTENSION_FUNCTION = 1U << 30U,
 };
 
 DEFINE_BITOPS(ParserStatus)

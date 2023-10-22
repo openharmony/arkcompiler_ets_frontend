@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_EXPRESSION_CALL_EXPRESSION_H
 
 #include "binder/variable.h"
+#include "checker/types/ets/etsFunctionType.h"
 #include "ir/expression.h"
 
 namespace panda::es2panda::checker {
@@ -44,7 +45,22 @@ public:
         return callee_;
     }
 
+    Expression *Callee()
+    {
+        return callee_;
+    }
+
+    void SetCallee(Expression *callee)
+    {
+        callee_ = callee;
+    }
+
     const TSTypeParameterInstantiation *TypeParams() const
+    {
+        return type_params_;
+    }
+
+    TSTypeParameterInstantiation *TypeParams()
     {
         return type_params_;
     }
@@ -111,6 +127,10 @@ public:
     void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::Signature *ResolveCallExtensionFunction(checker::ETSFunctionType *function_type,
+                                                     checker::ETSChecker *checker);
+    checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensionFuncHelperType *type,
+                                                                 checker::ETSChecker *checker);
 
 protected:
     compiler::VReg CreateSpreadArguments(compiler::PandaGen *pg) const;

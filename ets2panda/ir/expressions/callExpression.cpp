@@ -373,6 +373,40 @@ bool CallExpression::IsETSConstructorCall() const
     return callee_->IsThisExpression() || callee_->IsSuperExpression();
 }
 
+checker::Signature *CallExpression::ResolveCallExtensionFunction(checker::ETSFunctionType *function_type,
+                                                                 checker::ETSChecker *checker)
+{
+    auto *member_expr = callee_->AsMemberExpression();
+    arguments_.insert(arguments_.begin(), member_expr->Object());
+    auto *signature = checker->ResolveCallExpressionAndTrailingLambda(function_type->CallSignatures(), this, Start());
+    if (!signature->Function()->IsExtensionMethod()) {
+        checker->ThrowTypeError({"Property '", member_expr->Property()->AsIdentifier()->Name(),
+                                 "' does not exist on type '", member_expr->ObjType()->Name(), "'"},
+                                member_expr->Property()->Start());
+    }
+    this->SetSignature(signature);
+    this->SetCallee(member_expr->Property());
+    member_expr->Property()->AsIdentifier()->SetParent(this);
+    this->Arguments()[0]->SetParent(this);
+    checker->HandleUpdatedCallExpressionNode(this);
+    // Set TsType for new Callee(original member expression's Object)
+    this->Callee()->Check(checker);
+    return signature;
+}
+
+checker::Signature *CallExpression::ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensionFuncHelperType *type,
+                                                                             checker::ETSChecker *checker)
+{
+    checker::Signature *signature = checker->ResolveCallExpressionAndTrailingLambda(
+        type->ClassMethodType()->CallSignatures(), this, Start(), checker::TypeRelationFlag::NO_THROW);
+
+    if (signature != nullptr) {
+        return signature;
+    }
+
+    return ResolveCallExtensionFunction(type->ExtensionMethodType(), checker);
+}
+
 checker::Type *CallExpression::Check(checker::ETSChecker *checker)
 {
     if (TsType() != nullptr) {
@@ -391,26 +425,41 @@ checker::Type *CallExpression::Check(checker::ETSChecker *checker)
         bool functional_interface =
             callee_type->IsETSObjectType() &&
             callee_type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
+        bool ets_extension_func_helper_type = callee_type->IsETSExtensionFuncHelperType();
+        bool extension_function_type = callee_->IsMemberExpression() && checker->ExtensionETSFunctionType(callee_type);
 
         if (callee_->IsArrowFunctionExpression()) {
             callee_type = InitAnonymousLambdaCallee(checker, callee_, callee_type);
             functional_interface = true;
         }
 
-        if (!functional_interface && !callee_type->IsETSFunctionType() && !constructor_call) {
+        if (!functional_interface && !callee_type->IsETSFunctionType() && !constructor_call &&
+            !ets_extension_func_helper_type) {
             checker->ThrowTypeError("This expression is not callable.", Start());
         }
 
-        auto &signatures = constructor_call ? callee_type->AsETSObjectType()->ConstructSignatures()
-                           : functional_interface
-                               ? callee_type->AsETSObjectType()
-                                     ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke")
-                                     ->TsType()
-                                     ->AsETSFunctionType()
-                                     ->CallSignatures()
-                               : callee_type->AsETSFunctionType()->CallSignatures();
+        checker::Signature *signature = nullptr;
 
-        auto *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, this, Start());
+        if (ets_extension_func_helper_type) {
+            signature = ResolveCallForETSExtensionFuncHelperType(callee_type->AsETSExtensionFuncHelperType(), checker);
+        } else {
+            if (extension_function_type) {
+                signature = ResolveCallExtensionFunction(callee_type->AsETSFunctionType(), checker);
+            } else {
+                auto &signatures = constructor_call ? callee_type->AsETSObjectType()->ConstructSignatures()
+                                   : functional_interface
+                                       ? callee_type->AsETSObjectType()
+                                             ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke")
+                                             ->TsType()
+                                             ->AsETSFunctionType()
+                                             ->CallSignatures()
+                                       : callee_type->AsETSFunctionType()->CallSignatures();
+                signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, this, Start());
+                if (signature->Function()->IsExtensionMethod()) {
+                    checker->ThrowTypeError({"No matching call signature"}, Start());
+                }
+            }
+        }
 
         checker->CheckObjectLiteralArguments(signature, arguments_);
 

@@ -78,6 +78,30 @@ enum class OverrideErrorCode {
     OVERRIDDEN_WEAKER,
 };
 
+enum class ResolvedKind {
+    PROPERTY,
+    INSTANCE_EXTENSION_FUNCTION,
+};
+
+class ResolveResult {
+public:
+    explicit ResolveResult(binder::Variable *v, ResolvedKind kind) : variable_(v), kind_(kind) {}
+
+    binder::Variable *Variable()
+    {
+        return variable_;
+    }
+
+    ResolvedKind Kind()
+    {
+        return kind_;
+    }
+
+private:
+    binder::Variable *variable_ {};
+    ResolvedKind kind_ {};
+};
+
 using ComputedAbstracts =
     ArenaUnorderedMap<ETSObjectType *, std::pair<ArenaVector<ETSFunctionType *>, std::unordered_set<ETSObjectType *>>>;
 using ArrayMap = ArenaUnorderedMap<Type *, ETSArrayType *>;
@@ -85,7 +109,7 @@ using GlobalArraySignatureMap = ArenaUnorderedMap<ETSArrayType *, Signature *>;
 using DynamicCallIntrinsicsMap = ArenaUnorderedMap<Language, ArenaUnorderedMap<util::StringView, ir::ScriptFunction *>>;
 using DynamicLambdaObjectSignatureMap = ArenaUnorderedMap<std::string, Signature *>;
 
-class ETSChecker : public Checker {
+class ETSChecker final : public Checker {
 public:
     explicit ETSChecker()
         // NOLINTNEXTLINE(readability-redundant-member-init)
@@ -180,7 +204,9 @@ public:
     void CreateFunctionTypesFromAbstracts(const std::vector<Signature *> &abstracts,
                                           ArenaVector<ETSFunctionType *> *target);
     void CheckCyclicConstructorCall(Signature *signature);
-    binder::LocalVariable *ResolveMemberReference(const ir::MemberExpression *member_expr, const ETSObjectType *target);
+    std::vector<ResolveResult *> ResolveMemberReference(const ir::MemberExpression *member_expr,
+                                                        const ETSObjectType *target);
+    binder::Variable *ResolveInstanceExtension(const ir::MemberExpression *member_expr);
     void CheckImplicitSuper(ETSObjectType *class_type, Signature *ctor_sig);
     void CheckValidInheritance(ETSObjectType *class_type, ir::ClassDefinition *class_def);
     void CheckGetterSetterProperties(ETSObjectType *class_type);
@@ -206,6 +232,8 @@ public:
     ETSFunctionType *CreateETSFunctionType(ir::ScriptFunction *func, Signature *signature, util::StringView name);
     ETSFunctionType *CreateETSFunctionType(util::StringView name);
     ETSFunctionType *CreateETSFunctionType(ArenaVector<Signature *> &signatures);
+    ETSExtensionFuncHelperType *CreateETSExtensionFuncHelperType(ETSFunctionType *class_method_type,
+                                                                 ETSFunctionType *extension_function_type);
     ETSTypeParameter *CreateTypeParameter(Type *assembler_type);
     ETSObjectType *CreateETSObjectType(util::StringView name, ir::AstNode *decl_node, ETSObjectFlags flags);
     ETSEnumType *CreateETSEnumType(ir::TSEnumDeclaration const *enum_decl);
@@ -275,7 +303,8 @@ public:
                                      const ir::TSTypeParameterInstantiation *type_arguments,
                                      const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos);
     Signature *ResolveCallExpressionAndTrailingLambda(ArenaVector<Signature *> &signatures,
-                                                      ir::CallExpression *call_expr, const lexer::SourcePosition &pos);
+                                                      ir::CallExpression *call_expr, const lexer::SourcePosition &pos,
+                                                      TypeRelationFlag throw_flag = TypeRelationFlag::NONE);
     Signature *ResolveConstructExpression(ETSObjectType *type, const ArenaVector<ir::Expression *> &arguments,
                                           const lexer::SourcePosition &pos);
     void CheckObjectLiteralArguments(Signature *sig, ArenaVector<ir::Expression *> const &arguments);
@@ -308,7 +337,7 @@ public:
     ir::MethodDefinition *CreateLambdaImplicitCtor(ArenaVector<ir::AstNode *> &properties);
     ir::MethodDefinition *CreateProxyMethodForLambda(ir::ClassDefinition *klass, ir::ArrowFunctionExpression *lambda,
                                                      ArenaVector<ir::AstNode *> &captured, bool is_static);
-    binder::FunctionParamScope *CreateProxyMethodParams(ArenaVector<ir::Expression *> &params,
+    binder::FunctionParamScope *CreateProxyMethodParams(ir::ArrowFunctionExpression *lambda,
                                                         ArenaVector<ir::Expression *> &proxy_params,
                                                         ArenaVector<ir::AstNode *> &captured, bool is_static);
     void ReplaceIdentifierReferencesInProxyMethod(ir::AstNode *body, ArenaVector<ir::Expression *> &proxy_params,
@@ -446,6 +475,7 @@ public:
     void AddNullParamsForDefaultParams(const Signature *signature,
                                        ArenaVector<panda::es2panda::ir::Expression *> &arguments, ETSChecker *checker);
     void SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpression *expr, Type *annotation_type);
+    bool ExtensionETSFunctionType(checker::Type *type);
 
     // Exception
     ETSObjectType *CheckExceptionOrErrorType(checker::Type *type, lexer::SourcePosition pos);
@@ -480,6 +510,8 @@ public:
     void BuildLambdaObjectClass(ETSObjectType *functional_interface, ir::TypeNode *ret_type_annotation);
     // Trailing lambda
     void EnsureValidCurlyBrace(ir::CallExpression *call_expr);
+    // Extension function
+    void HandleUpdatedCallExpressionNode(ir::CallExpression *call_expr);
 
     std::recursive_mutex *Mutex()
     {

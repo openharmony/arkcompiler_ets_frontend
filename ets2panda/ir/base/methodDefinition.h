@@ -16,12 +16,14 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_METHOD_DEFINITION_H
 #define ES2PANDA_PARSER_INCLUDE_AST_METHOD_DEFINITION_H
 
+#include "checker/types/ets/etsObjectType.h"
+#include "checker/types/signature.h"
 #include "ir/base/classElement.h"
 
 namespace panda::es2panda::ir {
 class Expression;
 
-enum class MethodDefinitionKind { NONE, CONSTRUCTOR, METHOD, GET, SET };
+enum class MethodDefinitionKind { NONE, CONSTRUCTOR, METHOD, EXTENSION_METHOD, GET, SET };
 
 class MethodDefinition : public ClassElement {
 public:
@@ -41,6 +43,11 @@ public:
     bool IsConstructor() const
     {
         return kind_ == MethodDefinitionKind::CONSTRUCTOR;
+    }
+
+    bool IsExtensionMethod() const
+    {
+        return kind_ == MethodDefinitionKind::EXTENSION_METHOD;
     }
 
     const ArenaVector<MethodDefinition *> &Overloads() const
@@ -67,6 +74,13 @@ public:
     const ScriptFunction *Function() const;
     PrivateFieldKind ToPrivateFieldKind(bool is_static) const override;
     void CheckMethodModifiers(checker::ETSChecker *checker);
+    void CheckExtensionMethod(checker::ETSChecker *checker, ScriptFunction *extension_func);
+    void CheckExtensionIsShadowedByMethod(checker::ETSChecker *checker, checker::ETSObjectType *obj_type,
+                                          ScriptFunction *extension_func, checker::Signature *sigature);
+    void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *checker,
+                                                           checker::ETSObjectType *obj_type,
+                                                           ScriptFunction *extension_func,
+                                                           checker::Signature *sigature);
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

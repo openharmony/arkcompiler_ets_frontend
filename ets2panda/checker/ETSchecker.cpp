@@ -16,8 +16,9 @@
 #include "ETSchecker.h"
 
 #include "es2panda.h"
-#include "ir/expression.h"
 #include "ir/base/classDefinition.h"
+#include "ir/expression.h"
+#include "ir/expressions/callExpression.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/statements/blockStatement.h"
 #include "binder/ETSBinder.h"
@@ -316,6 +317,11 @@ const GlobalArraySignatureMap &ETSChecker::GlobalArrayTypes() const
 const Type *MaybeBoxedType(Checker *checker, const binder::Variable *var)
 {
     return checker->AsETSChecker()->MaybeBoxedType(var);
+}
+
+void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *call_expr)
+{
+    Binder()->AsETSBinder()->HandleCustomNodes(call_expr);
 }
 
 }  // namespace panda::es2panda::checker

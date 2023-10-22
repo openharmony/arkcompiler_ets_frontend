@@ -118,9 +118,7 @@ export class LinterConfig {
     LinterConfig.nodeDesc[FaultID.StrictDiagnostic] = 'Strict diagnostic';
     LinterConfig.nodeDesc[FaultID.UnsupportedDecorators] = 'Unsupported decorators';
     LinterConfig.nodeDesc[FaultID.ImportAfterStatement] = 'Import declaration after other declaration or statement';
-    LinterConfig.nodeDesc[FaultID.EsObjectType] = '"ESObject" type';
-    LinterConfig.nodeDesc[FaultID.EsObjectAssignment] = '"ESObject" type assignment';
-    LinterConfig.nodeDesc[FaultID.EsObjectAccess] = '"ESObject" access';
+    LinterConfig.nodeDesc[FaultID.EsObjectType] = 'Restricted "ESObject" type';
 
     LinterConfig.initTsSyntaxKindNames();
   }

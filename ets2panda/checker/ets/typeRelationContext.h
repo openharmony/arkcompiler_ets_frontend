@@ -54,7 +54,8 @@ public:
         relation->SetFlags(flags_);
 
         if (!relation->IsAssignableTo(source, target)) {
-            if (((flags_ & TypeRelationFlag::UNBOXING) != 0) && source->IsETSObjectType() && !relation->IsTrue()) {
+            if (((flags_ & TypeRelationFlag::UNBOXING) != 0) && !relation->IsTrue() && source->IsETSObjectType() &&
+                !target->IsETSObjectType()) {
                 ets_checker->CheckUnboxedTypesAssignable(relation, source, target);
             }
             if (((flags_ & TypeRelationFlag::BOXING) != 0) && target->IsETSObjectType() && !relation->IsTrue()) {
@@ -100,7 +101,8 @@ public:
         relation->SetFlags(flags_ | initial_flags);
 
         if (!relation->IsAssignableTo(source, target)) {
-            if (((flags_ & TypeRelationFlag::UNBOXING) != 0U) && source->IsETSObjectType() && !relation->IsTrue()) {
+            if (((flags_ & TypeRelationFlag::UNBOXING) != 0U) && !relation->IsTrue() && source->IsETSObjectType() &&
+                !target->IsETSObjectType()) {
                 ets_checker->CheckUnboxedSourceTypeWithWideningAssignable(relation, source, target);
             }
             if (((flags_ & TypeRelationFlag::BOXING) != 0) && target->IsETSObjectType() && !relation->IsTrue()) {

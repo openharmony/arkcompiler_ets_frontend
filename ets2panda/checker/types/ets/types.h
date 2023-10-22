@@ -25,6 +25,7 @@
 #include "shortType.h"
 #include "etsBooleanType.h"
 #include "etsEnumType.h"
+#include "etsExtensionFuncHelperType.h"
 #include "etsFunctionType.h"
 #include "etsVoidType.h"
 #include "etsStringType.h"

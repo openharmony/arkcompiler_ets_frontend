@@ -64,7 +64,7 @@ bool Token::IsUnary() const
             type_ == TokenType::PUNCTUATOR_TILDE || type_ == TokenType::PUNCTUATOR_EXCLAMATION_MARK ||
             type_ == TokenType::PUNCTUATOR_PLUS_PLUS || type_ == TokenType::PUNCTUATOR_MINUS_MINUS ||
             type_ == TokenType::KEYW_TYPEOF || type_ == TokenType::KEYW_VOID || type_ == TokenType::KEYW_DELETE ||
-            type_ == TokenType::KEYW_AWAIT);
+            type_ == TokenType::KEYW_AWAIT || type_ == TokenType::PUNCTUATOR_DOLLAR_DOLLAR);
 }
 
 bool Token::IsPropNameLiteral() const
@@ -421,6 +421,8 @@ const char *TokenToString(TokenType type)  // NOLINT(readability-function-size)
             return "eos";
         case TokenType::KEYW_OUT:
             return "out";
+        case TokenType::PUNCTUATOR_DOLLAR_DOLLAR:
+            return "$$";
         default:
             return "";
     }

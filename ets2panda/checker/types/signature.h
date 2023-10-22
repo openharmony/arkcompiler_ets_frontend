@@ -40,6 +40,7 @@ public:
         }
         for (auto *it : other->params) {
             params.push_back(it->Copy(allocator, it->Declaration()));
+            params.back()->SetTsType(it->TsType());
         }
 
         min_arg_count = other->min_arg_count;

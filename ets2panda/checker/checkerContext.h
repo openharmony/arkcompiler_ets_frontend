@@ -44,6 +44,7 @@ enum class CheckerStatus : uint32_t {
     BUILTINS_INITIALIZED = 1U << 12U,
     IN_LAMBDA = 1U << 13U,
     IGNORE_VISIBILITY = 1U << 14U,
+    IN_INSTANCE_EXTENSION_METHOD = 1U << 15U,
 };
 
 DEFINE_BITOPS(CheckerStatus)

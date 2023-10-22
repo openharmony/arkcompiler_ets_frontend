@@ -116,4 +116,22 @@ bool ETSLaunchExpression::IsStaticCall() const
 {
     return expr_->Signature()->HasSignatureFlag(checker::SignatureFlags::STATIC);
 }
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *ETSLaunchExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const expr = expr_ != nullptr ? expr_->Clone(allocator)->AsCallExpression() : nullptr;
+
+    if (auto *const clone = allocator->New<ETSLaunchExpression>(expr); clone != nullptr) {
+        if (expr != nullptr) {
+            expr->SetParent(clone);
+        }
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
 }  // namespace panda::es2panda::ir

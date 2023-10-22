@@ -28,7 +28,7 @@ decodeURIComponent('');
 escape('');
 unescape('');
 
-global.eval('console.log("foo")');
+// global and window are not portabe, so they are excluded from test suite
 globalThis.eval('console.log("foo")');
 
 class C {}
@@ -91,3 +91,9 @@ if (handler.setPrototypeOf) handler.setPrototypeOf(c, null);
 
 /// Array
 ArrayBuffer.isView({});
+
+Number.NaN;
+Number.isFinite(1);
+Number.isNaN(2);
+Number.parseFloat('3');
+Number.parseInt('4', 10);

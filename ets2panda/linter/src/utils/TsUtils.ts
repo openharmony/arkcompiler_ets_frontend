@@ -353,13 +353,12 @@ export class TsUtils {
 
   public isNullableUnionType(type: ts.Type): boolean {
     if (type.isUnion()) {
-      let unionTypes = type.types;
-      return (
-        unionTypes.length === 2 &&
-        ((unionTypes[0].flags & ts.TypeFlags.Undefined) !== 0 || (unionTypes[1].flags & ts.TypeFlags.Undefined) !== 0)
-      );
+      for (const t of type.types) {
+        if (!!(t.flags & ts.TypeFlags.Undefined) || !!(t.flags & ts.TypeFlags.Null)) {
+          return true;
+        }
+      }
     }
-
     return false;
   }
 
@@ -538,19 +537,49 @@ export class TsUtils {
   }
 
   // return true if two class types are not related by inheritance and structural identity check is needed
-  public needToDeduceStructuralIdentity(typeFrom: ts.Type, typeTo: ts.Type, allowPromotion: boolean = false): boolean {
-    if (this.isLibraryType(typeTo)) {
+  public needToDeduceStructuralIdentity(lhsType: ts.Type, rhsType: ts.Type, rhsExpr: ts.Expression,
+    allowPromotion: boolean = false): boolean {
+    // Compare non-nullable version of types.
+    lhsType = this.getNonNullableType(lhsType);
+    rhsType = this.getNonNullableType(rhsType);
+
+    if (this.isLibraryType(lhsType)) {
       return false;
     }
-    if (this.advancedClassChecks && this.isClassValueType(typeFrom) && typeTo != typeFrom && !this.isObject(typeTo)) {
+
+    if (this.isDynamicObjectAssignedToStdType(lhsType, rhsExpr)) {
+      return false;
+    }
+
+    if (rhsType.isUnion()) {
+      // Each Class/Interface of the RHS union type must be compatible with LHS type.
+      for (const compType of rhsType.types) {
+        if (this.needToDeduceStructuralIdentity(lhsType, compType, rhsExpr, allowPromotion)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    if (lhsType.isUnion()) {
+      // RHS type needs to be compatible with at least one type of the LHS union.
+      for (const compType of lhsType.types) {
+        if (!this.needToDeduceStructuralIdentity(compType, rhsType, rhsExpr, allowPromotion)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    if (this.advancedClassChecks && this.isClassValueType(rhsType) && lhsType != rhsType && !this.isObjectType(lhsType)) {
       // missing exact rule
       return true;
     }
 
-    let res = typeTo.isClassOrInterface() && typeFrom.isClassOrInterface() && !this.relatedByInheritanceOrIdentical(typeFrom, typeTo);
+    let res = lhsType.isClassOrInterface() && rhsType.isClassOrInterface() && !this.relatedByInheritanceOrIdentical(rhsType, lhsType);
 
     if (allowPromotion) {
-      res &&= !this.relatedByInheritanceOrIdentical(typeTo, typeFrom);
+      res &&= !this.relatedByInheritanceOrIdentical(lhsType, rhsType);
     }
 
     return res;
@@ -704,132 +733,52 @@ export class TsUtils {
     return t;
   }
 
-  public isExpressionAssignableToType(lhsType: ts.Type | undefined, rhsExpr: ts.Expression): boolean {
+  public isObjectLiteralAssignable(lhsType: ts.Type | undefined, rhsExpr: ts.ObjectLiteralExpression): boolean {
     if (lhsType === undefined) {
       return false;
     }
 
-    let nonNullableLhs = this.getNonNullableType(lhsType);
+    // Always check with the non-nullable variant of lhs type.
+    lhsType = this.getNonNullableType(lhsType);
+
+    if (lhsType.isUnion()) {
+      for (const compType of lhsType.types) {
+        if (this.isObjectLiteralAssignable(compType, rhsExpr)) {
+          return true;
+        }
+      }
+    }
 
     // Allow initializing with anything when the type
     // originates from the library.
-    if (this.isAnyType(nonNullableLhs) || this.isLibraryType(nonNullableLhs)) {
+    if (this.isAnyType(lhsType) || this.isLibraryType(lhsType)) {
       return true;
     }
 
     // issue 13412:
     // Allow initializing with a dynamic object when the LHS type
     // is primitive or defined in standard library.
-    if (this.isDynamicObjectAssignedToStdType(nonNullableLhs, rhsExpr)) {
+    if (this.isDynamicObjectAssignedToStdType(lhsType, rhsExpr)) {
       return true;
     }
 
-    // Allow initializing Record objects with object initializer.
-    // Record supports any type for a its value, but the key value
-    // must be either a string or number literal.
-    if (this.isStdRecordType(nonNullableLhs) && ts.isObjectLiteralExpression(rhsExpr)) {
-      return this.validateRecordObjectKeys(rhsExpr);
-    }
-
     // For Partial<T>, Required<T>, Readonly<T> types, validate their argument type.
-    if (this.isStdPartialType(nonNullableLhs) || this.isStdRequiredType(nonNullableLhs) || this.isStdReadonlyType(nonNullableLhs)) {
-      if (nonNullableLhs.aliasTypeArguments && nonNullableLhs.aliasTypeArguments.length === 1) {
-        nonNullableLhs = nonNullableLhs.aliasTypeArguments[0];
+    if (this.isStdPartialType(lhsType) || this.isStdRequiredType(lhsType) || this.isStdReadonlyType(lhsType)) {
+      if (lhsType.aliasTypeArguments && lhsType.aliasTypeArguments.length === 1) {
+        lhsType = lhsType.aliasTypeArguments[0];
       } else {
         return false;
       }
     }
 
-    let rhsType = this.getNonNullableType(this.tsTypeChecker.getTypeAtLocation(rhsExpr));
-
-    if (rhsType.isUnion()) {
-      let res = true;
-      for (const compType of rhsType.types) {
-        res &&= this.areTypesAssignable(lhsType, compType)
-      }
-      return res;
+    // Allow initializing Record objects with object initializer.
+    // Record supports any type for a its value, but the key value
+    // must be either a string or number literal.
+    if (this.isStdRecordType(lhsType)) {
+      return this.validateRecordObjectKeys(rhsExpr);
     }
 
-    if (lhsType.isUnion()) {
-      for (const compType of lhsType.types) {
-        if (this.isExpressionAssignableToType(compType, rhsExpr)) {
-          return true;
-        }
-      }
-    }
-
-    if (ts.isObjectLiteralExpression(rhsExpr)) {
-      return this.isObjectLiteralAssignable(nonNullableLhs, rhsExpr);
-    }
-
-    return this.areTypesAssignable(lhsType, rhsType)
-  }
-
-  private areTypesAssignable(lhsType: ts.Type, rhsType: ts.Type): boolean {
-    if (rhsType.isUnion()) {
-      let res = true;
-      for (const compType of rhsType.types) {
-        res &&= this.areTypesAssignable(lhsType, compType)
-      }
-      return res;
-    }
-    
-    if (lhsType.isUnion()) {
-      for (const compType of lhsType.types) {
-        if (this.areTypesAssignable(compType, rhsType)) {
-          return true;
-        }
-      }
-    }
-
-    // we pretend to be non strict mode to avoid incompatibilities with IDE/RT linter,
-    // where execution environments differ. in IDE this error will be reported anyways by 
-    // StrictModeError
-    const isRhsUndefined: boolean = !!(rhsType.flags & ts.TypeFlags.Undefined);
-    const isRhsNull: boolean = !!(rhsType.flags & ts.TypeFlags.Null);
-    if (isRhsUndefined || isRhsNull) {
-      return true;
-    }
-    
-    // Allow initializing with anything when the type
-    // originates from the library.
-    if (this.isAnyType(lhsType) || this.isLibraryType(lhsType)) {
-      return true;
-    }
-    
-    // If type is a literal type, compare its base type.
-    lhsType = this.tsTypeChecker.getBaseTypeOfLiteralType(lhsType);
-    rhsType = this.tsTypeChecker.getBaseTypeOfLiteralType(rhsType);
-
-    // issue 13114:
-    // Const enum values are convertible to string/number type.
-    // Note: This check should appear before calling TypeChecker.getBaseTypeOfLiteralType()
-    // to ensure that lhsType has its original form, as it can be a literal type with
-    // specific number or string value, which shouldn't pass this check.
-    if (this.isEnumAssignment(lhsType, rhsType)) {
-      return true;
-    }
-
-    // issue 13033:
-    // If both types are functional, they are considered compatible.
-    if (this.areCompatibleFunctionals(lhsType, rhsType)) {
-      return true;
-    }
-
-    return lhsType === rhsType || this.relatedByInheritanceOrIdentical(rhsType, this.getTargetType(lhsType));
-  }
-
-  private isEnumAssignment(lhsType: ts.Type, rhsType: ts.Type) {
-    const isNumberEnum = this.isPrimitiveEnumType(rhsType, ts.TypeFlags.NumberLiteral) ||
-                         this.isPrimitiveEnumMemberType(rhsType, ts.TypeFlags.NumberLiteral);
-    const isStringEnum = this.isPrimitiveEnumType(rhsType, ts.TypeFlags.StringLiteral) ||
-                         this.isPrimitiveEnumMemberType(rhsType, ts.TypeFlags.StringLiteral);
-    return (this.isNumberType(lhsType) && isNumberEnum) || (this.isStringType(lhsType) && isStringEnum);
-  }
-
-  private areCompatibleFunctionals(lhsType: ts.Type, rhsType: ts.Type) {
-    return (this.isStdFunctionType(lhsType) || this.isFunctionalType(lhsType)) &&
-           (this.isStdFunctionType(rhsType) || this.isFunctionalType(rhsType))
+    return this.validateObjectLiteralType(lhsType) && !this.hasMethods(lhsType) && this.validateFields(lhsType, rhsExpr);
   }
 
   isFunctionalType(type: ts.Type): boolean {
@@ -848,28 +797,37 @@ export class TsUtils {
     return false;
   }
 
-  private isObjectLiteralAssignable(lhsType: ts.Type, rhsExpr: ts.Expression): boolean {
-    if (ts.isObjectLiteralExpression(rhsExpr)) {
-      return this.validateObjectLiteralType(lhsType) && !this.hasMethods(lhsType) &&
-        this.validateFields(lhsType, rhsExpr);
-    }
-    return false;
-  }
-
-  validateFields(type: ts.Type, objectLiteral: ts.ObjectLiteralExpression): boolean {
+  validateFields(objectType: ts.Type, objectLiteral: ts.ObjectLiteralExpression): boolean {
     for (const prop of objectLiteral.properties) {
       if (ts.isPropertyAssignment(prop)) {
-        const propName = prop.name.getText();
-        const propSym = this.findProperty(type, propName);
-        if (!propSym || !propSym.declarations?.length) {
-          return false;
-        }
-        const propType = this.tsTypeChecker.getTypeOfSymbolAtLocation(propSym, propSym.declarations[0]);
-        if (!this.isExpressionAssignableToType(propType, prop.initializer)) {
+        if (!this.validateField(objectType, prop)) {
           return false;
         }
       }
     };
+
+    return true;
+  }
+
+  private validateField(type: ts.Type, prop: ts.PropertyAssignment): boolean {
+    const propName = prop.name.getText();
+    const propSym = this.findProperty(type, propName);
+    if (!propSym || !propSym.declarations?.length) {
+      return false;
+    }
+
+    const propType = this.tsTypeChecker.getTypeOfSymbolAtLocation(propSym, propSym.declarations[0]);
+    const initExpr = this.unwrapParenthesized(prop.initializer);
+    if (ts.isObjectLiteralExpression(initExpr)) {
+      if (!this.isObjectLiteralAssignable(propType, initExpr)) {
+        return false;
+      } 
+    } else {
+      // Only check for structural sub-typing.
+      if (this.needToDeduceStructuralIdentity(propType, this.tsTypeChecker.getTypeAtLocation(initExpr), initExpr)) {
+        return false;
+      }
+    }
 
     return true;
   }
@@ -944,7 +902,7 @@ export class TsUtils {
 
   public isStdObjectAPI(symbol: ts.Symbol): boolean {
     let parentName = this.getParentSymbolName(symbol);
-    return !!parentName && (parentName === 'Object' || parentName === 'ObjectConstructor');
+    return !!parentName && (parentName === 'Object');
   }
 
   public isStdReflectAPI(symbol: ts.Symbol): boolean {
@@ -959,18 +917,22 @@ export class TsUtils {
 
   public isStdArrayAPI(symbol: ts.Symbol): boolean {
     let parentName = this.getParentSymbolName(symbol);
-    return !!parentName && (parentName === 'Array' || parentName === 'ArrayConstructor');
+    return !!parentName && (parentName === 'Array');
   }
 
   public isStdArrayBufferAPI(symbol: ts.Symbol): boolean {
     let parentName = this.getParentSymbolName(symbol);
-    return !!parentName && (parentName === 'ArrayBuffer' || parentName === 'ArrayBufferConstructor');
+    return !!parentName && (parentName === 'ArrayBuffer');
   }
 
-  public isSymbolAPI(symbol: ts.Symbol): boolean {
+  public isStdSymbol(symbol: ts.Symbol): boolean {
+    const name = this.tsTypeChecker.getFullyQualifiedName(symbol)
+    return name === 'Symbol';
+  }
+
+  public isStdSymbolAPI(symbol: ts.Symbol): boolean {
     let parentName = this.getParentSymbolName(symbol);
-    let name = parentName ? parentName : symbol.escapedName;
-    return name === 'Symbol' || name === 'SymbolConstructor';
+    return !!parentName && (parentName === 'Symbol');
   }
 
   public isDefaultImport(importSpec: ts.ImportSpecifier): boolean {
@@ -1179,20 +1141,27 @@ export class TsUtils {
       typeNode.typeName.text == ES_OBJECT;
   }
 
-  public isEsObjectAllowed(typeRef: ts.TypeReferenceNode): boolean {
-    let node = typeRef.parent;
-
-    if (!this.isVarDeclaration(node)) {
-      return false;
-    }
-
-    while (node) {
-      if (ts.isBlock(node)) {
+  public isInsideBlock(node: ts.Node): boolean {
+    let par = node.parent
+    while (par) {
+      if (ts.isBlock(par)) {
         return true;
       }
-      node = node.parent;
+      par = par.parent;
     }
     return false;
+  }
+
+  public isEsObjectPossiblyAllowed(typeRef: ts.TypeReferenceNode): boolean {
+    return ts.isVariableDeclaration(typeRef.parent);
+  }
+
+  public isValueAssignableToESObject(node: ts.Node): boolean {
+    if (ts.isArrayLiteralExpression(node) || ts.isObjectLiteralExpression(node)) {
+      return false;
+    }
+    const valueType = this.tsTypeChecker.getTypeAtLocation(node);
+    return this.isUnsupportedType(valueType) || this.isAnonymousType(valueType)
   }
 
   public getVariableDeclarationTypeNode(node: ts.Node): ts.TypeNode | undefined {
@@ -1224,7 +1193,7 @@ export class TsUtils {
   public isEsObjectSymbol(sym: ts.Symbol): boolean {
     let decl = this.getDeclaration(sym);
     return !!decl && ts.isTypeAliasDeclaration(decl) && decl.name.escapedText == ES_OBJECT &&
-      decl.type.kind == ts.SyntaxKind.AnyKeyword;
+      decl.type.kind === ts.SyntaxKind.AnyKeyword;
   }
 
   public isAnonymousType(type: ts.Type): boolean {

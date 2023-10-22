@@ -17,17 +17,9 @@ import("//build/ohos.gni")
 ohos_executable("es2panda") {
   sources = [
     "main.cpp",
-    "options.cpp",
   ]
 
   include_dirs = [ "$target_gen_dir" ]
-
-  build_gen_root = rebase_path(root_gen_dir)
-
-  cflags_cc = [
-    # TODO(vpukhov): adjust es2panda path
-    "-DDEFAULT_ARKTSCONFIG=\"$build_gen_root/tools/es2panda/generated/arktsconfig.json\"",
-  ]
 
   configs = [
     sdk_libc_secshared_config,
