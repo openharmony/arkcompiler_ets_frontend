@@ -706,6 +706,7 @@ void ETSChecker::CheckClassDefinition(ir::ClassDefinition *class_def)
     CheckValidInheritance(class_type, class_def);
     CheckConstFields(class_type);
     CheckGetterSetterProperties(class_type);
+    CheckInvokeMethodsLegitimacy(class_type);
 }
 
 static bool IsAsyncMethod(ir::AstNode *node)
@@ -1443,4 +1444,29 @@ ETSObjectType *ETSChecker::GetTypeargumentedLUB(ETSObjectType *const source, ETS
     return lub_type;
 }
 
+void ETSChecker::CheckInvokeMethodsLegitimacy(ETSObjectType *const class_type)
+{
+    if (class_type->HasObjectFlag(ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY)) {
+        return;
+    }
+
+    auto search_flag = PropertySearchFlags::SEARCH_IN_INTERFACES | PropertySearchFlags::SEARCH_IN_BASE |
+                       PropertySearchFlags::SEARCH_STATIC_METHOD;
+
+    auto *const invoke_method = class_type->GetProperty(compiler::Signatures::STATIC_INVOKE_METHOD, search_flag);
+    if (invoke_method == nullptr) {
+        class_type->AddObjectFlag(ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
+        return;
+    }
+
+    auto *const instantiate_method =
+        class_type->GetProperty(compiler::Signatures::STATIC_INSTANTIATE_METHOD, search_flag);
+    if (instantiate_method != nullptr) {
+        ThrowTypeError({"Static ", compiler::Signatures::STATIC_INVOKE_METHOD, " method and static ",
+                        compiler::Signatures::STATIC_INSTANTIATE_METHOD, " method both exist in class/interface ",
+                        class_type->Name(), " is not allowed."},
+                       class_type->GetDeclNode()->Start());
+    }
+    class_type->AddObjectFlag(ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
+}
 }  // namespace panda::es2panda::checker

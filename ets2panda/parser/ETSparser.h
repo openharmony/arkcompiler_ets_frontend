@@ -39,6 +39,9 @@ public:
 
     ~ETSParser() = default;
 
+    ir::Expression *CreateExpression(ExpressionParseFlags flags, std::string_view source_code,
+                                     std::string_view file_name = DEFAULT_SOURCE_FILE);
+
 private:
     struct ImportData {
         Language lang;
@@ -86,7 +89,8 @@ private:
     ir::ModifierFlags ParseClassFieldModifiers(bool seen_static);
     ir::ModifierFlags ParseClassMethodModifiers(bool seen_static);
     ir::MethodDefinition *ParseClassMethodDefinition(ir::Identifier *method_name, ir::ModifierFlags modifiers,
-                                                     ir::Identifier *class_name = nullptr);
+                                                     ir::Identifier *class_name = nullptr,
+                                                     ir::Identifier *ident_node = nullptr);
     ir::ScriptFunction *ParseFunction(ParserStatus new_status, ir::Identifier *class_name = nullptr);
     ir::MethodDefinition *ParseClassMethod(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                            ir::Expression *prop_name, lexer::SourcePosition *prop_end) override;
@@ -110,7 +114,7 @@ private:
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseFunctionType();
     void CreateClassFunctionDeclaration(ir::MethodDefinition *method);
-    void AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method);
+    void AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *ident_node = nullptr);
     std::string GetNameForTypeNode(const ir::TypeNode *type_annotation);
     ir::TSInterfaceDeclaration *ParseInterfaceBody(ir::Identifier *name, bool is_static);
     bool IsArrowFunctionExpressionStart();
@@ -161,7 +165,8 @@ private:
                                                    ir::ModifierFlags mod_flags = ir::ModifierFlags::NONE) override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
-                                   ir::ModifierFlags flags = ir::ModifierFlags::NONE) override;
+                                   ir::ModifierFlags flags = ir::ModifierFlags::NONE,
+                                   ir::Identifier *ident_node = nullptr) override;
     ir::Expression *ParseNewExpression() override;
     ir::Expression *ParseAsyncExpression();
     ir::Expression *ParseAwaitExpression();
@@ -242,8 +247,6 @@ private:
                                                   std::string_view file_name = DEFAULT_SOURCE_FILE);
     ir::MethodDefinition *CreateMethodDefinition(ir::ModifierFlags modifiers, std::string_view source_code,
                                                  std::string_view file_name = DEFAULT_SOURCE_FILE);
-    ir::Expression *CreateExpression(ExpressionParseFlags flags, std::string_view source_code,
-                                     std::string_view file_name = DEFAULT_SOURCE_FILE);
     ir::TypeNode *CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view source_code,
                                        std::string_view file_name = DEFAULT_SOURCE_FILE);
     // NOLINTEND(google-default-arguments)

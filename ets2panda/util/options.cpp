@@ -78,7 +78,7 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> op_ets_module("ets-module", false, "Compile the input as ets-module");
     panda::PandArg<std::string> op_ts_decl_out("gen-ts-decl", "", "For given .ets file, generate .ts interop file");
 
-    auto constexpr DEFAULT_THREAD_COUNT = 2;
+    auto constexpr DEFAULT_THREAD_COUNT = 0;
     panda::PandArg<int> op_thread_count("thread", DEFAULT_THREAD_COUNT, "Number of worker threads");
     panda::PandArg<bool> op_size_stat("dump-size-stat", false, "Dump size statistics");
     panda::PandArg<std::string> output_file("output", "", "Compiler binary output (.abc)");

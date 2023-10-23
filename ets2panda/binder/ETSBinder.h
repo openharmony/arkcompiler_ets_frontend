@@ -22,8 +22,7 @@
 
 namespace panda::es2panda::binder {
 
-using ComputedLambdaObjects =
-    ArenaUnorderedMap<const ir::AstNode *, std::pair<ir::ClassDefinition *, checker::Signature *>>;
+using ComputedLambdaObjects = ArenaMap<const ir::AstNode *, std::pair<ir::ClassDefinition *, checker::Signature *>>;
 
 struct DynamicImportData {
     const ir::ETSImportDeclaration *import;
@@ -83,12 +82,12 @@ public:
         return &global_record_table_;
     }
 
-    ArenaUnorderedMap<parser::Program *, RecordTable *> &GetExternalRecordTable()
+    ArenaMap<parser::Program *, RecordTable *> &GetExternalRecordTable()
     {
         return external_record_table_;
     }
 
-    const ArenaUnorderedMap<parser::Program *, RecordTable *> &GetExternalRecordTable() const
+    const ArenaMap<parser::Program *, RecordTable *> &GetExternalRecordTable() const
     {
         return external_record_table_;
     }
@@ -194,7 +193,7 @@ private:
 
     RecordTable global_record_table_;
     RecordTable *record_table_;
-    ArenaUnorderedMap<parser::Program *, RecordTable *> external_record_table_;
+    ArenaMap<parser::Program *, RecordTable *> external_record_table_;
     ArenaVector<ir::ETSImportDeclaration *> default_imports_;
     ArenaVector<ir::ETSImportDeclaration *> dynamic_imports_;
     ComputedLambdaObjects lambda_objects_;

@@ -437,7 +437,8 @@ protected:
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
                                            ir::ClassDefinitionModifiers modifiers,
-                                           ir::ModifierFlags flags = ir::ModifierFlags::NONE);
+                                           ir::ModifierFlags flags = ir::ModifierFlags::NONE,
+                                           ir::Identifier *ident_node = nullptr);
     virtual bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,
                                    ArenaVector<ir::AstNode *> &properties);
     virtual void ValidateClassMethodStart(ClassElementDescriptor *desc, ir::TypeNode *type_annotation);
@@ -535,7 +536,8 @@ protected:
     virtual ir::Expression *ParseSuperClassReference();
 
     using ClassBody = std::tuple<ir::MethodDefinition *, ArenaVector<ir::AstNode *>, lexer::SourceRange>;
-    ClassBody ParseClassBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags = ir::ModifierFlags::NONE);
+    ClassBody ParseClassBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags = ir::ModifierFlags::NONE,
+                             ir::Identifier *ident_node = nullptr);
 
     virtual binder::Decl *BindClassName(ir::Identifier *ident_node);
 

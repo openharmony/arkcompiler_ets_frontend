@@ -423,6 +423,8 @@ const char *TokenToString(TokenType type)  // NOLINT(readability-function-size)
             return "out";
         case TokenType::PUNCTUATOR_DOLLAR_DOLLAR:
             return "$$";
+        case TokenType::KEYW_OVERRIDE:
+            return "override";
         default:
             return "";
     }

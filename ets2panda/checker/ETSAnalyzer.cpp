@@ -14,6 +14,8 @@
  */
 #include "ETSAnalyzer.h"
 
+#include "binder/binder.h"
+#include "binder/ETSBinder.h"
 #include "checker/ets/typeRelationContext.h"
 #include "ir/base/catchClause.h"
 #include "ir/base/classProperty.h"
@@ -680,6 +682,7 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
 
             containing_func->Signature()->SetReturnType(func_return_type);
             containing_func->Signature()->RemoveSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE);
+            checker->Binder()->AsETSBinder()->BuildFunctionName(containing_func);
 
             if (st->argument_ != nullptr && st->argument_->IsObjectExpression()) {
                 st->argument_->AsObjectExpression()->SetPreferredType(func_return_type);

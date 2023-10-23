@@ -58,6 +58,7 @@
 #include "binder/variable.h"
 #include "binder/scope.h"
 #include "binder/declaration.h"
+#include "parser/ETSparser.h"
 #include "parser/program/program.h"
 #include "checker/ETSchecker.h"
 #include "binder/ETSBinder.h"
@@ -290,7 +291,7 @@ bool ETSChecker::IsVariableGetterSetter(const binder::Variable *var) const
     return var->TsType() != nullptr && var->TsType()->HasTypeFlag(TypeFlag::GETTER_SETTER);
 }
 
-void ETSChecker::ValidateResolvedIdentifier(const ir::Identifier *const ident, binder::Variable *const resolved)
+void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, binder::Variable *const resolved)
 {
     const auto throw_error = [this, ident]() {
         ThrowTypeError({"Unresolved reference ", ident->Name()}, ident->Start());
@@ -318,7 +319,8 @@ void ETSChecker::ValidateResolvedIdentifier(const ir::Identifier *const ident, b
             if (ident->Parent()->AsCallExpression()->Callee() == ident && !resolved_type->IsETSFunctionType() &&
                 !resolved_type->IsETSDynamicType() &&
                 (!resolved_type->IsETSObjectType() ||
-                 !resolved_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
+                 !resolved_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) &&
+                !TryTransformingToStaticInvoke(ident, resolved_type)) {
                 throw_error();
             }
 
@@ -2066,5 +2068,67 @@ bool ETSChecker::ExtensionETSFunctionType(checker::Type *type)
     }
 
     return false;
+}
+
+bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, const Type *resolved_type)
+{
+    ASSERT(ident->Parent()->IsCallExpression());
+    ASSERT(ident->Parent()->AsCallExpression()->Callee() == ident);
+
+    if (!resolved_type->IsETSObjectType()) {
+        return false;
+    }
+
+    auto class_name = ident->Name();
+    std::string_view property_name;
+
+    PropertySearchFlags search_flag = PropertySearchFlags::SEARCH_IN_INTERFACES | PropertySearchFlags::SEARCH_IN_BASE |
+                                      PropertySearchFlags::SEARCH_STATIC_METHOD;
+    auto *instantiate_method =
+        resolved_type->AsETSObjectType()->GetProperty(compiler::Signatures::STATIC_INSTANTIATE_METHOD, search_flag);
+    if (instantiate_method != nullptr) {
+        property_name = compiler::Signatures::STATIC_INSTANTIATE_METHOD;
+    } else if (auto *invoke_method = resolved_type->AsETSObjectType()->GetProperty(
+                   compiler::Signatures::STATIC_INVOKE_METHOD, search_flag);
+               invoke_method != nullptr) {
+        property_name = compiler::Signatures::STATIC_INVOKE_METHOD;
+    } else {
+        ThrowTypeError({"No static ", compiler::Signatures::STATIC_INVOKE_METHOD, " method and static ",
+                        compiler::Signatures::STATIC_INSTANTIATE_METHOD, " method in ", class_name, ". ", class_name,
+                        "() is not allowed."},
+                       ident->Start());
+    }
+
+    auto *class_id = AllocNode<ir::Identifier>(class_name, Allocator());
+    auto *method_id = AllocNode<ir::Identifier>(property_name, Allocator());
+    auto *transformed_callee =
+        AllocNode<ir::MemberExpression>(class_id, method_id, ir::MemberExpressionKind::PROPERTY_ACCESS, false, false);
+
+    class_id->SetRange(ident->Range());
+    method_id->SetRange(ident->Range());
+    transformed_callee->SetRange(ident->Range());
+
+    auto *call_expr = ident->Parent()->AsCallExpression();
+    transformed_callee->SetParent(call_expr);
+    call_expr->SetCallee(transformed_callee);
+
+    if (instantiate_method != nullptr) {
+        std::string implicit_instantiate_argument = "()=>{return new " + std::string(class_name) + "()}";
+
+        parser::Program program(Allocator(), Binder());
+        es2panda::CompilerOptions options;
+        auto parser = parser::ETSParser(&program, options, parser::ParserStatus::NO_OPTS);
+        auto *arg_expr = parser.CreateExpression(parser::ExpressionParseFlags::NO_OPTS, implicit_instantiate_argument);
+
+        arg_expr->SetParent(call_expr);
+        arg_expr->SetRange(ident->Range());
+
+        Binder()->AsETSBinder()->HandleCustomNodes(arg_expr);
+
+        auto &arguments = call_expr->Arguments();
+        arguments.insert(arguments.begin(), arg_expr);
+    }
+
+    return true;
 }
 }  // namespace panda::es2panda::checker

@@ -185,11 +185,12 @@ public:
     friend class TypeStackElement;
     friend class SavedCheckerContext;
 
+    binder::Binder *Binder() const;
+
 protected:
     void Initialize(binder::Binder *binder);
     parser::Program *Program() const;
     void SetProgram(parser::Program *program);
-    binder::Binder *Binder() const;
 
 private:
     ArenaAllocator allocator_;

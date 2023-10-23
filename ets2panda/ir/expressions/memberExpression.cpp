@@ -401,31 +401,38 @@ checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
     obj_type_ = base_type->AsETSObjectType();
     auto resolve_res = checker->ResolveMemberReference(this, obj_type_);
     ASSERT(!resolve_res.empty());
-
+    checker::Type *type_to_set = nullptr;
     switch (resolve_res.size()) {
         case 1: {
             if (resolve_res[0]->Kind() == checker::ResolvedKind::PROPERTY) {
                 prop_var_ = resolve_res[0]->Variable()->AsLocalVariable();
                 checker->ValidatePropertyAccess(prop_var_, obj_type_, property_->Start());
-                SetTsType(checker->GetTypeOfVariable(prop_var_));
+                type_to_set = checker->GetTypeOfVariable(prop_var_);
             } else {
-                auto *member_type = checker->GetTypeOfVariable(resolve_res[0]->Variable());
-                SetTsType(member_type);
+                type_to_set = checker->GetTypeOfVariable(resolve_res[0]->Variable());
             }
-            return TsType();
+            break;
         }
         case 2: {
             // ETSExtensionFuncHelperType(class_method_type, extension_method_type)
-            auto *ets_extension_func_helper_type = checker->CreateETSExtensionFuncHelperType(
+            type_to_set = checker->CreateETSExtensionFuncHelperType(
                 checker->GetTypeOfVariable(resolve_res[1]->Variable())->AsETSFunctionType(),
                 checker->GetTypeOfVariable(resolve_res[0]->Variable())->AsETSFunctionType());
-            SetTsType(ets_extension_func_helper_type);
-            return TsType();
+            break;
         }
         default: {
             UNREACHABLE();
         }
     }
+    SetTsType(type_to_set);
+    if (prop_var_ != nullptr && prop_var_->TsType() != nullptr && prop_var_->TsType()->IsETSFunctionType()) {
+        for (auto *sig : prop_var_->TsType()->AsETSFunctionType()->CallSignatures()) {
+            if (sig->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
+                sig->OwnerVar()->Declaration()->Node()->Check(checker);
+            }
+        }
+    }
+    return TsType();
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

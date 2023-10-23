@@ -412,7 +412,14 @@ checker::Type *CallExpression::Check(checker::ETSChecker *checker)
     if (TsType() != nullptr) {
         return TsType();
     }
+    auto *old_callee = callee_;
     checker::Type *callee_type = callee_->Check(checker);
+    if (callee_ != old_callee) {
+        // If it is a static invoke, the callee will be transformed from an identifier to a member expression
+        // Type check the callee again for member expression
+        callee_type = callee_->Check(checker);
+    }
+
     checker::Type *return_type;
     if (callee_type->IsETSDynamicType() && !callee_type->AsETSDynamicType()->HasDecl()) {
         // Trailing lambda for js function call is not supported, check the correctness of `foo() {}`

@@ -177,6 +177,13 @@ checker::Type *Identifier::Check(checker::ETSChecker *checker)
     }
 
     SetTsType(checker->ResolveIdentifier(this));
+    if (TsType()->IsETSFunctionType()) {
+        for (auto *sig : TsType()->AsETSFunctionType()->CallSignatures()) {
+            if (sig->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
+                sig->OwnerVar()->Declaration()->Node()->Check(checker);
+            }
+        }
+    }
     return TsType();
 }
 }  // namespace panda::es2panda::ir

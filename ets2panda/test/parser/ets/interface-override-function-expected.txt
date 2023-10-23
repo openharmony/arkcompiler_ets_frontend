@@ -1,0 +1,1 @@
+SyntaxError: 'override' modifier cannot appear in interfaces [interface-override-function.ets:23:5]

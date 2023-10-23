@@ -1315,7 +1315,7 @@ void ETSParser::ParseClassFieldDefiniton(ir::Identifier *field_name, ir::Modifie
 }
 
 ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *method_name, ir::ModifierFlags modifiers,
-                                                            ir::Identifier *class_name)
+                                                            ir::Identifier *class_name, ir::Identifier *ident_node)
 {
     auto *cur_scope = Binder()->GetScope();
     auto res = cur_scope->Find(method_name->Name(), binder::ResolveBindingOptions::ALL);
@@ -1353,7 +1353,7 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
     method->SetRange(func_expr->Range());
 
     CreateClassFunctionDeclaration(method);
-    AddProxyOverloadToMethodWithDefaultParams(method);
+    AddProxyOverloadToMethodWithDefaultParams(method, ident_node);
 
     return method;
 }
@@ -1397,6 +1397,10 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus new_status, ir::Identi
         function_context.AddFlag(ir::ScriptFunctionFlags::EXPRESSION);
     }
 
+    if ((GetContext().Status() & ParserStatus::FUNCTION_HAS_RETURN_STATEMENT) != 0) {
+        function_context.AddFlag(ir::ScriptFunctionFlags::HAS_RETURN);
+        GetContext().Status() ^= ParserStatus::FUNCTION_HAS_RETURN_STATEMENT;
+    }
     function_context.AddFlag(throw_marker);
 
     auto *func_node =
@@ -1496,7 +1500,8 @@ void ETSParser::ValidateLabeledStatement(lexer::TokenType type)
 // NOLINTNEXTLINE(google-default-arguments)
 ir::AstNode *ETSParser::ParseClassElement([[maybe_unused]] const ArenaVector<ir::AstNode *> &properties,
                                           [[maybe_unused]] ir::ClassDefinitionModifiers modifiers,
-                                          [[maybe_unused]] ir::ModifierFlags flags)
+                                          [[maybe_unused]] ir::ModifierFlags flags,
+                                          [[maybe_unused]] ir::Identifier *ident_node)
 {
     auto start_loc = Lexer()->GetToken().Start();
     auto saved_pos = Lexer()->Save();  // NOLINT(clang-analyzer-deadcode.DeadStores)
@@ -1596,7 +1601,7 @@ ir::AstNode *ETSParser::ParseClassElement([[maybe_unused]] const ArenaVector<ir:
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        auto *class_method = ParseClassMethodDefinition(member_name, memberModifiers);
+        auto *class_method = ParseClassMethodDefinition(member_name, memberModifiers, nullptr, ident_node);
         class_method->SetStart(start_loc);
         return class_method;
     }
@@ -1925,7 +1930,7 @@ ir::ClassDefinition *ETSParser::ParseClassDefinition(ir::ClassDefinitionModifier
     ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE, false);
 
     // Parse ClassBody
-    auto [ctor, properties, bodyRange] = ParseClassBody(modifiers, flags);
+    auto [ctor, properties, bodyRange] = ParseClassBody(modifiers, flags, ident_node);
     CreateCCtor(class_ctx.GetScope()->StaticMethodScope(), properties, bodyRange.start);
 
     auto *class_scope = class_ctx.GetScope();
@@ -2135,7 +2140,7 @@ void ETSParser::CreateClassFunctionDeclaration(ir::MethodDefinition *method)
     method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
 }
 
-void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method)
+void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *ident_node)
 {
     if (method->IsConstructor()) {
         return;  // TODO(szd): Fix constructors not working with default params
@@ -2203,7 +2208,15 @@ void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *
         }
     }
 
-    proxy_method += (return_type == "void") ? "" : cls_scope->Parent()->IsGlobalScope() ? "return " : "return this.";
+    if (return_type != "void") {
+        if (cls_scope->Parent()->IsGlobalScope()) {
+            proxy_method += "return ";
+        } else if (method->IsStatic()) {
+            proxy_method += "return " + ident_node->Name().Mutf8() + ".";
+        } else {
+            proxy_method += "return this.";
+        }
+    }
 
     proxy_method += function->Id()->Name().Mutf8() + "(";
     for (const auto *const it : function->Params()) {

@@ -600,6 +600,10 @@ ArenaVector<ir::AstNode *> TypedParser::ParseTypeLiteralOrInterface()
 
     ArenaVector<ir::AstNode *> members(Allocator()->Adapter());
 
+    if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_OVERRIDE) {
+        ThrowSyntaxError("'override' modifier cannot appear in interfaces");
+    }
+
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         ir::AstNode *member = ParseTypeLiteralOrInterfaceMember();
 
@@ -1007,7 +1011,8 @@ ir::ClassDefinition *TypedParser::ParseClassDefinition(ir::ClassDefinitionModifi
 
 // NOLINTNEXTLINE(google-default-arguments)
 ir::AstNode *TypedParser::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
-                                            ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
+                                            ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags,
+                                            [[maybe_unused]] ir::Identifier *ident_node)
 {
     if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC &&
         Lexer()->Lookahead() == lexer::LEX_CHAR_LEFT_BRACE) {

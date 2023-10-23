@@ -599,7 +599,8 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
 // NOLINTNEXTLINE(google-default-arguments)
 ir::AstNode *ParserImpl::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
                                            [[maybe_unused]] ir::ClassDefinitionModifiers modifiers,
-                                           [[maybe_unused]] ir::ModifierFlags flags)
+                                           [[maybe_unused]] ir::ModifierFlags flags,
+                                           [[maybe_unused]] ir::Identifier *ident_node)
 {
     if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC &&
         lexer_->Lookahead() == lexer::LEX_CHAR_LEFT_BRACE) {
@@ -814,7 +815,8 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifie
     return class_definition;
 }
 
-ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
+ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags,
+                                                 ir::Identifier *ident_node)
 {
     auto saved_ctx = SavedStatusContext<ParserStatus::IN_CLASS_BODY>(&context_);
 
@@ -832,7 +834,7 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
             continue;
         }
 
-        ir::AstNode *property = ParseClassElement(properties, modifiers, flags);
+        ir::AstNode *property = ParseClassElement(properties, modifiers, flags, ident_node);
 
         if (CheckClassElement(property, ctor, properties)) {
             continue;

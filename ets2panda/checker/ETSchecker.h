@@ -447,7 +447,7 @@ public:
     std::pair<const binder::Variable *, const ETSObjectType *> FindVariableInClassOrEnclosing(
         util::StringView name, const ETSObjectType *class_type);
     binder::Variable *FindVariableInGlobal(const ir::Identifier *identifier);
-    void ValidateResolvedIdentifier(const ir::Identifier *ident, binder::Variable *resolved);
+    void ValidateResolvedIdentifier(ir::Identifier *ident, binder::Variable *resolved);
     bool IsVariableStatic(const binder::Variable *var) const;
     bool IsVariableGetterSetter(const binder::Variable *var) const;
     bool IsSameDeclarationType(binder::LocalVariable *target, binder::LocalVariable *compare);
@@ -510,8 +510,12 @@ public:
     void BuildLambdaObjectClass(ETSObjectType *functional_interface, ir::TypeNode *ret_type_annotation);
     // Trailing lambda
     void EnsureValidCurlyBrace(ir::CallExpression *call_expr);
+
     // Extension function
     void HandleUpdatedCallExpressionNode(ir::CallExpression *call_expr);
+
+    // Static invoke
+    void CheckInvokeMethodsLegitimacy(ETSObjectType *class_type);
 
     std::recursive_mutex *Mutex()
     {
@@ -590,6 +594,9 @@ private:
     void MoveTrailingBlockToEnclosingBlockStatement(ir::CallExpression *call_expr);
     void TransformTraillingLambda(ir::CallExpression *call_expr);
     ArenaVector<ir::Expression *> ExtendArgumentsWithFakeLamda(ir::CallExpression *call_expr);
+
+    // Static invoke
+    bool TryTransformingToStaticInvoke(ir::Identifier *ident, const Type *resolved_type);
 
     ArrayMap array_types_;
     GlobalArraySignatureMap global_array_signatures_;

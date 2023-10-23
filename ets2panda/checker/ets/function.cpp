@@ -878,7 +878,7 @@ checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction 
         signature->AddSignatureFlag(SignatureFlags::CALL);
     }
 
-    if (return_type_annotation == nullptr) {
+    if (return_type_annotation == nullptr && ((func->Flags() & ir::ScriptFunctionFlags::HAS_RETURN) != 0)) {
         signature->AddSignatureFlag(SignatureFlags::NEED_RETURN_TYPE);
     }
 

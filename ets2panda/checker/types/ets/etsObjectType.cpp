@@ -392,9 +392,11 @@ bool ETSObjectType::CheckIdenticalFlags(ETSObjectFlags target) const
     auto cleaned_target_flags = static_cast<ETSObjectFlags>(target & (~ETSObjectFlags::COMPLETELY_RESOLVED));
     cleaned_target_flags &= ~ETSObjectFlags::INCOMPLETE_INSTANTIATION;
     cleaned_target_flags &= ~ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS;
+    cleaned_target_flags &= ~ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
     auto cleaned_self_flags = static_cast<ETSObjectFlags>(ObjectFlags() & (~ETSObjectFlags::COMPLETELY_RESOLVED));
     cleaned_self_flags &= ~ETSObjectFlags::INCOMPLETE_INSTANTIATION;
     cleaned_self_flags &= ~ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS;
+    cleaned_self_flags &= ~ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
     return cleaned_self_flags == cleaned_target_flags;
 }
 
@@ -755,7 +757,7 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     auto *const copied_type = checker->CreateNewETSObjectType(name_, decl_node_, flags_);
     copied_type->type_flags_ = type_flags_;
     copied_type->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
-                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION);
+                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
     copied_type->SetAssemblerName(assembler_name_);
     copied_type->SetVariable(variable_);
     copied_type->SetSuperType(super_type_);
@@ -858,7 +860,7 @@ Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *subs
     auto *const copied_type = checker->CreateNewETSObjectType(name_, decl_node_, flags_);
     copied_type->type_flags_ = type_flags_;
     copied_type->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
-                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION);
+                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
     copied_type->SetVariable(variable_);
     copied_type->SetBaseType(this);
 

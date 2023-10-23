@@ -129,6 +129,7 @@ enum class ScriptFunctionFlags : uint32_t {
     DEFAULT_PARAM_PROXY = 1U << 17U,
     ENTRY_POINT = 1U << 18U,
     INSTANCE_EXTENSION_METHOD = 1U << 19U,
+    HAS_RETURN = 1U << 20U
 };
 
 DEFINE_BITOPS(ScriptFunctionFlags)
