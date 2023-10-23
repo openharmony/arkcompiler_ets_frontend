@@ -99,9 +99,9 @@ struct CompilerOptions {
     bool parse_only {};
     std::string std_lib {};
     std::string ts_decl_out {};
-    std::unordered_set<util::StringView> skip_phases {};
-    std::unordered_set<util::StringView> dump_before_phases {};
-    std::unordered_set<util::StringView> dump_after_phases {};
+    std::unordered_set<std::string> skip_phases {};
+    std::unordered_set<std::string> dump_before_phases {};
+    std::unordered_set<std::string> dump_after_phases {};
     std::shared_ptr<ArkTsConfig> arkts_config {};
     CompilationMode compilation_mode {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)

@@ -36,21 +36,21 @@ Options::~Options()
     delete argparser_;
 }
 
-static std::unordered_set<util::StringView> StringToStringSet(const std::string &str)
+static std::unordered_set<std::string> StringToStringSet(const std::string &str)
 {
-    std::unordered_set<util::StringView> res;
+    std::unordered_set<std::string> res;
     std::string_view curr_str {str};
     auto ix = curr_str.find(',');
     while (ix != std::string::npos) {
         if (ix != 0) {
-            res.insert(curr_str.substr(0, ix));
+            res.insert(std::string(curr_str.substr(0, ix)));
         }
         curr_str = curr_str.substr(ix + 1);
         ix = curr_str.find(',');
     }
 
     if (!curr_str.empty()) {
-        res.insert(curr_str);
+        res.insert(std::string(curr_str));
     }
     return res;
 }

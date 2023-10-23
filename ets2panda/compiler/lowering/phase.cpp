@@ -63,7 +63,8 @@ bool Phase::Apply(CompilerContext *ctx, parser::Program *program)
         // TODO(tatiana): Add some error processing
     }
     if (!Precondition(ctx, program)) {
-        ctx->Checker()->ThrowTypeError({"Precondition check failed for ", Name()}, lexer::SourcePosition {});
+        ctx->Checker()->ThrowTypeError({"Precondition check failed for ", util::StringView {Name()}},
+                                       lexer::SourcePosition {});
     }
 #endif
 
@@ -82,7 +83,8 @@ bool Phase::Apply(CompilerContext *ctx, parser::Program *program)
         // TODO(tatiana): Add some error processing
     }
     if (!Postcondition(ctx, program)) {
-        ctx->Checker()->ThrowTypeError({"Postcondition check failed for ", Name()}, lexer::SourcePosition {});
+        ctx->Checker()->ThrowTypeError({"Postcondition check failed for ", util::StringView {Name()}},
+                                       lexer::SourcePosition {});
     }
 #endif
 

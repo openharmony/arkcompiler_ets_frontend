@@ -20,9 +20,10 @@
 
 namespace panda::es2panda::compiler {
 class CheckerPhase : public Phase {
-    util::StringView Name() override
+    std::string const &Name() override
     {
-        return "checker";
+        static std::string const NAME = "checker";
+        return NAME;
     }
 
     bool Perform(CompilerContext *ctx, parser::Program *program) override;
