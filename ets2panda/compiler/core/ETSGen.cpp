@@ -679,7 +679,8 @@ void ETSGen::InitLambdaObject(const ir::AstNode *node, checker::Signature *signa
 
             for (size_t i = 0; i < arguments.size(); i++) {
                 auto ttctx = TargetTypeContext(this, signature->Params()[i]->TsType());
-                StoreAccumulator(node, arguments[i]);
+                VReg arg_reg = AllocReg();
+                MoveVreg(node, arg_reg, arguments[i]);
             }
 
             Rra().Emit<InitobjRange>(node, arg_start, arguments.size(), name, arg_start);
