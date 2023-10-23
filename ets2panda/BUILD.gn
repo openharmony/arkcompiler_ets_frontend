@@ -162,16 +162,15 @@ libes2panda_sources = [
   "compiler/function/functionBuilder.cpp",
   "compiler/function/generatorFunctionBuilder.cpp",
   "compiler/lowering/checkerPhase.cpp",
+  "compiler/lowering/ets/generateDeclarations.cpp",
+  "compiler/lowering/ets/opAssignment.cpp",
   "compiler/lowering/phase.cpp",
   "compiler/lowering/util.cpp",
   "es2panda.cpp",
   "ir/as/namedType.cpp",
   "ir/as/prefixAssertionExpression.cpp",
-  "compiler/lowering/ets/generateDeclarations.cpp",
-  "compiler/lowering/ets/opAssignment.cpp",
   "ir/astDump.cpp",
   "ir/astNode.cpp",
-  "ir/typeNode.cpp",
   "ir/base/catchClause.cpp",
   "ir/base/classDefinition.cpp",
   "ir/base/classElement.cpp",
@@ -322,6 +321,7 @@ libes2panda_sources = [
   "ir/ts/tsUnionType.cpp",
   "ir/ts/tsUnknownKeyword.cpp",
   "ir/ts/tsVoidKeyword.cpp",
+  "ir/typeNode.cpp",
   "lexer/ASLexer.cpp",
   "lexer/ETSLexer.cpp",
   "lexer/TSLexer.cpp",
@@ -446,7 +446,8 @@ ohos_shared_library("libes2panda_public") {
 
   relative_install_dir = "ark"
   output_extension = "so"
-  subsystem_name = "$ark_subsystem_name"
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ohos_static_library("libes2panda_public_frontend_static") {
@@ -456,8 +457,10 @@ ohos_static_library("libes2panda_public_frontend_static") {
 
   deps = [
     ":libes2panda_frontend_static",
-    "$ark_root/bytecode_optimizer:libarkbytecodeopt_frontend_static",
+    "$ark_root/bytecode_optimizer:libarktsbytecodeopt_frontend_static",
   ]
+  part_name = "ets_frontend"
+  subsystem_name = "arkcompiler"
 }
 
 ark_isa_gen("isa_gen_es2panda") {

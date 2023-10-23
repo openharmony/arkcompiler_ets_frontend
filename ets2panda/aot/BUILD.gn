@@ -15,9 +15,7 @@ import("//arkcompiler/runtime_core/static_core/ark_config.gni")
 import("//build/ohos.gni")
 
 ohos_executable("es2panda") {
-  sources = [
-    "main.cpp",
-  ]
+  sources = [ "main.cpp" ]
 
   include_dirs = [ "$target_gen_dir" ]
 
@@ -35,6 +33,7 @@ ohos_executable("es2panda") {
 
   deps = [
     "$ark_es2panda_root:libes2panda_frontend_static",
+    "$ark_es2panda_root:libes2panda_public_frontend_static",
     "$ark_root/assembler:libarktsassembler_frontend_static",
     "$ark_root/bytecode_optimizer:libarktsbytecodeopt_frontend_static",
     "$ark_root/compiler:libarktscompiler_frontend_static",
