@@ -451,6 +451,15 @@ checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
         return AdjustOptional(checker, CheckUnionMember(checker, base_type));
     }
 
+    if (base_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        checker->Relation()->SetNode(this);
+        SetObjectType(checker->PrimitiveTypeAsETSBuiltinType(base_type)->AsETSObjectType());
+        checker->AddBoxingUnboxingFlagToNode(this, obj_type_);
+        auto [res_type, res_var] = ResolveObjectMember(checker);
+        SetPropVar(res_var);
+        return AdjustOptional(checker, res_type);
+    }
+
     checker->ThrowTypeError({"Cannot access property of non-object or non-enum type"}, object_->Start());
 }
 

@@ -524,7 +524,9 @@ void ETSCompiler::CompileDynamic(const ir::CallExpression *expr, compiler::VReg 
 void ETSCompiler::EmitCall(const ir::CallExpression *expr, compiler::VReg &callee_reg, bool is_static) const
 {
     ETSGen *etsg = GetETSGen();
-
+    if (expr->Callee()->GetBoxingUnboxingFlags() != ir::BoxingUnboxingFlags::NONE) {
+        etsg->ApplyConversionAndStoreAccumulator(expr->Callee(), callee_reg, nullptr);
+    }
     if (is_static) {
         etsg->CallStatic(expr, expr->Signature(), expr->Arguments());
     } else if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::PRIVATE) || expr->IsETSConstructorCall() ||
