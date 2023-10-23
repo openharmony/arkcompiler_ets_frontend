@@ -24,6 +24,7 @@
 #include <ir/statements/blockStatement.h>
 #include <ir/statements/expressionStatement.h>
 #include <lexer/token/sourceLocation.h>
+#include <parser/module/sourceTextModuleRecord.h>
 
 namespace panda::es2panda::util {
 
@@ -60,19 +61,28 @@ void Concurrent::ThrowInvalidConcurrentFunction(const lexer::LineIndex &lineInde
     }
 }
 
-void Concurrent::VerifyImportVarForConcurrentFunction(const lexer::LineIndex &lineIndex, const ir::AstNode *node,
-                                                      const binder::ScopeFindResult &result)
+void Concurrent::ProcessConcurrent(const lexer::LineIndex &lineIndex, const ir::AstNode *node,
+                                   const binder::ScopeFindResult &result, parser::Program *program)
 {
-    if (!result.crossConcurrent) {
+    if (!result.concurrentFunc) {
         return;
     }
 
     if (result.variable->IsModuleVariable() && result.variable->Declaration()->IsImportDecl()) {
+        CollectRelativeModule(result, program);
         return;
     }
 
     ThrowInvalidConcurrentFunction(lineIndex, node, ConcurrentInvalidFlag::NOT_IMPORT_VARIABLE,
                                    result.variable->Declaration()->Name());
+}
+
+void Concurrent::CollectRelativeModule(const binder::ScopeFindResult &result, parser::Program *program)
+{
+    int moduleRequestIdx = program->ModuleRecord()->GetModuleRequestIdx(result.variable->Name());
+    if (moduleRequestIdx != parser::SourceTextModuleRecord::INVALID_MODULEREQUEST_ID) {
+        result.concurrentFunc->AddConcurrentModuleRequest(moduleRequestIdx);
+    }
 }
 
 } // namespace panda::es2panda::util

@@ -76,5 +76,6 @@ message Function {
     optional FileLocation fileLocation = 16;
     uint32 function_kind = 17;
     uint64 slotsNum = 18;
+    repeated uint32 concurrent_module_requests = 19;
 }
 

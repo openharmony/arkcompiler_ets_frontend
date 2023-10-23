@@ -107,6 +107,10 @@ void Function::Serialize(const panda::pandasm::Function &function, protoPanda::F
     }
     protoFunction.set_function_kind(static_cast<uint8_t>(function.function_kind));
     protoFunction.set_slotsnum(function.slots_num);
+
+    for (const auto &moduleRequestId : function.concurrent_module_requests) {
+        protoFunction.add_concurrent_module_requests(moduleRequestId);
+    }
 }
 
 void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pandasm::Function &function,
@@ -166,5 +170,9 @@ void Function::Deserialize(const protoPanda::Function &protoFunction, panda::pan
     }
     function.SetFunctionKind(static_cast<panda::panda_file::FunctionKind>(protoFunction.function_kind()));
     function.SetSlotsNum(protoFunction.slotsnum());
+
+    for (const auto &moduleRequestId : protoFunction.concurrent_module_requests()) {
+        function.concurrent_module_requests.emplace_back(moduleRequestId);
+    }
 }
 } // panda::proto

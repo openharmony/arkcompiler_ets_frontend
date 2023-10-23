@@ -99,6 +99,7 @@ public:
     void CheckImplicitIndirectExport(ImportEntry *importEntry);
 
     void AssignIndexToModuleVariable(binder::ModuleScope *moduleScope);
+    int GetModuleRequestIdx(const util::StringView localName);
 
     using ModuleRequestList = ArenaVector<util::StringView>;
     using ModuleRequestMap = ArenaMap<const util::StringView, uint32_t>;
@@ -146,6 +147,7 @@ public:
     static constexpr std::string_view DEFAULT_LOCAL_NAME = "*default*";
     static constexpr std::string_view DEFAULT_EXTERNAL_NAME = "default";
     static constexpr std::string_view ANONY_NAMESPACE_NAME = "=ens";
+    static constexpr int INVALID_MODULEREQUEST_ID = -1;
 
 private:
     bool HasDuplicateExport(util::StringView exportName) const;

@@ -203,6 +203,20 @@ public:
         return !(IsGenerator() || IsArrow() || IsConstructor() || IsMethod());
     }
 
+    void AddConcurrentModuleRequest(int moduleRequestId)
+    {
+        if (!IsConcurrent()) {
+            return;
+        }
+
+        concurrentModuleRequests_.emplace_back(moduleRequestId);
+    }
+
+    std::vector<int> GetConcurrentModuleRequests() const
+    {
+        return concurrentModuleRequests_;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
@@ -223,6 +237,7 @@ private:
     ir::ScriptFunctionFlags flags_;
     bool declare_;
     bool exportDefault_;
+    std::vector<int> concurrentModuleRequests_;
 };
 
 }  // namespace panda::es2panda::ir

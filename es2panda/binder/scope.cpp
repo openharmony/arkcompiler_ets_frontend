@@ -93,13 +93,13 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
     uint32_t level = 0;
     uint32_t lexLevel = 0;
     const auto *iter = this;
-    bool crossConcurrent = false;
+    ir::ScriptFunction *concurrentFunc = nullptr;
 
     if (iter->IsFunctionParamScope()) {
         Variable *v = iter->FindLocal(name, options);
 
         if (v != nullptr) {
-            return {name, const_cast<Scope *>(iter), level, lexLevel, v, crossConcurrent};
+            return {name, const_cast<Scope *>(iter), level, lexLevel, v, concurrentFunc};
         }
 
         level++;
@@ -119,7 +119,7 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
         Variable *v = iter->FindLocal(name, options);
 
         if (v != nullptr) {
-            return {name, const_cast<Scope *>(iter), level, lexLevel, v, crossConcurrent};
+            return {name, const_cast<Scope *>(iter), level, lexLevel, v, concurrentFunc};
         }
 
         if (iter->IsFunctionVariableScope() && !lexical) {
@@ -131,8 +131,10 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
                 level++;
             }
 
-            if (iter->IsFunctionScope() && !crossConcurrent) {
-                crossConcurrent = iter->Node()->AsScriptFunction()->IsConcurrent() ? true : false;
+            if (iter->IsFunctionScope() && !concurrentFunc) {
+                if (iter->Node()->AsScriptFunction()->IsConcurrent()) {
+                    concurrentFunc = const_cast<ir::ScriptFunction *>(iter->Node()->AsScriptFunction());
+                }
             }
 
             if (iter->AsVariableScope()->NeedLexEnv()) {
@@ -143,7 +145,7 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
         iter = iter->Parent();
     }
 
-    return {name, nullptr, 0, 0, nullptr, crossConcurrent};
+    return {name, nullptr, 0, 0, nullptr, concurrentFunc};
 }
 
 Decl *Scope::FindDecl(const util::StringView &name) const
