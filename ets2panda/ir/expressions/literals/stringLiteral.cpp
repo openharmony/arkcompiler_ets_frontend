@@ -15,11 +15,9 @@
 
 #include "stringLiteral.h"
 
-#include "compiler/core/pandagen.h"
-#include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
-#include "checker/ETSchecker.h"
-#include "ir/astDump.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void StringLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -32,34 +30,22 @@ void StringLiteral::Dump(ir::AstDumper *dumper) const
 
 void StringLiteral::Compile(compiler::PandaGen *pg) const
 {
-    pg->LoadAccumulatorString(this, str_);
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void StringLiteral::Compile(compiler::ETSGen *etsg) const
 {
-    etsg->LoadAccumulatorString(this, str_);
-    etsg->SetAccumulatorType(TsType());
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *StringLiteral::Check(checker::TSChecker *checker)
 {
-    auto search = checker->StringLiteralMap().find(str_);
-    if (search != checker->StringLiteralMap().end()) {
-        return search->second;
-    }
-
-    auto *new_str_literal_type = checker->Allocator()->New<checker::StringLiteralType>(str_);
-    checker->StringLiteralMap().insert({str_, new_str_literal_type});
-
-    return new_str_literal_type;
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *StringLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *StringLiteral::Check(checker::ETSChecker *checker)
 {
-    if (TsType() == nullptr) {
-        SetTsType(checker->CreateETSStringLiteralType(str_));
-    }
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

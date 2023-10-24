@@ -15,8 +15,9 @@
 
 #include "exportSpecifier.h"
 
-#include "ir/astDump.h"
-#include "ir/expressions/identifier.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void ExportSpecifier::TransformChildren(const NodeTransformer &cb)
@@ -36,15 +37,23 @@ void ExportSpecifier::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ExportSpecifier"}, {"local", local_}, {"exported", exported_}});
 }
 
-void ExportSpecifier::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *ExportSpecifier::Check([[maybe_unused]] checker::TSChecker *checker)
+void ExportSpecifier::Compile(compiler::PandaGen *pg) const
 {
-    return nullptr;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ExportSpecifier::Check([[maybe_unused]] checker::ETSChecker *checker)
+void ExportSpecifier::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *ExportSpecifier::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *ExportSpecifier::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

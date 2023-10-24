@@ -15,9 +15,9 @@
 
 #include "exportAllDeclaration.h"
 
-#include "ir/astDump.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/literals/stringLiteral.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void ExportAllDeclaration::TransformChildren(const NodeTransformer &cb)
@@ -43,15 +43,23 @@ void ExportAllDeclaration::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ExportAllDeclaration"}, {"source", source_}, {"exported", AstDumper::Nullish(exported_)}});
 }
 
-void ExportAllDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *ExportAllDeclaration::Check([[maybe_unused]] checker::TSChecker *checker)
+void ExportAllDeclaration::Compile(compiler::PandaGen *pg) const
 {
-    return nullptr;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ExportAllDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
+void ExportAllDeclaration::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *ExportAllDeclaration::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *ExportAllDeclaration::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

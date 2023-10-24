@@ -525,26 +525,47 @@ checker::Type *ETSAnalyzer::Check(ir::CharLiteral *expr) const
 
 checker::Type *ETSAnalyzer::Check(ir::NullLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    if (expr->TsType() == nullptr) {
+        expr->SetTsType(checker->GlobalETSNullType());
+    }
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::NumberLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    if (expr->Number().IsInt()) {
+        expr->SetTsType(checker->CreateIntType(expr->Number().GetInt()));
+        return expr->TsType();
+    }
+
+    if (expr->Number().IsLong()) {
+        expr->SetTsType(checker->CreateLongType(expr->Number().GetLong()));
+        return expr->TsType();
+    }
+
+    if (expr->Number().IsFloat()) {
+        expr->SetTsType(checker->CreateFloatType(expr->Number().GetFloat()));
+        return expr->TsType();
+    }
+
+    expr->SetTsType(checker->CreateDoubleType(expr->Number().GetDouble()));
+    return expr->TsType();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::RegExpLiteral *expr) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::RegExpLiteral *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::StringLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    if (expr->TsType() == nullptr) {
+        expr->SetTsType(checker->CreateETSStringLiteralType(expr->Str()));
+    }
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::UndefinedLiteral *expr) const
@@ -554,27 +575,23 @@ checker::Type *ETSAnalyzer::Check(ir::UndefinedLiteral *expr) const
 }
 
 // compile methods for MODULE-related nodes in alphabetical order
-checker::Type *ETSAnalyzer::Check(ir::ExportAllDeclaration *st) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ExportAllDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ExportDefaultDeclaration *st) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ExportDefaultDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ExportNamedDeclaration *st) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ExportNamedDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ExportSpecifier *st) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ExportSpecifier *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 

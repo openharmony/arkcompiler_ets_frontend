@@ -15,11 +15,9 @@
 
 #include "nullLiteral.h"
 
-#include "compiler/core/pandagen.h"
-#include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
-#include "checker/ETSchecker.h"
-#include "ir/astDump.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void NullLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -32,25 +30,22 @@ void NullLiteral::Dump(ir::AstDumper *dumper) const
 
 void NullLiteral::Compile(compiler::PandaGen *pg) const
 {
-    pg->LoadConst(this, compiler::Constant::JS_NULL);
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void NullLiteral::Compile(compiler::ETSGen *etsg) const
 {
-    etsg->LoadAccumulatorNull(this, TsType());
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *NullLiteral::Check(checker::TSChecker *checker)
 {
-    return checker->GlobalNullType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *NullLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *NullLiteral::Check(checker::ETSChecker *checker)
 {
-    if (TsType() == nullptr) {
-        SetTsType(checker->GlobalETSNullType());
-    }
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

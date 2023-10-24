@@ -428,28 +428,44 @@ checker::Type *TSAnalyzer::Check(ir::CharLiteral *expr) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::NullLiteral *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::NullLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    return checker->GlobalNullType();
 }
 
 checker::Type *TSAnalyzer::Check(ir::NumberLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    auto search = checker->NumberLiteralMap().find(expr->Number().GetDouble());
+    if (search != checker->NumberLiteralMap().end()) {
+        return search->second;
+    }
+
+    auto *new_num_literal_type = checker->Allocator()->New<checker::NumberLiteralType>(expr->Number().GetDouble());
+    checker->NumberLiteralMap().insert({expr->Number().GetDouble(), new_num_literal_type});
+    return new_num_literal_type;
 }
 
-checker::Type *TSAnalyzer::Check(ir::RegExpLiteral *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::RegExpLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    // TODO(aszilagyi);
+    return checker->GlobalAnyType();
 }
 
 checker::Type *TSAnalyzer::Check(ir::StringLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    auto search = checker->StringLiteralMap().find(expr->Str());
+    if (search != checker->StringLiteralMap().end()) {
+        return search->second;
+    }
+
+    auto *new_str_literal_type = checker->Allocator()->New<checker::StringLiteralType>(expr->Str());
+    checker->StringLiteralMap().insert({expr->Str(), new_str_literal_type});
+
+    return new_str_literal_type;
 }
 
 checker::Type *TSAnalyzer::Check(ir::UndefinedLiteral *expr) const
@@ -459,27 +475,23 @@ checker::Type *TSAnalyzer::Check(ir::UndefinedLiteral *expr) const
 }
 
 // compile methods for MODULE-related nodes in alphabetical order
-checker::Type *TSAnalyzer::Check(ir::ExportAllDeclaration *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ExportAllDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ExportDefaultDeclaration *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ExportDefaultDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ExportNamedDeclaration *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ExportNamedDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ExportSpecifier *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ExportSpecifier *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 

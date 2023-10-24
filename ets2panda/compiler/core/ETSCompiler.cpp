@@ -433,26 +433,54 @@ void ETSCompiler::Compile(const ir::CharLiteral *expr) const
 
 void ETSCompiler::Compile(const ir::NullLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    etsg->LoadAccumulatorNull(expr, expr->TsType());
 }
 
 void ETSCompiler::Compile(const ir::NumberLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
+    if (expr->Number().IsInt()) {
+        if (util::Helpers::IsTargetFitInSourceRange<checker::ByteType::UType, checker::IntType::UType>(
+                expr->Number().GetInt())) {
+            etsg->LoadAccumulatorByte(expr, static_cast<int8_t>(expr->Number().GetInt()));
+            return;
+        }
+
+        if (util::Helpers::IsTargetFitInSourceRange<checker::ShortType::UType, checker::IntType::UType>(
+                expr->Number().GetInt())) {
+            etsg->LoadAccumulatorShort(expr, static_cast<int16_t>(expr->Number().GetInt()));
+            return;
+        }
+
+        etsg->LoadAccumulatorInt(expr, static_cast<int32_t>(expr->Number().GetInt()));
+        return;
+    }
+
+    if (expr->Number().IsLong()) {
+        etsg->LoadAccumulatorWideInt(expr, expr->Number().GetLong());
+        return;
+    }
+
+    if (expr->Number().IsFloat()) {
+        etsg->LoadAccumulatorFloat(expr, expr->Number().GetFloat());
+        return;
+    }
+
+    etsg->LoadAccumulatorDouble(expr, expr->Number().GetDouble());
 }
 
-void ETSCompiler::Compile(const ir::RegExpLiteral *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::RegExpLiteral *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::StringLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    etsg->LoadAccumulatorString(expr, expr->Str());
+    etsg->SetAccumulatorType(expr->TsType());
 }
 
 void ETSCompiler::Compile(const ir::UndefinedLiteral *expr) const
@@ -462,27 +490,23 @@ void ETSCompiler::Compile(const ir::UndefinedLiteral *expr) const
 }
 
 // compile methods for MODULE-related nodes in alphabetical order
-void ETSCompiler::Compile(const ir::ExportAllDeclaration *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ExportAllDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ExportDefaultDeclaration *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ExportDefaultDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ExportNamedDeclaration *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ExportNamedDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ExportSpecifier *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ExportSpecifier *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
