@@ -26,7 +26,7 @@
             "column": 3,
             "problem": "NonDeclarationInNamespace",
             "suggest": "",
-            "rule": "Non-declaration statements in namespaces are not supported (arkts-no-ns-statements)"
+            "rule": "Non-declaration statements in namespaces are not supported (single semicolons are considered as empty non-declaration statement) (arkts-no-ns-statements)"
         },
         {
             "line": 20,
@@ -47,7 +47,7 @@
             "column": 3,
             "problem": "NonDeclarationInNamespace",
             "suggest": "",
-            "rule": "Non-declaration statements in namespaces are not supported (arkts-no-ns-statements)"
+            "rule": "Non-declaration statements in namespaces are not supported (single semicolons are considered as empty non-declaration statement) (arkts-no-ns-statements)"
         },
         {
             "line": 25,
