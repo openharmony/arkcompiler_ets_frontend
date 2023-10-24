@@ -54,15 +54,7 @@ class MailHelper():
                     if os.path.exists(pic_path):
                         os.remove(pic_path)
 
-    @staticmethod
-    def get_project_name(prj_name, aot_mode):
-        if aot_mode == performance_config.AotMode.NoAOT:
-            return prj_name
-        else:
-            return prj_name + ":aot:type"
-
     def create(self, prj_name):
-        self.create_table(MailHelper.get_project_name(prj_name, performance_config.AotMode.Type))
         self.create_table(prj_name)
 
     def create_table(self, prj_name):
@@ -89,11 +81,10 @@ class MailHelper():
     def add_msg(self, msg):
         self.mail_msg += msg
 
-    def add_failed_project(self, prj_name, build_mode, log_type, aot_type):
+    def add_failed_project(self, prj_name, build_mode, log_type):
         build_mode_info = 'Debug' if build_mode == performance_config.BuildMode.DEBUG else 'Release'
         build_type_info = 'full_build' if log_type == performance_config.LogType.FULL else 'incremental_build'
-        aot_info = 'no_aot' if aot_type == performance_config.AotMode.NoAOT else 'aot_type'
-        info = '-'.join((prj_name, build_mode_info, build_type_info, aot_info)) + '<br>'
+        info = '-'.join((prj_name, build_mode_info, build_type_info)) + '<br>'
         if self.failed_prjs == '':
             self.failed_prjs = 'failed projects:<br>'
         self.failed_prjs += info
