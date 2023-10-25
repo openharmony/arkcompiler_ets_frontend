@@ -159,6 +159,7 @@ checker::Type *TSInterfaceDeclaration::Check(checker::ETSChecker *checker)
         interface_type = checker->BuildInterfaceProperties(this);
         ASSERT(interface_type != nullptr);
         interface_type->SetSuperType(checker->GlobalETSObjectType());
+        checker->CheckInvokeMethodsLegitimacy(interface_type);
         SetTsType(interface_type);
     }
 

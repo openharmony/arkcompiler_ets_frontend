@@ -243,4 +243,29 @@ checker::Type *BinaryExpression::Check(checker::ETSChecker *checker)
     SetTsType(new_ts_type);
     return TsType();
 }
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *BinaryExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const left = left_ != nullptr ? left_->Clone(allocator) : nullptr;
+    auto *const right = right_ != nullptr ? right_->Clone(allocator) : nullptr;
+
+    if (auto *const clone = allocator->New<BinaryExpression>(left, right, operator_); clone != nullptr) {
+        if (operation_type_ != nullptr) {
+            clone->SetOperationType(operation_type_);
+        }
+        if (right != nullptr) {
+            right->SetParent(clone);
+        }
+        if (left != nullptr) {
+            left->SetParent(clone);
+        }
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
 }  // namespace panda::es2panda::ir

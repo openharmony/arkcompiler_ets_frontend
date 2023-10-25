@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -599,7 +599,8 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
 // NOLINTNEXTLINE(google-default-arguments)
 ir::AstNode *ParserImpl::ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
                                            [[maybe_unused]] ir::ClassDefinitionModifiers modifiers,
-                                           [[maybe_unused]] ir::ModifierFlags flags)
+                                           [[maybe_unused]] ir::ModifierFlags flags,
+                                           [[maybe_unused]] ir::Identifier *ident_node)
 {
     if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_STATIC &&
         lexer_->Lookahead() == lexer::LEX_CHAR_LEFT_BRACE) {
@@ -814,7 +815,8 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifie
     return class_definition;
 }
 
-ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
+ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags,
+                                                 ir::Identifier *ident_node)
 {
     auto saved_ctx = SavedStatusContext<ParserStatus::IN_CLASS_BODY>(&context_);
 
@@ -832,7 +834,7 @@ ParserImpl::ClassBody ParserImpl::ParseClassBody(ir::ClassDefinitionModifiers mo
             continue;
         }
 
-        ir::AstNode *property = ParseClassElement(properties, modifiers, flags);
+        ir::AstNode *property = ParseClassElement(properties, modifiers, flags, ident_node);
 
         if (CheckClassElement(property, ctor, properties)) {
             continue;
@@ -857,7 +859,7 @@ void ParserImpl::ValidateRestParameter(ir::Expression *param)
         }
 
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-            ThrowSyntaxError("Rest parameter must be last formal parameter");
+            ThrowSyntaxError("Rest parameter must be last formal parameter.");
         }
     }
 }
@@ -876,20 +878,21 @@ ArenaVector<ir::Expression *> ParserImpl::ParseFunctionParams()
 
         params.push_back(parameter);
 
-        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA &&
-            lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-            ThrowSyntaxError(", expected");
-        }
-
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
             lexer_->NextToken();
+        } else if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+            ThrowSyntaxError("Invalid token: comma or right parenthesis expected.");
         }
     }
 
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
     lexer_->NextToken();
-
     return params;
+}
+
+ir::Expression *ParserImpl::CreateParameterThis([[maybe_unused]] util::StringView class_name)
+{
+    ThrowSyntaxError({"Unexpected token: ", class_name.Utf8()});
 }
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::ParseFunctionBody(
@@ -905,7 +908,7 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::
     return {true, body, body->End(), false};
 }
 
-FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status)
+FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::Identifier *class_name)
 {
     auto type_params_ctx = binder::LexicalScope<binder::LocalScope>(Binder());
 
@@ -917,7 +920,19 @@ FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status)
 
     FunctionParameterContext func_param_context(&context_, Binder());
 
+    ir::Expression *parameter_this = nullptr;
+    if (class_name != nullptr) {
+        const auto saved_pos = Lexer()->Save();
+        lexer_->NextToken();  // eat '('
+        parameter_this = CreateParameterThis(class_name->Name());
+        Lexer()->Rewind(saved_pos);
+    }
+
     auto params = ParseFunctionParams();
+
+    if (class_name != nullptr) {
+        params.emplace(params.begin(), parameter_this);
+    }
 
     ir::TypeNode *return_type_annotation = ParseFunctionReturnType(status);
     ir::ScriptFunctionFlags throw_marker = ParseFunctionThrowMarker(true);

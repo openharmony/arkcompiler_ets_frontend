@@ -21,7 +21,7 @@ export enum FaultID {
   ImportFromPath, FunctionExpression, IntersectionType,
   ObjectTypeLiteral, CommaOperator, LimitedReturnTypeInference, 
   LambdaWithTypeParameters, ClassExpression, DestructuringAssignment,
-  DestructuringDeclaration, ForOfNonArray, VarDeclaration, CatchWithUnsupportedType, DeleteOperator,
+  DestructuringDeclaration, VarDeclaration, CatchWithUnsupportedType, DeleteOperator,
   DeclWithDuplicateName, UnaryArithmNotNumber, ConstructorType, ConstructorIface, ConstructorFuncs, CallSignature,
   TypeAssertion, PrivateIdentifier, LocalFunction,
   ConditionalType, MappedType, NamespaceAsObject, ClassAsObject,
@@ -34,8 +34,7 @@ export enum FaultID {
   NewTarget, DefiniteAssignment, Prototype, GlobalThis,
   UtilityType, PropertyDeclOnFunction, FunctionApplyBindCall, ConstAssertion, ImportAssertion, 
   SpreadOperator, LimitedStdLibApi, ErrorSuppression, StrictDiagnostic, UnsupportedDecorators, ImportAfterStatement,
-  EsObjectType, EsObjectAssignment, EsObjectAccess,
-  LAST_ID, // this should always be last enum`
+  EsObjectType, LAST_ID, // this should always be last enum
 }
 
 export class FaultAttributs {
@@ -88,7 +87,6 @@ faultsAttrs[FaultID.CommaOperator] = {cookBookRef: '71',};
 faultsAttrs[FaultID.DestructuringDeclaration] = {migratable: true, cookBookRef: '74',};
 faultsAttrs[FaultID.CatchWithUnsupportedType] = {migratable: true, cookBookRef: '79',};
 faultsAttrs[FaultID.ForInStatement] = {cookBookRef: '80',};
-faultsAttrs[FaultID.ForOfNonArray] = {migratable: true, cookBookRef: '82',};
 faultsAttrs[FaultID.MappedType] = {cookBookRef: '83',};
 faultsAttrs[FaultID.WithStatement] = {cookBookRef: '84',};
 faultsAttrs[FaultID.ThrowStatement] = {migratable: true, cookBookRef: '87',};
@@ -132,6 +130,4 @@ faultsAttrs[FaultID.ErrorSuppression] = {cookBookRef: '146',};
 faultsAttrs[FaultID.UnsupportedDecorators] = {warning: true, cookBookRef: '148',};
 faultsAttrs[FaultID.ClassAsObject] = {cookBookRef: '149',};
 faultsAttrs[FaultID.ImportAfterStatement] = {cookBookRef: '150',};
-faultsAttrs[FaultID.EsObjectType] = {warning: true, cookBookRef: '8'};
-faultsAttrs[FaultID.EsObjectAssignment] = {warning: true, cookBookRef: '8'};
-faultsAttrs[FaultID.EsObjectAccess] = {warning: true, cookBookRef: '8'};
+faultsAttrs[FaultID.EsObjectType] = {warning: true, cookBookRef: '151',};

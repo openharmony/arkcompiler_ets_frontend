@@ -36,11 +36,6 @@
         },
         {
             "line": 23,
-            "column": 10,
-            "problem": "GenericCallNoTypeArgs"
-        },
-        {
-            "line": 23,
             "column": 38,
             "problem": "JsxElement"
         }

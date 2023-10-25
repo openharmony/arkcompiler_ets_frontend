@@ -51,7 +51,7 @@ function formTscOptions(cmdOptions: CommandLineOptions, extraOptions?: any): ts.
     if (extraOptions) {
       options.options = Object.assign(options.options, extraOptions);
     }
-
+    
     return options;
   }
 
@@ -62,7 +62,6 @@ function formTscOptions(cmdOptions: CommandLineOptions, extraOptions?: any): ts.
       module: ts.ModuleKind.CommonJS,
       allowJs: true,
       checkJs: true,
-      maxNodeModuleJsDepth: 2
     },
   };
 

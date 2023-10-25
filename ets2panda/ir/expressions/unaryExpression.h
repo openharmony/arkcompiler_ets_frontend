@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,20 +32,29 @@ class Type;
 namespace panda::es2panda::ir {
 class UnaryExpression : public Expression {
 public:
-    explicit UnaryExpression(Expression *argument, lexer::TokenType unary_operator)
+    UnaryExpression() = delete;
+    ~UnaryExpression() override = default;
+
+    NO_COPY_SEMANTIC(UnaryExpression);
+    NO_MOVE_SEMANTIC(UnaryExpression);
+
+    explicit UnaryExpression(Expression *const argument, lexer::TokenType const unary_operator)
         : Expression(AstNodeType::UNARY_EXPRESSION), argument_(argument), operator_(unary_operator)
     {
     }
 
-    lexer::TokenType OperatorType() const
+    [[nodiscard]] lexer::TokenType OperatorType() const noexcept
     {
         return operator_;
     }
 
-    const Expression *Argument() const
+    [[nodiscard]] const Expression *Argument() const noexcept
     {
         return argument_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

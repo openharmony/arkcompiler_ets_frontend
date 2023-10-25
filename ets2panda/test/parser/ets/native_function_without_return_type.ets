@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 
-
 native function foo();
 
 function main(): void {

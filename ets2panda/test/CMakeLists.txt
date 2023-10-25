@@ -11,6 +11,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# target to test compilation issue on arm32 platforms
+# see issue https://gitee.com/openharmony-sig/arkcompiler_ets_frontend/issues/I84VFY
+if (PANDA_TARGET_ARM32)
+  add_custom_target(ets_tests_arm32_punctuator_any_equal
+      COMMAND ${PANDA_ROOT}/tests/tests-u-runner/runner.sh
+              ${PANDA_ROOT}
+              --build-dir ${PANDA_BINARY_ROOT}
+              --arm32-qemu
+              --ets-runtime
+              --test-file PunctuatorAnyEqual.ets
+  )
+endif()
+
 # ignore ARM32 because some files (not gnueabi or gnueabihf) are incompatible with 32x processors
 # this will be fixed in the future
 if(PANDA_TARGET_ARM32 OR PANDA_ARM64_TESTS_WITH_SANITIZER)
@@ -61,6 +74,18 @@ if(PANDA_WITH_ETS)
         )
         add_dependencies(es2panda-regression-tests es2panda-regression-tests-${CURRENT_GROUP})
     endforeach()
+
+    panda_add_gtest(
+        NAME es2panda_public_tests
+        SOURCES
+            public/es2panda_public_test.cpp
+        LIBRARIES
+            es2panda-public es2panda-lib arkassembler arkbytecodeopt
+        INCLUDE_DIRS
+            ${CMAKE_CURRENT_SOURCE_DIR}/..
+        SANITIZERS
+            ${PANDA_SANITIZERS_LIST}
+    )
 
     add_dependencies(es2panda_tests es2panda-regression-tests)
     if(TARGET ets_tests)

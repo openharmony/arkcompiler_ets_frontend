@@ -39,6 +39,7 @@ class DebugInfo;
 class Emitter;
 class CodeGen;
 class ProgramElement;
+class AstCompiler;
 
 class CompilerContext {
 public:

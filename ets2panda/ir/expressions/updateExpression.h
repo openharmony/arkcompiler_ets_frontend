@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,7 +22,13 @@
 namespace panda::es2panda::ir {
 class UpdateExpression : public Expression {
 public:
-    explicit UpdateExpression(Expression *argument, lexer::TokenType update_operator, bool is_prefix)
+    UpdateExpression() = delete;
+    ~UpdateExpression() override = default;
+
+    NO_COPY_SEMANTIC(UpdateExpression);
+    NO_MOVE_SEMANTIC(UpdateExpression);
+
+    explicit UpdateExpression(Expression *const argument, lexer::TokenType const update_operator, bool const is_prefix)
         : Expression(AstNodeType::UPDATE_EXPRESSION),
           argument_(argument),
           operator_(update_operator),
@@ -32,20 +38,24 @@ public:
                update_operator == lexer::TokenType::PUNCTUATOR_MINUS_MINUS);
     }
 
-    lexer::TokenType OperatorType() const
+    [[nodiscard]] lexer::TokenType OperatorType() const noexcept
     {
         return operator_;
     }
 
-    const Expression *Argument() const
+    [[nodiscard]] const Expression *Argument() const noexcept
     {
         return argument_;
     }
 
-    bool IsPrefix() const
+    [[nodiscard]] bool IsPrefix() const noexcept
     {
         return prefix_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;

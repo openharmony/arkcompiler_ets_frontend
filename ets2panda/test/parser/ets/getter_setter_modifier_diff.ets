@@ -13,14 +13,7 @@
  * limitations under the License.
  */
 
-class Book {
-    private _pages: int;
-
-    set pages(p: int): void {
-        this._pages = p;
-    }
-
-    static get pages(): int {
-        return 300;
-    }
+class A {
+    set foo(p: int) {}
+    final get foo(): int {}
 }

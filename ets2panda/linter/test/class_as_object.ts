@@ -80,3 +80,14 @@ namespace test1 {
 
     let x9 = new Bar(SomethingFoo);
 }
+
+enum Color { WHITE, BLUE, RED };
+let color: Color = Color.RED;
+
+for (let item = 0; item < Object.keys(Color).length; item++) {
+    console.log(item);
+}
+
+foo2(() => C);
+
+export { C as H };

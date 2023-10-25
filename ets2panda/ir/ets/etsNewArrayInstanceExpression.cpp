@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -68,5 +68,27 @@ checker::Type *ETSNewArrayInstanceExpression::Check([[maybe_unused]] checker::ET
     SetTsType(checker->CreateETSArrayType(element_type));
     checker->CreateBuiltinArraySignature(TsType()->AsETSArrayType(), 1);
     return TsType();
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *ETSNewArrayInstanceExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const type_ref = type_reference_ != nullptr ? type_reference_->Clone(allocator)->AsTypeNode() : nullptr;
+    auto *const dimension = dimension_ != nullptr ? dimension_->Clone(allocator) : nullptr;
+
+    if (auto *const clone = allocator->New<ETSNewArrayInstanceExpression>(type_ref, dimension); clone != nullptr) {
+        if (type_ref != nullptr) {
+            type_ref->SetParent(clone);
+        }
+        if (dimension != nullptr) {
+            dimension->SetParent(clone);
+        }
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

@@ -19,7 +19,7 @@ import { ProblemSeverity } from '../ProblemSeverity';
 import { LintOptions } from '../LintOptions';
 import { TypeScriptDiagnosticsExtractor } from './TypeScriptDiagnosticsExtractor';
 import { compile } from '../CompilerWrapper';
-import { FaultID } from '../Problems';
+import { FaultID } from '../utils/consts/Problems';
 import { faultsAttrs } from '../FaultAttrs';
 
 export interface TSCCompiledProgram {

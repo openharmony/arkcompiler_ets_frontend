@@ -30,26 +30,6 @@
             "problem": "UtilityType"
         },
         {
-            "line": 31,
-            "column": 15,
-            "problem": "UtilityType"
-        },
-        {
-            "line": 31,
-            "column": 33,
-            "problem": "ObjectLiteralNoContextType"
-        },
-        {
-            "line": 39,
-            "column": 15,
-            "problem": "UtilityType"
-        },
-        {
-            "line": 39,
-            "column": 32,
-            "problem": "ObjectLiteralNoContextType"
-        },
-        {
             "line": 53,
             "column": 22,
             "problem": "UtilityType"
@@ -311,7 +291,7 @@
         },
         {
             "line": 178,
-            "column": 12,
+            "column": 18,
             "problem": "FunctionApplyBindCall"
         },
         {
@@ -336,7 +316,7 @@
         },
         {
             "line": 187,
-            "column": 54,
+            "column": 60,
             "problem": "FunctionApplyBindCall"
         },
         {
@@ -403,11 +383,6 @@
             "line": 201,
             "column": 39,
             "problem": "IntersectionType"
-        },
-        {
-            "line": 204,
-            "column": 15,
-            "problem": "GenericCallNoTypeArgs"
         },
         {
             "line": 204,

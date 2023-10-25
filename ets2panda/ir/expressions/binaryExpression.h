@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,54 +22,60 @@
 namespace panda::es2panda::ir {
 class BinaryExpression : public Expression {
 public:
-    explicit BinaryExpression(Expression *left_expr, Expression *right_expr, lexer::TokenType operator_type)
-        : Expression(AstNodeType::BINARY_EXPRESSION), left_(left_expr), right_(right_expr), operator_(operator_type)
+    BinaryExpression() = delete;
+    ~BinaryExpression() override = default;
+
+    NO_COPY_SEMANTIC(BinaryExpression);
+    NO_MOVE_SEMANTIC(BinaryExpression);
+
+    explicit BinaryExpression(Expression *const left, Expression *const right, lexer::TokenType const operator_type)
+        : Expression(AstNodeType::BINARY_EXPRESSION), left_(left), right_(right), operator_(operator_type)
     {
     }
 
-    const Expression *Left() const
+    [[nodiscard]] const Expression *Left() const noexcept
     {
         return left_;
     }
 
-    Expression *Left()
+    [[nodiscard]] Expression *Left() noexcept
     {
         return left_;
     }
 
-    const Expression *Right() const
+    [[nodiscard]] const Expression *Right() const noexcept
     {
         return right_;
     }
 
-    Expression *Right()
+    [[nodiscard]] Expression *Right() noexcept
     {
         return right_;
     }
 
-    lexer::TokenType OperatorType() const
+    [[nodiscard]] lexer::TokenType OperatorType() const noexcept
     {
         return operator_;
     }
 
-    bool IsLogical() const
+    [[nodiscard]] bool IsLogical() const noexcept
     {
         return operator_ <= lexer::TokenType::PUNCTUATOR_LOGICAL_AND;
     }
 
-    void SetLeft(Expression *expr)
+    void SetLeft(Expression *expr) noexcept
     {
         left_ = expr;
         SetStart(left_->Start());
     }
 
-    void SetOperator(lexer::TokenType operator_type)
+    void SetOperator(lexer::TokenType operator_type) noexcept
     {
         operator_ = operator_type;
         type_ = AstNodeType::BINARY_EXPRESSION;
     }
 
-    checker::Type *OperationType()
+    [[nodiscard]] checker::Type *OperationType() noexcept
     {
         return operation_type_;
     }
@@ -79,10 +85,13 @@ public:
         operation_type_ = operation_type;
     }
 
-    const checker::Type *OperationType() const
+    [[nodiscard]] const checker::Type *OperationType() const noexcept
     {
         return operation_type_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -95,8 +104,8 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
 private:
-    Expression *left_;
-    Expression *right_;
+    Expression *left_ = nullptr;
+    Expression *right_ = nullptr;
     lexer::TokenType operator_;
     checker::Type *operation_type_ {};
 };

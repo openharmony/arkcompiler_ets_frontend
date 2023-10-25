@@ -50,11 +50,6 @@
             "problem": "YieldExpression"
         },
         {
-            "line": 29,
-            "column": 1,
-            "problem": "ForOfNonArray"
-        },
-        {
             "line": 35,
             "column": 3,
             "problem": "GeneratorFunction"

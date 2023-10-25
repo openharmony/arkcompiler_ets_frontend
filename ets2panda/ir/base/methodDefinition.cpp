@@ -102,6 +102,10 @@ void MethodDefinition::Dump(ir::AstDumper *dumper) const
             kind = "method";
             break;
         }
+        case MethodDefinitionKind::EXTENSION_METHOD: {
+            kind = "extensionmethod";
+            break;
+        }
         case MethodDefinitionKind::GET: {
             kind = "get";
             break;
@@ -192,6 +196,10 @@ checker::Type *MethodDefinition::Check(checker::ETSChecker *checker)
             checker->AddStatus(checker::CheckerStatus::IN_CONSTRUCTOR);
         }
 
+        if (IsExtensionMethod()) {
+            CheckExtensionMethod(checker, script_func);
+        }
+
         script_func->Body()->Check(checker);
 
         // In case of inferred function's return type set it forcedly to all return statements;
@@ -202,6 +210,14 @@ checker::Type *MethodDefinition::Check(checker::ETSChecker *checker)
         }
 
         checker->Context().SetContainingSignature(nullptr);
+    }
+
+    if (script_func->IsSetter() && (script_func->Signature()->ReturnType() != checker->GlobalBuiltinVoidType())) {
+        checker->ThrowTypeError("Setter must have void return type", script_func->Start());
+    }
+
+    if (script_func->IsGetter() && (script_func->Signature()->ReturnType() == checker->GlobalBuiltinVoidType())) {
+        checker->ThrowTypeError("Getter must return a value", script_func->Start());
     }
 
     checker->CheckOverride(TsType()->AsETSFunctionType()->FindSignature(Function()));
@@ -215,6 +231,70 @@ checker::Type *MethodDefinition::Check(checker::ETSChecker *checker)
     }
 
     return TsType();
+}
+
+void MethodDefinition::CheckExtensionMethod(checker::ETSChecker *checker, ScriptFunction *extension_func)
+{
+    auto *const class_type = extension_func->Signature()->Params()[0]->TsType();
+    if (!class_type->IsETSObjectType() ||
+        (!class_type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::CLASS) &&
+         !class_type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::INTERFACE))) {
+        checker->ThrowTypeError("Extension function can only defined for class and interface type.", Start());
+    }
+
+    checker->AddStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD);
+
+    checker::SignatureInfo *original_extension_sig_info = checker->Allocator()->New<checker::SignatureInfo>(
+        extension_func->Signature()->GetSignatureInfo(), checker->Allocator());
+    original_extension_sig_info->min_arg_count -= 1;
+    original_extension_sig_info->params.erase(original_extension_sig_info->params.begin());
+    checker::Signature *original_extension_sigature = checker->CreateSignature(
+        original_extension_sig_info, extension_func->Signature()->ReturnType(), extension_func);
+
+    CheckExtensionIsShadowedByMethod(checker, class_type->AsETSObjectType(), extension_func,
+                                     original_extension_sigature);
+}
+
+void MethodDefinition::CheckExtensionIsShadowedByMethod(checker::ETSChecker *checker, checker::ETSObjectType *obj_type,
+                                                        ScriptFunction *extension_func, checker::Signature *sigature)
+{
+    if (obj_type == nullptr) {
+        return;
+    }
+
+    CheckExtensionIsShadowedInCurrentClassOrInterface(checker, obj_type, extension_func, sigature);
+
+    for (auto *interface : obj_type->Interfaces()) {
+        CheckExtensionIsShadowedByMethod(checker, interface, extension_func, sigature);
+    }
+
+    CheckExtensionIsShadowedByMethod(checker, obj_type->SuperType(), extension_func, sigature);
+}
+
+void MethodDefinition::CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *checker,
+                                                                         checker::ETSObjectType *obj_type,
+                                                                         ScriptFunction *extension_func,
+                                                                         checker::Signature *sigature)
+{
+    const auto method_name = extension_func->Id()->Name();
+    // Only check if there are class and interfaces' instance methods which would shadow instance extension method
+    auto *const variable = obj_type->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(method_name);
+    if (variable == nullptr) {
+        return;
+    }
+
+    const auto *const func_type = variable->TsType()->AsETSFunctionType();
+    for (auto *func_signature : func_type->CallSignatures()) {
+        sigature->SetReturnType(func_signature->ReturnType());
+        if (!checker->Relation()->IsIdenticalTo(sigature, func_signature)) {
+            continue;
+        }
+
+        checker->ReportWarning({"extension is shadowed by a instance member function '", func_type->Name(),
+                                func_signature, "' in class ", obj_type->Name()},
+                               extension_func->Body()->Start());
+        return;
+    }
 }
 
 void MethodDefinition::CheckMethodModifiers(checker::ETSChecker *checker)

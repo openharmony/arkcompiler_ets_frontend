@@ -16,6 +16,13 @@
     "nodes": [
         {
             "line": 18,
+            "column": 1,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
+        },
+        {
+            "line": 18,
             "column": 51,
             "problem": "UnknownType",
             "suggest": "",

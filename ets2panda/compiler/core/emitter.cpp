@@ -384,7 +384,7 @@ static void UpdateLiteralBufferId([[maybe_unused]] panda::pandasm::Ins *ins, [[m
 
 void Emitter::AddProgramElement(ProgramElement *program_element)
 {
-    prog_->strings.merge(program_element->Strings());
+    prog_->strings.insert(program_element->Strings().begin(), program_element->Strings().end());
 
     uint32_t new_literal_buffer_index = literal_buffer_index_;
     for (const auto &buff : program_element->BuffStorage()) {

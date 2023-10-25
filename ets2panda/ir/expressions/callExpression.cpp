@@ -25,9 +25,11 @@
 #include "checker/types/ets/etsDynamicFunctionType.h"
 #include "checker/types/ts/objectType.h"
 #include "checker/types/signature.h"
-#include "ir/base/scriptFunction.h"
 #include "ir/astDump.h"
+#include "ir/base/scriptFunction.h"
+#include "ir/base/spreadElement.h"
 #include "ir/ets/etsFunctionType.h"
+#include "ir/expressions/arrayExpression.h"
 #include "ir/expressions/chainExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/memberExpression.h"
@@ -83,6 +85,32 @@ compiler::VReg CallExpression::CreateSpreadArguments(compiler::PandaGen *pg) con
     pg->CreateArray(this, arguments_, args_obj);
 
     return args_obj;
+}
+
+void CallExpression::ConvertRestArguments(checker::ETSChecker *const checker) const
+{
+    if (signature_->RestVar() != nullptr) {
+        std::size_t const argument_count = arguments_.size();
+        std::size_t const parameter_count = signature_->MinArgCount();
+        ASSERT(argument_count >= parameter_count);
+
+        auto &arguments = const_cast<ArenaVector<Expression *> &>(arguments_);
+        std::size_t i = parameter_count;
+
+        if (i < argument_count && arguments_[i]->IsSpreadElement()) {
+            arguments[i] = arguments_[i]->AsSpreadElement()->Argument();
+        } else {
+            ArenaVector<ir::Expression *> elements(checker->Allocator()->Adapter());
+            for (; i < argument_count; ++i) {
+                elements.emplace_back(arguments_[i]);
+            }
+            auto *array_expression = checker->AllocNode<ir::ArrayExpression>(std::move(elements), checker->Allocator());
+            array_expression->SetParent(const_cast<CallExpression *>(this));
+            array_expression->SetTsType(signature_->RestVar()->TsType());
+            arguments.erase(arguments_.begin() + parameter_count, arguments_.end());
+            arguments.emplace_back(array_expression);
+        }
+    }
 }
 
 void CallExpression::Compile(compiler::PandaGen *pg) const
@@ -171,46 +199,60 @@ void CallExpression::Compile(compiler::ETSGen *etsg) const
 
     const auto is_proxy = signature_->HasSignatureFlag(checker::SignatureFlags::PROXY);
 
-    if (is_proxy && callee_->IsMemberExpression() &&
-        callee_->AsMemberExpression()->Object()->TsType()->IsETSEnumType()) {
-        ArenaVector<ir::Expression *> arguments(etsg->Allocator()->Adapter());
+    if (is_proxy && callee_->IsMemberExpression()) {
+        auto *const callee_object = callee_->AsMemberExpression()->Object();
 
-        checker::Signature *const signature = [this, &arguments]() {
-            auto *const callee_obj = callee_->AsMemberExpression()->Object();
-            const auto *const enum_type = callee_obj->TsType()->AsETSEnumType();
-            const auto &member_proxy_method_name = signature_->InternalName();
-
-            if (member_proxy_method_name == checker::ETSEnumType::TO_STRING_METHOD_NAME) {
-                arguments.push_back(callee_obj);
-                return enum_type->ToStringMethod().global_signature;
+        auto const *const enum_interface = [callee_type =
+                                                callee_object->TsType()]() -> checker::ETSEnumInterface const * {
+            if (callee_type->IsETSEnumType()) {
+                return callee_type->AsETSEnumType();
             }
-            if (member_proxy_method_name == checker::ETSEnumType::GET_VALUE_METHOD_NAME) {
-                arguments.push_back(callee_obj);
-                return enum_type->GetValueMethod().global_signature;
+            if (callee_type->IsETSStringEnumType()) {
+                return callee_type->AsETSStringEnumType();
             }
-            if (member_proxy_method_name == checker::ETSEnumType::GET_NAME_METHOD_NAME) {
-                arguments.push_back(callee_obj);
-                return enum_type->GetNameMethod().global_signature;
-            }
-            if (member_proxy_method_name == checker::ETSEnumType::VALUES_METHOD_NAME) {
-                return enum_type->ValuesMethod().global_signature;
-            }
-            if (member_proxy_method_name == checker::ETSEnumType::VALUE_OF_METHOD_NAME) {
-                arguments.push_back(arguments_.front());
-                return enum_type->ValueOfMethod().global_signature;
-            }
-            UNREACHABLE();
+            return nullptr;
         }();
 
-        ASSERT(signature->ReturnType() == signature_->ReturnType());
-        etsg->CallStatic(this, signature, arguments);
-        etsg->SetAccumulatorType(TsType());
-        return;
+        if (enum_interface != nullptr) {
+            ArenaVector<ir::Expression *> arguments(etsg->Allocator()->Adapter());
+
+            checker::Signature *const signature = [this, callee_object, enum_interface, &arguments]() {
+                const auto &member_proxy_method_name = signature_->InternalName();
+
+                if (member_proxy_method_name == checker::ETSEnumType::TO_STRING_METHOD_NAME) {
+                    arguments.push_back(callee_object);
+                    return enum_interface->ToStringMethod().global_signature;
+                }
+                if (member_proxy_method_name == checker::ETSEnumType::GET_VALUE_METHOD_NAME) {
+                    arguments.push_back(callee_object);
+                    return enum_interface->GetValueMethod().global_signature;
+                }
+                if (member_proxy_method_name == checker::ETSEnumType::GET_NAME_METHOD_NAME) {
+                    arguments.push_back(callee_object);
+                    return enum_interface->GetNameMethod().global_signature;
+                }
+                if (member_proxy_method_name == checker::ETSEnumType::VALUES_METHOD_NAME) {
+                    return enum_interface->ValuesMethod().global_signature;
+                }
+                if (member_proxy_method_name == checker::ETSEnumType::VALUE_OF_METHOD_NAME) {
+                    arguments.push_back(arguments_.front());
+                    return enum_interface->ValueOfMethod().global_signature;
+                }
+                UNREACHABLE();
+            }();
+
+            ASSERT(signature->ReturnType() == signature_->ReturnType());
+            etsg->CallStatic(this, signature, arguments);
+            etsg->SetAccumulatorType(TsType());
+            return;
+        }
     }
 
     bool is_static = signature_->HasSignatureFlag(checker::SignatureFlags::STATIC);
     bool is_reference = signature_->HasSignatureFlag(checker::SignatureFlags::TYPE);
     bool is_dynamic = callee_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG);
+
+    ConvertRestArguments(const_cast<checker::ETSChecker *>(etsg->Checker()->AsETSChecker()));
 
     compiler::VReg dyn_param2;
 
@@ -331,12 +373,53 @@ bool CallExpression::IsETSConstructorCall() const
     return callee_->IsThisExpression() || callee_->IsSuperExpression();
 }
 
+checker::Signature *CallExpression::ResolveCallExtensionFunction(checker::ETSFunctionType *function_type,
+                                                                 checker::ETSChecker *checker)
+{
+    auto *member_expr = callee_->AsMemberExpression();
+    arguments_.insert(arguments_.begin(), member_expr->Object());
+    auto *signature = checker->ResolveCallExpressionAndTrailingLambda(function_type->CallSignatures(), this, Start());
+    if (!signature->Function()->IsExtensionMethod()) {
+        checker->ThrowTypeError({"Property '", member_expr->Property()->AsIdentifier()->Name(),
+                                 "' does not exist on type '", member_expr->ObjType()->Name(), "'"},
+                                member_expr->Property()->Start());
+    }
+    this->SetSignature(signature);
+    this->SetCallee(member_expr->Property());
+    member_expr->Property()->AsIdentifier()->SetParent(this);
+    this->Arguments()[0]->SetParent(this);
+    checker->HandleUpdatedCallExpressionNode(this);
+    // Set TsType for new Callee(original member expression's Object)
+    this->Callee()->Check(checker);
+    return signature;
+}
+
+checker::Signature *CallExpression::ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensionFuncHelperType *type,
+                                                                             checker::ETSChecker *checker)
+{
+    checker::Signature *signature = checker->ResolveCallExpressionAndTrailingLambda(
+        type->ClassMethodType()->CallSignatures(), this, Start(), checker::TypeRelationFlag::NO_THROW);
+
+    if (signature != nullptr) {
+        return signature;
+    }
+
+    return ResolveCallExtensionFunction(type->ExtensionMethodType(), checker);
+}
+
 checker::Type *CallExpression::Check(checker::ETSChecker *checker)
 {
     if (TsType() != nullptr) {
         return TsType();
     }
+    auto *old_callee = callee_;
     checker::Type *callee_type = callee_->Check(checker);
+    if (callee_ != old_callee) {
+        // If it is a static invoke, the callee will be transformed from an identifier to a member expression
+        // Type check the callee again for member expression
+        callee_type = callee_->Check(checker);
+    }
+
     checker::Type *return_type;
     if (callee_type->IsETSDynamicType() && !callee_type->AsETSDynamicType()->HasDecl()) {
         // Trailing lambda for js function call is not supported, check the correctness of `foo() {}`
@@ -349,26 +432,41 @@ checker::Type *CallExpression::Check(checker::ETSChecker *checker)
         bool functional_interface =
             callee_type->IsETSObjectType() &&
             callee_type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
+        bool ets_extension_func_helper_type = callee_type->IsETSExtensionFuncHelperType();
+        bool extension_function_type = callee_->IsMemberExpression() && checker->ExtensionETSFunctionType(callee_type);
 
         if (callee_->IsArrowFunctionExpression()) {
             callee_type = InitAnonymousLambdaCallee(checker, callee_, callee_type);
             functional_interface = true;
         }
 
-        if (!functional_interface && !callee_type->IsETSFunctionType() && !constructor_call) {
+        if (!functional_interface && !callee_type->IsETSFunctionType() && !constructor_call &&
+            !ets_extension_func_helper_type) {
             checker->ThrowTypeError("This expression is not callable.", Start());
         }
 
-        auto &signatures = constructor_call ? callee_type->AsETSObjectType()->ConstructSignatures()
-                           : functional_interface
-                               ? callee_type->AsETSObjectType()
-                                     ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke")
-                                     ->TsType()
-                                     ->AsETSFunctionType()
-                                     ->CallSignatures()
-                               : callee_type->AsETSFunctionType()->CallSignatures();
+        checker::Signature *signature = nullptr;
 
-        auto *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, this, Start());
+        if (ets_extension_func_helper_type) {
+            signature = ResolveCallForETSExtensionFuncHelperType(callee_type->AsETSExtensionFuncHelperType(), checker);
+        } else {
+            if (extension_function_type) {
+                signature = ResolveCallExtensionFunction(callee_type->AsETSFunctionType(), checker);
+            } else {
+                auto &signatures = constructor_call ? callee_type->AsETSObjectType()->ConstructSignatures()
+                                   : functional_interface
+                                       ? callee_type->AsETSObjectType()
+                                             ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke")
+                                             ->TsType()
+                                             ->AsETSFunctionType()
+                                             ->CallSignatures()
+                                       : callee_type->AsETSFunctionType()->CallSignatures();
+                signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, this, Start());
+                if (signature->Function()->IsExtensionMethod()) {
+                    checker->ThrowTypeError({"No matching call signature"}, Start());
+                }
+            }
+        }
 
         checker->CheckObjectLiteralArguments(signature, arguments_);
 
@@ -404,6 +502,12 @@ checker::Type *CallExpression::Check(checker::ETSChecker *checker)
         }
 
         return_type = signature->ReturnType();
+    }
+
+    if (signature_->RestVar() != nullptr) {
+        auto *const element_type = signature_->RestVar()->TsType()->AsETSArrayType()->ElementType();
+        auto *const array_type = checker->CreateETSArrayType(element_type)->AsETSArrayType();
+        checker->CreateBuiltinArraySignature(array_type, array_type->Rank());
     }
 
     SetTsType(return_type);

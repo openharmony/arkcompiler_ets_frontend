@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,7 +36,16 @@ enum class MemberExpressionKind : uint32_t {
 DEFINE_BITOPS(MemberExpressionKind)
 
 class MemberExpression : public Expression {
+private:
+    struct Tag {};
+
 public:
+    MemberExpression() = delete;
+    ~MemberExpression() override = default;
+
+    NO_COPY_OPERATOR(MemberExpression);
+    NO_MOVE_SEMANTIC(MemberExpression);
+
     explicit MemberExpression(Expression *object, Expression *property, MemberExpressionKind kind, bool computed,
                               bool optional)
         : Expression(AstNodeType::MEMBER_EXPRESSION),
@@ -48,57 +57,59 @@ public:
     {
     }
 
-    Expression *Object()
+    explicit MemberExpression(Tag tag, Expression *object, Expression *property);
+
+    [[nodiscard]] Expression *Object() noexcept
     {
         return object_;
     }
 
-    const Expression *Object() const
+    [[nodiscard]] const Expression *Object() const noexcept
     {
         return object_;
     }
 
-    Expression *Property()
+    [[nodiscard]] Expression *Property() noexcept
     {
         return property_;
     }
 
-    const Expression *Property() const
+    [[nodiscard]] const Expression *Property() const noexcept
     {
         return property_;
     }
 
-    binder::LocalVariable *PropVar()
+    [[nodiscard]] binder::LocalVariable *PropVar() noexcept
     {
         return prop_var_;
     }
 
-    const binder::LocalVariable *PropVar() const
+    [[nodiscard]] const binder::LocalVariable *PropVar() const noexcept
     {
         return prop_var_;
     }
 
-    bool IsComputed() const
+    [[nodiscard]] bool IsComputed() const noexcept
     {
         return computed_;
     }
 
-    bool IsOptional() const
+    [[nodiscard]] bool IsOptional() const noexcept
     {
         return optional_;
     }
 
-    MemberExpressionKind Kind() const
+    [[nodiscard]] MemberExpressionKind Kind() const noexcept
     {
         return kind_;
     }
 
-    void AddMemberKind(MemberExpressionKind kind)
+    void AddMemberKind(MemberExpressionKind kind) noexcept
     {
         kind_ |= kind;
     }
 
-    bool HasMemberKind(MemberExpressionKind kind) const
+    [[nodiscard]] bool HasMemberKind(MemberExpressionKind kind) const noexcept
     {
         return (kind_ & kind) != 0;
     }
@@ -108,32 +119,35 @@ public:
         kind_ &= ~kind;
     }
 
-    checker::ETSObjectType *ObjType() const
+    [[nodiscard]] checker::ETSObjectType *ObjType() const noexcept
     {
         return obj_type_;
     }
 
-    void SetPropVar(binder::LocalVariable *prop_var)
+    void SetPropVar(binder::LocalVariable *prop_var) noexcept
     {
         prop_var_ = prop_var;
     }
 
-    void SetObjectType(checker::ETSObjectType *obj_type)
+    void SetObjectType(checker::ETSObjectType *obj_type) noexcept
     {
         obj_type_ = obj_type;
     }
 
-    bool IsIgnoreBox() const
+    [[nodiscard]] bool IsIgnoreBox() const noexcept
     {
         return ignore_box_;
     }
 
-    void SetIgnoreBox()
+    void SetIgnoreBox() noexcept
     {
         ignore_box_ = true;
     }
 
-    bool IsPrivateReference() const;
+    [[nodiscard]] bool IsPrivateReference() const noexcept;
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -145,10 +159,22 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
+protected:
+    MemberExpression(MemberExpression const &other) : Expression(static_cast<Expression const &>(other))
+    {
+        kind_ = other.kind_;
+        computed_ = other.computed_;
+        optional_ = other.optional_;
+        ignore_box_ = other.ignore_box_;
+        prop_var_ = other.prop_var_;
+        // Note! Probably, we need to do 'Instantiate(...)' but we haven't access to 'Relation()' here...
+        obj_type_ = other.obj_type_;
+    }
+
 private:
     void LoadRhs(compiler::PandaGen *pg) const;
-    Expression *object_;
-    Expression *property_;
+    Expression *object_ = nullptr;
+    Expression *property_ = nullptr;
     MemberExpressionKind kind_;
     bool computed_;
     bool optional_;

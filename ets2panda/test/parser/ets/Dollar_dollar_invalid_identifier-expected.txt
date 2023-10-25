@@ -1,0 +1,1 @@
+SyntaxError: Identifier expected. [Dollar_dollar_invalid_identifier.ets:16:5]

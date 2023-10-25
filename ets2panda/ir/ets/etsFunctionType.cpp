@@ -96,30 +96,29 @@ checker::Type *ETSFunctionType::Check(checker::ETSChecker *checker)
     auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
 
     for (auto *it : invoke_func->Params()) {
-        if (it->IsRestElement()) {
-            auto *rest_param = it->AsRestElement();
-            ASSERT(rest_param->Argument()->IsIdentifier());
-
-            auto *rest_ident = rest_param->Argument()->AsIdentifier();
+        auto *const param = it->AsETSParameterExpression();
+        if (param->IsRestParameter()) {
+            auto *rest_ident = param->Ident();
 
             ASSERT(rest_ident->Variable());
             signature_info->rest_var = rest_ident->Variable()->AsLocalVariable();
 
-            ASSERT(rest_param->TypeAnnotation());
-            signature_info->rest_var->SetTsType(rest_param->TypeAnnotation()->GetType(checker));
-            break;
+            ASSERT(param->TypeAnnotation());
+            signature_info->rest_var->SetTsType(checker->GetTypeFromTypeAnnotation(param->TypeAnnotation()));
+
+            auto array_type = signature_info->rest_var->TsType()->AsETSArrayType();
+            checker->CreateBuiltinArraySignature(array_type, array_type->Rank());
+        } else {
+            auto *param_ident = param->Ident();
+
+            ASSERT(param_ident->Variable());
+            binder::Variable *param_var = param_ident->Variable();
+
+            ASSERT(param->TypeAnnotation());
+            param_var->SetTsType(checker->GetTypeFromTypeAnnotation(param->TypeAnnotation()));
+            signature_info->params.push_back(param_var->AsLocalVariable());
+            ++signature_info->min_arg_count;
         }
-
-        ASSERT(it->IsETSParameterExpression());
-        auto *param_ident = it->AsETSParameterExpression()->Ident();
-
-        ASSERT(param_ident->Variable());
-        binder::Variable *param_var = param_ident->Variable();
-
-        ASSERT(param_ident->TypeAnnotation());
-        param_var->SetTsType(param_ident->TypeAnnotation()->GetType(checker));
-        signature_info->params.push_back(param_var->AsLocalVariable());
-        signature_info->min_arg_count++;
     }
 
     invoke_func->ReturnTypeAnnotation()->Check(checker);

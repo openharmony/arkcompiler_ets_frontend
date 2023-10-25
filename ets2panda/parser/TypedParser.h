@@ -62,7 +62,8 @@ protected:
                                               ir::ModifierFlags flags = ir::ModifierFlags::NONE) override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
-                                   ir::ModifierFlags flags = ir::ModifierFlags::NONE) override;
+                                   ir::ModifierFlags flags = ir::ModifierFlags::NONE,
+                                   ir::Identifier *ident_node = nullptr) override;
 
     static bool CheckClassElementInterfaceBody(ir::AstNode *property, ArenaVector<ir::AstNode *> &properties);
     bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,

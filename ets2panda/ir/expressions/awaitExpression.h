@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,12 +21,21 @@
 namespace panda::es2panda::ir {
 class AwaitExpression : public Expression {
 public:
+    AwaitExpression() = delete;
+    ~AwaitExpression() override = default;
+
+    NO_COPY_SEMANTIC(AwaitExpression);
+    NO_MOVE_SEMANTIC(AwaitExpression);
+
     explicit AwaitExpression(Expression *argument) : Expression(AstNodeType::AWAIT_EXPRESSION), argument_(argument) {}
 
-    const Expression *Argument() const
+    [[nodiscard]] const Expression *Argument() const noexcept
     {
         return argument_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

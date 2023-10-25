@@ -17,9 +17,9 @@
 #define ES2PANDA_COMPILER_CORE_CODEGEN_H
 
 #include "compiler/base/literals.h"
+#include "compiler/core/ASTCompiler.h"
 #include "compiler/core/regAllocator.h"
 #include "compiler/core/regScope.h"
-#include "compiler/core/dynamicContext.h"
 
 namespace panda::es2panda::compiler {
 class CatchTable;
@@ -71,8 +71,9 @@ public:
     using TypeMap = ArenaUnorderedMap<VReg, const checker::Type *>;
 
     explicit CodeGen(ArenaAllocator *allocator, RegSpiller *spiller, CompilerContext *context,
-                     binder::FunctionScope *scope, ProgramElement *program_element) noexcept
-        : allocator_(allocator),
+                     binder::FunctionScope *scope, ProgramElement *program_element, AstCompiler *astcompiler) noexcept
+        : ast_compiler_(astcompiler),
+          allocator_(allocator),
           context_(context),
           debug_info_(allocator_),
           top_scope_(scope),
@@ -86,6 +87,7 @@ public:
           ra_(this, spiller),
           rra_(this, spiller)
     {
+        ast_compiler_->SetCodeGen(this);
     }
     virtual ~CodeGen() = default;
     NO_COPY_SEMANTIC(CodeGen);
@@ -151,6 +153,8 @@ public:
 
     [[nodiscard]] virtual checker::Type const *TypeForVar(binder::Variable const *var) const noexcept;
 
+    compiler::AstCompiler *GetAstCompiler() const;
+
 protected:
     [[nodiscard]] SimpleAllocator &Sa() noexcept;
     [[nodiscard]] const SimpleAllocator &Sa() const noexcept;
@@ -163,6 +167,7 @@ protected:
     [[nodiscard]] const TypeMap &GetTypeMap() const noexcept;
 
 private:
+    AstCompiler *ast_compiler_;
     ArenaAllocator *allocator_ {};
     CompilerContext *context_ {};
     DebugInfo debug_info_;

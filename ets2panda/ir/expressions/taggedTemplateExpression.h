@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,26 +24,35 @@ class TSTypeParameterInstantiation;
 
 class TaggedTemplateExpression : public Expression {
 public:
+    TaggedTemplateExpression() = delete;
+    ~TaggedTemplateExpression() override = default;
+
+    NO_COPY_SEMANTIC(TaggedTemplateExpression);
+    NO_MOVE_SEMANTIC(TaggedTemplateExpression);
+
     explicit TaggedTemplateExpression(Expression *tag, TemplateLiteral *quasi,
                                       TSTypeParameterInstantiation *type_params)
         : Expression(AstNodeType::TAGGED_TEMPLATE_EXPRESSION), tag_(tag), quasi_(quasi), type_params_(type_params)
     {
     }
 
-    const Expression *Tag() const
+    [[nodiscard]] const Expression *Tag() const noexcept
     {
         return tag_;
     }
 
-    const TemplateLiteral *Quasi() const
+    [[nodiscard]] const TemplateLiteral *Quasi() const noexcept
     {
         return quasi_;
     }
 
-    const TSTypeParameterInstantiation *TypeParams() const
+    [[nodiscard]] const TSTypeParameterInstantiation *TypeParams() const noexcept
     {
         return type_params_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

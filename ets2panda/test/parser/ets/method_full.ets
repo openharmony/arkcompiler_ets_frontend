@@ -20,7 +20,7 @@ abstract class method_full  {
     }
     foo_int(b : double, c : char, i : int): int {
     }
-    foo_bool(d : double, c : char, ... i: int ): boolean {
+    foo_bool(d : double, c : char, ... i: int[]): boolean {
     }
     private final foo_private(d : double): int {
     }

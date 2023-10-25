@@ -18,10 +18,12 @@
 
 #include "binder/enumMemberResult.h"
 #include "checker/checkerContext.h"
+#include "checker/SemanticAnalyzer.h"
 #include "checker/types/typeRelation.h"
 #include "util/enumbitops.h"
 #include "util/ustring.h"
 #include "es2panda.h"
+
 #include "macros.h"
 
 #include <cstdint>
@@ -151,10 +153,12 @@ public:
     virtual Type *GetTypeOfVariable(binder::Variable *var) = 0;
     virtual void ResolveStructuredTypeMembers(Type *type) = 0;
 
+    std::string FormatMsg(std::initializer_list<TypeErrorMessageElement> list);
     [[noreturn]] void ThrowTypeError(std::string_view message, const lexer::SourcePosition &pos);
     [[noreturn]] void ThrowTypeError(std::initializer_list<TypeErrorMessageElement> list,
                                      const lexer::SourcePosition &pos);
     void Warning(std::string_view message, const lexer::SourcePosition &pos) const;
+    void ReportWarning(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &pos);
 
     bool IsTypeIdenticalTo(Type *source, Type *target);
     bool IsTypeIdenticalTo(Type *source, Type *target, const std::string &err_msg,
@@ -174,22 +178,26 @@ public:
     bool AreTypesComparable(Type *source, Type *target);
     bool IsTypeEqualityComparableTo(Type *source, Type *target);
     bool IsAllTypesAssignableTo(Type *source, Type *target);
+    void SetAnalyzer(SemanticAnalyzer *analyzer);
+    checker::SemanticAnalyzer *GetAnalyzer() const;
 
     friend class ScopeContext;
     friend class TypeStackElement;
     friend class SavedCheckerContext;
 
+    binder::Binder *Binder() const;
+
 protected:
     void Initialize(binder::Binder *binder);
     parser::Program *Program() const;
     void SetProgram(parser::Program *program);
-    binder::Binder *Binder() const;
 
 private:
     ArenaAllocator allocator_;
     CheckerContext context_;
     GlobalTypesHolder *global_types_;
     TypeRelation *relation_;
+    SemanticAnalyzer *analyzer_ {};
     binder::Binder *binder_ {};
     parser::Program *program_ {};
     binder::Scope *scope_ {};

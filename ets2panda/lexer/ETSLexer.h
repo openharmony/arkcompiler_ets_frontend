@@ -50,8 +50,11 @@ public:
 
     void CheckUtf16Compatible(char32_t cp) const;
     void ConvertNumber(const std::string &utf8, NumberFlags flags) override;
+
+protected:
     void ScanEqualsPunctuator() override;
     void ScanExclamationPunctuator() override;
+    bool ScanDollarPunctuator() override;
 };
 }  // namespace panda::es2panda::lexer
 

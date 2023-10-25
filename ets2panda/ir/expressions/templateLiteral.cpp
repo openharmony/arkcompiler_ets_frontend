@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +23,33 @@
 #include "ir/base/templateElement.h"
 
 namespace panda::es2panda::ir {
+TemplateLiteral::TemplateLiteral([[maybe_unused]] Tag const tag, TemplateLiteral const &other,
+                                 ArenaAllocator *const allocator)
+    : Expression(static_cast<Expression const &>(other)),
+      quasis_(allocator->Adapter()),
+      expressions_(allocator->Adapter())
+{
+    for (auto *quasy : other.quasis_) {
+        quasis_.emplace_back(quasy->Clone(allocator, this)->AsTemplateElement());
+    }
+
+    for (auto *expression : other.expressions_) {
+        expressions_.emplace_back(expression->Clone(allocator, this));
+    }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *TemplateLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<TemplateLiteral>(Tag {}, *this, allocator); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 void TemplateLiteral::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : expressions_) {

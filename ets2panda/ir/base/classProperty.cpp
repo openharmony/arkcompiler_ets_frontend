@@ -15,14 +15,16 @@
 
 #include "classProperty.h"
 
+#include "checker/ETSchecker.h"
+#include "checker/TSchecker.h"
+#include "checker/types/ets/etsObjectType.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/base/decorator.h"
 #include "ir/typeNode.h"
 #include "ir/expression.h"
 #include "ir/expressions/identifier.h"
-#include "checker/ETSchecker.h"
-#include "compiler/core/ETSGen.h"
-#include "checker/types/ets/etsObjectType.h"
 
 #include <cstdint>
 #include <string>
@@ -79,52 +81,23 @@ void ClassProperty::Dump(ir::AstDumper *dumper) const
                  {"decorators", decorators_}});
 }
 
-void ClassProperty::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-void ClassProperty::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ClassProperty::Compile(compiler::PandaGen *pg) const
 {
-    if (value_ == nullptr || (IsStatic() && TsType()->HasTypeFlag(checker::TypeFlag::CONSTANT))) {
-        return;
-    }
-
-    auto ttctx = compiler::TargetTypeContext(etsg, TsType());
-    compiler::RegScope rs(etsg);
-
-    if (!etsg->TryLoadConstantExpression(value_)) {
-        value_->Compile(etsg);
-        etsg->ApplyConversion(value_, nullptr);
-    }
-
-    if (IsStatic()) {
-        etsg->StoreStaticOwnProperty(this, TsType(), key_->AsIdentifier()->Name());
-    } else {
-        etsg->StoreProperty(this, TsType(), etsg->GetThisReg(), key_->AsIdentifier()->Name());
-    }
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ClassProperty::Check([[maybe_unused]] checker::TSChecker *checker)
+void ClassProperty::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *ClassProperty::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *ClassProperty::Check(checker::ETSChecker *checker)
 {
-    ASSERT(key_->IsIdentifier());
-
-    if (TsType() != nullptr) {
-        return TsType();
-    }
-
-    checker::SavedCheckerContext saved_context(checker, checker->Context().Status(),
-                                               checker->Context().ContainingClass(),
-                                               checker->Context().ContainingSignature());
-
-    if (IsStatic()) {
-        checker->AddStatus(checker::CheckerStatus::IN_STATIC_CONTEXT);
-    }
-
-    SetTsType(checker->CheckVariableDeclaration(key_->AsIdentifier(), type_annotation_, value_, flags_));
-
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

@@ -487,9 +487,7 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *class_def, bool exter
         class_record.metadata->SetAttributeValue(Signatures::IMPLEMENTS_ATTRIBUTE, name);
     }
 
-    if (!class_def->IsAbstract()) {
-        GenClassInheritedFields(base_type, class_record);
-    }
+    GenClassInheritedFields(base_type, class_record);
 
     for (const auto *prop : class_def->Body()) {
         if (!prop->IsClassProperty()) {

@@ -14,6 +14,7 @@
  */
 
 #include "spreadElement.h"
+#include "es2panda.h"
 
 #include "ir/astDump.h"
 #include "ir/base/decorator.h"
@@ -22,6 +23,34 @@
 #include "ir/expressions/objectExpression.h"
 
 namespace panda::es2panda::ir {
+SpreadElement::SpreadElement([[maybe_unused]] Tag const tag, SpreadElement const &other,
+                             ArenaAllocator *const allocator)
+    : AnnotatedExpression(static_cast<AnnotatedExpression const &>(other)), decorators_(allocator->Adapter())
+{
+    CloneTypeAnnotation(allocator);
+    optional_ = other.optional_;
+
+    if (other.argument_ != nullptr) {
+        argument_ = other.argument_->Clone(allocator, this);
+    }
+
+    for (auto *decorator : other.decorators_) {
+        decorators_.emplace_back(decorator->Clone(allocator, this)->AsDecorator());
+    }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *SpreadElement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<SpreadElement>(Tag {}, *this, allocator); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 ValidationInfo SpreadElement::ValidateExpression()
 {
     ValidationInfo info;

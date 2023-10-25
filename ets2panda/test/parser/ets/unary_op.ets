@@ -21,3 +21,5 @@ let e = -a;
 let f = ~a;
 let g = true;
 let h = !g;
+const i = true;
+let j = !i;

@@ -18,11 +18,23 @@
 
 #include "ir/statement.h"
 
+namespace panda::es2panda::checker {
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
+
+namespace panda::es2panda::compiler {
+class ETSCompiler;
+}  // namespace panda::es2panda::compiler
+
 namespace panda::es2panda::ir {
 class ReturnStatement : public Statement {
 public:
     explicit ReturnStatement() : ReturnStatement(nullptr) {}
     explicit ReturnStatement(Expression *argument) : Statement(AstNodeType::RETURN_STATEMENT), argument_(argument) {}
+
+    // TODO (csabahurton): these friend relationships can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
+    friend class compiler::ETSCompiler;
 
     Expression *Argument() noexcept
     {

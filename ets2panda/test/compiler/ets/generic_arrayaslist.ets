@@ -28,7 +28,7 @@ interface Listt <T>  {
 
     forEach(fn: (e: T) => T): Listt<T> | null;
     map<U>(fn: (e: T) => U): Listt<U>;
-    fold(combine: (lhs: T, rhs: T) => T): T;
+    fold(combine: (lhs: T, rhs: T) => T): T | null;
     foldWith<U>(combine: (lhs: U, rhs: T) => U, initVal: U): U;
     filter(filterCond: (e: T) => boolean) : Listt<T> | null;
     sort(comparator: (lhs: T, rhs: T) => boolean) : Listt<T> | null;

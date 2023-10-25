@@ -1678,4 +1678,4 @@
     }
   }
 }
-TypeError: Expected 1 arguments, got 2 . [FunctionType8.ets:36:3]
+TypeError: Expected 1 arguments, got 2. [FunctionType8.ets:36:3]

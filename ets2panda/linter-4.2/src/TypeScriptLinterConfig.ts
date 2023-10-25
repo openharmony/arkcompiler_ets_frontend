@@ -64,7 +64,6 @@ export class LinterConfig {
     LinterConfig.nodeDesc[FaultID.ClassExpression] = 'Class expressions';
     LinterConfig.nodeDesc[FaultID.DestructuringAssignment] = 'Destructuring assignments';
     LinterConfig.nodeDesc[FaultID.DestructuringDeclaration] = 'Destructuring variable declarations';
-    LinterConfig.nodeDesc[FaultID.ForOfNonArray] = '"for-of" statement for non-array object';
     LinterConfig.nodeDesc[FaultID.VarDeclaration] = '"var" declarations';
     LinterConfig.nodeDesc[FaultID.CatchWithUnsupportedType] = '"catch" clause with unsupported exception type';
     LinterConfig.nodeDesc[FaultID.DeleteOperator] = '"delete" operations';
@@ -119,9 +118,7 @@ export class LinterConfig {
     LinterConfig.nodeDesc[FaultID.StrictDiagnostic] = 'Strict diagnostic';
     LinterConfig.nodeDesc[FaultID.UnsupportedDecorators] = 'Unsupported decorators';
     LinterConfig.nodeDesc[FaultID.ImportAfterStatement] = 'Import declaration after other declaration or statement';
-    LinterConfig.nodeDesc[FaultID.EsObjectType] = '"ESObject" type';
-    LinterConfig.nodeDesc[FaultID.EsObjectAssignment] = '"ESObject" type assignment';
-    LinterConfig.nodeDesc[FaultID.EsObjectAccess] = '"ESObject" access';
+    LinterConfig.nodeDesc[FaultID.EsObjectType] = 'Restricted "ESObject" type';
 
     LinterConfig.initTsSyntaxKindNames();
   }

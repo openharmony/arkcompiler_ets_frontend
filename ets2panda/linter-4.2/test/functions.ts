@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { foo, bar } from "./oh_modules/ohos_lib"
+
 function restSpread() {
   const arr = [1, 2, 3];
   function test(a, ...t) {
@@ -83,3 +85,24 @@ class Collection<T> {
 }
 const col = new Collection<number>(1, 2, 3);
 const col2 = new Collection('a', 'b', 'c');
+
+function f(a: string): number {
+  return 42;
+}
+
+foo(f(null));
+foo(null);
+
+foo(() => {
+  f(null);
+});
+
+bar(() => {
+  f(null);
+}, null, f(null));
+
+bar(() => {
+  bar(() => {
+    f(null);
+  }, null, f(null));
+}, null, foo(f(null)));

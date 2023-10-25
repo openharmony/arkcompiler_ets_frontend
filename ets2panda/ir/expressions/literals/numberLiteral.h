@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,25 +23,34 @@
 namespace panda::es2panda::ir {
 class NumberLiteral : public Literal {
 public:
-    explicit NumberLiteral(util::StringView str) : Literal(AstNodeType::NUMBER_LITERAL), number_(str) {}
-    explicit NumberLiteral(lexer::Number number) : Literal(AstNodeType::NUMBER_LITERAL), number_(number) {}
+    NumberLiteral() = delete;
+    ~NumberLiteral() override = default;
 
-    const util::StringView &Str() const
+    NO_COPY_SEMANTIC(NumberLiteral);
+    NO_MOVE_SEMANTIC(NumberLiteral);
+
+    explicit NumberLiteral(util::StringView const str) : Literal(AstNodeType::NUMBER_LITERAL), number_(str) {}
+    explicit NumberLiteral(lexer::Number const number) : Literal(AstNodeType::NUMBER_LITERAL), number_(number) {}
+
+    [[nodiscard]] const util::StringView &Str() const noexcept
     {
         return number_.Str();
     }
 
-    lexer::Number &Number()
+    [[nodiscard]] lexer::Number &Number()
     {
         return number_;
     }
 
-    const lexer::Number &Number() const
+    [[nodiscard]] const lexer::Number &Number() const noexcept
     {
         return number_;
     }
 
-    bool HasFloatingPoint() const;
+    [[nodiscard]] bool HasFloatingPoint() const;
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

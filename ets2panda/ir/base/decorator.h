@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,19 +23,29 @@ class Expression;
 
 class Decorator : public Statement {
 public:
+    Decorator() = delete;
+    ~Decorator() override = default;
+
+    NO_COPY_SEMANTIC(Decorator);
+    NO_MOVE_SEMANTIC(Decorator);
+
     explicit Decorator(Expression *expr) : Statement(AstNodeType::DECORATOR), expr_(expr) {}
 
-    const Expression *Expr() const
+    [[nodiscard]] const Expression *Expr() const noexcept
     {
         return expr_;
     }
 
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Statement *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    void Compile(compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     Expression *expr_;

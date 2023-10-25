@@ -15,14 +15,6 @@
             "autofixable": false,
             "suggest": "",
             "rule": "Generator functions are not supported (arkts-no-generators)"
-        },
-        {
-            "line": 7,
-            "column": 1,
-            "problem": "ForOfNonArray",
-            "autofixable": false,
-            "suggest": "",
-            "rule": "\"for-of\" is supported only for arrays, strings, sets, maps and classes derived from them (arkts-for-of-str-arr)"
         }
     ]
 }

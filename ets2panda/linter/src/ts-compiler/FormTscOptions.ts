@@ -36,7 +36,6 @@ export function formTscOptions(cmdOptions: CommandLineOptions, extraOptions?: an
       module: ts.ModuleKind.CommonJS,
       allowJs: true,
       checkJs: true,
-      maxNodeModuleJsDepth: 2
     },
   };
   if (extraOptions) {

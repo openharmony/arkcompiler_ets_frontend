@@ -25,6 +25,7 @@
 #include "ir/base/spreadElement.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/classDefinition.h"
+#include "ir/base/scriptFunction.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/memberExpression.h"
@@ -183,8 +184,8 @@ ETSLReference::ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind
     const auto *member_expr = Node()->AsMemberExpression();
     static_obj_ref_ = member_expr->Object()->TsType();
 
-    if (!member_expr->IsComputed() &&
-        (member_expr->PropVar()->HasFlag(binder::VariableFlags::STATIC) && !static_obj_ref_->IsETSDynamicType())) {
+    if (!member_expr->IsComputed() && etsg_->Checker()->IsVariableStatic(member_expr->PropVar()) &&
+        !static_obj_ref_->IsETSDynamicType()) {
         return;
     }
 
@@ -284,6 +285,20 @@ void ETSLReference::SetValue() const
                 } else {
                     etsg_->StoreArrayElement(Node(), base_reg_, prop_reg_,
                                              etsg_->GetVRegType(base_reg_)->AsETSArrayType()->ElementType());
+                }
+                break;
+            }
+
+            if (member_expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
+                const auto *sig = member_expr->PropVar()->TsType()->AsETSFunctionType()->FindSetter();
+
+                auto arg_reg = etsg_->AllocReg();
+                etsg_->StoreAccumulator(Node(), arg_reg);
+
+                if (sig->Function()->IsStatic()) {
+                    etsg_->CallThisStatic0(Node(), arg_reg, sig->InternalName());
+                } else {
+                    etsg_->CallThisVirtual1(Node(), base_reg_, sig->InternalName(), arg_reg);
                 }
                 break;
             }

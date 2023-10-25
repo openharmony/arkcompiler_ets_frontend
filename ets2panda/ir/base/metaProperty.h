@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,17 +20,32 @@
 
 namespace panda::es2panda::ir {
 class MetaProperty : public Expression {
+private:
+    struct Tag {};
+
 public:
+    MetaProperty() = delete;
+    ~MetaProperty() override = default;
+
+    NO_COPY_SEMANTIC(MetaProperty);
+    NO_MOVE_SEMANTIC(MetaProperty);
+
     enum class MetaPropertyKind { NEW_TARGET, IMPORT_META };
 
-    explicit MetaProperty(MetaPropertyKind kind) : Expression(AstNodeType::META_PROPERTY_EXPRESSION), kind_(kind) {}
+    explicit MetaProperty(MetaPropertyKind const kind) : Expression(AstNodeType::META_PROPERTY_EXPRESSION), kind_(kind)
+    {
+    }
 
-    MetaPropertyKind Kind() const
+    [[nodiscard]] MetaPropertyKind Kind() const noexcept
     {
         return kind_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;

@@ -2,7 +2,7 @@
     "nodes": [
         {
             "line": 7,
-            "column": 9,
+            "column": 16,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"

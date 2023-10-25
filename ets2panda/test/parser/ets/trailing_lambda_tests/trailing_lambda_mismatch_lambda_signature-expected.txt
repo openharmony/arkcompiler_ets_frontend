@@ -676,4 +676,4 @@
     }
   }
 }
-TypeError: Expected 1 arguments, got 0 . [trailing_lambda_mismatch_lambda_signature.ets:22:5]
+TypeError: Expected 1 arguments, got 0. [trailing_lambda_mismatch_lambda_signature.ets:22:5]

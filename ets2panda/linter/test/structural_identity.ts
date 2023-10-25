@@ -328,3 +328,31 @@ class Cz {
 
 let x: Ct | null = new Ct();
 let y: I = x as I
+
+class X {}
+class Y {}
+class Z {}
+class W extends X {}
+
+function union(x: X, xy: X | Y, xz: X | Z, xyz: X | Y | Z, w: W, xw: X | W, zw: Z | W) {
+  x = xy; // ERR, 'X | Y' assigned to 'X'
+  xy = x; // OK
+
+  xy = xz; // ERR, 'X | Z' assigned to 'X | Y'
+  xz = xy; // ERR, 'X | Y' assigned to 'X | Z'
+
+  xyz = xz; // OK
+  xz = xyz; // ERR, 'X | Y | Z' assigned to 'X | Z'
+  
+  x = w; // OK
+  w = x; // ERR, 'X' assigned to 'W' 
+
+  x = xw; // OK
+  xw = x; // OK
+
+  xw = zw; // ERR, 'Z | W' assigned to 'X | W'
+  zw = xw; // ERR, 'X | W' assigned to 'Z | W'
+  
+  xz = zw; // OK
+  zw = xz; // ERR, 'X | Z' assigned to 'Z | W'
+}

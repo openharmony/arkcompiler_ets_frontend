@@ -19,6 +19,7 @@
 #include "util/arktsconfig.h"
 #include "util/helpers.h"
 #include "util/language.h"
+#include "binder/binder.h"
 #include "binder/privateBinding.h"
 #include "binder/scope.h"
 #include "binder/ETSBinder.h"
@@ -135,6 +136,8 @@ namespace fs = std::experimental::filesystem;
 #endif
 
 namespace panda::es2panda::parser {
+using namespace std::literals::string_literals;
+
 std::unique_ptr<lexer::Lexer> ETSParser::InitLexer(const SourceFile &source_file)
 {
     GetProgram()->SetSource(source_file);
@@ -684,10 +687,17 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
             }
             case lexer::TokenType::KEYW_FUNCTION: {
                 Lexer()->NextToken();
+                // check whether it is an extension function
+                ir::Identifier *class_name = nullptr;
+                if (Lexer()->Lookahead() == lexer::LEX_CHAR_DOT) {
+                    class_name = ExpectIdentifier();
+                    Lexer()->NextToken();
+                }
+
                 auto *member_name = ExpectIdentifier();
                 auto class_ctx =
                     binder::LexicalScope<binder::ClassScope>::Enter(Binder(), GetProgram()->GlobalClassScope());
-                auto *class_method = ParseClassMethodDefinition(member_name, member_modifiers);
+                auto *class_method = ParseClassMethodDefinition(member_name, member_modifiers, class_name);
                 class_method->SetStart(start_loc);
                 if (!class_method->Function()->IsOverload()) {
                     global_properties.push_back(class_method);
@@ -1304,7 +1314,8 @@ void ETSParser::ParseClassFieldDefiniton(ir::Identifier *field_name, ir::Modifie
     }
 }
 
-ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *method_name, ir::ModifierFlags modifiers)
+ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *method_name, ir::ModifierFlags modifiers,
+                                                            ir::Identifier *class_name, ir::Identifier *ident_node)
 {
     auto *cur_scope = Binder()->GetScope();
     auto res = cur_scope->Find(method_name->Name(), binder::ResolveBindingOptions::ALL);
@@ -1314,38 +1325,45 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
 
     auto new_status = ParserStatus::NEED_RETURN_TYPE | ParserStatus::ALLOW_SUPER;
     auto method_kind = ir::MethodDefinitionKind::METHOD;
-    auto script_function_flag = ir::ScriptFunctionFlags::METHOD;
+
+    if (class_name != nullptr) {
+        method_kind = ir::MethodDefinitionKind::EXTENSION_METHOD;
+        new_status |= ParserStatus::IN_EXTENSION_FUNCTION;
+    }
 
     if ((modifiers & ir::ModifierFlags::CONSTRUCTOR) != 0) {
         new_status = ParserStatus::CONSTRUCTOR_FUNCTION | ParserStatus::ALLOW_SUPER | ParserStatus::ALLOW_SUPER_CALL;
         method_kind = ir::MethodDefinitionKind::CONSTRUCTOR;
-        script_function_flag |= ir::ScriptFunctionFlags::CONSTRUCTOR;
     }
 
     if ((modifiers & ir::ModifierFlags::ASYNC) != 0) {
         new_status |= ParserStatus::ASYNC_FUNCTION;
     }
 
-    ir::ScriptFunction *func = ParseFunction(new_status);
+    ir::ScriptFunction *func = ParseFunction(new_status, class_name);
     func->SetIdent(method_name);
     auto *func_expr = AllocNode<ir::FunctionExpression>(func);
     func_expr->SetRange(func->Range());
     func->AddModifier(modifiers);
+
+    if (class_name != nullptr) {
+        func->AddFlag(ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD);
+    }
     auto *method = AllocNode<ir::MethodDefinition>(method_kind, method_name, func_expr, modifiers, Allocator(), false);
     method->SetRange(func_expr->Range());
 
     CreateClassFunctionDeclaration(method);
-    AddProxyOverloadToMethodWithDefaultParams(method);
+    AddProxyOverloadToMethodWithDefaultParams(method, ident_node);
 
     return method;
 }
 
-ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus new_status)
+ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus new_status, ir::Identifier *class_name)
 {
     FunctionContext function_context(this, new_status | ParserStatus::FUNCTION);
     lexer::SourcePosition start_loc = Lexer()->GetToken().Start();
     auto [typeParamDecl, params, returnTypeAnnotation, funcParamScope, throw_marker] =
-        ParseFunctionSignature(new_status);
+        ParseFunctionSignature(new_status, class_name);
 
     auto param_ctx = binder::LexicalScope<binder::FunctionParamScope>::Enter(Binder(), funcParamScope, false);
     auto function_ctx = binder::LexicalScope<binder::FunctionScope>(Binder());
@@ -1379,6 +1397,10 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus new_status)
         function_context.AddFlag(ir::ScriptFunctionFlags::EXPRESSION);
     }
 
+    if ((GetContext().Status() & ParserStatus::FUNCTION_HAS_RETURN_STATEMENT) != 0) {
+        function_context.AddFlag(ir::ScriptFunctionFlags::HAS_RETURN);
+        GetContext().Status() ^= ParserStatus::FUNCTION_HAS_RETURN_STATEMENT;
+    }
     function_context.AddFlag(throw_marker);
 
     auto *func_node =
@@ -1478,7 +1500,8 @@ void ETSParser::ValidateLabeledStatement(lexer::TokenType type)
 // NOLINTNEXTLINE(google-default-arguments)
 ir::AstNode *ETSParser::ParseClassElement([[maybe_unused]] const ArenaVector<ir::AstNode *> &properties,
                                           [[maybe_unused]] ir::ClassDefinitionModifiers modifiers,
-                                          [[maybe_unused]] ir::ModifierFlags flags)
+                                          [[maybe_unused]] ir::ModifierFlags flags,
+                                          [[maybe_unused]] ir::Identifier *ident_node)
 {
     auto start_loc = Lexer()->GetToken().Start();
     auto saved_pos = Lexer()->Save();  // NOLINT(clang-analyzer-deadcode.DeadStores)
@@ -1578,7 +1601,7 @@ ir::AstNode *ETSParser::ParseClassElement([[maybe_unused]] const ArenaVector<ir:
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        auto *class_method = ParseClassMethodDefinition(member_name, memberModifiers);
+        auto *class_method = ParseClassMethodDefinition(member_name, memberModifiers, nullptr, ident_node);
         class_method->SetStart(start_loc);
         return class_method;
     }
@@ -1907,7 +1930,7 @@ ir::ClassDefinition *ETSParser::ParseClassDefinition(ir::ClassDefinitionModifier
     ExpectToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE, false);
 
     // Parse ClassBody
-    auto [ctor, properties, bodyRange] = ParseClassBody(modifiers, flags);
+    auto [ctor, properties, bodyRange] = ParseClassBody(modifiers, flags, ident_node);
     CreateCCtor(class_ctx.GetScope()->StaticMethodScope(), properties, bodyRange.start);
 
     auto *class_scope = class_ctx.GetScope();
@@ -2040,10 +2063,6 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags)
         body = ParseBlockStatement(function_scope);
     } else if ((flags & (ir::ModifierFlags::PRIVATE | ir::ModifierFlags::STATIC)) != 0 && !is_declare) {
         ThrowSyntaxError("Private or static interface methods must have body", start_loc);
-    } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
-        Lexer()->NextToken();
-    } else {
-        ThrowUnexpectedToken(Lexer()->GetToken().Type());
     }
 
     function_context.AddFlag(throw_marker);
@@ -2068,6 +2087,9 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags)
     auto *method =
         AllocNode<ir::MethodDefinition>(ir::MethodDefinitionKind::METHOD, name, func_expr, flags, Allocator(), false);
     method->SetRange(func_expr->Range());
+
+    ConsumeSemicolon(method);
+
     return method;
 }
 
@@ -2106,10 +2128,6 @@ void ETSParser::CreateClassFunctionDeclaration(ir::MethodDefinition *method)
         ThrowSyntaxError("Main overload is not enabled", method_name->Start());
     }
 
-    if (method_name->IsMutator()) {
-        method_name->SetMutator();
-    }
-
     auto *current_node = found->Declaration()->Node();
 
     if (current_node->AsMethodDefinition()->Function()->IsDefaultParamProxy()) {
@@ -2122,7 +2140,7 @@ void ETSParser::CreateClassFunctionDeclaration(ir::MethodDefinition *method)
     method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
 }
 
-void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method)
+void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *ident_node)
 {
     if (method->IsConstructor()) {
         return;  // TODO(szd): Fix constructors not working with default params
@@ -2131,19 +2149,36 @@ void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *
     const auto *const function = method->Function();
 
     bool has_default_parameter = false;
+    bool has_rest_parameter = false;
+
     for (auto *const it : function->Params()) {
-        if (it->AsETSParameterExpression()->IsDefault()) {
+        auto const *const param = it->AsETSParameterExpression();
+        if (param->IsRestParameter()) {
+            has_rest_parameter = true;
+            continue;
+        }
+
+        if (has_rest_parameter) {
+            ThrowSyntaxError("Rest parameter should be the last one.", param->Start());
+        }
+
+        if (param->IsDefault()) {
             has_default_parameter = true;
             continue;
         }
 
         if (has_default_parameter) {
-            ThrowSyntaxError("Default param follows non-default param", method->Start());
+            ThrowSyntaxError("Required parameter follows default parameter(s).", param->Start());
         }
     }
 
     if (!has_default_parameter) {
         return;
+    }
+
+    if (has_rest_parameter) {
+        ThrowSyntaxError("Both optional and rest parameters are not allowed in function's parameter list.",
+                         function->Start());
     }
 
     auto *const cls_scope = Binder()->GetScope()->AsClassScope();
@@ -2154,31 +2189,42 @@ void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *
     std::string proxy_method = function->Id()->Name().Mutf8() + "_proxy(";
 
     for (const auto *const it : function->Params()) {
-        const auto *const param_ident = it->AsETSParameterExpression()->Ident();
-        proxy_method += param_ident->Name().Mutf8() + ":" + GetNameForTypeNode(param_ident->TypeAnnotation()) + ",";
+        auto const *const param = it->AsETSParameterExpression();
+        proxy_method += param->Ident()->Name().Mutf8() + ": " + GetNameForTypeNode(param->TypeAnnotation()) + ", ";
     }
 
-    std::string return_type = GetNameForTypeNode(method->Function()->ReturnTypeAnnotation());
-    proxy_method += "proxy_int:int):" + return_type + "{";
+    const bool has_function_return_type = method->Function()->ReturnTypeAnnotation() != nullptr;
+    const std::string return_type =
+        has_function_return_type ? GetNameForTypeNode(method->Function()->ReturnTypeAnnotation()) : "";
 
-    for (size_t i = 0; i != function->Params().size(); i++) {
-        if (const auto *const param = function->Params()[i]->AsETSParameterExpression();
-            param->Initializer() != nullptr) {
-            std::string proxy_if = "if(((proxy_int >> " + std::to_string(i) + ") & 0x1) == 1){" +
-                                   param->Ident()->Name().Mutf8() + " = " + param->LexerSaved().Mutf8() + ";}";
+    proxy_method += has_function_return_type ? "proxy_int:int):" + return_type + "{" : "proxy_int:int) {";
+
+    auto const parameters_number = function->Params().size();
+    for (size_t i = 0U; i < parameters_number; i++) {
+        if (auto const *const param = function->Params()[i]->AsETSParameterExpression(); param->IsDefault()) {
+            std::string proxy_if = "if (((proxy_int >> " + std::to_string(i) + ") & 0x1) == 1) { " +
+                                   param->Ident()->Name().Mutf8() + " = " + param->LexerSaved().Mutf8() + " }";
             proxy_method += proxy_if;
         }
     }
 
-    proxy_method += (return_type == "void") ? "" : cls_scope->Parent()->IsGlobalScope() ? "return " : "return this.";
+    if (return_type != "void") {
+        if (cls_scope->Parent()->IsGlobalScope()) {
+            proxy_method += "return ";
+        } else if (method->IsStatic()) {
+            proxy_method += "return " + ident_node->Name().Mutf8() + ".";
+        } else {
+            proxy_method += "return this.";
+        }
+    }
 
     proxy_method += function->Id()->Name().Mutf8() + "(";
     for (const auto *const it : function->Params()) {
-        const auto *const param_ident = it->AsETSParameterExpression()->Ident();
-        proxy_method += param_ident->Name().Mutf8() + ",";
+        proxy_method += it->AsETSParameterExpression()->Ident()->Name().Mutf8() + ", ";
     }
-    proxy_method = proxy_method.substr(0, proxy_method.size() - 1);
-    proxy_method += ");}";
+    proxy_method.pop_back();
+    proxy_method.pop_back();
+    proxy_method += ") }";
 
     auto class_ctx = binder::LexicalScope<binder::ClassScope>::Enter(Binder(), GetProgram()->GlobalClassScope());
 
@@ -2240,27 +2286,24 @@ std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *const type_annotat
         return "((" + lambda_params + ") => " + return_type_name + ")" + optional_nullable;
     }
 
-    ASSERT(type_annotation->IsTSArrayType());
+    if (type_annotation->IsTSArrayType()) {
+        // Note! array is required for the rest parameter.
+        return GetNameForTypeNode(type_annotation->AsTSArrayType()->ElementType()) + "[]";
+    }
 
-    ThrowSyntaxError("Array default param not support yet");
-
-    // TODO(ttamas)
-    // return GetNameForTypeNode(type_annotation->AsTSArrayType()->ElementType())+"[]";
+    UNREACHABLE();
 }
 
 void ETSParser::ValidateRestParameter(ir::Expression *param)
 {
-    if (param->AsETSParameterExpression()->Spread() == nullptr) {
-        return;
-    }
+    if (param->IsETSParameterExpression()) {
+        if (param->AsETSParameterExpression()->IsRestParameter()) {
+            GetContext().Status() |= ParserStatus::HAS_COMPLEX_PARAM;
 
-    GetContext().Status() |= ParserStatus::HAS_COMPLEX_PARAM;
-    if (!param->AsETSParameterExpression()->Spread()->IsRestElement()) {
-        return;
-    }
-
-    if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
-        ThrowSyntaxError("Rest parameter must be last formal parameter");
+            if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
+                ThrowSyntaxError("Rest parameter must be the last formal parameter.");
+            }
+        }
     }
 }
 
@@ -2915,19 +2958,19 @@ bool ETSParser::CheckModuleAsModifier()
 
 ir::AnnotatedExpression *ETSParser::GetAnnotatedExpressionFromParam()
 {
+    ir::AnnotatedExpression *parameter;
+
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::LITERAL_IDENT: {
-            auto *const ident = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-
-            if (ident->AsIdentifier()->Decorators().empty()) {
-                ident->SetRange(Lexer()->GetToken().Loc());
+            parameter = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+            if (parameter->AsIdentifier()->Decorators().empty()) {
+                parameter->SetRange(Lexer()->GetToken().Loc());
             } else {
-                ident->SetRange({ident->AsIdentifier()->Decorators().front()->Start(), Lexer()->GetToken().End()});
+                parameter->SetRange(
+                    {parameter->AsIdentifier()->Decorators().front()->Start(), Lexer()->GetToken().End()});
             }
+        } break;
 
-            Lexer()->NextToken();
-            return ident;
-        }
         case lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD: {
             const auto start_loc = Lexer()->GetToken().Start();
             Lexer()->NextToken();
@@ -2936,48 +2979,67 @@ ir::AnnotatedExpression *ETSParser::GetAnnotatedExpressionFromParam()
                 ThrowSyntaxError("Unexpected token, expected an identifier.");
             }
 
-            auto *const rest_name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-            rest_name->SetRange(Lexer()->GetToken().Loc());
+            auto *const rest_ident = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+            rest_ident->SetRange(Lexer()->GetToken().Loc());
 
-            auto *const spread = AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, Allocator(), rest_name);
-            spread->SetRange({start_loc, Lexer()->GetToken().End()});
+            parameter = AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, Allocator(), rest_ident);
+            parameter->SetRange({start_loc, Lexer()->GetToken().End()});
+        } break;
 
-            Lexer()->NextToken();
-            return spread;
-        }
         default: {
             ThrowSyntaxError("Unexpected token, expected an identifier.");
         }
     }
+
+    Lexer()->NextToken();
+    return parameter;
 }
 
-ir::ETSParameterExpression *ETSParser::ParseFunctionParameter()
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+static constexpr char const NO_DEFAULT_FOR_REST[] = "Rest parameter cannot have the default value.";
+static constexpr char const ONLY_ARRAY_FOR_REST[] = "Rest parameter should be of an array type.";
+static constexpr char const EXPLICIT_PARAM_TYPE[] = "Parameter declaration should have an explicit type annotation.";
+// NOLINTEND(modernize-avoid-c-arrays)
+
+ir::Expression *ETSParser::ParseFunctionParameter()
 {
+    ir::ETSParameterExpression *param_expression;
     auto *const param_ident = GetAnnotatedExpressionFromParam();
 
     bool default_null = false;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
+        if (param_ident->IsRestElement()) {
+            ThrowSyntaxError(NO_DEFAULT_FOR_REST);
+        }
         default_null = true;
         Lexer()->NextToken();  // eat '?'
     }
 
     const bool is_arrow = (GetContext().Status() & ParserStatus::ARROW_FUNCTION) != 0;
+
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
         Lexer()->NextToken();  // eat ':'
 
         TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
         ir::TypeNode *type_annotation = ParseTypeAnnotation(&options);
+
+        if (param_ident->IsRestElement() && !type_annotation->IsTSArrayType()) {
+            ThrowSyntaxError(ONLY_ARRAY_FOR_REST);
+        }
+
         type_annotation->SetParent(param_ident);
         param_ident->SetTsTypeAnnotation(type_annotation);
         param_ident->SetEnd(type_annotation->End());
 
-    } else if (!is_arrow) {
-        ThrowSyntaxError("Unexpected token, expected ':'");
+    } else if (!is_arrow && !default_null) {
+        ThrowSyntaxError(EXPLICIT_PARAM_TYPE);
     }
 
-    ir::ETSParameterExpression *param_expression {};
-
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+        if (param_ident->IsRestElement()) {
+            ThrowSyntaxError(NO_DEFAULT_FOR_REST);
+        }
+
         auto const lexer_pos = Lexer()->Save().Iterator();
         Lexer()->NextToken();  // eat '='
 
@@ -2990,27 +3052,30 @@ ir::ETSParameterExpression *ETSParser::ParseFunctionParameter()
             ThrowSyntaxError("You didn't set the value.");
         }
 
-        param_expression = AllocNode<ir::ETSParameterExpression>(param_ident, ParseExpression());
-        std::string value = Lexer()->SourceView(lexer_pos.Index(), Lexer()->Save().Iterator().Index()).Mutf8();
+        param_expression = AllocNode<ir::ETSParameterExpression>(param_ident->AsIdentifier(), ParseExpression());
 
-        if (value.back() == ' ') {
+        std::string value = Lexer()->SourceView(lexer_pos.Index(), Lexer()->Save().Iterator().Index()).Mutf8();
+        while (value.back() == ' ') {
             value.pop_back();
         }
-
         if (value.back() == ')' || value.back() == ',') {
             value.pop_back();
         }
-
         param_expression->SetLexerSaved(util::UString(value, Allocator()).View());
 
         param_expression->SetRange({param_ident->Start(), param_expression->Initializer()->End()});
-    } else {
-        const auto type_annotation_value = [this, &param_ident]() -> std::pair<ir::Expression *, std::string> {
-            if (!param_ident->TypeAnnotation()->IsETSPrimitiveType()) {
+    } else if (param_ident->IsIdentifier()) {
+        auto *const type_annotation = param_ident->AsIdentifier()->TypeAnnotation();
+
+        const auto type_annotation_value = [this, type_annotation]() -> std::pair<ir::Expression *, std::string> {
+            if (type_annotation == nullptr) {
+                return std::make_pair(nullptr, "");
+            }
+            if (!type_annotation->IsETSPrimitiveType()) {
                 return std::make_pair(AllocNode<ir::NullLiteral>(), "null");
             }
             // TODO(ttamas) : after nullable fix, fix this scope
-            switch (param_ident->TypeAnnotation()->AsETSPrimitiveType()->GetPrimitiveType()) {
+            switch (type_annotation->AsETSPrimitiveType()->GetPrimitiveType()) {
                 case ir::PrimitiveType::BYTE:
                 case ir::PrimitiveType::INT:
                 case ir::PrimitiveType::LONG:
@@ -3026,28 +3091,52 @@ ir::ETSParameterExpression *ETSParser::ParseFunctionParameter()
                     UNREACHABLE();
                 }
             }
-        };
+        }();
 
-        if (default_null && !param_ident->TypeAnnotation()->IsETSPrimitiveType()) {
-            param_ident->TypeAnnotation()->AddModifier(ir::ModifierFlags::NULLABLE);
+        if (default_null && !type_annotation->IsETSPrimitiveType()) {
+            type_annotation->AddModifier(ir::ModifierFlags::NULLABLE);
         }
 
         param_expression = AllocNode<ir::ETSParameterExpression>(
-            param_ident, default_null ? std::get<0>(type_annotation_value()) : nullptr);
-        param_expression->SetLexerSaved(
-            util::UString(default_null ? std::get<1>(type_annotation_value()) : "", Allocator()).View());
+            param_ident->AsIdentifier(), default_null ? std::get<0>(type_annotation_value) : nullptr);
 
+        if (default_null) {
+            param_expression->SetLexerSaved(util::UString(std::get<1>(type_annotation_value), Allocator()).View());
+        }
+
+        param_expression->SetRange({param_ident->Start(), param_ident->End()});
+    } else {
+        param_expression = AllocNode<ir::ETSParameterExpression>(param_ident->AsRestElement(), nullptr);
         param_expression->SetRange({param_ident->Start(), param_ident->End()});
     }
 
     auto *const var = std::get<1>(Binder()->AddParamDecl(param_expression));
-    // TODO(ttamas) : stdlib "to" param crash when AnnotatedExpression set variable
-    if (param_ident->IsIdentifier()) {
-        param_ident->AsIdentifier()->SetVariable(var);
-    } else {
-        param_ident->SetVariable(var);
-    }
+    param_expression->Ident()->SetVariable(var);
+    var->SetScope(Binder()->GetScope());
 
+    return param_expression;
+}
+
+ir::Expression *ETSParser::CreateParameterThis(const util::StringView class_name)
+{
+    auto *param_ident = AllocNode<ir::Identifier>(binder::TypedBinder::MANDATORY_PARAM_THIS, Allocator());
+    param_ident->SetRange(Lexer()->GetToken().Loc());
+
+    ir::Expression *class_type_name = AllocNode<ir::Identifier>(class_name, Allocator());
+    class_type_name->AsIdentifier()->SetReference();
+    class_type_name->SetRange(Lexer()->GetToken().Loc());
+
+    auto type_ref_part = AllocNode<ir::ETSTypeReferencePart>(class_type_name, nullptr, nullptr);
+    ir::TypeNode *type_annotation = AllocNode<ir::ETSTypeReference>(type_ref_part);
+
+    type_annotation->SetParent(param_ident);
+    param_ident->SetTsTypeAnnotation(type_annotation);
+
+    auto *param_expression = AllocNode<ir::ETSParameterExpression>(param_ident, nullptr);
+    param_expression->SetRange({param_ident->Start(), param_ident->End()});
+
+    auto *const var = std::get<1>(Binder()->AddParamDecl(param_expression));
+    param_ident->AsIdentifier()->SetVariable(var);
     var->SetScope(Binder()->GetScope());
 
     return param_expression;
@@ -3349,6 +3438,7 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         case lexer::TokenType::PUNCTUATOR_PLUS:
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::PUNCTUATOR_TILDE:
+        case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR:
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
             break;
         }
@@ -3370,6 +3460,7 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::PUNCTUATOR_TILDE:
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK:
+        case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR:
         case lexer::TokenType::PUNCTUATOR_PLUS_PLUS:
         case lexer::TokenType::PUNCTUATOR_MINUS_MINUS: {
             argument = ParseUnaryOrPrefixUpdateExpression();
@@ -3881,6 +3972,14 @@ ir::TSTypeParameter *ETSParser::ParseTypeParameter([[maybe_unused]] TypeAnnotati
     return type_param;
 }
 
+// NOLINTBEGIN(cert-err58-cpp)
+static std::string const DUPLICATE_ENUM_VALUE = "Duplicate enum initialization value "s;
+static std::string const INVALID_ENUM_TYPE = "Invalid enum initialization type"s;
+static std::string const INVALID_ENUM_VALUE = "Invalid enum initialization value"s;
+static std::string const MISSING_COMMA_IN_ENUM = "Missing comma between enum constants"s;
+static std::string const TRAILING_COMMA_IN_ENUM = "Trailing comma is not allowed in enum constant list"s;
+// NOLINTEND(cert-err58-cpp)
+
 ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, const lexer::SourcePosition &enum_start,
                                                    const bool is_const, const bool is_static)
 {
@@ -3894,11 +3993,53 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
         ThrowSyntaxError("An enum must have at least one enum constant");
     }
 
+    // Lambda to check if enum underlying type is string:
+    auto const is_string_enum = [this]() -> bool {
+        Lexer()->NextToken();
+        auto token_type = Lexer()->GetToken().Type();
+        while (token_type != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE &&
+               token_type != lexer::TokenType::PUNCTUATOR_COMMA) {
+            if (token_type == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+                Lexer()->NextToken();
+                if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING) {
+                    return true;
+                }
+            }
+            Lexer()->NextToken();
+            token_type = Lexer()->GetToken().Type();
+        }
+        return false;
+    };
+
+    // Get the underlying type of enum (number or string). It is defined from the first element ONLY!
+    auto const pos = Lexer()->Save();
+    auto const string_type_enum = is_string_enum();
+    Lexer()->Rewind(pos);
+
     ArenaVector<ir::AstNode *> members(Allocator()->Adapter());
     const auto enum_ctx = binder::LexicalScope<binder::LocalScope>(Binder());
+
+    if (string_type_enum) {
+        ParseStringEnum(members);
+    } else {
+        ParseNumberEnum(members);
+    }
+
+    auto *const enum_declaration = AllocNode<ir::TSEnumDeclaration>(Allocator(), Binder()->GetScope()->AsLocalScope(),
+                                                                    key, std::move(members), is_const, is_static);
+    enum_declaration->SetRange({enum_start, Lexer()->GetToken().End()});
+
+    Lexer()->NextToken();  // eat '}'
+
+    return enum_declaration;
+}
+
+void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
+{
     std::unordered_set<checker::ETSEnumType::ValueType> enum_values {};
     checker::ETSEnumType::ValueType current_value {};
 
+    // Lambda to parse enum member (maybe with initializer)
     auto const parse_member = [this, &members, &enum_values, &current_value]() {
         auto *const ident = ExpectIdentifier();
         auto [decl, var] = Binder()->NewVarDecl<binder::LetDecl>(ident->Start(), ident->Name());
@@ -3908,7 +4049,7 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
 
         auto const add_value = [this, &enum_values](checker::ETSEnumType::ValueType const new_value) {
             if (auto const rc = enum_values.emplace(new_value); !rc.second) {
-                ThrowSyntaxError("Duplicate enum initialization value " + std::to_string(new_value));
+                ThrowSyntaxError(DUPLICATE_ENUM_VALUE + std::to_string(new_value));
             }
         };
 
@@ -3929,12 +4070,12 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
             }
 
             if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_NUMBER) {
-                ThrowSyntaxError("Invalid enum initialization type");
+                ThrowSyntaxError(INVALID_ENUM_TYPE);
             }
 
             ordinal = ParseNumberLiteral()->AsNumberLiteral();
             if (!ordinal->Number().CanGetValue<checker::ETSEnumType::ValueType>()) {
-                ThrowSyntaxError("Invalid enum initialization value");
+                ThrowSyntaxError(INVALID_ENUM_VALUE);
             } else if (minus_sign) {
                 ordinal->Number().Negate();
             }
@@ -3965,7 +4106,7 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
-            ThrowSyntaxError("Missing comma between enum constants");
+            ThrowSyntaxError(MISSING_COMMA_IN_ENUM);
         }
 
         Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
@@ -3976,19 +4117,69 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
 
         parse_member();
     }
+}
 
-    auto *const enum_declaration = AllocNode<ir::TSEnumDeclaration>(Allocator(), Binder()->GetScope()->AsLocalScope(),
-                                                                    key, std::move(members), is_const, is_static);
-    enum_declaration->SetRange({enum_start, Lexer()->GetToken().End()});
+void ETSParser::ParseStringEnum(ArenaVector<ir::AstNode *> &members)
+{
+    std::unordered_set<util::StringView> enum_values {};
 
-    Lexer()->NextToken();  // eat '}'
+    // Lambda to parse enum member (maybe with initializer)
+    auto const parse_member = [this, &members, &enum_values]() {
+        auto *const ident = ExpectIdentifier();
+        auto [decl, var] = Binder()->NewVarDecl<binder::LetDecl>(ident->Start(), ident->Name());
+        var->SetScope(Binder()->GetScope());
+        var->AddFlag(binder::VariableFlags::STATIC);
+        ident->SetVariable(var);
 
-    return enum_declaration;
+        ir::StringLiteral *item_value;
+
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+            // Case when user explicitly set the value for enumeration constant
+
+            Lexer()->NextToken();
+            if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_STRING) {
+                ThrowSyntaxError(INVALID_ENUM_TYPE);
+            }
+
+            item_value = ParseStringLiteral();
+            if (auto const rc = enum_values.emplace(item_value->Str()); !rc.second) {
+                ThrowSyntaxError(DUPLICATE_ENUM_VALUE + '\'' + std::string {item_value->Str()} + '\'');
+            }
+        } else {
+            // Default item value is not allowed for string type enumerations!
+            ThrowSyntaxError("All items of string-type enumeration should be explicitly initialized.");
+        }
+
+        auto *const member = AllocNode<ir::TSEnumMember>(ident, item_value);
+        member->SetRange({ident->Start(), item_value->End()});
+        decl->BindNode(member);
+        members.emplace_back(member);
+    };
+
+    parse_member();
+
+    while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
+            ThrowSyntaxError(MISSING_COMMA_IN_ENUM);
+        }
+
+        Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
+
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
+            ThrowSyntaxError(TRAILING_COMMA_IN_ENUM);
+        }
+
+        parse_member();
+    }
 }
 
 ir::ThisExpression *ETSParser::ParseThisExpression()
 {
     auto *this_expression = TypedParser::ParseThisExpression();
+
+    if (Lexer()->GetToken().NewLine()) {
+        return this_expression;
+    }
 
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::PUNCTUATOR_PERIOD:

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,59 +21,74 @@
 
 namespace panda::es2panda::ir {
 class AssignmentExpression : public Expression {
+private:
+    struct Tag {};
+
 public:
-    explicit AssignmentExpression(Expression *left, Expression *right, lexer::TokenType assignment_operator)
+    AssignmentExpression() = delete;
+    ~AssignmentExpression() override = default;
+
+    NO_COPY_OPERATOR(AssignmentExpression);
+    NO_MOVE_SEMANTIC(AssignmentExpression);
+
+    explicit AssignmentExpression(Expression *const left, Expression *const right,
+                                  lexer::TokenType const assignment_operator)
         : AssignmentExpression(AstNodeType::ASSIGNMENT_EXPRESSION, left, right, assignment_operator)
     {
     }
 
-    explicit AssignmentExpression(AstNodeType type, Expression *left, Expression *right,
-                                  lexer::TokenType assignment_operator)
+    explicit AssignmentExpression(AstNodeType const type, Expression *const left, Expression *const right,
+                                  lexer::TokenType const assignment_operator)
         : Expression(type), left_(left), right_(right), operator_(assignment_operator)
     {
     }
 
-    const Expression *Left() const
+    explicit AssignmentExpression(Tag tag, AssignmentExpression const &other, Expression *left, Expression *right);
+
+    [[nodiscard]] const Expression *Left() const noexcept
     {
         return left_;
     }
 
-    Expression *Left()
+    [[nodiscard]] Expression *Left() noexcept
     {
         return left_;
     }
 
-    Expression *Right()
+    [[nodiscard]] Expression *Right() noexcept
     {
         return right_;
     }
 
-    const Expression *Right() const
+    [[nodiscard]] const Expression *Right() const noexcept
     {
         return right_;
     }
 
-    lexer::TokenType OperatorType() const
+    [[nodiscard]] lexer::TokenType OperatorType() const noexcept
     {
         return operator_;
     }
 
-    lexer::TokenType SetOperatorType(lexer::TokenType token_type)
+    [[nodiscard]] lexer::TokenType SetOperatorType(lexer::TokenType token_type) noexcept
     {
         return operator_ = token_type;
     }
 
-    binder::Variable *Target()
+    [[nodiscard]] binder::Variable *Target() noexcept
     {
         return target_;
     }
 
-    binder::Variable *Target() const
+    [[nodiscard]] binder::Variable *Target() const noexcept
     {
         return target_;
     }
 
-    bool ConvertibleToAssignmentPattern(bool must_be_pattern = true);
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
+    [[nodiscard]] bool ConvertibleToAssignmentPattern(bool must_be_pattern = true);
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -84,9 +99,17 @@ public:
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
+protected:
+    AssignmentExpression(AssignmentExpression const &other) : Expression(static_cast<Expression const &>(other))
+    {
+        operator_ = other.operator_;
+        target_ = other.target_;
+        operation_type_ = other.operation_type_;
+    }
+
 private:
-    Expression *left_;
-    Expression *right_;
+    Expression *left_ = nullptr;
+    Expression *right_ = nullptr;
     lexer::TokenType operator_;
     binder::Variable *target_ {};
     checker::Type *operation_type_ {};

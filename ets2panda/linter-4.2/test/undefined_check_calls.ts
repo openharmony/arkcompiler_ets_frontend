@@ -14,7 +14,7 @@
  */
 
 import { ff } from "./oh_modules/ohos_lib";
-import { f, f2, bar, applyToUnknown, fooExecute, C1, ResourceStr } from "./dynamic_lib";
+import { f, f2, bar, applyToUnknown, fooExecute, C1, ResourceStr, myFoo, myFoo2 } from "./dynamic_lib";
 
 let a1: C1 = new C1()
 
@@ -49,5 +49,18 @@ class A {
         this.buttonTitle1 = resourceFoo(menu?.buttonTitle1);
         this.buttonTitle2 = resourceFoo(menu?.buttonTitle2);
         this.buttonTitle3 = resourceFoo2(menu?.buttonTitle3);
+    }
+}
+
+myFoo({x: "", y: undefined})
+
+class A2 {
+    public a: Object = undefined
+    f() {
+        myFoo2(
+            () => {
+                this.a = undefined;
+            }
+        )
     }
 }

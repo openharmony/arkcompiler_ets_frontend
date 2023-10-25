@@ -1243,6 +1243,11 @@ void Lexer::ScanColonPunctuator()
     GetToken().type_ = TokenType::PUNCTUATOR_COLON;
 }
 
+bool Lexer::ScanDollarPunctuator()
+{
+    return false;
+}
+
 // NOLINTNEXTLINE(readability-function-size)
 void Lexer::NextToken(Keywords *kws)
 {
@@ -1354,7 +1359,13 @@ void Lexer::NextToken(Keywords *kws)
             GetToken().type_ = TokenType::PUNCTUATOR_AT;
             break;
         }
-        case LEX_CHAR_DOLLAR_SIGN:
+        case LEX_CHAR_DOLLAR_SIGN: {
+            if (ScanDollarPunctuator()) {
+                break;
+            }
+
+            [[fallthrough]];
+        }
         case LEX_CHAR_UPPERCASE_A:
         case LEX_CHAR_UPPERCASE_B:
         case LEX_CHAR_UPPERCASE_C:

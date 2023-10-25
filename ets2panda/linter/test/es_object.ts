@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { fooOh, barOh } from './oh_modules/ohos_lib'
 type ESObject = any
 
 class A<T> {}
@@ -174,3 +174,20 @@ interface CL extends ESObject {}
 export interface CLS extends ESObject {}
 
 foo2({ k: 'k', h: {t: 1}}) // we can assign anything to the esobject, even untyped literal
+let q1: ESObject = 1; // CTE - ``ESObject`` typed variable can only be local
+let q2: ESObject = fooOh(); // CTE - ``ESObject`` typed variable can only be local
+let q3: ESObject = q2; // CTE - ``ESObject`` typed variable can only be local
+function f() {
+    let e1 = fooOh(); // CTE - type of e1 is `any`
+    let e2: ESObject = 1; // CTE - can't initialize ESObject with not dynamic values
+    let e3: ESObject = {}; // CTE - can't initialize ESObject with not dynamic values
+    let e4: ESObject = []; // CTE - can't initialize ESObject with not dynamic values
+    let e5: ESObject = ""; // CTE - can't initialize ESObject with not dynamic values
+    let e6: ESObject = fooOh(); // OK - explicitly annotaded as ESObject
+    let e7: ESObject = e6; // OK - initialize ESObject with ESObject
+    e6['prop'] // CTE - can't access dynamic properties of ESObject
+    e6[1] // CTE - can't access dynamic properties of ESObject
+    e6.prop // CTE - can't access dynamic properties of ESObject
+    barOh(e6) // OK - ESObject is passed to interop call
+    e6 = e7 // OK - ESObject is assigned to ESObject
+}

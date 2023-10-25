@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,6 +14,15 @@
  */
 
 #include "expression.h"
+#include "typeNode.h"
 
 namespace panda::es2panda::ir {
+
+void AnnotatedExpression::CloneTypeAnnotation(ArenaAllocator *const allocator)
+{
+    if (auto *annotation = const_cast<TypeNode *>(TypeAnnotation()); annotation != nullptr) {
+        SetTsTypeAnnotation(annotation->Clone(allocator, this)->AsTypeNode());
+    }
+}
+
 }  // namespace panda::es2panda::ir

@@ -131,3 +131,16 @@ class C {
 function no_space_before_body(x: number){ // Need fix
   return w(x)
 }
+
+declare function fooImplicitDeclaration(); // CTE - no type in declaration
+function fooImplicitImplementation() {}; // OK - deduces void
+
+interface ImplicitTest {
+  bar1(); // CTE - no type in declaration
+  bar2(): number; // OK - type is specified explicitly
+}
+
+declare class ImplicitTestClass {
+  bar1(); // CTE - no type in declaration
+  bar2(): number; // OK - type is specified explicitly
+}

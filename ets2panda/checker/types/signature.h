@@ -40,6 +40,7 @@ public:
         }
         for (auto *it : other->params) {
             params.push_back(it->Copy(allocator, it->Declaration()));
+            params.back()->SetTsType(it->TsType());
         }
 
         min_arg_count = other->min_arg_count;
@@ -78,6 +79,7 @@ enum class SignatureFlags : uint32_t {
     INTERNAL = 1U << 12U,
     NEED_RETURN_TYPE = 1U << 13U,
     INFERRED_RETURN_TYPE = 1U << 14U,
+    SUBSTITUTED_RETURN_TYPE = 1U << 15U,
 
     INTERNAL_PROTECTED = INTERNAL | PROTECTED,
     FUNCTIONAL_INTERFACE_SIGNATURE = VIRTUAL | ABSTRACT | CALL | PUBLIC | TYPE

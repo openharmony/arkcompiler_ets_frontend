@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -113,6 +113,7 @@ binder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(const
     func_type->AddTypeFlag(TypeFlag::SYNTHETIC);
 
     binder::LocalVariable *functional_interface = CollectSignaturesForSyntheticType(func_type, name, flags);
+
     if (functional_interface != nullptr) {
         return functional_interface;
     }
@@ -148,15 +149,6 @@ binder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFunct
                 return found;
             }
 
-            if (found->Declaration()->Node()->IsMethodDefinition()) {
-                const auto *method = found->Declaration()->Node()->AsMethodDefinition();
-                if (method->Function()->IsGetter()) {
-                    func_type->AddTypeFlag(TypeFlag::GETTER);
-                } else if (method->Function()->IsSetter()) {
-                    func_type->AddTypeFlag(TypeFlag::SETTER);
-                }
-            }
-
             ASSERT(found->TsType()->IsETSFunctionType());
             for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
                 if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) &&
@@ -175,15 +167,6 @@ binder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFunct
             if (found->HasFlag(binder::VariableFlags::METHOD_REFERENCE)) {
                 // Functional interface found
                 return found;
-            }
-
-            if (found->Declaration()->Node()->IsMethodDefinition()) {
-                const auto *method = found->Declaration()->Node()->AsMethodDefinition();
-                if (method->Function()->IsGetter()) {
-                    func_type->AddTypeFlag(TypeFlag::GETTER);
-                } else if (method->Function()->IsSetter()) {
-                    func_type->AddTypeFlag(TypeFlag::SETTER);
-                }
             }
 
             ASSERT(found->TsType()->IsETSFunctionType());
@@ -308,15 +291,21 @@ std::unordered_map<util::StringView, const binder::LocalVariable *> ETSObjectTyp
 void ETSObjectType::ToString(std::stringstream &ss) const
 {
     ss << name_;
+
     if (IsGeneric()) {
         auto const type_arguments_size = type_arguments_.size();
         ss << compiler::Signatures::GENERIC_BEGIN;
         type_arguments_[0]->ToString(ss);
         for (std::size_t i = 1U; i < type_arguments_size; ++i) {
-            ss << ", ";
+            ss << ',';
             type_arguments_[i]->ToString(ss);
         }
         ss << compiler::Signatures::GENERIC_END;
+    }
+
+    if (IsNullableType() && this != GetConstOriginalBaseType() && !name_.Is("NullType") && !name_.Is("null") &&
+        !name_.Empty()) {
+        ss << "|null";
     }
 }
 
@@ -327,8 +316,8 @@ void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other
         return;
     }
 
-    auto *this_base = relation->GetChecker()->AsETSChecker()->GetOriginalBaseType(this);
-    auto *other_base = relation->GetChecker()->AsETSChecker()->GetOriginalBaseType(other);
+    auto *this_base = GetOriginalBaseType();
+    auto *other_base = other->AsETSObjectType()->GetOriginalBaseType();
     if (this_base->Variable() != other_base->Variable()) {
         return;
     }
@@ -403,9 +392,11 @@ bool ETSObjectType::CheckIdenticalFlags(ETSObjectFlags target) const
     auto cleaned_target_flags = static_cast<ETSObjectFlags>(target & (~ETSObjectFlags::COMPLETELY_RESOLVED));
     cleaned_target_flags &= ~ETSObjectFlags::INCOMPLETE_INSTANTIATION;
     cleaned_target_flags &= ~ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS;
+    cleaned_target_flags &= ~ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
     auto cleaned_self_flags = static_cast<ETSObjectFlags>(ObjectFlags() & (~ETSObjectFlags::COMPLETELY_RESOLVED));
     cleaned_self_flags &= ~ETSObjectFlags::INCOMPLETE_INSTANTIATION;
     cleaned_self_flags &= ~ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS;
+    cleaned_self_flags &= ~ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY;
     return cleaned_self_flags == cleaned_target_flags;
 }
 
@@ -639,8 +630,10 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
 {
     relation->Result(false);
     auto *const ets_checker = relation->GetChecker()->AsETSChecker();
+
     // 3.8.3 Subtyping among Array Types
-    if (ets_checker->GetOriginalBaseType(this) == ets_checker->GlobalETSObjectType() && source->IsETSArrayType()) {
+    auto const *const base = GetConstOriginalBaseType();
+    if (base == ets_checker->GlobalETSObjectType() && source->IsETSArrayType()) {
         relation->Result(true);
         return;
     }
@@ -655,7 +648,7 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
     }
 
     // All classes and interfaces are subtypes of Object
-    if (ets_checker->GetOriginalBaseType(this) == ets_checker->GlobalETSObjectType()) {
+    if (base == ets_checker->GlobalETSObjectType()) {
         relation->Result(true);
         return;
     }
@@ -754,16 +747,17 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
     std::lock_guard guard {*checker->Mutex()};
+    auto *const base = GetOriginalBaseType();
 
-    if ((!relation->TypeInstantiationPossible(checker->GetOriginalBaseType(this))) || IsETSNullType()) {
+    if (!relation->TypeInstantiationPossible(base) || IsETSNullType()) {
         return this;
     }
-    relation->IncreaseTypeRecursionCount(checker->GetOriginalBaseType(this));
+    relation->IncreaseTypeRecursionCount(base);
 
     auto *const copied_type = checker->CreateNewETSObjectType(name_, decl_node_, flags_);
     copied_type->type_flags_ = type_flags_;
     copied_type->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
-                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION);
+                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
     copied_type->SetAssemblerName(assembler_name_);
     copied_type->SetVariable(variable_);
     copied_type->SetSuperType(super_type_);
@@ -781,7 +775,7 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     copied_type->relation_ = relation;
     copied_type->substitution_ = nullptr;
 
-    relation->DecreaseTypeRecursionCount(checker->GetOriginalBaseType(this));
+    relation->DecreaseTypeRecursionCount(base);
 
     return copied_type;
 }
@@ -797,13 +791,26 @@ static binder::LocalVariable *CopyPropertyWithTypeArguments(binder::LocalVariabl
     return copied_prop;
 }
 
+ETSObjectType const *ETSObjectType::GetConstOriginalBaseType() const noexcept
+{
+    if (auto *base_iter = GetBaseType(); base_iter != nullptr) {
+        auto *base_iter_next = base_iter->GetBaseType();
+        while (base_iter_next != nullptr && base_iter_next != base_iter) {
+            base_iter = base_iter_next;
+            base_iter_next = base_iter->GetBaseType();
+        }
+        return base_iter;
+    }
+    return this;
+}
+
 Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *substitution)
 {
     if (substitution == nullptr || substitution->empty()) {
         return this;
     }
     auto *const checker = relation->GetChecker()->AsETSChecker();
-    auto *base = checker->GetOriginalBaseType(this);
+    auto *base = GetOriginalBaseType();
     if (auto repl = substitution->find(base); repl != substitution->end()) {
         auto *repl_type = repl->second;
 
@@ -845,15 +852,15 @@ Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *subs
         return inst;
     }
 
-    if ((!relation->TypeInstantiationPossible(checker->GetOriginalBaseType(this))) || IsETSNullType()) {
+    if ((!relation->TypeInstantiationPossible(base)) || IsETSNullType()) {
         return this;
     }
-    relation->IncreaseTypeRecursionCount(checker->GetOriginalBaseType(this));
+    relation->IncreaseTypeRecursionCount(base);
 
     auto *const copied_type = checker->CreateNewETSObjectType(name_, decl_node_, flags_);
     copied_type->type_flags_ = type_flags_;
     copied_type->RemoveObjectFlag(ETSObjectFlags::CHECKED_COMPATIBLE_ABSTRACTS |
-                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION);
+                                  ETSObjectFlags::INCOMPLETE_INSTANTIATION | ETSObjectFlags::CHECKED_INVOKE_LEGITIMACY);
     copied_type->SetVariable(variable_);
     copied_type->SetBaseType(this);
 
@@ -871,7 +878,7 @@ Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *subs
         copied_type->AddInterface(new_itf);
     }
 
-    relation->DecreaseTypeRecursionCount(checker->GetOriginalBaseType(this));
+    relation->DecreaseTypeRecursionCount(base);
 
     return copied_type;
 }

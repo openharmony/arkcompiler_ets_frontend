@@ -236,6 +236,30 @@
             "column": 3,
             "problem": "LimitedReturnTypeInference",
             "autofixable": false
+        },
+        {
+            "line": 131,
+            "column": 1,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
+        },
+        {
+            "line": 135,
+            "column": 3,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
+        },
+        {
+            "line": 140,
+            "column": 3,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         }
     ]
 }

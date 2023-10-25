@@ -48,4 +48,22 @@ checker::Type *ImportExpression::Check([[maybe_unused]] checker::ETSChecker *che
 {
     return nullptr;
 }
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *ImportExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const source = source_ != nullptr ? source_->Clone(allocator) : nullptr;
+
+    if (auto *const clone = allocator->New<ImportExpression>(source); clone != nullptr) {
+        if (source != nullptr) {
+            source->SetParent(clone);
+        }
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
 }  // namespace panda::es2panda::ir

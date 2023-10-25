@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,19 +23,23 @@ namespace panda::es2panda::ir {
 enum class PropertyKind { INIT, GET, SET, PROTO };
 
 class Property : public Expression {
+private:
+    struct Tag {};
+
 public:
-    explicit Property(Expression *key, Expression *value)
-        : Expression(AstNodeType::PROPERTY),
-          kind_(PropertyKind::INIT),
-          key_(key),
-          value_(value),
-          is_method_(false),
-          is_shorthand_(true),
-          is_computed_(false)
+    Property() = delete;
+    ~Property() override = default;
+
+    NO_COPY_OPERATOR(Property);
+    NO_MOVE_SEMANTIC(Property);
+
+    explicit Property(Expression *const key, Expression *const value)
+        : Expression(AstNodeType::PROPERTY), kind_(PropertyKind::INIT), key_(key), value_(value)
     {
     }
 
-    explicit Property(PropertyKind kind, Expression *key, Expression *value, bool is_method, bool is_computed)
+    explicit Property(PropertyKind const kind, Expression *const key, Expression *const value, bool const is_method,
+                      bool const is_computed)
         : Expression(AstNodeType::PROPERTY),
           kind_(kind),
           key_(key),
@@ -46,58 +50,64 @@ public:
     {
     }
 
-    Expression *Key()
+    explicit Property(Tag tag, Expression *key, Expression *value);
+
+    [[nodiscard]] Expression *Key() noexcept
     {
         return key_;
     }
 
-    const Expression *Key() const
+    [[nodiscard]] const Expression *Key() const noexcept
     {
         return key_;
     }
 
-    const Expression *Value() const
+    [[nodiscard]] const Expression *Value() const noexcept
     {
         return value_;
     }
 
-    Expression *Value()
+    [[nodiscard]] Expression *Value() noexcept
     {
         return value_;
     }
 
-    PropertyKind Kind() const
+    [[nodiscard]] PropertyKind Kind() const noexcept
     {
         return kind_;
     }
 
-    bool IsMethod() const
+    [[nodiscard]] bool IsMethod() const noexcept
     {
         return is_method_;
     }
 
-    bool IsShorthand() const
+    [[nodiscard]] bool IsShorthand() const noexcept
     {
         return is_shorthand_;
     }
 
-    bool IsComputed() const
+    [[nodiscard]] bool IsComputed() const noexcept
     {
         return is_computed_;
     }
 
-    bool IsAccessor() const
+    [[nodiscard]] bool IsAccessor() const noexcept
     {
         return IsAccessorKind(kind_);
     }
 
-    static bool IsAccessorKind(PropertyKind kind)
+    [[nodiscard]] static bool IsAccessorKind(PropertyKind kind) noexcept
     {
         return kind == PropertyKind::GET || kind == PropertyKind::SET;
     }
 
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
     bool ConvertibleToPatternProperty();
     ValidationInfo ValidateExpression();
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -105,13 +115,22 @@ public:
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
+protected:
+    Property(Property const &other) : Expression(static_cast<Expression const &>(other))
+    {
+        kind_ = other.kind_;
+        is_method_ = other.is_method_;
+        is_shorthand_ = other.is_shorthand_;
+        is_computed_ = other.is_computed_;
+    }
+
 private:
     PropertyKind kind_;
-    Expression *key_;
-    Expression *value_;
-    bool is_method_;
-    bool is_shorthand_;
-    bool is_computed_;
+    Expression *key_ = nullptr;
+    Expression *value_ = nullptr;
+    bool is_method_ = false;
+    bool is_shorthand_ = true;
+    bool is_computed_ = false;
 };
 }  // namespace panda::es2panda::ir
 

@@ -22,18 +22,18 @@
             "rule": "Prototype assignment is not supported (arkts-no-prototype-assignment)"
         },
         {
-            "line": 39,
+            "line": 38,
             "column": 5,
-            "problem": "StructuralIdentity",
+            "problem": "AnyType",
             "suggest": "",
-            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 42,
+            "line": 41,
             "column": 5,
-            "problem": "StructuralIdentity",
+            "problem": "AnyType",
             "suggest": "",
-            "rule": "Structural typing is not supported (arkts-no-structural-typing)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         }
     ]
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,14 +21,24 @@
 
 namespace panda::es2panda::ir {
 class ArrayExpression : public AnnotatedExpression {
+private:
+    struct Tag {};
+
 public:
-    explicit ArrayExpression(ArenaVector<Expression *> &&elements, ArenaAllocator *allocator)
+    ArrayExpression() = delete;
+    ~ArrayExpression() override = default;
+
+    NO_COPY_SEMANTIC(ArrayExpression);
+    NO_MOVE_SEMANTIC(ArrayExpression);
+
+public:
+    explicit ArrayExpression(ArenaVector<Expression *> &&elements, ArenaAllocator *const allocator)
         : ArrayExpression(AstNodeType::ARRAY_EXPRESSION, std::move(elements), allocator, false)
     {
     }
 
-    explicit ArrayExpression(AstNodeType node_type, ArenaVector<Expression *> &&elements, ArenaAllocator *allocator,
-                             bool trailing_comma)
+    explicit ArrayExpression(AstNodeType node_type, ArenaVector<Expression *> &&elements,
+                             ArenaAllocator *const allocator, bool const trailing_comma)
         : AnnotatedExpression(node_type),
           decorators_(allocator->Adapter()),
           elements_(std::move(elements)),
@@ -36,47 +46,49 @@ public:
     {
     }
 
-    const ArenaVector<Expression *> &Elements() const
+    explicit ArrayExpression(Tag tag, ArrayExpression const &other, ArenaAllocator *allocator);
+
+    [[nodiscard]] const ArenaVector<Expression *> &Elements() const noexcept
     {
         return elements_;
     }
 
-    ArenaVector<Expression *> &Elements()
+    [[nodiscard]] ArenaVector<Expression *> &Elements() noexcept
     {
         return elements_;
     }
 
-    bool IsDeclaration() const
+    [[nodiscard]] bool IsDeclaration() const noexcept
     {
         return is_declaration_;
     }
 
-    bool IsOptional() const
+    [[nodiscard]] bool IsOptional() const noexcept
     {
         return optional_;
     }
 
-    void SetDeclaration()
+    void SetDeclaration() noexcept
     {
         is_declaration_ = true;
     }
 
-    void SetOptional(bool optional)
+    void SetOptional(bool optional) noexcept
     {
         optional_ = optional;
     }
 
-    void SetPreferredType(checker::Type *preferred_type)
+    void SetPreferredType(checker::Type *preferred_type) noexcept
     {
         preferred_type_ = preferred_type;
     }
 
-    checker::Type *GetPreferredType()
+    [[nodiscard]] checker::Type *GetPreferredType() noexcept
     {
         return preferred_type_;
     }
 
-    const ArenaVector<Decorator *> &Decorators() const
+    [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const noexcept
     {
         return decorators_;
     }
@@ -86,8 +98,11 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    bool ConvertibleToArrayPattern();
-    ValidationInfo ValidateExpression();
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
+    [[nodiscard]] bool ConvertibleToArrayPattern();
+    [[nodiscard]] ValidationInfo ValidateExpression();
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

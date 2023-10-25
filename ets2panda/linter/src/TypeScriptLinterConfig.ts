@@ -14,7 +14,7 @@
  */
 
 import * as ts from 'typescript';
-import { FaultID } from './Problems';
+import { FaultID } from './utils/consts/Problems';
 
 export class LinterConfig {
   // The SyntaxKind enum defines additional elements at the end of the enum

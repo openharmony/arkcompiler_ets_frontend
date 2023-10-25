@@ -229,6 +229,7 @@ protected:
     void ScanPercentPunctuator();
     void ScanDotPunctuator();
     void ScanColonPunctuator();
+    virtual bool ScanDollarPunctuator();
 
     virtual void SkipMultiLineComment();
     virtual void ScanHashMark();

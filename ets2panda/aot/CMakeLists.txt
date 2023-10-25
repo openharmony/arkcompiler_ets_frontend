@@ -12,12 +12,11 @@
 # limitations under the License.
 
 set(ES2PANDA_AOT_SRC
-  options.cpp
   main.cpp
 )
 
 panda_add_executable(es2panda ${ES2PANDA_AOT_SRC})
-panda_target_link_libraries(es2panda es2panda-lib arkassembler arkbytecodeopt)
+panda_target_link_libraries(es2panda es2panda-public es2panda-lib arkassembler arkbytecodeopt)
 panda_target_include_directories(es2panda PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 panda_target_include_directories(es2panda PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
@@ -29,10 +28,6 @@ endif()
 
 panda_target_compile_options(es2panda
   PRIVATE -Werror=shadow
-)
-
-panda_target_compile_definitions(es2panda
-  PRIVATE "DEFAULT_ARKTSCONFIG=\"${GENERATED_DIR}/arktsconfig.json\""
 )
 
 panda_add_sanitizers(TARGET es2panda SANITIZERS ${PANDA_SANITIZERS_LIST})

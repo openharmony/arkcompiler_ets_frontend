@@ -134,6 +134,7 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtin_name_m
     builtin_name_mappings_.emplace("FloatBox", GlobalTypeId::ETS_FLOAT_BOX_BUILTIN);
     builtin_name_mappings_.emplace("DoubleBox", GlobalTypeId::ETS_DOUBLE_BOX_BUILTIN);
     builtin_name_mappings_.emplace("void", GlobalTypeId::ETS_VOID_BUILTIN);
+    builtin_name_mappings_.emplace("never", GlobalTypeId::ETS_NEVER_BUILTIN);
 
     // ETS escompat layer
     builtin_name_mappings_.emplace("Array", GlobalTypeId::ETS_ARRAY_BUILTIN);
@@ -577,6 +578,11 @@ Type *GlobalTypesHolder::GlobalFloatBoxBuiltinType()
 Type *GlobalTypesHolder::GlobalDoubleBoxBuiltinType()
 {
     return global_types_.at(static_cast<size_t>(GlobalTypeId::ETS_DOUBLE_BOX_BUILTIN));
+}
+
+Type *GlobalTypesHolder::GlobalBuiltinNeverType()
+{
+    return global_types_.at(static_cast<size_t>(GlobalTypeId::ETS_NEVER_BUILTIN));
 }
 
 void GlobalTypesHolder::InitializeBuiltin(const util::StringView name, Type *type)

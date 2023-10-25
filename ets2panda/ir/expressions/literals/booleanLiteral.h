@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,12 +21,21 @@
 namespace panda::es2panda::ir {
 class BooleanLiteral : public Literal {
 public:
-    explicit BooleanLiteral(bool value) : Literal(AstNodeType::BOOLEAN_LITERAL), boolean_(value) {}
+    BooleanLiteral() = delete;
+    ~BooleanLiteral() override = default;
 
-    bool Value() const
+    NO_COPY_SEMANTIC(BooleanLiteral);
+    NO_MOVE_SEMANTIC(BooleanLiteral);
+
+    explicit BooleanLiteral(bool const value) : Literal(AstNodeType::BOOLEAN_LITERAL), boolean_(value) {}
+
+    [[nodiscard]] bool Value() const noexcept
     {
         return boolean_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -37,7 +46,7 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
 private:
-    bool boolean_;
+    bool const boolean_;
 };
 }  // namespace panda::es2panda::ir
 
