@@ -21,7 +21,6 @@
 #include "checker/ets/castingContext.h"
 #include "checker/ets/typeRelationContext.h"
 #include "util/helpers.h"
-
 namespace panda::es2panda::checker {
 
 ETSChecker *ETSAnalyzer::GetETSChecker() const
@@ -2209,8 +2208,9 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSAnyKeyword *node) const
 
 checker::Type *ETSAnalyzer::Check(ir::TSArrayType *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    node->element_type_->Check(checker);
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
@@ -2219,9 +2219,8 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSBigintKeyword *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSBigintKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -2333,9 +2332,8 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSIntersectionType *node)
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSLiteralType *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSLiteralType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -2361,16 +2359,23 @@ checker::Type *ETSAnalyzer::Check(ir::TSNamedTupleMember *node) const
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSNeverKeyword *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSNeverKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::TSNonNullExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    auto expr_type = expr->expr_->Check(checker);
+
+    if (!expr_type->IsNullish()) {
+        checker->ThrowTypeError("Bad operand type, the operand of the non-null expression must be a nullable type",
+                                expr->Expr()->Start());
+    }
+
+    expr->SetTsType(expr_type->IsNullish() ? checker->GetNonNullishType(expr_type) : expr_type);
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSNullKeyword *node) const
@@ -2394,9 +2399,8 @@ checker::Type *ETSAnalyzer::Check(ir::TSParameterProperty *expr) const
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSParenthesizedType *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSParenthesizedType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -2434,9 +2438,8 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeAssertion *expr) const
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSTypeLiteral *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSTypeLiteral *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -2487,9 +2490,8 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSUndefinedKeyword *node)
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSUnionType *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSUnionType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 

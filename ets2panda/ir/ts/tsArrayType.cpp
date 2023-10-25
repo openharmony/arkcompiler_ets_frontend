@@ -15,6 +15,8 @@
 
 #include "tsArrayType.h"
 
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
@@ -35,12 +37,19 @@ void TSArrayType::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSArrayType"}, {"elementType", element_type_}});
 }
 
-void TSArrayType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSArrayType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+
+void TSArrayType::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSArrayType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    element_type_->Check(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSArrayType::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -50,8 +59,7 @@ checker::Type *TSArrayType::GetType([[maybe_unused]] checker::TSChecker *checker
 
 checker::Type *TSArrayType::Check(checker::ETSChecker *checker)
 {
-    element_type_->Check(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSArrayType::GetType(checker::ETSChecker *checker)

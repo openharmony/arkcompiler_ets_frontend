@@ -1620,9 +1620,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSAnyKeyword *node) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSArrayType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSArrayType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1632,9 +1631,8 @@ void JSCompiler::Compile(const ir::TSAsExpression *expr) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSBigintKeyword *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSBigintKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1726,9 +1724,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSIntersectionType *node) co
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSLiteralType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSLiteralType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1754,15 +1751,13 @@ void JSCompiler::Compile(const ir::TSNamedTupleMember *node) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSNeverKeyword *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSNeverKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSNonNullExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSNonNullExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1787,9 +1782,8 @@ void JSCompiler::Compile(const ir::TSParameterProperty *expr) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSParenthesizedType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSParenthesizedType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1827,9 +1821,8 @@ void JSCompiler::Compile(const ir::TSTypeAssertion *expr) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeLiteral *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeLiteral *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1880,9 +1873,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSUndefinedKeyword *node) co
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSUnionType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSUnionType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
