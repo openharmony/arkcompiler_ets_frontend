@@ -108,3 +108,7 @@ declare class B {
 }
 
 export declare function bad_func(): A & B;
+
+export type IndexedSignatureType = {
+    [key: string]: string;
+}
