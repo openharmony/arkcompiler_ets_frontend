@@ -89,13 +89,16 @@ def parse_args():
                         default=DEFAULT_PRODUCT_NAME,
                         required=False,
                         help="ark's product name")
+    parser.add_argument('--run-pgo', action='store_true',
+                        required=False,
+                        help="Run test262 with aot pgo")
     arguments = parser.parse_args()
     return arguments
 
 
 ICU_PATH = f"--icu-data-path={CODE_ROOT}/third_party/icu/ohos_icu4j/data"
-if platform.system() == "Windows" :
-    ICU_PATH = ICU_PATH.replace("/","\\")
+if platform.system() == "Windows":
+    ICU_PATH = ICU_PATH.replace("/", "\\")
 ARK_TOOL = DEFAULT_ARK_TOOL
 LIBS_DIR = DEFAULT_LIBS_DIR
 ARK_AOT_TOOL = DEFAULT_ARK_AOT_TOOL
@@ -143,7 +146,7 @@ def exec_command(cmd_args, timeout=DEFAULT_TIMEOUT):
         if ret_code and ret_code != 1:
             code = ret_code
             msg = f"Command {cmd_string}: \n"
-            msg += f"error: {str(errs.decode(code_format,'ignore'))}"
+            msg += f"error: {str(errs.decode(code_format, 'ignore'))}"
         else:
             code = 0
             msg = str(output_res.decode(code_format, 'ignore'))
@@ -160,20 +163,24 @@ def exec_command(cmd_args, timeout=DEFAULT_TIMEOUT):
     output(code, msg)
     return code
 
+
 def print_command(cmd_args):
     sys.stderr.write("\n")
     sys.stderr.write(" ".join(cmd_args))
     sys.stderr.write("\n")
 
+
 # for debug use, to keep aot file
 def run_command(cmd_args):
     return subprocess.run(" ".join(cmd_args))
+
 
 class ArkProgram():
     def __init__(self, args):
         self.args = args
         self.ark_tool = ARK_TOOL
         self.ark_aot = False
+        self.run_pgo = False
         self.ark_aot_tool = ARK_AOT_TOOL
         self.libs_dir = LIBS_DIR
         self.ark_frontend = ARK_FRONTEND
@@ -196,6 +203,9 @@ class ArkProgram():
 
         if self.args.ark_aot:
             self.ark_aot = self.args.ark_aot
+
+        if self.args.run_pgo:
+            self.run_pgo = self.args.run_pgo
 
         if self.args.ark_aot_tool:
             self.ark_aot_tool = self.args.ark_aot_tool
@@ -241,7 +251,7 @@ class ArkProgram():
 
             for module_mode in list(set(module_mode_list)):
                 if len(module_mode[0]) != 0 or len(module_mode[1]) != 0 or \
-                    len(module_mode[2]) != 0:
+                        len(module_mode[2]) != 0:
                     return True
 
         if "flags: [module]" in content_file or "/language/module-code/" in self.js_file:
@@ -462,20 +472,44 @@ class ArkProgram():
         os.environ["LD_LIBRARY_PATH"] = self.libs_dir
         file_name_pre = os.path.splitext(self.js_file)[0]
         cmd_args = []
-        if self.arch == ARK_ARCH_LIST[1]:
-            cmd_args = [self.ark_aot_tool, ICU_PATH,
-                        f'--compiler-target-triple=aarch64-unknown-linux-gnu',
-                        f'--aot-file={file_name_pre}',
-                        self.abc_file]
-        elif self.arch == ARK_ARCH_LIST[2]:
-            cmd_args = [self.ark_aot_tool, ICU_PATH,
-                        f'--compiler-target-triple=arm-unknown-linux-gnu',
-                        f'--aot-file={file_name_pre}',
-                        self.abc_file]
-        elif self.arch == ARK_ARCH_LIST[0]:
-            cmd_args = [self.ark_aot_tool, ICU_PATH,
-                        f'--aot-file={file_name_pre}',
-                        self.abc_file]
+        if self.run_pgo:
+            if self.arch == ARK_ARCH_LIST[1]:
+                qemu_tool = "qemu-aarch64"
+                qemu_arg1 = "-L"
+                qemu_arg2 = self.arch_root
+                cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_aot_tool,
+                            ICU_PATH, f'--compiler-target-triple=aarch64-unknown-linux-gnu']
+            elif self.arch == ARK_ARCH_LIST[2]:
+                cmd_args = [self.ark_aot_tool, ICU_PATH, f'--compiler-target-triple=arm-unknown-linux-gnu']
+            elif self.arch == ARK_ARCH_LIST[0]:
+                cmd_args = [self.ark_aot_tool, ICU_PATH]
+
+            cmd_args.append("--compiler-opt-loop-peeling=true")
+            cmd_args.append("--compiler-fast-compile=false")
+            cmd_args.append("--compiler-opt-track-field=true")
+            cmd_args.append("--compiler-opt-inlining=true")
+            cmd_args.append("--compiler-max-inline-bytecodes=45")
+            cmd_args.append("--compiler-opt-level=2")
+            cmd_args.append(
+                f"--builtins-dts={CODE_ROOT}/arkcompiler/ets_runtime/ecmascript/ts_types/lib_ark_builtins.d.abc")
+            cmd_args.append(f'--compiler-pgo-profiler-path={file_name_pre}.ap')
+            cmd_args.append(f'--aot-file={file_name_pre}')
+            cmd_args.append(self.abc_file)
+        else:
+            if self.arch == ARK_ARCH_LIST[1]:
+                cmd_args = [self.ark_aot_tool, ICU_PATH,
+                            f'--compiler-target-triple=aarch64-unknown-linux-gnu',
+                            f'--aot-file={file_name_pre}',
+                            self.abc_file]
+            elif self.arch == ARK_ARCH_LIST[2]:
+                cmd_args = [self.ark_aot_tool, ICU_PATH,
+                            f'--compiler-target-triple=arm-unknown-linux-gnu',
+                            f'--aot-file={file_name_pre}',
+                            self.abc_file]
+            elif self.arch == ARK_ARCH_LIST[0]:
+                cmd_args = [self.ark_aot_tool, ICU_PATH,
+                            f'--aot-file={file_name_pre}',
+                            self.abc_file]
         retcode = exec_command(cmd_args, 180000)
         if retcode:
             print_command(self.abc_cmd)
@@ -497,7 +531,7 @@ class ArkProgram():
         elif self.arch == ARK_ARCH_LIST[2]:
             qemu_tool = "qemu-arm"
             qemu_arg1 = "-L"
-            qemu_arg2 =  self.arch_root
+            qemu_arg2 = self.arch_root
             cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_tool,
                         ICU_PATH,
                         f'--aot-file={file_name_pre}',
@@ -521,20 +555,20 @@ class ArkProgram():
 
     def execute(self):
         unforce_gc = False
-        if platform.system() == "Windows" :
-            #add env path for cmd/powershell execute
+        if platform.system() == "Windows":
+            # add env path for cmd/powershell execute
             libs_dir = self.libs_dir.replace(":", ";")
             libs_dir = libs_dir.replace("/", "\\")
             os.environ["PATH"] = libs_dir + ";" + os.environ["PATH"]
-        elif platform.system() == "Linux" :
+        elif platform.system() == "Linux":
             os.environ["LD_LIBRARY_PATH"] = self.libs_dir
-        else :
+        else:
             sys.exit(f" test262 on {platform.system()} not supported")
         file_name_pre = os.path.splitext(self.js_file)[0]
         # In the case of Windows, it is necessary to convert ' \\' to '/', otherwise there will be a crash or the file cannot be found
         # Maintain consistent interface path with DevEco Studio 
-        if platform.system() == "Windows": 
-            file_name_pre = file_name_pre.replace("\\","/")
+        if platform.system() == "Windows":
+            file_name_pre = file_name_pre.replace("\\", "/")
         cmd_args = []
         if self.arch == ARK_ARCH_LIST[1]:
             qemu_tool = "qemu-aarch64"
@@ -546,7 +580,7 @@ class ArkProgram():
         elif self.arch == ARK_ARCH_LIST[2]:
             qemu_tool = "qemu-arm"
             qemu_arg1 = "-L"
-            qemu_arg2 =  self.arch_root
+            qemu_arg2 = self.arch_root
             cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_tool,
                         ICU_PATH,
                         f'{file_name_pre}.abc']
@@ -566,6 +600,37 @@ class ArkProgram():
             print_command(cmd_args)
         return retcode
 
+    def run_generator_ap(self):
+        os.environ["LD_LIBRARY_PATH"] = self.libs_dir
+        file_name_pre = os.path.splitext(self.js_file)[0]
+        record_name = os.path.splitext(os.path.split(self.js_file)[1])[0]
+        if self.arch == ARK_ARCH_LIST[1]:
+            qemu_tool = "qemu-aarch64"
+            qemu_arg1 = "-L"
+            qemu_arg2 = self.arch_root
+            cmd_args = [qemu_tool, qemu_arg1, qemu_arg2, self.ark_tool,
+                        ICU_PATH,
+                        "--log-level=error",
+                        "--enable-pgo-profiler=true",
+                        "--compiler-opt-inlining=true",
+                        f'--compiler-pgo-profiler-path={file_name_pre}.ap',
+                        "--asm-interpreter=true",
+                        f'--entry-point={record_name}',
+                        f'{file_name_pre}.abc']
+        else:
+            cmd_args = [self.ark_tool, ICU_PATH,
+                        "--log-level=error",
+                        "--enable-pgo-profiler=true",
+                        "--compiler-opt-inlining=true",
+                        f'--compiler-pgo-profiler-path={file_name_pre}.ap',
+                        "--asm-interpreter=true",
+                        f'--entry-point={record_name}',
+                        f'{file_name_pre}.abc']
+        return_code = exec_command(cmd_args)
+        if return_code:
+            print_command(cmd_args)
+        return return_code
+
     def is_legal_frontend(self):
         if self.ark_frontend not in ARK_FRONTEND_LIST:
             sys.stderr.write("Wrong ark front-end option")
@@ -577,13 +642,17 @@ class ArkProgram():
         self.get_all_skip_force_gc_tests()
         if not self.is_legal_frontend():
             return
+
         if self.gen_abc():
             return
+        if self.run_pgo:
+            self.run_generator_ap()
         if self.ark_aot:
             self.compile_aot()
             self.execute_aot()
         else:
             self.execute()
+
 
 def main():
     args = parse_args()
