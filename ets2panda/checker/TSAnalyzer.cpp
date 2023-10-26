@@ -713,13 +713,12 @@ checker::Type *TSAnalyzer::Check(ir::BigIntLiteral *expr) const
 
 checker::Type *TSAnalyzer::Check(ir::BooleanLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    return expr->Value() ? checker->GlobalTrueType() : checker->GlobalFalseType();
 }
 
-checker::Type *TSAnalyzer::Check(ir::CharLiteral *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::CharLiteral *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -810,22 +809,26 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ImportSpecifier *st) const
     UNREACHABLE();
 }
 // compile methods for STATEMENTS in alphabetical order
-checker::Type *TSAnalyzer::Check(ir::AssertStatement *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::AssertStatement *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::BlockStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::ScopeContext scope_ctx(checker, st->Scope());
+
+    for (auto *it : st->Statements()) {
+        it->Check(checker);
+    }
+
+    return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check(ir::BreakStatement *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::BreakStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ClassDeclaration *st) const

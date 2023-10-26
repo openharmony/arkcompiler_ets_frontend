@@ -32,25 +32,22 @@ void BooleanLiteral::Dump(ir::AstDumper *dumper) const
 
 void BooleanLiteral::Compile(compiler::PandaGen *pg) const
 {
-    pg->LoadConst(this, boolean_ ? compiler::Constant::JS_TRUE : compiler::Constant::JS_FALSE);
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void BooleanLiteral::Compile(compiler::ETSGen *etsg) const
 {
-    etsg->LoadAccumulatorBoolean(this, boolean_);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *BooleanLiteral::Check(checker::TSChecker *checker)
 {
-    return boolean_ ? checker->GlobalTrueType() : checker->GlobalFalseType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *BooleanLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    if (TsType() == nullptr) {
-        SetTsType(checker->CreateETSBooleanType(boolean_));
-    }
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

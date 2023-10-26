@@ -18,6 +18,10 @@
 
 #include "ir/statement.h"
 
+namespace panda::es2panda::checker {
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
+
 namespace panda::es2panda::ir {
 class Expression;
 
@@ -27,6 +31,8 @@ public:
         : Statement(AstNodeType::ASSERT_STATEMENT), test_(test), second_(second)
     {
     }
+    // TODO (somas): this friend relationship can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
 
     const Expression *Test() const
     {
@@ -45,9 +51,6 @@ public:
     void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
-
-protected:
-    void ThrowError(compiler::ETSGen *etsg) const;
 
 private:
     Expression *test_;

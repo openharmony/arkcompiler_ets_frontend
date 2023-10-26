@@ -18,6 +18,14 @@
 
 #include "ir/statement.h"
 
+namespace panda::es2panda::checker {
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
+
+namespace panda::es2panda::compiler {
+class ETSCompiler;
+}  // namespace panda::es2panda::compiler
+
 namespace panda::es2panda::ir {
 class Identifier;
 
@@ -25,6 +33,9 @@ class BreakStatement : public Statement {
 public:
     explicit BreakStatement() : Statement(AstNodeType::BREAK_STATEMENT) {}
     explicit BreakStatement(Identifier *ident) : Statement(AstNodeType::BREAK_STATEMENT), ident_(ident) {}
+
+    friend checker::ETSAnalyzer;
+    friend compiler::ETSCompiler;
 
     const Identifier *Ident() const
     {

@@ -48,68 +48,23 @@ void AssertStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "AssertStatement"}, {"test", test_}, {"second", AstDumper::Nullish(second_)}});
 }
 
-void AssertStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-void AssertStatement::ThrowError(compiler::ETSGen *const etsg) const
+void AssertStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    const compiler::RegScope rs(etsg);
-
-    if (second_ != nullptr) {
-        second_->Compile(etsg);
-    } else {
-        etsg->LoadAccumulatorString(this, "Assertion failed.");
-    }
-
-    const auto message = etsg->AllocReg();
-    etsg->StoreAccumulator(this, message);
-
-    const auto assertion_error = etsg->AllocReg();
-    etsg->NewObject(this, assertion_error, compiler::Signatures::BUILTIN_ASSERTION_ERROR);
-    etsg->CallThisStatic1(this, assertion_error, compiler::Signatures::BUILTIN_ASSERTION_ERROR_CTOR, message);
-    etsg->EmitThrow(this, assertion_error);
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void AssertStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 {
-    auto res = compiler::Condition::CheckConstantExpr(etsg, test_);
-    if (res == compiler::Condition::Result::CONST_TRUE) {
-        return;
-    }
-
-    if (res == compiler::Condition::Result::CONST_FALSE) {
-        ThrowError(etsg);
-        return;
-    }
-
-    compiler::Label *true_label = etsg->AllocLabel();
-    compiler::Label *false_label = etsg->AllocLabel();
-
-    compiler::Condition::Compile(etsg, test_, false_label);
-    etsg->JumpTo(this, true_label);
-
-    etsg->SetLabel(this, false_label);
-    ThrowError(etsg);
-
-    etsg->SetLabel(this, true_label);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *AssertStatement::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *AssertStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    checker->CheckTruthinessOfType(test_);
-
-    if (second_ != nullptr) {
-        auto *msg_type = second_->Check(checker);
-
-        if (!msg_type->IsETSStringType()) {
-            checker->ThrowTypeError("Assert message must be string", second_->Start());
-        }
-    }
-
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

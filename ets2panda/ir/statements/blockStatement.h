@@ -18,6 +18,10 @@
 
 #include "ir/statement.h"
 
+namespace panda::es2panda::checker {
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
+
 namespace panda::es2panda::ir {
 class BlockStatement : public Statement {
 public:
@@ -29,6 +33,9 @@ public:
           trailing_blocks_(allocator->Adapter())
     {
     }
+
+    // TODO (somas): this friend relationship can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
 
     bool IsScopeBearer() const override
     {
