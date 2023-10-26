@@ -13,32 +13,13 @@
  * limitations under the License.
  */
 
-function logClassName(constructor: Function) {
-  console.log(`Class name: ${constructor.name}`);
+class MyClass {
+  private a = 1;
+  
+  foo(): number{
+    return this.a;
+  }
 }
 
-function logProperty1(target: any, key: string) {
-  console.log(`Property name: ${key}`);
-}
-function logProperty2(target: any, key: string) {
-  console.log(`Property name: ${key}`);
-}
-
-@logClassName
-class ExampleClass {
-  @logProperty1 @logProperty2
-  private someProperty: string; // commentssssss
-  @logProperty2
-  @logProperty1
-  public secondProperty: number;
-
-  @logProperty1
-  async foo(): Promise<any> { }
-}
-function foo() {
-  let a1 = 1
-  let a2 = 2;
-  let a3 = 3
-  let a4 = 4
-  let a5 = 5
-}
+const b = new MyClass();
+const myInstance = b.foo;

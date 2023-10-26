@@ -15,9 +15,13 @@
 
 import type {Expression, Node, ObjectBindingPattern, SourceFile} from 'typescript';
 import {
+  SyntaxKind,
   getModifiers,
+  isBinaryExpression,
   isBindingElement,
   isCallExpression,
+  isClassDeclaration,
+  isClassExpression,
   isComputedPropertyName,
   isConstructorDeclaration,
   isElementAccessExpression,
@@ -27,6 +31,7 @@ import {
   isMethodDeclaration,
   isMethodSignature,
   isParameter,
+  isPrivateIdentifier,
   isPropertyAccessExpression,
   isPropertyAssignment,
   isPropertyDeclaration,
@@ -104,7 +109,30 @@ export class NodeUtils {
     if (isPropertyAccessExpression(parent) && parent.name === node) {
       return true;
     }
+    if (isPrivateIdentifier(node) && NodeUtils.isInClassDeclaration(parent)) {
+      return NodeUtils.isInExpression(parent);
+    }
     return isQualifiedName(parent) && parent.right === node;
+  }
+
+  private static isInClassDeclaration(node: Node | undefined): boolean {
+    if (!node) {
+      return false;
+    }
+
+    if (isClassDeclaration(node) || isClassExpression(node)) {
+      return true;
+    }
+
+    return NodeUtils.isInClassDeclaration(node.parent);
+  }
+
+  private static isInExpression(node: Node | undefined): boolean {
+    return !!node && NodeUtils.isInOperator(node);
+  }
+
+  private static isInOperator(node: Node): boolean {
+    return isBinaryExpression(node) && node.operatorToken.kind === SyntaxKind.InKeyword;
   }
 
   public static isElementAccessNode(node: Node): boolean {
