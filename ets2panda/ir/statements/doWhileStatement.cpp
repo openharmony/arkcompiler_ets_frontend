@@ -21,8 +21,6 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
-#include "ir/astDump.h"
-#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 void DoWhileStatement::TransformChildren(const NodeTransformer &cb)
@@ -42,55 +40,23 @@ void DoWhileStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "DoWhileStatement"}, {"body", body_}, {"test", test_}});
 }
 
-template <typename CodeGen>
-void CompileImpl(const DoWhileStatement *self, [[maybe_unused]] CodeGen *cg)
+void DoWhileStatement::Compile(compiler::PandaGen *pg) const
 {
-    auto *start_label = cg->AllocLabel();
-    compiler::LabelTarget label_target(cg);
-
-    cg->SetLabel(self, start_label);
-
-    {
-        compiler::LocalRegScope reg_scope(cg, self->Scope());
-        compiler::LabelContext label_ctx(cg, label_target);
-        self->Body()->Compile(cg);
-    }
-
-    cg->SetLabel(self, label_target.ContinueTarget());
-    compiler::Condition::Compile(cg, self->Test(), label_target.BreakTarget());
-
-    cg->Branch(self, start_label);
-    cg->SetLabel(self, label_target.BreakTarget());
+    pg->GetAstCompiler()->Compile(this);
 }
 
-void DoWhileStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void DoWhileStatement::Compile(compiler::ETSGen *etsg) const
 {
-    CompileImpl(this, pg);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-void DoWhileStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+checker::Type *DoWhileStatement::Check(checker::TSChecker *checker)
 {
-    CompileImpl(this, etsg);
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *DoWhileStatement::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *DoWhileStatement::Check(checker::ETSChecker *checker)
 {
-    checker::ScopeContext scope_ctx(checker, Scope());
-
-    checker::Type *test_type = Test()->Check(checker);
-    checker->CheckTruthinessOfType(test_type, Test()->Start());
-    Body()->Check(checker);
-
-    return nullptr;
-}
-
-checker::Type *DoWhileStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
-{
-    checker::ScopeContext scope_ctx(checker, Scope());
-
-    checker->CheckTruthinessOfType(Test());
-    Body()->Check(checker);
-
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

@@ -15,12 +15,10 @@
 
 #include "importNamespaceSpecifier.h"
 
-#include "checker/ETSchecker.h"
 #include "varbinder/ETSBinder.h"
-#include "ir/astDump.h"
-#include "ir/expressions/identifier.h"
-#include "ir/module/importDeclaration.h"
-#include "ir/expressions/literals/stringLiteral.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void ImportNamespaceSpecifier::TransformChildren(const NodeTransformer &cb)
@@ -38,81 +36,23 @@ void ImportNamespaceSpecifier::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ImportNamespaceSpecifier"}, {"local", local_}});
 }
 
-void ImportNamespaceSpecifier::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *ImportNamespaceSpecifier::Check([[maybe_unused]] checker::TSChecker *checker)
+void ImportNamespaceSpecifier::Compile(compiler::PandaGen *pg) const
 {
-    return nullptr;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ImportNamespaceSpecifier::Check([[maybe_unused]] checker::ETSChecker *checker)
+void ImportNamespaceSpecifier::Compile(compiler::ETSGen *etsg) const
 {
-    if (Local()->Name().Empty()) {
-        return nullptr;
-    }
+    etsg->GetAstCompiler()->Compile(this);
+}
 
-    if (Local()->AsIdentifier()->TsType() != nullptr) {
-        return local_->TsType();
-    }
+checker::Type *ImportNamespaceSpecifier::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
 
-    auto *import_decl = Parent()->AsETSImportDeclaration();
-    auto import_path = import_decl->Source()->Str();
-
-    if (import_decl->IsPureDynamic()) {
-        auto *type = checker->GlobalBuiltinDynamicType(import_decl->Language());
-        checker->SetrModuleObjectTsType(local_, type);
-        return type;
-    }
-
-    std::string package_name =
-        (import_decl->Module() == nullptr) ? import_path.Mutf8() : import_decl->Module()->Str().Mutf8();
-
-    std::replace(package_name.begin(), package_name.end(), '/', '.');
-    util::UString package_path(package_name, checker->Allocator());
-    std::vector<util::StringView> synthetic_names = checker->GetNameForSynteticObjectType(package_path.View());
-
-    ASSERT(!synthetic_names.empty());
-
-    auto assembler_name = synthetic_names[0];
-    if (import_decl->Module() != nullptr) {
-        assembler_name = util::UString(assembler_name.Mutf8().append(".").append(compiler::Signatures::ETS_GLOBAL),
-                                       checker->Allocator())
-                             .View();
-    }
-
-    auto *module_object_type =
-        checker->Allocator()->New<checker::ETSObjectType>(checker->Allocator(), synthetic_names[0], assembler_name,
-                                                          local_->AsIdentifier(), checker::ETSObjectFlags::CLASS);
-
-    auto *root_decl = checker->Allocator()->New<varbinder::ClassDecl>(synthetic_names[0]);
-    varbinder::LocalVariable *root_var =
-        checker->Allocator()->New<varbinder::LocalVariable>(root_decl, varbinder::VariableFlags::NONE);
-    root_var->SetTsType(module_object_type);
-
-    synthetic_names.erase(synthetic_names.begin());
-    checker::ETSObjectType *last_object_type(module_object_type);
-
-    for (const auto &synthetic_name : synthetic_names) {
-        auto *synthetic_obj_type =
-            checker->Allocator()->New<checker::ETSObjectType>(checker->Allocator(), synthetic_name, synthetic_name,
-                                                              local_->AsIdentifier(), checker::ETSObjectFlags::NO_OPTS);
-
-        auto *class_decl = checker->Allocator()->New<varbinder::ClassDecl>(synthetic_name);
-        varbinder::LocalVariable *var =
-            checker->Allocator()->New<varbinder::LocalVariable>(class_decl, varbinder::VariableFlags::CLASS);
-        var->SetTsType(synthetic_obj_type);
-        last_object_type->AddProperty<checker::PropertyType::STATIC_FIELD>(var);
-        synthetic_obj_type->SetEnclosingType(last_object_type);
-        last_object_type = synthetic_obj_type;
-    }
-
-    checker->SetPropertiesForModuleObject(
-        last_object_type,
-        (import_decl->Module() != nullptr)
-            ? util::UString(import_path.Mutf8() + import_decl->Module()->Str().Mutf8(), checker->Allocator()).View()
-            : import_path);
-    checker->SetrModuleObjectTsType(local_, last_object_type);
-
-    return module_object_type;
+checker::Type *ImportNamespaceSpecifier::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

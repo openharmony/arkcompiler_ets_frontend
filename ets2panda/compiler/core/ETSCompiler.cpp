@@ -486,27 +486,23 @@ void ETSCompiler::Compile(const ir::ExportSpecifier *st) const
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ImportDeclaration *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ImportDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ImportDefaultSpecifier *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ImportDefaultSpecifier *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ImportNamespaceSpecifier *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ImportNamespaceSpecifier *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ImportSpecifier *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ImportSpecifier *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 // compile methods for STATEMENTS in alphabetical order
@@ -528,28 +524,55 @@ void ETSCompiler::Compile(const ir::BreakStatement *st) const
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ClassDeclaration *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ClassDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
+}
+
+static void CompileImpl(const ir::ContinueStatement *self, ETSGen *etsg)
+{
+    compiler::Label *target = etsg->ControlFlowChangeContinue(self->Ident());
+    etsg->Branch(self, target);
 }
 
 void ETSCompiler::Compile(const ir::ContinueStatement *st) const
 {
-    (void)st;
+    ETSGen *etsg = GetETSGen();
+    if (etsg->ExtendWithFinalizer(st->parent_, st)) {
+        return;
+    }
+    CompileImpl(st, etsg);
+}
+
+void ETSCompiler::Compile([[maybe_unused]] const ir::DebuggerStatement *st) const
+{
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::DebuggerStatement *st) const
+void CompileImpl(const ir::DoWhileStatement *self, ETSGen *etsg)
 {
-    (void)st;
-    UNREACHABLE();
+    auto *start_label = etsg->AllocLabel();
+    compiler::LabelTarget label_target(etsg);
+
+    etsg->SetLabel(self, start_label);
+
+    {
+        compiler::LocalRegScope reg_scope(etsg, self->Scope());
+        compiler::LabelContext label_ctx(etsg, label_target);
+        self->Body()->Compile(etsg);
+    }
+
+    etsg->SetLabel(self, label_target.ContinueTarget());
+    compiler::Condition::Compile(etsg, self->Test(), label_target.BreakTarget());
+
+    etsg->Branch(self, start_label);
+    etsg->SetLabel(self, label_target.BreakTarget());
 }
 
 void ETSCompiler::Compile(const ir::DoWhileStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    CompileImpl(st, etsg);
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::EmptyStatement *st) const {}

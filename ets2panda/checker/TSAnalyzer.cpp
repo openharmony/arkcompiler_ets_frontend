@@ -483,27 +483,23 @@ checker::Type *TSAnalyzer::Check(ir::ExportSpecifier *st) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ImportDeclaration *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ImportDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ImportDefaultSpecifier *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ImportDefaultSpecifier *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ImportNamespaceSpecifier *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ImportNamespaceSpecifier *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ImportSpecifier *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ImportSpecifier *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 // compile methods for STATEMENTS in alphabetical order
@@ -525,9 +521,8 @@ checker::Type *TSAnalyzer::Check(ir::BreakStatement *st) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ClassDeclaration *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ClassDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
@@ -537,16 +532,21 @@ checker::Type *TSAnalyzer::Check(ir::ContinueStatement *st) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::DebuggerStatement *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::DebuggerStatement *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::DoWhileStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::ScopeContext scope_ctx(checker, st->Scope());
+
+    checker::Type *test_type = st->Test()->Check(checker);
+    checker->CheckTruthinessOfType(test_type, st->Test()->Start());
+    st->Body()->Check(checker);
+
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::EmptyStatement *st) const

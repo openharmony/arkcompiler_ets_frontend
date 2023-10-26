@@ -580,25 +580,96 @@ checker::Type *ETSAnalyzer::Check(ir::ExportSpecifier *st) const
 
 checker::Type *ETSAnalyzer::Check(ir::ImportDeclaration *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    checker::Type *type = nullptr;
+    for (auto *spec : st->Specifiers()) {
+        if (spec->IsImportNamespaceSpecifier()) {
+            type = spec->AsImportNamespaceSpecifier()->Check(checker);
+        }
+    }
+
+    return type;
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ImportDefaultSpecifier *st) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ImportDefaultSpecifier *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ImportNamespaceSpecifier *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    if (st->Local()->Name().Empty()) {
+        return nullptr;
+    }
+
+    if (st->Local()->AsIdentifier()->TsType() != nullptr) {
+        return st->Local()->TsType();
+    }
+
+    auto *import_decl = st->Parent()->AsETSImportDeclaration();
+    auto import_path = import_decl->Source()->Str();
+
+    if (import_decl->IsPureDynamic()) {
+        auto *type = checker->GlobalBuiltinDynamicType(import_decl->Language());
+        checker->SetrModuleObjectTsType(st->Local(), type);
+        return type;
+    }
+
+    std::string package_name =
+        (import_decl->Module() == nullptr) ? import_path.Mutf8() : import_decl->Module()->Str().Mutf8();
+
+    std::replace(package_name.begin(), package_name.end(), '/', '.');
+    util::UString package_path(package_name, checker->Allocator());
+    std::vector<util::StringView> synthetic_names = checker->GetNameForSynteticObjectType(package_path.View());
+
+    ASSERT(!synthetic_names.empty());
+
+    auto assembler_name = synthetic_names[0];
+    if (import_decl->Module() != nullptr) {
+        assembler_name = util::UString(assembler_name.Mutf8().append(".").append(compiler::Signatures::ETS_GLOBAL),
+                                       checker->Allocator())
+                             .View();
+    }
+
+    auto *module_object_type =
+        checker->Allocator()->New<checker::ETSObjectType>(checker->Allocator(), synthetic_names[0], assembler_name,
+                                                          st->Local()->AsIdentifier(), checker::ETSObjectFlags::CLASS);
+
+    auto *root_decl = checker->Allocator()->New<varbinder::ClassDecl>(synthetic_names[0]);
+    varbinder::LocalVariable *root_var =
+        checker->Allocator()->New<varbinder::LocalVariable>(root_decl, varbinder::VariableFlags::NONE);
+    root_var->SetTsType(module_object_type);
+
+    synthetic_names.erase(synthetic_names.begin());
+    checker::ETSObjectType *last_object_type(module_object_type);
+
+    for (const auto &synthetic_name : synthetic_names) {
+        auto *synthetic_obj_type = checker->Allocator()->New<checker::ETSObjectType>(
+            checker->Allocator(), synthetic_name, synthetic_name, st->Local()->AsIdentifier(),
+            checker::ETSObjectFlags::NO_OPTS);
+
+        auto *class_decl = checker->Allocator()->New<varbinder::ClassDecl>(synthetic_name);
+        varbinder::LocalVariable *var =
+            checker->Allocator()->New<varbinder::LocalVariable>(class_decl, varbinder::VariableFlags::CLASS);
+        var->SetTsType(synthetic_obj_type);
+        last_object_type->AddProperty<checker::PropertyType::STATIC_FIELD>(var);
+        synthetic_obj_type->SetEnclosingType(last_object_type);
+        last_object_type = synthetic_obj_type;
+    }
+
+    checker->SetPropertiesForModuleObject(
+        last_object_type,
+        (import_decl->Module() != nullptr)
+            ? util::UString(import_path.Mutf8() + import_decl->Module()->Str().Mutf8(), checker->Allocator()).View()
+            : import_path);
+    checker->SetrModuleObjectTsType(st->Local(), last_object_type);
+
+    return module_object_type;
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ImportSpecifier *st) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ImportSpecifier *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 // compile methods for STATEMENTS in alphabetical order
@@ -622,26 +693,32 @@ checker::Type *ETSAnalyzer::Check(ir::BreakStatement *st) const
 
 checker::Type *ETSAnalyzer::Check(ir::ClassDeclaration *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    st->Definition()->Check(checker);
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ContinueStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    st->target_ = checker->FindJumpTarget(st->Type(), st, st->Ident());
+    return nullptr;
 }
 
-checker::Type *ETSAnalyzer::Check(ir::DebuggerStatement *st) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::DebuggerStatement *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::DoWhileStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    checker::ScopeContext scope_ctx(checker, st->Scope());
+
+    checker->CheckTruthinessOfType(st->Test());
+    st->Body()->Check(checker);
+
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::EmptyStatement *st) const
