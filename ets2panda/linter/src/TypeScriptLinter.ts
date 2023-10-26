@@ -1553,13 +1553,13 @@ export class TypeScriptLinter {
     let rangesToFilter: { begin: number, end: number }[] = [];
     if (nonFilteringRanges.length !== 0) {
       let rangesSize = nonFilteringRanges.length;
-      rangesToFilter.push({ begin: callExpr.pos, end: nonFilteringRanges[0].begin })
-      rangesToFilter.push({ begin: nonFilteringRanges[rangesSize - 1].end, end: callExpr.end })
+      rangesToFilter.push({ begin: callExpr.arguments.pos, end: nonFilteringRanges[0].begin })
+      rangesToFilter.push({ begin: nonFilteringRanges[rangesSize - 1].end, end: callExpr.arguments.end })
       for (let i = 0; i < rangesSize - 1; i++) {
         rangesToFilter.push({ begin: nonFilteringRanges[i].end, end: nonFilteringRanges[i + 1].begin })
       }
     } else {
-      rangesToFilter.push({ begin: callExpr.pos, end: callExpr.end })
+      rangesToFilter.push({ begin: callExpr.arguments.pos, end: callExpr.arguments.end })
     }
 
     this.filterStrictDiagnostics({

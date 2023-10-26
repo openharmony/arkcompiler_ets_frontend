@@ -106,3 +106,22 @@ bar(() => {
     f(null);
   }, null, f(null));
 }, null, foo(f(null)));
+
+type PropDecorator = () => void;
+let Builder: PropDecorator;
+
+// this test is useless until we use custom tsc
+@Builder
+function buildSwiper() {
+  f(null)
+  foo(null) {
+    f(null)
+      foo(null) {
+        f(null)
+        foo(() => {
+        f(null)
+      })
+    }
+    .foo(null)
+  }
+}
