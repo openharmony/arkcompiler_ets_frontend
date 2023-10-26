@@ -1,7 +1,7 @@
 {
     "mCompact": false,
     "mRemoveComments": false,
-    "mOutputDir": "../test/local",
+    "mOutputDir": "../../local",
     "mDisableHilog": false,
     "mDisableConsole": false,
     "mSimplify": false,

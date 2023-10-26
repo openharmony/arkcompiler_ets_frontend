@@ -42,9 +42,9 @@ import type {
   Expression
 } from 'typescript';
 
-import type {IOptions} from '../../configs/IOptions';
-import type {TransformPlugin} from '../TransformPlugin';
-import {isCommentedNode, isSuperCallStatement} from '../../utils/TransformUtil';
+import type { IOptions } from '../../configs/IOptions';
+import type { TransformPlugin } from '../TransformPlugin';
+import { isCommentedNode, isSuperCallStatement } from '../../utils/TransformUtil';
 
 namespace secharmony {
   const TRANSFORMER_ORDER: number = 5;
