@@ -73,7 +73,7 @@ public:
     NO_MOVE_SEMANTIC(Scope);
 
     using VariableMap = ArenaUnorderedMap<util::StringView, Variable *>;
-    using InsertResult = std::pair<VariableMap::iterator, bool>;
+    using InsertResult = std::pair<VariableMap::const_iterator, bool>;
 
     virtual ScopeType Type() const = 0;
 

@@ -312,8 +312,10 @@ void FunctionEmitter::GenScopeVariableInfo(pandasm::Function *func, const varbin
                     GenLocalVariableInfo(variable_debug, param, start, vars_length, cg_->TotalRegsNum(), extension);
                 }
             }
-
-            for (const auto &[_, variable] : scope->Bindings()) {
+            const auto &unsorted_bindings = scope->Bindings();
+            std::map<util::StringView, es2panda::varbinder::Variable *> bindings(unsorted_bindings.begin(),
+                                                                                 unsorted_bindings.end());
+            for (const auto &[_, variable] : bindings) {
                 (void)_;
                 if (!variable->IsLocalVariable() || variable->LexicalBound() ||
                     variable->Declaration()->IsParameterDecl() || variable->Declaration()->IsTypeAliasDecl()) {
@@ -347,7 +349,6 @@ void FunctionEmitter::GenVariablesDebugInfo(pandasm::Function *func)
 Emitter::Emitter(const CompilerContext *context) : context_(context)
 {
     prog_ = new pandasm::Program();
-    prog_->function_table.reserve(context->VarBinder()->Functions().size());
 }
 
 Emitter::~Emitter()

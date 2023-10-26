@@ -480,7 +480,7 @@ Scope::InsertResult GlobalScope::InsertImpl(const util::StringView &name, Variab
         if (const bool exported = node->IsClassDefinition() ? node->Parent()->IsExported() : node->IsExported();
             !exported) {
             if (!node->IsDefaultExported()) {
-                return Scope::InsertResult {{}, false};
+                return Scope::InsertResult {Bindings().end(), false};
             }
         }
     }

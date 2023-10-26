@@ -797,7 +797,7 @@ protected:
         return varbinder_;
     }
 
-    varbinder::Scope::VariableMap SavedBindings() const
+    const varbinder::Scope::VariableMap &SavedBindings() const
     {
         return saved_bindings_;
     }
