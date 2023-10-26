@@ -61,7 +61,7 @@ export class TSCCompiledProgramWithDiagnostics implements TSCCompiledProgram {
 
   public getStrictDiagnostics(fileName: string): ts.Diagnostic[] {
     const cachedDiagnostic = this.cachedDiagnostics.get(fileName);
-    if (!!cachedDiagnostic) {
+    if (cachedDiagnostic) {
       return cachedDiagnostic
     }
     const diagnostic = this.diagnosticsExtractor.getStrictDiagnostics(fileName);

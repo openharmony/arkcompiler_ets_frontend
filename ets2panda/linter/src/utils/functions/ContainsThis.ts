@@ -40,4 +40,3 @@ export function scopeContainsThis(tsNode: ts.Node): boolean {
   visitNode(tsNode);
   return found;
 }
-  
