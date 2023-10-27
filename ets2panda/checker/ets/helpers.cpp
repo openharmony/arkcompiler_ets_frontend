@@ -72,13 +72,15 @@ namespace panda::es2panda::checker {
 void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
 {
     checker::Type *type = expr->Check(this);
-    auto *unboxed_type = ETSBuiltinTypeAsPrimitiveType(type);
+    auto *unboxed_type = ETSBuiltinTypeAsConditionalType(type);
 
-    if (unboxed_type == nullptr || !unboxed_type->IsETSBooleanType()) {
-        ThrowTypeError("Condition must be of type boolean", expr->Start());
+    if (unboxed_type != nullptr && !unboxed_type->IsConditionalExprType()) {
+        ThrowTypeError("Condition must be of possible condition type", expr->Start());
     }
 
-    FlagExpressionWithUnboxing(type, unboxed_type, expr);
+    if (unboxed_type != nullptr && unboxed_type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        FlagExpressionWithUnboxing(type, unboxed_type, expr);
+    }
     expr->SetTsType(unboxed_type);
 }
 
@@ -626,9 +628,10 @@ checker::Type *ETSChecker::ApplyConditionalOperatorPromotion(checker::ETSChecker
     UNREACHABLE();
 }
 
-Type *ETSChecker::ApplyUnaryOperatorPromotion(Type *type, bool create_const, bool do_promotion)
+Type *ETSChecker::ApplyUnaryOperatorPromotion(Type *type, const bool create_const, const bool do_promotion,
+                                              const bool is_cond_expr)
 {
-    Type *unboxed_type = ETSBuiltinTypeAsPrimitiveType(type);
+    Type *unboxed_type = is_cond_expr ? ETSBuiltinTypeAsConditionalType(type) : ETSBuiltinTypeAsPrimitiveType(type);
 
     if (unboxed_type == nullptr) {
         return nullptr;
@@ -650,6 +653,58 @@ Type *ETSChecker::ApplyUnaryOperatorPromotion(Type *type, bool create_const, boo
         }
     }
     return unboxed_type;
+}
+
+bool ETSChecker::IsNullOrVoidExpression(const ir::Expression *expr) const
+{
+    return (expr->IsLiteral() && expr->AsLiteral()->IsNullLiteral()) ||
+           (expr->IsCallExpression() &&
+            (expr->AsCallExpression()->Signature()->ReturnType() == GlobalBuiltinVoidType()));
+}
+
+Type *ETSChecker::HandleBooleanLogicalOperatorsExtended(Type *left_type, Type *right_type, ir::BinaryExpression *expr)
+{
+    ASSERT(left_type->IsConditionalExprType() && right_type->IsConditionalExprType());
+
+    bool resolve_left = false;
+    bool left_value = false;
+    bool resolve_right = false;
+    bool right_value = false;
+    std::tie(resolve_left, left_value) =
+        IsNullOrVoidExpression(expr->Left()) ? std::make_tuple(true, false) : left_type->ResolveConditionExpr();
+    std::tie(resolve_right, right_value) =
+        IsNullOrVoidExpression(expr->Right()) ? std::make_tuple(true, false) : right_type->ResolveConditionExpr();
+
+    if (!resolve_left) {
+        // return the UNION type when it is implemented
+        return IsTypeIdenticalTo(left_type, right_type) ? left_type : GlobalETSBooleanType();
+    }
+
+    switch (expr->OperatorType()) {
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
+            if (left_value) {
+                expr->SetResult(expr->Left());
+                return left_type->IsETSBooleanType() ? CreateETSBooleanType(true) : left_type;
+            }
+
+            expr->SetResult(expr->Right());
+            return right_type->IsETSBooleanType() && resolve_right ? CreateETSBooleanType(right_value) : right_type;
+        }
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
+            if (left_value) {
+                expr->SetResult(expr->Right());
+                return right_type->IsETSBooleanType() && resolve_right ? CreateETSBooleanType(right_value) : right_type;
+            }
+
+            expr->SetResult(expr->Left());
+            return left_type->IsETSBooleanType() ? CreateETSBooleanType(false) : left_type;
+        }
+        default: {
+            break;
+        }
+    }
+
+    UNREACHABLE();
 }
 
 Type *ETSChecker::HandleBooleanLogicalOperators(Type *left_type, Type *right_type, lexer::TokenType token_type)
@@ -1307,6 +1362,27 @@ Type *ETSChecker::ETSBuiltinTypeAsPrimitiveType(Type *object_type)
     UnboxingConverter converter = UnboxingConverter(AsETSChecker(), Relation(), object_type, object_type);
     Relation()->Result(saved_result);
     return converter.Result();
+}
+
+Type *ETSChecker::ETSBuiltinTypeAsConditionalType(Type *object_type)
+{
+    if ((object_type == nullptr) || !object_type->IsConditionalExprType()) {
+        return nullptr;
+    }
+
+    if (object_type->IsETSObjectType()) {
+        if (!object_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
+            return object_type;
+        }
+        auto saved_result = Relation()->IsTrue();
+        Relation()->Result(false);
+
+        UnboxingConverter converter = UnboxingConverter(AsETSChecker(), Relation(), object_type, object_type);
+        Relation()->Result(saved_result);
+        return converter.Result();
+    }
+
+    return object_type;
 }
 
 Type *ETSChecker::PrimitiveTypeAsETSBuiltinType(Type *object_type)

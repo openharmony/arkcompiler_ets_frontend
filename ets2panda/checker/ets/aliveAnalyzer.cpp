@@ -300,10 +300,9 @@ void AliveAnalyzer::AnalyzeDoLoop(const ir::DoWhileStatement *do_while)
     AnalyzeStat(do_while->Body());
     status_ = Or(status_, ResolveContinues(do_while));
     AnalyzeNode(do_while->Test());
-    ASSERT(do_while->Test()->TsType() && do_while->Test()->TsType()->IsETSBooleanType());
-    auto *cond_type = do_while->Test()->TsType()->AsETSBooleanType();
-    status_ = And(status_,
-                  static_cast<LivenessStatus>(!(cond_type->HasTypeFlag(TypeFlag::CONSTANT) && cond_type->GetValue())));
+    ASSERT(do_while->Test()->TsType() && do_while->Test()->TsType()->IsConditionalExprType());
+    const auto expr_res = do_while->Test()->TsType()->ResolveConditionExpr();
+    status_ = And(status_, static_cast<LivenessStatus>(!std::get<0>(expr_res) || !std::get<1>(expr_res)));
     status_ = Or(status_, ResolveBreaks(do_while));
 }
 
@@ -311,26 +310,28 @@ void AliveAnalyzer::AnalyzeWhileLoop(const ir::WhileStatement *while_stmt)
 {
     SetOldPendingExits(PendingExits());
     AnalyzeNode(while_stmt->Test());
-    ASSERT(while_stmt->Test()->TsType() && while_stmt->Test()->TsType()->IsETSBooleanType());
-    auto *cond_type = while_stmt->Test()->TsType()->AsETSBooleanType();
-    status_ = And(status_,
-                  static_cast<LivenessStatus>(!(cond_type->HasTypeFlag(TypeFlag::CONSTANT) && !cond_type->GetValue())));
+    ASSERT(while_stmt->Test()->TsType() && while_stmt->Test()->TsType()->IsConditionalExprType());
+    const auto expr_res = while_stmt->Test()->TsType()->ResolveConditionExpr();
+    status_ = And(status_, static_cast<LivenessStatus>(!std::get<0>(expr_res) || std::get<1>(expr_res)));
     AnalyzeStat(while_stmt->Body());
     status_ = Or(status_, ResolveContinues(while_stmt));
-    status_ =
-        Or(ResolveBreaks(while_stmt), From(!(cond_type->HasTypeFlag(TypeFlag::CONSTANT) && cond_type->GetValue())));
+    status_ = Or(ResolveBreaks(while_stmt), From(!std::get<0>(expr_res) || !std::get<1>(expr_res)));
 }
 
 void AliveAnalyzer::AnalyzeForLoop(const ir::ForUpdateStatement *for_stmt)
 {
     AnalyzeNode(for_stmt->Init());
     SetOldPendingExits(PendingExits());
-    const ETSBooleanType *cond_type {};
+    const Type *cond_type {};
+    bool resolve_type = false;
+    bool res = false;
+
     if (for_stmt->Test() != nullptr) {
         AnalyzeNode(for_stmt->Test());
-        ASSERT(for_stmt->Test()->TsType() && for_stmt->Test()->TsType()->IsETSBooleanType());
-        cond_type = for_stmt->Test()->TsType()->AsETSBooleanType();
-        status_ = From(!(cond_type->HasTypeFlag(TypeFlag::CONSTANT) && !cond_type->GetValue()));
+        ASSERT(for_stmt->Test()->TsType() && for_stmt->Test()->TsType()->IsConditionalExprType());
+        cond_type = for_stmt->Test()->TsType();
+        std::tie(resolve_type, res) = for_stmt->Test()->TsType()->ResolveConditionExpr();
+        status_ = From(!resolve_type || res);
     } else {
         status_ = LivenessStatus::ALIVE;
     }
@@ -338,8 +339,7 @@ void AliveAnalyzer::AnalyzeForLoop(const ir::ForUpdateStatement *for_stmt)
     AnalyzeStat(for_stmt->Body());
     status_ = Or(status_, ResolveContinues(for_stmt));
     AnalyzeNode(for_stmt->Update());
-    status_ = Or(ResolveBreaks(for_stmt),
-                 From(cond_type != nullptr && !(cond_type->HasTypeFlag(TypeFlag::CONSTANT) && cond_type->GetValue())));
+    status_ = Or(ResolveBreaks(for_stmt), From(cond_type != nullptr && (!resolve_type || !res)));
 }
 
 void AliveAnalyzer::AnalyzeForOfLoop(const ir::ForOfStatement *for_of_stmt)

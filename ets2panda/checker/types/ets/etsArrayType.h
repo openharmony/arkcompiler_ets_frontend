@@ -33,6 +33,11 @@ public:
         return element_;
     }
 
+    std::tuple<bool, bool> ResolveConditionExpr() const override
+    {
+        return {false, false};
+    }
+
     void ToString(std::stringstream &ss) const override;
     void ToAssemblerType(std::stringstream &ss) const override;
     void ToAssemblerTypeWithRank(std::stringstream &ss) const override;

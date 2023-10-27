@@ -52,6 +52,11 @@ public:
         ss << compiler::Signatures::TYPE_DESCRIPTOR_INT;
     }
 
+    std::tuple<bool, bool> ResolveConditionExpr() const override
+    {
+        return {IsConstantType(), value_ != 0};
+    }
+
 private:
     UType value_ {0};
 };

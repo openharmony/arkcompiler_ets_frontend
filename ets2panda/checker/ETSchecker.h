@@ -250,7 +250,7 @@ public:
     // Arithmetic
     Type *NegateNumericType(Type *type, ir::Expression *node);
     Type *BitwiseNegateIntegralType(Type *type, ir::Expression *node);
-    std::tuple<Type *, Type *> CheckBinaryOperator(ir::Expression *left, ir::Expression *right,
+    std::tuple<Type *, Type *> CheckBinaryOperator(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
                                                    lexer::TokenType operation_type, lexer::SourcePosition pos,
                                                    bool force_promotion = false);
     Type *HandleArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operation_type);
@@ -399,14 +399,17 @@ public:
     Type *GetTypeFromEnumReference(binder::Variable *var);
     Type *GetTypeFromTypeParameterReference(binder::LocalVariable *var, const lexer::SourcePosition &pos);
     Type *GetNonConstantTypeFromPrimitiveType(Type *type);
+    bool IsNullOrVoidExpression(const ir::Expression *expr) const;
     bool IsConstantExpression(ir::Expression *expr, Type *type);
     void ValidateUnaryOperatorOperand(binder::Variable *variable);
     std::tuple<Type *, bool> ApplyBinaryOperatorPromotion(Type *left, Type *right, TypeFlag test,
                                                           bool do_promotion = true);
     checker::Type *ApplyConditionalOperatorPromotion(checker::ETSChecker *checker, checker::Type *unboxed_l,
                                                      checker::Type *unboxed_r);
-    Type *ApplyUnaryOperatorPromotion(Type *type, bool create_const = true, bool do_promotion = true);
+    Type *ApplyUnaryOperatorPromotion(Type *type, bool create_const = true, bool do_promotion = true,
+                                      bool is_cond_expr = false);
     Type *HandleBooleanLogicalOperators(Type *left_type, Type *right_type, lexer::TokenType token_type);
+    Type *HandleBooleanLogicalOperatorsExtended(Type *left_type, Type *right_type, ir::BinaryExpression *expr);
     checker::Type *CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *type_annotation, ir::Expression *init,
                                             ir::ModifierFlags flags);
     void CheckTruthinessOfType(ir::Expression *expr);
@@ -428,6 +431,7 @@ public:
     binder::VariableFlags GetAccessFlagFromNode(const ir::AstNode *node);
     void CheckSwitchDiscriminant(ir::Expression *discriminant);
     Type *ETSBuiltinTypeAsPrimitiveType(Type *object_type);
+    Type *ETSBuiltinTypeAsConditionalType(Type *object_type);
     Type *PrimitiveTypeAsETSBuiltinType(Type *object_type);
     void AddBoxingUnboxingFlagToNode(ir::AstNode *node, Type *boxing_unboxing_type);
     ir::BoxingUnboxingFlags GetBoxingFlag(Type *boxing_type);

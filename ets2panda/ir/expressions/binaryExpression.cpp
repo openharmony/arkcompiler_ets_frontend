@@ -20,11 +20,9 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/regScope.h"
-#include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
 #include "ir/astDump.h"
 #include "ir/expressions/identifier.h"
-#include "lexer/token/tokenType.h"
 
 namespace panda::es2panda::ir {
 void BinaryExpression::TransformChildren(const NodeTransformer &cb)
@@ -149,20 +147,46 @@ void BinaryExpression::CompileLogical(compiler::ETSGen *etsg) const
 {
     auto *end_label = etsg->AllocLabel();
 
-    left_->Compile(etsg);
-    etsg->ApplyConversion(left_, operation_type_);
-
-    if (operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
-        etsg->BranchIfFalse(this, end_label);
-    } else if (operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_OR) {
-        etsg->BranchIfTrue(this, end_label);
-    } else {
-        ASSERT(operator_ == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING);
+    if (operator_ == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING) {
+        left_->Compile(etsg);
+        etsg->ApplyConversion(left_, operation_type_);
         etsg->BranchIfNotNull(this, end_label);
+        right_->Compile(etsg);
+        etsg->ApplyConversion(right_, operation_type_);
+        etsg->SetLabel(this, end_label);
+        return;
     }
 
-    right_->Compile(etsg);
-    etsg->ApplyConversion(right_, operation_type_);
+    ASSERT(IsLogicalExtended());
+    auto ttctx = compiler::TargetTypeContext(etsg, OperationType());
+    compiler::RegScope rs(etsg);
+    auto lhs = etsg->AllocReg();
+    auto rhs = etsg->AllocReg();
+    left_->Compile(etsg);
+    etsg->ApplyConversionAndStoreAccumulator(left_, lhs, OperationType());
+
+    auto left_false_label = etsg->AllocLabel();
+    if (operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
+        etsg->ResolveConditionalResultIfFalse(left_, left_false_label);
+        etsg->BranchIfFalse(this, left_false_label);
+
+        right_->Compile(etsg);
+        etsg->ApplyConversionAndStoreAccumulator(right_, rhs, OperationType());
+        etsg->Branch(this, end_label);
+
+        etsg->SetLabel(this, left_false_label);
+        etsg->LoadAccumulator(this, lhs);
+    } else {
+        etsg->ResolveConditionalResultIfFalse(left_, left_false_label);
+        etsg->BranchIfFalse(this, left_false_label);
+
+        etsg->LoadAccumulator(this, lhs);
+        etsg->Branch(this, end_label);
+
+        etsg->SetLabel(this, left_false_label);
+        right_->Compile(etsg);
+        etsg->ApplyConversionAndStoreAccumulator(right_, rhs, OperationType());
+    }
 
     etsg->SetLabel(this, end_label);
 }
@@ -239,7 +263,7 @@ checker::Type *BinaryExpression::Check(checker::ETSChecker *checker)
         return TsType();
     }
     checker::Type *new_ts_type {nullptr};
-    std::tie(new_ts_type, operation_type_) = checker->CheckBinaryOperator(left_, right_, operator_, Start());
+    std::tie(new_ts_type, operation_type_) = checker->CheckBinaryOperator(left_, right_, this, operator_, Start());
     SetTsType(new_ts_type);
     return TsType();
 }

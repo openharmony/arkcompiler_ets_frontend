@@ -51,6 +51,11 @@ public:
         ss << compiler::Signatures::TYPE_DESCRIPTOR_BOOLEAN;
     }
 
+    std::tuple<bool, bool> ResolveConditionExpr() const override
+    {
+        return {IsConstantType(), value_};
+    }
+
 private:
     UType value_ {false};
 };

@@ -71,7 +71,7 @@ void AssertStatement::ThrowError(compiler::ETSGen *const etsg) const
 
 void AssertStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 {
-    auto res = compiler::Condition::CheckConstantExpr(test_);
+    auto res = compiler::Condition::CheckConstantExpr(etsg, test_);
 
     if (res == compiler::Condition::Result::CONST_TRUE) {
         return;

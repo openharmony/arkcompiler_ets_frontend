@@ -21,6 +21,7 @@
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/binaryExpression.h"
+#include "ir/expressions/callExpression.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/templateLiteral.h"
 #include "ir/statements/breakStatement.h"
@@ -1878,7 +1879,8 @@ void ETSGen::Negate(const ir::AstNode *node)
 
 void ETSGen::LogicalNot(const ir::AstNode *node)
 {
-    ASSERT(GetAccumulatorType()->IsETSBooleanType());
+    ASSERT(GetAccumulatorType()->IsConditionalExprType());
+    ResolveConditionalResultIfFalse<true, false>(node);
     Sa().Emit<Xori>(node, 1);
 }
 
@@ -2235,6 +2237,18 @@ void ETSGen::LoadStringLength(const ir::AstNode *node)
 {
     Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_STRING_LENGTH, dummy_reg_, 0);
     SetAccumulatorType(Checker()->GlobalIntType());
+}
+
+void ETSGen::FloatIsNaN(const ir::AstNode *node)
+{
+    Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_FLOAT_IS_NAN, dummy_reg_, 0);
+    SetAccumulatorType(Checker()->GlobalETSBooleanType());
+}
+
+void ETSGen::DoubleIsNaN(const ir::AstNode *node)
+{
+    Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_DOUBLE_IS_NAN, dummy_reg_, 0);
+    SetAccumulatorType(Checker()->GlobalETSBooleanType());
 }
 
 void ETSGen::LoadStringChar(const ir::AstNode *node, const VReg string_obj, const VReg char_index)

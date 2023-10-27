@@ -96,6 +96,132 @@ public:
     bool TryLoadConstantExpression(const ir::Expression *node);
     void Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, Label *if_false);
 
+    template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
+    void ResolveConditionalResult(const ir::AstNode *node, [[maybe_unused]] Label *if_false)
+    {
+        auto type = node->IsExpression() ? node->AsExpression()->TsType() : GetAccumulatorType();
+        if (type->IsETSObjectType() &&
+            type->AsETSObjectType()->HasObjectFlag(panda::es2panda::checker::ETSObjectFlags::UNBOXABLE_TYPE)) {
+            type = GetAccumulatorType();
+        }
+        if (type->IsETSBooleanType()) {
+            return;
+        }
+
+        if (node->IsExpression()) {
+            auto expr_node = node->AsExpression();
+            if (Checker()->IsNullOrVoidExpression(expr_node)) {
+                if constexpr (USE_FALSE_LABEL) {
+                    Branch(node, if_false);
+                } else {
+                    Sa().Emit<Ldai>(node, 0);
+                }
+                return;
+            }
+        }
+        Label *if_nullable {nullptr};
+        Label *end {nullptr};
+        if (type->IsNullableType()) {
+            if constexpr (USE_FALSE_LABEL) {
+                BranchIfNull(node, if_false);
+            } else {
+                if_nullable = AllocLabel();
+                end = AllocLabel();
+                BranchIfNull(node, if_nullable);
+            }
+        }
+        if (type->IsETSArrayType()) {
+            compiler::VReg obj_reg = AllocReg();
+            StoreAccumulator(node, obj_reg);
+            LoadArrayLength(node, obj_reg);
+        } else if (type->IsETSObjectType()) {
+            if (type->IsETSStringType()) {
+                LoadStringLength(node);
+                if constexpr (BEFORE_LOGICAL_NOT) {
+                    Label *zero_lenth = AllocLabel();
+                    BranchIfFalse(node, zero_lenth);
+                    ToBinaryResult(node, zero_lenth);
+                }
+            } else {
+                Sa().Emit<Ldai>(node, 1);
+            }
+        } else {
+            switch (type->TypeFlags()) {
+                case checker::TypeFlag::LONG: {
+                    CastToInt(node);
+                    [[fallthrough]];
+                }
+                case checker::TypeFlag::BYTE:
+                case checker::TypeFlag::CHAR:
+                case checker::TypeFlag::SHORT:
+                case checker::TypeFlag::INT: {
+                    if constexpr (BEFORE_LOGICAL_NOT) {
+                        Label *zero_primitive = AllocLabel();
+                        BranchIfFalse(node, zero_primitive);
+                        ToBinaryResult(node, zero_primitive);
+                    }
+                    break;
+                }
+                case checker::TypeFlag::DOUBLE:
+                case checker::TypeFlag::FLOAT: {
+                    VReg tmp_reg = AllocReg();
+                    StoreAccumulator(node, tmp_reg);
+                    if (type->IsFloatType()) {
+                        FloatIsNaN(node);
+                    } else {
+                        DoubleIsNaN(node);
+                    }
+                    Sa().Emit<Xori>(node, 1);
+
+                    auto real_end_label = [](Label *end_label, Label *if_false_label, ETSGen *etsgn,
+                                             bool use_false_label) {
+                        if (use_false_label) {
+                            return if_false_label;
+                        }
+                        if (end_label == nullptr) {
+                            end_label = etsgn->AllocLabel();
+                        }
+                        return end_label;
+                    }(end, if_false, this, USE_FALSE_LABEL);
+                    BranchIfFalse(node, real_end_label);
+
+                    LoadAccumulator(node, tmp_reg);
+                    VReg zero_reg = AllocReg();
+                    if (type->IsFloatType()) {
+                        MoveImmediateToRegister(node, zero_reg, checker::TypeFlag::FLOAT, 0);
+                        BinaryNumberComparison<Fcmpl, Jeqz>(node, zero_reg, real_end_label);
+                    } else {
+                        MoveImmediateToRegister(node, zero_reg, checker::TypeFlag::DOUBLE, 0);
+                        BinaryNumberComparison<FcmplWide, Jeqz>(node, zero_reg, real_end_label);
+                    }
+                    break;
+                }
+                default:
+                    break;
+            }
+        }
+        if (if_nullable != nullptr) {
+            Branch(node, end);
+            SetLabel(node, if_nullable);
+            Sa().Emit<Ldai>(node, 0);
+        }
+        if (end != nullptr) {
+            SetLabel(node, end);
+        }
+    }
+
+    template <bool BEFORE_LOGICAL_NOT = false, bool FALSE_LABEL_EXISTED = true>
+    void ResolveConditionalResultIfFalse(const ir::AstNode *node, Label *if_false = nullptr)
+    {
+        ResolveConditionalResult<Jeqz, BEFORE_LOGICAL_NOT, FALSE_LABEL_EXISTED>(node, if_false);
+    }
+
+    template <bool BEFORE_LOGICAL_NOT = false>
+    void ResolveConditionalResultIfTrue(const ir::AstNode *node, Label *if_false = nullptr)
+    {
+        ResolveConditionalResult<Jnez, BEFORE_LOGICAL_NOT, false>(node, if_false);
+    }
+
     void BranchIfFalse(const ir::AstNode *node, Label *if_false)
     {
         Sa().Emit<Jeqz>(node, if_false);
@@ -305,6 +431,9 @@ public:
     void LoadStringLength(const ir::AstNode *node);
     void LoadStringChar(const ir::AstNode *node, VReg string_obj, VReg char_index);
 
+    void FloatIsNaN(const ir::AstNode *node);
+    void DoubleIsNaN(const ir::AstNode *node);
+
     void CompileStatements(const ArenaVector<ir::Statement *> &statements);
 
     // Cast
@@ -500,9 +629,12 @@ private:
     template <typename CondCompare>
     void ConditionalBranching(const ir::AstNode *node, Label *if_false)
     {
-        SetAccumulatorType(Checker()->GlobalETSBooleanType());
         if constexpr (std::is_same_v<CondCompare, Jeqz>) {
-            LogicalNot(node);
+            ResolveConditionalResultIfTrue<true>(node, if_false);
+            Sa().Emit<Neg>(node);
+            Sa().Emit<Addi>(node, 1);
+        } else {
+            ResolveConditionalResultIfFalse(node, if_false);
         }
         BranchIfFalse(node, if_false);
     }
@@ -519,6 +651,7 @@ private:
         } else {
             CallThisVirtual1(node, lhs, Signatures::BUILTIN_OBJECT_EQUALS, arg0);
         }
+        SetAccumulatorType(Checker()->GlobalETSBooleanType());
         ConditionalBranching<CondCompare>(node, if_false);
         JumpTo(node, if_true);
 

@@ -17,7 +17,9 @@
 
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
+#include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/binaryExpression.h"
+#include "ir/expressions/callExpression.h"
 #include "ir/expressions/unaryExpression.h"
 
 namespace panda::es2panda::compiler {
@@ -91,11 +93,29 @@ void Condition::Compile(PandaGen *pg, const ir::Expression *expr, Label *false_l
     pg->BranchIfFalse(expr, false_label);
 }
 
-Condition::Result Condition::CheckConstantExpr(const ir::Expression *expr)
+Condition::Result Condition::CheckConstantExpr(ETSGen *etsg, const ir::Expression *expr)
 {
-    if (expr->TsType()->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
-        auto res = expr->TsType()->AsETSBooleanType()->GetValue();
-        return res ? Result::CONST_TRUE : Result::CONST_FALSE;
+    const auto resulting_expression = [](const ir::Expression *e) {
+        if (e->IsBinaryExpression() && e->AsBinaryExpression()->IsLogicalExtended()) {
+            return e->AsBinaryExpression()->Result();
+        }
+        if (e->IsAssignmentExpression() && e->AsAssignmentExpression()->IsLogicalExtended()) {
+            return e->AsAssignmentExpression()->Result();
+        }
+        return e;
+    }(expr);
+
+    if (resulting_expression == nullptr) {
+        return Result::UNKNOWN;
+    }
+
+    if (etsg->Checker()->IsNullOrVoidExpression(resulting_expression)) {
+        return Result::CONST_FALSE;
+    }
+
+    auto expr_res = resulting_expression->TsType()->ResolveConditionExpr();
+    if (std::get<0>(expr_res)) {
+        return std::get<1>(expr_res) ? Result::CONST_TRUE : Result::CONST_FALSE;
     }
 
     return Result::UNKNOWN;
@@ -129,10 +149,12 @@ void Condition::Compile(ETSGen *etsg, const ir::Expression *expr, Label *false_l
             case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
                 bin_expr->Left()->Compile(etsg);
                 etsg->ApplyConversion(bin_expr->Left(), bin_expr->OperationType());
+                etsg->ResolveConditionalResultIfFalse(bin_expr->Left(), false_label);
                 etsg->BranchIfFalse(bin_expr, false_label);
 
                 bin_expr->Right()->Compile(etsg);
                 etsg->ApplyConversion(bin_expr->Right(), bin_expr->OperationType());
+                etsg->ResolveConditionalResultIfFalse(bin_expr->Right(), false_label);
                 etsg->BranchIfFalse(bin_expr, false_label);
                 return;
             }
@@ -141,10 +163,12 @@ void Condition::Compile(ETSGen *etsg, const ir::Expression *expr, Label *false_l
 
                 bin_expr->Left()->Compile(etsg);
                 etsg->ApplyConversion(bin_expr->Left(), bin_expr->OperationType());
+                etsg->ResolveConditionalResultIfTrue(bin_expr->Left(), end_label);
                 etsg->BranchIfTrue(bin_expr, end_label);
 
                 bin_expr->Right()->Compile(etsg);
                 etsg->ApplyConversion(bin_expr->Right(), bin_expr->OperationType());
+                etsg->ResolveConditionalResultIfFalse(bin_expr->Right(), false_label);
                 etsg->BranchIfFalse(bin_expr, false_label);
                 etsg->SetLabel(bin_expr, end_label);
                 return;
@@ -157,17 +181,14 @@ void Condition::Compile(ETSGen *etsg, const ir::Expression *expr, Label *false_l
                expr->AsUnaryExpression()->OperatorType() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
         expr->AsUnaryExpression()->Argument()->Compile(etsg);
         etsg->ApplyConversion(expr->AsUnaryExpression()->Argument(), etsg->Checker()->GlobalETSBooleanType());
+        etsg->ResolveConditionalResultIfTrue(expr, false_label);
         etsg->BranchIfTrue(expr, false_label);
         return;
     }
-
-    // TODO(user): Handle implicit bool conversion: not zero int == true, not null obj ref == true, otherwise false
-    ASSERT(expr->TsType()->IsETSBooleanType() ||
-           (expr->TsType()->IsETSObjectType() &&
-            expr->TsType()->AsETSObjectType()->HasObjectFlag(
-                checker::ETSObjectFlags::BUILTIN_BOOLEAN)));  // already checked by checker::CheckTruthinessOfType()
+    ASSERT(expr->TsType()->IsConditionalExprType());
     expr->Compile(etsg);
     etsg->ApplyConversion(expr, etsg->Checker()->GlobalETSBooleanType());
+    etsg->ResolveConditionalResultIfFalse(expr, false_label);
     etsg->BranchIfFalse(expr, false_label);
 }
 }  // namespace panda::es2panda::compiler

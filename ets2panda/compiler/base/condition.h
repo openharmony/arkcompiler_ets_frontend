@@ -35,7 +35,7 @@ public:
 
     static void Compile(PandaGen *pg, const ir::Expression *expr, Label *false_label);
     static void Compile(ETSGen *etsg, const ir::Expression *expr, Label *false_label);
-    static Result CheckConstantExpr(const ir::Expression *expr);
+    static Result CheckConstantExpr(ETSGen *etsg, const ir::Expression *expr);
 };
 }  // namespace panda::es2panda::compiler
 

@@ -128,13 +128,18 @@ Type *ETSChecker::HandleRelationOperationOnTypes(Type *left, Type *right, lexer:
 
 // NOLINTNEXTLINE(readability-function-size)
 std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left, ir::Expression *right,
-                                                           lexer::TokenType operation_type, lexer::SourcePosition pos,
-                                                           bool force_promotion)
+                                                           ir::Expression *expr, lexer::TokenType operation_type,
+                                                           lexer::SourcePosition pos, bool force_promotion)
 {
     checker::Type *const left_type = left->Check(this);
     checker::Type *const right_type = right->Check(this);
-    Type *unboxed_l = ETSBuiltinTypeAsPrimitiveType(left_type);
-    Type *unboxed_r = ETSBuiltinTypeAsPrimitiveType(right_type);
+    const bool is_logical_extended_operator = (operation_type == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) ||
+                                              (operation_type == lexer::TokenType::PUNCTUATOR_LOGICAL_OR);
+    Type *unboxed_l = is_logical_extended_operator ? ETSBuiltinTypeAsConditionalType(left_type)
+                                                   : ETSBuiltinTypeAsPrimitiveType(left_type);
+    Type *unboxed_r = is_logical_extended_operator ? ETSBuiltinTypeAsConditionalType(right_type)
+                                                   : ETSBuiltinTypeAsPrimitiveType(right_type);
+
     checker::Type *ts_type {};
     bool is_equal_op = (operation_type > lexer::TokenType::PUNCTUATOR_SUBSTITUTION &&
                         operation_type < lexer::TokenType::PUNCTUATOR_ARROW) &&
@@ -283,15 +288,24 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperator(ir::Expression *left,
         }
         case lexer::TokenType::PUNCTUATOR_LOGICAL_AND:
         case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-            if (unboxed_l == nullptr || !unboxed_l->HasTypeFlag(checker::TypeFlag::ETS_BOOLEAN) ||
-                unboxed_r == nullptr || !unboxed_r->HasTypeFlag(checker::TypeFlag::ETS_BOOLEAN)) {
-                ThrowTypeError("Bad operand type, the types of the operands must be boolean type.", pos);
+            if (unboxed_l == nullptr || !unboxed_l->IsConditionalExprType() || unboxed_r == nullptr ||
+                !unboxed_r->IsConditionalExprType()) {
+                ThrowTypeError("Bad operand type, the types of the operands must be of possible condition type.", pos);
             }
 
-            FlagExpressionWithUnboxing(left_type, unboxed_l, left);
-            FlagExpressionWithUnboxing(right_type, unboxed_r, right);
+            if (unboxed_l->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+                FlagExpressionWithUnboxing(left_type, unboxed_l, left);
+            }
 
-            ts_type = HandleBooleanLogicalOperators(unboxed_l, unboxed_r, operation_type);
+            if (unboxed_r->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+                FlagExpressionWithUnboxing(right_type, unboxed_r, right);
+            }
+
+            if (expr->IsBinaryExpression()) {
+                ts_type = HandleBooleanLogicalOperatorsExtended(unboxed_l, unboxed_r, expr->AsBinaryExpression());
+            } else {
+                UNREACHABLE();
+            }
             break;
         }
         case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:

@@ -145,6 +145,16 @@ public:
         return reinterpret_cast<const ETSDynamicFunctionType *>(this);
     }
 
+    bool IsConditionalExprType() const
+    {
+        return HasTypeFlag(TypeFlag::CONDITION_EXPRESSION_TYPE);
+    }
+
+    bool IsConstantType() const
+    {
+        return HasTypeFlag(checker::TypeFlag::CONSTANT);
+    }
+
     TypeFlag TypeFlags() const
     {
         return type_flags_;
@@ -207,6 +217,11 @@ public:
     {
         return 0;
     }
+
+    virtual std::tuple<bool, bool> ResolveConditionExpr() const
+    {
+        UNREACHABLE();
+    };
 
     virtual void Identical(TypeRelation *relation, Type *other);
     virtual void AssignmentTarget(TypeRelation *relation, Type *source) = 0;
