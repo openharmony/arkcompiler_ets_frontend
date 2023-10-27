@@ -338,7 +338,7 @@ private:
                                                       std::string_view file_name = DEFAULT_SOURCE_FILE);
     ir::TypeNode *CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view source_code,
                                        std::string_view file_name = DEFAULT_SOURCE_FILE);
-
+    // NOLINTEND(google-default-arguments)
     friend class ExternalSourceParser;
     friend class InnerSourceParser;
 

@@ -91,6 +91,7 @@
     _(ETS_IMPORT_DECLARATION, ETSImportDeclaration)                                       \
     _(ETS_PARAMETER_EXPRESSION, ETSParameterExpression)                                   \
     _(ETS_TUPLE, ETSTuple)                                                                \
+    _(ETS_SCRIPT, ETSScript)                                                              \
     _(SUPER_EXPRESSION, SuperExpression)                                                  \
     _(STRUCT_DECLARATION, ETSStructDeclaration)                                           \
     _(SWITCH_CASE_STATEMENT, SwitchCaseStatement)                                         \

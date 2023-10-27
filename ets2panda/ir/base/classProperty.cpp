@@ -71,7 +71,7 @@ void ClassProperty::Dump(ir::AstDumper *dumper) const
                  {"static", IsStatic()},
                  {"readonly", IsReadonly()},
                  {"declare", IsDeclare()},
-                 {"optional", IsOptional()},
+                 {"optional", IsOptionalDeclaration()},
                  {"computed", is_computed_},
                  {"typeAnnotation", AstDumper::Optional(type_annotation_)},
                  {"definite", IsDefinite()},

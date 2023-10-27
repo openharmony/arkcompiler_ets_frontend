@@ -82,7 +82,7 @@ if(PANDA_WITH_ETS)
         LIBRARIES
             es2panda-public es2panda-lib arkassembler arkbytecodeopt
         INCLUDE_DIRS
-            ${CMAKE_CURRENT_SOURCE_DIR}/..
+            ${ES2PANDA_ROOT}
         SANITIZERS
             ${PANDA_SANITIZERS_LIST}
           )
@@ -114,6 +114,7 @@ if(PANDA_WITH_ETS)
             es2panda-lib
         INCLUDE_DIRS
             ${ES2PANDA_PATH}
+            ${ES2PANDA_BINARY_ROOT}
         SANITIZERS
             ${PANDA_SANITIZERS_LIST}
     )

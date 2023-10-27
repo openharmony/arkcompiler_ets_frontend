@@ -284,7 +284,7 @@ public:
         return (flags_ & ModifierFlags::READONLY) != 0;
     }
 
-    [[nodiscard]] bool IsOptional() const noexcept
+    [[nodiscard]] bool IsOptionalDeclaration() const noexcept
     {
         return (flags_ & ModifierFlags::OPTIONAL) != 0;
     }

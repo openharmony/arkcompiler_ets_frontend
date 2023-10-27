@@ -139,6 +139,11 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSSignatureDeclaration *nod
     UNREACHABLE();
 }
 // from ets folder
+void ETSCompiler::Compile([[maybe_unused]] const ir::ETSScript *node) const
+{
+    UNREACHABLE();
+}
+
 void ETSCompiler::Compile(const ir::ETSClassLiteral *expr) const
 {
     ETSGen *etsg = GetETSGen();

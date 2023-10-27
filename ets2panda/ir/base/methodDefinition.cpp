@@ -113,7 +113,7 @@ void MethodDefinition::Dump(ir::AstDumper *dumper) const
                  {"kind", kind},
                  {"accessibility", AstDumper::Optional(AstDumper::ModifierToString(flags_))},
                  {"static", IsStatic()},
-                 {"optional", IsOptional()},
+                 {"optional", IsOptionalDeclaration()},
                  {"computed", is_computed_},
                  {"value", value_},
                  {"overloads", overloads_},

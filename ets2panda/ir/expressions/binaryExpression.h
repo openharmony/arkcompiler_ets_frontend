@@ -86,6 +86,23 @@ public:
                operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_OR;
     }
 
+    [[nodiscard]] bool IsArithmetic() const noexcept
+    {
+        return operator_ == lexer::TokenType::PUNCTUATOR_PLUS || operator_ == lexer::TokenType::PUNCTUATOR_MINUS ||
+               operator_ == lexer::TokenType::PUNCTUATOR_MULTIPLY || operator_ == lexer::TokenType::PUNCTUATOR_DIVIDE ||
+               operator_ == lexer::TokenType::PUNCTUATOR_MOD || operator_ == lexer::TokenType::PUNCTUATOR_BITWISE_OR ||
+               operator_ == lexer::TokenType::PUNCTUATOR_BITWISE_XOR ||
+               operator_ == lexer::TokenType::PUNCTUATOR_BITWISE_AND ||
+               operator_ == lexer::TokenType::PUNCTUATOR_PLUS_EQUAL ||
+               operator_ == lexer::TokenType::PUNCTUATOR_MINUS_EQUAL ||
+               operator_ == lexer::TokenType::PUNCTUATOR_MULTIPLY_EQUAL ||
+               operator_ == lexer::TokenType::PUNCTUATOR_DIVIDE_EQUAL ||
+               operator_ == lexer::TokenType::PUNCTUATOR_MOD_EQUAL ||
+               operator_ == lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL ||
+               operator_ == lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL ||
+               operator_ == lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL;
+    }
+
     void SetLeft(Expression *expr) noexcept
     {
         left_ = expr;

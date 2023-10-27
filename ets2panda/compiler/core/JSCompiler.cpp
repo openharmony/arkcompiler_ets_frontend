@@ -469,6 +469,11 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSSignatureDeclaration *node
     UNREACHABLE();
 }
 // from ets folder
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSScript *expr) const
+{
+    UNREACHABLE();
+}
+
 void JSCompiler::Compile([[maybe_unused]] const ir::ETSClassLiteral *expr) const
 {
     UNREACHABLE();

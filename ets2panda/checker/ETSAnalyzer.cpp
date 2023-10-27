@@ -370,6 +370,11 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSSignatureDeclaration *n
     UNREACHABLE();
 }
 // from ets folder
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSScript *node) const
+{
+    UNREACHABLE();
+}
+
 checker::Type *ETSAnalyzer::Check(ir::ETSClassLiteral *expr) const
 {
     ETSChecker *checker = GetETSChecker();

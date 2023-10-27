@@ -213,6 +213,8 @@ protected:
                                                    ir::MethodDefinition *last_overload, bool impl_exists,
                                                    bool is_abstract = false);
 
+    void ThrowAllocationError(std::string_view message) const;
+
     void ValidateAccessor(ExpressionParseFlags flags, lexer::TokenFlags current_token_flags);
     void CheckPropertyKeyAsyncModifier(ParserStatus *method_status);
     ir::Property *ParseShorthandProperty(const lexer::LexerPosition *start_pos);
@@ -281,7 +283,7 @@ protected:
     {
         auto *ret = program_->Allocator()->New<T>(std::forward<Args>(args)...);
         if (ret == nullptr) {
-            throw Error(ErrorType::GENERIC, program_->SourceFile().Utf8(), "Unsuccessful allocation during parsing");
+            ThrowAllocationError("Unsuccessful allocation during parsing");
         }
 
         return ret;
