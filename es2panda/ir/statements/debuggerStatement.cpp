@@ -14,7 +14,7 @@
  */
 
 #include "debuggerStatement.h"
-#include <compiler/core/pandagen.h>
+
 #include <ir/astDump.h>
 
 namespace panda::es2panda::ir {
@@ -26,10 +26,7 @@ void DebuggerStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "DebuggerStatement"}});
 }
 
-void DebuggerStatement::Compile(compiler::PandaGen *pg) const
-{
-    pg->GenDebugger(this);
-}
+void DebuggerStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
 checker::Type *DebuggerStatement::Check([[maybe_unused]] checker::Checker *checker) const
 {

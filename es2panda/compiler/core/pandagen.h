@@ -439,7 +439,6 @@ public:
     void LoadSuperProperty(const ir::AstNode *node, VReg obj, const Operand &prop);
 
     void PopLexEnv(const ir::AstNode *node);
-    void GenDebugger(const ir::AstNode *node);
     void CopyLexEnv(const ir::AstNode *node);
     void NewLexicalEnv(const ir::AstNode *node, uint32_t num, binder::VariableScope *scope);
     void NewLexEnv(const ir::AstNode *node, uint32_t num);
