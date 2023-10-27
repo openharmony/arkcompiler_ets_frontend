@@ -43,11 +43,10 @@ function getQualifiedStart(ident: ts.Node): ts.Node {
 }
 
 function isEnumPropAccess(ident: ts.Identifier, tsSym: ts.Symbol, context: ts.Node): boolean {
-  return ts.isElementAccessExpression(context) &&
-    (context as ts.ElementAccessExpression).expression == ident &&
-    !!(tsSym.flags & ts.SymbolFlags.Enum);
+  return ts.isElementAccessExpression(context) && !!(tsSym.flags & ts.SymbolFlags.Enum) &&
+    (context.expression == ident ||
+      (ts.isPropertyAccessExpression(context.expression) && context.expression.name == ident));
 }
-
 function isValidTypeNode(node: ts.TypeNode): boolean {
   return !ts.isTypeOfExpression(node);
 }

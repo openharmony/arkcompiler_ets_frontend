@@ -1268,8 +1268,9 @@ export class TypeScriptLinter {
 
     if (ts.isCallExpression(ctx.parent) || ts.isNewExpression(ctx.parent)) {
       let callee = ctx.parent.expression;
-      if (callee != ctx && (this.tsUtils.isAnyType(this.tsTypeChecker.getTypeAtLocation(callee)) ||
-        this.tsUtils.hasLibraryType(callee))) {
+      const isAny = this.tsUtils.isAnyType(this.tsTypeChecker.getTypeAtLocation(callee));
+      const isDynamic = isAny || this.tsUtils.hasLibraryType(callee);
+      if (callee != ctx && isDynamic) {
         return true;
       }
     }
