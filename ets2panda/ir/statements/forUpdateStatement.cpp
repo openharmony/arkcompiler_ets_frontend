@@ -23,8 +23,6 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/dynamicContext.h"
 #include "checker/TSchecker.h"
-#include "ir/astDump.h"
-#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 void ForUpdateStatement::TransformChildren(const NodeTransformer &cb)
@@ -68,115 +66,23 @@ void ForUpdateStatement::Dump(ir::AstDumper *dumper) const
                  {"body", body_}});
 }
 
-void ForUpdateStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ForUpdateStatement::Compile(compiler::PandaGen *pg) const
 {
-    compiler::LocalRegScope decl_reg_scope(pg, Scope()->DeclScope()->InitScope());
-
-    if (init_ != nullptr) {
-        ASSERT(init_->IsVariableDeclaration() || init_->IsExpression());
-        init_->Compile(pg);
-    }
-
-    auto *start_label = pg->AllocLabel();
-    compiler::LabelTarget label_target(pg);
-
-    compiler::LoopEnvScope decl_env_scope(pg, Scope()->DeclScope());
-    compiler::LoopEnvScope env_scope(pg, label_target, Scope());
-    pg->SetLabel(this, start_label);
-
-    {
-        compiler::LocalRegScope reg_scope(pg, Scope());
-
-        if (test_ != nullptr) {
-            compiler::Condition::Compile(pg, test_, label_target.BreakTarget());
-        }
-
-        body_->Compile(pg);
-        pg->SetLabel(this, label_target.ContinueTarget());
-        env_scope.CopyPetIterationCtx();
-    }
-
-    if (update_ != nullptr) {
-        update_->Compile(pg);
-    }
-
-    pg->Branch(this, start_label);
-    pg->SetLabel(this, label_target.BreakTarget());
+    pg->GetAstCompiler()->Compile(this);
 }
 
-void ForUpdateStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ForUpdateStatement::Compile(compiler::ETSGen *etsg) const
 {
-    compiler::LocalRegScope decl_reg_scope(etsg, Scope()->DeclScope()->InitScope());
-
-    if (init_ != nullptr) {
-        ASSERT(init_->IsVariableDeclaration() || init_->IsExpression());
-        init_->Compile(etsg);
-    }
-
-    auto *start_label = etsg->AllocLabel();
-    compiler::LabelTarget label_target(etsg);
-    auto label_ctx = compiler::LabelContext(etsg, label_target);
-    etsg->SetLabel(this, start_label);
-
-    {
-        compiler::LocalRegScope reg_scope(etsg, Scope());
-
-        if (test_ != nullptr) {
-            compiler::Condition::Compile(etsg, test_, label_target.BreakTarget());
-        }
-
-        body_->Compile(etsg);
-        etsg->SetLabel(this, label_target.ContinueTarget());
-    }
-
-    if (update_ != nullptr) {
-        update_->Compile(etsg);
-    }
-
-    etsg->Branch(this, start_label);
-    etsg->SetLabel(this, label_target.BreakTarget());
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ForUpdateStatement::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *ForUpdateStatement::Check(checker::TSChecker *checker)
 {
-    checker::ScopeContext scope_ctx(checker, Scope());
-
-    if (init_ != nullptr) {
-        init_->Check(checker);
-    }
-
-    if (test_ != nullptr) {
-        checker::Type *test_type = test_->Check(checker);
-        checker->CheckTruthinessOfType(test_type, Start());
-    }
-
-    if (update_ != nullptr) {
-        update_->Check(checker);
-    }
-
-    body_->Check(checker);
-
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ForUpdateStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ForUpdateStatement::Check(checker::ETSChecker *checker)
 {
-    checker::ScopeContext scope_ctx(checker, Scope());
-
-    if (init_ != nullptr) {
-        init_->Check(checker);
-    }
-
-    if (test_ != nullptr) {
-        checker->CheckTruthinessOfType(test_);
-    }
-
-    if (update_ != nullptr) {
-        update_->Check(checker);
-    }
-
-    body_->Check(checker);
-
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

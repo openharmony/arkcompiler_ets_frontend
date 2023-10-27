@@ -21,12 +21,6 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
-#include "checker/ets/typeRelationContext.h"
-#include "ir/astDump.h"
-#include "ir/expression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/memberExpression.h"
-#include "ir/statements/switchCaseStatement.h"
 
 namespace panda::es2panda::ir {
 void SwitchStatement::TransformChildren(const NodeTransformer &cb)
@@ -52,132 +46,24 @@ void SwitchStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "SwitchStatement"}, {"discriminant", discriminant_}, {"cases", cases_}});
 }
 
-template <typename CodeGen>
-void CompileImpl(const SwitchStatement *self, CodeGen *cg)
+void SwitchStatement::Compile(compiler::PandaGen *pg) const
 {
-    compiler::LocalRegScope lrs(cg, self->Scope());
-    compiler::SwitchBuilder builder(cg, self);
-    compiler::VReg tag = cg->AllocReg();
-
-    builder.CompileTagOfSwitch(tag);
-    uint32_t default_index = 0;
-
-    for (size_t i = 0; i < self->Cases().size(); i++) {
-        const auto *clause = self->Cases()[i];
-
-        if (clause->Test() == nullptr) {
-            default_index = i;
-            continue;
-        }
-
-        builder.JumpIfCase(tag, i);
-    }
-
-    if (default_index > 0) {
-        builder.JumpToDefault(default_index);
-    } else {
-        builder.Break();
-    }
-
-    for (size_t i = 0; i < self->Cases().size(); i++) {
-        builder.SetCaseTarget(i);
-        builder.CompileCaseStatements(i);
-    }
+    pg->GetAstCompiler()->Compile(this);
 }
 
-void SwitchStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void SwitchStatement::Compile(compiler::ETSGen *etsg) const
 {
-    CompileImpl(this, pg);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-void SwitchStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+checker::Type *SwitchStatement::Check(checker::TSChecker *checker)
 {
-    CompileImpl(this, etsg);
-}
-
-checker::Type *SwitchStatement::Check([[maybe_unused]] checker::TSChecker *checker)
-{
-    checker::ScopeContext scope_ctx(checker, scope_);
-
-    checker::Type *expr_type = discriminant_->Check(checker);
-    bool expr_is_literal = checker::TSChecker::IsLiteralType(expr_type);
-
-    for (auto *it : cases_) {
-        if (it->Test() != nullptr) {
-            checker::Type *case_type = it->Test()->Check(checker);
-            bool case_is_literal = checker::TSChecker::IsLiteralType(case_type);
-            checker::Type *compared_expr_type = expr_type;
-
-            if (!case_is_literal || !expr_is_literal) {
-                case_type = case_is_literal ? checker->GetBaseTypeOfLiteralType(case_type) : case_type;
-                compared_expr_type = checker->GetBaseTypeOfLiteralType(expr_type);
-            }
-
-            if (!checker->IsTypeEqualityComparableTo(compared_expr_type, case_type) &&
-                !checker->IsTypeComparableTo(case_type, compared_expr_type)) {
-                checker->ThrowTypeError({"Type ", case_type, " is not comparable to type ", compared_expr_type},
-                                        it->Test()->Start());
-            }
-        }
-
-        for (auto *case_stmt : it->Consequent()) {
-            case_stmt->Check(checker);
-        }
-    }
-
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *SwitchStatement::Check(checker::ETSChecker *const checker)
 {
-    checker::ScopeContext scope_ctx(checker, scope_);
-    discriminant_->Check(checker);
-    checker::SavedTypeRelationFlagsContext saved_type_relation_flag_ctx(checker->Relation(),
-                                                                        checker::TypeRelationFlag::NONE);
-    // NOTE: check exhaustive Switch
-    checker->CheckSwitchDiscriminant(discriminant_);
-    auto *compared_expr_type = discriminant_->TsType();
-    auto unboxed_disc_type = (Discriminant()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U
-                                 ? checker->ETSBuiltinTypeAsPrimitiveType(compared_expr_type)
-                                 : compared_expr_type;
-
-    bool valid_case_type;
-
-    for (auto *it : cases_) {
-        if (it->Test() != nullptr) {
-            auto *case_type = it->Test()->Check(checker);
-            valid_case_type = true;
-            if (case_type->HasTypeFlag(checker::TypeFlag::CHAR)) {
-                valid_case_type = compared_expr_type->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL);
-            } else if (case_type->IsETSEnumType() && discriminant_->TsType()->IsETSEnumType()) {
-                valid_case_type = discriminant_->TsType()->AsETSEnumType()->IsSameEnumType(case_type->AsETSEnumType());
-            } else if (case_type->IsETSStringEnumType() && discriminant_->TsType()->IsETSStringEnumType()) {
-                valid_case_type =
-                    discriminant_->TsType()->AsETSStringEnumType()->IsSameEnumType(case_type->AsETSStringEnumType());
-            } else {
-                checker::AssignmentContext(
-                    checker->Relation(), discriminant_, case_type, unboxed_disc_type, it->Test()->Start(),
-                    {"Switch case type ", case_type, " is not comparable to discriminant type ", compared_expr_type},
-                    (compared_expr_type->IsETSObjectType() ? checker::TypeRelationFlag::NO_WIDENING
-                                                           : checker::TypeRelationFlag::NO_UNBOXING) |
-                        checker::TypeRelationFlag::NO_BOXING);
-            }
-
-            if (!valid_case_type) {
-                checker->ThrowTypeError(
-                    {"Switch case type ", case_type, " is not comparable to discriminant type ", compared_expr_type},
-                    it->Test()->Start());
-            }
-        }
-
-        for (auto *case_stmt : it->Consequent()) {
-            case_stmt->Check(checker);
-        }
-    }
-
-    checker->CheckForSameSwitchCases(&cases_);
-
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 void SwitchStatement::SetReturnType(checker::ETSChecker *checker, checker::Type *type)

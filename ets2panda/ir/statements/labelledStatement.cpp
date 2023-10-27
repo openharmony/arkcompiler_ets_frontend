@@ -15,11 +15,9 @@
 
 #include "labelledStatement.h"
 
-#include "compiler/core/pandagen.h"
+#include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
-#include "compiler/core/labelTarget.h"
-#include "ir/astDump.h"
-#include "ir/expressions/identifier.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void LabelledStatement::TransformChildren(const NodeTransformer &cb)
@@ -37,13 +35,6 @@ void LabelledStatement::Iterate(const NodeTraverser &cb) const
 void LabelledStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "LabelledStatement"}, {"label", ident_}, {"body", body_}});
-}
-
-template <typename CodeGen>
-void CompileImpl(const LabelledStatement *self, CodeGen *cg)
-{
-    compiler::LabelContext label_ctx(cg, self);
-    self->Body()->Compile(cg);
 }
 
 const ir::AstNode *LabelledStatement::GetReferencedStatement() const
@@ -67,24 +58,23 @@ const ir::AstNode *LabelledStatement::GetReferencedStatement() const
     }
 }
 
-void LabelledStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void LabelledStatement::Compile(compiler::PandaGen *pg) const
 {
-    CompileImpl(this, pg);
+    pg->GetAstCompiler()->Compile(this);
 }
 
-void LabelledStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void LabelledStatement::Compile(compiler::ETSGen *etsg) const
 {
-    CompileImpl(this, etsg);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *LabelledStatement::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *LabelledStatement::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *LabelledStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *LabelledStatement::Check(checker::ETSChecker *checker)
 {
-    body_->Check(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

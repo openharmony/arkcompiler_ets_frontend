@@ -549,51 +549,90 @@ checker::Type *TSAnalyzer::Check(ir::DoWhileStatement *st) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::EmptyStatement *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::EmptyStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::ExpressionStatement *st) const
 {
-    (void)st;
+    TSChecker *checker = GetTSChecker();
+    return st->GetExpression()->Check(checker);
+}
+
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ForInStatement *st) const
+{
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ForInStatement *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ForOfStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check(ir::ForOfStatement *st) const
-{
-    (void)st;
     UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::ForUpdateStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::ScopeContext scope_ctx(checker, st->Scope());
+
+    if (st->Init() != nullptr) {
+        st->Init()->Check(checker);
+    }
+
+    if (st->Test() != nullptr) {
+        checker::Type *test_type = st->Test()->Check(checker);
+        checker->CheckTruthinessOfType(test_type, st->Start());
+    }
+
+    if (st->Update() != nullptr) {
+        st->Update()->Check(checker);
+    }
+
+    st->Body()->Check(checker);
+
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::FunctionDeclaration *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    if (st->Function()->IsOverload()) {
+        return nullptr;
+    }
+
+    const util::StringView &func_name = st->Function()->Id()->Name();
+    auto result = checker->Scope()->Find(func_name);
+    ASSERT(result.variable);
+
+    checker::ScopeContext scope_ctx(checker, st->Function()->Scope());
+
+    if (result.variable->TsType() == nullptr) {
+        checker->InferFunctionDeclarationType(result.variable->Declaration()->AsFunctionDecl(), result.variable);
+    }
+
+    st->Function()->Body()->Check(checker);
+
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::IfStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::Type *test_type = st->test_->Check(checker);
+    checker->CheckTruthinessOfType(test_type, st->Start());
+    checker->CheckTestingKnownTruthyCallableOrAwaitableType(st->test_, test_type, st->consequent_);
+
+    st->consequent_->Check(checker);
+
+    if (st->Alternate() != nullptr) {
+        st->alternate_->Check(checker);
+    }
+
+    return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check(ir::LabelledStatement *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::LabelledStatement *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
@@ -628,16 +667,43 @@ checker::Type *TSAnalyzer::Check(ir::ReturnStatement *st) const
     return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check(ir::SwitchCaseStatement *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::SwitchCaseStatement *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::SwitchStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    checker::ScopeContext scope_ctx(checker, st->Scope());
+
+    checker::Type *expr_type = st->discriminant_->Check(checker);
+    bool expr_is_literal = checker::TSChecker::IsLiteralType(expr_type);
+
+    for (auto *it : st->Cases()) {
+        if (it->Test() != nullptr) {
+            checker::Type *case_type = it->Test()->Check(checker);
+            bool case_is_literal = checker::TSChecker::IsLiteralType(case_type);
+            checker::Type *compared_expr_type = expr_type;
+
+            if (!case_is_literal || !expr_is_literal) {
+                case_type = case_is_literal ? checker->GetBaseTypeOfLiteralType(case_type) : case_type;
+                compared_expr_type = checker->GetBaseTypeOfLiteralType(expr_type);
+            }
+
+            if (!checker->IsTypeEqualityComparableTo(compared_expr_type, case_type) &&
+                !checker->IsTypeComparableTo(case_type, compared_expr_type)) {
+                checker->ThrowTypeError({"Type ", case_type, " is not comparable to type ", compared_expr_type},
+                                        it->Test()->Start());
+            }
+        }
+
+        for (auto *case_stmt : it->Consequent()) {
+            case_stmt->Check(checker);
+        }
+    }
+
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::ThrowStatement *st) const

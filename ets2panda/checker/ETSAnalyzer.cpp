@@ -644,52 +644,150 @@ checker::Type *ETSAnalyzer::Check(ir::DoWhileStatement *st) const
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::EmptyStatement *st) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::EmptyStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ExpressionStatement *st) const
 {
-    (void)st;
+    ETSChecker *checker = GetETSChecker();
+    return st->GetExpression()->Check(checker);
+}
+
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ForInStatement *st) const
+{
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ForInStatement *st) const
-{
-    (void)st;
-    UNREACHABLE();
-}
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+static constexpr char const INVALID_SOURCE_EXPR_TYPE[] =
+    "'For-of' statement source expression should be either a string or an array.";
+static constexpr char const INVALID_CONST_ASSIGNMENT[] = "Cannot assign a value to a constant variable ";
+static constexpr char const ITERATOR_TYPE_ABSENT[] = "Cannot obtain iterator type in 'for-of' statement.";
+// NOLINTEND(modernize-avoid-c-arrays)
 
 checker::Type *ETSAnalyzer::Check(ir::ForOfStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    checker::ScopeContext scope_ctx(checker, st->Scope());
+
+    checker::Type *const expr_type = st->Right()->Check(checker);
+    checker::Type *elem_type;
+
+    if (expr_type == nullptr || (!expr_type->IsETSArrayType() && !expr_type->IsETSStringType())) {
+        checker->ThrowTypeError(INVALID_SOURCE_EXPR_TYPE, st->Right()->Start());
+    } else if (expr_type->IsETSStringType()) {
+        elem_type = checker->GetGlobalTypesHolder()->GlobalCharType();
+    } else {
+        elem_type = expr_type->AsETSArrayType()->ElementType()->Instantiate(checker->Allocator(), checker->Relation(),
+                                                                            checker->GetGlobalTypesHolder());
+        elem_type->RemoveTypeFlag(checker::TypeFlag::CONSTANT);
+    }
+
+    st->Left()->Check(checker);
+    checker::Type *iter_type = nullptr;
+
+    // Just to avoid extra nested level(s)
+    auto const get_iter_type = [checker, elem_type](ir::VariableDeclarator *const declarator) -> checker::Type * {
+        if (declarator->TsType() == nullptr) {
+            if (auto *resolved = checker->FindVariableInFunctionScope(declarator->Id()->AsIdentifier()->Name());
+                resolved != nullptr) {
+                resolved->SetTsType(elem_type);
+                return elem_type;
+            }
+        } else {
+            return declarator->TsType();
+        }
+        return nullptr;
+    };
+
+    if (st->Left()->IsIdentifier()) {
+        if (auto *const variable = st->Left()->AsIdentifier()->Variable(); variable != nullptr) {
+            if (variable->Declaration()->IsConstDecl()) {
+                checker->ThrowTypeError({INVALID_CONST_ASSIGNMENT, variable->Name()},
+                                        variable->Declaration()->Node()->Start());
+            }
+        }
+        iter_type = st->Left()->AsIdentifier()->TsType();
+    } else if (st->Left()->IsVariableDeclaration()) {
+        if (auto const &declarators = st->Left()->AsVariableDeclaration()->Declarators(); !declarators.empty()) {
+            iter_type = get_iter_type(declarators.front());
+        }
+    }
+
+    if (iter_type == nullptr) {
+        checker->ThrowTypeError(ITERATOR_TYPE_ABSENT, st->Left()->Start());
+    }
+
+    auto *const relation = checker->Relation();
+    relation->SetFlags(checker::TypeRelationFlag::ASSIGNMENT_CONTEXT);
+    relation->SetNode(checker->AllocNode<ir::SuperExpression>());  // Dummy node to avoid assertion!
+
+    if (!relation->IsAssignableTo(elem_type, iter_type)) {
+        std::stringstream ss {};
+        ss << "Source element type '";
+        elem_type->ToString(ss);
+        ss << "' is not assignable to the loop iterator type '";
+        iter_type->ToString(ss);
+        ss << "'.";
+        checker->ThrowTypeError(ss.str(), st->Start());
+    }
+
+    relation->SetNode(nullptr);
+    relation->SetFlags(checker::TypeRelationFlag::NONE);
+
+    st->Body()->Check(checker);
+
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ForUpdateStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    checker::ScopeContext scope_ctx(checker, st->Scope());
+
+    if (st->Init() != nullptr) {
+        st->Init()->Check(checker);
+    }
+
+    if (st->Test() != nullptr) {
+        checker->CheckTruthinessOfType(st->Test());
+    }
+
+    if (st->Update() != nullptr) {
+        st->Update()->Check(checker);
+    }
+
+    st->Body()->Check(checker);
+
+    return nullptr;
 }
 
-checker::Type *ETSAnalyzer::Check(ir::FunctionDeclaration *st) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::FunctionDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::IfStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    checker->CheckTruthinessOfType(st->test_);
+
+    st->consequent_->Check(checker);
+
+    if (st->Alternate() != nullptr) {
+        st->alternate_->Check(checker);
+    }
+
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::LabelledStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    st->body_->Check(checker);
+    return nullptr;
 }
 
 void CheckArgumentVoidType(checker::Type *&func_return_type, ETSChecker *checker, const std::string &name,
@@ -903,16 +1001,64 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
     return nullptr;
 }
 
-checker::Type *ETSAnalyzer::Check(ir::SwitchCaseStatement *st) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::SwitchCaseStatement *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::SwitchStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    checker::ScopeContext scope_ctx(checker, st->scope_);
+    st->discriminant_->Check(checker);
+    checker::SavedTypeRelationFlagsContext saved_type_relation_flag_ctx(checker->Relation(),
+                                                                        checker::TypeRelationFlag::NONE);
+    // TODO(user): check exhaustive Switch
+    checker->CheckSwitchDiscriminant(st->discriminant_);
+    auto *compared_expr_type = st->discriminant_->TsType();
+    auto unboxed_disc_type =
+        (st->Discriminant()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U
+            ? checker->ETSBuiltinTypeAsPrimitiveType(compared_expr_type)
+            : compared_expr_type;
+
+    bool valid_case_type;
+
+    for (auto *it : st->Cases()) {
+        if (it->Test() != nullptr) {
+            auto *case_type = it->Test()->Check(checker);
+            valid_case_type = true;
+            if (case_type->HasTypeFlag(checker::TypeFlag::CHAR)) {
+                valid_case_type = compared_expr_type->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL);
+            } else if (case_type->IsETSEnumType() && st->Discriminant()->TsType()->IsETSEnumType()) {
+                valid_case_type =
+                    st->Discriminant()->TsType()->AsETSEnumType()->IsSameEnumType(case_type->AsETSEnumType());
+            } else if (case_type->IsETSStringEnumType() && st->Discriminant()->TsType()->IsETSStringEnumType()) {
+                valid_case_type = st->Discriminant()->TsType()->AsETSStringEnumType()->IsSameEnumType(
+                    case_type->AsETSStringEnumType());
+            } else {
+                checker::AssignmentContext(
+                    checker->Relation(), st->discriminant_, case_type, unboxed_disc_type, it->Test()->Start(),
+                    {"Switch case type ", case_type, " is not comparable to discriminant type ", compared_expr_type},
+                    (compared_expr_type->IsETSObjectType() ? checker::TypeRelationFlag::NO_WIDENING
+                                                           : checker::TypeRelationFlag::NO_UNBOXING) |
+                        checker::TypeRelationFlag::NO_BOXING);
+            }
+
+            if (!valid_case_type) {
+                checker->ThrowTypeError(
+                    {"Switch case type ", case_type, " is not comparable to discriminant type ", compared_expr_type},
+                    it->Test()->Start());
+            }
+        }
+
+        for (auto *case_stmt : it->Consequent()) {
+            case_stmt->Check(checker);
+        }
+    }
+
+    checker->CheckForSameSwitchCases(&st->cases_);
+
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ThrowStatement *st) const

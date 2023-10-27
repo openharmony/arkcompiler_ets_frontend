@@ -15,7 +15,9 @@
 
 #include "emptyStatement.h"
 
-#include "ir/astDump.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void EmptyStatement::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -26,15 +28,23 @@ void EmptyStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "EmptyStatement"}});
 }
 
-void EmptyStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *EmptyStatement::Check([[maybe_unused]] checker::TSChecker *checker)
+void EmptyStatement::Compile(compiler::PandaGen *pg) const
 {
-    return nullptr;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *EmptyStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+void EmptyStatement::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *EmptyStatement::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *EmptyStatement::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

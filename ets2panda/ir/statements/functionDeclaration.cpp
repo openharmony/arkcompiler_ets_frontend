@@ -19,14 +19,7 @@
 #include "varbinder/scope.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
-#include "checker/ETSchecker.h"
-#include "checker/types/ets/etsFunctionType.h"
-#include "ir/astDump.h"
-#include "ir/typeNode.h"
-#include "ir/base/spreadElement.h"
-#include "ir/base/decorator.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/expressions/identifier.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void FunctionDeclaration::TransformChildren(const NodeTransformer &cb)
@@ -54,37 +47,23 @@ void FunctionDeclaration::Dump(ir::AstDumper *dumper) const
                  {"function", func_}});
 }
 
-void FunctionDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-void FunctionDeclaration::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void FunctionDeclaration::Compile(compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *FunctionDeclaration::Check([[maybe_unused]] checker::TSChecker *checker)
+void FunctionDeclaration::Compile(compiler::ETSGen *etsg) const
 {
-    if (func_->IsOverload()) {
-        return nullptr;
-    }
-
-    const util::StringView &func_name = func_->Id()->Name();
-    auto result = checker->Scope()->Find(func_name);
-    ASSERT(result.variable);
-
-    checker::ScopeContext scope_ctx(checker, func_->Scope());
-
-    if (result.variable->TsType() == nullptr) {
-        checker->InferFunctionDeclarationType(result.variable->Declaration()->AsFunctionDecl(), result.variable);
-    }
-
-    func_->Body()->Check(checker);
-
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *FunctionDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *FunctionDeclaration::Check(checker::TSChecker *checker)
 {
-    UNREACHABLE();
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *FunctionDeclaration::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

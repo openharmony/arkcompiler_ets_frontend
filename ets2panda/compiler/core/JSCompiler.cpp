@@ -18,6 +18,7 @@
 #include "compiler/base/condition.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
+#include "compiler/core/switchBuilder.h"
 #include "compiler/function/functionBuilder.h"
 #include "util/helpers.h"
 
@@ -853,52 +854,156 @@ void JSCompiler::Compile(const ir::DoWhileStatement *st) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::EmptyStatement *st) const
-{
-    (void)st;
-    UNREACHABLE();
-}
+void JSCompiler::Compile([[maybe_unused]] const ir::EmptyStatement *st) const {}
 
 void JSCompiler::Compile(const ir::ExpressionStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    st->GetExpression()->Compile(pg);
 }
 
 void JSCompiler::Compile(const ir::ForInStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::LabelTarget label_target(pg);
+
+    compiler::RegScope rs(pg);
+    compiler::VReg iter = pg->AllocReg();
+    compiler::VReg prop_name = pg->AllocReg();
+
+    // create enumerator
+    st->Right()->Compile(pg);
+    pg->GetPropIterator(st);
+    pg->StoreAccumulator(st, iter);
+
+    pg->SetLabel(st, label_target.ContinueTarget());
+
+    // get next prop of enumerator
+    pg->GetNextPropName(st, iter);
+    pg->StoreAccumulator(st, prop_name);
+    pg->BranchIfUndefined(st, label_target.BreakTarget());
+
+    compiler::LocalRegScope decl_reg_scope(pg, st->Scope()->DeclScope()->InitScope());
+    auto lref = compiler::JSLReference::Create(pg, st->Left(), false);
+    pg->LoadAccumulator(st, prop_name);
+    lref.SetValue();
+
+    compiler::LoopEnvScope decl_env_scope(pg, st->Scope()->DeclScope());
+
+    {
+        compiler::LoopEnvScope env_scope(pg, st->Scope(), label_target);
+        st->Body()->Compile(pg);
+    }
+
+    pg->Branch(st, label_target.ContinueTarget());
+    pg->SetLabel(st, label_target.BreakTarget());
 }
 
 void JSCompiler::Compile(const ir::ForOfStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::LocalRegScope decl_reg_scope(pg, st->Scope()->DeclScope()->InitScope());
+
+    st->Right()->Compile(pg);
+
+    compiler::LabelTarget label_target(pg);
+    auto iterator_type = st->IsAwait() ? compiler::IteratorType::ASYNC : compiler::IteratorType::SYNC;
+    compiler::Iterator iterator(pg, st, iterator_type);
+
+    pg->SetLabel(st, label_target.ContinueTarget());
+
+    iterator.Next();
+    iterator.Complete();
+    pg->BranchIfTrue(st, label_target.BreakTarget());
+
+    iterator.Value();
+    pg->StoreAccumulator(st, iterator.NextResult());
+
+    auto lref = compiler::JSLReference::Create(pg, st->Left(), false);
+
+    {
+        compiler::IteratorContext for_of_ctx(pg, iterator, label_target);
+        pg->LoadAccumulator(st, iterator.NextResult());
+        lref.SetValue();
+
+        compiler::LoopEnvScope decl_env_scope(pg, st->Scope()->DeclScope());
+        compiler::LoopEnvScope env_scope(pg, st->Scope(), {});
+        st->Body()->Compile(pg);
+    }
+
+    pg->Branch(st, label_target.ContinueTarget());
+    pg->SetLabel(st, label_target.BreakTarget());
 }
 
 void JSCompiler::Compile(const ir::ForUpdateStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::LocalRegScope decl_reg_scope(pg, st->Scope()->DeclScope()->InitScope());
+
+    if (st->Init() != nullptr) {
+        ASSERT(st->Init()->IsVariableDeclaration() || st->Init()->IsExpression());
+        st->Init()->Compile(pg);
+    }
+
+    auto *start_label = pg->AllocLabel();
+    compiler::LabelTarget label_target(pg);
+
+    compiler::LoopEnvScope decl_env_scope(pg, st->Scope()->DeclScope());
+    compiler::LoopEnvScope env_scope(pg, label_target, st->Scope());
+    pg->SetLabel(st, start_label);
+
+    {
+        compiler::LocalRegScope reg_scope(pg, st->Scope());
+
+        if (st->Test() != nullptr) {
+            compiler::Condition::Compile(pg, st->Test(), label_target.BreakTarget());
+        }
+
+        st->Body()->Compile(pg);
+        pg->SetLabel(st, label_target.ContinueTarget());
+        env_scope.CopyPetIterationCtx();
+    }
+
+    if (st->Update() != nullptr) {
+        st->Update()->Compile(pg);
+    }
+
+    pg->Branch(st, start_label);
+    pg->SetLabel(st, label_target.BreakTarget());
 }
 
-void JSCompiler::Compile(const ir::FunctionDeclaration *st) const
-{
-    (void)st;
-    UNREACHABLE();
-}
+void JSCompiler::Compile([[maybe_unused]] const ir::FunctionDeclaration *st) const {}
 
 void JSCompiler::Compile(const ir::IfStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    auto *consequent_end = pg->AllocLabel();
+    compiler::Label *statement_end = consequent_end;
+
+    compiler::Condition::Compile(pg, st->Test(), consequent_end);
+    st->Consequent()->Compile(pg);
+
+    if (st->Alternate() != nullptr) {
+        statement_end = pg->AllocLabel();
+        pg->Branch(pg->Insns().back()->Node(), statement_end);
+
+        pg->SetLabel(st, consequent_end);
+        st->Alternate()->Compile(pg);
+    }
+
+    pg->SetLabel(st, statement_end);
+}
+
+void CompileImpl(const ir::LabelledStatement *self, PandaGen *cg)
+{
+    compiler::LabelContext label_ctx(cg, self);
+    self->Body()->Compile(cg);
 }
 
 void JSCompiler::Compile(const ir::LabelledStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    CompileImpl(st, pg);
 }
 
 void JSCompiler::Compile(const ir::ReturnStatement *st) const
@@ -927,16 +1032,47 @@ void JSCompiler::Compile(const ir::ReturnStatement *st) const
     }
 }
 
-void JSCompiler::Compile(const ir::SwitchCaseStatement *st) const
+void JSCompiler::Compile([[maybe_unused]] const ir::SwitchCaseStatement *st) const
 {
-    (void)st;
     UNREACHABLE();
+}
+
+static void CompileImpl(const ir::SwitchStatement *self, PandaGen *cg)
+{
+    compiler::LocalRegScope lrs(cg, self->Scope());
+    compiler::SwitchBuilder builder(cg, self);
+    compiler::VReg tag = cg->AllocReg();
+
+    builder.CompileTagOfSwitch(tag);
+    uint32_t default_index = 0;
+
+    for (size_t i = 0; i < self->Cases().size(); i++) {
+        const auto *clause = self->Cases()[i];
+
+        if (clause->Test() == nullptr) {
+            default_index = i;
+            continue;
+        }
+
+        builder.JumpIfCase(tag, i);
+    }
+
+    if (default_index > 0) {
+        builder.JumpToDefault(default_index);
+    } else {
+        builder.Break();
+    }
+
+    for (size_t i = 0; i < self->Cases().size(); i++) {
+        builder.SetCaseTarget(i);
+        builder.CompileCaseStatements(i);
+    }
 }
 
 void JSCompiler::Compile(const ir::SwitchStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    CompileImpl(st, pg);
 }
 
 void JSCompiler::Compile(const ir::ThrowStatement *st) const

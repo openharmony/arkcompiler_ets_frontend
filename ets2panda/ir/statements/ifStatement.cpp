@@ -15,12 +15,9 @@
 
 #include "ifStatement.h"
 
-#include "compiler/base/condition.h"
-#include "compiler/core/pandagen.h"
-#include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
-#include "ir/astDump.h"
-#include "ir/expression.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void IfStatement::TransformChildren(const NodeTransformer &cb)
@@ -51,84 +48,23 @@ void IfStatement::Dump(ir::AstDumper *dumper) const
                  {"alternate", AstDumper::Nullish(alternate_)}});
 }
 
-void IfStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void IfStatement::Compile(compiler::PandaGen *pg) const
 {
-    auto *consequent_end = pg->AllocLabel();
-    compiler::Label *statement_end = consequent_end;
-
-    compiler::Condition::Compile(pg, test_, consequent_end);
-    consequent_->Compile(pg);
-
-    if (alternate_ != nullptr) {
-        statement_end = pg->AllocLabel();
-        pg->Branch(pg->Insns().back()->Node(), statement_end);
-
-        pg->SetLabel(this, consequent_end);
-        alternate_->Compile(pg);
-    }
-
-    pg->SetLabel(this, statement_end);
+    pg->GetAstCompiler()->Compile(this);
 }
 
-void IfStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void IfStatement::Compile(compiler::ETSGen *etsg) const
 {
-    auto res = compiler::Condition::CheckConstantExpr(etsg, test_);
-
-    if (res == compiler::Condition::Result::CONST_TRUE) {
-        consequent_->Compile(etsg);
-        return;
-    }
-
-    if (res == compiler::Condition::Result::CONST_FALSE) {
-        if (alternate_ != nullptr) {
-            alternate_->Compile(etsg);
-        }
-        return;
-    }
-
-    auto *consequent_end = etsg->AllocLabel();
-    compiler::Label *statement_end = consequent_end;
-
-    compiler::Condition::Compile(etsg, test_, consequent_end);
-
-    consequent_->Compile(etsg);
-
-    if (alternate_ != nullptr) {
-        statement_end = etsg->AllocLabel();
-        etsg->Branch(etsg->Insns().back()->Node(), statement_end);
-
-        etsg->SetLabel(this, consequent_end);
-        alternate_->Compile(etsg);
-    }
-
-    etsg->SetLabel(this, statement_end);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *IfStatement::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    checker::Type *test_type = test_->Check(checker);
-    checker->CheckTruthinessOfType(test_type, Start());
-    checker->CheckTestingKnownTruthyCallableOrAwaitableType(test_, test_type, consequent_);
-
-    consequent_->Check(checker);
-
-    if (alternate_ != nullptr) {
-        alternate_->Check(checker);
-    }
-
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *IfStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    checker->CheckTruthinessOfType(test_);
-
-    consequent_->Check(checker);
-
-    if (alternate_ != nullptr) {
-        alternate_->Check(checker);
-    }
-
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

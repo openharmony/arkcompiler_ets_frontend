@@ -19,6 +19,11 @@
 #include "varbinder/scope.h"
 #include "ir/statement.h"
 
+namespace panda::es2panda::checker {
+class TSAnalyzer;
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
+
 namespace panda::es2panda::ir {
 class Expression;
 class SwitchCaseStatement;
@@ -30,6 +35,10 @@ public:
         : Statement(AstNodeType::SWITCH_STATEMENT), scope_(scope), discriminant_(discriminant), cases_(std::move(cases))
     {
     }
+
+    // TODO (csabahurton): these friend relationships can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
+    friend class checker::TSAnalyzer;
 
     const Expression *Discriminant() const
     {
@@ -56,10 +65,10 @@ public:
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    void Compile(compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     varbinder::LocalScope *scope_;
