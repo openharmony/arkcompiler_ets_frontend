@@ -33,7 +33,7 @@ public:
 
     explicit AwaitExpression(Expression *argument) : Expression(AstNodeType::AWAIT_EXPRESSION), argument_(argument) {}
 
-    // TODO (csabahurton): friend relationship can be removed once there are getters for private fields
+    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
 
     [[nodiscard]] const Expression *Argument() const noexcept

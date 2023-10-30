@@ -16,14 +16,9 @@
 #include "scriptFunction.h"
 
 #include "varbinder/scope.h"
+#include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/expression.h"
-#include "ir/typeNode.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/ts/tsTypeParameter.h"
-#include "ir/ts/tsTypeParameterDeclaration.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 
@@ -108,19 +103,22 @@ void ScriptFunction::Dump(ir::AstDumper *dumper) const
     }
 }
 
-void ScriptFunction::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-void ScriptFunction::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ScriptFunction::Compile(compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    pg->GetAstCompiler()->Compile(this);
+}
+void ScriptFunction::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ScriptFunction::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *ScriptFunction::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ScriptFunction::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ScriptFunction::Check(checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

@@ -37,7 +37,7 @@ public:
     {
     }
 
-    // TODO (csabahurton): friend relationship can be removed once there are getters for private fields
+    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
     friend class checker::TSAnalyzer;
 
     const Expression *GetExpression() const noexcept

@@ -19,10 +19,7 @@
 #include "ir/base/classElement.h"
 
 namespace panda::es2panda::checker {
-
-class ETSObjectType;
-class Signature;
-
+class ETSAnalyzer;
 }  // namespace panda::es2panda::checker
 
 namespace panda::es2panda::ir {
@@ -48,7 +45,10 @@ public:
     {
     }
 
-    [[nodiscard]] MethodDefinitionKind Kind() const noexcept
+    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
+
+    MethodDefinitionKind Kind() const
     {
         return kind_;
     }
@@ -83,19 +83,9 @@ public:
         return std::find(overloads_.begin(), overloads_.end(), overload) != overloads_.end();
     }
 
-    [[nodiscard]] ScriptFunction *Function() noexcept;
-    [[nodiscard]] const ScriptFunction *Function() const noexcept;
-
-    [[nodiscard]] PrivateFieldKind ToPrivateFieldKind(bool is_static) const override;
-
-    void CheckMethodModifiers(checker::ETSChecker *checker);
-    void CheckExtensionMethod(checker::ETSChecker *checker, ScriptFunction *extension_func);
-    void CheckExtensionIsShadowedByMethod(checker::ETSChecker *checker, checker::ETSObjectType *obj_type,
-                                          ScriptFunction *extension_func, checker::Signature *sigature);
-    void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *checker,
-                                                           checker::ETSObjectType *obj_type,
-                                                           ScriptFunction *extension_func,
-                                                           checker::Signature *sigature);
+    ScriptFunction *Function();
+    const ScriptFunction *Function() const;
+    PrivateFieldKind ToPrivateFieldKind(bool is_static) const override;
 
     // NOLINTNEXTLINE(google-default-arguments)
     [[nodiscard]] MethodDefinition *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
@@ -104,11 +94,10 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
 
     void Dump(ir::AstDumper *dumper) const override;
-
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    void Compile(compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     MethodDefinitionKind kind_;

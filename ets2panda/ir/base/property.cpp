@@ -16,14 +16,9 @@
 #include "property.h"
 
 #include "es2panda.h"
-#include "ir/astDump.h"
-#include "ir/expression.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/objectExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/literals/stringLiteral.h"
-#include "ir/validationInfo.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 Property::Property([[maybe_unused]] Tag const tag, Property const &other, Expression *const key,
@@ -172,15 +167,23 @@ void Property::Dump(ir::AstDumper *dumper) const
                  {"kind", kind}});
 }
 
-void Property::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *Property::Check([[maybe_unused]] checker::TSChecker *checker)
+void Property::Compile(compiler::PandaGen *pg) const
 {
-    return nullptr;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *Property::Check([[maybe_unused]] checker::ETSChecker *checker)
+void Property::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *Property::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *Property::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

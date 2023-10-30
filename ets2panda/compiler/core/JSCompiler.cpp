@@ -410,25 +410,30 @@ void JSCompiler::Compile([[maybe_unused]] const ir::Decorator *st) const
 
 void JSCompiler::Compile(const ir::MetaProperty *expr) const
 {
-    (void)expr;
+    PandaGen *pg = GetPandaGen();
+    if (expr->Kind() == ir::MetaProperty::MetaPropertyKind::NEW_TARGET) {
+        pg->GetNewTarget(expr);
+        return;
+    }
+
+    if (expr->Kind() == ir::MetaProperty::MetaPropertyKind::IMPORT_META) {
+        // NOTE
+        pg->Unimplemented();
+    }
+}
+
+void JSCompiler::Compile([[maybe_unused]] const ir::MethodDefinition *node) const
+{
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::MethodDefinition *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::Property *expr) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::Property *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ScriptFunction *node) const
 {
-    (void)expr;
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile(const ir::ScriptFunction *node) const
-{
-    (void)node;
     UNREACHABLE();
 }
 
@@ -438,27 +443,23 @@ void JSCompiler::Compile(const ir::SpreadElement *expr) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TemplateElement *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TemplateElement *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSIndexSignature *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSIndexSignature *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSMethodSignature *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSMethodSignature *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSPropertySignature *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSPropertySignature *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -664,6 +665,28 @@ void JSCompiler::Compile(const ir::BlockExpression *expr) const
     UNREACHABLE();
 }
 
+void CompileSuperExprWithoutSpread(PandaGen *pg, const ir::CallExpression *expr)
+{
+    compiler::RegScope param_scope(pg);
+    compiler::VReg arg_start {};
+
+    if (expr->Arguments().empty()) {
+        arg_start = pg->AllocReg();
+        pg->StoreConst(expr, arg_start, compiler::Constant::JS_UNDEFINED);
+    } else {
+        arg_start = pg->NextReg();
+    }
+
+    for (const auto *it : expr->Arguments()) {
+        compiler::VReg arg = pg->AllocReg();
+        it->Compile(pg);
+        pg->StoreAccumulator(it, arg);
+    }
+
+    pg->GetFunctionObject(expr);
+    pg->SuperCall(expr, arg_start, expr->Arguments().size());
+}
+
 void JSCompiler::Compile(const ir::CallExpression *expr) const
 {
     PandaGen *pg = GetPandaGen();
@@ -678,24 +701,7 @@ void JSCompiler::Compile(const ir::CallExpression *expr) const
             pg->GetFunctionObject(expr);
             pg->SuperCallSpread(expr, args_obj);
         } else {
-            compiler::RegScope param_scope(pg);
-            compiler::VReg arg_start {};
-
-            if (expr->Arguments().empty()) {
-                arg_start = pg->AllocReg();
-                pg->StoreConst(expr, arg_start, compiler::Constant::JS_UNDEFINED);
-            } else {
-                arg_start = pg->NextReg();
-            }
-
-            for (const auto *it : expr->Arguments()) {
-                compiler::VReg arg = pg->AllocReg();
-                it->Compile(pg);
-                pg->StoreAccumulator(it, arg);
-            }
-
-            pg->GetFunctionObject(expr);
-            pg->SuperCall(expr, arg_start, expr->Arguments().size());
+            CompileSuperExprWithoutSpread(pg, expr);
         }
 
         compiler::VReg new_this = pg->AllocReg();

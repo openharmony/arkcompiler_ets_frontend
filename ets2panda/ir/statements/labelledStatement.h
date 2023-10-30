@@ -33,7 +33,7 @@ public:
     {
     }
 
-    // TODO (csabahurton): these friend relationships can be removed once there are getters for private fields
+    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
 
     const Statement *Body() const

@@ -87,27 +87,23 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::Decorator *st) const
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::MetaProperty *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::MetaProperty *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::MethodDefinition *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::MethodDefinition *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::Property *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::Property *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ScriptFunction *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ScriptFunction *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -119,25 +115,22 @@ void ETSCompiler::Compile(const ir::SpreadElement *expr) const
 
 void ETSCompiler::Compile(const ir::TemplateElement *expr) const
 {
-    (void)expr;
+    ETSGen *etsg = GetETSGen();
+    etsg->LoadAccumulatorString(expr, expr->Raw());
+}
+
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSIndexSignature *node) const
+{
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSIndexSignature *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSMethodSignature *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSMethodSignature *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSPropertySignature *node) const
 {
-    (void)node;
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile(const ir::TSPropertySignature *node) const
-{
-    (void)node;
     UNREACHABLE();
 }
 
@@ -425,6 +418,125 @@ void ETSCompiler::Compile(const ir::BlockExpression *expr) const
     UNREACHABLE();
 }
 
+bool ETSCompiler::IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *expr) const
+{
+    ETSGen *etsg = GetETSGen();
+    auto *const callee_object = expr->callee_->AsMemberExpression()->Object();
+    auto const *const enum_interface = [callee_type = callee_object->TsType()]() -> checker::ETSEnumInterface const * {
+        if (callee_type->IsETSEnumType()) {
+            return callee_type->AsETSEnumType();
+        }
+        if (callee_type->IsETSStringEnumType()) {
+            return callee_type->AsETSStringEnumType();
+        }
+        return nullptr;
+    }();
+
+    if (enum_interface != nullptr) {
+        ArenaVector<ir::Expression *> arguments(etsg->Allocator()->Adapter());
+
+        checker::Signature *const signature = [expr, callee_object, enum_interface, &arguments]() {
+            const auto &member_proxy_method_name = expr->Signature()->InternalName();
+
+            if (member_proxy_method_name == checker::ETSEnumType::TO_STRING_METHOD_NAME) {
+                arguments.push_back(callee_object);
+                return enum_interface->ToStringMethod().global_signature;
+            }
+            if (member_proxy_method_name == checker::ETSEnumType::GET_VALUE_METHOD_NAME) {
+                arguments.push_back(callee_object);
+                return enum_interface->GetValueMethod().global_signature;
+            }
+            if (member_proxy_method_name == checker::ETSEnumType::GET_NAME_METHOD_NAME) {
+                arguments.push_back(callee_object);
+                return enum_interface->GetNameMethod().global_signature;
+            }
+            if (member_proxy_method_name == checker::ETSEnumType::VALUES_METHOD_NAME) {
+                return enum_interface->ValuesMethod().global_signature;
+            }
+            if (member_proxy_method_name == checker::ETSEnumType::VALUE_OF_METHOD_NAME) {
+                arguments.push_back(expr->Arguments().front());
+                return enum_interface->ValueOfMethod().global_signature;
+            }
+            UNREACHABLE();
+        }();
+
+        ASSERT(signature->ReturnType() == expr->Signature()->ReturnType());
+        etsg->CallStatic(expr, signature, arguments);
+        etsg->SetAccumulatorType(expr->TsType());
+    }
+
+    return enum_interface != nullptr;
+}
+
+void ETSCompiler::CompileDynamic(const ir::CallExpression *expr, compiler::VReg &callee_reg) const
+{
+    ETSGen *etsg = GetETSGen();
+    compiler::VReg dyn_param2 = etsg->AllocReg();
+    ir::Expression *obj = expr->callee_;
+    std::vector<util::StringView> parts;
+
+    while (obj->IsMemberExpression() && obj->AsMemberExpression()->ObjType()->IsETSDynamicType()) {
+        auto *mem_expr = obj->AsMemberExpression();
+        obj = mem_expr->Object();
+        parts.push_back(mem_expr->Property()->AsIdentifier()->Name());
+    }
+
+    if (!obj->IsMemberExpression() && obj->IsIdentifier()) {
+        auto *var = obj->AsIdentifier()->Variable();
+        auto *data = etsg->VarBinder()->DynamicImportDataForVar(var);
+        if (data != nullptr) {
+            auto *import = data->import;
+            auto *specifier = data->specifier;
+            ASSERT(import->Language().IsDynamic());
+            etsg->LoadAccumulatorDynamicModule(expr, import);
+            if (specifier->IsImportSpecifier()) {
+                parts.push_back(specifier->AsImportSpecifier()->Imported()->Name());
+            }
+        } else {
+            obj->Compile(etsg);
+        }
+    } else {
+        obj->Compile(etsg);
+    }
+
+    etsg->StoreAccumulator(expr, callee_reg);
+
+    if (!parts.empty()) {
+        std::stringstream ss;
+        for_each(parts.rbegin(), parts.rend(), [&ss](util::StringView sv) { ss << "." << sv; });
+        etsg->LoadAccumulatorString(expr, util::UString(ss.str(), etsg->Allocator()).View());
+    } else {
+        auto lang = expr->Callee()->TsType()->IsETSDynamicFunctionType()
+                        ? expr->Callee()->TsType()->AsETSDynamicFunctionType()->Language()
+                        : expr->Callee()->TsType()->AsETSDynamicType()->Language();
+        etsg->LoadUndefinedDynamic(expr, lang);
+    }
+    etsg->StoreAccumulator(expr, dyn_param2);
+    etsg->CallDynamic(expr, callee_reg, dyn_param2, expr->Signature(), expr->Arguments());
+    etsg->SetAccumulatorType(expr->TsType());
+
+    if (expr->Signature()->ReturnType() != expr->TsType()) {
+        etsg->ApplyConversion(expr, expr->TsType());
+    }
+}
+
+// Helper function to avoid branching in non optional cases
+void ETSCompiler::EmitCall(const ir::CallExpression *expr, compiler::VReg &callee_reg, bool is_static) const
+{
+    ETSGen *etsg = GetETSGen();
+
+    if (is_static) {
+        etsg->CallStatic(expr, expr->Signature(), expr->Arguments());
+    } else if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::PRIVATE) || expr->IsETSConstructorCall() ||
+               (expr->Callee()->IsMemberExpression() &&
+                expr->Callee()->AsMemberExpression()->Object()->IsSuperExpression())) {
+        etsg->CallThisStatic(expr, callee_reg, expr->Signature(), expr->Arguments());
+    } else {
+        etsg->CallThisVirtual(expr, callee_reg, expr->Signature(), expr->Arguments());
+    }
+    etsg->SetAccumulatorType(expr->TsType());
+}
+
 void ETSCompiler::Compile(const ir::CallExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
@@ -432,52 +544,8 @@ void ETSCompiler::Compile(const ir::CallExpression *expr) const
     compiler::VReg callee_reg = etsg->AllocReg();
 
     const auto is_proxy = expr->Signature()->HasSignatureFlag(checker::SignatureFlags::PROXY);
-
     if (is_proxy && expr->Callee()->IsMemberExpression()) {
-        auto *const callee_object = expr->callee_->AsMemberExpression()->Object();
-
-        auto const *const enum_interface = [callee_type =
-                                                callee_object->TsType()]() -> checker::ETSEnumInterface const * {
-            if (callee_type->IsETSEnumType()) {
-                return callee_type->AsETSEnumType();
-            }
-            if (callee_type->IsETSStringEnumType()) {
-                return callee_type->AsETSStringEnumType();
-            }
-            return nullptr;
-        }();
-
-        if (enum_interface != nullptr) {
-            ArenaVector<ir::Expression *> arguments(etsg->Allocator()->Adapter());
-
-            checker::Signature *const signature = [expr, callee_object, enum_interface, &arguments]() {
-                const auto &member_proxy_method_name = expr->Signature()->InternalName();
-
-                if (member_proxy_method_name == checker::ETSEnumType::TO_STRING_METHOD_NAME) {
-                    arguments.push_back(callee_object);
-                    return enum_interface->ToStringMethod().global_signature;
-                }
-                if (member_proxy_method_name == checker::ETSEnumType::GET_VALUE_METHOD_NAME) {
-                    arguments.push_back(callee_object);
-                    return enum_interface->GetValueMethod().global_signature;
-                }
-                if (member_proxy_method_name == checker::ETSEnumType::GET_NAME_METHOD_NAME) {
-                    arguments.push_back(callee_object);
-                    return enum_interface->GetNameMethod().global_signature;
-                }
-                if (member_proxy_method_name == checker::ETSEnumType::VALUES_METHOD_NAME) {
-                    return enum_interface->ValuesMethod().global_signature;
-                }
-                if (member_proxy_method_name == checker::ETSEnumType::VALUE_OF_METHOD_NAME) {
-                    arguments.push_back(expr->Arguments().front());
-                    return enum_interface->ValueOfMethod().global_signature;
-                }
-                UNREACHABLE();
-            }();
-
-            ASSERT(signature->ReturnType() == expr->Signature()->ReturnType());
-            etsg->CallStatic(expr, signature, arguments);
-            etsg->SetAccumulatorType(expr->TsType());
+        if (IsSucceedCompilationProxyMemberExpr(expr)) {
             return;
         }
     }
@@ -488,99 +556,32 @@ void ETSCompiler::Compile(const ir::CallExpression *expr) const
 
     ConvertRestArguments(const_cast<checker::ETSChecker *>(etsg->Checker()->AsETSChecker()), expr);
 
-    compiler::VReg dyn_param2;
-
-    // Helper function to avoid branching in non optional cases
-    auto emit_call = [expr, etsg, is_static, is_dynamic, &callee_reg, &dyn_param2]() {
-        if (is_dynamic) {
-            etsg->CallDynamic(expr, callee_reg, dyn_param2, expr->Signature(), expr->Arguments());
-        } else if (is_static) {
-            etsg->CallStatic(expr, expr->Signature(), expr->Arguments());
-        } else if (expr->Signature()->HasSignatureFlag(checker::SignatureFlags::PRIVATE) ||
-                   expr->IsETSConstructorCall() ||
-                   (expr->Callee()->IsMemberExpression() &&
-                    expr->Callee()->AsMemberExpression()->Object()->IsSuperExpression())) {
-            etsg->CallThisStatic(expr, callee_reg, expr->Signature(), expr->Arguments());
-        } else {
-            etsg->CallThisVirtual(expr, callee_reg, expr->Signature(), expr->Arguments());
-        }
-        etsg->SetAccumulatorType(expr->TsType());
-    };
-
     if (is_dynamic) {
-        dyn_param2 = etsg->AllocReg();
-
-        ir::Expression *obj = expr->callee_;
-        std::vector<util::StringView> parts;
-
-        while (obj->IsMemberExpression() && obj->AsMemberExpression()->ObjType()->IsETSDynamicType()) {
-            auto *mem_expr = obj->AsMemberExpression();
-            obj = mem_expr->Object();
-            parts.push_back(mem_expr->Property()->AsIdentifier()->Name());
-        }
-
-        if (!obj->IsMemberExpression() && obj->IsIdentifier()) {
-            auto *var = obj->AsIdentifier()->Variable();
-            auto *data = etsg->VarBinder()->DynamicImportDataForVar(var);
-            if (data != nullptr) {
-                auto *import = data->import;
-                auto *specifier = data->specifier;
-                ASSERT(import->Language().IsDynamic());
-                etsg->LoadAccumulatorDynamicModule(expr, import);
-                if (specifier->IsImportSpecifier()) {
-                    parts.push_back(specifier->AsImportSpecifier()->Imported()->Name());
-                }
-            } else {
-                obj->Compile(etsg);
-            }
-        } else {
-            obj->Compile(etsg);
-        }
-
-        etsg->StoreAccumulator(expr, callee_reg);
-
-        if (!parts.empty()) {
-            std::stringstream ss;
-            for_each(parts.rbegin(), parts.rend(), [&ss](util::StringView sv) { ss << "." << sv; });
-
-            etsg->LoadAccumulatorString(expr, util::UString(ss.str(), etsg->Allocator()).View());
-        } else {
-            auto lang = expr->Callee()->TsType()->IsETSDynamicFunctionType()
-                            ? expr->Callee()->TsType()->AsETSDynamicFunctionType()->Language()
-                            : expr->Callee()->TsType()->AsETSDynamicType()->Language();
-
-            etsg->LoadUndefinedDynamic(expr, lang);
-        }
-
-        etsg->StoreAccumulator(expr, dyn_param2);
-
-        emit_call();
-
-        if (expr->Signature()->ReturnType() != expr->TsType()) {
-            etsg->ApplyConversion(expr, expr->TsType());
-        }
+        CompileDynamic(expr, callee_reg);
     } else if (!is_reference && expr->Callee()->IsIdentifier()) {
         if (!is_static) {
             etsg->LoadThis(expr);
             etsg->StoreAccumulator(expr, callee_reg);
         }
-        emit_call();
+        EmitCall(expr, callee_reg, is_static);
     } else if (!is_reference && expr->Callee()->IsMemberExpression()) {
         if (!is_static) {
             expr->Callee()->AsMemberExpression()->Object()->Compile(etsg);
             etsg->StoreAccumulator(expr, callee_reg);
         }
-        emit_call();
+        EmitCall(expr, callee_reg, is_static);
     } else if (expr->Callee()->IsSuperExpression() || expr->Callee()->IsThisExpression()) {
         ASSERT(!is_reference && expr->IsETSConstructorCall());
         expr->Callee()->Compile(etsg);  // ctor is not a value!
         etsg->SetVRegType(callee_reg, etsg->GetAccumulatorType());
-        emit_call();
+        EmitCall(expr, callee_reg, is_static);
     } else {
         ASSERT(is_reference);
         etsg->CompileAndCheck(expr->Callee());
         etsg->StoreAccumulator(expr, callee_reg);
-        etsg->EmitMaybeOptional(expr, emit_call, expr->IsOptional());
+        etsg->EmitMaybeOptional(
+            expr, [this, expr, is_static, &callee_reg]() { this->EmitCall(expr, callee_reg, is_static); },
+            expr->IsOptional());
     }
 }
 
@@ -1010,7 +1011,6 @@ void ETSCompiler::Compile(const ir::IfStatement *st) const
 {
     ETSGen *etsg = GetETSGen();
     auto res = compiler::Condition::CheckConstantExpr(etsg, st->Test());
-
     if (res == compiler::Condition::Result::CONST_TRUE) {
         st->Consequent()->Compile(etsg);
         return;

@@ -55,7 +55,7 @@ public:
 
     explicit CallExpression(CallExpression const &other, ArenaAllocator *allocator);
 
-    // TODO (csabahurton): these friend relationships can be removed once there are getters for private fields
+    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
     friend class checker::TSAnalyzer;
     friend class checker::ETSAnalyzer;
     friend class compiler::JSCompiler;

@@ -77,27 +77,25 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::Decorator *st) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::MetaProperty *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::MetaProperty *expr) const
 {
-    (void)expr;
+    TSChecker *checker = GetTSChecker();
+    // NOTE: aszilagyi.
+    return checker->GlobalAnyType();
+}
+
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::MethodDefinition *node) const
+{
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::MethodDefinition *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::Property *expr) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::Property *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ScriptFunction *node) const
 {
-    (void)expr;
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check(ir::ScriptFunction *node) const
-{
-    (void)node;
     UNREACHABLE();
 }
 
@@ -107,28 +105,81 @@ checker::Type *TSAnalyzer::Check(ir::SpreadElement *expr) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::TemplateElement *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TemplateElement *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSIndexSignature *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    if (node->TsType() != nullptr) {
+        return node->TsType();
+    }
+
+    const util::StringView &param_name = node->Param()->AsIdentifier()->Name();
+    node->type_annotation_->Check(checker);
+    checker::Type *index_type = node->type_annotation_->GetType(checker);
+    checker::IndexInfo *info =
+        checker->Allocator()->New<checker::IndexInfo>(index_type, param_name, node->Readonly(), node->Start());
+    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
+    checker::ObjectType *placeholder = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
+
+    if (node->Kind() == ir::TSIndexSignature::TSIndexSignatureKind::NUMBER) {
+        placeholder->Desc()->number_index_info = info;
+    } else {
+        placeholder->Desc()->string_index_info = info;
+    }
+
+    node->SetTsType(placeholder);
+    return placeholder;
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSMethodSignature *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    if (node->Computed()) {
+        checker->CheckComputedPropertyName(node->Key());
+    }
+
+    checker::ScopeContext scope_ctx(checker, node->Scope());
+
+    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(node->Params(), signature_info);
+
+    auto *call_signature = checker->Allocator()->New<checker::Signature>(signature_info, checker->GlobalAnyType());
+    node->Variable()->SetTsType(checker->CreateFunctionTypeWithSignature(call_signature));
+
+    if (node->ReturnTypeAnnotation() == nullptr) {
+        checker->ThrowTypeError(
+            "Method signature, which lacks return-type annotation, implicitly has an 'any' return type.",
+            node->Start());
+    }
+
+    node->return_type_annotation_->Check(checker);
+    call_signature->SetReturnType(node->return_type_annotation_->GetType(checker));
+
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSPropertySignature *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    if (node->TypeAnnotation() != nullptr) {
+        node->TypeAnnotation()->Check(checker);
+    }
+
+    if (node->Computed()) {
+        checker->CheckComputedPropertyName(node->Key());
+    }
+
+    if (node->TypeAnnotation() != nullptr) {
+        node->Variable()->SetTsType(node->TypeAnnotation()->GetType(checker));
+        return nullptr;
+    }
+
+    checker->ThrowTypeError("Property implicitly has an 'any' type.", node->Start());
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSSignatureDeclaration *node) const
@@ -555,7 +606,7 @@ checker::Type *TSAnalyzer::Check(ir::NumberLiteral *expr) const
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::RegExpLiteral *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    // NOTE(aszilagyi);
+    // NOTE: aszilagyi
     return checker->GlobalAnyType();
 }
 
@@ -938,7 +989,7 @@ static int32_t ToInt(double num)
         return static_cast<int32_t>(num);
     }
 
-    // TODO(aszilagyi): Perform ECMA defined toInt conversion
+    // NOTE (aszilagyi): Perform ECMA defined toInt conversion
 
     return 0;
 }
@@ -949,9 +1000,55 @@ static uint32_t ToUInt(double num)
         return static_cast<int32_t>(num);
     }
 
-    // TODO(aszilagyi): Perform ECMA defined toInt conversion
+    // NOTE (aszilagyi): Perform ECMA defined toInt conversion
 
     return 0;
+}
+
+varbinder::EnumMemberResult GetOperationResulForDouble(lexer::TokenType type, varbinder::EnumMemberResult left,
+                                                       varbinder::EnumMemberResult right)
+{
+    switch (type) {
+        case lexer::TokenType::PUNCTUATOR_BITWISE_OR: {
+            return static_cast<double>(ToUInt(std::get<double>(left)) | ToUInt(std::get<double>(right)));
+        }
+        case lexer::TokenType::PUNCTUATOR_BITWISE_AND: {
+            return static_cast<double>(ToUInt(std::get<double>(left)) & ToUInt(std::get<double>(right)));
+        }
+        case lexer::TokenType::PUNCTUATOR_BITWISE_XOR: {
+            return static_cast<double>(ToUInt(std::get<double>(left)) ^ ToUInt(std::get<double>(right)));
+        }
+        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT: {  // NOLINTNEXTLINE(hicpp-signed-bitwise)
+            return static_cast<double>(ToInt(std::get<double>(left)) << ToUInt(std::get<double>(right)));
+        }
+        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT: {  // NOLINTNEXTLINE(hicpp-signed-bitwise)
+            return static_cast<double>(ToInt(std::get<double>(left)) >> ToUInt(std::get<double>(right)));
+        }
+        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT: {
+            return static_cast<double>(ToUInt(std::get<double>(left)) >> ToUInt(std::get<double>(right)));
+        }
+        case lexer::TokenType::PUNCTUATOR_PLUS: {
+            return std::get<double>(left) + std::get<double>(right);
+        }
+        case lexer::TokenType::PUNCTUATOR_MINUS: {
+            return std::get<double>(left) - std::get<double>(right);
+        }
+        case lexer::TokenType::PUNCTUATOR_MULTIPLY: {
+            return std::get<double>(left) * std::get<double>(right);
+        }
+        case lexer::TokenType::PUNCTUATOR_DIVIDE: {
+            return std::get<double>(left) / std::get<double>(right);
+        }
+        case lexer::TokenType::PUNCTUATOR_MOD: {
+            return std::fmod(std::get<double>(left), std::get<double>(right));
+        }
+        case lexer::TokenType::PUNCTUATOR_EXPONENTIATION: {
+            return std::pow(std::get<double>(left), std::get<double>(right));
+        }
+        default: {
+            return false;
+        }
+    }
 }
 
 varbinder::EnumMemberResult TSAnalyzer::EvaluateBinaryExpression(checker::TSChecker *checker,
@@ -961,49 +1058,7 @@ varbinder::EnumMemberResult TSAnalyzer::EvaluateBinaryExpression(checker::TSChec
     varbinder::EnumMemberResult left = EvaluateEnumMember(checker, enum_var, expr->AsBinaryExpression()->Left());
     varbinder::EnumMemberResult right = EvaluateEnumMember(checker, enum_var, expr->AsBinaryExpression()->Right());
     if (std::holds_alternative<double>(left) && std::holds_alternative<double>(right)) {
-        switch (expr->AsBinaryExpression()->OperatorType()) {
-            case lexer::TokenType::PUNCTUATOR_BITWISE_OR: {
-                return static_cast<double>(ToUInt(std::get<double>(left)) | ToUInt(std::get<double>(right)));
-            }
-            case lexer::TokenType::PUNCTUATOR_BITWISE_AND: {
-                return static_cast<double>(ToUInt(std::get<double>(left)) & ToUInt(std::get<double>(right)));
-            }
-            case lexer::TokenType::PUNCTUATOR_BITWISE_XOR: {
-                return static_cast<double>(ToUInt(std::get<double>(left)) ^ ToUInt(std::get<double>(right)));
-            }
-            case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT: {  // NOLINTNEXTLINE(hicpp-signed-bitwise)
-                return static_cast<double>(ToInt(std::get<double>(left)) << ToUInt(std::get<double>(right)));
-            }
-            case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT: {  // NOLINTNEXTLINE(hicpp-signed-bitwise)
-                return static_cast<double>(ToInt(std::get<double>(left)) >> ToUInt(std::get<double>(right)));
-            }
-            case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT: {
-                return static_cast<double>(ToUInt(std::get<double>(left)) >> ToUInt(std::get<double>(right)));
-            }
-            case lexer::TokenType::PUNCTUATOR_PLUS: {
-                return std::get<double>(left) + std::get<double>(right);
-            }
-            case lexer::TokenType::PUNCTUATOR_MINUS: {
-                return std::get<double>(left) - std::get<double>(right);
-            }
-            case lexer::TokenType::PUNCTUATOR_MULTIPLY: {
-                return std::get<double>(left) * std::get<double>(right);
-            }
-            case lexer::TokenType::PUNCTUATOR_DIVIDE: {
-                return std::get<double>(left) / std::get<double>(right);
-            }
-            case lexer::TokenType::PUNCTUATOR_MOD: {
-                return std::fmod(std::get<double>(left), std::get<double>(right));
-            }
-            case lexer::TokenType::PUNCTUATOR_EXPONENTIATION: {
-                return std::pow(std::get<double>(left), std::get<double>(right));
-            }
-            default: {
-                break;
-            }
-        }
-
-        return false;
+        GetOperationResulForDouble(expr->AsBinaryExpression()->OperatorType(), left, right);
     }
 
     if (std::holds_alternative<util::StringView>(left) && std::holds_alternative<util::StringView>(right) &&
@@ -1118,10 +1173,21 @@ static void AddEnumValueDeclaration(checker::TSChecker *checker, double number, 
     enum_var->SetValue(variable->Declaration()->Name());
 }
 
-void TSAnalyzer::InferEnumVariableType(checker::TSChecker *checker, varbinder::EnumVariable *variable, double *value,
-                                       bool *init_next, bool *is_literal_enum, bool is_const_enum,
-                                       const ir::Expression *computed_expr) const
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+static constexpr char const INVALID_COMPUTED_WITH_STRING[] =
+    "Computed values are not permitted in an enum with string valued members.";
+static constexpr char const INVALID_CONST_MEMBER[] =
+    "'const' enum member initializers can only contain literal values and other computed enum values.";
+static constexpr char const INVALID_CONST_NAN[] =
+    "'const' enum member initializer was evaluated to disallowed value 'NaN'.";
+static constexpr char const INVALID_CONST_INF[] =
+    "'const' enum member initializer was evaluated to a non-finite value.";
+// NOLINTEND(modernize-avoid-c-arrays)
+
+void TSAnalyzer::InferEnumVariableType(varbinder::EnumVariable *variable, double *value, bool *init_next,
+                                       bool *is_literal_enum, bool is_const_enum) const
 {
+    TSChecker *checker = GetTSChecker();
     const ir::Expression *init = variable->Declaration()->Node()->AsTSEnumMember()->Init();
 
     if (init == nullptr && *init_next) {
@@ -1135,23 +1201,12 @@ void TSAnalyzer::InferEnumVariableType(checker::TSChecker *checker, varbinder::E
     }
 
     ASSERT(init);
-
-    if (IsComputedEnumMember(init)) {
-        if (*is_literal_enum) {
-            checker->ThrowTypeError("Computed values are not permitted in an enum with string valued members.",
-                                    init->Start());
-        }
-
-        computed_expr = init;
+    if (IsComputedEnumMember(init) && *is_literal_enum) {
+        checker->ThrowTypeError(INVALID_COMPUTED_WITH_STRING, init->Start());
     }
 
     varbinder::EnumMemberResult res = EvaluateEnumMember(checker, variable, init);
     if (std::holds_alternative<util::StringView>(res)) {
-        if (computed_expr != nullptr) {
-            checker->ThrowTypeError("Computed values are not permitted in an enum with string valued members.",
-                                    computed_expr->Start());
-        }
-
         *is_literal_enum = true;
         variable->SetTsType(checker->GlobalStringType());
         *init_next = true;
@@ -1160,10 +1215,7 @@ void TSAnalyzer::InferEnumVariableType(checker::TSChecker *checker, varbinder::E
 
     if (std::holds_alternative<bool>(res)) {
         if (is_const_enum) {
-            checker->ThrowTypeError(
-                "const enum member initializers can only contain literal values and other computed enum "
-                "values.",
-                init->Start());
+            checker->ThrowTypeError(INVALID_CONST_MEMBER, init->Start());
         }
 
         *init_next = true;
@@ -1174,16 +1226,12 @@ void TSAnalyzer::InferEnumVariableType(checker::TSChecker *checker, varbinder::E
     variable->SetValue(res);
 
     *value = std::get<double>(res);
-    if (is_const_enum) {
-        if (std::isnan(*value)) {
-            checker->ThrowTypeError("'const' enum member initializer was evaluated to disallowed value 'NaN'.",
-                                    init->Start());
-        }
+    if (is_const_enum && std::isnan(*value)) {
+        checker->ThrowTypeError(INVALID_CONST_NAN, init->Start());
+    }
 
-        if (std::isinf(*value)) {
-            checker->ThrowTypeError("'const' enum member initializer was evaluated to a non-finite value.",
-                                    init->Start());
-        }
+    if (is_const_enum && std::isinf(*value)) {
+        checker->ThrowTypeError(INVALID_CONST_INF, init->Start());
     }
 
     *init_next = false;
@@ -1198,7 +1246,6 @@ checker::Type *TSAnalyzer::InferType(checker::TSChecker *checker, bool is_const,
 
     bool init_next = false;
     bool is_literal_enum = false;
-    const ir::Expression *computed_expr = nullptr;
     size_t locals_size = enum_scope->Decls().size();
 
     for (size_t i = 0; i < locals_size; i++) {
@@ -1206,8 +1253,7 @@ checker::Type *TSAnalyzer::InferType(checker::TSChecker *checker, bool is_const,
         varbinder::Variable *current_var =
             enum_scope->FindLocal(current_name, varbinder::ResolveBindingOptions::BINDINGS);
         ASSERT(current_var && current_var->IsEnumVariable());
-        InferEnumVariableType(checker, current_var->AsEnumVariable(), &value, &init_next, &is_literal_enum, is_const,
-                              computed_expr);
+        InferEnumVariableType(current_var->AsEnumVariable(), &value, &init_next, &is_literal_enum, is_const);
     }
 
     checker::Type *enum_type = checker->Allocator()->New<checker::EnumLiteralType>(

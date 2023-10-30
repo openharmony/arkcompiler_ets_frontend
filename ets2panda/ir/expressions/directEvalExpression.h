@@ -32,7 +32,7 @@ public:
         type_ = AstNodeType::DIRECT_EVAL;
     }
 
-    // TODO (csabahurton): friend relationship can be removed once there are getters for private fields
+    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
     friend class compiler::JSCompiler;
 
     void Compile(compiler::PandaGen *pg) const override;

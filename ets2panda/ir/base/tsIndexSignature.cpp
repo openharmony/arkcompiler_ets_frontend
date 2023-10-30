@@ -15,10 +15,9 @@
 
 #include "tsIndexSignature.h"
 
-#include "ir/astDump.h"
-#include "ir/expressions/identifier.h"
-
 #include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 TSIndexSignature::TSIndexSignatureKind TSIndexSignature::Kind() const noexcept
@@ -47,35 +46,24 @@ void TSIndexSignature::Dump(ir::AstDumper *dumper) const
                  {"readonly", readonly_}});
 }
 
-void TSIndexSignature::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSIndexSignature::Check([[maybe_unused]] checker::TSChecker *checker)
+void TSIndexSignature::Compile(compiler::PandaGen *pg) const
 {
-    if (TsType() != nullptr) {
-        return TsType();
-    }
-
-    const util::StringView &param_name = param_->AsIdentifier()->Name();
-    type_annotation_->Check(checker);
-    checker::Type *index_type = type_annotation_->GetType(checker);
-    checker::IndexInfo *info =
-        checker->Allocator()->New<checker::IndexInfo>(index_type, param_name, readonly_, this->Start());
-    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
-    checker::ObjectType *placeholder = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
-
-    if (Kind() == ir::TSIndexSignature::TSIndexSignatureKind::NUMBER) {
-        placeholder->Desc()->number_index_info = info;
-    } else {
-        placeholder->Desc()->string_index_info = info;
-    }
-
-    SetTsType(placeholder);
-    return placeholder;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *TSIndexSignature::Check([[maybe_unused]] checker::ETSChecker *checker)
+void TSIndexSignature::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *TSIndexSignature::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *TSIndexSignature::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

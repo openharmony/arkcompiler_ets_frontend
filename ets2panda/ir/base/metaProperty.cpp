@@ -15,10 +15,9 @@
 
 #include "metaProperty.h"
 
-#include "es2panda.h"
-#include "compiler/core/pandagen.h"
 #include "checker/TSchecker.h"
-#include "ir/astDump.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void MetaProperty::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -45,28 +44,24 @@ void MetaProperty::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "MetaProperty"}, {"kind", kind}});
 }
 
-void MetaProperty::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void MetaProperty::Compile(compiler::PandaGen *pg) const
 {
-    if (kind_ == ir::MetaProperty::MetaPropertyKind::NEW_TARGET) {
-        pg->GetNewTarget(this);
-        return;
-    }
-
-    if (kind_ == ir::MetaProperty::MetaPropertyKind::IMPORT_META) {
-        // NOTE
-        pg->Unimplemented();
-    }
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *MetaProperty::Check([[maybe_unused]] checker::TSChecker *checker)
+void MetaProperty::Compile(compiler::ETSGen *etsg) const
 {
-    // NOTE: aszilagyi.
-    return checker->GlobalAnyType();
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *MetaProperty::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *MetaProperty::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *MetaProperty::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
