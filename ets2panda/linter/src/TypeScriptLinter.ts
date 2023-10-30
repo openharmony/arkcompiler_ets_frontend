@@ -1864,9 +1864,7 @@ export class TypeScriptLinter {
     if (type.aliasSymbol != undefined) {
       return;
     }
-    const isObject = type.flags & ts.TypeFlags.Object;
-    const isReference = (type as ts.ObjectType).objectFlags & ts.ObjectFlags.Reference;
-    if (isObject && isReference) {
+    if (this.tsUtils.isObjectType(type) && !!(type.objectFlags & ts.ObjectFlags.Reference)) {
       this.handleInferredObjectreference(type, decl);
       return;
     }
