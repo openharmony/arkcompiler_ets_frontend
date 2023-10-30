@@ -15,7 +15,9 @@
 
 #include "tsExternalModuleReference.h"
 
-#include "ir/astDump.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void TSExternalModuleReference::TransformChildren(const NodeTransformer &cb)
@@ -33,15 +35,23 @@ void TSExternalModuleReference::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSExternalModuleReference"}, {"expression", expr_}});
 }
 
-void TSExternalModuleReference::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSExternalModuleReference::Check([[maybe_unused]] checker::TSChecker *checker)
+void TSExternalModuleReference::Compile(compiler::PandaGen *pg) const
 {
-    return nullptr;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *TSExternalModuleReference::Check([[maybe_unused]] checker::ETSChecker *checker)
+void TSExternalModuleReference::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *TSExternalModuleReference::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *TSExternalModuleReference::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

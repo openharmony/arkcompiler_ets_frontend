@@ -20,15 +20,6 @@
 #include "checker/ETSchecker.h"
 #include "checker/ets/castingContext.h"
 #include "checker/ets/typeRelationContext.h"
-#include "ir/astNode.h"
-#include "ir/base/catchClause.h"
-#include "ir/base/classProperty.h"
-#include "ir/base/classStaticBlock.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/objectExpression.h"
-#include "ir/expressions/arrayExpression.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/statements/returnStatement.h"
 #include "util/helpers.h"
 
 namespace panda::es2panda::checker {
@@ -954,9 +945,8 @@ checker::Type *ETSAnalyzer::Check(ir::WhileStatement *st) const
     UNREACHABLE();
 }
 // from ts folder
-checker::Type *ETSAnalyzer::Check(ir::TSAnyKeyword *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSAnyKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -978,9 +968,8 @@ checker::Type *ETSAnalyzer::Check(ir::TSBigintKeyword *node) const
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSBooleanKeyword *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSBooleanKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1004,19 +993,36 @@ checker::Type *ETSAnalyzer::Check(ir::TSConstructorType *node) const
 
 checker::Type *ETSAnalyzer::Check(ir::TSEnumDeclaration *st) const
 {
-    (void)st;
+    ETSChecker *checker = GetETSChecker();
+    varbinder::Variable *enum_var = st->Key()->Variable();
+    ASSERT(enum_var != nullptr);
+
+    if (enum_var->TsType() == nullptr) {
+        checker::Type *ets_enum_type;
+        if (auto *const item_init = st->Members().front()->AsTSEnumMember()->Init(); item_init->IsNumberLiteral()) {
+            ets_enum_type = checker->CreateETSEnumType(st);
+        } else if (item_init->IsStringLiteral()) {
+            ets_enum_type = checker->CreateETSStringEnumType(st);
+        } else {
+            checker->ThrowTypeError("Invalid enumeration value type.", st->Start());
+        }
+        st->SetTsType(ets_enum_type);
+        ets_enum_type->SetVariable(enum_var);
+        enum_var->SetTsType(ets_enum_type);
+    } else if (st->TsType() == nullptr) {
+        st->SetTsType(enum_var->TsType());
+    }
+
+    return st->TsType();
+}
+
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSEnumMember *st) const
+{
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSEnumMember *st) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSExternalModuleReference *expr) const
 {
-    (void)st;
-    UNREACHABLE();
-}
-
-checker::Type *ETSAnalyzer::Check(ir::TSExternalModuleReference *expr) const
-{
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1122,15 +1128,13 @@ checker::Type *ETSAnalyzer::Check(ir::TSNullKeyword *node) const
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSNumberKeyword *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSNumberKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSObjectKeyword *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSObjectKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1152,9 +1156,8 @@ checker::Type *ETSAnalyzer::Check(ir::TSQualifiedName *expr) const
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSStringKeyword *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSStringKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1230,9 +1233,8 @@ checker::Type *ETSAnalyzer::Check(ir::TSTypeReference *node) const
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSUndefinedKeyword *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSUndefinedKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1242,15 +1244,13 @@ checker::Type *ETSAnalyzer::Check(ir::TSUnionType *node) const
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSUnknownKeyword *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSUnknownKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::TSVoidKeyword *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSVoidKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 

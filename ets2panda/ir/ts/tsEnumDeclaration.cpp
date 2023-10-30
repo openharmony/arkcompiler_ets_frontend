@@ -15,22 +15,11 @@
 
 #include "tsEnumDeclaration.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "varbinder/scope.h"
 #include "util/helpers.h"
-#include "ir/astDump.h"
-#include "ir/base/decorator.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/expressions/identifier.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/expressions/memberExpression.h"
-#include "ir/expressions/unaryExpression.h"
-#include "ir/expressions/binaryExpression.h"
-#include "ir/expressions/templateLiteral.h"
-#include "ir/expressions/literals/stringLiteral.h"
-#include "ir/expressions/literals/numberLiteral.h"
-#include "ir/ts/tsEnumMember.h"
-#include "checker/TSchecker.h"
-#include "checker/ETSchecker.h"
 
 namespace panda::es2panda::ir {
 void TSEnumDeclaration::TransformChildren(const NodeTransformer &cb)
@@ -67,8 +56,6 @@ void TSEnumDeclaration::Dump(ir::AstDumper *dumper) const
                  {"members", members_},
                  {"const", is_const_}});
 }
-
-void TSEnumDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
 int32_t ToInt(double num)
 {
@@ -382,70 +369,23 @@ void InferEnumVariableType(checker::TSChecker *checker, varbinder::EnumVariable 
     AddEnumValueDeclaration(checker, *value, variable);
 }
 
-checker::Type *TSEnumDeclaration::InferType(checker::TSChecker *checker, bool is_const) const
+void TSEnumDeclaration::Compile(compiler::PandaGen *pg) const
 {
-    double value = -1.0;
-
-    varbinder::LocalScope *enum_scope = checker->Scope()->AsLocalScope();
-
-    bool init_next = false;
-    bool is_literal_enum = false;
-    const ir::Expression *computed_expr = nullptr;
-    size_t locals_size = enum_scope->Decls().size();
-
-    for (size_t i = 0; i < locals_size; i++) {
-        const util::StringView &current_name = enum_scope->Decls()[i]->Name();
-        varbinder::Variable *current_var =
-            enum_scope->FindLocal(current_name, varbinder::ResolveBindingOptions::BINDINGS);
-        ASSERT(current_var && current_var->IsEnumVariable());
-        InferEnumVariableType(checker, current_var->AsEnumVariable(), &value, &init_next, &is_literal_enum, is_const,
-                              computed_expr);
-    }
-
-    checker::Type *enum_type = checker->Allocator()->New<checker::EnumLiteralType>(
-        key_->Name(), checker->Scope(),
-        is_literal_enum ? checker::EnumLiteralType::EnumLiteralTypeKind::LITERAL
-                        : checker::EnumLiteralType::EnumLiteralTypeKind::NUMERIC);
-
-    return enum_type;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *TSEnumDeclaration::Check([[maybe_unused]] checker::TSChecker *checker)
+void TSEnumDeclaration::Compile(compiler::ETSGen *etsg) const
 {
-    varbinder::Variable *enum_var = key_->Variable();
-    ASSERT(enum_var);
+    etsg->GetAstCompiler()->Compile(this);
+}
 
-    if (enum_var->TsType() == nullptr) {
-        checker::ScopeContext scope_ctx(checker, scope_);
-        checker::Type *enum_type = InferType(checker, is_const_);
-        enum_type->SetVariable(enum_var);
-        enum_var->SetTsType(enum_type);
-    }
-
-    return nullptr;
+checker::Type *TSEnumDeclaration::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSEnumDeclaration::Check(checker::ETSChecker *const checker)
 {
-    varbinder::Variable *enum_var = key_->Variable();
-    ASSERT(enum_var != nullptr);
-
-    if (enum_var->TsType() == nullptr) {
-        checker::Type *ets_enum_type;
-        if (auto *const item_init = members_.front()->AsTSEnumMember()->Init(); item_init->IsNumberLiteral()) {
-            ets_enum_type = checker->CreateETSEnumType(this);
-        } else if (item_init->IsStringLiteral()) {
-            ets_enum_type = checker->CreateETSStringEnumType(this);
-        } else {
-            checker->ThrowTypeError("Invalid enumeration value type.", Start());
-        }
-        SetTsType(ets_enum_type);
-        ets_enum_type->SetVariable(enum_var);
-        enum_var->SetTsType(ets_enum_type);
-    } else if (TsType() == nullptr) {
-        SetTsType(enum_var->TsType());
-    }
-
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

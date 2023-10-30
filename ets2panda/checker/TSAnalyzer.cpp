@@ -17,7 +17,6 @@
 
 #include "checker/TSchecker.h"
 #include "checker/ts/destructuringContext.h"
-#include "util/helpers.h"
 
 namespace panda::es2panda::checker {
 
@@ -671,10 +670,9 @@ checker::Type *TSAnalyzer::Check(ir::WhileStatement *st) const
     UNREACHABLE();
 }
 // from ts folder
-checker::Type *TSAnalyzer::Check(ir::TSAnyKeyword *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSAnyKeyword *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSArrayType *node) const
@@ -695,10 +693,9 @@ checker::Type *TSAnalyzer::Check(ir::TSBigintKeyword *node) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::TSBooleanKeyword *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSBooleanKeyword *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSClassImplements *expr) const
@@ -719,21 +716,348 @@ checker::Type *TSAnalyzer::Check(ir::TSConstructorType *node) const
     UNREACHABLE();
 }
 
+static varbinder::EnumMemberResult EvaluateIdentifier(checker::TSChecker *checker, varbinder::EnumVariable *enum_var,
+                                                      const ir::Identifier *expr)
+{
+    if (expr->Name() == "NaN") {
+        return std::nan("");
+    }
+    if (expr->Name() == "Infinity") {
+        return std::numeric_limits<double>::infinity();
+    }
+
+    varbinder::Variable *enum_member = expr->AsIdentifier()->Variable();
+
+    if (enum_member == nullptr) {
+        checker->ThrowTypeError({"Cannot find name ", expr->AsIdentifier()->Name()},
+                                enum_var->Declaration()->Node()->Start());
+    }
+
+    if (enum_member->IsEnumVariable()) {
+        varbinder::EnumVariable *expr_enum_var = enum_member->AsEnumVariable();
+        if (std::holds_alternative<bool>(expr_enum_var->Value())) {
+            checker->ThrowTypeError(
+                "A member initializer in a enum declaration cannot reference members declared after it, "
+                "including "
+                "members defined in other enums.",
+                enum_var->Declaration()->Node()->Start());
+        }
+
+        return expr_enum_var->Value();
+    }
+
+    return false;
+}
+
+static int32_t ToInt(double num)
+{
+    if (num >= std::numeric_limits<int32_t>::min() && num <= std::numeric_limits<int32_t>::max()) {
+        return static_cast<int32_t>(num);
+    }
+
+    // TODO(aszilagyi): Perform ECMA defined toInt conversion
+
+    return 0;
+}
+
+static uint32_t ToUInt(double num)
+{
+    if (num >= std::numeric_limits<uint32_t>::min() && num <= std::numeric_limits<uint32_t>::max()) {
+        return static_cast<int32_t>(num);
+    }
+
+    // TODO(aszilagyi): Perform ECMA defined toInt conversion
+
+    return 0;
+}
+
+varbinder::EnumMemberResult TSAnalyzer::EvaluateBinaryExpression(checker::TSChecker *checker,
+                                                                 varbinder::EnumVariable *enum_var,
+                                                                 const ir::BinaryExpression *expr) const
+{
+    varbinder::EnumMemberResult left = EvaluateEnumMember(checker, enum_var, expr->AsBinaryExpression()->Left());
+    varbinder::EnumMemberResult right = EvaluateEnumMember(checker, enum_var, expr->AsBinaryExpression()->Right());
+    if (std::holds_alternative<double>(left) && std::holds_alternative<double>(right)) {
+        switch (expr->AsBinaryExpression()->OperatorType()) {
+            case lexer::TokenType::PUNCTUATOR_BITWISE_OR: {
+                return static_cast<double>(ToUInt(std::get<double>(left)) | ToUInt(std::get<double>(right)));
+            }
+            case lexer::TokenType::PUNCTUATOR_BITWISE_AND: {
+                return static_cast<double>(ToUInt(std::get<double>(left)) & ToUInt(std::get<double>(right)));
+            }
+            case lexer::TokenType::PUNCTUATOR_BITWISE_XOR: {
+                return static_cast<double>(ToUInt(std::get<double>(left)) ^ ToUInt(std::get<double>(right)));
+            }
+            case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT: {  // NOLINTNEXTLINE(hicpp-signed-bitwise)
+                return static_cast<double>(ToInt(std::get<double>(left)) << ToUInt(std::get<double>(right)));
+            }
+            case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT: {  // NOLINTNEXTLINE(hicpp-signed-bitwise)
+                return static_cast<double>(ToInt(std::get<double>(left)) >> ToUInt(std::get<double>(right)));
+            }
+            case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT: {
+                return static_cast<double>(ToUInt(std::get<double>(left)) >> ToUInt(std::get<double>(right)));
+            }
+            case lexer::TokenType::PUNCTUATOR_PLUS: {
+                return std::get<double>(left) + std::get<double>(right);
+            }
+            case lexer::TokenType::PUNCTUATOR_MINUS: {
+                return std::get<double>(left) - std::get<double>(right);
+            }
+            case lexer::TokenType::PUNCTUATOR_MULTIPLY: {
+                return std::get<double>(left) * std::get<double>(right);
+            }
+            case lexer::TokenType::PUNCTUATOR_DIVIDE: {
+                return std::get<double>(left) / std::get<double>(right);
+            }
+            case lexer::TokenType::PUNCTUATOR_MOD: {
+                return std::fmod(std::get<double>(left), std::get<double>(right));
+            }
+            case lexer::TokenType::PUNCTUATOR_EXPONENTIATION: {
+                return std::pow(std::get<double>(left), std::get<double>(right));
+            }
+            default: {
+                break;
+            }
+        }
+
+        return false;
+    }
+
+    if (std::holds_alternative<util::StringView>(left) && std::holds_alternative<util::StringView>(right) &&
+        expr->AsBinaryExpression()->OperatorType() == lexer::TokenType::PUNCTUATOR_PLUS) {
+        std::stringstream ss;
+        ss << std::get<util::StringView>(left) << std::get<util::StringView>(right);
+
+        util::UString res(ss.str(), checker->Allocator());
+        return res.View();
+    }
+
+    return false;
+}
+
+varbinder::EnumMemberResult TSAnalyzer::EvaluateUnaryExpression(checker::TSChecker *checker,
+                                                                varbinder::EnumVariable *enum_var,
+                                                                const ir::UnaryExpression *expr) const
+{
+    varbinder::EnumMemberResult value = EvaluateEnumMember(checker, enum_var, expr->Argument());
+    if (!std::holds_alternative<double>(value)) {
+        return false;
+    }
+
+    switch (expr->OperatorType()) {
+        case lexer::TokenType::PUNCTUATOR_PLUS: {
+            return std::get<double>(value);
+        }
+        case lexer::TokenType::PUNCTUATOR_MINUS: {
+            return -std::get<double>(value);
+        }
+        case lexer::TokenType::PUNCTUATOR_TILDE: {
+            return static_cast<double>(~ToInt(std::get<double>(value)));  // NOLINT(hicpp-signed-bitwise)
+        }
+        default: {
+            break;
+        }
+    }
+
+    return false;
+}
+
+varbinder::EnumMemberResult TSAnalyzer::EvaluateEnumMember(checker::TSChecker *checker,
+                                                           varbinder::EnumVariable *enum_var,
+                                                           const ir::AstNode *expr) const
+{
+    switch (expr->Type()) {
+        case ir::AstNodeType::UNARY_EXPRESSION: {
+            return EvaluateUnaryExpression(checker, enum_var, expr->AsUnaryExpression());
+        }
+        case ir::AstNodeType::BINARY_EXPRESSION: {
+            return EvaluateBinaryExpression(checker, enum_var, expr->AsBinaryExpression());
+        }
+        case ir::AstNodeType::NUMBER_LITERAL: {
+            return expr->AsNumberLiteral()->Number().GetDouble();
+        }
+        case ir::AstNodeType::STRING_LITERAL: {
+            return expr->AsStringLiteral()->Str();
+        }
+        case ir::AstNodeType::IDENTIFIER: {
+            return EvaluateIdentifier(checker, enum_var, expr->AsIdentifier());
+        }
+        case ir::AstNodeType::MEMBER_EXPRESSION: {
+            return EvaluateEnumMember(checker, enum_var, expr->AsMemberExpression());
+        }
+        default:
+            break;
+    }
+
+    return false;
+}
+
+static bool IsComputedEnumMember(const ir::Expression *init)
+{
+    if (init->IsLiteral()) {
+        return !init->AsLiteral()->IsStringLiteral() && !init->AsLiteral()->IsNumberLiteral();
+    }
+
+    if (init->IsTemplateLiteral()) {
+        return !init->AsTemplateLiteral()->Quasis().empty();
+    }
+
+    return true;
+}
+
+static void AddEnumValueDeclaration(checker::TSChecker *checker, double number, varbinder::EnumVariable *variable)
+{
+    variable->SetTsType(checker->GlobalNumberType());
+
+    util::StringView member_str = util::Helpers::ToStringView(checker->Allocator(), number);
+
+    varbinder::LocalScope *enum_scope = checker->Scope()->AsLocalScope();
+    varbinder::Variable *res = enum_scope->FindLocal(member_str, varbinder::ResolveBindingOptions::BINDINGS);
+    varbinder::EnumVariable *enum_var = nullptr;
+
+    if (res == nullptr) {
+        auto *decl = checker->Allocator()->New<varbinder::EnumDecl>(member_str);
+        decl->BindNode(variable->Declaration()->Node());
+        enum_scope->AddDecl(checker->Allocator(), decl, ScriptExtension::TS);
+        res = enum_scope->FindLocal(member_str, varbinder::ResolveBindingOptions::BINDINGS);
+        ASSERT(res && res->IsEnumVariable());
+        enum_var = res->AsEnumVariable();
+        enum_var->AsEnumVariable()->SetBackReference();
+        enum_var->SetTsType(checker->GlobalStringType());
+    } else {
+        ASSERT(res->IsEnumVariable());
+        enum_var = res->AsEnumVariable();
+        auto *decl = checker->Allocator()->New<varbinder::EnumDecl>(member_str);
+        decl->BindNode(variable->Declaration()->Node());
+        enum_var->ResetDecl(decl);
+    }
+
+    enum_var->SetValue(variable->Declaration()->Name());
+}
+
+void TSAnalyzer::InferEnumVariableType(checker::TSChecker *checker, varbinder::EnumVariable *variable, double *value,
+                                       bool *init_next, bool *is_literal_enum, bool is_const_enum,
+                                       const ir::Expression *computed_expr) const
+{
+    const ir::Expression *init = variable->Declaration()->Node()->AsTSEnumMember()->Init();
+
+    if (init == nullptr && *init_next) {
+        checker->ThrowTypeError("Enum member must have initializer.", variable->Declaration()->Node()->Start());
+    }
+
+    if (init == nullptr && !*init_next) {
+        variable->SetValue(++(*value));
+        AddEnumValueDeclaration(checker, *value, variable);
+        return;
+    }
+
+    ASSERT(init);
+
+    if (IsComputedEnumMember(init)) {
+        if (*is_literal_enum) {
+            checker->ThrowTypeError("Computed values are not permitted in an enum with string valued members.",
+                                    init->Start());
+        }
+
+        computed_expr = init;
+    }
+
+    varbinder::EnumMemberResult res = EvaluateEnumMember(checker, variable, init);
+    if (std::holds_alternative<util::StringView>(res)) {
+        if (computed_expr != nullptr) {
+            checker->ThrowTypeError("Computed values are not permitted in an enum with string valued members.",
+                                    computed_expr->Start());
+        }
+
+        *is_literal_enum = true;
+        variable->SetTsType(checker->GlobalStringType());
+        *init_next = true;
+        return;
+    }
+
+    if (std::holds_alternative<bool>(res)) {
+        if (is_const_enum) {
+            checker->ThrowTypeError(
+                "const enum member initializers can only contain literal values and other computed enum "
+                "values.",
+                init->Start());
+        }
+
+        *init_next = true;
+        return;
+    }
+
+    ASSERT(std::holds_alternative<double>(res));
+    variable->SetValue(res);
+
+    *value = std::get<double>(res);
+    if (is_const_enum) {
+        if (std::isnan(*value)) {
+            checker->ThrowTypeError("'const' enum member initializer was evaluated to disallowed value 'NaN'.",
+                                    init->Start());
+        }
+
+        if (std::isinf(*value)) {
+            checker->ThrowTypeError("'const' enum member initializer was evaluated to a non-finite value.",
+                                    init->Start());
+        }
+    }
+
+    *init_next = false;
+    AddEnumValueDeclaration(checker, *value, variable);
+}
+
+checker::Type *TSAnalyzer::InferType(checker::TSChecker *checker, bool is_const, ir::TSEnumDeclaration *st) const
+{
+    double value = -1.0;
+
+    varbinder::LocalScope *enum_scope = checker->Scope()->AsLocalScope();
+
+    bool init_next = false;
+    bool is_literal_enum = false;
+    const ir::Expression *computed_expr = nullptr;
+    size_t locals_size = enum_scope->Decls().size();
+
+    for (size_t i = 0; i < locals_size; i++) {
+        const util::StringView &current_name = enum_scope->Decls()[i]->Name();
+        varbinder::Variable *current_var =
+            enum_scope->FindLocal(current_name, varbinder::ResolveBindingOptions::BINDINGS);
+        ASSERT(current_var && current_var->IsEnumVariable());
+        InferEnumVariableType(checker, current_var->AsEnumVariable(), &value, &init_next, &is_literal_enum, is_const,
+                              computed_expr);
+    }
+
+    checker::Type *enum_type = checker->Allocator()->New<checker::EnumLiteralType>(
+        st->Key()->Name(), checker->Scope(),
+        is_literal_enum ? checker::EnumLiteralType::EnumLiteralTypeKind::LITERAL
+                        : checker::EnumLiteralType::EnumLiteralTypeKind::NUMERIC);
+
+    return enum_type;
+}
+
 checker::Type *TSAnalyzer::Check(ir::TSEnumDeclaration *st) const
 {
-    (void)st;
+    TSChecker *checker = GetTSChecker();
+    varbinder::Variable *enum_var = st->Key()->Variable();
+    ASSERT(enum_var);
+
+    if (enum_var->TsType() == nullptr) {
+        checker::ScopeContext scope_ctx(checker, st->Scope());
+        checker::Type *enum_type = InferType(checker, st->IsConst(), st);
+        enum_type->SetVariable(enum_var);
+        enum_var->SetTsType(enum_type);
+    }
+
+    return nullptr;
+}
+
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSEnumMember *st) const
+{
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::TSEnumMember *st) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSExternalModuleReference *expr) const
 {
-    (void)st;
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check(ir::TSExternalModuleReference *expr) const
-{
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -839,15 +1163,13 @@ checker::Type *TSAnalyzer::Check(ir::TSNullKeyword *node) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::TSNumberKeyword *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSNumberKeyword *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check(ir::TSObjectKeyword *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSObjectKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -869,10 +1191,9 @@ checker::Type *TSAnalyzer::Check(ir::TSQualifiedName *expr) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::TSStringKeyword *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSStringKeyword *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSThisType *node) const
@@ -947,10 +1268,9 @@ checker::Type *TSAnalyzer::Check(ir::TSTypeReference *node) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::TSUndefinedKeyword *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSUndefinedKeyword *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    return nullptr;
 }
 
 checker::Type *TSAnalyzer::Check(ir::TSUnionType *node) const
@@ -959,16 +1279,14 @@ checker::Type *TSAnalyzer::Check(ir::TSUnionType *node) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::TSUnknownKeyword *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSUnknownKeyword *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    return nullptr;
 }
 
-checker::Type *TSAnalyzer::Check(ir::TSVoidKeyword *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TSVoidKeyword *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    return nullptr;
 }
 
 }  // namespace panda::es2panda::checker
