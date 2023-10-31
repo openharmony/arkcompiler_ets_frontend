@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+/**
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,20 +13,33 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_COMPILER_LOWERING_GENERATE_DECLARATIONS_H
-#define ES2PANDA_COMPILER_LOWERING_GENERATE_DECLARATIONS_H
+#ifndef ES2PANDA_COMPILER_PLUGIN_PHASE_H
+#define ES2PANDA_COMPILER_PLUGIN_PHASE_H
 
 #include "compiler/lowering/phase.h"
+#include "util/plugin.h"
 
 namespace panda::es2panda::compiler {
 
-class GenerateTsDeclarationsPhase : public Phase {
+class PluginPhase : public Phase {
 public:
+    constexpr PluginPhase(char const *name, es2panda_ContextState context_state,
+                          void (util::Plugin::*method_call)(es2panda_Context *) const) noexcept
+        : name_(name), context_state_(context_state), method_call_(method_call)
+    {
+    }
+
     std::string_view Name() override
     {
-        return "generate-ts-declarations";
+        return name_;
     }
+
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+
+private:
+    char const *name_;
+    es2panda_ContextState context_state_;
+    void (util::Plugin::*method_call_)(es2panda_Context *) const;
 };
 
 }  // namespace panda::es2panda::compiler

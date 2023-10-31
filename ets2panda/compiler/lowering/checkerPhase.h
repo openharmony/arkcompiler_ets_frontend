@@ -20,13 +20,12 @@
 
 namespace panda::es2panda::compiler {
 class CheckerPhase : public Phase {
-    std::string const &Name() override
+    std::string_view Name() override
     {
-        static std::string const NAME = "checker";
-        return NAME;
+        return "checker";
     }
 
-    bool Perform(CompilerContext *ctx, parser::Program *program) override;
+    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
 };
 }  // namespace panda::es2panda::compiler
 

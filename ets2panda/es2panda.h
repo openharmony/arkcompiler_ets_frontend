@@ -18,6 +18,7 @@
 
 #include "macros.h"
 #include "util/arktsconfig.h"
+#include "util/plugin.h"
 #include "util/ustring.h"
 
 #include <string>
@@ -100,6 +101,7 @@ struct CompilerOptions {
     bool parse_only {};
     std::string std_lib {};
     std::string ts_decl_out {};
+    std::vector<std::string> plugins {};
     std::unordered_set<std::string> skip_phases {};
     std::unordered_set<std::string> dump_before_phases {};
     std::unordered_set<std::string> dump_after_phases {};
@@ -192,6 +194,7 @@ class Compiler {
 public:
     explicit Compiler(ScriptExtension ext);
     explicit Compiler(ScriptExtension ext, size_t thread_count);
+    explicit Compiler(ScriptExtension ext, size_t thread_count, std::vector<util::Plugin> &&plugins);
     ~Compiler();
     NO_COPY_SEMANTIC(Compiler);
     NO_MOVE_SEMANTIC(Compiler);
@@ -212,7 +215,13 @@ public:
         return error_;
     }
 
+    std::vector<util::Plugin> const &Plugins()
+    {
+        return plugins_;
+    }
+
 private:
+    std::vector<util::Plugin> const plugins_;
     compiler::CompilerImpl *compiler_;
     Error error_;
     ScriptExtension ext_;

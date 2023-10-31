@@ -37,10 +37,9 @@
 
 namespace panda::es2panda::compiler {
 
-std::string const &OpAssignmentLowering::Name()
+std::string_view OpAssignmentLowering::Name()
 {
-    static std::string const NAME = "op-assignment";
-    return NAME;
+    return "op-assignment";
 }
 
 struct Conversion {
@@ -209,9 +208,9 @@ ir::Expression *HandleOpAssignment(checker::ETSChecker *checker, parser::ETSPars
     return lowering_result;
 }
 
-bool OpAssignmentLowering::Perform(CompilerContext *ctx, parser::Program *program)
+bool OpAssignmentLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    if (ctx->Options()->compilation_mode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->compiler_context->Options()->compilation_mode == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, ext_programs] : program->ExternalSources()) {
             (void)_;
             for (auto *ext_prog : ext_programs) {
@@ -220,8 +219,8 @@ bool OpAssignmentLowering::Perform(CompilerContext *ctx, parser::Program *progra
         }
     }
 
-    auto *const checker = ctx->Checker()->AsETSChecker();
-    auto *const parser = ctx->GetParser()->AsETSParser();
+    auto *const parser = ctx->parser->AsETSParser();
+    checker::ETSChecker *checker = ctx->checker->AsETSChecker();
 
     program->Ast()->TransformChildrenRecursively([checker, parser](ir::AstNode *ast) -> ir::AstNode * {
         if (ast->IsAssignmentExpression() &&
@@ -235,9 +234,9 @@ bool OpAssignmentLowering::Perform(CompilerContext *ctx, parser::Program *progra
     return true;
 }
 
-bool OpAssignmentLowering::Postcondition(CompilerContext *ctx, const parser::Program *program)
+bool OpAssignmentLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
-    if (ctx->Options()->compilation_mode == CompilationMode::GEN_STD_LIB) {
+    if (ctx->compiler_context->Options()->compilation_mode == CompilationMode::GEN_STD_LIB) {
         for (auto &[_, ext_programs] : program->ExternalSources()) {
             (void)_;
             for (auto *ext_prog : ext_programs) {

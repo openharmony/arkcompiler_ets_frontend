@@ -43,6 +43,26 @@ public:
     explicit ETSNewMultiDimArrayInstanceExpression(ETSNewMultiDimArrayInstanceExpression const &other,
                                                    ArenaAllocator *allocator);
 
+    ir::TypeNode *TypeReference()
+    {
+        return type_reference_;
+    }
+
+    ir::TypeNode const *TypeReference() const
+    {
+        return type_reference_;
+    }
+
+    ArenaVector<ir::Expression *> &Dimensions()
+    {
+        return dimensions_;
+    }
+
+    ArenaVector<ir::Expression *> const &Dimension() const
+    {
+        return dimensions_;
+    }
+
     [[nodiscard]] checker::Signature *Signature() noexcept
     {
         return signature_;

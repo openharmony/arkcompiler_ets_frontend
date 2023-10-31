@@ -1,0 +1,16 @@
+Hi there!
+After parse
+ETSGLOBAL
+_$init$_
+_$init$_
+main
+main
+m
+n
+console
+log
+m
+n
+<cctor>
+After check
+After lowerings

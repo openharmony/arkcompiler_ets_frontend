@@ -150,6 +150,11 @@ public:
         return super_class_;
     }
 
+    void SetSuper(Expression *super_class)
+    {
+        super_class_ = super_class;
+    }
+
     [[nodiscard]] bool IsGlobal() const noexcept
     {
         return (modifiers_ & ClassDefinitionModifiers::GLOBAL) != 0;
@@ -214,6 +219,11 @@ public:
         return ctor_;
     }
 
+    void SetCtor(MethodDefinition *ctor)
+    {
+        ctor_ = ctor;
+    }
+
     [[nodiscard]] ArenaVector<ir::TSClassImplements *> &Implements() noexcept
     {
         return implements_;
@@ -232,6 +242,11 @@ public:
     [[nodiscard]] ir::TSTypeParameterDeclaration *TypeParams() noexcept
     {
         return type_params_;
+    }
+
+    void SetTypeParams(ir::TSTypeParameterDeclaration *type_params)
+    {
+        type_params_ = type_params;
     }
 
     const FunctionExpression *Ctor() const;

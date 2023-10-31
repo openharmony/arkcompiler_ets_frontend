@@ -63,6 +63,16 @@ public:
         return kind_ == MethodDefinitionKind::EXTENSION_METHOD;
     }
 
+    Expression const *Key() const
+    {
+        return key_;
+    }
+
+    Expression const *Value() const
+    {
+        return value_;
+    }
+
     [[nodiscard]] const ArenaVector<MethodDefinition *> &Overloads() const noexcept
     {
         return overloads_;

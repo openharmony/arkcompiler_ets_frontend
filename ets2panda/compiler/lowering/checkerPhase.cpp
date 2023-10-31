@@ -18,9 +18,9 @@
 #include "compiler/core/compilerContext.h"
 
 namespace panda::es2panda::compiler {
-bool CheckerPhase::Perform(CompilerContext *ctx, [[maybe_unused]] parser::Program *program)
+bool CheckerPhase::Perform(public_lib::Context *ctx, [[maybe_unused]] parser::Program *program)
 {
-    return ctx->Checker()->StartChecker(ctx->VarBinder(), *ctx->Options());
+    return ctx->checker->StartChecker(ctx->compiler_context->VarBinder(), *ctx->compiler_context->Options());
 }
 
 }  // namespace panda::es2panda::compiler

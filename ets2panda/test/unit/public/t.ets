@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+/**
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,22 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_COMPILER_LOWERING_GENERATE_DECLARATIONS_H
-#define ES2PANDA_COMPILER_LOWERING_GENERATE_DECLARATIONS_H
-
-#include "compiler/lowering/phase.h"
-
-namespace panda::es2panda::compiler {
-
-class GenerateTsDeclarationsPhase : public Phase {
-public:
-    std::string_view Name() override
-    {
-        return "generate-ts-declarations";
-    }
-    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
-};
-
-}  // namespace panda::es2panda::compiler
-
-#endif
+function main() {
+    let m: int = 1
+    let n: int = 2
+    console.log(m + n)
+}

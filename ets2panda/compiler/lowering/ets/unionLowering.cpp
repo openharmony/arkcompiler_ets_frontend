@@ -37,10 +37,9 @@
 
 namespace panda::es2panda::compiler {
 
-std::string const &UnionLowering::Name()
+std::string_view UnionLowering::Name()
 {
-    static std::string const NAME = "union-property-access";
-    return NAME;
+    return "union-property-access";
 }
 
 ir::ClassDefinition *GetUnionFieldClass(checker::ETSChecker *checker, varbinder::VarBinder *varbinder)
@@ -370,7 +369,7 @@ ir::BlockStatement *HandleBlockWithBinaryAndUnions(checker::ETSChecker *checker,
     return modified_ast_block;
 }
 
-bool UnionLowering::Perform(CompilerContext *ctx, parser::Program *program)
+bool UnionLowering::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     for (auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;
@@ -379,12 +378,12 @@ bool UnionLowering::Perform(CompilerContext *ctx, parser::Program *program)
         }
     }
 
-    checker::ETSChecker *checker = ctx->Checker()->AsETSChecker();
+    checker::ETSChecker *checker = ctx->checker->AsETSChecker();
 
-    program->Ast()->TransformChildrenRecursively([checker, ctx](ir::AstNode *ast) -> ir::AstNode * {
+    program->Ast()->TransformChildrenRecursively([checker](ir::AstNode *ast) -> ir::AstNode * {
         if (ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr &&
             ast->AsMemberExpression()->Object()->TsType()->IsETSUnionType()) {
-            HandleUnionPropertyAccess(checker, ctx->VarBinder(), ast->AsMemberExpression());
+            HandleUnionPropertyAccess(checker, checker->VarBinder(), ast->AsMemberExpression());
             return ast;
         }
 
@@ -409,14 +408,14 @@ bool UnionLowering::Perform(CompilerContext *ctx, parser::Program *program)
     return true;
 }
 
-bool UnionLowering::Postcondition(CompilerContext *ctx, const parser::Program *program)
+bool UnionLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
     bool current = !program->Ast()->IsAnyChild([](const ir::AstNode *ast) {
         return ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr &&
                ast->AsMemberExpression()->Object()->TsType()->IsETSUnionType() &&
                ast->AsMemberExpression()->PropVar() == nullptr;
     });
-    if (!current || ctx->Options()->compilation_mode != CompilationMode::GEN_STD_LIB) {
+    if (!current || ctx->compiler_context->Options()->compilation_mode != CompilationMode::GEN_STD_LIB) {
         return current;
     }
 

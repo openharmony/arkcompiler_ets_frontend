@@ -263,6 +263,12 @@ public:
         variable_ = variable;
     }
 
+    // When no decorators are allowed, we cannot return a reference to an empty vector.
+    virtual const ArenaVector<ir::Decorator *> *DecoratorsPtr() const
+    {
+        return nullptr;
+    }
+
     virtual void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators)
     {
         UNREACHABLE();

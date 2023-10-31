@@ -135,6 +135,7 @@ set(ES2PANDA_LIB_SRC
   compiler/function/generatorFunctionBuilder.cpp
   compiler/lowering/checkerPhase.cpp
   compiler/lowering/phase.cpp
+  compiler/lowering/plugin_phase.cpp
   compiler/lowering/util.cpp
   compiler/lowering/ets/generateDeclarations.cpp
   compiler/lowering/ets/opAssignment.cpp
@@ -461,6 +462,7 @@ set(ES2PANDA_PUBLIC_SOURCES
   public/es2panda_lib.cpp
   util/generateBin.cpp
   util/options.cpp
+  util/plugin.cpp
 )
 
 

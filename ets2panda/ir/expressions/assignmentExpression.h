@@ -80,7 +80,7 @@ public:
         return operator_;
     }
 
-    [[nodiscard]] lexer::TokenType SetOperatorType(lexer::TokenType token_type) noexcept
+    lexer::TokenType SetOperatorType(lexer::TokenType token_type) noexcept
     {
         return operator_ = token_type;
     }

@@ -76,7 +76,7 @@ if(PANDA_WITH_ETS)
     endforeach()
 
     panda_add_gtest(
-        NAME es2panda_public_tests
+        NAME es2panda_public_test
         SOURCES
             unit/public/es2panda_public_test.cpp
         LIBRARIES
@@ -85,7 +85,21 @@ if(PANDA_WITH_ETS)
             ${CMAKE_CURRENT_SOURCE_DIR}/..
         SANITIZERS
             ${PANDA_SANITIZERS_LIST}
+          )
+
+    panda_add_library(e2p_test_plugin SHARED unit/public/e2p_test_plugin.c)
+    panda_target_include_directories(e2p_test_plugin PRIVATE  "${CMAKE_CURRENT_SOURCE_DIR}/..")
+    panda_target_link_libraries(e2p_test_plugin es2panda-public)
+
+    add_custom_target(es2panda-plugin-test
+      COMMENT "Test es2panda plugin functionality"
+      COMMAND ${CMAKE_COMMAND} -E env LD_LIBRARY_PATH=${CMAKE_LIBRARY_OUTPUT_DIRECTORY} $<TARGET_FILE:es2panda> --plugins=e2p_test_plugin
+        "${CMAKE_CURRENT_SOURCE_DIR}/unit/public/t.ets" > "${CMAKE_CURRENT_BINARY_DIR}/plugin_test.out"
+      COMMAND ${CMAKE_COMMAND} -E compare_files
+        "${CMAKE_CURRENT_BINARY_DIR}/plugin_test.out" "${CMAKE_CURRENT_SOURCE_DIR}/unit/public/plugin_test.expected.txt"
     )
+    add_dependencies(es2panda-plugin-test es2panda e2p_test_plugin)
+    add_dependencies(es2panda_tests es2panda-plugin-test)
 
     add_dependencies(es2panda_tests es2panda-regression-tests)
     if(TARGET ets_tests)

@@ -49,20 +49,35 @@ public:
 
 class CompilerImpl {
 public:
-    explicit CompilerImpl(size_t thread_count) : queue_(thread_count) {}
+    explicit CompilerImpl(size_t thread_count, std::vector<util::Plugin> const *plugins)
+        : queue_(thread_count), plugins_(plugins)
+    {
+    }
     NO_COPY_SEMANTIC(CompilerImpl);
     NO_MOVE_SEMANTIC(CompilerImpl);
     ~CompilerImpl() = default;
 
     pandasm::Program *Compile(const CompilationUnit &unit);
 
+    std::vector<util::Plugin> const &Plugins()
+    {
+        return *plugins_;
+    }
+
     static void DumpAsm(const panda::pandasm::Program *prog);
 
-private:
     panda::pandasm::Program *Emit(CompilerContext *context);
+
+    CompileQueue *Queue()
+    {
+        return &queue_;
+    }
+
+private:
     static void HandleContextLiterals(CompilerContext *context);
 
     CompileQueue queue_;
+    std::vector<util::Plugin> const *plugins_;
 };
 }  // namespace panda::es2panda::compiler
 

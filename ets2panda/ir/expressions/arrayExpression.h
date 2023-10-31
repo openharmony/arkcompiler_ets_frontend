@@ -93,9 +93,19 @@ public:
         return decorators_;
     }
 
+    const ArenaVector<Decorator *> *DecoratorsPtr() const override
+    {
+        return &Decorators();
+    }
+
     void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators) override
     {
         decorators_ = std::move(decorators);
+    }
+
+    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    {
+        return true;
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
@@ -103,7 +113,6 @@ public:
 
     [[nodiscard]] bool ConvertibleToArrayPattern();
     [[nodiscard]] ValidationInfo ValidateExpression();
-
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;

@@ -53,10 +53,51 @@ TEST_F(Es2PandaLibTest, NoError)
 TEST_F(Es2PandaLibTest, TypeError)
 {
     es2panda_Context *ctx =
-        impl_->CreateContextFromString(cfg_, "function main() { let x: int = \"\" }", "no-error.ets");
-    impl_->ProceedToState(ctx, ES2PANDA_STATE_ASM_GENERATED);  // don't produce any object files
+        impl_->CreateContextFromString(cfg_, "function main() { let x: int = \"\" }", "type-error.ets");
+    impl_->ProceedToState(ctx, ES2PANDA_STATE_ASM_GENERATED);
     ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_ERROR);
     ASSERT_EQ(std::string(impl_->ContextErrorMessage(ctx)),
-              "TypeError: Initializers type is not assignable to the target type[no-error.ets:1,32]");
+              "TypeError: Initializers type is not assignable to the target type[type-error.ets:1,32]");
+    impl_->DestroyContext(ctx);
+}
+
+TEST_F(Es2PandaLibTest, ListIdentifiers)
+{
+    char const *text = R"XXX(
+class C {
+    n: string = "oh"
+}
+
+function main() {
+    let c = new C
+    console.log(c.n + 1) // type error, but not syntax error
+}
+)XXX";
+    es2panda_Context *ctx = impl_->CreateContextFromString(cfg_, text, "list-ids.ets");
+    ctx = impl_->ProceedToState(ctx, ES2PANDA_STATE_PARSED);
+    ASSERT_EQ(impl_->ContextState(ctx), ES2PANDA_STATE_PARSED);
+
+    struct Arg {
+        es2panda_Impl const *impl = nullptr;
+        es2panda_Context *ctx = nullptr;
+        std::vector<std::string> ids;
+    } arg;
+    arg.impl = impl_;
+    arg.ctx = ctx;
+
+    auto func = [](es2panda_AstNode *ast, void *argp) {
+        auto *a = reinterpret_cast<Arg *>(argp);
+        if (a->impl->IsIdentifier(ast)) {
+            a->ids.emplace_back(a->impl->IdentifierName(a->ctx, ast));
+        }
+    };
+
+    impl_->AstNodeForEach(impl_->ProgramAst(impl_->ContextProgram(ctx)), func, &arg);
+
+    std::vector<std::string> expected {"C",        "n",        "string", "constructor", "constructor", "ETSGLOBAL",
+                                       "_$init$_", "_$init$_", "main",   "main",        "c",           "C",
+                                       "console",  "log",      "c",      "n",           "<cctor>"};
+    ASSERT_EQ(arg.ids, expected);
+
     impl_->DestroyContext(ctx);
 }

@@ -177,7 +177,7 @@ public:
     explicit ParserImpl(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS);
     NO_COPY_SEMANTIC(ParserImpl);
     NO_MOVE_SEMANTIC(ParserImpl);
-    ~ParserImpl() = default;
+    virtual ~ParserImpl() = default;
 
     void ParseScript(const SourceFile &source_file, bool gen_std_lib);
 

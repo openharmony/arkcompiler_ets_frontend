@@ -58,12 +58,22 @@ public:
         return decorators_;
     }
 
+    const ArenaVector<Decorator *> *DecoratorsPtr() const override
+    {
+        return &Decorators();
+    }
+
     void AddDecorators(ArenaVector<Decorator *> &&decorators) override
     {
         decorators_ = std::move(decorators);
     }
 
-    void SetOptional(bool const optional) noexcept
+    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    {
+        return true;
+    }
+
+    void SetOptional(bool optional) noexcept
     {
         optional_ = optional;
     }
