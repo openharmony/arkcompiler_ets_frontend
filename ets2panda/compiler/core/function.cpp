@@ -15,10 +15,10 @@
 
 #include "function.h"
 
-#include "binder/binder.h"
+#include "varbinder/varbinder.h"
 #include "util/helpers.h"
-#include "binder/scope.h"
-#include "binder/variable.h"
+#include "varbinder/scope.h"
+#include "varbinder/variable.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
 #include "ir/base/classDefinition.h"
@@ -74,16 +74,16 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
     for (const auto *param : func->Params()) {
         auto ref = JSLReference::Create(pg, param, true);
 
-        [[maybe_unused]] binder::Variable *param_var = ref.Variable();
+        [[maybe_unused]] varbinder::Variable *param_var = ref.Variable();
 
         if (ref.Kind() == ReferenceKind::DESTRUCTURING) {
             util::StringView name = util::Helpers::ToStringView(pg->Allocator(), index);
-            param_var = pg->Scope()->FindLocal(name, binder::ResolveBindingOptions::BINDINGS);
+            param_var = pg->Scope()->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
         }
 
         ASSERT(param_var && param_var->IsLocalVariable());
 
-        VReg param_reg = VReg(binder::Binder::MANDATORY_PARAMS_NUMBER + VReg::PARAM_START + index++);
+        VReg param_reg = VReg(varbinder::VarBinder::MANDATORY_PARAMS_NUMBER + VReg::PARAM_START + index++);
         ASSERT(param_var->LexicalBound() || param_var->AsLocalVariable()->Vreg() == param_reg);
 
         if (param->IsAssignmentPattern()) {

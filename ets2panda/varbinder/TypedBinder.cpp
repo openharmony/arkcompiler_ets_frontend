@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 #include "ir/ts/tsConstructorType.h"
 #include "ir/ets/etsFunctionType.h"
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 
 void TypedBinder::BuildSignatureDeclarationBaseParams(ir::AstNode *type_node)
 {
@@ -79,4 +79,4 @@ void TypedBinder::HandleCustomNodes(ir::AstNode *child_node)
         }
     }
 }
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder

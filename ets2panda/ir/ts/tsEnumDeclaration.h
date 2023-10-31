@@ -16,13 +16,13 @@
 #ifndef ES2PANDA_IR_TS_ENUM_DECLARATION_H
 #define ES2PANDA_IR_TS_ENUM_DECLARATION_H
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "ir/statement.h"
-#include "binder/enumMemberResult.h"
+#include "varbinder/enumMemberResult.h"
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class EnumVariable;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::ir {
 class Identifier;
@@ -30,7 +30,7 @@ class TSEnumMember;
 
 class TSEnumDeclaration : public TypedStatement {
 public:
-    explicit TSEnumDeclaration(ArenaAllocator *allocator, binder::LocalScope *scope, Identifier *key,
+    explicit TSEnumDeclaration(ArenaAllocator *allocator, varbinder::LocalScope *scope, Identifier *key,
                                ArenaVector<AstNode *> &&members, bool is_const, bool is_static = false)
         : TypedStatement(AstNodeType::TS_ENUM_DECLARATION),
           scope_(scope),
@@ -49,7 +49,7 @@ public:
         return true;
     }
 
-    binder::LocalScope *Scope() const override
+    varbinder::LocalScope *Scope() const override
     {
         return scope_;
     }
@@ -99,8 +99,8 @@ public:
         return !in_ts;
     }
 
-    static binder::EnumMemberResult EvaluateEnumMember(checker::TSChecker *checker, binder::EnumVariable *enum_var,
-                                                       const ir::AstNode *expr);
+    static varbinder::EnumMemberResult EvaluateEnumMember(checker::TSChecker *checker,
+                                                          varbinder::EnumVariable *enum_var, const ir::AstNode *expr);
     checker::Type *InferType(checker::TSChecker *checker, bool is_const) const;
 
     void TransformChildren(const NodeTransformer &cb) override;
@@ -111,7 +111,7 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
 private:
-    binder::LocalScope *scope_;
+    varbinder::LocalScope *scope_;
     ArenaVector<ir::Decorator *> decorators_;
     Identifier *key_;
     ArenaVector<AstNode *> members_;

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ Expression *ETSParameterExpression::Initializer() noexcept
     return initializer_;
 }
 
-binder::Variable *ETSParameterExpression::Variable() const noexcept
+varbinder::Variable *ETSParameterExpression::Variable() const noexcept
 {
     return ident_->Variable();
 }
@@ -90,7 +90,7 @@ TypeNode *ETSParameterExpression::TypeAnnotation() noexcept
     return !IsRestParameter() ? ident_->TypeAnnotation() : spread_->TypeAnnotation();
 }
 
-void ETSParameterExpression::SetVariable(binder::Variable *const variable) noexcept
+void ETSParameterExpression::SetVariable(varbinder::Variable *const variable) noexcept
 {
     ident_->SetVariable(variable);
 }

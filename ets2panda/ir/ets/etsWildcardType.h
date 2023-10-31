@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ public:
     explicit ETSWildcardType(ir::ETSTypeReference *type_reference, ModifierFlags flags)
         : TypeNode(AstNodeType::ETS_WILDCARD_TYPE, flags), type_reference_(type_reference)
     {
-        ASSERT((flags == ModifierFlags::IN && type_reference != nullptr) || flags == ModifierFlags::OUT);
+        ASSERT(flags == ModifierFlags::IN || flags == ModifierFlags::OUT);
+        ASSERT(type_reference != nullptr || flags == ModifierFlags::OUT);
     }
 
     ir::ETSTypeReference *TypeReference()

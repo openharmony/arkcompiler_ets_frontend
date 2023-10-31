@@ -53,14 +53,14 @@ void MetaProperty::Compile([[maybe_unused]] compiler::PandaGen *pg) const
     }
 
     if (kind_ == ir::MetaProperty::MetaPropertyKind::IMPORT_META) {
-        // TODO()
+        // NOTE
         pg->Unimplemented();
     }
 }
 
 checker::Type *MetaProperty::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    // TODO(aszilagyi)
+    // NOTE: aszilagyi.
     return checker->GlobalAnyType();
 }
 

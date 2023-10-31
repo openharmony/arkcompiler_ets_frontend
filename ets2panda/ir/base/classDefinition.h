@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_CLASS_DEFINITION_H
 #define ES2PANDA_PARSER_INCLUDE_AST_CLASS_DEFINITION_H
 
-#include "binder/scope.h"
-#include "binder/variable.h"
+#include "varbinder/scope.h"
+#include "varbinder/variable.h"
 #include "ir/astNode.h"
 #include "util/bitset.h"
 #include "util/language.h"
@@ -50,7 +50,7 @@ DEFINE_BITOPS(ClassDefinitionModifiers)
 
 class ClassDefinition : public TypedAstNode {
 public:
-    explicit ClassDefinition(binder::LocalScope *scope, const util::StringView &private_id, Identifier *ident,
+    explicit ClassDefinition(varbinder::LocalScope *scope, const util::StringView &private_id, Identifier *ident,
                              TSTypeParameterDeclaration *type_params, TSTypeParameterInstantiation *super_type_params,
                              ArenaVector<TSClassImplements *> &&implements, MethodDefinition *ctor,
                              Expression *super_class, ArenaVector<AstNode *> &&body, ClassDefinitionModifiers modifiers,
@@ -70,7 +70,7 @@ public:
     {
     }
 
-    explicit ClassDefinition(ArenaAllocator *allocator, binder::LocalScope *scope, Identifier *ident,
+    explicit ClassDefinition(ArenaAllocator *allocator, varbinder::LocalScope *scope, Identifier *ident,
                              ArenaVector<AstNode *> &&body, ClassDefinitionModifiers modifiers, Language lang)
         : TypedAstNode(AstNodeType::CLASS_DEFINITION),
           scope_(scope),
@@ -82,7 +82,7 @@ public:
     {
     }
 
-    explicit ClassDefinition(ArenaAllocator *allocator, binder::LocalScope *scope, Identifier *ident,
+    explicit ClassDefinition(ArenaAllocator *allocator, varbinder::LocalScope *scope, Identifier *ident,
                              ClassDefinitionModifiers modifiers, ModifierFlags flags, Language lang)
         : TypedAstNode(AstNodeType::CLASS_DEFINITION, flags),
           scope_(scope),
@@ -99,7 +99,7 @@ public:
         return true;
     }
 
-    binder::LocalScope *Scope() const override
+    varbinder::LocalScope *Scope() const override
     {
         return scope_;
     }
@@ -245,7 +245,7 @@ private:
     void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VReg class_reg,
                                         const std::vector<compiler::VReg> &static_computed_field_keys) const;
 
-    binder::LocalScope *scope_;
+    varbinder::LocalScope *scope_;
     util::StringView private_id_ {};
     Identifier *ident_ {};
     TSTypeParameterDeclaration *type_params_ {};

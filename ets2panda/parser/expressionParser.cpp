@@ -291,8 +291,9 @@ ParserStatus ParserImpl::ValidateArrowParameter(ir::Expression *expr, [[maybe_un
 }
 
 ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(
-    ArrowFunctionContext *arrow_function_context, binder::FunctionScope *function_scope, ArrowFunctionDescriptor *desc,
-    ir::TSTypeParameterDeclaration *type_param_decl, ir::TypeNode *return_type_annotation)
+    ArrowFunctionContext *arrow_function_context, varbinder::FunctionScope *function_scope,
+    ArrowFunctionDescriptor *desc, ir::TSTypeParameterDeclaration *type_param_decl,
+    ir::TypeNode *return_type_annotation)
 {
     context_.Status() |= desc->new_status;
 
@@ -338,7 +339,7 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(
 }
 
 ArrowFunctionDescriptor ParserImpl::ConvertToArrowParameter(ir::Expression *expr, bool is_async,
-                                                            binder::FunctionParamScope *param_scope)
+                                                            varbinder::FunctionParamScope *param_scope)
 {
     auto arrow_status = is_async ? ParserStatus::ASYNC_FUNCTION : ParserStatus::NO_OPTS;
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
@@ -396,7 +397,7 @@ ArrowFunctionDescriptor ParserImpl::ConvertToArrowParameter(ir::Expression *expr
     }
 
     for (auto *param : params) {
-        Binder()->AddParamDecl(param);
+        VarBinder()->AddParamDecl(param);
     }
 
     return ArrowFunctionDescriptor {std::move(params), param_scope, expr->Start(), arrow_status};
@@ -416,11 +417,11 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpression(ir::Expres
     }
 
     ArrowFunctionContext arrow_function_context(this, is_async);
-    FunctionParameterContext function_param_context(&context_, Binder());
+    FunctionParameterContext function_param_context(&context_, VarBinder());
     ArrowFunctionDescriptor desc =
         ConvertToArrowParameter(expr, is_async, function_param_context.LexicalScope().GetScope());
 
-    auto function_ctx = binder::LexicalScope<binder::FunctionScope>(Binder());
+    auto function_ctx = varbinder::LexicalScope<varbinder::FunctionScope>(VarBinder());
     return ParseArrowFunctionExpressionBody(&arrow_function_context, function_ctx.GetScope(), &desc, type_param_decl,
                                             return_type_annotation);
 }
@@ -1286,7 +1287,7 @@ ir::CallExpression *ParserImpl::ParseCallExpression(ir::Expression *callee, bool
             call_expr = AllocNode<ir::DirectEvalExpression>(callee, std::move(arguments), nullptr, is_optional_chain,
                                                             parser_status);
 
-            Binder()->PropagateDirectEval();
+            VarBinder()->PropagateDirectEval();
         } else {
             call_expr =
                 AllocNode<ir::CallExpression>(callee, std::move(arguments), nullptr, is_optional_chain, trailing_comma);
@@ -2153,7 +2154,7 @@ ir::Expression *ParserImpl::ParseImportExpression()
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
         if (!context_.IsModule()) {
             ThrowSyntaxError("'import.Meta' may appear only with 'sourceType: module'");
-        } else if (Binder()->GetCompilerContext()->IsDirectEval()) {
+        } else if (VarBinder()->GetCompilerContext()->IsDirectEval()) {
             ThrowSyntaxError("'import.Meta' is not allowed in direct eval in module code.");
         }
 

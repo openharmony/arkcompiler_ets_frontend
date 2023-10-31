@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_BINDER_JS_BINDER_H
-#define ES2PANDA_BINDER_JS_BINDER_H
+#ifndef ES2PANDA_VARBINDER_JS_VARBINDER_H
+#define ES2PANDA_VARBINDER_JS_VARBINDER_H
 
-#include "binder/binder.h"
+#include "varbinder/varbinder.h"
 
-namespace panda::es2panda::binder {
-class JSBinder : public Binder {
+namespace panda::es2panda::varbinder {
+class JSBinder : public VarBinder {
 public:
-    explicit JSBinder(ArenaAllocator *allocator) : Binder(allocator) {}
+    explicit JSBinder(ArenaAllocator *allocator) : VarBinder(allocator) {}
 
     NO_COPY_SEMANTIC(JSBinder);
     NO_MOVE_SEMANTIC(JSBinder);
@@ -29,6 +29,6 @@ public:
 
 private:
 };
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 #endif

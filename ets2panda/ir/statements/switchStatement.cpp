@@ -15,7 +15,7 @@
 
 #include "switchStatement.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "compiler/core/labelTarget.h"
 #include "compiler/core/switchBuilder.h"
 #include "compiler/core/pandagen.h"
@@ -134,7 +134,7 @@ checker::Type *SwitchStatement::Check(checker::ETSChecker *const checker)
     discriminant_->Check(checker);
     checker::SavedTypeRelationFlagsContext saved_type_relation_flag_ctx(checker->Relation(),
                                                                         checker::TypeRelationFlag::NONE);
-    // TODO(user): check exhaustive Switch
+    // NOTE: check exhaustive Switch
     checker->CheckSwitchDiscriminant(discriminant_);
     auto *compared_expr_type = discriminant_->TsType();
     auto unboxed_disc_type = (Discriminant()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U

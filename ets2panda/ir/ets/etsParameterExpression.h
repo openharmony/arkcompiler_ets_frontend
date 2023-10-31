@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public:
 
     explicit ETSParameterExpression(AnnotatedExpression *ident_or_spread, Expression *initializer);
 
-    // TODO (csabahurton): friend relationship can be removed once there are getters for private fields
+    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
 
     [[nodiscard]] const Identifier *Ident() const noexcept;
@@ -48,8 +48,8 @@ public:
     void SetLexerSaved(util::StringView s) noexcept;
     [[nodiscard]] util::StringView LexerSaved() const noexcept;
 
-    [[nodiscard]] binder::Variable *Variable() const noexcept;
-    void SetVariable(binder::Variable *variable) noexcept;
+    [[nodiscard]] varbinder::Variable *Variable() const noexcept;
+    void SetVariable(varbinder::Variable *variable) noexcept;
 
     [[nodiscard]] TypeNode const *TypeAnnotation() const noexcept;
     [[nodiscard]] TypeNode *TypeAnnotation() noexcept;

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 #ifndef ES2PANDA_COMPILER_LOWERING_UTIL_H
 #define ES2PANDA_COMPILER_LOWERING_UTIL_H
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "ir/astNode.h"
 
 namespace panda::es2panda::compiler {
 
-binder::Scope *NearestScope(const ir::AstNode *ast);
+varbinder::Scope *NearestScope(const ir::AstNode *ast);
 ir::Identifier *Gensym(ArenaAllocator *allocator);
 
 }  // namespace panda::es2panda::compiler

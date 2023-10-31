@@ -101,7 +101,7 @@ public:
         return (constituent_flags_ & flag) != 0;
     }
 
-    ArenaUnorderedMap<util::StringView, binder::Variable *> &CachedSyntheticProperties()
+    ArenaUnorderedMap<util::StringView, varbinder::Variable *> &CachedSyntheticProperties()
     {
         return cached_synthetic_properties_;
     }
@@ -133,7 +133,7 @@ private:
 
     ArenaVector<Type *> constituent_types_;
     TypeFlag constituent_flags_ {TypeFlag::NONE};
-    ArenaUnorderedMap<util::StringView, binder::Variable *> cached_synthetic_properties_;
+    ArenaUnorderedMap<util::StringView, varbinder::Variable *> cached_synthetic_properties_;
     ObjectType *merged_object_type_ {};
 };
 }  // namespace panda::es2panda::checker

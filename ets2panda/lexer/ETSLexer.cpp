@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,19 @@ void ETSLexer::CheckUtf16Compatible(char32_t cp) const
 
 void ETSLexer::SkipMultiLineComment()
 {
-    uint32_t depth = 1;
+    uint32_t depth = 1U;
+
+    // Just to reduce extra nested level(s)
+    auto const check_asterisk = [this, &depth]() -> bool {
+        if (Iterator().Peek() == LEX_CHAR_SLASH) {
+            Iterator().Forward(1);
+
+            if (--depth == 0U) {
+                return false;
+            }
+        }
+        return true;
+    };
 
     while (true) {
         switch (Iterator().Next()) {
@@ -97,12 +109,8 @@ void ETSLexer::SkipMultiLineComment()
                 continue;
             }
             case LEX_CHAR_ASTERISK: {
-                if (Iterator().Peek() == LEX_CHAR_SLASH) {
-                    Iterator().Forward(1);
-
-                    if (--depth == 0) {
-                        return;
-                    }
+                if (!check_asterisk()) {
+                    return;
                 }
                 break;
             }

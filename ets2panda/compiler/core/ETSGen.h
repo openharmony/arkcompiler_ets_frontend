@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 #define ES2PANDA_COMPILER_CORE_ETSGEN_H
 
 #include "ir/astNode.h"
-#include "binder/ETSBinder.h"
+#include "varbinder/ETSBinder.h"
 #include "compiler/core/codeGen.h"
 #include "compiler/core/ETSfunction.h"
 #include "compiler/core/targetTypeContext.h"
@@ -29,10 +29,11 @@ namespace panda::es2panda::compiler {
 class ETSGen final : public CodeGen {
 public:
     explicit ETSGen(ArenaAllocator *allocator, RegSpiller *spiller, CompilerContext *context,
-                    binder::FunctionScope *scope, ProgramElement *program_element, AstCompiler *astcompiler) noexcept;
+                    varbinder::FunctionScope *scope, ProgramElement *program_element,
+                    AstCompiler *astcompiler) noexcept;
 
     [[nodiscard]] const checker::ETSChecker *Checker() const noexcept;
-    [[nodiscard]] const binder::ETSBinder *Binder() const noexcept;
+    [[nodiscard]] const varbinder::ETSBinder *VarBinder() const noexcept;
     [[nodiscard]] const checker::Type *ReturnType() const noexcept;
     [[nodiscard]] const checker::ETSObjectType *ContainingObjectType() const noexcept;
 
@@ -50,12 +51,12 @@ public:
     [[nodiscard]] IRNode *AllocMov(const ir::AstNode *node, OutVReg vd, VReg vs) override;
     void MoveVreg(const ir::AstNode *node, VReg vd, VReg vs);
 
-    [[nodiscard]] checker::Type const *TypeForVar(binder::Variable const *var) const noexcept override;
+    [[nodiscard]] checker::Type const *TypeForVar(varbinder::Variable const *var) const noexcept override;
 
-    void LoadVar(const ir::AstNode *node, binder::Variable const *var);
-    void LoadDynamicModuleVariable(const ir::AstNode *node, binder::Variable const *var);
-    void LoadDynamicNamespaceVariable(const ir::AstNode *node, binder::Variable const *var);
-    void StoreVar(const ir::AstNode *node, const binder::ConstScopeFindResult &result);
+    void LoadVar(const ir::AstNode *node, varbinder::Variable const *var);
+    void LoadDynamicModuleVariable(const ir::AstNode *node, varbinder::Variable const *var);
+    void LoadDynamicNamespaceVariable(const ir::AstNode *node, varbinder::Variable const *var);
+    void StoreVar(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result);
 
     void LoadStaticProperty(const ir::AstNode *node, const checker::Type *prop_type, const util::StringView &full_name);
     void StoreStaticProperty(const ir::AstNode *node, const checker::Type *prop_type,
@@ -113,8 +114,7 @@ public:
         }
 
         Sa().Emit<Xori>(node, 1);
-        auto real_end_label = [](Label *end_label, Label *if_false_label, ETSGen *etsgn,
-                                 bool use_false_label) {
+        auto real_end_label = [](Label *end_label, Label *if_false_label, ETSGen *etsgn, bool use_false_label) {
             if (use_false_label) {
                 return if_false_label;
             }
@@ -137,6 +137,66 @@ public:
     }
 
     template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
+    void ResolveConditionalResultNumeric(const ir::AstNode *node, [[maybe_unused]] Label *if_false, Label *end)
+    {
+        auto type = node->IsExpression() ? node->AsExpression()->TsType() : GetAccumulatorType();
+        switch (type->TypeFlags()) {
+            case checker::TypeFlag::LONG: {
+                CastToInt(node);
+                [[fallthrough]];
+            }
+            case checker::TypeFlag::BYTE:
+            case checker::TypeFlag::CHAR:
+            case checker::TypeFlag::SHORT:
+            case checker::TypeFlag::INT: {
+                if constexpr (BEFORE_LOGICAL_NOT) {
+                    Label *zero_primitive = AllocLabel();
+                    BranchIfFalse(node, zero_primitive);
+                    ToBinaryResult(node, zero_primitive);
+                }
+                break;
+            }
+            case checker::TypeFlag::DOUBLE:
+            case checker::TypeFlag::FLOAT: {
+                ResolveConditionalResultFloat<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, if_false, end);
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+    template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
+    void ResolveConditionalResultObject(const ir::AstNode *node, [[maybe_unused]] Label *if_false)
+    {
+        auto type = node->IsExpression() ? node->AsExpression()->TsType() : GetAccumulatorType();
+        if (type->IsETSStringType()) {
+            LoadStringLength(node);
+            if constexpr (BEFORE_LOGICAL_NOT) {
+                Label *zero_lenth = AllocLabel();
+                BranchIfFalse(node, zero_lenth);
+                ToBinaryResult(node, zero_lenth);
+            }
+        } else {
+            Sa().Emit<Ldai>(node, 1);
+        }
+    }
+
+    template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
+    void ResolveConditionalResultExpression(const ir::AstNode *node, [[maybe_unused]] Label *if_false)
+    {
+        auto expr_node = node->AsExpression();
+        if (Checker()->IsNullOrVoidExpression(expr_node)) {
+            if constexpr (USE_FALSE_LABEL) {
+                Branch(node, if_false);
+            } else {
+                Sa().Emit<Ldai>(node, 0);
+            }
+            return;
+        }
+    }
+
+    template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
     void ResolveConditionalResult(const ir::AstNode *node, [[maybe_unused]] Label *if_false)
     {
         auto type = node->IsExpression() ? node->AsExpression()->TsType() : GetAccumulatorType();
@@ -149,15 +209,7 @@ public:
         }
 
         if (node->IsExpression()) {
-            auto expr_node = node->AsExpression();
-            if (Checker()->IsNullOrVoidExpression(expr_node)) {
-                if constexpr (USE_FALSE_LABEL) {
-                    Branch(node, if_false);
-                } else {
-                    Sa().Emit<Ldai>(node, 0);
-                }
-                return;
-            }
+            ResolveConditionalResultExpression<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, if_false);
         }
         Label *if_nullable {nullptr};
         Label *end {nullptr};
@@ -175,41 +227,9 @@ public:
             StoreAccumulator(node, obj_reg);
             LoadArrayLength(node, obj_reg);
         } else if (type->IsETSObjectType()) {
-            if (type->IsETSStringType()) {
-                LoadStringLength(node);
-                if constexpr (BEFORE_LOGICAL_NOT) {
-                    Label *zero_lenth = AllocLabel();
-                    BranchIfFalse(node, zero_lenth);
-                    ToBinaryResult(node, zero_lenth);
-                }
-            } else {
-                Sa().Emit<Ldai>(node, 1);
-            }
+            ResolveConditionalResultObject<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, if_false);
         } else {
-            switch (type->TypeFlags()) {
-                case checker::TypeFlag::LONG: {
-                    CastToInt(node);
-                    [[fallthrough]];
-                }
-                case checker::TypeFlag::BYTE:
-                case checker::TypeFlag::CHAR:
-                case checker::TypeFlag::SHORT:
-                case checker::TypeFlag::INT: {
-                    if constexpr (BEFORE_LOGICAL_NOT) {
-                        Label *zero_primitive = AllocLabel();
-                        BranchIfFalse(node, zero_primitive);
-                        ToBinaryResult(node, zero_primitive);
-                    }
-                    break;
-                }
-                case checker::TypeFlag::DOUBLE:
-                case checker::TypeFlag::FLOAT: {
-                    ResolveConditionalResultFloat<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, if_false, end);
-                    break;
-                }
-                default:
-                    break;
-            }
+            ResolveConditionalResultNumeric<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, if_false, end);
         }
         if (if_nullable != nullptr) {
             Branch(node, end);
@@ -344,7 +364,7 @@ public:
 
     void EmitLocalBoxCtor(ir::AstNode const *node);
     void EmitLocalBoxGet(ir::AstNode const *node, checker::Type const *content_type);
-    void EmitLocalBoxSet(ir::AstNode const *node, binder::LocalVariable *lhs);
+    void EmitLocalBoxSet(ir::AstNode const *node, varbinder::LocalVariable *lhs);
 
     void LoadArrayLength(const ir::AstNode *node, VReg array_reg);
     void LoadArrayElement(const ir::AstNode *node, VReg object_reg);
@@ -404,11 +424,6 @@ public:
         switch (value_type) {
             // NOTE: operand of increment instruction (INCI) is defined in spec as 32-bit integer,
             // but its current implementation actually can work with 64-bit integers as well.
-            // Thus, leave this case just in case for possible use in the future.
-            // case checker::TypeFlag::LONG: {
-            //     Ra().Emit<Inci>(node, reg, static_cast<checker::LongType::UType>(value));
-            //     break;
-            // }
             case checker::TypeFlag::INT: {
                 Ra().Emit<Inci>(node, reg, static_cast<checker::IntType::UType>(value));
                 break;
@@ -520,7 +535,7 @@ public:
     void CallThisStatic2(const ir::AstNode *const node, const VReg ctor, const util::StringView name, const VReg arg0,
                          const VReg arg1)
     {
-        Ra().Emit<Call, 3>(node, name, ctor, arg0, arg1, dummy_reg_);
+        Ra().Emit<Call, 3U>(node, name, ctor, arg0, arg1, dummy_reg_);
     }
 
     void CallDynamic(const ir::AstNode *node, VReg &obj, VReg &param2, checker::Signature *signature,
@@ -559,7 +574,7 @@ public:
     void GetType(const ir::AstNode *node, bool is_ets_primitive)
     {
         if (is_ets_primitive) {
-            // TODO(SzD) LoadStaticProperty if ETS stdlib has static TYPE constants otherwise fallback to LdaType
+            // NOTE: SzD. LoadStaticProperty if ETS stdlib has static TYPE constants otherwise fallback to LdaType
         } else {
             auto class_ref = GetAccumulatorType()->AsETSObjectType()->AssemblerName();
             Sa().Emit<LdaType>(node, class_ref);
@@ -576,7 +591,7 @@ private:
     void StringBuilderAppend(const ir::AstNode *node, VReg builder);
     void AppendString(const ir::Expression *bin_expr, VReg builder);
     void StringBuilder(const ir::Expression *left, const ir::Expression *right, VReg builder);
-    util::StringView FormClassPropReference(binder::Variable const *var);
+    util::StringView FormClassPropReference(varbinder::Variable const *var);
     void UnaryMinus(const ir::AstNode *node);
     void UnaryTilde(const ir::AstNode *node);
     void UnaryDollarDollar(const ir::AstNode *node);
@@ -688,7 +703,7 @@ private:
     void BinaryDynamicStrictEquality(const ir::AstNode *node, VReg lhs, Label *if_false)
     {
         ASSERT(GetAccumulatorType()->IsETSDynamicType() && GetVRegType(lhs)->IsETSDynamicType());
-        Ra().Emit<CallShort, 2>(node, Signatures::BUILTIN_JSRUNTIME_STRICT_EQUAL, lhs, MoveAccToReg(node));
+        Ra().Emit<CallShort, 2U>(node, Signatures::BUILTIN_JSRUNTIME_STRICT_EQUAL, lhs, MoveAccToReg(node));
         Ra().Emit<DynCompare>(node, if_false);
     }
 
@@ -887,22 +902,22 @@ private:
         const auto name = signature->InternalName();
 
         switch (arguments.size()) {
-            case 0: {
+            case 0U: {
                 Ra().Emit<Short, 1>(node, name, ctor, dummy_reg_);
                 break;
             }
-            case 1: {
+            case 1U: {
                 COMPILE_ARG(0);
                 Ra().Emit<Short>(node, name, ctor, arg0);
                 break;
             }
-            case 2: {
+            case 2U: {
                 COMPILE_ARG(0);
                 COMPILE_ARG(1);
-                Ra().Emit<General, 3>(node, name, ctor, arg0, arg1, dummy_reg_);
+                Ra().Emit<General, 3U>(node, name, ctor, arg0, arg1, dummy_reg_);
                 break;
             }
-            case 3: {
+            case 3U: {
                 COMPILE_ARG(0);
                 COMPILE_ARG(1);
                 COMPILE_ARG(2);
@@ -936,29 +951,29 @@ private:
         const auto name = signature->InternalName();
 
         switch (arguments.size()) {
-            case 0: {
+            case 0U: {
                 Ra().Emit<Short, 0>(node, name, dummy_reg_, dummy_reg_);
                 break;
             }
-            case 1: {
+            case 1U: {
                 COMPILE_ARG(0);
                 Ra().Emit<Short, 1>(node, name, arg0, dummy_reg_);
                 break;
             }
-            case 2: {
+            case 2U: {
                 COMPILE_ARG(0);
                 COMPILE_ARG(1);
                 Ra().Emit<Short>(node, name, arg0, arg1);
                 break;
             }
-            case 3: {
+            case 3U: {
                 COMPILE_ARG(0);
                 COMPILE_ARG(1);
                 COMPILE_ARG(2);
-                Ra().Emit<General, 3>(node, name, arg0, arg1, arg2, dummy_reg_);
+                Ra().Emit<General, 3U>(node, name, arg0, arg1, arg2, dummy_reg_);
                 break;
             }
-            case 4: {
+            case 4U: {
                 COMPILE_ARG(0);
                 COMPILE_ARG(1);
                 COMPILE_ARG(2);
@@ -1006,16 +1021,16 @@ private:
         const auto name = signature->InternalName();
 
         switch (arguments.size()) {
-            case 0: {
+            case 0U: {
                 Ra().Emit<Short>(node, name, obj, param2);
                 break;
             }
-            case 1: {
+            case 1U: {
                 COMPILE_ARG(0);
-                Ra().Emit<General, 3>(node, name, obj, param2, arg0, dummy_reg_);
+                Ra().Emit<General, 3U>(node, name, obj, param2, arg0, dummy_reg_);
                 break;
             }
-            case 2: {
+            case 2U: {
                 COMPILE_ARG(0);
                 COMPILE_ARG(1);
                 Ra().Emit<General>(node, name, obj, param2, arg0, arg1);
@@ -1034,7 +1049,7 @@ private:
                     index++;
                 }
 
-                Rra().Emit<Range>(node, obj, arguments.size() + 2, name, obj);
+                Rra().Emit<Range>(node, obj, arguments.size() + 2U, name, obj);
                 break;
             }
         }
@@ -1054,7 +1069,7 @@ private:
     void LoadAccumulatorNumber(const ir::AstNode *node, T number, checker::TypeFlag target_type);
     void InitializeContainingClass();
 
-    util::StringView FormDynamicModulePropReference(const binder::Variable *var);
+    util::StringView FormDynamicModulePropReference(const varbinder::Variable *var);
     util::StringView FormDynamicModulePropReference(const ir::ETSImportDeclaration *import);
 
     friend class TargetTypeContext;

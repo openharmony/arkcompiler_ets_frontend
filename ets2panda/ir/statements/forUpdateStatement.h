@@ -18,16 +18,16 @@
 
 #include "ir/statements/loopStatement.h"
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class LoopScope;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::ir {
 class Expression;
 
 class ForUpdateStatement : public LoopStatement {
 public:
-    explicit ForUpdateStatement(binder::LoopScope *scope, AstNode *init, Expression *test, Expression *update,
+    explicit ForUpdateStatement(varbinder::LoopScope *scope, AstNode *init, Expression *test, Expression *update,
                                 Statement *body)
         : LoopStatement(AstNodeType::FOR_UPDATE_STATEMENT, scope),
           init_(init),

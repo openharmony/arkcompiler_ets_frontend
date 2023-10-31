@@ -15,7 +15,7 @@
 
 #include "tsTypeParameterDeclaration.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "ir/astDump.h"
 #include "ir/ts/tsTypeParameter.h"
 

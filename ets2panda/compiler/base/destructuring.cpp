@@ -70,7 +70,6 @@ static void GenRestElement(PandaGen *pg, const ir::SpreadElement *rest_element,
 
 static void GenArray(PandaGen *pg, const ir::ArrayExpression *array)
 {
-    // RegScope rs(pg);
     DestructuringIterator iterator(pg, array);
 
     if (array->Elements().empty()) {

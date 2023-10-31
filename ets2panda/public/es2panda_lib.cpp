@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 #include "generated/signatures.h"
 #include "es2panda.h"
 #include "assembler/assembly-program.h"
-#include "binder/ETSBinder.h"
+#include "varbinder/ETSBinder.h"
 #include "checker/ETSAnalyzer.h"
 #include "checker/ETSchecker.h"
 #include "compiler/core/compileQueue.h"
@@ -70,7 +70,7 @@ extern "C" es2panda_Config *CreateConfig(int args, char const **argv)
 
     auto options = std::make_unique<util::Options>();
     if (!options->Parse(args, argv)) {
-        // TODO(gogabr): report option errors properly.
+        // NOTE: gogabr. report option errors properly.
         std::cerr << options->ErrorMsg() << std::endl;
         return nullptr;
     }
@@ -91,7 +91,7 @@ extern "C" void DestroyConfig(es2panda_Config *config)
     delete reinterpret_cast<ConfigImpl *>(config);
 }
 
-static void CompileJob(compiler::CompilerContext *context, binder::FunctionScope *scope,
+static void CompileJob(compiler::CompilerContext *context, varbinder::FunctionScope *scope,
                        compiler::ProgramElement *program_element)
 {
     compiler::StaticRegSpiller reg_spiller;
@@ -116,8 +116,8 @@ static es2panda_Context *CreateContext(es2panda_Config *config, std::string cons
         res->allocator = std::make_unique<ArenaAllocator>(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
         res->queue = std::make_unique<compiler::CompileQueue>(cfg->options->ThreadCount());
 
-        auto *binder = res->allocator->New<binder::ETSBinder>(res->allocator.get());
-        res->parser_program = std::make_unique<parser::Program>(res->allocator.get(), binder);
+        auto *varbinder = res->allocator->New<varbinder::ETSBinder>(res->allocator.get());
+        res->parser_program = std::make_unique<parser::Program>(res->allocator.get(), varbinder);
         res->parser_program->MarkEntry();
         res->parser = std::make_unique<parser::ETSParser>(res->parser_program.get(), cfg->options->CompilerOptions(),
                                                           parser::ParserStatus::NO_OPTS);
@@ -125,11 +125,11 @@ static es2panda_Context *CreateContext(es2panda_Config *config, std::string cons
         res->analyzer = std::make_unique<checker::ETSAnalyzer>(res->checker.get());
         res->checker->SetAnalyzer(res->analyzer.get());
 
-        binder->SetProgram(res->parser_program.get());
+        varbinder->SetProgram(res->parser_program.get());
 
         res->compiler_context = std::make_unique<compiler::CompilerContext>(
-            binder, res->checker.get(), cfg->options->CompilerOptions(), CompileJob);
-        binder->SetCompilerContext(res->compiler_context.get());
+            varbinder, res->checker.get(), cfg->options->CompilerOptions(), CompileJob);
+        varbinder->SetCompilerContext(res->compiler_context.get());
         res->emitter = std::make_unique<compiler::ETSEmitter>(res->compiler_context.get());
         res->compiler_context->SetEmitter(res->emitter.get());
         res->program = nullptr;
@@ -166,7 +166,7 @@ extern "C" es2panda_Context *CreateContextFromFile(es2panda_Config *config, char
 
 extern "C" es2panda_Context *CreateContextFromString(es2panda_Config *config, char const *source, char const *file_name)
 {
-    // TODO(gogabr): avoid copying source.
+    // NOTE: gogabr. avoid copying source.
     return CreateContext(config, source, file_name);
 }
 
@@ -204,7 +204,7 @@ static Context *Check(Context *ctx)
     ASSERT(ctx->state == ES2PANDA_STATE_PARSED);
 
     try {
-        ctx->compiler_context->Checker()->StartChecker(ctx->compiler_context->Binder(),
+        ctx->compiler_context->Checker()->StartChecker(ctx->compiler_context->VarBinder(),
                                                        ctx->config->options->CompilerOptions());
         ctx->state = ES2PANDA_STATE_CHECKED;
     } catch (Error &e) {
@@ -230,7 +230,7 @@ static Context *Lower(Context *ctx)
 
     try {
         for (auto *phase : compiler::GetETSPhaseList()) {
-            phase->Apply(ctx->compiler_context.get(), ctx->compiler_context->Binder()->Program());
+            phase->Apply(ctx->compiler_context.get(), ctx->compiler_context->VarBinder()->Program());
         }
 
         ctx->state = ES2PANDA_STATE_LOWERED;

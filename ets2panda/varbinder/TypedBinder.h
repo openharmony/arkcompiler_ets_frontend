@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_BINDER_TYPED_BINDER_H
-#define ES2PANDA_BINDER_TYPED_BINDER_H
+#ifndef ES2PANDA_VARBINDER_TYPED_VARBINDER_H
+#define ES2PANDA_VARBINDER_TYPED_VARBINDER_H
 
-#include "binder/binder.h"
+#include "varbinder/varbinder.h"
 
-namespace panda::es2panda::binder {
-class TypedBinder : public Binder {
+namespace panda::es2panda::varbinder {
+class TypedBinder : public VarBinder {
 public:
-    explicit TypedBinder(ArenaAllocator *allocator) : Binder(allocator) {}
+    explicit TypedBinder(ArenaAllocator *allocator) : VarBinder(allocator) {}
 
     NO_COPY_SEMANTIC(TypedBinder);
     NO_MOVE_SEMANTIC(TypedBinder);
@@ -31,6 +31,6 @@ protected:
     void HandleCustomNodes(ir::AstNode *child_node) override;
     void BuildSignatureDeclarationBaseParams([[maybe_unused]] ir::AstNode *type_node) override;
 };
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 #endif

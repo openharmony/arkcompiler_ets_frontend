@@ -25,9 +25,9 @@
 #include <sstream>
 #include <variant>
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class Variable;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::checker {
 class ObjectDescriptor;
@@ -180,17 +180,17 @@ public:
         return id_;
     }
 
-    void SetVariable(binder::Variable *variable)
+    void SetVariable(varbinder::Variable *variable)
     {
         variable_ = variable;
     }
 
-    binder::Variable *Variable()
+    varbinder::Variable *Variable()
     {
         return variable_;
     }
 
-    const binder::Variable *Variable() const
+    const varbinder::Variable *Variable() const
     {
         return variable_;
     }
@@ -229,7 +229,7 @@ public:
     virtual void Compare(TypeRelation *relation, Type *other);
     virtual void Cast(TypeRelation *relation, Type *target);
     virtual void IsSupertypeOf(TypeRelation *relation, Type *source);
-    virtual Type *AsSuper(Checker *checker, binder::Variable *source_var);
+    virtual Type *AsSuper(Checker *checker, varbinder::Variable *source_var);
 
     virtual Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types);
     virtual Type *Substitute(TypeRelation *relation, const Substitution *substitution);
@@ -237,7 +237,7 @@ public:
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     TypeFlag type_flags_;
-    binder::Variable *variable_ {};  // Variable associated with the type if any
+    varbinder::Variable *variable_ {};  // Variable associated with the type if any
     uint64_t id_;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };

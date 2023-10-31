@@ -83,16 +83,16 @@ panda_gen(
 
 set(ES2PANDA_LIB_SRC
   es2panda.cpp
-  binder/ASBinder.cpp
-  binder/TSBinder.cpp
-  binder/TypedBinder.cpp
-  binder/ETSBinder.cpp
-  binder/JSBinder.cpp
-  binder/binder.cpp
-  binder/declaration.cpp
-  binder/recordTable.cpp
-  binder/scope.cpp
-  binder/variable.cpp
+  varbinder/ASBinder.cpp
+  varbinder/TSBinder.cpp
+  varbinder/TypedBinder.cpp
+  varbinder/ETSBinder.cpp
+  varbinder/JSBinder.cpp
+  varbinder/varbinder.cpp
+  varbinder/declaration.cpp
+  varbinder/recordTable.cpp
+  varbinder/scope.cpp
+  varbinder/variable.cpp
   compiler/base/catchTable.cpp
   compiler/base/condition.cpp
   compiler/base/destructuring.cpp

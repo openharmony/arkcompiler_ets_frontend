@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +43,9 @@
 #include "ir/ets/etsNewClassInstanceExpression.h"
 #include "ir/ets/etsStructDeclaration.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
-#include "binder/variable.h"
-#include "binder/scope.h"
-#include "binder/declaration.h"
+#include "varbinder/variable.h"
+#include "varbinder/scope.h"
+#include "varbinder/declaration.h"
 #include "checker/ETSchecker.h"
 #include "ir/base/catchClause.h"
 
@@ -428,7 +428,7 @@ void AliveAnalyzer::AnalyzeSwitch(const ir::SwitchStatement *switch_stmt)
         AnalyzeStats(case_clause->Consequent());
 
         if (status_ == LivenessStatus::ALIVE && !case_clause->Consequent().empty() && i < size - 1) {
-            // TODO(user) Add lint categories and option to enable/disable compiler warnings
+            // NOTE Add lint categories and option to enable/disable compiler warnings
             checker_->Warning("Possible fall-through into case", case_clause->Start());
         }
     }

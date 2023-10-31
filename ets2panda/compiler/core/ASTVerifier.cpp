@@ -16,8 +16,8 @@
 #include "ASTVerifier.h"
 
 #include "es2panda.h"
-#include "binder/variableFlags.h"
-#include "binder/scope.h"
+#include "varbinder/variableFlags.h"
+#include "varbinder/scope.h"
 #include "ir/astNode.h"
 #include "ir/base/catchClause.h"
 #include "ir/base/classDefinition.h"
@@ -81,40 +81,40 @@ bool ASTVerifier::IsCorrectProgram(const parser::Program *program)
     return is_correct;
 }
 
-std::string ToStringHelper(const binder::ScopeType type)
+std::string ToStringHelper(const varbinder::ScopeType type)
 {
     switch (type) {
-        case binder::ScopeType::CATCH: {
+        case varbinder::ScopeType::CATCH: {
             return "CATCH";
         }
-        case binder::ScopeType::CATCH_PARAM: {
+        case varbinder::ScopeType::CATCH_PARAM: {
             return "CATCH_PARAM";
         }
-        case binder::ScopeType::CLASS: {
+        case varbinder::ScopeType::CLASS: {
             return "CLASS";
         }
-        case binder::ScopeType::FUNCTION: {
+        case varbinder::ScopeType::FUNCTION: {
             return "FUNCTION";
         }
-        case binder::ScopeType::FUNCTION_PARAM: {
+        case varbinder::ScopeType::FUNCTION_PARAM: {
             return "FUNCTION_PARAM";
         }
-        case binder::ScopeType::GLOBAL: {
+        case varbinder::ScopeType::GLOBAL: {
             return "GLOBAL";
         }
-        case binder::ScopeType::LOCAL: {
+        case varbinder::ScopeType::LOCAL: {
             return "LOCAL";
         }
-        case binder::ScopeType::LOOP: {
+        case varbinder::ScopeType::LOOP: {
             return "LOOP";
         }
-        case binder::ScopeType::LOOP_DECL: {
+        case varbinder::ScopeType::LOOP_DECL: {
             return "LOOP_DECL";
         }
-        case binder::ScopeType::MODULE: {
+        case varbinder::ScopeType::MODULE: {
             return "MODULE";
         }
-        case binder::ScopeType::PARAM: {
+        case varbinder::ScopeType::PARAM: {
             return "PARAM";
         }
         default: {
@@ -128,20 +128,20 @@ std::string ToStringHelper(const util::StringView &name)
     return name == nullptr ? "<null>" : name.Mutf8();
 }
 
-std::string ToStringHelper(const binder::Scope *scope)
+std::string ToStringHelper(const varbinder::Scope *scope)
 {
     if (scope == nullptr) {
         return "<null>";
     }
 
     switch (scope->Type()) {
-        case binder::ScopeType::FUNCTION: {
+        case varbinder::ScopeType::FUNCTION: {
             return "FUNC_SCOPE " + ToStringHelper(scope->AsFunctionScope()->Name());
         }
-        case binder::ScopeType::LOCAL: {
+        case varbinder::ScopeType::LOCAL: {
             return "LOCAL_SCOPE ";
         }
-        case binder::ScopeType::CATCH: {
+        case varbinder::ScopeType::CATCH: {
             return "CATCH_SCOPE ";
         }
         default: {
@@ -150,23 +150,23 @@ std::string ToStringHelper(const binder::Scope *scope)
     }
 }
 
-std::string ToStringHelper(const binder::Variable *var)
+std::string ToStringHelper(const varbinder::Variable *var)
 {
     if (var == nullptr) {
         return "<null>";
     }
 
     switch (var->Type()) {
-        case binder::VariableType::LOCAL: {
+        case varbinder::VariableType::LOCAL: {
             return "LOCAL_VAR " + ToStringHelper(var->Name());
         }
-        case binder::VariableType::MODULE: {
+        case varbinder::VariableType::MODULE: {
             return "MODULE_VAR " + ToStringHelper(var->Name());
         }
-        case binder::VariableType::GLOBAL: {
+        case varbinder::VariableType::GLOBAL: {
             return "GLOBAL_VAR " + ToStringHelper(var->Name());
         }
-        case binder::VariableType::ENUM: {
+        case varbinder::VariableType::ENUM: {
             return "ENUM_VAR " + ToStringHelper(var->Name());
         }
         default: {
@@ -391,7 +391,7 @@ bool ASTVerifier::HasScope(const ir::AstNode *ast)
         error_messages_.push_back("NULL_SCOPE_LOCAL_VAR: " + ToStringHelper(ast));
         return false;
     }
-    // TODO(tatiana): Add check that the scope enclose this identifier
+    // NOTE(tatiana): Add check that the scope enclose this identifier
     return true;
 }
 

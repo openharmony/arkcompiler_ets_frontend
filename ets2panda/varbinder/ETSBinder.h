@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,14 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_BINDER_ETS_BINDER_H
-#define ES2PANDA_BINDER_ETS_BINDER_H
+#ifndef ES2PANDA_VARBINDER_ETSBINDER_H
+#define ES2PANDA_VARBINDER_ETSBINDER_H
 
-#include "binder/TypedBinder.h"
-#include "binder/recordTable.h"
+#include "varbinder/TypedBinder.h"
+#include "varbinder/recordTable.h"
 #include "ir/ets/etsImportDeclaration.h"
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 
 using ComputedLambdaObjects = ArenaMap<const ir::AstNode *, std::pair<ir::ClassDefinition *, checker::Signature *>>;
 
@@ -119,6 +119,19 @@ public:
     void BuildImportDeclaration(ir::ETSImportDeclaration *decl);
     void BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *class_instance);
     void AddSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
+    bool AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *specifier,
+                                                   const varbinder::Scope::VariableMap &global_bindings,
+                                                   const parser::Program *import_program,
+                                                   const varbinder::GlobalScope *import_global_scope,
+                                                   const ir::ETSImportDeclaration *import);
+    bool AddImportSpecifiersToTopBindings(ir::AstNode *specifier, const varbinder::Scope::VariableMap &global_bindings,
+                                          const ir::ETSImportDeclaration *import,
+                                          const ArenaVector<parser::Program *> &record_res);
+    Variable *FindImportSpecifiersVariable(const util::StringView &imported,
+                                           const varbinder::Scope::VariableMap &global_bindings,
+                                           const ArenaVector<parser::Program *> &record_res,
+                                           const ir::StringLiteral *import_path);
+    Variable *FindStaticBinding(const ArenaVector<parser::Program *> &record_res, const ir::StringLiteral *import_path);
     void AddDynamicSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
 
     void ResolveInterfaceDeclaration(ir::TSInterfaceDeclaration *decl);
@@ -190,6 +203,8 @@ private:
     void InitImplicitThisParam();
     void HandleStarImport(ir::TSQualifiedName *import_name, util::StringView full_path);
     void ImportGlobalProperties(const ir::ClassDefinition *class_def);
+    bool ImportGlobalPropertiesForNotDefaultedExports(varbinder::Variable *var, const util::StringView &name,
+                                                      const ir::ClassElement *class_element);
 
     RecordTable global_record_table_;
     RecordTable *record_table_;
@@ -203,6 +218,6 @@ private:
     ir::AstNode *default_export_ {};
 };
 
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 #endif

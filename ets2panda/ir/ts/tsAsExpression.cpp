@@ -15,7 +15,7 @@
 
 #include "tsAsExpression.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "checker/ets/castingContext.h"
 #include "checker/types/ets/etsUnionType.h"
@@ -215,7 +215,7 @@ checker::Type *TSAsExpression::Check(checker::ETSChecker *const checker)
                                       {"Cannot cast type '", source_type, "' to '", target_type, "'"});
 
     if (source_type->IsETSDynamicType() && target_type->IsLambdaObject()) {
-        // TODO(itrubachev) change target_type to created lambdaobject type.
+        // NOTE: itrubachev. change target_type to created lambdaobject type.
         // Now target_type is not changed, only construct signature is added to it
         checker->BuildLambdaObjectClass(target_type->AsETSObjectType(),
                                         TypeAnnotation()->AsETSFunctionType()->ReturnType());

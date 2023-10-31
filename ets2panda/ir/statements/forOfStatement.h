@@ -18,16 +18,17 @@
 
 #include "ir/statements/loopStatement.h"
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class LoopScope;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::ir {
 class Expression;
 
 class ForOfStatement : public LoopStatement {
 public:
-    explicit ForOfStatement(binder::LoopScope *scope, AstNode *left, Expression *right, Statement *body, bool is_await)
+    explicit ForOfStatement(varbinder::LoopScope *scope, AstNode *left, Expression *right, Statement *body,
+                            bool is_await)
         : LoopStatement(AstNodeType::FOR_OF_STATEMENT, scope),
           left_(left),
           right_(right),

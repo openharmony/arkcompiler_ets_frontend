@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ const ArenaVector<ir::AstNode *> &ETSEnumInterface::GetMembers() const noexcept
     return decl_->Members();
 }
 
-binder::LocalVariable *ETSEnumInterface::GetMemberVar() const noexcept
+varbinder::LocalVariable *ETSEnumInterface::GetMemberVar() const noexcept
 {
     ASSERT(IsLiteralType());
     return member_->Key()->AsIdentifier()->Variable()->AsLocalVariable();
@@ -227,7 +227,7 @@ bool ETSEnumInterface::IsEnumTypeExpression(const ir::Expression *const expressi
         return false;
     }
 
-    const auto *const local_var = [expression]() -> const binder::LocalVariable * {
+    const auto *const local_var = [expression]() -> const varbinder::LocalVariable * {
         if (expression->IsMemberExpression()) {
             const auto *const member_expr = expression->AsMemberExpression();
             return member_expr->PropVar() != nullptr
@@ -238,9 +238,8 @@ bool ETSEnumInterface::IsEnumTypeExpression(const ir::Expression *const expressi
     }();
 
     ASSERT(local_var->Declaration() == decl_->Key()->AsIdentifier()->Variable()->Declaration() ||
-           !local_var->HasFlag(binder::VariableFlags::ENUM_LITERAL));
-
-    return local_var->HasFlag(binder::VariableFlags::ENUM_LITERAL);
+           !local_var->HasFlag(varbinder::VariableFlags::ENUM_LITERAL));
+    return local_var->HasFlag(varbinder::VariableFlags::ENUM_LITERAL);
 }
 
 ETSEnumInterface::Method ETSEnumInterface::FromIntMethod() const noexcept

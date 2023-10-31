@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
 
 #include "regScope.h"
 
-#include "binder/binder.h"
-#include "binder/scope.h"
-#include "binder/variable.h"
+#include "varbinder/varbinder.h"
+#include "varbinder/scope.h"
+#include "varbinder/variable.h"
 #include "compiler/base/hoisting.h"
 #include "compiler/core/codeGen.h"
 #include "compiler/core/pandagen.h"
@@ -47,7 +47,7 @@ void RegScope::DebuggerCloseScope()
 
 LocalRegScope::LocalRegScope(PandaGen *pg) : RegScope(pg) {}
 
-LocalRegScope::LocalRegScope(CodeGen *cg, binder::Scope *scope) : RegScope(cg)
+LocalRegScope::LocalRegScope(CodeGen *cg, varbinder::Scope *scope) : RegScope(cg)
 {
     prev_scope_ = cg_->scope_;
     cg_->scope_ = scope;
@@ -65,7 +65,7 @@ LocalRegScope::LocalRegScope(CodeGen *cg, binder::Scope *scope) : RegScope(cg)
     }
 }
 
-LocalRegScope::LocalRegScope(PandaGen *pg, binder::Scope *scope) : LocalRegScope(static_cast<CodeGen *>(pg), scope)
+LocalRegScope::LocalRegScope(PandaGen *pg, varbinder::Scope *scope) : LocalRegScope(static_cast<CodeGen *>(pg), scope)
 {
     Hoisting::Hoist(pg);
 }
@@ -85,7 +85,7 @@ LocalRegScope::~LocalRegScope()
 
 FunctionRegScope::FunctionRegScope(CodeGen *cg) : RegScope(cg)
 {
-    InitializeParams([](binder::LocalVariable *const param, const VReg param_reg) { param->BindVReg(param_reg); });
+    InitializeParams([](varbinder::LocalVariable *const param, const VReg param_reg) { param->BindVReg(param_reg); });
 }
 
 void FunctionRegScope::InitializeParams(const StoreParamCb &cb)
@@ -135,7 +135,7 @@ FunctionRegScope::FunctionRegScope(PandaGen *pg) : RegScope(pg), env_scope_(pg->
 
     pg->StoreAccumulator(node, lex_env);
 
-    InitializeParams([pg, node](binder::LocalVariable *const param, const VReg param_reg) {
+    InitializeParams([pg, node](varbinder::LocalVariable *const param, const VReg param_reg) {
         if (param->LexicalBound()) {
             pg->LoadAccumulator(node, param_reg);
             pg->StoreLexicalVar(node, 0, param->LexIdx());

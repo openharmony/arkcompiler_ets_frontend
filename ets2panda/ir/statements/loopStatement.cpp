@@ -15,7 +15,7 @@
 
 #include "loopStatement.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 
 namespace panda::es2panda::ir {
 }  // namespace panda::es2panda::ir

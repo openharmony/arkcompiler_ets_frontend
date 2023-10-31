@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@
 
 #include "emitter.h"
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class RecordTable;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::ir {
 class ClassDefinition;
@@ -58,7 +58,7 @@ protected:
 
     void GenFunctionAnnotations(pandasm::Function *func) override;
     void GenVariableSignature(pandasm::debuginfo::LocalVariable &variable_debug,
-                              binder::LocalVariable *variable) const override;
+                              varbinder::LocalVariable *variable) const override;
 };
 
 class ETSEmitter : public Emitter {
@@ -71,7 +71,7 @@ public:
     void GenAnnotation() override;
 
 private:
-    void GenExternalRecord(binder::RecordTable *record_table);
+    void GenExternalRecord(varbinder::RecordTable *record_table);
     void GenGlobalArrayRecord(checker::ETSArrayType *array_type, checker::Signature *signature);
     void GenClassRecord(const ir::ClassDefinition *class_def, bool external);
     void GenEnumRecord(const ir::TSEnumDeclaration *enum_decl, bool external);

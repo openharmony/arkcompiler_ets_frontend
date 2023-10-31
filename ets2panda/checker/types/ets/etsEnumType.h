@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ template <typename>
 // NOLINTNEXTLINE(readability-identifier-naming)
 inline constexpr bool dependent_false_v = false;
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class LocalVariable;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::checker {
 template <typename T>
@@ -66,7 +66,7 @@ public:
 
     [[nodiscard]] const ArenaVector<ir::AstNode *> &GetMembers() const noexcept;
 
-    [[nodiscard]] binder::LocalVariable *GetMemberVar() const noexcept;
+    [[nodiscard]] varbinder::LocalVariable *GetMemberVar() const noexcept;
 
     [[nodiscard]] util::StringView GetName() const noexcept;
 

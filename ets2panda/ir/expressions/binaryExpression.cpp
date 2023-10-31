@@ -15,7 +15,7 @@
 
 #include "binaryExpression.h"
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "compiler/core/function.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
@@ -241,7 +241,7 @@ checker::Type *BinaryExpression::Check(checker::TSChecker *checker)
             return checker->CheckOrOperator(left_type, right_type, left_);
         }
         case lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING: {
-            // TODO(Csaba Repasi): Implement checker for nullish coalescing
+            // NOTE: Csaba Repasi. Implement checker for nullish coalescing
             return checker->GlobalAnyType();
         }
         case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {

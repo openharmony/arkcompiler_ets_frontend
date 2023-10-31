@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -248,7 +248,7 @@ void ETSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
     std::vector<compiler::VReg> arguments;
 
     for (auto *it : expr->CapturedVars()) {
-        if (it->HasFlag(binder::VariableFlags::LOCAL)) {
+        if (it->HasFlag(varbinder::VariableFlags::LOCAL)) {
             arguments.push_back(it->AsLocalVariable()->Vreg());
         }
     }
@@ -602,7 +602,6 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
         }
 
         etsg->LoadBuiltinVoid(st);
-
     } else {
         auto ttctx = compiler::TargetTypeContext(etsg, etsg->ReturnType());
 
@@ -626,7 +625,6 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
         etsg->LoadAccumulator(st, res);
     }
 
-    // etsg->ApplyConversion(st, st->ReturnType());
     etsg->ReturnAcc(st);
 }
 

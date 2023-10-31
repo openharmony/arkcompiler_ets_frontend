@@ -15,7 +15,7 @@
 
 #include "helpers.h"
 
-#include "binder/privateBinding.h"
+#include "varbinder/privateBinding.h"
 #include "checker/types/ets/types.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
@@ -532,7 +532,7 @@ util::StringView Helpers::FunctionName(ArenaAllocator *allocator, const ir::Scri
                     return ident->Name();
                 }
 
-                return util::UString(binder::PrivateBinding::ToPrivateBinding(ident->Name()), allocator).View();
+                return util::UString(varbinder::PrivateBinding::ToPrivateBinding(ident->Name()), allocator).View();
             }
 
             break;

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class TSInterfaceDeclaration;
 class Identifier;
 }  // namespace panda::es2panda::ir
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class FunctionScope;
 class BoundContext;
 
@@ -156,7 +156,7 @@ private:
 
     ArenaSet<ir::ClassDefinition *> class_definitions_;
     ArenaSet<ir::TSInterfaceDeclaration *> interface_declarations_;
-    ArenaVector<binder::FunctionScope *> signatures_;
+    ArenaVector<varbinder::FunctionScope *> signatures_;
     RecordHolder record_ {nullptr};
     parser::Program *program_ {};
     BoundContext *bound_ctx_ {};
@@ -184,6 +184,6 @@ private:
     ir::Identifier *record_ident_;
 };
 
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 #endif

@@ -15,8 +15,8 @@
 
 #include "functionDeclaration.h"
 
-#include "binder/variable.h"
-#include "binder/scope.h"
+#include "varbinder/variable.h"
+#include "varbinder/scope.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"

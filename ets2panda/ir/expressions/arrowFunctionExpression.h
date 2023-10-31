@@ -31,7 +31,7 @@ public:
         : Expression(AstNodeType::ARROW_FUNCTION_EXPRESSION), func_(func), captured_vars_(allocator->Adapter())
     {
     }
-    // TODO (csabahurton): friend relationship can be removed once there are getters for private fields
+    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
     friend class compiler::ETSCompiler;
 
     const ScriptFunction *Function() const
@@ -54,12 +54,12 @@ public:
         return resolved_lambda_;
     }
 
-    ArenaVector<binder::Variable *> &CapturedVars()
+    ArenaVector<varbinder::Variable *> &CapturedVars()
     {
         return captured_vars_;
     }
 
-    const ArenaVector<binder::Variable *> &CapturedVars() const
+    const ArenaVector<varbinder::Variable *> &CapturedVars() const
     {
         return captured_vars_;
     }
@@ -84,7 +84,7 @@ public:
 
 private:
     ScriptFunction *func_;
-    ArenaVector<binder::Variable *> captured_vars_;
+    ArenaVector<varbinder::Variable *> captured_vars_;
     ir::ClassDefinition *resolved_lambda_ {nullptr};
     bool propagate_this_ {false};
 };

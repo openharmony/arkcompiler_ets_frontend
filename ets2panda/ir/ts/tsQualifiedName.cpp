@@ -43,7 +43,7 @@ void TSQualifiedName::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 checker::Type *TSQualifiedName::Check([[maybe_unused]] checker::TSChecker *checker)
 {
     checker::Type *base_type = checker->CheckNonNullType(left_->Check(checker), left_->Start());
-    binder::Variable *prop = checker->GetPropertyOfType(base_type, right_->Name());
+    varbinder::Variable *prop = checker->GetPropertyOfType(base_type, right_->Name());
 
     if (prop != nullptr) {
         return checker->GetTypeOfVariable(prop);
@@ -65,7 +65,7 @@ checker::Type *TSQualifiedName::Check(checker::ETSChecker *checker)
 {
     checker::Type *base_type = left_->Check(checker);
     if (base_type->IsETSObjectType()) {
-        binder::Variable *prop =
+        varbinder::Variable *prop =
             base_type->AsETSObjectType()->GetProperty(right_->Name(), checker::PropertySearchFlags::SEARCH_DECL);
 
         if (prop != nullptr) {

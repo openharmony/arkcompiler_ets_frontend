@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,11 +70,8 @@ void DebugInfoDumper::WrapArray(const char *name, const std::vector<T> &array, b
                 ss_ << "\"" << *elem << "\"";
                 // NOLINTNEXTLINE
             } else if constexpr (std::is_same_v<T, std::variant<int64_t, double>>) {
-                if (std::holds_alternative<int64_t>(*elem)) {
-                    ss_ << std::to_string(std::get<int64_t>(*elem));
-                } else {
-                    ss_ << std::to_string(std::get<double>(*elem));
-                }
+                ss_ << (std::holds_alternative<int64_t>(*elem) ? std::to_string(std::get<int64_t>(*elem))
+                                                               : std::to_string(std::get<double>(*elem)));
                 // NOLINTNEXTLINE
             } else {
                 ss_ << std::to_string(*elem);

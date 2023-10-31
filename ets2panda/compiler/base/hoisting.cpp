@@ -16,11 +16,11 @@
 #include "hoisting.h"
 
 #include "ir/base/scriptFunction.h"
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::compiler {
-static void HoistVar(PandaGen *pg, binder::Variable *var, const binder::VarDecl *decl)
+static void HoistVar(PandaGen *pg, varbinder::Variable *var, const varbinder::VarDecl *decl)
 {
     auto *scope = pg->Scope();
 
@@ -30,13 +30,13 @@ static void HoistVar(PandaGen *pg, binder::Variable *var, const binder::VarDecl 
         return;
     }
 
-    binder::ConstScopeFindResult result(decl->Name(), scope, 0, var);
+    varbinder::ConstScopeFindResult result(decl->Name(), scope, 0, var);
 
     pg->LoadConst(decl->Node(), Constant::JS_UNDEFINED);
     pg->StoreAccToLexEnv(decl->Node(), result, true);
 }
 
-static void HoistFunction(PandaGen *pg, binder::Variable *var, const binder::FunctionDecl *decl)
+static void HoistFunction(PandaGen *pg, varbinder::Variable *var, const varbinder::FunctionDecl *decl)
 {
     const ir::ScriptFunction *script_function = decl->Node()->AsScriptFunction();
     auto *scope = pg->Scope();
@@ -50,7 +50,7 @@ static void HoistFunction(PandaGen *pg, binder::Variable *var, const binder::Fun
     }
 
     ASSERT(scope->IsFunctionScope() || scope->IsCatchScope() || scope->IsLocalScope() || scope->IsModuleScope());
-    binder::ConstScopeFindResult result(decl->Name(), scope, 0, var);
+    varbinder::ConstScopeFindResult result(decl->Name(), scope, 0, var);
 
     pg->DefineFunction(decl->Node(), script_function, internal_name);
     pg->StoreAccToLexEnv(decl->Node(), result, true);
@@ -62,7 +62,7 @@ void Hoisting::Hoist(PandaGen *pg)
 
     for (const auto &[_, var] : scope->Bindings()) {
         (void)_;
-        if (!var->HasFlag(binder::VariableFlags::HOIST)) {
+        if (!var->HasFlag(varbinder::VariableFlags::HOIST)) {
             continue;
         }
 

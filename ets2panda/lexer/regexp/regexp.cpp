@@ -572,7 +572,7 @@ uint32_t RegExpParser::ParseLegacyOctalEscape()
         return octal_value;
     }
 
-    octal_value = octal_value * 8 + DigitValue(Next());
+    octal_value = octal_value * 8U + DigitValue(Next());
 
     if (!IsOctalDigit(Peek())) {
         return octal_value;
@@ -653,18 +653,18 @@ uint32_t RegExpParser::ParseUnicodeEscape()
         Next();
     } else {
         value = ParseUnicodeDigits();
-        if (util::StringView::IsHighSurrogate(value)) {
-            auto pos = iter_;
-
-            if (Next() == LEX_CHAR_BACKSLASH && Next() == LEX_CHAR_LOWERCASE_U) {
-                uint32_t next = ParseUnicodeDigits();
-                if (util::StringView::IsLowSurrogate(next)) {
-                    return util::StringView::DecodeSurrogates(value, next);
-                }
-            }
-
-            iter_ = pos;
+        if (!util::StringView::IsHighSurrogate(value)) {
+            return value;
         }
+
+        auto pos = iter_;
+        if (Next() == LEX_CHAR_BACKSLASH && Next() == LEX_CHAR_LOWERCASE_U) {
+            uint32_t next = ParseUnicodeDigits();
+            if (util::StringView::IsLowSurrogate(next)) {
+                return util::StringView::DecodeSurrogates(value, next);
+            }
+        }
+        iter_ = pos;
     }
 
     return value;
@@ -692,7 +692,7 @@ void RegExpParser::ParseUnicodePropertyEscape()
             break;
         }
 
-        /* TODO(dbatyai): Parse and validate Unicode property names */
+        /* NOTE: Parse and validate Unicode property names */
     }
 }
 

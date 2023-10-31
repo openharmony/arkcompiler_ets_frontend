@@ -15,7 +15,7 @@
 
 #include "scriptFunction.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "compiler/core/ETSGen.h"
 #include "ir/astDump.h"
 #include "ir/expression.h"

@@ -32,7 +32,7 @@ public:
     explicit ReturnStatement() : ReturnStatement(nullptr) {}
     explicit ReturnStatement(Expression *argument) : Statement(AstNodeType::RETURN_STATEMENT), argument_(argument) {}
 
-    // TODO (csabahurton): these friend relationships can be removed once there are getters for private fields
+    // NOTE: csabahurton. these friend relationships can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
     friend class compiler::ETSCompiler;
 

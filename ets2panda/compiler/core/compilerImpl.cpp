@@ -31,10 +31,10 @@
 #include "parser/TSparser.h"
 #include "parser/ETSparser.h"
 #include "parser/program/program.h"
-#include "binder/JSBinder.h"
-#include "binder/ASBinder.h"
-#include "binder/TSBinder.h"
-#include "binder/ETSBinder.h"
+#include "varbinder/JSBinder.h"
+#include "varbinder/ASBinder.h"
+#include "varbinder/TSBinder.h"
+#include "varbinder/ETSBinder.h"
 #include "checker/TSAnalyzer.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSAnalyzer.h"
@@ -78,39 +78,39 @@ panda::pandasm::Program *CompilerImpl::Emit(CompilerContext *context)
 template <typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter, typename AstCompiler>
 static CompilerContext::CodeGenCb MakeCompileJob()
 {
-    return
-        [](CompilerContext *context, binder::FunctionScope *scope, compiler::ProgramElement *program_element) -> void {
-            RegSpiller reg_spiller;
-            ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
-            AstCompiler astcompiler;
-            CodeGen cg(&allocator, &reg_spiller, context, scope, program_element, &astcompiler);
-            FunctionEmitter func_emitter(&cg, program_element);
-            func_emitter.Generate();
-        };
+    return [](CompilerContext *context, varbinder::FunctionScope *scope,
+              compiler::ProgramElement *program_element) -> void {
+        RegSpiller reg_spiller;
+        ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
+        AstCompiler astcompiler;
+        CodeGen cg(&allocator, &reg_spiller, context, scope, program_element, &astcompiler);
+        FunctionEmitter func_emitter(&cg, program_element);
+        func_emitter.Generate();
+    };
 }
 
 using EmitCb = std::function<pandasm::Program *(compiler::CompilerContext *)>;
 using PhaseListGetter = std::function<std::vector<compiler::Phase *>()>;
 
-template <typename Parser, typename Binder, typename Checker, typename Analyzer, typename AstCompiler, typename CodeGen,
-          typename RegSpiller, typename FunctionEmitter, typename Emitter>
+template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
+          typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
 static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const PhaseListGetter &get_phases,
                                         const EmitCb &emit_cb)
 {
     ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
-    auto program = parser::Program::NewProgram<Binder>(&allocator);
+    auto program = parser::Program::NewProgram<VarBinder>(&allocator);
     program.MarkEntry();
     auto parser = Parser(&program, unit.options, static_cast<parser::ParserStatus>(unit.raw_parser_status));
     auto checker = Checker();
     auto analyzer = Analyzer(&checker);
     checker.SetAnalyzer(&analyzer);
 
-    auto *binder = program.Binder();
-    binder->SetProgram(&program);
+    auto *varbinder = program.VarBinder();
+    varbinder->SetProgram(&program);
 
-    CompilerContext context(binder, &checker, unit.options,
+    CompilerContext context(varbinder, &checker, unit.options,
                             MakeCompileJob<CodeGen, RegSpiller, FunctionEmitter, Emitter, AstCompiler>());
-    binder->SetCompilerContext(&context);
+    varbinder->SetCompilerContext(&context);
 
     auto emitter = Emitter(&context);
     context.SetEmitter(&emitter);
@@ -134,25 +134,25 @@ pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit)
 
     switch (unit.ext) {
         case ScriptExtension::TS: {
-            return CreateCompiler<parser::TSParser, binder::TSBinder, checker::TSChecker, checker::TSAnalyzer,
+            return CreateCompiler<parser::TSParser, varbinder::TSBinder, checker::TSChecker, checker::TSAnalyzer,
                                   compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
                                   compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetTrivialPhaseList,
                                                                                     emit_cb);
         }
         case ScriptExtension::AS: {
-            return CreateCompiler<parser::ASParser, binder::ASBinder, checker::ASChecker, checker::TSAnalyzer,
+            return CreateCompiler<parser::ASParser, varbinder::ASBinder, checker::ASChecker, checker::TSAnalyzer,
                                   compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
                                   compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetTrivialPhaseList,
                                                                                     emit_cb);
         }
         case ScriptExtension::ETS: {
-            return CreateCompiler<parser::ETSParser, binder::ETSBinder, checker::ETSChecker, checker::ETSAnalyzer,
+            return CreateCompiler<parser::ETSParser, varbinder::ETSBinder, checker::ETSChecker, checker::ETSAnalyzer,
                                   compiler::ETSCompiler, compiler::ETSGen, compiler::StaticRegSpiller,
                                   compiler::ETSFunctionEmitter, compiler::ETSEmitter>(unit, compiler::GetETSPhaseList,
                                                                                       emit_cb);
         }
         case ScriptExtension::JS: {
-            return CreateCompiler<parser::JSParser, binder::JSBinder, checker::JSChecker, checker::TSAnalyzer,
+            return CreateCompiler<parser::JSParser, varbinder::JSBinder, checker::JSChecker, checker::TSAnalyzer,
                                   compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
                                   compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetTrivialPhaseList,
                                                                                     emit_cb);

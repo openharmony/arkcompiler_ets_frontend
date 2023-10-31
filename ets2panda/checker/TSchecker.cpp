@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@
 
 namespace panda::es2panda::checker {
 
-bool TSChecker::StartChecker([[maybe_unused]] binder::Binder *binder, const CompilerOptions &options)
+bool TSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options)
 {
-    Initialize(binder);
-    binder->IdentifierAnalysis();
+    Initialize(varbinder);
+    varbinder->IdentifierAnalysis();
 
     if (options.dump_ast) {
         std::cout << Program()->Dump() << std::endl;

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_COMPILER_CORE_ENV_SCOPE_H
 #define ES2PANDA_COMPILER_CORE_ENV_SCOPE_H
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "ir/irnode.h"
 #include "compiler/core/dynamicContext.h"
 #include "compiler/core/regScope.h"
@@ -32,7 +32,7 @@ class PandaGen;
 
 class ScopeContext {
 public:
-    explicit ScopeContext(CodeGen *cg, binder::Scope *new_scope);
+    explicit ScopeContext(CodeGen *cg, varbinder::Scope *new_scope);
     ~ScopeContext();
 
     NO_COPY_SEMANTIC(ScopeContext);
@@ -40,7 +40,7 @@ public:
 
 private:
     CodeGen *cg_;
-    binder::Scope *prev_scope_;
+    varbinder::Scope *prev_scope_;
 };
 
 class EnvScope {
@@ -75,25 +75,25 @@ protected:
 
 class LoopEnvScope : public EnvScope {
 public:
-    explicit LoopEnvScope(PandaGen *pg, binder::LoopScope *scope, LabelTarget target)
+    explicit LoopEnvScope(PandaGen *pg, varbinder::LoopScope *scope, LabelTarget target)
         : scope_(NeedEnv(scope) ? scope : nullptr), reg_scope_(pg, scope), lex_env_ctx_(this, pg, target)
     {
-        CopyBindings(pg, scope, binder::VariableFlags::PER_ITERATION);
+        CopyBindings(pg, scope, varbinder::VariableFlags::PER_ITERATION);
     }
 
-    explicit LoopEnvScope(PandaGen *pg, LabelTarget target, binder::LoopScope *scope)
+    explicit LoopEnvScope(PandaGen *pg, LabelTarget target, varbinder::LoopScope *scope)
         : scope_(NeedEnv(scope) ? scope : nullptr), reg_scope_(pg), lex_env_ctx_(this, pg, target)
     {
-        CopyBindings(pg, scope, binder::VariableFlags::PER_ITERATION);
+        CopyBindings(pg, scope, varbinder::VariableFlags::PER_ITERATION);
     }
 
-    explicit LoopEnvScope(PandaGen *pg, binder::LoopDeclarationScope *scope)
+    explicit LoopEnvScope(PandaGen *pg, varbinder::LoopDeclarationScope *scope)
         : scope_(NeedEnv(scope) ? scope : nullptr), reg_scope_(pg), lex_env_ctx_(this, pg, {})
     {
-        CopyBindings(pg, scope, binder::VariableFlags::LOOP_DECL);
+        CopyBindings(pg, scope, varbinder::VariableFlags::LOOP_DECL);
     }
 
-    binder::VariableScope *Scope() const
+    varbinder::VariableScope *Scope() const
     {
         ASSERT(HasEnv());
         return scope_;
@@ -107,14 +107,14 @@ public:
     void CopyPetIterationCtx();
 
 private:
-    static bool NeedEnv(binder::VariableScope *scope)
+    static bool NeedEnv(varbinder::VariableScope *scope)
     {
         return scope->IsVariableScope() && scope->AsVariableScope()->NeedLexEnv();
     }
 
-    void CopyBindings(PandaGen *pg, binder::VariableScope *scope, binder::VariableFlags flag);
+    void CopyBindings(PandaGen *pg, varbinder::VariableScope *scope, varbinder::VariableFlags flag);
 
-    binder::VariableScope *scope_ {};
+    varbinder::VariableScope *scope_ {};
     LocalRegScope reg_scope_;
     LexEnvContext lex_env_ctx_;
 };

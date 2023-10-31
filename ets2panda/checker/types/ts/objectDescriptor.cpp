@@ -15,12 +15,12 @@
 
 #include "objectDescriptor.h"
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "checker/types/ts/indexInfo.h"
 #include "checker/types/signature.h"
 
 namespace panda::es2panda::checker {
-binder::LocalVariable *ObjectDescriptor::FindProperty(const util::StringView &name) const
+varbinder::LocalVariable *ObjectDescriptor::FindProperty(const util::StringView &name) const
 {
     for (auto *it : properties) {
         if (it->Name() == name) {

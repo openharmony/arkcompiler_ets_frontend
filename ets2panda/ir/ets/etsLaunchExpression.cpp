@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,6 @@ void ETSLaunchExpression::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
     checker::Signature *signature = expr_->Signature();
     bool is_static = signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
     bool is_reference = signature->HasSignatureFlag(checker::SignatureFlags::TYPE);
-
     if (!is_reference && expr_->Callee()->IsIdentifier()) {
         if (!is_static) {
             etsg->LoadThis(expr_);

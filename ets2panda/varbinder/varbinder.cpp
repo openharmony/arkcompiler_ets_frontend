@@ -13,13 +13,13 @@
  * limitations under the License.
  */
 
-#include "binder.h"
+#include "varbinder.h"
 
-#include "binder/privateBinding.h"
+#include "varbinder/privateBinding.h"
 #include "parser/program/program.h"
 #include "util/helpers.h"
-#include "binder/scope.h"
-#include "binder/tsBinding.h"
+#include "varbinder/scope.h"
+#include "varbinder/tsBinding.h"
 #include "compiler/core/compilerContext.h"
 #include "es2panda.h"
 #include "ir/astNode.h"
@@ -58,8 +58,8 @@
 #include "ir/base/tsSignatureDeclaration.h"
 #include "ir/base/tsMethodSignature.h"
 
-namespace panda::es2panda::binder {
-void Binder::InitTopScope()
+namespace panda::es2panda::varbinder {
+void VarBinder::InitTopScope()
 {
     if (program_->Kind() == parser::ScriptKind::MODULE) {
         top_scope_ = Allocator()->New<ModuleScope>(Allocator());
@@ -71,7 +71,7 @@ void Binder::InitTopScope()
     var_scope_ = top_scope_;
 }
 
-std::tuple<ParameterDecl *, Variable *> Binder::AddParamDecl(ir::AstNode *param)
+std::tuple<ParameterDecl *, Variable *> VarBinder::AddParamDecl(ir::AstNode *param)
 {
     ASSERT(scope_->IsFunctionParamScope() || scope_->IsCatchParamScope());
     auto [decl, node, var] = static_cast<ParamScope *>(scope_)->AddParamDecl(Allocator(), param);
@@ -83,42 +83,42 @@ std::tuple<ParameterDecl *, Variable *> Binder::AddParamDecl(ir::AstNode *param)
     ThrowRedeclaration(node->Start(), decl->Name());
 }
 
-void Binder::ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name) const
+void VarBinder::ThrowRedeclaration(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
     std::stringstream ss;
     ss << "Variable '" << name << "' has already been declared.";
     ThrowError(pos, ss.str());
 }
 
-void Binder::ThrowUnresolvableVariable(const lexer::SourcePosition &pos, const util::StringView &name) const
+void VarBinder::ThrowUnresolvableVariable(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
     std::stringstream ss;
     ss << "Cannot find variable '" << name << "'.";
     ThrowError(pos, ss.str());
 }
 
-void Binder::ThrowUnresolvableType(const lexer::SourcePosition &pos, const util::StringView &name) const
+void VarBinder::ThrowUnresolvableType(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
     std::stringstream ss;
     ss << "Cannot find type '" << name << "'.";
     ThrowError(pos, ss.str());
 }
 
-void Binder::ThrowTDZ(const lexer::SourcePosition &pos, const util::StringView &name) const
+void VarBinder::ThrowTDZ(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
     std::stringstream ss;
     ss << "Variable '" << name << "' is accessed before it's initialization.";
     ThrowError(pos, ss.str());
 }
 
-void Binder::ThrowInvalidCapture(const lexer::SourcePosition &pos, const util::StringView &name) const
+void VarBinder::ThrowInvalidCapture(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
     std::stringstream ss;
     ss << "Cannot capture variable'" << name << "'.";
     ThrowError(pos, ss.str());
 }
 
-void Binder::ThrowPrivateFieldMismatch(const lexer::SourcePosition &pos, const util::StringView &name) const
+void VarBinder::ThrowPrivateFieldMismatch(const lexer::SourcePosition &pos, const util::StringView &name) const
 {
     std::stringstream ss;
     ss << "Private field '" << name << "' must be declared in an enclosing class";
@@ -126,7 +126,7 @@ void Binder::ThrowPrivateFieldMismatch(const lexer::SourcePosition &pos, const u
     ThrowError(pos, ss.str());
 }
 
-void Binder::ThrowError(const lexer::SourcePosition &pos, const std::string_view &msg) const
+void VarBinder::ThrowError(const lexer::SourcePosition &pos, const std::string_view &msg) const
 {
     lexer::LineIndex index(program_->SourceCode());
     lexer::SourceLocation loc = index.GetLocation(pos);
@@ -134,7 +134,7 @@ void Binder::ThrowError(const lexer::SourcePosition &pos, const std::string_view
     throw Error(ErrorType::SYNTAX, program_->SourceFile().Utf8(), msg, loc.line, loc.col);
 }
 
-void Binder::IdentifierAnalysis()
+void VarBinder::IdentifierAnalysis()
 {
     ASSERT(program_->Ast());
     ASSERT(scope_ == top_scope_);
@@ -150,7 +150,7 @@ void Binder::IdentifierAnalysis()
     AddMandatoryParams();
 }
 
-void Binder::LookupReference(const util::StringView &name)
+void VarBinder::LookupReference(const util::StringView &name)
 {
     auto res = scope_->Find(name);
     if (res.level == 0) {
@@ -161,7 +161,27 @@ void Binder::LookupReference(const util::StringView &name)
     res.variable->SetLexical(res.scope);
 }
 
-void Binder::InstantiateArguments()
+bool VarBinder::InstantiateArgumentsImpl(Scope **scope, Scope *iter, const ir::AstNode *node)
+{
+    if (node->AsScriptFunction()->IsArrow()) {
+        return false;
+    }
+    auto *arguments_variable =
+        (*scope)->AddDecl<ConstDecl, LocalVariable>(Allocator(), FUNCTION_ARGUMENTS, VariableFlags::INITIALIZED);
+    if (iter->IsFunctionParamScope()) {
+        if (arguments_variable == nullptr) {
+            return true;
+        }
+
+        *scope = iter->AsFunctionParamScope()->GetFunctionScope();
+        (*scope)->InsertBinding(arguments_variable->Name(), arguments_variable);
+    }
+
+    (*scope)->AddFlag(ScopeFlags::USE_ARGS);
+    return true;
+}
+
+void VarBinder::InstantiateArguments()
 {
     auto *iter = scope_;
     while (true) {
@@ -178,21 +198,7 @@ void Binder::InstantiateArguments()
             break;
         }
 
-        if (!node->AsScriptFunction()->IsArrow()) {
-            auto *arguments_variable =
-                scope->AddDecl<ConstDecl, LocalVariable>(Allocator(), FUNCTION_ARGUMENTS, VariableFlags::INITIALIZED);
-
-            if (iter->IsFunctionParamScope()) {
-                if (arguments_variable == nullptr) {
-                    break;
-                }
-
-                scope = iter->AsFunctionParamScope()->GetFunctionScope();
-                scope->InsertBinding(arguments_variable->Name(), arguments_variable);
-            }
-
-            scope->AddFlag(ScopeFlags::USE_ARGS);
-
+        if (InstantiateArgumentsImpl(&scope, iter, node)) {
             break;
         }
 
@@ -200,7 +206,7 @@ void Binder::InstantiateArguments()
     }
 }
 
-void Binder::PropagateDirectEval() const
+void VarBinder::PropagateDirectEval() const
 {
     auto *iter = scope_;
 
@@ -213,13 +219,13 @@ void Binder::PropagateDirectEval() const
     } while (iter != nullptr);
 }
 
-void Binder::InstantiatePrivateContext(const ir::Identifier *ident) const
+void VarBinder::InstantiatePrivateContext(const ir::Identifier *ident) const
 {
     auto *class_def = util::Helpers::GetContainingClassDefinition(ident);
 
     while (class_def != nullptr) {
         auto *scope = class_def->Scope();
-        Variable *variable = scope->FindLocal(class_def->PrivateId());
+        Variable *variable = scope->FindLocal(class_def->PrivateId(), varbinder::ResolveBindingOptions::BINDINGS);
 
         if (!variable->HasFlag(VariableFlags::INITIALIZED)) {
             break;
@@ -236,7 +242,7 @@ void Binder::InstantiatePrivateContext(const ir::Identifier *ident) const
     ThrowPrivateFieldMismatch(ident->Start(), ident->Name());
 }
 
-void Binder::LookupIdentReference(ir::Identifier *ident)
+void VarBinder::LookupIdentReference(ir::Identifier *ident)
 {
     if (!ident->IsReference()) {
         return;
@@ -268,7 +274,7 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
     ident->SetVariable(res.variable);
 }
 
-util::StringView Binder::BuildFunctionName(util::StringView name, uint32_t idx)
+util::StringView VarBinder::BuildFunctionName(util::StringView name, uint32_t idx)
 {
     std::stringstream ss;
     ss << "func_" << name << "_" << std::to_string(idx);
@@ -277,7 +283,7 @@ util::StringView Binder::BuildFunctionName(util::StringView name, uint32_t idx)
     return internal_name.View();
 }
 
-bool Binder::BuildInternalName(ir::ScriptFunction *script_func)
+bool VarBinder::BuildInternalName(ir::ScriptFunction *script_func)
 {
     auto *func_scope = script_func->Scope();
     auto name = util::Helpers::FunctionName(Allocator(), script_func);
@@ -289,7 +295,7 @@ bool Binder::BuildInternalName(ir::ScriptFunction *script_func)
     return !script_func->IsOverload();
 }
 
-void Binder::BuildVarDeclaratorId(ir::AstNode *child_node)
+void VarBinder::BuildVarDeclaratorId(ir::AstNode *child_node)
 {
     switch (child_node->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
@@ -300,7 +306,7 @@ void Binder::BuildVarDeclaratorId(ir::AstNode *child_node)
                 break;
             }
 
-            auto *variable = scope_->FindLocal(name);
+            auto *variable = scope_->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
             ident->SetVariable(variable);
             BuildSignatureDeclarationBaseParams(ident->TypeAnnotation());
             variable->AddFlag(VariableFlags::INITIALIZED);
@@ -345,7 +351,7 @@ void Binder::BuildVarDeclaratorId(ir::AstNode *child_node)
     }
 }
 
-void Binder::BuildVarDeclarator(ir::VariableDeclarator *var_decl)
+void VarBinder::BuildVarDeclarator(ir::VariableDeclarator *var_decl)
 {
     if (var_decl->Parent()->AsVariableDeclaration()->Kind() == ir::VariableDeclaration::VariableDeclarationKind::VAR) {
         ResolveReferences(var_decl);
@@ -359,7 +365,7 @@ void Binder::BuildVarDeclarator(ir::VariableDeclarator *var_decl)
     BuildVarDeclaratorId(var_decl->Id());
 }
 
-void Binder::BuildClassProperty(const ir::ClassProperty *prop)
+void VarBinder::BuildClassProperty(const ir::ClassProperty *prop)
 {
     const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(prop);
     auto scope_ctx = LexicalScope<FunctionScope>::Enter(this, ctor->Scope());
@@ -367,7 +373,7 @@ void Binder::BuildClassProperty(const ir::ClassProperty *prop)
     ResolveReferences(prop);
 }
 
-void Binder::InitializeClassBinding(ir::ClassDefinition *class_def)
+void VarBinder::InitializeClassBinding(ir::ClassDefinition *class_def)
 {
     auto res = scope_->Find(class_def->Ident()->Name());
 
@@ -375,7 +381,7 @@ void Binder::InitializeClassBinding(ir::ClassDefinition *class_def)
     res.variable->AddFlag(VariableFlags::INITIALIZED);
 }
 
-void Binder::InitializeClassIdent(ir::ClassDefinition *class_def)
+void VarBinder::InitializeClassIdent(ir::ClassDefinition *class_def)
 {
     auto res = scope_->Find(class_def->Ident()->Name());
 
@@ -383,7 +389,7 @@ void Binder::InitializeClassIdent(ir::ClassDefinition *class_def)
     res.variable->AddFlag(VariableFlags::INITIALIZED);
 }
 
-void Binder::BuildClassDefinition(ir::ClassDefinition *class_def)
+void VarBinder::BuildClassDefinition(ir::ClassDefinition *class_def)
 {
     if (class_def->Parent()->IsClassDeclaration() || class_def->Parent()->IsETSStructDeclaration()) {
         InitializeClassBinding(class_def);
@@ -395,7 +401,7 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *class_def)
         ResolveReference(class_def->Super());
     }
 
-    Variable *variable = scope_->FindLocal(class_def->PrivateId());
+    Variable *variable = scope_->FindLocal(class_def->PrivateId(), varbinder::ResolveBindingOptions::BINDINGS);
     variable->AddFlag(VariableFlags::INITIALIZED);
 
     if (class_def->Ident() != nullptr) {
@@ -409,7 +415,7 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *class_def)
     }
 }
 
-void Binder::BuildForUpdateLoop(ir::ForUpdateStatement *for_update_stmt)
+void VarBinder::BuildForUpdateLoop(ir::ForUpdateStatement *for_update_stmt)
 {
     auto *loop_scope = for_update_stmt->Scope();
 
@@ -434,8 +440,8 @@ void Binder::BuildForUpdateLoop(ir::ForUpdateStatement *for_update_stmt)
     loop_ctx.GetScope()->ConvertToVariableScope(Allocator());
 }
 
-void Binder::BuildForInOfLoop(binder::LoopScope *loop_scope, ir::AstNode *left, ir::Expression *right,
-                              ir::Statement *body)
+void VarBinder::BuildForInOfLoop(varbinder::LoopScope *loop_scope, ir::AstNode *left, ir::Expression *right,
+                                 ir::Statement *body)
 {
     auto decl_scope_ctx = LexicalScope<LoopDeclarationScope>::Enter(this, loop_scope->DeclScope());
 
@@ -448,7 +454,7 @@ void Binder::BuildForInOfLoop(binder::LoopScope *loop_scope, ir::AstNode *left, 
     loop_ctx.GetScope()->ConvertToVariableScope(Allocator());
 }
 
-void Binder::BuildCatchClause(ir::CatchClause *catch_clause_stmt)
+void VarBinder::BuildCatchClause(ir::CatchClause *catch_clause_stmt)
 {
     if (catch_clause_stmt->Param() != nullptr) {
         auto param_scope_ctx = LexicalScope<CatchParamScope>::Enter(this, catch_clause_stmt->Scope()->ParamScope());
@@ -459,7 +465,7 @@ void Binder::BuildCatchClause(ir::CatchClause *catch_clause_stmt)
     ResolveReference(catch_clause_stmt->Body());
 }
 
-void Binder::AddCompilableFunction(ir::ScriptFunction *func)
+void VarBinder::AddCompilableFunction(ir::ScriptFunction *func)
 {
     if (func->IsArrow()) {
         VariableScope *outer_var_scope = scope_->EnclosingVariableScope();
@@ -469,12 +475,12 @@ void Binder::AddCompilableFunction(ir::ScriptFunction *func)
     AddCompilableFunctionScope(func->Scope());
 }
 
-void Binder::AddCompilableFunctionScope(binder::FunctionScope *func_scope)
+void VarBinder::AddCompilableFunctionScope(varbinder::FunctionScope *func_scope)
 {
     function_scopes_.push_back(func_scope);
 }
 
-void Binder::VisitScriptFunction(ir::ScriptFunction *func)
+void VarBinder::VisitScriptFunction(ir::ScriptFunction *func)
 {
     auto *func_scope = func->Scope();
 
@@ -503,7 +509,7 @@ void Binder::VisitScriptFunction(ir::ScriptFunction *func)
     }
 }
 
-void Binder::VisitScriptFunctionWithPotentialTypeParams(ir::ScriptFunction *func)
+void VarBinder::VisitScriptFunctionWithPotentialTypeParams(ir::ScriptFunction *func)
 {
     if (func->TypeParams() != nullptr) {
         auto type_param_scope_ctx = LexicalScope<Scope>::Enter(this, func->TypeParams()->Scope());
@@ -514,7 +520,7 @@ void Binder::VisitScriptFunctionWithPotentialTypeParams(ir::ScriptFunction *func
     VisitScriptFunction(func);
 }
 
-void Binder::ResolveReference(ir::AstNode *child_node)
+void VarBinder::ResolveReference(ir::AstNode *child_node)
 {
     switch (child_node->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
@@ -604,12 +610,12 @@ void Binder::ResolveReference(ir::AstNode *child_node)
     }
 }
 
-void Binder::ResolveReferences(const ir::AstNode *parent)
+void VarBinder::ResolveReferences(const ir::AstNode *parent)
 {
     parent->Iterate([this](auto *child_node) { ResolveReference(child_node); });
 }
 
-LocalVariable *Binder::AddMandatoryParam(const std::string_view &name)
+LocalVariable *VarBinder::AddMandatoryParam(const std::string_view &name)
 {
     ASSERT(scope_->IsFunctionParamScope());
 
@@ -625,7 +631,7 @@ LocalVariable *Binder::AddMandatoryParam(const std::string_view &name)
     return param;
 }
 
-void Binder::LookUpMandatoryReferences(const FunctionScope *func_scope, bool need_lexical_func_obj)
+void VarBinder::LookUpMandatoryReferences(const FunctionScope *func_scope, bool need_lexical_func_obj)
 {
     LookupReference(MANDATORY_PARAM_NEW_TARGET);
     LookupReference(MANDATORY_PARAM_THIS);
@@ -639,7 +645,7 @@ void Binder::LookUpMandatoryReferences(const FunctionScope *func_scope, bool nee
     }
 }
 
-void Binder::AddMandatoryParams()
+void VarBinder::AddMandatoryParams()
 {
     ASSERT(scope_ == top_scope_);
     ASSERT(!function_scopes_.empty());
@@ -690,4 +696,4 @@ void Binder::AddMandatoryParams()
         LookUpMandatoryReferences(func_scope, lexical_function_object);
     }
 }
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder

@@ -20,9 +20,9 @@
 #include "util/ustring.h"
 #include <vector>
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class LocalVariable;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::checker {
 class Signature;
@@ -44,12 +44,12 @@ public:
     NO_COPY_SEMANTIC(ObjectDescriptor);
     NO_MOVE_SEMANTIC(ObjectDescriptor);
 
-    binder::LocalVariable *FindProperty(const util::StringView &name) const;
+    varbinder::LocalVariable *FindProperty(const util::StringView &name) const;
     void Copy(ArenaAllocator *allocator, ObjectDescriptor *copied_desc, TypeRelation *relation,
               GlobalTypesHolder *global_types);
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    ArenaVector<binder::LocalVariable *> properties;
+    ArenaVector<varbinder::LocalVariable *> properties;
     ArenaVector<Signature *> call_signatures;
     ArenaVector<Signature *> construct_signatures;
     IndexInfo *string_index_info {};

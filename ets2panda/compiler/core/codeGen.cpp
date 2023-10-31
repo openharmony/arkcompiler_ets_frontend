@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,12 +36,12 @@ const ArenaVector<CatchTable *> &CodeGen::CatchList() const noexcept
     return catch_list_;
 }
 
-const binder::FunctionScope *CodeGen::TopScope() const noexcept
+const varbinder::FunctionScope *CodeGen::TopScope() const noexcept
 {
     return top_scope_;
 }
 
-const binder::Scope *CodeGen::Scope() const noexcept
+const varbinder::Scope *CodeGen::Scope() const noexcept
 {
     return scope_;
 }
@@ -106,7 +106,7 @@ const checker::Type *CodeGen::GetVRegType(const VReg vreg) const
     return it != type_map_.end() ? it->second : nullptr;
 }
 
-checker::Type const *CodeGen::TypeForVar(binder::Variable const *var) const noexcept
+checker::Type const *CodeGen::TypeForVar(varbinder::Variable const *var) const noexcept
 {
     return var->TsType();
 }
@@ -158,9 +158,9 @@ const util::StringView &CodeGen::FunctionName() const noexcept
     return top_scope_->Name();
 }
 
-binder::Binder *CodeGen::Binder() const noexcept
+varbinder::VarBinder *CodeGen::VarBinder() const noexcept
 {
-    return context_->Binder();
+    return context_->VarBinder();
 }
 
 std::int32_t CodeGen::AddLiteralBuffer(LiteralBuffer &&buf)

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 namespace panda::es2panda::compiler {
 bool CheckerPhase::Perform(CompilerContext *ctx, [[maybe_unused]] parser::Program *program)
 {
-    return ctx->Checker()->StartChecker(ctx->Binder(), *ctx->Options());
+    return ctx->Checker()->StartChecker(ctx->VarBinder(), *ctx->Options());
 }
 
 }  // namespace panda::es2panda::compiler

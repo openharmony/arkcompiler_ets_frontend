@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,11 @@
 
 #include "ETSfunction.h"
 
-#include "binder/binder.h"
-#include "binder/ETSBinder.h"
+#include "varbinder/varbinder.h"
+#include "varbinder/ETSBinder.h"
 #include "util/helpers.h"
-#include "binder/scope.h"
-#include "binder/variable.h"
+#include "varbinder/scope.h"
+#include "varbinder/variable.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/envScope.h"
@@ -48,7 +48,6 @@ void ETSFunction::CallImplicitCtor(ETSGen *etsg)
 
     auto res = std::find_if(super_type->ConstructSignatures().cbegin(), super_type->ConstructSignatures().cend(),
                             [](const checker::Signature *sig) { return sig->Params().empty(); });
-
     if (res == super_type->ConstructSignatures().cend()) {
         return;
     }
@@ -58,24 +57,26 @@ void ETSFunction::CallImplicitCtor(ETSGen *etsg)
 
 void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *block)
 {
+    auto const check_initializer = [](ArenaVector<ir::AstNode *> const &nodes) -> bool {
+        for (auto const *const node : nodes) {
+            if (node->IsMethodDefinition() && node->AsClassElement()->Key()->IsIdentifier()) {
+                if (node->AsClassElement()->Id()->Name() == compiler::Signatures::INIT_METHOD) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
     auto *script_func = etsg->RootNode()->AsScriptFunction();
+
     if (script_func->IsEnum()) {
-        // TODO(user): add enum methods
+        // NOTE: add enum methods
     } else if (script_func->IsStaticBlock()) {
         const auto *class_def = etsg->ContainingObjectType()->GetDeclNode()->AsClassDefinition();
 
         // Check if it is the Global class static constructor and the special '_$init$_" method exists
-        bool compile_initializer = true;
-        if (class_def->IsGlobal()) {
-            for (const auto *prop : class_def->Body()) {
-                if (prop->IsMethodDefinition() && prop->AsClassElement()->Key()->IsIdentifier()) {
-                    if (prop->AsClassElement()->Key()->AsIdentifier()->Name() == compiler::Signatures::INIT_METHOD) {
-                        compile_initializer = false;
-                        break;
-                    }
-                }
-            }
-        }
+        bool const compile_initializer = class_def->IsGlobal() ? check_initializer(class_def->Body()) : true;
 
         for (const auto *prop : class_def->Body()) {
             if (!prop->IsClassProperty() || !prop->IsStatic()) {
@@ -112,7 +113,6 @@ void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *blo
         if (script_func->IsConstructor() || script_func->IsStaticBlock() || script_func->IsEntryPoint()) {
             ASSERT(etsg->ReturnType() != etsg->Checker()->GlobalBuiltinVoidType());
             etsg->EmitReturnVoid(block);
-
         } else {
             ASSERT(!etsg->ReturnType()->IsETSVoidType());
             etsg->LoadBuiltinVoid(block);
@@ -149,7 +149,7 @@ void ETSFunction::CompileFunction(ETSGen *etsg)
     const auto *decl = etsg->RootNode()->AsScriptFunction();
 
     if (const ir::AstNode *body = decl->Body(); body->IsExpression()) {
-        // TODO(user):
+        // NOTE
     } else {
         CompileSourceBlock(etsg, body->AsBlockStatement());
     }

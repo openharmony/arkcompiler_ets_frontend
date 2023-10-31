@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_COMPILER_SCOPES_VARIABLE_H
 #define ES2PANDA_COMPILER_SCOPES_VARIABLE_H
 
-#include "binder/enumMemberResult.h"
-#include "binder/variableFlags.h"
+#include "varbinder/enumMemberResult.h"
+#include "varbinder/variableFlags.h"
 #include "ir/irnode.h"
 #include "macros.h"
 #include "util/ustring.h"
@@ -29,7 +29,7 @@ class Type;
 enum class PropertyType;
 }  // namespace panda::es2panda::checker
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class Decl;
 class Scope;
 class VariableScope;
@@ -96,7 +96,7 @@ public:
         ts_type_ = ts_type;
     }
 
-    void SetScope(binder::Scope *scope)
+    void SetScope(varbinder::Scope *scope)
     {
         scope_ = scope;
     }
@@ -276,5 +276,5 @@ private:
     EnumMemberResult value_ {};
     bool back_reference_ {};
 };
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 #endif

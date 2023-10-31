@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ checker::Type *TSAnalyzer::Check(ir::CatchClause *st) const
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ClassDefinition *node) const
 {
     TSChecker *checker = GetTSChecker();
-    // TODO(aszilagyi)
+    // NOTE: aszilagyi.
     return checker->GlobalAnyType();
 }
 
@@ -231,7 +231,7 @@ checker::Type *TSAnalyzer::Check(ir::ArrayExpression *expr) const
 checker::Type *TSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    binder::Variable *func_var = nullptr;
+    varbinder::Variable *func_var = nullptr;
 
     if (expr->Function()->Parent()->Parent() != nullptr &&
         expr->Function()->Parent()->Parent()->IsVariableDeclarator() &&

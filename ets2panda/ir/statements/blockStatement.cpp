@@ -15,7 +15,7 @@
 
 #include "blockStatement.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "compiler/core/regScope.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"

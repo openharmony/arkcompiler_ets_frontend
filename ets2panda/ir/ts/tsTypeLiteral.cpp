@@ -17,8 +17,8 @@
 
 #include "ir/astDump.h"
 
-#include "binder/variable.h"
-#include "binder/declaration.h"
+#include "varbinder/variable.h"
+#include "varbinder/declaration.h"
 #include "checker/TSchecker.h"
 #include "checker/types/signature.h"
 

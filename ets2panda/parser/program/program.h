@@ -20,7 +20,7 @@
 #include "mem/pool_manager.h"
 #include "os/filesystem.h"
 #include "util/ustring.h"
-#include "binder/binder.h"
+#include "varbinder/varbinder.h"
 
 #include "es2panda.h"
 
@@ -28,9 +28,9 @@ namespace panda::es2panda::ir {
 class BlockStatement;
 }  // namespace panda::es2panda::ir
 
-namespace panda::es2panda::binder {
-class Binder;
-}  // namespace panda::es2panda::binder
+namespace panda::es2panda::varbinder {
+class VarBinder;
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::parser {
 enum class ScriptKind { SCRIPT, MODULE, STDLIB };
@@ -41,22 +41,22 @@ public:
     template <typename T>
     static Program NewProgram(ArenaAllocator *allocator)
     {
-        auto *binder = allocator->New<T>(allocator);
-        return Program(allocator, binder);
+        auto *varbinder = allocator->New<T>(allocator);
+        return Program(allocator, varbinder);
     }
 
-    Program(ArenaAllocator *allocator, binder::Binder *binder)
+    Program(ArenaAllocator *allocator, varbinder::VarBinder *varbinder)
         : allocator_(allocator),
-          binder_(binder),
+          varbinder_(varbinder),
           external_sources_(allocator_->Adapter()),
-          extension_(binder->Extension())
+          extension_(varbinder->Extension())
     {
     }
 
     void SetKind(ScriptKind kind)
     {
         kind_ = kind;
-        binder_->InitTopScope();
+        varbinder_->InitTopScope();
     }
 
     NO_COPY_SEMANTIC(Program);
@@ -69,14 +69,14 @@ public:
         return allocator_;
     }
 
-    const binder::Binder *Binder() const
+    const varbinder::VarBinder *VarBinder() const
     {
-        return binder_;
+        return varbinder_;
     }
 
-    binder::Binder *Binder()
+    varbinder::VarBinder *VarBinder()
     {
-        return binder_;
+        return varbinder_;
     }
 
     ScriptExtension Extension() const
@@ -207,11 +207,11 @@ public:
         entry_point_ = true;
     }
 
-    binder::ClassScope *GlobalClassScope();
-    const binder::ClassScope *GlobalClassScope() const;
+    varbinder::ClassScope *GlobalClassScope();
+    const varbinder::ClassScope *GlobalClassScope() const;
 
-    binder::GlobalScope *GlobalScope();
-    const binder::GlobalScope *GlobalScope() const;
+    varbinder::GlobalScope *GlobalScope();
+    const varbinder::GlobalScope *GlobalScope() const;
 
     util::StringView PackageClassName(util::StringView class_name);
 
@@ -219,7 +219,7 @@ public:
 
 private:
     ArenaAllocator *allocator_ {};
-    binder::Binder *binder_ {};
+    varbinder::VarBinder *varbinder_ {};
     ir::BlockStatement *ast_ {};
     ir::ClassDefinition *global_class_ {};
     util::StringView source_code_ {};

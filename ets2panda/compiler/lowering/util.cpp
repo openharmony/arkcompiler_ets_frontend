@@ -13,13 +13,15 @@
  * limitations under the License.
  */
 
+#include <cstring>
+
 #include "util.h"
 
 #include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::compiler {
 
-binder::Scope *NearestScope(const ir::AstNode *ast)
+varbinder::Scope *NearestScope(const ir::AstNode *ast)
 {
     while (!ast->IsScopeBearer()) {
         ast = ast->Parent();
@@ -38,7 +40,7 @@ ir::Identifier *Gensym(ArenaAllocator *allocator)
     const ArenaString s {allocator->Adapter()};
     const auto str = ss.str();
     auto *arena_pointer = allocator->Alloc(str.size() + 1);
-    memmove(arena_pointer, reinterpret_cast<const void *>(str.c_str()), str.size() + 1);
+    std::memmove(arena_pointer, reinterpret_cast<const void *>(str.c_str()), str.size() + 1);
     return allocator->New<ir::Identifier>(util::StringView(reinterpret_cast<const char *>(arena_pointer)), allocator);
 }
 

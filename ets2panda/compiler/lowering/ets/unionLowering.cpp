@@ -14,8 +14,8 @@
  */
 
 #include "unionLowering.h"
-#include "binder/variableFlags.h"
-#include "binder/ETSBinder.h"
+#include "varbinder/variableFlags.h"
+#include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
 #include "compiler/core/compilerContext.h"
 #include "ir/base/classDefinition.h"
@@ -43,19 +43,20 @@ std::string const &UnionLowering::Name()
     return NAME;
 }
 
-ir::ClassDefinition *CreateUnionFieldClass(checker::ETSChecker *checker, binder::Binder *binder)
+ir::ClassDefinition *CreateUnionFieldClass(checker::ETSChecker *checker, varbinder::VarBinder *varbinder)
 {
     // Create the name for the synthetic class node
     util::UString union_field_class_name(util::StringView(panda_file::GetDummyClassName()), checker->Allocator());
-    binder::Variable *found_var = nullptr;
-    if ((found_var = checker->Scope()->FindLocal(union_field_class_name.View())) != nullptr) {
+    varbinder::Variable *found_var = nullptr;
+    if ((found_var = checker->Scope()->FindLocal(union_field_class_name.View(),
+                                                 varbinder::ResolveBindingOptions::BINDINGS)) != nullptr) {
         return found_var->Declaration()->Node()->AsClassDeclaration()->Definition();
     }
     auto *ident = checker->AllocNode<ir::Identifier>(union_field_class_name.View(), checker->Allocator());
-    auto [decl, var] = binder->NewVarDecl<binder::ClassDecl>(ident->Start(), ident->Name());
+    auto [decl, var] = varbinder->NewVarDecl<varbinder::ClassDecl>(ident->Start(), ident->Name());
     ident->SetVariable(var);
 
-    auto class_ctx = binder::LexicalScope<binder::ClassScope>(binder);
+    auto class_ctx = varbinder::LexicalScope<varbinder::ClassScope>(varbinder);
     auto *class_def = checker->AllocNode<ir::ClassDefinition>(checker->Allocator(), class_ctx.GetScope(), ident,
                                                               ir::ClassDefinitionModifiers::GLOBAL,
                                                               ir::ModifierFlags::NONE, Language(Language::Id::ETS));
@@ -66,18 +67,20 @@ ir::ClassDefinition *CreateUnionFieldClass(checker::ETSChecker *checker, binder:
     decl->BindNode(class_decl);
     var->SetScope(class_def->Scope());
 
-    binder->AsETSBinder()->BuildClassDefinition(class_def);
+    varbinder->AsETSBinder()->BuildClassDefinition(class_def);
     return class_def;
 }
 
-void CreateUnionFieldClassProperty(ArenaAllocator *allocator, binder::Binder *binder, ir::ClassDefinition *class_def,
-                                   checker::Type *field_type, const util::StringView &prop_name)
+void CreateUnionFieldClassProperty(ArenaAllocator *allocator, varbinder::VarBinder *varbinder,
+                                   ir::ClassDefinition *class_def, checker::Type *field_type,
+                                   const util::StringView &prop_name)
 {
     auto *class_scope = class_def->Scope()->AsClassScope();
     // Enter the union filed class instance field scope
-    auto field_ctx = binder::LexicalScope<binder::LocalScope>::Enter(binder, class_scope->InstanceFieldScope());
+    auto field_ctx =
+        varbinder::LexicalScope<varbinder::LocalScope>::Enter(varbinder, class_scope->InstanceFieldScope());
 
-    if (class_scope->FindLocal(prop_name, binder::ResolveBindingOptions::VARIABLES) != nullptr) {
+    if (class_scope->FindLocal(prop_name, varbinder::ResolveBindingOptions::VARIABLES) != nullptr) {
         return;
     }
 
@@ -89,8 +92,8 @@ void CreateUnionFieldClassProperty(ArenaAllocator *allocator, binder::Binder *bi
         allocator->New<ir::ClassProperty>(field_ident, nullptr, nullptr, ir::ModifierFlags::NONE, allocator, false);
 
     // Add the declaration to the scope
-    auto [decl, var] = binder->NewVarDecl<binder::LetDecl>(field_ident->Start(), field_ident->Name());
-    var->AddFlag(binder::VariableFlags::PROPERTY);
+    auto [decl, var] = varbinder->NewVarDecl<varbinder::LetDecl>(field_ident->Start(), field_ident->Name());
+    var->AddFlag(varbinder::VariableFlags::PROPERTY);
     var->SetTsType(field_type);
     field_ident->SetVariable(var);
     field->SetTsType(field_type);
@@ -101,11 +104,11 @@ void CreateUnionFieldClassProperty(ArenaAllocator *allocator, binder::Binder *bi
     class_def->AddProperties(std::move(field_decl));
 }
 
-ir::Expression *HandleUnionPropertyAccess(checker::ETSChecker *checker, binder::Binder *binder,
+ir::Expression *HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::VarBinder *varbinder,
                                           ir::MemberExpression *expr)
 {
-    auto *class_def = CreateUnionFieldClass(checker, binder);
-    CreateUnionFieldClassProperty(checker->Allocator(), binder, class_def, expr->PropVar()->TsType(),
+    auto *class_def = CreateUnionFieldClass(checker, varbinder);
+    CreateUnionFieldClassProperty(checker->Allocator(), varbinder, class_def, expr->PropVar()->TsType(),
                                   expr->Property()->AsIdentifier()->Name());
     if (expr->Object()->IsIdentifier()) {
         auto *new_ts_type = expr->Object()->TsType()->AsETSUnionType()->GetLeastUpperBoundType(checker);
@@ -172,10 +175,10 @@ bool UnionLowering::Perform(CompilerContext *ctx, parser::Program *program)
 
     checker::ETSChecker *checker = ctx->Checker()->AsETSChecker();
 
-    program->Ast()->TransformChildrenRecursively([checker, ctx](ir::AstNode *ast) -> ir::AstNode* {
+    program->Ast()->TransformChildrenRecursively([checker, ctx](ir::AstNode *ast) -> ir::AstNode * {
         if (ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr &&
             ast->AsMemberExpression()->Object()->TsType()->IsETSUnionType()) {
-            return HandleUnionPropertyAccess(checker, ctx->Binder(), ast->AsMemberExpression());
+            return HandleUnionPropertyAccess(checker, ctx->VarBinder(), ast->AsMemberExpression());
         }
 
         if (ast->IsETSParameterExpression() &&
@@ -200,9 +203,9 @@ bool UnionLowering::Postcondition(CompilerContext *ctx, const parser::Program *p
     if (ctx->Options()->compilation_mode != CompilationMode::GEN_STD_LIB) {
         return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) {
             return ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr &&
-               ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType()->IsETSUnionType() &&
-               ast->AsMemberExpression()->Object()->IsIdentifier() &&
-               ast->AsMemberExpression()->Object()->AsIdentifier()->Variable()->TsType()->IsETSUnionType();
+                   ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType()->IsETSUnionType() &&
+                   ast->AsMemberExpression()->Object()->IsIdentifier() &&
+                   ast->AsMemberExpression()->Object()->AsIdentifier()->Variable()->TsType()->IsETSUnionType();
         });
     }
 

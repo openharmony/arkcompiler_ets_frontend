@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_EXPRESSION_CALL_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_CALL_EXPRESSION_H
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "checker/types/ets/etsFunctionType.h"
 #include "ir/expression.h"
 

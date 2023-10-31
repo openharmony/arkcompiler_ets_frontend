@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 
 #include "compileQueue.h"
 
-#include "binder/binder.h"
-#include "binder/scope.h"
+#include "varbinder/varbinder.h"
+#include "varbinder/scope.h"
 #include "compiler/core/compilerContext.h"
 #include "compiler/core/emitter.h"
 #include "compiler/core/function.h"
@@ -50,7 +50,7 @@ void CompileQueue::Schedule(CompilerContext *context)
 {
     ASSERT(jobs_count_ == 0);
     std::unique_lock<std::mutex> lock(m_);
-    const auto &functions = context->Binder()->Functions();
+    const auto &functions = context->VarBinder()->Functions();
     jobs_ = new CompileJob[functions.size()]();
 
     for (auto *function : functions) {

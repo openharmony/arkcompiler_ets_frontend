@@ -126,27 +126,19 @@ void MemberExpression::CompileToReg(compiler::PandaGen *pg, compiler::VReg obj_r
     LoadRhs(pg);
 }
 
-void MemberExpression::Compile(compiler::ETSGen *etsg) const
+bool MemberExpression::CompileComputed(compiler::ETSGen *etsg) const
 {
-    auto lambda = etsg->Binder()->LambdaObjects().find(this);
-    if (lambda != etsg->Binder()->LambdaObjects().end()) {
-        etsg->CreateLambdaObjectFromMemberReference(this, object_, lambda->second.first);
-        return;
-    }
-
-    compiler::RegScope rs(etsg);
-
     if (computed_) {
         auto ottctx = compiler::TargetTypeContext(etsg, object_->TsType());
         object_->Compile(etsg);
 
         if (etsg->GetAccumulatorType()->IsETSNullType()) {
             if (optional_) {
-                return;
+                return true;
             }
 
             etsg->EmitNullPointerException(this);
-            return;
+            return true;
         }
 
         // Helper function to avoid branching in non optional cases
@@ -178,6 +170,21 @@ void MemberExpression::Compile(compiler::ETSGen *etsg) const
             compile_and_load_elements();
         }
 
+        return true;
+    }
+    return false;
+}
+
+void MemberExpression::Compile(compiler::ETSGen *etsg) const
+{
+    auto lambda = etsg->VarBinder()->LambdaObjects().find(this);
+    if (lambda != etsg->VarBinder()->LambdaObjects().end()) {
+        etsg->CreateLambdaObjectFromMemberReference(this, object_, lambda->second.first);
+        return;
+    }
+
+    compiler::RegScope rs(etsg);
+    if (CompileComputed(etsg)) {
         return;
     }
 
@@ -229,7 +236,7 @@ void MemberExpression::Compile(compiler::ETSGen *etsg) const
     auto ottctx = compiler::TargetTypeContext(etsg, object_->TsType());
     object_->Compile(etsg);
 
-    // TODO(rsipka): it should be CTE if object type is non nullable type
+    // NOTE: rsipka. it should be CTE if object type is non nullable type
 
     if (etsg->GetAccumulatorType()->IsETSNullType()) {
         if (optional_) {
@@ -328,11 +335,11 @@ checker::Type *MemberExpression::Check(checker::TSChecker *checker)
         }
     }
 
-    binder::Variable *prop = checker->GetPropertyOfType(base_type, property_->AsIdentifier()->Name());
+    varbinder::Variable *prop = checker->GetPropertyOfType(base_type, property_->AsIdentifier()->Name());
 
     if (prop != nullptr) {
         checker::Type *prop_type = checker->GetTypeOfVariable(prop);
-        if (prop->HasFlag(binder::VariableFlags::READONLY)) {
+        if (prop->HasFlag(varbinder::VariableFlags::READONLY)) {
             prop_type->AddTypeFlag(checker::TypeFlag::READONLY);
         }
 
@@ -394,7 +401,7 @@ checker::Type *MemberExpression::CheckObjectMember(checker::ETSChecker *checker)
             }
             break;
         }
-        case 2: {
+        case 2U: {
             // ETSExtensionFuncHelperType(class_method_type, extension_method_type)
             type_to_set = checker->CreateETSExtensionFuncHelperType(
                 checker->GetTypeOfVariable(resolve_res[1]->Variable())->AsETSFunctionType(),

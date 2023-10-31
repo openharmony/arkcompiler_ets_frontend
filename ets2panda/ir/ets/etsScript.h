@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ namespace panda::es2panda::ir {
 
 class ETSScript : public BlockStatement {
 public:
-    explicit ETSScript(ArenaAllocator *allocator, binder::Scope *scope, ArenaVector<Statement *> &&statement_list,
+    explicit ETSScript(ArenaAllocator *allocator, varbinder::Scope *scope, ArenaVector<Statement *> &&statement_list,
                        parser::Program *program)
         : BlockStatement(allocator, scope, std::move(statement_list)), program_(program)
     {

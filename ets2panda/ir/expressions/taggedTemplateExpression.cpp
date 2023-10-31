@@ -15,7 +15,7 @@
 
 #include "taggedTemplateExpression.h"
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "compiler/base/literals.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/regScope.h"
@@ -73,7 +73,7 @@ void TaggedTemplateExpression::Compile(compiler::PandaGen *pg) const
 
 checker::Type *TaggedTemplateExpression::Check(checker::TSChecker *checker)
 {
-    // TODO(aszilagyi)
+    // NOTE: aszilagyi.
     return checker->GlobalAnyType();
 }
 

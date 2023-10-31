@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 #define ES2PANDA_COMPILER_CORE_REG_SCOPE_H
 
 #include "macros.h"
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 
 namespace panda::es2panda::ir {
 class AstNode;
@@ -49,8 +49,8 @@ protected:
 
 class LocalRegScope : public RegScope {
 public:
-    explicit LocalRegScope(PandaGen *pg, binder::Scope *scope);
-    explicit LocalRegScope(CodeGen *cg, binder::Scope *scope);
+    explicit LocalRegScope(PandaGen *pg, varbinder::Scope *scope);
+    explicit LocalRegScope(CodeGen *cg, varbinder::Scope *scope);
     explicit LocalRegScope(PandaGen *pg);
     NO_COPY_SEMANTIC(LocalRegScope);
     NO_MOVE_SEMANTIC(LocalRegScope);
@@ -60,12 +60,12 @@ public:
     void *operator new[](size_t) = delete;
 
 private:
-    binder::Scope *prev_scope_ {};
+    varbinder::Scope *prev_scope_ {};
 };
 
 class LoopRegScope : public RegScope {
 public:
-    explicit LoopRegScope(PandaGen *pg, binder::LoopScope *scope);
+    explicit LoopRegScope(PandaGen *pg, varbinder::LoopScope *scope);
     NO_COPY_SEMANTIC(LoopRegScope);
     NO_MOVE_SEMANTIC(LoopRegScope);
     ~LoopRegScope();
@@ -74,7 +74,7 @@ public:
     void *operator new[](size_t) = delete;
 
 private:
-    binder::Scope *prev_scope_ {};
+    varbinder::Scope *prev_scope_ {};
 };
 
 class FunctionRegScope : public RegScope {
@@ -89,7 +89,7 @@ public:
     void *operator new[](size_t) = delete;
 
 private:
-    using StoreParamCb = std::function<void(binder::LocalVariable *, VReg)>;
+    using StoreParamCb = std::function<void(varbinder::LocalVariable *, VReg)>;
     void InitializeParams(const StoreParamCb &cb);
     EnvScope *env_scope_ {};
 };

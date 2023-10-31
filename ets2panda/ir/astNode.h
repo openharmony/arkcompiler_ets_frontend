@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_IR_AST_NODE_H
 #define ES2PANDA_IR_AST_NODE_H
 
+#include "ir/astNodeFlags.h"
 #include "ir/astNodeMapping.h"
 #include "lexer/token/sourceLocation.h"
 #include "util/enumbitops.h"
@@ -34,10 +35,10 @@ class ETSChecker;
 class Type;
 }  // namespace panda::es2panda::checker
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class Variable;
 class Scope;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::ir {
 // NOLINTBEGIN(modernize-avoid-c-arrays)
@@ -62,105 +63,11 @@ enum class AstNodeType {
 #undef DECLARE_NODE_TYPES
 };
 
-enum class AstNodeFlags {
-    NO_OPTS = 0,
-    STRICT = (1U << 0U),
-    PARAMETER = (1U << 1U),
-};
-
 DEFINE_BITOPS(AstNodeFlags)
-
-enum class ModifierFlags : uint32_t {
-    NONE = 0U,
-    STATIC = 1U << 0U,
-    ASYNC = 1U << 1U,
-    PUBLIC = 1U << 2U,
-    PROTECTED = 1U << 3U,
-    PRIVATE = 1U << 4U,
-    DECLARE = 1U << 5U,
-    READONLY = 1U << 6U,
-    OPTIONAL = 1U << 7U,
-    DEFINITE = 1U << 8U,
-    ABSTRACT = 1U << 9U,
-    CONST = 1U << 10U,
-    FINAL = 1U << 11U,
-    NATIVE = 1U << 12U,
-    OVERRIDE = 1U << 13U,
-    CONSTRUCTOR = 1U << 14U,
-    SYNCHRONIZED = 1U << 15U,
-    FUNCTIONAL = 1U << 16U,
-    IN = 1U << 17U,
-    OUT = 1U << 18U,
-    INTERNAL = 1U << 19U,
-    NULLABLE = 1U << 20U,
-    EXPORT = 1U << 21U,
-    SETTER = 1U << 22U,
-    DEFAULT_EXPORT = 1U << 23U,
-    ACCESS = PUBLIC | PROTECTED | PRIVATE | INTERNAL,
-    ALL = STATIC | ASYNC | ACCESS | DECLARE | READONLY | ABSTRACT,
-    ALLOWED_IN_CTOR_PARAMETER = ACCESS | READONLY,
-    INTERNAL_PROTECTED = INTERNAL | PROTECTED,
-    ACCESSOR_MODIFIERS = ABSTRACT | FINAL | OVERRIDE
-};
 
 DEFINE_BITOPS(ModifierFlags)
 
-enum class PrivateFieldKind { FIELD, METHOD, GET, SET, STATIC_FIELD, STATIC_METHOD, STATIC_GET, STATIC_SET };
-
-enum class ScriptFunctionFlags : uint32_t {
-    NONE = 0U,
-    GENERATOR = 1U << 0U,
-    ASYNC = 1U << 1U,
-    ARROW = 1U << 2U,
-    EXPRESSION = 1U << 3U,
-    OVERLOAD = 1U << 4U,
-    CONSTRUCTOR = 1U << 5U,
-    METHOD = 1U << 6U,
-    STATIC_BLOCK = 1U << 7U,
-    HIDDEN = 1U << 8U,
-    IMPLICIT_SUPER_CALL_NEEDED = 1U << 9U,
-    ENUM = 1U << 10U,
-    EXTERNAL = 1U << 11U,
-    PROXY = 1U << 12U,
-    THROWS = 1U << 13U,
-    RETHROWS = 1U << 14U,
-    GETTER = 1U << 15U,
-    SETTER = 1U << 16U,
-    DEFAULT_PARAM_PROXY = 1U << 17U,
-    ENTRY_POINT = 1U << 18U,
-    INSTANCE_EXTENSION_METHOD = 1U << 19U,
-    HAS_RETURN = 1U << 20U
-};
-
 DEFINE_BITOPS(ScriptFunctionFlags)
-
-enum class TSOperatorType { READONLY, KEYOF, UNIQUE };
-enum class MappedOption { NO_OPTS, PLUS, MINUS };
-
-enum class BoxingUnboxingFlags : uint32_t {
-    NONE = 0U,
-    BOX_TO_BOOLEAN = 1U << 0U,
-    BOX_TO_BYTE = 1U << 1U,
-    BOX_TO_SHORT = 1U << 2U,
-    BOX_TO_CHAR = 1U << 3U,
-    BOX_TO_INT = 1U << 4U,
-    BOX_TO_LONG = 1U << 5U,
-    BOX_TO_FLOAT = 1U << 6U,
-    BOX_TO_DOUBLE = 1U << 7U,
-    UNBOX_TO_BOOLEAN = 1U << 8U,
-    UNBOX_TO_BYTE = 1U << 9U,
-    UNBOX_TO_SHORT = 1U << 10U,
-    UNBOX_TO_CHAR = 1U << 11U,
-    UNBOX_TO_INT = 1U << 12U,
-    UNBOX_TO_LONG = 1U << 13U,
-    UNBOX_TO_FLOAT = 1U << 14U,
-    UNBOX_TO_DOUBLE = 1U << 15U,
-    BOXING_FLAG = BOX_TO_BOOLEAN | BOX_TO_BYTE | BOX_TO_SHORT | BOX_TO_CHAR | BOX_TO_INT | BOX_TO_LONG | BOX_TO_FLOAT |
-                  BOX_TO_DOUBLE,
-    UNBOXING_FLAG = UNBOX_TO_BOOLEAN | UNBOX_TO_BYTE | UNBOX_TO_SHORT | UNBOX_TO_CHAR | UNBOX_TO_INT | UNBOX_TO_LONG |
-                    UNBOX_TO_FLOAT | UNBOX_TO_DOUBLE,
-
-};
 
 DEFINE_BITOPS(BoxingUnboxingFlags)
 
@@ -346,12 +253,12 @@ public:
         parent_ = parent;
     }
 
-    [[nodiscard]] binder::Variable *Variable() const noexcept
+    [[nodiscard]] varbinder::Variable *Variable() const noexcept
     {
         return variable_;
     }
 
-    void SetVariable(binder::Variable *const variable) noexcept
+    void SetVariable(varbinder::Variable *const variable) noexcept
     {
         variable_ = variable;
     }
@@ -528,7 +435,7 @@ public:
         return false;
     }
 
-    virtual binder::Scope *Scope() const
+    virtual varbinder::Scope *Scope() const
     {
         UNREACHABLE();
     }
@@ -562,7 +469,7 @@ protected:
     AstNode *parent_ {};
     lexer::SourceRange range_ {};
     AstNodeType type_;
-    binder::Variable *variable_ {};
+    varbinder::Variable *variable_ {};
     ModifierFlags flags_ {};
     mutable BoxingUnboxingFlags boxing_unboxing_flags_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  */
 
 #include "typeRelationContext.h"
-#include "binder/variable.h"
-#include "binder/scope.h"
-#include "binder/declaration.h"
+#include "varbinder/variable.h"
+#include "varbinder/scope.h"
+#include "varbinder/declaration.h"
 #include "ir/expressions/arrayExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsArrayType.h"
@@ -95,7 +95,7 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
 bool InstantiationContext::ValidateTypeArg(ETSObjectType *constraint_type, ETSObjectType *arg_ref_type)
 {
     if (const auto *const found = checker_->AsETSChecker()->Scope()->FindLocal(
-            constraint_type->Name(), binder::ResolveBindingOptions::TYPE_ALIASES);
+            constraint_type->Name(), varbinder::ResolveBindingOptions::TYPE_ALIASES);
         found != nullptr) {
         arg_ref_type = found->TsType()->AsETSObjectType();
     }
@@ -103,7 +103,7 @@ bool InstantiationContext::ValidateTypeArg(ETSObjectType *constraint_type, ETSOb
     auto assignable = checker_->Relation()->IsAssignableTo(arg_ref_type, constraint_type);
     if (constraint_type->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
         for (const auto *const interface : arg_ref_type->Interfaces()) {
-            // TODO(mmartin): make correct check later for multiple bounds
+            // NOTE: mmartin.  make correct check later for multiple bounds
             assignable = (interface == constraint_type) || assignable;
         }
     }

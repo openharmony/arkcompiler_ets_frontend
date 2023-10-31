@@ -23,7 +23,7 @@ class TSTypeParameterDeclaration;
 
 class TSConstructorType : public TypeNode {
 public:
-    explicit TSConstructorType(binder::Scope *scope, ArenaVector<Expression *> &&params,
+    explicit TSConstructorType(varbinder::Scope *scope, ArenaVector<Expression *> &&params,
                                TSTypeParameterDeclaration *type_params, TypeNode *return_type, bool abstract)
         : TypeNode(AstNodeType::TS_CONSTRUCTOR_TYPE),
           scope_(scope),
@@ -39,7 +39,7 @@ public:
         return true;
     }
 
-    binder::Scope *Scope() const override
+    varbinder::Scope *Scope() const override
     {
         return scope_;
     }
@@ -73,7 +73,7 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
 private:
-    binder::Scope *scope_;
+    varbinder::Scope *scope_;
     ArenaVector<Expression *> params_;
     TSTypeParameterDeclaration *type_params_;
     TypeNode *return_type_;

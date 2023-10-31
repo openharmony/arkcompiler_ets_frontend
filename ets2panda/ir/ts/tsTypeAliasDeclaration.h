@@ -18,9 +18,9 @@
 
 #include "ir/statement.h"
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class Variable;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::ir {
 class Identifier;

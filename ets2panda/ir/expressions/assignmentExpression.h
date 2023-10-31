@@ -97,12 +97,12 @@ public:
                operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_OR;
     }
 
-    [[nodiscard]] binder::Variable *Target() noexcept
+    [[nodiscard]] varbinder::Variable *Target() noexcept
     {
         return target_;
     }
 
-    [[nodiscard]] binder::Variable *Target() const noexcept
+    [[nodiscard]] varbinder::Variable *Target() const noexcept
     {
         return target_;
     }
@@ -134,7 +134,7 @@ private:
     Expression *right_ = nullptr;
     Expression *result_ = nullptr;
     lexer::TokenType operator_;
-    binder::Variable *target_ {};
+    varbinder::Variable *target_ {};
     checker::Type *operation_type_ {};
 };
 }  // namespace panda::es2panda::ir

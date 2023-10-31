@@ -15,7 +15,7 @@
 
 #include "variableDeclarator.h"
 
-#include "binder/variableFlags.h"
+#include "varbinder/variableFlags.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
@@ -80,7 +80,7 @@ void VariableDeclarator::Compile(compiler::ETSGen *etsg) const
     auto lref = compiler::ETSLReference::Create(etsg, id_, true);
     auto ttctx = compiler::TargetTypeContext(etsg, TsType());
 
-    if (id_->AsIdentifier()->Variable()->HasFlag(binder::VariableFlags::BOXED)) {
+    if (id_->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::BOXED)) {
         etsg->EmitLocalBoxCtor(id_);
         etsg->StoreAccumulator(this, lref.Variable()->AsLocalVariable()->Vreg());
     }
@@ -100,7 +100,7 @@ void VariableDeclarator::Compile(compiler::ETSGen *etsg) const
 
 static void CheckSimpleVariableDeclaration(checker::TSChecker *checker, ir::VariableDeclarator *declarator)
 {
-    binder::Variable *const binding_var = declarator->Id()->AsIdentifier()->Variable();
+    varbinder::Variable *const binding_var = declarator->Id()->AsIdentifier()->Variable();
     checker::Type *previous_type = binding_var->TsType();
     auto *const type_annotation = declarator->Id()->AsIdentifier()->TypeAnnotation();
     auto *const initializer = declarator->Init();

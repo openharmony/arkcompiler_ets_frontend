@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_BINDER_PRIVATE_BINDING_H
-#define ES2PANDA_BINDER_PRIVATE_BINDING_H
+#ifndef ES2PANDA_VARBINDER_PRIVATE_BINDING_H
+#define ES2PANDA_VARBINDER_PRIVATE_BINDING_H
 
 #include "util/ustring.h"
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class PrivateBinding : public util::UString {
 public:
     explicit PrivateBinding(ArenaAllocator *allocator, uint32_t id)
@@ -34,6 +34,6 @@ public:
 
     static constexpr std::string_view PRIVATE_PREFIX = "#";
 };
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 #endif

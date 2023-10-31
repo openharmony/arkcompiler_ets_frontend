@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,7 +128,6 @@ VReg RegAllocatorBase::Spill(IRNode *const ins, const VReg reg) const
 void RegAllocatorBase::Restore(const IRNode *const ins) const
 {
     const auto spill_info = spiller_->Restore();
-
     if (spiller_->GetCodeGen()->GetVRegType(spill_info.OriginReg()) == nullptr) {
         return;
     }
@@ -218,7 +217,6 @@ void RangeRegAllocator::Run(IRNode *const ins, VReg range_start, const std::size
     std::array<VReg *, IRNode::MAX_REG_OPERAND> regs {};
     const auto reg_cnt = ins->Registers(&regs);
     const auto registers = Span<VReg *>(regs.data(), regs.data() + reg_cnt);
-
     if (RegIndicesValid(ins, registers).first) {
         PushBack(ins);
         return;

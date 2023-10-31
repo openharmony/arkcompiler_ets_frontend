@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  */
 #include "ETSAnalyzer.h"
 
-#include "binder/binder.h"
-#include "binder/ETSBinder.h"
+#include "varbinder/varbinder.h"
+#include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/castingContext.h"
 #include "checker/ets/typeRelationContext.h"
@@ -245,10 +245,6 @@ checker::Type *ETSAnalyzer::Check(ir::ETSParameterExpression *expr) const
             param_type = !expr->IsRestParameter() ? expr->Ident()->Check(checker) : expr->spread_->Check(checker);
             if (expr->IsDefault()) {
                 [[maybe_unused]] auto *const init_type = expr->Initializer()->Check(checker);
-                // TODO(ttamas) : fix this aftet nullable fix
-                // const checker::AssignmentContext ctx(checker->Relation(), initializer_, init_type, name_type,
-                //                                      initializer_->Start(),
-                //                                      {"Initializers type is not assignable to the target type"});
             }
         }
 
@@ -333,7 +329,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
         here the enclosing class of arrow function should be Class A
         */
         checker->Context().SetContainingClass(
-            checker->Scope()->Find(binder::Binder::MANDATORY_PARAM_THIS).variable->TsType()->AsETSObjectType());
+            checker->Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS).variable->TsType()->AsETSObjectType());
     }
 
     checker::SavedCheckerContext saved_context(checker, checker->Context().Status(),
@@ -760,7 +756,6 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
             //  First (or single) return statement in the function:
             func_return_type =
                 st->argument_ == nullptr ? checker->GlobalBuiltinVoidType() : st->argument_->Check(checker);
-
             if (func_return_type->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
                 // remove CONSTANT type modifier if exists
                 func_return_type = func_return_type->Instantiate(checker->Allocator(), checker->Relation(),
@@ -770,7 +765,7 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
 
             containing_func->Signature()->SetReturnType(func_return_type);
             containing_func->Signature()->RemoveSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE);
-            checker->Binder()->AsETSBinder()->BuildFunctionName(containing_func);
+            checker->VarBinder()->AsETSBinder()->BuildFunctionName(containing_func);
 
             if (st->argument_ != nullptr && st->argument_->IsObjectExpression()) {
                 st->argument_->AsObjectExpression()->SetPreferredType(func_return_type);
@@ -832,7 +827,6 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
                             if (argument_type == nullptr) {
                                 checker->ThrowTypeError("Invalid return statement expression", st->argument_->Start());
                             }
-                            // argument_->SetTsType(argument_type);
                             st->argument_->AddBoxingUnboxingFlag(checker->GetBoxingFlag(argument_type));
                         }
 
@@ -846,18 +840,14 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
                         func_return_type = checker->FindLeastUpperBound(func_return_type, argument_type);
                         containing_func->Signature()->SetReturnType(func_return_type);
                         containing_func->Signature()->AddSignatureFlag(checker::SignatureFlags::INFERRED_RETURN_TYPE);
-
                     } else if (func_return_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE_RETURN) &&
                                argument_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE_RETURN)) {
                         // function return type is of primitive type (including enums):
                         relation->SetFlags(checker::TypeRelationFlag::DIRECT_RETURN |
                                            checker::TypeRelationFlag::IN_ASSIGNMENT_CONTEXT |
                                            checker::TypeRelationFlag::ASSIGNMENT_CONTEXT);
-
                         if (relation->IsAssignableTo(func_return_type, argument_type)) {
                             func_return_type = argument_type;
-                            // func_return_type = argument_type->Instantiate(checker->Allocator(), relation,
-                            //     checker->GetGlobalTypesHolder());
                             containing_func->Signature()->SetReturnType(func_return_type);
                             containing_func->Signature()->AddSignatureFlag(
                                 checker::SignatureFlags::INFERRED_RETURN_TYPE);

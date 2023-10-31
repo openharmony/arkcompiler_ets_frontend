@@ -20,9 +20,9 @@
 #include "ir/statements/blockStatement.h"
 #include "parser/program/program.h"
 #include "util/helpers.h"
-#include "binder/binder.h"
-#include "binder/scope.h"
-#include "binder/variable.h"
+#include "varbinder/varbinder.h"
+#include "varbinder/scope.h"
+#include "varbinder/variable.h"
 #include "es2panda.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ts/unionType.h"
@@ -41,11 +41,11 @@ Checker::Checker()
 {
 }
 
-void Checker::Initialize(binder::Binder *binder)
+void Checker::Initialize(varbinder::VarBinder *varbinder)
 {
-    binder_ = binder;
-    scope_ = binder_->TopScope();
-    program_ = binder_->Program();
+    varbinder_ = varbinder;
+    scope_ = varbinder_->TopScope();
+    program_ = varbinder_->Program();
 }
 
 std::string Checker::FormatMsg(std::initializer_list<TypeErrorMessageElement> list)
@@ -93,7 +93,7 @@ void Checker::Warning(const std::string_view message, const lexer::SourcePositio
     lexer::LineIndex index(program_->SourceCode());
     lexer::SourceLocation loc = index.GetLocation(pos);
 
-    // TODO(user) This should go to stderr but currently the test system does not handle stderr messages
+    // NOTE: This should go to stderr but currently the test system does not handle stderr messages
     auto file_name = program_->SourceFile().Utf8();
     file_name = file_name.substr(file_name.find_last_of(panda::os::file::File::GetPathDelim()) + 1);
     std::cout << "Warning: " << message << " [" << file_name << ":" << loc.line << ":" << loc.col << "]" << std::endl;
@@ -211,9 +211,9 @@ void Checker::SetProgram(parser::Program *program)
     program_ = program;
 }
 
-binder::Binder *Checker::Binder() const
+varbinder::VarBinder *Checker::VarBinder() const
 {
-    return binder_;
+    return varbinder_;
 }
 
 void Checker::SetAnalyzer(SemanticAnalyzer *analyzer)

@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_STATEMENT_LOOP_STATEMENT_H
 #define ES2PANDA_IR_STATEMENT_LOOP_STATEMENT_H
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "ir/statement.h"
 
 namespace panda::es2panda::ir {
@@ -27,7 +27,7 @@ public:
         return true;
     }
 
-    binder::LoopScope *Scope() const override
+    varbinder::LoopScope *Scope() const override
     {
         return scope_;
     }
@@ -64,10 +64,10 @@ public:
     }
 
 protected:
-    explicit LoopStatement(AstNodeType type, binder::LoopScope *scope) : Statement(type), scope_(scope) {}
+    explicit LoopStatement(AstNodeType type, varbinder::LoopScope *scope) : Statement(type), scope_(scope) {}
 
 private:
-    binder::LoopScope *scope_;
+    varbinder::LoopScope *scope_;
 };
 }  // namespace panda::es2panda::ir
 

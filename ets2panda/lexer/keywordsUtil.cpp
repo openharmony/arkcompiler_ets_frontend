@@ -215,7 +215,7 @@ void KeywordsUtil::ScanIdContinue()
 
     auto escape_end = start_pos;
 
-    do {
+    while (true) {
         if (Iterator().Peek() == LEX_CHAR_BACKSLASH) {
             ident.Append(lexer_->SourceView(escape_end, Iterator().Index()));
 
@@ -236,7 +236,7 @@ void KeywordsUtil::ScanIdContinue()
         }
 
         Iterator().Forward(cp_size);
-    } while (true);
+    }
 
     lexer_->GetToken().type_ = TokenType::LITERAL_IDENT;
     lexer_->GetToken().keyword_type_ = TokenType::LITERAL_IDENT;
@@ -278,7 +278,7 @@ void KeywordsUtil::ScanIdContinueMaybeKeyword(const Keywords *kws, Span<const Ke
             end = middle;
         }
 
-        middle = (start + end) / 2;
+        middle = (start + end) / 2U;
 
         if (start >= end) {
             return;

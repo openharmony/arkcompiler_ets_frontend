@@ -16,7 +16,7 @@
 #include "importNamespaceSpecifier.h"
 
 #include "checker/ETSchecker.h"
-#include "binder/ETSBinder.h"
+#include "varbinder/ETSBinder.h"
 #include "ir/astDump.h"
 #include "ir/expressions/identifier.h"
 #include "ir/module/importDeclaration.h"
@@ -84,9 +84,9 @@ checker::Type *ImportNamespaceSpecifier::Check([[maybe_unused]] checker::ETSChec
         checker->Allocator()->New<checker::ETSObjectType>(checker->Allocator(), synthetic_names[0], assembler_name,
                                                           local_->AsIdentifier(), checker::ETSObjectFlags::CLASS);
 
-    auto *root_decl = checker->Allocator()->New<binder::ClassDecl>(synthetic_names[0]);
-    binder::LocalVariable *root_var =
-        checker->Allocator()->New<binder::LocalVariable>(root_decl, binder::VariableFlags::NONE);
+    auto *root_decl = checker->Allocator()->New<varbinder::ClassDecl>(synthetic_names[0]);
+    varbinder::LocalVariable *root_var =
+        checker->Allocator()->New<varbinder::LocalVariable>(root_decl, varbinder::VariableFlags::NONE);
     root_var->SetTsType(module_object_type);
 
     synthetic_names.erase(synthetic_names.begin());
@@ -97,9 +97,9 @@ checker::Type *ImportNamespaceSpecifier::Check([[maybe_unused]] checker::ETSChec
             checker->Allocator()->New<checker::ETSObjectType>(checker->Allocator(), synthetic_name, synthetic_name,
                                                               local_->AsIdentifier(), checker::ETSObjectFlags::NO_OPTS);
 
-        auto *class_decl = checker->Allocator()->New<binder::ClassDecl>(synthetic_name);
-        binder::LocalVariable *var =
-            checker->Allocator()->New<binder::LocalVariable>(class_decl, binder::VariableFlags::CLASS);
+        auto *class_decl = checker->Allocator()->New<varbinder::ClassDecl>(synthetic_name);
+        varbinder::LocalVariable *var =
+            checker->Allocator()->New<varbinder::LocalVariable>(class_decl, varbinder::VariableFlags::CLASS);
         var->SetTsType(synthetic_obj_type);
         last_object_type->AddProperty<checker::PropertyType::STATIC_FIELD>(var);
         synthetic_obj_type->SetEnclosingType(last_object_type);

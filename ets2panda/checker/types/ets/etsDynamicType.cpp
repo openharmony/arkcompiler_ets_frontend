@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,16 @@
 
 namespace panda::es2panda::checker {
 
-binder::LocalVariable *ETSDynamicType::GetPropertyDynamic(const util::StringView &name, const ETSChecker *checker) const
+varbinder::LocalVariable *ETSDynamicType::GetPropertyDynamic(const util::StringView &name,
+                                                             const ETSChecker *checker) const
 {
     auto it = properties_cache_.find(name);
     if (it != properties_cache_.end()) {
         return it->second;
     }
 
-    binder::LocalVariable *var =
-        binder::Scope::CreateVar<binder::PropertyDecl>(Allocator(), name, binder::VariableFlags::BUILTIN_TYPE, nullptr);
+    varbinder::LocalVariable *var = varbinder::Scope::CreateVar<varbinder::PropertyDecl>(
+        Allocator(), name, varbinder::VariableFlags::BUILTIN_TYPE, nullptr);
     var->SetTsType(checker->GlobalBuiltinDynamicType(lang_));
     properties_cache_.emplace(name, var);
 

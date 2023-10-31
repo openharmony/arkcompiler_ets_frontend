@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,60 +23,66 @@
 #include "ir/expressions/unaryExpression.h"
 
 namespace panda::es2panda::compiler {
+bool Condition::CompileBinaryExpr(PandaGen *pg, const ir::BinaryExpression *bin_expr, Label *false_label)
+{
+    switch (bin_expr->OperatorType()) {
+        case lexer::TokenType::PUNCTUATOR_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL: {
+            // This is a special case
+            // These operators are expressed via cmp instructions and the following
+            // if-else branches. Condition also expressed via cmp instruction and
+            // the following if-else.
+            // the goal of this method is to merge these two sequences of instructions.
+            RegScope rs(pg);
+            VReg lhs = pg->AllocReg();
+
+            bin_expr->Left()->Compile(pg);
+            pg->StoreAccumulator(bin_expr, lhs);
+            bin_expr->Right()->Compile(pg);
+            pg->Condition(bin_expr, bin_expr->OperatorType(), lhs, false_label);
+            return true;
+        }
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
+            bin_expr->Left()->Compile(pg);
+            pg->ToBoolean(bin_expr);
+            pg->BranchIfFalse(bin_expr, false_label);
+
+            bin_expr->Right()->Compile(pg);
+            pg->ToBoolean(bin_expr);
+            pg->BranchIfFalse(bin_expr, false_label);
+            return true;
+        }
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
+            auto *end_label = pg->AllocLabel();
+
+            bin_expr->Left()->Compile(pg);
+            pg->ToBoolean(bin_expr);
+            pg->BranchIfTrue(bin_expr, end_label);
+
+            bin_expr->Right()->Compile(pg);
+            pg->ToBoolean(bin_expr);
+            pg->BranchIfFalse(bin_expr, false_label);
+            pg->SetLabel(bin_expr, end_label);
+            return true;
+        }
+        default: {
+            break;
+        }
+    }
+    return false;
+}
+
 void Condition::Compile(PandaGen *pg, const ir::Expression *expr, Label *false_label)
 {
     if (expr->IsBinaryExpression()) {
-        const auto *bin_expr = expr->AsBinaryExpression();
-
-        switch (bin_expr->OperatorType()) {
-            case lexer::TokenType::PUNCTUATOR_EQUAL:
-            case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
-            case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
-            case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
-            case lexer::TokenType::PUNCTUATOR_LESS_THAN:
-            case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
-            case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
-            case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL: {
-                // This is a special case
-                // These operators are expressed via cmp instructions and the following
-                // if-else branches. Condition also expressed via cmp instruction and
-                // the following if-else.
-                // the goal of this method is to merge these two sequences of instructions.
-                RegScope rs(pg);
-                VReg lhs = pg->AllocReg();
-
-                bin_expr->Left()->Compile(pg);
-                pg->StoreAccumulator(bin_expr, lhs);
-                bin_expr->Right()->Compile(pg);
-                pg->Condition(bin_expr, bin_expr->OperatorType(), lhs, false_label);
-                return;
-            }
-            case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
-                bin_expr->Left()->Compile(pg);
-                pg->ToBoolean(bin_expr);
-                pg->BranchIfFalse(bin_expr, false_label);
-
-                bin_expr->Right()->Compile(pg);
-                pg->ToBoolean(bin_expr);
-                pg->BranchIfFalse(bin_expr, false_label);
-                return;
-            }
-            case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-                auto *end_label = pg->AllocLabel();
-
-                bin_expr->Left()->Compile(pg);
-                pg->ToBoolean(bin_expr);
-                pg->BranchIfTrue(bin_expr, end_label);
-
-                bin_expr->Right()->Compile(pg);
-                pg->ToBoolean(bin_expr);
-                pg->BranchIfFalse(bin_expr, false_label);
-                pg->SetLabel(bin_expr, end_label);
-                return;
-            }
-            default: {
-                break;
-            }
+        if (CompileBinaryExpr(pg, expr->AsBinaryExpression(), false_label)) {
+            return;
         }
     } else if (expr->IsUnaryExpression() &&
                expr->AsUnaryExpression()->OperatorType() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
@@ -120,61 +126,67 @@ Condition::Result Condition::CheckConstantExpr(ETSGen *etsg, const ir::Expressio
     return Result::UNKNOWN;
 }
 
+bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *bin_expr, Label *false_label)
+{
+    switch (bin_expr->OperatorType()) {
+        case lexer::TokenType::PUNCTUATOR_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
+        case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
+        case lexer::TokenType::KEYW_INSTANCEOF: {
+            auto ttctx = TargetTypeContext(etsg, bin_expr->OperationType());
+
+            RegScope rs(etsg);
+            VReg lhs = etsg->AllocReg();
+
+            bin_expr->Left()->Compile(etsg);
+            etsg->ApplyConversionAndStoreAccumulator(bin_expr->Left(), lhs, bin_expr->OperationType());
+            bin_expr->Right()->Compile(etsg);
+            etsg->ApplyConversion(bin_expr->Right(), bin_expr->OperationType());
+            etsg->Condition(bin_expr, bin_expr->OperatorType(), lhs, false_label);
+            return true;
+        }
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
+            bin_expr->Left()->Compile(etsg);
+            etsg->ApplyConversion(bin_expr->Left(), bin_expr->OperationType());
+            etsg->ResolveConditionalResultIfFalse(bin_expr->Left(), false_label);
+            etsg->BranchIfFalse(bin_expr, false_label);
+
+            bin_expr->Right()->Compile(etsg);
+            etsg->ApplyConversion(bin_expr->Right(), bin_expr->OperationType());
+            etsg->ResolveConditionalResultIfFalse(bin_expr->Right(), false_label);
+            etsg->BranchIfFalse(bin_expr, false_label);
+            return true;
+        }
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
+            auto *end_label = etsg->AllocLabel();
+
+            bin_expr->Left()->Compile(etsg);
+            etsg->ApplyConversion(bin_expr->Left(), bin_expr->OperationType());
+            etsg->ResolveConditionalResultIfTrue(bin_expr->Left(), end_label);
+            etsg->BranchIfTrue(bin_expr, end_label);
+
+            bin_expr->Right()->Compile(etsg);
+            etsg->ApplyConversion(bin_expr->Right(), bin_expr->OperationType());
+            etsg->ResolveConditionalResultIfFalse(bin_expr->Right(), false_label);
+            etsg->BranchIfFalse(bin_expr, false_label);
+            etsg->SetLabel(bin_expr, end_label);
+            return true;
+        }
+        default: {
+            break;
+        }
+    }
+    return false;
+}
+
 void Condition::Compile(ETSGen *etsg, const ir::Expression *expr, Label *false_label)
 {
     if (expr->IsBinaryExpression()) {
-        const auto *bin_expr = expr->AsBinaryExpression();
-
-        switch (bin_expr->OperatorType()) {
-            case lexer::TokenType::PUNCTUATOR_EQUAL:
-            case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
-            case lexer::TokenType::PUNCTUATOR_LESS_THAN:
-            case lexer::TokenType::PUNCTUATOR_LESS_THAN_EQUAL:
-            case lexer::TokenType::PUNCTUATOR_GREATER_THAN:
-            case lexer::TokenType::PUNCTUATOR_GREATER_THAN_EQUAL:
-            case lexer::TokenType::KEYW_INSTANCEOF: {
-                auto ttctx = TargetTypeContext(etsg, bin_expr->OperationType());
-
-                RegScope rs(etsg);
-                VReg lhs = etsg->AllocReg();
-
-                bin_expr->Left()->Compile(etsg);
-                etsg->ApplyConversionAndStoreAccumulator(bin_expr->Left(), lhs, bin_expr->OperationType());
-                bin_expr->Right()->Compile(etsg);
-                etsg->ApplyConversion(bin_expr->Right(), bin_expr->OperationType());
-                etsg->Condition(bin_expr, bin_expr->OperatorType(), lhs, false_label);
-                return;
-            }
-            case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
-                bin_expr->Left()->Compile(etsg);
-                etsg->ApplyConversion(bin_expr->Left(), bin_expr->OperationType());
-                etsg->ResolveConditionalResultIfFalse(bin_expr->Left(), false_label);
-                etsg->BranchIfFalse(bin_expr, false_label);
-
-                bin_expr->Right()->Compile(etsg);
-                etsg->ApplyConversion(bin_expr->Right(), bin_expr->OperationType());
-                etsg->ResolveConditionalResultIfFalse(bin_expr->Right(), false_label);
-                etsg->BranchIfFalse(bin_expr, false_label);
-                return;
-            }
-            case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-                auto *end_label = etsg->AllocLabel();
-
-                bin_expr->Left()->Compile(etsg);
-                etsg->ApplyConversion(bin_expr->Left(), bin_expr->OperationType());
-                etsg->ResolveConditionalResultIfTrue(bin_expr->Left(), end_label);
-                etsg->BranchIfTrue(bin_expr, end_label);
-
-                bin_expr->Right()->Compile(etsg);
-                etsg->ApplyConversion(bin_expr->Right(), bin_expr->OperationType());
-                etsg->ResolveConditionalResultIfFalse(bin_expr->Right(), false_label);
-                etsg->BranchIfFalse(bin_expr, false_label);
-                etsg->SetLabel(bin_expr, end_label);
-                return;
-            }
-            default: {
-                break;
-            }
+        if (CompileBinaryExpr(etsg, expr->AsBinaryExpression(), false_label)) {
+            return;
         }
     } else if (expr->IsUnaryExpression() &&
                expr->AsUnaryExpression()->OperatorType() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {

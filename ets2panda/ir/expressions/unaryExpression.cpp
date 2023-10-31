@@ -15,7 +15,7 @@
 
 #include "unaryExpression.h"
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
@@ -127,6 +127,43 @@ void UnaryExpression::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
     etsg->Unary(this, operator_);
 }
 
+checker::Type *UnaryExpression::CheckDeleteKeyword([[maybe_unused]] checker::TSChecker *checker)
+{
+    checker::Type *prop_type = argument_->Check(checker);
+    if (!argument_->IsMemberExpression()) {
+        checker->ThrowTypeError("The operand of a delete operator must be a property reference.", argument_->Start());
+    }
+    if (prop_type->Variable()->HasFlag(varbinder::VariableFlags::READONLY)) {
+        checker->ThrowTypeError("The operand of a delete operator cannot be a readonly property.", argument_->Start());
+    }
+    if (!prop_type->Variable()->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
+        checker->ThrowTypeError("The operand of a delete operator must be a optional.", argument_->Start());
+    }
+    return checker->GlobalBooleanType();
+}
+
+checker::Type *UnaryExpression::CheckLiteral([[maybe_unused]] checker::TSChecker *checker)
+{
+    if (!argument_->IsLiteral()) {
+        return nullptr;
+    }
+
+    const ir::Literal *lit = argument_->AsLiteral();
+    if (lit->IsNumberLiteral()) {
+        auto number_value = lit->AsNumberLiteral()->Number().GetDouble();
+        if (operator_ == lexer::TokenType::PUNCTUATOR_PLUS) {
+            return checker->CreateNumberLiteralType(number_value);
+        }
+        if (operator_ == lexer::TokenType::PUNCTUATOR_MINUS) {
+            return checker->CreateNumberLiteralType(-number_value);
+        }
+    } else if (lit->IsBigIntLiteral() && operator_ == lexer::TokenType::PUNCTUATOR_MINUS) {
+        return checker->CreateBigintLiteralType(lit->AsBigIntLiteral()->Str(), true);
+    }
+
+    return nullptr;
+}
+
 checker::Type *UnaryExpression::Check([[maybe_unused]] checker::TSChecker *checker)
 {
     checker::Type *operand_type = argument_->Check(checker);
@@ -136,40 +173,12 @@ checker::Type *UnaryExpression::Check([[maybe_unused]] checker::TSChecker *check
     }
 
     if (operator_ == lexer::TokenType::KEYW_DELETE) {
-        checker::Type *prop_type = argument_->Check(checker);
-
-        if (!argument_->IsMemberExpression()) {
-            checker->ThrowTypeError("The operand of a delete operator must be a property reference.",
-                                    argument_->Start());
-        }
-
-        if (prop_type->Variable()->HasFlag(binder::VariableFlags::READONLY)) {
-            checker->ThrowTypeError("The operand of a delete operator cannot be a readonly property.",
-                                    argument_->Start());
-        }
-
-        if (!prop_type->Variable()->HasFlag(binder::VariableFlags::OPTIONAL)) {
-            checker->ThrowTypeError("The operand of a delete operator must be a optional.", argument_->Start());
-        }
-
-        return checker->GlobalBooleanType();
+        return CheckDeleteKeyword(checker);
     }
 
-    if (argument_->IsLiteral()) {
-        const ir::Literal *lit = argument_->AsLiteral();
-
-        if (lit->IsNumberLiteral()) {
-            auto number_value = lit->AsNumberLiteral()->Number().GetDouble();
-            if (operator_ == lexer::TokenType::PUNCTUATOR_PLUS) {
-                return checker->CreateNumberLiteralType(number_value);
-            }
-
-            if (operator_ == lexer::TokenType::PUNCTUATOR_MINUS) {
-                return checker->CreateNumberLiteralType(-number_value);
-            }
-        } else if (lit->IsBigIntLiteral() && operator_ == lexer::TokenType::PUNCTUATOR_MINUS) {
-            return checker->CreateBigintLiteralType(lit->AsBigIntLiteral()->Str(), true);
-        }
+    auto *res = CheckLiteral(checker);
+    if (res != nullptr) {
+        return res;
     }
 
     switch (operator_) {
@@ -177,7 +186,7 @@ checker::Type *UnaryExpression::Check([[maybe_unused]] checker::TSChecker *check
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::PUNCTUATOR_TILDE: {
             checker->CheckNonNullType(operand_type, Start());
-            // TODO(aszilagyi): check Symbol like types
+            // NOTE: aszilagyi. check Symbol like types
 
             if (operator_ == lexer::TokenType::PUNCTUATOR_PLUS) {
                 if (checker::TSChecker::MaybeTypeOfKind(operand_type, checker::TypeFlag::BIGINT_LIKE)) {

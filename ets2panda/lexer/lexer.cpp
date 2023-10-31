@@ -265,7 +265,7 @@ void Lexer::ScanDecimalNumbers()
                 }
 
                 GetToken().flags_ |= TokenFlags::NUMBER_HAS_UNDERSCORE;
-                Iterator().Forward(2);
+                Iterator().Forward(2U);
                 allow_numeric_on_next = false;
                 break;
             }
@@ -410,7 +410,19 @@ void Lexer::ScanTemplateStringEnd()
 LexerTemplateString Lexer::ScanTemplateString()
 {
     LexerTemplateString template_str(Allocator());
-    size_t cp_size = 0;
+    size_t cp_size = 0U;
+
+    auto const check_octal_digit = [this](char32_t const next_cp) -> void {
+        if (IsOctalDigit(next_cp)) {
+            Iterator().Forward(1);
+
+            if (Iterator().Peek() != LEX_CHAR_BACK_TICK) {
+                ThrowError("Octal escape sequences are not allowed in template strings");
+            }
+
+            Iterator().Backward(1);
+        }
+    };
 
     while (true) {
         char32_t cp = Iterator().PeekCp(&cp_size);
@@ -443,15 +455,7 @@ LexerTemplateString Lexer::ScanTemplateString()
                 Iterator().Forward(1);
 
                 char32_t next_cp = Iterator().Peek();
-                if (IsOctalDigit(next_cp)) {
-                    Iterator().Forward(1);
-
-                    if (Iterator().Peek() != LEX_CHAR_BACK_TICK) {
-                        ThrowError("Octal escape sequences are not allowed in template strings");
-                    }
-
-                    Iterator().Backward(1);
-                }
+                check_octal_digit(next_cp);
 
                 if (next_cp == LEX_CHAR_BACK_TICK || next_cp == LEX_CHAR_BACKSLASH) {
                     template_str.str.Append(cp);
@@ -556,7 +560,7 @@ char32_t Lexer::ScanUnicodeCharacter()
         }
         case LEX_CHAR_LOWERCASE_X: {
             Iterator().Forward(1);
-            cp = ScanHexEscape<2>();
+            cp = ScanHexEscape<2U>();
             return cp;
         }
         case LEX_CHAR_LOWERCASE_U: {
@@ -1501,6 +1505,32 @@ void Lexer::NextToken(Keywords *kws)
 
     SetTokenEnd();
     SkipWhiteSpaces();
+}
+
+void Lexer::ScanNumberLeadingZeroImplNonAllowedCases()
+{
+    switch (Iterator().Peek()) {
+        case LEX_CHAR_0:
+        case LEX_CHAR_1:
+        case LEX_CHAR_2:
+        case LEX_CHAR_3:
+        case LEX_CHAR_4:
+        case LEX_CHAR_5:
+        case LEX_CHAR_6:
+        case LEX_CHAR_7: {
+            ThrowError("Implicit octal literal not allowed");
+        }
+        case LEX_CHAR_8:
+        case LEX_CHAR_9: {
+            ThrowError("NonOctalDecimalIntegerLiteral is not enabled in strict mode code");
+        }
+        case LEX_CHAR_UNDERSCORE: {
+            ThrowError("Numeric separator '_' is not allowed in numbers that start with '0'.");
+        }
+        default: {
+            break;
+        }
+    }
 }
 
 LexerPosition &Lexer::Pos()

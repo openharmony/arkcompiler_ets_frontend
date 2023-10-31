@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,7 +86,7 @@ bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *c
 
     // - If there exists a parameterized type X that is a supertype of T, and a parameterized type Y that is a supertype
     //   of S, such that the erasures of X and Y are the same, then X and Y are not provably distinct
-    // TODO(user): implement
+    // NOTE: implement
 
     // - One of the following cases applies:
 
@@ -95,7 +95,7 @@ bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *c
         auto *const t = target->AsETSObjectType();
 
         // 1. S and T are class types, and either |S| <: |T| or |T| <: |S|.
-        // FIXME: use type erased S and T
+        // NOTE: use type erased S and T
         relation->Result(false);
         if ((t->IsSupertypeOf(relation, s), relation->IsTrue()) ||
             (s->IsSupertypeOf(relation, t), relation->IsTrue())) {
@@ -138,7 +138,7 @@ bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *c
     if (source->HasTypeFlag(TypeFlag::ETS_OBJECT) && target->HasTypeFlag(TypeFlag::ETS_ARRAY)) {
         // 7. S is the class type Object of the interface type java.io.Serializable or Cloneable (the only interfaces
         //    implemented by arrays (link to class objects for arrays)), and T is an array type.
-        // TODO(user): implement
+        // NOTE: implement
         return true;
     }
 
@@ -158,21 +158,21 @@ bool IsAllowedNarrowingReferenceConversion(TypeRelation *const relation, Type *c
     }
 
     // 9. S is a type variable, and a narrowing reference conversion exists from the upper bound of S to T.
-    // TODO(user): implement
+    // NOTE:: implement
 
     // 10. T is a type variable, and either a widening reference conversion or a narrowing reference conversion exists
     //     from S to the upper bound of T.
-    // TODO(user): implement
+    // NOTE: implement
 
     // 11. S is an intersection type S1 & … & Sn, and for all i (1 ≤ i ≤ n), either a widening reference
     // conversion or a
     //     narrowing reference conversion exists from Si to T.
-    // TODO(user): implement
+    // NOTE: implement
 
     // 12. T is an intersection type T1 & … & Tn, and for all i (1 ≤ i ≤ n), either a widening reference
     // conversion or a
     //     narrowing reference conversion exists from S to Ti.
-    // TODO(user): implement
+    // NOTE: implement
 
     return false;
 }
@@ -193,7 +193,7 @@ bool IsUncheckedNarrowingReferenceConversion([[maybe_unused]] TypeRelation *cons
     // - A narrowing reference conversion from a type S to an intersection type T1 & … & Tn
     //     is unchecked if there exists a Ti (1 ≤ i ≤ n) such that S is not a subtype of Ti, and a
     //     narrowing reference conversion from S to Ti is unchecked.
-    // TODO(user): implement
+    // NOTE: implement
 
     return false;
 }

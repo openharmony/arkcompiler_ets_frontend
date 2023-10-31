@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_TS_MODULE_DECLARATION_H
 #define ES2PANDA_IR_TS_MODULE_DECLARATION_H
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "ir/statement.h"
 
 namespace panda::es2panda::ir {
@@ -24,7 +24,7 @@ class Expression;
 
 class TSModuleDeclaration : public Statement {
 public:
-    explicit TSModuleDeclaration(ArenaAllocator *allocator, binder::LocalScope *scope, Expression *name,
+    explicit TSModuleDeclaration(ArenaAllocator *allocator, varbinder::LocalScope *scope, Expression *name,
                                  Statement *body, bool declare, bool global)
         : Statement(AstNodeType::TS_MODULE_DECLARATION),
           decorators_(allocator->Adapter()),
@@ -41,7 +41,7 @@ public:
         return true;
     }
 
-    binder::LocalScope *Scope() const override
+    varbinder::LocalScope *Scope() const override
     {
         return scope_;
     }
@@ -85,7 +85,7 @@ public:
 
 private:
     ArenaVector<Decorator *> decorators_;
-    binder::LocalScope *scope_;
+    varbinder::LocalScope *scope_;
     Expression *name_;
     Statement *body_;
     bool declare_;

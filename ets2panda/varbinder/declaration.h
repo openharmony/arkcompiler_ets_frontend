@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_COMPILER_SCOPES_DECLARATION_H
 #define ES2PANDA_COMPILER_SCOPES_DECLARATION_H
 
-#include "binder/variableFlags.h"
+#include "varbinder/variableFlags.h"
 #include "macros.h"
 #include "util/ustring.h"
 
@@ -28,7 +28,7 @@ class ImportDeclaration;
 class ETSImportDeclaration;
 }  // namespace panda::es2panda::ir
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class Scope;
 class LocalScope;
 
@@ -369,6 +369,6 @@ public:
 private:
     util::StringView export_name_;
 };
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 #endif

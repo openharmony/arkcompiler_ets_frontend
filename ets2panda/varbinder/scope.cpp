@@ -15,11 +15,11 @@
 
 #include "scope.h"
 
-#include "binder/declaration.h"
+#include "varbinder/declaration.h"
 #include "util/helpers.h"
-#include "binder/tsBinding.h"
-#include "binder/variable.h"
-#include "binder/variableFlags.h"
+#include "varbinder/tsBinding.h"
+#include "varbinder/variable.h"
+#include "varbinder/variableFlags.h"
 #include "ir/astNode.h"
 #include "ir/expressions/identifier.h"
 #include "ir/statements/classDeclaration.h"
@@ -45,7 +45,7 @@
 #include <algorithm>
 #include <sstream>
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 VariableScope *Scope::EnclosingVariableScope()
 {
     Scope *iter = this;
@@ -76,11 +76,10 @@ const VariableScope *Scope::EnclosingVariableScope() const
     return nullptr;
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 Variable *Scope::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
 {
     if ((options & ResolveBindingOptions::INTERFACES) != 0) {
-        std::string ts_binding_name = binder::TSBinding::ToTSBinding(name);
+        std::string ts_binding_name = varbinder::TSBinding::ToTSBinding(name);
         util::StringView interface_name_view(ts_binding_name);
 
         auto res = bindings_.find(interface_name_view);
@@ -178,7 +177,7 @@ std::tuple<Scope *, bool> Scope::IterateShadowedVariables(const util::StringView
     auto *iter = this;
 
     while (true) {
-        auto *v = iter->FindLocal(name);
+        auto *v = iter->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
 
         if (v != nullptr && visitor(v)) {
             return {iter, true};
@@ -194,26 +193,31 @@ std::tuple<Scope *, bool> Scope::IterateShadowedVariables(const util::StringView
     return {iter, false};
 }
 
+Variable *Scope::AddLocalVar(ArenaAllocator *allocator, Decl *new_decl)
+{
+    auto [scope, shadowed] =
+        IterateShadowedVariables(new_decl->Name(), [](const Variable *v) { return !v->HasFlag(VariableFlags::VAR); });
+
+    if (shadowed) {
+        return nullptr;
+    }
+
+    VariableFlags var_flags = VariableFlags::HOIST_VAR | VariableFlags::LEXICAL_VAR;
+    if (scope->IsGlobalScope()) {
+        return scope->InsertBinding(new_decl->Name(), allocator->New<GlobalVariable>(new_decl, var_flags))
+            .first->second;
+    }
+
+    return scope->PropagateBinding<LocalVariable>(allocator, new_decl->Name(), new_decl, var_flags);
+}
+
 Variable *Scope::AddLocal(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
                           [[maybe_unused]] ScriptExtension extension)
 {
     VariableFlags flags = VariableFlags::LEXICAL;
     switch (new_decl->Type()) {
         case DeclType::VAR: {
-            auto [scope, shadowed] = IterateShadowedVariables(
-                new_decl->Name(), [](const Variable *v) { return !v->HasFlag(VariableFlags::VAR); });
-
-            if (shadowed) {
-                return nullptr;
-            }
-
-            VariableFlags var_flags = VariableFlags::HOIST_VAR | VariableFlags::LEXICAL_VAR;
-            if (scope->IsGlobalScope()) {
-                return scope->InsertBinding(new_decl->Name(), allocator->New<GlobalVariable>(new_decl, var_flags))
-                    .first->second;
-            }
-
-            return scope->PropagateBinding<LocalVariable>(allocator, new_decl->Name(), new_decl, var_flags);
+            return AddLocalVar(allocator, new_decl);
         }
         case DeclType::ENUM: {
             return bindings_.insert({new_decl->Name(), allocator->New<EnumVariable>(new_decl, false)}).first->second;
@@ -286,7 +290,7 @@ void VariableScope::CheckDirectEval(compiler::CompilerContext *compiler_ctx)
             literals[variable->AsLocalVariable()->LexIdx()] = compiler::Literal(name);
         }
     } else {
-        std::vector<binder::Variable *> bindings(LexicalSlots());
+        std::vector<varbinder::Variable *> bindings(LexicalSlots());
 
         for (const auto &[name, variable] : var_map) {
             (void)name;
@@ -336,7 +340,8 @@ std::tuple<ParameterDecl *, ir::AstNode *, Variable *> ParamScope::AddParamDecl(
     const auto [name, pattern] = util::Helpers::ParamName(allocator, param, params_.size());
 
     auto *decl = NewDecl<ParameterDecl>(allocator, name);
-    auto *var = AddParam(allocator, FindLocal(name), decl, VariableFlags::VAR | VariableFlags::LOCAL);
+    auto *var = AddParam(allocator, FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS), decl,
+                         VariableFlags::VAR | VariableFlags::LOCAL);
 
     if (var == nullptr) {
         return {decl, param, nullptr};
@@ -353,7 +358,7 @@ std::tuple<ParameterDecl *, ir::AstNode *, Variable *> ParamScope::AddParamDecl(
         auto *var_decl = NewDecl<VarDecl>(allocator, binding->Name());
         var_decl->BindNode(binding);
 
-        if (FindLocal(var_decl->Name()) != nullptr) {
+        if (FindLocal(var_decl->Name(), varbinder::ResolveBindingOptions::BINDINGS) != nullptr) {
             return {decl, binding, nullptr};
         }
 
@@ -589,11 +594,13 @@ bool ModuleScope::ExportAnalysis()
         if (exportDecl->IsExportAllDeclaration()) {
             const auto *export_all_decl = exportDecl->AsExportAllDeclaration();
 
-            if (export_all_decl->Exported() != nullptr) {
-                auto result = exported_names.insert(export_all_decl->Exported()->Name());
-                if (!result.second) {
-                    return false;
-                }
+            if (export_all_decl->Exported() == nullptr) {
+                continue;
+            }
+
+            auto result = exported_names.insert(export_all_decl->Exported()->Name());
+            if (!result.second) {
+                return false;
             }
 
             continue;
@@ -608,7 +615,7 @@ bool ModuleScope::ExportAnalysis()
         }
 
         for (const auto *decl : decls) {
-            binder::Variable *variable = FindLocal(decl->LocalName());
+            varbinder::Variable *variable = FindLocal(decl->LocalName(), varbinder::ResolveBindingOptions::BINDINGS);
 
             if (variable == nullptr) {
                 continue;
@@ -637,7 +644,6 @@ Variable *LocalScope::AddBinding(ArenaAllocator *allocator, Variable *current_va
     return AddLocal(allocator, current_variable, new_decl, extension);
 }
 
-// NOLINTNEXTLINE(google-default-arguments)
 Variable *ClassScope::FindLocal(const util::StringView &name, ResolveBindingOptions options) const
 {
     if ((options & ResolveBindingOptions::TYPE_ALIASES) != 0) {
@@ -692,49 +698,33 @@ Variable *ClassScope::FindLocal(const util::StringView &name, ResolveBindingOpti
     return nullptr;
 }
 
-Variable *ClassScope::AddBinding(ArenaAllocator *allocator, [[maybe_unused]] Variable *current_variable, Decl *new_decl,
-                                 [[maybe_unused]] ScriptExtension extension)
+void ClassScope::SetBindingProps(Decl *new_decl, BindingProps *props, bool is_static)
 {
-    VariableFlags flags = VariableFlags::NONE;
-    bool is_static = new_decl->Node()->IsStatic();
-    ir::Identifier *ident {};
-    LocalScope *target_scope {};
-
-    if (is_static) {
-        flags |= VariableFlags::STATIC;
-    }
-
-    const auto decl_type = new_decl->Type();
-    switch (decl_type) {
+    switch (new_decl->Type()) {
         case DeclType::CONST:
         case DeclType::LET: {
-            target_scope = is_static ? static_field_scope_ : instance_field_scope_;
-            ident = new_decl->Node()->AsClassProperty()->Id();
-            flags |= VariableFlags::PROPERTY;
+            props->SetBindingProps(VariableFlags::PROPERTY, new_decl->Node()->AsClassProperty()->Id(),
+                                   is_static ? static_field_scope_ : instance_field_scope_);
             break;
         }
         case DeclType::INTERFACE: {
-            target_scope = is_static ? static_decl_scope_ : instance_decl_scope_;
-            ident = new_decl->Node()->AsTSInterfaceDeclaration()->Id();
-            flags |= VariableFlags::INTERFACE;
+            props->SetBindingProps(VariableFlags::INTERFACE, new_decl->Node()->AsTSInterfaceDeclaration()->Id(),
+                                   is_static ? static_decl_scope_ : instance_decl_scope_);
             break;
         }
         case DeclType::CLASS: {
-            target_scope = is_static ? static_decl_scope_ : instance_decl_scope_;
-            ident = new_decl->Node()->AsClassDefinition()->Ident();
-            flags |= VariableFlags::CLASS;
+            props->SetBindingProps(VariableFlags::CLASS, new_decl->Node()->AsClassDefinition()->Ident(),
+                                   is_static ? static_decl_scope_ : instance_decl_scope_);
             break;
         }
         case DeclType::ENUM_LITERAL: {
-            target_scope = is_static ? static_decl_scope_ : instance_decl_scope_;
-            ident = new_decl->Node()->AsTSEnumDeclaration()->Key();
-            flags |= VariableFlags::ENUM_LITERAL;
+            props->SetBindingProps(VariableFlags::ENUM_LITERAL, new_decl->Node()->AsTSEnumDeclaration()->Key(),
+                                   is_static ? static_decl_scope_ : instance_decl_scope_);
             break;
         }
         case DeclType::TYPE_ALIAS: {
-            target_scope = type_alias_scope_;
-            ident = new_decl->Node()->AsTSTypeAliasDeclaration()->Id();
-            flags |= VariableFlags::TYPE_ALIAS;
+            props->SetBindingProps(VariableFlags::TYPE_ALIAS, new_decl->Node()->AsTSTypeAliasDeclaration()->Id(),
+                                   type_alias_scope_);
             break;
         }
         default: {
@@ -742,22 +732,34 @@ Variable *ClassScope::AddBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
             break;
         }
     }
+}
+
+Variable *ClassScope::AddBinding(ArenaAllocator *allocator, [[maybe_unused]] Variable *current_variable, Decl *new_decl,
+                                 [[maybe_unused]] ScriptExtension extension)
+{
+    bool is_static = new_decl->Node()->IsStatic();
+    BindingProps props;
+
+    if (is_static) {
+        props.SetFlagsType(VariableFlags::STATIC);
+    }
+
+    SetBindingProps(new_decl, &props, is_static);
 
     if (FindLocal(new_decl->Name(), ResolveBindingOptions::ALL) != nullptr) {
         return nullptr;
     }
 
-    auto *var = target_scope->AddBinding(allocator, nullptr, new_decl, extension);
-
+    auto *var = props.GetTargetScope()->AddBinding(allocator, nullptr, new_decl, extension);
     if (var == nullptr) {
         return nullptr;
     }
 
     var->SetScope(this);
-    var->AddFlag(flags);
+    var->AddFlag(props.GetFlags());
 
-    if (ident != nullptr) {
-        ident->SetVariable(var);
+    if (props.GetIdent() != nullptr) {
+        props.GetIdent()->SetVariable(var);
     }
 
     return var;
@@ -825,10 +827,11 @@ Variable *CatchParamScope::AddBinding(ArenaAllocator *allocator, Variable *curre
 Variable *CatchScope::AddBinding(ArenaAllocator *allocator, Variable *current_variable, Decl *new_decl,
                                  [[maybe_unused]] ScriptExtension extension)
 {
-    if (!new_decl->IsVarDecl() && (param_scope_->FindLocal(new_decl->Name()) != nullptr)) {
+    if (!new_decl->IsVarDecl() &&
+        (param_scope_->FindLocal(new_decl->Name(), varbinder::ResolveBindingOptions::BINDINGS) != nullptr)) {
         return nullptr;
     }
 
     return AddLocal(allocator, current_variable, new_decl, extension);
 }
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder

@@ -157,7 +157,7 @@ Type *TSChecker::CheckOrOperator(Type *left_type, Type *right_type, ir::Expressi
     CheckTruthinessOfType(left_type, left_expr->Start());
 
     if ((static_cast<uint64_t>(left_type->GetTypeFacts()) & static_cast<uint64_t>(TypeFacts::FALSY)) != 0U) {
-        // TODO(aszilagyi): subtype reduction in the result union
+        // NOTE: aszilagyi. subtype reduction in the result union
         Type *result_type = CreateUnionType({RemoveDefinitelyFalsyTypes(left_type), right_type});
         return result_type;
     }
@@ -180,7 +180,7 @@ Type *TSChecker::CheckInstanceofExpression(Type *left_type, Type *right_type, ir
                        expr->Start());
     }
 
-    // TODO(aszilagyi): Check if right type is subtype of globalFunctionType
+    // NOTE: aszilagyi. Check if right type is subtype of globalFunctionType
     if (right_type->TypeFlags() != TypeFlag::ANY && !TypeHasCallOrConstructSignatures(right_type)) {
         ThrowTypeError({"The right-hand side of an 'instanceof' expression must be of type 'any'",
                         " or of a type assignable to the 'Function' interface type."},
@@ -196,14 +196,14 @@ Type *TSChecker::CheckInExpression(Type *left_type, Type *right_type, ir::Expres
     CheckNonNullType(left_type, left_expr->Start());
     CheckNonNullType(right_type, right_expr->Start());
 
-    // TODO(aszilagyi): Check IsAllTypesAssignableTo with ESSymbol too
+    // NOTE: aszilagyi. Check IsAllTypesAssignableTo with ESSymbol too
     if (left_type->TypeFlags() != TypeFlag::ANY && !IsAllTypesAssignableTo(left_type, GlobalStringOrNumberType())) {
         ThrowTypeError(
             {"The left-hand side of an 'in' expression must be of type 'any',", " 'string', 'number', or 'symbol'."},
             expr->Start());
     }
 
-    // TODO(aszilagyi): Handle type parameters
+    // NOTE: aszilagyi. Handle type parameters
     if (!IsAllTypesAssignableTo(right_type, GlobalNonPrimitiveType())) {
         ThrowTypeError("The right-hand side of an 'in' expression must not be a primitive.", right_expr->Start());
     }

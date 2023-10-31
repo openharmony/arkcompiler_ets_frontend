@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
 
 #include "recordTable.h"
 #include "parser/program/program.h"
-#include "binder/ETSBinder.h"
+#include "varbinder/ETSBinder.h"
 #include "ir/base/classDefinition.h"
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsEnumDeclaration.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "generated/signatures.h"
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 BoundContext::BoundContext(RecordTable *record_table, ir::ClassDefinition *class_def)
     : prev_(record_table->bound_ctx_), record_table_(record_table), saved_record_(record_table->record_)
 {
@@ -87,4 +87,4 @@ util::StringView RecordTable::RecordName() const
     return std::get<ir::TSInterfaceDeclaration *>(record_)->InternalName();
 }
 
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 #include "etsObjectType.h"
 
-#include "binder/declaration.h"
+#include "varbinder/declaration.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
 #include "checker/types/typeFlag.h"
@@ -41,9 +41,9 @@ void ETSObjectType::Iterate(const PropertyTraverser &cb) const
     }
 }
 
-binder::LocalVariable *ETSObjectType::GetProperty(const util::StringView &name, PropertySearchFlags flags) const
+varbinder::LocalVariable *ETSObjectType::GetProperty(const util::StringView &name, PropertySearchFlags flags) const
 {
-    binder::LocalVariable *res {};
+    varbinder::LocalVariable *res {};
     if ((flags & PropertySearchFlags::SEARCH_INSTANCE_FIELD) != 0) {
         res = GetOwnProperty<PropertyType::INSTANCE_FIELD>(name);
     }
@@ -90,7 +90,6 @@ binder::LocalVariable *ETSObjectType::GetProperty(const util::StringView &name, 
     if ((flags & PropertySearchFlags::SEARCH_IN_INTERFACES) != 0) {
         for (auto *interface : interfaces_) {
             res = interface->GetProperty(name, flags);
-
             if (res != nullptr) {
                 return res;
             }
@@ -104,15 +103,15 @@ binder::LocalVariable *ETSObjectType::GetProperty(const util::StringView &name, 
     return res;
 }
 
-binder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(const util::StringView &name,
-                                                                           PropertySearchFlags flags) const
+varbinder::LocalVariable *ETSObjectType::CreateSyntheticVarFromEverySignature(const util::StringView &name,
+                                                                              PropertySearchFlags flags) const
 {
-    binder::LocalVariable *res =
-        allocator_->New<binder::LocalVariable>(binder::VariableFlags::SYNTHETIC | binder::VariableFlags::METHOD);
+    varbinder::LocalVariable *res = allocator_->New<varbinder::LocalVariable>(varbinder::VariableFlags::SYNTHETIC |
+                                                                              varbinder::VariableFlags::METHOD);
     ETSFunctionType *func_type = CreateETSFunctionType(name);
     func_type->AddTypeFlag(TypeFlag::SYNTHETIC);
 
-    binder::LocalVariable *functional_interface = CollectSignaturesForSyntheticType(func_type, name, flags);
+    varbinder::LocalVariable *functional_interface = CollectSignaturesForSyntheticType(func_type, name, flags);
 
     if (functional_interface != nullptr) {
         return functional_interface;
@@ -132,52 +131,47 @@ ETSFunctionType *ETSObjectType::CreateETSFunctionType(const util::StringView &na
     return allocator_->New<ETSFunctionType>(name, allocator_);
 }
 
-binder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFunctionType *func_type,
-                                                                        const util::StringView &name,
-                                                                        PropertySearchFlags flags) const
+varbinder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFunctionType *func_type,
+                                                                           const util::StringView &name,
+                                                                           PropertySearchFlags flags) const
 {
+    auto const add_signature = [func_type, flags](varbinder::LocalVariable *found) -> void {
+        for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
+            if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) &&
+                it->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
+                continue;
+            }
+
+            func_type->AddCallSignature(it);
+        }
+    };
+
     // During function reference resolution, if the found properties type is not a function type, then it is a
     // functional interface, because no other property can be found in the methods of the class. We have to
     // return the found property, because we doesn't need to create a synthetic variable for functional
     // interfaces due to the fact, that by nature they behave as fields, and can't have overloads, and they are
     // subjected to hiding
     if ((flags & PropertySearchFlags::SEARCH_STATIC_METHOD) != 0) {
-        auto *found = GetOwnProperty<PropertyType::STATIC_METHOD>(name);
-        if (found != nullptr) {
-            if (found->HasFlag(binder::VariableFlags::METHOD_REFERENCE)) {
+        if (auto *found = GetOwnProperty<PropertyType::STATIC_METHOD>(name); found != nullptr) {
+            if (found->HasFlag(varbinder::VariableFlags::METHOD_REFERENCE)) {
                 // Functional interface found
                 return found;
             }
 
             ASSERT(found->TsType()->IsETSFunctionType());
-            for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
-                if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) &&
-                    it->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
-                    continue;
-                }
-
-                func_type->AddCallSignature(it);
-            }
+            add_signature(found);
         }
     }
 
     if ((flags & PropertySearchFlags::SEARCH_INSTANCE_METHOD) != 0) {
-        auto *found = GetOwnProperty<PropertyType::INSTANCE_METHOD>(name);
-        if (found != nullptr) {
-            if (found->HasFlag(binder::VariableFlags::METHOD_REFERENCE)) {
+        if (auto *found = GetOwnProperty<PropertyType::INSTANCE_METHOD>(name); found != nullptr) {
+            if (found->HasFlag(varbinder::VariableFlags::METHOD_REFERENCE)) {
                 // Functional interface found
                 return found;
             }
 
             ASSERT(found->TsType()->IsETSFunctionType());
-            for (auto *it : found->TsType()->AsETSFunctionType()->CallSignatures()) {
-                if (((flags & PropertySearchFlags::IGNORE_ABSTRACT) != 0) &&
-                    it->HasSignatureFlag(SignatureFlags::ABSTRACT)) {
-                    continue;
-                }
-
-                func_type->AddCallSignature(it);
-            }
+            add_signature(found);
         }
     }
 
@@ -188,9 +182,9 @@ binder::LocalVariable *ETSObjectType::CollectSignaturesForSyntheticType(ETSFunct
     return nullptr;
 }
 
-std::vector<binder::LocalVariable *> ETSObjectType::GetAllProperties() const
+std::vector<varbinder::LocalVariable *> ETSObjectType::GetAllProperties() const
 {
-    std::vector<binder::LocalVariable *> all_properties;
+    std::vector<varbinder::LocalVariable *> all_properties;
     for (const auto &[_, prop] : InstanceFields()) {
         (void)_;
         all_properties.push_back(prop);
@@ -224,9 +218,9 @@ std::vector<binder::LocalVariable *> ETSObjectType::GetAllProperties() const
     return all_properties;
 }
 
-std::vector<binder::LocalVariable *> ETSObjectType::Methods() const
+std::vector<varbinder::LocalVariable *> ETSObjectType::Methods() const
 {
-    std::vector<binder::LocalVariable *> methods;
+    std::vector<varbinder::LocalVariable *> methods;
     for (const auto &[_, prop] : InstanceMethods()) {
         (void)_;
         methods.push_back(prop);
@@ -240,9 +234,9 @@ std::vector<binder::LocalVariable *> ETSObjectType::Methods() const
     return methods;
 }
 
-std::vector<binder::LocalVariable *> ETSObjectType::Fields() const
+std::vector<varbinder::LocalVariable *> ETSObjectType::Fields() const
 {
-    std::vector<binder::LocalVariable *> fields;
+    std::vector<varbinder::LocalVariable *> fields;
     for (const auto &[_, prop] : InstanceFields()) {
         (void)_;
         fields.push_back(prop);
@@ -256,9 +250,9 @@ std::vector<binder::LocalVariable *> ETSObjectType::Fields() const
     return fields;
 }
 
-std::vector<const binder::LocalVariable *> ETSObjectType::ForeignProperties() const
+std::vector<const varbinder::LocalVariable *> ETSObjectType::ForeignProperties() const
 {
-    std::vector<const binder::LocalVariable *> foreign_props;
+    std::vector<const varbinder::LocalVariable *> foreign_props;
     std::unordered_set<util::StringView> own_props;
 
     EnsurePropertiesInstantiated();
@@ -278,12 +272,12 @@ std::vector<const binder::LocalVariable *> ETSObjectType::ForeignProperties() co
     return foreign_props;
 }
 
-std::unordered_map<util::StringView, const binder::LocalVariable *> ETSObjectType::CollectAllProperties() const
+std::unordered_map<util::StringView, const varbinder::LocalVariable *> ETSObjectType::CollectAllProperties() const
 {
-    std::unordered_map<util::StringView, const binder::LocalVariable *> prop_map;
+    std::unordered_map<util::StringView, const varbinder::LocalVariable *> prop_map;
     EnsurePropertiesInstantiated();
     prop_map.reserve(properties_.size());
-    Iterate([&prop_map](const binder::LocalVariable *var) { prop_map.insert({var->Name(), var}); });
+    Iterate([&prop_map](const varbinder::LocalVariable *var) { prop_map.insert({var->Name(), var}); });
 
     return prop_map;
 }
@@ -341,22 +335,26 @@ void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other
         if (type_arguments_.empty() != other_type_arguments.empty()) {
             return;
         }
-        ASSERT(type_arguments_.size() == other_type_arguments.size());
-        for (size_t idx = 0; idx < type_arguments_.size(); idx++) {
-            if (!(type_arguments_[idx]->IsWildcardType() || other_type_arguments[idx]->IsWildcardType())) {
-                const auto get_original_base_type_or_type = [&relation](Type *const original_type) {
-                    auto *const base_type = relation->GetChecker()->AsETSChecker()->GetOriginalBaseType(original_type);
-                    return base_type == nullptr ? original_type : base_type;
-                };
 
-                auto *const type_arg_type = get_original_base_type_or_type(type_arguments_[idx]);
-                auto *const other_type_arg_type = get_original_base_type_or_type(other_type_arguments[idx]);
+        auto const args_number = type_arguments_.size();
+        ASSERT(args_number == other_type_arguments.size());
 
-                type_arg_type->Identical(relation, other_type_arg_type);
+        for (size_t idx = 0U; idx < args_number; ++idx) {
+            if (type_arguments_[idx]->IsWildcardType() || other_type_arguments[idx]->IsWildcardType()) {
+                continue;
+            }
 
-                if (!relation->IsTrue()) {
-                    return;
-                }
+            const auto get_original_base_type_or_type = [&relation](Type *const original_type) {
+                auto *const base_type = relation->GetChecker()->AsETSChecker()->GetOriginalBaseType(original_type);
+                return base_type == nullptr ? original_type : base_type;
+            };
+
+            auto *const type_arg_type = get_original_base_type_or_type(type_arguments_[idx]);
+            auto *const other_type_arg_type = get_original_base_type_or_type(other_type_arguments[idx]);
+
+            type_arg_type->Identical(relation, other_type_arg_type);
+            if (!relation->IsTrue()) {
+                return;
             }
         }
     } else {
@@ -429,6 +427,141 @@ void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
     IsSupertypeOf(relation, source);
 }
 
+bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const target)
+{
+    if (this->IsNullableType()) {
+        return false;
+    }
+
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_BYTE)) {
+        if (target->HasTypeFlag(TypeFlag::BYTE)) {
+            conversion::Unboxing(relation, this);
+            return true;
+        }
+        if (target->HasTypeFlag(TypeFlag::SHORT | TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT |
+                                TypeFlag::DOUBLE)) {
+            conversion::UnboxingWideningPrimitive(relation, this, target);
+            return true;
+        }
+        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
+            conversion::WideningReference(relation, this, target->AsETSObjectType());
+            return true;
+        }
+        conversion::Forbidden(relation);
+        return true;
+    }
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_SHORT)) {
+        if (target->HasTypeFlag(TypeFlag::SHORT)) {
+            conversion::Unboxing(relation, this);
+            return true;
+        }
+        if (target->HasTypeFlag(TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
+            conversion::UnboxingWideningPrimitive(relation, this, target);
+            return true;
+        }
+        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
+            conversion::WideningReference(relation, this, target->AsETSObjectType());
+            return true;
+        }
+        conversion::Forbidden(relation);
+        return true;
+    }
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR)) {
+        if (target->HasTypeFlag(TypeFlag::CHAR)) {
+            conversion::Unboxing(relation, this);
+            return true;
+        }
+        if (target->HasTypeFlag(TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
+            conversion::UnboxingWideningPrimitive(relation, this, target);
+            return true;
+        }
+        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
+            conversion::WideningReference(relation, this, target->AsETSObjectType());
+            return true;
+        }
+        conversion::Forbidden(relation);
+        return true;
+    }
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_INT)) {
+        if (target->HasTypeFlag(TypeFlag::INT)) {
+            conversion::Unboxing(relation, this);
+            return true;
+        }
+        if (target->HasTypeFlag(TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
+            conversion::UnboxingWideningPrimitive(relation, this, target);
+            return true;
+        }
+        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
+            conversion::WideningReference(relation, this, target->AsETSObjectType());
+            return true;
+        }
+        conversion::Forbidden(relation);
+        return true;
+    }
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_LONG)) {
+        if (target->HasTypeFlag(TypeFlag::LONG)) {
+            conversion::Unboxing(relation, this);
+            return true;
+        }
+        if (target->HasTypeFlag(TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
+            conversion::UnboxingWideningPrimitive(relation, this, target);
+            return true;
+        }
+        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
+            conversion::WideningReference(relation, this, target->AsETSObjectType());
+            return true;
+        }
+        conversion::Forbidden(relation);
+        return true;
+    }
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_FLOAT)) {
+        if (target->HasTypeFlag(TypeFlag::FLOAT)) {
+            conversion::Unboxing(relation, this);
+            return true;
+        }
+        if (target->HasTypeFlag(TypeFlag::DOUBLE)) {
+            conversion::UnboxingWideningPrimitive(relation, this, target);
+            return true;
+        }
+        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
+            conversion::WideningReference(relation, this, target->AsETSObjectType());
+            return true;
+        }
+        conversion::Forbidden(relation);
+        return true;
+    }
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE)) {
+        if (target->HasTypeFlag(TypeFlag::DOUBLE)) {
+            conversion::Unboxing(relation, this);
+            return true;
+        }
+        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
+            conversion::WideningReference(relation, this, target->AsETSObjectType());
+            return true;
+        }
+        conversion::Forbidden(relation);
+        return true;
+    }
+    if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN)) {
+        if (target->HasTypeFlag(TypeFlag::ETS_BOOLEAN)) {
+            conversion::Unboxing(relation, this);
+            return true;
+        }
+        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
+            conversion::WideningReference(relation, this, target->AsETSObjectType());
+            return true;
+        }
+        conversion::Forbidden(relation);
+        return true;
+    }
+    if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG |
+                            TypeFlag::FLOAT | TypeFlag::DOUBLE | TypeFlag::ETS_BOOLEAN)) {
+        conversion::NarrowingReferenceUnboxing(relation, this, target);
+        return true;
+    }
+    return false;
+}
+
 void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
 {
     conversion::Identity(relation, this, target);
@@ -447,163 +580,8 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
         return;
     }
 
-    if (!this->IsNullableType()) {
-        if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_BYTE)) {
-            if (target->HasTypeFlag(TypeFlag::BYTE)) {
-                conversion::Unboxing(relation, this);
-                return;
-            }
-
-            if (target->HasTypeFlag(TypeFlag::SHORT | TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT |
-                                    TypeFlag::DOUBLE)) {
-                conversion::UnboxingWideningPrimitive(relation, this, target);
-                return;
-            }
-
-            if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-                conversion::WideningReference(relation, this, target->AsETSObjectType());
-                return;
-            }
-
-            conversion::Forbidden(relation);
-            return;
-        }
-
-        if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_SHORT)) {
-            if (target->HasTypeFlag(TypeFlag::SHORT)) {
-                conversion::Unboxing(relation, this);
-                return;
-            }
-
-            if (target->HasTypeFlag(TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
-                conversion::UnboxingWideningPrimitive(relation, this, target);
-                return;
-            }
-
-            if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-                conversion::WideningReference(relation, this, target->AsETSObjectType());
-                return;
-            }
-
-            conversion::Forbidden(relation);
-            return;
-        }
-
-        if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR)) {
-            if (target->HasTypeFlag(TypeFlag::CHAR)) {
-                conversion::Unboxing(relation, this);
-                return;
-            }
-
-            if (target->HasTypeFlag(TypeFlag::INT | TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
-                conversion::UnboxingWideningPrimitive(relation, this, target);
-                return;
-            }
-
-            if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-                conversion::WideningReference(relation, this, target->AsETSObjectType());
-                return;
-            }
-
-            conversion::Forbidden(relation);
-            return;
-        }
-
-        if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_INT)) {
-            if (target->HasTypeFlag(TypeFlag::INT)) {
-                conversion::Unboxing(relation, this);
-                return;
-            }
-
-            if (target->HasTypeFlag(TypeFlag::LONG | TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
-                conversion::UnboxingWideningPrimitive(relation, this, target);
-                return;
-            }
-
-            if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-                conversion::WideningReference(relation, this, target->AsETSObjectType());
-                return;
-            }
-
-            conversion::Forbidden(relation);
-            return;
-        }
-
-        if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_LONG)) {
-            if (target->HasTypeFlag(TypeFlag::LONG)) {
-                conversion::Unboxing(relation, this);
-                return;
-            }
-
-            if (target->HasTypeFlag(TypeFlag::FLOAT | TypeFlag::DOUBLE)) {
-                conversion::UnboxingWideningPrimitive(relation, this, target);
-                return;
-            }
-
-            if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-                conversion::WideningReference(relation, this, target->AsETSObjectType());
-                return;
-            }
-
-            conversion::Forbidden(relation);
-            return;
-        }
-
-        if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_FLOAT)) {
-            if (target->HasTypeFlag(TypeFlag::FLOAT)) {
-                conversion::Unboxing(relation, this);
-                return;
-            }
-
-            if (target->HasTypeFlag(TypeFlag::DOUBLE)) {
-                conversion::UnboxingWideningPrimitive(relation, this, target);
-                return;
-            }
-
-            if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-                conversion::WideningReference(relation, this, target->AsETSObjectType());
-                return;
-            }
-
-            conversion::Forbidden(relation);
-            return;
-        }
-
-        if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE)) {
-            if (target->HasTypeFlag(TypeFlag::DOUBLE)) {
-                conversion::Unboxing(relation, this);
-                return;
-            }
-
-            if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-                conversion::WideningReference(relation, this, target->AsETSObjectType());
-                return;
-            }
-
-            conversion::Forbidden(relation);
-            return;
-        }
-
-        if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN)) {
-            if (target->HasTypeFlag(TypeFlag::ETS_BOOLEAN)) {
-                conversion::Unboxing(relation, this);
-                return;
-            }
-
-            if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-                conversion::WideningReference(relation, this, target->AsETSObjectType());
-                return;
-            }
-
-            conversion::Forbidden(relation);
-            return;
-        }
-
-        if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG |
-                                TypeFlag::FLOAT | TypeFlag::DOUBLE | TypeFlag::ETS_BOOLEAN)) {
-            conversion::NarrowingReferenceUnboxing(relation, this, target);
-            return;
-        }
+    if (CastNumericObject(relation, target)) {
+        return;
     }
 
     if (target->HasTypeFlag(TypeFlag::ETS_ARRAY)) {
@@ -682,7 +660,7 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
     }
 }
 
-Type *ETSObjectType::AsSuper(Checker *checker, binder::Variable *source_var)
+Type *ETSObjectType::AsSuper(Checker *checker, varbinder::Variable *source_var)
 {
     if (source_var == nullptr) {
         return nullptr;
@@ -734,8 +712,8 @@ Type *ETSObjectType::AsSuper(Checker *checker, binder::Variable *source_var)
     return nullptr;
 }
 
-binder::LocalVariable *ETSObjectType::CopyProperty(binder::LocalVariable *prop, ArenaAllocator *allocator,
-                                                   TypeRelation *relation, GlobalTypesHolder *global_types)
+varbinder::LocalVariable *ETSObjectType::CopyProperty(varbinder::LocalVariable *prop, ArenaAllocator *allocator,
+                                                      TypeRelation *relation, GlobalTypesHolder *global_types)
 {
     auto *const copied_prop = prop->Copy(allocator, prop->Declaration());
     auto *const copied_prop_type = ETSChecker::TryToInstantiate(
@@ -786,8 +764,8 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     return copied_type;
 }
 
-static binder::LocalVariable *CopyPropertyWithTypeArguments(binder::LocalVariable *prop, TypeRelation *relation,
-                                                            const Substitution *substitution)
+static varbinder::LocalVariable *CopyPropertyWithTypeArguments(varbinder::LocalVariable *prop, TypeRelation *relation,
+                                                               const Substitution *substitution)
 {
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *const copied_prop_type = checker->GetTypeOfVariable(prop)->Substitute(relation, substitution);
@@ -847,7 +825,7 @@ Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *subs
     }
 
     // Lambda types can capture type params in their bodies, normal classes cannot.
-    // TODO(gogabr): determine precise conditions where we do not need to copy.
+    // NOTE: gogabr. determine precise conditions where we do not need to copy.
     // Perhaps keep track of captured type parameters for each type.
     if (!any_change && !HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
         return this;

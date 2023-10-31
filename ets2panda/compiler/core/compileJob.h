@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@
 #include <condition_variable>
 #include <mutex>
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class FunctionScope;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::compiler {
 class CompilerContext;
@@ -48,7 +48,7 @@ public:
         return &program_element_;
     }
 
-    void SetContext(CompilerContext *context, binder::FunctionScope *scope)
+    void SetContext(CompilerContext *context, varbinder::FunctionScope *scope)
     {
         context_ = context;
         scope_ = scope;
@@ -62,7 +62,7 @@ private:
     std::mutex m_;
     std::condition_variable cond_;
     CompilerContext *context_ {};
-    binder::FunctionScope *scope_ {};
+    varbinder::FunctionScope *scope_ {};
     ProgramElement program_element_;
     CompileJob *dependant_ {};
     size_t dependencies_ {0};

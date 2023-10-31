@@ -25,16 +25,6 @@ config("libes2panda_public_config") {
 }
 
 libes2panda_sources = [
-  "binder/ASBinder.cpp",
-  "binder/ETSBinder.cpp",
-  "binder/JSBinder.cpp",
-  "binder/TSBinder.cpp",
-  "binder/TypedBinder.cpp",
-  "binder/binder.cpp",
-  "binder/declaration.cpp",
-  "binder/recordTable.cpp",
-  "binder/scope.cpp",
-  "binder/variable.cpp",
   "checker/ASchecker.cpp",
   "checker/ETSAnalyzer.cpp",
   "checker/ETSchecker.cpp",
@@ -352,6 +342,16 @@ libes2panda_sources = [
   "util/declgenEts2Ts.cpp",
   "util/helpers.cpp",
   "util/ustring.cpp",
+  "varbinder/ASBinder.cpp",
+  "varbinder/ETSBinder.cpp",
+  "varbinder/JSBinder.cpp",
+  "varbinder/TSBinder.cpp",
+  "varbinder/TypedBinder.cpp",
+  "varbinder/declaration.cpp",
+  "varbinder/recordTable.cpp",
+  "varbinder/scope.cpp",
+  "varbinder/varbinder.cpp",
+  "varbinder/variable.cpp",
 ]
 
 # libes2panda does not include bytecode optimizer, because it is used in

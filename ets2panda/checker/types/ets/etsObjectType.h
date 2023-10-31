@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 #include "checker/types/signature.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "ir/base/classDefinition.h"
 
 namespace panda::es2panda::checker {
@@ -113,9 +113,9 @@ enum class PropertyType {
 
 class ETSObjectType : public Type {
 public:
-    using PropertyMap = ArenaUnorderedMap<util::StringView, binder::LocalVariable *>;
+    using PropertyMap = ArenaUnorderedMap<util::StringView, varbinder::LocalVariable *>;
     using InstantiationMap = ArenaUnorderedMap<util::StringView, ETSObjectType *>;
-    using PropertyTraverser = std::function<void(const binder::LocalVariable *)>;
+    using PropertyTraverser = std::function<void(const varbinder::LocalVariable *)>;
     using PropertyHolder = std::array<PropertyMap, static_cast<size_t>(PropertyType::COUNT)>;
 
     explicit ETSObjectType(ArenaAllocator *allocator) : ETSObjectType(allocator, ETSObjectFlags::NO_OPTS) {}
@@ -292,14 +292,14 @@ public:
         return const_cast<ETSObjectType *>(GetConstOriginalBaseType());
     }
 
-    bool IsPropertyInherited(const binder::Variable *var)
+    bool IsPropertyInherited(const varbinder::Variable *var)
     {
-        if (var->HasFlag(binder::VariableFlags::PRIVATE)) {
+        if (var->HasFlag(varbinder::VariableFlags::PRIVATE)) {
             return GetProperty(var->Name(), PropertySearchFlags::SEARCH_FIELD | PropertySearchFlags::SEARCH_DECL) ==
                    var;
         }
 
-        if (var->HasFlag(binder::VariableFlags::PROTECTED)) {
+        if (var->HasFlag(varbinder::VariableFlags::PROTECTED)) {
             return (GetProperty(var->Name(), PropertySearchFlags::SEARCH_FIELD | PropertySearchFlags::SEARCH_DECL) ==
                     var) ||
                    this->IsPropertyOfAscendant(var);
@@ -308,7 +308,7 @@ public:
         return true;
     }
 
-    bool IsPropertyOfAscendant(const binder::Variable *var)
+    bool IsPropertyOfAscendant(const varbinder::Variable *var)
     {
         if (this->SuperType() == nullptr) {
             return false;
@@ -404,7 +404,6 @@ public:
     ETSObjectType *GetInstantiatedType(util::StringView hash)
     {
         auto found = instantiation_map_.find(hash);
-
         if (found != instantiation_map_.end()) {
             return found->second;
         }
@@ -412,7 +411,7 @@ public:
         return nullptr;
     }
 
-    binder::Scope *GetTypeArgumentScope() const
+    varbinder::Scope *GetTypeArgumentScope() const
     {
         if (HasObjectFlag(ETSObjectFlags::ENUM) || !HasTypeFlag(TypeFlag::GENERIC)) {
             return nullptr;
@@ -433,7 +432,7 @@ public:
     }
 
     template <PropertyType TYPE>
-    binder::LocalVariable *GetOwnProperty(const util::StringView &name) const
+    varbinder::LocalVariable *GetOwnProperty(const util::StringView &name) const
     {
         EnsurePropertiesInstantiated();
         auto found = properties_[static_cast<size_t>(TYPE)].find(name);
@@ -444,7 +443,7 @@ public:
     }
 
     template <PropertyType TYPE>
-    void AddProperty(binder::LocalVariable *prop)
+    void AddProperty(varbinder::LocalVariable *prop)
     {
         properties_[static_cast<size_t>(TYPE)].emplace(prop->Name(), prop);
         properties_instantiated_ = true;
@@ -455,20 +454,21 @@ public:
         return !type_arguments_.empty();
     }
 
-    std::vector<const binder::LocalVariable *> ForeignProperties() const;
-    binder::LocalVariable *GetProperty(const util::StringView &name, PropertySearchFlags flags) const;
-    std::vector<binder::LocalVariable *> GetAllProperties() const;
+    std::vector<const varbinder::LocalVariable *> ForeignProperties() const;
+    varbinder::LocalVariable *GetProperty(const util::StringView &name, PropertySearchFlags flags) const;
+    std::vector<varbinder::LocalVariable *> GetAllProperties() const;
     void CreatePropertyMap(ArenaAllocator *allocator);
-    binder::LocalVariable *CopyProperty(binder::LocalVariable *prop, ArenaAllocator *allocator, TypeRelation *relation,
-                                        GlobalTypesHolder *global_types);
-    std::vector<binder::LocalVariable *> Methods() const;
-    std::vector<binder::LocalVariable *> Fields() const;
-    binder::LocalVariable *CreateSyntheticVarFromEverySignature(const util::StringView &name,
+    varbinder::LocalVariable *CopyProperty(varbinder::LocalVariable *prop, ArenaAllocator *allocator,
+                                           TypeRelation *relation, GlobalTypesHolder *global_types);
+    std::vector<varbinder::LocalVariable *> Methods() const;
+    std::vector<varbinder::LocalVariable *> Fields() const;
+    varbinder::LocalVariable *CreateSyntheticVarFromEverySignature(const util::StringView &name,
+                                                                   PropertySearchFlags flags) const;
+    varbinder::LocalVariable *CollectSignaturesForSyntheticType(ETSFunctionType *func_type,
+                                                                const util::StringView &name,
                                                                 PropertySearchFlags flags) const;
-    binder::LocalVariable *CollectSignaturesForSyntheticType(ETSFunctionType *func_type, const util::StringView &name,
-                                                             PropertySearchFlags flags) const;
     bool CheckIdenticalFlags(ETSObjectFlags target) const;
-    bool CheckIdenticalVariable(binder::Variable *other_var) const;
+    bool CheckIdenticalVariable(varbinder::Variable *other_var) const;
 
     void Iterate(const PropertyTraverser &cb) const;
     void ToString(std::stringstream &ss) const override;
@@ -478,8 +478,9 @@ public:
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
     void Cast(TypeRelation *relation, Type *target) override;
+    bool CastNumericObject(TypeRelation *relation, Type *target);
     void IsSupertypeOf(TypeRelation *relation, Type *source) override;
-    Type *AsSuper(Checker *checker, binder::Variable *source_var) override;
+    Type *AsSuper(Checker *checker, varbinder::Variable *source_var) override;
 
     void ToAssemblerType([[maybe_unused]] std::stringstream &ss) const override
     {
@@ -547,7 +548,7 @@ private:
             properties_instantiated_ = true;
         }
     }
-    std::unordered_map<util::StringView, const binder::LocalVariable *> CollectAllProperties() const;
+    std::unordered_map<util::StringView, const varbinder::LocalVariable *> CollectAllProperties() const;
     void IdenticalUptoNullability(TypeRelation *relation, Type *other);
 
     ArenaAllocator *allocator_;

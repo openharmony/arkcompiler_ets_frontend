@@ -26,8 +26,8 @@
 #include "ir/ts/tsTypeReference.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/ts/tsTypeParameter.h"
-#include "binder/variable.h"
-#include "binder/scope.h"
+#include "varbinder/variable.h"
+#include "varbinder/scope.h"
 #include "util/helpers.h"
 
 #include "checker/ts/typeElaborationContext.h"
@@ -99,7 +99,7 @@ void TSChecker::CheckReferenceExpression(ir::Expression *expr, const char *inval
         auto result = Scope()->Find(name);
         ASSERT(result.variable);
 
-        if (result.variable->HasFlag(binder::VariableFlags::ENUM_LITERAL)) {
+        if (result.variable->HasFlag(varbinder::VariableFlags::ENUM_LITERAL)) {
             ThrowTypeError({"Cannot assign to '", name, "' because it is not a variable."}, expr->Start());
         }
     } else if (!expr->IsMemberExpression()) {
@@ -115,7 +115,7 @@ void TSChecker::CheckTestingKnownTruthyCallableOrAwaitableType([[maybe_unused]] 
                                                                [[maybe_unused]] Type *type,
                                                                [[maybe_unused]] ir::AstNode *body)
 {
-    // TODO(aszilagyi) rework this
+    // NOTE: aszilagyi. rework this
 }
 
 Type *TSChecker::ExtractDefinitelyFalsyTypes(Type *type)
@@ -218,12 +218,12 @@ TypeFlag TSChecker::GetFalsyFlags(Type *type)
     return static_cast<TypeFlag>(type->TypeFlags() & TypeFlag::POSSIBLY_FALSY);
 }
 
-bool TSChecker::IsVariableUsedInConditionBody(ir::AstNode *parent, binder::Variable *search_var)
+bool TSChecker::IsVariableUsedInConditionBody(ir::AstNode *parent, varbinder::Variable *search_var)
 {
     bool found = false;
 
     parent->Iterate([this, search_var, &found](ir::AstNode *child_node) -> void {
-        binder::Variable *result_var = nullptr;
+        varbinder::Variable *result_var = nullptr;
         if (child_node->IsIdentifier()) {
             auto result = Scope()->Find(child_node->AsIdentifier()->Name());
             ASSERT(result.variable);
@@ -243,7 +243,7 @@ bool TSChecker::IsVariableUsedInConditionBody(ir::AstNode *parent, binder::Varia
     return found;
 }
 
-bool TSChecker::FindVariableInBinaryExpressionChain(ir::AstNode *parent, binder::Variable *search_var)
+bool TSChecker::FindVariableInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *search_var)
 {
     bool found = false;
 
@@ -263,7 +263,7 @@ bool TSChecker::FindVariableInBinaryExpressionChain(ir::AstNode *parent, binder:
     return found;
 }
 
-bool TSChecker::IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, binder::Variable *search_var)
+bool TSChecker::IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *search_var)
 {
     while (parent->IsBinaryExpression() &&
            parent->AsBinaryExpression()->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
@@ -339,7 +339,7 @@ void TSChecker::InferSimpleVariableDeclaratorType(ir::VariableDeclarator *declar
 {
     ASSERT(declarator->Id()->IsIdentifier());
 
-    binder::Variable *var = declarator->Id()->AsIdentifier()->Variable();
+    varbinder::Variable *var = declarator->Id()->AsIdentifier()->Variable();
     ASSERT(var);
 
     if (declarator->Id()->AsIdentifier()->TypeAnnotation() != nullptr) {
@@ -356,13 +356,13 @@ void TSChecker::InferSimpleVariableDeclaratorType(ir::VariableDeclarator *declar
                    declarator->Id()->Start());
 }
 
-Type *TSChecker::GetTypeOfVariable(binder::Variable *var)
+Type *TSChecker::GetTypeOfVariable(varbinder::Variable *var)
 {
     if (var->TsType() != nullptr) {
         return var->TsType();
     }
 
-    binder::Decl *decl = var->Declaration();
+    varbinder::Decl *decl = var->Declaration();
 
     TypeStackElement tse(this, decl->Node(),
                          {"'", var->Name(),
@@ -371,8 +371,8 @@ Type *TSChecker::GetTypeOfVariable(binder::Variable *var)
                          decl->Node()->Start());
 
     switch (decl->Type()) {
-        case binder::DeclType::CONST:
-        case binder::DeclType::LET: {
+        case varbinder::DeclType::CONST:
+        case varbinder::DeclType::LET: {
             if (!decl->Node()->Parent()->IsTSTypeQuery()) {
                 ThrowTypeError({"Block-scoped variable '", var->Name(), "' used before its declaration"},
                                decl->Node()->Start());
@@ -381,7 +381,7 @@ Type *TSChecker::GetTypeOfVariable(binder::Variable *var)
 
             [[fallthrough]];
         }
-        case binder::DeclType::VAR: {
+        case varbinder::DeclType::VAR: {
             ir::AstNode *declarator =
                 util::Helpers::FindAncestorGivenByType(decl->Node(), ir::AstNodeType::VARIABLE_DECLARATOR);
             ASSERT(declarator);
@@ -394,22 +394,22 @@ Type *TSChecker::GetTypeOfVariable(binder::Variable *var)
             declarator->Check(this);
             break;
         }
-        case binder::DeclType::PROPERTY: {
+        case varbinder::DeclType::PROPERTY: {
             var->SetTsType(decl->Node()->AsTSPropertySignature()->TypeAnnotation()->GetType(this));
             break;
         }
-        case binder::DeclType::METHOD: {
+        case varbinder::DeclType::METHOD: {
             auto *signature_info = Allocator()->New<checker::SignatureInfo>(Allocator());
             auto *call_signature = Allocator()->New<checker::Signature>(signature_info, GlobalAnyType());
             var->SetTsType(CreateFunctionTypeWithSignature(call_signature));
             break;
         }
-        case binder::DeclType::FUNC: {
+        case varbinder::DeclType::FUNC: {
             checker::ScopeContext scope_ctx(this, decl->Node()->AsScriptFunction()->Scope());
             InferFunctionDeclarationType(decl->AsFunctionDecl(), var);
             break;
         }
-        case binder::DeclType::PARAM: {
+        case varbinder::DeclType::PARAM: {
             ir::AstNode *declaration = FindAncestorUntilGivenType(decl->Node(), ir::AstNodeType::SCRIPT_FUNCTION);
 
             if (declaration->IsIdentifier()) {
@@ -438,9 +438,9 @@ Type *TSChecker::GetTypeOfVariable(binder::Variable *var)
             CheckFunctionParameter(declaration->AsExpression(), nullptr);
             break;
         }
-        case binder::DeclType::ENUM: {
+        case varbinder::DeclType::ENUM: {
             ASSERT(var->IsEnumVariable());
-            binder::EnumVariable *enum_var = var->AsEnumVariable();
+            varbinder::EnumVariable *enum_var = var->AsEnumVariable();
 
             if (std::holds_alternative<bool>(enum_var->Value())) {
                 ThrowTypeError(
@@ -453,8 +453,8 @@ Type *TSChecker::GetTypeOfVariable(binder::Variable *var)
             var->SetTsType(std::holds_alternative<double>(enum_var->Value()) ? GlobalNumberType() : GlobalStringType());
             break;
         }
-        case binder::DeclType::ENUM_LITERAL: {
-            UNREACHABLE();  // TODO(aszilagyi)
+        case varbinder::DeclType::ENUM_LITERAL: {
+            UNREACHABLE();  // NOTE: aszilagyi.
         }
         default: {
             break;
@@ -464,7 +464,8 @@ Type *TSChecker::GetTypeOfVariable(binder::Variable *var)
     return var->TsType();
 }
 
-Type *TSChecker::GetTypeFromClassOrInterfaceReference([[maybe_unused]] ir::TSTypeReference *node, binder::Variable *var)
+Type *TSChecker::GetTypeFromClassOrInterfaceReference([[maybe_unused]] ir::TSTypeReference *node,
+                                                      varbinder::Variable *var)
 {
     Type *resolved_type = var->TsType();
 
@@ -478,7 +479,7 @@ Type *TSChecker::GetTypeFromClassOrInterfaceReference([[maybe_unused]] ir::TSTyp
     return resolved_type;
 }
 
-Type *TSChecker::GetTypeFromTypeAliasReference(ir::TSTypeReference *node, binder::Variable *var)
+Type *TSChecker::GetTypeFromTypeAliasReference(ir::TSTypeReference *node, varbinder::Variable *var)
 {
     Type *resolved_type = var->TsType();
 
@@ -496,10 +497,10 @@ Type *TSChecker::GetTypeFromTypeAliasReference(ir::TSTypeReference *node, binder
     return resolved_type;
 }
 
-Type *TSChecker::GetTypeReferenceType(ir::TSTypeReference *node, binder::Variable *var)
+Type *TSChecker::GetTypeReferenceType(ir::TSTypeReference *node, varbinder::Variable *var)
 {
     ASSERT(var->Declaration());
-    binder::Decl *decl = var->Declaration();
+    varbinder::Decl *decl = var->Declaration();
 
     if (decl->IsInterfaceDecl()) {
         return GetTypeFromClassOrInterfaceReference(node, var);

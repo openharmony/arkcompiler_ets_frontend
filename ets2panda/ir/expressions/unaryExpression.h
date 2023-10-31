@@ -63,6 +63,8 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::Type *CheckDeleteKeyword([[maybe_unused]] checker::TSChecker *checker);
+    checker::Type *CheckLiteral([[maybe_unused]] checker::TSChecker *checker);
 
 private:
     Expression *argument_;

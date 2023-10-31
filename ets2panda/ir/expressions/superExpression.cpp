@@ -49,7 +49,7 @@ void SuperExpression::Compile(compiler::ETSGen *etsg) const
 
 checker::Type *SuperExpression::Check(checker::TSChecker *checker)
 {
-    // TODO(aszilagyi)
+    // NOTE: aszilagyi.
     return checker->GlobalAnyType();
 }
 

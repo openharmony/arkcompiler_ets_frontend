@@ -16,7 +16,7 @@
 #include "tsTupleType.h"
 
 #include "util/helpers.h"
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "checker/types/ts/indexInfo.h"
 #include "ir/astDump.h"
@@ -62,7 +62,7 @@ checker::Type *TSTupleType::GetType(checker::TSChecker *checker)
         util::StringView member_index = util::Helpers::ToStringView(checker->Allocator(), index);
 
         auto *member_var =
-            binder::Scope::CreateVar(checker->Allocator(), member_index, binder::VariableFlags::PROPERTY, it);
+            varbinder::Scope::CreateVar(checker->Allocator(), member_index, varbinder::VariableFlags::PROPERTY, it);
 
         checker::ElementFlags member_flag = checker::ElementFlags::NO_OPTS;
         if (it->IsTSNamedTupleMember()) {
@@ -70,7 +70,7 @@ checker::Type *TSTupleType::GetType(checker::TSChecker *checker)
             checker::Type *member_type = named_member->ElementType()->GetType(checker);
 
             if (named_member->IsOptional()) {
-                member_var->AddFlag(binder::VariableFlags::OPTIONAL);
+                member_var->AddFlag(varbinder::VariableFlags::OPTIONAL);
                 member_flag = checker::ElementFlags::OPTIONAL;
             } else {
                 member_flag = checker::ElementFlags::REQUIRED;
