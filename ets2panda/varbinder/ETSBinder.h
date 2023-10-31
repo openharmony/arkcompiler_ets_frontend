@@ -19,6 +19,7 @@
 #include "varbinder/TypedBinder.h"
 #include "varbinder/recordTable.h"
 #include "ir/ets/etsImportDeclaration.h"
+#include "ir/ets/etsReExportDeclaration.h"
 
 namespace panda::es2panda::varbinder {
 
@@ -41,6 +42,7 @@ public:
           external_record_table_(Allocator()->Adapter()),
           default_imports_(Allocator()->Adapter()),
           dynamic_imports_(Allocator()->Adapter()),
+          re_export_imports_(Allocator()->Adapter()),
           lambda_objects_(Allocator()->Adapter()),
           dynamic_import_vars_(Allocator()->Adapter()),
           import_specifiers_(Allocator()->Adapter()),
@@ -129,12 +131,15 @@ public:
                                                    const ir::ETSImportDeclaration *import);
     bool AddImportSpecifiersToTopBindings(ir::AstNode *specifier, const varbinder::Scope::VariableMap &global_bindings,
                                           const ir::ETSImportDeclaration *import,
-                                          const ArenaVector<parser::Program *> &record_res);
+                                          const ArenaVector<parser::Program *> &record_res,
+                                          std::vector<ir::ETSImportDeclaration *> viewed_re_export);
     Variable *FindImportSpecifiersVariable(const util::StringView &imported,
                                            const varbinder::Scope::VariableMap &global_bindings,
-                                           const ArenaVector<parser::Program *> &record_res,
-                                           const ir::StringLiteral *import_path);
+                                           const ArenaVector<parser::Program *> &record_res);
     Variable *FindStaticBinding(const ArenaVector<parser::Program *> &record_res, const ir::StringLiteral *import_path);
+    void AddSpecifiersToTopBindings(
+        ir::AstNode *specifier, const ir::ETSImportDeclaration *import, ir::StringLiteral *path,
+        std::vector<ir::ETSImportDeclaration *> viewed_re_export = std::vector<ir::ETSImportDeclaration *>());
     void AddDynamicSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
 
     void ResolveInterfaceDeclaration(ir::TSInterfaceDeclaration *decl);
@@ -170,6 +175,16 @@ public:
     const ArenaVector<ir::ETSImportDeclaration *> &DynamicImports() const
     {
         return dynamic_imports_;
+    }
+
+    void AddReExportImport(ir::ETSReExportDeclaration *re_export)
+    {
+        re_export_imports_.push_back(re_export);
+    }
+
+    const ArenaVector<ir::ETSReExportDeclaration *> &ReExportImports() const
+    {
+        return re_export_imports_;
     }
 
     const DynamicImportVariables &DynamicImportVars() const
@@ -237,6 +252,7 @@ private:
     ArenaMap<parser::Program *, RecordTable *> external_record_table_;
     ArenaVector<ir::ETSImportDeclaration *> default_imports_;
     ArenaVector<ir::ETSImportDeclaration *> dynamic_imports_;
+    ArenaVector<ir::ETSReExportDeclaration *> re_export_imports_;
     ComputedLambdaObjects lambda_objects_;
     DynamicImportVariables dynamic_import_vars_;
     ir::Identifier *this_param_ {};

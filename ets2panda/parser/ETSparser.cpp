@@ -86,6 +86,7 @@
 #include "ir/ets/etsClassLiteral.h"
 #include "ir/ets/etsPrimitiveType.h"
 #include "ir/ets/etsPackageDeclaration.h"
+#include "ir/ets/etsReExportDeclaration.h"
 #include "ir/ets/etsWildcardType.h"
 #include "ir/ets/etsNewArrayInstanceExpression.h"
 #include "ir/ets/etsTuple.h"
@@ -171,26 +172,49 @@ void ETSParser::ParseETSGlobalScript(lexer::SourcePosition start_loc, ArenaVecto
 {
     auto paths = ParseImportDeclarations(statements);
 
-    // remove external sources from paths because already parsed them
-    paths.erase(remove_if(begin(paths), end(paths),
-                          [this](auto x) {
-                              auto resolved = ResolveImportPath(x);
-                              auto path_iter =
-                                  std::find_if(resolved_parsed_sources_.begin(), resolved_parsed_sources_.end(),
-                                               [resolved](const auto &p) { return p.second == resolved; });
-                              auto found = path_iter != resolved_parsed_sources_.end();
-                              if (found) {
-                                  resolved_parsed_sources_.emplace(x, resolved);
-                              }
-                              return found;
-                          }),
-                end(paths));
+    auto remove_parsed_sources = [this](std::vector<std::string> &items) {
+        items.erase(remove_if(begin(items), end(items),
+                              [this](auto x) {
+                                  auto resolved = ResolveImportPath(x);
+                                  auto path_iter =
+                                      std::find_if(resolved_parsed_sources_.begin(), resolved_parsed_sources_.end(),
+                                                   [resolved](const auto &p) { return p.second == resolved; });
+                                  auto found = path_iter != resolved_parsed_sources_.end();
+                                  if (found) {
+                                      resolved_parsed_sources_.emplace(x, resolved);
+                                  }
+                                  return found;
+                              }),
+                    end(items));
 
-    for (const auto &path : paths) {
-        parsed_sources_.push_back(ResolveImportPath(path));
-    }
+        for (const auto &item : items) {
+            parsed_sources_.push_back(ResolveImportPath(item));
+        }
+    };
+
+    remove_parsed_sources(paths);
 
     ParseSources(paths, false);
+
+    if (!GetProgram()->VarBinder()->AsETSBinder()->ReExportImports().empty()) {
+        std::vector<std::string> re_export_paths;
+
+        for (auto re_export : GetProgram()->VarBinder()->AsETSBinder()->ReExportImports()) {
+            if (std::find(paths.begin(), paths.end(), re_export->GetProgramPath().Mutf8()) != paths.end()) {
+                auto path = re_export->GetProgramPath().Mutf8().substr(
+                    0, re_export->GetProgramPath().Mutf8().find_last_of('/'));
+                for (auto item : re_export->GetUserPaths()) {
+                    re_export_paths.push_back(
+                        path + "/" + item.Mutf8().substr(item.Mutf8().find_first_of('/') + 1, item.Mutf8().length()));
+                }
+            }
+        }
+
+        remove_parsed_sources(re_export_paths);
+
+        ParseSources(re_export_paths, false);
+    }
+
     ParseTopLevelDeclaration(statements);
 
     auto *ets_script =
@@ -683,6 +707,12 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
         if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXPORT) {
             Lexer()->NextToken();
             current_pos = global_properties.size();
+
+            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
+                Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+                ParseReExport(Lexer()->GetToken().Start());
+                continue;
+            }
 
             if (Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_DEFAULT) {
                 default_export = true;
@@ -2956,6 +2986,42 @@ ir::DebuggerStatement *ETSParser::ParseDebuggerStatement()
     ThrowUnexpectedToken(lexer::TokenType::KEYW_DEBUGGER);
 }
 
+void ETSParser::ParseReExport(lexer::SourcePosition start_loc)
+{
+    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
+           Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
+    ArenaVector<ir::AstNode *> specifiers(Allocator()->Adapter());
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
+        ParseNameSpaceSpecifier(&specifiers, true);
+    } else {
+        ParseNamedSpecifiers(&specifiers, true);
+
+        if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM) {
+            ThrowSyntaxError("Selective export directive is not implemented yet");
+        }
+    }
+
+    ir::ImportSource *re_export_source = nullptr;
+    std::vector<std::string> user_paths;
+
+    std::tie(re_export_source, user_paths) = ParseFromClause(true);
+
+    lexer::SourcePosition end_loc = re_export_source->Source()->End();
+    auto *re_export_declaration = AllocNode<ir::ETSImportDeclaration>(re_export_source, specifiers);
+    re_export_declaration->SetRange({start_loc, end_loc});
+
+    if (re_export_declaration->Language().IsDynamic()) {
+        VarBinder()->AsETSBinder()->AddDynamicImport(re_export_declaration);
+    }
+
+    ConsumeSemicolon(re_export_declaration);
+
+    auto *re_export = Allocator()->New<ir::ETSReExportDeclaration>(re_export_declaration, user_paths,
+                                                                   GetProgram()->SourceFile(), Allocator());
+    GetProgram()->VarBinder()->AsETSBinder()->AddReExportImport(re_export);
+}
+
 ir::Statement *ETSParser::ParseFunctionStatement([[maybe_unused]] const StatementParsingFlags flags)
 {
     ASSERT((flags & StatementParsingFlags::GLOBAL) == 0);
@@ -3071,9 +3137,9 @@ std::vector<std::string> ETSParser::ParseImportDeclarations(ArenaVector<ir::Stat
         ir::ImportSource *import_source = nullptr;
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
-            ParseNameSpaceImport(&specifiers);
+            ParseNameSpaceSpecifier(&specifiers);
         } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-            ParseNamedImportSpecifiers(&specifiers);
+            ParseNamedSpecifiers(&specifiers);
         } else {
             ParseImportDefaultSpecifier(&specifiers);
         }
@@ -3111,11 +3177,11 @@ std::vector<std::string> ETSParser::ParseImportDeclarations(ArenaVector<ir::Stat
     return all_user_paths;
 }
 
-void ETSParser::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers)
+void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool is_re_export)
 {
     // NOTE(user): handle qualifiedName in file bindings: qualifiedName '.' '*'
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        ThrowSyntaxError("Unexpected token, expected '{'");
+        ThrowExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
     }
     Lexer()->NextToken();  // eat '{'
 
@@ -3159,12 +3225,12 @@ void ETSParser::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifier
 
     Lexer()->NextToken();  // eat '}'
 
-    if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM) {
+    if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM && !is_re_export) {
         ThrowSyntaxError("Unexpected token, expected 'from'");
     }
 }
 
-void ETSParser::ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers)
+void ETSParser::ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool is_re_export)
 {
     lexer::SourcePosition namespace_start = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat `*` character
@@ -3175,7 +3241,7 @@ void ETSParser::ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers)
 
     auto *local = AllocNode<ir::Identifier>(util::StringView(""), Allocator());
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA ||
-        Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_FROM) {
+        Lexer()->GetToken().KeywordType() == lexer::TokenType::KEYW_FROM || is_re_export) {
         auto *specifier = AllocNode<ir::ImportNamespaceSpecifier>(local);
         specifier->SetRange({namespace_start, Lexer()->GetToken().End()});
         specifiers->push_back(specifier);
