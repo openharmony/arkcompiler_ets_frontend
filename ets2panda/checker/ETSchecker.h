@@ -257,7 +257,7 @@ public:
     bool TypeInference(Signature *signature, const ArenaVector<ir::Expression *> &arguments,
                        TypeRelationFlag flags = TypeRelationFlag::NONE);
     bool CheckLambdaAssignable(ir::Expression *param, ir::ScriptFunction *lambda);
-    bool IsCompatibleTypeArgument(Type *type_param, Type *type_argument);
+    bool IsCompatibleTypeArgument(Type *type_param, Type *type_argument, const Substitution *substitution);
     Substitution *NewSubstitution()
     {
         return Allocator()->New<Substitution>(Allocator()->Adapter());
@@ -475,6 +475,8 @@ public:
     bool CheckRethrowingParams(const ir::AstNode *ancestor_function, const ir::AstNode *node);
     void CheckThrowingStatements(ir::AstNode *node);
     bool CheckThrowingPlacement(ir::AstNode *node, const ir::AstNode *ancestor_function);
+    void CheckNumberOfTypeArguments(Type *type, ir::TSTypeParameterDeclaration *type_param_decl,
+                                    ir::TSTypeParameterInstantiation *type_args, const lexer::SourcePosition &pos);
     ir::BlockStatement *FindFinalizerOfTryStatement(ir::AstNode *start_from, const ir::AstNode *p);
     void CheckRethrowingFunction(ir::ScriptFunction *func);
     ETSObjectType *GetRelevantArgumentedTypeFromChild(ETSObjectType *child, ETSObjectType *target);
@@ -586,6 +588,8 @@ private:
 
     ArenaVector<Type *> CreateTypeForTypeParameters(ir::TSTypeParameterDeclaration *type_params);
     Type *CreateTypeParameterType(ir::TSTypeParameter *param);
+    void SetUpTypeParameterConstraint(ir::TSTypeParameter *param);
+    ETSObjectType *SetUpParameterType(ir::TSTypeParameter *param);
     ETSObjectType *CreateETSObjectTypeCheckBuiltins(util::StringView name, ir::AstNode *decl_node,
                                                     ETSObjectFlags flags);
     void CheckProgram(parser::Program *program, bool run_analysis = false);

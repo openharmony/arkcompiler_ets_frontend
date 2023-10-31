@@ -81,6 +81,7 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
     if (prev_ == nullptr) {
         checker::Type *base_type = checker->GetReferencedTypeBase(name_);
 
+        ASSERT(base_type != nullptr);
         if (base_type->IsETSObjectType()) {
             checker::InstantiationContext ctx(checker, base_type->AsETSObjectType(), type_params_, Start());
             return ctx.Result();

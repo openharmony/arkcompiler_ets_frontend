@@ -112,6 +112,7 @@ static const Substitution *BuildExplicitSubstitutionForArguments(ETSChecker *che
                                                                  TypeRelationFlag flags)
 {
     auto *substitution = checker->NewSubstitution();
+    auto *constraints_substitution = checker->NewSubstitution();
     ArenaVector<Type *> &type_params = signature->GetSignatureInfo()->type_params;
     ArenaVector<Type *> type_arg_types {checker->Allocator()->Adapter()};
     for (auto *ta_expr : type_arguments->Params()) {
@@ -126,8 +127,11 @@ static const Substitution *BuildExplicitSubstitutionForArguments(ETSChecker *che
         }
         return nullptr;
     }
+    for (size_t ix = 0; ix < type_params.size(); ix++) {
+        constraints_substitution->emplace(type_params[ix], type_arg_types[ix]);
+    }
     for (size_t ix = 0; ix < type_arg_types.size(); ix++) {
-        if (!checker->IsCompatibleTypeArgument(type_params[ix], type_arg_types[ix])) {
+        if (!checker->IsCompatibleTypeArgument(type_params[ix], type_arg_types[ix], constraints_substitution)) {
             return nullptr;
         }
         substitution->emplace(type_params[ix], type_arg_types[ix]);

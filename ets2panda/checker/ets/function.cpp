@@ -67,7 +67,7 @@
 
 namespace panda::es2panda::checker {
 
-bool ETSChecker::IsCompatibleTypeArgument(Type *type_param, Type *type_argument)
+bool ETSChecker::IsCompatibleTypeArgument(Type *type_param, Type *type_argument, const Substitution *substitution)
 {
     ASSERT(type_param->IsETSObjectType() &&
            type_param->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::TYPE_PARAMETER));
@@ -78,13 +78,21 @@ bool ETSChecker::IsCompatibleTypeArgument(Type *type_param, Type *type_argument)
         return false;
     }
     auto *type_param_obj = type_param->AsETSObjectType();
-    if (type_param_obj->SuperType() != nullptr) {
-        type_param_obj->SuperType()->IsSupertypeOf(Relation(), type_argument);
+    auto *type_param_obj_supertype = type_param_obj->SuperType();
+    if (type_param_obj_supertype != nullptr) {
+        if (!type_param_obj_supertype->TypeArguments().empty()) {
+            type_param_obj_supertype =
+                type_param_obj_supertype->Substitute(this->Relation(), substitution)->AsETSObjectType();
+        }
+        type_param_obj_supertype->IsSupertypeOf(Relation(), type_argument);
         if (!Relation()->IsTrue()) {
             return false;
         }
     }
     for (auto *itf : type_param_obj->Interfaces()) {
+        if (!itf->TypeArguments().empty()) {
+            itf = itf->Substitute(this->Relation(), substitution)->AsETSObjectType();
+        }
         itf->IsSupertypeOf(Relation(), type_argument);
         if (!Relation()->IsTrue()) {
             return false;
