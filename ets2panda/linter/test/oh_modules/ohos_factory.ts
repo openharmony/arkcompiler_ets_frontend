@@ -31,3 +31,18 @@ export declare class SomethingBar extends Something { }
 export declare class Bar<T extends Something> {
     constructor(arg: { new(): T });
 }
+
+export class Select<Model> {
+    public from(cls: any) {
+        return this;
+    }
+
+    // we intentionally omit generic argument of 'Select', see #14228
+    public eq(name: string): Select {
+        return this;
+    }
+
+    public query(cls: any): Promise<any> {
+        return cls.foo();
+    }
+}

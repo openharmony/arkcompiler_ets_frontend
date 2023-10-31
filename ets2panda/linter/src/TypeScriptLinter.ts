@@ -1268,7 +1268,8 @@ export class TypeScriptLinter {
 
     if (ts.isCallExpression(ctx.parent) || ts.isNewExpression(ctx.parent)) {
       let callee = ctx.parent.expression;
-      if (callee != ctx && this.tsUtils.hasLibraryType(callee)) {
+      if (callee != ctx && (this.tsUtils.isAnyType(this.tsTypeChecker.getTypeAtLocation(callee)) ||
+        this.tsUtils.hasLibraryType(callee))) {
         return true;
       }
     }
