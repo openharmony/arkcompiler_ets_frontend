@@ -393,29 +393,13 @@ libes2panda_public_configs = [
 ]
 
 ohos_shared_library("libes2panda") {
-  sources = libes2panda_sources
-
-  configs = libes2panda_configs
-
-  deps = [
-    ":gen_es2panda_compiler_signatures_h",
-    ":gen_es2panda_lexer_keywords_h",
-    ":isa_gen_es2panda_formats_h",
-    ":isa_gen_es2panda_isa_h",
-    "$ark_root/assembler:libarktsassembler",
-    "$ark_root/libpandabase:libarktsbase",
-    "$ark_root/libpandafile:libarktsfile",
-    "$ark_third_party_root/icu/icu4c:shared_icui18n",
-    "$ark_third_party_root/icu/icu4c:shared_icuuc",
-  ]
-
-  relative_install_dir = "ark"
+  deps = [ ":libes2panda_frontend_static" ]
   output_extension = "so"
   part_name = "ets_frontend"
   subsystem_name = "arkcompiler"
 }
 
-ohos_static_library("libes2panda_frontend_static") {
+ohos_source_set("libes2panda_frontend_static") {
   sources = libes2panda_sources
 
   configs = libes2panda_configs
@@ -425,40 +409,31 @@ ohos_static_library("libes2panda_frontend_static") {
     ":gen_es2panda_lexer_keywords_h",
     ":isa_gen_es2panda_formats_h",
     ":isa_gen_es2panda_isa_h",
-    "$ark_root/assembler:libarktsassembler_frontend_static",
-    "$ark_root/libpandafile:libarktsfile_frontend_static",
     "$ark_third_party_root/icu/icu4c:static_icui18n",
     "$ark_third_party_root/icu/icu4c:static_icuuc",
+  ]
+  external_deps = [
+    "runtime_core:libarktsassembler_package",
+    "runtime_core:libarktsfile_package",
   ]
   part_name = "ets_frontend"
   subsystem_name = "arkcompiler"
 }
 
 ohos_shared_library("libes2panda_public") {
-  sources = libes2panda_public_sources
-
-  configs = libes2panda_public_configs
-
-  deps = [
-    ":libes2panda",
-    "$ark_root/bytecode_optimizer:libarktsbytecodeopt",
-  ]
-
-  relative_install_dir = "ark"
+  deps = [ ":libes2panda_public_frontend_static" ]
   output_extension = "so"
   part_name = "ets_frontend"
   subsystem_name = "arkcompiler"
 }
 
-ohos_static_library("libes2panda_public_frontend_static") {
+ohos_source_set("libes2panda_public_frontend_static") {
   sources = libes2panda_public_sources
 
   configs = libes2panda_public_configs
 
-  deps = [
-    ":libes2panda_frontend_static",
-    "$ark_root/bytecode_optimizer:libarktsbytecodeopt_frontend_static",
-  ]
+  deps = [ ":libes2panda_frontend_static" ]
+  external_deps = [ "runtime_core:libarktsbytecodeopt_package" ]
   part_name = "ets_frontend"
   subsystem_name = "arkcompiler"
 }
