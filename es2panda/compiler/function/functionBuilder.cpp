@@ -303,7 +303,9 @@ void FunctionBuilder::YieldStar(const ir::AstNode *node)
         pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::THROW));
         // d. Assert: awaited.[[Type]] is normal.
         // e. Return Completion { [[Type]]: return, [[Value]]: awaited.[[Value]], [[Target]]: empty }.
-        pg_->Condition(node, lexer::TokenType::PUNCTUATOR_EQUAL, receivedType, returnCompletion);
+        pg_->Condition(node, lexer::TokenType::PUNCTUATOR_NOT_EQUAL, receivedType, loopStart);
+        pg_->LoadAccumulatorInt(node, static_cast<int32_t>(ResumeMode::RETURN));
+        pg_->StoreAccumulator(node, receivedType);
     } else {
         // vii. Else, set received to GeneratorYield(innerResult).
         // 8. Else, set received to GeneratorYield(innerResult).
