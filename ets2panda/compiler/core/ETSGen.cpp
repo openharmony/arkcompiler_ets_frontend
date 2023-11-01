@@ -2286,41 +2286,39 @@ void ETSGen::StringBuilderAppend(const ir::AstNode *node, VReg builder)
 
     node->Compile(this);
 
-    switch (checker::ETSChecker::ETSType(GetAccumulatorType())) {
-        case checker::TypeFlag::ETS_BOOLEAN: {
-            signature = Signatures::BUILTIN_STRING_BUILDER_APPEND_BOOLEAN;
-            break;
-        }
-        case checker::TypeFlag::CHAR: {
-            signature = Signatures::BUILTIN_STRING_BUILDER_APPEND_CHAR;
-            break;
-        }
-        case checker::TypeFlag::SHORT:
-        case checker::TypeFlag::BYTE:
-        case checker::TypeFlag::INT: {
-            signature = Signatures::BUILTIN_STRING_BUILDER_APPEND_INT;
-            break;
-        }
-        case checker::TypeFlag::LONG: {
-            signature = Signatures::BUILTIN_STRING_BUILDER_APPEND_LONG;
-            break;
-        }
-        case checker::TypeFlag::FLOAT: {
-            signature = Signatures::BUILTIN_STRING_BUILDER_APPEND_FLOAT;
-            break;
-        }
-        case checker::TypeFlag::DOUBLE: {
-            signature = Signatures::BUILTIN_STRING_BUILDER_APPEND_DOUBLE;
-            break;
-        }
-        default: {
-            signature = Signatures::BUILTIN_STRING_BUILDER_APPEND_BUILTIN_STRING;
-            break;
-        }
+    std::unordered_map<checker::TypeFlag, std::string_view> type_flag_to_signatures_map {
+        {checker::TypeFlag::ETS_BOOLEAN, Signatures::BUILTIN_STRING_BUILDER_APPEND_BOOLEAN},
+        {checker::TypeFlag::CHAR, Signatures::BUILTIN_STRING_BUILDER_APPEND_CHAR},
+        {checker::TypeFlag::SHORT, Signatures::BUILTIN_STRING_BUILDER_APPEND_INT},
+        {checker::TypeFlag::BYTE, Signatures::BUILTIN_STRING_BUILDER_APPEND_INT},
+        {checker::TypeFlag::INT, Signatures::BUILTIN_STRING_BUILDER_APPEND_INT},
+        {checker::TypeFlag::LONG, Signatures::BUILTIN_STRING_BUILDER_APPEND_LONG},
+        {checker::TypeFlag::FLOAT, Signatures::BUILTIN_STRING_BUILDER_APPEND_FLOAT},
+        {checker::TypeFlag::DOUBLE, Signatures::BUILTIN_STRING_BUILDER_APPEND_DOUBLE},
+    };
+
+    auto search = type_flag_to_signatures_map.find(checker::ETSChecker::ETSType(GetAccumulatorType()));
+    if (search != type_flag_to_signatures_map.end()) {
+        signature = search->second;
+    } else {
+        signature = Signatures::BUILTIN_STRING_BUILDER_APPEND_BUILTIN_STRING;
     }
 
     if (GetAccumulatorType()->IsETSObjectType() && !GetAccumulatorType()->IsETSStringType()) {
-        Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_OBJECT_TO_STRING, dummy_reg_, 0);
+        if (GetAccumulatorType()->ContainsNull() || GetAccumulatorType()->IsETSNullType()) {
+            Label *ifnull = AllocLabel();
+            Label *end = AllocLabel();
+            BranchIfNull(node, ifnull);
+            Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_OBJECT_TO_STRING, dummy_reg_, 0);
+            JumpTo(node, end);
+
+            SetLabel(node, ifnull);
+            LoadAccumulatorString(node, "null");
+
+            SetLabel(node, end);
+        } else {
+            Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_OBJECT_TO_STRING, dummy_reg_, 0);
+        }
     }
 
     VReg arg0 = AllocReg();
