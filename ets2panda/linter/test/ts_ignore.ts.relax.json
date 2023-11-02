@@ -15,6 +15,20 @@
     ],
     "nodes": [
         {
+            "line": 53,
+            "column": 3,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 55,
+            "column": 22,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
             "line": 16,
             "column": 1,
             "problem": "ErrorSuppression",
@@ -55,20 +69,6 @@
             "problem": "ErrorSuppression",
             "suggest": "",
             "rule": "Switching off type checks with in-place comments is not allowed (arkts-strict-typing-required)"
-        },
-        {
-            "line": 53,
-            "column": 3,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
-        },
-        {
-            "line": 55,
-            "column": 22,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 56,

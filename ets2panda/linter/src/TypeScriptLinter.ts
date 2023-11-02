@@ -251,7 +251,7 @@ export class TypeScriptLinter {
         self.handleStructDeclaration(node);
         return;
       }
-      self.handleComments(node);
+
       if (LinterConfig.terminalTokens.has(node.kind)) {
         return;
       }
@@ -1881,9 +1881,47 @@ export class TypeScriptLinter {
     }
   }
 
+  private handleCommentDirectives(sourceFile: ts.SourceFile) {
+    // We use a dirty hack to retrieve list of parsed comment directives by accessing
+    // internal properties of SourceFile node. 
+
+    // Handle comment directive '@ts-nocheck'
+    let pragmas = (sourceFile as any)['pragmas'];
+    if (pragmas && pragmas instanceof Map) {
+      for (const pragma of pragmas) {
+        if (pragma[0] !== 'ts-nocheck' || !pragma[1]?.range.kind || !pragma[1]?.range.pos || !pragma[1]?.range.end) {
+          continue;
+        }
+
+        this.incrementCounters(pragma[1].range as ts.CommentRange, FaultID.ErrorSuppression);
+      }
+    }
+
+    // Handle comment directives '@ts-ignore' and '@ts-expect-error'
+    let commentDirectives = (sourceFile as any)['commentDirectives'];
+    if (commentDirectives && Array.isArray(commentDirectives)) {
+      for (const directive of commentDirectives) {
+        if (!directive.range?.pos || !directive.range?.end) continue;
+
+        const range = directive.range as ts.TextRange;
+        const kind: ts.SyntaxKind = sourceFile.text.slice(range.pos, range.pos + 2) === '/*'
+          ? ts.SyntaxKind.MultiLineCommentTrivia
+          : ts.SyntaxKind.SingleLineCommentTrivia;
+        let commentRange: ts.CommentRange = {
+          pos: range.pos,
+          end: range.end,
+          kind
+        };
+
+        this.incrementCounters(commentRange, FaultID.ErrorSuppression);
+      }
+    }
+  }
+
   public lint(sourceFile: ts.SourceFile) {
     this.walkedComments.clear();
     this.sourceFile = sourceFile;
     this.visitTSNode(this.sourceFile);
+    this.handleCommentDirectives(this.sourceFile);
   }
 }

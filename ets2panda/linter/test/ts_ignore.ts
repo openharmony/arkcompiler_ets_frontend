@@ -31,11 +31,11 @@ let b: number = null;
 console.log("Hello" * 42);
 
  /*
- @ts-expect-error
+ @ts-expect-error (shouldn't be reported)
 */
 console.log("Hello" * 42);
 
-// no @ts-expect-error
+// no @ts-expect-error (shouldn't be reported)
 console.log("Hello" * 42);
 
 const l1 = (): void => {
@@ -74,3 +74,14 @@ class ChainedCallsClass {
 let cc = new ChainedCallsClass()
 // @ts-ignore
 .methodOne().methodTwo();
+
+// #14305
+/*
+@ts-ignore (shouldn't be reported)
+ */
+let c: number = '1';
+
+/*
+ @ts-ignore (shouldn't be reported)
+ */
+let d: number = '1';
