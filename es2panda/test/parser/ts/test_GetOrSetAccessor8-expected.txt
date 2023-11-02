@@ -1,0 +1,90 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "TSInterfaceDeclaration",
+      "body": {
+        "type": "TSInterfaceBody",
+        "body": [
+          {
+            "type": "TSMethodSignature",
+            "computed": true,
+            "optional": false,
+            "isGetAccessor": true,
+            "isSetAccessor": false,
+            "key": {
+              "type": "NumberLiteral",
+              "value": 1,
+              "loc": {
+                "start": {
+                  "line": 18,
+                  "column": 10
+                },
+                "end": {
+                  "line": 18,
+                  "column": 11
+                }
+              }
+            },
+            "params": [],
+            "loc": {
+              "start": {
+                "line": 18,
+                "column": 5
+              },
+              "end": {
+                "line": 18,
+                "column": 15
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 13
+          },
+          "end": {
+            "line": 19,
+            "column": 2
+          }
+        }
+      },
+      "id": {
+        "type": "Identifier",
+        "name": "I",
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 11
+          },
+          "end": {
+            "line": 17,
+            "column": 12
+          }
+        }
+      },
+      "extends": [],
+      "loc": {
+        "start": {
+          "line": 17,
+          "column": 1
+        },
+        "end": {
+          "line": 19,
+          "column": 2
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1
+    },
+    "end": {
+      "line": 19,
+      "column": 3
+    }
+  }
+}

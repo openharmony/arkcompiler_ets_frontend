@@ -39,7 +39,7 @@ class TSMethodSignature : public Expression {
 public:
     explicit TSMethodSignature(binder::Scope *scope, Expression *key, TSTypeParameterDeclaration *typeParams,
                                ArenaVector<Expression *> &&params, Expression *returnTypeAnnotation, bool computed,
-                               bool optional)
+                               bool optional, bool isGetAccessor, bool isSetAccessor)
         : Expression(AstNodeType::TS_METHOD_SIGNATURE),
           scope_(scope),
           key_(key),
@@ -47,7 +47,9 @@ public:
           params_(std::move(params)),
           returnTypeAnnotation_(returnTypeAnnotation),
           computed_(computed),
-          optional_(optional)
+          optional_(optional),
+          isGetAccessor_(isGetAccessor),
+          isSetAccessor_(isSetAccessor)
     {
     }
 
@@ -91,6 +93,16 @@ public:
         return optional_;
     }
 
+    bool IsGetAccessor() const
+    {
+        return isGetAccessor_;
+    }
+    
+    bool IsSetAccessor() const
+    {
+        return isSetAccessor_;
+    }
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
@@ -105,6 +117,8 @@ private:
     Expression *returnTypeAnnotation_;
     bool computed_;
     bool optional_;
+    bool isGetAccessor_;
+    bool isSetAccessor_;
 };
 
 }  // namespace panda::es2panda::ir

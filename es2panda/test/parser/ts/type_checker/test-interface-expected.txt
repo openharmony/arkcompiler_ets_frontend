@@ -124,6 +124,8 @@
             "type": "TSMethodSignature",
             "computed": false,
             "optional": false,
+            "isGetAccessor": false,
+            "isSetAccessor": false,
             "key": {
               "type": "Identifier",
               "name": "c",
@@ -415,6 +417,8 @@
             "type": "TSMethodSignature",
             "computed": false,
             "optional": false,
+            "isGetAccessor": false,
+            "isSetAccessor": false,
             "key": {
               "type": "Identifier",
               "name": "readonly",
@@ -689,6 +693,8 @@
                   "type": "TSMethodSignature",
                   "computed": false,
                   "optional": true,
+                  "isGetAccessor": false,
+                  "isSetAccessor": false,
                   "key": {
                     "type": "Identifier",
                     "name": "c",

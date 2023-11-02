@@ -1,0 +1,714 @@
+{
+  "type": "Program",
+  "statements": [
+    {
+      "type": "TSInterfaceDeclaration",
+      "body": {
+        "type": "TSInterfaceBody",
+        "body": [
+          {
+            "type": "TSPropertySignature",
+            "computed": false,
+            "optional": false,
+            "readonly": false,
+            "key": {
+              "type": "Identifier",
+              "name": "get",
+              "loc": {
+                "start": {
+                  "line": 18,
+                  "column": 5
+                },
+                "end": {
+                  "line": 18,
+                  "column": 8
+                }
+              }
+            },
+            "typeAnnotation": {
+              "type": "TSNumberKeyword",
+              "loc": {
+                "start": {
+                  "line": 18,
+                  "column": 9
+                },
+                "end": {
+                  "line": 18,
+                  "column": 15
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 18,
+                "column": 5
+              },
+              "end": {
+                "line": 19,
+                "column": 2
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 17
+          },
+          "end": {
+            "line": 19,
+            "column": 2
+          }
+        }
+      },
+      "id": {
+        "type": "Identifier",
+        "name": "Iest1",
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 11
+          },
+          "end": {
+            "line": 17,
+            "column": 16
+          }
+        }
+      },
+      "extends": [],
+      "loc": {
+        "start": {
+          "line": 17,
+          "column": 1
+        },
+        "end": {
+          "line": 19,
+          "column": 2
+        }
+      }
+    },
+    {
+      "type": "TSInterfaceDeclaration",
+      "body": {
+        "type": "TSInterfaceBody",
+        "body": [
+          {
+            "type": "TSPropertySignature",
+            "computed": false,
+            "optional": false,
+            "readonly": false,
+            "key": {
+              "type": "Identifier",
+              "name": "get",
+              "loc": {
+                "start": {
+                  "line": 22,
+                  "column": 5
+                },
+                "end": {
+                  "line": 22,
+                  "column": 8
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 22,
+                "column": 5
+              },
+              "end": {
+                "line": 23,
+                "column": 2
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 21,
+            "column": 17
+          },
+          "end": {
+            "line": 23,
+            "column": 2
+          }
+        }
+      },
+      "id": {
+        "type": "Identifier",
+        "name": "Iest2",
+        "loc": {
+          "start": {
+            "line": 21,
+            "column": 11
+          },
+          "end": {
+            "line": 21,
+            "column": 16
+          }
+        }
+      },
+      "extends": [],
+      "loc": {
+        "start": {
+          "line": 21,
+          "column": 1
+        },
+        "end": {
+          "line": 23,
+          "column": 2
+        }
+      }
+    },
+    {
+      "type": "TSInterfaceDeclaration",
+      "body": {
+        "type": "TSInterfaceBody",
+        "body": [
+          {
+            "type": "TSPropertySignature",
+            "computed": false,
+            "optional": false,
+            "readonly": false,
+            "key": {
+              "type": "Identifier",
+              "name": "get",
+              "loc": {
+                "start": {
+                  "line": 26,
+                  "column": 5
+                },
+                "end": {
+                  "line": 26,
+                  "column": 8
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 26,
+                "column": 5
+              },
+              "end": {
+                "line": 26,
+                "column": 9
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 25,
+            "column": 17
+          },
+          "end": {
+            "line": 27,
+            "column": 2
+          }
+        }
+      },
+      "id": {
+        "type": "Identifier",
+        "name": "Iest3",
+        "loc": {
+          "start": {
+            "line": 25,
+            "column": 11
+          },
+          "end": {
+            "line": 25,
+            "column": 16
+          }
+        }
+      },
+      "extends": [],
+      "loc": {
+        "start": {
+          "line": 25,
+          "column": 1
+        },
+        "end": {
+          "line": 27,
+          "column": 2
+        }
+      }
+    },
+    {
+      "type": "TSInterfaceDeclaration",
+      "body": {
+        "type": "TSInterfaceBody",
+        "body": [
+          {
+            "type": "TSPropertySignature",
+            "computed": false,
+            "optional": true,
+            "readonly": false,
+            "key": {
+              "type": "Identifier",
+              "name": "get",
+              "loc": {
+                "start": {
+                  "line": 30,
+                  "column": 5
+                },
+                "end": {
+                  "line": 30,
+                  "column": 8
+                }
+              }
+            },
+            "typeAnnotation": {
+              "type": "TSNumberKeyword",
+              "loc": {
+                "start": {
+                  "line": 30,
+                  "column": 10
+                },
+                "end": {
+                  "line": 30,
+                  "column": 16
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 30,
+                "column": 5
+              },
+              "end": {
+                "line": 31,
+                "column": 2
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 29,
+            "column": 17
+          },
+          "end": {
+            "line": 31,
+            "column": 2
+          }
+        }
+      },
+      "id": {
+        "type": "Identifier",
+        "name": "Iest4",
+        "loc": {
+          "start": {
+            "line": 29,
+            "column": 11
+          },
+          "end": {
+            "line": 29,
+            "column": 16
+          }
+        }
+      },
+      "extends": [],
+      "loc": {
+        "start": {
+          "line": 29,
+          "column": 1
+        },
+        "end": {
+          "line": 31,
+          "column": 2
+        }
+      }
+    },
+    {
+      "type": "TSInterfaceDeclaration",
+      "body": {
+        "type": "TSInterfaceBody",
+        "body": [
+          {
+            "type": "TSMethodSignature",
+            "computed": false,
+            "optional": false,
+            "isGetAccessor": false,
+            "isSetAccessor": false,
+            "key": {
+              "type": "Identifier",
+              "name": "get",
+              "loc": {
+                "start": {
+                  "line": 34,
+                  "column": 5
+                },
+                "end": {
+                  "line": 34,
+                  "column": 8
+                }
+              }
+            },
+            "params": [],
+            "typeAnnotation": {
+              "type": "TSNumberKeyword",
+              "loc": {
+                "start": {
+                  "line": 34,
+                  "column": 11
+                },
+                "end": {
+                  "line": 34,
+                  "column": 17
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 34,
+                "column": 5
+              },
+              "end": {
+                "line": 34,
+                "column": 18
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 33,
+            "column": 17
+          },
+          "end": {
+            "line": 35,
+            "column": 2
+          }
+        }
+      },
+      "id": {
+        "type": "Identifier",
+        "name": "Iest5",
+        "loc": {
+          "start": {
+            "line": 33,
+            "column": 11
+          },
+          "end": {
+            "line": 33,
+            "column": 16
+          }
+        }
+      },
+      "extends": [],
+      "loc": {
+        "start": {
+          "line": 33,
+          "column": 1
+        },
+        "end": {
+          "line": 35,
+          "column": 2
+        }
+      }
+    },
+    {
+      "type": "TSInterfaceDeclaration",
+      "body": {
+        "type": "TSInterfaceBody",
+        "body": [
+          {
+            "type": "TSMethodSignature",
+            "computed": false,
+            "optional": false,
+            "isGetAccessor": false,
+            "isSetAccessor": false,
+            "key": {
+              "type": "Identifier",
+              "name": "get",
+              "loc": {
+                "start": {
+                  "line": 38,
+                  "column": 5
+                },
+                "end": {
+                  "line": 38,
+                  "column": 8
+                }
+              }
+            },
+            "params": [],
+            "typeParameters": {
+              "type": "TSTypeParameterDeclaration",
+              "params": [
+                {
+                  "type": "TSTypeParameter",
+                  "name": {
+                    "type": "Identifier",
+                    "name": "T",
+                    "loc": {
+                      "start": {
+                        "line": 38,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 38,
+                        "column": 10
+                      }
+                    }
+                  },
+                  "in": false,
+                  "out": false,
+                  "loc": {
+                    "start": {
+                      "line": 38,
+                      "column": 9
+                    },
+                    "end": {
+                      "line": 38,
+                      "column": 11
+                    }
+                  }
+                }
+              ],
+              "loc": {
+                "start": {
+                  "line": 38,
+                  "column": 8
+                },
+                "end": {
+                  "line": 38,
+                  "column": 11
+                }
+              }
+            },
+            "typeAnnotation": {
+              "type": "TSNumberKeyword",
+              "loc": {
+                "start": {
+                  "line": 38,
+                  "column": 14
+                },
+                "end": {
+                  "line": 38,
+                  "column": 20
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 38,
+                "column": 5
+              },
+              "end": {
+                "line": 38,
+                "column": 21
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 37,
+            "column": 17
+          },
+          "end": {
+            "line": 39,
+            "column": 2
+          }
+        }
+      },
+      "id": {
+        "type": "Identifier",
+        "name": "Iest6",
+        "loc": {
+          "start": {
+            "line": 37,
+            "column": 11
+          },
+          "end": {
+            "line": 37,
+            "column": 16
+          }
+        }
+      },
+      "extends": [],
+      "loc": {
+        "start": {
+          "line": 37,
+          "column": 1
+        },
+        "end": {
+          "line": 39,
+          "column": 2
+        }
+      }
+    },
+    {
+      "type": "TSInterfaceDeclaration",
+      "body": {
+        "type": "TSInterfaceBody",
+        "body": [
+          {
+            "type": "TSMethodSignature",
+            "computed": false,
+            "optional": true,
+            "isGetAccessor": false,
+            "isSetAccessor": false,
+            "key": {
+              "type": "Identifier",
+              "name": "get",
+              "loc": {
+                "start": {
+                  "line": 42,
+                  "column": 5
+                },
+                "end": {
+                  "line": 42,
+                  "column": 8
+                }
+              }
+            },
+            "params": [],
+            "typeAnnotation": {
+              "type": "TSNumberKeyword",
+              "loc": {
+                "start": {
+                  "line": 42,
+                  "column": 12
+                },
+                "end": {
+                  "line": 42,
+                  "column": 18
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 42,
+                "column": 5
+              },
+              "end": {
+                "line": 42,
+                "column": 19
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 41,
+            "column": 17
+          },
+          "end": {
+            "line": 43,
+            "column": 2
+          }
+        }
+      },
+      "id": {
+        "type": "Identifier",
+        "name": "Iest7",
+        "loc": {
+          "start": {
+            "line": 41,
+            "column": 11
+          },
+          "end": {
+            "line": 41,
+            "column": 16
+          }
+        }
+      },
+      "extends": [],
+      "loc": {
+        "start": {
+          "line": 41,
+          "column": 1
+        },
+        "end": {
+          "line": 43,
+          "column": 2
+        }
+      }
+    },
+    {
+      "type": "TSInterfaceDeclaration",
+      "body": {
+        "type": "TSInterfaceBody",
+        "body": [
+          {
+            "type": "TSPropertySignature",
+            "computed": false,
+            "optional": false,
+            "readonly": false,
+            "key": {
+              "type": "Identifier",
+              "name": "get",
+              "loc": {
+                "start": {
+                  "line": 46,
+                  "column": 5
+                },
+                "end": {
+                  "line": 46,
+                  "column": 8
+                }
+              }
+            },
+            "loc": {
+              "start": {
+                "line": 46,
+                "column": 5
+              },
+              "end": {
+                "line": 46,
+                "column": 9
+              }
+            }
+          }
+        ],
+        "loc": {
+          "start": {
+            "line": 45,
+            "column": 17
+          },
+          "end": {
+            "line": 47,
+            "column": 2
+          }
+        }
+      },
+      "id": {
+        "type": "Identifier",
+        "name": "Iest8",
+        "loc": {
+          "start": {
+            "line": 45,
+            "column": 11
+          },
+          "end": {
+            "line": 45,
+            "column": 16
+          }
+        }
+      },
+      "extends": [],
+      "loc": {
+        "start": {
+          "line": 45,
+          "column": 1
+        },
+        "end": {
+          "line": 47,
+          "column": 2
+        }
+      }
+    }
+  ],
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 1
+    },
+    "end": {
+      "line": 47,
+      "column": 2
+    }
+  }
+}

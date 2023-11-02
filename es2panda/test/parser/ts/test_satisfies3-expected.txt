@@ -19,6 +19,8 @@
                       "type": "TSMethodSignature",
                       "computed": false,
                       "optional": false,
+                      "isGetAccessor": false,
+                      "isSetAccessor": false,
                       "key": {
                         "type": "Identifier",
                         "name": "f",
@@ -398,6 +400,8 @@
                       "type": "TSMethodSignature",
                       "computed": false,
                       "optional": false,
+                      "isGetAccessor": false,
+                      "isSetAccessor": false,
                       "key": {
                         "type": "Identifier",
                         "name": "g",
@@ -709,6 +713,8 @@
               "type": "TSMethodSignature",
               "computed": false,
               "optional": false,
+              "isGetAccessor": false,
+              "isSetAccessor": false,
               "key": {
                 "type": "Identifier",
                 "name": "f",

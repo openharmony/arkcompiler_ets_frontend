@@ -48,6 +48,8 @@ void TSMethodSignature::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSMethodSignature"},
                  {"computed", computed_},
                  {"optional", optional_},
+                 {"isGetAccessor", isGetAccessor_},
+                 {"isSetAccessor", isSetAccessor_},
                  {"key", key_},
                  {"params", params_},
                  {"typeParameters", AstDumper::Optional(typeParams_)},

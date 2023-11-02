@@ -141,6 +141,8 @@
                   "type": "TSMethodSignature",
                   "computed": false,
                   "optional": true,
+                  "isGetAccessor": false,
+                  "isSetAccessor": false,
                   "key": {
                     "type": "Identifier",
                     "name": "b",
@@ -530,6 +532,8 @@
                   "type": "TSMethodSignature",
                   "computed": false,
                   "optional": false,
+                  "isGetAccessor": false,
+                  "isSetAccessor": false,
                   "key": {
                     "type": "Identifier",
                     "name": "a",
@@ -909,6 +913,8 @@
                   "type": "TSMethodSignature",
                   "computed": true,
                   "optional": false,
+                  "isGetAccessor": false,
+                  "isSetAccessor": false,
                   "key": {
                     "type": "NumberLiteral",
                     "value": 5,
@@ -1525,6 +1531,8 @@
                   "type": "TSMethodSignature",
                   "computed": false,
                   "optional": false,
+                  "isGetAccessor": false,
+                  "isSetAccessor": false,
                   "key": {
                     "type": "Identifier",
                     "name": "readonly",

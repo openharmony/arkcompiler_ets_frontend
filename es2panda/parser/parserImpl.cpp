@@ -1417,12 +1417,43 @@ void ParserImpl::CreateTSVariableForProperty(ir::AstNode *node, const ir::Expres
     node->SetVariable(propVar);
 }
 
+void ParserImpl::ParseTsTypeLiteralOrInterfaceKeyModifiers(bool *isGetAccessor, bool *isSetAccesser)
+{
+    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        return;
+    }
+
+    char32_t nextCp = lexer_->Lookahead();
+    if (Extension() == ScriptExtension::TS &&
+        nextCp != LEX_CHAR_EQUALS && nextCp != LEX_CHAR_SEMICOLON && nextCp != LEX_CHAR_LEFT_PAREN &&
+        nextCp != LEX_CHAR_LESS_THAN && nextCp != LEX_CHAR_QUESTION && nextCp != LEX_CHAR_COLON &&
+        nextCp != LEX_CHAR_RIGHT_BRACE && nextCp != LEX_CHAR_COMMA) {
+        if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_GET) {
+            if (lexer_->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) {
+                ThrowSyntaxError("Keyword must not contain escaped characters");
+            }
+
+            *isGetAccessor = true;
+            lexer_->NextToken();
+        } else if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_SET) {
+            if (lexer_->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) {
+                ThrowSyntaxError("Keyword must not contain escaped characters");
+            }
+
+            *isSetAccesser = true;
+            lexer_->NextToken();
+        }
+    }
+}
+
 ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceMember()
 {
     bool computed = false;
     bool optional = false;
     bool signature = false;
     bool readonly = false;
+    bool isGetAccessor = false;
+    bool isSetAccessor = false;
     bool isConstructSignature = false;
     bool isIndexSignature = false;
     lexer::SourcePosition memberStartLoc = lexer_->GetToken().Start();
@@ -1433,7 +1464,8 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceMember()
         readonly = true;
         lexer_->NextToken();
     }
-
+ 
+    ParseTsTypeLiteralOrInterfaceKeyModifiers(&isGetAccessor, &isSetAccessor);
     ir::Expression *key = ParseTsTypeLiteralOrInterfaceKey(&computed, &signature, &isIndexSignature);
 
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
@@ -1502,7 +1534,7 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceMember()
             funcParamScope->BindNode(member);
         } else {
             member = AllocNode<ir::TSMethodSignature>(funcParamScope, key, typeParamDecl, std::move(params),
-                                                      typeAnnotation, computed, optional);
+                                                      typeAnnotation, computed, optional, isGetAccessor, isSetAccessor);
             funcParamScope->BindNode(member);
             CreateTSVariableForProperty(member, key, flags | binder::VariableFlags::METHOD);
         }
@@ -2198,7 +2230,8 @@ void ParserImpl::ParseClassKeyModifiers(ClassElmentDescriptor *desc)
     if ((Extension() == ScriptExtension::JS && nextCp != LEX_CHAR_LEFT_PAREN) ||
         (Extension() == ScriptExtension::TS &&
         nextCp != LEX_CHAR_EQUALS && nextCp != LEX_CHAR_SEMICOLON && nextCp != LEX_CHAR_LEFT_PAREN &&
-        nextCp != LEX_CHAR_LESS_THAN && nextCp != LEX_CHAR_QUESTION && nextCp != LEX_CHAR_COLON)) {
+        nextCp != LEX_CHAR_LESS_THAN && nextCp != LEX_CHAR_QUESTION && nextCp != LEX_CHAR_COLON &&
+        nextCp != LEX_CHAR_RIGHT_BRACE)) {
         if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_GET) {
             if (lexer_->GetToken().Flags() & lexer::TokenFlags::HAS_ESCAPE) {
                 ThrowSyntaxError("Keyword must not contain escaped characters");
