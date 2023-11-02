@@ -29,6 +29,12 @@ std::string Program::Dump() const
     return dumper.Str();
 }
 
+void Program::DumpSilent() const
+{
+    [[maybe_unused]] ir::AstDumper dumper {ast_, SourceCode()};
+    ASSERT(!dumper.Str().empty());
+}
+
 util::StringView Program::PackageClassName(util::StringView class_name)
 {
     if (package_name_.Empty()) {

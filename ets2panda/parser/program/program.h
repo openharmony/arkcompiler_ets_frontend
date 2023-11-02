@@ -217,6 +217,8 @@ public:
 
     std::string Dump() const;
 
+    void DumpSilent() const;
+
 private:
     ArenaAllocator *allocator_ {};
     varbinder::VarBinder *varbinder_ {};

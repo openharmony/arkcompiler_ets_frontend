@@ -66,6 +66,8 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<bool> op_module("module", false, "Parse the input as module (JS only option)");
     panda::PandArg<bool> op_parse_only("parse-only", false, "Parse the input only");
     panda::PandArg<bool> op_dump_ast("dump-ast", false, "Dump the parsed AST");
+    panda::PandArg<bool> op_dump_ast_only_silent(
+        "dump-ast-only-silent", false, "Dump parsed AST with all dumpers available but don't print to stdout");
     panda::PandArg<bool> op_dump_checked_ast("dump-dynamic-ast", false,
                                              "Dump AST with synthetic nodes for dynamic languages");
     panda::PandArg<bool> op_list_files("list-files", false, "Print names of files that are part of compilation");
@@ -98,6 +100,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&op_help);
     argparser_->Add(&op_module);
     argparser_->Add(&op_dump_ast);
+    argparser_->Add(&op_dump_ast_only_silent);
     argparser_->Add(&op_dump_checked_ast);
     argparser_->Add(&op_parse_only);
     argparser_->Add(&op_dump_assembly);
@@ -290,6 +293,7 @@ bool Options::Parse(int argc, const char **argv)
     compiler_options_.ts_decl_out = op_ts_decl_out.GetValue();
     compiler_options_.dump_asm = op_dump_assembly.GetValue();
     compiler_options_.dump_ast = op_dump_ast.GetValue();
+    compiler_options_.op_dump_ast_only_silent = op_dump_ast_only_silent.GetValue();
     compiler_options_.dump_checked_ast = op_dump_checked_ast.GetValue();
     compiler_options_.dump_debug_info = op_dump_debug_info.GetValue();
     compiler_options_.is_debug = op_debug_info.GetValue();

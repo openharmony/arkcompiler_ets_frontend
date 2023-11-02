@@ -29,6 +29,11 @@ bool TSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, c
         std::cout << Program()->Dump() << std::endl;
     }
 
+    if (options.op_dump_ast_only_silent) {
+        Program()->DumpSilent();
+        return false;
+    }
+
     if (options.parse_only) {
         return false;
     }
