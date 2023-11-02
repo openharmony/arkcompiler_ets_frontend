@@ -1,0 +1,1 @@
+SyntaxError: Invalid or unexpected token [test-hashbang-comment-3.js:18:1]

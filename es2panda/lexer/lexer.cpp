@@ -201,7 +201,9 @@ void Lexer::SkipSingleLineComment()
 
 void Lexer::ThrowError(std::string_view message)
 {
-    throw es2panda::Error(es2panda::ErrorType::SYNTAX, message, pos_.line, Iterator().Index());
+    lexer::LineIndex lineIndex = parserContext_->GetProgram()->GetLineIndex();
+    SourceLocation loc = lineIndex.GetLocation(SourcePosition(Iterator().Index(), pos_.line + pos_.nextTokenLine));
+    throw es2panda::Error(es2panda::ErrorType::SYNTAX, message, loc.line, loc.col);
 }
 
 void Lexer::CheckNumberLiteralEnd()
@@ -1244,6 +1246,14 @@ void Lexer::SkipWhiteSpaces()
                 Iterator().Forward(1);
                 cp = Iterator().Peek();
                 if (cp == LEX_CHAR_EXCLAMATION) {
+                    if (Iterator().Index() != 1) {
+                        /*
+                         * according to ECMA-262 specification item 12.5 Hashbang Comments are location-sensitive.
+                         * only allowed occurs at the beginning of files, other position is illegal.
+                         */
+                        Iterator().Backward(1);
+                        ThrowError("Invalid or unexpected token");
+                    }
                     Iterator().Forward(1);
                     SkipSingleLineComment();
                     continue;

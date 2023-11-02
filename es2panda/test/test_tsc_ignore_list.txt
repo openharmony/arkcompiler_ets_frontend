@@ -2,6 +2,7 @@ es2panda/test/TypeScript/tests/cases/compiler/bom-utf16be.ts
 es2panda/test/TypeScript/tests/cases/compiler/collisionArgumentsInType.ts
 es2panda/test/TypeScript/tests/cases/compiler/collisionArgumentsInterfaceMembers.ts
 es2panda/test/TypeScript/tests/cases/compiler/elidedEmbeddedStatementsReplacedWithSemicolon.ts
+es2panda/test/TypeScript/tests/cases/compiler/emitBundleWithShebang1.ts
 es2panda/test/TypeScript/tests/cases/compiler/isLiteral1.ts
 es2panda/test/TypeScript/tests/cases/compiler/isLiteral2.ts
 es2panda/test/TypeScript/tests/cases/compiler/letAsIdentifier2.ts
