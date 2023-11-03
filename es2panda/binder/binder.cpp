@@ -303,7 +303,7 @@ void Binder::LookupIdentReference(ir::Identifier *ident)
     if (res.level != 0) {
         ASSERT(res.variable);
         if (!res.variable->Declaration()->IsDeclare()) {
-            util::Concurrent::VerifyImportVarForConcurrentFunction(Program()->GetLineIndex(), ident, res);
+            util::Concurrent::ProcessConcurrent(Program()->GetLineIndex(), ident, res, program_);
             res.variable->SetLexical(res.scope, program_->PatchFixHelper());
         }
     }

@@ -69,6 +69,7 @@ void FunctionEmitter::Generate(util::PatchFix *patchFixHelper)
     GenFunctionCatchTables();
     GenLiteralBuffers();
     GenFunctionSource();
+    GenConcurrentFunctionModuleRequests();
     if (patchFixHelper != nullptr) {
         patchFixHelper->ProcessFunction(pg_, func_, literalBuffers_);
     }
@@ -296,6 +297,21 @@ void FunctionEmitter::GenVariablesDebugInfo()
 
     for (const auto *scope : pg_->Debuginfo().variableDebugInfo) {
         GenScopeVariableInfo(scope);
+    }
+}
+
+void FunctionEmitter::GenConcurrentFunctionModuleRequests()
+{
+    if (static_cast<panda::panda_file::FunctionKind>(pg_->GetFunctionKind()) !=
+        panda::panda_file::FunctionKind::CONCURRENT_FUNCTION) {
+        return;
+    }
+
+    std::vector<int> moduleRequests =
+        static_cast<const ir::ScriptFunction *>(pg_->RootNode())->GetConcurrentModuleRequests();
+    func_->concurrent_module_requests.reserve(moduleRequests.size());
+    for (auto it : moduleRequests) {
+        func_->concurrent_module_requests.emplace_back(it);
     }
 }
 

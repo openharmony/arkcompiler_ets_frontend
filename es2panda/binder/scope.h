@@ -28,7 +28,11 @@
 
 namespace panda::es2panda::compiler {
 class IRNode;
-}  // namespace panda::es2panda::compiler
+} // namespace panda::es2panda::compiler
+
+namespace panda::es2panda::ir {
+class ScriptFunction;
+} // namespace panda::es2panda::ir
 
 namespace panda::es2panda::binder {
 
@@ -140,10 +144,10 @@ private:
 class ScopeFindResult {
 public:
     ScopeFindResult() = default;
-    ScopeFindResult(util::StringView n, Scope *s, uint32_t l, Variable *v) : ScopeFindResult(n, s, l, l, v, false) {}
+    ScopeFindResult(util::StringView n, Scope *s, uint32_t l, Variable *v) : ScopeFindResult(n, s, l, l, v, nullptr) {}
     ScopeFindResult(Scope *s, uint32_t l, uint32_t ll, Variable *v) : scope(s), level(l), lexLevel(ll), variable(v) {}
-    ScopeFindResult(util::StringView n, Scope *s, uint32_t l, uint32_t ll, Variable *v, bool c)
-        : name(n), scope(s), level(l), lexLevel(ll), variable(v), crossConcurrent(c)
+    ScopeFindResult(util::StringView n, Scope *s, uint32_t l, uint32_t ll, Variable *v, ir::ScriptFunction *c)
+        : name(n), scope(s), level(l), lexLevel(ll), variable(v), concurrentFunc(c)
     {
     }
 
@@ -152,7 +156,7 @@ public:
     uint32_t level {};
     uint32_t lexLevel {};
     Variable *variable {};
-    bool crossConcurrent {false};
+    ir::ScriptFunction *concurrentFunc {};
 };
 
 class Scope {

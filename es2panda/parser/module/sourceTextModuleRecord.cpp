@@ -193,4 +193,25 @@ namespace panda::es2panda::parser {
         util::StringView localName = parser::SourceTextModuleRecord::DEFAULT_LOCAL_NAME;
         localExportEntries_.erase(localName);
     }
+
+    int SourceTextModuleRecord::GetModuleRequestIdx(const util::StringView localName)
+    {
+        for (const auto &it : regularImportEntries_) {
+            if (it.first != localName) {
+                continue;
+            }
+
+            return it.second->moduleRequestIdx_;
+        }
+
+        for (const auto &it : namespaceImportEntries_) {
+            if (it->localName_ != localName) {
+                continue;
+            }
+
+            return it->moduleRequestIdx_;
+        }
+
+        return SourceTextModuleRecord::INVALID_MODULEREQUEST_ID;
+    }
 } // namespace panda::es2panda::parser
