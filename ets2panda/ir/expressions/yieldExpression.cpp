@@ -70,9 +70,9 @@ checker::Type *YieldExpression::Check([[maybe_unused]] checker::ETSChecker *chec
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *YieldExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+YieldExpression *YieldExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const argument = argument_ != nullptr ? argument_->Clone(allocator) : nullptr;
+    auto *const argument = argument_ != nullptr ? argument_->Clone(allocator)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<YieldExpression>(argument, delegate_); clone != nullptr) {
         if (argument != nullptr) {

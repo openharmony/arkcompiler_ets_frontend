@@ -83,7 +83,7 @@ public:
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] ObjectExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     [[nodiscard]] ValidationInfo ValidateExpression();
     [[nodiscard]] bool ConvertibleToObjectPattern();

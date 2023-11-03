@@ -94,9 +94,9 @@ checker::Type *AwaitExpression::Check(checker::ETSChecker *checker)
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *AwaitExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+AwaitExpression *AwaitExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const argument = argument_ != nullptr ? argument_->Clone(allocator) : nullptr;
+    auto *const argument = argument_ != nullptr ? argument_->Clone(allocator)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<AwaitExpression>(argument); clone != nullptr) {
         if (argument != nullptr) {

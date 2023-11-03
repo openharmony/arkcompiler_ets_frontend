@@ -82,7 +82,7 @@ checker::Type *ETSAnalyzer::Check(ir::ClassDefinition *node) const
 
 checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
 {
-    ASSERT(st->Key()->IsIdentifier());
+    ASSERT(st->Id() != nullptr);
     ETSChecker *checker = GetETSChecker();
 
     if (st->TsType() != nullptr) {
@@ -97,8 +97,7 @@ checker::Type *ETSAnalyzer::Check(ir::ClassProperty *st) const
         checker->AddStatus(checker::CheckerStatus::IN_STATIC_CONTEXT);
     }
 
-    st->SetTsType(
-        checker->CheckVariableDeclaration(st->Key()->AsIdentifier(), st->TypeAnnotation(), st->Value(), st->flags_));
+    st->SetTsType(checker->CheckVariableDeclaration(st->Id(), st->TypeAnnotation(), st->Value(), st->Modifiers()));
 
     return st->TsType();
 }

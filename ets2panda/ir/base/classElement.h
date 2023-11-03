@@ -23,8 +23,14 @@ class Expression;
 
 class ClassElement : public TypedStatement {
 public:
-    explicit ClassElement(AstNodeType element_type, Expression *key, Expression *value, ModifierFlags modifiers,
-                          ArenaAllocator *allocator, bool is_computed)
+    ClassElement() = delete;
+    ~ClassElement() override = default;
+
+    NO_COPY_SEMANTIC(ClassElement);
+    NO_MOVE_SEMANTIC(ClassElement);
+
+    explicit ClassElement(AstNodeType const element_type, Expression *const key, Expression *const value,
+                          ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const is_computed)
         : TypedStatement(element_type, modifiers),
           key_(key),
           value_(value),
@@ -33,37 +39,38 @@ public:
     {
     }
 
-    Identifier *Id();
-    const Identifier *Id() const;
+    [[nodiscard]] Identifier *Id() noexcept;
 
-    Expression *Key()
+    [[nodiscard]] const Identifier *Id() const noexcept;
+
+    [[nodiscard]] Expression *Key() noexcept
     {
         return key_;
     }
 
-    const Expression *Key() const
+    [[nodiscard]] const Expression *Key() const noexcept
     {
         return key_;
     }
 
-    Expression *Value()
+    [[nodiscard]] Expression *Value() noexcept
     {
         return value_;
     }
 
-    const Expression *Value() const
+    [[nodiscard]] const Expression *Value() const noexcept
     {
         return value_;
     }
 
-    bool IsPrivateElement() const;
+    [[nodiscard]] bool IsPrivateElement() const noexcept;
 
-    const ArenaVector<Decorator *> &Decorators() const
+    [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const noexcept
     {
         return decorators_;
     }
 
-    bool IsComputed() const
+    [[nodiscard]] bool IsComputed() const noexcept
     {
         return is_computed_;
     }
@@ -73,7 +80,14 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    virtual PrivateFieldKind ToPrivateFieldKind(bool is_static) const = 0;
+    void AddDecorator(ir::Decorator *const decorator)
+    {
+        if (decorator != nullptr) {
+            decorators_.emplace_back(decorator);
+        }
+    }
+
+    [[nodiscard]] virtual PrivateFieldKind ToPrivateFieldKind(bool is_static) const = 0;
 
 protected:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)

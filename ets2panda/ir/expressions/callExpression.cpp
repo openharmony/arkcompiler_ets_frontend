@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -532,5 +532,37 @@ checker::Type *CallExpression::InitAnonymousLambdaCallee(checker::ETSChecker *ch
     checker->Relation()->SetNode(callee);
     checker->Relation()->IsAssignableTo(callee_type, func_iface);
     return func_iface;
+}
+
+CallExpression::CallExpression(CallExpression const &other, ArenaAllocator *const allocator)
+    : MaybeOptionalExpression(static_cast<MaybeOptionalExpression const &>(other)),
+      arguments_(allocator->Adapter()),
+      signature_(other.signature_),
+      trailing_comma_(other.trailing_comma_),
+      is_trailing_block_in_new_line_(other.is_trailing_block_in_new_line_)
+{
+    callee_ = other.callee_->Clone(allocator, this)->AsExpression();
+    type_params_ = other.type_params_->Clone(allocator, this);
+
+    for (auto *const argument : other.arguments_) {
+        arguments_.emplace_back(argument->Clone(allocator, this)->AsExpression());
+    }
+
+    if (other.trailing_block_ != nullptr) {
+        trailing_block_ = other.trailing_block_->Clone(allocator, this)->AsBlockStatement();
+    }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+CallExpression *CallExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<CallExpression>(*this, allocator); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

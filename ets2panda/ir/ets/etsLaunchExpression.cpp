@@ -117,9 +117,9 @@ bool ETSLaunchExpression::IsStaticCall() const
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *ETSLaunchExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+ETSLaunchExpression *ETSLaunchExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const expr = expr_ != nullptr ? expr_->Clone(allocator)->AsCallExpression() : nullptr;
+    auto *const expr = expr_ != nullptr ? expr_->Clone(allocator) : nullptr;
 
     if (auto *const clone = allocator->New<ETSLaunchExpression>(expr); clone != nullptr) {
         if (expr != nullptr) {

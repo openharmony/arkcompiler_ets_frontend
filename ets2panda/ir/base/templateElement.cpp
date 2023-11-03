@@ -51,7 +51,7 @@ checker::Type *TemplateElement::Check([[maybe_unused]] checker::ETSChecker *chec
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *TemplateElement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+TemplateElement *TemplateElement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<TemplateElement>(raw_, cooked_); clone != nullptr) {
         if (parent != nullptr) {

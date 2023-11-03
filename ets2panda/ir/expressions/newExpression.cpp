@@ -28,16 +28,16 @@ NewExpression::NewExpression([[maybe_unused]] Tag const tag, NewExpression const
     : Expression(static_cast<Expression const &>(other)), arguments_(allocator->Adapter())
 {
     if (other.callee_ != nullptr) {
-        callee_ = other.callee_->Clone(allocator, this);
+        callee_ = other.callee_->Clone(allocator, this)->AsExpression();
     }
 
     for (auto *argument : other.arguments_) {
-        arguments_.emplace_back(argument->Clone(allocator, this));
+        arguments_.emplace_back(argument->Clone(allocator, this)->AsExpression());
     }
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *NewExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+NewExpression *NewExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<NewExpression>(Tag {}, *this, allocator); clone != nullptr) {
         if (parent != nullptr) {

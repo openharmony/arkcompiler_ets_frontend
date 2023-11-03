@@ -448,6 +448,13 @@ public:
     [[nodiscard]] ir::BlockStatement *GetTopStatement();
     [[nodiscard]] const ir::BlockStatement *GetTopStatement() const;
 
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] virtual AstNode *Clone([[maybe_unused]] ArenaAllocator *const allocator,
+                                         [[maybe_unused]] AstNode *const parent = nullptr)
+    {
+        UNREACHABLE();
+    }
+
     virtual void TransformChildren(const NodeTransformer &cb) = 0;
     virtual void Iterate(const NodeTraverser &cb) const = 0;
     void TransformChildrenRecursively(const NodeTransformer &cb);

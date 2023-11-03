@@ -46,16 +46,16 @@ ArrayExpression::ArrayExpression([[maybe_unused]] Tag const tag, ArrayExpression
     optional_ = other.optional_;
 
     for (auto *element : other.elements_) {
-        elements_.emplace_back(element->Clone(allocator, this));
+        elements_.emplace_back(element->Clone(allocator, this)->AsExpression());
     }
 
     for (auto *decorator : other.decorators_) {
-        decorators_.emplace_back(decorator->Clone(allocator, this)->AsDecorator());
+        decorators_.emplace_back(decorator->Clone(allocator, this));
     }
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *ArrayExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+ArrayExpression *ArrayExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<ArrayExpression>(Tag {}, *this, allocator); clone != nullptr) {
         if (parent != nullptr) {

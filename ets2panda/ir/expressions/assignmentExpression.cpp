@@ -322,10 +322,10 @@ AssignmentExpression::AssignmentExpression([[maybe_unused]] Tag const tag, Assig
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *AssignmentExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+AssignmentExpression *AssignmentExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const left = left_ != nullptr ? left_->Clone(allocator) : nullptr;
-    auto *const right = right_ != nullptr ? right_->Clone(allocator) : nullptr;
+    auto *const left = left_ != nullptr ? left_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const right = right_ != nullptr ? right_->Clone(allocator)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<AssignmentExpression>(Tag {}, *this, left, right); clone != nullptr) {
         if (parent != nullptr) {

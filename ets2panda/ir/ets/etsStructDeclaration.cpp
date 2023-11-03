@@ -68,4 +68,27 @@ checker::Type *ETSStructDeclaration::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
 }
+
+// NOLINTNEXTLINE(google-default-arguments)
+ETSStructDeclaration *ETSStructDeclaration::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const def = def_ != nullptr ? def_->Clone(allocator, this)->AsClassDefinition() : nullptr;
+
+    if (auto *const clone = allocator->New<ETSStructDeclaration>(def, allocator); clone != nullptr) {
+        for (auto *const decorator : decorators_) {
+            clone->AddDecorator(decorator->Clone(allocator, clone));
+        }
+
+        if (def != nullptr) {
+            def->SetParent(clone);
+        }
+
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
 }  // namespace panda::es2panda::ir

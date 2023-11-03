@@ -111,7 +111,7 @@ checker::Type *NumberLiteral::Check([[maybe_unused]] checker::ETSChecker *checke
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *NumberLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+NumberLiteral *NumberLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<NumberLiteral>(number_); clone != nullptr) {
         if (parent != nullptr) {

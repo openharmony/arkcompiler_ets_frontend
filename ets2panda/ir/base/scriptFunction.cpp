@@ -26,26 +26,17 @@
 #include "ir/ts/tsTypeParameterDeclaration.h"
 
 namespace panda::es2panda::ir {
-bool ScriptFunction::HasBody() const
-{
-    return body_ != nullptr;
-}
 
-ir::ScriptFunctionFlags ScriptFunction::Flags() const
+std::size_t ScriptFunction::FormalParamsLength() const noexcept
 {
-    return func_flags_;
-}
-
-size_t ScriptFunction::FormalParamsLength() const
-{
-    size_t length = 0;
+    std::size_t length = 0U;
 
     for (const auto *param : params_) {
         if (param->IsRestElement() || param->IsAssignmentPattern()) {
             break;
         }
 
-        length++;
+        ++length;
     }
 
     return length;

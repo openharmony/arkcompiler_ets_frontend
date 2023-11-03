@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,52 +27,64 @@ class ScriptFunction;
 
 class ArrowFunctionExpression : public Expression {
 public:
-    explicit ArrowFunctionExpression(ArenaAllocator *allocator, ScriptFunction *func)
+    ArrowFunctionExpression() = delete;
+    ~ArrowFunctionExpression() override = default;
+
+    NO_COPY_SEMANTIC(ArrowFunctionExpression);
+    NO_MOVE_SEMANTIC(ArrowFunctionExpression);
+
+    explicit ArrowFunctionExpression(ArenaAllocator *const allocator, ScriptFunction *const func)
         : Expression(AstNodeType::ARROW_FUNCTION_EXPRESSION), func_(func), captured_vars_(allocator->Adapter())
     {
     }
+
+    explicit ArrowFunctionExpression(ArrowFunctionExpression const &other, ArenaAllocator *allocator);
+
     // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
     friend class compiler::ETSCompiler;
 
-    const ScriptFunction *Function() const
+    [[nodiscard]] const ScriptFunction *Function() const noexcept
     {
         return func_;
     }
 
-    ScriptFunction *Function()
+    [[nodiscard]] ScriptFunction *Function() noexcept
     {
         return func_;
     }
 
-    const ClassDefinition *ResolvedLambda() const
+    [[nodiscard]] const ClassDefinition *ResolvedLambda() const noexcept
     {
         return resolved_lambda_;
     }
 
-    ClassDefinition *ResolvedLambda()
+    [[nodiscard]] ClassDefinition *ResolvedLambda() noexcept
     {
         return resolved_lambda_;
     }
 
-    ArenaVector<varbinder::Variable *> &CapturedVars()
+    [[nodiscard]] ArenaVector<varbinder::Variable *> &CapturedVars() noexcept
     {
         return captured_vars_;
     }
 
-    const ArenaVector<varbinder::Variable *> &CapturedVars() const
+    [[nodiscard]] const ArenaVector<varbinder::Variable *> &CapturedVars() const noexcept
     {
         return captured_vars_;
     }
 
-    void SetResolvedLambda(ClassDefinition *lambda)
+    void SetResolvedLambda(ClassDefinition *const lambda) noexcept
     {
         resolved_lambda_ = lambda;
     }
 
-    void SetPropagateThis()
+    void SetPropagateThis() noexcept
     {
         propagate_this_ = true;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] ArrowFunctionExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

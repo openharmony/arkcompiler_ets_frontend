@@ -296,10 +296,10 @@ checker::Type *BinaryExpression::Check(checker::ETSChecker *checker)
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *BinaryExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+BinaryExpression *BinaryExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const left = left_ != nullptr ? left_->Clone(allocator) : nullptr;
-    auto *const right = right_ != nullptr ? right_->Clone(allocator) : nullptr;
+    auto *const left = left_ != nullptr ? left_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const right = right_ != nullptr ? right_->Clone(allocator)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<BinaryExpression>(left, right, operator_); clone != nullptr) {
         if (operation_type_ != nullptr) {

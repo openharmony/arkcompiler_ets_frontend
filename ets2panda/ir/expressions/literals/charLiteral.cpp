@@ -52,7 +52,7 @@ checker::Type *CharLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *CharLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+CharLiteral *CharLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<CharLiteral>(char_); clone != nullptr) {
         if (parent != nullptr) {

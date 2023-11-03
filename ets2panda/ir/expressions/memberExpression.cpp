@@ -469,10 +469,10 @@ checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+MemberExpression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const object = object_ != nullptr ? object_->Clone(allocator) : nullptr;
-    auto *const property = property_ != nullptr ? property_->Clone(allocator) : nullptr;
+    auto *const object = object_ != nullptr ? object_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const property = property_ != nullptr ? property_->Clone(allocator)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<MemberExpression>(Tag {}, object, property); clone != nullptr) {
         if (parent != nullptr) {

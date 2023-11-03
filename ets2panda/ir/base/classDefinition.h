@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -50,6 +50,12 @@ DEFINE_BITOPS(ClassDefinitionModifiers)
 
 class ClassDefinition : public TypedAstNode {
 public:
+    ClassDefinition() = delete;
+    ~ClassDefinition() override = default;
+
+    NO_COPY_SEMANTIC(ClassDefinition);
+    NO_MOVE_SEMANTIC(ClassDefinition);
+
     explicit ClassDefinition(varbinder::LocalScope *scope, const util::StringView &private_id, Identifier *ident,
                              TSTypeParameterDeclaration *type_params, TSTypeParameterInstantiation *super_type_params,
                              ArenaVector<TSClassImplements *> &&implements, MethodDefinition *ctor,
@@ -104,82 +110,82 @@ public:
         return scope_;
     }
 
-    const Identifier *Ident() const
+    [[nodiscard]] const Identifier *Ident() const noexcept
     {
         return ident_;
     }
 
-    Identifier *Ident()
+    [[nodiscard]] Identifier *Ident() noexcept
     {
         return ident_;
     }
 
-    void SetIdent(ir::Identifier *ident)
+    void SetIdent(ir::Identifier *ident) noexcept
     {
         ident_ = ident;
     }
 
-    const util::StringView &PrivateId() const
+    [[nodiscard]] const util::StringView &PrivateId() const noexcept
     {
         return private_id_;
     }
 
-    const util::StringView &InternalName() const
+    [[nodiscard]] const util::StringView &InternalName() const noexcept
     {
         return private_id_;
     }
 
-    void SetInternalName(util::StringView internal_name)
+    void SetInternalName(util::StringView internal_name) noexcept
     {
         private_id_ = internal_name;
     }
 
-    Expression *Super()
+    [[nodiscard]] Expression *Super() noexcept
     {
         return super_class_;
     }
 
-    const Expression *Super() const
+    [[nodiscard]] const Expression *Super() const noexcept
     {
         return super_class_;
     }
 
-    bool IsGlobal() const
+    [[nodiscard]] bool IsGlobal() const noexcept
     {
         return (modifiers_ & ClassDefinitionModifiers::GLOBAL) != 0;
     }
 
-    bool IsExtern() const
+    [[nodiscard]] bool IsExtern() const noexcept
     {
         return (modifiers_ & ClassDefinitionModifiers::EXTERN) != 0;
     }
 
-    bool IsInner() const
+    [[nodiscard]] bool IsInner() const noexcept
     {
         return (modifiers_ & ClassDefinitionModifiers::INNER) != 0;
     }
 
-    bool IsGlobalInitialized() const
+    [[nodiscard]] bool IsGlobalInitialized() const noexcept
     {
         return (modifiers_ & ClassDefinitionModifiers::GLOBAL_INITIALIZED) != 0;
     }
 
-    es2panda::Language Language() const
+    [[nodiscard]] es2panda::Language Language() const noexcept
     {
         return lang_;
     }
 
-    void SetGlobalInitialized()
+    void SetGlobalInitialized() noexcept
     {
         modifiers_ |= ClassDefinitionModifiers::GLOBAL_INITIALIZED;
     }
 
-    void SetInnerModifier()
+    void SetInnerModifier() noexcept
     {
         modifiers_ |= ClassDefinitionModifiers::INNER;
     }
 
-    ClassDefinitionModifiers Modifiers() const
+    [[nodiscard]] ClassDefinitionModifiers Modifiers() const noexcept
     {
         return modifiers_;
     }
@@ -193,37 +199,37 @@ public:
         body_.insert(body_.end(), body.begin(), body.end());
     }
 
-    ArenaVector<AstNode *> &Body()
+    [[nodiscard]] ArenaVector<AstNode *> &Body() noexcept
     {
         return body_;
     }
 
-    const ArenaVector<AstNode *> &Body() const
+    [[nodiscard]] const ArenaVector<AstNode *> &Body() const noexcept
     {
         return body_;
     }
 
-    MethodDefinition *Ctor()
+    [[nodiscard]] MethodDefinition *Ctor() noexcept
     {
         return ctor_;
     }
 
-    ArenaVector<ir::TSClassImplements *> &Implements()
+    [[nodiscard]] ArenaVector<ir::TSClassImplements *> &Implements() noexcept
     {
         return implements_;
     }
 
-    const ArenaVector<ir::TSClassImplements *> &Implements() const
+    [[nodiscard]] const ArenaVector<ir::TSClassImplements *> &Implements() const noexcept
     {
         return implements_;
     }
 
-    const ir::TSTypeParameterDeclaration *TypeParams() const
+    [[nodiscard]] const ir::TSTypeParameterDeclaration *TypeParams() const noexcept
     {
         return type_params_;
     }
 
-    ir::TSTypeParameterDeclaration *TypeParams()
+    [[nodiscard]] ir::TSTypeParameterDeclaration *TypeParams() noexcept
     {
         return type_params_;
     }
@@ -235,7 +241,9 @@ public:
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
+
     void Dump(ir::AstDumper *dumper) const override;
+
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -70,5 +70,32 @@ checker::Type *ETSNewMultiDimArrayInstanceExpression::Check([[maybe_unused]] che
     SetTsType(element_type);
     signature_ = checker->CreateBuiltinArraySignature(element_type->AsETSArrayType(), dimensions_.size());
     return TsType();
+}
+
+ETSNewMultiDimArrayInstanceExpression::ETSNewMultiDimArrayInstanceExpression(
+    ETSNewMultiDimArrayInstanceExpression const &other, ArenaAllocator *const allocator)
+    : Expression(static_cast<Expression const &>(other)),
+      dimensions_(allocator->Adapter()),
+      signature_(other.signature_)
+{
+    type_reference_ = other.type_reference_->Clone(allocator, this);
+
+    for (auto *const dimension : other.dimensions_) {
+        dimensions_.emplace_back(dimension->Clone(allocator, this)->AsExpression());
+    }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+ETSNewMultiDimArrayInstanceExpression *ETSNewMultiDimArrayInstanceExpression::Clone(ArenaAllocator *const allocator,
+                                                                                    AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<ETSNewMultiDimArrayInstanceExpression>(*this, allocator); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

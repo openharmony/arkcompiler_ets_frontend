@@ -44,7 +44,7 @@ public:
     void TransformChildren(const NodeTransformer &cb) override;
 
     // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] MetaProperty *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;

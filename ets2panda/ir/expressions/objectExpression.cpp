@@ -58,16 +58,16 @@ ObjectExpression::ObjectExpression([[maybe_unused]] Tag const tag, ObjectExpress
     optional_ = other.optional_;
 
     for (auto *property : other.properties_) {
-        properties_.emplace_back(property->Clone(allocator, this));
+        properties_.emplace_back(property->Clone(allocator, this)->AsExpression());
     }
 
     for (auto *decorator : other.decorators_) {
-        decorators_.emplace_back(decorator->Clone(allocator, this)->AsDecorator());
+        decorators_.emplace_back(decorator->Clone(allocator, this));
     }
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *ObjectExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+ObjectExpression *ObjectExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<ObjectExpression>(Tag {}, *this, allocator); clone != nullptr) {
         if (parent != nullptr) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,8 +29,15 @@ class TSTypeParameterInstantiation;
 
 class CallExpression : public MaybeOptionalExpression {
 public:
-    explicit CallExpression(Expression *callee, ArenaVector<Expression *> &&arguments,
-                            TSTypeParameterInstantiation *type_params, bool optional, bool trailing_comma = false)
+    CallExpression() = delete;
+    ~CallExpression() override = default;
+
+    NO_COPY_SEMANTIC(CallExpression);
+    NO_MOVE_SEMANTIC(CallExpression);
+
+    explicit CallExpression(Expression *const callee, ArenaVector<Expression *> &&arguments,
+                            TSTypeParameterInstantiation *const type_params, bool const optional,
+                            bool const trailing_comma = false)
         : MaybeOptionalExpression(AstNodeType::CALL_EXPRESSION, optional),
           callee_(callee),
           arguments_(std::move(arguments)),
@@ -39,93 +46,101 @@ public:
     {
     }
 
-    const Expression *Callee() const
+    explicit CallExpression(CallExpression const &other, ArenaAllocator *allocator);
+
+    [[nodiscard]] const Expression *Callee() const noexcept
     {
         return callee_;
     }
 
-    Expression *Callee()
+    [[nodiscard]] Expression *Callee() noexcept
     {
         return callee_;
     }
 
-    void SetCallee(Expression *callee)
+    void SetCallee(Expression *callee) noexcept
     {
         callee_ = callee;
     }
 
-    const TSTypeParameterInstantiation *TypeParams() const
+    [[nodiscard]] const TSTypeParameterInstantiation *TypeParams() const noexcept
     {
         return type_params_;
     }
 
-    TSTypeParameterInstantiation *TypeParams()
+    [[nodiscard]] TSTypeParameterInstantiation *TypeParams() noexcept
     {
         return type_params_;
     }
 
-    const ArenaVector<Expression *> &Arguments() const
+    [[nodiscard]] const ArenaVector<Expression *> &Arguments() const noexcept
     {
         return arguments_;
     }
 
-    ArenaVector<Expression *> &Arguments()
+    [[nodiscard]] ArenaVector<Expression *> &Arguments() noexcept
     {
         return arguments_;
     }
 
-    bool HasTrailingComma() const
+    [[nodiscard]] bool HasTrailingComma() const noexcept
     {
         return trailing_comma_;
     }
 
-    checker::Signature *Signature()
+    [[nodiscard]] checker::Signature *Signature() noexcept
     {
         return signature_;
     }
 
-    checker::Signature *Signature() const
+    [[nodiscard]] checker::Signature *Signature() const noexcept
     {
         return signature_;
     }
 
-    void SetSignature(checker::Signature *signature)
+    void SetSignature(checker::Signature *const signature) noexcept
     {
         signature_ = signature;
     }
 
-    void SetTypeParams(TSTypeParameterInstantiation *type_params)
+    void SetTypeParams(TSTypeParameterInstantiation *const type_params) noexcept
     {
         type_params_ = type_params;
     }
 
-    void SetTrailingBlock(ir::BlockStatement *block)
+    void SetTrailingBlock(ir::BlockStatement *const block) noexcept
     {
         trailing_block_ = block;
     }
 
-    ir::BlockStatement *TrailingBlock() const
+    [[nodiscard]] ir::BlockStatement *TrailingBlock() const noexcept
     {
         return trailing_block_;
     }
 
-    void SetIsTrailingBlockInNewLine(bool is_new_line)
+    void SetIsTrailingBlockInNewLine(bool const is_new_line) noexcept
     {
         is_trailing_block_in_new_line_ = is_new_line;
     }
 
-    bool IsTrailingBlockInNewLine() const
+    [[nodiscard]] bool IsTrailingBlockInNewLine() const noexcept
     {
         return is_trailing_block_in_new_line_;
     }
 
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] CallExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
+
     void Dump(ir::AstDumper *dumper) const override;
+
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+
     checker::Signature *ResolveCallExtensionFunction(checker::ETSFunctionType *function_type,
                                                      checker::ETSChecker *checker);
     checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensionFuncHelperType *type,

@@ -77,9 +77,9 @@ checker::Type *ETSClassLiteral::Check([[maybe_unused]] checker::ETSChecker *chec
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *ETSClassLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+ETSClassLiteral *ETSClassLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const expr = expr_ != nullptr ? expr_->Clone(allocator)->AsTypeNode() : nullptr;
+    auto *const expr = expr_ != nullptr ? expr_->Clone(allocator) : nullptr;
 
     if (auto *const clone = allocator->New<ETSClassLiteral>(expr); clone != nullptr) {
         if (expr != nullptr) {

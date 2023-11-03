@@ -20,17 +20,17 @@
 
 namespace panda::es2panda::ir {
 
-Identifier *ClassElement::Id()
+Identifier *ClassElement::Id() noexcept
 {
-    return key_->AsIdentifier();
+    return key_->IsIdentifier() ? key_->AsIdentifier() : nullptr;
 }
 
-const Identifier *ClassElement::Id() const
+const Identifier *ClassElement::Id() const noexcept
 {
-    return key_->AsIdentifier();
+    return key_->IsIdentifier() ? key_->AsIdentifier() : nullptr;
 }
 
-bool ClassElement::IsPrivateElement() const
+bool ClassElement::IsPrivateElement() const noexcept
 {
     if (IsClassStaticBlock()) {
         return false;

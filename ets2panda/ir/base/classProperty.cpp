@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,9 +25,6 @@
 #include "ir/typeNode.h"
 #include "ir/expression.h"
 #include "ir/expressions/identifier.h"
-
-#include <cstdint>
-#include <string>
 
 namespace panda::es2panda::ir {
 void ClassProperty::TransformChildren(const NodeTransformer &cb)
@@ -99,5 +96,32 @@ checker::Type *ClassProperty::Check(checker::TSChecker *checker)
 checker::Type *ClassProperty::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+ClassProperty *ClassProperty::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const key = key_->Clone(allocator)->AsExpression();
+    auto *const value = value_->Clone(allocator)->AsExpression();
+    auto *const type_annotation = type_annotation_->Clone(allocator, this);
+
+    if (auto *const clone = allocator->New<ClassProperty>(key, value, type_annotation, flags_, allocator, is_computed_);
+        clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        key->SetParent(clone);
+        value->SetParent(clone);
+        type_annotation->SetParent(clone);
+
+        for (auto *const decorator : decorators_) {
+            clone->AddDecorator(decorator->Clone(allocator, clone));
+        }
+
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

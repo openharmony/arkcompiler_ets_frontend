@@ -63,7 +63,7 @@ checker::Type *StringLiteral::Check([[maybe_unused]] checker::ETSChecker *checke
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *StringLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+StringLiteral *StringLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<StringLiteral>(str_); clone != nullptr) {
         if (parent != nullptr) {

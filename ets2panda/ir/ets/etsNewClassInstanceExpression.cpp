@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -183,5 +183,31 @@ checker::Type *ETSNewClassInstanceExpression::Check([[maybe_unused]] checker::ET
     }
 
     return TsType();
+}
+
+ETSNewClassInstanceExpression::ETSNewClassInstanceExpression(ETSNewClassInstanceExpression const &other,
+                                                             ArenaAllocator *const allocator)
+    : Expression(static_cast<Expression const &>(other)), arguments_(allocator->Adapter()), signature_(other.signature_)
+{
+    type_reference_ = other.type_reference_->Clone(allocator, this)->AsExpression();
+    class_def_ = other.class_def_->Clone(allocator, this)->AsClassDefinition();
+
+    for (auto *const argument : other.arguments_) {
+        arguments_.emplace_back(argument->Clone(allocator, this)->AsExpression());
+    }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+ETSNewClassInstanceExpression *ETSNewClassInstanceExpression::Clone(ArenaAllocator *const allocator,
+                                                                    AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<ETSNewClassInstanceExpression>(*this, allocator); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

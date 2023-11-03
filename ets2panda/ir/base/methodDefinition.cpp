@@ -33,17 +33,17 @@
 
 namespace panda::es2panda::ir {
 
-ScriptFunction *MethodDefinition::Function()
+ScriptFunction *MethodDefinition::Function() noexcept
 {
-    return value_->AsFunctionExpression()->Function();
+    return value_->IsFunctionExpression() ? value_->AsFunctionExpression()->Function() : nullptr;
 }
 
-const ScriptFunction *MethodDefinition::Function() const
+const ScriptFunction *MethodDefinition::Function() const noexcept
 {
-    return value_->AsFunctionExpression()->Function();
+    return value_->IsFunctionExpression() ? value_->AsFunctionExpression()->Function() : nullptr;
 }
 
-PrivateFieldKind MethodDefinition::ToPrivateFieldKind(bool is_static) const
+PrivateFieldKind MethodDefinition::ToPrivateFieldKind(bool const is_static) const
 {
     switch (kind_) {
         case MethodDefinitionKind::METHOD: {
@@ -330,5 +330,39 @@ void MethodDefinition::CheckMethodModifiers(checker::ETSChecker *checker)
         checker->ThrowTypeError(
             "Invalid method modifier(s): a static method can't have abstract, final or override modifier.", Start());
     }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+MethodDefinition *MethodDefinition::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const key = key_ != nullptr ? key_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const value = value_ != nullptr ? value_->Clone(allocator)->AsExpression() : nullptr;
+
+    if (auto *const clone = allocator->New<MethodDefinition>(kind_, key, value, flags_, allocator, is_computed_);
+        clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        if (key != nullptr) {
+            key->SetParent(clone);
+        }
+
+        if (value != nullptr) {
+            value->SetParent(clone);
+        }
+
+        for (auto *const decorator : decorators_) {
+            clone->AddDecorator(decorator->Clone(allocator, clone));
+        }
+
+        for (auto *const overloads : overloads_) {
+            clone->AddOverload(overloads->Clone(allocator, clone));
+        }
+
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

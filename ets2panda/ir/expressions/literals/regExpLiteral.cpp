@@ -46,7 +46,7 @@ checker::Type *RegExpLiteral::Check([[maybe_unused]] checker::ETSChecker *checke
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *RegExpLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+RegExpLiteral *RegExpLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<RegExpLiteral>(pattern_, flags_, flags_str_); clone != nullptr) {
         if (parent != nullptr) {

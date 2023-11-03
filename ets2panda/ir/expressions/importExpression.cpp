@@ -50,9 +50,9 @@ checker::Type *ImportExpression::Check([[maybe_unused]] checker::ETSChecker *che
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *ImportExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+ImportExpression *ImportExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const source = source_ != nullptr ? source_->Clone(allocator) : nullptr;
+    auto *const source = source_ != nullptr ? source_->Clone(allocator)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<ImportExpression>(source); clone != nullptr) {
         if (source != nullptr) {

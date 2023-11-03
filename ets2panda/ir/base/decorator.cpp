@@ -60,9 +60,9 @@ checker::Type *Decorator::Check(checker::ETSChecker *checker)
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Statement *Decorator::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+Decorator *Decorator::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const expr = expr_ != nullptr ? expr_->Clone(allocator) : nullptr;
+    auto *const expr = expr_ != nullptr ? expr_->Clone(allocator)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<Decorator>(expr); clone != nullptr) {
         if (expr != nullptr) {

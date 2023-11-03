@@ -109,7 +109,7 @@ checker::Type *ThisExpression::Check(checker::ETSChecker *checker)
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *ThisExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+ThisExpression *ThisExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<ThisExpression>(); clone != nullptr) {
         if (parent != nullptr) {

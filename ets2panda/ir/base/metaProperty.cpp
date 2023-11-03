@@ -70,7 +70,7 @@ checker::Type *MetaProperty::Check([[maybe_unused]] checker::ETSChecker *checker
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *MetaProperty::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+MetaProperty *MetaProperty::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<MetaProperty>(kind_); clone != nullptr) {
         if (parent != nullptr) {

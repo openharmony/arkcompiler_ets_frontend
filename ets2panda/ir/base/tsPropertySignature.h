@@ -23,6 +23,12 @@ class TypeNode;
 
 class TSPropertySignature : public AnnotatedAstNode {
 public:
+    TSPropertySignature() = delete;
+    ~TSPropertySignature() override = default;
+
+    NO_COPY_SEMANTIC(TSPropertySignature);
+    NO_MOVE_SEMANTIC(TSPropertySignature);
+
     explicit TSPropertySignature(Expression *key, TypeNode *type_annotation, bool computed, bool optional,
                                  bool readonly)
         : AnnotatedAstNode(AstNodeType::TS_PROPERTY_SIGNATURE, type_annotation),
@@ -33,34 +39,39 @@ public:
     {
     }
 
-    const Expression *Key() const
+    [[nodiscard]] const Expression *Key() const noexcept
     {
         return key_;
     }
 
-    Expression *Key()
+    [[nodiscard]] Expression *Key() noexcept
     {
         return key_;
     }
 
-    bool Computed() const
+    [[nodiscard]] bool Computed() const noexcept
     {
         return computed_;
     }
 
-    bool Optional() const
+    [[nodiscard]] bool Optional() const noexcept
     {
         return optional_;
     }
 
-    bool Readonly() const
+    [[nodiscard]] bool Readonly() const noexcept
     {
         return readonly_;
     }
 
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] TSPropertySignature *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
+
     void Dump(ir::AstDumper *dumper) const override;
+
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;

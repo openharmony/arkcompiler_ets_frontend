@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,13 +22,25 @@ namespace panda::es2panda::ir {
 
 class ETSPackageDeclaration : public Statement {
 public:
-    explicit ETSPackageDeclaration(ir::Expression *name) : Statement(AstNodeType::ETS_PACKAGE_DECLARATION), name_(name)
+    ETSPackageDeclaration() = delete;
+    ~ETSPackageDeclaration() override = default;
+
+    NO_COPY_SEMANTIC(ETSPackageDeclaration);
+    NO_MOVE_SEMANTIC(ETSPackageDeclaration);
+
+    explicit ETSPackageDeclaration(ir::Expression *const name)
+        : Statement(AstNodeType::ETS_PACKAGE_DECLARATION), name_(name)
     {
     }
 
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] ETSPackageDeclaration *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
+
     void Dump(ir::AstDumper *dumper) const override;
+
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;

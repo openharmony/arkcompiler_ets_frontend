@@ -71,10 +71,11 @@ checker::Type *ETSNewArrayInstanceExpression::Check([[maybe_unused]] checker::ET
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *ETSNewArrayInstanceExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+ETSNewArrayInstanceExpression *ETSNewArrayInstanceExpression::Clone(ArenaAllocator *const allocator,
+                                                                    AstNode *const parent)
 {
-    auto *const type_ref = type_reference_ != nullptr ? type_reference_->Clone(allocator)->AsTypeNode() : nullptr;
-    auto *const dimension = dimension_ != nullptr ? dimension_->Clone(allocator) : nullptr;
+    auto *const type_ref = type_reference_ != nullptr ? type_reference_->Clone(allocator) : nullptr;
+    auto *const dimension = dimension_ != nullptr ? dimension_->Clone(allocator)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<ETSNewArrayInstanceExpression>(type_ref, dimension); clone != nullptr) {
         if (type_ref != nullptr) {

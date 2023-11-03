@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,14 +16,20 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_TS_INDEX_SIGNATURE_H
 #define ES2PANDA_PARSER_INCLUDE_AST_TS_INDEX_SIGNATURE_H
 
-#include "ir/statement.h"
+#include "ir/typeNode.h"
 
 namespace panda::es2panda::ir {
 class TSIndexSignature : public TypedAstNode {
 public:
     enum class TSIndexSignatureKind { NUMBER, STRING };
 
-    explicit TSIndexSignature(Expression *param, TypeNode *type_annotation, bool readonly)
+    TSIndexSignature() = delete;
+    ~TSIndexSignature() override = default;
+
+    NO_COPY_SEMANTIC(TSIndexSignature);
+    NO_MOVE_SEMANTIC(TSIndexSignature);
+
+    explicit TSIndexSignature(Expression *const param, TypeNode *const type_annotation, bool const readonly)
         : TypedAstNode(AstNodeType::TS_INDEX_SIGNATURE),
           param_(param),
           type_annotation_(type_annotation),
@@ -31,26 +37,31 @@ public:
     {
     }
 
-    const Expression *Param() const
+    [[nodiscard]] const Expression *Param() const noexcept
     {
         return param_;
     }
 
-    const TypeNode *TypeAnnotation() const
+    [[nodiscard]] const TypeNode *TypeAnnotation() const noexcept
     {
         return type_annotation_;
     }
 
-    bool Readonly() const
+    [[nodiscard]] bool Readonly() const noexcept
     {
         return readonly_;
     }
 
-    TSIndexSignatureKind Kind() const;
+    [[nodiscard]] TSIndexSignatureKind Kind() const noexcept;
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] TSIndexSignature *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
+
     void Dump(ir::AstDumper *dumper) const override;
+
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;

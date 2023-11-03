@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,7 +30,14 @@ class TSTypeParameterDeclaration;
 class TypeNode;
 
 class ScriptFunction : public AstNode {
+private:
 public:
+    ScriptFunction() = delete;
+    ~ScriptFunction() override = default;
+
+    NO_COPY_SEMANTIC(ScriptFunction);
+    NO_MOVE_SEMANTIC(ScriptFunction);
+
     explicit ScriptFunction(varbinder::FunctionScope *scope, ArenaVector<Expression *> &&params,
                             TSTypeParameterDeclaration *type_params, AstNode *body, TypeNode *return_type_annotation,
                             ir::ScriptFunctionFlags func_flags, bool declare, Language lang)
@@ -61,164 +68,167 @@ public:
     {
     }
 
-    const Identifier *Id() const
+    [[nodiscard]] const Identifier *Id() const noexcept
     {
         return id_;
     }
 
-    Identifier *Id()
+    [[nodiscard]] Identifier *Id() noexcept
     {
         return id_;
     }
 
-    const checker::Signature *Signature() const
+    [[nodiscard]] const checker::Signature *Signature() const noexcept
     {
         return signature_;
     }
 
-    checker::Signature *Signature()
+    [[nodiscard]] checker::Signature *Signature() noexcept
     {
         return signature_;
     }
 
-    const ArenaVector<Expression *> &Params() const
+    [[nodiscard]] const ArenaVector<Expression *> &Params() const noexcept
     {
         return params_;
     }
 
-    ArenaVector<Expression *> &Params()
+    [[nodiscard]] ArenaVector<Expression *> &Params() noexcept
     {
         return params_;
     }
 
-    const TSTypeParameterDeclaration *TypeParams() const
+    [[nodiscard]] const TSTypeParameterDeclaration *TypeParams() const noexcept
     {
         return type_params_;
     }
 
-    TSTypeParameterDeclaration *TypeParams()
+    [[nodiscard]] TSTypeParameterDeclaration *TypeParams() noexcept
     {
         return type_params_;
     }
 
-    const AstNode *Body() const
+    [[nodiscard]] const AstNode *Body() const noexcept
     {
         return body_;
     }
 
-    AstNode *Body()
+    [[nodiscard]] AstNode *Body() noexcept
     {
         return body_;
     }
 
-    void SetBody(AstNode *body)
+    void SetBody(AstNode *body) noexcept
     {
         body_ = body;
     }
 
-    const TypeNode *ReturnTypeAnnotation() const
+    [[nodiscard]] const TypeNode *ReturnTypeAnnotation() const noexcept
     {
         return return_type_annotation_;
     }
 
-    TypeNode *ReturnTypeAnnotation()
+    [[nodiscard]] TypeNode *ReturnTypeAnnotation() noexcept
     {
         return return_type_annotation_;
     }
 
-    void SetReturnTypeAnnotation(TypeNode *node)
+    void SetReturnTypeAnnotation(TypeNode *node) noexcept
     {
         return_type_annotation_ = node;
     }
 
-    bool IsEntryPoint() const
+    [[nodiscard]] bool IsEntryPoint() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::ENTRY_POINT) != 0;
     }
 
-    bool IsGenerator() const
+    [[nodiscard]] bool IsGenerator() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::GENERATOR) != 0;
     }
 
-    bool IsAsyncFunc() const
+    [[nodiscard]] bool IsAsyncFunc() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::ASYNC) != 0;
     }
 
-    bool IsArrow() const
+    [[nodiscard]] bool IsArrow() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::ARROW) != 0;
     }
 
-    bool IsOverload() const
+    [[nodiscard]] bool IsOverload() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::OVERLOAD) != 0;
     }
 
-    bool IsConstructor() const
+    [[nodiscard]] bool IsConstructor() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::CONSTRUCTOR) != 0;
     }
 
-    bool IsGetter() const
+    [[nodiscard]] bool IsGetter() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::GETTER) != 0;
     }
 
-    bool IsSetter() const
+    [[nodiscard]] bool IsSetter() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::SETTER) != 0;
     }
 
-    bool IsMethod() const
+    [[nodiscard]] bool IsMethod() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::METHOD) != 0;
     }
 
-    bool IsProxy() const
+    [[nodiscard]] bool IsProxy() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::PROXY) != 0;
     }
 
-    bool IsStaticBlock() const
+    [[nodiscard]] bool IsStaticBlock() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::STATIC_BLOCK) != 0;
     }
 
-    bool IsEnum() const
+    [[nodiscard]] bool IsEnum() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::ENUM) != 0;
     }
 
-    bool IsHidden() const
+    [[nodiscard]] bool IsHidden() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::HIDDEN) != 0;
     }
 
-    bool IsExternal() const
+    [[nodiscard]] bool IsExternal() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::EXTERNAL) != 0;
     }
 
-    bool IsImplicitSuperCallNeeded() const
+    [[nodiscard]] bool IsImplicitSuperCallNeeded() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED) != 0;
     }
 
-    bool HasBody() const;
+    [[nodiscard]] bool HasBody() const noexcept
+    {
+        return body_ != nullptr;
+    }
 
-    bool IsThrowing() const
+    [[nodiscard]] bool IsThrowing() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::THROWS) != 0;
     }
 
-    bool IsRethrowing() const
+    [[nodiscard]] bool IsRethrowing() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::RETHROWS) != 0;
     }
 
-    bool IsDefaultParamProxy() const noexcept
+    [[nodiscard]] bool IsDefaultParamProxy() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::DEFAULT_PARAM_PROXY) != 0;
     }
@@ -228,44 +238,47 @@ public:
         AddFlag(ir::ScriptFunctionFlags::DEFAULT_PARAM_PROXY);
     }
 
-    bool IsDynamic() const
+    [[nodiscard]] bool IsDynamic() const noexcept
     {
         return lang_.IsDynamic();
     }
 
-    bool IsExtensionMethod() const
+    [[nodiscard]] bool IsExtensionMethod() const noexcept
     {
         return (func_flags_ & ir::ScriptFunctionFlags::INSTANCE_EXTENSION_METHOD) != 0;
     }
 
-    bool Declare() const
+    [[nodiscard]] bool Declare() const noexcept
     {
         return declare_;
     }
 
-    ir::ScriptFunctionFlags Flags() const;
+    [[nodiscard]] ir::ScriptFunctionFlags Flags() const noexcept
+    {
+        return func_flags_;
+    }
 
-    void SetIdent(Identifier *id)
+    void SetIdent(Identifier *id) noexcept
     {
         id_ = id;
     }
 
-    void SetSignature(checker::Signature *signature)
+    void SetSignature(checker::Signature *signature) noexcept
     {
         signature_ = signature;
     }
 
-    void AddFlag(ir::ScriptFunctionFlags flags)
+    void AddFlag(ir::ScriptFunctionFlags flags) noexcept
     {
         func_flags_ |= flags;
     }
 
-    void AddModifier(ir::ModifierFlags flags)
+    void AddModifier(ir::ModifierFlags flags) noexcept
     {
         flags_ |= flags;
     }
 
-    size_t FormalParamsLength() const;
+    [[nodiscard]] std::size_t FormalParamsLength() const noexcept;
 
     bool IsScopeBearer() const override
     {
@@ -277,15 +290,16 @@ public:
         return scope_;
     }
 
-    void TransformChildren(const NodeTransformer &cb) override;
-
-    es2panda::Language Language() const
+    [[nodiscard]] es2panda::Language Language() const
     {
         return lang_;
     }
 
+    void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
+
     void Dump(ir::AstDumper *dumper) const override;
+
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;

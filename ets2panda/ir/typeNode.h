@@ -48,7 +48,7 @@ public:
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] TypeNode *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
 protected:
     explicit TypeNode(AstNodeType const type) : Expression(type) {}

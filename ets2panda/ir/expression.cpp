@@ -21,7 +21,7 @@ namespace panda::es2panda::ir {
 void AnnotatedExpression::CloneTypeAnnotation(ArenaAllocator *const allocator)
 {
     if (auto *annotation = const_cast<TypeNode *>(TypeAnnotation()); annotation != nullptr) {
-        SetTsTypeAnnotation(annotation->Clone(allocator, this)->AsTypeNode());
+        SetTsTypeAnnotation(annotation->Clone(allocator, this));
     }
 }
 

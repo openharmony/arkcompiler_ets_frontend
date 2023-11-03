@@ -35,12 +35,12 @@ Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, 
     variable_ = other.variable_;
 
     for (auto *decorator : other.decorators_) {
-        decorators_.emplace_back(decorator->Clone(allocator, this)->AsDecorator());
+        decorators_.emplace_back(decorator->Clone(allocator, this));
     }
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+Identifier *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<Identifier>(Tag {}, *this, allocator); clone != nullptr) {
         if (parent != nullptr) {

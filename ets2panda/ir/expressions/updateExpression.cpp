@@ -149,9 +149,9 @@ checker::Type *UpdateExpression::Check(checker::ETSChecker *checker)
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *UpdateExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+UpdateExpression *UpdateExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const argument = argument_ != nullptr ? argument_->Clone(allocator) : nullptr;
+    auto *const argument = argument_ != nullptr ? argument_->Clone(allocator)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<UpdateExpression>(argument, operator_, prefix_); clone != nullptr) {
         if (argument != nullptr) {

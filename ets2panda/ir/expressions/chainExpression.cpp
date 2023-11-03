@@ -68,9 +68,9 @@ checker::Type *ChainExpression::Check([[maybe_unused]] checker::ETSChecker *chec
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *ChainExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+ChainExpression *ChainExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const expression = expression_ != nullptr ? expression_->Clone(allocator) : nullptr;
+    auto *const expression = expression_ != nullptr ? expression_->Clone(allocator)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<ChainExpression>(expression); clone != nullptr) {
         if (expression != nullptr) {
