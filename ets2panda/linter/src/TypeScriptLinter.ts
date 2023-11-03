@@ -50,6 +50,7 @@ import { ReportAutofixCallback } from './autofixes/ReportAutofixCallback';
 import { DiagnosticChecker } from './utils/functions/DiagnosticChecker';
 import {
   ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE,
+  NO_OVERLOAD_MATCHES_THIS_CALL_ERROR_CODE,
   TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE,
   LibraryTypeCallDiagnosticChecker
 } from './utils/functions/LibraryTypeCallDiagnosticChecker';
@@ -1569,6 +1570,9 @@ export class TypeScriptLinter {
     this.filterStrictDiagnostics({
       [ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE]: (pos: number) => {
         return this.checkInRange(rangesToFilter, pos);
+      },
+      [NO_OVERLOAD_MATCHES_THIS_CALL_ERROR_CODE]: (pos: number) => {
+        return this.checkInRange([{begin: callExpr.pos, end: callExpr.end}], pos);
       },
       [TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE]: (pos: number) => {
         return this.checkInRange(rangesToFilter, pos);

@@ -24,6 +24,7 @@ export const TYPE_NULL_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE = /^Type 'null' is not ass
 export const TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE = /^Type 'undefined' is not assignable to type '.*'\.$/;
 
 export const ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE = 2345;
+export const NO_OVERLOAD_MATCHES_THIS_CALL_ERROR_CODE = 2769;
 export const ARGUMENT_OF_TYPE_NULL_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE = /^Argument of type 'null' is not assignable to parameter of type '.*'\.$/;
 export const ARGUMENT_OF_TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE = /^Argument of type 'undefined' is not assignable to parameter of type '.*'\.$/;
 
@@ -61,6 +62,14 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
         return false;
       }
       if (this.inLibCall && chain.messageText.match(TYPE_NULL_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE)) {
+        return false;
+      }
+    }
+    if (chain.code == ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE) {
+      if (this.inLibCall && chain.messageText.match(ARGUMENT_OF_TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE)) {
+        return false;
+      }
+      if (this.inLibCall && chain.messageText.match(ARGUMENT_OF_TYPE_NULL_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE)) {
         return false;
       }
     }

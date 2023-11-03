@@ -15,13 +15,6 @@
     ],
     "nodes": [
         {
-            "line": 33,
-            "column": 12,
-            "problem": "StrictDiagnostic",
-            "suggest": "No overload matches this call.\n  Overload 1 of 2, '(func: Function, ...args: unknown[]): Promise<unknown>', gave the following error.\n    Argument of type 'undefined' is not assignable to parameter of type 'Function'.\n  Overload 2 of 2, '(group: TaskGroup, priority?: Priority | undefined): Promise<unknown[]>', gave the following error.\n    Argument of type 'undefined' is not assignable to parameter of type 'TaskGroup'.",
-            "rule": "No overload matches this call.\n  Overload 1 of 2, '(func: Function, ...args: unknown[]): Promise<unknown>', gave the following error.\n    Argument of type 'undefined' is not assignable to parameter of type 'Function'.\n  Overload 2 of 2, '(group: TaskGroup, priority?: Priority | undefined): Promise<unknown[]>', gave the following error.\n    Argument of type 'undefined' is not assignable to parameter of type 'TaskGroup'."
-        },
-        {
             "line": 37,
             "column": 5,
             "problem": "StrictDiagnostic",
