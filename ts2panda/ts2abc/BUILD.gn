@@ -93,7 +93,7 @@ ohos_executable("ts2abc") {
 
   if (is_linux || is_mingw || is_mac) {
     deps += [ "$ark_third_party_root/jsoncpp:jsoncpp_static" ]
-    if (!is_cross_platform_build) {
+    if (!is_arkui_x) {
       external_deps += [
         "runtime_core:libarkassembler_frontend_static",
         "runtime_core:libarkbase_frontend_static",
