@@ -14,6 +14,7 @@
  */
 
 #include "parserImpl.h"
+#include <functional>
 
 #include <binder/scope.h>
 #include <binder/tsBinding.h>
@@ -541,29 +542,6 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
             return ParseTsIntersectionType(typeAnnotation, *options & TypeAnnotationParsingOptions::IN_UNION,
                                            *options & TypeAnnotationParsingOptions::RESTRICT_EXTENDS);
         }
-        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
-        case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS:
-        case lexer::TokenType::KEYW_NEW: {
-            return ParseTsParenthesizedOrFunctionType(typeAnnotation,
-                                                      *options & TypeAnnotationParsingOptions::THROW_ERROR);
-        }
-        case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
-            if (typeAnnotation) {
-                if (lexer_->GetToken().NewLine()) {
-                    break;
-                }
-                if (lexer_->Lookahead() == LEX_CHAR_RIGHT_SQUARE) {
-                    return ParseTsArrayType(typeAnnotation);
-                }
-
-                return ParseTsIndexAccessType(typeAnnotation, *options & TypeAnnotationParsingOptions::THROW_ERROR);
-            }
-
-            return ParseTsTupleType();
-        }
-        case lexer::TokenType::PUNCTUATOR_LEFT_BRACE: {
-            return ParseTsTypeLiteralOrTsMappedType(typeAnnotation);
-        }
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::LITERAL_NUMBER:
         case lexer::TokenType::LITERAL_STRING:
@@ -619,6 +597,9 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
                 return ParseTsIdentifierReference(*options);
             }
 
+            if (InDisallowConditionalTypesContext()) {
+                break;
+            }
             return ParseTsConditionalType(typeAnnotation, *options & TypeAnnotationParsingOptions::RESTRICT_EXTENDS);
         }
         case lexer::TokenType::KEYW_THIS: {
@@ -630,7 +611,11 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
             return ParseTsTemplateLiteralType(*options & TypeAnnotationParsingOptions::THROW_ERROR);
         }
         default: {
-            break;
+            auto type = DoOutsideOfDisallowConditinalTypesContext(&ParserImpl::ParsePostfixTypeOrHigher,
+                                                                  typeAnnotation, options);
+            if (type) {
+                return type;
+            }
         }
     }
 
@@ -638,6 +623,41 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
         ThrowSyntaxError("Type expected");
     }
 
+    return nullptr;
+}
+
+ir::Expression *ParserImpl::ParsePostfixTypeOrHigher(ir::Expression *typeAnnotation,
+                                                     TypeAnnotationParsingOptions *options)
+{
+    switch (lexer_->GetToken().Type()) {
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+        case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS:
+        case lexer::TokenType::KEYW_NEW: {
+            return ParseTsParenthesizedOrFunctionType(typeAnnotation,
+                                                      *options & TypeAnnotationParsingOptions::THROW_ERROR);
+        }
+        
+        case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
+            if (typeAnnotation) {
+                if (lexer_->GetToken().NewLine()) {
+                    break;
+                }
+                if (lexer_->Lookahead() == LEX_CHAR_RIGHT_SQUARE) {
+                    return ParseTsArrayType(typeAnnotation);
+                }
+
+                return ParseTsIndexAccessType(typeAnnotation, *options & TypeAnnotationParsingOptions::THROW_ERROR);
+            }
+
+            return ParseTsTupleType();
+        }
+        case lexer::TokenType::PUNCTUATOR_LEFT_BRACE: {
+            return ParseTsTypeLiteralOrTsMappedType(typeAnnotation);
+        }
+        default: {
+            break;
+        }
+    }
     return nullptr;
 }
 
@@ -735,8 +755,9 @@ ir::Expression *ParserImpl::ParseTsConditionalType(ir::Expression *checkType, bo
 
     TypeAnnotationParsingOptions options =
         TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::RESTRICT_EXTENDS;
-    auto *extendsType = ParseTsTypeAnnotation(&options);
 
+    ir::Expression *extendsType = DoInsideOfDisallowConditinalTypesContext(&ParserImpl::ParseTsTypeAnnotation,
+                                                                           &options);
     context_.Status() = savedStatus;
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
@@ -746,7 +767,7 @@ ir::Expression *ParserImpl::ParseTsConditionalType(ir::Expression *checkType, bo
     lexer_->NextToken();  // eat '?'
 
     options &= ~TypeAnnotationParsingOptions::RESTRICT_EXTENDS;
-    auto *trueType = ParseTsTypeAnnotation(&options);
+    auto *trueType = DoOutsideOfDisallowConditinalTypesContext(&ParserImpl::ParseTsTypeAnnotation, &options);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
         ThrowSyntaxError("':' expected.");
@@ -754,7 +775,7 @@ ir::Expression *ParserImpl::ParseTsConditionalType(ir::Expression *checkType, bo
 
     lexer_->NextToken();  // eat ':'
 
-    auto *falseType = ParseTsTypeAnnotation(&options);
+    auto *falseType = DoOutsideOfDisallowConditinalTypesContext(&ParserImpl::ParseTsTypeAnnotation, &options);
 
     lexer::SourcePosition endLoc = falseType->End();
 
@@ -3476,11 +3497,7 @@ ir::TSTypeParameter *ParserImpl::ParseTsTypeParameter(bool throwError, bool addB
         options |= TypeAnnotationParsingOptions::THROW_ERROR;
     }
 
-    ir::Expression *constraint = nullptr;
-    if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS) {
-        lexer_->NextToken();
-        constraint = ParseTsTypeAnnotation(&options);
-    }
+    ir::Expression *constraint = TryParseConstraintOfInferType(&options);
 
     ir::Expression *defaultType = nullptr;
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
@@ -3493,6 +3510,22 @@ ir::TSTypeParameter *ParserImpl::ParseTsTypeParameter(bool throwError, bool addB
     typeParam->SetRange({startLoc, lexer_->GetToken().End()});
 
     return typeParam;
+}
+
+ir::Expression *ParserImpl::TryParseConstraintOfInferType(TypeAnnotationParsingOptions *options)
+{
+    ir::Expression *constraint = nullptr;
+    if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS) {
+        auto savedPos = lexer_->Save();
+        lexer_->NextToken(); // eat 'extends'
+        constraint = DoInsideOfDisallowConditinalTypesContext(&ParserImpl::ParseTsTypeAnnotation, options);
+        if (!InDisallowConditionalTypesContext() &&
+            lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
+            constraint = nullptr;
+            lexer_->Rewind(savedPos); // go back to 'extends'
+        }
+    }
+    return constraint;
 }
 
 ir::TSTypeParameterDeclaration *ParserImpl::ParseTsTypeParameterDeclaration(bool throwError, bool isAllowInOut)
@@ -4012,4 +4045,55 @@ void ParserImpl::CheckStrictReservedWord() const
     }
 }
 
+template<typename Function, typename... Args>
+ir::Expression* ParserImpl::DoOutsideOfDisallowConditinalTypesContext(Function func, Args &&... args)
+{
+    ParserStatus status = ParserStatus::DISALLOW_CONDITIONAL_TYPES;
+    auto inDisallowConditionalTypesContext = InDisallowConditionalTypesContext();
+    ir::Expression *result = nullptr;
+    if (inDisallowConditionalTypesContext) {
+        RemoveFlagToStatus(status);
+        result = (this->*func)(std::forward<Args>(args)...);
+        AddFlagToStatus(status);
+        return result;
+    }
+    result = (this->*func)(std::forward<Args>(args)...);
+    return result;
+}
+
+template<typename Function, typename... Args>
+ir::Expression* ParserImpl::DoInsideOfDisallowConditinalTypesContext(Function func, Args &&... args)
+{
+    ParserStatus status = ParserStatus::DISALLOW_CONDITIONAL_TYPES;
+    auto inAllowConditionalTypesContext = status & ~context_.Status();
+    ir::Expression *result = nullptr;
+    if (inAllowConditionalTypesContext) {
+        AddFlagToStatus(status);
+        result = (this->*func)(std::forward<Args>(args)...);
+        RemoveFlagToStatus(status);
+        return result;
+    }
+    result = (this->*func)(std::forward<Args>(args)...);
+    return result;
+}
+
+bool ParserImpl::InDisallowConditionalTypesContext()
+{
+    return InContext(ParserStatus::DISALLOW_CONDITIONAL_TYPES);
+}
+
+bool ParserImpl::InContext(ParserStatus status)
+{
+    return context_.Status() & status;
+}
+
+void ParserImpl::AddFlagToStatus(ParserStatus status)
+{
+    context_.Status() |= status;
+}
+
+void ParserImpl::RemoveFlagToStatus(ParserStatus status)
+{
+    context_.Status() &= ~status;
+}
 }  // namespace panda::es2panda::parser

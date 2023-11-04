@@ -341,6 +341,8 @@ private:
                                        ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     bool ParsePropertyEnd();
 
+    ir::Expression *ParsePostfixTypeOrHigher(ir::Expression *typeAnnotation, TypeAnnotationParsingOptions *options);
+    ir::Expression *TryParseConstraintOfInferType(TypeAnnotationParsingOptions *options);
     ir::Expression *ParsePropertyDefinition(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     bool CheckOutIsIdentInTypeParameter();
     ir::TSTypeParameter *ParseTsTypeParameter(bool throwError, bool addBinding = false, bool isAllowInOut = false);
@@ -451,6 +453,18 @@ private:
     ir::Identifier *ParseNamedExport(const lexer::Token &exportedToken);
     void CheckStrictReservedWord() const;
 
+    // Discard the DISALLOW_CONDITIONAL_TYPES in current status to call function.
+    template<class Function,  typename... Args>
+    ir::Expression *DoOutsideOfDisallowConditinalTypesContext(Function func, Args &&... args);
+
+    // Add the DISALLOW_CONDITIONAL_TYPES to current status to call function.
+    template<typename Function, typename... Args>
+    ir::Expression *DoInsideOfDisallowConditinalTypesContext(Function func, Args &&... args);
+
+    bool InDisallowConditionalTypesContext();
+    bool InContext(ParserStatus status);
+    void AddFlagToStatus(ParserStatus status);
+    void RemoveFlagToStatus(ParserStatus status);
     // StatementParser.Cpp
 
     void ConsumeSemicolon(ir::Statement *statement);

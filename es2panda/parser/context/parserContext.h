@@ -62,6 +62,7 @@ enum class ParserStatus {
     DISALLOW_CONTINUE = (1 << 27),
 
     TS_MODULE = (1 << 28),
+    DISALLOW_CONDITIONAL_TYPES = (1 << 29),
 };
 
 DEFINE_BITOPS(ParserStatus)
