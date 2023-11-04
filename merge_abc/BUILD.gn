@@ -149,7 +149,7 @@ ohos_source_set("assembly_proto_static") {
   ]
 
   external_deps = []
-  if (!is_cross_platform_build) {
+  if (!is_arkui_x) {
     external_deps += [
       "runtime_core:libarkassembler_frontend_static",
       "runtime_core:libarkbase_frontend_static",
@@ -204,7 +204,7 @@ ohos_executable("merge_abc") {
     "../es2panda:es2panda_lib",
   ]
 
-  if (!is_cross_platform_build) {
+  if (!is_arkui_x) {
     external_deps = [ "runtime_core:libarkziparchive_frontend_static" ]
   } else {
     deps += [ "$ark_root/libziparchive:libarkziparchive_frontend_static" ]
