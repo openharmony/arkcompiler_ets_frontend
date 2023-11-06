@@ -139,6 +139,16 @@ public:
         ignore_box_ = true;
     }
 
+    checker::Type *GetTupleConvertedType() const noexcept
+    {
+        return tuple_converted_type_;
+    }
+
+    void SetTupleConvertedType(checker::Type *conv_type) noexcept
+    {
+        tuple_converted_type_ = conv_type;
+    }
+
     [[nodiscard]] bool IsPrivateReference() const noexcept;
 
     // NOLINTNEXTLINE(google-default-arguments)
@@ -185,6 +195,7 @@ private:
     bool ignore_box_ {false};
     varbinder::LocalVariable *prop_var_ {};
     checker::ETSObjectType *obj_type_ {};
+    checker::Type *tuple_converted_type_ {};
 };
 }  // namespace panda::es2panda::ir
 

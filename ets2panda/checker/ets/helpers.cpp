@@ -929,7 +929,11 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
 
     if (init->IsArrayExpression() && annotation_type->IsETSArrayType()) {
-        init->AsArrayExpression()->SetPreferredType(annotation_type->AsETSArrayType()->ElementType());
+        if (annotation_type->IsETSTupleType()) {
+            ValidateTupleMinElementSize(init->AsArrayExpression(), annotation_type->AsETSTupleType());
+        }
+
+        init->AsArrayExpression()->SetPreferredType(annotation_type);
     }
 
     if (init->IsObjectExpression()) {
@@ -1006,7 +1010,7 @@ void ETSChecker::SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpre
     // Set explicit target type for array
     if ((object != nullptr) && (object->IsArrayExpression())) {
         ir::ArrayExpression *array = object->AsArrayExpression();
-        array->SetPreferredType(element_type);
+        array->SetPreferredType(CreateETSArrayType(element_type));
     }
 }
 
@@ -2288,6 +2292,28 @@ bool ETSChecker::ExtensionETSFunctionType(checker::Type *type)
     }
 
     return false;
+}
+
+void ETSChecker::ValidateTupleMinElementSize(ir::ArrayExpression *const array_expr, ETSTupleType *tuple)
+{
+    if (array_expr->Elements().size() < static_cast<size_t>(tuple->GetMinTupleSize())) {
+        ThrowTypeError({"Few elements in array initializer for tuple with size of ",
+                        static_cast<size_t>(tuple->GetMinTupleSize())},
+                       array_expr->Start());
+    }
+}
+
+void ETSChecker::ModifyPreferredType(ir::ArrayExpression *const array_expr, Type *const new_preferred_type)
+{
+    // After modifying the preferred type of an array expression, it needs to be rechecked at the call site
+    array_expr->SetPreferredType(new_preferred_type);
+    array_expr->SetTsType(nullptr);
+
+    for (auto *const element : array_expr->Elements()) {
+        if (element->IsArrayExpression()) {
+            ModifyPreferredType(element->AsArrayExpression(), nullptr);
+        }
+    }
 }
 
 bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, const Type *resolved_type)

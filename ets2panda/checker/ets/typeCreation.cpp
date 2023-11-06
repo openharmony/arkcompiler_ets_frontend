@@ -13,18 +13,24 @@
  * limitations under the License.
  */
 
-#include "generated/signatures.h"
 #include "checker/ETSchecker.h"
+#include "checker/types/ets/byteType.h"
+#include "checker/types/ets/charType.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
-#include "varbinder/varbinder.h"
-#include "varbinder/ETSBinder.h"
-#include "ir/ets/etsScript.h"
+#include "checker/types/ets/etsDynamicType.h"
+#include "checker/types/ets/etsStringType.h"
+#include "checker/types/ets/etsUnionType.h"
+#include "checker/types/ets/shortType.h"
+#include "generated/signatures.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/scriptFunction.h"
+#include "ir/ets/etsScript.h"
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsEnumDeclaration.h"
 #include "ir/ts/tsEnumMember.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
+#include "varbinder/varbinder.h"
+#include "varbinder/ETSBinder.h"
 #include "parser/program/program.h"
 #include "util/helpers.h"
 

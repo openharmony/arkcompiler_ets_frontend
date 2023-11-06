@@ -481,6 +481,12 @@ void JSCompiler::Compile(const ir::ETSFunctionType *expr) const
     UNREACHABLE();
 }
 
+void JSCompiler::Compile(const ir::ETSTuple *expr) const
+{
+    (void)expr;
+    UNREACHABLE();
+}
+
 void JSCompiler::Compile(const ir::ETSImportDeclaration *node) const
 {
     (void)node;

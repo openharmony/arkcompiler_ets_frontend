@@ -15,9 +15,10 @@
 
 #include "memberExpression.h"
 
-#include "compiler/core/pandagen.h"
-#include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
+#include "checker/ets/castingContext.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 MemberExpression::MemberExpression([[maybe_unused]] Tag const tag, MemberExpression const &other,
@@ -135,6 +136,12 @@ bool MemberExpression::CompileComputed(compiler::ETSGen *etsg) const
             } else {
                 etsg->LoadArrayElement(this, obj_reg);
             }
+
+            if (object_->TsType()->IsETSTupleType() && (GetTupleConvertedType() != nullptr)) {
+                etsg->EmitCheckedNarrowingReferenceConversion(this, GetTupleConvertedType());
+            }
+
+            etsg->ApplyConversion(this);
         };
 
         etsg->EmitMaybeOptional(this, load_element, IsOptional());
@@ -398,7 +405,12 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
     if (!base_type->IsETSArrayType() && !base_type->IsETSDynamicType()) {
         checker->ThrowTypeError("Indexed access expression can only be used in array type.", Object()->Start());
     }
+
     checker->ValidateArrayIndex(Property());
+
+    if (base_type->IsETSTupleType()) {
+        checker->ValidateTupleIndex(base_type->AsETSTupleType(), this);
+    }
 
     if (Property()->IsIdentifier()) {
         SetPropVar(Property()->AsIdentifier()->Variable()->AsLocalVariable());
@@ -408,7 +420,38 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
 
     // NOTE: apply capture conversion on this type
     if (base_type->IsETSArrayType()) {
-        return base_type->AsETSArrayType()->ElementType();
+        if (!base_type->IsETSTupleType()) {
+            return base_type->AsETSArrayType()->ElementType();
+        }
+
+        auto *const tuple_type_at_idx =
+            base_type->AsETSTupleType()->GetTypeAtIndex(checker->GetTupleElementAccessValue(Property()->TsType()));
+
+        if ((!Parent()->IsAssignmentExpression() || Parent()->AsAssignmentExpression()->Left() != this) &&
+            (!Parent()->IsUpdateExpression())) {
+            // Error never should be thrown by this call, because LUB of types can be converted to any type which LUB
+            // was calculated by casting
+            const checker::CastingContext cast(checker->Relation(), this, base_type->AsETSArrayType()->ElementType(),
+                                               tuple_type_at_idx, Start(), {"Tuple type couldn't be converted "});
+
+            // TODO(mmartin): this can be replaced with the general type mapper, once implemented
+            if ((GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
+                auto *const saved_node = checker->Relation()->GetNode();
+                if (saved_node == nullptr) {
+                    checker->Relation()->SetNode(this);
+                }
+
+                SetTupleConvertedType(checker->PrimitiveTypeAsETSBuiltinType(tuple_type_at_idx));
+
+                checker->Relation()->SetNode(saved_node);
+            }
+
+            if (tuple_type_at_idx->IsETSObjectType() && base_type->AsETSArrayType()->ElementType()->IsETSObjectType()) {
+                SetTupleConvertedType(tuple_type_at_idx);
+            }
+        }
+
+        return tuple_type_at_idx;
     }
 
     // Dynamic

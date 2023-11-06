@@ -24,6 +24,7 @@
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"
 #include "ir/expressions/unaryExpression.h"
+#include "ir/ts/tsAsExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/memberExpression.h"
 
@@ -126,6 +127,10 @@ checker::Type *UpdateExpression::Check(checker::ETSChecker *checker)
     checker::Type *operand_type = argument_->Check(checker);
     if (argument_->IsIdentifier()) {
         checker->ValidateUnaryOperatorOperand(argument_->AsIdentifier()->Variable());
+    } else if (argument_->IsTSAsExpression()) {
+        if (auto *const as_expr_var = argument_->AsTSAsExpression()->Variable(); as_expr_var != nullptr) {
+            checker->ValidateUnaryOperatorOperand(as_expr_var);
+        }
     } else {
         ASSERT(argument_->IsMemberExpression());
         varbinder::LocalVariable *prop_var = argument_->AsMemberExpression()->PropVar();

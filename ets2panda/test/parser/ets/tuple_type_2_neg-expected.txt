@@ -1,0 +1,1 @@
+SyntaxError: Spread type must be at the last index in the tuple type [tuple_type_2_neg.ets:17:30]

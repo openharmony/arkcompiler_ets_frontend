@@ -43,6 +43,11 @@ public:
         return operator_;
     }
 
+    [[nodiscard]] Expression *Argument() noexcept
+    {
+        return argument_;
+    }
+
     [[nodiscard]] const Expression *Argument() const noexcept
     {
         return argument_;

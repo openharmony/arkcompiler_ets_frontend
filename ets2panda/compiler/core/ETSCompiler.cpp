@@ -152,6 +152,12 @@ void ETSCompiler::Compile(const ir::ETSFunctionType *node) const
     UNREACHABLE();
 }
 
+void ETSCompiler::Compile(const ir::ETSTuple *node) const
+{
+    (void)node;
+    UNREACHABLE();
+}
+
 void ETSCompiler::Compile(const ir::ETSImportDeclaration *node) const
 {
     (void)node;

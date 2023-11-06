@@ -80,6 +80,7 @@ enum class TypeFlag : uint64_t {
     SETTER = 1ULL << 55ULL,              // ETS Setter
     ETS_EXTENSION_FUNC_HELPER = 1ULL << 56ULL,  // ETS Extension Function Helper
     ETS_UNION = 1ULL << 57ULL,                  // ETS union
+    ETS_TUPLE = 1ULL << 58ULL,                  // ETS tuple type
     ETS_DYNAMIC_TYPE = ETS_OBJECT | ETS_DYNAMIC_FLAG,
     ETS_DYNAMIC_FUNCTION_TYPE = FUNCTION | ETS_DYNAMIC_FLAG,
     ETS_TYPE = BYTE | SHORT | INT | LONG | FLOAT | DOUBLE | CHAR | ETS_BOOLEAN | ETS_VOID | ETS_OBJECT | ETS_ARRAY |

@@ -453,6 +453,12 @@ checker::Type *ETSAnalyzer::Check(ir::ETSStructDeclaration *node) const
     return nullptr;
 }
 
+checker::Type *ETSAnalyzer::Check(ir::ETSTuple *node) const
+{
+    (void)node;
+    UNREACHABLE();
+}
+
 checker::Type *ETSAnalyzer::Check(ir::ETSTypeReference *node) const
 {
     ETSChecker *checker = GetETSChecker();
@@ -1545,8 +1551,8 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
     }
 
     if ((st->argument_ != nullptr) && st->argument_->IsArrayExpression()) {
-        st->argument_->AsArrayExpression()->SetPreferredType(
-            func_return_type->IsETSArrayType() ? func_return_type->AsETSArrayType()->ElementType() : func_return_type);
+        checker->ModifyPreferredType(st->argument_->AsArrayExpression(), func_return_type);
+        st->argument_->Check(checker);
     }
 
     st->return_type_ = func_return_type;

@@ -15,21 +15,21 @@
 
 #include "arrayExpression.h"
 
-#include "ir/base/decorator.h"
-#include "util/helpers.h"
-#include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
+#include "checker/TSchecker.h"
+#include "checker/ets/castingContext.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/ts/destructuringContext.h"
-#include "compiler/base/literals.h"
-#include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
-#include "ir/typeNode.h"
+#include "ir/base/decorator.h"
 #include "ir/base/spreadElement.h"
-#include "ir/expressions/identifier.h"
 #include "ir/expressions/assignmentExpression.h"
+#include "ir/expressions/identifier.h"
 #include "ir/expressions/objectExpression.h"
+#include "ir/typeNode.h"
+#include "util/helpers.h"
 
 namespace panda::es2panda::ir {
 ArrayExpression::ArrayExpression([[maybe_unused]] Tag const tag, ArrayExpression const &other,
@@ -237,7 +237,12 @@ void ArrayExpression::Compile(compiler::ETSGen *const etsg) const
 
         etsg->ApplyConversion(expr, nullptr);
         etsg->ApplyConversion(expr);
-        etsg->StoreArrayElement(this, arr, index_reg, TsType()->AsETSArrayType()->ElementType());
+
+        if (expr->TsType()->IsETSArrayType()) {
+            etsg->StoreArrayElement(this, arr, index_reg, expr->TsType());
+        } else {
+            etsg->StoreArrayElement(this, arr, index_reg, TsType()->AsETSArrayType()->ElementType());
+        }
     }
 
     etsg->LoadAccumulator(this, arr);
@@ -477,10 +482,49 @@ checker::Type *ArrayExpression::CheckPattern(checker::TSChecker *checker)
                                     false);
 }
 
+void ArrayExpression::HandleNestedArrayExpression(checker::ETSChecker *const checker,
+                                                  ArrayExpression *const current_element, const bool is_array,
+                                                  const bool is_preferred_tuple, const std::size_t idx)
+{
+    if (is_preferred_tuple) {
+        current_element->SetPreferredType(is_array ? preferred_type_
+                                                   : preferred_type_->AsETSTupleType()->GetTypeAtIndex(idx));
+
+        if (current_element->GetPreferredType()->IsETSTupleType()) {
+            checker->ValidateTupleMinElementSize(current_element,
+                                                 current_element->GetPreferredType()->AsETSTupleType());
+        }
+
+        return;
+    }
+
+    if (preferred_type_->IsETSArrayType()) {
+        if (preferred_type_->AsETSArrayType()->ElementType()->IsETSTupleType()) {
+            checker->ValidateTupleMinElementSize(current_element,
+                                                 preferred_type_->AsETSArrayType()->ElementType()->AsETSTupleType());
+        }
+
+        current_element->SetPreferredType(is_array ? preferred_type_
+                                                   : preferred_type_->AsETSArrayType()->ElementType());
+        return;
+    }
+
+    if (current_element->GetPreferredType() == nullptr) {
+        current_element->SetPreferredType(preferred_type_);
+    }
+}
+
 checker::Type *ArrayExpression::Check(checker::ETSChecker *checker)
 {
     if (TsType() != nullptr) {
         return TsType();
+    }
+
+    const bool is_array =
+        (preferred_type_ != nullptr) && preferred_type_->IsETSArrayType() && !preferred_type_->IsETSTupleType();
+
+    if (is_array) {
+        preferred_type_ = preferred_type_->AsETSArrayType()->ElementType();
     }
 
     if (!elements_.empty()) {
@@ -488,19 +532,47 @@ checker::Type *ArrayExpression::Check(checker::ETSChecker *checker)
             preferred_type_ = elements_[0]->Check(checker);
         }
 
-        for (auto *element : elements_) {
-            if (element->IsArrayExpression() && preferred_type_->IsETSArrayType()) {
-                element->AsArrayExpression()->SetPreferredType(preferred_type_->AsETSArrayType()->ElementType());
-            }
-            if (element->IsObjectExpression()) {
-                element->AsObjectExpression()->SetPreferredType(preferred_type_);
+        const bool is_preferred_tuple = preferred_type_->IsETSTupleType();
+        auto *const target_element_type =
+            is_preferred_tuple && !is_array ? preferred_type_->AsETSTupleType()->ElementType() : preferred_type_;
+
+        for (std::size_t idx = 0; idx < elements_.size(); ++idx) {
+            auto *const current_element = elements_[idx];
+
+            if (current_element->IsArrayExpression()) {
+                HandleNestedArrayExpression(checker, current_element->AsArrayExpression(), is_array, is_preferred_tuple,
+                                            idx);
             }
 
-            checker::Type *element_type = element->Check(checker);
-            checker::AssignmentContext(checker->Relation(), element, element_type, preferred_type_, element->Start(),
+            if (current_element->IsObjectExpression()) {
+                current_element->AsObjectExpression()->SetPreferredType(preferred_type_);
+            }
+
+            checker::Type *element_type = current_element->Check(checker);
+
+            if (!element_type->IsETSArrayType() && is_preferred_tuple) {
+                auto *const compare_type = preferred_type_->AsETSTupleType()->GetTypeAtIndex(idx);
+
+                if (compare_type == nullptr) {
+                    checker->ThrowTypeError({"Too many elements in array initializer for tuple with size of ",
+                                             static_cast<uint32_t>(preferred_type_->AsETSTupleType()->GetTupleSize())},
+                                            current_element->Start());
+                }
+
+                const checker::CastingContext cast(
+                    checker->Relation(), current_element, element_type, compare_type, current_element->Start(),
+                    {"Array initializer's type is not assignable to tuple type at index: ", idx});
+
+                element_type = compare_type;
+            }
+
+            checker::AssignmentContext(checker->Relation(), current_element, element_type, target_element_type,
+                                       current_element->Start(),
                                        {"Array element type '", element_type, "' is not assignable to explicit type '",
                                         GetPreferredType(), "'"});
         }
+
+        SetPreferredType(target_element_type);
     }
 
     if (preferred_type_ == nullptr) {
@@ -508,7 +580,7 @@ checker::Type *ArrayExpression::Check(checker::ETSChecker *checker)
     }
 
     SetTsType(checker->CreateETSArrayType(preferred_type_));
-    auto array_type = TsType()->AsETSArrayType();
+    auto *const array_type = TsType()->AsETSArrayType();
     checker->CreateBuiltinArraySignature(array_type, array_type->Rank());
     return TsType();
 }

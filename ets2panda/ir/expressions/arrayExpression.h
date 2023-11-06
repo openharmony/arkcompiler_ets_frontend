@@ -121,6 +121,8 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
     checker::Type *CheckPattern(checker::TSChecker *checker);
+    void HandleNestedArrayExpression(checker::ETSChecker *checker, ArrayExpression *current_element, bool is_array,
+                                     bool is_preferred_tuple, std::size_t idx);
 
 private:
     ArenaVector<Decorator *> decorators_;

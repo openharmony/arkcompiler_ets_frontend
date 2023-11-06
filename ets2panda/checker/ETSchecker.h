@@ -17,20 +17,20 @@
 #define ES2PANDA_CHECKER_ETS_CHECKER_H
 
 #include "checker/checkerContext.h"
-#include "checker/types/ets/etsObjectType.h"
-#include "checker/checker.h"
 #include "varbinder/enumMemberResult.h"
+#include "varbinder/scope.h"
+#include "checker/checker.h"
+#include "checker/ets/primitiveWrappers.h"
+#include "checker/ets/typeConverter.h"
+#include "checker/types/ets/etsObjectType.h"
+#include "checker/types/ets/etsTupleType.h"
+#include "checker/types/ets/types.h"
+#include "checker/types/globalTypesHolder.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "util/enumbitops.h"
 #include "util/ustring.h"
 #include "checker/resolveResult.h"
-#include "checker/types/ets/types.h"
-#include "checker/ets/typeConverter.h"
-#include "checker/ets/primitiveWrappers.h"
-#include "checker/types/globalTypesHolder.h"
-#include "varbinder/scope.h"
-
 #include "macros.h"
 
 #include <cstdint>
@@ -140,7 +140,9 @@ public:
     void ValidateImplementedInterface(ETSObjectType *type, Type *interface, std::unordered_set<Type *> *extends_set,
                                       const lexer::SourcePosition &pos);
     void ResolveDeclaredMembersOfObject(ETSObjectType *type);
+    int32_t GetTupleElementAccessValue(const Type *type) const;
     Type *ValidateArrayIndex(ir::Expression *expr);
+    void ValidateTupleIndex(const ETSTupleType *tuple, const ir::MemberExpression *expr);
     ETSObjectType *CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *class_type, std::string_view msg);
     void CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type);
     void SetTypeParameterType(ir::TSTypeParameter *type_param, Type *type_param_type);
@@ -493,6 +495,8 @@ public:
                                             ETSChecker *checker);
     void SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpression *expr, Type *annotation_type);
     bool ExtensionETSFunctionType(checker::Type *type);
+    void ValidateTupleMinElementSize(ir::ArrayExpression *array_expr, ETSTupleType *tuple);
+    void ModifyPreferredType(ir::ArrayExpression *array_expr, Type *new_preferred_type);
 
     // Exception
     ETSObjectType *CheckExceptionOrErrorType(checker::Type *type, lexer::SourcePosition pos);

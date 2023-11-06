@@ -251,6 +251,12 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSStructDeclaration *node
     UNREACHABLE();
 }
 
+checker::Type *TSAnalyzer::Check(ir::ETSTuple *node) const
+{
+    (void)node;
+    UNREACHABLE();
+}
+
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSTypeReference *node) const
 {
     UNREACHABLE();

@@ -19,47 +19,48 @@
 #include "typeFlag.h"
 
 // NOLINTBEGIN(cppcoreguidelines-macro-usage)
-#define TYPE_MAPPING(_)                               \
-    _(TypeFlag::ARRAY, ArrayType)                     \
-    _(TypeFlag::ANY, AnyType)                         \
-    _(TypeFlag::BIGINT_LITERAL, BigintLiteralType)    \
-    _(TypeFlag::NUMBER, NumberType)                   \
-    _(TypeFlag::STRING, StringType)                   \
-    _(TypeFlag::BOOLEAN, BooleanType)                 \
-    _(TypeFlag::VOID, VoidType)                       \
-    _(TypeFlag::NULL_TYPE, NullType)                  \
-    _(TypeFlag::UNDEFINED, UndefinedType)             \
-    _(TypeFlag::UNKNOWN, UnknownType)                 \
-    _(TypeFlag::NEVER, NeverType)                     \
-    _(TypeFlag::UNION, UnionType)                     \
-    _(TypeFlag::OBJECT, ObjectType)                   \
-    _(TypeFlag::BIGINT, BigintType)                   \
-    _(TypeFlag::BOOLEAN_LITERAL, BooleanLiteralType)  \
-    _(TypeFlag::NUMBER_LITERAL, NumberLiteralType)    \
-    _(TypeFlag::STRING_LITERAL, StringLiteralType)    \
-    _(TypeFlag::ENUM, EnumType)                       \
-    _(TypeFlag::ENUM_LITERAL, EnumLiteralType)        \
-    _(TypeFlag::TYPE_PARAMETER, TypeParameter)        \
-    _(TypeFlag::TYPE_REFERENCE, TypeReference)        \
-    _(TypeFlag::BYTE, ByteType)                       \
-    _(TypeFlag::SHORT, ShortType)                     \
-    _(TypeFlag::INT, IntType)                         \
-    _(TypeFlag::LONG, LongType)                       \
-    _(TypeFlag::FLOAT, FloatType)                     \
-    _(TypeFlag::DOUBLE, DoubleType)                   \
-    _(TypeFlag::CHAR, CharType)                       \
-    _(TypeFlag::ETS_BOOLEAN, ETSBooleanType)          \
-    _(TypeFlag::ETS_VOID, ETSVoidType)                \
-    _(TypeFlag::FUNCTION, ETSFunctionType)            \
-    _(TypeFlag::ETS_OBJECT, ETSObjectType)            \
-    _(TypeFlag::ETS_ARRAY, ETSArrayType)              \
-    _(TypeFlag::ETS_UNION, ETSUnionType)              \
-    _(TypeFlag::NON_PRIMITIVE, NonPrimitiveType)      \
-    _(TypeFlag::WILDCARD, WildcardType)               \
-    _(TypeFlag::ETS_TYPE_PARAMETER, ETSTypeParameter) \
-    _(TypeFlag::ETS_ENUM, ETSEnumType)                \
-    _(TypeFlag::ETS_STRING_ENUM, ETSStringEnumType)   \
-    _(TypeFlag::ETS_EXTENSION_FUNC_HELPER, ETSExtensionFuncHelperType)
+#define TYPE_MAPPING(_)                                                \
+    _(TypeFlag::ARRAY, ArrayType)                                      \
+    _(TypeFlag::ANY, AnyType)                                          \
+    _(TypeFlag::BIGINT_LITERAL, BigintLiteralType)                     \
+    _(TypeFlag::NUMBER, NumberType)                                    \
+    _(TypeFlag::STRING, StringType)                                    \
+    _(TypeFlag::BOOLEAN, BooleanType)                                  \
+    _(TypeFlag::VOID, VoidType)                                        \
+    _(TypeFlag::NULL_TYPE, NullType)                                   \
+    _(TypeFlag::UNDEFINED, UndefinedType)                              \
+    _(TypeFlag::UNKNOWN, UnknownType)                                  \
+    _(TypeFlag::NEVER, NeverType)                                      \
+    _(TypeFlag::UNION, UnionType)                                      \
+    _(TypeFlag::OBJECT, ObjectType)                                    \
+    _(TypeFlag::BIGINT, BigintType)                                    \
+    _(TypeFlag::BOOLEAN_LITERAL, BooleanLiteralType)                   \
+    _(TypeFlag::NUMBER_LITERAL, NumberLiteralType)                     \
+    _(TypeFlag::STRING_LITERAL, StringLiteralType)                     \
+    _(TypeFlag::ENUM, EnumType)                                        \
+    _(TypeFlag::ENUM_LITERAL, EnumLiteralType)                         \
+    _(TypeFlag::TYPE_PARAMETER, TypeParameter)                         \
+    _(TypeFlag::TYPE_REFERENCE, TypeReference)                         \
+    _(TypeFlag::BYTE, ByteType)                                        \
+    _(TypeFlag::SHORT, ShortType)                                      \
+    _(TypeFlag::INT, IntType)                                          \
+    _(TypeFlag::LONG, LongType)                                        \
+    _(TypeFlag::FLOAT, FloatType)                                      \
+    _(TypeFlag::DOUBLE, DoubleType)                                    \
+    _(TypeFlag::CHAR, CharType)                                        \
+    _(TypeFlag::ETS_BOOLEAN, ETSBooleanType)                           \
+    _(TypeFlag::ETS_VOID, ETSVoidType)                                 \
+    _(TypeFlag::FUNCTION, ETSFunctionType)                             \
+    _(TypeFlag::ETS_OBJECT, ETSObjectType)                             \
+    _(TypeFlag::ETS_ARRAY, ETSArrayType)                               \
+    _(TypeFlag::ETS_UNION, ETSUnionType)                               \
+    _(TypeFlag::NON_PRIMITIVE, NonPrimitiveType)                       \
+    _(TypeFlag::WILDCARD, WildcardType)                                \
+    _(TypeFlag::ETS_TYPE_PARAMETER, ETSTypeParameter)                  \
+    _(TypeFlag::ETS_ENUM, ETSEnumType)                                 \
+    _(TypeFlag::ETS_STRING_ENUM, ETSStringEnumType)                    \
+    _(TypeFlag::ETS_EXTENSION_FUNC_HELPER, ETSExtensionFuncHelperType) \
+    _(TypeFlag::ETS_TUPLE, ETSTupleType)
 
 #define OBJECT_TYPE_MAPPING(_)                                \
     _(ObjectType::ObjectTypeKind::FUNCTION, FunctionType)     \

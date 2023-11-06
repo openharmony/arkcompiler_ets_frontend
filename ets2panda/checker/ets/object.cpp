@@ -14,6 +14,7 @@
  */
 
 #include "varbinder/variableFlags.h"
+#include "checker/ets/castingContext.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "ir/astNode.h"
 #include "ir/typeNode.h"
@@ -951,6 +952,46 @@ Type *ETSChecker::ValidateArrayIndex(ir::Expression *expr)
     }
 
     return index_type;
+}
+
+int32_t ETSChecker::GetTupleElementAccessValue(const Type *const type) const
+{
+    ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_NUMERIC));
+
+    switch (ETSType(type)) {
+        case TypeFlag::BYTE: {
+            return type->AsByteType()->GetValue();
+        }
+        case TypeFlag::SHORT: {
+            return type->AsShortType()->GetValue();
+        }
+        case TypeFlag::INT: {
+            return type->AsIntType()->GetValue();
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+}
+
+void ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, const ir::MemberExpression *const expr)
+{
+    const auto *const expr_type = expr->Property()->TsType();
+    ASSERT(expr_type != nullptr);
+
+    if (!expr_type->HasTypeFlag(TypeFlag::CONSTANT) && !tuple->HasSpreadType()) {
+        ThrowTypeError("Only constant expression allowed for element access on tuples.", expr->Property()->Start());
+    }
+
+    if (!expr_type->HasTypeFlag(TypeFlag::ETS_ARRAY_INDEX)) {
+        ThrowTypeError("Only integer type allowed for element access on tuples.", expr->Property()->Start());
+    }
+
+    const int32_t expr_value = GetTupleElementAccessValue(expr_type);
+
+    if (((expr_value >= tuple->GetTupleSize()) && !tuple->HasSpreadType()) || (expr_value < 0)) {
+        ThrowTypeError("Element accessor value is out of tuple size bounds.", expr->Property()->Start());
+    }
 }
 
 ETSObjectType *ETSChecker::CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *class_type, std::string_view msg)

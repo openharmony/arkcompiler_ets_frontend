@@ -69,14 +69,24 @@ void ETSGen::CompileAndCheck(const ir::Expression *expr)
     // NOTE: vpukhov. bad accumulator type leads to terrible bugs in codegen
     // make exact types match mandatory
     expr->Compile(this);
+
+    if (expr->TsType()->IsETSTupleType()) {
+        // This piece of code is necessary to handle multidimensional tuples. As a tuple is stored as an
+        // array of `Objects`. If we make an array inside of the tuple type, then we won't be able to derefer a
+        // 2 dimensional array, with an array that expects to return `Object` after index access.
+        EmitCheckedNarrowingReferenceConversion(expr, expr->TsType());
+    }
+
     auto const *const acc_type = GetAccumulatorType();
     if (acc_type == expr->TsType()) {
         return;
     }
+
     if (acc_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) &&
         ((acc_type->TypeFlags() ^ expr->TsType()->TypeFlags()) & ~checker::TypeFlag::CONSTANT) == 0) {
         return;
     }
+
     ASSERT(!"Type mismatch after Expression::Compile");
 }
 

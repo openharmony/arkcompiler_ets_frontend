@@ -170,6 +170,7 @@ private:
     ir::TSIntersectionType *ParseIntersectionType(ir::Expression *type);
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseFunctionType();
+    ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
     void CreateClassFunctionDeclaration(ir::MethodDefinition *method);
     std::pair<bool, std::size_t> CheckDefaultParameters(const ir::ScriptFunction *function) const;
     ir::MethodDefinition *CreateProxyMethodDefinition(ir::MethodDefinition const *method,

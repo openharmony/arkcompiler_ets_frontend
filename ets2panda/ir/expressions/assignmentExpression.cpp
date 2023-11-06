@@ -284,8 +284,9 @@ checker::Type *AssignmentExpression::Check([[maybe_unused]] checker::ETSChecker 
         }
         case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
             if (left_type->IsETSArrayType() && right_->IsArrayExpression()) {
-                right_->AsArrayExpression()->SetPreferredType(left_type->AsETSArrayType()->ElementType());
+                checker->ModifyPreferredType(right_->AsArrayExpression(), left_type);
             }
+
             if (right_->IsObjectExpression()) {
                 right_->AsObjectExpression()->SetPreferredType(left_type);
             }

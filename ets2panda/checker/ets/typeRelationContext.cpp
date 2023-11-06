@@ -14,18 +14,21 @@
  */
 
 #include "typeRelationContext.h"
-#include "varbinder/variable.h"
 #include "varbinder/scope.h"
+#include "varbinder/variable.h"
 #include "varbinder/declaration.h"
+#include "checker/types/ets/etsUnionType.h"
 #include "ir/expressions/arrayExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/ts/tsArrayType.h"
 #include "ir/ts/tsTypeParameter.h"
 
 namespace panda::es2panda::checker {
 void AssignmentContext::ValidateArrayTypeInitializerByElement(TypeRelation *relation, ir::ArrayExpression *node,
                                                               ETSArrayType *target)
 {
+    if (target->IsETSTupleType()) {
+        return;
+    }
+
     for (uint32_t index = 0; index < node->Elements().size(); index++) {
         ir::Expression *current_array_elem = node->Elements()[index];
         AssignmentContext(relation, current_array_elem,
