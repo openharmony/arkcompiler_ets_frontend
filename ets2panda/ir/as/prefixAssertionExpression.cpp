@@ -15,6 +15,9 @@
 
 #include "prefixAssertionExpression.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/typeNode.h"
 
@@ -36,15 +39,23 @@ void PrefixAssertionExpression::Dump(AstDumper *dumper) const
     dumper->Add({{"type", "PrefixAssertionExpression"}, {"expression", expr_}, {"type", type_}});
 }
 
-void PrefixAssertionExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *PrefixAssertionExpression::Check([[maybe_unused]] checker::TSChecker *checker)
+void PrefixAssertionExpression::Compile(compiler::PandaGen *pg) const
 {
-    return nullptr;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *PrefixAssertionExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+void PrefixAssertionExpression::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *PrefixAssertionExpression::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *PrefixAssertionExpression::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

@@ -63,7 +63,7 @@ class IncrementalTest:
 
         abc_path = os.path.join(uncompressed_output_file, 'ets')
         modules_abc_path = os.path.join(abc_path, 'modules.abc')
-        modules_pa = disasm_abc(modules_abc_path)
+        modules_pa = disasm_abc(task, modules_abc_path)
         if not modules_pa or not os.path.exists(modules_pa):
             inc_info.result = options.TaskResult.failed
             inc_info.error_message = f'ark_disasm failed, module name change not verified'
@@ -551,26 +551,13 @@ class OtherTest:
                 test_info.result = options.TaskResult.passed
 
 
-def disasm_abc(abc_file):
-    sdk_path = options.configs.get('deveco_sdk_path')
-    ark_disasm_path = ''
-    if utils.is_windows():
-        ark_disasm = 'ark_disasm.exe'
-    else:
-        ark_disasm = 'ark_disasm'
-    # try to find ark_disasm in api 10, api 9 sequentially
-    ark_disasm_10_path = os.path.join(sdk_path, '10', 'toolchains', ark_disasm)
-    ark_disasm_9_path = os.path.join(sdk_path, '9', 'toolchains', ark_disasm)
-    if os.path.exists(ark_disasm_10_path):
-        ark_disasm_path = ark_disasm_10_path
-    elif os.path.exists(ark_disasm_9_path):
-        ark_disasm_path = ark_disasm_9_path
-    else:
+def disasm_abc(task, abc_file):
+    if not os.path.exists(task.ark_disasm_path):
         logging.error("ark_disasm executable not found")
         return ''
 
     pa_file = abc_file + '.pa'
-    cmd = [ark_disasm_path, '--verbose', abc_file, pa_file]
+    cmd = [task.ark_disasm_path, '--verbose', abc_file, pa_file]
     logging.debug(f'cmd: {cmd}')
     process = subprocess.Popen(
         cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -585,8 +572,8 @@ def disasm_abc(abc_file):
     return pa_file
 
 
-def is_abc_debug_info_correct(abc_file, is_debug):
-    pa_file = disasm_abc(abc_file)
+def is_abc_debug_info_correct(task, abc_file, is_debug):
+    pa_file = disasm_abc(task, abc_file)
     if not os.path.exists(pa_file):
         logging.error(f"pa file not exist: {pa_file}")
         return False
@@ -618,7 +605,7 @@ def validate_output_for_jsbundle(info, task, uncompressed_output_path, is_debug)
     for file in abc_files:
         total_size += os.path.getsize(
             os.path.join(uncompressed_output_path, file))
-        if 'compatible8' not in task.type and not is_abc_debug_info_correct(file, is_debug):
+        if 'compatible8' not in task.type and not is_abc_debug_info_correct(task, file, is_debug):
             # skip compatible8 outputs as disasm may failed
             info.result = options.TaskResult.failed
             info.error_message = f"{file} debug info not correct"
@@ -656,7 +643,7 @@ def validate_output_for_esmodule(info, task, uncompressed_output_path, is_debug)
         info.result = options.TaskResult.failed
         info.error_message = "modules.abc size is 0"
         return False
-    if not is_abc_debug_info_correct(modules_abc_path, is_debug):
+    if not is_abc_debug_info_correct(task, modules_abc_path, is_debug):
         info.result = options.TaskResult.failed
         info.error_message = "modules.abc debug info not correct"
         return False
@@ -674,7 +661,7 @@ def validate_output_for_esmodule(info, task, uncompressed_output_path, is_debug)
             info.result = options.TaskResult.failed
             info.error_message = "widgets.abc size is 0"
             return False
-        if not is_abc_debug_info_correct(widget_abc_path, is_debug):
+        if not is_abc_debug_info_correct(task, widget_abc_path, is_debug):
             info.result = options.TaskResult.failed
             info.error_message = "widgets.abc debug info not correct"
             return False

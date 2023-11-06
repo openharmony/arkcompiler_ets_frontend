@@ -90,6 +90,10 @@ defines:
     ref: GENERIC_END
   - name: ctor
     ref: CONSTRUCTOR
+  - name: <get>
+    ref: GETTER_BEGIN
+  - name: <set>
+    ref: SETTER_BEGIN
   - name: param0
     ref: CTOR_PARAM0
   - name: param1
@@ -106,6 +110,10 @@ defines:
     ref: LAMBDA_OBJECT
   - name: invoke
     ref: LAMBDA_OBJECT_INVOKE
+  - name: invoke
+    ref: STATIC_INVOKE_METHOD
+  - name: instantiate
+    ref: STATIC_INSTANTIATE_METHOD
 
 packages:
   - name: 'std.core'
@@ -862,7 +870,7 @@ signatures:
     params: [BUILTIN_STRING]
     return_type: BUILTIN_VOID
     ref: BUILTIN_JSRUNTIME_INIT_DYNAMIC_NEW_CLASS
-  
+
   - callee: BUILTIN_JSRUNTIME
     method_name: __createLambdaProxy
     params: [BUILTIN_OBJECT]
@@ -1054,7 +1062,7 @@ signatures:
     params: [PRIMITIVE_DOUBLE]
     return_type: BUILTIN_VOID
     ref: BUILTIN_DOUBLE_BOX_SET
-    
+
   - callee: BUILTIN_JSRUNTIME
     method_name: createObject
     params: []

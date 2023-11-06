@@ -119,13 +119,14 @@ namespace secharmony {
           }
         }
 
-        function doMerge(currentType: SyntaxKind | undefined, child: Statement | undefined): void {
+        function doMerge(currentType: SyntaxKind | undefined, childArg: Statement | undefined): void {
           if (preType === currentType) {
             if (preType !== SyntaxKind.VariableStatement) {
               return;
             }
 
-            if (nodeFlag === (child as VariableStatement).declarationList.flags) {
+            let child = childArg as VariableStatement;
+            if (nodeFlag === child.declarationList.flags) {
               if (!modifiers && !child.modifiers) {
                 return;
               }

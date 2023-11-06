@@ -18,9 +18,10 @@
 #include "compiler/compiler_logger.h"
 #include "mem/arena_allocator.h"
 #include "mem/pool_manager.h"
-#include "options.h"
 #include "es2panda.h"
 #include "util/arktsconfig.h"
+#include "util/generateBin.h"
+#include "util/options.h"
 
 #include <iostream>
 #include <memory>
@@ -48,73 +49,7 @@ public:
     }
 };
 
-static int GenerateProgram(panda::pandasm::Program *prog, const Options *options)
-{
-    std::map<std::string, size_t> stat;
-    std::map<std::string, size_t> *statp = options->OptLevel() != 0 ? &stat : nullptr;
-    panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps maps {};
-    panda::pandasm::AsmEmitter::PandaFileToPandaAsmMaps *mapsp = options->OptLevel() != 0 ? &maps : nullptr;
-
-#ifdef PANDA_WITH_BYTECODE_OPTIMIZER
-    if (options->OptLevel() != 0) {
-        panda::Logger::ComponentMask component_mask;
-        component_mask.set(panda::Logger::Component::ASSEMBLER);
-        component_mask.set(panda::Logger::Component::COMPILER);
-        component_mask.set(panda::Logger::Component::BYTECODE_OPTIMIZER);
-
-        panda::Logger::InitializeStdLogging(Logger::LevelFromString(options->LogLevel()), component_mask);
-
-        if (!panda::pandasm::AsmEmitter::Emit(options->CompilerOutput(), *prog, statp, mapsp, true)) {
-            std::cerr << "Failed to emit binary data: " << panda::pandasm::AsmEmitter::GetLastError() << std::endl;
-            return 1;
-        }
-
-        panda::bytecodeopt::OPTIONS.SetOptLevel(options->OptLevel());
-        // Set default value instead of maximum set in panda::bytecodeopt::SetCompilerOptions()
-        panda::compiler::CompilerLogger::Init({"all"});
-        panda::compiler::OPTIONS.SetCompilerMaxBytecodeSize(panda::compiler::OPTIONS.GetCompilerMaxBytecodeSize());
-        panda::bytecodeopt::OptimizeBytecode(prog, mapsp, options->CompilerOutput(), options->IsDynamic(), true);
-    }
-#endif
-
-    if (options->CompilerOptions().dump_asm) {
-        es2panda::Compiler::DumpAsm(prog);
-    }
-
-    if (!panda::pandasm::AsmEmitter::AssignProfileInfo(prog)) {
-        std::cerr << "AssignProfileInfo failed" << std::endl;
-        return 1;
-    }
-
-    if (!panda::pandasm::AsmEmitter::Emit(options->CompilerOutput(), *prog, statp, mapsp, true)) {
-        std::cerr << "Failed to emit binary data: " << panda::pandasm::AsmEmitter::GetLastError() << std::endl;
-        return 1;
-    }
-
-    if (options->SizeStat()) {
-        size_t total_size = 0;
-        std::cout << "Panda file size statistic:" << std::endl;
-        constexpr std::array<std::string_view, 2> INFO_STATS = {"instructions_number", "codesize"};
-
-        for (const auto &[name, size] : stat) {
-            if (find(INFO_STATS.begin(), INFO_STATS.end(), name) != INFO_STATS.end()) {
-                continue;
-            }
-            std::cout << name << " section: " << size << std::endl;
-            total_size += size;
-        }
-
-        for (const auto &name : INFO_STATS) {
-            std::cout << name << ": " << stat.at(std::string(name)) << std::endl;
-        }
-
-        std::cout << "total: " << total_size << std::endl;
-    }
-
-    return 0;
-}
-
-static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile &input, Options *options)
+static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile &input, util::Options *options)
 {
     auto program = std::unique_ptr<pandasm::Program> {compiler.Compile(input, options->CompilerOptions())};
 
@@ -127,16 +62,16 @@ static int CompileFromSource(es2panda::Compiler &compiler, es2panda::SourceFile 
         }
 
         std::cout << err.TypeString() << ": " << err.Message();
-        std::cout << " [" << (err.File().empty() ? BaseName(options->SourceFile()) : BaseName(err.File())) << ":"
-                  << err.Line() << ":" << err.Col() << "]" << std::endl;
+        std::cout << " [" << (err.File().empty() ? util::BaseName(options->SourceFile()) : util::BaseName(err.File()))
+                  << ":" << err.Line() << ":" << err.Col() << "]" << std::endl;
 
         return err.ErrorCode();
     }
 
-    return GenerateProgram(program.get(), options);
+    return util::GenerateProgram(program.get(), options, [](std::string const &str) { std::cerr << str << std::endl; });
 }
 
-static int CompileFromConfig(es2panda::Compiler &compiler, Options *options)
+static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *options)
 {
     auto compilation_list = FindProjectSources(options->CompilerOptions().arkts_config);
     if (compilation_list.empty()) {
@@ -173,7 +108,7 @@ static int CompileFromConfig(es2panda::Compiler &compiler, Options *options)
 
 static int Run(int argc, const char **argv)
 {
-    auto options = std::make_unique<Options>();
+    auto options = std::make_unique<util::Options>();
 
     if (!options->Parse(argc, argv)) {
         std::cerr << options->ErrorMsg() << std::endl;

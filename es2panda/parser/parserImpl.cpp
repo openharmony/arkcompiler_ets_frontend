@@ -14,6 +14,7 @@
  */
 
 #include "parserImpl.h"
+#include <functional>
 
 #include <binder/scope.h>
 #include <binder/tsBinding.h>
@@ -542,29 +543,6 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
             return ParseTsIntersectionType(typeAnnotation, *options & TypeAnnotationParsingOptions::IN_UNION,
                                            *options & TypeAnnotationParsingOptions::RESTRICT_EXTENDS);
         }
-        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
-        case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS:
-        case lexer::TokenType::KEYW_NEW: {
-            return ParseTsParenthesizedOrFunctionType(typeAnnotation,
-                                                      *options & TypeAnnotationParsingOptions::THROW_ERROR);
-        }
-        case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
-            if (typeAnnotation) {
-                if (lexer_->GetToken().NewLine()) {
-                    break;
-                }
-                if (lexer_->Lookahead() == LEX_CHAR_RIGHT_SQUARE) {
-                    return ParseTsArrayType(typeAnnotation);
-                }
-
-                return ParseTsIndexAccessType(typeAnnotation, *options & TypeAnnotationParsingOptions::THROW_ERROR);
-            }
-
-            return ParseTsTupleType();
-        }
-        case lexer::TokenType::PUNCTUATOR_LEFT_BRACE: {
-            return ParseTsTypeLiteralOrTsMappedType(typeAnnotation);
-        }
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::LITERAL_NUMBER:
         case lexer::TokenType::LITERAL_STRING:
@@ -620,6 +598,9 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
                 return ParseTsIdentifierReference(*options);
             }
 
+            if (InDisallowConditionalTypesContext()) {
+                break;
+            }
             return ParseTsConditionalType(typeAnnotation, *options & TypeAnnotationParsingOptions::RESTRICT_EXTENDS);
         }
         case lexer::TokenType::KEYW_THIS: {
@@ -631,7 +612,11 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
             return ParseTsTemplateLiteralType(*options & TypeAnnotationParsingOptions::THROW_ERROR);
         }
         default: {
-            break;
+            auto type = DoOutsideOfDisallowConditinalTypesContext(&ParserImpl::ParsePostfixTypeOrHigher,
+                                                                  typeAnnotation, options);
+            if (type) {
+                return type;
+            }
         }
     }
 
@@ -639,6 +624,41 @@ ir::Expression *ParserImpl::ParseTsTypeAnnotationElement(ir::Expression *typeAnn
         ThrowSyntaxError("Type expected");
     }
 
+    return nullptr;
+}
+
+ir::Expression *ParserImpl::ParsePostfixTypeOrHigher(ir::Expression *typeAnnotation,
+                                                     TypeAnnotationParsingOptions *options)
+{
+    switch (lexer_->GetToken().Type()) {
+        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
+        case lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS:
+        case lexer::TokenType::KEYW_NEW: {
+            return ParseTsParenthesizedOrFunctionType(typeAnnotation,
+                                                      *options & TypeAnnotationParsingOptions::THROW_ERROR);
+        }
+        
+        case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
+            if (typeAnnotation) {
+                if (lexer_->GetToken().NewLine()) {
+                    break;
+                }
+                if (lexer_->Lookahead() == LEX_CHAR_RIGHT_SQUARE) {
+                    return ParseTsArrayType(typeAnnotation);
+                }
+
+                return ParseTsIndexAccessType(typeAnnotation, *options & TypeAnnotationParsingOptions::THROW_ERROR);
+            }
+
+            return ParseTsTupleType();
+        }
+        case lexer::TokenType::PUNCTUATOR_LEFT_BRACE: {
+            return ParseTsTypeLiteralOrTsMappedType(typeAnnotation);
+        }
+        default: {
+            break;
+        }
+    }
     return nullptr;
 }
 
@@ -736,8 +756,9 @@ ir::Expression *ParserImpl::ParseTsConditionalType(ir::Expression *checkType, bo
 
     TypeAnnotationParsingOptions options =
         TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::RESTRICT_EXTENDS;
-    auto *extendsType = ParseTsTypeAnnotation(&options);
 
+    ir::Expression *extendsType = DoInsideOfDisallowConditinalTypesContext(&ParserImpl::ParseTsTypeAnnotation,
+                                                                           &options);
     context_.Status() = savedStatus;
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
@@ -747,7 +768,7 @@ ir::Expression *ParserImpl::ParseTsConditionalType(ir::Expression *checkType, bo
     lexer_->NextToken();  // eat '?'
 
     options &= ~TypeAnnotationParsingOptions::RESTRICT_EXTENDS;
-    auto *trueType = ParseTsTypeAnnotation(&options);
+    auto *trueType = DoOutsideOfDisallowConditinalTypesContext(&ParserImpl::ParseTsTypeAnnotation, &options);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
         ThrowSyntaxError("':' expected.");
@@ -755,7 +776,7 @@ ir::Expression *ParserImpl::ParseTsConditionalType(ir::Expression *checkType, bo
 
     lexer_->NextToken();  // eat ':'
 
-    auto *falseType = ParseTsTypeAnnotation(&options);
+    auto *falseType = DoOutsideOfDisallowConditinalTypesContext(&ParserImpl::ParseTsTypeAnnotation, &options);
 
     lexer::SourcePosition endLoc = falseType->End();
 
@@ -1321,11 +1342,7 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceKey(bool *computed, boo
             TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
             ir::Expression *typeAnnotation = ParseTsTypeAnnotation(&options);
 
-            if (!typeAnnotation->IsTSNumberKeyword() && !typeAnnotation->IsTSStringKeyword()) {
-                ThrowSyntaxError(
-                    "An index signature parameter type must be either "
-                    "'string' or 'number'");
-            }
+            ValidateIndexSignatureParameterType(typeAnnotation);
 
             key->SetTsTypeAnnotation(typeAnnotation);
         } else {
@@ -1346,6 +1363,20 @@ ir::Expression *ParserImpl::ParseTsTypeLiteralOrInterfaceKey(bool *computed, boo
     }
 
     return key;
+}
+
+void ParserImpl::ValidateIndexSignatureParameterType(ir::Expression *typeAnnotation)
+{
+    // Validation of IndexSignatureParameterType is coarse-grained.
+    if (!typeAnnotation->IsTSStringKeyword() && !typeAnnotation->IsTSNumberKeyword() &&
+        !typeAnnotation->IsTSSymbolKeyword() && !typeAnnotation->IsTSTemplateLiteralType() &&
+        !typeAnnotation->IsTSUnionType() && !typeAnnotation->IsTSTypeReference() &&
+        !typeAnnotation->IsTSParenthesizedType() && !typeAnnotation->IsTSConditionalType() &&
+        !typeAnnotation->IsTSIndexedAccessType() && !typeAnnotation->IsTSIntersectionType()) {
+        ThrowSyntaxError(
+            "An index signature parameter type must be 'string', 'number', 'symbol', "
+            "or a template literal type.");
+    }
 }
 
 void ParserImpl::CreateTSVariableForProperty(ir::AstNode *node, const ir::Expression *key, binder::VariableFlags flags)
@@ -2284,11 +2315,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDe
                 TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
                 ir::Expression *typeAnnotation = ParseTsTypeAnnotation(&options);
 
-                if (!typeAnnotation->IsTSNumberKeyword() && !typeAnnotation->IsTSStringKeyword()) {
-                    ThrowSyntaxError(
-                        "An index signature parameter type must be either "
-                        "'string' or 'number'");
-                }
+                ValidateIndexSignatureParameterType(typeAnnotation);
 
                 propName->SetTsTypeAnnotation(typeAnnotation);
 
@@ -3047,7 +3074,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
 
     lexer_->NextToken();
 
-    ValidateClassConstructor(ctor, properties, superClass, isDeclare, hasConstructorFuncBody, hasSuperClass);
+    ValidateClassConstructor(ctor, properties, isDeclare, hasConstructorFuncBody, hasSuperClass, isExtendsFromNull);
 
     auto *classDefinition = AllocNode<ir::ClassDefinition>(
         classCtx.GetScope(), identNode, typeParamDecl, superTypeParams, std::move(implements), ctor, staticInitializer,
@@ -3061,10 +3088,10 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
     return classDefinition;
 }
 
-void ParserImpl::ValidateClassConstructor(ir::MethodDefinition *ctor,
-                                          ArenaVector<ir::Statement *> &properties,
-                                          ir::Expression *superClass,
-                                          bool isDeclare, bool hasConstructorFuncBody, bool hasSuperClass)
+void ParserImpl::ValidateClassConstructor(const ir::MethodDefinition *ctor,
+                                          const ArenaVector<ir::Statement *> &properties,
+                                          bool isDeclare, bool hasConstructorFuncBody,
+                                          bool hasSuperClass, bool isExtendsFromNull)
 {
     if (!hasConstructorFuncBody) {
         if (isDeclare) {
@@ -3078,41 +3105,55 @@ void ParserImpl::ValidateClassConstructor(ir::MethodDefinition *ctor,
     }
 
     bool hasSuperCall = false;
-    FindSuperCallInConstructor(ctor, &hasSuperCall);
+    FindSuperCall(ctor->Function()->Body()->AsBlockStatement(), &hasSuperCall);
     if (hasSuperCall) {
-        if (superClass->IsNullLiteral()) {
+        if (isExtendsFromNull) {
             ThrowSyntaxError("A constructor cannot contain a super call when its class extends null.", ctor->Start());
         }
 
-        if (SuperCallShouldBeFirst(ctor, properties)) {
-            ir::Statement *firstStat = nullptr;
-            ASSERT(ctor->Function()->Body()->IsBlockStatement());
-            ir::BlockStatement *blockStat = ctor->Function()->Body()->AsBlockStatement();
-            for (auto iter = blockStat->Statements().begin(); iter != blockStat->Statements().end();) {
-                if ((*iter)->IsExpressionStatement() &&
-                    (*iter)->AsExpressionStatement()->GetExpression()->IsStringLiteral()) {
-                    iter++;
-                } else {
-                    firstStat = *iter;
-                    break;
-                }
-            }
-
-            if (firstStat == nullptr || !firstStat->IsExpressionStatement() ||
-                !firstStat->AsExpressionStatement()->GetExpression()->IsCallExpression() ||
-                !firstStat->AsExpressionStatement()->GetExpression()->AsCallExpression()
-                ->Callee()->IsSuperExpression()) {
-                ThrowSyntaxError("A super call must be the first statement in the constructor when a class contains "
-                                 "initialized properties, parameter properties, or private identifiers.",
-                                 ctor->Start());
-            }
+        ValidateSuperCallLocation(ctor, SuperCallShouldBeRootLevel(ctor, properties));
+    } else {
+        if (!isExtendsFromNull) {
+            ThrowSyntaxError("Constructors for derived classes must contain a super call.", ctor->Start());
         }
-    } else if (!superClass->IsNullLiteral()) {
-        ThrowSyntaxError("Constructors for derived classes must contain a super call.", ctor->Start());
     }
 }
 
-bool ParserImpl::SuperCallShouldBeFirst(ir::MethodDefinition *ctor, ArenaVector<ir::Statement *> &properties)
+void ParserImpl::FindSuperCall(const ir::AstNode *parent, bool *hasSuperCall)
+{
+    parent->Iterate([this, hasSuperCall](auto *childNode) {
+        FindSuperCallInCtorChildNode(childNode, hasSuperCall);
+    });
+}
+
+void ParserImpl::FindSuperCallInCtorChildNode(const ir::AstNode *childNode, bool *hasSuperCall)
+{
+    if (*hasSuperCall) {
+        return;
+    }
+    switch (childNode->Type()) {
+        case ir::AstNodeType::CALL_EXPRESSION: {
+            if (childNode->AsCallExpression()->Callee()->IsSuperExpression()) {
+                *hasSuperCall = true;
+                return;
+            }
+            break;
+        }
+        case ir::AstNodeType::CLASS_DEFINITION:
+        case ir::AstNodeType::FUNCTION_DECLARATION:
+        case ir::AstNodeType::FUNCTION_EXPRESSION:
+        case ir::AstNodeType::ARROW_FUNCTION_EXPRESSION: {
+            break;
+        }
+        default: {
+            FindSuperCall(childNode, hasSuperCall);
+            break;
+        }
+    }
+}
+
+bool ParserImpl::SuperCallShouldBeRootLevel(const ir::MethodDefinition *ctor,
+                                            const ArenaVector<ir::Statement *> &properties)
 {
     for (const auto *property : properties) {
         if (property->IsClassProperty() && (property->AsClassProperty()->Value() != nullptr ||
@@ -3131,30 +3172,76 @@ bool ParserImpl::SuperCallShouldBeFirst(ir::MethodDefinition *ctor, ArenaVector<
     return false;
 }
 
-void ParserImpl::FindSuperCallInConstructor(const ir::AstNode *parent, bool *hasSuperCall)
+void ParserImpl::ValidateSuperCallLocation(const ir::MethodDefinition *ctor, bool superCallShouldBeRootLevel)
 {
-    parent->Iterate([this, hasSuperCall](auto *childNode) {
-        FindSuperCallInConstructorChildNode(childNode, hasSuperCall);
+    bool hasThisOrSuperReferenceBeforeSuperCall = false;
+    const ir::BlockStatement *blockStat = ctor->Function()->Body()->AsBlockStatement();
+
+    if (superCallShouldBeRootLevel) {
+        bool superCallInRootLevel = false;
+        for (auto iter = blockStat->Statements().begin(); iter != blockStat->Statements().end(); iter++) {
+            if ((*iter)->IsExpressionStatement() &&
+                (*iter)->AsExpressionStatement()->GetExpression()->IsCallExpression() &&
+                (*iter)->AsExpressionStatement()->GetExpression()->AsCallExpression()->Callee()->IsSuperExpression()) {
+                superCallInRootLevel = true;
+                break;
+            }
+            if (!hasThisOrSuperReferenceBeforeSuperCall) {
+                FindThisOrSuperReferenceInChildNode(*iter, &hasThisOrSuperReferenceBeforeSuperCall);
+            }
+        }
+
+        if (!superCallInRootLevel) {
+            ThrowSyntaxError("A super call must be a root-level statement within a constructor of a derived class "
+                             "that contains initialized properties, parameter properties, or private identifiers.",
+                             ctor->Start());
+        }
+    } else {
+        for (auto iter = blockStat->Statements().begin(); iter != blockStat->Statements().end(); iter++) {
+            bool superCallInStatement = false;
+            FindSuperCallInCtorChildNode(*iter, &superCallInStatement);
+            if (superCallInStatement) {
+                break;
+            }
+            if (!hasThisOrSuperReferenceBeforeSuperCall) {
+                FindThisOrSuperReferenceInChildNode(*iter, &hasThisOrSuperReferenceBeforeSuperCall);
+            }
+        }
+    }
+
+    if (hasThisOrSuperReferenceBeforeSuperCall) {
+        ThrowSyntaxError("super() must be called before this/super access.", ctor->Start());
+    }
+}
+
+void ParserImpl::FindThisOrSuperReference(const ir::AstNode *parent, bool *hasThisOrSuperReference)
+{
+    parent->Iterate([this, hasThisOrSuperReference](auto *childNode) {
+        FindThisOrSuperReferenceInChildNode(childNode, hasThisOrSuperReference);
     });
 }
 
-void ParserImpl::FindSuperCallInConstructorChildNode(const ir::AstNode *childNode, bool *hasSuperCall)
+void ParserImpl::FindThisOrSuperReferenceInChildNode(const ir::AstNode *childNode, bool *hasThisOrSuperReference)
 {
-    if (*hasSuperCall) {
+    if (*hasThisOrSuperReference) {
         return;
     }
+
+    // The logic for finding ThisOrSuperReference is coarse-grained and may miss some cases.
     switch (childNode->Type()) {
-        case ir::AstNodeType::CALL_EXPRESSION: {
-            if (childNode->AsCallExpression()->Callee()->IsSuperExpression()) {
-                *hasSuperCall = true;
-            }
+        case ir::AstNodeType::THIS_EXPRESSION:
+        case ir::AstNodeType::SUPER_EXPRESSION: {
+            *hasThisOrSuperReference = true;
             break;
         }
-        case ir::AstNodeType::CLASS_DEFINITION: {
+        case ir::AstNodeType::CLASS_DEFINITION:
+        case ir::AstNodeType::FUNCTION_DECLARATION:
+        case ir::AstNodeType::FUNCTION_EXPRESSION:
+        case ir::AstNodeType::ARROW_FUNCTION_EXPRESSION: {
             break;
         }
         default: {
-            FindSuperCallInConstructor(childNode, hasSuperCall);
+            FindThisOrSuperReference(childNode, hasThisOrSuperReference);
             break;
         }
     }
@@ -3455,11 +3542,7 @@ ir::TSTypeParameter *ParserImpl::ParseTsTypeParameter(bool throwError, bool addB
         options |= TypeAnnotationParsingOptions::THROW_ERROR;
     }
 
-    ir::Expression *constraint = nullptr;
-    if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS) {
-        lexer_->NextToken();
-        constraint = ParseTsTypeAnnotation(&options);
-    }
+    ir::Expression *constraint = TryParseConstraintOfInferType(&options);
 
     ir::Expression *defaultType = nullptr;
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
@@ -3472,6 +3555,22 @@ ir::TSTypeParameter *ParserImpl::ParseTsTypeParameter(bool throwError, bool addB
     typeParam->SetRange({startLoc, lexer_->GetToken().End()});
 
     return typeParam;
+}
+
+ir::Expression *ParserImpl::TryParseConstraintOfInferType(TypeAnnotationParsingOptions *options)
+{
+    ir::Expression *constraint = nullptr;
+    if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS) {
+        auto savedPos = lexer_->Save();
+        lexer_->NextToken(); // eat 'extends'
+        constraint = DoInsideOfDisallowConditinalTypesContext(&ParserImpl::ParseTsTypeAnnotation, options);
+        if (!InDisallowConditionalTypesContext() &&
+            lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
+            constraint = nullptr;
+            lexer_->Rewind(savedPos); // go back to 'extends'
+        }
+    }
+    return constraint;
 }
 
 ir::TSTypeParameterDeclaration *ParserImpl::ParseTsTypeParameterDeclaration(bool throwError, bool isAllowInOut)
@@ -3991,4 +4090,55 @@ void ParserImpl::CheckStrictReservedWord() const
     }
 }
 
+template<typename Function, typename... Args>
+ir::Expression* ParserImpl::DoOutsideOfDisallowConditinalTypesContext(Function func, Args &&... args)
+{
+    ParserStatus status = ParserStatus::DISALLOW_CONDITIONAL_TYPES;
+    auto inDisallowConditionalTypesContext = InDisallowConditionalTypesContext();
+    ir::Expression *result = nullptr;
+    if (inDisallowConditionalTypesContext) {
+        RemoveFlagToStatus(status);
+        result = (this->*func)(std::forward<Args>(args)...);
+        AddFlagToStatus(status);
+        return result;
+    }
+    result = (this->*func)(std::forward<Args>(args)...);
+    return result;
+}
+
+template<typename Function, typename... Args>
+ir::Expression* ParserImpl::DoInsideOfDisallowConditinalTypesContext(Function func, Args &&... args)
+{
+    ParserStatus status = ParserStatus::DISALLOW_CONDITIONAL_TYPES;
+    auto inAllowConditionalTypesContext = status & ~context_.Status();
+    ir::Expression *result = nullptr;
+    if (inAllowConditionalTypesContext) {
+        AddFlagToStatus(status);
+        result = (this->*func)(std::forward<Args>(args)...);
+        RemoveFlagToStatus(status);
+        return result;
+    }
+    result = (this->*func)(std::forward<Args>(args)...);
+    return result;
+}
+
+bool ParserImpl::InDisallowConditionalTypesContext()
+{
+    return InContext(ParserStatus::DISALLOW_CONDITIONAL_TYPES);
+}
+
+bool ParserImpl::InContext(ParserStatus status)
+{
+    return context_.Status() & status;
+}
+
+void ParserImpl::AddFlagToStatus(ParserStatus status)
+{
+    context_.Status() |= status;
+}
+
+void ParserImpl::RemoveFlagToStatus(ParserStatus status)
+{
+    context_.Status() &= ~status;
+}
 }  // namespace panda::es2panda::parser

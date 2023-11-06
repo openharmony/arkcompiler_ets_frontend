@@ -16,14 +16,14 @@ generic-set.ets
 # panda#11502
 nullCoalesc.ets
 
-# panda#13365
-non-const-capture.ets
-
 # panda#11104
 unboxing.ets
 
 # panda#11326
 GenericsTest.ets
+
+# panda#11106
+LongLiteralLimits.ets
 
 # panda#11327
 objectEquality.ets

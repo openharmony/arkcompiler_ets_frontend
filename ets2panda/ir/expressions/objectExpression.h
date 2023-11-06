@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,7 +26,16 @@ class BitSet;
 
 namespace panda::es2panda::ir {
 class ObjectExpression : public AnnotatedExpression {
+private:
+    struct Tag {};
+
 public:
+    ObjectExpression() = delete;
+    ~ObjectExpression() override = default;
+
+    NO_COPY_SEMANTIC(ObjectExpression);
+    NO_MOVE_SEMANTIC(ObjectExpression);
+
     explicit ObjectExpression(AstNodeType node_type, ArenaAllocator *allocator, ArenaVector<Expression *> &&properties,
                               bool trailing_comma)
         : AnnotatedExpression(node_type),
@@ -36,32 +45,34 @@ public:
     {
     }
 
-    const ArenaVector<Expression *> &Properties() const
+    explicit ObjectExpression(Tag tag, ObjectExpression const &other, ArenaAllocator *allocator);
+
+    [[nodiscard]] const ArenaVector<Expression *> &Properties() const noexcept
     {
         return properties_;
     }
 
-    bool IsDeclaration() const
+    [[nodiscard]] bool IsDeclaration() const noexcept
     {
         return is_declaration_;
     }
 
-    bool IsOptional() const
+    [[nodiscard]] bool IsOptional() const noexcept
     {
         return optional_;
     }
 
-    void SetPreferredType(checker::Type *preferred_type)
+    void SetPreferredType(checker::Type *const preferred_type) noexcept
     {
         preferred_type_ = preferred_type;
     }
 
-    checker::Type *PreferredType() const
+    [[nodiscard]] checker::Type *PreferredType() const noexcept
     {
         return preferred_type_;
     }
 
-    const ArenaVector<Decorator *> &Decorators() const
+    [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const noexcept
     {
         return decorators_;
     }
@@ -71,8 +82,11 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    ValidationInfo ValidateExpression();
-    bool ConvertibleToObjectPattern();
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
+    [[nodiscard]] ValidationInfo ValidateExpression();
+    [[nodiscard]] bool ConvertibleToObjectPattern();
 
     void SetDeclaration();
     void SetOptional(bool optional);

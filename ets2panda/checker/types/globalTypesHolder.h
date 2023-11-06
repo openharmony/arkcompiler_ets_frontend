@@ -106,6 +106,7 @@ enum class GlobalTypeId {
     ETS_LONG_BOX_BUILTIN,
     ETS_FLOAT_BOX_BUILTIN,
     ETS_DOUBLE_BOX_BUILTIN,
+    ETS_NEVER_BUILTIN,
 
     COUNT,
 };
@@ -193,6 +194,7 @@ public:
     Type *GlobalLongBoxBuiltinType();
     Type *GlobalFloatBoxBuiltinType();
     Type *GlobalDoubleBoxBuiltinType();
+    Type *GlobalBuiltinNeverType();
 
     // ETS escompat layer
     Type *GlobalArrayBuiltinType();

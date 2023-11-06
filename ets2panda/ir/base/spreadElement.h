@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,28 +21,39 @@
 
 namespace panda::es2panda::ir {
 class SpreadElement : public AnnotatedExpression {
+private:
+    struct Tag {};
+
 public:
-    explicit SpreadElement(AstNodeType node_type, ArenaAllocator *allocator, Expression *argument)
+    SpreadElement() = delete;
+    ~SpreadElement() override = default;
+
+    NO_COPY_SEMANTIC(SpreadElement);
+    NO_MOVE_SEMANTIC(SpreadElement);
+
+    explicit SpreadElement(AstNodeType const node_type, ArenaAllocator *const allocator, Expression *const argument)
         : AnnotatedExpression(node_type), decorators_(allocator->Adapter()), argument_(argument)
     {
     }
 
-    const Expression *Argument() const
+    explicit SpreadElement(Tag tag, SpreadElement const &other, ArenaAllocator *allocator);
+
+    [[nodiscard]] const Expression *Argument() const noexcept
     {
         return argument_;
     }
 
-    Expression *Argument()
+    [[nodiscard]] Expression *Argument() noexcept
     {
         return argument_;
     }
 
-    bool IsOptional() const
+    [[nodiscard]] bool IsOptional() const noexcept
     {
         return optional_;
     }
 
-    const ArenaVector<Decorator *> &Decorators() const
+    [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const noexcept
     {
         return decorators_;
     }
@@ -52,13 +63,16 @@ public:
         decorators_ = std::move(decorators);
     }
 
-    void SetOptional(bool optional)
+    void SetOptional(bool const optional) noexcept
     {
         optional_ = optional;
     }
 
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
     ValidationInfo ValidateExpression();
-    bool ConvertibleToRest(bool is_declaration, bool allow_pattern = true);
+    [[nodiscard]] bool ConvertibleToRest(bool is_declaration, bool allow_pattern = true);
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -69,7 +83,7 @@ public:
 
 private:
     ArenaVector<Decorator *> decorators_;
-    Expression *argument_;
+    Expression *argument_ = nullptr;
     bool optional_ {false};
 };
 }  // namespace panda::es2panda::ir

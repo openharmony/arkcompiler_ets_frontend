@@ -26,6 +26,31 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
+Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, ArenaAllocator *const allocator)
+    : AnnotatedExpression(static_cast<AnnotatedExpression const &>(other)), decorators_(allocator->Adapter())
+{
+    CloneTypeAnnotation(allocator);
+    name_ = other.name_;
+    flags_ = other.flags_;
+    variable_ = other.variable_;
+
+    for (auto *decorator : other.decorators_) {
+        decorators_.emplace_back(decorator->Clone(allocator, this)->AsDecorator());
+    }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *Identifier::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<Identifier>(Tag {}, *this, allocator); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 void Identifier::TransformChildren(const NodeTransformer &cb)
 {
     if (TypeAnnotation() != nullptr) {
@@ -152,6 +177,13 @@ checker::Type *Identifier::Check(checker::ETSChecker *checker)
     }
 
     SetTsType(checker->ResolveIdentifier(this));
+    if (TsType()->IsETSFunctionType()) {
+        for (auto *sig : TsType()->AsETSFunctionType()->CallSignatures()) {
+            if (sig->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
+                sig->OwnerVar()->Declaration()->Node()->Check(checker);
+            }
+        }
+    }
     return TsType();
 }
 }  // namespace panda::es2panda::ir

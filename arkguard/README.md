@@ -97,7 +97,7 @@ following:
     }
     ```
     will not be obfuscated.
-For 'indirectly export' cases such as `export MyClass` and `let a = MyClass; export a;`, if you do not want to obfuscate
+For 'indirectly export' cases such as `export MyClass` and `let a = MyClass; export {a};`, if you do not want to obfuscate
 their property names, you need to use [keep options](#keep-options) to keep them. Besides, for the property names of properties of directly exported classes or objects, like `name` and `age` in the following example, if you do not want to obfuscate them, then you also need [keep options](#keep-options) to keep them.
     ```
     export class MyClass {
@@ -115,6 +115,7 @@ their property names, you need to use [keep options](#keep-options) to keep them
     will not be obfuscated.
 * the property names that are specified by [keep options](#keep-options).
 * the property names in system API list. System API list is a name set which is extracted from SDK automatically by default.
+* in the Native API scenario, the APIs in the d.ts file of so library will not be obfuscated.
 * the property names that are string literals. For example, the property names "name" and "age" in the following code will not be obfuscated.
     ```
     let person = {"name": "abc"};
@@ -165,7 +166,7 @@ incremental compilation.
 
 Keep options are useful only when you use `enable-property-obfuscation` or `enable-toplevel-obfuscation`.
 
-`-keep-property-name` [,modifiers,...]
+`-keep-property-name` [,identifiers,...]
 
 Specifies property names that you want to keep. For example,
 ```
@@ -202,8 +203,9 @@ console.log(obj['t']);        // t and 't' can be safely obfuscated when `-enabl
 obj['v'] = 0;
 console.log(obj['v']);        // 'v' can be safely obfuscated when `-enable-string-property-obfuscation`, but we suggest keeping v
 ```
+In the native API scenario, if in the ets/ts/js file you want to use APIs that are not declared in d.ts file, you need to keep these APIs.
 
-`-keep-global-name` [,modifiers,...]
+`-keep-global-name` [,identifiers,...]
 
 Specifies names that you want to keep in the global scope. For example,
 ```

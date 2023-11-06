@@ -59,3 +59,18 @@ class SomeClass {
         let nns: String = null;
   }
 }
+
+class ChainedCallsClass {
+    methodOne(): ChainedCallsClass {
+        return this;
+    }
+
+    methodTwo(): ChainedCallsClass {
+        return this;
+    }
+}
+
+// Issue 13972
+let cc = new ChainedCallsClass()
+// @ts-ignore
+.methodOne().methodTwo();

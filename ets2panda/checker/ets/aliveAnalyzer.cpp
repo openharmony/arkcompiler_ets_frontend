@@ -397,6 +397,9 @@ void AliveAnalyzer::AnalyzeCall(const ir::CallExpression *call_expr)
     for (const auto *it : call_expr->Arguments()) {
         AnalyzeNode(it);
     }
+    if (call_expr->Signature()->ReturnType() == checker_->GetGlobalTypesHolder()->GlobalBuiltinNeverType()) {
+        MarkDead();
+    }
 }
 
 void AliveAnalyzer::AnalyzeThrow(const ir::ThrowStatement *throw_stmt)

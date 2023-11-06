@@ -46,6 +46,7 @@ enum class ETSObjectFlags : uint32_t {
     DYNAMIC = 1U << 16U,
     ASYNC_FUNC_RETURN_TYPE = 1U << 17U,
     TYPE_PARAMETER = 1U << 18U,
+    CHECKED_INVOKE_LEGITIMACY = 1U << 19U,
 
     BUILTIN_STRING = 1U << 23U,
     BUILTIN_BOOLEAN = 1U << 24U,
@@ -85,8 +86,9 @@ enum class PropertySearchFlags : uint32_t {
     IGNORE_ABSTRACT = 1U << 8U,
     ALLOW_FUNCTIONAL_INTERFACE = 1U << 9U,
     DISALLOW_SYNTHETIC_METHOD_CREATION = 1U << 10U,
-    IS_SETTER = 1U << 11U,
-    IS_GETTER = 1U << 12U,
+    IS_FUNCTIONAL = 1U << 11U,
+    IS_SETTER = 1U << 12U,
+    IS_GETTER = 1U << 13U,
 
     SEARCH_INSTANCE = SEARCH_INSTANCE_FIELD | SEARCH_INSTANCE_METHOD | SEARCH_INSTANCE_DECL,
     SEARCH_STATIC = SEARCH_STATIC_FIELD | SEARCH_STATIC_METHOD | SEARCH_STATIC_DECL,
@@ -273,14 +275,21 @@ public:
         base_type_ = base_type;
     }
 
-    ETSObjectType *GetBaseType()
+    ETSObjectType *GetBaseType() noexcept
     {
         return base_type_;
     }
 
-    const ETSObjectType *GetBaseType() const
+    const ETSObjectType *GetBaseType() const noexcept
     {
         return base_type_;
+    }
+
+    ETSObjectType const *GetConstOriginalBaseType() const noexcept;
+
+    ETSObjectType *GetOriginalBaseType() noexcept
+    {
+        return const_cast<ETSObjectType *>(GetConstOriginalBaseType());
     }
 
     bool IsPropertyInherited(const binder::Variable *var)

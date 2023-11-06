@@ -41,6 +41,27 @@
             "problem": "YieldExpression",
             "suggest": "",
             "rule": "Generator functions are not supported (arkts-no-generators)"
+        },
+        {
+            "line": 82,
+            "column": 5,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 102,
+            "column": 9,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 104,
+            "column": 7,
+            "problem": "FunctionApplyBindCall",
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
         }
     ]
 }

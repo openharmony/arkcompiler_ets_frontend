@@ -22,15 +22,24 @@
 namespace panda::es2panda::ir {
 class ChainExpression : public Expression {
 public:
+    ChainExpression() = delete;
+    ~ChainExpression() override = default;
+
+    NO_COPY_SEMANTIC(ChainExpression);
+    NO_MOVE_SEMANTIC(ChainExpression);
+
     explicit ChainExpression(Expression *expression)
         : Expression(AstNodeType::CHAIN_EXPRESSION), expression_(expression)
     {
     }
 
-    const Expression *GetExpression() const
+    const Expression *GetExpression() const noexcept
     {
         return expression_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

@@ -188,7 +188,7 @@ public:
         Val value_ {};
     };
 
-    explicit AstDumper(const BlockStatement *program, util::StringView source_code);
+    explicit AstDumper(const ir::AstNode *node, util::StringView source_code = "");
 
     void Add(std::initializer_list<Property> props);
     void Add(const AstDumper::Property &prop);
@@ -241,9 +241,10 @@ private:
 
     void SerializeArray(std::vector<const ir::AstNode *> array);
 
-    lexer::LineIndex index_;
+    const lexer::LineIndex index_;
     std::stringstream ss_;
     int32_t indent_ {};
+    bool is_src_empty_ = false;
 };
 }  // namespace panda::es2panda::ir
 

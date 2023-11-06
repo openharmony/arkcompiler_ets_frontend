@@ -38,6 +38,20 @@
             "line": 47,
             "column": 5,
             "problem": "StrictDiagnostic"
+        },
+        {
+            "line": 52,
+            "column": 12,
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'null' is not assignable to type 'Object'.",
+            "rule": "Type 'null' is not assignable to type 'Object'."
+        },
+        {
+            "line": 56,
+            "column": 17,
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'null' is not assignable to type 'Object'.",
+            "rule": "Type 'null' is not assignable to type 'Object'."
         }
     ]
 }

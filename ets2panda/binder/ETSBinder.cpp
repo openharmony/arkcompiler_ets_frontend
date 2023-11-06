@@ -462,15 +462,8 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
                     insert_foreign_binding(bindingName, var);
                 }
             }
-        } else {
-            auto *const let_decl = Allocator()->New<binder::LetDecl>(namespace_specifier->Local()->Name(), specifier);
-            auto *const var = Allocator()->New<binder::LocalVariable>(let_decl, binder::VariableFlags::STATIC);
-            var->AddFlag(VariableFlags::INITIALIZED);
-
-            if (!var->Declaration()->Node()->IsDefaultExported()) {
-                insert_foreign_binding(namespace_specifier->Local()->Name(), var);
-            }
         }
+
         return;
     }
 
@@ -656,12 +649,15 @@ void ETSBinder::BuildFunctionName(const ir::ScriptFunction *func) const
 
     if (func->IsStaticBlock()) {
         ss << compiler::Signatures::CCTOR;
+    } else if (func->IsConstructor()) {
+        ss << compiler::Signatures::CTOR;
     } else {
-        if (func->IsConstructor()) {
-            ss << compiler::Signatures::CTOR;
-        } else {
-            ss << util::Helpers::FunctionName(Allocator(), func);
+        if (func->IsGetter()) {
+            ss << compiler::Signatures::GETTER_BEGIN;
+        } else if (func->IsSetter()) {
+            ss << compiler::Signatures::SETTER_BEGIN;
         }
+        ss << util::Helpers::FunctionName(Allocator(), func);
     }
 
     signature->ToAssemblerType(GetCompilerContext(), ss);

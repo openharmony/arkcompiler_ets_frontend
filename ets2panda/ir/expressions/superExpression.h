@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,7 +21,15 @@
 namespace panda::es2panda::ir {
 class SuperExpression : public Expression {
 public:
+    ~SuperExpression() override = default;
+
+    NO_COPY_SEMANTIC(SuperExpression);
+    NO_MOVE_SEMANTIC(SuperExpression);
+
     explicit SuperExpression() : Expression(AstNodeType::SUPER_EXPRESSION) {}
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

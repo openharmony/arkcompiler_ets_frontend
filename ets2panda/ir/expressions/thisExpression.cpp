@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -68,12 +68,55 @@ checker::Type *ThisExpression::Check(checker::ETSChecker *checker)
         return TsType();
     }
 
-    SetTsType(checker->CheckThisOrSuperAccess(this, checker->Context().ContainingClass(), "this"));
+    /*
+    example code:
+    ```
+        class A {
+            prop
+        }
+        function A.method() {
+            let a = () => {
+                console.println(this.prop)
+            }
+        }
+        is identical to
+        function method(this: A) {
+            let a = () => {
+                console.println(this.prop)
+            }
+        }
+    ```
+    here when "this" is used inside an extension function, we need to bind "this" to the first
+    parameter(MANDATORY_PARAM_THIS), and capture the paramter's variable other than containing class's variable
+    */
+    auto *variable = checker->AsETSChecker()->Scope()->Find(binder::Binder::MANDATORY_PARAM_THIS).variable;
+    if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
+        ASSERT(variable != nullptr);
+        SetTsType(variable->TsType());
+    } else {
+        SetTsType(checker->CheckThisOrSuperAccess(this, checker->Context().ContainingClass(), "this"));
+    }
 
     if (checker->HasStatus(checker::CheckerStatus::IN_LAMBDA)) {
-        checker->Context().AddCapturedVar(checker->Context().ContainingClass()->Variable(), this->Start());
+        if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
+            checker->Context().AddCapturedVar(variable, this->Start());
+        } else {
+            checker->Context().AddCapturedVar(checker->Context().ContainingClass()->Variable(), this->Start());
+        }
     }
 
     return TsType();
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *ThisExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<ThisExpression>(); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

@@ -119,6 +119,7 @@ VReg RegAllocatorBase::Spill(IRNode *const ins, const VReg reg) const
 
     if (auto *const mov = spiller_->MoveReg(ins->Node(), spill_info.OriginReg(), reg, false); mov != nullptr) {
         PushBack(mov);
+        spiller_->GetCodeGen()->SetVRegType(spill_info.OriginReg(), origin_type);
     }
 
     return spill_info.OriginReg();
@@ -173,6 +174,7 @@ void RegAllocator::Run(IRNode *const ins, const int32_t spill_max)
     std::vector<IRNode *> dst_moves;
     size_t i = 0;
     for (auto *const reg : registers) {
+        auto dst_info = dst_regs[i++];
         if (reg->IsValid(limit)) {
             continue;
         }
@@ -181,7 +183,6 @@ void RegAllocator::Run(IRNode *const ins, const int32_t spill_max)
 
         auto r = Spill(ins, *reg);
 
-        auto dst_info = dst_regs[i++];
         if (dst_info.reg != nullptr) {
             dst_moves.push_back(GetCodeGen().AllocMov(ins->Node(), dst_info, r));
         }

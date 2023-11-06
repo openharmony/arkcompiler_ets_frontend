@@ -15,19 +15,9 @@ import("//arkcompiler/runtime_core/static_core/ark_config.gni")
 import("//build/ohos.gni")
 
 ohos_executable("es2panda") {
-  sources = [
-    "main.cpp",
-    "options.cpp",
-  ]
+  sources = [ "main.cpp" ]
 
   include_dirs = [ "$target_gen_dir" ]
-
-  build_gen_root = rebase_path(root_gen_dir)
-
-  cflags_cc = [
-    # TODO(vpukhov): adjust es2panda path
-    "-DDEFAULT_ARKTSCONFIG=\"$build_gen_root/plugins/es2panda/generated/arktsconfig.json\"",
-  ]
 
   configs = [
     sdk_libc_secshared_config,
@@ -43,6 +33,7 @@ ohos_executable("es2panda") {
 
   deps = [
     "$ark_es2panda_root:libes2panda_frontend_static",
+    "$ark_es2panda_root:libes2panda_public_frontend_static",
     "$ark_root/assembler:libarktsassembler_frontend_static",
     "$ark_root/bytecode_optimizer:libarktsbytecodeopt_frontend_static",
     "$ark_root/compiler:libarktscompiler_frontend_static",

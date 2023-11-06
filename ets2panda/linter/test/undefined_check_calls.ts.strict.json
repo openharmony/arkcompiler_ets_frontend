@@ -34,6 +34,20 @@
             "problem": "StrictDiagnostic",
             "suggest": "Argument of type 'string | undefined' is not assignable to parameter of type 'ResourceStr'.",
             "rule": "Argument of type 'string | undefined' is not assignable to parameter of type 'ResourceStr'."
+        },
+        {
+            "line": 58,
+            "column": 12,
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'undefined' is not assignable to type 'Object'.",
+            "rule": "Type 'undefined' is not assignable to type 'Object'."
+        },
+        {
+            "line": 62,
+            "column": 17,
+            "problem": "StrictDiagnostic",
+            "suggest": "Type 'undefined' is not assignable to type 'Object'.",
+            "rule": "Type 'undefined' is not assignable to type 'Object'."
         }
     ]
 }

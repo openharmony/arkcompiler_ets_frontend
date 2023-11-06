@@ -393,7 +393,7 @@ protected:
                                                      ir::ModifierFlags flags = ir::ModifierFlags::NONE);
     ir::ClassDeclaration *ParseClassDeclaration(ir::ClassDefinitionModifiers modifiers,
                                                 ir::ModifierFlags flags = ir::ModifierFlags::NONE);
-    FunctionSignature ParseFunctionSignature(ParserStatus status);
+    FunctionSignature ParseFunctionSignature(ParserStatus status, ir::Identifier *class_name = nullptr);
 
     [[nodiscard]] virtual std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &source_file);
     virtual void AddVariableDeclarationBindings(ir::Expression *init, lexer::SourcePosition start_loc,
@@ -425,6 +425,7 @@ protected:
     virtual void ValidateArrowFunctionRestParameter(ir::SpreadElement *rest_element);
     virtual ir::Statement *ParsePotentialExpressionStatement(StatementParsingFlags flags);
     virtual ArenaVector<ir::Expression *> ParseFunctionParams();
+    virtual ir::Expression *CreateParameterThis(util::StringView class_name);
     virtual ir::Expression *ParseFunctionParameter();
     virtual void ConvertThisKeywordToIdentIfNecessary() {}
     virtual void ParseCatchParamTypeAnnotation(ir::AnnotatedExpression *param);
@@ -436,7 +437,8 @@ protected:
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties,
                                            ir::ClassDefinitionModifiers modifiers,
-                                           ir::ModifierFlags flags = ir::ModifierFlags::NONE);
+                                           ir::ModifierFlags flags = ir::ModifierFlags::NONE,
+                                           ir::Identifier *ident_node = nullptr);
     virtual bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,
                                    ArenaVector<ir::AstNode *> &properties);
     virtual void ValidateClassMethodStart(ClassElementDescriptor *desc, ir::TypeNode *type_annotation);
@@ -534,7 +536,8 @@ protected:
     virtual ir::Expression *ParseSuperClassReference();
 
     using ClassBody = std::tuple<ir::MethodDefinition *, ArenaVector<ir::AstNode *>, lexer::SourceRange>;
-    ClassBody ParseClassBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags = ir::ModifierFlags::NONE);
+    ClassBody ParseClassBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags = ir::ModifierFlags::NONE,
+                             ir::Identifier *ident_node = nullptr);
 
     virtual binder::Decl *BindClassName(ir::Identifier *ident_node);
 

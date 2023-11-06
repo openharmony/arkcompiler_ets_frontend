@@ -609,6 +609,7 @@ void ETSChecker::BuildDynamicImportClass()
                        auto *var = scope->AddDecl(Allocator(), decl, Binder()->Extension());
                        var->AddFlag(binder::VariableFlags::PROPERTY);
                        field_ident->SetVariable(var);
+                       var->SetTsType(GlobalBuiltinDynamicType(import->Language()));
 
                        class_type->AddProperty<PropertyType::STATIC_FIELD>(var->AsLocalVariable());
 

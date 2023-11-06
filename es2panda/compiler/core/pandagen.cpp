@@ -1903,6 +1903,13 @@ void PandaGen::PopLexEnv(const ir::AstNode *node)
     ra_.Emit<Poplexenv>(node);
 }
 
+void PandaGen::GenDebugger(const ir::AstNode *node)
+{
+    if (IsDebug()) {
+        ra_.Emit<Debugger>(node);
+    }
+}
+
 void PandaGen::CopyLexEnv(const ir::AstNode *node)
 {
     /*
@@ -2091,6 +2098,39 @@ bool PandaGen::TryCompileFunctionCallOrNewExpression(const ir::Expression *expr)
     }
 
     return false;
+}
+
+void PandaGen::ReArrangeIc()
+{
+    if (!IsIcOverFlow()) {
+        return;
+    }
+
+    ResetCurrentSlot(0);
+
+    for (auto *ins: Insns()) {
+        if (!ins->InlineCacheEnabled()) {
+            continue;
+        }
+
+        if (ins->oneByteSlotOnly()) {
+            auto inc = ins->SetIcSlot(GetCurrentSlot());
+            IncreaseCurrentSlot(inc);
+        }
+    }
+
+    for (auto *ins: Insns()) {
+        if (!ins->InlineCacheEnabled()) {
+            continue;
+        }
+
+        if (ins->oneByteSlotOnly()) {
+            continue;
+        }
+
+        auto inc = ins->SetIcSlot(GetCurrentSlot());
+        IncreaseCurrentSlot(inc);
+    }
 }
 
 }  // namespace panda::es2panda::compiler

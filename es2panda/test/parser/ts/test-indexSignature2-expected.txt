@@ -1,0 +1,1 @@
+SyntaxError: An index signature parameter type must be 'string', 'number', 'symbol', or a template literal type. [test-indexSignature2.ts:18:16]

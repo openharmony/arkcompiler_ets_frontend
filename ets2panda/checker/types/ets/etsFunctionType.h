@@ -18,6 +18,7 @@
 
 #include "checker/types/type.h"
 #include "checker/types/signature.h"
+#include "ir/base/scriptFunction.h"
 
 namespace panda::es2panda::checker {
 
@@ -51,6 +52,11 @@ public:
 
     void AddCallSignature(Signature *signature)
     {
+        if (signature->Function()->IsGetter()) {
+            AddTypeFlag(TypeFlag::GETTER);
+        } else if (signature->Function()->IsSetter()) {
+            AddTypeFlag(TypeFlag::SETTER);
+        }
         call_signatures_.push_back(signature);
     }
 
@@ -72,6 +78,26 @@ public:
             }
         }
 
+        return nullptr;
+    }
+
+    Signature *FindGetter() const
+    {
+        for (auto *sig : call_signatures_) {
+            if (sig->Function()->IsGetter()) {
+                return sig;
+            }
+        }
+        return nullptr;
+    }
+
+    Signature *FindSetter() const
+    {
+        for (auto *sig : call_signatures_) {
+            if (sig->Function()->IsSetter()) {
+                return sig;
+            }
+        }
         return nullptr;
     }
 

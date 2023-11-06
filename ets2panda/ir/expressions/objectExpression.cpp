@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,6 +44,40 @@
 #include "util/bitset.h"
 
 namespace panda::es2panda::ir {
+ObjectExpression::ObjectExpression([[maybe_unused]] Tag const tag, ObjectExpression const &other,
+                                   ArenaAllocator *const allocator)
+    : AnnotatedExpression(static_cast<AnnotatedExpression const &>(other)),
+      decorators_(allocator->Adapter()),
+      properties_(allocator->Adapter())
+{
+    CloneTypeAnnotation(allocator);
+
+    preferred_type_ = other.preferred_type_;
+    is_declaration_ = other.is_declaration_;
+    trailing_comma_ = other.trailing_comma_;
+    optional_ = other.optional_;
+
+    for (auto *property : other.properties_) {
+        properties_.emplace_back(property->Clone(allocator, this));
+    }
+
+    for (auto *decorator : other.decorators_) {
+        decorators_.emplace_back(decorator->Clone(allocator, this)->AsDecorator());
+    }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *ObjectExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<ObjectExpression>(Tag {}, *this, allocator); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 ValidationInfo ObjectExpression::ValidateExpression()
 {
     if (optional_) {
@@ -312,7 +346,7 @@ void ObjectExpression::CompileRemainingProperties(compiler::PandaGen *pg, const 
 
         if (properties_[i]->IsSpreadElement()) {
             compiler::VReg src_obj = pg->AllocReg();
-            const ir::SpreadElement *spread = properties_[i]->AsSpreadElement();
+            auto const *const spread = properties_[i]->AsSpreadElement();
 
             spread->Argument()->Compile(pg);
             pg->StoreAccumulator(spread, src_obj);
@@ -639,7 +673,7 @@ checker::Type *ObjectExpression::Check(checker::TSChecker *checker)
 
         ASSERT(it->IsSpreadElement());
 
-        checker::Type *spread_type = it->AsSpreadElement()->Argument()->Check(checker);
+        checker::Type *const spread_type = it->AsSpreadElement()->Argument()->Check(checker);
         seen_spread = true;
 
         // TODO(aszilagyi): handle union of object types

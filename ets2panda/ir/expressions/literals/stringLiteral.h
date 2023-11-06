@@ -17,15 +17,21 @@
 #define ES2PANDA_IR_EXPRESSION_LITERAL_STRING_LITERAL_H
 
 #include "ir/expressions/literal.h"
+#include "macros.h"
 #include "util/ustring.h"
 
 namespace panda::es2panda::ir {
 class StringLiteral : public Literal {
 public:
+    ~StringLiteral() override = default;
+
+    NO_COPY_SEMANTIC(StringLiteral);
+    NO_MOVE_SEMANTIC(StringLiteral);
+
     explicit StringLiteral() : StringLiteral("") {}
     explicit StringLiteral(util::StringView str) : Literal(AstNodeType::STRING_LITERAL), str_(str) {}
 
-    const util::StringView &Str() const
+    [[nodiscard]] const util::StringView &Str() const noexcept
     {
         return str_;
     }
@@ -34,6 +40,9 @@ public:
     {
         return str_ == other.str_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

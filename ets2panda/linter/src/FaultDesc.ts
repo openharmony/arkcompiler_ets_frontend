@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { FaultID } from './Problems';
+import { FaultID } from './utils/consts/Problems';
 
 export const faultDesc: string[] = [];
 
@@ -48,7 +48,6 @@ faultDesc[FaultID.LambdaWithTypeParameters] = 'Lambda function with type paramet
 faultDesc[FaultID.ClassExpression] = 'Class expressions';
 faultDesc[FaultID.DestructuringAssignment] = 'Destructuring assignments';
 faultDesc[FaultID.DestructuringDeclaration] = 'Destructuring variable declarations';
-faultDesc[FaultID.ForOfNonArray] = '"for-of" statement for non-array object';
 faultDesc[FaultID.VarDeclaration] = '"var" declarations';
 faultDesc[FaultID.CatchWithUnsupportedType] = '"catch" clause with unsupported exception type';
 faultDesc[FaultID.DeleteOperator] = '"delete" operations';
@@ -103,6 +102,4 @@ faultDesc[FaultID.ErrorSuppression] = 'Error suppression annotation';
 faultDesc[FaultID.StrictDiagnostic] = 'Strict diagnostic';
 faultDesc[FaultID.UnsupportedDecorators] = 'Unsupported decorators';
 faultDesc[FaultID.ImportAfterStatement] = 'Import declaration after other declaration or statement';
-faultDesc[FaultID.EsObjectType] = '"ESObject" type';
-faultDesc[FaultID.EsObjectAssignment] = '"ESObject" type assignment';
-faultDesc[FaultID.EsObjectAccess] = '"ESObject" access';
+faultDesc[FaultID.EsObjectType] = 'Restricted "ESObject" type';

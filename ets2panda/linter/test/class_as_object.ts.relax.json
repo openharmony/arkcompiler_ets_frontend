@@ -71,6 +71,16 @@
             "line": 60,
             "column": 7,
             "problem": "ClassAsObject"
+        },
+        {
+            "line": 87,
+            "column": 39,
+            "problem": "ClassAsObject"
+        },
+        {
+            "line": 91,
+            "column": 12,
+            "problem": "ClassAsObject"
         }
     ]
 }

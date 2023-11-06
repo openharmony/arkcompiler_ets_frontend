@@ -19,6 +19,6 @@ class A extends Base {
     prop: number = 1;
     constructor() {
         print("hello");
-        super();
+        if (true) { super() }
     }
 }

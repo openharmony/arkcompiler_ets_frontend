@@ -15,15 +15,12 @@
 # limitations under the License.
 
 
-import logging
 import os
 import subprocess
 import stat
 import sys
 import time
 import zipfile
-
-import json5
 
 import performance_config
 
@@ -43,6 +40,7 @@ class PerformanceBuild():
         self.config = config_input
         self.prj_name = ''
         self.timeout = 180
+        self.error_log_str = ''
 
     def start(self):
         self.init()
@@ -78,8 +76,6 @@ class PerformanceBuild():
             os.makedirs(self.config.log_direct)
         self.config.log_direct = os.path.join(self.config.project_path, self.config.log_direct)
         self.config.error_filename = os.path.join(self.config.log_direct, self.config.error_filename)
-        logging.basicConfig(filename=self.config.error_filename,
-                            format='[%(asctime)s %(filename)s:%(lineno)d]: [%(levelname)s] %(message)s')
         if self.developing_test_mode:
             self.config.build_times = 3
 
@@ -180,8 +176,7 @@ class PerformanceBuild():
             elif 'ERROR' in log_str:
                 rest_error = p.stdout.read().decode('utf-8')
                 print(rest_error)
-                log_str += rest_error
-                logging.error(log_str)
+                self.error_log_str = self.error_log_str + log_str + rest_error
                 p.communicate(timeout=self.timeout)
                 return False
             else:
@@ -352,11 +347,10 @@ class PerformanceBuild():
             self.mail_helper.add_logs_file(file_path, content.encode())
 
 
-    def generate_full_and_incremental_results(self, is_debug, aot_mode):
+    def generate_full_and_incremental_results(self, is_debug):
         path_prefix = self.config.output_split.join(
             (self.config.ide_filename[self.config.ide - 1],
             self.config.debug_or_release[0 if is_debug else 1],
-            self.config.aot_mode[aot_mode],
             self.config.build_type_of_log[0])
         )
         temp_mail_msg = ""
@@ -389,78 +383,56 @@ class PerformanceBuild():
                 temp_mail_msg + '</table>'
             self.mail_msg += temp_mail_msg
 
-    def set_aot_mode(self, aot_mode):
-        with open(self.config.json5_path, 'r+', encoding='UTF-8') as modified_file:
-            json_obj = json5.load(modified_file)
-            opt_obj = json_obj.get("buildOption")
-            if not opt_obj:
-                opt_obj = {}
-                json_obj["buildOption"] = opt_obj
-            compile_mode = opt_obj.get("aotCompileMode")
-            if aot_mode == performance_config.AotMode.Type:
-                if compile_mode == 'type':
-                    return
-                else:
-                    opt_obj["aotCompileMode"] = 'type'
-            else:
-                if not compile_mode:
-                    return
-                else:
-                    del opt_obj["aotCompileMode"]
-            modified_file.seek(0)
-            json5.dump(json_obj, modified_file, indent=4)
-            modified_file.truncate()
 
-
-    def error_handle(self, is_debug, log_type, aot_mode):
+    def error_handle(self, is_debug, log_type):
         build_mode = performance_config.BuildMode.DEBUG if is_debug else performance_config.BuildMode.RELEASE
         if log_type == performance_config.LogType.FULL:
             self.mail_helper.add_failed_project(self.prj_name, build_mode,
-                                                performance_config.LogType.FULL, aot_mode)
+                                                performance_config.LogType.FULL)
         self.mail_helper.add_failed_project(self.prj_name, build_mode,
-                                            performance_config.LogType.INCREMENTAL, aot_mode)
-        if os.path.exists(self.config.error_filename):
-            with open(self.config.error_filename, 'r') as error_log:
-                save_name = os.path.basename(self.config.error_filename)
-                self.mail_helper.add_logs_file(os.path.join(self.prj_name, save_name),
-                                               error_log.read())
+                                            performance_config.LogType.INCREMENTAL)
 
-    def full_and_incremental_build(self, is_debug, aot_mode):
+    def full_and_incremental_build(self, is_debug):
         self.reset()
-        self.set_aot_mode(aot_mode)
-        self.prj_name = self.mail_helper.get_project_name(
-            os.path.basename(self.config.project_path),
-            aot_mode
-        )
+        self.prj_name = os.path.basename(self.config.project_path)
         if self.developing_test_mode:
             PerformanceBuild.append_into_dic("task0", 7100, self.all_time_dic)
         self.first_line_in_avg_excel = self.first_line_in_avg_excel + ",first build,incremental build"
         for i in range(self.config.build_times):
             self.clean_project()
-            print(f"fullbuild: is_debug{is_debug}, aot_mode:{aot_mode == performance_config.AotMode.Type}")
+            print(f"fullbuild: {'Debug' if is_debug else 'Release'}, {i + 1}/{self.config.build_times}")
             res = self.start_build(is_debug)
             if not res:
-                self.error_handle(is_debug, performance_config.LogType.FULL, aot_mode)
+                self.error_handle(is_debug, performance_config.LogType.FULL)
                 return res
             self.get_bytecode_size(is_debug)
             self.add_incremental_code(1)
-            print(f"incremental: is_debug{is_debug}, aot_mode:{aot_mode == performance_config.AotMode.Type}")
+            print(f"incremental: {'Debug' if is_debug else 'Release'}, {i + 1}/{self.config.build_times}")
             res = self.start_build(is_debug)
             if not res:
-                self.error_handle(is_debug, performance_config.LogType.INCREMENTAL, aot_mode)
+                self.error_handle(is_debug, performance_config.LogType.INCREMENTAL)
                 return res
             self.get_bytecode_size(is_debug)
             self.revert_incremental_code()
         self.cal_incremental_avg()
-        self.generate_full_and_incremental_results(is_debug, aot_mode)
+        self.generate_full_and_incremental_results(is_debug)
         return True
 
+    def add_error_logs(self):
+        if not self.error_log_str:
+            return
+        with os.fdopen(os.open(self.config.error_filename,
+                               os.O_WRONLY | os.O_CREAT,
+                               stat.S_IRWXU | stat.S_IRWXO | stat.S_IRWXG), 'w') as excel:
+            excel.write(self.error_log_str)
+            save_name = os.path.basename(self.config.error_filename)
+            self.mail_helper.add_logs_file(os.path.join(self.prj_name, save_name),
+                                           self.error_log_str)
+
     def start_test(self):
-        self.full_and_incremental_build(True, performance_config.AotMode.NoAOT)
-        self.full_and_incremental_build(False, performance_config.AotMode.NoAOT)
-        self.full_and_incremental_build(True, performance_config.AotMode.Type)
-        self.full_and_incremental_build(False, performance_config.AotMode.Type)
-        self.set_aot_mode(performance_config.AotMode.NoAOT)
+        self.full_and_incremental_build(True)
+        self.full_and_incremental_build(False)
+        self.add_error_logs()
 
     def write_mail_msg(self):
         if self.config.send_mail:

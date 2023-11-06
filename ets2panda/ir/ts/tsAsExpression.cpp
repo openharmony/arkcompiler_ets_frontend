@@ -106,8 +106,12 @@ void TSAsExpression::Compile(compiler::ETSGen *const etsg) const
             etsg->CastToArrayOrObject(this, TsType(), is_unchecked_cast_);
             break;
         }
+        case checker::TypeFlag::ETS_STRING_ENUM:
+            [[fallthrough]];
         case checker::TypeFlag::ETS_ENUM: {
-            auto *const signature = TsType()->AsETSEnumType()->FromIntMethod().global_signature;
+            auto *const signature = TsType()->IsETSEnumType()
+                                        ? TsType()->AsETSEnumType()->FromIntMethod().global_signature
+                                        : TsType()->AsETSStringEnumType()->FromIntMethod().global_signature;
             ArenaVector<ir::Expression *> arguments(etsg->Allocator()->Adapter());
             arguments.push_back(expression_);
             etsg->CallStatic(this, signature, arguments);

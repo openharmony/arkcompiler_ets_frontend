@@ -20,55 +20,55 @@
 
 // NOLINTBEGIN(cppcoreguidelines-macro-usage)
 #define DEFINE_BITOPS(T)                                                          \
-    inline T operator~(T a)                                                       \
+    inline constexpr T operator~(T a)                                             \
     {                                                                             \
         using utype = std::underlying_type_t<T>;                                  \
         /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
         return static_cast<T>(~static_cast<utype>(a));                            \
     }                                                                             \
                                                                                   \
-    inline bool operator!(T a)                                                    \
+    inline constexpr bool operator!(T a)                                          \
     {                                                                             \
         using utype = std::underlying_type_t<T>;                                  \
         /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
         return (!static_cast<utype>(a));                                          \
     }                                                                             \
                                                                                   \
-    inline T operator|(T a, T b)                                                  \
+    inline constexpr T operator|(T a, T b)                                        \
     {                                                                             \
         using utype = std::underlying_type_t<T>;                                  \
         /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
         return static_cast<T>(static_cast<utype>(a) | static_cast<utype>(b));     \
     }                                                                             \
                                                                                   \
-    inline std::underlying_type_t<T> operator&(T a, T b)                          \
+    inline constexpr std::underlying_type_t<T> operator&(T a, T b)                \
     {                                                                             \
         using utype = std::underlying_type_t<T>;                                  \
         /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
         return static_cast<utype>(static_cast<utype>(a) & static_cast<utype>(b)); \
     }                                                                             \
                                                                                   \
-    inline T operator^(T a, T b)                                                  \
+    inline constexpr T operator^(T a, T b)                                        \
     {                                                                             \
         using utype = std::underlying_type_t<T>;                                  \
         /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
         return static_cast<T>(static_cast<utype>(a) ^ static_cast<utype>(b));     \
     }                                                                             \
                                                                                   \
-    inline T &operator|=(T &a, T b)                                               \
+    inline constexpr T &operator|=(T &a, T b)                                     \
     {                                                                             \
         /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
         return a = a | b;                                                         \
     }                                                                             \
                                                                                   \
-    inline T &operator&=(T &a, T b)                                               \
+    inline constexpr T &operator&=(T &a, T b)                                     \
     {                                                                             \
         using utype = std::underlying_type_t<T>;                                  \
         /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
         return a = static_cast<T>(static_cast<utype>(a) & static_cast<utype>(b)); \
     }                                                                             \
                                                                                   \
-    inline T &operator^=(T &a, T b)                                               \
+    inline constexpr T &operator^=(T &a, T b)                                     \
     {                                                                             \
         /* NOLINTNEXTLINE(hicpp-signed-bitwise) */                                \
         return a = a ^ b;                                                         \

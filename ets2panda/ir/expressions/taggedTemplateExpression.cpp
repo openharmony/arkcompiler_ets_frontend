@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -80,5 +80,32 @@ checker::Type *TaggedTemplateExpression::Check(checker::TSChecker *checker)
 checker::Type *TaggedTemplateExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
     return nullptr;
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *TaggedTemplateExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const tag = tag_ != nullptr ? tag_->Clone(allocator) : nullptr;
+    auto *const quasi = quasi_ != nullptr ? quasi_->Clone(allocator)->AsTemplateLiteral() : nullptr;
+    auto *const type_params =
+        type_params_ != nullptr ? type_params_->Clone(allocator)->AsTSTypeParameterInstantiation() : nullptr;
+
+    if (auto *const clone = allocator->New<TaggedTemplateExpression>(tag, quasi, type_params); clone != nullptr) {
+        if (tag != nullptr) {
+            tag->SetParent(clone);
+        }
+        if (quasi != nullptr) {
+            quasi->SetParent(clone);
+        }
+        if (type_params != nullptr) {
+            type_params->SetParent(clone);
+        }
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

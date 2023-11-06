@@ -6,6 +6,76 @@
             "problem": "CommaOperator",
             "suggest": "",
             "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
+        },
+        {
+            "line": 19,
+            "column": 12,
+            "problem": "CommaOperator",
+            "suggest": "",
+            "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
+        },
+        {
+            "line": 19,
+            "column": 12,
+            "problem": "CommaOperator",
+            "suggest": "",
+            "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
+        },
+        {
+            "line": 20,
+            "column": 12,
+            "problem": "CommaOperator",
+            "suggest": "",
+            "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
+        },
+        {
+            "line": 20,
+            "column": 12,
+            "problem": "CommaOperator",
+            "suggest": "",
+            "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
+        },
+        {
+            "line": 23,
+            "column": 27,
+            "problem": "CommaOperator",
+            "suggest": "",
+            "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
+        },
+        {
+            "line": 23,
+            "column": 27,
+            "problem": "CommaOperator",
+            "suggest": "",
+            "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
+        },
+        {
+            "line": 24,
+            "column": 15,
+            "problem": "CommaOperator",
+            "suggest": "",
+            "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
+        },
+        {
+            "line": 24,
+            "column": 15,
+            "problem": "CommaOperator",
+            "suggest": "",
+            "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
+        },
+        {
+            "line": 27,
+            "column": 24,
+            "problem": "CommaOperator",
+            "suggest": "",
+            "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
+        },
+        {
+            "line": 27,
+            "column": 24,
+            "problem": "CommaOperator",
+            "suggest": "",
+            "rule": "The comma operator \",\" is supported only in \"for\" loops (arkts-no-comma-outside-loops)"
         }
     ]
 }

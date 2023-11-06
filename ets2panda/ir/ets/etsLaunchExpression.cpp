@@ -97,23 +97,41 @@ checker::Type *ETSLaunchExpression::Check(checker::ETSChecker *checker)
             ->AsETSObjectType();
     launch_promise_type->AddTypeFlag(checker::TypeFlag::GENERIC);
 
-    // Launch expression returns a Promise<T> type, so we need to insert the expression's type as type parameter for the
-    // Promise class. If we are in a generic class declaration, then it's type parameters are inserted at class
-    // declaration check, so we need to clear them first, to avoid duplicate insertion.
+    // Launch expression returns a Promise<T> type, so we need to insert the expression's type
+    // as type parameter for the Promise class.
 
-    launch_promise_type->TypeArguments().clear();
     auto *expr_type =
         expr_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) && !expr_->TsType()->IsETSVoidType()
             ? checker->PrimitiveTypeAsETSBuiltinType(expr_->TsType())
             : expr_->TsType();
-    launch_promise_type->TypeArguments().emplace_back(expr_type);
+    checker::Substitution *substitution = checker->NewSubstitution();
+    ASSERT(launch_promise_type->TypeArguments().size() == 1);
+    substitution->emplace(checker->GetOriginalBaseType(launch_promise_type->TypeArguments()[0]), expr_type);
 
-    SetTsType(launch_promise_type);
+    SetTsType(launch_promise_type->Substitute(checker->Relation(), substitution));
     return TsType();
 }
 
 bool ETSLaunchExpression::IsStaticCall() const
 {
     return expr_->Signature()->HasSignatureFlag(checker::SignatureFlags::STATIC);
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *ETSLaunchExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const expr = expr_ != nullptr ? expr_->Clone(allocator)->AsCallExpression() : nullptr;
+
+    if (auto *const clone = allocator->New<ETSLaunchExpression>(expr); clone != nullptr) {
+        if (expr != nullptr) {
+            expr->SetParent(clone);
+        }
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

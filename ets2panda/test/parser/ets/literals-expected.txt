@@ -1145,4 +1145,3 @@
     }
   }
 }
-TypeError: Cannot infer type for lit14 because array literal needs an explicit target type [literals.ets:31:7]

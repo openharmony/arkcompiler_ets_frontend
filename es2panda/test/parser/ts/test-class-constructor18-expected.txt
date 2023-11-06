@@ -1,0 +1,1 @@
+SyntaxError: super() must be called before this/super access. [test-class-constructor18.ts:22:5]

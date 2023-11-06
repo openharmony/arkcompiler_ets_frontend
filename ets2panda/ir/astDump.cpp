@@ -22,9 +22,10 @@
 #include <iostream>
 
 namespace panda::es2panda::ir {
-AstDumper::AstDumper(const BlockStatement *program, util::StringView source_code) : index_(source_code)
+AstDumper::AstDumper(const ir::AstNode *node, util::StringView source_code) : index_(source_code)
 {
-    SerializeObject(reinterpret_cast<const ir::AstNode *>(program));
+    is_src_empty_ = source_code.Empty();
+    SerializeObject(node);
 }
 
 void AstDumper::Add(std::initializer_list<AstDumper::Property> props)
@@ -214,7 +215,9 @@ void AstDumper::SerializeObject(const ir::AstNode *object)
 {
     Wrap([this, object]() -> void {
         object->Dump(this);
-        SerializeLoc(object->Range());
+        if (!is_src_empty_) {
+            SerializeLoc(object->Range());
+        }
     });
 }
 

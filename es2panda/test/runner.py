@@ -163,6 +163,8 @@ def get_args():
         help='run base64 tests')
     parser.add_argument('--bytecode', dest='bytecode', action='store_true', default=False,
         help='run bytecode tests')
+    parser.add_argument('--debugger', dest='debugger', action='store_true', default=False,
+        help='run debugger tests')
 
     return parser.parse_args()
 
@@ -1178,6 +1180,58 @@ class ColdfixRunner(PatchRunner):
         self.tests += list(map(lambda t: PatchTest(t, "coldfix"), self.tests_in_dirs))
 
 
+class DebuggerTest(Test):
+    def __init__(self, test_path, mode):
+        Test.__init__(self, test_path, "")
+        self.mode = mode
+
+    def run(self, runner):
+        cmd = runner.cmd_prefix + [runner.es2panda, "--module"]
+        input_file_name = 'base.js'
+        if self.mode == "debug-mode":
+            cmd.extend(['--debug-info'])
+        cmd.extend([os.path.join(self.path, input_file_name)])
+        cmd.extend(['--dump-assembly'])
+       
+
+        self.log_cmd(cmd)
+
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate(timeout=runner.args.es2panda_timeout)
+        if stderr:
+            self.passed = False
+            self.error = stderr.decode("utf-8", errors="ignore")
+            return self
+
+        self.output = stdout.decode("utf-8", errors="ignore")
+
+        expected_path = os.path.join(self.path, 'expected.txt')
+        try:
+            with open(expected_path, 'r') as fp:
+                expected = (''.join((fp.readlines()[12:]))).lstrip()
+            self.passed = expected == self.output
+        except Exception:
+            self.passed = False
+
+        if not self.passed:
+            self.error = "expected output:" + os.linesep + expected + os.linesep + "actual output:" + os.linesep +\
+                self.output
+
+        return self
+
+
+class DebuggerRunner(Runner):
+    def __init__(self, args):
+        Runner.__init__(self, args, "debugger")
+        self.test_directory = path.join(self.test_root, "debugger")
+        self.add_test()
+
+    def add_test(self):
+        self.tests = []
+        self.tests.append(DebuggerTest(os.path.join(self.test_directory, "debugger-in-debug"), "debug-mode"))
+        self.tests.append(DebuggerTest(os.path.join(self.test_directory, "debugger-in-release"), "release-mode"))
+
+
 class Base64Test(Test):
     def __init__(self, test_path, input_type):
         Test.__init__(self, test_path, "")
@@ -1504,6 +1558,9 @@ def main():
 
     if args.coldfix:
         runners.append(ColdfixRunner(args))
+
+    if args.debugger:
+        runners.append(DebuggerRunner(args))
 
     if args.base64:
         runners.append(Base64Runner(args))

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -101,10 +101,7 @@ Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, Gl
         auto *const param_type = signature_info_->params[idx]->TsType();
         if (param_type->HasTypeFlag(TypeFlag::GENERIC) && param_type->IsETSObjectType()) {
             copied_info->params[idx]->SetTsType(param_type->Instantiate(allocator, relation, global_types));
-            auto original_type_args = relation->GetChecker()
-                                          ->AsETSChecker()
-                                          ->GetOriginalBaseType(param_type->AsETSObjectType())
-                                          ->TypeArguments();
+            auto original_type_args = param_type->AsETSObjectType()->GetOriginalBaseType()->TypeArguments();
             copied_info->params[idx]->TsType()->AsETSObjectType()->SetTypeArguments(std::move(original_type_args));
         } else {
             copied_info->params[idx]->SetTsType(
@@ -177,8 +174,8 @@ void Signature::ToString(std::stringstream &ss, const binder::Variable *variable
 
 void Signature::Identical(TypeRelation *relation, Signature *other)
 {
-    if (signature_info_->min_arg_count != other->MinArgCount() ||
-        signature_info_->params.size() != other->Params().size()) {
+    if ((this->MinArgCount() != other->MinArgCount() || this->Params().size() != other->Params().size()) &&
+        this->RestVar() == nullptr && other->RestVar() == nullptr) {
         relation->Result(false);
         return;
     }
@@ -186,27 +183,55 @@ void Signature::Identical(TypeRelation *relation, Signature *other)
     if (relation->NoReturnTypeCheck()) {
         relation->Result(true);
     } else {
-        relation->IsIdenticalTo(return_type_, other->ReturnType());
+        relation->IsIdenticalTo(this->ReturnType(), other->ReturnType());
     }
 
     if (relation->IsTrue()) {
-        for (uint64_t i = 0; i < signature_info_->params.size(); i++) {
-            auto *const this_sig_param_type = signature_info_->params[i]->TsType();
-            auto *const other_sig_param_type = other->Params()[i]->TsType();
-            if (!CheckFunctionalInterfaces(relation, this_sig_param_type, other_sig_param_type)) {
-                relation->IsIdenticalTo(this_sig_param_type, other_sig_param_type);
+        // Lambda to check parameter types
+        auto const identical_parameters = [this, relation](checker::Type *const type1,
+                                                           checker::Type *const type2) -> bool {
+            if (!CheckFunctionalInterfaces(relation, type1, type2)) {
+                relation->IsIdenticalTo(type1, type2);
             }
+            return relation->IsTrue();
+        };
 
-            if (!relation->IsTrue()) {
+        auto const this_parameters_number = this->Params().size();
+        auto const other_parameters_number = other->Params().size();
+        auto const parameters_number = std::min(this_parameters_number, other_parameters_number);
+
+        std::size_t i = 0U;
+        for (; i < parameters_number; ++i) {
+            auto *const this_sig_param_type = this->Params()[i]->TsType();
+            auto *const other_sig_param_type = other->Params()[i]->TsType();
+            if (!identical_parameters(this_sig_param_type, other_sig_param_type)) {
                 return;
             }
         }
 
-        if (signature_info_->rest_var != nullptr && other->RestVar() != nullptr) {
-            relation->IsIdenticalTo(signature_info_->rest_var->TsType(), other->RestVar()->TsType());
-        } else if ((signature_info_->rest_var != nullptr && other->RestVar() == nullptr) ||
-                   (signature_info_->rest_var == nullptr && other->RestVar() != nullptr)) {
-            relation->Result(false);
+        // Lambda to check the rest parameters
+        auto const identical_rest_parameters = [&i, &identical_parameters,
+                                                relation](std::size_t const parameter_number,
+                                                          ArenaVector<binder::LocalVariable *> const &parameters,
+                                                          binder::LocalVariable const *const rest_parameter) -> void {
+            if (rest_parameter != nullptr) {
+                auto *const other_sig_param_type = rest_parameter->TsType()->AsETSArrayType()->ElementType();
+
+                for (; i < parameter_number; ++i) {
+                    auto *const this_sig_param_type = parameters[i]->TsType();
+                    if (!identical_parameters(this_sig_param_type, other_sig_param_type)) {
+                        break;
+                    }
+                }
+            } else {
+                relation->Result(false);
+            }
+        };
+
+        if (i < this_parameters_number) {
+            identical_rest_parameters(this_parameters_number, this->Params(), other->RestVar());
+        } else if (i < other_parameters_number) {
+            identical_rest_parameters(other_parameters_number, other->Params(), this->RestVar());
         }
     }
 }

@@ -47,7 +47,22 @@ checker::Type *NullLiteral::Check(checker::TSChecker *checker)
 
 checker::Type *NullLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    SetTsType(checker->GlobalETSNullType());
+    if (TsType() == nullptr) {
+        SetTsType(checker->GlobalETSNullType());
+    }
     return TsType();
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *NullLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<NullLiteral>(); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

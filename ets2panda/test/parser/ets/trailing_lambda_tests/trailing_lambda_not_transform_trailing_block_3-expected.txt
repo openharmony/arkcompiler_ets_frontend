@@ -647,4 +647,4 @@
     }
   }
 }
-TypeError: Expected 1 arguments, got 0 . [trailing_lambda_not_transform_trailing_block_3.ets:23:5]
+TypeError: Expected 1 arguments, got 0. [trailing_lambda_not_transform_trailing_block_3.ets:23:5]

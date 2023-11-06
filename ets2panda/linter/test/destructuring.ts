@@ -124,3 +124,15 @@ function loopVariables(): void {
     console.log(`Name: ${n}, Father: ${f}`);
   }
 }
+
+interface I {
+  d: number
+}
+
+function f1({d = 1}: I) {
+}
+f1({d:2})
+
+function f2({d = 1}: {d: number}) {
+}
+f2({d:2})

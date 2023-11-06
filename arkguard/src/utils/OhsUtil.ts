@@ -33,6 +33,7 @@ import {
   SyntaxKind,
   isExpressionStatement,
   isClassExpression,
+  getModifiers,
 } from 'typescript';
 
 import type {
@@ -277,12 +278,14 @@ export function getClassProperties(classNode: ClassDeclaration | ClassExpression
 
     if (isConstructorDeclaration(member) && member.parameters) {
       member.parameters.forEach((parameter) => {
-        if (isParameter(parameter) && parameter.modifiers) {
-          parameter.modifiers.forEach((modifier) => {
-            if (isParameterPropertyModifier(modifier) && parameter.name && isIdentifier(parameter.name)) {
+        const modifiers = getModifiers(parameter);
+        if (isParameter(parameter) && modifiers && modifiers.length > 0) {
+          if (parameter.name && isIdentifier(parameter.name)) {
+            let hasParameterPropertyModifier = modifiers.find(modifier => isParameterPropertyModifier(modifier)) !== undefined;
+            if (hasParameterPropertyModifier) {
               propertySet.add(parameter.name.text);
             }
-          });
+          }
           processMemberInitializer(parameter.initializer, propertySet);
         }
       });

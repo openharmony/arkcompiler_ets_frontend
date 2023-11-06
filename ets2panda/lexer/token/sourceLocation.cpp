@@ -69,7 +69,7 @@ LineIndex::LineIndex(const util::StringView &source) noexcept
     }
 }
 
-SourceLocation LineIndex::GetLocation(SourcePosition pos) noexcept
+SourceLocation LineIndex::GetLocation(SourcePosition pos) const noexcept
 {
     size_t line = pos.line;
 

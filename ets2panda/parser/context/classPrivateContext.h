@@ -28,8 +28,6 @@ class Identifier;
 }  // namespace panda::es2panda::ir
 
 namespace panda::es2panda::parser {
-class Program;
-
 class ClassPrivateContext {
 public:
     explicit ClassPrivateContext() = default;

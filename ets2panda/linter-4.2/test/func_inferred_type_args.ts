@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+import { bad_func } from "./dynamic_lib"
+
 function choose<T>(x: T, y: T): T {
   return Math.random() < 0.5 ? x : y
 }
@@ -59,3 +61,17 @@ c = new C(new Set<any>()); // T is 'Set<any>'
 
 const d: { ddd: [[]] };
 d.ddd.push([]);
+
+{
+  let a: Promise<number> | undefined = undefined
+  let b: undefined = undefined
+  let c: [string, number] = ["abc", 0]
+  let d: [any, number] = [10, 10]
+
+  Boolean(a)
+  Boolean(b)
+  Boolean(c)
+  Boolean(d)
+}
+
+Boolean(bad_func())

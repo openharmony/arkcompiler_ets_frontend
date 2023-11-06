@@ -27,7 +27,7 @@ enum class PrimitiveType;
 }  // namespace panda::es2panda::ir
 
 namespace panda::es2panda::parser {
-class ETSParser : public TypedParser {
+class ETSParser final : public TypedParser {
 public:
     ETSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
         : TypedParser(program, options, status), global_program_(GetProgram()), parsed_sources_({})
@@ -38,6 +38,9 @@ public:
     NO_MOVE_SEMANTIC(ETSParser);
 
     ~ETSParser() = default;
+
+    ir::Expression *CreateExpression(ExpressionParseFlags flags, std::string_view source_code,
+                                     std::string_view file_name = DEFAULT_SOURCE_FILE);
 
 private:
     struct ImportData {
@@ -85,8 +88,10 @@ private:
     std::tuple<ir::ModifierFlags, bool> ParseClassMemberAccessModifiers();
     ir::ModifierFlags ParseClassFieldModifiers(bool seen_static);
     ir::ModifierFlags ParseClassMethodModifiers(bool seen_static);
-    ir::MethodDefinition *ParseClassMethodDefinition(ir::Identifier *method_name, ir::ModifierFlags modifiers);
-    ir::ScriptFunction *ParseFunction(ParserStatus new_status);
+    ir::MethodDefinition *ParseClassMethodDefinition(ir::Identifier *method_name, ir::ModifierFlags modifiers,
+                                                     ir::Identifier *class_name = nullptr,
+                                                     ir::Identifier *ident_node = nullptr);
+    ir::ScriptFunction *ParseFunction(ParserStatus new_status, ir::Identifier *class_name = nullptr);
     ir::MethodDefinition *ParseClassMethod(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                            ir::Expression *prop_name, lexer::SourcePosition *prop_end) override;
     std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
@@ -94,6 +99,7 @@ private:
         binder::FunctionScope *func_scope) override;
     ir::TypeNode *ParseFunctionReturnType(ParserStatus status) override;
     ir::ScriptFunctionFlags ParseFunctionThrowMarker(bool is_rethrows_allowed) override;
+    ir::Expression *CreateParameterThis(util::StringView class_name) override;
 
     // NOLINTNEXTLINE(google-default-arguments)
     void ParseClassFieldDefiniton(ir::Identifier *field_name, ir::ModifierFlags modifiers,
@@ -108,7 +114,7 @@ private:
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseFunctionType();
     void CreateClassFunctionDeclaration(ir::MethodDefinition *method);
-    void AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method);
+    void AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *ident_node = nullptr);
     std::string GetNameForTypeNode(const ir::TypeNode *type_annotation);
     ir::TSInterfaceDeclaration *ParseInterfaceBody(ir::Identifier *name, bool is_static);
     bool IsArrowFunctionExpressionStart();
@@ -135,7 +141,7 @@ private:
     ir::AstNode *ParseTypeLiteralOrInterfaceMember() override;
     void ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers);
     bool CheckModuleAsModifier();
-    ir::ETSParameterExpression *ParseFunctionParameter() override;
+    ir::Expression *ParseFunctionParameter() override;
     ir::AnnotatedExpression *GetAnnotatedExpressionFromParam();
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseUnaryOrPrefixUpdateExpression(
@@ -159,13 +165,18 @@ private:
                                                    ir::ModifierFlags mod_flags = ir::ModifierFlags::NONE) override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::AstNode *ParseClassElement(const ArenaVector<ir::AstNode *> &properties, ir::ClassDefinitionModifiers modifiers,
-                                   ir::ModifierFlags flags = ir::ModifierFlags::NONE) override;
+                                   ir::ModifierFlags flags = ir::ModifierFlags::NONE,
+                                   ir::Identifier *ident_node = nullptr) override;
     ir::Expression *ParseNewExpression() override;
     ir::Expression *ParseAsyncExpression();
     ir::Expression *ParseAwaitExpression();
     ir::TSTypeParameter *ParseTypeParameter(TypeAnnotationParsingOptions *options) override;
+
     ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enum_start, bool is_const,
                                             bool is_static) override;
+    void ParseNumberEnum(ArenaVector<ir::AstNode *> &members);
+    void ParseStringEnum(ArenaVector<ir::AstNode *> &members);
+
     ir::Statement *ParseInterfaceDeclaration(bool is_static) override;
     ir::ThisExpression *ParseThisExpression() override;
     ir::Statement *ParseFunctionStatement(StatementParsingFlags flags) override;
@@ -236,8 +247,6 @@ private:
                                                   std::string_view file_name = DEFAULT_SOURCE_FILE);
     ir::MethodDefinition *CreateMethodDefinition(ir::ModifierFlags modifiers, std::string_view source_code,
                                                  std::string_view file_name = DEFAULT_SOURCE_FILE);
-    ir::Expression *CreateExpression(ExpressionParseFlags flags, std::string_view source_code,
-                                     std::string_view file_name = DEFAULT_SOURCE_FILE);
     ir::TypeNode *CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view source_code,
                                        std::string_view file_name = DEFAULT_SOURCE_FILE);
     // NOLINTEND(google-default-arguments)

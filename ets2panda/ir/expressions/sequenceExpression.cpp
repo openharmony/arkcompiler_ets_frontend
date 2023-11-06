@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +19,27 @@
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
+SequenceExpression::SequenceExpression([[maybe_unused]] Tag const tag, SequenceExpression const &other,
+                                       ArenaAllocator *const allocator)
+    : Expression(static_cast<Expression const &>(other)), sequence_(allocator->Adapter())
+{
+    for (auto *sequence : other.sequence_) {
+        sequence_.emplace_back(sequence->Clone(allocator, this));
+    }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *SequenceExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<SequenceExpression>(Tag {}, *this, allocator); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 void SequenceExpression::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : sequence_) {

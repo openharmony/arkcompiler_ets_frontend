@@ -96,7 +96,7 @@
               },
               "end": {
                 "line": 17,
-                "column": 12
+                "column": 13
               }
             }
           }

@@ -15,7 +15,7 @@
     ],
     "nodes": [
         {
-            "line": 18,
+            "line": 20,
             "column": 3,
             "problem": "LocalFunction",
             "autofixable": false,
@@ -23,7 +23,7 @@
             "rule": "Nested functions are not supported (arkts-no-nested-funcs)"
         },
         {
-            "line": 18,
+            "line": 20,
             "column": 17,
             "problem": "AnyType",
             "autofixable": false,
@@ -31,7 +31,7 @@
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 18,
+            "line": 20,
             "column": 20,
             "problem": "AnyType",
             "autofixable": false,
@@ -39,7 +39,7 @@
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 27,
+            "line": 29,
             "column": 3,
             "problem": "GeneratorFunction",
             "autofixable": false,
@@ -47,7 +47,7 @@
             "rule": "Generator functions are not supported (arkts-no-generators)"
         },
         {
-            "line": 31,
+            "line": 33,
             "column": 7,
             "problem": "YieldExpression",
             "autofixable": false,
@@ -55,7 +55,7 @@
             "rule": "Generator functions are not supported (arkts-no-generators)"
         },
         {
-            "line": 51,
+            "line": 53,
             "column": 19,
             "problem": "AnyType",
             "autofixable": false,
@@ -63,7 +63,7 @@
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 53,
+            "line": 55,
             "column": 17,
             "problem": "AnyType",
             "autofixable": false,
@@ -71,7 +71,7 @@
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 56,
+            "line": 58,
             "column": 27,
             "problem": "AnyType",
             "autofixable": false,
@@ -79,7 +79,7 @@
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 58,
+            "line": 60,
             "column": 19,
             "problem": "LambdaWithTypeParameters",
             "autofixable": false,
@@ -87,7 +87,7 @@
             "rule": "Use generic functions instead of generic arrow functions (arkts-no-generic-lambdas)"
         },
         {
-            "line": 61,
+            "line": 63,
             "column": 1,
             "problem": "FunctionContainsThis",
             "autofixable": false,
@@ -95,12 +95,68 @@
             "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"
         },
         {
-            "line": 65,
+            "line": 67,
             "column": 3,
             "problem": "StrictDiagnostic",
             "autofixable": false,
             "suggest": "Property 'c' has no initializer and is not definitely assigned in the constructor.",
             "rule": "Property 'c' has no initializer and is not definitely assigned in the constructor."
+        },
+        {
+            "line": 93,
+            "column": 7,
+            "problem": "StrictDiagnostic",
+            "autofixable": false,
+            "suggest": "Argument of type 'null' is not assignable to parameter of type 'string'.",
+            "rule": "Argument of type 'null' is not assignable to parameter of type 'string'."
+        },
+        {
+            "line": 97,
+            "column": 5,
+            "problem": "StrictDiagnostic",
+            "autofixable": false,
+            "suggest": "Argument of type 'null' is not assignable to parameter of type 'string'.",
+            "rule": "Argument of type 'null' is not assignable to parameter of type 'string'."
+        },
+        {
+            "line": 101,
+            "column": 5,
+            "problem": "StrictDiagnostic",
+            "autofixable": false,
+            "suggest": "Argument of type 'null' is not assignable to parameter of type 'string'.",
+            "rule": "Argument of type 'null' is not assignable to parameter of type 'string'."
+        },
+        {
+            "line": 102,
+            "column": 12,
+            "problem": "StrictDiagnostic",
+            "autofixable": false,
+            "suggest": "Argument of type 'null' is not assignable to parameter of type 'string'.",
+            "rule": "Argument of type 'null' is not assignable to parameter of type 'string'."
+        },
+        {
+            "line": 106,
+            "column": 7,
+            "problem": "StrictDiagnostic",
+            "autofixable": false,
+            "suggest": "Argument of type 'null' is not assignable to parameter of type 'string'.",
+            "rule": "Argument of type 'null' is not assignable to parameter of type 'string'."
+        },
+        {
+            "line": 107,
+            "column": 14,
+            "problem": "StrictDiagnostic",
+            "autofixable": false,
+            "suggest": "Argument of type 'null' is not assignable to parameter of type 'string'.",
+            "rule": "Argument of type 'null' is not assignable to parameter of type 'string'."
+        },
+        {
+            "line": 108,
+            "column": 16,
+            "problem": "StrictDiagnostic",
+            "autofixable": false,
+            "suggest": "Argument of type 'null' is not assignable to parameter of type 'string'.",
+            "rule": "Argument of type 'null' is not assignable to parameter of type 'string'."
         }
     ]
 }

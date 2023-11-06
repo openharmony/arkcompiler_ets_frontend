@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,23 +26,33 @@ class Type;
 namespace panda::es2panda::ir {
 class TypeNode : public Expression {
 public:
-    explicit TypeNode(AstNodeType type) : Expression(type) {}
-    explicit TypeNode(AstNodeType type, ModifierFlags flags) : Expression(type, flags) {}
+    TypeNode() = delete;
+    ~TypeNode() override = default;
 
-    bool IsTypeNode() const override
+    NO_COPY_SEMANTIC(TypeNode);
+    NO_MOVE_SEMANTIC(TypeNode);
+
+    [[nodiscard]] bool IsTypeNode() const noexcept override
     {
         return true;
     }
 
-    virtual checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker)
+    [[nodiscard]] virtual checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker)
     {
         return nullptr;
     }
 
-    virtual checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker)
+    [[nodiscard]] virtual checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker)
     {
         return nullptr;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
+protected:
+    explicit TypeNode(AstNodeType const type) : Expression(type) {}
+    explicit TypeNode(AstNodeType const type, ModifierFlags const flags) : Expression(type, flags) {}
 };
 }  // namespace panda::es2panda::ir
 

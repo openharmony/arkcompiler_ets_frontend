@@ -18,7 +18,7 @@
 #include <assembly-program.h>
 
 namespace panda::es2panda::compiler {
-std::unordered_set<std::string> &ProgramElement::Strings()
+std::set<std::string> &ProgramElement::Strings()
 {
     return strings_;
 }

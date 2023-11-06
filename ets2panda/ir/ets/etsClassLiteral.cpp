@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +15,7 @@
 
 #include "etsClassLiteral.h"
 
+#include "ir/astNode.h"
 #include "ir/astDump.h"
 #include "ir/typeNode.h"
 #include "checker/TSchecker.h"
@@ -73,5 +74,23 @@ checker::Type *ETSClassLiteral::Check([[maybe_unused]] checker::ETSChecker *chec
     checker::InstantiationContext ctx(checker, checker->GlobalBuiltinTypeType(), type_arg_types, range_.start);
     SetTsType(ctx.Result());
     return TsType();
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *ETSClassLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const expr = expr_ != nullptr ? expr_->Clone(allocator)->AsTypeNode() : nullptr;
+
+    if (auto *const clone = allocator->New<ETSClassLiteral>(expr); clone != nullptr) {
+        if (expr != nullptr) {
+            expr->SetParent(clone);
+        }
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

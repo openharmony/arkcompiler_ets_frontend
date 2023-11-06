@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -144,41 +144,11 @@ void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *blo
     }
 }
 
-void ETSFunction::CompileFunctionParameterDeclaration(ETSGen *etsg, const ir::ScriptFunction *func)
-{
-    ScopeContext scope_ctx(etsg, func->Scope()->ParamScope());
-
-    uint32_t index = 0;
-
-    for (const auto *param : func->Params()) {
-        ASSERT(param->IsETSParameterExpression());
-
-        if (param->IsETSParameterExpression() && param->AsETSParameterExpression()->Spread() == nullptr) {
-            index++;
-            continue;
-        }
-
-        param = param->AsETSParameterExpression()->Spread();
-        auto ref = JSLReference::Create(etsg, param, true);
-        [[maybe_unused]] binder::Variable *param_var = ref.Variable();
-        ASSERT(param_var && param_var->IsLocalVariable());
-
-        [[maybe_unused]] VReg param_reg = VReg(binder::Binder::MANDATORY_PARAMS_NUMBER + VReg::PARAM_START + index++);
-        ASSERT(param_var->AsLocalVariable()->Vreg() == param_reg);
-
-        ref.SetValue();
-        index++;
-    }
-}
-
 void ETSFunction::CompileFunction(ETSGen *etsg)
 {
     const auto *decl = etsg->RootNode()->AsScriptFunction();
-    CompileFunctionParameterDeclaration(etsg, decl);
 
-    const ir::AstNode *body = decl->Body();
-
-    if (body->IsExpression()) {
+    if (const ir::AstNode *body = decl->Body(); body->IsExpression()) {
         // TODO(user):
     } else {
         CompileSourceBlock(etsg, body->AsBlockStatement());

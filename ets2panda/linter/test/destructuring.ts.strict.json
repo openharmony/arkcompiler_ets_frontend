@@ -228,6 +228,26 @@
             "line": 120,
             "column": 8,
             "problem": "DestructuringAssignment"
+        },
+        {
+            "line": 132,
+            "column": 13,
+            "problem": "DestructuringParameter"
+        },
+        {
+            "line": 136,
+            "column": 13,
+            "problem": "DestructuringParameter"
+        },
+        {
+            "line": 136,
+            "column": 22,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 138,
+            "column": 4,
+            "problem": "ObjectLiteralNoContextType"
         }
     ]
 }

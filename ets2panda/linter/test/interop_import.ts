@@ -34,9 +34,9 @@ Cjs2.prototype;
 class B {
   f: number = 1;
 }
-
+let CJS1: Cjs1 = new Cjs1();
 let cjs1 = new Cjs1();
 let f1: B = cjs1;
-
+let CJS2: Cjs2 = new Cjs2();
 let cjs2 = new Cjs2();
 let f2: B = cjs2;

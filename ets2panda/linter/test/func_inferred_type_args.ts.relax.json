@@ -15,124 +15,123 @@
     ],
     "nodes": [
         {
-            "line": 24,
+            "line": 26,
             "column": 5,
-            "problem": "UnknownType"
-        },
-        {
-            "line": 24,
-            "column": 9,
-            "problem": "GenericCallNoTypeArgs"
+            "problem": "UnknownType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 26,
+            "column": 9,
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)"
+        },
+        {
+            "line": 28,
             "column": 21,
-            "problem": "AnyType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 29,
+            "line": 31,
             "column": 1,
-            "problem": "GenericCallNoTypeArgs"
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)"
         },
         {
-            "line": 30,
+            "line": 38,
             "column": 1,
-            "problem": "GenericCallNoTypeArgs"
-        },
-        {
-            "line": 36,
-            "column": 1,
-            "problem": "GenericCallNoTypeArgs"
-        },
-        {
-            "line": 40,
-            "column": 1,
-            "problem": "GenericCallNoTypeArgs"
-        },
-        {
-            "line": 44,
-            "column": 8,
-            "problem": "AnyType"
-        },
-        {
-            "line": 45,
-            "column": 1,
-            "problem": "GenericCallNoTypeArgs"
-        },
-        {
-            "line": 45,
-            "column": 16,
-            "problem": "AnyType"
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)"
         },
         {
             "line": 46,
-            "column": 1,
-            "problem": "GenericCallNoTypeArgs"
-        },
-        {
-            "line": 47,
-            "column": 1,
-            "problem": "GenericCallNoTypeArgs"
-        },
-        {
-            "line": 47,
             "column": 8,
-            "problem": "ObjectLiteralNoContextType"
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 47,
+            "column": 16,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 49,
+            "column": 8,
+            "problem": "ObjectLiteralNoContextType",
+            "suggest": "",
+            "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
+        },
+        {
+            "line": 51,
             "column": 5,
-            "problem": "UnknownType"
+            "problem": "UnknownType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 49,
+            "line": 51,
             "column": 11,
-            "problem": "GenericCallNoTypeArgs"
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)"
         },
         {
-            "line": 54,
+            "line": 56,
             "column": 5,
-            "problem": "UnknownType"
+            "problem": "UnknownType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 54,
+            "line": 56,
             "column": 9,
-            "problem": "GenericCallNoTypeArgs"
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)"
         },
         {
-            "line": 56,
-            "column": 5,
-            "problem": "GenericCallNoTypeArgs"
-        },
-        {
-            "line": 56,
+            "line": 58,
             "column": 11,
-            "problem": "GenericCallNoTypeArgs"
-        },
-        {
-            "line": 57,
-            "column": 5,
-            "problem": "GenericCallNoTypeArgs"
-        },
-        {
-            "line": 58,
-            "column": 5,
-            "problem": "GenericCallNoTypeArgs"
-        },
-        {
-            "line": 58,
-            "column": 19,
-            "problem": "AnyType"
+            "problem": "GenericCallNoTypeArgs",
+            "suggest": "",
+            "rule": "Type inference in case of generic function calls is limited (arkts-no-inferred-generic-params)"
         },
         {
             "line": 60,
-            "column": 10,
-            "problem": "ObjectTypeLiteral"
+            "column": 19,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 61,
+            "line": 62,
+            "column": 10,
+            "problem": "ObjectTypeLiteral",
+            "suggest": "",
+            "rule": "Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)"
+        },
+        {
+            "line": 69,
+            "column": 11,
+            "problem": "AnyType",
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 63,
             "column": 1,
-            "problem": "StrictDiagnostic"
+            "problem": "StrictDiagnostic",
+            "suggest": "Variable 'd' is used before being assigned.",
+            "rule": "Variable 'd' is used before being assigned."
         }
     ]
 }

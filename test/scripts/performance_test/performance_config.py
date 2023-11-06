@@ -22,11 +22,6 @@ class IdeType():
     DevEco = 2
 
 
-class AotMode():
-    NoAOT = 0
-    Type = 1
-
-
 class Config():
     log_direct = "buildTestData"
     log_direct_data_format = "%Y-%m-%d-%H-%M-%S"
@@ -44,7 +39,6 @@ class Config():
         self.log_filename = ["size_all.csv", "size_avg.csv",
                              "time_all.csv", "time_avg.csv"]
         self.error_filename = 'error.log'
-        self.aot_mode = ["noaot", "aottype"]
         self.ide = IdeType.DevEco
         self.incremental_code_str = "let index = 5 + 6\n"
         self.incremental_code_start_pos = "let index = 5 + 6\n"

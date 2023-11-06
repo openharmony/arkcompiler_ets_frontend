@@ -243,6 +243,180 @@
             ],
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 78,
+            "column": 12,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1663,
+                    "end": 1714,
+                    "replacementText": "(() => {\r\n    console.log('called immediately');\r\n})"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 82,
+            "column": 5,
+            "problem": "AnyType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 82,
+            "column": 19,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1737,
+                    "end": 1782,
+                    "replacementText": "(() => {\r\n    console.log('index access');\r\n})"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 86,
+            "column": 6,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1793,
+                    "end": 1830,
+                    "replacementText": "(() => {\r\n    console.log('void');\r\n})"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 91,
+            "column": 9,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1870,
+                    "end": 1912,
+                    "replacementText": "(() => {\r\n    console.log('async');\r\n})"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 96,
+            "column": 25,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 1941,
+                    "end": 1980,
+                    "replacementText": "(() => {\r\n    console.log('typeof');\r\n})"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 102,
+            "column": 9,
+            "problem": "AnyType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+        },
+        {
+            "line": 102,
+            "column": 15,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 2027,
+                    "end": 2097,
+                    "replacementText": "((p: boolean) => {\r\n    console.log('Function.bind(this)');\r\n})"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 104,
+            "column": 7,
+            "problem": "FunctionApplyBindCall",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
+        },
+        {
+            "line": 108,
+            "column": 16,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 2132,
+                    "end": 2171,
+                    "replacementText": "() => { console.log('callback'); }"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 109,
+            "column": 24,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 2195,
+                    "end": 2246,
+                    "replacementText": "(() => { console.log('expr || function(){}'); })"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 112,
+            "column": 5,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 2282,
+                    "end": 2322,
+                    "replacementText": "(() => { console.log('ternary 1'); })"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
+        },
+        {
+            "line": 113,
+            "column": 10,
+            "problem": "FunctionExpression",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 2337,
+                    "end": 2377,
+                    "replacementText": "(() => { console.log('ternary 2'); })"
+                }
+            ],
+            "suggest": "",
+            "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         }
     ]
 }

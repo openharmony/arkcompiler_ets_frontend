@@ -113,8 +113,10 @@ void ForOfStatement::Compile(compiler::ETSGen *etsg) const
     etsg->MoveImmediateToRegister(this, count_reg, checker::TypeFlag::INT, static_cast<std::int32_t>(0));
     etsg->LoadAccumulatorInt(this, static_cast<std::int32_t>(0));
 
+    auto *const start_label = etsg->AllocLabel();
+    etsg->SetLabel(this, start_label);
+
     auto lref = compiler::ETSLReference::Create(etsg, left_, false);
-    etsg->SetLabel(this, label_target.ContinueTarget());
 
     if (right_->TsType()->IsETSArrayType()) {
         etsg->LoadArrayElement(this, obj_reg);
@@ -125,10 +127,12 @@ void ForOfStatement::Compile(compiler::ETSGen *etsg) const
     lref.SetValue();
     body_->Compile(etsg);
 
+    etsg->SetLabel(this, label_target.ContinueTarget());
+
     etsg->IncrementImmediateRegister(this, count_reg, checker::TypeFlag::INT, static_cast<std::int32_t>(1));
     etsg->LoadAccumulator(this, count_reg);
 
-    etsg->JumpCompareRegister<compiler::Jlt>(this, size_reg, label_target.ContinueTarget());
+    etsg->JumpCompareRegister<compiler::Jlt>(this, size_reg, start_label);
     etsg->SetLabel(this, label_target.BreakTarget());
 }
 

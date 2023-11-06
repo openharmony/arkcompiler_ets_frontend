@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,7 +24,16 @@ class CallExpression;
 
 class ETSLaunchExpression : public Expression {
 public:
+    ETSLaunchExpression() = delete;
+    ~ETSLaunchExpression() override = default;
+
+    NO_COPY_SEMANTIC(ETSLaunchExpression);
+    NO_MOVE_SEMANTIC(ETSLaunchExpression);
+
     explicit ETSLaunchExpression(CallExpression *expr);
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -35,7 +44,7 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
     bool IsStaticCall() const;
 
-    const CallExpression *Call() const
+    [[nodiscard]] const CallExpression *Call() const noexcept
     {
         return expr_;
     }

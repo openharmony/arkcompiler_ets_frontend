@@ -261,7 +261,6 @@ void ETSTryContext::EmitFinalizer(
             if (insertion.second->AsReturnStatement()->ReturnType()->IsETSVoidType()) {
                 etsg->EmitReturnVoid(try_stmt_);
             } else {
-                etsg->ApplyConversion(try_stmt_, insertion.second->AsReturnStatement()->ReturnType());
                 etsg->ReturnAcc(try_stmt_);
             }
 

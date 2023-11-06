@@ -21,7 +21,15 @@
 namespace panda::es2panda::ir {
 class NullLiteral : public Literal {
 public:
+    ~NullLiteral() override = default;
+
+    NO_COPY_SEMANTIC(NullLiteral);
+    NO_MOVE_SEMANTIC(NullLiteral);
+
     explicit NullLiteral() : Literal(AstNodeType::NULL_LITERAL) {}
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

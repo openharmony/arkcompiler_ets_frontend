@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,35 +21,44 @@
 namespace panda::es2panda::ir {
 class ConditionalExpression : public Expression {
 public:
+    ConditionalExpression() = delete;
+    ~ConditionalExpression() override = default;
+
+    NO_COPY_SEMANTIC(ConditionalExpression);
+    NO_MOVE_SEMANTIC(ConditionalExpression);
+
     explicit ConditionalExpression(Expression *test, Expression *consequent, Expression *alternate)
         : Expression(AstNodeType::CONDITIONAL_EXPRESSION), test_(test), consequent_(consequent), alternate_(alternate)
     {
     }
 
-    const Expression *Test() const
+    [[nodiscard]] const Expression *Test() const noexcept
     {
         return test_;
     }
 
-    Expression *Test()
+    [[nodiscard]] Expression *Test() noexcept
     {
         return test_;
     }
 
-    const Expression *Consequent() const
+    [[nodiscard]] const Expression *Consequent() const noexcept
     {
         return consequent_;
     }
 
-    const Expression *Alternate() const
+    [[nodiscard]] const Expression *Alternate() const noexcept
     {
         return alternate_;
     }
 
-    void SetTest(Expression *test)
+    void SetTest(Expression *const test) noexcept
     {
         test_ = test;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

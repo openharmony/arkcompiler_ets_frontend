@@ -1085,6 +1085,7 @@ ir::ReturnStatement *ParserImpl::ParseReturnStatement()
     return_statement->SetRange({start_loc, end_loc});
     ConsumeSemicolon(return_statement);
 
+    context_.Status() |= ParserStatus::FUNCTION_HAS_RETURN_STATEMENT;
     return return_statement;
 }
 

@@ -30,75 +30,87 @@ ETSParameterExpression::ETSParameterExpression(AnnotatedExpression *const ident_
     : Expression(AstNodeType::ETS_PARAMETER_EXPRESSION), initializer_(initializer)
 {
     ASSERT(ident_or_spread != nullptr);
-    ASSERT(ident_or_spread->IsIdentifier() || ident_or_spread->IsRestElement());
-    if (ident_or_spread->IsRestElement()) {
+
+    if (ident_or_spread->IsIdentifier()) {
+        ident_ = ident_or_spread->AsIdentifier();
+    } else if (ident_or_spread->IsRestElement()) {
         spread_ = ident_or_spread->AsRestElement();
         ASSERT(spread_->Argument()->IsIdentifier());
         ident_ = spread_->Argument()->AsIdentifier();
+        initializer_ = nullptr;  // Just in case!
     } else {
-        ident_ = ident_or_spread->AsIdentifier();
-        spread_ = nullptr;
+        UNREACHABLE();
     }
 }
 
-const Identifier *ETSParameterExpression::Ident() const
+const Identifier *ETSParameterExpression::Ident() const noexcept
 {
     return ident_;
 }
 
-Identifier *ETSParameterExpression::Ident()
+Identifier *ETSParameterExpression::Ident() noexcept
 {
     return ident_;
 }
 
-const SpreadElement *ETSParameterExpression::Spread() const
+const SpreadElement *ETSParameterExpression::RestParameter() const noexcept
 {
     return spread_;
 }
 
-SpreadElement *ETSParameterExpression::Spread()
+SpreadElement *ETSParameterExpression::RestParameter() noexcept
 {
     return spread_;
 }
 
-const Expression *ETSParameterExpression::Initializer() const
+const Expression *ETSParameterExpression::Initializer() const noexcept
 {
     return initializer_;
 }
 
-Expression *ETSParameterExpression::Initializer()
+Expression *ETSParameterExpression::Initializer() noexcept
 {
     return initializer_;
 }
 
-binder::Variable *ETSParameterExpression::Variable() const
+binder::Variable *ETSParameterExpression::Variable() const noexcept
 {
     return ident_->Variable();
 }
 
-void ETSParameterExpression::SetVariable(binder::Variable *const variable)
+TypeNode const *ETSParameterExpression::TypeAnnotation() const noexcept
+{
+    return !IsRestParameter() ? ident_->TypeAnnotation() : spread_->TypeAnnotation();
+}
+
+TypeNode *ETSParameterExpression::TypeAnnotation() noexcept
+{
+    return !IsRestParameter() ? ident_->TypeAnnotation() : spread_->TypeAnnotation();
+}
+
+void ETSParameterExpression::SetVariable(binder::Variable *const variable) noexcept
 {
     ident_->SetVariable(variable);
 }
 
-void ETSParameterExpression::SetLexerSaved(util::StringView s)
+void ETSParameterExpression::SetLexerSaved(util::StringView s) noexcept
 {
     saved_lexer_ = s;
 }
 
-util::StringView ETSParameterExpression::LexerSaved() const
+util::StringView ETSParameterExpression::LexerSaved() const noexcept
 {
     return saved_lexer_;
 }
 
-bool ETSParameterExpression::IsDefault() const
-{
-    return initializer_ != nullptr;
-}
-
 void ETSParameterExpression::TransformChildren(const NodeTransformer &cb)
 {
-    ident_ = cb(ident_)->AsIdentifier();
+    if (IsRestParameter()) {
+        spread_ = cb(spread_)->AsRestElement();
+        ident_ = spread_->Argument()->AsIdentifier();
+    } else {
+        ident_ = cb(ident_)->AsIdentifier();
+    }
 
     if (IsDefault()) {
         initializer_ = cb(initializer_)->AsExpression();
@@ -107,7 +119,11 @@ void ETSParameterExpression::TransformChildren(const NodeTransformer &cb)
 
 void ETSParameterExpression::Iterate(const NodeTraverser &cb) const
 {
-    cb(ident_);
+    if (IsRestParameter()) {
+        cb(spread_);
+    } else {
+        cb(ident_);
+    }
 
     if (IsDefault()) {
         cb(initializer_);
@@ -116,13 +132,11 @@ void ETSParameterExpression::Iterate(const NodeTraverser &cb) const
 
 void ETSParameterExpression::Dump(ir::AstDumper *const dumper) const
 {
-    if (spread_ == nullptr) {
+    if (!IsRestParameter()) {
         dumper->Add(
             {{"type", "ETSParameterExpression"}, {"name", ident_}, {"initializer", AstDumper::Optional(initializer_)}});
     } else {
-        dumper->Add({{"type", "ETSParameterExpression"},
-                     {"spread", spread_},
-                     {"initializer", AstDumper::Optional(initializer_)}});
+        dumper->Add({{"type", "ETSParameterExpression"}, {"rest parameter", spread_}});
     }
 }
 
@@ -143,23 +157,46 @@ checker::Type *ETSParameterExpression::Check([[maybe_unused]] checker::TSChecker
 
 checker::Type *ETSParameterExpression::Check(checker::ETSChecker *const checker)
 {
-    if (ident_->TsType() != nullptr) {
-        SetTsType(ident_->TsType());
-        return TsType();
+    if (TsType() == nullptr) {
+        checker::Type *param_type;
+
+        if (ident_->TsType() != nullptr) {
+            param_type = ident_->TsType();
+        } else {
+            param_type = !IsRestParameter() ? ident_->Check(checker) : spread_->Check(checker);
+            if (IsDefault()) {
+                [[maybe_unused]] auto *const init_type = initializer_->Check(checker);
+                // TODO(ttamas) : fix this aftet nullable fix
+                // const checker::AssignmentContext ctx(checker->Relation(), initializer_, init_type, name_type,
+                //                                      initializer_->Start(),
+                //                                      {"Initializers type is not assignable to the target type"});
+            }
+        }
+
+        SetTsType(param_type);
     }
 
-    auto *const name_type =
-        spread_ == nullptr ? ident_->TypeAnnotation()->GetType(checker) : spread_->TypeAnnotation()->GetType(checker);
-    if (IsDefault()) {
-        [[maybe_unused]] auto *const init_type = initializer_->Check(checker);
-        // TODO(ttamas) : fix this aftet nullable fix
-        // const checker::AssignmentContext ctx(checker->Relation(), initializer_, init_type, name_type,
-        //                                      initializer_->Start(),
-        //                                      {"Initializers type is not assignable to the target type"});
-    }
-
-    SetTsType(name_type);
     return TsType();
 }
 
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *ETSParameterExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const ident_or_spread = spread_ != nullptr ? spread_->Clone(allocator)->AsAnnotatedExpression()
+                                                     : ident_->Clone(allocator)->AsAnnotatedExpression();
+    auto *const initializer = initializer_ != nullptr ? initializer_->Clone(allocator) : nullptr;
+
+    if (auto *const clone = allocator->New<ETSParameterExpression>(ident_or_spread, initializer); clone != nullptr) {
+        ident_or_spread->SetParent(clone);
+        if (initializer != nullptr) {
+            initializer->SetParent(clone);
+        }
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
 }  // namespace panda::es2panda::ir

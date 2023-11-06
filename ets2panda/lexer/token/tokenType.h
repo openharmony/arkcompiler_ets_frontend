@@ -94,6 +94,7 @@ enum class TokenType {
     PUNCTUATOR_BACK_TICK,
     PUNCTUATOR_HASH_MARK,
     PUNCTUATOR_AT,
+    PUNCTUATOR_DOLLAR_DOLLAR,
 
     /* contextual keywords */
     KEYW_GET,

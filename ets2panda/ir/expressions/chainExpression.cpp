@@ -66,4 +66,22 @@ checker::Type *ChainExpression::Check([[maybe_unused]] checker::ETSChecker *chec
 {
     return nullptr;
 }
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *ChainExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const expression = expression_ != nullptr ? expression_->Clone(allocator) : nullptr;
+
+    if (auto *const clone = allocator->New<ChainExpression>(expression); clone != nullptr) {
+        if (expression != nullptr) {
+            expression->SetParent(clone);
+        }
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
 }  // namespace panda::es2panda::ir

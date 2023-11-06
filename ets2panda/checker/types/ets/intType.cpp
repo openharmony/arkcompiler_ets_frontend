@@ -57,7 +57,7 @@ void IntType::Cast(TypeRelation *const relation, Type *const target)
         return;
     }
 
-    if (target->HasTypeFlag(TypeFlag::ETS_ENUM)) {
+    if (target->HasTypeFlag(TypeFlag::ETS_ENUM | TypeFlag::ETS_STRING_ENUM)) {
         relation->Result(true);
         return;
     }

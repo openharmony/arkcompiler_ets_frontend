@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,10 +22,15 @@
 namespace panda::es2panda::ir {
 class CharLiteral : public Literal {
 public:
-    explicit CharLiteral() : CharLiteral(u'\u0000') {}
-    explicit CharLiteral(char16_t character) : Literal(AstNodeType::CHAR_LITERAL), char_(character) {}
+    ~CharLiteral() override = default;
 
-    char16_t Char() const
+    NO_COPY_SEMANTIC(CharLiteral);
+    NO_MOVE_SEMANTIC(CharLiteral);
+
+    explicit CharLiteral() : CharLiteral(u'\u0000') {}
+    explicit CharLiteral(char16_t const character) : Literal(AstNodeType::CHAR_LITERAL), char_(character) {}
+
+    [[nodiscard]] char16_t Char() const noexcept
     {
         return char_;
     }
@@ -34,6 +39,9 @@ public:
     {
         return char_ == other.char_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -44,7 +52,7 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
 private:
-    char16_t char_;
+    char16_t const char_;
 };
 }  // namespace panda::es2panda::ir
 

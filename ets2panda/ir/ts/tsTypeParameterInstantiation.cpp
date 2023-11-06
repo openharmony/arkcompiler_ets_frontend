@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "es2panda.h"
 #include "tsTypeParameterInstantiation.h"
 
 #include "ir/astDump.h"
@@ -20,6 +21,28 @@
 #include "ir/typeNode.h"
 
 namespace panda::es2panda::ir {
+TSTypeParameterInstantiation::TSTypeParameterInstantiation([[maybe_unused]] Tag const tag,
+                                                           TSTypeParameterInstantiation const &other,
+                                                           ArenaAllocator *const allocator)
+    : Expression(static_cast<Expression const &>(other)), params_(allocator->Adapter())
+{
+    for (auto *param : other.params_) {
+        params_.emplace_back(param->Clone(allocator, this)->AsTypeNode());
+    }
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Expression *TSTypeParameterInstantiation::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<TSTypeParameterInstantiation>(Tag {}, *this, allocator); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 void TSTypeParameterInstantiation::TransformChildren(const NodeTransformer &cb)
 {
     for (auto *&it : params_) {

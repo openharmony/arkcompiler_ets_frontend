@@ -118,6 +118,8 @@ def parse_args():
     parser.add_argument('--product-name',
                         default=DEFAULT_PRODUCT_NAME,
                         help="ark's product name")
+    parser.add_argument('--run-pgo', action='store_true',
+                        help="Run test262 with aot pgo")
     return parser.parse_args()
 
 
@@ -608,12 +610,13 @@ def get_host_args(args, host_type):
 
     if args.merge_abc_mode:
         merge_abc_mode = args.merge_abc_mode
-
     if host_type == DEFAULT_HOST_TYPE:
         host_args = f"-B test262/run_sunspider.py "
         host_args += f"--ark-tool={ark_tool} "
         if args.ark_aot:
             host_args += f"--ark-aot "
+        if args.run_pgo:
+            host_args += f"--run-pgo "
         host_args += f"--ark-aot-tool={ark_aot_tool} "
         host_args += f"--libs-dir={libs_dir} "
         host_args += f"--ark-frontend={ark_frontend} "

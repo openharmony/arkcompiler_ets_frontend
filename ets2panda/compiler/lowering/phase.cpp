@@ -17,29 +17,38 @@
 #include "checker/checker.h"
 #include "compiler/core/compilerContext.h"
 #include "lexer/token/sourceLocation.h"
+#include "compiler/lowering/checkerPhase.h"
+#include "compiler/lowering/ets/generateDeclarations.h"
 #include "compiler/lowering/ets/opAssignment.h"
 
 namespace panda::es2panda::compiler {
 
-std::vector<Phase *> GetEmptyPhaseList()
+static CheckerPhase CHECKER_PHASE;
+
+std::vector<Phase *> GetTrivialPhaseList()
 {
-    return std::vector<Phase *> {};
+    return std::vector<Phase *> {
+        &CHECKER_PHASE,
+    };
 }
 
+static GenerateTsDeclarationsPhase GENERATE_TS_DECLARATIONS_PHASE;
 static OpAssignmentLowering OP_ASSIGNMENT_LOWERING;
 
 std::vector<Phase *> GetETSPhaseList()
 {
     return std::vector<Phase *> {
+        &CHECKER_PHASE,
+        &GENERATE_TS_DECLARATIONS_PHASE,
         &OP_ASSIGNMENT_LOWERING,
     };
 }
 
-void Phase::Apply(CompilerContext *ctx, parser::Program *program)
+bool Phase::Apply(CompilerContext *ctx, parser::Program *program)
 {
     const auto *options = ctx->Options();
     if (options->skip_phases.count(Name()) > 0) {
-        return;
+        return true;
     }
 
     if (options->dump_before_phases.count(Name()) > 0) {
@@ -53,7 +62,9 @@ void Phase::Apply(CompilerContext *ctx, parser::Program *program)
     }
 #endif
 
-    Perform(ctx, program);
+    if (!Perform(ctx, program)) {
+        return false;
+    }
 
     if (options->dump_after_phases.count(Name()) > 0) {
         std::cout << "After phase " << Name() << ":" << std::endl;
@@ -65,6 +76,8 @@ void Phase::Apply(CompilerContext *ctx, parser::Program *program)
         ctx->Checker()->ThrowTypeError({"Postcondition check failed for ", Name()}, lexer::SourcePosition {});
     }
 #endif
+
+    return true;
 }
 
 }  // namespace panda::es2panda::compiler

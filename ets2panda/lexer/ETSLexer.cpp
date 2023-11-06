@@ -192,4 +192,15 @@ void ETSLexer::ScanExclamationPunctuator()
         }
     }
 }
+
+bool ETSLexer::ScanDollarPunctuator()
+{
+    if (Iterator().Peek() != LEX_CHAR_DOLLAR_SIGN) {
+        return false;
+    }
+
+    GetToken().type_ = TokenType::PUNCTUATOR_DOLLAR_DOLLAR;
+    Iterator().Forward(1);
+    return true;
+}
 }  // namespace panda::es2panda::lexer

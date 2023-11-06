@@ -16,9 +16,9 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_CLASS_DEFINITION_H
 #define ES2PANDA_PARSER_INCLUDE_AST_CLASS_DEFINITION_H
 
-#include "ir/astNode.h"
 #include "binder/scope.h"
 #include "binder/variable.h"
+#include "ir/astNode.h"
 #include "util/bitset.h"
 #include "util/language.h"
 
@@ -236,14 +236,12 @@ public:
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    void Compile(compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
-    compiler::VReg CompileHeritageClause(compiler::PandaGen *pg) const;
-    void InitializeClassName(compiler::PandaGen *pg) const;
-    void CompileMissingProperties(compiler::PandaGen *pg, const util::BitSet &compiled, compiler::VReg class_reg) const;
     void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VReg class_reg,
                                         const std::vector<compiler::VReg> &static_computed_field_keys) const;
 

@@ -67,22 +67,22 @@ public:
         return (flags_ & RecordTableFlags::EXTERNAL) != 0;
     }
 
-    ArenaUnorderedSet<ir::ClassDefinition *> &ClassDefinitions()
+    ArenaSet<ir::ClassDefinition *> &ClassDefinitions()
     {
         return class_definitions_;
     }
 
-    const ArenaUnorderedSet<ir::ClassDefinition *> &ClassDefinitions() const
+    const ArenaSet<ir::ClassDefinition *> &ClassDefinitions() const
     {
         return class_definitions_;
     }
 
-    ArenaUnorderedSet<ir::TSInterfaceDeclaration *> &InterfaceDeclarations()
+    ArenaSet<ir::TSInterfaceDeclaration *> &InterfaceDeclarations()
     {
         return interface_declarations_;
     }
 
-    const ArenaUnorderedSet<ir::TSInterfaceDeclaration *> &InterfaceDeclarations() const
+    const ArenaSet<ir::TSInterfaceDeclaration *> &InterfaceDeclarations() const
     {
         return interface_declarations_;
     }
@@ -154,8 +154,8 @@ private:
     friend class BoundContext;
     using RecordHolder = std::variant<ir::ClassDefinition *, ir::TSInterfaceDeclaration *, std::nullptr_t>;
 
-    ArenaUnorderedSet<ir::ClassDefinition *> class_definitions_;
-    ArenaUnorderedSet<ir::TSInterfaceDeclaration *> interface_declarations_;
+    ArenaSet<ir::ClassDefinition *> class_definitions_;
+    ArenaSet<ir::TSInterfaceDeclaration *> interface_declarations_;
     ArenaVector<binder::FunctionScope *> signatures_;
     RecordHolder record_ {nullptr};
     parser::Program *program_ {};

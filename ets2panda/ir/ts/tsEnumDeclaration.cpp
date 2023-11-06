@@ -428,7 +428,14 @@ checker::Type *TSEnumDeclaration::Check(checker::ETSChecker *const checker)
     ASSERT(enum_var != nullptr);
 
     if (enum_var->TsType() == nullptr) {
-        auto *const ets_enum_type = checker->CreateETSEnumType(this);
+        checker::Type *ets_enum_type;
+        if (auto *const item_init = members_.front()->AsTSEnumMember()->Init(); item_init->IsNumberLiteral()) {
+            ets_enum_type = checker->CreateETSEnumType(this);
+        } else if (item_init->IsStringLiteral()) {
+            ets_enum_type = checker->CreateETSStringEnumType(this);
+        } else {
+            checker->ThrowTypeError("Invalid enumeration value type.", Start());
+        }
         SetTsType(ets_enum_type);
         ets_enum_type->SetVariable(enum_var);
         enum_var->SetTsType(ets_enum_type);

@@ -25,7 +25,8 @@ from enum import Enum
 
 import yaml
 
-from utils import init_logger
+import json5
+import utils
 
 
 arguments = {}
@@ -125,6 +126,16 @@ def parse_configs():
         configs = yaml.safe_load(config_file)
 
 
+def get_ark_disasm_path(task_path):
+    sdk_path = configs.get('deveco_sdk_path')
+    ark_disasm = 'ark_disasm.exe' if utils.is_windows() else 'ark_disasm'
+    profile_file = os.path.join(task_path, 'build-profile.json5')
+    with open(profile_file, 'r') as file:
+        profile_data = json5.load(file)
+    return os.path.join(sdk_path, str(profile_data['app']['products'][0]['compileSdkVersion']),
+                        'toolchains', ark_disasm)
+
+
 def create_test_tasks():
     task_list = []
     haps_list = configs.get('haps')
@@ -152,6 +163,7 @@ def create_test_tasks():
             task.output_app_path = hap['output_app_path']
             task.inc_modify_file = hap['inc_modify_file']
             task.backup_info.cache_path = os.path.join(task.path, 'test_suite_cache')
+            task.ark_disasm_path = get_ark_disasm_path(task.path)
 
             task_list.append(task)
 
@@ -160,6 +172,6 @@ def create_test_tasks():
 
 def process_options():
     parse_args()
-    init_logger(arguments.log_level, arguments.log_file)
+    utils.init_logger(arguments.log_level, arguments.log_file)
     parse_configs()
     return create_test_tasks()

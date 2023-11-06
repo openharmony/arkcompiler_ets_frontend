@@ -123,6 +123,27 @@
             "line": 126,
             "column": 3,
             "problem": "LimitedReturnTypeInference"
+        },
+        {
+            "line": 131,
+            "column": 1,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
+        },
+        {
+            "line": 135,
+            "column": 3,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
+        },
+        {
+            "line": 140,
+            "column": 3,
+            "problem": "LimitedReturnTypeInference",
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
         }
     ]
 }

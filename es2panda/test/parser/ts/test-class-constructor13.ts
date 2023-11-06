@@ -16,9 +16,9 @@
 
 class Base { }
 class A extends Base {
-    #prop:number;
+    name: number;
     constructor() {
-        print("hello");
-        super();
+        this.name = 1;
+        if (true) { super() }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,9 +21,18 @@
 namespace panda::es2panda::ir {
 class OmittedExpression : public Expression {
 public:
+    ~OmittedExpression() override = default;
+
+    NO_COPY_SEMANTIC(OmittedExpression);
+    NO_MOVE_SEMANTIC(OmittedExpression);
+
     explicit OmittedExpression() : Expression(AstNodeType::OMITTED_EXPRESSION) {}
 
     void TransformChildren(const NodeTransformer &cb) override;
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;

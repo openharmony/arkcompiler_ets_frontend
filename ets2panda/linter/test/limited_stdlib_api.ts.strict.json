@@ -22,62 +22,6 @@
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
-            "line": 18,
-            "column": 11,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 19,
-            "column": 11,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 20,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 21,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 22,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 23,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 31,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 32,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
             "line": 32,
             "column": 1,
             "problem": "GlobalThis",
@@ -85,22 +29,29 @@
             "rule": "\"globalThis\" is not supported (arkts-no-globalthis)"
         },
         {
+            "line": 32,
+            "column": 12,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
             "line": 56,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 57,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 58,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
@@ -114,133 +65,133 @@
         },
         {
             "line": 59,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 61,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 62,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 63,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 64,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 65,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 66,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 67,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 68,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 69,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 70,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 71,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 72,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 73,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 74,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 75,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 76,
-            "column": 1,
+            "column": 8,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 85,
-            "column": 1,
+            "column": 9,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 86,
-            "column": 1,
+            "column": 9,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
@@ -254,7 +205,7 @@
         },
         {
             "line": 87,
-            "column": 1,
+            "column": 9,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
@@ -268,42 +219,42 @@
         },
         {
             "line": 88,
-            "column": 1,
+            "column": 9,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 90,
-            "column": 1,
+            "column": 9,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 91,
-            "column": 1,
+            "column": 9,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 92,
-            "column": 1,
+            "column": 9,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 93,
-            "column": 1,
+            "column": 9,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 94,
-            "column": 1,
+            "column": 9,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
@@ -317,21 +268,42 @@
         },
         {
             "line": 105,
-            "column": 20,
+            "column": 13,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 105,
+            "column": 28,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 106,
-            "column": 24,
+            "column": 13,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 106,
+            "column": 32,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 107,
-            "column": 29,
+            "column": 13,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 107,
+            "column": 37,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
@@ -345,77 +317,147 @@
         },
         {
             "line": 108,
-            "column": 29,
+            "column": 13,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 108,
+            "column": 37,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 109,
-            "column": 18,
+            "column": 13,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 109,
+            "column": 26,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 110,
-            "column": 39,
+            "column": 13,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 110,
+            "column": 47,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 111,
-            "column": 29,
+            "column": 13,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 111,
+            "column": 37,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 112,
-            "column": 18,
+            "column": 13,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 112,
+            "column": 26,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 113,
-            "column": 27,
+            "column": 13,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 113,
+            "column": 35,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 114,
-            "column": 22,
+            "column": 13,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 114,
+            "column": 30,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 115,
-            "column": 32,
+            "column": 13,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 115,
+            "column": 40,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 116,
-            "column": 18,
+            "column": 13,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 116,
+            "column": 26,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 117,
-            "column": 29,
+            "column": 13,
+            "problem": "LimitedStdLibApi",
+            "suggest": "",
+            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
+        },
+        {
+            "line": 117,
+            "column": 37,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         },
         {
             "line": 120,
-            "column": 1,
+            "column": 13,
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"

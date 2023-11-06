@@ -1,0 +1,19 @@
+{
+    "nodes": [
+        {
+            "line": 13,
+            "column": 5,
+            "problem": "LimitedReturnTypeInference",
+            "autofixable": true,
+            "autofix": [
+                {
+                    "start": 206,
+                    "end": 206,
+                    "replacementText": ": number"
+                }
+            ],
+            "suggest": "",
+            "rule": "Function return type inference is limited (arkts-no-implicit-return-types)"
+        }
+    ]
+}

@@ -15,7 +15,9 @@
 
 #include "namedType.h"
 
+#include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "ir/astDump.h"
@@ -56,20 +58,23 @@ void NamedType::Dump(AstDumper *dumper) const
                  {"isNullable", nullable_}});
 }
 
-void NamedType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-void NamedType::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void NamedType::Compile(compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *NamedType::Check([[maybe_unused]] checker::TSChecker *checker)
+void NamedType::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *NamedType::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *NamedType::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *NamedType::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

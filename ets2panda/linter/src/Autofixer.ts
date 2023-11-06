@@ -15,7 +15,8 @@
 
 import * as ts from 'typescript';
 import { AutofixInfo } from './autofixes/AutofixInfo';
-import { FaultID } from './Problems';
+import { FaultID } from './utils/consts/Problems';
+import { isAssignmentOperator } from './utils/functions/isAssignmentOperator';
 
 export const AUTOFIX_ALL: AutofixInfo = {
   problemID: '', start: -1, end: -1
@@ -78,10 +79,13 @@ export function fixFunctionExpression(funcExpr: ts.FunctionExpression,
   params: ts.NodeArray<ts.ParameterDeclaration> = funcExpr.parameters, 
   retType: ts.TypeNode | undefined = funcExpr.type,
   modifiers: readonly ts.Modifier[] | undefined): Autofix {
-  let arrowFunc = ts.factory.createArrowFunction(
+  let arrowFunc: ts.Expression = ts.factory.createArrowFunction(
     modifiers, undefined, params, retType, ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken), 
     funcExpr.body
   );
+  if (needsParentheses(funcExpr)) {
+    arrowFunc = ts.factory.createParenthesizedExpression(arrowFunc);
+  }
   let text = printer.printNode(ts.EmitHint.Unspecified, arrowFunc, funcExpr.getSourceFile());
   return { start: funcExpr.getStart(), end: funcExpr.getEnd(), replacementText: text };
 }
@@ -186,4 +190,13 @@ function getReturnTypePosition(funcLikeDecl: ts.FunctionLikeDeclaration): number
 
   // Shouldn't get here.
   return -1;
+}
+
+function needsParentheses(node: ts.FunctionExpression): boolean {
+  const parent = node.parent;
+  return ts.isPrefixUnaryExpression(parent) || ts.isPostfixUnaryExpression(parent) ||
+    ts.isPropertyAccessExpression(parent) || ts.isElementAccessExpression(parent) ||
+    ts.isTypeOfExpression(parent) || ts.isVoidExpression(parent) || ts.isAwaitExpression(parent) ||
+    (ts.isCallExpression(parent) && node === parent.expression) ||
+    (ts.isBinaryExpression(parent) && !isAssignmentOperator(parent.operatorToken));
 }

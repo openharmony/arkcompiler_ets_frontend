@@ -262,6 +262,7 @@ private:
     ir::TSMappedType *ParseTsMappedType();
     ir::TSTypePredicate *ParseTsTypePredicate();
     ir::Expression *ParseTsTypeLiteralOrInterfaceKey(bool *computed, bool *signature, bool *isIndexSignature);
+    void ValidateIndexSignatureParameterType(ir::Expression *typeAnnotation);
     ir::Expression *ParseTsConditionalType(ir::Expression *checkType, bool restrictExtends);
     ir::Expression *ParseTsTypeLiteralOrInterfaceMember();
     ArenaVector<ir::Expression *> ParseTsTypeLiteralOrInterface();
@@ -322,13 +323,16 @@ private:
     ir::ClassDefinition *ParseClassDefinition(bool isDeclaration, bool idRequired = true, bool isDeclare = false,
                                               bool isAbstract = false);
 
-    void ValidateClassConstructor(ir::MethodDefinition *ctor,
-                                  ArenaVector<ir::Statement *> &properties,
-                                  ir::Expression *superClass,
-                                  bool isDeclare, bool hasConstructorFuncBody, bool hasSuperClass);
-    void FindSuperCallInConstructor(const ir::AstNode *parent, bool *hasSuperCall);
-    void FindSuperCallInConstructorChildNode(const ir::AstNode *childNode, bool *hasSuperCall);
-    bool SuperCallShouldBeFirst(ir::MethodDefinition *ctor, ArenaVector<ir::Statement *> &properties);
+    void ValidateClassConstructor(const ir::MethodDefinition *ctor,
+                                  const ArenaVector<ir::Statement *> &properties,
+                                  bool isDeclare, bool hasConstructorFuncBody,
+                                  bool hasSuperClass, bool isExtendsFromNull);
+    void FindSuperCall(const ir::AstNode *parent, bool *hasSuperCall);
+    void FindSuperCallInCtorChildNode(const ir::AstNode *childNode, bool *hasSuperCall);
+    bool SuperCallShouldBeRootLevel(const ir::MethodDefinition *ctor, const ArenaVector<ir::Statement *> &properties);
+    void ValidateSuperCallLocation(const ir::MethodDefinition *ctor, bool superCallShouldBeRootLevel);
+    void FindThisOrSuperReference(const ir::AstNode *parent, bool *hasThisOrSuperReference);
+    void FindThisOrSuperReferenceInChildNode(const ir::AstNode *childNode, bool *hasThisOrSuperReference);
     void ValidateAccessor(ExpressionParseFlags flags, lexer::TokenFlags currentTokenFlags);
     void CheckPropertyKeyAsycModifier(ParserStatus *methodStatus);
     ir::Property *ParseShorthandProperty(const lexer::LexerPosition *startPos);
@@ -339,6 +343,8 @@ private:
                                        ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     bool ParsePropertyEnd();
 
+    ir::Expression *ParsePostfixTypeOrHigher(ir::Expression *typeAnnotation, TypeAnnotationParsingOptions *options);
+    ir::Expression *TryParseConstraintOfInferType(TypeAnnotationParsingOptions *options);
     ir::Expression *ParsePropertyDefinition(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     bool CheckOutIsIdentInTypeParameter();
     ir::TSTypeParameter *ParseTsTypeParameter(bool throwError, bool addBinding = false, bool isAllowInOut = false);
@@ -449,6 +455,18 @@ private:
     ir::Identifier *ParseNamedExport(const lexer::Token &exportedToken);
     void CheckStrictReservedWord() const;
 
+    // Discard the DISALLOW_CONDITIONAL_TYPES in current status to call function.
+    template<class Function,  typename... Args>
+    ir::Expression *DoOutsideOfDisallowConditinalTypesContext(Function func, Args &&... args);
+
+    // Add the DISALLOW_CONDITIONAL_TYPES to current status to call function.
+    template<typename Function, typename... Args>
+    ir::Expression *DoInsideOfDisallowConditinalTypesContext(Function func, Args &&... args);
+
+    bool InDisallowConditionalTypesContext();
+    bool InContext(ParserStatus status);
+    void AddFlagToStatus(ParserStatus status);
+    void RemoveFlagToStatus(ParserStatus status);
     // StatementParser.Cpp
 
     void ConsumeSemicolon(ir::Statement *statement);

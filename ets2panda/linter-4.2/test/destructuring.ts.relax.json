@@ -143,6 +143,26 @@
             "line": 116,
             "column": 15,
             "problem": "ObjectLiteralNoContextType"
+        },
+        {
+            "line": 132,
+            "column": 13,
+            "problem": "DestructuringParameter"
+        },
+        {
+            "line": 136,
+            "column": 13,
+            "problem": "DestructuringParameter"
+        },
+        {
+            "line": 136,
+            "column": 22,
+            "problem": "ObjectTypeLiteral"
+        },
+        {
+            "line": 138,
+            "column": 4,
+            "problem": "ObjectLiteralNoContextType"
         }
     ]
 }

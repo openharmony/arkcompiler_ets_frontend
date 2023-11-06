@@ -151,6 +151,9 @@ checker::Type *SwitchStatement::Check(checker::ETSChecker *const checker)
                 valid_case_type = compared_expr_type->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL);
             } else if (case_type->IsETSEnumType() && discriminant_->TsType()->IsETSEnumType()) {
                 valid_case_type = discriminant_->TsType()->AsETSEnumType()->IsSameEnumType(case_type->AsETSEnumType());
+            } else if (case_type->IsETSStringEnumType() && discriminant_->TsType()->IsETSStringEnumType()) {
+                valid_case_type =
+                    discriminant_->TsType()->AsETSStringEnumType()->IsSameEnumType(case_type->AsETSStringEnumType());
             } else {
                 checker::AssignmentContext(
                     checker->Relation(), discriminant_, case_type, unboxed_disc_type, it->Test()->Start(),

@@ -170,6 +170,12 @@ ETSFunctionType *ETSChecker::CreateETSFunctionType(util::StringView name)
     return Allocator()->New<ETSFunctionType>(name, Allocator());
 }
 
+ETSExtensionFuncHelperType *ETSChecker::CreateETSExtensionFuncHelperType(ETSFunctionType *class_method_type,
+                                                                         ETSFunctionType *extension_function_type)
+{
+    return Allocator()->New<ETSExtensionFuncHelperType>(class_method_type, extension_function_type);
+}
+
 ETSObjectType *ETSChecker::CreateETSObjectTypeCheckBuiltins(util::StringView name, ir::AstNode *decl_node,
                                                             ETSObjectFlags flags)
 {
@@ -288,7 +294,7 @@ ETSObjectType *ETSChecker::CreateETSObjectType(util::StringView name, ir::AstNod
     return obj_type;
 }
 
-ETSEnumType *ETSChecker::CreateETSEnumType(ir::TSEnumDeclaration *const enum_decl)
+ETSEnumType *ETSChecker::CreateETSEnumType(ir::TSEnumDeclaration const *const enum_decl)
 {
     binder::Variable *enum_var = enum_decl->Key()->Variable();
     ASSERT(enum_var != nullptr);
@@ -313,13 +319,13 @@ ETSEnumType *ETSChecker::CreateETSEnumType(ir::TSEnumDeclaration *const enum_dec
     auto const value_of_method = CreateEnumValueOfMethod(names_array_ident, enum_type);
     enum_type->SetValueOfMethod(value_of_method);
 
+    auto const from_int_method = CreateEnumFromIntMethod(names_array_ident, enum_type);
+    enum_type->SetFromIntMethod(from_int_method);
+
     auto *const values_array_ident = CreateEnumValuesArray(enum_type);
 
     auto const get_value_method = CreateEnumGetValueMethod(values_array_ident, enum_type);
     enum_type->SetGetValueMethod(get_value_method);
-
-    auto const from_int_method = CreateEnumFromIntMethod(values_array_ident, enum_type);
-    enum_type->SetFromIntMethod(from_int_method);
 
     auto *const string_values_array_ident = CreateEnumStringValuesArray(enum_type);
 
@@ -335,6 +341,57 @@ ETSEnumType *ETSChecker::CreateETSEnumType(ir::TSEnumDeclaration *const enum_dec
         auto *const enum_literal_type =
             member->AsTSEnumMember()->Key()->AsIdentifier()->Variable()->TsType()->AsETSEnumType();
         enum_literal_type->SetGetValueMethod(get_value_method);
+        enum_literal_type->SetGetNameMethod(get_name_method);
+        enum_literal_type->SetToStringMethod(to_string_method);
+    }
+
+    return enum_type;
+}
+
+ETSStringEnumType *ETSChecker::CreateETSStringEnumType(ir::TSEnumDeclaration const *const enum_decl)
+{
+    binder::Variable *enum_var = enum_decl->Key()->Variable();
+    ASSERT(enum_var != nullptr);
+
+    ETSEnumType::UType ordinal = -1;
+    auto *const enum_type = Allocator()->New<ETSStringEnumType>(enum_decl, ordinal++);
+    enum_type->SetVariable(enum_var);
+    enum_var->SetTsType(enum_type);
+
+    for (auto *const member : enum_type->GetMembers()) {
+        auto *const member_var = member->AsTSEnumMember()->Key()->AsIdentifier()->Variable();
+        auto *const enum_literal_type =
+            Allocator()->New<ETSStringEnumType>(enum_decl, ordinal++, member->AsTSEnumMember());
+        enum_literal_type->SetVariable(member_var);
+        member_var->SetTsType(enum_literal_type);
+    }
+
+    auto *const names_array_ident = CreateEnumNamesArray(enum_type);
+
+    auto const get_name_method = CreateEnumGetNameMethod(names_array_ident, enum_type);
+    enum_type->SetGetNameMethod(get_name_method);
+
+    auto const value_of_method = CreateEnumValueOfMethod(names_array_ident, enum_type);
+    enum_type->SetValueOfMethod(value_of_method);
+
+    auto const from_int_method = CreateEnumFromIntMethod(names_array_ident, enum_type);
+    enum_type->SetFromIntMethod(from_int_method);
+
+    auto *const string_values_array_ident = CreateEnumStringValuesArray(enum_type);
+
+    auto const to_string_method = CreateEnumToStringMethod(string_values_array_ident, enum_type);
+    enum_type->SetToStringMethod(to_string_method);
+    enum_type->SetGetValueMethod(to_string_method);
+
+    auto *const items_array_ident = CreateEnumItemsArray(enum_type);
+
+    auto const values_method = CreateEnumValuesMethod(items_array_ident, enum_type);
+    enum_type->SetValuesMethod(values_method);
+
+    for (auto *const member : enum_type->GetMembers()) {
+        auto *const enum_literal_type =
+            member->AsTSEnumMember()->Key()->AsIdentifier()->Variable()->TsType()->AsETSStringEnumType();
+        enum_literal_type->SetGetValueMethod(to_string_method);
         enum_literal_type->SetGetNameMethod(get_name_method);
         enum_literal_type->SetToStringMethod(to_string_method);
     }

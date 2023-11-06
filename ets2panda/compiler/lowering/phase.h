@@ -22,7 +22,8 @@ namespace panda::es2panda::compiler {
 
 class Phase {
 public:
-    void Apply(CompilerContext *ctx, parser::Program *program);
+    /* If Apply returns false, processing is stopped. */
+    bool Apply(CompilerContext *ctx, parser::Program *program);
 
     virtual util::StringView Name() = 0;
 
@@ -30,14 +31,14 @@ public:
     {
         return true;
     }
-    virtual void Perform(CompilerContext *ctx, parser::Program *program) = 0;
+    virtual bool Perform(CompilerContext *ctx, parser::Program *program) = 0;
     virtual bool Postcondition([[maybe_unused]] CompilerContext *ctx, [[maybe_unused]] const parser::Program *program)
     {
         return true;
     }
 };
 
-std::vector<Phase *> GetEmptyPhaseList();
+std::vector<Phase *> GetTrivialPhaseList();
 std::vector<Phase *> GetETSPhaseList();
 
 }  // namespace panda::es2panda::compiler

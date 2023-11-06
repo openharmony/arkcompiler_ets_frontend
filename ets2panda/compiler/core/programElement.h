@@ -32,14 +32,14 @@ public:
     NO_COPY_SEMANTIC(ProgramElement);
     NO_MOVE_SEMANTIC(ProgramElement);
 
-    std::unordered_set<std::string> &Strings();
+    std::set<std::string> &Strings();
     std::vector<pandasm::Ins *> &LiteralBufferIns();
     std::vector<LiteralBuffer> &BuffStorage();
     pandasm::Function *Function();
     void SetFunction(pandasm::Function *func);
 
 private:
-    std::unordered_set<std::string> strings_;
+    std::set<std::string> strings_;
     std::vector<pandasm::Ins *> literal_buffer_ins_;
     std::vector<LiteralBuffer> buff_storage_;
     pandasm::Function *func_ {};

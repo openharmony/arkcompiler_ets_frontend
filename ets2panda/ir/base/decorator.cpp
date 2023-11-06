@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,8 +15,13 @@
 
 #include "decorator.h"
 
+#include "es2panda.h"
 #include "ir/expression.h"
 #include "ir/astDump.h"
+#include "checker/ETSchecker.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void Decorator::TransformChildren(const NodeTransformer &cb)
@@ -34,15 +39,41 @@ void Decorator::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "Decorator"}, {"expression", expr_}});
 }
 
-void Decorator::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *Decorator::Check([[maybe_unused]] checker::TSChecker *checker)
+void Decorator::Compile(compiler::PandaGen *pg) const
 {
-    return nullptr;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *Decorator::Check([[maybe_unused]] checker::ETSChecker *checker)
+void Decorator::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *Decorator::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *Decorator::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+Statement *Decorator::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const expr = expr_ != nullptr ? expr_->Clone(allocator) : nullptr;
+
+    if (auto *const clone = allocator->New<Decorator>(expr); clone != nullptr) {
+        if (expr != nullptr) {
+            expr->SetParent(clone);
+        }
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir
