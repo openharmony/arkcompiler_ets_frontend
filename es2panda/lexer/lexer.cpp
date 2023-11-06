@@ -1245,22 +1245,22 @@ void Lexer::SkipWhiteSpaces()
             case LEX_CHAR_HASH_MARK: {
                 Iterator().Forward(1);
                 cp = Iterator().Peek();
-                if (cp == LEX_CHAR_EXCLAMATION) {
-                    if (Iterator().Index() != 1) {
-                        /*
-                         * according to ECMA-262 specification item 12.5 Hashbang Comments are location-sensitive.
-                         * only allowed occurs at the beginning of files, other position is illegal.
-                         */
-                        Iterator().Backward(1);
-                        ThrowError("Invalid or unexpected token");
-                    }
-                    Iterator().Forward(1);
-                    SkipSingleLineComment();
-                    continue;
+                if (cp != LEX_CHAR_EXCLAMATION) {
+                    Iterator().Backward(1);
+                    return;
+                }
+                if (Iterator().Index() != 1) {
+                    /*
+                    * according to ECMA-262 specification item 12.5 Hashbang Comments are location-sensitive.
+                    * only allowed occurs at the beginning of files, other position is illegal.
+                    */
+                    Iterator().Backward(1);
+                    ThrowError("Invalid or unexpected token");
                 }
 
-                Iterator().Backward(1);
-                return;
+                Iterator().Forward(1);
+                SkipSingleLineComment();
+                continue;
             }
             case LEX_CHAR_CR: {
                 Iterator().Forward(1);
