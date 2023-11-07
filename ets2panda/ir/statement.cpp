@@ -17,11 +17,4 @@
 #include "typeNode.h"
 
 namespace panda::es2panda::ir {
-void AnnotatedStatement::CloneTypeAnnotation(ArenaAllocator *const allocator)
-{
-    if (auto *annotation = const_cast<TypeNode *>(TypeAnnotation()); annotation != nullptr) {
-        SetTsTypeAnnotation(annotation->Clone(allocator, this));
-    }
-}
-
 }  // namespace panda::es2panda::ir

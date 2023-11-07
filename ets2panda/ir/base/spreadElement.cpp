@@ -25,9 +25,8 @@
 namespace panda::es2panda::ir {
 SpreadElement::SpreadElement([[maybe_unused]] Tag const tag, SpreadElement const &other,
                              ArenaAllocator *const allocator)
-    : AnnotatedExpression(static_cast<AnnotatedExpression const &>(other)), decorators_(allocator->Adapter())
+    : AnnotatedExpression(static_cast<AnnotatedExpression const &>(other), allocator), decorators_(allocator->Adapter())
 {
-    CloneTypeAnnotation(allocator);
     optional_ = other.optional_;
 
     if (other.argument_ != nullptr) {

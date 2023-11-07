@@ -34,12 +34,10 @@
 namespace panda::es2panda::ir {
 ArrayExpression::ArrayExpression([[maybe_unused]] Tag const tag, ArrayExpression const &other,
                                  ArenaAllocator *const allocator)
-    : AnnotatedExpression(static_cast<AnnotatedExpression const &>(other)),
+    : AnnotatedExpression(static_cast<AnnotatedExpression const &>(other), allocator),
       decorators_(allocator->Adapter()),
       elements_(allocator->Adapter())
 {
-    CloneTypeAnnotation(allocator);
-
     preferred_type_ = other.preferred_type_;
     is_declaration_ = other.is_declaration_;
     trailing_comma_ = other.trailing_comma_;

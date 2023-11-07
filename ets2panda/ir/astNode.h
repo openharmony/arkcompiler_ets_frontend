@@ -584,8 +584,6 @@ public:
     NO_COPY_OPERATOR(AnnotatedAstNode);
     NO_MOVE_SEMANTIC(AnnotatedAstNode);
 
-    void CloneTypeAnnotation(ArenaAllocator *allocator);
-
 protected:
     explicit AnnotatedAstNode(AstNodeType const type, TypeNode *const type_annotation)
         : Annotated<AstNode>(type, type_annotation)

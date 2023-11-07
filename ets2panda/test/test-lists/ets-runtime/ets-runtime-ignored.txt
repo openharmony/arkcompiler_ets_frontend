@@ -22,9 +22,6 @@ unboxing.ets
 # panda#11326
 GenericsTest.ets
 
-# panda#11106
-LongLiteralLimits.ets
-
 # panda#11327
 objectEquality.ets
 

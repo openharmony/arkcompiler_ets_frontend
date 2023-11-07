@@ -115,7 +115,7 @@ public:
     AnnotatedExpression() = delete;
     ~AnnotatedExpression() override = default;
 
-    NO_COPY_OPERATOR(AnnotatedExpression);
+    NO_COPY_SEMANTIC(AnnotatedExpression);
     NO_MOVE_SEMANTIC(AnnotatedExpression);
 
     [[nodiscard]] bool IsAnnotatedExpression() const noexcept override
@@ -130,12 +130,7 @@ protected:
     }
     explicit AnnotatedExpression(AstNodeType const type) : Annotated<Expression>(type) {}
 
-    AnnotatedExpression(AnnotatedExpression const &other)
-        : Annotated<Expression>(static_cast<Annotated<Expression> const &>(other))
-    {
-    }
-
-    void CloneTypeAnnotation(ArenaAllocator *allocator);
+    explicit AnnotatedExpression(AnnotatedExpression const &other, ArenaAllocator *allocator);
 };
 
 class MaybeOptionalExpression : public Expression {

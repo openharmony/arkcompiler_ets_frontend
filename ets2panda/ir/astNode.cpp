@@ -110,13 +110,6 @@ AstNode *AstNode::FindChild(const NodePredicate &cb) const
     return found;
 }
 
-void AnnotatedAstNode::CloneTypeAnnotation(ArenaAllocator *const allocator)
-{
-    if (auto *annotation = const_cast<TypeNode *>(TypeAnnotation()); annotation != nullptr) {
-        SetTsTypeAnnotation(annotation->Clone(allocator, this));
-    }
-}
-
 std::string AstNode::DumpJSON() const
 {
     ir::AstDumper dumper {this};

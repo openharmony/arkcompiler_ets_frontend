@@ -27,9 +27,8 @@
 
 namespace panda::es2panda::ir {
 Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, ArenaAllocator *const allocator)
-    : AnnotatedExpression(static_cast<AnnotatedExpression const &>(other)), decorators_(allocator->Adapter())
+    : AnnotatedExpression(static_cast<AnnotatedExpression const &>(other), allocator), decorators_(allocator->Adapter())
 {
-    CloneTypeAnnotation(allocator);
     name_ = other.name_;
     flags_ = other.flags_;
     variable_ = other.variable_;

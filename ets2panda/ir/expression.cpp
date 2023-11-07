@@ -18,10 +18,11 @@
 
 namespace panda::es2panda::ir {
 
-void AnnotatedExpression::CloneTypeAnnotation(ArenaAllocator *const allocator)
+AnnotatedExpression::AnnotatedExpression(AnnotatedExpression const &other, ArenaAllocator *const allocator)
+    : Annotated<Expression>(static_cast<Annotated<Expression> const &>(other))
 {
-    if (auto *annotation = const_cast<TypeNode *>(TypeAnnotation()); annotation != nullptr) {
-        SetTsTypeAnnotation(annotation->Clone(allocator, this));
+    if (auto *const annotation = other.TypeAnnotation(); annotation != nullptr) {
+        SetTsTypeAnnotation(annotation->Clone(allocator, this)->AsTypeNode());
     }
 }
 

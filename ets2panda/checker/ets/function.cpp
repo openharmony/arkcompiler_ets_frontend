@@ -2557,21 +2557,21 @@ varbinder::FunctionParamScope *ETSChecker::CopyParams(const ArenaVector<ir::Expr
                                                       ArenaVector<ir::Expression *> &out_params)
 {
     auto param_ctx = varbinder::LexicalScope<varbinder::FunctionParamScope>(VarBinder());
-    for (auto *const it : params) {
-        auto *const param_expr_ident = it->AsETSParameterExpression()->Ident();
-        auto *const param_ident = Allocator()->New<ir::Identifier>(param_expr_ident->Name(), Allocator());
 
-        auto *const param = Allocator()->New<ir::ETSParameterExpression>(param_ident, nullptr);
-        auto *const var = std::get<1>(VarBinder()->AddParamDecl(param));
-        var->SetTsType(param_expr_ident->Variable()->TsType());
+    for (auto *const it : params) {
+        auto *const param_old = it->AsETSParameterExpression();
+        auto *const param_new = param_old->Clone(Allocator(), param_old->Parent())->AsETSParameterExpression();
+
+        auto *const var = std::get<1>(VarBinder()->AddParamDecl(param_new));
+        var->SetTsType(param_old->Ident()->Variable()->TsType());
         var->SetScope(param_ctx.GetScope());
-        param->SetVariable(var);
-        param_ident->SetTsTypeAnnotation(param_expr_ident->TypeAnnotation());
-        param->SetTsType(param_expr_ident->Variable()->TsType());
-        param->SetParent(it->Parent());
-        param_ident->SetParent(param_expr_ident->Parent());
-        out_params.push_back(param);
+        param_new->SetVariable(var);
+
+        param_new->SetTsType(param_old->TsType());
+
+        out_params.emplace_back(param_new);
     }
+
     return param_ctx.GetScope();
 }
 
