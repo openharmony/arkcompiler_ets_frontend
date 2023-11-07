@@ -16,7 +16,7 @@
 #include "stringType.h"
 
 namespace ark::es2panda::checker {
-void StringType::ToString(std::stringstream &ss) const
+void StringType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     ss << "string";
 }

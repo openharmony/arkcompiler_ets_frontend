@@ -224,8 +224,13 @@ public:
     }
 
     bool IsLambdaObject() const;
-    virtual void ToString(std::stringstream &ss) const = 0;
+    virtual void ToString(std::stringstream &ss, bool precise) const = 0;
+    void ToString(std::stringstream &ss) const;
+    std::string ToString() const;
+    std::string ToStringPrecise() const;
     virtual void ToStringAsSrc(std::stringstream &ss) const;
+    std::string ToStringAsSrc() const;
+
     virtual TypeFacts GetTypeFacts() const;
     virtual void ToAssemblerType([[maybe_unused]] std::stringstream &ss) const {};
     virtual void ToDebugInfoType([[maybe_unused]] std::stringstream &ss) const {};

@@ -37,12 +37,12 @@ public:
     void Cast(TypeRelation *relation, Type *target) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 
-    void ToString(std::stringstream &ss) const override
+    void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override
     {
         ss << "byte";
     }
 
-    void ToAssemblerType([[maybe_unused]] std::stringstream &ss) const override
+    void ToAssemblerType(std::stringstream &ss) const override
     {
         ss << compiler::Signatures::PRIMITIVE_BYTE;
     }

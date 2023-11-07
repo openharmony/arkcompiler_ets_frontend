@@ -20,7 +20,7 @@
 #include "checker/types/ts/enumType.h"
 
 namespace ark::es2panda::checker {
-void NumberLiteralType::ToString(std::stringstream &ss) const
+void NumberLiteralType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     ss << util::Helpers::ToString(value_);
 }

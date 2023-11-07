@@ -23,7 +23,7 @@ class UndefinedType : public Type {
 public:
     UndefinedType() : Type(TypeFlag::UNDEFINED) {}
 
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override;
     void Identical(TypeRelation *relation, Type *other) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;

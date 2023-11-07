@@ -128,7 +128,7 @@ public:
         return properties;
     }
 
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override;
     TypeFacts GetTypeFacts() const override;
     void Identical(TypeRelation *relation, Type *other) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;

@@ -80,7 +80,7 @@ public:
 
     [[nodiscard]] Type *GetTypeAtIndex(int32_t index) const;
 
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, bool precise) const override;
 
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;

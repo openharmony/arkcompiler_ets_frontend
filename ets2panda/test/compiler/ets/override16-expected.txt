@@ -735,4 +735,4 @@
     }
   }
 }
-TypeError: Hiding method is not return-type-substitutable for other method. [override16.ets:23:5]
+TypeError: fn(): float in B cannot override fn(): int in A because overridden method is static. [override16.ets:23:5]

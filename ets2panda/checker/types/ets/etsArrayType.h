@@ -38,7 +38,7 @@ public:
         return {false, false};
     }
 
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, bool precise) const override;
     void ToAssemblerType(std::stringstream &ss) const override;
     void ToAssemblerTypeWithRank(std::stringstream &ss) const override;
     void ToDebugInfoType(std::stringstream &ss) const override;

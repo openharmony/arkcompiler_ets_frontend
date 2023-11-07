@@ -17,6 +17,6 @@ class A<T> {}
 class B {}
 
 function main(): void {
-  let abn : A<B | null> = new A<B>(); // should work: non nullable B is the subtype of nullable B
+  let abn : A<B | null> = new A<B>(); // should not work: non nullable B is the subtype of nullable B, but T has no variance mark
   let ab : A<B> = abn; // should not work: nullable B (the type of abn) is not the subtype of non nullable B
 }

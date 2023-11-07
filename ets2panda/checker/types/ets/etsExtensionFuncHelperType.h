@@ -38,7 +38,7 @@ public:
         return extensionFunctionType_;
     }
 
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, bool precise) const override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
 
 private:

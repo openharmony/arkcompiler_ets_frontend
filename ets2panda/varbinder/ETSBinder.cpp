@@ -400,8 +400,9 @@ void ETSBinder::BuildLambdaObject(ir::AstNode *refNode, ir::ClassDefinition *lam
     auto boundCtx = BoundContext(GetGlobalRecordTable(), lambdaObject);
     const auto &lambdaBody = lambdaObject->Body();
 
+    AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 3U]->AsMethodDefinition()->Function());
     AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 2U]->AsMethodDefinition()->Function());
-    AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 1]->AsMethodDefinition()->Function());
+    AddLambdaFunctionThisParam(lambdaBody[lambdaBody.size() - 1U]->AsMethodDefinition()->Function());
 
     LambdaObjects().insert({refNode, {lambdaObject, signature}});
 }
@@ -876,16 +877,6 @@ void ETSBinder::FormLambdaName(util::UString &name, const util::StringView &sign
     name.Append(replaced);
 }
 
-void ETSBinder::FormFunctionalInterfaceName(util::UString &name, const util::StringView &signature)
-{
-    auto replaced = std::string(signature.Utf8());
-    std::replace(replaced.begin(), replaced.end(), '.', '-');
-    std::replace(replaced.begin(), replaced.end(), ':', '-');
-    std::replace(replaced.begin(), replaced.end(), ';', '-');
-    replaced.append(std::to_string(0));
-    name.Append(replaced);
-}
-
 void ETSBinder::BuildLambdaObjectName(const ir::AstNode *refNode)
 {
     auto found = lambdaObjects_.find(refNode);
@@ -913,51 +904,17 @@ void ETSBinder::BuildLambdaObjectName(const ir::AstNode *refNode)
     lambdaObject->SetAssemblerName(lambdaClass->Ident()->Name());
 
     const auto &lambdaBody = lambdaClass->Body();
-    auto *ctorFunc = lambdaBody[lambdaBody.size() - 2]->AsMethodDefinition()->Function();
+    auto *ctorFunc = lambdaBody[lambdaBody.size() - 3U]->AsMethodDefinition()->Function();
     auto *ctorFuncScope = ctorFunc->Scope();
     ctorFuncScope->BindName(lambdaClass->Ident()->Name());
 
-    auto *invokeFunc = lambdaBody[lambdaBody.size() - 1]->AsMethodDefinition()->Function();
+    auto *invoke0Func = lambdaBody[lambdaBody.size() - 2U]->AsMethodDefinition()->Function();
+    auto *invoke0FuncScope = invoke0Func->Scope();
+    invoke0FuncScope->BindName(lambdaClass->Ident()->Name());
+
+    auto *invokeFunc = lambdaBody[lambdaBody.size() - 1U]->AsMethodDefinition()->Function();
     auto *invokeFuncScope = invokeFunc->Scope();
     invokeFuncScope->BindName(lambdaClass->Ident()->Name());
-}
-
-void ETSBinder::BuildFunctionalInterfaceName(ir::ETSFunctionType *funcType)
-{
-    auto *functionalInterface = funcType->FunctionalInterface();
-    auto *invokeFunc = functionalInterface->Body()->Body()[0]->AsMethodDefinition()->Function();
-    util::UString functionalInterfaceName(functionalInterface->Id()->Name(), Allocator());
-    std::stringstream ss;
-    invokeFunc->Signature()->ToAssemblerType(GetCompilerContext(), ss);
-    std::string signatureString = ss.str();
-    util::StringView signatureName(signatureString);
-    FormFunctionalInterfaceName(functionalInterfaceName, signatureName);
-    functionalInterface->Id()->SetName(functionalInterfaceName.View());
-    util::UString internalName(Program()->GetPackageName(), Allocator());
-    if (!(internalName.View().Empty())) {
-        internalName.Append(compiler::Signatures::METHOD_SEPARATOR);
-    }
-    internalName.Append(functionalInterface->Id()->Name());
-    functionalInterface->SetInternalName(internalName.View());
-
-    checker::ETSObjectType *functionalInterfaceType = functionalInterface->TsType()->AsETSObjectType();
-    functionalInterfaceType->SetName(functionalInterface->Id()->Name());
-    functionalInterfaceType->SetAssemblerName(internalName.View());
-
-    auto *invokeFuncScope = invokeFunc->Scope();
-    invokeFuncScope->BindName(functionalInterface->Id()->Name());
-
-    util::UString invokeInternalName(Program()->GetPackageName(), Allocator());
-    if (!(invokeInternalName.View().Empty())) {
-        invokeInternalName.Append(compiler::Signatures::METHOD_SEPARATOR);
-    }
-    invokeInternalName.Append(invokeFuncScope->Name());
-    invokeInternalName.Append(compiler::Signatures::METHOD_SEPARATOR);
-    invokeInternalName.Append(invokeFunc->Id()->Name());
-    std::stringstream invokeSignatureSs;
-    invokeFunc->Signature()->ToAssemblerType(GetCompilerContext(), invokeSignatureSs);
-    invokeInternalName.Append(invokeSignatureSs.str());
-    invokeFuncScope->BindInternalName(invokeInternalName.View());
 }
 
 void ETSBinder::InitImplicitThisParam()

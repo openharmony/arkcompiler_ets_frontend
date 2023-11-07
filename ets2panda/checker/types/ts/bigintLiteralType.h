@@ -36,7 +36,7 @@ public:
         return negative_;
     }
 
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override;
     void ToStringAsSrc(std::stringstream &ss) const override;
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;

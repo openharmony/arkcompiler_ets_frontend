@@ -60,7 +60,7 @@ public:
     void ToAssemblerType(std::stringstream &ss) const override;
     void ToDebugInfoType(std::stringstream &ss) const override;
 
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override;
 
     [[nodiscard]] const ir::TSEnumDeclaration *GetDecl() const noexcept;
 

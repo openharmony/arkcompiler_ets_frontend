@@ -96,7 +96,9 @@ static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *che
         }
         auto *argType = arg->Check(checker);
         argType = MaybeBoxedType(checker, argType, arg);
-        auto *paramType = (ix < signature->MinArgCount()) ? sigInfo->params[ix]->TsType() : sigInfo->restVar->TsType();
+        auto *paramType = (ix < signature->MinArgCount()) ? sigInfo->params[ix]->TsType()
+                          : sigInfo->restVar != nullptr   ? sigInfo->restVar->TsType()
+                                                          : nullptr;
         if (paramType == nullptr) {
             continue;
         }
@@ -161,7 +163,10 @@ static Signature *MaybeSubstituteTypeParameters(ETSChecker *checker, Signature *
     const Substitution *substitution =
         (typeArguments != nullptr)
             ? BuildExplicitSubstitutionForArguments(checker, signature, typeArguments->Params(), pos, flags)
-            : BuildImplicitSubstitutionForArguments(checker, signature, arguments);
+            : (signature->GetSignatureInfo()->params.empty()
+                   ? nullptr
+                   : BuildImplicitSubstitutionForArguments(checker, signature, arguments));
+
     return (substitution == nullptr) ? nullptr : signature->Substitute(checker->Relation(), substitution);
 }
 

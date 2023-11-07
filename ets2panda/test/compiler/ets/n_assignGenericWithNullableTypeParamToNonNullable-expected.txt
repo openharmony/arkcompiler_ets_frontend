@@ -1012,4 +1012,4 @@
     }
   }
 }
-TypeError: Type 'A<B|null>' cannot be assigned to type 'A<B>' [n_assignGenericWithNullableTypeParamToNonNullable.ets:21:19]
+TypeError: Type 'A<B>' cannot be assigned to type 'A<B|null>' [n_assignGenericWithNullableTypeParamToNonNullable.ets:20:27]

@@ -14,5 +14,5 @@
  */
 
 
-interface G<T, U extends V, V extends Function> {}
+interface G<T, U extends V, V extends FunctioN> {}
 

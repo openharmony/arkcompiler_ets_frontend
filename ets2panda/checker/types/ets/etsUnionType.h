@@ -32,7 +32,7 @@ public:
         return constituentTypes_;
     }
 
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, bool precise) const override;
     void ToAssemblerType(std::stringstream &ss) const override;
     void ToDebugInfoType(std::stringstream &ss) const override;
     void Identical(TypeRelation *relation, Type *other) override;

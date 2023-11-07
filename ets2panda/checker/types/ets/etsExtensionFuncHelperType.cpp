@@ -27,11 +27,11 @@ namespace ark::es2panda::checker {
     in order to figure out a representation for case 3, we need the etsExtensionFuncHelperType
 */
 
-void ETSExtensionFuncHelperType::ToString(std::stringstream &ss) const
+void ETSExtensionFuncHelperType::ToString(std::stringstream &ss, bool precise) const
 {
-    classMethodType_->ToString(ss);
+    classMethodType_->ToString(ss, precise);
     ss << " | ";
-    extensionFunctionType_->ToString(ss);
+    extensionFunctionType_->ToString(ss, precise);
 }
 
 void ETSExtensionFuncHelperType::AssignmentTarget(TypeRelation *relation, Type *source)

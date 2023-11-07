@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +41,7 @@ public:
         return enumVar_;
     }
 
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override;
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     TypeFacts GetTypeFacts() const override;

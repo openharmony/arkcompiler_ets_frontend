@@ -411,57 +411,50 @@ checker::Type *ETSAnalyzer::Check(ir::ETSClassLiteral *expr) const
 checker::Type *ETSAnalyzer::Check(ir::ETSFunctionType *node) const
 {
     ETSChecker *checker = GetETSChecker();
-    checker->CreateFunctionalInterfaceForFunctionType(node);
-    auto *interfaceType =
-        checker->CreateETSObjectType(node->FunctionalInterface()->Id()->Name(), node->FunctionalInterface(),
-                                     checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
-    interfaceType->SetSuperType(checker->GlobalETSObjectType());
+    auto *genericInterfaceType = checker->GlobalBuiltinFunctionType(node->Params().size());
+    node->SetFunctionalInterface(genericInterfaceType->GetDeclNode()->AsTSInterfaceDeclaration());
 
-    auto *invokeFunc = node->FunctionalInterface()->Body()->Body()[0]->AsMethodDefinition()->Function();
-    auto *signatureInfo = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    auto *tsType = checker->GetCachedFunctionlInterface(node);
+    node->SetTsType(tsType);
+    if (tsType != nullptr) {
+        return tsType;
+    }
 
-    for (auto *it : invokeFunc->Params()) {
-        auto *const param = it->AsETSParameterExpression();
-        if (param->IsRestParameter()) {
-            auto *restIdent = param->Ident();
+    auto *substitution = checker->NewSubstitution();
 
-            ASSERT(restIdent->Variable());
-            signatureInfo->restVar = restIdent->Variable()->AsLocalVariable();
+    auto maxParamsNum = checker->GlobalBuiltinFunctionTypeVariadicThreshold();
 
-            ASSERT(param->TypeAnnotation());
-            signatureInfo->restVar->SetTsType(checker->GetTypeFromTypeAnnotation(param->TypeAnnotation()));
+    auto const &params = node->Params();
+    size_t i = 0;
+    if (params.size() < maxParamsNum) {
+        for (; i < params.size(); i++) {
+            auto *paramType =
+                checker->GetTypeFromTypeAnnotation(params[i]->AsETSParameterExpression()->TypeAnnotation());
+            if (paramType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+                checker->Relation()->SetNode(params[i]);
+                auto *const boxedTypeArg = checker->PrimitiveTypeAsETSBuiltinType(paramType);
+                ASSERT(boxedTypeArg);
+                paramType = boxedTypeArg->Instantiate(checker->Allocator(), checker->Relation(),
+                                                      checker->GetGlobalTypesHolder());
+            }
 
-            auto arrayType = signatureInfo->restVar->TsType()->AsETSArrayType();
-            checker->CreateBuiltinArraySignature(arrayType, arrayType->Rank());
-        } else {
-            auto *paramIdent = param->Ident();
-
-            ASSERT(paramIdent->Variable());
-            varbinder::Variable *paramVar = paramIdent->Variable();
-
-            ASSERT(param->TypeAnnotation());
-            paramVar->SetTsType(checker->GetTypeFromTypeAnnotation(param->TypeAnnotation()));
-            signatureInfo->params.push_back(paramVar->AsLocalVariable());
-            ++signatureInfo->minArgCount;
+            checker::ETSChecker::EmplaceSubstituted(
+                substitution, genericInterfaceType->TypeArguments()[i]->AsETSTypeParameter()->GetOriginal(), paramType);
         }
     }
 
-    invokeFunc->ReturnTypeAnnotation()->Check(checker);
-    auto *signature =
-        checker->Allocator()->New<checker::Signature>(signatureInfo, node->ReturnType()->GetType(checker), invokeFunc);
-    signature->SetOwnerVar(invokeFunc->Id()->Variable()->AsLocalVariable());
-    signature->AddSignatureFlag(checker::SignatureFlags::FUNCTIONAL_INTERFACE_SIGNATURE);
-    signature->SetOwner(interfaceType);
+    auto *returnType = node->ReturnType()->GetType(checker);
+    if (returnType->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
+        checker->Relation()->SetNode(node->ReturnType());
+        auto *const boxedTypeRet = checker->PrimitiveTypeAsETSBuiltinType(returnType);
+        returnType =
+            boxedTypeRet->Instantiate(checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder());
+    }
 
-    auto *funcType = checker->CreateETSFunctionType(signature);
-    invokeFunc->SetSignature(signature);
-    invokeFunc->Id()->Variable()->SetTsType(funcType);
-    interfaceType->AddProperty<checker::PropertyType::INSTANCE_METHOD>(invokeFunc->Id()->Variable()->AsLocalVariable());
-    node->FunctionalInterface()->SetTsType(interfaceType);
+    checker::ETSChecker::EmplaceSubstituted(
+        substitution, genericInterfaceType->TypeArguments()[i]->AsETSTypeParameter()->GetOriginal(), returnType);
 
-    auto *thisVar = invokeFunc->Scope()->ParamScope()->Params().front();
-    thisVar->SetTsType(interfaceType);
-    checker->BuildFunctionalInterfaceName(node);
+    auto *interfaceType = genericInterfaceType->Substitute(checker->Relation(), substitution)->AsETSObjectType();
 
     node->SetTsType(interfaceType);
     return interfaceType;
@@ -1016,7 +1009,7 @@ ArenaVector<checker::Signature *> &ChooseSignatures(ETSChecker *checker, checker
     }
     if (isFunctionalInterface) {
         return calleeType->AsETSObjectType()
-            ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke")
+            ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME)
             ->TsType()
             ->AsETSFunctionType()
             ->CallSignatures();

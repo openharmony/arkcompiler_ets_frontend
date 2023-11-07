@@ -19,7 +19,7 @@
 #include "checker/types/ts/enumType.h"
 
 namespace ark::es2panda::checker {
-void EnumLiteralType::ToString(std::stringstream &ss) const
+void EnumLiteralType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     ss << name_;
 }

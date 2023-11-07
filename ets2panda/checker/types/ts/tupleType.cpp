@@ -30,7 +30,7 @@ Type *TupleType::ConvertToArrayType(TSChecker *checker)
     return checker->Allocator()->New<ArrayType>(arrayType);
 }
 
-void TupleType::ToString(std::stringstream &ss) const
+void TupleType::ToString(std::stringstream &ss, bool precise) const
 {
     if (readonly_) {
         ss << "readonly ";
@@ -39,7 +39,7 @@ void TupleType::ToString(std::stringstream &ss) const
 
     if (namedMembers_.empty()) {
         for (auto it = desc_->properties.begin(); it != desc_->properties.end(); it++) {
-            (*it)->TsType()->ToString(ss);
+            (*it)->TsType()->ToString(ss, precise);
             if ((*it)->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
                 ss << "?";
             }
@@ -58,7 +58,7 @@ void TupleType::ToString(std::stringstream &ss) const
             }
 
             ss << ": ";
-            (*it)->TsType()->ToString(ss);
+            (*it)->TsType()->ToString(ss, precise);
             if (std::next(it) != desc_->properties.end()) {
                 ss << ", ";
             }

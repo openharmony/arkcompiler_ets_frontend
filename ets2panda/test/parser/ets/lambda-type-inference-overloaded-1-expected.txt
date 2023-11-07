@@ -1963,4 +1963,4 @@
     }
   }
 }
-TypeError: Reference to foo is ambiguous [lambda-type-inference-overloaded-1.ets:32:5]
+TypeError: Function with this assembly signature already declared. [lambda-type-inference-overloaded-1.ets:20:1]

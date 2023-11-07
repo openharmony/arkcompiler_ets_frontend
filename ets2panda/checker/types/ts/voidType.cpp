@@ -16,7 +16,7 @@
 #include "voidType.h"
 
 namespace ark::es2panda::checker {
-void VoidType::ToString(std::stringstream &ss) const
+void VoidType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     ss << "void";
 }

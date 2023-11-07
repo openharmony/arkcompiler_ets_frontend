@@ -23,7 +23,7 @@ class BooleanType : public Type {
 public:
     BooleanType() : Type(TypeFlag::BOOLEAN) {}
 
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override;
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     TypeFacts GetTypeFacts() const override;

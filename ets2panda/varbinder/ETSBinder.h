@@ -158,8 +158,6 @@ public:
     void AddInvokeFunctionThisParam(ir::ScriptFunction *func);
     void BuildLambdaObjectName(const ir::AstNode *refNode);
     void FormLambdaName(util::UString &name, const util::StringView &signature);
-    void FormFunctionalInterfaceName(util::UString &name, const util::StringView &signature);
-    void BuildFunctionalInterfaceName(ir::ETSFunctionType *funcType);
 
     void SetDefaultImports(ArenaVector<ir::ETSImportDeclaration *> defaultImports)
     {

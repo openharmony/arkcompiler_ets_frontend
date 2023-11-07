@@ -465,4 +465,4 @@
     }
   }
 }
-TypeError: Type 'int' cannot be assigned to type '() => int' [etsObjectToString4.ets:18:29]
+TypeError: Type 'int' cannot be assigned to type '() => Int' [etsObjectToString4.ets:18:29]

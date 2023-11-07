@@ -19,10 +19,10 @@
 #include "checker/types/globalTypesHolder.h"
 
 namespace ark::es2panda::checker {
-void UnionType::ToString(std::stringstream &ss) const
+void UnionType::ToString(std::stringstream &ss, bool precise) const
 {
     for (auto it = constituentTypes_.begin(); it != constituentTypes_.end(); it++) {
-        (*it)->ToString(ss);
+        (*it)->ToString(ss, precise);
         if (std::next(it) != constituentTypes_.end()) {
             ss << " | ";
         }

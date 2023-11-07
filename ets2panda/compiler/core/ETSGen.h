@@ -213,8 +213,7 @@ public:
     template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
     void ResolveConditionalResult(const ir::AstNode *node, [[maybe_unused]] Label *ifFalse)
     {
-        auto type = node->IsExpression() && !node->AsExpression()->IsUnaryExpression() ? node->AsExpression()->TsType()
-                                                                                       : GetAccumulatorType();
+        auto type = GetAccumulatorType();
         if (type->IsETSBooleanType()) {
             return;
         }
@@ -233,11 +232,7 @@ public:
                 BranchIfNullish(node, ifNullish);
             }
         }
-        if (type->IsETSArrayType()) {
-            compiler::VReg objReg = AllocReg();
-            StoreAccumulator(node, objReg);
-            LoadArrayLength(node, objReg);
-        } else if (type->IsETSObjectType()) {
+        if (type->IsETSArrayType() || type->IsETSObjectType() || type->IsETSUnionType()) {
             ResolveConditionalResultObject<CondCompare, BEFORE_LOGICAL_NOT>(node);
         } else {
             ResolveConditionalResultNumeric<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, ifFalse, &end);
@@ -937,7 +932,7 @@ private:
     arguments[idx]->Compile(this);                                                                            \
     VReg arg##idx = AllocReg();                                                                               \
     ApplyConversion(arguments[idx], nullptr);                                                                 \
-    ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx);
+    ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx)
 
     template <typename Short, typename General, typename Range>
     void CallThisImpl(const ir::AstNode *const node, const VReg ctor, checker::Signature *const signature,
@@ -970,11 +965,8 @@ private:
                 break;
             }
             default: {
-                for (const auto *arg : arguments) {
-                    auto ttctx = TargetTypeContext(this, arg->TsType());
-                    VReg argReg = AllocReg();
-                    arg->Compile(this);
-                    StoreAccumulator(node, argReg);
+                for (size_t idx = 0; idx < arguments.size(); idx++) {
+                    COMPILE_ARG(idx);
                 }
 
                 Rra().Emit<Range>(node, ctor, arguments.size() + 1, name, ctor);
@@ -1078,11 +1070,8 @@ private:
             default: {
                 VReg argStart = NextReg();
 
-                for (const auto *arg : arguments) {
-                    auto ttctx = TargetTypeContext(this, arg->TsType());
-                    VReg argReg = AllocReg();
-                    arg->Compile(this);
-                    StoreAccumulator(node, argReg);
+                for (size_t idx = 0; idx < arguments.size(); idx++) {
+                    COMPILE_ARG(idx);
                 }
 
                 Rra().Emit<Range>(node, argStart, arguments.size(), name, argStart);
@@ -1100,7 +1089,7 @@ private:
     auto ttctx##idx = TargetTypeContext(this, paramType##idx);                                                 \
     VReg arg##idx = AllocReg();                                                                                \
     arguments[idx]->Compile(this);                                                                             \
-    ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx);
+    ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx)
 
     template <typename Short, typename General, typename Range>
     void CallDynamicImpl(const ir::AstNode *node, VReg &obj, VReg &param2, checker::Signature *signature,

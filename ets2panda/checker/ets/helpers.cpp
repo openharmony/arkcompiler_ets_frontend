@@ -89,7 +89,7 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
         ThrowTypeError("Condition must be of possible condition type", expr->Start());
     }
 
-    if (unboxedType != nullptr && unboxedType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+    if (unboxedType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
         FlagExpressionWithUnboxing(type, unboxedType, expr);
     }
     expr->SetTsType(unboxedType);
@@ -886,7 +886,7 @@ std::tuple<bool, bool> ETSChecker::IsResolvedAndValue(const ir::Expression *expr
         IsNullLikeOrVoidExpression(expr) ? std::make_tuple(true, false) : type->ResolveConditionExpr();
 
     const Type *tsType = expr->TsType();
-    if (!tsType->ContainsUndefined() && !tsType->ContainsNull() && !tsType->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+    if (!tsType->ContainsUndefined() && !tsType->ContainsNull() && !type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
         isResolve = true;
         isValue = true;
     }
@@ -1780,6 +1780,10 @@ Type *ETSChecker::ETSBuiltinTypeAsConditionalType(Type *objectType)
         return nullptr;
     }
 
+    if (auto *unboxed = ETSBuiltinTypeAsPrimitiveType(objectType); unboxed != nullptr) {
+        return unboxed;
+    }
+
     return objectType;
 }
 
@@ -2296,38 +2300,6 @@ ETSObjectType *ETSChecker::GetRelevantArgumentedTypeFromChild(ETSObjectType *con
     return GetRelevantArgumentedTypeFromChild(child->SuperType(), target);
 }
 
-static void TypeToString(std::stringstream &ss, Type *tp)
-{
-    if (tp->IsETSTypeParameter()) {
-        ss << tp->AsETSTypeParameter()->GetDeclNode()->Start().index;
-        ss << ".";
-    }
-    if (!tp->IsETSObjectType()) {
-        tp->ToString(ss);
-        return;
-    }
-    auto *const objType = tp->AsETSObjectType();
-    ss << objType->Name();
-
-    if (!objType->TypeArguments().empty()) {
-        auto typeArgs = objType->TypeArguments();
-        ss << "<";
-        for (auto *ta : typeArgs) {
-            TypeToString(ss, ta);
-            ss << ";";
-        }
-        ss << ">";
-    }
-
-    if (tp->ContainsNull()) {
-        ss << "|null";
-    }
-
-    if (tp->ContainsUndefined()) {
-        ss << "|undefined";
-    }
-}
-
 void ETSChecker::EmplaceSubstituted(Substitution *substitution, ETSTypeParameter *tparam, Type *typeArg)
 {
     substitution->emplace(tparam, typeArg);
@@ -2338,7 +2310,7 @@ util::StringView ETSChecker::GetHashFromTypeArguments(const ArenaVector<Type *> 
     std::stringstream ss;
 
     for (auto *it : typeArgTypes) {
-        TypeToString(ss, it);
+        it->ToString(ss, true);
         ss << compiler::Signatures::MANGLE_SEPARATOR;
     }
 
@@ -2350,9 +2322,9 @@ util::StringView ETSChecker::GetHashFromSubstitution(const Substitution *substit
     std::vector<std::string> fields;
     for (auto [k, v] : *substitution) {
         std::stringstream ss;
-        TypeToString(ss, k);
+        k->ToString(ss, true);
         ss << ":";
-        TypeToString(ss, v);
+        v->ToString(ss, true);
         fields.push_back(ss.str());
     }
     std::sort(fields.begin(), fields.end());
@@ -2362,6 +2334,29 @@ util::StringView ETSChecker::GetHashFromSubstitution(const Substitution *substit
         ss << fstr;
         ss << ";";
     }
+    return util::UString(ss.str(), Allocator()).View();
+}
+
+util::StringView ETSChecker::GetHashFromFunctionType(ir::ETSFunctionType *type)
+{
+    std::stringstream ss;
+    for (auto *p : type->Params()) {
+        auto *const param = p->AsETSParameterExpression();
+        GetTypeFromTypeAnnotation(param->TypeAnnotation())->ToString(ss, true);
+        ss << ";";
+    }
+
+    type->ReturnType()->GetType(this)->ToString(ss, true);
+    ss << ";";
+
+    if (type->IsThrowing()) {
+        ss << "throws;";
+    }
+
+    if (type->IsRethrowing()) {
+        ss << "rethrows;";
+    }
+
     return util::UString(ss.str(), Allocator()).View();
 }
 
@@ -2418,6 +2413,10 @@ void ETSChecker::CheckNumberOfTypeArguments(ETSObjectType *const type, ir::TSTyp
         if (typeArgs != nullptr) {
             ThrowTypeError({"Type '", type, "' is not generic."}, pos);
         }
+        return;
+    }
+
+    if (typeArgs == nullptr) {
         return;
     }
 
@@ -2640,35 +2639,35 @@ std::string GenerateImplicitInstantiateArg(varbinder::LocalVariable *instantiate
     return implicitInstantiateArgument;
 }
 
-void ETSChecker::GenerateGetterSetterBody(ETSChecker *checker, ArenaVector<ir::Statement *> &stmts,
-                                          ArenaVector<ir::Expression *> &params, ir::ClassProperty *const field,
-                                          varbinder::FunctionParamScope *paramScope, bool isSetter)
+void ETSChecker::GenerateGetterSetterBody(ArenaVector<ir::Statement *> &stmts, ArenaVector<ir::Expression *> &params,
+                                          ir::ClassProperty *const field, varbinder::FunctionParamScope *paramScope,
+                                          bool isSetter)
 {
     if (!isSetter) {
-        stmts.push_back(checker->Allocator()->New<ir::ReturnStatement>(field->Key()));
+        stmts.push_back(Allocator()->New<ir::ReturnStatement>(field->Key()));
         return;
     }
 
-    auto *paramIdent = field->Key()->AsIdentifier()->Clone(checker->Allocator());
-    paramIdent->SetTsTypeAnnotation(field->TypeAnnotation()->Clone(checker->Allocator()));
+    auto *paramIdent = field->Key()->AsIdentifier()->Clone(Allocator());
+    paramIdent->SetTsTypeAnnotation(field->TypeAnnotation()->Clone(Allocator()));
     paramIdent->TypeAnnotation()->SetParent(paramIdent);
 
-    auto *paramExpression = checker->AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
+    auto *paramExpression = AllocNode<ir::ETSParameterExpression>(paramIdent, nullptr);
     paramExpression->SetRange(paramIdent->Range());
-    auto *const paramVar = std::get<2>(paramScope->AddParamDecl(checker->Allocator(), paramExpression));
+    auto *const paramVar = std::get<2>(paramScope->AddParamDecl(Allocator(), paramExpression));
 
     paramIdent->SetVariable(paramVar);
     paramExpression->SetVariable(paramVar);
 
     params.push_back(paramExpression);
 
-    auto *assignmentExpression = checker->AllocNode<ir::AssignmentExpression>(
-        field->Key(), paramExpression, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    auto *assignmentExpression =
+        AllocNode<ir::AssignmentExpression>(field->Key(), paramExpression, lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
 
     assignmentExpression->SetRange({field->Start(), field->End()});
 
-    stmts.push_back(checker->AllocNode<ir::ExpressionStatement>(assignmentExpression));
-    stmts.push_back(checker->Allocator()->New<ir::ReturnStatement>(nullptr));
+    stmts.push_back(AllocNode<ir::ExpressionStatement>(assignmentExpression));
+    stmts.push_back(Allocator()->New<ir::ReturnStatement>(nullptr));
 }
 
 ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty *const field,
@@ -2685,7 +2684,7 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
 
     ArenaVector<ir::Expression *> params(checker->Allocator()->Adapter());
     ArenaVector<ir::Statement *> stmts(checker->Allocator()->Adapter());
-    checker->GenerateGetterSetterBody(checker, stmts, params, field, paramScope, isSetter);
+    checker->GenerateGetterSetterBody(stmts, params, field, paramScope, isSetter);
 
     auto *body = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(stmts));
     auto funcFlags = isSetter ? ir::ScriptFunctionFlags::SETTER : ir::ScriptFunctionFlags::GETTER;
@@ -2732,7 +2731,7 @@ ir::MethodDefinition *ETSChecker::GenerateDefaultGetterSetter(ir::ClassProperty 
 const Type *ETSChecker::TryGettingFunctionTypeFromInvokeFunction(const Type *type) const
 {
     if (type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-        auto const propInvoke = type->AsETSObjectType()->GetProperty(util::StringView("invoke"),
+        auto const propInvoke = type->AsETSObjectType()->GetProperty(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME,
                                                                      PropertySearchFlags::SEARCH_INSTANCE_METHOD);
         ASSERT(propInvoke != nullptr);
 

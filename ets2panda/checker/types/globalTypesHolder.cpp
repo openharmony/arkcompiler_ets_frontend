@@ -158,6 +158,18 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtinNameMap
     builtinNameMappings_.emplace("RegExp", GlobalTypeId::ETS_REGEXP_BUILTIN);
     builtinNameMappings_.emplace("Set", GlobalTypeId::ETS_SET_BUILTIN);
 
+    // ETS functional types
+    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS), nargs = 0;
+         id < static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS); id++, nargs++) {
+        std::stringstream ss;
+        ss << "Function";
+        ss << nargs;
+
+        builtinNameMappings_.emplace(util::UString(ss.str(), allocator).View(), static_cast<GlobalTypeId>(id));
+    }
+
+    builtinNameMappings_.emplace("FunctionN", GlobalTypeId::ETS_FUNCTIONN_CLASS);
+
     // ETS interop js specific types
     builtinNameMappings_.emplace("JSRuntime", GlobalTypeId::ETS_INTEROP_JSRUNTIME_BUILTIN);
     builtinNameMappings_.emplace("JSValue", GlobalTypeId::ETS_INTEROP_JSVALUE_BUILTIN);
@@ -611,6 +623,20 @@ Type *GlobalTypesHolder::GlobalDoubleBoxBuiltinType()
 Type *GlobalTypesHolder::GlobalBuiltinNeverType()
 {
     return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_NEVER_BUILTIN));
+}
+
+size_t GlobalTypesHolder::VariadicFunctionTypeThreshold()
+{
+    return static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS) -
+           static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS);
+}
+
+Type *GlobalTypesHolder::GlobalFunctionBuiltinType(size_t nargs)
+{
+    if (nargs >= VariadicFunctionTypeThreshold()) {
+        return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS));
+    }
+    return globalTypes_.at(static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS) + nargs);
 }
 
 void GlobalTypesHolder::InitializeBuiltin(const util::StringView name, Type *type)

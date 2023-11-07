@@ -93,6 +93,11 @@ public:
         return (funcFlags_ & ir::ScriptFunctionFlags::THROWS) != 0;
     }
 
+    bool IsRethrowing() const
+    {
+        return (funcFlags_ & ir::ScriptFunctionFlags::RETHROWS) != 0;
+    }
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;

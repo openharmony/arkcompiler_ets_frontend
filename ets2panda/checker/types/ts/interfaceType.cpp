@@ -23,7 +23,7 @@
 #include <utility>
 
 namespace ark::es2panda::checker {
-void InterfaceType::ToString(std::stringstream &ss) const
+void InterfaceType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     ss << name_;
 

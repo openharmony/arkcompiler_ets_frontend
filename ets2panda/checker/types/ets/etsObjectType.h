@@ -112,6 +112,9 @@ enum class PropertyType {
     COUNT,
 };
 
+/* Invoke method name in functional interfaces */
+constexpr char const *FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME = "invoke0";
+
 class ETSObjectType : public Type {
 public:
     using PropertyMap = ArenaUnorderedMap<util::StringView, varbinder::LocalVariable *>;
@@ -392,7 +395,7 @@ public:
     ETSFunctionType *GetFunctionalInterfaceInvokeType() const
     {
         ASSERT(HasObjectFlag(ETSObjectFlags::FUNCTIONAL));
-        auto *invoke = GetOwnProperty<PropertyType::INSTANCE_METHOD>("invoke");
+        auto *invoke = GetOwnProperty<PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
         ASSERT(invoke && invoke->TsType() && invoke->TsType()->IsETSFunctionType());
         return invoke->TsType()->AsETSFunctionType();
     }
@@ -414,17 +417,11 @@ public:
 
     varbinder::Scope *GetTypeArgumentScope() const
     {
-        if (HasObjectFlag(ETSObjectFlags::ENUM) || !HasTypeFlag(TypeFlag::GENERIC)) {
+        auto *typeParams = GetTypeParams();
+        if (typeParams == nullptr) {
             return nullptr;
         }
-
-        if (HasObjectFlag(ETSObjectFlags::CLASS)) {
-            ASSERT(declNode_->IsClassDefinition() && declNode_->AsClassDefinition()->TypeParams());
-            return declNode_->AsClassDefinition()->TypeParams()->Scope();
-        }
-
-        ASSERT(declNode_->IsTSInterfaceDeclaration() && declNode_->AsTSInterfaceDeclaration()->TypeParams());
-        return declNode_->AsTSInterfaceDeclaration()->TypeParams()->Scope();
+        return typeParams->Scope();
     }
 
     InstantiationMap &GetInstantiationMap()
@@ -471,7 +468,7 @@ public:
     bool CheckIdenticalVariable(varbinder::Variable *otherVar) const;
 
     void Iterate(const PropertyTraverser &cb) const;
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, bool precise) const override;
     void Identical(TypeRelation *relation, Type *other) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
@@ -479,7 +476,8 @@ public:
     bool SubstituteTypeArgs(TypeRelation *relation, ArenaVector<Type *> &newTypeArgs, const Substitution *substitution);
     void SetCopiedTypeProperties(TypeRelation *relation, ETSObjectType *copiedType, ArenaVector<Type *> &newTypeArgs,
                                  const Substitution *substitution);
-    Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
+    ETSObjectType *Substitute(TypeRelation *relation, const Substitution *substitution) override;
+    ETSObjectType *Substitute(TypeRelation *relation, const Substitution *substitution, bool cache);
     void Cast(TypeRelation *relation, Type *target) override;
     bool CastNumericObject(TypeRelation *relation, Type *target);
     bool DefaultObjectTypeChecks(const ETSChecker *etsChecker, TypeRelation *relation, Type *source);
@@ -549,6 +547,23 @@ private:
     void IdenticalUptoNullability(TypeRelation *relation, Type *other);
     bool CastWideningNarrowing(TypeRelation *relation, Type *target, TypeFlag unboxFlags, TypeFlag wideningFlags,
                                TypeFlag narrowingFlags);
+    void IdenticalUptoNullabilityAndTypeArguments(TypeRelation *relation, Type *other);
+    void IsGenericSupertypeOf(TypeRelation *relation, Type *source);
+
+    ir::TSTypeParameterDeclaration *GetTypeParams() const
+    {
+        if (HasObjectFlag(ETSObjectFlags::ENUM) || !HasTypeFlag(TypeFlag::GENERIC)) {
+            return nullptr;
+        }
+
+        if (HasObjectFlag(ETSObjectFlags::CLASS)) {
+            ASSERT(declNode_->IsClassDefinition() && declNode_->AsClassDefinition()->TypeParams());
+            return declNode_->AsClassDefinition()->TypeParams();
+        }
+
+        ASSERT(declNode_->IsTSInterfaceDeclaration() && declNode_->AsTSInterfaceDeclaration()->TypeParams());
+        return declNode_->AsTSInterfaceDeclaration()->TypeParams();
+    }
 
     ArenaAllocator *allocator_;
     util::StringView name_;

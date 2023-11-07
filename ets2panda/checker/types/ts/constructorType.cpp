@@ -18,7 +18,7 @@
 #include "checker/types/signature.h"
 
 namespace ark::es2panda::checker {
-void ConstructorType::ToString(std::stringstream &ss) const
+void ConstructorType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     if (desc_->constructSignatures.size() > 1) {
         ss << "{ ";

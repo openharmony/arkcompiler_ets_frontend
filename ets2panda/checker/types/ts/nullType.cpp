@@ -16,7 +16,7 @@
 #include "nullType.h"
 
 namespace ark::es2panda::checker {
-void NullType::ToString(std::stringstream &ss) const
+void NullType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     ss << "null";
 }

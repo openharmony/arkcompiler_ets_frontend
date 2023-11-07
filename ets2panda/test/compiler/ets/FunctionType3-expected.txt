@@ -809,4 +809,4 @@
     }
   }
 }
-TypeError: Type 'string' is not compatible with type 'int' at index 2 [FunctionType3.ets:23:16]
+TypeError: Type 'string' is not compatible with type 'Int' at index 2 [FunctionType3.ets:23:16]

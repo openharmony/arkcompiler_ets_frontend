@@ -18,11 +18,11 @@
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 
 namespace ark::es2panda::checker {
-void ETSAsyncFuncReturnType::ToString(std::stringstream &ss) const
+void ETSAsyncFuncReturnType::ToString(std::stringstream &ss, bool precise) const
 {
-    promiseType_->ToString(ss);
+    promiseType_->ToString(ss, precise);
     ss << " | ";
-    GetPromiseTypeArg()->ToString(ss);
+    GetPromiseTypeArg()->ToString(ss, precise);
 }
 
 void ETSAsyncFuncReturnType::Identical(TypeRelation *relation, Type *other)

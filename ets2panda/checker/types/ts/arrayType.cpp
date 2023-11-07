@@ -19,13 +19,13 @@
 #include "checker/types/ts/objectType.h"
 
 namespace ark::es2panda::checker {
-void ArrayType::ToString(std::stringstream &ss) const
+void ArrayType::ToString(std::stringstream &ss, bool precise) const
 {
     bool elemIsUnion = (element_->TypeFlags() == TypeFlag::UNION);
     if (elemIsUnion) {
         ss << "(";
     }
-    ElementType()->ToString(ss);
+    ElementType()->ToString(ss, precise);
     if (elemIsUnion) {
         ss << ")";
     }

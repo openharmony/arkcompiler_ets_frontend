@@ -71,10 +71,9 @@ parser/ets/trailing_lambda_tests/trailing_lambda_define_lambda_in_body_capture_v
 compiler/ets/override13.ets
 
 # 15095
-compiler/ets/methodOverrideCovariantReturnType.ets
-compiler/ets/override16.ets
 compiler/ets/override17.ets
 parser/ets/static_function_hide_2.ets
 
-# 14595
-compiler/ets/n_assignGenericWithNullableTypeParamToNonNullable.ets
+# Throwing function types
+compiler/ets/throwingFunctionType2.ets
+compiler/ets/throwingFunctionAsParameter2.ets

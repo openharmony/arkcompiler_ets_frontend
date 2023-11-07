@@ -16,7 +16,7 @@
 #include "undefinedType.h"
 
 namespace ark::es2panda::checker {
-void UndefinedType::ToString(std::stringstream &ss) const
+void UndefinedType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     ss << "undefined";
 }

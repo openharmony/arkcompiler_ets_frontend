@@ -29,6 +29,73 @@
 #include "util/helpers.h"
 
 namespace ark::es2panda::checker {
+
+static util::StringView InitBuiltin(ETSChecker *checker, std::string_view signature)
+{
+    const auto varMap = checker->VarBinder()->TopScope()->Bindings();
+    const auto iterator = varMap.find(signature);
+    ASSERT(iterator != varMap.end());
+    auto *var = iterator->second;
+    Type *type {nullptr};
+    if (var->Declaration()->Node()->IsClassDefinition()) {
+        type = checker->BuildBasicClassProperties(var->Declaration()->Node()->AsClassDefinition());
+    } else {
+        ASSERT(var->Declaration()->Node()->IsTSInterfaceDeclaration());
+        type = checker->BuildBasicInterfaceProperties(var->Declaration()->Node()->AsTSInterfaceDeclaration());
+    }
+    checker->GetGlobalTypesHolder()->InitializeBuiltin(iterator->first, type);
+    return iterator->first;
+}
+
+static void SetupFunctionalInterface(ETSChecker *checker, ETSObjectType *type)
+{
+    auto savedContext = SavedCheckerContext(checker, checker::CheckerStatus::IN_INTERFACE, type);
+    checker::ScopeContext scopeCtx(checker, type->GetDeclNode()->Scope());
+    checker->ResolveDeclaredMembersOfObject(type);
+    type->AddObjectFlag(ETSObjectFlags::FUNCTIONAL);
+    auto *invoke = type->GetOwnProperty<PropertyType::INSTANCE_METHOD>(FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
+    auto *invokeType = invoke->TsType()->AsETSFunctionType();
+    ASSERT(invokeType->CallSignatures().size() == 1);
+    auto *signature = invokeType->CallSignatures()[0];
+    signature->AddSignatureFlag(SignatureFlags::FUNCTIONAL_INTERFACE_SIGNATURE);
+}
+
+static void SetupBuiltinMember(ETSChecker *checker, varbinder::Variable *var)
+{
+    auto *type = var->TsType();
+    if (type == nullptr || !type->IsETSObjectType()) {
+        return;
+    }
+    auto *objType = type->AsETSObjectType();
+    auto *declNode = var->Declaration()->Node();
+    if (declNode->IsClassDefinition()) {
+        auto savedContext = SavedCheckerContext(checker, checker::CheckerStatus::IN_CLASS, objType);
+        checker::ScopeContext scopeCtx(checker, declNode->Scope());
+        checker->ResolveDeclaredMembersOfObject(objType);
+    } else if (declNode->IsTSInterfaceDeclaration()) {
+        auto savedContext = SavedCheckerContext(checker, checker::CheckerStatus::IN_INTERFACE, objType);
+        checker::ScopeContext scopeCtx(checker, declNode->Scope());
+        checker->ResolveDeclaredMembersOfObject(objType);
+    }
+}
+
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
+static constexpr std::string_view BUILTINS_TO_INIT[] = {
+    compiler::Signatures::BUILTIN_BOOLEAN_CLASS,    compiler::Signatures::BUILTIN_BYTE_CLASS,
+    compiler::Signatures::BUILTIN_CHAR_CLASS,       compiler::Signatures::BUILTIN_SHORT_CLASS,
+    compiler::Signatures::BUILTIN_INT_CLASS,        compiler::Signatures::BUILTIN_LONG_CLASS,
+    compiler::Signatures::BUILTIN_FLOAT_CLASS,      compiler::Signatures::BUILTIN_DOUBLE_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION0_CLASS,  compiler::Signatures::BUILTIN_FUNCTION1_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION2_CLASS,  compiler::Signatures::BUILTIN_FUNCTION3_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION4_CLASS,  compiler::Signatures::BUILTIN_FUNCTION5_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION6_CLASS,  compiler::Signatures::BUILTIN_FUNCTION7_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION8_CLASS,  compiler::Signatures::BUILTIN_FUNCTION9_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION10_CLASS, compiler::Signatures::BUILTIN_FUNCTION11_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION12_CLASS, compiler::Signatures::BUILTIN_FUNCTION13_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION14_CLASS, compiler::Signatures::BUILTIN_FUNCTION15_CLASS,
+    compiler::Signatures::BUILTIN_FUNCTION16_CLASS, compiler::Signatures::BUILTIN_FUNCTIONN_CLASS,
+};
+
 void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
 {
     if (HasStatus(CheckerStatus::BUILTINS_INITIALIZED)) {
@@ -37,17 +104,23 @@ void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
 
     const auto varMap = varbinder->TopScope()->Bindings();
 
-    auto initBuiltin = [varMap](ETSChecker *checker, std::string_view signature) -> util::StringView {
-        const auto iterator = varMap.find(signature);
-        ASSERT(iterator != varMap.end());
-        checker->GetGlobalTypesHolder()->InitializeBuiltin(
-            iterator->first,
-            checker->BuildClassProperties(iterator->second->Declaration()->Node()->AsClassDefinition()));
-        return iterator->first;
-    };
+    auto const objectName = InitBuiltin(this, compiler::Signatures::BUILTIN_OBJECT_CLASS);
+    auto const voidName = InitBuiltin(this, compiler::Signatures::BUILTIN_VOID_CLASS);
 
-    auto const objectName = initBuiltin(this, compiler::Signatures::BUILTIN_OBJECT_CLASS);
-    auto const voidName = initBuiltin(this, compiler::Signatures::BUILTIN_VOID_CLASS);
+    for (auto sig : BUILTINS_TO_INIT) {
+        InitBuiltin(this, sig);
+    }
+
+    for (size_t id = static_cast<size_t>(GlobalTypeId::ETS_FUNCTION0_CLASS), nargs = 0;
+         id <= static_cast<size_t>(GlobalTypeId::ETS_FUNCTIONN_CLASS); id++, nargs++) {
+        auto *type = GetGlobalTypesHolder()->GlobalFunctionBuiltinType(nargs)->AsETSObjectType();
+        SetupFunctionalInterface(this, type);
+    }
+
+    for (const auto &[name, var] : varMap) {
+        (void)name;
+        SetupBuiltinMember(this, var);
+    }
 
     for (const auto &[name, var] : varMap) {
         if (name == objectName || name == voidName) {
@@ -55,7 +128,11 @@ void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
         }
 
         if (var->HasFlag(varbinder::VariableFlags::BUILTIN_TYPE)) {
-            InitializeBuiltin(var, name);
+            if (var->TsType() == nullptr) {
+                InitializeBuiltin(var, name);
+            } else {
+                GetGlobalTypesHolder()->InitializeBuiltin(name, var->TsType());
+            }
         }
     }
 
@@ -160,9 +237,10 @@ Type *ETSChecker::CheckTypeCached(ir::Expression *expr)
     return expr->TsType();
 }
 
-ETSObjectType *ETSChecker::AsETSObjectType(Type *(GlobalTypesHolder::*typeFunctor)()) const
+template <typename... Args>
+ETSObjectType *ETSChecker::AsETSObjectType(Type *(GlobalTypesHolder::*typeFunctor)(Args...), Args... args) const
 {
-    auto *ret = (GetGlobalTypesHolder()->*typeFunctor)();
+    auto *ret = (GetGlobalTypesHolder()->*typeFunctor)(args...);
     return ret != nullptr ? ret->AsETSObjectType() : nullptr;
 }
 
@@ -294,6 +372,16 @@ ETSObjectType *ETSChecker::GlobalBuiltinJSValueType() const
 ETSObjectType *ETSChecker::GlobalBuiltinVoidType() const
 {
     return AsETSObjectType(&GlobalTypesHolder::GlobalBuiltinVoidType);
+}
+
+ETSObjectType *ETSChecker::GlobalBuiltinFunctionType(size_t nargs) const
+{
+    return AsETSObjectType(&GlobalTypesHolder::GlobalFunctionBuiltinType, nargs);
+}
+
+size_t ETSChecker::GlobalBuiltinFunctionTypeVariadicThreshold() const
+{
+    return GetGlobalTypesHolder()->VariadicFunctionTypeThreshold();
 }
 
 ETSObjectType *ETSChecker::GlobalBuiltinDynamicType(Language lang) const

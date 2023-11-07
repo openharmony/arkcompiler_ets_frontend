@@ -16,7 +16,7 @@
 #include "nonPrimitiveType.h"
 
 namespace ark::es2panda::checker {
-void NonPrimitiveType::ToString(std::stringstream &ss) const
+void NonPrimitiveType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     ss << "object";
 }

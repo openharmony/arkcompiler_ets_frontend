@@ -18,7 +18,7 @@
 #include "checker/types/signature.h"
 
 namespace ark::es2panda::checker {
-void FunctionType::ToString(std::stringstream &ss) const
+void FunctionType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     static std::unordered_set<const FunctionType *> stack;
 

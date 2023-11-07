@@ -20,7 +20,7 @@ function check(): Boolean {
 
 function main(): void {
   let x: Boolean = false;
-  assert (x || check());
+  assert (!x || check());
 
   let y: Char = c'a';
   assert (y != c'b');

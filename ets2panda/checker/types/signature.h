@@ -81,6 +81,8 @@ enum class SignatureFlags : uint32_t {
     THIS_RETURN_TYPE = 1U << 15U,
     GETTER = 1U << 16U,
     SETTER = 1U << 17U,
+    THROWS = 1U << 18U,
+    RETHROWS = 1U << 19U,
 
     INTERNAL_PROTECTED = INTERNAL | PROTECTED,
     GETTER_OR_SETTER = GETTER | SETTER,
@@ -245,10 +247,13 @@ public:
     Signature *Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);
     Signature *Substitute(TypeRelation *relation, const Substitution *substitution);
 
-    void ToString(std::stringstream &ss, const varbinder::Variable *variable, bool printAsMethod = false) const;
+    void ToString(std::stringstream &ss, const varbinder::Variable *variable, bool printAsMethod = false,
+                  bool precise = false) const;
+    std::string ToString() const;
     void Identical(TypeRelation *relation, Signature *other);
     bool CheckFunctionalInterfaces(TypeRelation *relation, Type *source, Type *target);
     void AssignmentTarget(TypeRelation *relation, Signature *source);
+    Signature *BoxPrimitives(ETSChecker *checker);
 
 private:
     bool IdenticalParameter(TypeRelation *relation, Type *type1, Type *type2);

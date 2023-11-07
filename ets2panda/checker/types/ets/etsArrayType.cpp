@@ -21,9 +21,16 @@
 #include "checker/types/typeRelation.h"
 
 namespace ark::es2panda::checker {
-void ETSArrayType::ToString(std::stringstream &ss) const
+void ETSArrayType::ToString(std::stringstream &ss, bool precise) const
 {
-    element_->ToString(ss);
+    bool needParens = (element_->IsETSUnionType() || element_->IsETSFunctionType() || element_->IsNullish());
+    if (needParens) {
+        ss << "(";
+    }
+    element_->ToString(ss, precise);
+    if (needParens) {
+        ss << ")";
+    }
     ss << "[]";
 
     if (IsNullish()) {

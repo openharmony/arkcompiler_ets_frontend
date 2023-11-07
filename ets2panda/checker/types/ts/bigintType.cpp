@@ -16,7 +16,7 @@
 #include "bigintType.h"
 
 namespace ark::es2panda::checker {
-void BigintType::ToString(std::stringstream &ss) const
+void BigintType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     ss << "bigint";
 }

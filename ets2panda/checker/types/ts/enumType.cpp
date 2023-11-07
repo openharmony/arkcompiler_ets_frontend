@@ -18,7 +18,7 @@
 #include "varbinder/variable.h"
 
 namespace ark::es2panda::checker {
-void EnumType::ToString(std::stringstream &ss) const
+void EnumType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     ss << enumLiteralVar_->Name() << "." << enumVar_->Name();
 }

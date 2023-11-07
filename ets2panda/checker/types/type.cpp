@@ -83,9 +83,35 @@ bool Type::IsLambdaObject() const
     return false;
 }
 
+void Type::ToString(std::stringstream &ss) const
+{
+    ToString(ss, false);
+}
+
 void Type::ToStringAsSrc(std::stringstream &ss) const
 {
     ToString(ss);
+}
+
+std::string Type::ToString() const
+{
+    std::stringstream ss;
+    ToString(ss);
+    return ss.str();
+}
+
+std::string Type::ToStringAsSrc() const
+{
+    std::stringstream ss;
+    ToStringAsSrc(ss);
+    return ss.str();
+}
+
+std::string Type::ToStringPrecise() const
+{
+    std::stringstream ss;
+    ToString(ss, true);
+    return ss.str();
 }
 
 void Type::Identical(TypeRelation *relation, Type *other)

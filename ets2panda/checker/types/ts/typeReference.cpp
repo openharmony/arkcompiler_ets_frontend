@@ -16,10 +16,10 @@
 #include "typeReference.h"
 
 namespace ark::es2panda::checker {
-void TypeReference::ToString(std::stringstream &ss) const
+void TypeReference::ToString(std::stringstream &ss, bool precise) const
 {
     if (*ref_ != nullptr) {
-        (*ref_)->ToString(ss);
+        (*ref_)->ToString(ss, precise);
     }
 }
 

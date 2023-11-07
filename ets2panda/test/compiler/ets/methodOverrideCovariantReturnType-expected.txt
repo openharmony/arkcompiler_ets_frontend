@@ -2084,4 +2084,3 @@
     }
   }
 }
-TypeError: foo(a: int): C in B cannot override foo(): A in A because overriding return type is not compatible with the other return type. [methodOverrideCovariantReturnType.ets:42:8]

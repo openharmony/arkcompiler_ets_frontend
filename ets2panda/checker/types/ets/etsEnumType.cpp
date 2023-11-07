@@ -87,7 +87,7 @@ void ETSEnumInterface::ToDebugInfoType(std::stringstream &ss) const
     ToDebugInfoTypeImpl<UType>(ss);
 }
 
-void ETSEnumInterface::ToString(std::stringstream &ss) const
+void ETSEnumInterface::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     ss << decl_->Key()->Name();
 }

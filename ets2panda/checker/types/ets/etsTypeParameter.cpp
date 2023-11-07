@@ -20,8 +20,13 @@
 #include "checker/ets/conversion.h"
 
 namespace ark::es2panda::checker {
-void ETSTypeParameter::ToString(std::stringstream &ss) const
+
+void ETSTypeParameter::ToString(std::stringstream &ss, bool precise) const
 {
+    // Need source file name to avoid clashes
+    if (precise) {
+        ss << declNode_->Range().start.index << "." << declNode_->Range().start.line << ".";
+    }
     ss << declNode_->Name()->Name();
 
     if (IsNullish()) {

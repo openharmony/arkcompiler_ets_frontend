@@ -36,7 +36,7 @@ public:
         return value_;
     }
 
-    void ToString(std::stringstream &ss) const override
+    void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override
     {
         ss << "boolean";
     }

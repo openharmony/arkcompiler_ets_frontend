@@ -1753,10 +1753,6 @@ void ETSGen::CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicTyp
                 methodName = compiler::Signatures::Dynamic::NewStringBuiltin(type->Language());
                 break;
             }
-            if (GetAccumulatorType()->IsLambdaObject()) {
-                methodName = Signatures::BUILTIN_JSRUNTIME_CREATE_LAMBDA_PROXY;
-                break;
-            }
             [[fallthrough]];
         }
         case checker::TypeFlag::ETS_ARRAY: {
@@ -2020,6 +2016,8 @@ void ETSGen::Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, L
 void ETSGen::BranchIfNullish([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] Label *ifNullish)
 {
 #ifdef PANDA_WITH_ETS
+    RegScope rs(this);
+
     auto *const type = GetAccumulatorType();
 
     if (!Checker()->MayHaveNulllikeValue(type)) {
@@ -2056,6 +2054,8 @@ void ETSGen::BranchIfNullish([[maybe_unused]] const ir::AstNode *node, [[maybe_u
 void ETSGen::BranchIfNotNullish([[maybe_unused]] const ir::AstNode *node, [[maybe_unused]] Label *ifNotNullish)
 {
 #ifdef PANDA_WITH_ETS
+    RegScope rs(this);
+
     auto *const type = GetAccumulatorType();
 
     if (!Checker()->MayHaveNulllikeValue(type)) {
@@ -2117,6 +2117,7 @@ void ETSGen::EmitNullishGuardian(const ir::AstNode *node)
 
 void ETSGen::EmitNullishException(const ir::AstNode *node)
 {
+    RegScope ra(this);
     VReg exception = StoreException(node);
     NewObject(node, exception, Signatures::BUILTIN_NULLPOINTER_EXCEPTION);
     CallThisStatic0(node, exception, Signatures::BUILTIN_NULLPOINTER_EXCEPTION_CTOR);

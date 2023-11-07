@@ -285,9 +285,10 @@ void ETSChecker::CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type
                                                      : type->GetDeclNode()->AsTSInterfaceDeclaration()->TypeParams();
     type->SetTypeArguments(CreateTypeForTypeParameters(typeParams));
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_TYPE_PARAMS);
+    type->AddObjectFlag(ETSObjectFlags::INCOMPLETE_INSTANTIATION);
 }
 
-ETSObjectType *ETSChecker::BuildInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl)
+ETSObjectType *ETSChecker::BuildBasicInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl)
 {
     auto *var = interfaceDecl->Id()->Variable();
     ASSERT(var);
@@ -309,6 +310,14 @@ ETSObjectType *ETSChecker::BuildInterfaceProperties(ir::TSInterfaceDeclaration *
 
     GetInterfacesOfInterface(interfaceType);
 
+    interfaceType->SetSuperType(GlobalETSObjectType());
+
+    return interfaceType;
+}
+
+ETSObjectType *ETSChecker::BuildInterfaceProperties(ir::TSInterfaceDeclaration *interfaceDecl)
+{
+    auto *interfaceType = BuildBasicInterfaceProperties(interfaceDecl);
     checker::ScopeContext scopeCtx(this, interfaceDecl->Scope());
     auto savedContext = checker::SavedCheckerContext(this, checker::CheckerStatus::IN_INTERFACE, interfaceType);
 
@@ -317,7 +326,7 @@ ETSObjectType *ETSChecker::BuildInterfaceProperties(ir::TSInterfaceDeclaration *
     return interfaceType;
 }
 
-ETSObjectType *ETSChecker::BuildClassProperties(ir::ClassDefinition *classDef)
+ETSObjectType *ETSChecker::BuildBasicClassProperties(ir::ClassDefinition *classDef)
 {
     if (classDef->IsFinal() && classDef->IsAbstract()) {
         ThrowTypeError("Cannot use both 'final' and 'abstract' modifiers.", classDef->Start());
@@ -327,7 +336,6 @@ ETSObjectType *ETSChecker::BuildClassProperties(ir::ClassDefinition *classDef)
     ASSERT(var);
 
     const util::StringView &className = classDef->Ident()->Name();
-    auto *classScope = classDef->Scope();
 
     checker::ETSObjectType *classType {};
     if (var->TsType() == nullptr) {
@@ -368,10 +376,17 @@ ETSObjectType *ETSChecker::BuildClassProperties(ir::ClassDefinition *classDef)
         return classType;
     }
 
-    checker::ScopeContext scopeCtx(this, classScope);
+    return classType;
+}
+
+ETSObjectType *ETSChecker::BuildClassProperties(ir::ClassDefinition *classDef)
+{
+    auto *classType = BuildBasicClassProperties(classDef);
+
+    auto savedContext = checker::SavedCheckerContext(this, checker::CheckerStatus::IN_CLASS, classType);
+    checker::ScopeContext scopeCtx(this, classDef->Scope());
 
     ResolveDeclaredMembersOfObject(classType);
-
     return classType;
 }
 
@@ -1584,7 +1599,8 @@ void ETSChecker::AddElementsToModuleObject(ETSObjectType *moduleObj, const util:
 
 Type *ETSChecker::FindLeastUpperBound(Type *source, Type *target)
 {
-    ASSERT(source->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT) && target->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT));
+    ASSERT(source->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT | TypeFlag::ETS_TYPE_PARAMETER));
+    ASSERT(target->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT | TypeFlag::ETS_TYPE_PARAMETER));
 
     // GetCommonClass(GenA<A>, GenB<B>) => LUB(GenA, GenB)<T>
     auto commonClass = GetCommonClass(source, target);
@@ -1693,7 +1709,12 @@ ETSObjectType *ETSChecker::GetTypeargumentedLUB(ETSObjectType *const source, ETS
         return source;
     }
 
-    ETSObjectType *templateType = source->GetDeclNode()->AsClassDefinition()->TsType()->AsETSObjectType();
+    ETSObjectType *templateType;
+    if (source->GetDeclNode()->IsClassDefinition()) {
+        templateType = source->GetDeclNode()->AsClassDefinition()->TsType()->AsETSObjectType();
+    } else {
+        templateType = source->GetDeclNode()->AsTSInterfaceDeclaration()->TsType()->AsETSObjectType();
+    }
 
     auto *lubType = templateType->GetInstantiatedType(hash);
 

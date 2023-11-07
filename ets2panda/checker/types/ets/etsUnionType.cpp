@@ -22,10 +22,10 @@
 #include "ir/astNode.h"
 
 namespace ark::es2panda::checker {
-void ETSUnionType::ToString(std::stringstream &ss) const
+void ETSUnionType::ToString(std::stringstream &ss, bool precise) const
 {
     for (auto it = constituentTypes_.begin(); it != constituentTypes_.end(); it++) {
-        (*it)->ToString(ss);
+        (*it)->ToString(ss, precise);
         if (std::next(it) != constituentTypes_.end()) {
             ss << "|";
         }

@@ -15,6 +15,7 @@
 
 #include "signature.h"
 
+#include "typeFlag.h"
 #include "varbinder/scope.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/ts/tsTypeParameter.h"
@@ -118,12 +119,13 @@ Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, Gl
     return copiedSignature;
 }
 
-void Signature::ToString(std::stringstream &ss, const varbinder::Variable *variable, bool printAsMethod) const
+void Signature::ToString(std::stringstream &ss, const varbinder::Variable *variable, bool printAsMethod,
+                         bool precise) const
 {
     if (!signatureInfo_->typeParams.empty()) {
         ss << "<";
         for (auto it = signatureInfo_->typeParams.begin(); it != signatureInfo_->typeParams.end(); ++it) {
-            (*it)->ToString(ss);
+            (*it)->ToString(ss, precise);
             if (std::next(it) != signatureInfo_->typeParams.end()) {
                 ss << ", ";
             }
@@ -142,7 +144,7 @@ void Signature::ToString(std::stringstream &ss, const varbinder::Variable *varia
 
         ss << ": ";
 
-        (*it)->TsType()->ToString(ss);
+        (*it)->TsType()->ToString(ss, precise);
 
         if (std::next(it) != signatureInfo_->params.end()) {
             ss << ", ";
@@ -157,7 +159,8 @@ void Signature::ToString(std::stringstream &ss, const varbinder::Variable *varia
         ss << "...";
         ss << signatureInfo_->restVar->Name();
         ss << ": ";
-        signatureInfo_->restVar->TsType()->ToString(ss);
+        signatureInfo_->restVar->TsType()->ToString(ss, precise);
+
         ss << "[]";
     }
 
@@ -169,7 +172,14 @@ void Signature::ToString(std::stringstream &ss, const varbinder::Variable *varia
         ss << " => ";
     }
 
-    returnType_->ToString(ss);
+    returnType_->ToString(ss, precise);
+}
+
+std::string Signature::ToString() const
+{
+    std::stringstream ss;
+    ToString(ss, nullptr);
+    return ss.str();
 }
 
 namespace {
@@ -190,9 +200,7 @@ std::size_t GetToCheckParamCount(Signature *signature, bool isEts)
 
 bool Signature::IdenticalParameter(TypeRelation *relation, Type *type1, Type *type2)
 {
-    if (!CheckFunctionalInterfaces(relation, type1, type2)) {
-        relation->IsIdenticalTo(type1, type2);
-    }
+    relation->IsIdenticalTo(type1, type2);
     return relation->IsTrue();
 }
 
@@ -339,5 +347,25 @@ void Signature::AssignmentTarget(TypeRelation *relation, Signature *source)
     if (relation->IsTrue() && signatureInfo_->restVar != nullptr && source->RestVar() != nullptr) {
         relation->IsAssignableTo(source->RestVar()->TsType(), signatureInfo_->restVar->TsType());
     }
+}
+
+Signature *Signature::BoxPrimitives(ETSChecker *checker)
+{
+    auto *allocator = checker->Allocator();
+    auto *sigInfo = allocator->New<SignatureInfo>(signatureInfo_, allocator);
+    for (auto param : sigInfo->params) {
+        if (param->TsType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+            param->SetTsType(checker->PrimitiveTypeAsETSBuiltinType(param->TsType()));
+        }
+    }
+    auto *retType = returnType_->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)
+                        ? checker->PrimitiveTypeAsETSBuiltinType(returnType_)
+                        : returnType_;
+
+    auto *resultSig = allocator->New<Signature>(sigInfo, retType, func_);
+    resultSig->flags_ = flags_;
+    resultSig->SetOwner(Owner());
+    resultSig->SetOwnerVar(OwnerVar());
+    return resultSig;
 }
 }  // namespace ark::es2panda::checker

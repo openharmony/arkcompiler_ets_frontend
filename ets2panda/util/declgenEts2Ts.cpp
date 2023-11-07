@@ -295,7 +295,8 @@ void TSDeclGen::GenEnumType(const checker::ETSEnumType *enumType)
 void TSDeclGen::GenObjectType(const checker::ETSObjectType *objectType)
 {
     if (objectType->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL)) {
-        const auto *invoke = objectType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke");
+        const auto *invoke = objectType->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>(
+            checker::FUNCTIONAL_INTERFACE_INVOKE_METHOD_NAME);
         ASSERT(invoke && invoke->TsType() && invoke->TsType()->IsETSFunctionType());
         GenType(invoke->TsType());
         return;

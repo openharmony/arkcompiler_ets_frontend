@@ -23,7 +23,7 @@ class ConstructorType : public ObjectType {
 public:
     explicit ConstructorType(ObjectDescriptor *desc) : ObjectType(ObjectType::ObjectTypeKind::FUNCTION, desc) {}
 
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override;
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 };

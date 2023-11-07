@@ -23,7 +23,7 @@ class NonPrimitiveType : public Type {
 public:
     NonPrimitiveType() : Type(TypeFlag::NON_PRIMITIVE) {}
 
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override;
     TypeFacts GetTypeFacts() const override;
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;

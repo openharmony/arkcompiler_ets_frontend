@@ -16,7 +16,7 @@
 #include "unknownType.h"
 
 namespace ark::es2panda::checker {
-void UnknownType::ToString(std::stringstream &ss) const
+void UnknownType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     ss << "unknown";
 }

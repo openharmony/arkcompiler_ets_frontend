@@ -24,7 +24,7 @@ public:
     explicit ObjectLiteralType(ObjectDescriptor *desc) : ObjectType(ObjectType::ObjectTypeKind::LITERAL, desc) {}
     ObjectLiteralType() : ObjectType(ObjectType::ObjectTypeKind::LITERAL) {}
 
-    void ToString(std::stringstream &ss) const override;
+    void ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const override;
     TypeFacts GetTypeFacts() const override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes) override;
 };

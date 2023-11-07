@@ -16,7 +16,7 @@
 #include "booleanLiteralType.h"
 
 namespace ark::es2panda::checker {
-void BooleanLiteralType::ToString(std::stringstream &ss) const
+void BooleanLiteralType::ToString(std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     if (value_) {
         ss << "true";

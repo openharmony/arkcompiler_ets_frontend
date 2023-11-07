@@ -16,7 +16,7 @@
 #include "typeParameter.h"
 
 namespace ark::es2panda::checker {
-void TypeParameter::ToString([[maybe_unused]] std::stringstream &ss) const
+void TypeParameter::ToString([[maybe_unused]] std::stringstream &ss, [[maybe_unused]] bool precise) const
 {
     UNREACHABLE();
 }
