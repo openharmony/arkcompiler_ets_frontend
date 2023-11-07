@@ -349,6 +349,12 @@ void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other
                 continue;
             }
 
+            // checking the nullishness of type args before getting their original base types
+            // because most probably GetOriginalBaseType will return the non-nullish version of the type
+            if (!type_arguments_[idx]->IsNullish() && other_type_arguments[idx]->IsNullish()) {
+                return;
+            }
+
             const auto get_original_base_type_or_type = [&relation](Type *const original_type) {
                 auto *const base_type = relation->GetChecker()->AsETSChecker()->GetOriginalBaseType(original_type);
                 return base_type == nullptr ? original_type : base_type;
