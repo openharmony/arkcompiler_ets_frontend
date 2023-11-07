@@ -154,7 +154,7 @@ void ETSParser::ParseProgram(ScriptKind kind)
     GetProgram()->SetKind(kind);
 
     if (GetProgram()->SourceFile().Utf8()[0] == '@') {
-        // TODO(user): handle multiple sourceFiles
+        // NOTE(user): handle multiple sourceFiles
     }
 
     auto statements = PrepareGlobalClass();
@@ -242,7 +242,7 @@ ArenaVector<ir::Statement *> ETSParser::PrepareExternalGlobalClass([[maybe_unuse
         res->second.push_back(GetProgram());
         auto *ext_prog = res->second.front();
         GetProgram()->SetGlobalClass(ext_prog->GlobalClass());
-        // TODO(user): check nullptr cases and handle recursive imports
+        // NOTE(user): check nullptr cases and handle recursive imports
         if (ext_prog->Ast() != nullptr) {
             VarBinder()->ResetTopScope(ext_prog->GlobalScope());
         }
@@ -626,7 +626,7 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
     // Add special '_$init$_' method that will hold all the top-level variable initializations (as assignments) and
     // statements. By default it will be called in the global class static constructor but also it can be called
     // directly from outside using public '_$init$_' method call in global scope.
-    // TBD: now only a single-file modules are supported. Such a technique can be implemented in packages directly.
+    // NOTE: now only a single-file modules are supported. Such a technique can be implemented in packages directly.
     ir::ScriptFunction *init_function = nullptr;
     if (GetProgram()->GetPackageName().Empty()) {
         init_function = AddInitMethod(global_properties);
@@ -1146,7 +1146,7 @@ ir::ModifierFlags ETSParser::ParseClassFieldModifiers(bool seen_static)
                 break;
             }
             case lexer::TokenType::KEYW_READONLY: {
-                // TODO(OCs): Use ir::ModifierFlags::READONLY once compiler is ready for it.
+                // NOTE(OCs): Use ir::ModifierFlags::READONLY once compiler is ready for it.
                 current_flag = ir::ModifierFlags::CONST;
                 break;
             }
@@ -2901,7 +2901,7 @@ std::vector<std::string> ETSParser::ParseImportDeclarations(ArenaVector<ir::Stat
 
 void ETSParser::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers)
 {
-    // TODO(user): handle qualifiedName in file bindings: qualifiedName '.' '*'
+    // NOTE(user): handle qualifiedName in file bindings: qualifiedName '.' '*'
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         ThrowSyntaxError("Unexpected token, expected '{'");
     }
@@ -3130,7 +3130,7 @@ ir::Expression *ETSParser::ParseFunctionParameter()
             if (!type_annotation->IsETSPrimitiveType()) {
                 return std::make_pair(AllocNode<ir::NullLiteral>(), "null");
             }
-            // TODO(ttamas) : after nullable fix, fix this scope
+            // NOTE(ttamas) : after nullable fix, fix this scope
             switch (type_annotation->AsETSPrimitiveType()->GetPrimitiveType()) {
                 case ir::PrimitiveType::BYTE:
                 case ir::PrimitiveType::INT:

@@ -76,9 +76,9 @@ ir::Expression *TypedParser::ParseExpression(ExpressionParseFlags flags)
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         const auto start_pos = Lexer()->Save();
 
-        // TODO(rsipka): ParseTsGenericArrowFunction and ParseTsTypeAssertion might be in a common function
+        // NOTE(rsipka): ParseTsGenericArrowFunction and ParseTsTypeAssertion might be in a common function
         ir::Expression *expr = ParseGenericArrowFunction();
-        // TODO(rsipka): negative cases are not covered, probably this is not a complete solution yet
+        // NOTE(rsipka): negative cases are not covered, probably this is not a complete solution yet
         if (expr == nullptr) {
             Lexer()->Rewind(start_pos);
             expr = ParseTypeAssertion();

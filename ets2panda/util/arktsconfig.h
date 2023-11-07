@@ -23,7 +23,7 @@
 
 #include "util/language.h"
 
-// TODO(ivagin): If ARKTSCONFIG_USE_FILESYSTEM is not defined part of ArkTsConfig functionality is disabled.
+// NOTE(ivagin): If ARKTSCONFIG_USE_FILESYSTEM is not defined part of ArkTsConfig functionality is disabled.
 //       Only build configuration which prevents us from usage of std::filesystem is "MOBILE" build
 //       because of lack of std::filesystem in our current version of mobile nativ development kit.
 //       nativ development kit version should be updated and ARKTSCONFIG_USE_FILESYSTEM removed
