@@ -17,6 +17,7 @@
 
 #include "varbinder/privateBinding.h"
 #include "checker/types/ets/types.h"
+#include "ir/astNode.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/methodDefinition.h"
@@ -25,6 +26,7 @@
 #include "ir/base/spreadElement.h"
 #include "ir/expressions/arrayExpression.h"
 #include "ir/expressions/assignmentExpression.h"
+#include "ir/expressions/callExpression.h"
 #include "ir/expressions/functionExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/literals/numberLiteral.h"
@@ -32,6 +34,7 @@
 #include "ir/expressions/literals/booleanLiteral.h"
 #include "ir/expressions/literals/nullLiteral.h"
 #include "ir/expressions/objectExpression.h"
+#include "ir/statements/returnStatement.h"
 #include "ir/statements/variableDeclaration.h"
 #include "ir/statements/variableDeclarator.h"
 #include "ir/module/importSpecifier.h"
@@ -356,22 +359,6 @@ const ir::ScriptFunction *Helpers::GetContainingFunction(const ir::AstNode *node
     }
 
     return nullptr;
-}
-
-ir::AstNode *Helpers::FindAncestorGivenByType(ir::AstNode *node, ir::AstNodeType type)
-{
-    node = node->Parent();
-
-    while (node->Type() != type) {
-        if (node->Parent() != nullptr) {
-            node = node->Parent();
-            continue;
-        }
-
-        return nullptr;
-    }
-
-    return node;
 }
 
 const ir::ClassDefinition *Helpers::GetClassDefiniton(const ir::ScriptFunction *node)

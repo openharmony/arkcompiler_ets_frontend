@@ -326,7 +326,8 @@ public:
     [[nodiscard]] bool IsReturnTypeSubstitutable(Signature *s1, Signature *s2);
     void CheckStaticHide(Signature *target, Signature *source);
     void CheckThrowMarkers(Signature *source, Signature *target);
-    void ValidateSignatureAccessibility(ETSObjectType *callee, Signature *signature, const lexer::SourcePosition &pos,
+    void ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *call_expr,
+                                        Signature *signature, const lexer::SourcePosition &pos,
                                         char const *error_message = nullptr);
     void CreateLambdaObjectForLambdaReference(ir::ArrowFunctionExpression *lambda, ETSObjectType *functional_interface);
     ir::ClassProperty *CreateLambdaCapturedField(const varbinder::Variable *captured_var, varbinder::ClassScope *scope,

@@ -1186,15 +1186,35 @@ Signature *ETSChecker::GetSignatureFromMethodDefinition(const ir::MethodDefiniti
     return nullptr;
 }
 
-void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, Signature *signature,
-                                                const lexer::SourcePosition &pos, char const *error_message)
+void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, const ir::CallExpression *call_expr,
+                                                Signature *signature, const lexer::SourcePosition &pos,
+                                                char const *error_message)
 {
     if ((Context().Status() & CheckerStatus::IGNORE_VISIBILITY) != 0U) {
         return;
     }
     if (signature->HasSignatureFlag(SignatureFlags::PRIVATE) ||
         signature->HasSignatureFlag(SignatureFlags::PROTECTED)) {
-        ASSERT(callee->GetDeclNode() && callee->GetDeclNode()->IsClassDefinition());
+        ASSERT(callee->GetDeclNode() &&
+               (callee->GetDeclNode()->IsClassDefinition() || callee->GetDeclNode()->IsTSInterfaceDeclaration()));
+
+        if (callee->GetDeclNode()->IsTSInterfaceDeclaration()) {
+            if (call_expr->Callee()->IsMemberExpression() &&
+                call_expr->Callee()->AsMemberExpression()->Object()->IsThisExpression()) {
+                const auto *enclosing_func =
+                    util::Helpers::FindAncestorGivenByType(call_expr, ir::AstNodeType::SCRIPT_FUNCTION)
+                        ->AsScriptFunction();
+                if (signature->Function()->IsPrivate() && !enclosing_func->IsPrivate()) {
+                    ThrowTypeError({"Cannot reference 'this' in this context."}, enclosing_func->Start());
+                }
+            }
+
+            if (Context().ContainingClass() == callee->GetDeclNode()->AsTSInterfaceDeclaration()->TsType() &&
+                callee->GetDeclNode()->AsTSInterfaceDeclaration()->TsType()->AsETSObjectType()->IsSignatureInherited(
+                    signature)) {
+                return;
+            }
+        }
         if (Context().ContainingClass() == callee->GetDeclNode()->AsClassDefinition()->TsType() &&
             callee->GetDeclNode()->AsClassDefinition()->TsType()->AsETSObjectType()->IsSignatureInherited(signature)) {
             return;

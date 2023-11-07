@@ -45,6 +45,8 @@ class ClassProperty;
 class Identifier;
 class MethodDefinition;
 class AstNode;
+class ReturnStatement;
+class CallExpression;
 class ClassStaticBlock;
 class TSInterfaceDeclaration;
 class TSEnumDeclaration;
@@ -84,7 +86,26 @@ public:
 
     static const ir::ScriptFunction *GetContainingConstructor(const ir::AstNode *node);
     static const ir::ScriptFunction *GetContainingConstructor(const ir::ClassProperty *node);
-    static ir::AstNode *FindAncestorGivenByType(ir::AstNode *node, ir::AstNodeType type);
+
+    template <typename T,
+              typename U = std::enable_if_t<
+                  std::is_convertible_v<std::remove_const_t<std::remove_pointer_t<T>> *, ir::AstNode *>,
+                  std::conditional_t<std::is_const_v<std::remove_pointer_t<T>>, const ir::AstNode *, ir::AstNode *>>>
+    static U FindAncestorGivenByType(T node, ir::AstNodeType type)
+    {
+        U iter = node->Parent();
+
+        while (iter->Type() != type) {
+            if (iter->Parent() != nullptr) {
+                iter = iter->Parent();
+                continue;
+            }
+
+            return nullptr;
+        }
+
+        return iter;
+    }
 
     static const checker::ETSObjectType *GetContainingObjectType(const ir::AstNode *node);
     static const ir::TSEnumDeclaration *GetContainingEnumDeclaration(const ir::AstNode *node);

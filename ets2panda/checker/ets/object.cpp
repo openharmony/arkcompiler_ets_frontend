@@ -1040,7 +1040,7 @@ ETSObjectType *ETSChecker::CheckThisOrSuperAccess(ir::Expression *node, ETSObjec
         ThrowTypeError({"'", msg, "' cannot be referenced from a static context"}, node->Start());
     }
 
-    if (class_type->GetDeclNode()->AsClassDefinition()->IsGlobal()) {
+    if (class_type->GetDeclNode()->IsClassDefinition() && class_type->GetDeclNode()->AsClassDefinition()->IsGlobal()) {
         ThrowTypeError({"Cannot reference '", msg, "' in this context."}, node->Start());
     }
 
@@ -1285,19 +1285,21 @@ std::vector<ResolveResult *> ETSChecker::ResolveMemberReference(const ir::Member
         ASSERT((prop_type->FindSetter() != nullptr) == prop_type->HasTypeFlag(TypeFlag::SETTER));
 
         auto const &source_pos = member_expr->Property()->Start();
+        auto call_expr =
+            member_expr->Parent()->IsCallExpression() ? member_expr->Parent()->AsCallExpression() : nullptr;
 
         if ((search_flag & PropertySearchFlags::IS_GETTER) != 0) {
             if (!prop_type->HasTypeFlag(TypeFlag::GETTER)) {
                 ThrowTypeError("Cannot read from this property because it is writeonly.", source_pos);
             }
-            ValidateSignatureAccessibility(member_expr->ObjType(), prop_type->FindGetter(), source_pos);
+            ValidateSignatureAccessibility(member_expr->ObjType(), call_expr, prop_type->FindGetter(), source_pos);
         }
 
         if ((search_flag & PropertySearchFlags::IS_SETTER) != 0) {
             if (!prop_type->HasTypeFlag(TypeFlag::SETTER)) {
                 ThrowTypeError("Cannot assign to this property because it is readonly.", source_pos);
             }
-            ValidateSignatureAccessibility(member_expr->ObjType(), prop_type->FindSetter(), source_pos);
+            ValidateSignatureAccessibility(member_expr->ObjType(), call_expr, prop_type->FindSetter(), source_pos);
         }
     }
 

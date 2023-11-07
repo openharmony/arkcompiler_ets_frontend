@@ -292,7 +292,8 @@ checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *che
     if (signature == nullptr) {
         checker->ThrowTypeError("Cannot find index access method with the required signature.", Property()->Start());
     }
-    checker->ValidateSignatureAccessibility(obj_type_, signature, Start(), "Index access method is not visible here.");
+    checker->ValidateSignatureAccessibility(obj_type_, nullptr, signature, Start(),
+                                            "Index access method is not visible here.");
 
     ASSERT(signature->Function() != nullptr);
 

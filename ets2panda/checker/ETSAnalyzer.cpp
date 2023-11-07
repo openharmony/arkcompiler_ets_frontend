@@ -553,7 +553,7 @@ checker::Type *ETSAnalyzer::Check(ir::ETSNewClassInstanceExpression *expr) const
         checker->CheckObjectLiteralArguments(signature, expr->GetArguments());
         checker->AddUndefinedParamsForDefaultParams(signature, expr->arguments_, checker);
 
-        checker->ValidateSignatureAccessibility(callee_obj, signature, expr->Start());
+        checker->ValidateSignatureAccessibility(callee_obj, nullptr, signature, expr->Start());
 
         ASSERT(signature->Function() != nullptr);
 
@@ -1031,7 +1031,7 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
 
     if (!is_functional_interface) {
         checker::ETSObjectType *callee_obj = ChooseCalleeObj(checker, expr, callee_type, is_constructor_call);
-        checker->ValidateSignatureAccessibility(callee_obj, signature, expr->Start());
+        checker->ValidateSignatureAccessibility(callee_obj, expr, signature, expr->Start());
     }
 
     ASSERT(signature->Function() != nullptr);
@@ -1302,7 +1302,7 @@ checker::Type *ETSAnalyzer::Check(ir::ObjectExpression *expr) const
     for (checker::Signature *sig : obj_type->ConstructSignatures()) {
         if (sig->Params().empty()) {
             have_empty_constructor = true;
-            checker->ValidateSignatureAccessibility(obj_type, sig, expr->Start());
+            checker->ValidateSignatureAccessibility(obj_type, nullptr, sig, expr->Start());
             break;
         }
     }
