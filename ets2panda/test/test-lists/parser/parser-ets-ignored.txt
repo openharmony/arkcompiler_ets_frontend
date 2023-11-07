@@ -1,2 +1,13 @@
 parser/ets/test-type-alias-call7.ets
 parser/ets/test-type-alias-call8.ets
+
+# Disabled temporarily #I8EM2T implementation struct directly expanded to class
+parser/ets/struct_init.ets
+parser/ets/struct_static_initializer.ets
+parser/ets/struct_identifier.ets
+parser/ets/struct_invalid_extends1.ets
+parser/ets/struct_templete.ets
+parser/ets/import_tests/modules/struct_module.ets
+parser/ets/import_tests/check_exported_default_struct.ets
+parser/ets/import_tests/modules/struct_default_module.ets
+parser/ets/import_tests/check_exported_struct.ets

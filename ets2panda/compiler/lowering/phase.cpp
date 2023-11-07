@@ -29,6 +29,7 @@
 #include "compiler/lowering/ets/opAssignment.h"
 #include "compiler/lowering/ets/tupleLowering.h"
 #include "compiler/lowering/ets/unionLowering.h"
+#include "compiler/lowering/ets/structLowering.h"
 #include "public/es2panda_lib.h"
 #include "compiler/lowering/ets/promiseVoid.h"
 
@@ -52,45 +53,74 @@ static TupleLowering g_tupleLowering;  // Can be only applied after checking pha
 static UnionLowering g_unionLowering;
 static ExpandBracketsPhase g_expandBracketsPhase;
 static PromiseVoidLowering g_promiseVoidLowering;
+static StructLowering g_structLowering;
 static PluginPhase g_pluginsAfterParse {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
 static PluginPhase g_pluginsAfterCheck {"plugins-after-check", ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck};
 static PluginPhase g_pluginsAfterLowerings {"plugins-after-lowering", ES2PANDA_STATE_LOWERED,
                                             &util::Plugin::AfterLowerings};
 
-std::vector<Phase *> GetPhaseList(ScriptExtension ext)
+// clang-format off
+std::vector<Phase *> GetETSPhaseList()
 {
     static ScopesInitPhaseETS scopesPhaseEts;
-    static ScopesInitPhaseAS scopesPhaseAs;
-    static ScopesInitPhaseTs scopesPhaseTs;
-    static ScopesInitPhaseJs scopesPhaseJs;
+    return {
+        &scopesPhaseEts,
+        &g_pluginsAfterParse,
+        &g_promiseVoidLowering,
+        &g_structLowering,
+        &g_lambdaLowering,
+        &g_interfacePropDeclPhase,
+        &g_checkerPhase,
+        &g_pluginsAfterCheck,
+        &g_generateTsDeclarationsPhase,
+        &g_opAssignmentLowering,
+        &g_objectIndexLowering,
+        &g_tupleLowering,
+        &g_unionLowering,
+        &g_expandBracketsPhase,
+        &g_pluginsAfterLowerings,
+    };
+}
+// clang-format on
 
+std::vector<Phase *> GetASPhaseList()
+{
+    static ScopesInitPhaseAS scopesPhaseAs;
+    return {
+        &scopesPhaseAs,
+        &g_checkerPhase,
+    };
+}
+
+std::vector<Phase *> GetTSPhaseList()
+{
+    static ScopesInitPhaseTs scopesPhaseTs;
+    return {
+        &scopesPhaseTs,
+        &g_checkerPhase,
+    };
+}
+
+std::vector<Phase *> GetJSPhaseList()
+{
+    static ScopesInitPhaseJs scopesPhaseJs;
+    return {
+        &scopesPhaseJs,
+        &g_checkerPhase,
+    };
+}
+
+std::vector<Phase *> GetPhaseList(ScriptExtension ext)
+{
     switch (ext) {
         case ScriptExtension::ETS:
-            return {
-                &scopesPhaseEts,           &g_pluginsAfterParse,
-                &g_promiseVoidLowering,    &g_lambdaLowering,
-                &g_interfacePropDeclPhase, &g_checkerPhase,
-                &g_pluginsAfterCheck,      &g_generateTsDeclarationsPhase,
-                &g_opAssignmentLowering,   &g_objectIndexLowering,
-                &g_tupleLowering,          &g_unionLowering,
-                &g_expandBracketsPhase,    &g_pluginsAfterLowerings,
-            };
-
+            return GetETSPhaseList();
         case ScriptExtension::AS:
-            return std::vector<Phase *> {
-                &scopesPhaseAs,
-                &g_checkerPhase,
-            };
+            return GetASPhaseList();
         case ScriptExtension::TS:
-            return std::vector<Phase *> {
-                &scopesPhaseTs,
-                &g_checkerPhase,
-            };
+            return GetTSPhaseList();
         case ScriptExtension::JS:
-            return std::vector<Phase *> {
-                &scopesPhaseJs,
-                &g_checkerPhase,
-            };
+            return GetJSPhaseList();
         default:
             UNREACHABLE();
     }

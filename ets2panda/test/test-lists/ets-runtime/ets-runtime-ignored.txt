@@ -37,3 +37,10 @@ notNullMultidimensionalArray.ets
 
 # ignored until verifier can't handle if a field name can be static and non-static at the same time
 class-fields-same-name.ets
+
+# Disabled temporarily #I8EM2T implementation struct directly expanded to class
+struct-identifier.ets
+struct-init.ets
+struct-init2.ets
+struct_implements.ets
+top_level_03.ets

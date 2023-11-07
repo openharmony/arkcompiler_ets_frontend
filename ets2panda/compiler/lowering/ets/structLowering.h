@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,19 @@
  * limitations under the License.
  */
 
-import ExportDefaultClass from "import_tests/modules/class_default_module";
+#ifndef ES2PANDA_COMPILER_LOWERING_STRUCT_LOWERING_H
+#define ES2PANDA_COMPILER_LOWERING_STRUCT_LOWERING_H
 
-function main() {
-  let test_class: ExportDefaultClass = new ExportDefaultClass();
-}
+#include "compiler/lowering/phase.h"
+
+namespace panda::es2panda::compiler {
+
+class StructLowering : public Phase {
+public:
+    std::string_view Name() override;
+    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+};
+
+}  // namespace panda::es2panda::compiler
+
+#endif  // ES2PANDA_COMPILER_LOWERING_STRUCT_LOWERING_H
