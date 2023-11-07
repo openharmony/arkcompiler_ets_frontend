@@ -403,7 +403,7 @@ ohos_static_library("es2panda_lib") {
   ]
 
   external_deps = []
-  if (!is_cross_platform_build) {
+  if (!is_arkui_x) {
     external_deps += [
       "runtime_core:libarkassembler_frontend_static",
       "runtime_core:libarkbase_frontend_static",
