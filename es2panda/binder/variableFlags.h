@@ -79,6 +79,7 @@ DEFINE_BITOPS(ResolveBindingOptions)
 enum class ResolveBindingFlags {
     ALL = 1U << 0U,
     TS_BEFORE_TRANSFORM = 1U << 1U,
+    TS_AFTER_TRANSFORM = 1U << 2U,
 };
 
 DEFINE_BITOPS(ResolveBindingFlags)

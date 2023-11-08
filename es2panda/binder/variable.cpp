@@ -50,10 +50,15 @@ void LocalVariable::SetLexical(Scope *scope, util::PatchFix *patchFixHelper)
     uint32_t slot = 0;
     auto name = Declaration()->Name();
 
-    if (patchFixHelper && !patchFixHelper->IsHotReload() && patchFixHelper->IsScopeValidToPatchLexical(varScope)) {
+    if (patchFixHelper && patchFixHelper->IsScopeValidToPatchLexical(varScope)) {
+        // get slot from symbol table for lexical variable, if not found, slot is set to UINT32_MAX
         slot = patchFixHelper->GetSlotIdFromSymbolTable(std::string(name));
-        if (patchFixHelper->IsPatchVar(slot)) {
+        // Store the additional lexical variable into PatchEnv
+        if (patchFixHelper->IsAdditionalVarInPatch(slot)) {
             patchFixHelper->AllocSlotfromPatchEnv(std::string(name));
+        } else { 
+            // Just for restore 'newlexenv' instruction for func_main_0 in patch
+            varScope->RestoreFuncMain0LexEnv(patchFixHelper->GetEnvSizeOfFuncMain0());
         }
     } else {
         slot = varScope->NextSlot();

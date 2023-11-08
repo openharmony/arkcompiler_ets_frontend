@@ -66,9 +66,10 @@ public:
     void Finalize(panda::pandasm::Program **prog);
     bool IsScopeValidToPatchLexical(binder::VariableScope *scope) const;
     uint32_t GetSlotIdFromSymbolTable(const std::string &variableName);
+    uint32_t GetEnvSizeOfFuncMain0();
     void AllocSlotfromPatchEnv(const std::string &variableName);
     uint32_t GetPatchLexicalIdx(const std::string &variableName);
-    bool IsPatchVar(uint32_t slot);
+    bool IsAdditionalVarInPatch(uint32_t slot);
     void ProcessFunction(const compiler::PandaGen *pg, panda::pandasm::Function *func, LiteralBuffers &literalBuffers);
     void ProcessModule(const std::string &recordName, std::vector<panda::pandasm::LiteralArray::Literal> &moduleBuffer);
     void ProcessJsonContentRecord(const std::string &recordName, const std::string &jsonFileContent);

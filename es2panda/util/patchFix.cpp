@@ -293,6 +293,13 @@ uint32_t PatchFix::GetSlotIdFromSymbolTable(const std::string &variableName)
     return UINT32_MAX;
 }
 
+uint32_t PatchFix::GetEnvSizeOfFuncMain0()
+{
+    auto functionIter = originFunctionInfo_->find(funcMain0_);
+    ASSERT(functionIter != originFunctionInfo_->end());
+    return functionIter->second.lexenv.size();
+}
+
 uint32_t PatchFix::GetPatchLexicalIdx(const std::string &variableName)
 {
     ASSERT(topScopeLexEnvs_.count(variableName));
@@ -618,7 +625,7 @@ void PatchFix::DumpFunctionInfo(const compiler::PandaGen *pg, panda::pandasm::Fu
     symbolTable_->WriteSymbolTable(ss.str());
 }
 
-bool PatchFix::IsPatchVar(uint32_t slot)
+bool PatchFix::IsAdditionalVarInPatch(uint32_t slot)
 {
     return slot == UINT32_MAX;
 }
