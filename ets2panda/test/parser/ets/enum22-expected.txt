@@ -1,0 +1,1 @@
+SyntaxError: Variable 'Gray' has already been declared. [enum22.ets:18:5]

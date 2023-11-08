@@ -4119,22 +4119,15 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
 
 void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
 {
-    std::unordered_set<checker::ETSEnumType::ValueType> enum_values {};
     checker::ETSEnumType::ValueType current_value {};
 
     // Lambda to parse enum member (maybe with initializer)
-    auto const parse_member = [this, &members, &enum_values, &current_value]() {
+    auto const parse_member = [this, &members, &current_value]() {
         auto *const ident = ExpectIdentifier();
         auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(ident->Start(), ident->Name());
         var->SetScope(VarBinder()->GetScope());
         var->AddFlag(varbinder::VariableFlags::STATIC);
         ident->SetVariable(var);
-
-        auto const add_value = [this, &enum_values](checker::ETSEnumType::ValueType const new_value) {
-            if (auto const rc = enum_values.emplace(new_value); !rc.second) {
-                ThrowSyntaxError(DUPLICATE_ENUM_VALUE + std::to_string(new_value));
-            }
-        };
 
         ir::NumberLiteral *ordinal;
         lexer::SourcePosition end_loc;
@@ -4164,14 +4157,12 @@ void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
             }
 
             current_value = ordinal->Number().GetValue<checker::ETSEnumType::ValueType>();
-            add_value(current_value);
 
             end_loc = ordinal->End();
         } else {
             // Default enumeration constant value. Equal to 0 for the first item and = previous_value + 1 for all the
             // others.
 
-            add_value(current_value);
             ordinal = AllocNode<ir::NumberLiteral>(lexer::Number(current_value));
 
             end_loc = ident->End();
@@ -4204,10 +4195,8 @@ void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
 
 void ETSParser::ParseStringEnum(ArenaVector<ir::AstNode *> &members)
 {
-    std::unordered_set<util::StringView> enum_values {};
-
     // Lambda to parse enum member (maybe with initializer)
-    auto const parse_member = [this, &members, &enum_values]() {
+    auto const parse_member = [this, &members]() {
         auto *const ident = ExpectIdentifier();
         auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(ident->Start(), ident->Name());
         var->SetScope(VarBinder()->GetScope());
@@ -4225,9 +4214,6 @@ void ETSParser::ParseStringEnum(ArenaVector<ir::AstNode *> &members)
             }
 
             item_value = ParseStringLiteral();
-            if (auto const rc = enum_values.emplace(item_value->Str()); !rc.second) {
-                ThrowSyntaxError(DUPLICATE_ENUM_VALUE + '\'' + std::string {item_value->Str()} + '\'');
-            }
         } else {
             // Default item value is not allowed for string type enumerations!
             ThrowSyntaxError("All items of string-type enumeration should be explicitly initialized.");

@@ -5,7 +5,7 @@
       "type": "TSEnumDeclaration",
       "id": {
         "type": "Identifier",
-        "name": "InvalidInitTypeEnum",
+        "name": "ArkColor",
         "decorators": [],
         "loc": {
           "start": {
@@ -14,7 +14,7 @@
           },
           "end": {
             "line": 16,
-            "column": 25
+            "column": 14
           }
         }
       },
@@ -23,7 +23,7 @@
           "type": "TSEnumMember",
           "id": {
             "type": "Identifier",
-            "name": "Red",
+            "name": "Gray",
             "decorators": [],
             "loc": {
               "start": {
@@ -32,116 +32,74 @@
               },
               "end": {
                 "line": 17,
-                "column": 6
-              }
-            }
-          },
-          "initializer": {
-            "type": "NumberLiteral",
-            "value": 0,
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 1
-              },
-              "end": {
-                "line": 1,
-                "column": 1
-              }
-            }
-          },
-          "loc": {
-            "start": {
-              "line": 17,
-              "column": 3
-            },
-            "end": {
-              "line": 17,
-              "column": 6
-            }
-          }
-        },
-        {
-          "type": "TSEnumMember",
-          "id": {
-            "type": "Identifier",
-            "name": "Green",
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 18,
-                "column": 3
-              },
-              "end": {
-                "line": 18,
-                "column": 8
-              }
-            }
-          },
-          "initializer": {
-            "type": "NumberLiteral",
-            "value": -1,
-            "loc": {
-              "start": {
-                "line": 18,
-                "column": 12
-              },
-              "end": {
-                "line": 18,
-                "column": 13
-              }
-            }
-          },
-          "loc": {
-            "start": {
-              "line": 18,
-              "column": 3
-            },
-            "end": {
-              "line": 18,
-              "column": 13
-            }
-          }
-        },
-        {
-          "type": "TSEnumMember",
-          "id": {
-            "type": "Identifier",
-            "name": "Blue",
-            "decorators": [],
-            "loc": {
-              "start": {
-                "line": 19,
-                "column": 3
-              },
-              "end": {
-                "line": 19,
                 "column": 7
               }
             }
           },
           "initializer": {
-            "type": "NumberLiteral",
-            "value": -1,
+            "type": "StringLiteral",
+            "value": "#ff808080",
             "loc": {
               "start": {
-                "line": 19,
+                "line": 17,
                 "column": 10
               },
               "end": {
-                "line": 19,
-                "column": 20
+                "line": 17,
+                "column": 21
               }
             }
           },
           "loc": {
             "start": {
-              "line": 19,
+              "line": 17,
               "column": 3
             },
             "end": {
-              "line": 19,
-              "column": 20
+              "line": 17,
+              "column": 21
+            }
+          }
+        },
+        {
+          "type": "TSEnumMember",
+          "id": {
+            "type": "Identifier",
+            "name": "Grey",
+            "decorators": [],
+            "loc": {
+              "start": {
+                "line": 18,
+                "column": 3
+              },
+              "end": {
+                "line": 18,
+                "column": 7
+              }
+            }
+          },
+          "initializer": {
+            "type": "StringLiteral",
+            "value": "#ff808080",
+            "loc": {
+              "start": {
+                "line": 18,
+                "column": 10
+              },
+              "end": {
+                "line": 18,
+                "column": 21
+              }
+            }
+          },
+          "loc": {
+            "start": {
+              "line": 18,
+              "column": 3
+            },
+            "end": {
+              "line": 18,
+              "column": 21
             }
           }
         }
@@ -153,7 +111,7 @@
           "column": 1
         },
         "end": {
-          "line": 20,
+          "line": 19,
           "column": 2
         }
       }
@@ -303,7 +261,7 @@
       "column": 1
     },
     "end": {
-      "line": 21,
+      "line": 20,
       "column": 1
     }
   }
