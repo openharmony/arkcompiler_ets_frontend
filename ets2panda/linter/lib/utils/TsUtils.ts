@@ -26,7 +26,7 @@ import { ARKTS_IGNORE_DIRS, ARKTS_IGNORE_FILES } from './consts/ArktsIgnorePaths
 import { isAssignmentOperator } from './functions/isAssignmentOperator';
 import { forEachNodeInSubtree } from './functions/ForEachNodeInSubtree';
 
-export type CheckType = (t: ts.Type) => boolean;
+export type CheckType = ((this: TsUtils, t: ts.Type) => boolean);
 export class TsUtils {
   constructor(
     private readonly tsTypeChecker: ts.TypeChecker,
@@ -736,6 +736,18 @@ export class TsUtils {
     }
 
     return undefined;
+  }
+
+  checkTypeSet(typeSet: ts.Type, predicate: CheckType): boolean {
+    if (!typeSet.isUnionOrIntersection()) {
+      return predicate.call(this, typeSet);
+    }
+    for (const elemType of typeSet.types) {
+      if (this.checkTypeSet(elemType, predicate)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   static getNonNullableType(t: ts.Type): ts.Type {

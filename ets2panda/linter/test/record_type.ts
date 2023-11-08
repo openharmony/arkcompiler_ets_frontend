@@ -99,3 +99,43 @@ rec = { // NOT OK, key must be either string or number literal
   birthday: '2020-03-10',
   23:'xx'
 }
+
+// #14360 - Record in a union type
+class RecUnion {
+  v: Record<string, string> | null = null;
+}
+let recU: RecUnion = {
+  v: {
+    'a': 'v'
+  }
+};
+
+interface RecUnion2 {
+  param: Record<string, string | number | undefined | null>;
+  extra?: Record<string, string | number | undefined | null>;
+  value: Record<string, string | number> | string;
+}
+let recU2: RecUnion2 = {
+  param: {
+    'aa': 111
+  },
+  extra: {
+    'bbb': 222
+  },
+  value: {
+    'bbb': 222
+  }
+};
+
+class RecUnion3 {
+  extra: Record<string, number> | string = '';
+  param?: Record<string, number> | string = '';
+}
+let recU3: RecUnion3 = {
+  extra: {
+    'bbb': 222
+  },
+  param: {
+    'bbb': 222
+  }
+};

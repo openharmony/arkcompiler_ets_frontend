@@ -691,7 +691,7 @@ export class TypeScriptLinter {
       if (ts.isPropertyAssignment(node)) {
         const objectLiteralType = this.tsTypeChecker.getContextualType(node.parent);
         if (objectLiteralType) {
-          isRecordObjectInitializer = this.tsUtils.isStdRecordType(objectLiteralType);
+          isRecordObjectInitializer = this.tsUtils.checkTypeSet(objectLiteralType, this.tsUtils.isStdRecordType);
           isLibraryType = this.tsUtils.isLibraryType(objectLiteralType);
         }
         isDynamic = isLibraryType || this.tsUtils.isDynamicLiteralInitializer(node.parent);
