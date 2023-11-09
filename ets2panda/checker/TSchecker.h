@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 #define ES2PANDA_CHECKER_TS_CHECKER_H
 
 #include "checker/checker.h"
-#include "binder/enumMemberResult.h"
+#include "varbinder/enumMemberResult.h"
 #include "checker/types/globalTypesHolder.h"
 #include "checker/types/ts/types.h"
 #include "util/enumbitops.h"
@@ -29,15 +29,15 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace panda::es2panda::binder {
-class Binder;
+namespace panda::es2panda::varbinder {
+class VarBinder;
 class Decl;
 class EnumVariable;
 class FunctionDecl;
 class LocalVariable;
 class Scope;
 class Variable;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::ir {
 class AstNode;
@@ -240,7 +240,7 @@ public:
         return bigint_literal_map_;
     }
 
-    bool StartChecker([[maybe_unused]] binder::Binder *binder, const CompilerOptions &options) override;
+    bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options) override;
     Type *CheckTypeCached(ir::Expression *expr) override;
 
     // Util
@@ -264,20 +264,20 @@ public:
     Type *ExtractDefinitelyFalsyTypes(Type *type);
     Type *RemoveDefinitelyFalsyTypes(Type *type);
     TypeFlag GetFalsyFlags(Type *type);
-    bool IsVariableUsedInConditionBody(ir::AstNode *parent, binder::Variable *search_var);
-    bool FindVariableInBinaryExpressionChain(ir::AstNode *parent, binder::Variable *search_var);
-    bool IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, binder::Variable *search_var);
+    bool IsVariableUsedInConditionBody(ir::AstNode *parent, varbinder::Variable *search_var);
+    bool FindVariableInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *search_var);
+    bool IsVariableUsedInBinaryExpressionChain(ir::AstNode *parent, varbinder::Variable *search_var);
     [[noreturn]] void ThrowBinaryLikeError(lexer::TokenType op, Type *left_type, Type *right_type,
                                            lexer::SourcePosition line_info);
     [[noreturn]] void ThrowAssignmentError(Type *source, Type *target, lexer::SourcePosition line_info,
                                            bool is_as_src_left_type = false);
     void ElaborateElementwise(Type *target_type, ir::Expression *source_node, const lexer::SourcePosition &pos);
     void InferSimpleVariableDeclaratorType(ir::VariableDeclarator *declarator);
-    Type *GetTypeOfVariable(binder::Variable *var) override;
+    Type *GetTypeOfVariable(varbinder::Variable *var) override;
     Type *GetUnaryResultType(Type *operand_type);
-    Type *GetTypeFromClassOrInterfaceReference(ir::TSTypeReference *node, binder::Variable *var);
-    Type *GetTypeFromTypeAliasReference(ir::TSTypeReference *node, binder::Variable *var);
-    Type *GetTypeReferenceType(ir::TSTypeReference *node, binder::Variable *var);
+    Type *GetTypeFromClassOrInterfaceReference(ir::TSTypeReference *node, varbinder::Variable *var);
+    Type *GetTypeFromTypeAliasReference(ir::TSTypeReference *node, varbinder::Variable *var);
+    Type *GetTypeReferenceType(ir::TSTypeReference *node, varbinder::Variable *var);
 
     // Type creation
     Type *CreateNumberLiteralType(double value);
@@ -304,12 +304,12 @@ public:
                                        ArenaVector<ir::TSSignatureDeclaration *> &signature_declarations);
     void ResolveIndexInfosOfObjectType(ObjectType *type, ArenaVector<ir::TSIndexSignature *> &index_declarations);
     void ResolveDeclaredMembers(InterfaceType *type);
-    bool ValidateInterfaceMemberRedeclaration(ObjectType *type, binder::Variable *prop,
+    bool ValidateInterfaceMemberRedeclaration(ObjectType *type, varbinder::Variable *prop,
                                               const lexer::SourcePosition &loc_info);
-    binder::Variable *GetPropertyOfType(Type *type, const util::StringView &name, bool get_partial = false,
-                                        binder::VariableFlags propagate_flags = binder::VariableFlags::NONE);
-    binder::Variable *GetPropertyOfUnionType(UnionType *type, const util::StringView &name, bool get_partial,
-                                             binder::VariableFlags propagate_flags);
+    varbinder::Variable *GetPropertyOfType(Type *type, const util::StringView &name, bool get_partial = false,
+                                           varbinder::VariableFlags propagate_flags = varbinder::VariableFlags::NONE);
+    varbinder::Variable *GetPropertyOfUnionType(UnionType *type, const util::StringView &name, bool get_partial,
+                                                varbinder::VariableFlags propagate_flags);
     void CheckIndexConstraints(Type *type);
     void ResolveUnionTypeMembers(UnionType *type);
     void ResolveObjectTypeMembers(ObjectType *type);
@@ -323,19 +323,19 @@ public:
     // Function
     Type *HandleFunctionReturn(ir::ScriptFunction *func);
     void CheckFunctionParameterDeclarations(const ArenaVector<ir::Expression *> &params, SignatureInfo *signature_info);
-    std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> CheckFunctionParameter(
+    std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> CheckFunctionParameter(
         ir::Expression *param, SignatureInfo *signature_info);
-    std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> CheckFunctionIdentifierParameter(
+    std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> CheckFunctionIdentifierParameter(
         ir::Identifier *param);
-    std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> CheckFunctionAssignmentPatternParameter(
+    std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> CheckFunctionAssignmentPatternParameter(
         ir::AssignmentExpression *param);
-    std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> CheckFunctionRestParameter(
+    std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> CheckFunctionRestParameter(
         ir::SpreadElement *param, SignatureInfo *signature_info);
-    std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> CheckFunctionArrayPatternParameter(
+    std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> CheckFunctionArrayPatternParameter(
         ir::ArrayExpression *param);
-    std::tuple<binder::LocalVariable *, binder::LocalVariable *, bool> CheckFunctionObjectPatternParameter(
+    std::tuple<varbinder::LocalVariable *, varbinder::LocalVariable *, bool> CheckFunctionObjectPatternParameter(
         ir::ObjectExpression *param);
-    void InferFunctionDeclarationType(const binder::FunctionDecl *decl, binder::Variable *func_var);
+    void InferFunctionDeclarationType(const varbinder::FunctionDecl *decl, varbinder::Variable *func_var);
     void CollectTypesFromReturnStatements(ir::AstNode *parent, ArenaVector<Type *> *return_types);
     void CheckAllCodePathsInNonVoidFunctionReturnOrThrow(ir::ScriptFunction *func, lexer::SourcePosition line_info,
                                                          const char *err_msg);

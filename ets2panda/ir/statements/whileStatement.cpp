@@ -15,7 +15,7 @@
 
 #include "whileStatement.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "compiler/base/condition.h"
 #include "compiler/core/labelTarget.h"
 #include "compiler/core/pandagen.h"

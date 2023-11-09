@@ -15,7 +15,7 @@
 
 #include "arrayType.h"
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "checker/types/ts/objectType.h"
 
 namespace panda::es2panda::checker {

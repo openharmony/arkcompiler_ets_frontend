@@ -84,7 +84,7 @@ void Type::IsSupertypeOf(TypeRelation *const relation, [[maybe_unused]] Type *so
     relation->Result(false);
 }
 
-Type *Type::AsSuper([[maybe_unused]] Checker *checker, [[maybe_unused]] binder::Variable *source_var)
+Type *Type::AsSuper([[maybe_unused]] Checker *checker, [[maybe_unused]] varbinder::Variable *source_var)
 {
     return nullptr;
 }

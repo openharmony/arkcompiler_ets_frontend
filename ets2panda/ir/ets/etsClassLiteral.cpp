@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ checker::Type *ETSClassLiteral::Check([[maybe_unused]] checker::ETSChecker *chec
     }
 
     ArenaVector<checker::Type *> type_arg_types(checker->Allocator()->Adapter());
-    type_arg_types.push_back(expr_type);  // TODO(user): Box it if it's a primitive type
+    type_arg_types.push_back(expr_type);  // NOTE: Box it if it's a primitive type
 
     checker::InstantiationContext ctx(checker, checker->GlobalBuiltinTypeType(), type_arg_types, range_.start);
     SetTsType(ctx.Result());

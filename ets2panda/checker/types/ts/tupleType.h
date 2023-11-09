@@ -18,12 +18,12 @@
 
 #include "macros.h"
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "checker/types/ts/elementFlags.h"
 #include "checker/types/ts/objectType.h"
 
 namespace panda::es2panda::checker {
-using NamedTupleMemberPool = ArenaUnorderedMap<binder::LocalVariable *, util::StringView>;
+using NamedTupleMemberPool = ArenaUnorderedMap<varbinder::LocalVariable *, util::StringView>;
 
 class TupleType : public ObjectType {
 public:
@@ -44,7 +44,7 @@ public:
     {
         if (readonly_) {
             for (auto *it : Properties()) {
-                it->AddFlag(binder::VariableFlags::READONLY);
+                it->AddFlag(varbinder::VariableFlags::READONLY);
             }
         }
     }
@@ -79,7 +79,7 @@ public:
         return named_members_;
     }
 
-    const util::StringView &FindNamedMemberName(binder::LocalVariable *member) const
+    const util::StringView &FindNamedMemberName(varbinder::LocalVariable *member) const
     {
         auto res = named_members_.find(member);
         return res->second;

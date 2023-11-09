@@ -214,7 +214,22 @@
                             "type": "Identifier",
                             "name": "a",
                             "typeAnnotation": {
-                              "type": "ETSPrimitiveType",
+                              "type": "ETSUnionType",
+                              "types": [
+                                {
+                                  "type": "ETSPrimitiveType",
+                                  "loc": {
+                                    "start": {
+                                      "line": 17,
+                                      "column": 11
+                                    },
+                                    "end": {
+                                      "line": 17,
+                                      "column": 14
+                                    }
+                                  }
+                                }
+                              ],
                               "loc": {
                                 "start": {
                                   "line": 17,

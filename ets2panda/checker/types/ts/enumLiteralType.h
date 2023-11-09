@@ -18,26 +18,26 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class Scope;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::checker {
 class EnumLiteralType : public Type {
 public:
     enum class EnumLiteralTypeKind { NUMERIC, LITERAL };
 
-    EnumLiteralType(util::StringView name, binder::Scope *scope, EnumLiteralTypeKind kind)
+    EnumLiteralType(util::StringView name, varbinder::Scope *scope, EnumLiteralTypeKind kind)
         : Type(TypeFlag::ENUM_LITERAL), name_(name), scope_(scope), kind_(kind)
     {
     }
 
-    binder::Scope *Scope()
+    varbinder::Scope *Scope()
     {
         return scope_;
     }
 
-    const binder::Scope *Scope() const
+    const varbinder::Scope *Scope() const
     {
         return scope_;
     }
@@ -56,7 +56,7 @@ public:
 
 private:
     util::StringView name_;
-    binder::Scope *scope_;
+    varbinder::Scope *scope_;
     EnumLiteralTypeKind kind_;
 };
 }  // namespace panda::es2panda::checker

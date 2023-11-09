@@ -263,7 +263,6 @@ void ETSTryContext::EmitFinalizer(
             } else {
                 etsg->ReturnAcc(try_stmt_);
             }
-
         } else if (insertion.second->IsBreakStatement()) {
             compiler::Label *target = etsg->ControlFlowChangeBreak(insertion.second->AsBreakStatement()->Ident());
             etsg->Branch(try_stmt_, target);

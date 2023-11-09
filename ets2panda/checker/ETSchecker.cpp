@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 #include "ir/expressions/callExpression.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/statements/blockStatement.h"
-#include "binder/ETSBinder.h"
+#include "varbinder/ETSBinder.h"
 #include "parser/program/program.h"
 #include "checker/ets/aliveAnalyzer.h"
 
@@ -29,13 +29,13 @@
 #include "util/helpers.h"
 
 namespace panda::es2panda::checker {
-void ETSChecker::InitializeBuiltins(binder::ETSBinder *binder)
+void ETSChecker::InitializeBuiltins(varbinder::ETSBinder *varbinder)
 {
     if (HasStatus(CheckerStatus::BUILTINS_INITIALIZED)) {
         return;
     }
 
-    const auto var_map = binder->TopScope()->Bindings();
+    const auto var_map = varbinder->TopScope()->Bindings();
 
     auto init_builtin = [var_map](ETSChecker *checker, std::string_view signature) -> util::StringView {
         const auto iterator = var_map.find(signature);
@@ -54,7 +54,7 @@ void ETSChecker::InitializeBuiltins(binder::ETSBinder *binder)
             continue;
         }
 
-        if (var->HasFlag(binder::VariableFlags::BUILTIN_TYPE)) {
+        if (var->HasFlag(varbinder::VariableFlags::BUILTIN_TYPE)) {
             Type *type {nullptr};
             if (var->Declaration()->Node()->IsClassDefinition()) {
                 type = BuildClassProperties(var->Declaration()->Node()->AsClassDefinition());
@@ -69,9 +69,9 @@ void ETSChecker::InitializeBuiltins(binder::ETSBinder *binder)
     AddStatus(CheckerStatus::BUILTINS_INITIALIZED);
 }
 
-bool ETSChecker::StartChecker([[maybe_unused]] binder::Binder *binder, const CompilerOptions &options)
+bool ETSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options)
 {
-    Initialize(binder);
+    Initialize(varbinder);
 
     if (options.dump_ast) {
         std::cout << Program()->Dump() << std::endl;
@@ -81,10 +81,10 @@ bool ETSChecker::StartChecker([[maybe_unused]] binder::Binder *binder, const Com
         return false;
     }
 
-    binder->SetGenStdLib(options.compilation_mode == CompilationMode::GEN_STD_LIB);
-    binder->IdentifierAnalysis();
+    varbinder->SetGenStdLib(options.compilation_mode == CompilationMode::GEN_STD_LIB);
+    varbinder->IdentifierAnalysis();
 
-    auto *ets_binder = binder->AsETSBinder();
+    auto *ets_binder = varbinder->AsETSBinder();
     InitializeBuiltins(ets_binder);
 
     for (auto &entry : ets_binder->DynamicImportVars()) {
@@ -105,7 +105,7 @@ bool ETSChecker::StartChecker([[maybe_unused]] binder::Binder *binder, const Com
     for (auto lambda : ets_binder->LambdaObjects()) {
         ASSERT(!lambda.second.first->TsType()->AsETSObjectType()->AssemblerName().Empty());
     }
-    for (auto *func : binder->Functions()) {
+    for (auto *func : varbinder->Functions()) {
         ASSERT(!func->Node()->AsScriptFunction()->Scope()->InternalName().Empty());
     }
 #endif
@@ -136,7 +136,7 @@ void ETSChecker::CheckProgram(parser::Program *program, bool run_analysis)
         AliveAnalyzer(Program()->Ast(), this);
     }
 
-    ASSERT(Binder()->AsETSBinder()->GetExternalRecordTable().find(program)->second);
+    ASSERT(VarBinder()->AsETSBinder()->GetExternalRecordTable().find(program)->second);
 
     SetProgram(saved_program);
 }
@@ -314,14 +314,14 @@ const GlobalArraySignatureMap &ETSChecker::GlobalArrayTypes() const
 }
 
 // For use in Signature::ToAssemblerType
-const Type *MaybeBoxedType(Checker *checker, const binder::Variable *var)
+const Type *MaybeBoxedType(Checker *checker, const varbinder::Variable *var)
 {
     return checker->AsETSChecker()->MaybeBoxedType(var);
 }
 
 void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *call_expr)
 {
-    Binder()->AsETSBinder()->HandleCustomNodes(call_expr);
+    VarBinder()->AsETSBinder()->HandleCustomNodes(call_expr);
 }
 
 }  // namespace panda::es2panda::checker

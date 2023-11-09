@@ -92,5 +92,17 @@ if(PANDA_WITH_ETS)
         add_dependencies(ets_tests es2panda_tests)
     endif()
 
+    panda_add_gtest(
+        NAME es2panda_astverifier_tests
+        SOURCES
+            public/ast_verifier_test.cpp
+        LIBRARIES
+            es2panda-lib
+        INCLUDE_DIRS
+            ${ES2PANDA_PATH}
+        SANITIZERS
+            ${PANDA_SANITIZERS_LIST}
+    )
+
     add_subdirectory(tsconfig)
 endif()

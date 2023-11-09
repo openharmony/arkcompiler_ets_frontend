@@ -57,7 +57,7 @@ public:
     void HandleDestructuringAssignment(ir::Identifier *ident, Type *inferred_type, Type *default_type);
     void HandleAssignmentPattern(ir::AssignmentExpression *assignment_pattern, Type *inferred_type,
                                  bool validate_default);
-    void SetInferredTypeForVariable(binder::Variable *var, Type *inferred_type, const lexer::SourcePosition &loc);
+    void SetInferredTypeForVariable(varbinder::Variable *var, Type *inferred_type, const lexer::SourcePosition &loc);
     void Prepare(ir::TypeNode *type_annotation, ir::Expression *initializer, const lexer::SourcePosition &loc);
 
     DEFAULT_COPY_SEMANTIC(DestructuringContext);

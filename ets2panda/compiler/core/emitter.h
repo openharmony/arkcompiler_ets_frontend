@@ -35,10 +35,10 @@ struct LocalVariable;
 }  // namespace debuginfo
 }  // namespace panda::pandasm
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class Scope;
 class LocalVariable;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::compiler {
 class CodeGen;
@@ -66,11 +66,11 @@ protected:
     virtual pandasm::Function *GenFunctionSignature() = 0;
     virtual void GenFunctionAnnotations(pandasm::Function *func) = 0;
     virtual void GenVariableSignature(pandasm::debuginfo::LocalVariable &variable_debug,
-                                      binder::LocalVariable *variable) const = 0;
+                                      varbinder::LocalVariable *variable) const = 0;
 
     void GenInstructionDebugInfo(const IRNode *ins, panda::pandasm::Ins *panda_ins);
     void GenFunctionInstructions(pandasm::Function *func);
-    void GenScopeVariableInfo(pandasm::Function *func, const binder::Scope *scope) const;
+    void GenScopeVariableInfo(pandasm::Function *func, const varbinder::Scope *scope) const;
     void GenSourceFileDebugInfo(pandasm::Function *func);
     void GenFunctionCatchTables(panda::pandasm::Function *func);
     void GenVariablesDebugInfo(pandasm::Function *func);

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 #include "assertStatement.h"
 
-#include "binder/ETSBinder.h"
+#include "varbinder/ETSBinder.h"
 #include "compiler/base/condition.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
@@ -71,8 +71,7 @@ void AssertStatement::ThrowError(compiler::ETSGen *const etsg) const
 
 void AssertStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 {
-    auto res = compiler::Condition::CheckConstantExpr(test_);
-
+    auto res = compiler::Condition::CheckConstantExpr(etsg, test_);
     if (res == compiler::Condition::Result::CONST_TRUE) {
         return;
     }

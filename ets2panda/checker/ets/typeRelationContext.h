@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -173,6 +173,9 @@ public:
 private:
     bool ValidateTypeArguments(ETSObjectType *type, ir::TSTypeParameterDeclaration *type_param_decl,
                                ir::TSTypeParameterInstantiation *type_args, const lexer::SourcePosition &pos);
+
+    bool ValidateTypeArg(ETSObjectType *constraint_type, ETSObjectType *arg_ref_type);
+
     void InstantiateType(ETSObjectType *type, ir::TSTypeParameterInstantiation *type_args);
 
     void InstantiateType(ETSObjectType *type, ArenaVector<Type *> &type_arg_types, const lexer::SourcePosition &pos);

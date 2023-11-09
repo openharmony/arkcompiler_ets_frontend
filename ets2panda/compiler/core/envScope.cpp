@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 #include "ir/statement.h"
 
 namespace panda::es2panda::compiler {
-ScopeContext::ScopeContext(CodeGen *cg, binder::Scope *new_scope) : cg_(cg), prev_scope_(cg_->scope_)
+ScopeContext::ScopeContext(CodeGen *cg, varbinder::Scope *new_scope) : cg_(cg), prev_scope_(cg_->scope_)
 {
     cg->scope_ = new_scope;
 }
@@ -47,7 +47,7 @@ EnvScope::~EnvScope()
     pg_->env_scope_ = prev_;
 }
 
-void LoopEnvScope::CopyBindings(PandaGen *pg, binder::VariableScope *scope, binder::VariableFlags flag)
+void LoopEnvScope::CopyBindings(PandaGen *pg, varbinder::VariableScope *scope, varbinder::VariableFlags flag)
 {
     if (!HasEnv()) {
         return;

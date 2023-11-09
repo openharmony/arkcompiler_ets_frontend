@@ -299,13 +299,38 @@
                 "expression": false,
                 "params": [],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "A",
-                      "decorators": [],
+                  "type": "ETSUnionType",
+                  "types": [
+                    {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "Identifier",
+                          "name": "A",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 18,
+                              "column": 18
+                            },
+                            "end": {
+                              "line": 18,
+                              "column": 19
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 18,
+                            "column": 18
+                          },
+                          "end": {
+                            "line": 18,
+                            "column": 21
+                          }
+                        }
+                      },
                       "loc": {
                         "start": {
                           "line": 18,
@@ -313,21 +338,11 @@
                         },
                         "end": {
                           "line": 18,
-                          "column": 19
+                          "column": 21
                         }
                       }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 18,
-                        "column": 18
-                      },
-                      "end": {
-                        "line": 18,
-                        "column": 21
-                      }
                     }
-                  },
+                  ],
                   "loc": {
                     "start": {
                       "line": 18,

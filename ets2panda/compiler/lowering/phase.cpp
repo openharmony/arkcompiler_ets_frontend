@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
 
 #include "phase.h"
 #include "checker/checker.h"
+#include "compiler/core/ASTVerifier.h"
 #include "compiler/core/compilerContext.h"
 #include "lexer/token/sourceLocation.h"
 #include "compiler/lowering/checkerPhase.h"
 #include "compiler/lowering/ets/generateDeclarations.h"
 #include "compiler/lowering/ets/opAssignment.h"
+#include "compiler/lowering/ets/unionLowering.h"
 
 namespace panda::es2panda::compiler {
 
@@ -34,6 +36,7 @@ std::vector<Phase *> GetTrivialPhaseList()
 
 static GenerateTsDeclarationsPhase GENERATE_TS_DECLARATIONS_PHASE;
 static OpAssignmentLowering OP_ASSIGNMENT_LOWERING;
+static UnionLowering UNION_LOWERING;
 
 std::vector<Phase *> GetETSPhaseList()
 {
@@ -41,6 +44,7 @@ std::vector<Phase *> GetETSPhaseList()
         &CHECKER_PHASE,
         &GENERATE_TS_DECLARATIONS_PHASE,
         &OP_ASSIGNMENT_LOWERING,
+        &UNION_LOWERING,
     };
 }
 
@@ -57,8 +61,13 @@ bool Phase::Apply(CompilerContext *ctx, parser::Program *program)
     }
 
 #ifndef NDEBUG
+    ASTVerifier ast_before;
+    if (!ast_before.IsCorrectProgram(program)) {
+        // NOTE(tatiana): Add some error processing
+    }
     if (!Precondition(ctx, program)) {
-        ctx->Checker()->ThrowTypeError({"Precondition check failed for ", Name()}, lexer::SourcePosition {});
+        ctx->Checker()->ThrowTypeError({"Precondition check failed for ", util::StringView {Name()}},
+                                       lexer::SourcePosition {});
     }
 #endif
 
@@ -72,8 +81,13 @@ bool Phase::Apply(CompilerContext *ctx, parser::Program *program)
     }
 
 #ifndef NDEBUG
+    ASTVerifier ast_after;
+    if (!ast_after.IsCorrectProgram(program)) {
+        // NOTE(tatiana): Add some error processing
+    }
     if (!Postcondition(ctx, program)) {
-        ctx->Checker()->ThrowTypeError({"Postcondition check failed for ", Name()}, lexer::SourcePosition {});
+        ctx->Checker()->ThrowTypeError({"Postcondition check failed for ", util::StringView {Name()}},
+                                       lexer::SourcePosition {});
     }
 #endif
 

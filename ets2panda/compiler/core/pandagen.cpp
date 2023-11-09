@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,12 @@
 
 #include "pandagen.h"
 
-#include "binder/binder.h"
+#include "varbinder/varbinder.h"
 #include "checker/checker.h"
 #include "checker/types/globalTypesHolder.h"
 #include "util/helpers.h"
-#include "binder/scope.h"
-#include "binder/variable.h"
+#include "varbinder/scope.h"
+#include "varbinder/variable.h"
 #include "compiler/base/catchTable.h"
 #include "compiler/base/lexenv.h"
 #include "compiler/base/literals.h"
@@ -257,7 +257,8 @@ using EcmaDirecteval = EcmaDisabled;
 #endif
 
 PandaGen::PandaGen(ArenaAllocator *const allocator, RegSpiller *const spiller, CompilerContext *const context,
-                   binder::FunctionScope *const scope, ProgramElement *const program_element, AstCompiler *astcompiler)
+                   varbinder::FunctionScope *const scope, ProgramElement *const program_element,
+                   AstCompiler *astcompiler)
     : CodeGen(allocator, spiller, context, scope, program_element, astcompiler)
 {
     Function::Compile(this);
@@ -417,25 +418,25 @@ void PandaGen::LoadConst(const ir::AstNode *node, Constant id)
 
 void PandaGen::GetFunctionObject(const ir::AstNode *node)
 {
-    LoadAccFromLexEnv(node, Scope()->Find(binder::Binder::MANDATORY_PARAM_FUNC));
+    LoadAccFromLexEnv(node, Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_FUNC));
 }
 
 void PandaGen::GetNewTarget(const ir::AstNode *node)
 {
-    LoadAccFromLexEnv(node, Scope()->Find(binder::Binder::MANDATORY_PARAM_NEW_TARGET));
+    LoadAccFromLexEnv(node, Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_NEW_TARGET));
 }
 
 void PandaGen::GetThis(const ir::AstNode *node)
 {
-    LoadAccFromLexEnv(node, Scope()->Find(binder::Binder::MANDATORY_PARAM_THIS));
+    LoadAccFromLexEnv(node, Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS));
 }
 
 void PandaGen::SetThis(const ir::AstNode *node)
 {
-    StoreAccToLexEnv(node, Scope()->Find(binder::Binder::MANDATORY_PARAM_THIS), true);
+    StoreAccToLexEnv(node, Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS), true);
 }
 
-void PandaGen::LoadVar(const ir::Identifier *node, const binder::ConstScopeFindResult &result)
+void PandaGen::LoadVar(const ir::Identifier *node, const varbinder::ConstScopeFindResult &result)
 {
     auto *var = result.variable;
 
@@ -458,9 +459,9 @@ void PandaGen::LoadVar(const ir::Identifier *node, const binder::ConstScopeFindR
     LoadAccFromLexEnv(node, result);
 }
 
-void PandaGen::StoreVar(const ir::AstNode *node, const binder::ConstScopeFindResult &result, bool is_declaration)
+void PandaGen::StoreVar(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result, bool is_declaration)
 {
-    binder::Variable *var = result.variable;
+    varbinder::Variable *var = result.variable;
 
     if (var == nullptr) {
         if (IsDirectEval()) {
@@ -487,11 +488,11 @@ void PandaGen::StoreVar(const ir::AstNode *node, const binder::ConstScopeFindRes
 
 void PandaGen::LoadAccFromArgs(const ir::AstNode *node)
 {
-    if (!Scope()->HasFlag(binder::ScopeFlags::USE_ARGS)) {
+    if (!Scope()->HasFlag(varbinder::ScopeFlags::USE_ARGS)) {
         return;
     }
 
-    auto res = Scope()->Find(binder::Binder::FUNCTION_ARGUMENTS);
+    auto res = Scope()->Find(varbinder::VarBinder::FUNCTION_ARGUMENTS);
     ASSERT(res.scope);
 
     GetUnmappedArgs(node);
@@ -621,12 +622,12 @@ VReg PandaGen::LexEnv() const noexcept
     return env_scope_->LexEnv();
 }
 
-void PandaGen::LoadAccFromLexEnv(const ir::AstNode *node, const binder::ConstScopeFindResult &result)
+void PandaGen::LoadAccFromLexEnv(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result)
 {
     VirtualLoadVar::Expand(this, node, result);
 }
 
-void PandaGen::StoreAccToLexEnv(const ir::AstNode *node, const binder::ConstScopeFindResult &result,
+void PandaGen::StoreAccToLexEnv(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result,
                                 bool is_declaration)
 {
     VirtualStoreVar::Expand(this, node, result, is_declaration);
@@ -1651,7 +1652,7 @@ Operand PandaGen::ToNamedPropertyKey(const ir::Expression *prop, bool is_compute
     if (prop->IsStringLiteral()) {
         const util::StringView &str = prop->AsStringLiteral()->Str();
 
-        /* TODO(dbatyai): remove this when runtime handles __proto__ as property name correctly */
+        /* NOTE: dbatyai. remove this when runtime handles __proto__ as property name correctly */
         if (str.Is("__proto__")) {
             return res;
         }
@@ -1801,7 +1802,7 @@ void PandaGen::DirectEval(const ir::AstNode *node, uint32_t parser_status)
 
 void PandaGen::LoadLexicalContext(const ir::AstNode *node)
 {
-    auto result = Scope()->Find(binder::Binder::LEXICAL_CONTEXT_PARAM);
+    auto result = Scope()->Find(varbinder::VarBinder::LEXICAL_CONTEXT_PARAM);
     LoadLexicalVar(node, result.lex_level, result.variable->AsLocalVariable()->LexIdx());
 }
 

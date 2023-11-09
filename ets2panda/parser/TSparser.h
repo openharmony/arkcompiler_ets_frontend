@@ -65,7 +65,7 @@ private:
                                                bool throw_error);
     ir::TSSignatureDeclaration *ParseSignatureMember(bool is_call_signature);
     bool IsPotentiallyIndexSignature();
-    void CreateTSVariableForProperty(ir::AstNode *node, const ir::Expression *key, binder::VariableFlags flags);
+    void CreateTSVariableForProperty(ir::AstNode *node, const ir::Expression *key, varbinder::VariableFlags flags);
     void ValidateFunctionParam(const ArenaVector<ir::Expression *> &params, const ir::Expression *parameter,
                                bool *seen_optional);
     ir::TSParameterProperty *CreateParameterProperty(ir::Expression *parameter, ir::ModifierFlags modifiers);
@@ -121,7 +121,7 @@ private:
     ir::TypeNode *ParseFunctionReturnType(ParserStatus status) override;
     std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
         const ArenaVector<ir::Expression *> &params, ParserStatus new_status, ParserStatus context_status,
-        binder::FunctionScope *func_scope) override;
+        varbinder::FunctionScope *func_scope) override;
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers) override;
     ir::Statement *ParseExportDeclaration(StatementParsingFlags flags) override;
     ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList() override;

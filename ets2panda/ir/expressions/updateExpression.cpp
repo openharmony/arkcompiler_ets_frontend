@@ -15,7 +15,7 @@
 
 #include "updateExpression.h"
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
@@ -127,7 +127,7 @@ checker::Type *UpdateExpression::Check(checker::ETSChecker *checker)
         checker->ValidateUnaryOperatorOperand(argument_->AsIdentifier()->Variable());
     } else {
         ASSERT(argument_->IsMemberExpression());
-        binder::LocalVariable *prop_var = argument_->AsMemberExpression()->PropVar();
+        varbinder::LocalVariable *prop_var = argument_->AsMemberExpression()->PropVar();
         if (prop_var != nullptr) {
             checker->ValidateUnaryOperatorOperand(prop_var);
         }

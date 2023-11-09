@@ -15,7 +15,7 @@
 
 #include "identifier.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
@@ -134,8 +134,8 @@ void Identifier::Compile(compiler::PandaGen *pg) const
 
 void Identifier::Compile(compiler::ETSGen *etsg) const
 {
-    auto lambda = etsg->Binder()->LambdaObjects().find(this);
-    if (lambda != etsg->Binder()->LambdaObjects().end()) {
+    auto lambda = etsg->VarBinder()->LambdaObjects().find(this);
+    if (lambda != etsg->VarBinder()->LambdaObjects().end()) {
         etsg->CreateLambdaObjectFromIdentReference(this, lambda->second.first);
         return;
     }
@@ -143,7 +143,7 @@ void Identifier::Compile(compiler::ETSGen *etsg) const
     auto ttctx = compiler::TargetTypeContext(etsg, TsType());
 
     ASSERT(variable_ != nullptr);
-    if (!variable_->HasFlag(binder::VariableFlags::TYPE_ALIAS)) {
+    if (!variable_->HasFlag(varbinder::VariableFlags::TYPE_ALIAS)) {
         etsg->LoadVar(this, variable_);
     } else {
         etsg->LoadVar(this, TsType()->Variable());
@@ -160,7 +160,7 @@ checker::Type *Identifier::Check(checker::TSChecker *checker)
         checker->ThrowTypeError({"Cannot find name ", name_}, Start());
     }
 
-    const binder::Decl *decl = Variable()->Declaration();
+    const varbinder::Decl *decl = Variable()->Declaration();
 
     if (decl->IsTypeAliasDecl() || decl->IsInterfaceDecl()) {
         checker->ThrowTypeError({name_, " only refers to a type, but is being used as a value here."}, Start());

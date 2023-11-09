@@ -15,7 +15,7 @@
 
 #include "unaryExpression.h"
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
@@ -24,6 +24,7 @@
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/literals/bigIntLiteral.h"
 #include "ir/expressions/literals/numberLiteral.h"
+#include "ir/expressions/callExpression.h"
 #include "ir/expressions/memberExpression.h"
 
 namespace panda::es2panda::ir {
@@ -126,6 +127,43 @@ void UnaryExpression::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
     etsg->Unary(this, operator_);
 }
 
+checker::Type *UnaryExpression::CheckDeleteKeyword([[maybe_unused]] checker::TSChecker *checker)
+{
+    checker::Type *prop_type = argument_->Check(checker);
+    if (!argument_->IsMemberExpression()) {
+        checker->ThrowTypeError("The operand of a delete operator must be a property reference.", argument_->Start());
+    }
+    if (prop_type->Variable()->HasFlag(varbinder::VariableFlags::READONLY)) {
+        checker->ThrowTypeError("The operand of a delete operator cannot be a readonly property.", argument_->Start());
+    }
+    if (!prop_type->Variable()->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
+        checker->ThrowTypeError("The operand of a delete operator must be a optional.", argument_->Start());
+    }
+    return checker->GlobalBooleanType();
+}
+
+checker::Type *UnaryExpression::CheckLiteral([[maybe_unused]] checker::TSChecker *checker)
+{
+    if (!argument_->IsLiteral()) {
+        return nullptr;
+    }
+
+    const ir::Literal *lit = argument_->AsLiteral();
+    if (lit->IsNumberLiteral()) {
+        auto number_value = lit->AsNumberLiteral()->Number().GetDouble();
+        if (operator_ == lexer::TokenType::PUNCTUATOR_PLUS) {
+            return checker->CreateNumberLiteralType(number_value);
+        }
+        if (operator_ == lexer::TokenType::PUNCTUATOR_MINUS) {
+            return checker->CreateNumberLiteralType(-number_value);
+        }
+    } else if (lit->IsBigIntLiteral() && operator_ == lexer::TokenType::PUNCTUATOR_MINUS) {
+        return checker->CreateBigintLiteralType(lit->AsBigIntLiteral()->Str(), true);
+    }
+
+    return nullptr;
+}
+
 checker::Type *UnaryExpression::Check([[maybe_unused]] checker::TSChecker *checker)
 {
     checker::Type *operand_type = argument_->Check(checker);
@@ -135,40 +173,12 @@ checker::Type *UnaryExpression::Check([[maybe_unused]] checker::TSChecker *check
     }
 
     if (operator_ == lexer::TokenType::KEYW_DELETE) {
-        checker::Type *prop_type = argument_->Check(checker);
-
-        if (!argument_->IsMemberExpression()) {
-            checker->ThrowTypeError("The operand of a delete operator must be a property reference.",
-                                    argument_->Start());
-        }
-
-        if (prop_type->Variable()->HasFlag(binder::VariableFlags::READONLY)) {
-            checker->ThrowTypeError("The operand of a delete operator cannot be a readonly property.",
-                                    argument_->Start());
-        }
-
-        if (!prop_type->Variable()->HasFlag(binder::VariableFlags::OPTIONAL)) {
-            checker->ThrowTypeError("The operand of a delete operator must be a optional.", argument_->Start());
-        }
-
-        return checker->GlobalBooleanType();
+        return CheckDeleteKeyword(checker);
     }
 
-    if (argument_->IsLiteral()) {
-        const ir::Literal *lit = argument_->AsLiteral();
-
-        if (lit->IsNumberLiteral()) {
-            auto number_value = lit->AsNumberLiteral()->Number().GetDouble();
-            if (operator_ == lexer::TokenType::PUNCTUATOR_PLUS) {
-                return checker->CreateNumberLiteralType(number_value);
-            }
-
-            if (operator_ == lexer::TokenType::PUNCTUATOR_MINUS) {
-                return checker->CreateNumberLiteralType(-number_value);
-            }
-        } else if (lit->IsBigIntLiteral() && operator_ == lexer::TokenType::PUNCTUATOR_MINUS) {
-            return checker->CreateBigintLiteralType(lit->AsBigIntLiteral()->Str(), true);
-        }
+    auto *res = CheckLiteral(checker);
+    if (res != nullptr) {
+        return res;
     }
 
     switch (operator_) {
@@ -176,7 +186,7 @@ checker::Type *UnaryExpression::Check([[maybe_unused]] checker::TSChecker *check
         case lexer::TokenType::PUNCTUATOR_MINUS:
         case lexer::TokenType::PUNCTUATOR_TILDE: {
             checker->CheckNonNullType(operand_type, Start());
-            // TODO(aszilagyi): check Symbol like types
+            // NOTE: aszilagyi. check Symbol like types
 
             if (operator_ == lexer::TokenType::PUNCTUATOR_PLUS) {
                 if (checker::TSChecker::MaybeTypeOfKind(operand_type, checker::TypeFlag::BIGINT_LIKE)) {
@@ -216,8 +226,10 @@ checker::Type *UnaryExpression::Check(checker::ETSChecker *checker)
     }
 
     auto arg_type = argument_->Check(checker);
-    checker::Type *operand_type = checker->ApplyUnaryOperatorPromotion(arg_type);
-    auto unboxed_operand_type = checker->ETSBuiltinTypeAsPrimitiveType(arg_type);
+    const auto is_cond_expr = operator_ == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK;
+    checker::Type *operand_type = checker->ApplyUnaryOperatorPromotion(arg_type, true, true, is_cond_expr);
+    auto unboxed_operand_type = is_cond_expr ? checker->ETSBuiltinTypeAsConditionalType(arg_type)
+                                             : checker->ETSBuiltinTypeAsPrimitiveType(arg_type);
 
     switch (operator_) {
         case lexer::TokenType::PUNCTUATOR_MINUS:
@@ -251,13 +263,23 @@ checker::Type *UnaryExpression::Check(checker::ETSChecker *checker)
             break;
         }
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
-            if (operand_type == nullptr || !operand_type->HasTypeFlag(checker::TypeFlag::ETS_BOOLEAN)) {
+            if (checker->IsNullOrVoidExpression(argument_)) {
+                auto ts_type = checker->CreateETSBooleanType(true);
+                ts_type->AddTypeFlag(checker::TypeFlag::CONSTANT);
+                SetTsType(ts_type);
+                break;
+            }
+
+            if (operand_type == nullptr || !operand_type->IsConditionalExprType()) {
                 checker->ThrowTypeError("Bad operand type, the type of the operand must be boolean type.",
                                         argument_->Start());
             }
 
-            if (operand_type->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
-                SetTsType(checker->CreateETSBooleanType(!operand_type->AsETSBooleanType()->GetValue()));
+            auto expr_res = operand_type->ResolveConditionExpr();
+            if (std::get<0>(expr_res)) {
+                auto ts_type = checker->CreateETSBooleanType(!std::get<1>(expr_res));
+                ts_type->AddTypeFlag(checker::TypeFlag::CONSTANT);
+                SetTsType(ts_type);
                 break;
             }
 
@@ -274,7 +296,8 @@ checker::Type *UnaryExpression::Check(checker::ETSChecker *checker)
         }
     }
 
-    if (arg_type->IsETSObjectType() && (unboxed_operand_type != nullptr)) {
+    if (arg_type->IsETSObjectType() && (unboxed_operand_type != nullptr) &&
+        unboxed_operand_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
         argument_->AddBoxingUnboxingFlag(checker->GetUnboxingFlag(unboxed_operand_type));
     }
 

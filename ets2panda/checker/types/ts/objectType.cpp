@@ -67,7 +67,7 @@ void ObjectType::Identical(TypeRelation *relation, Type *other)
     }
 
     for (auto *it : desc_->properties) {
-        binder::LocalVariable *found = other_obj->Desc()->FindProperty(it->Name());
+        varbinder::LocalVariable *found = other_obj->Desc()->FindProperty(it->Name());
         if (found == nullptr) {
             relation->Result(false);
             return;
@@ -112,12 +112,12 @@ void ObjectType::Identical(TypeRelation *relation, Type *other)
 
 void ObjectType::AssignProperties(TypeRelation *relation, ObjectType *source)
 {
-    const ArenaVector<binder::LocalVariable *> &target_properties = Properties();
+    const ArenaVector<varbinder::LocalVariable *> &target_properties = Properties();
     IndexInfo *number_info = NumberIndexInfo();
     IndexInfo *string_info = StringIndexInfo();
 
     for (auto *it : target_properties) {
-        binder::LocalVariable *found = source->GetProperty(it->Name(), true);
+        varbinder::LocalVariable *found = source->GetProperty(it->Name(), true);
         Type *target_type = relation->GetChecker()->GetTypeOfVariable(it);
 
         if (found != nullptr) {
@@ -127,7 +127,8 @@ void ObjectType::AssignProperties(TypeRelation *relation, ObjectType *source)
                 return;
             }
 
-            if (found->HasFlag(binder::VariableFlags::OPTIONAL) && !it->HasFlag(binder::VariableFlags::OPTIONAL)) {
+            if (found->HasFlag(varbinder::VariableFlags::OPTIONAL) &&
+                !it->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
                 relation->Result(false);
                 return;
             }
@@ -135,7 +136,7 @@ void ObjectType::AssignProperties(TypeRelation *relation, ObjectType *source)
             continue;
         }
 
-        if (number_info != nullptr && it->HasFlag(binder::VariableFlags::NUMERIC_NAME) &&
+        if (number_info != nullptr && it->HasFlag(varbinder::VariableFlags::NUMERIC_NAME) &&
             !relation->IsAssignableTo(number_info->GetType(), target_type)) {
             return;
         }
@@ -144,7 +145,7 @@ void ObjectType::AssignProperties(TypeRelation *relation, ObjectType *source)
             return;
         }
 
-        if (!it->HasFlag(binder::VariableFlags::OPTIONAL)) {
+        if (!it->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
             relation->Result(false);
             return;
         }
@@ -187,7 +188,7 @@ void ObjectType::AssignIndexInfo([[maybe_unused]] TypeRelation *relation, Object
         }
 
         for (auto *it : source->Properties()) {
-            if (assign_number_info && !it->HasFlag(binder::VariableFlags::NUMERIC_NAME)) {
+            if (assign_number_info && !it->HasFlag(varbinder::VariableFlags::NUMERIC_NAME)) {
                 continue;
             }
 
@@ -203,7 +204,7 @@ void ObjectType::CheckExcessProperties(TypeRelation *relation, ObjectType *sourc
     for (auto *it : source->Properties()) {
         auto *found = GetProperty(it->Name(), true);
 
-        if (found != nullptr || (it->HasFlag(binder::VariableFlags::NUMERIC_NAME) && NumberIndexInfo() != nullptr) ||
+        if (found != nullptr || (it->HasFlag(varbinder::VariableFlags::NUMERIC_NAME) && NumberIndexInfo() != nullptr) ||
             StringIndexInfo() != nullptr) {
             continue;
         }
@@ -228,6 +229,17 @@ void ObjectType::AssignmentTarget(TypeRelation *relation, Type *source)
         CheckExcessProperties(relation, source_obj);
     }
 
+    // Just to avoid extra nesting level(s):
+    auto const assign_index_info = [this, relation, source_obj]() -> void {
+        if (relation->IsTrue()) {
+            AssignIndexInfo(relation, source_obj);
+
+            if (relation->IsTrue()) {
+                AssignIndexInfo(relation, source_obj, false);
+            }
+        }
+    };
+
     if (relation->IsTrue()) {
         AssignProperties(relation, source_obj);
 
@@ -237,13 +249,7 @@ void ObjectType::AssignmentTarget(TypeRelation *relation, Type *source)
             if (relation->IsTrue()) {
                 AssignSignatures(relation, source_obj, false);
 
-                if (relation->IsTrue()) {
-                    AssignIndexInfo(relation, source_obj);
-
-                    if (relation->IsTrue()) {
-                        AssignIndexInfo(relation, source_obj, false);
-                    }
-                }
+                assign_index_info();
             }
         }
     }

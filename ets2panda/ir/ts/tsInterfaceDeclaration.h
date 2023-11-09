@@ -16,13 +16,13 @@
 #ifndef ES2PANDA_IR_TS_INTERFACE_DECLARATION_H
 #define ES2PANDA_IR_TS_INTERFACE_DECLARATION_H
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "ir/statement.h"
 #include "util/language.h"
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class Variable;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::ir {
 class Identifier;
@@ -32,7 +32,7 @@ class TSTypeParameterDeclaration;
 
 class TSInterfaceDeclaration : public TypedStatement {
 public:
-    explicit TSInterfaceDeclaration(ArenaAllocator *allocator, binder::LocalScope *scope, Identifier *id,
+    explicit TSInterfaceDeclaration(ArenaAllocator *allocator, varbinder::LocalScope *scope, Identifier *id,
                                     TSTypeParameterDeclaration *type_params, TSInterfaceBody *body,
                                     ArenaVector<TSInterfaceHeritage *> &&extends, bool is_static, Language lang)
         : TypedStatement(AstNodeType::TS_INTERFACE_DECLARATION),
@@ -55,7 +55,7 @@ public:
         return true;
     }
 
-    binder::LocalScope *Scope() const override
+    varbinder::LocalScope *Scope() const override
     {
         return scope_;
     }
@@ -142,11 +142,11 @@ public:
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
-    checker::Type *InferType(checker::TSChecker *checker, binder::Variable *binding_var) const;
+    checker::Type *InferType(checker::TSChecker *checker, varbinder::Variable *binding_var) const;
 
 private:
     ArenaVector<Decorator *> decorators_;
-    binder::LocalScope *scope_;
+    varbinder::LocalScope *scope_;
     Identifier *id_;
     TSTypeParameterDeclaration *type_params_;
     TSInterfaceBody *body_;

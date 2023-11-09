@@ -18,24 +18,24 @@
 
 #include "checker/types/type.h"
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class EnumVariable;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::checker {
 class EnumType : public Type {
 public:
-    EnumType(binder::Variable *enum_literal_var, binder::EnumVariable *enum_var)
+    EnumType(varbinder::Variable *enum_literal_var, varbinder::EnumVariable *enum_var)
         : Type(TypeFlag::ENUM), enum_literal_var_(enum_literal_var), enum_var_(enum_var)
     {
     }
 
-    const binder::Variable *EnumLiteralVar() const
+    const varbinder::Variable *EnumLiteralVar() const
     {
         return enum_literal_var_;
     }
 
-    const binder::EnumVariable *EnumVar() const
+    const varbinder::EnumVariable *EnumVar() const
     {
         return enum_var_;
     }
@@ -47,8 +47,8 @@ public:
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
 
 private:
-    binder::Variable *enum_literal_var_;
-    binder::EnumVariable *enum_var_;
+    varbinder::Variable *enum_literal_var_;
+    varbinder::EnumVariable *enum_var_;
 };
 }  // namespace panda::es2panda::checker
 

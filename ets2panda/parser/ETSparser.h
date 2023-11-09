@@ -96,7 +96,7 @@ private:
                                            ir::Expression *prop_name, lexer::SourcePosition *prop_end) override;
     std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
         const ArenaVector<ir::Expression *> &params, ParserStatus new_status, ParserStatus context_status,
-        binder::FunctionScope *func_scope) override;
+        varbinder::FunctionScope *func_scope) override;
     ir::TypeNode *ParseFunctionReturnType(ParserStatus status) override;
     ir::ScriptFunctionFlags ParseFunctionThrowMarker(bool is_rethrows_allowed) override;
     ir::Expression *CreateParameterThis(util::StringView class_name) override;
@@ -110,10 +110,14 @@ private:
     ir::TypeNode *ParseTypeReference(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseBaseTypeReference(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParsePrimitiveType(TypeAnnotationParsingOptions *options, ir::PrimitiveType type);
+    ir::ETSUnionType *ParseUnionType(ir::Expression *type);
     ir::TSIntersectionType *ParseIntersectionType(ir::Expression *type);
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseFunctionType();
     void CreateClassFunctionDeclaration(ir::MethodDefinition *method);
+    bool HasDefaultParam(const ir::ScriptFunction *function);
+    std::string CreateProxyMethodName(const ir::ScriptFunction *function, ir::MethodDefinition *method,
+                                      ir::Identifier *ident_node, varbinder::ClassScope *cls_scope);
     void AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *ident_node = nullptr);
     std::string GetNameForTypeNode(const ir::TypeNode *type_annotation);
     ir::TSInterfaceDeclaration *ParseInterfaceBody(ir::Identifier *name, bool is_static);
@@ -146,6 +150,8 @@ private:
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseUnaryOrPrefixUpdateExpression(
         ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
+    // NOLINTNEXTLINE(google-default-arguments)
+    ir::Expression *ParseDefaultPrimaryExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS);
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParsePrimaryExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
     ir::Expression *ParsePostPrimaryExpression(ir::Expression *primary_expr, lexer::SourcePosition start_loc,
@@ -193,7 +199,7 @@ private:
     bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,
                            ArenaVector<ir::AstNode *> &properties) override;
     // NOLINTNEXTLINE(google-default-arguments)
-    void CreateCCtor(binder::LocalScope *class_scope, ArenaVector<ir::AstNode *> &properties,
+    void CreateCCtor(varbinder::LocalScope *class_scope, ArenaVector<ir::AstNode *> &properties,
                      const lexer::SourcePosition &loc, bool in_global_class = false) override;
     void CreateImplicitConstructor(ir::MethodDefinition *&ctor, ArenaVector<ir::AstNode *> &properties,
                                    ir::ClassDefinitionModifiers modifiers,
@@ -202,7 +208,7 @@ private:
                                            const lexer::SourcePosition &start_loc,
                                            bool ignore_call_expression) override;
     bool ParsePotentialNonNullExpression(ir::Expression **expression, lexer::SourcePosition start_loc) override;
-    binder::Decl *BindClassName([[maybe_unused]] ir::Identifier *ident_node) override
+    varbinder::Decl *BindClassName([[maybe_unused]] ir::Identifier *ident_node) override
     {
         return nullptr;
     }
@@ -274,7 +280,7 @@ private:
     ETSParser *parser_;
     Program *saved_program_;
     lexer::Lexer *saved_lexer_;
-    binder::GlobalScope *saved_top_scope_;
+    varbinder::GlobalScope *saved_top_scope_;
 };
 
 class InnerSourceParser {

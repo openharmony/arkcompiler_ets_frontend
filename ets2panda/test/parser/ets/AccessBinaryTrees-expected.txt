@@ -46,13 +46,38 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "ETSTypeReference",
-              "part": {
-                "type": "ETSTypeReferencePart",
-                "name": {
-                  "type": "Identifier",
-                  "name": "TreeNode",
-                  "decorators": [],
+              "type": "ETSUnionType",
+              "types": [
+                {
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "TreeNode",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 17,
+                          "column": 17
+                        },
+                        "end": {
+                          "line": 17,
+                          "column": 25
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 17,
+                        "column": 17
+                      },
+                      "end": {
+                        "line": 17,
+                        "column": 27
+                      }
+                    }
+                  },
                   "loc": {
                     "start": {
                       "line": 17,
@@ -60,21 +85,11 @@
                     },
                     "end": {
                       "line": 17,
-                      "column": 25
+                      "column": 27
                     }
                   }
-                },
-                "loc": {
-                  "start": {
-                    "line": 17,
-                    "column": 17
-                  },
-                  "end": {
-                    "line": 17,
-                    "column": 27
-                  }
                 }
-              },
+              ],
               "loc": {
                 "start": {
                   "line": 17,
@@ -123,13 +138,38 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "ETSTypeReference",
-              "part": {
-                "type": "ETSTypeReferencePart",
-                "name": {
-                  "type": "Identifier",
-                  "name": "TreeNode",
-                  "decorators": [],
+              "type": "ETSUnionType",
+              "types": [
+                {
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "TreeNode",
+                      "decorators": [],
+                      "loc": {
+                        "start": {
+                          "line": 18,
+                          "column": 18
+                        },
+                        "end": {
+                          "line": 18,
+                          "column": 26
+                        }
+                      }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 18,
+                        "column": 18
+                      },
+                      "end": {
+                        "line": 18,
+                        "column": 28
+                      }
+                    }
+                  },
                   "loc": {
                     "start": {
                       "line": 18,
@@ -137,21 +177,11 @@
                     },
                     "end": {
                       "line": 18,
-                      "column": 26
+                      "column": 28
                     }
                   }
-                },
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 18
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 28
-                  }
                 }
-              },
+              ],
               "loc": {
                 "start": {
                   "line": 18,
@@ -276,13 +306,38 @@
                       "type": "Identifier",
                       "name": "left",
                       "typeAnnotation": {
-                        "type": "ETSTypeReference",
-                        "part": {
-                          "type": "ETSTypeReferencePart",
-                          "name": {
-                            "type": "Identifier",
-                            "name": "TreeNode",
-                            "decorators": [],
+                        "type": "ETSUnionType",
+                        "types": [
+                          {
+                            "type": "ETSTypeReference",
+                            "part": {
+                              "type": "ETSTypeReferencePart",
+                              "name": {
+                                "type": "Identifier",
+                                "name": "TreeNode",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 21,
+                                    "column": 21
+                                  },
+                                  "end": {
+                                    "line": 21,
+                                    "column": 29
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 21,
+                                  "column": 21
+                                },
+                                "end": {
+                                  "line": 21,
+                                  "column": 31
+                                }
+                              }
+                            },
                             "loc": {
                               "start": {
                                 "line": 21,
@@ -290,21 +345,11 @@
                               },
                               "end": {
                                 "line": 21,
-                                "column": 29
+                                "column": 31
                               }
                             }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 21,
-                              "column": 21
-                            },
-                            "end": {
-                              "line": 21,
-                              "column": 31
-                            }
                           }
-                        },
+                        ],
                         "loc": {
                           "start": {
                             "line": 21,
@@ -345,13 +390,38 @@
                       "type": "Identifier",
                       "name": "right",
                       "typeAnnotation": {
-                        "type": "ETSTypeReference",
-                        "part": {
-                          "type": "ETSTypeReferencePart",
-                          "name": {
-                            "type": "Identifier",
-                            "name": "TreeNode",
-                            "decorators": [],
+                        "type": "ETSUnionType",
+                        "types": [
+                          {
+                            "type": "ETSTypeReference",
+                            "part": {
+                              "type": "ETSTypeReferencePart",
+                              "name": {
+                                "type": "Identifier",
+                                "name": "TreeNode",
+                                "decorators": [],
+                                "loc": {
+                                  "start": {
+                                    "line": 21,
+                                    "column": 45
+                                  },
+                                  "end": {
+                                    "line": 21,
+                                    "column": 53
+                                  }
+                                }
+                              },
+                              "loc": {
+                                "start": {
+                                  "line": 21,
+                                  "column": 45
+                                },
+                                "end": {
+                                  "line": 21,
+                                  "column": 55
+                                }
+                              }
+                            },
                             "loc": {
                               "start": {
                                 "line": 21,
@@ -359,21 +429,11 @@
                               },
                               "end": {
                                 "line": 21,
-                                "column": 53
+                                "column": 55
                               }
                             }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 21,
-                              "column": 45
-                            },
-                            "end": {
-                              "line": 21,
-                              "column": 55
-                            }
                           }
-                        },
+                        ],
                         "loc": {
                           "start": {
                             "line": 21,

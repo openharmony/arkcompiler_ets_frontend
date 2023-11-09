@@ -15,7 +15,7 @@
 
 #include "tsFunctionType.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/signature.h"

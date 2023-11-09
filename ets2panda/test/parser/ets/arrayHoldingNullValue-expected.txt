@@ -309,20 +309,35 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "TSArrayType",
-              "elementType": {
-                "type": "ETSPrimitiveType",
-                "loc": {
-                  "start": {
-                    "line": 16,
-                    "column": 8
+              "type": "ETSUnionType",
+              "types": [
+                {
+                  "type": "TSArrayType",
+                  "elementType": {
+                    "type": "ETSPrimitiveType",
+                    "loc": {
+                      "start": {
+                        "line": 16,
+                        "column": 8
+                      },
+                      "end": {
+                        "line": 16,
+                        "column": 11
+                      }
+                    }
                   },
-                  "end": {
-                    "line": 16,
-                    "column": 11
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 14
+                    },
+                    "end": {
+                      "line": 16,
+                      "column": 15
+                    }
                   }
                 }
-              },
+              ],
               "loc": {
                 "start": {
                   "line": 16,
@@ -371,20 +386,35 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "TSArrayType",
-              "elementType": {
-                "type": "ETSPrimitiveType",
-                "loc": {
-                  "start": {
-                    "line": 17,
-                    "column": 8
+              "type": "ETSUnionType",
+              "types": [
+                {
+                  "type": "TSArrayType",
+                  "elementType": {
+                    "type": "ETSPrimitiveType",
+                    "loc": {
+                      "start": {
+                        "line": 17,
+                        "column": 8
+                      },
+                      "end": {
+                        "line": 17,
+                        "column": 14
+                      }
+                    }
                   },
-                  "end": {
-                    "line": 17,
-                    "column": 14
+                  "loc": {
+                    "start": {
+                      "line": 17,
+                      "column": 17
+                    },
+                    "end": {
+                      "line": 17,
+                      "column": 18
+                    }
                   }
                 }
-              },
+              ],
               "loc": {
                 "start": {
                   "line": 17,
@@ -433,15 +463,40 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "TSArrayType",
-              "elementType": {
-                "type": "ETSTypeReference",
-                "part": {
-                  "type": "ETSTypeReferencePart",
-                  "name": {
-                    "type": "Identifier",
-                    "name": "Double",
-                    "decorators": [],
+              "type": "ETSUnionType",
+              "types": [
+                {
+                  "type": "TSArrayType",
+                  "elementType": {
+                    "type": "ETSTypeReference",
+                    "part": {
+                      "type": "ETSTypeReferencePart",
+                      "name": {
+                        "type": "Identifier",
+                        "name": "Double",
+                        "decorators": [],
+                        "loc": {
+                          "start": {
+                            "line": 18,
+                            "column": 8
+                          },
+                          "end": {
+                            "line": 18,
+                            "column": 14
+                          }
+                        }
+                      },
+                      "loc": {
+                        "start": {
+                          "line": 18,
+                          "column": 8
+                        },
+                        "end": {
+                          "line": 18,
+                          "column": 15
+                        }
+                      }
+                    },
                     "loc": {
                       "start": {
                         "line": 18,
@@ -449,32 +504,22 @@
                       },
                       "end": {
                         "line": 18,
-                        "column": 14
+                        "column": 15
                       }
                     }
                   },
                   "loc": {
                     "start": {
                       "line": 18,
-                      "column": 8
+                      "column": 17
                     },
                     "end": {
                       "line": 18,
-                      "column": 15
+                      "column": 18
                     }
                   }
-                },
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 8
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 15
-                  }
                 }
-              },
+              ],
               "loc": {
                 "start": {
                   "line": 18,
@@ -597,20 +642,35 @@
                             "type": "Identifier",
                             "name": "c",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSPrimitiveType",
-                                "loc": {
-                                  "start": {
-                                    "line": 21,
-                                    "column": 14
+                              "type": "ETSUnionType",
+                              "types": [
+                                {
+                                  "type": "TSArrayType",
+                                  "elementType": {
+                                    "type": "ETSPrimitiveType",
+                                    "loc": {
+                                      "start": {
+                                        "line": 21,
+                                        "column": 14
+                                      },
+                                      "end": {
+                                        "line": 21,
+                                        "column": 19
+                                      }
+                                    }
                                   },
-                                  "end": {
-                                    "line": 21,
-                                    "column": 19
+                                  "loc": {
+                                    "start": {
+                                      "line": 21,
+                                      "column": 22
+                                    },
+                                    "end": {
+                                      "line": 21,
+                                      "column": 23
+                                    }
                                   }
                                 }
-                              },
+                              ],
                               "loc": {
                                 "start": {
                                   "line": 21,
@@ -681,20 +741,35 @@
                             "type": "Identifier",
                             "name": "d",
                             "typeAnnotation": {
-                              "type": "TSArrayType",
-                              "elementType": {
-                                "type": "ETSPrimitiveType",
-                                "loc": {
-                                  "start": {
-                                    "line": 22,
-                                    "column": 12
+                              "type": "ETSUnionType",
+                              "types": [
+                                {
+                                  "type": "TSArrayType",
+                                  "elementType": {
+                                    "type": "ETSPrimitiveType",
+                                    "loc": {
+                                      "start": {
+                                        "line": 22,
+                                        "column": 12
+                                      },
+                                      "end": {
+                                        "line": 22,
+                                        "column": 16
+                                      }
+                                    }
                                   },
-                                  "end": {
-                                    "line": 22,
-                                    "column": 16
+                                  "loc": {
+                                    "start": {
+                                      "line": 22,
+                                      "column": 19
+                                    },
+                                    "end": {
+                                      "line": 22,
+                                      "column": 20
+                                    }
                                   }
                                 }
-                              },
+                              ],
                               "loc": {
                                 "start": {
                                   "line": 22,

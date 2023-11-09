@@ -60,7 +60,7 @@ void YieldExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 
 checker::Type *YieldExpression::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    // TODO(aszilagyi)
+    // NOTE: aszilagyi.
     return checker->GlobalAnyType();
 }
 

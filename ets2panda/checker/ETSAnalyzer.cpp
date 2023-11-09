@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
  */
 #include "ETSAnalyzer.h"
 
-#include "binder/binder.h"
-#include "binder/ETSBinder.h"
+#include "varbinder/varbinder.h"
+#include "varbinder/ETSBinder.h"
+#include "checker/ETSchecker.h"
+#include "checker/ets/castingContext.h"
 #include "checker/ets/typeRelationContext.h"
 #include "ir/base/catchClause.h"
 #include "ir/base/classProperty.h"
@@ -233,37 +235,57 @@ checker::Type *ETSAnalyzer::Check(ir::ETSPackageDeclaration *st) const
 
 checker::Type *ETSAnalyzer::Check(ir::ETSParameterExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    if (expr->TsType() == nullptr) {
+        checker::Type *param_type;
+
+        if (expr->Ident()->TsType() != nullptr) {
+            param_type = expr->Ident()->TsType();
+        } else {
+            param_type = !expr->IsRestParameter() ? expr->Ident()->Check(checker) : expr->spread_->Check(checker);
+            if (expr->IsDefault()) {
+                [[maybe_unused]] auto *const init_type = expr->Initializer()->Check(checker);
+            }
+        }
+
+        expr->SetTsType(param_type);
+    }
+
+    return expr->TsType();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ETSPrimitiveType *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSPrimitiveType *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSStructDeclaration *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    node->Definition()->Check(checker);
+    return nullptr;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSTypeReference *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    return node->GetType(checker);
 }
 
 checker::Type *ETSAnalyzer::Check(ir::ETSTypeReferencePart *node) const
 {
+    ETSChecker *checker = GetETSChecker();
+    return node->GetType(checker);
+}
+
+checker::Type *ETSAnalyzer::Check(ir::ETSUnionType *node) const
+{
     (void)node;
     UNREACHABLE();
 }
 
-checker::Type *ETSAnalyzer::Check(ir::ETSWildcardType *node) const
+checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::ETSWildcardType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 // compile methods for EXPRESSIONS in alphabetical order
@@ -275,8 +297,70 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
 
 checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSChecker *checker = GetETSChecker();
+    if (expr->TsType() != nullptr) {
+        return expr->TsType();
+    }
+
+    auto *func_type = checker->BuildFunctionSignature(expr->Function(), false);
+
+    if (expr->Function()->IsAsyncFunc()) {
+        auto *ret_type = static_cast<checker::ETSObjectType *>(expr->Function()->Signature()->ReturnType());
+        if (ret_type->AssemblerName() != checker->GlobalBuiltinPromiseType()->AssemblerName()) {
+            checker->ThrowTypeError("Return type of async lambda must be 'Promise'", expr->Function()->Start());
+        }
+    }
+
+    checker::ScopeContext scope_ctx(checker, expr->Function()->Scope());
+
+    if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
+        /*
+        example code:
+        ```
+            class A {
+                prop:number
+            }
+            function A.method() {
+                let a = () => {
+                    console.println(this.prop)
+                }
+            }
+        ```
+        here the enclosing class of arrow function should be Class A
+        */
+        checker->Context().SetContainingClass(
+            checker->Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS).variable->TsType()->AsETSObjectType());
+    }
+
+    checker::SavedCheckerContext saved_context(checker, checker->Context().Status(),
+                                               checker->Context().ContainingClass());
+    checker->AddStatus(checker::CheckerStatus::IN_LAMBDA);
+    checker->Context().SetContainingSignature(func_type->CallSignatures()[0]);
+
+    auto *body_type = expr->Function()->Body()->Check(checker);
+
+    if (expr->Function()->Body()->IsExpression()) {
+        if (expr->Function()->ReturnTypeAnnotation() == nullptr) {
+            func_type->CallSignatures()[0]->SetReturnType(body_type);
+        }
+
+        checker::AssignmentContext(
+            checker->Relation(), expr->Function()->Body()->AsExpression(), body_type,
+            func_type->CallSignatures()[0]->ReturnType(), expr->Function()->Start(),
+            {"Return statements return type is not compatible with the containing functions return type"},
+            checker::TypeRelationFlag::DIRECT_RETURN);
+    }
+
+    checker->Context().SetContainingSignature(nullptr);
+    checker->CheckCapturedVariables();
+
+    for (auto [var, _] : checker->Context().CapturedVars()) {
+        (void)_;
+        expr->CapturedVars().push_back(var);
+    }
+
+    expr->SetTsType(func_type);
+    return expr->TsType();
 }
 
 checker::Type *ETSAnalyzer::Check(ir::AssignmentExpression *expr) const
@@ -672,7 +756,6 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
             //  First (or single) return statement in the function:
             func_return_type =
                 st->argument_ == nullptr ? checker->GlobalBuiltinVoidType() : st->argument_->Check(checker);
-
             if (func_return_type->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
                 // remove CONSTANT type modifier if exists
                 func_return_type = func_return_type->Instantiate(checker->Allocator(), checker->Relation(),
@@ -682,7 +765,7 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
 
             containing_func->Signature()->SetReturnType(func_return_type);
             containing_func->Signature()->RemoveSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE);
-            checker->Binder()->AsETSBinder()->BuildFunctionName(containing_func);
+            checker->VarBinder()->AsETSBinder()->BuildFunctionName(containing_func);
 
             if (st->argument_ != nullptr && st->argument_->IsObjectExpression()) {
                 st->argument_->AsObjectExpression()->SetPreferredType(func_return_type);
@@ -744,7 +827,6 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
                             if (argument_type == nullptr) {
                                 checker->ThrowTypeError("Invalid return statement expression", st->argument_->Start());
                             }
-                            // argument_->SetTsType(argument_type);
                             st->argument_->AddBoxingUnboxingFlag(checker->GetBoxingFlag(argument_type));
                         }
 
@@ -758,18 +840,14 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
                         func_return_type = checker->FindLeastUpperBound(func_return_type, argument_type);
                         containing_func->Signature()->SetReturnType(func_return_type);
                         containing_func->Signature()->AddSignatureFlag(checker::SignatureFlags::INFERRED_RETURN_TYPE);
-
                     } else if (func_return_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE_RETURN) &&
                                argument_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE_RETURN)) {
                         // function return type is of primitive type (including enums):
                         relation->SetFlags(checker::TypeRelationFlag::DIRECT_RETURN |
                                            checker::TypeRelationFlag::IN_ASSIGNMENT_CONTEXT |
                                            checker::TypeRelationFlag::ASSIGNMENT_CONTEXT);
-
                         if (relation->IsAssignableTo(func_return_type, argument_type)) {
                             func_return_type = argument_type;
-                            // func_return_type = argument_type->Instantiate(checker->Allocator(), relation,
-                            //     checker->GetGlobalTypesHolder());
                             containing_func->Signature()->SetReturnType(func_return_type);
                             containing_func->Signature()->AddSignatureFlag(
                                 checker::SignatureFlags::INFERRED_RETURN_TYPE);

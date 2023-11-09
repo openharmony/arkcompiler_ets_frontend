@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,10 @@
 
 #include <unordered_map>
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class FunctionScope;
 class Scope;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::ir {
 class AstNode;
@@ -50,7 +50,7 @@ class DynamicContext;
 class PandaGen final : public CodeGen {
 public:
     explicit PandaGen(ArenaAllocator *allocator, RegSpiller *spiller, CompilerContext *context,
-                      binder::FunctionScope *scope, ProgramElement *program_element, AstCompiler *astcompiler);
+                      varbinder::FunctionScope *scope, ProgramElement *program_element, AstCompiler *astcompiler);
 
     ~PandaGen() override = default;
     NO_COPY_SEMANTIC(PandaGen);
@@ -85,8 +85,8 @@ public:
     void GetNewTarget(const ir::AstNode *node);
     void GetThis(const ir::AstNode *node);
     void SetThis(const ir::AstNode *node);
-    void LoadVar(const ir::Identifier *node, const binder::ConstScopeFindResult &result);
-    void StoreVar(const ir::AstNode *node, const binder::ConstScopeFindResult &result, bool is_declaration);
+    void LoadVar(const ir::Identifier *node, const varbinder::ConstScopeFindResult &result);
+    void StoreVar(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result, bool is_declaration);
 
     void LoadAccFromArgs(const ir::AstNode *node);
     void LoadObjProperty(const ir::AstNode *node, const Operand &prop);
@@ -105,8 +105,8 @@ public:
     void TryLoadGlobalByName(const ir::AstNode *node, const util::StringView &name);
     void TryStoreGlobalByName(const ir::AstNode *node, const util::StringView &name);
 
-    void LoadAccFromLexEnv(const ir::AstNode *node, const binder::ConstScopeFindResult &result);
-    void StoreAccToLexEnv(const ir::AstNode *node, const binder::ConstScopeFindResult &result, bool is_declaration);
+    void LoadAccFromLexEnv(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result);
+    void StoreAccToLexEnv(const ir::AstNode *node, const varbinder::ConstScopeFindResult &result, bool is_declaration);
 
     void LoadAccumulatorBigInt(const ir::AstNode *node, const util::StringView &big_int);
 

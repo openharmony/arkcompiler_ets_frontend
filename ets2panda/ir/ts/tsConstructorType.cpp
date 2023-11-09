@@ -15,7 +15,7 @@
 
 #include "tsConstructorType.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "checker/types/signature.h"
 #include "ir/astDump.h"

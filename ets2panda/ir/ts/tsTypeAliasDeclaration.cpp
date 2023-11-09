@@ -15,7 +15,7 @@
 
 #include "tsTypeAliasDeclaration.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "ir/astDump.h"
 #include "ir/typeNode.h"

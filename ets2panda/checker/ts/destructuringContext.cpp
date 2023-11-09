@@ -16,7 +16,7 @@
 #include "destructuringContext.h"
 
 #include "util/helpers.h"
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "ir/typeNode.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/objectExpression.h"
@@ -58,7 +58,7 @@ void DestructuringContext::HandleDestructuringAssignment(ir::Identifier *ident, 
         checker_->ThrowTypeError({"Cannot find name '", ident->Name(), "'."}, ident->Start());
     }
 
-    binder::Variable *variable = ident->Variable();
+    varbinder::Variable *variable = ident->Variable();
     ASSERT(variable->TsType());
 
     if (default_type != nullptr && !checker_->IsTypeAssignableTo(default_type, variable->TsType())) {
@@ -70,7 +70,7 @@ void DestructuringContext::HandleDestructuringAssignment(ir::Identifier *ident, 
     }
 }
 
-void DestructuringContext::SetInferredTypeForVariable(binder::Variable *var, Type *inferred_type,
+void DestructuringContext::SetInferredTypeForVariable(varbinder::Variable *var, Type *inferred_type,
                                                       const lexer::SourcePosition &loc)
 {
     ASSERT(var);
@@ -212,7 +212,7 @@ void ArrayDestructuringContext::ValidateInferredType()
 Type *ArrayDestructuringContext::GetTypeFromTupleByIndex(TupleType *tuple)
 {
     util::StringView member_index = util::Helpers::ToStringView(checker_->Allocator(), index_);
-    binder::Variable *member_var = tuple->GetProperty(member_index, false);
+    varbinder::Variable *member_var = tuple->GetProperty(member_index, false);
 
     if (member_var == nullptr) {
         return nullptr;
@@ -317,8 +317,8 @@ Type *ArrayDestructuringContext::CreateTupleTypeForRest(TupleType *tuple)
     while (tuple_element_type != nullptr) {
         ElementFlags member_flag = ElementFlags::REQUIRED;
         util::StringView member_index = util::Helpers::ToStringView(checker_->Allocator(), iter_index);
-        auto *member_var =
-            binder::Scope::CreateVar(checker_->Allocator(), member_index, binder::VariableFlags::PROPERTY, nullptr);
+        auto *member_var = varbinder::Scope::CreateVar(checker_->Allocator(), member_index,
+                                                       varbinder::VariableFlags::PROPERTY, nullptr);
         member_var->SetTsType(tuple_element_type);
         element_flags.push_back(member_flag);
         desc->properties.push_back(member_var);
@@ -466,7 +466,7 @@ void ArrayDestructuringContext::Start()
         if (convert_tuple_to_array_ && next_inferred_type != nullptr && inferred_type_->IsObjectType()) {
             ASSERT(inferred_type_->AsObjectType()->IsTupleType());
 
-            binder::Variable *current_tuple_element = inferred_type_->AsObjectType()->Properties()[index_];
+            varbinder::Variable *current_tuple_element = inferred_type_->AsObjectType()->Properties()[index_];
 
             if (current_tuple_element != nullptr) {
                 current_tuple_element->SetTsType(next_inferred_type);
@@ -540,9 +540,9 @@ Type *ObjectDestructuringContext::CreateObjectTypeForRest(ObjectType *obj_type)
     ObjectDescriptor *desc = checker_->Allocator()->New<ObjectDescriptor>(checker_->Allocator());
 
     for (auto *it : obj_type->AsObjectType()->Properties()) {
-        if (!it->HasFlag(binder::VariableFlags::INFERRED_IN_PATTERN)) {
+        if (!it->HasFlag(varbinder::VariableFlags::INFERRED_IN_PATTERN)) {
             auto *member_var =
-                binder::Scope::CreateVar(checker_->Allocator(), it->Name(), binder::VariableFlags::NONE, nullptr);
+                varbinder::Scope::CreateVar(checker_->Allocator(), it->Name(), varbinder::VariableFlags::NONE, nullptr);
             member_var->SetTsType(it->TsType());
             member_var->AddFlag(it->Flags());
             desc->properties.push_back(member_var);
@@ -611,11 +611,11 @@ Type *ObjectDestructuringContext::ConvertTupleTypeToArrayTypeIfNecessary(ir::Ast
 Type *ObjectDestructuringContext::NextInferredType([[maybe_unused]] const util::StringView &search_name,
                                                    bool throw_error)
 {
-    binder::Variable *prop = checker_->GetPropertyOfType(inferred_type_, search_name, !throw_error,
-                                                         binder::VariableFlags::INFERRED_IN_PATTERN);
+    varbinder::Variable *prop = checker_->GetPropertyOfType(inferred_type_, search_name, !throw_error,
+                                                            varbinder::VariableFlags::INFERRED_IN_PATTERN);
 
     if (prop != nullptr) {
-        prop->AddFlag(binder::VariableFlags::INFERRED_IN_PATTERN);
+        prop->AddFlag(varbinder::VariableFlags::INFERRED_IN_PATTERN);
         return prop->TsType();
     }
 
@@ -649,7 +649,7 @@ void ObjectDestructuringContext::Start()
                 ir::Property *property = it->AsProperty();
 
                 if (property->IsComputed()) {
-                    // TODO(aszilagyi)
+                    // NOTE: aszilagyi.
                     return;
                 }
 

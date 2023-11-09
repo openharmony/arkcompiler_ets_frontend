@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@ public:
     explicit ETSWildcardType(ir::ETSTypeReference *type_reference, ModifierFlags flags)
         : TypeNode(AstNodeType::ETS_WILDCARD_TYPE, flags), type_reference_(type_reference)
     {
-        ASSERT((flags == ModifierFlags::IN && type_reference != nullptr) || flags == ModifierFlags::OUT);
+        ASSERT(flags == ModifierFlags::IN || flags == ModifierFlags::OUT);
+        ASSERT(type_reference != nullptr || flags == ModifierFlags::OUT);
     }
 
     ir::ETSTypeReference *TypeReference()
@@ -36,11 +37,11 @@ public:
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
+    void Compile(compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
+    checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
 
 private:

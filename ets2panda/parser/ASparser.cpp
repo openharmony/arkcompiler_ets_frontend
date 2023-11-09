@@ -16,9 +16,9 @@
 #include "ASparser.h"
 
 #include "util/helpers.h"
-#include "binder/privateBinding.h"
-#include "binder/scope.h"
-#include "binder/tsBinding.h"
+#include "varbinder/privateBinding.h"
+#include "varbinder/scope.h"
+#include "varbinder/tsBinding.h"
 #include "lexer/ASLexer.h"
 #include "ir/base/decorator.h"
 #include "ir/base/property.h"
@@ -121,14 +121,14 @@ ir::TSTypeAliasDeclaration *ASParser::ParseTypeAliasDeclaration()
     }
 
     const util::StringView &ident = Lexer()->GetToken().Ident();
-    binder::TSBinding ts_binding(Allocator(), ident);
-    auto *decl = Binder()->AddTsDecl<binder::TypeAliasDecl>(Lexer()->GetToken().Start(), ts_binding.View());
+    varbinder::TSBinding ts_binding(Allocator(), ident);
+    auto *decl = VarBinder()->AddTsDecl<varbinder::TypeAliasDecl>(Lexer()->GetToken().Start(), ts_binding.View());
 
     auto *id = AllocNode<ir::Identifier>(ident, Allocator());
     id->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
 
-    auto type_params_ctx = binder::LexicalScope<binder::LocalScope>(Binder());
+    auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         auto options = TypeAnnotationParsingOptions::THROW_ERROR;
@@ -270,7 +270,7 @@ ParserStatus ASParser::ValidateArrowParameter(ir::Expression *expr, bool *seen_o
 }
 
 ArrowFunctionDescriptor ASParser::ConvertToArrowParameter(ir::Expression *expr, bool is_async,
-                                                          binder::FunctionParamScope *param_scope)
+                                                          varbinder::FunctionParamScope *param_scope)
 {
     auto arrow_status = is_async ? ParserStatus::ASYNC_FUNCTION : ParserStatus::NO_OPTS;
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
@@ -320,7 +320,7 @@ ArrowFunctionDescriptor ASParser::ConvertToArrowParameter(ir::Expression *expr, 
     }
 
     for (auto *param : params) {
-        Binder()->AddParamDecl(param);
+        VarBinder()->AddParamDecl(param);
     }
 
     return ArrowFunctionDescriptor {std::move(params), param_scope, expr->Start(), arrow_status};
@@ -491,7 +491,7 @@ bool ASParser::CurrentIsBasicType()
 
 ir::TypeNode *ASParser::ParseFunctionType(lexer::SourcePosition start_loc)
 {
-    FunctionParameterContext func_param_context(&GetContext(), Binder());
+    FunctionParameterContext func_param_context(&GetContext(), VarBinder());
     auto *func_param_scope = func_param_context.LexicalScope().GetScope();
     auto params = ParseFunctionParams();
 
@@ -1021,7 +1021,7 @@ ir::AstNode *ASParser::ParsePropertyOrMethodSignature(const lexer::SourcePositio
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        auto type_params_ctx = binder::LexicalScope<binder::LocalScope>(Binder());
+        auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
         ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
@@ -1029,7 +1029,7 @@ ir::AstNode *ASParser::ParsePropertyOrMethodSignature(const lexer::SourcePositio
             type_param_decl = ParseTypeParameterDeclaration(&options);
         }
 
-        FunctionParameterContext func_param_context(&GetContext(), Binder());
+        FunctionParameterContext func_param_context(&GetContext(), VarBinder());
         auto *func_param_scope = func_param_context.LexicalScope().GetScope();
         auto params = ParseFunctionParams();
 
@@ -1327,7 +1327,7 @@ std::tuple<bool, bool, bool> ASParser::ParseComputedClassFieldOrIndexSignature(i
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ASParser::ParseFunctionBody(
     [[maybe_unused]] const ArenaVector<ir::Expression *> &params, [[maybe_unused]] ParserStatus new_status,
-    ParserStatus context_status, binder::FunctionScope *func_scope)
+    ParserStatus context_status, varbinder::FunctionScope *func_scope)
 {
     bool is_declare = InAmbientContext();
     bool is_overload = false;
@@ -1540,7 +1540,7 @@ ir::ExportDefaultDeclaration *ASParser::ParseExportDefaultDeclaration(const lexe
     ir::AstNode *decl_node = nullptr;
     bool eat_semicolon = false;
 
-    ExportDeclarationContext export_decl_ctx(Binder());
+    ExportDeclarationContext export_decl_ctx(VarBinder());
 
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::KEYW_FUNCTION: {
@@ -1607,7 +1607,7 @@ ir::ExportNamedDeclaration *ASParser::ParseNamedExportDeclaration(const lexer::S
         flags |= ir::ModifierFlags::ABSTRACT;
     }
 
-    ExportDeclarationContext export_decl_ctx(Binder());
+    ExportDeclarationContext export_decl_ctx(VarBinder());
 
     switch (Lexer()->GetToken().KeywordType()) {
         case lexer::TokenType::KEYW_VAR: {
@@ -1690,7 +1690,7 @@ ir::AstNode *ASParser::ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifi
 
 ir::Statement *ASParser::ParseImportDeclaration([[maybe_unused]] StatementParsingFlags flags)
 {
-    ImportDeclarationContext import_ctx(Binder());
+    ImportDeclarationContext import_ctx(VarBinder());
 
     char32_t next_char = Lexer()->Lookahead();
     if (next_char == lexer::LEX_CHAR_LEFT_PAREN || next_char == lexer::LEX_CHAR_DOT) {

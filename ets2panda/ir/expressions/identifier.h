@@ -20,9 +20,9 @@
 #include "util/ustring.h"
 #include "ir/validationInfo.h"
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class Variable;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::ir {
 enum class IdentifierFlags : uint32_t {
@@ -165,17 +165,17 @@ public:
         flags_ |= IdentifierFlags::IGNORE_BOX;
     }
 
-    [[nodiscard]] binder::Variable *Variable() const noexcept
+    [[nodiscard]] varbinder::Variable *Variable() const noexcept
     {
         return variable_;
     }
 
-    void SetVariable(binder::Variable *const variable) noexcept
+    void SetVariable(varbinder::Variable *const variable) noexcept
     {
         variable_ = variable;
     }
 
-    [[nodiscard]] binder::Variable *Variable() noexcept
+    [[nodiscard]] varbinder::Variable *Variable() noexcept
     {
         return variable_;
     }
@@ -202,7 +202,7 @@ private:
     util::StringView name_;
     IdentifierFlags flags_ {IdentifierFlags::NONE};
     ArenaVector<Decorator *> decorators_;
-    binder::Variable *variable_ {};
+    varbinder::Variable *variable_ {};
 };
 }  // namespace panda::es2panda::ir
 

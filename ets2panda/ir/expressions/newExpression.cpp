@@ -91,7 +91,7 @@ void NewExpression::Compile(compiler::PandaGen *pg) const
             pg->StoreAccumulator(this, arg);
         }
 
-        pg->NewObject(this, ctor, arguments_.size() + 2);
+        pg->NewObject(this, ctor, arguments_.size() + 2U);
     } else {
         compiler::VReg args_obj = pg->AllocReg();
 

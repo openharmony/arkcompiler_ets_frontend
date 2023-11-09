@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 #include "JSemitter.h"
 
 #include "compiler/core/pandagen.h"
-#include "binder/binder.h"
+#include "varbinder/varbinder.h"
 #include "parser/program/program.h"
 #include "compiler/core/compilerContext.h"
 #include "assembly-program.h"
@@ -45,7 +45,7 @@ pandasm::Function *JSFunctionEmitter::GenFunctionSignature()
 }
 
 void JSFunctionEmitter::GenVariableSignature(pandasm::debuginfo::LocalVariable &variable_debug,
-                                             [[maybe_unused]] binder::LocalVariable *variable) const
+                                             [[maybe_unused]] varbinder::LocalVariable *variable) const
 {
     variable_debug.signature = "any";
     variable_debug.signature_type = "any";
@@ -77,7 +77,7 @@ void JSEmitter::GenAnnotation()
 #ifdef PANDA_WITH_ECMASCRIPT
     Program()->lang = panda_file::SourceLang::ECMASCRIPT;
     GenESAnnotationRecord();
-    GenESModuleModeRecord(Context()->Binder()->Program()->Kind() == parser::ScriptKind::MODULE);
+    GenESModuleModeRecord(Context()->VarBinder()->Program()->Kind() == parser::ScriptKind::MODULE);
 #else
     UNREACHABLE();
 #endif

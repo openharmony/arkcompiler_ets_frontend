@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public:
 
     static bool IsDynamicType(util::StringView assembler_name);
 
-    binder::LocalVariable *GetPropertyDynamic(const util::StringView &name, const ETSChecker *checker) const;
+    varbinder::LocalVariable *GetPropertyDynamic(const util::StringView &name, const ETSChecker *checker) const;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     void Cast(TypeRelation *relation, Type *target) override;

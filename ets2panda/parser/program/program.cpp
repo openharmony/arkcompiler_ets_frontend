@@ -15,8 +15,8 @@
 
 #include "program.h"
 
-#include "binder/binder.h"
-#include "binder/ETSBinder.h"
+#include "varbinder/varbinder.h"
+#include "varbinder/ETSBinder.h"
 #include "ir/astDump.h"
 #include "ir/base/classDefinition.h"
 #include "ir/statements/blockStatement.h"
@@ -41,26 +41,26 @@ util::StringView Program::PackageClassName(util::StringView class_name)
     return name.View();
 }
 
-binder::ClassScope *Program::GlobalClassScope()
+varbinder::ClassScope *Program::GlobalClassScope()
 {
     return global_class_->Scope()->AsClassScope();
 }
 
-const binder::ClassScope *Program::GlobalClassScope() const
+const varbinder::ClassScope *Program::GlobalClassScope() const
 {
     return global_class_->Scope()->AsClassScope();
 }
 
-binder::GlobalScope *Program::GlobalScope()
+varbinder::GlobalScope *Program::GlobalScope()
 {
     ASSERT(ast_->Scope()->IsGlobalScope() || ast_->Scope()->IsModuleScope());
-    return static_cast<binder::GlobalScope *>(ast_->Scope());
+    return static_cast<varbinder::GlobalScope *>(ast_->Scope());
 }
 
-const binder::GlobalScope *Program::GlobalScope() const
+const varbinder::GlobalScope *Program::GlobalScope() const
 {
     ASSERT(ast_->Scope()->IsGlobalScope() || ast_->Scope()->IsModuleScope());
-    return static_cast<const binder::GlobalScope *>(ast_->Scope());
+    return static_cast<const varbinder::GlobalScope *>(ast_->Scope());
 }
 
 }  // namespace panda::es2panda::parser

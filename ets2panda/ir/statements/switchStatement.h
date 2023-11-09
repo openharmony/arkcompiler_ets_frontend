@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_STATEMENT_SWITCH_STATEMENT_H
 #define ES2PANDA_IR_STATEMENT_SWITCH_STATEMENT_H
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "ir/statement.h"
 
 namespace panda::es2panda::ir {
@@ -25,7 +25,7 @@ class SwitchCaseStatement;
 
 class SwitchStatement : public Statement {
 public:
-    explicit SwitchStatement(binder::LocalScope *scope, Expression *discriminant,
+    explicit SwitchStatement(varbinder::LocalScope *scope, Expression *discriminant,
                              ArenaVector<SwitchCaseStatement *> &&cases)
         : Statement(AstNodeType::SWITCH_STATEMENT), scope_(scope), discriminant_(discriminant), cases_(std::move(cases))
     {
@@ -46,7 +46,7 @@ public:
         return true;
     }
 
-    binder::LocalScope *Scope() const override
+    varbinder::LocalScope *Scope() const override
     {
         return scope_;
     }
@@ -62,7 +62,7 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
 private:
-    binder::LocalScope *scope_;
+    varbinder::LocalScope *scope_;
     Expression *discriminant_;
     ArenaVector<SwitchCaseStatement *> cases_;
 };

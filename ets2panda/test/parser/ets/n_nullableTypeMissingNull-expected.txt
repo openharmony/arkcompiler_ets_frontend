@@ -1,1 +1,1 @@
-SyntaxError: Unexpected token, expected: 'null'. [n_nullableTypeMissingNull.ets:17:16]
+SyntaxError: Invalid Type [n_nullableTypeMissingNull.ets:17:16]

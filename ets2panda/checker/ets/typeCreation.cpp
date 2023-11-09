@@ -16,8 +16,8 @@
 #include "generated/signatures.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
-#include "binder/binder.h"
-#include "binder/ETSBinder.h"
+#include "varbinder/varbinder.h"
+#include "varbinder/ETSBinder.h"
 #include "ir/ets/etsScript.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/scriptFunction.h"
@@ -112,6 +112,35 @@ ETSArrayType *ETSChecker::CreateETSArrayType(Type *element_type)
     array_types_.insert({element_type, array_type});
 
     return array_type;
+}
+
+Type *ETSChecker::CreateETSUnionType(ArenaVector<Type *> &&constituent_types)
+{
+    if (constituent_types.empty()) {
+        return nullptr;
+    }
+
+    ArenaVector<Type *> new_constituent_types(Allocator()->Adapter());
+
+    for (auto *it : constituent_types) {
+        if (it->IsUnionType()) {
+            for (auto *type : it->AsETSUnionType()->ConstituentTypes()) {
+                new_constituent_types.push_back(type);
+            }
+
+            continue;
+        }
+
+        new_constituent_types.push_back(it);
+    }
+
+    if (new_constituent_types.size() == 1) {
+        return new_constituent_types[0];
+    }
+
+    auto *new_union_type = Allocator()->New<ETSUnionType>(std::move(new_constituent_types));
+
+    return ETSUnionType::HandleUnionType(new_union_type);
 }
 
 ETSFunctionType *ETSChecker::CreateETSFunctionType(ArenaVector<Signature *> &signatures)
@@ -296,7 +325,7 @@ ETSObjectType *ETSChecker::CreateETSObjectType(util::StringView name, ir::AstNod
 
 ETSEnumType *ETSChecker::CreateETSEnumType(ir::TSEnumDeclaration const *const enum_decl)
 {
-    binder::Variable *enum_var = enum_decl->Key()->Variable();
+    varbinder::Variable *enum_var = enum_decl->Key()->Variable();
     ASSERT(enum_var != nullptr);
 
     ETSEnumType::UType ordinal = -1;
@@ -350,7 +379,7 @@ ETSEnumType *ETSChecker::CreateETSEnumType(ir::TSEnumDeclaration const *const en
 
 ETSStringEnumType *ETSChecker::CreateETSStringEnumType(ir::TSEnumDeclaration const *const enum_decl)
 {
-    binder::Variable *enum_var = enum_decl->Key()->Variable();
+    varbinder::Variable *enum_var = enum_decl->Key()->Variable();
     ASSERT(enum_var != nullptr);
 
     ETSEnumType::UType ordinal = -1;
@@ -409,7 +438,7 @@ ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::Ast
     if (containing_obj_type != nullptr) {
         prefix = containing_obj_type->AssemblerName();
     } else if (decl_node->GetTopStatement()->Type() !=
-               ir::AstNodeType::BLOCK_STATEMENT) {  // TODO(): should not occur, fix for TS_INTERFACE_DECLARATION
+               ir::AstNodeType::BLOCK_STATEMENT) {  // NOTE: should not occur, fix for TS_INTERFACE_DECLARATION
         ASSERT(decl_node->IsTSInterfaceDeclaration());
         assembler_name = decl_node->AsTSInterfaceDeclaration()->InternalName();
     } else {
@@ -464,7 +493,8 @@ std::tuple<util::StringView, SignatureInfo *> ETSChecker::CreateBuiltinArraySign
 
     for (size_t i = 0; i < dim; i++) {
         util::UString param(std::to_string(i), Allocator());
-        auto *param_var = binder::Scope::CreateVar(Allocator(), param.View(), binder::VariableFlags::NONE, nullptr);
+        auto *param_var =
+            varbinder::Scope::CreateVar(Allocator(), param.View(), varbinder::VariableFlags::NONE, nullptr);
         param_var->SetTsType(GlobalIntType());
 
         info->params.push_back(param_var);

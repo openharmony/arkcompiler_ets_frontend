@@ -15,7 +15,7 @@
 
 #include "signature.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "checker/ETSchecker.h"
@@ -118,7 +118,7 @@ Signature *Signature::Copy(ArenaAllocator *allocator, TypeRelation *relation, Gl
     return copied_signature;
 }
 
-void Signature::ToString(std::stringstream &ss, const binder::Variable *variable, bool print_as_method) const
+void Signature::ToString(std::stringstream &ss, const varbinder::Variable *variable, bool print_as_method) const
 {
     if (!signature_info_->type_params.empty()) {
         ss << "<";
@@ -136,7 +136,7 @@ void Signature::ToString(std::stringstream &ss, const binder::Variable *variable
     for (auto it = signature_info_->params.begin(); it != signature_info_->params.end(); it++) {
         ss << (*it)->Name();
 
-        if ((*it)->HasFlag(binder::VariableFlags::OPTIONAL)) {
+        if ((*it)->HasFlag(varbinder::VariableFlags::OPTIONAL)) {
             ss << "?";
         }
 
@@ -163,7 +163,7 @@ void Signature::ToString(std::stringstream &ss, const binder::Variable *variable
 
     ss << ")";
 
-    if (print_as_method || (variable != nullptr && variable->HasFlag(binder::VariableFlags::METHOD))) {
+    if (print_as_method || (variable != nullptr && variable->HasFlag(varbinder::VariableFlags::METHOD))) {
         ss << ": ";
     } else {
         ss << " => ";
@@ -210,10 +210,10 @@ void Signature::Identical(TypeRelation *relation, Signature *other)
         }
 
         // Lambda to check the rest parameters
-        auto const identical_rest_parameters = [&i, &identical_parameters,
-                                                relation](std::size_t const parameter_number,
-                                                          ArenaVector<binder::LocalVariable *> const &parameters,
-                                                          binder::LocalVariable const *const rest_parameter) -> void {
+        auto const identical_rest_parameters =
+            [&i, &identical_parameters, relation](std::size_t const parameter_number,
+                                                  ArenaVector<varbinder::LocalVariable *> const &parameters,
+                                                  varbinder::LocalVariable const *const rest_parameter) -> void {
             if (rest_parameter != nullptr) {
                 auto *const other_sig_param_type = rest_parameter->TsType()->AsETSArrayType()->ElementType();
 

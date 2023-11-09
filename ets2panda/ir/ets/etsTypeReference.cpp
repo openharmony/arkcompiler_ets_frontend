@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
 
 #include "etsTypeReference.h"
 
+#include "checker/ETSchecker.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/ts/tsQualifiedName.h"
 #include "ir/ets/etsTypeReferencePart.h"
-#include "checker/ETSchecker.h"
-#include "compiler/core/ETSGen.h"
 
 namespace panda::es2panda::ir {
 void ETSTypeReference::TransformChildren(const NodeTransformer &cb)
@@ -60,20 +62,23 @@ void ETSTypeReference::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ETSTypeReference"}, {"part", part_}});
 }
 
-void ETSTypeReference::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-void ETSTypeReference::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ETSTypeReference::Compile(compiler::PandaGen *pg) const
 {
-    part_->Compile(etsg);
+    pg->GetAstCompiler()->Compile(this);
+}
+void ETSTypeReference::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ETSTypeReference::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *ETSTypeReference::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *ETSTypeReference::Check(checker::ETSChecker *checker)
 {
-    return GetType(checker);
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)

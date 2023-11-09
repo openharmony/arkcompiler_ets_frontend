@@ -83,16 +83,16 @@ panda_gen(
 
 set(ES2PANDA_LIB_SRC
   es2panda.cpp
-  binder/ASBinder.cpp
-  binder/TSBinder.cpp
-  binder/TypedBinder.cpp
-  binder/ETSBinder.cpp
-  binder/JSBinder.cpp
-  binder/binder.cpp
-  binder/declaration.cpp
-  binder/recordTable.cpp
-  binder/scope.cpp
-  binder/variable.cpp
+  varbinder/ASBinder.cpp
+  varbinder/TSBinder.cpp
+  varbinder/TypedBinder.cpp
+  varbinder/ETSBinder.cpp
+  varbinder/JSBinder.cpp
+  varbinder/varbinder.cpp
+  varbinder/declaration.cpp
+  varbinder/recordTable.cpp
+  varbinder/scope.cpp
+  varbinder/variable.cpp
   compiler/base/catchTable.cpp
   compiler/base/condition.cpp
   compiler/base/destructuring.cpp
@@ -102,6 +102,7 @@ set(ES2PANDA_LIB_SRC
   compiler/base/literals.cpp
   compiler/base/lreference.cpp
   compiler/base/optionalChain.cpp
+  compiler/core/ASTVerifier.cpp
   compiler/core/codeGen.cpp
   compiler/core/compileJob.cpp
   compiler/core/compileQueue.cpp
@@ -137,6 +138,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/util.cpp
   compiler/lowering/ets/generateDeclarations.cpp
   compiler/lowering/ets/opAssignment.cpp
+  compiler/lowering/ets/unionLowering.cpp
   ir/astDump.cpp
   ir/astNode.cpp
   ir/irnode.cpp
@@ -240,6 +242,7 @@ set(ES2PANDA_LIB_SRC
   ir/ets/etsScript.cpp
   ir/ets/etsTypeReference.cpp
   ir/ets/etsTypeReferencePart.cpp
+  ir/ets/etsUnionType.cpp
   ir/ets/etsWildcardType.cpp
   ir/ets/etsImportSource.cpp
   ir/ts/tsAnyKeyword.cpp
@@ -368,6 +371,7 @@ set(ES2PANDA_LIB_SRC
   checker/types/ets/etsObjectType.cpp
   checker/types/ets/etsStringType.cpp
   checker/types/ets/etsTypeParameter.cpp
+  checker/types/ets/etsUnionType.cpp
   checker/types/ets/etsVoidType.cpp
   checker/types/ets/wildcardType.cpp
   checker/types/ets/etsAsyncFuncReturnType.cpp

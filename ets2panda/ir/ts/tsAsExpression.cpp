@@ -15,9 +15,10 @@
 
 #include "tsAsExpression.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "checker/ets/castingContext.h"
+#include "checker/types/ets/etsUnionType.h"
 #include "compiler/core/ETSGen.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/literal.h"
@@ -58,7 +59,7 @@ void TSAsExpression::Dump(ir::AstDumper *dumper) const
 
 void TSAsExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
-void TSAsExpression::Compile(compiler::ETSGen *const etsg) const
+void TSAsExpression::Compile(compiler::ETSGen *etsg) const
 {
     if (!etsg->TryLoadConstantExpression(expression_)) {
         expression_->Compile(etsg);
@@ -66,7 +67,12 @@ void TSAsExpression::Compile(compiler::ETSGen *const etsg) const
 
     etsg->ApplyConversion(expression_, nullptr);
 
-    const auto target_type_kind = checker::ETSChecker::TypeKind(TsType());
+    auto *target_type = TsType();
+    if (target_type->IsETSUnionType()) {
+        target_type = target_type->AsETSUnionType()->FindTypeIsCastableToThis(expression_, etsg->Checker()->Relation(),
+                                                                              expression_->TsType());
+    }
+    const auto target_type_kind = checker::ETSChecker::TypeKind(target_type);
     switch (target_type_kind) {
         case checker::TypeFlag::ETS_BOOLEAN: {
             etsg->CastToBoolean(this);
@@ -103,7 +109,7 @@ void TSAsExpression::Compile(compiler::ETSGen *const etsg) const
         case checker::TypeFlag::ETS_ARRAY:
         case checker::TypeFlag::ETS_OBJECT:
         case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            etsg->CastToArrayOrObject(this, TsType(), is_unchecked_cast_);
+            etsg->CastToArrayOrObject(this, target_type, is_unchecked_cast_);
             break;
         }
         case checker::TypeFlag::ETS_STRING_ENUM:
@@ -209,7 +215,7 @@ checker::Type *TSAsExpression::Check(checker::ETSChecker *const checker)
                                       {"Cannot cast type '", source_type, "' to '", target_type, "'"});
 
     if (source_type->IsETSDynamicType() && target_type->IsLambdaObject()) {
-        // TODO(itrubachev) change target_type to created lambdaobject type.
+        // NOTE: itrubachev. change target_type to created lambdaobject type.
         // Now target_type is not changed, only construct signature is added to it
         checker->BuildLambdaObjectClass(target_type->AsETSObjectType(),
                                         TypeAnnotation()->AsETSFunctionType()->ReturnType());

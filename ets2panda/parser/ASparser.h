@@ -72,7 +72,7 @@ private:
     std::tuple<bool, bool, bool> ParseComputedClassFieldOrIndexSignature(ir::Expression **prop_name) override;
     std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
         const ArenaVector<ir::Expression *> &params, ParserStatus new_status, ParserStatus context_status,
-        binder::FunctionScope *func_scope) override;
+        varbinder::FunctionScope *func_scope) override;
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers) override;
     std::tuple<ir::Expression *, bool> ParseInterfacePropertyKey() override;
     ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList() override;
@@ -91,7 +91,7 @@ private:
     void ParseOptionalClassElement(ClassElementDescriptor *desc) override;
     void ValidateIndexSignatureTypeAnnotation(ir::TypeNode *type_annotation) override;
     ArrowFunctionDescriptor ConvertToArrowParameter(ir::Expression *expr, bool is_async,
-                                                    binder::FunctionParamScope *param_scope) override;
+                                                    varbinder::FunctionParamScope *param_scope) override;
     ParserStatus ValidateArrowParameter(ir::Expression *expr, bool *seen_optional) override;
     void ThrowIllegalBreakError() override;
     void ThrowIllegalContinueError() override;

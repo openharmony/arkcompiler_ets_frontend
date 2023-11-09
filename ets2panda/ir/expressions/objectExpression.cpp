@@ -130,7 +130,7 @@ ValidationInfo ObjectExpression::ValidateExpression()
 
 bool ObjectExpression::ConvertibleToObjectPattern()
 {
-    // TODO(rsipka): throw more precise messages in case of false results
+    // NOTE: rsipka. throw more precise messages in case of false results
     bool rest_found = false;
     bool conv_result = true;
 
@@ -449,9 +449,9 @@ checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
             continue;
         }
 
-        binder::LocalVariable *found_var = desc->FindProperty(prop->Key()->AsIdentifier()->Name());
+        varbinder::LocalVariable *found_var = desc->FindProperty(prop->Key()->AsIdentifier()->Name());
         checker::Type *pattern_param_type = checker->GlobalAnyType();
-        binder::Variable *binding_var = nullptr;
+        varbinder::Variable *binding_var = nullptr;
 
         if (prop->IsShorthand()) {
             switch (prop->Value()->Type()) {
@@ -545,12 +545,12 @@ checker::Type *ObjectExpression::CheckPattern(checker::TSChecker *checker)
             continue;
         }
 
-        binder::LocalVariable *pattern_var = binder::Scope::CreateVar(
-            checker->Allocator(), prop->Key()->AsIdentifier()->Name(), binder::VariableFlags::PROPERTY, *it);
+        varbinder::LocalVariable *pattern_var = varbinder::Scope::CreateVar(
+            checker->Allocator(), prop->Key()->AsIdentifier()->Name(), varbinder::VariableFlags::PROPERTY, *it);
         pattern_var->SetTsType(pattern_param_type);
 
         if (is_optional) {
-            pattern_var->AddFlag(binder::VariableFlags::OPTIONAL);
+            pattern_var->AddFlag(varbinder::VariableFlags::OPTIONAL);
         }
 
         desc->properties.insert(desc->properties.begin(), pattern_var);
@@ -575,16 +575,16 @@ const util::StringView &GetPropertyName(const ir::Expression *key)
     return key->AsNumberLiteral()->Str();
 }
 
-binder::VariableFlags GetFlagsForProperty(const ir::Property *prop)
+varbinder::VariableFlags GetFlagsForProperty(const ir::Property *prop)
 {
     if (!prop->IsMethod()) {
-        return binder::VariableFlags::PROPERTY;
+        return varbinder::VariableFlags::PROPERTY;
     }
 
-    binder::VariableFlags prop_flags = binder::VariableFlags::METHOD;
+    varbinder::VariableFlags prop_flags = varbinder::VariableFlags::METHOD;
 
     if (prop->IsAccessor() && prop->Kind() == PropertyKind::GET) {
-        prop_flags |= binder::VariableFlags::READONLY;
+        prop_flags |= varbinder::VariableFlags::READONLY;
     }
 
     return prop_flags;
@@ -642,13 +642,13 @@ checker::Type *ObjectExpression::Check(checker::TSChecker *checker)
             }
 
             checker::Type *prop_type = GetTypeForProperty(prop, checker);
-            binder::VariableFlags flags = GetFlagsForProperty(prop);
+            varbinder::VariableFlags flags = GetFlagsForProperty(prop);
             const util::StringView &prop_name = GetPropertyName(prop->Key());
 
-            auto *member_var = binder::Scope::CreateVar(checker->Allocator(), prop_name, flags, it);
+            auto *member_var = varbinder::Scope::CreateVar(checker->Allocator(), prop_name, flags, it);
 
             if (in_const_context) {
-                member_var->AddFlag(binder::VariableFlags::READONLY);
+                member_var->AddFlag(varbinder::VariableFlags::READONLY);
             } else {
                 prop_type = checker->GetBaseTypeOfLiteralType(prop_type);
             }
@@ -656,10 +656,10 @@ checker::Type *ObjectExpression::Check(checker::TSChecker *checker)
             member_var->SetTsType(prop_type);
 
             if (prop->Key()->IsNumberLiteral()) {
-                member_var->AddFlag(binder::VariableFlags::NUMERIC_NAME);
+                member_var->AddFlag(varbinder::VariableFlags::NUMERIC_NAME);
             }
 
-            binder::LocalVariable *found_member = desc->FindProperty(prop_name);
+            varbinder::LocalVariable *found_member = desc->FindProperty(prop_name);
             all_properties_map.insert({prop_name, it->Start()});
 
             if (found_member != nullptr) {
@@ -676,7 +676,7 @@ checker::Type *ObjectExpression::Check(checker::TSChecker *checker)
         checker::Type *const spread_type = it->AsSpreadElement()->Argument()->Check(checker);
         seen_spread = true;
 
-        // TODO(aszilagyi): handle union of object types
+        // N OTE: aszilagyi. handle union of object types
         if (!spread_type->IsObjectType()) {
             checker->ThrowTypeError("Spread types may only be created from object types.", it->Start());
         }
@@ -688,7 +688,7 @@ checker::Type *ObjectExpression::Check(checker::TSChecker *checker)
                     {found->first, " is specified more than once, so this usage will be overwritten."}, found->second);
             }
 
-            binder::LocalVariable *found_member = desc->FindProperty(spread_prop->Name());
+            varbinder::LocalVariable *found_member = desc->FindProperty(spread_prop->Name());
 
             if (found_member != nullptr) {
                 found_member->SetTsType(spread_prop->TsType());
@@ -703,7 +703,7 @@ checker::Type *ObjectExpression::Check(checker::TSChecker *checker)
         for (auto *it : desc->properties) {
             computed_string_prop_types.push_back(it->TsType());
 
-            if (has_computed_number_property && it->HasFlag(binder::VariableFlags::NUMERIC_NAME)) {
+            if (has_computed_number_property && it->HasFlag(varbinder::VariableFlags::NUMERIC_NAME)) {
                 computed_number_prop_types.push_back(it->TsType());
             }
         }
@@ -838,13 +838,13 @@ checker::Type *ObjectExpression::Check(checker::ETSChecker *checker)
         } else {
             checker->ThrowTypeError({"key in class composite should be either identifier or string literal"}, Start());
         }
-        binder::LocalVariable *lv = obj_type->GetProperty(pname, checker::PropertySearchFlags::SEARCH_INSTANCE_FIELD |
-                                                                     checker::PropertySearchFlags::SEARCH_IN_BASE);
+        varbinder::LocalVariable *lv = obj_type->GetProperty(
+            pname, checker::PropertySearchFlags::SEARCH_INSTANCE_FIELD | checker::PropertySearchFlags::SEARCH_IN_BASE);
         if (lv == nullptr) {
             checker->ThrowTypeError({"type ", obj_type->Name(), " has no property named ", pname}, prop_expr->Start());
         }
         checker->ValidatePropertyAccess(lv, obj_type, prop_expr->Start());
-        if (lv->HasFlag(binder::VariableFlags::READONLY)) {
+        if (lv->HasFlag(varbinder::VariableFlags::READONLY)) {
             checker->ThrowTypeError({"cannot assign to readonly property ", pname}, prop_expr->Start());
         }
 

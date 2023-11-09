@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,15 @@ public:
     util::StringView GetValue() const
     {
         return value_;
+    }
+
+    std::tuple<bool, bool> ResolveConditionExpr() const override
+    {
+        if (IsNullableType()) {
+            return {false, false};
+        }
+
+        return {IsConstantType(), IsConstantType() ? (GetValue().Length() != 0) : false};
     }
 
 private:

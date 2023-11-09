@@ -451,6 +451,18 @@ signatures:
     return_type: BUILTIN_DOUBLE
     ref: BUILTIN_DOUBLE_VALUE_OF
 
+  - callee: BUILTIN_FLOAT
+    method_name: isNaN
+    params: [PRIMITIVE_FLOAT]
+    return_type: PRIMITIVE_BOOLEAN
+    ref: BUILTIN_FLOAT_IS_NAN
+
+  - callee: BUILTIN_DOUBLE
+    method_name: isNaN
+    params: [PRIMITIVE_DOUBLE]
+    return_type: PRIMITIVE_BOOLEAN
+    ref: BUILTIN_DOUBLE_IS_NAN
+
   - callee: BUILTIN_BOOLEAN
     method_name: unboxed
     params: []

@@ -15,7 +15,7 @@
 
 #include "forOfStatement.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "compiler/base/iterators.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/labelTarget.h"
@@ -168,6 +168,20 @@ checker::Type *ForOfStatement::Check(checker::ETSChecker *checker)
     left_->Check(checker);
     checker::Type *iter_type = nullptr;
 
+    // Just to avoid extra nested level(s)
+    auto const get_iter_type = [checker, elem_type](ir::VariableDeclarator *const declarator) -> checker::Type * {
+        if (declarator->TsType() == nullptr) {
+            if (auto *resolved = checker->FindVariableInFunctionScope(declarator->Id()->AsIdentifier()->Name());
+                resolved != nullptr) {
+                resolved->SetTsType(elem_type);
+                return elem_type;
+            }
+        } else {
+            return declarator->TsType();
+        }
+        return nullptr;
+    };
+
     if (left_->IsIdentifier()) {
         if (auto *const variable = left_->AsIdentifier()->Variable(); variable != nullptr) {
             if (variable->Declaration()->IsConstDecl()) {
@@ -178,15 +192,7 @@ checker::Type *ForOfStatement::Check(checker::ETSChecker *checker)
         iter_type = left_->AsIdentifier()->TsType();
     } else if (left_->IsVariableDeclaration()) {
         if (auto const &declarators = left_->AsVariableDeclaration()->Declarators(); !declarators.empty()) {
-            if (auto const &for_iterator = declarators.front(); for_iterator->TsType() == nullptr) {
-                if (auto *resolved = checker->FindVariableInFunctionScope(for_iterator->Id()->AsIdentifier()->Name());
-                    resolved != nullptr) {
-                    resolved->SetTsType(elem_type);
-                    iter_type = elem_type;
-                }
-            } else {
-                iter_type = for_iterator->TsType();
-            }
+            iter_type = get_iter_type(declarators.front());
         }
     }
 

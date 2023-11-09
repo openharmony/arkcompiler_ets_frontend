@@ -290,7 +290,7 @@ void CallExpression::Compile(compiler::ETSGen *etsg) const
 
         if (!obj->IsMemberExpression() && obj->IsIdentifier()) {
             auto *var = obj->AsIdentifier()->Variable();
-            auto *data = etsg->Binder()->DynamicImportDataForVar(var);
+            auto *data = etsg->VarBinder()->DynamicImportDataForVar(var);
             if (data != nullptr) {
                 auto *import = data->import;
                 auto *specifier = data->specifier;
@@ -358,7 +358,7 @@ checker::Type *CallExpression::Check(checker::TSChecker *checker)
 {
     checker::Type *callee_type = callee_->Check(checker);
 
-    // TODO(aszilagyi): handle optional chain
+    // NOTE: aszilagyi. handle optional chain
     if (callee_type->IsObjectType()) {
         checker::ObjectType *callee_obj = callee_type->AsObjectType();
         return checker->ResolveCallOrNewExpression(callee_obj->CallSignatures(), arguments_, Start());

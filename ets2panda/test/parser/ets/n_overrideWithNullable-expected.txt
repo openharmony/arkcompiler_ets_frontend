@@ -1141,13 +1141,38 @@
                           "type": "Identifier",
                           "name": "a",
                           "typeAnnotation": {
-                            "type": "ETSTypeReference",
-                            "part": {
-                              "type": "ETSTypeReferencePart",
-                              "name": {
-                                "type": "Identifier",
-                                "name": "A",
-                                "decorators": [],
+                            "type": "ETSUnionType",
+                            "types": [
+                              {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "A",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 31,
+                                        "column": 27
+                                      },
+                                      "end": {
+                                        "line": 31,
+                                        "column": 28
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 31,
+                                      "column": 27
+                                    },
+                                    "end": {
+                                      "line": 31,
+                                      "column": 30
+                                    }
+                                  }
+                                },
                                 "loc": {
                                   "start": {
                                     "line": 31,
@@ -1155,21 +1180,11 @@
                                   },
                                   "end": {
                                     "line": 31,
-                                    "column": 28
+                                    "column": 30
                                   }
                                 }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 31,
-                                  "column": 27
-                                },
-                                "end": {
-                                  "line": 31,
-                                  "column": 30
-                                }
                               }
-                            },
+                            ],
                             "loc": {
                               "start": {
                                 "line": 31,
@@ -1346,13 +1361,38 @@
                           "type": "Identifier",
                           "name": "t",
                           "typeAnnotation": {
-                            "type": "ETSTypeReference",
-                            "part": {
-                              "type": "ETSTypeReferencePart",
-                              "name": {
-                                "type": "Identifier",
-                                "name": "T",
-                                "decorators": [],
+                            "type": "ETSUnionType",
+                            "types": [
+                              {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "T",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 35,
+                                        "column": 40
+                                      },
+                                      "end": {
+                                        "line": 35,
+                                        "column": 41
+                                      }
+                                    }
+                                  },
+                                  "loc": {
+                                    "start": {
+                                      "line": 35,
+                                      "column": 40
+                                    },
+                                    "end": {
+                                      "line": 35,
+                                      "column": 43
+                                    }
+                                  }
+                                },
                                 "loc": {
                                   "start": {
                                     "line": 35,
@@ -1360,21 +1400,11 @@
                                   },
                                   "end": {
                                     "line": 35,
-                                    "column": 41
+                                    "column": 43
                                   }
                                 }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 35,
-                                  "column": 40
-                                },
-                                "end": {
-                                  "line": 35,
-                                  "column": 43
-                                }
                               }
-                            },
+                            ],
                             "loc": {
                               "start": {
                                 "line": 35,

@@ -82,6 +82,7 @@
     _(ETS_CLASS_LITERAL, ETSClassLiteral)                                                 \
     _(ETS_TYPE_REFERENCE, ETSTypeReference)                                               \
     _(ETS_TYPE_REFERENCE_PART, ETSTypeReferencePart)                                      \
+    _(ETS_UNION_TYPE, ETSUnionType)                                                       \
     _(ETS_LAUNCH_EXPRESSION, ETSLaunchExpression)                                         \
     _(ETS_NEW_ARRAY_INSTANCE_EXPRESSION, ETSNewArrayInstanceExpression)                   \
     _(ETS_NEW_MULTI_DIM_ARRAY_INSTANCE_EXPRESSION, ETSNewMultiDimArrayInstanceExpression) \

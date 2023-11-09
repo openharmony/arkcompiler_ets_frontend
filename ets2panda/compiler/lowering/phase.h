@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ public:
     /* If Apply returns false, processing is stopped. */
     bool Apply(CompilerContext *ctx, parser::Program *program);
 
-    virtual util::StringView Name() = 0;
+    virtual std::string const &Name() = 0;
 
     virtual bool Precondition([[maybe_unused]] CompilerContext *ctx, [[maybe_unused]] const parser::Program *program)
     {

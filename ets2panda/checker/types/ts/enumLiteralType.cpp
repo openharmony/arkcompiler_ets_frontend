@@ -15,7 +15,7 @@
 
 #include "enumLiteralType.h"
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "checker/types/ts/enumType.h"
 
 namespace panda::es2panda::checker {

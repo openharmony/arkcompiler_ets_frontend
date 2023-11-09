@@ -16,7 +16,8 @@
 #ifndef ES2PANDA_IR_EXPRESSION_MEMBER_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_MEMBER_EXPRESSION_H
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
+#include "checker/types/ets/etsObjectType.h"
 #include "ir/expression.h"
 #include "ir/irnode.h"
 
@@ -79,12 +80,12 @@ public:
         return property_;
     }
 
-    [[nodiscard]] binder::LocalVariable *PropVar() noexcept
+    [[nodiscard]] varbinder::LocalVariable *PropVar() noexcept
     {
         return prop_var_;
     }
 
-    [[nodiscard]] const binder::LocalVariable *PropVar() const noexcept
+    [[nodiscard]] const varbinder::LocalVariable *PropVar() const noexcept
     {
         return prop_var_;
     }
@@ -124,7 +125,7 @@ public:
         return obj_type_;
     }
 
-    void SetPropVar(binder::LocalVariable *prop_var) noexcept
+    void SetPropVar(varbinder::LocalVariable *prop_var) noexcept
     {
         prop_var_ = prop_var;
     }
@@ -146,12 +147,16 @@ public:
 
     [[nodiscard]] bool IsPrivateReference() const noexcept;
 
+    checker::Type *CheckEnumMember(checker::ETSChecker *checker, checker::Type *type);
+    checker::Type *CheckObjectMember(checker::ETSChecker *checker);
+
     // NOLINTNEXTLINE(google-default-arguments)
     [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
+    bool CompileComputed(compiler::ETSGen *etsg) const;
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     void CompileToReg(compiler::PandaGen *pg, compiler::VReg obj_reg) const;
@@ -179,7 +184,7 @@ private:
     bool computed_;
     bool optional_;
     bool ignore_box_ {false};
-    binder::LocalVariable *prop_var_ {};
+    varbinder::LocalVariable *prop_var_ {};
     checker::ETSObjectType *obj_type_ {};
 };
 }  // namespace panda::es2panda::ir

@@ -449,7 +449,22 @@
                       "type": "Identifier",
                       "name": "a",
                       "typeAnnotation": {
-                        "type": "ETSPrimitiveType",
+                        "type": "ETSUnionType",
+                        "types": [
+                          {
+                            "type": "ETSPrimitiveType",
+                            "loc": {
+                              "start": {
+                                "line": 21,
+                                "column": 18
+                              },
+                              "end": {
+                                "line": 21,
+                                "column": 21
+                              }
+                            }
+                          }
+                        ],
                         "loc": {
                           "start": {
                             "line": 21,
@@ -486,13 +501,38 @@
                   }
                 ],
                 "returnType": {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "Int",
-                      "decorators": [],
+                  "type": "ETSUnionType",
+                  "types": [
+                    {
+                      "type": "ETSTypeReference",
+                      "part": {
+                        "type": "ETSTypeReferencePart",
+                        "name": {
+                          "type": "Identifier",
+                          "name": "Int",
+                          "decorators": [],
+                          "loc": {
+                            "start": {
+                              "line": 21,
+                              "column": 32
+                            },
+                            "end": {
+                              "line": 21,
+                              "column": 35
+                            }
+                          }
+                        },
+                        "loc": {
+                          "start": {
+                            "line": 21,
+                            "column": 32
+                          },
+                          "end": {
+                            "line": 21,
+                            "column": 37
+                          }
+                        }
+                      },
                       "loc": {
                         "start": {
                           "line": 21,
@@ -500,21 +540,11 @@
                         },
                         "end": {
                           "line": 21,
-                          "column": 35
+                          "column": 37
                         }
                       }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 21,
-                        "column": 32
-                      },
-                      "end": {
-                        "line": 21,
-                        "column": 37
-                      }
                     }
-                  },
+                  ],
                   "loc": {
                     "start": {
                       "line": 21,

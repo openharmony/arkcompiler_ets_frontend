@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,11 @@ public:
 
     static void Compile(PandaGen *pg, const ir::Expression *expr, Label *false_label);
     static void Compile(ETSGen *etsg, const ir::Expression *expr, Label *false_label);
-    static Result CheckConstantExpr(const ir::Expression *expr);
+    static Result CheckConstantExpr(ETSGen *etsg, const ir::Expression *expr);
+
+private:
+    static bool CompileBinaryExpr(PandaGen *pg, const ir::BinaryExpression *bin_expr, Label *false_label);
+    static bool CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *bin_expr, Label *false_label);
 };
 }  // namespace panda::es2panda::compiler
 

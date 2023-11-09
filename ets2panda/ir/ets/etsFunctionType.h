@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ class TSTypeParameterDeclaration;
 
 class ETSFunctionType : public TypeNode {
 public:
-    explicit ETSFunctionType(binder::Scope *scope, ArenaVector<Expression *> &&params,
+    explicit ETSFunctionType(varbinder::Scope *scope, ArenaVector<Expression *> &&params,
                              TSTypeParameterDeclaration *type_params, TypeNode *return_type,
                              ir::ScriptFunctionFlags func_flags)
         : TypeNode(AstNodeType::ETS_FUNCTION_TYPE),
@@ -40,7 +40,7 @@ public:
         return true;
     }
 
-    binder::Scope *Scope() const override
+    varbinder::Scope *Scope() const override
     {
         return scope_;
     }
@@ -95,7 +95,7 @@ public:
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
 
 private:
-    binder::Scope *scope_;
+    varbinder::Scope *scope_;
     ArenaVector<Expression *> params_;
     TSTypeParameterDeclaration *type_params_;
     TypeNode *return_type_;

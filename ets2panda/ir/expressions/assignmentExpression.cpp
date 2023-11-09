@@ -274,7 +274,7 @@ checker::Type *AssignmentExpression::Check([[maybe_unused]] checker::ETSChecker 
         case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_PLUS_EQUAL: {
             std::tie(std::ignore, operation_type_) =
-                checker->CheckBinaryOperator(left_, right_, operator_, Start(), true);
+                checker->CheckBinaryOperator(left_, right_, this, operator_, Start(), true);
 
             auto unboxed_left = checker->ETSBuiltinTypeAsPrimitiveType(left_type);
             source_type = unboxed_left == nullptr ? left_type : unboxed_left;

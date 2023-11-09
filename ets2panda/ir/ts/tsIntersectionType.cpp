@@ -52,7 +52,7 @@ checker::Type *TSIntersectionType::GetType([[maybe_unused]] checker::TSChecker *
 
 checker::Type *TSIntersectionType::GetType([[maybe_unused]] checker::ETSChecker *checker)
 {
-    // TODO(): validate
+    // NOTE: validate
     return checker->GlobalETSObjectType();
 }
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 #include "ETSemitter.h"
 
 #include "compiler/core/ETSGen.h"
-#include "binder/binder.h"
-#include "binder/variableFlags.h"
-#include "binder/ETSBinder.h"
+#include "varbinder/varbinder.h"
+#include "varbinder/variableFlags.h"
+#include "varbinder/ETSBinder.h"
 #include "ir/astNode.h"
 #include "ir/expressions/identifier.h"
 #include "ir/base/decorator.h"
@@ -48,7 +48,7 @@ namespace panda::es2panda::compiler {
 #ifdef PANDA_WITH_ETS
 static constexpr auto EXTENSION = panda_file::SourceLang::ETS;
 #else
-// TODO: temporary dummy gn buildfix until ETS plugin has gn build support
+// NOTE: temporary dummy gn buildfix until ETS plugin has gn build support
 static constexpr auto EXTENSION = panda_file::SourceLang::PANDA_ASSEMBLY;
 #endif
 
@@ -62,7 +62,7 @@ static uint32_t TranslateModifierFlags(ir::ModifierFlags modifier_flags)
         if ((modifier_flags & ir::ModifierFlags::PROTECTED) != 0) {
             access_flags = ACC_PROTECTED;
         }
-        // TODO(torokg): Add ACC_INTERNAL access flag to libpandabase
+        // NOTE: torokg. Add ACC_INTERNAL access flag to libpandabase
     } else if ((modifier_flags & ir::ModifierFlags::PROTECTED) != 0) {
         access_flags = ACC_PROTECTED;
     } else {
@@ -135,7 +135,7 @@ pandasm::Function *ETSFunctionEmitter::GenFunctionSignature()
 }
 
 void ETSFunctionEmitter::GenVariableSignature(pandasm::debuginfo::LocalVariable &variable_debug,
-                                              [[maybe_unused]] binder::LocalVariable *variable) const
+                                              [[maybe_unused]] varbinder::LocalVariable *variable) const
 {
     variable_debug.signature = Signatures::ANY;
     variable_debug.signature_type = Signatures::ANY;
@@ -192,9 +192,9 @@ static pandasm::Function GenExternalFunction(checker::Signature *signature, bool
 void ETSEmitter::GenAnnotation()
 {
     Program()->lang = EXTENSION;
-    const auto *binder = static_cast<binder::ETSBinder *>(Context()->Binder());
+    const auto *varbinder = static_cast<varbinder::ETSBinder *>(Context()->VarBinder());
 
-    auto *global_record_table = binder->GetGlobalRecordTable();
+    auto *global_record_table = varbinder->GetGlobalRecordTable();
 
     for (auto *class_decl : global_record_table->ClassDefinitions()) {
         GenClassRecord(class_decl, false);
@@ -215,7 +215,7 @@ void ETSEmitter::GenAnnotation()
         Program()->function_table.emplace(func.name, std::move(func));
     }
 
-    for (auto [extProg, recordTable] : binder->GetExternalRecordTable()) {
+    for (auto [extProg, recordTable] : varbinder->GetExternalRecordTable()) {
         (void)extProg;
         GenExternalRecord(recordTable);
     }
@@ -227,9 +227,9 @@ void ETSEmitter::GenAnnotation()
     }
 }
 
-void ETSEmitter::GenExternalRecord(binder::RecordTable *record_table)
+void ETSEmitter::GenExternalRecord(varbinder::RecordTable *record_table)
 {
-    bool is_gen_std_lib = record_table->Program()->Binder()->IsGenStdLib();
+    bool is_gen_std_lib = record_table->Program()->VarBinder()->IsGenStdLib();
     for (auto *class_decl : record_table->ClassDefinitions()) {
         GenClassRecord(class_decl, !is_gen_std_lib);
     }
@@ -362,7 +362,7 @@ void ETSEmitter::GenField(const checker::Type *ts_type, const util::StringView &
 
 void ETSEmitter::GenClassInheritedFields(const checker::ETSObjectType *base_type, pandasm::Record &class_record)
 {
-    std::vector<const binder::LocalVariable *> foreign_props = base_type->ForeignProperties();
+    std::vector<const varbinder::LocalVariable *> foreign_props = base_type->ForeignProperties();
 
     for (const auto *foreign_prop : foreign_props) {
         auto *decl_node = foreign_prop->Declaration()->Node();
@@ -412,7 +412,7 @@ void ETSEmitter::GenInterfaceRecord(const ir::TSInterfaceDeclaration *interface_
     }
 
     interface_record.metadata->SetAccessFlags(access_flags);
-    interface_record.source_file = Context()->Binder()->Program()->AbsoluteName().Mutf8();
+    interface_record.source_file = Context()->VarBinder()->Program()->AbsoluteName().Mutf8();
     interface_record.metadata->SetAttributeValue(Signatures::EXTENDS_ATTRIBUTE, Signatures::BUILTIN_OBJECT);
 
     for (auto *it : base_type->Interfaces()) {
@@ -456,16 +456,14 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *class_def, bool exter
     }
 
     class_record.metadata->SetAccessFlags(access_flags);
-    class_record.source_file = Context()->Binder()->Program()->AbsoluteName().Mutf8();
+    class_record.source_file = Context()->VarBinder()->Program()->AbsoluteName().Mutf8();
 
     auto *base_type = class_def->TsType()->AsETSObjectType();
-
     if (base_type->SuperType() != nullptr) {
         class_record.metadata->SetAttributeValue(Signatures::EXTENDS_ATTRIBUTE,
                                                  base_type->SuperType()->AssemblerName().Mutf8());
     } else {
-        // TODO(rtakacs): replace the whole if block (below) with assert when lambda objects have super class.
-        // ASSERT(base_type->AssemblerName().Mutf8() == Signatures::BUILTIN_OBJECT);
+        // NOTE: rtakacs. Replace the whole if block (below) with assert when lambda objects have super class.
         if (base_type->AssemblerName().Mutf8() != Signatures::BUILTIN_OBJECT) {
             class_record.metadata->SetAttributeValue(Signatures::EXTENDS_ATTRIBUTE, Signatures::BUILTIN_OBJECT);
         }
@@ -478,7 +476,7 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *class_def, bool exter
         }
 
         auto *decl_node = it->GetDeclNode();
-        // TODO(itrubachev): replace it with ASSERT(decl_node->IsTSInterfaceDeclaration())
+        // NOTE: itrubachev. replace it with ASSERT(decl_node->IsTSInterfaceDeclaration())
         // after adding proper creation of lambda object in ETSFunctionType::AssignmentSource
         if (!decl_node->IsTSInterfaceDeclaration()) {
             continue;

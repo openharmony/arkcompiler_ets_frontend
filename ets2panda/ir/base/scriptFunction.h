@@ -17,7 +17,7 @@
 #define ES2PANDA_PARSER_INCLUDE_AST_SCRIPT_FUNCTION_H
 
 #include "ir/astNode.h"
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "util/enumbitops.h"
 #include "util/language.h"
 
@@ -31,7 +31,7 @@ class TypeNode;
 
 class ScriptFunction : public AstNode {
 public:
-    explicit ScriptFunction(binder::FunctionScope *scope, ArenaVector<Expression *> &&params,
+    explicit ScriptFunction(varbinder::FunctionScope *scope, ArenaVector<Expression *> &&params,
                             TSTypeParameterDeclaration *type_params, AstNode *body, TypeNode *return_type_annotation,
                             ir::ScriptFunctionFlags func_flags, bool declare, Language lang)
         : AstNode(AstNodeType::SCRIPT_FUNCTION),
@@ -46,7 +46,7 @@ public:
     {
     }
 
-    explicit ScriptFunction(binder::FunctionScope *scope, ArenaVector<Expression *> &&params,
+    explicit ScriptFunction(varbinder::FunctionScope *scope, ArenaVector<Expression *> &&params,
                             TSTypeParameterDeclaration *type_params, AstNode *body, TypeNode *return_type_annotation,
                             ir::ScriptFunctionFlags func_flags, ir::ModifierFlags flags, bool declare, Language lang)
         : AstNode(AstNodeType::SCRIPT_FUNCTION, flags),
@@ -272,7 +272,7 @@ public:
         return true;
     }
 
-    binder::FunctionScope *Scope() const override
+    varbinder::FunctionScope *Scope() const override
     {
         return scope_;
     }
@@ -292,7 +292,7 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
 private:
-    binder::FunctionScope *scope_;
+    varbinder::FunctionScope *scope_;
     Identifier *id_ {};
     ArenaVector<Expression *> params_;
     TSTypeParameterDeclaration *type_params_;

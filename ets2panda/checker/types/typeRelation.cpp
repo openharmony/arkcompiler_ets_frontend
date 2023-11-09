@@ -94,7 +94,7 @@ bool TypeRelation::IsIdenticalTo(IndexInfo *source, IndexInfo *target)
     return result_ == RelationResult::TRUE;
 }
 
-// TODO(user): applyNarrowing -> flag
+// NOTE: applyNarrowing -> flag
 bool TypeRelation::IsAssignableTo(Type *source, Type *target)
 {
     result_ = CacheLookup(source, target, checker_->AssignableResults(), RelationType::ASSIGNABLE);
@@ -156,7 +156,7 @@ bool TypeRelation::IsCastableTo(Type *const source, Type *const target)
             return false;
         }
 
-        // FIXME: Can't cache if the node has BoxingUnboxingFlags. These flags should be stored and restored on the node
+        // NOTE: Can't cache if the node has BoxingUnboxingFlags. These flags should be stored and restored on the node
         // on cache hit.
         if (UncheckedCast() && node_->GetBoxingUnboxingFlags() == ir::BoxingUnboxingFlags::NONE) {
             checker_->UncheckedCastableResult().cached.insert(

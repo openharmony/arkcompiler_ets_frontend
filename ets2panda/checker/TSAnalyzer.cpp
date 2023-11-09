@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,7 @@
 #include "TSAnalyzer.h"
 
 #include "checker/TSchecker.h"
-#include "ir/base/catchClause.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/statements/returnStatement.h"
-#include "ir/typeNode.h"
+#include "checker/ts/destructuringContext.h"
 #include "util/helpers.h"
 
 namespace panda::es2panda::checker {
@@ -64,7 +59,7 @@ checker::Type *TSAnalyzer::Check(ir::CatchClause *st) const
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ClassDefinition *node) const
 {
     TSChecker *checker = GetTSChecker();
-    // TODO(aszilagyi)
+    // NOTE: aszilagyi.
     return checker->GlobalAnyType();
 }
 
@@ -191,39 +186,39 @@ checker::Type *TSAnalyzer::Check(ir::ETSPackageDeclaration *st) const
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ETSParameterExpression *expr) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSParameterExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ETSPrimitiveType *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSPrimitiveType *node) const
+{
+    UNREACHABLE();
+}
+
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSStructDeclaration *node) const
+{
+    UNREACHABLE();
+}
+
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSTypeReference *node) const
+{
+    UNREACHABLE();
+}
+
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSTypeReferencePart *node) const
+{
+    UNREACHABLE();
+}
+
+checker::Type *TSAnalyzer::Check(ir::ETSUnionType *node) const
 {
     (void)node;
     UNREACHABLE();
 }
 
-checker::Type *TSAnalyzer::Check(ir::ETSStructDeclaration *node) const
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSWildcardType *node) const
 {
-    (void)node;
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check(ir::ETSTypeReference *node) const
-{
-    (void)node;
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check(ir::ETSTypeReferencePart *node) const
-{
-    (void)node;
-    UNREACHABLE();
-}
-
-checker::Type *TSAnalyzer::Check(ir::ETSWildcardType *node) const
-{
-    (void)node;
     UNREACHABLE();
 }
 // compile methods for EXPRESSIONS in alphabetical order
@@ -235,8 +230,35 @@ checker::Type *TSAnalyzer::Check(ir::ArrayExpression *expr) const
 
 checker::Type *TSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    TSChecker *checker = GetTSChecker();
+    varbinder::Variable *func_var = nullptr;
+
+    if (expr->Function()->Parent()->Parent() != nullptr &&
+        expr->Function()->Parent()->Parent()->IsVariableDeclarator() &&
+        expr->Function()->Parent()->Parent()->AsVariableDeclarator()->Id()->IsIdentifier()) {
+        func_var = expr->Function()->Parent()->Parent()->AsVariableDeclarator()->Id()->AsIdentifier()->Variable();
+    }
+
+    checker::ScopeContext scope_ctx(checker, expr->Function()->Scope());
+
+    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
+    checker->CheckFunctionParameterDeclarations(expr->Function()->Params(), signature_info);
+
+    auto *signature = checker->Allocator()->New<checker::Signature>(
+        signature_info, checker->GlobalResolvingReturnType(), expr->Function());
+    checker::Type *func_type = checker->CreateFunctionTypeWithSignature(signature);
+
+    if (func_var != nullptr && func_var->TsType() == nullptr) {
+        func_var->SetTsType(func_type);
+    }
+
+    signature->SetReturnType(checker->HandleFunctionReturn(expr->Function()));
+
+    if (!expr->Function()->Body()->IsExpression()) {
+        expr->Function()->Body()->Check(checker);
+    }
+
+    return func_type;
 }
 
 checker::Type *TSAnalyzer::Check(ir::AssignmentExpression *expr) const

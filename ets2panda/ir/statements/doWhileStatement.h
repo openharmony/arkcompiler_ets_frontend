@@ -18,16 +18,16 @@
 
 #include "ir/statements/loopStatement.h"
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class LoopScope;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::ir {
 class Expression;
 
 class DoWhileStatement : public LoopStatement {
 public:
-    explicit DoWhileStatement(binder::LoopScope *scope, Statement *body, Expression *test)
+    explicit DoWhileStatement(varbinder::LoopScope *scope, Statement *body, Expression *test)
         : LoopStatement(AstNodeType::DO_WHILE_STATEMENT, scope), body_(body), test_(test)
     {
     }

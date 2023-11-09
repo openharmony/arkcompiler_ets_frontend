@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,20 @@
  * limitations under the License.
  */
 
-/**
- * This is a sample lowering, of little value by itself.
- * TODO(gogabr):
- *   - temporary variables are inserted into the current scope without any accompanying definition
- *     construction; most likely, a proper AST checker would complain.
- *
- * desc: A compound assignment expression of the form E1 op= E2 is equivalent to E1 =
- *   	 ((E1) op (E2)) as T, where T is the type of E1, except that E1 is evaluated only
- *   	 once.
- */
+//
+// This is a sample lowering, of little value by itself.
+// NOTE: gobabr.
+//   - temporary variables are inserted into the current scope without any accompanying definition
+//     construction; most likely, a proper AST checker would complain.
+//
+// desc: A compound assignment expression of the form E1 op= E2 is equivalent to E1 =
+//   	 ((E1) op (E2)) as T, where T is the type of E1, except that E1 is evaluated only
+//   	 once.
+//
 
 #include "opAssignment.h"
 #include "checker/types/typeFlag.h"
-#include "binder/variableFlags.h"
+#include "varbinder/variableFlags.h"
 #include "checker/ETSchecker.h"
 #include "compiler/core/compilerContext.h"
 #include "compiler/lowering/util.h"
@@ -44,9 +44,10 @@
 
 namespace panda::es2panda::compiler {
 
-util::StringView OpAssignmentLowering::Name()
+std::string const &OpAssignmentLowering::Name()
 {
-    return "op-assignment";
+    static std::string const NAME = "op-assignment";
+    return NAME;
 }
 
 struct Conversion {
@@ -130,7 +131,7 @@ static ir::AstNode *CloneNode(checker::ETSChecker *checker, ir::AstNode *ast)
 
 void AdjustBoxingUnboxingFlags(ir::Expression *new_expr, const ir::Expression *old_expr)
 {
-    // TODO(gogabr): make sure that the checker never puts both a boxing and an unboxing flag on the same node.
+    // NOTE: gogabr. make sure that the checker never puts both a boxing and an unboxing flag on the same node.
     // Then this function will become unnecessary.
     const ir::BoxingUnboxingFlags old_boxing_flag {old_expr->GetBoxingUnboxingFlags() &
                                                    ir::BoxingUnboxingFlags::BOXING_FLAG};
@@ -147,7 +148,7 @@ void AdjustBoxingUnboxingFlags(ir::Expression *new_expr, const ir::Expression *o
 
 ir::Expression *HandleOpAssignment(checker::ETSChecker *checker, ir::AssignmentExpression *assignment)
 {
-    if (assignment->TsType() == nullptr) {  // hasn't been throiugh checker
+    if (assignment->TsType() == nullptr) {  // hasn't been through checker
         return assignment;
     }
 
@@ -173,8 +174,8 @@ ir::Expression *HandleOpAssignment(checker::ETSChecker *checker, ir::AssignmentE
         auto *scope = NearestScope(assignment);
 
         auto *tmp_obj_var_id = Gensym(checker->Allocator());
-        auto *tmp_obj_var = scope->AddDecl<binder::LetDecl, binder::LocalVariable>(
-            checker->Allocator(), tmp_obj_var_id->Name(), binder::VariableFlags::LOCAL);
+        auto *tmp_obj_var = scope->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(
+            checker->Allocator(), tmp_obj_var_id->Name(), varbinder::VariableFlags::LOCAL);
         tmp_obj_var->SetTsType(left_memb->Object()->TsType());
         tmp_obj_var_id->SetVariable(tmp_obj_var);
         tmp_obj_var_id->SetTsType(tmp_obj_var->TsType());
@@ -186,8 +187,8 @@ ir::Expression *HandleOpAssignment(checker::ETSChecker *checker, ir::AssignmentE
         auto *property = left_memb->Property();
         if (!property->IsIdentifier()) {
             auto *tmp_prop_var_id = Gensym(checker->Allocator());
-            auto *tmp_prop_var = scope->AddDecl<binder::LetDecl, binder::LocalVariable>(
-                checker->Allocator(), tmp_prop_var_id->Name(), binder::VariableFlags::LOCAL);
+            auto *tmp_prop_var = scope->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(
+                checker->Allocator(), tmp_prop_var_id->Name(), varbinder::VariableFlags::LOCAL);
             tmp_prop_var->SetTsType(left_memb->Property()->TsType());
             tmp_prop_var_id->SetVariable(tmp_prop_var);
             tmp_prop_var_id->SetTsType(tmp_prop_var->TsType());

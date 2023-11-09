@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ void ETSNewClassInstanceExpression::CreateDynamicObject(const ir::AstNode *node,
     }
 
     auto *var = name->AsIdentifier()->Variable();
-    auto *data = etsg->Binder()->DynamicImportDataForVar(var);
+    auto *data = etsg->VarBinder()->DynamicImportDataForVar(var);
     if (data != nullptr) {
         auto *import = data->import;
         auto *specifier = data->specifier;

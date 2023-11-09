@@ -21,7 +21,8 @@
 namespace panda::es2panda::ir {
 class BlockStatement : public Statement {
 public:
-    explicit BlockStatement(ArenaAllocator *allocator, binder::Scope *scope, ArenaVector<Statement *> &&statement_list)
+    explicit BlockStatement(ArenaAllocator *allocator, varbinder::Scope *scope,
+                            ArenaVector<Statement *> &&statement_list)
         : Statement(AstNodeType::BLOCK_STATEMENT),
           scope_(scope),
           statements_(std::move(statement_list)),
@@ -34,12 +35,12 @@ public:
         return true;
     }
 
-    binder::Scope *Scope() const override
+    varbinder::Scope *Scope() const override
     {
         return scope_;
     }
 
-    void SetScope(binder::Scope *scope)
+    void SetScope(varbinder::Scope *scope)
     {
         scope_ = scope;
     }
@@ -77,7 +78,7 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
 private:
-    binder::Scope *scope_;
+    varbinder::Scope *scope_;
     ArenaVector<Statement *> statements_;
     ArenaUnorderedMap<AstNode *, BlockStatement *> trailing_blocks_;
 };

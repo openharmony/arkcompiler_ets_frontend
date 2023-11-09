@@ -72,7 +72,7 @@ void IfStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 
 void IfStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 {
-    auto res = compiler::Condition::CheckConstantExpr(test_);
+    auto res = compiler::Condition::CheckConstantExpr(etsg, test_);
 
     if (res == compiler::Condition::Result::CONST_TRUE) {
         consequent_->Compile(etsg);

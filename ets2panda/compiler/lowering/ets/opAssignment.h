@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ namespace panda::es2panda::compiler {
 
 class OpAssignmentLowering : public Phase {
 public:
-    util::StringView Name() override;
+    std::string const &Name() override;
     bool Perform(CompilerContext *ctx, parser::Program *program) override;
     bool Postcondition(CompilerContext *ctx, const parser::Program *program) override;
 };

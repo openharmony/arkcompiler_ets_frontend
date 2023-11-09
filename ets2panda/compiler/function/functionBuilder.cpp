@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 #include "functionBuilder.h"
 
-#include "binder/binder.h"
+#include "varbinder/varbinder.h"
 #include "util/helpers.h"
 #include "ir/statement.h"
 #include "ir/base/scriptFunction.h"
@@ -84,8 +84,8 @@ void FunctionBuilder::ResumeGenerator(const ir::AstNode *node, VReg completion_t
 
 VReg FunctionBuilder::FunctionReg(const ir::ScriptFunction *node) const
 {
-    binder::FunctionScope *scope = node->Scope();
-    auto res = scope->Find(binder::Binder::MANDATORY_PARAM_FUNC);
+    varbinder::FunctionScope *scope = node->Scope();
+    auto res = scope->Find(varbinder::VarBinder::MANDATORY_PARAM_FUNC);
     ASSERT(res.level == 0 && res.variable->IsLocalVariable());
     return res.variable->AsLocalVariable()->Vreg();
 }
@@ -93,7 +93,7 @@ VReg FunctionBuilder::FunctionReg(const ir::ScriptFunction *node) const
 void FunctionBuilder::Await(const ir::AstNode *node)
 {
     if (BuilderKind() == BuilderType::NORMAL) {
-        // TODO(frobert): Implement top-level await
+        // NOTE: frobert. Implement top-level await
         PandaGen::Unimplemented();
     }
 

@@ -15,7 +15,7 @@
 
 #include "interfaceType.h"
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "checker/checker.h"
 #include "checker/types/ts/typeParameter.h"
 
@@ -50,8 +50,8 @@ void InterfaceType::Identical(TypeRelation *relation, Type *other)
 
     InterfaceType *other_interface = other->AsObjectType()->AsInterfaceType();
 
-    const ArenaVector<binder::LocalVariable *> &target_properties = Properties();
-    const ArenaVector<binder::LocalVariable *> &source_properties = other_interface->Properties();
+    const ArenaVector<varbinder::LocalVariable *> &target_properties = Properties();
+    const ArenaVector<varbinder::LocalVariable *> &source_properties = other_interface->Properties();
 
     if (target_properties.size() != source_properties.size()) {
         relation->Result(false);
@@ -61,7 +61,7 @@ void InterfaceType::Identical(TypeRelation *relation, Type *other)
     for (auto *target_prop : target_properties) {
         bool found_prop =
             std::any_of(source_properties.begin(), source_properties.end(),
-                        [target_prop, relation](binder::LocalVariable *source_prop) {
+                        [target_prop, relation](varbinder::LocalVariable *source_prop) {
                             if (target_prop->Name() == source_prop->Name()) {
                                 Type *target_type = relation->GetChecker()->GetTypeOfVariable(target_prop);
                                 Type *source_type = relation->GetChecker()->GetTypeOfVariable(source_prop);
@@ -160,7 +160,7 @@ void InterfaceType::CollectSignatures(ArenaVector<Signature *> *collected_signat
     }
 }
 
-void InterfaceType::CollectProperties(ArenaVector<binder::LocalVariable *> *collected_properties) const
+void InterfaceType::CollectProperties(ArenaVector<varbinder::LocalVariable *> *collected_properties) const
 {
     for (auto *current_prop : desc_->properties) {
         bool prop_already_collected = false;

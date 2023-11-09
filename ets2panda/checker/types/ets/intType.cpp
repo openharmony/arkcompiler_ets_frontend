@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ bool IntType::AssignmentSource([[maybe_unused]] TypeRelation *relation, [[maybe_
         }
     }
 
-    if (relation->ApplyBoxing() && target->IsETSObjectType()) {
+    if (relation->ApplyBoxing() && (target->IsETSObjectType())) {
         relation->GetChecker()->AsETSChecker()->CheckBoxedSourceTypeAssignable(relation, this, target);
     }
 
@@ -84,6 +84,11 @@ void IntType::Cast(TypeRelation *const relation, Type *const target)
         }
 
         conversion::BoxingWideningReference(relation, this, target->AsETSObjectType());
+        return;
+    }
+
+    if (target->IsETSUnionType()) {
+        target->AsETSUnionType()->CastToThis(relation, this);
         return;
     }
 

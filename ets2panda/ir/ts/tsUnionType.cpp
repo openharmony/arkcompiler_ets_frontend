@@ -50,6 +50,11 @@ checker::Type *TSUnionType::Check([[maybe_unused]] checker::TSChecker *checker)
     return nullptr;
 }
 
+checker::Type *TSUnionType::Check([[maybe_unused]] checker::ETSChecker *checker)
+{
+    return nullptr;
+}
+
 checker::Type *TSUnionType::GetType(checker::TSChecker *checker)
 {
     if (TsType() != nullptr) {
@@ -64,10 +69,5 @@ checker::Type *TSUnionType::GetType(checker::TSChecker *checker)
 
     SetTsType(checker->CreateUnionType(std::move(types)));
     return TsType();
-}
-
-checker::Type *TSUnionType::Check([[maybe_unused]] checker::ETSChecker *checker)
-{
-    return nullptr;
 }
 }  // namespace panda::es2panda::ir

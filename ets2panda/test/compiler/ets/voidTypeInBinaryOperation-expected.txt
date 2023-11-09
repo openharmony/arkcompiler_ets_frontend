@@ -494,4 +494,3 @@
     }
   }
 }
-TypeError: Bad operand type, the types of the operands must be boolean type. [voidTypeInBinaryOperation.ets:20:10]

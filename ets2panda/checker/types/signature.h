@@ -18,12 +18,12 @@
 
 #include "type.h"
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "compiler/core/compilerContext.h"
 
 namespace panda::es2panda::checker {
 // For use in Signature::ToAssemblerType
-Type const *MaybeBoxedType(Checker *checker, binder::Variable const *var);
+Type const *MaybeBoxedType(Checker *checker, varbinder::Variable const *var);
 
 class SignatureInfo {
 public:
@@ -57,8 +57,8 @@ public:
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     ArenaVector<Type *> type_params;
     uint32_t min_arg_count {};
-    binder::LocalVariable *rest_var {};
-    ArenaVector<binder::LocalVariable *> params;
+    varbinder::LocalVariable *rest_var {};
+    ArenaVector<varbinder::LocalVariable *> params;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
@@ -118,12 +118,12 @@ public:
         return signature_info_;
     }
 
-    const ArenaVector<binder::LocalVariable *> &Params() const
+    const ArenaVector<varbinder::LocalVariable *> &Params() const
     {
         return signature_info_->params;
     }
 
-    ArenaVector<binder::LocalVariable *> &Params()
+    ArenaVector<varbinder::LocalVariable *> &Params()
     {
         return signature_info_->params;
     }
@@ -158,7 +158,7 @@ public:
         owner_obj_ = owner;
     }
 
-    void SetOwnerVar(binder::Variable *owner)
+    void SetOwnerVar(varbinder::Variable *owner)
     {
         owner_var_ = owner;
     }
@@ -178,7 +178,7 @@ public:
         return owner_obj_;
     }
 
-    binder::Variable *OwnerVar()
+    varbinder::Variable *OwnerVar()
     {
         return owner_var_;
     }
@@ -188,7 +188,7 @@ public:
         return func_;
     }
 
-    const binder::LocalVariable *RestVar() const
+    const varbinder::LocalVariable *RestVar() const
     {
         return signature_info_->rest_var;
     }
@@ -196,11 +196,11 @@ public:
     uint8_t ProtectionFlag() const
     {
         if ((flags_ & SignatureFlags::PRIVATE) != 0) {
-            return 2;
+            return 2U;
         }
 
         if ((flags_ & SignatureFlags::PROTECTED) != 0) {
-            return 1;
+            return 1U;
         }
 
         return 0;
@@ -244,7 +244,7 @@ public:
     Signature *Copy(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types);
     Signature *Substitute(TypeRelation *relation, const Substitution *substitution);
 
-    void ToString(std::stringstream &ss, const binder::Variable *variable, bool print_as_method = false) const;
+    void ToString(std::stringstream &ss, const varbinder::Variable *variable, bool print_as_method = false) const;
     void Identical(TypeRelation *relation, Signature *other);
     bool CheckFunctionalInterfaces(TypeRelation *relation, Type *source, Type *target);
     void AssignmentTarget(TypeRelation *relation, Signature *source);
@@ -256,7 +256,7 @@ private:
     SignatureFlags flags_ {SignatureFlags::NO_OPTS};
     util::StringView internal_name_ {};
     ETSObjectType *owner_obj_ {};
-    binder::Variable *owner_var_ {};
+    varbinder::Variable *owner_var_ {};
 };
 }  // namespace panda::es2panda::checker
 

@@ -126,27 +126,19 @@ void MemberExpression::CompileToReg(compiler::PandaGen *pg, compiler::VReg obj_r
     LoadRhs(pg);
 }
 
-void MemberExpression::Compile(compiler::ETSGen *etsg) const
+bool MemberExpression::CompileComputed(compiler::ETSGen *etsg) const
 {
-    auto lambda = etsg->Binder()->LambdaObjects().find(this);
-    if (lambda != etsg->Binder()->LambdaObjects().end()) {
-        etsg->CreateLambdaObjectFromMemberReference(this, object_, lambda->second.first);
-        return;
-    }
-
-    compiler::RegScope rs(etsg);
-
     if (computed_) {
         auto ottctx = compiler::TargetTypeContext(etsg, object_->TsType());
         object_->Compile(etsg);
 
         if (etsg->GetAccumulatorType()->IsETSNullType()) {
             if (optional_) {
-                return;
+                return true;
             }
 
             etsg->EmitNullPointerException(this);
-            return;
+            return true;
         }
 
         // Helper function to avoid branching in non optional cases
@@ -178,6 +170,21 @@ void MemberExpression::Compile(compiler::ETSGen *etsg) const
             compile_and_load_elements();
         }
 
+        return true;
+    }
+    return false;
+}
+
+void MemberExpression::Compile(compiler::ETSGen *etsg) const
+{
+    auto lambda = etsg->VarBinder()->LambdaObjects().find(this);
+    if (lambda != etsg->VarBinder()->LambdaObjects().end()) {
+        etsg->CreateLambdaObjectFromMemberReference(this, object_, lambda->second.first);
+        return;
+    }
+
+    compiler::RegScope rs(etsg);
+    if (CompileComputed(etsg)) {
         return;
     }
 
@@ -229,7 +236,7 @@ void MemberExpression::Compile(compiler::ETSGen *etsg) const
     auto ottctx = compiler::TargetTypeContext(etsg, object_->TsType());
     object_->Compile(etsg);
 
-    // TODO(rsipka): it should be CTE if object type is non nullable type
+    // NOTE: rsipka. it should be CTE if object type is non nullable type
 
     if (etsg->GetAccumulatorType()->IsETSNullType()) {
         if (optional_) {
@@ -256,6 +263,8 @@ void MemberExpression::Compile(compiler::ETSGen *etsg) const
         } else if (object_->TsType()->IsETSDynamicType()) {
             auto lang = object_->TsType()->AsETSDynamicType()->Language();
             etsg->LoadPropertyDynamic(this, TsType(), obj_reg, prop_name, lang);
+        } else if (object_->TsType()->IsETSUnionType()) {
+            etsg->LoadUnionProperty(this, TsType(), obj_reg, prop_name);
         } else {
             const auto full_name = etsg->FormClassPropReference(object_->TsType()->AsETSObjectType(), prop_name);
             etsg->LoadProperty(this, TsType(), obj_reg, full_name);
@@ -326,11 +335,11 @@ checker::Type *MemberExpression::Check(checker::TSChecker *checker)
         }
     }
 
-    binder::Variable *prop = checker->GetPropertyOfType(base_type, property_->AsIdentifier()->Name());
+    varbinder::Variable *prop = checker->GetPropertyOfType(base_type, property_->AsIdentifier()->Name());
 
     if (prop != nullptr) {
         checker::Type *prop_type = checker->GetTypeOfVariable(prop);
-        if (prop->HasFlag(binder::VariableFlags::READONLY)) {
+        if (prop->HasFlag(varbinder::VariableFlags::READONLY)) {
             prop_type->AddTypeFlag(checker::TypeFlag::READONLY);
         }
 
@@ -355,50 +364,29 @@ checker::Type *MemberExpression::Check(checker::TSChecker *checker)
     return nullptr;
 }
 
-checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
+checker::Type *MemberExpression::CheckEnumMember(checker::ETSChecker *checker, checker::Type *type)
 {
-    if (TsType() != nullptr) {
+    auto const *const enum_interface = [type]() -> checker::ETSEnumInterface const * {
+        if (type->IsETSEnumType()) {
+            return type->AsETSEnumType();
+        }
+        return type->AsETSStringEnumType();
+    }();
+
+    if (parent_->Type() == ir::AstNodeType::CALL_EXPRESSION && parent_->AsCallExpression()->Callee() == this) {
+        auto *const enum_method_type = enum_interface->LookupMethod(checker, object_, property_->AsIdentifier());
+        SetTsType(enum_method_type);
         return TsType();
     }
 
-    if (computed_) {
-        SetTsType(checker->CheckArrayElementAccess(this));
-        return TsType();
-    }
+    auto *const enum_literal_type = enum_interface->LookupConstant(checker, object_, property_->AsIdentifier());
+    SetTsType(enum_literal_type);
+    SetPropVar(enum_literal_type->GetMemberVar());
+    return TsType();
+}
 
-    checker::Type *const base_type = object_->Check(checker);
-
-    if (!base_type->IsETSObjectType()) {
-        if (base_type->IsETSArrayType() && property_->AsIdentifier()->Name().Is("length")) {
-            SetTsType(checker->GlobalIntType());
-            return TsType();
-        }
-
-        if (base_type->IsETSEnumType() || base_type->IsETSStringEnumType()) {
-            auto const *const enum_interface = [base_type]() -> checker::ETSEnumInterface const * {
-                if (base_type->IsETSEnumType()) {
-                    return base_type->AsETSEnumType();
-                }
-                return base_type->AsETSStringEnumType();
-            }();
-
-            if (parent_->Type() == ir::AstNodeType::CALL_EXPRESSION && parent_->AsCallExpression()->Callee() == this) {
-                auto *const enum_method_type =
-                    enum_interface->LookupMethod(checker, object_, property_->AsIdentifier());
-                SetTsType(enum_method_type);
-                return TsType();
-            }
-
-            auto *const enum_literal_type = enum_interface->LookupConstant(checker, object_, property_->AsIdentifier());
-            SetTsType(enum_literal_type);
-            SetPropVar(enum_literal_type->GetMemberVar());
-            return TsType();
-        }
-
-        checker->ThrowTypeError({"Cannot access property of non-object or non-enum type"}, object_->Start());
-    }
-
-    obj_type_ = base_type->AsETSObjectType();
+checker::Type *MemberExpression::CheckObjectMember(checker::ETSChecker *checker)
+{
     auto resolve_res = checker->ResolveMemberReference(this, obj_type_);
     ASSERT(!resolve_res.empty());
     checker::Type *type_to_set = nullptr;
@@ -413,7 +401,7 @@ checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
             }
             break;
         }
-        case 2: {
+        case 2U: {
             // ETSExtensionFuncHelperType(class_method_type, extension_method_type)
             type_to_set = checker->CreateETSExtensionFuncHelperType(
                 checker->GetTypeOfVariable(resolve_res[1]->Variable())->AsETSFunctionType(),
@@ -433,6 +421,61 @@ checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
         }
     }
     return TsType();
+}
+
+checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
+{
+    if (TsType() != nullptr) {
+        return TsType();
+    }
+
+    if (computed_) {
+        SetTsType(checker->CheckArrayElementAccess(this));
+        return TsType();
+    }
+
+    checker::Type *const base_type = object_->Check(checker);
+
+    if (!base_type->IsETSObjectType()) {
+        if (base_type->IsETSArrayType() && property_->AsIdentifier()->Name().Is("length")) {
+            SetTsType(checker->GlobalIntType());
+            return TsType();
+        }
+
+        if (base_type->IsETSUnionType()) {
+            auto *const union_type = base_type->AsETSUnionType();
+            checker::Type *member_type = nullptr;
+            auto check_member_type = [this, checker, &member_type]() {
+                if (member_type != nullptr && member_type != TsType()) {
+                    checker->ThrowTypeError("Member type must be the same for all union objects.", Start());
+                }
+                member_type = TsType();
+            };
+            for (auto *type : union_type->ConstituentTypes()) {
+                if (type->IsETSObjectType()) {
+                    obj_type_ = type->AsETSObjectType();
+                    CheckObjectMember(checker);
+                    check_member_type();
+                }
+
+                if (type->IsETSEnumType() || base_type->IsETSStringEnumType()) {
+                    CheckEnumMember(checker, type);
+                    check_member_type();
+                }
+            }
+            obj_type_ = union_type->GetLeastUpperBoundType(checker)->AsETSObjectType();
+            return TsType();
+        }
+
+        if (base_type->IsETSEnumType() || base_type->IsETSStringEnumType()) {
+            return CheckEnumMember(checker, base_type);
+        }
+
+        checker->ThrowTypeError({"Cannot access property of non-object or non-enum type"}, object_->Start());
+    }
+
+    obj_type_ = base_type->AsETSObjectType();
+    return CheckObjectMember(checker);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

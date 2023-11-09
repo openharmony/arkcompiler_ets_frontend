@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 #include "etsNewMultiDimArrayInstanceExpression.h"
 
-#include "binder/ETSBinder.h"
+#include "varbinder/ETSBinder.h"
 #include "ir/astDump.h"
 #include "ir/typeNode.h"
 #include "compiler/core/ETSGen.h"

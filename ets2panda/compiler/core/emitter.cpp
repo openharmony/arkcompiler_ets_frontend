@@ -17,8 +17,8 @@
 
 #include "ir/irnode.h"
 #include "util/helpers.h"
-#include "binder/scope.h"
-#include "binder/variable.h"
+#include "varbinder/scope.h"
+#include "varbinder/variable.h"
 #include "compiler/base/literals.h"
 #include "compiler/core/compilerContext.h"
 #include "compiler/core/codeGen.h"
@@ -121,7 +121,7 @@ void FunctionEmitter::Generate()
 
 util::StringView FunctionEmitter::SourceCode() const
 {
-    return cg_->Binder()->Program()->SourceCode();
+    return cg_->VarBinder()->Program()->SourceCode();
 }
 
 static Format MatchFormat(const IRNode *node, const Formats &formats)
@@ -162,7 +162,7 @@ static size_t GetIRNodeWholeLength(const IRNode *node)
     const auto format = MatchFormat(node, formats);
 
     for (auto fi : format.GetFormatItem()) {
-        len += fi.BitWidth() / 8;
+        len += fi.BitWidth() / 8U;
     }
 
     return len;
@@ -257,7 +257,7 @@ void FunctionEmitter::GenFunctionCatchTables(pandasm::Function *func)
 
 void FunctionEmitter::GenSourceFileDebugInfo(pandasm::Function *func)
 {
-    func->source_file = std::string {cg_->Binder()->Program()->AbsoluteName()};
+    func->source_file = std::string {cg_->VarBinder()->Program()->AbsoluteName()};
 
     if (!cg_->IsDebug()) {
         return;
@@ -268,7 +268,7 @@ void FunctionEmitter::GenSourceFileDebugInfo(pandasm::Function *func)
     }
 }
 
-static void GenLocalVariableInfo(pandasm::debuginfo::LocalVariable &variable_debug, binder::Variable *var,
+static void GenLocalVariableInfo(pandasm::debuginfo::LocalVariable &variable_debug, varbinder::Variable *var,
                                  uint32_t start, uint32_t vars_length, uint32_t total_regs_num,
                                  const ScriptExtension extension)
 {
@@ -281,7 +281,7 @@ static void GenLocalVariableInfo(pandasm::debuginfo::LocalVariable &variable_deb
         std::stringstream ss;
         var->AsLocalVariable()->TsType()->ToDebugInfoType(ss);
         variable_debug.signature = ss.str();
-        variable_debug.signature_type = ss.str();  // TODO() Handle typeParams, either class or interface
+        variable_debug.signature_type = ss.str();  // NOTE: Handle typeParams, either class or interface
     }
 
     variable_debug.reg =
@@ -290,7 +290,7 @@ static void GenLocalVariableInfo(pandasm::debuginfo::LocalVariable &variable_deb
     variable_debug.length = static_cast<uint32_t>(vars_length);
 }
 
-void FunctionEmitter::GenScopeVariableInfo(pandasm::Function *func, const binder::Scope *scope) const
+void FunctionEmitter::GenScopeVariableInfo(pandasm::Function *func, const varbinder::Scope *scope) const
 {
     const auto *start_ins = scope->ScopeStart();
     const auto *end_ins = scope->ScopeEnd();
@@ -298,7 +298,7 @@ void FunctionEmitter::GenScopeVariableInfo(pandasm::Function *func, const binder
     uint32_t start = 0;
     uint32_t count = 0;
 
-    const auto extension = cg_->Binder()->Program()->Extension();
+    const auto extension = cg_->VarBinder()->Program()->Extension();
 
     for (const auto *it : cg_->Insns()) {
         if (start_ins == it) {
@@ -347,7 +347,7 @@ void FunctionEmitter::GenVariablesDebugInfo(pandasm::Function *func)
 Emitter::Emitter(const CompilerContext *context) : context_(context)
 {
     prog_ = new pandasm::Program();
-    prog_->function_table.reserve(context->Binder()->Functions().size());
+    prog_->function_table.reserve(context->VarBinder()->Functions().size());
 }
 
 Emitter::~Emitter()
@@ -470,7 +470,7 @@ pandasm::Program *Emitter::Finalize(bool dump_debug_info, std::string_view globa
         dumper.Dump();
     }
 
-    if (context_->Binder()->IsGenStdLib()) {
+    if (context_->VarBinder()->IsGenStdLib()) {
         auto it = prog_->record_table.find(std::string(global_class));
         if (it != prog_->record_table.end()) {
             prog_->record_table.erase(it);

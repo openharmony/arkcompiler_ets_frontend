@@ -152,7 +152,7 @@ void UnionType::RemoveRedundantLiteralTypesFromUnion(UnionType *type)
     }
 
     auto &constituent_types = type->ConstituentTypes();
-    /* TODO(dbatyai): use std::erase_if */
+    /* NOTE: dbatyai. use std::erase_if */
     auto it = constituent_types.begin();
     while (it != constituent_types.end()) {
         if ((remove_number_literals && (*it)->IsNumberLiteralType()) ||

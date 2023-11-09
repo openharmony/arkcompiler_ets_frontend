@@ -15,8 +15,8 @@
 
 #include "variableDeclaration.h"
 
-#include "binder/scope.h"
-#include "binder/variable.h"
+#include "varbinder/scope.h"
+#include "varbinder/variable.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"

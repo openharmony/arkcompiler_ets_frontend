@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_IR_EXPRESSION_OBJECT_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_OBJECT_EXPRESSION_H
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "ir/expression.h"
 #include "ir/validationInfo.h"
 

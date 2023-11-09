@@ -16,7 +16,7 @@
 #include "thisExpression.h"
 
 #include "util/helpers.h"
-#include "binder/binder.h"
+#include "varbinder/varbinder.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
@@ -39,7 +39,7 @@ void ThisExpression::Dump(ir::AstDumper *dumper) const
 
 void ThisExpression::Compile(compiler::PandaGen *pg) const
 {
-    auto res = pg->Scope()->Find(binder::Binder::MANDATORY_PARAM_THIS);
+    auto res = pg->Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS);
 
     ASSERT(res.variable && res.variable->IsLocalVariable());
     pg->LoadAccFromLexEnv(this, res);
@@ -58,7 +58,7 @@ void ThisExpression::Compile(compiler::ETSGen *etsg) const
 
 checker::Type *ThisExpression::Check(checker::TSChecker *checker)
 {
-    // TODO(aszilagyi)
+    // NOTE: aszilagyi
     return checker->GlobalAnyType();
 }
 
@@ -89,7 +89,7 @@ checker::Type *ThisExpression::Check(checker::ETSChecker *checker)
     here when "this" is used inside an extension function, we need to bind "this" to the first
     parameter(MANDATORY_PARAM_THIS), and capture the paramter's variable other than containing class's variable
     */
-    auto *variable = checker->AsETSChecker()->Scope()->Find(binder::Binder::MANDATORY_PARAM_THIS).variable;
+    auto *variable = checker->AsETSChecker()->Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS).variable;
     if (checker->HasStatus(checker::CheckerStatus::IN_INSTANCE_EXTENSION_METHOD)) {
         ASSERT(variable != nullptr);
         SetTsType(variable->TsType());

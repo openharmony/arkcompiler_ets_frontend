@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_UTIL_HELPERS_H
 #define ES2PANDA_UTIL_HELPERS_H
 
-#include "binder/variableFlags.h"
+#include "varbinder/variableFlags.h"
 #include "mem/pool_manager.h"
 #include "util/ustring.h"
 #include "ir/module/importSpecifier.h"
@@ -24,9 +24,9 @@
 #include <cmath>
 #include <string>
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class Variable;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::checker {
 class ETSObjectType;

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ public:
     // NOLINTNEXTLINE(readability-redundant-member-init)
     explicit JSChecker() : Checker() {}
 
-    bool StartChecker([[maybe_unused]] binder::Binder *binder, const CompilerOptions &options) override;
+    bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options) override;
 
     Type *CheckTypeCached([[maybe_unused]] ir::Expression *expr) override
     {
@@ -34,7 +34,7 @@ public:
 
     void ResolveStructuredTypeMembers([[maybe_unused]] Type *type) override {}
 
-    Type *GetTypeOfVariable([[maybe_unused]] binder::Variable *var) override
+    Type *GetTypeOfVariable([[maybe_unused]] varbinder::Variable *var) override
     {
         return nullptr;
     }

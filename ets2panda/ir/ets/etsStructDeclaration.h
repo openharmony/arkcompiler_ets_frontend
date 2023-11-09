@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,11 +54,11 @@ public:
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
+    void Compile(compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
 
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     ClassDefinition *def_;

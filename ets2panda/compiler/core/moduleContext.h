@@ -20,10 +20,10 @@
 
 #include <vector>
 
-namespace panda::es2panda::binder {
+namespace panda::es2panda::varbinder {
 class Variable;
 class ModuleScope;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -32,7 +32,7 @@ class ModuleContext {
 public:
     ModuleContext() = delete;
 
-    static void Compile(PandaGen *pg, binder::ModuleScope *scope);
+    static void Compile(PandaGen *pg, varbinder::ModuleScope *scope);
 };
 }  // namespace panda::es2panda::compiler
 

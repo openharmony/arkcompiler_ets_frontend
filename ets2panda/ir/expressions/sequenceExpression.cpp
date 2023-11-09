@@ -75,7 +75,7 @@ void SequenceExpression::Compile(compiler::ETSGen *etsg) const
 
 checker::Type *SequenceExpression::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    // TODO(aszilagyi)
+    // NOTE: aszilagyi.
     return checker->GlobalAnyType();
 }
 

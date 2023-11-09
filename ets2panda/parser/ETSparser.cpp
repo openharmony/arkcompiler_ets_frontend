@@ -19,10 +19,10 @@
 #include "util/arktsconfig.h"
 #include "util/helpers.h"
 #include "util/language.h"
-#include "binder/binder.h"
-#include "binder/privateBinding.h"
-#include "binder/scope.h"
-#include "binder/ETSBinder.h"
+#include "varbinder/varbinder.h"
+#include "varbinder/privateBinding.h"
+#include "varbinder/scope.h"
+#include "varbinder/ETSBinder.h"
 #include "lexer/lexer.h"
 #include "lexer/ETSLexer.h"
 #include "checker/types/ets/etsEnumType.h"
@@ -91,6 +91,7 @@
 #include "ir/ets/etsScript.h"
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
+#include "ir/ets/etsUnionType.h"
 #include "ir/ets/etsImportSource.h"
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsStructDeclaration.h"
@@ -178,8 +179,9 @@ void ETSParser::ParseETSGlobalScript(lexer::SourcePosition start_loc, ArenaVecto
     ParseSources(paths, false);
     ParseTopLevelDeclaration(statements);
 
-    auto *ets_script = AllocNode<ir::ETSScript>(Allocator(), Binder()->GetScope(), std::move(statements), GetProgram());
-    Binder()->GetScope()->BindNode(ets_script);
+    auto *ets_script =
+        AllocNode<ir::ETSScript>(Allocator(), VarBinder()->GetScope(), std::move(statements), GetProgram());
+    VarBinder()->GetScope()->BindNode(ets_script);
     ets_script->SetRange({start_loc, Lexer()->GetToken().End()});
     GetProgram()->SetAst(ets_script);
 }
@@ -187,10 +189,10 @@ void ETSParser::ParseETSGlobalScript(lexer::SourcePosition start_loc, ArenaVecto
 void ETSParser::CreateGlobalClass()
 {
     auto *ident = AllocNode<ir::Identifier>(compiler::Signatures::ETS_GLOBAL, Allocator());
-    auto [decl, var] = Binder()->NewVarDecl<binder::ClassDecl>(ident->Start(), ident->Name());
+    auto [decl, var] = VarBinder()->NewVarDecl<varbinder::ClassDecl>(ident->Start(), ident->Name());
     ident->SetVariable(var);
 
-    auto class_ctx = binder::LexicalScope<binder::ClassScope>(Binder());
+    auto class_ctx = varbinder::LexicalScope<varbinder::ClassScope>(VarBinder());
     auto *class_def =
         AllocNode<ir::ClassDefinition>(Allocator(), class_ctx.GetScope(), ident, ir::ClassDefinitionModifiers::GLOBAL,
                                        ir::ModifierFlags::ABSTRACT, Language(Language::Id::ETS));
@@ -232,7 +234,7 @@ ArenaVector<ir::Statement *> ETSParser::PrepareExternalGlobalClass([[maybe_unuse
     }
 
     if (res == ext_sources.end()) {
-        Binder()->InitTopScope();
+        VarBinder()->InitTopScope();
         CreateGlobalClass();
         auto ins_res = ext_sources.emplace(GetProgram()->SourceFilePath(), Allocator()->Adapter());
         ins_res.first->second.push_back(GetProgram());
@@ -242,7 +244,7 @@ ArenaVector<ir::Statement *> ETSParser::PrepareExternalGlobalClass([[maybe_unuse
         GetProgram()->SetGlobalClass(ext_prog->GlobalClass());
         // TODO(user): check nullptr cases and handle recursive imports
         if (ext_prog->Ast() != nullptr) {
-            Binder()->ResetTopScope(ext_prog->GlobalScope());
+            VarBinder()->ResetTopScope(ext_prog->GlobalScope());
         }
     }
 
@@ -505,7 +507,7 @@ void ETSParser::ParseSources(const std::vector<std::string> &paths, bool is_exte
 void ETSParser::ParseDefaultSources()
 {
     auto isp = InnerSourceParser(this);
-    SourceFile source(binder::ETSBinder::DEFAULT_IMPORT_SOURCE_FILE, binder::ETSBinder::DEFAULT_IMPORT_SOURCE);
+    SourceFile source(varbinder::ETSBinder::DEFAULT_IMPORT_SOURCE_FILE, varbinder::ETSBinder::DEFAULT_IMPORT_SOURCE);
     auto lexer = InitLexer(source);
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
 
@@ -523,7 +525,7 @@ void ETSParser::ParseDefaultSources()
 
 void ETSParser::ParseSource(const SourceFile &source_file)
 {
-    auto *program = Allocator()->New<parser::Program>(Allocator(), Binder());
+    auto *program = Allocator()->New<parser::Program>(Allocator(), VarBinder());
     auto esp = ExternalSourceParser(this, program);
     auto lexer = InitLexer(source_file);
 
@@ -548,14 +550,15 @@ ir::ScriptFunction *ETSParser::AddInitMethod(ArenaVector<ir::AstNode *> &global_
         ir::ScriptFunction *init_func;
 
         {
-            binder::FunctionParamScope *func_param_scope;
+            varbinder::FunctionParamScope *func_param_scope;
             ArenaVector<ir::Expression *> params(Allocator()->Adapter());
             {
-                FunctionParameterContext func_param_context(&GetContext(), Binder());
+                FunctionParameterContext func_param_context(&GetContext(), VarBinder());
                 func_param_scope = func_param_context.LexicalScope().GetScope();
             }
-            auto param_ctx = binder::LexicalScope<binder::FunctionParamScope>::Enter(Binder(), func_param_scope, false);
-            auto function_ctx = binder::LexicalScope<binder::FunctionScope>(Binder());
+            auto param_ctx =
+                varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(VarBinder(), func_param_scope, false);
+            auto function_ctx = varbinder::LexicalScope<varbinder::FunctionScope>(VarBinder());
             auto *function_scope = function_ctx.GetScope();
             function_scope->BindParamScope(func_param_scope);
             func_param_scope->BindFunctionScope(function_scope);
@@ -581,7 +584,8 @@ ir::ScriptFunction *ETSParser::AddInitMethod(ArenaVector<ir::AstNode *> &global_
         return std::make_pair(init_func, init_method);
     };
 
-    auto class_ctx = binder::LexicalScope<binder::ClassScope>::Enter(Binder(), GetProgram()->GlobalClassScope());
+    auto class_ctx =
+        varbinder::LexicalScope<varbinder::ClassScope>::Enter(VarBinder(), GetProgram()->GlobalClassScope());
 
     // Create public method for module re-initialization. The assignments and statements are sequentially called inside.
     auto [init_func, init_method] = create_function(compiler::Signatures::INIT_METHOD, ir::ScriptFunctionFlags::NONE,
@@ -604,7 +608,7 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
 
         {
             auto class_ctx =
-                binder::LexicalScope<binder::ClassScope>::Enter(Binder(), GetProgram()->GlobalClassScope());
+                varbinder::LexicalScope<varbinder::ClassScope>::Enter(VarBinder(), GetProgram()->GlobalClassScope());
             node = parser_function(this);
             if (node != nullptr) {
                 if (current_pos != std::numeric_limits<std::size_t>::max()) {
@@ -662,8 +666,8 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
             case lexer::TokenType::KEYW_LET: {
                 Lexer()->NextToken();
                 auto *member_name = ExpectIdentifier();
-                auto class_ctx =
-                    binder::LexicalScope<binder::ClassScope>::Enter(Binder(), GetProgram()->GlobalClassScope());
+                auto class_ctx = varbinder::LexicalScope<varbinder::ClassScope>::Enter(
+                    VarBinder(), GetProgram()->GlobalClassScope());
                 ParseClassFieldDefiniton(member_name, member_modifiers, &global_properties, init_function);
                 break;
             }
@@ -695,8 +699,8 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
                 }
 
                 auto *member_name = ExpectIdentifier();
-                auto class_ctx =
-                    binder::LexicalScope<binder::ClassScope>::Enter(Binder(), GetProgram()->GlobalClassScope());
+                auto class_ctx = varbinder::LexicalScope<varbinder::ClassScope>::Enter(
+                    VarBinder(), GetProgram()->GlobalClassScope());
                 auto *class_method = ParseClassMethodDefinition(member_name, member_modifiers, class_name);
                 class_method->SetStart(start_loc);
                 if (!class_method->Function()->IsOverload()) {
@@ -731,8 +735,8 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
                 }
 
                 if (init_function != nullptr) {
-                    auto class_ctx =
-                        binder::LexicalScope<binder::ClassScope>::Enter(Binder(), GetProgram()->GlobalClassScope());
+                    auto class_ctx = varbinder::LexicalScope<varbinder::ClassScope>::Enter(
+                        VarBinder(), GetProgram()->GlobalClassScope());
                     if (auto *const statement = ParseTopLevelStatement(); statement != nullptr) {
                         statement->SetParent(init_function->Body());
                         init_function->Body()->AsBlockStatement()->Statements().emplace_back(statement);
@@ -748,14 +752,14 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
 
         while (current_pos < global_properties.size()) {
             if (default_export) {
-                if (Binder()->AsETSBinder()->DefaultExport() != nullptr ||
+                if (VarBinder()->AsETSBinder()->DefaultExport() != nullptr ||
                     global_properties.size() - current_pos != 1) {
                     ThrowSyntaxError("Only one default export is allowed in a module");
                 }
 
                 auto current_export = global_properties[current_pos++];
                 current_export->AddModifier(ir::ModifierFlags::DEFAULT_EXPORT);
-                Binder()->AsETSBinder()->SetDefaultExport(current_export);
+                VarBinder()->AsETSBinder()->SetDefaultExport(current_export);
                 default_export = false;
             } else {
                 global_properties[current_pos++]->AddModifier(ir::ModifierFlags::EXPORT);
@@ -839,36 +843,36 @@ void ETSParser::AddGlobalDeclaration(ir::AstNode *node)
     switch (node->Type()) {
         case ir::AstNodeType::CLASS_DECLARATION: {
             auto *ident = node->AsClassDeclaration()->Definition()->Ident();
-            Binder()->TopScope()->InsertBinding(ident->Name(), ident->Variable());
+            VarBinder()->TopScope()->InsertBinding(ident->Name(), ident->Variable());
             if ((GetContext().Status() & ParserStatus::IN_EXTERNAL) != 0) {  // IN_EXTERNAL
-                ident->Variable()->AddFlag(binder::VariableFlags::BUILTIN_TYPE);
+                ident->Variable()->AddFlag(varbinder::VariableFlags::BUILTIN_TYPE);
             }
             break;
         }
         case ir::AstNodeType::STRUCT_DECLARATION: {
             auto *ident = node->AsETSStructDeclaration()->Definition()->Ident();
-            Binder()->TopScope()->InsertBinding(ident->Name(), ident->Variable());
+            VarBinder()->TopScope()->InsertBinding(ident->Name(), ident->Variable());
             if ((GetContext().Status() & ParserStatus::IN_EXTERNAL) != 0) {  // IN_EXTERNAL
-                ident->Variable()->AddFlag(binder::VariableFlags::BUILTIN_TYPE);
+                ident->Variable()->AddFlag(varbinder::VariableFlags::BUILTIN_TYPE);
             }
             break;
         }
         case ir::AstNodeType::TS_INTERFACE_DECLARATION: {
             auto *ident = node->AsTSInterfaceDeclaration()->Id();
-            Binder()->TopScope()->InsertBinding(ident->Name(), ident->Variable());
+            VarBinder()->TopScope()->InsertBinding(ident->Name(), ident->Variable());
             if ((GetContext().Status() & ParserStatus::IN_EXTERNAL) != 0) {
-                ident->Variable()->AddFlag(binder::VariableFlags::BUILTIN_TYPE);
+                ident->Variable()->AddFlag(varbinder::VariableFlags::BUILTIN_TYPE);
             }
             break;
         }
         case ir::AstNodeType::TS_ENUM_DECLARATION: {
             auto *ident = node->AsTSEnumDeclaration()->Key();
-            Binder()->TopScope()->InsertBinding(ident->Name(), ident->Variable());
+            VarBinder()->TopScope()->InsertBinding(ident->Name(), ident->Variable());
             break;
         }
         case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION: {
             auto *ident = node->AsTSTypeAliasDeclaration()->Id();
-            Binder()->TopScope()->InsertBinding(ident->Name(), ident->Variable());
+            VarBinder()->TopScope()->InsertBinding(ident->Name(), ident->Variable());
             break;
         }
         default: {
@@ -902,7 +906,7 @@ void ETSParser::ParseTopLevelDeclaration(ArenaVector<ir::Statement *> &statement
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-void ETSParser::CreateCCtor(binder::LocalScope *class_scope, ArenaVector<ir::AstNode *> &properties,
+void ETSParser::CreateCCtor(varbinder::LocalScope *class_scope, ArenaVector<ir::AstNode *> &properties,
                             const lexer::SourcePosition &loc, const bool in_global_class)
 {
     bool has_static_field = false;
@@ -926,12 +930,13 @@ void ETSParser::CreateCCtor(binder::LocalScope *class_scope, ArenaVector<ir::Ast
         return;
     }
 
-    auto class_ctx = binder::LexicalScope<binder::LocalScope>::Enter(Binder(), class_scope);
+    auto class_ctx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(VarBinder(), class_scope);
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
-    auto *param_scope = Binder()->Allocator()->New<binder::FunctionParamScope>(Allocator(), Binder()->GetScope());
-    auto *scope = Binder()->Allocator()->New<binder::FunctionScope>(Allocator(), param_scope);
+    auto *param_scope =
+        VarBinder()->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), VarBinder()->GetScope());
+    auto *scope = VarBinder()->Allocator()->New<varbinder::FunctionScope>(Allocator(), param_scope);
 
     auto *id = AllocNode<ir::Identifier>(compiler::Signatures::CCTOR, Allocator());
 
@@ -973,9 +978,9 @@ void ETSParser::CreateCCtor(binder::LocalScope *class_scope, ArenaVector<ir::Ast
     auto *static_block = AllocNode<ir::ClassStaticBlock>(func_expr, Allocator());
     static_block->AddModifier(ir::ModifierFlags::STATIC);
     static_block->SetRange({loc, loc});
-    auto [_, var] = Binder()->NewVarDecl<binder::FunctionDecl>(loc, Allocator(), id->Name(), static_block);
+    auto [_, var] = VarBinder()->NewVarDecl<varbinder::FunctionDecl>(loc, Allocator(), id->Name(), static_block);
     (void)_;
-    var->AddFlag(binder::VariableFlags::METHOD);
+    var->AddFlag(varbinder::VariableFlags::METHOD);
     id->SetVariable(var);
     properties.push_back(static_block);
 }
@@ -1269,7 +1274,7 @@ void ETSParser::ParseClassFieldDefiniton(ir::Identifier *field_name, ir::Modifie
     // performed multiple times.
     if (init_function != nullptr && (modifiers & ir::ModifierFlags::CONST) == 0U && initializer != nullptr &&
         !initializer->IsArrowFunctionExpression()) {
-        ASSERT(Binder()->GetScope()->Parent()->IsGlobalScope());
+        ASSERT(VarBinder()->GetScope()->Parent()->IsGlobalScope());
         if (auto *const func_body = init_function->Body(); func_body != nullptr && func_body->IsBlockStatement()) {
             auto *ident = AllocNode<ir::Identifier>(field_name->Name(), Allocator());
             ident->SetReference();
@@ -1296,13 +1301,13 @@ void ETSParser::ParseClassFieldDefiniton(ir::Identifier *field_name, ir::Modifie
     auto *field = AllocNode<ir::ClassProperty>(field_name, initializer, type_annotation, modifiers, Allocator(), false);
 
     if ((modifiers & ir::ModifierFlags::CONST) != 0) {
-        ASSERT(Binder()->GetScope()->Parent() != nullptr);
-        if (initializer == nullptr && Binder()->GetScope()->Parent()->IsGlobalScope() && !is_declare) {
+        ASSERT(VarBinder()->GetScope()->Parent() != nullptr);
+        if (initializer == nullptr && VarBinder()->GetScope()->Parent()->IsGlobalScope() && !is_declare) {
             ThrowSyntaxError("Missing initializer in const declaration");
         }
-        Binder()->AddDecl<binder::ConstDecl>(field_name->Start(), field_name->Name(), field);
+        VarBinder()->AddDecl<varbinder::ConstDecl>(field_name->Start(), field_name->Name(), field);
     } else {
-        Binder()->AddDecl<binder::LetDecl>(field_name->Start(), field_name->Name(), field);
+        VarBinder()->AddDecl<varbinder::LetDecl>(field_name->Start(), field_name->Name(), field);
     }
 
     declarations->push_back(field);
@@ -1317,10 +1322,10 @@ void ETSParser::ParseClassFieldDefiniton(ir::Identifier *field_name, ir::Modifie
 ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *method_name, ir::ModifierFlags modifiers,
                                                             ir::Identifier *class_name, ir::Identifier *ident_node)
 {
-    auto *cur_scope = Binder()->GetScope();
-    auto res = cur_scope->Find(method_name->Name(), binder::ResolveBindingOptions::ALL);
+    auto *cur_scope = VarBinder()->GetScope();
+    auto res = cur_scope->Find(method_name->Name(), varbinder::ResolveBindingOptions::ALL);
     if (res.variable != nullptr && !res.variable->Declaration()->IsFunctionDecl() && res.scope == cur_scope) {
-        Binder()->ThrowRedeclaration(method_name->Start(), res.name);
+        VarBinder()->ThrowRedeclaration(method_name->Start(), res.name);
     }
 
     auto new_status = ParserStatus::NEED_RETURN_TYPE | ParserStatus::ALLOW_SUPER;
@@ -1365,8 +1370,8 @@ ir::ScriptFunction *ETSParser::ParseFunction(ParserStatus new_status, ir::Identi
     auto [typeParamDecl, params, returnTypeAnnotation, funcParamScope, throw_marker] =
         ParseFunctionSignature(new_status, class_name);
 
-    auto param_ctx = binder::LexicalScope<binder::FunctionParamScope>::Enter(Binder(), funcParamScope, false);
-    auto function_ctx = binder::LexicalScope<binder::FunctionScope>(Binder());
+    auto param_ctx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(VarBinder(), funcParamScope, false);
+    auto function_ctx = varbinder::LexicalScope<varbinder::FunctionScope>(VarBinder());
     auto *function_scope = function_ctx.GetScope();
     function_scope->BindParamScope(funcParamScope);
     funcParamScope->BindFunctionScope(function_scope);
@@ -1444,7 +1449,7 @@ ir::MethodDefinition *ETSParser::ParseClassMethod(ClassElementDescriptor *desc,
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ETSParser::ParseFunctionBody(
     [[maybe_unused]] const ArenaVector<ir::Expression *> &params, [[maybe_unused]] ParserStatus new_status,
-    [[maybe_unused]] ParserStatus context_status, binder::FunctionScope *func_scope)
+    [[maybe_unused]] ParserStatus context_status, varbinder::FunctionScope *func_scope)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
 
@@ -1761,11 +1766,11 @@ ir::TSTypeAliasDeclaration *ETSParser::ParseTypeAliasDeclaration()
     id->SetRange(Lexer()->GetToken().Loc());
 
     auto *type_alias_decl = AllocNode<ir::TSTypeAliasDeclaration>(Allocator(), id);
-    Binder()->AddDecl<binder::TypeAliasDecl>(Lexer()->GetToken().Start(), ident, type_alias_decl);
+    VarBinder()->AddDecl<varbinder::TypeAliasDecl>(Lexer()->GetToken().Start(), ident, type_alias_decl);
 
     Lexer()->NextToken();  // eat alias name
 
-    auto type_params_ctx = binder::LexicalScope<binder::LocalScope>(Binder());
+    auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         auto options =
             TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::ALLOW_DECLARATION_SITE_VARIANCE;
@@ -1793,7 +1798,7 @@ ir::TSInterfaceDeclaration *ETSParser::ParseInterfaceBody(ir::Identifier *name, 
 {
     GetContext().Status() |= ParserStatus::ALLOW_THIS_TYPE;
 
-    auto type_params_ctx = binder::LexicalScope<binder::LocalScope>(Binder());
+    auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         auto options =
@@ -1806,7 +1811,7 @@ ir::TSInterfaceDeclaration *ETSParser::ParseInterfaceBody(ir::Identifier *name, 
         extends = ParseInterfaceExtendsClause();
     }
 
-    auto local_scope = binder::LexicalScope<binder::ClassScope>(Binder());
+    auto local_scope = varbinder::LexicalScope<varbinder::ClassScope>(VarBinder());
     lexer::SourcePosition body_start = Lexer()->GetToken().Start();
     auto members = ParseTypeLiteralOrInterface();
 
@@ -1847,7 +1852,8 @@ ir::Statement *ETSParser::ParseInterfaceDeclaration(bool is_static)
 
     auto *decl_node = ParseInterfaceBody(id, is_static);
 
-    auto *decl = Binder()->AddDecl<binder::InterfaceDecl>(Lexer()->GetToken().Start(), Allocator(), ident, decl_node);
+    auto *decl =
+        VarBinder()->AddDecl<varbinder::InterfaceDecl>(Lexer()->GetToken().Start(), Allocator(), ident, decl_node);
     decl->AsInterfaceDecl()->Add(decl_node);
     decl_node->SetRange({interface_start, Lexer()->GetToken().End()});
     return decl_node;
@@ -1869,7 +1875,8 @@ ir::Statement *ETSParser::ParseEnumDeclaration(bool is_const, bool is_static)
     util::StringView ident = FormInterfaceOrEnumDeclarationIdBinding(key);
 
     auto *decl_node = ParseEnumMembers(key, enum_start, is_const, is_static);
-    auto *decl = Binder()->AddDecl<binder::EnumLiteralDecl>(Lexer()->GetToken().Start(), ident, decl_node, is_const);
+    auto *decl =
+        VarBinder()->AddDecl<varbinder::EnumLiteralDecl>(Lexer()->GetToken().Start(), ident, decl_node, is_const);
     decl->BindScope(decl_node->Scope());
 
     return decl_node;
@@ -1898,7 +1905,7 @@ ir::ClassDefinition *ETSParser::ParseClassDefinition(ir::ClassDefinitionModifier
 
     ir::Identifier *ident_node = ParseClassIdent(modifiers);
 
-    auto type_params_ctx = binder::LexicalScope<binder::LocalScope>(Binder());
+    auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         auto options =
@@ -1906,7 +1913,7 @@ ir::ClassDefinition *ETSParser::ParseClassDefinition(ir::ClassDefinitionModifier
         type_param_decl = ParseTypeParameterDeclaration(&options);
     }
 
-    auto class_ctx = binder::LexicalScope<binder::ClassScope>(Binder());
+    auto class_ctx = varbinder::LexicalScope<varbinder::ClassScope>(VarBinder());
 
     // Parse SuperClass
     auto [superClass, superTypeParams] = ParseSuperClass();
@@ -2026,7 +2033,7 @@ ir::ClassProperty *ETSParser::ParseInterfaceField(const lexer::SourcePosition &s
     auto *field = AllocNode<ir::ClassProperty>(name, initializer, type_annotation, field_modifiers, Allocator(), false);
     field->SetEnd(Lexer()->GetToken().End());
 
-    auto *decl = Binder()->AddDecl<binder::ConstDecl>(start_loc, field->Id()->Name(), field);
+    auto *decl = VarBinder()->AddDecl<varbinder::ConstDecl>(start_loc, field->Id()->Name(), field);
     decl->BindNode(field);
 
     return field;
@@ -2046,8 +2053,8 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags)
     auto [typeParamDecl, params, returnTypeAnnotation, funcParamScope, throw_marker] =
         ParseFunctionSignature(ParserStatus::NEED_RETURN_TYPE);
 
-    auto param_ctx = binder::LexicalScope<binder::FunctionParamScope>::Enter(Binder(), funcParamScope, false);
-    auto function_ctx = binder::LexicalScope<binder::FunctionScope>(Binder());
+    auto param_ctx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(VarBinder(), funcParamScope, false);
+    auto function_ctx = varbinder::LexicalScope<varbinder::FunctionScope>(VarBinder());
     auto *function_scope = function_ctx.GetScope();
     function_scope->BindParamScope(funcParamScope);
     funcParamScope->BindFunctionScope(function_scope);
@@ -2095,31 +2102,31 @@ ir::MethodDefinition *ETSParser::ParseInterfaceMethod(ir::ModifierFlags flags)
 
 void ETSParser::CreateClassFunctionDeclaration(ir::MethodDefinition *method)
 {
-    ASSERT(Binder()->GetScope()->IsClassScope());
-    auto *const cls_scope = Binder()->GetScope()->AsClassScope();
+    ASSERT(VarBinder()->GetScope()->IsClassScope());
+    auto *const cls_scope = VarBinder()->GetScope()->AsClassScope();
     auto *const method_name = method->Id();
 
-    if (cls_scope->FindLocal(method_name->Name(), binder::ResolveBindingOptions::VARIABLES |
-                                                      binder::ResolveBindingOptions::DECLARATION) != nullptr) {
-        Binder()->ThrowRedeclaration(method_name->Start(), method_name->Name());
+    if (cls_scope->FindLocal(method_name->Name(), varbinder::ResolveBindingOptions::VARIABLES |
+                                                      varbinder::ResolveBindingOptions::DECLARATION) != nullptr) {
+        VarBinder()->ThrowRedeclaration(method_name->Start(), method_name->Name());
     }
 
-    binder::LocalScope *target_scope {};
+    varbinder::LocalScope *target_scope {};
     if (method->IsStatic() || method->IsConstructor()) {
         target_scope = cls_scope->StaticMethodScope();
     } else {
         target_scope = cls_scope->InstanceMethodScope();
     }
 
-    auto *found = target_scope->FindLocal(method_name->Name());
+    auto *found = target_scope->FindLocal(method_name->Name(), varbinder::ResolveBindingOptions::BINDINGS);
 
     if (found == nullptr) {
-        auto class_ctx = binder::LexicalScope<binder::LocalScope>::Enter(Binder(), target_scope);
-        auto [_, var] =
-            Binder()->NewVarDecl<binder::FunctionDecl>(method_name->Start(), Allocator(), method_name->Name(), method);
+        auto class_ctx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(VarBinder(), target_scope);
+        auto [_, var] = VarBinder()->NewVarDecl<varbinder::FunctionDecl>(method_name->Start(), Allocator(),
+                                                                         method_name->Name(), method);
         (void)_;
         var->SetScope(cls_scope);
-        var->AddFlag(binder::VariableFlags::METHOD);
+        var->AddFlag(varbinder::VariableFlags::METHOD);
         method_name->SetVariable(var);
         return;
     }
@@ -2140,14 +2147,8 @@ void ETSParser::CreateClassFunctionDeclaration(ir::MethodDefinition *method)
     method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
 }
 
-void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *ident_node)
+bool ETSParser::HasDefaultParam(const ir::ScriptFunction *const function)
 {
-    if (method->IsConstructor()) {
-        return;  // TODO(szd): Fix constructors not working with default params
-    }
-
-    const auto *const function = method->Function();
-
     bool has_default_parameter = false;
     bool has_rest_parameter = false;
 
@@ -2173,7 +2174,7 @@ void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *
     }
 
     if (!has_default_parameter) {
-        return;
+        return false;
     }
 
     if (has_rest_parameter) {
@@ -2181,11 +2182,12 @@ void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *
                          function->Start());
     }
 
-    auto *const cls_scope = Binder()->GetScope()->AsClassScope();
-    binder::LocalScope *target_scope =
-        method->IsStatic() ? cls_scope->StaticMethodScope() : cls_scope->InstanceMethodScope();
-    auto *const found = target_scope->FindLocal(method->Id()->Name());
+    return true;
+}
 
+std::string ETSParser::CreateProxyMethodName(const ir::ScriptFunction *const function, ir::MethodDefinition *method,
+                                             ir::Identifier *ident_node, varbinder::ClassScope *const cls_scope)
+{
     std::string proxy_method = function->Id()->Name().Mutf8() + "_proxy(";
 
     for (const auto *const it : function->Params()) {
@@ -2226,7 +2228,30 @@ void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *
     proxy_method.pop_back();
     proxy_method += ") }";
 
-    auto class_ctx = binder::LexicalScope<binder::ClassScope>::Enter(Binder(), GetProgram()->GlobalClassScope());
+    return proxy_method;
+}
+
+void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *ident_node)
+{
+    if (method->IsConstructor()) {
+        return;  // TODO(szd): Fix constructors not working with default params
+    }
+
+    const auto *const function = method->Function();
+
+    if (!HasDefaultParam(function)) {
+        return;
+    }
+
+    auto *const cls_scope = VarBinder()->GetScope()->AsClassScope();
+    varbinder::LocalScope *target_scope =
+        method->IsStatic() ? cls_scope->StaticMethodScope() : cls_scope->InstanceMethodScope();
+    auto *const found = target_scope->FindLocal(method->Id()->Name(), varbinder::ResolveBindingOptions::BINDINGS);
+
+    std::string proxy_method = CreateProxyMethodName(function, method, ident_node, cls_scope);
+
+    auto class_ctx =
+        varbinder::LexicalScope<varbinder::ClassScope>::Enter(VarBinder(), GetProgram()->GlobalClassScope());
 
     auto *const proxy_method_def = CreateMethodDefinition(method->Modifiers(), proxy_method, "<default_methods>.ets");
     proxy_method_def->Function()->SetDefaultParamProxy();
@@ -2238,9 +2263,14 @@ void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *
     proxy_method_def->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
 }
 
-std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *const type_annotation)
+std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *type_annotation)
 {
     const std::string optional_nullable = type_annotation->IsNullable() ? "|null" : "";
+
+    // NOTE(aakmaev): Support nullable types as unions
+    if (type_annotation->IsNullable() && type_annotation->IsETSUnionType()) {
+        type_annotation = type_annotation->AsETSUnionType()->Types().front();
+    }
 
     if (type_annotation->IsETSPrimitiveType()) {
         switch (type_annotation->AsETSPrimitiveType()->GetPrimitiveType()) {
@@ -2464,6 +2494,42 @@ ir::TypeNode *ETSParser::ParsePrimitiveType(TypeAnnotationParsingOptions *option
     return type_annotation;
 }
 
+ir::ETSUnionType *ETSParser::ParseUnionType(ir::Expression *type)
+{
+    TypeAnnotationParsingOptions options =
+        TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::DISALLOW_UNION;
+    lexer::SourcePosition start_loc = type->Start();
+    ArenaVector<ir::TypeNode *> types(Allocator()->Adapter());
+    ASSERT(type->IsTypeNode());
+    types.push_back(type->AsTypeNode());
+
+    bool is_nullable {false};
+    while (true) {
+        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
+            break;
+        }
+
+        Lexer()->NextToken();  // eat '|'
+
+        if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_NULL) {
+            Lexer()->NextToken();  // eat 'null'
+            type->AddModifier(ir::ModifierFlags::NULLABLE);
+            is_nullable = true;
+            continue;
+        }
+
+        types.push_back(ParseTypeAnnotation(&options));
+    }
+
+    lexer::SourcePosition end_loc = types.back()->End();
+    auto *union_type = AllocNode<ir::ETSUnionType>(std::move(types));
+    union_type->SetRange({start_loc, end_loc});
+    if (is_nullable) {
+        union_type->AddModifier(ir::ModifierFlags::NULLABLE);
+    }
+    return union_type;
+}
+
 ir::TSIntersectionType *ETSParser::ParseIntersectionType(ir::Expression *type)
 {
     auto start_loc = type->Start();
@@ -2511,8 +2577,8 @@ ir::TypeNode *ETSParser::ParseWildcardType(TypeAnnotationParsingOptions *options
 ir::TypeNode *ETSParser::ParseFunctionType()
 {
     auto start_loc = Lexer()->GetToken().Start();
-    auto type_params_ctx = binder::LexicalScope<binder::LocalScope>(Binder());
-    FunctionParameterContext func_param_context(&GetContext(), Binder());
+    auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
+    FunctionParameterContext func_param_context(&GetContext(), VarBinder());
     auto *func_param_scope = func_param_context.LexicalScope().GetScope();
     auto params = ParseFunctionParams();
 
@@ -2654,19 +2720,9 @@ ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *optio
         type_annotation->SetRange({start_pos, Lexer()->GetToken().End()});
     }
 
-    while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
-        Lexer()->NextToken();  // eat '|'
-
-        if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_NULL) {
-            if (throw_error) {
-                ThrowExpectedToken(lexer::TokenType::LITERAL_NULL);
-            }
-
-            return nullptr;
-        }
-        Lexer()->NextToken();  // eat 'null'
-
-        type_annotation->AddModifier(ir::ModifierFlags::NULLABLE);
+    if (((*options) & TypeAnnotationParsingOptions::DISALLOW_UNION) == 0 &&
+        Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
+        return ParseUnionType(type_annotation);
     }
 
     return type_annotation;
@@ -2818,7 +2874,7 @@ std::vector<std::string> ETSParser::ParseImportDeclarations(ArenaVector<ir::Stat
         import_declaration->SetRange({start_loc, end_loc});
 
         if (import_declaration->Language().IsDynamic()) {
-            Binder()->AsETSBinder()->AddDynamicImport(import_declaration);
+            VarBinder()->AsETSBinder()->AddDynamicImport(import_declaration);
         }
 
         ConsumeSemicolon(import_declaration);
@@ -2834,7 +2890,7 @@ std::vector<std::string> ETSParser::ParseImportDeclarations(ArenaVector<ir::Stat
     });
 
     if ((GetContext().Status() & ParserStatus::IN_DEFAULT_IMPORTS) != 0) {
-        static_cast<binder::ETSBinder *>(Binder())->SetDefaultImports(std::move(imports));
+        static_cast<varbinder::ETSBinder *>(VarBinder())->SetDefaultImports(std::move(imports));
     }
 
     sort(all_user_paths.begin(), all_user_paths.end());
@@ -2921,7 +2977,7 @@ void ETSParser::ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers)
     specifier->SetRange({namespace_start, Lexer()->GetToken().End()});
     specifiers->push_back(specifier);
 
-    Binder()->AddDecl<binder::ImportDecl>(local->Start(), local->Name(), local->Name(), specifier);
+    VarBinder()->AddDecl<varbinder::ImportDecl>(local->Start(), local->Name(), local->Name(), specifier);
 
     Lexer()->NextToken();  // eat local name
 }
@@ -3110,16 +3166,16 @@ ir::Expression *ETSParser::ParseFunctionParameter()
         param_expression->SetRange({param_ident->Start(), param_ident->End()});
     }
 
-    auto *const var = std::get<1>(Binder()->AddParamDecl(param_expression));
+    auto *const var = std::get<1>(VarBinder()->AddParamDecl(param_expression));
     param_expression->Ident()->SetVariable(var);
-    var->SetScope(Binder()->GetScope());
+    var->SetScope(VarBinder()->GetScope());
 
     return param_expression;
 }
 
 ir::Expression *ETSParser::CreateParameterThis(const util::StringView class_name)
 {
-    auto *param_ident = AllocNode<ir::Identifier>(binder::TypedBinder::MANDATORY_PARAM_THIS, Allocator());
+    auto *param_ident = AllocNode<ir::Identifier>(varbinder::TypedBinder::MANDATORY_PARAM_THIS, Allocator());
     param_ident->SetRange(Lexer()->GetToken().Loc());
 
     ir::Expression *class_type_name = AllocNode<ir::Identifier>(class_name, Allocator());
@@ -3135,9 +3191,9 @@ ir::Expression *ETSParser::CreateParameterThis(const util::StringView class_name
     auto *param_expression = AllocNode<ir::ETSParameterExpression>(param_ident, nullptr);
     param_expression->SetRange({param_ident->Start(), param_ident->End()});
 
-    auto *const var = std::get<1>(Binder()->AddParamDecl(param_expression));
+    auto *const var = std::get<1>(VarBinder()->AddParamDecl(param_expression));
     param_ident->AsIdentifier()->SetVariable(var);
-    var->SetScope(Binder()->GetScope());
+    var->SetScope(VarBinder()->GetScope());
 
     return param_expression;
 }
@@ -3148,18 +3204,18 @@ void ETSParser::AddVariableDeclarationBindings(ir::Expression *init, lexer::Sour
     std::vector<ir::Identifier *> bindings = util::Helpers::CollectBindingNames(init);
 
     for (auto *binding : bindings) {
-        binder::Decl *decl {};
-        binder::Variable *var {};
+        varbinder::Decl *decl {};
+        varbinder::Variable *var {};
 
         if ((flags & VariableParsingFlags::LET) != 0U) {
-            std::tie(decl, var) = Binder()->NewVarDecl<binder::LetDecl>(start_loc, binding->Name());
+            std::tie(decl, var) = VarBinder()->NewVarDecl<varbinder::LetDecl>(start_loc, binding->Name());
         } else {
-            std::tie(decl, var) = Binder()->NewVarDecl<binder::ConstDecl>(start_loc, binding->Name());
+            std::tie(decl, var) = VarBinder()->NewVarDecl<varbinder::ConstDecl>(start_loc, binding->Name());
         }
 
         binding->SetVariable(var);
-        var->SetScope(Binder()->GetScope());
-        var->AddFlag(binder::VariableFlags::LOCAL);
+        var->SetScope(VarBinder()->GetScope());
+        var->AddFlag(varbinder::VariableFlags::LOCAL);
         decl->BindNode(init);
     }
 }
@@ -3306,7 +3362,7 @@ ir::Expression *ETSParser::ParseCatchParam()
         ThrowSyntaxError("Unexpected token in catch parameter, expected an identifier");
     }
 
-    auto param_decl = Binder()->AddParamDecl(param);
+    auto param_decl = VarBinder()->AddParamDecl(param);
 
     if (param->IsIdentifier()) {
         param->AsIdentifier()->SetVariable(std::get<1>(param_decl));
@@ -3383,7 +3439,7 @@ ir::Statement *ETSParser::ParseTryStatement()
 
 ir::Statement *ETSParser::ParseImportDeclaration([[maybe_unused]] StatementParsingFlags flags)
 {
-    ImportDeclarationContext import_ctx(Binder());
+    ImportDeclarationContext import_ctx(VarBinder());
 
     char32_t next_char = Lexer()->Lookahead();
     if (next_char == lexer::LEX_CHAR_LEFT_PAREN || next_char == lexer::LEX_CHAR_DOT) {
@@ -3416,7 +3472,7 @@ ir::Statement *ETSParser::ParseImportDeclaration([[maybe_unused]] StatementParsi
     import_declaration->SetRange({start_loc, end_loc});
 
     if (import_declaration->Language().IsDynamic()) {
-        Binder()->AsETSBinder()->AddDynamicImport(import_declaration);
+        VarBinder()->AsETSBinder()->AddDynamicImport(import_declaration);
     }
 
     ConsumeSemicolon(import_declaration);
@@ -3493,6 +3549,39 @@ ir::Expression *ETSParser::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFla
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
+ir::Expression *ETSParser::ParseDefaultPrimaryExpression(ExpressionParseFlags flags)
+{
+    auto start_loc = Lexer()->GetToken().Start();
+    auto saved_pos = Lexer()->Save();
+    TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::POTENTIAL_CLASS_LITERAL |
+                                           TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE |
+                                           TypeAnnotationParsingOptions::DISALLOW_UNION;
+    ir::TypeNode *potential_type = ParseTypeAnnotation(&options);
+
+    if (potential_type != nullptr) {
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
+            Lexer()->NextToken();  // eat '.'
+        }
+
+        if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword()) {
+            Lexer()->NextToken();  // eat 'class' and 'struct'
+            auto *class_literal = AllocNode<ir::ETSClassLiteral>(potential_type);
+            class_literal->SetRange({start_loc, Lexer()->GetToken().End()});
+            return class_literal;
+        }
+    }
+
+    Lexer()->Rewind(saved_pos);
+
+    if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
+        return ParsePrimaryExpressionIdent(flags);
+    }
+
+    ThrowSyntaxError({"Unexpected token '", lexer::TokenToString(Lexer()->GetToken().Type()), "'."});
+    return nullptr;
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
 ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
 {
     switch (Lexer()->GetToken().Type()) {
@@ -3543,37 +3632,9 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
             ThrowSyntaxError("Type alias is allowed only as top-level declaration");
         }
         default: {
-            auto start_loc = Lexer()->GetToken().Start();
-            auto saved_pos = Lexer()->Save();
-            TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::POTENTIAL_CLASS_LITERAL |
-                                                   TypeAnnotationParsingOptions::IGNORE_FUNCTION_TYPE;
-            ir::TypeNode *potential_type = ParseTypeAnnotation(&options);
-
-            if (potential_type != nullptr) {
-                if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
-                    Lexer()->NextToken();  // eat '.'
-                }
-
-                if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS || IsStructKeyword()) {
-                    Lexer()->NextToken();  // eat 'class' and 'struct'
-                    auto *class_literal = AllocNode<ir::ETSClassLiteral>(potential_type);
-                    class_literal->SetRange({start_loc, Lexer()->GetToken().End()});
-                    return class_literal;
-                }
-            }
-
-            Lexer()->Rewind(saved_pos);
-
-            if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
-                return ParsePrimaryExpressionIdent(flags);
-            }
-
-            break;
+            return ParseDefaultPrimaryExpression(flags);
         }
     }
-
-    ThrowSyntaxError({"Unexpected token '", lexer::TokenToString(Lexer()->GetToken().Type()), "'."});
-    return nullptr;
 }
 
 bool ETSParser::IsArrowFunctionExpressionStart()
@@ -3860,13 +3921,13 @@ ir::Expression *ETSParser::ParseNewExpression()
     ir::ClassDefinition *class_definition {};
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-        auto *parent_class_scope = Binder()->GetScope();
+        auto *parent_class_scope = VarBinder()->GetScope();
         while (!parent_class_scope->IsClassScope()) {
             ASSERT(parent_class_scope->Parent());
             parent_class_scope = parent_class_scope->Parent();
         }
 
-        auto class_ctx = binder::LexicalScope<binder::ClassScope>(Binder());
+        auto class_ctx = varbinder::LexicalScope<varbinder::ClassScope>(VarBinder());
         ArenaVector<ir::TSClassImplements *> implements(Allocator()->Adapter());
         auto modifiers = ir::ClassDefinitionModifiers::ANONYMOUS | ir::ClassDefinitionModifiers::HAS_SUPER;
         auto [ctor, properties, bodyRange] = ParseClassBody(modifiers);
@@ -3952,10 +4013,10 @@ ir::TSTypeParameter *ETSParser::ParseTypeParameter([[maybe_unused]] TypeAnnotati
     }();
 
     auto *param_ident = ExpectIdentifier();
-    auto [decl, var] = Binder()->NewVarDecl<binder::TypeParameterDecl>(param_ident->Start(), param_ident->Name());
+    auto [decl, var] = VarBinder()->NewVarDecl<varbinder::TypeParameterDecl>(param_ident->Start(), param_ident->Name());
     param_ident->SetVariable(var);
-    var->SetScope(Binder()->GetScope());
-    var->AddFlag(binder::VariableFlags::TYPE_PARAMETER);
+    var->SetScope(VarBinder()->GetScope());
+    var->AddFlag(varbinder::VariableFlags::TYPE_PARAMETER);
 
     ir::TypeNode *constraint = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS) {
@@ -4017,7 +4078,7 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
     Lexer()->Rewind(pos);
 
     ArenaVector<ir::AstNode *> members(Allocator()->Adapter());
-    const auto enum_ctx = binder::LexicalScope<binder::LocalScope>(Binder());
+    const auto enum_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
 
     if (string_type_enum) {
         ParseStringEnum(members);
@@ -4025,8 +4086,8 @@ ir::TSEnumDeclaration *ETSParser::ParseEnumMembers(ir::Identifier *const key, co
         ParseNumberEnum(members);
     }
 
-    auto *const enum_declaration = AllocNode<ir::TSEnumDeclaration>(Allocator(), Binder()->GetScope()->AsLocalScope(),
-                                                                    key, std::move(members), is_const, is_static);
+    auto *const enum_declaration = AllocNode<ir::TSEnumDeclaration>(
+        Allocator(), VarBinder()->GetScope()->AsLocalScope(), key, std::move(members), is_const, is_static);
     enum_declaration->SetRange({enum_start, Lexer()->GetToken().End()});
 
     Lexer()->NextToken();  // eat '}'
@@ -4042,9 +4103,9 @@ void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
     // Lambda to parse enum member (maybe with initializer)
     auto const parse_member = [this, &members, &enum_values, &current_value]() {
         auto *const ident = ExpectIdentifier();
-        auto [decl, var] = Binder()->NewVarDecl<binder::LetDecl>(ident->Start(), ident->Name());
-        var->SetScope(Binder()->GetScope());
-        var->AddFlag(binder::VariableFlags::STATIC);
+        auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(ident->Start(), ident->Name());
+        var->SetScope(VarBinder()->GetScope());
+        var->AddFlag(varbinder::VariableFlags::STATIC);
         ident->SetVariable(var);
 
         auto const add_value = [this, &enum_values](checker::ETSEnumType::ValueType const new_value) {
@@ -4126,9 +4187,9 @@ void ETSParser::ParseStringEnum(ArenaVector<ir::AstNode *> &members)
     // Lambda to parse enum member (maybe with initializer)
     auto const parse_member = [this, &members, &enum_values]() {
         auto *const ident = ExpectIdentifier();
-        auto [decl, var] = Binder()->NewVarDecl<binder::LetDecl>(ident->Start(), ident->Name());
-        var->SetScope(Binder()->GetScope());
-        var->AddFlag(binder::VariableFlags::STATIC);
+        auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(ident->Start(), ident->Name());
+        var->SetScope(VarBinder()->GetScope());
+        var->AddFlag(varbinder::VariableFlags::STATIC);
         ident->SetVariable(var);
 
         ir::StringLiteral *item_value;
@@ -4234,14 +4295,14 @@ bool ETSParser::CheckClassElement(ir::AstNode *property, [[maybe_unused]] ir::Me
             ThrowSyntaxError("Only one static block is allowed", property->Start());
         }
 
-        ASSERT(Binder()->GetScope()->IsClassScope());
-        auto class_ctx = binder::LexicalScope<binder::LocalScope>::Enter(
-            Binder(), Binder()->GetScope()->AsClassScope()->StaticMethodScope());
+        ASSERT(VarBinder()->GetScope()->IsClassScope());
+        auto class_ctx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(
+            VarBinder(), VarBinder()->GetScope()->AsClassScope()->StaticMethodScope());
         auto *id = AllocNode<ir::Identifier>(compiler::Signatures::CCTOR, Allocator());
         auto [_, var] =
-            Binder()->NewVarDecl<binder::FunctionDecl>(property->Start(), Allocator(), id->Name(), property);
+            VarBinder()->NewVarDecl<varbinder::FunctionDecl>(property->Start(), Allocator(), id->Name(), property);
         (void)_;
-        var->AddFlag(binder::VariableFlags::METHOD);
+        var->AddFlag(varbinder::VariableFlags::METHOD);
         id->SetVariable(var);
         property->AsClassStaticBlock()->Function()->SetIdent(id);
     }
@@ -4271,13 +4332,13 @@ void ETSParser::CreateImplicitConstructor([[maybe_unused]] ir::MethodDefinition 
     auto *method_def = BuildImplicitConstructor(ir::ClassDefinitionModifiers::SET_CTOR_ID, start_loc);
     properties.push_back(method_def);
 
-    ASSERT(Binder()->GetScope()->IsClassScope());
-    auto class_ctx = binder::LexicalScope<binder::LocalScope>::Enter(
-        Binder(), Binder()->GetScope()->AsClassScope()->StaticMethodScope());
-    auto [_, var] = Binder()->NewVarDecl<binder::FunctionDecl>(method_def->Start(), Allocator(),
-                                                               method_def->Id()->Name(), method_def);
+    ASSERT(VarBinder()->GetScope()->IsClassScope());
+    auto class_ctx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(
+        VarBinder(), VarBinder()->GetScope()->AsClassScope()->StaticMethodScope());
+    auto [_, var] = VarBinder()->NewVarDecl<varbinder::FunctionDecl>(method_def->Start(), Allocator(),
+                                                                     method_def->Id()->Name(), method_def);
     (void)_;
-    var->AddFlag(binder::VariableFlags::METHOD);
+    var->AddFlag(varbinder::VariableFlags::METHOD);
     method_def->Function()->Id()->SetVariable(var);
 }
 
@@ -4405,7 +4466,7 @@ ir::Statement *ETSParser::CreateStatement(std::string_view const source_code, st
         return statements[0U];
     }
 
-    auto const local_ctx = binder::LexicalScope<binder::LocalScope>(Binder());
+    auto const local_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     auto *const scope = local_ctx.GetScope();
 
     auto *const block_stmt = AllocNode<ir::BlockStatement>(Allocator(), scope, std::move(statements));
@@ -4482,7 +4543,7 @@ ExternalSourceParser::ExternalSourceParser(ETSParser *parser, Program *new_progr
     : parser_(parser),
       saved_program_(parser_->GetProgram()),
       saved_lexer_(parser_->Lexer()),
-      saved_top_scope_(parser_->Binder()->TopScope())
+      saved_top_scope_(parser_->VarBinder()->TopScope())
 {
     parser_->SetProgram(new_program);
     parser_->GetContext().SetProgram(new_program);
@@ -4493,7 +4554,7 @@ ExternalSourceParser::~ExternalSourceParser()
     parser_->SetLexer(saved_lexer_);
     parser_->SetProgram(saved_program_);
     parser_->GetContext().SetProgram(saved_program_);
-    parser_->Binder()->ResetTopScope(saved_top_scope_);
+    parser_->VarBinder()->ResetTopScope(saved_top_scope_);
 }
 
 //================================================================================================//

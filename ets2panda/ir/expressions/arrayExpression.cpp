@@ -343,11 +343,11 @@ checker::Type *ArrayExpression::Check(checker::TSChecker *checker)
 
         for (auto it = element_types.begin(); it != element_types.end(); it++, index++) {
             util::StringView member_index = util::Helpers::ToStringView(checker->Allocator(), index);
-            binder::LocalVariable *tuple_member =
-                binder::Scope::CreateVar(checker->Allocator(), member_index, binder::VariableFlags::PROPERTY, nullptr);
+            varbinder::LocalVariable *tuple_member = varbinder::Scope::CreateVar(
+                checker->Allocator(), member_index, varbinder::VariableFlags::PROPERTY, nullptr);
 
             if (in_const_context) {
-                tuple_member->AddFlag(binder::VariableFlags::READONLY);
+                tuple_member->AddFlag(varbinder::VariableFlags::READONLY);
             }
 
             tuple_member->SetTsType(*it);
@@ -406,7 +406,7 @@ checker::Type *ArrayExpression::CheckPattern(checker::TSChecker *checker)
                 if (assignment_pattern->Left()->IsIdentifier()) {
                     const ir::Identifier *ident = assignment_pattern->Left()->AsIdentifier();
                     ASSERT(ident->Variable());
-                    binder::Variable *binding_var = ident->Variable();
+                    varbinder::Variable *binding_var = ident->Variable();
                     checker::Type *initializer_type =
                         checker->GetBaseTypeOfLiteralType(assignment_pattern->Right()->Check(checker));
                     binding_var->SetTsType(initializer_type);
@@ -459,10 +459,10 @@ checker::Type *ArrayExpression::CheckPattern(checker::TSChecker *checker)
         util::StringView member_index = util::Helpers::ToStringView(checker->Allocator(), index - 1);
 
         auto *member_var =
-            binder::Scope::CreateVar(checker->Allocator(), member_index, binder::VariableFlags::PROPERTY, *it);
+            varbinder::Scope::CreateVar(checker->Allocator(), member_index, varbinder::VariableFlags::PROPERTY, *it);
 
         if (member_flag == checker::ElementFlags::OPTIONAL) {
-            member_var->AddFlag(binder::VariableFlags::OPTIONAL);
+            member_var->AddFlag(varbinder::VariableFlags::OPTIONAL);
         } else {
             min_length++;
         }

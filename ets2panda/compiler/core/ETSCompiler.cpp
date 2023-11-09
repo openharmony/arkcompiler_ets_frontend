@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,11 @@
 
 #include "ETSCompiler.h"
 
+#include "checker/types/ets/etsDynamicFunctionType.h"
+#include "compiler/base/condition.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/base/catchClause.h"
-#include "ir/base/classProperty.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/statements/returnStatement.h"
+#include "compiler/function/functionBuilder.h"
 
 namespace panda::es2panda::compiler {
 
@@ -198,38 +196,42 @@ void ETSCompiler::Compile(const ir::ETSPackageDeclaration *st) const
 
 void ETSCompiler::Compile(const ir::ETSParameterExpression *expr) const
 {
-    (void)expr;
+    ETSGen *etsg = GetETSGen();
+    expr->Ident()->Identifier::Compile(etsg);
+}
+
+void ETSCompiler::Compile([[maybe_unused]] const ir::ETSPrimitiveType *node) const
+{
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ETSPrimitiveType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ETSStructDeclaration *node) const
 {
-    (void)node;
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile(const ir::ETSStructDeclaration *node) const
-{
-    (void)node;
     UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::ETSTypeReference *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    node->Part()->Compile(etsg);
 }
 
 void ETSCompiler::Compile(const ir::ETSTypeReferencePart *node) const
 {
+    ETSGen *etsg = GetETSGen();
+    node->Name()->Compile(etsg);
+}
+
+void ETSCompiler::Compile(const ir::ETSUnionType *node) const
+{
     (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ETSWildcardType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ETSWildcardType *node) const
 {
-    (void)node;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    etsg->Unimplemented();
 }
 // compile methods for EXPRESSIONS in alphabetical order
 void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
@@ -240,8 +242,23 @@ void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
 
 void ETSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    ASSERT(expr->ResolvedLambda() != nullptr);
+    auto *ctor = expr->ResolvedLambda()->TsType()->AsETSObjectType()->ConstructSignatures()[0];
+    std::vector<compiler::VReg> arguments;
+
+    for (auto *it : expr->CapturedVars()) {
+        if (it->HasFlag(varbinder::VariableFlags::LOCAL)) {
+            arguments.push_back(it->AsLocalVariable()->Vreg());
+        }
+    }
+
+    if (expr->propagate_this_) {
+        arguments.push_back(etsg->GetThisReg());
+    }
+
+    etsg->InitLambdaObject(expr, ctor, arguments);
+    etsg->SetAccumulatorType(expr->resolved_lambda_->TsType());
 }
 
 void ETSCompiler::Compile(const ir::AssignmentExpression *expr) const
@@ -585,7 +602,6 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
         }
 
         etsg->LoadBuiltinVoid(st);
-
     } else {
         auto ttctx = compiler::TargetTypeContext(etsg, etsg->ReturnType());
 
@@ -609,7 +625,6 @@ void ETSCompiler::Compile(const ir::ReturnStatement *st) const
         etsg->LoadAccumulator(st, res);
     }
 
-    // etsg->ApplyConversion(st, st->ReturnType());
     etsg->ReturnAcc(st);
 }
 

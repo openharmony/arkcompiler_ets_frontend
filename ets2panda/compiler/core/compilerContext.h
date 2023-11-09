@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,10 @@
 #include <cstdint>
 #include <mutex>
 
-namespace panda::es2panda::binder {
-class Binder;
+namespace panda::es2panda::varbinder {
+class VarBinder;
 class FunctionScope;
-}  // namespace panda::es2panda::binder
+}  // namespace panda::es2panda::varbinder
 
 namespace panda::es2panda::checker {
 class Checker;
@@ -44,10 +44,11 @@ class AstCompiler;
 class CompilerContext {
 public:
     using CodeGenCb =
-        std::function<void(compiler::CompilerContext *context, binder::FunctionScope *, compiler::ProgramElement *)>;
+        std::function<void(compiler::CompilerContext *context, varbinder::FunctionScope *, compiler::ProgramElement *)>;
 
-    CompilerContext(binder::Binder *binder, checker::Checker *checker, CompilerOptions options, CodeGenCb code_gen_cb)
-        : binder_(binder), checker_(checker), options_(std::move(options)), code_gen_cb_(std::move(code_gen_cb))
+    CompilerContext(varbinder::VarBinder *varbinder, checker::Checker *checker, CompilerOptions options,
+                    CodeGenCb code_gen_cb)
+        : varbinder_(varbinder), checker_(checker), options_(std::move(options)), code_gen_cb_(std::move(code_gen_cb))
     {
     }
 
@@ -55,9 +56,9 @@ public:
     NO_MOVE_SEMANTIC(CompilerContext);
     ~CompilerContext() = default;
 
-    binder::Binder *Binder() const
+    varbinder::VarBinder *VarBinder() const
     {
-        return binder_;
+        return varbinder_;
     }
 
     checker::Checker *Checker() const
@@ -122,7 +123,7 @@ public:
     }
 
 private:
-    binder::Binder *binder_;
+    varbinder::VarBinder *varbinder_;
     checker::Checker *checker_;
     Emitter *emitter_ {};
     std::vector<LiteralBuffer> buff_storage_;

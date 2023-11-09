@@ -44,12 +44,12 @@ public:
         return name_;
     }
 
-    void SetMergedTypeParams(std::pair<std::vector<binder::Variable *>, size_t> &&merged_type_params)
+    void SetMergedTypeParams(std::pair<std::vector<varbinder::Variable *>, size_t> &&merged_type_params)
     {
         merged_type_params_ = std::move(merged_type_params);
     }
 
-    const std::pair<std::vector<binder::Variable *>, size_t> &GetMergedTypeParams() const
+    const std::pair<std::vector<varbinder::Variable *>, size_t> &GetMergedTypeParams() const
     {
         return merged_type_params_;
     }
@@ -64,10 +64,10 @@ public:
         return type_param_types_;
     }
 
-    binder::LocalVariable *GetProperty(const util::StringView &name,
-                                       [[maybe_unused]] bool search_in_base) const override
+    varbinder::LocalVariable *GetProperty(const util::StringView &name,
+                                          [[maybe_unused]] bool search_in_base) const override
     {
-        binder::LocalVariable *result_prop = ObjectType::GetProperty(name, false);
+        varbinder::LocalVariable *result_prop = ObjectType::GetProperty(name, false);
 
         if (result_prop != nullptr) {
             return result_prop;
@@ -121,9 +121,9 @@ public:
         return FindIndexInfo(true);
     }
 
-    ArenaVector<binder::LocalVariable *> Properties() override
+    ArenaVector<varbinder::LocalVariable *> Properties() override
     {
-        ArenaVector<binder::LocalVariable *> properties(allocator_->Adapter());
+        ArenaVector<varbinder::LocalVariable *> properties(allocator_->Adapter());
         CollectProperties(&properties);
         return properties;
     }
@@ -134,7 +134,7 @@ public:
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
 
     void CollectSignatures(ArenaVector<Signature *> *collected_signatures, bool collect_call_signatures) const;
-    void CollectProperties(ArenaVector<binder::LocalVariable *> *collected_properties) const;
+    void CollectProperties(ArenaVector<varbinder::LocalVariable *> *collected_properties) const;
     const IndexInfo *FindIndexInfo(bool find_number_info) const;
     IndexInfo *FindIndexInfo(bool find_number_info);
 
@@ -142,7 +142,7 @@ private:
     util::StringView name_;
     ArenaVector<ObjectType *> bases_;
     ArenaAllocator *allocator_;
-    std::pair<std::vector<binder::Variable *>, size_t> merged_type_params_ {};
+    std::pair<std::vector<varbinder::Variable *>, size_t> merged_type_params_ {};
     std::vector<Type *> type_param_types_ {};
 };
 }  // namespace panda::es2panda::checker

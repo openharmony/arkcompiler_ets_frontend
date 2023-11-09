@@ -20,8 +20,6 @@
 #include "ir/astDump.h"
 #include "util/ustring.h"
 
-//#include <utility>
-
 namespace panda::es2panda::ir {
 void TemplateElement::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
 void TemplateElement::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
@@ -30,7 +28,7 @@ void TemplateElement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({
         {"type", "TemplateElement"},
-        {"value", {{"raw", "" /* raw_ */}, {"cooked", "" /* cooked_ */}}},
+        {"value", {{"raw", /* raw_ */ ""}, {"cooked", /* cooked_ */ ""}}},
     });
 }
 

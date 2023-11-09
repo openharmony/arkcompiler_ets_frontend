@@ -51,7 +51,7 @@ void FunctionExpression::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 
 checker::Type *FunctionExpression::Check(checker::TSChecker *checker)
 {
-    binder::Variable *func_var = nullptr;
+    varbinder::Variable *func_var = nullptr;
 
     if (func_->Parent()->Parent() != nullptr && func_->Parent()->Parent()->IsVariableDeclarator() &&
         func_->Parent()->Parent()->AsVariableDeclarator()->Id()->IsIdentifier()) {

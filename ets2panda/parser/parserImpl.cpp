@@ -15,9 +15,9 @@
 
 #include "parserImpl.h"
 
-#include "binder/privateBinding.h"
-#include "binder/scope.h"
-#include "binder/tsBinding.h"
+#include "varbinder/privateBinding.h"
+#include "varbinder/scope.h"
+#include "varbinder/tsBinding.h"
 #include "ir/astDump.h"
 #include "ir/astNode.h"
 #include "ir/base/classDefinition.h"
@@ -77,7 +77,7 @@ void ParserImpl::ParseScript(const SourceFile &source_file, bool gen_std_lib)
         context_.Status() |= (ParserStatus::MODULE);
         ParseProgram(ScriptKind::MODULE);
 
-        if (!Binder()->TopScope()->AsModuleScope()->ExportAnalysis()) {
+        if (!VarBinder()->TopScope()->AsModuleScope()->ExportAnalysis()) {
             ThrowSyntaxError("Invalid exported binding");
         }
     } else if (gen_std_lib) {
@@ -95,8 +95,8 @@ void ParserImpl::ParseProgram(ScriptKind kind)
 
     auto statements = ParseStatementList(StatementParsingFlags::STMT_GLOBAL_LEXICAL);
 
-    auto *block_stmt = AllocNode<ir::BlockStatement>(Allocator(), Binder()->GetScope(), std::move(statements));
-    Binder()->GetScope()->BindNode(block_stmt);
+    auto *block_stmt = AllocNode<ir::BlockStatement>(Allocator(), VarBinder()->GetScope(), std::move(statements));
+    VarBinder()->GetScope()->BindNode(block_stmt);
     block_stmt->SetRange({start_loc, lexer_->GetToken().End()});
 
     program_->SetAst(block_stmt);
@@ -569,9 +569,9 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
-    auto func_param_ctx = binder::LexicalScope<binder::FunctionParamScope>(Binder());
+    auto func_param_ctx = varbinder::LexicalScope<varbinder::FunctionParamScope>(VarBinder());
     auto *func_param_scope = func_param_ctx.GetScope();
-    auto func_ctx = binder::LexicalScope<binder::FunctionScope>(Binder());
+    auto func_ctx = varbinder::LexicalScope<varbinder::FunctionScope>(VarBinder());
     auto *func_scope = func_ctx.GetScope();
 
     func_scope->BindParamScope(func_param_scope);
@@ -654,8 +654,9 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
 
-    auto *param_scope = Binder()->Allocator()->New<binder::FunctionParamScope>(Allocator(), Binder()->GetScope());
-    auto *scope = Binder()->Allocator()->New<binder::FunctionScope>(Allocator(), param_scope);
+    auto *param_scope =
+        VarBinder()->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), VarBinder()->GetScope());
+    auto *scope = VarBinder()->Allocator()->New<varbinder::FunctionScope>(Allocator(), param_scope);
 
     if ((modifiers & ir::ClassDefinitionModifiers::HAS_SUPER) != 0U) {
         util::StringView args_str = "args";
@@ -761,13 +762,13 @@ std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParserImpl::Par
     return {ParseSuperClassReference(), nullptr};
 }
 
-binder::Decl *ParserImpl::BindClassName(ir::Identifier *ident_node)
+varbinder::Decl *ParserImpl::BindClassName(ir::Identifier *ident_node)
 {
     if (ident_node == nullptr) {
         return nullptr;
     }
 
-    return Binder()->AddDecl<binder::ConstDecl>(lexer_->GetToken().Start(), ident_node->Name());
+    return VarBinder()->AddDecl<varbinder::ConstDecl>(lexer_->GetToken().Start(), ident_node->Name());
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
@@ -776,17 +777,17 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifie
     lexer::SourcePosition start_loc = lexer_->GetToken().Start();
     lexer_->NextToken();
 
-    auto class_ctx = binder::LexicalScope<binder::LocalScope>(Binder());
+    auto class_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     ir::Identifier *ident_node = ParseClassIdent(modifiers);
 
     if (ident_node == nullptr && (modifiers & ir::ClassDefinitionModifiers::DECLARATION) != 0U) {
         ThrowSyntaxError("Unexpected token, expected an identifier.");
     }
 
-    binder::Decl *ident_decl = BindClassName(ident_node);
+    varbinder::Decl *ident_decl = BindClassName(ident_node);
 
-    binder::PrivateBinding private_binding(Allocator(), class_id_++);
-    Binder()->AddDecl<binder::ConstDecl>(start_loc, private_binding.View());
+    varbinder::PrivateBinding private_binding(Allocator(), class_id_++);
+    VarBinder()->AddDecl<varbinder::ConstDecl>(start_loc, private_binding.View());
 
     // Parse SuperClass
     auto [superClass, superTypeParams] = ParseSuperClass();
@@ -897,7 +898,7 @@ ir::Expression *ParserImpl::CreateParameterThis([[maybe_unused]] util::StringVie
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::ParseFunctionBody(
     [[maybe_unused]] const ArenaVector<ir::Expression *> &params, [[maybe_unused]] ParserStatus new_status,
-    [[maybe_unused]] ParserStatus context_status, binder::FunctionScope *func_scope)
+    [[maybe_unused]] ParserStatus context_status, varbinder::FunctionScope *func_scope)
 {
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         ThrowSyntaxError("Unexpected token, expected '{'");
@@ -910,7 +911,7 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::
 
 FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::Identifier *class_name)
 {
-    auto type_params_ctx = binder::LexicalScope<binder::LocalScope>(Binder());
+    auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
 
     ir::TSTypeParameterDeclaration *type_param_decl = ParseFunctionTypeParameters();
 
@@ -918,7 +919,7 @@ FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::Id
         ThrowSyntaxError("Unexpected token, expected '('");
     }
 
-    FunctionParameterContext func_param_context(&context_, Binder());
+    FunctionParameterContext func_param_context(&context_, VarBinder());
 
     ir::Expression *parameter_this = nullptr;
     if (class_name != nullptr) {
@@ -952,8 +953,8 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus new_status)
     auto [typeParamDecl, params, returnTypeAnnotation, funcParamScope, throw_marker] =
         ParseFunctionSignature(new_status);
 
-    auto param_ctx = binder::LexicalScope<binder::FunctionParamScope>::Enter(Binder(), funcParamScope, false);
-    auto function_ctx = binder::LexicalScope<binder::FunctionScope>(Binder());
+    auto param_ctx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(VarBinder(), funcParamScope, false);
+    auto function_ctx = varbinder::LexicalScope<varbinder::FunctionScope>(VarBinder());
     auto *function_scope = function_ctx.GetScope();
     function_scope->BindParamScope(funcParamScope);
     funcParamScope->BindFunctionScope(function_scope);
@@ -1039,7 +1040,7 @@ ir::Expression *ParserImpl::ParseFunctionParameter()
     }
 
     ir::Expression *function_parameter = ParsePatternElement(ExpressionParseFlags::NO_OPTS, true);
-    Binder()->AddParamDecl(function_parameter);
+    VarBinder()->AddParamDecl(function_parameter);
 
     return function_parameter;
 }
@@ -1221,48 +1222,49 @@ bool ParserImpl::CheckModuleAsModifier()
 
 void ExportDeclarationContext::BindExportDecl(ir::AstNode *export_decl)
 {
-    if (Binder() == nullptr) {
+    if (VarBinder() == nullptr) {
         return;
     }
 
-    binder::ModuleScope::ExportDeclList decl_list(Allocator()->Adapter());
+    varbinder::ModuleScope::ExportDeclList decl_list(Allocator()->Adapter());
 
     if (export_decl->IsExportDefaultDeclaration()) {
         auto *decl = export_decl->AsExportDefaultDeclaration();
         auto *rhs = decl->Decl();
 
-        if (Binder()->GetScope()->Bindings().size() == SavedBindings().size()) {
+        if (VarBinder()->GetScope()->Bindings().size() == SavedBindings().size()) {
             if (rhs->IsFunctionDeclaration()) {
-                Binder()->AddDecl<binder::FunctionDecl>(rhs->Start(), Binder()->Allocator(),
-                                                        util::StringView(DEFAULT_EXPORT),
-                                                        rhs->AsFunctionDeclaration()->Function());
+                VarBinder()->AddDecl<varbinder::FunctionDecl>(rhs->Start(), VarBinder()->Allocator(),
+                                                              util::StringView(DEFAULT_EXPORT),
+                                                              rhs->AsFunctionDeclaration()->Function());
             } else {
-                Binder()->AddDecl<binder::ConstDecl>(rhs->Start(), util::StringView(DEFAULT_EXPORT));
+                VarBinder()->AddDecl<varbinder::ConstDecl>(rhs->Start(), util::StringView(DEFAULT_EXPORT));
             }
         }
     }
 
-    for (const auto &[name, variable] : Binder()->GetScope()->Bindings()) {
+    for (const auto &[name, variable] : VarBinder()->GetScope()->Bindings()) {
         if (SavedBindings().find(name) != SavedBindings().end()) {
             continue;
         }
 
         util::StringView export_name(export_decl->IsExportDefaultDeclaration() ? "default" : name);
 
-        variable->AddFlag(binder::VariableFlags::LOCAL_EXPORT);
-        auto *decl = Binder()->AddDecl<binder::ExportDecl>(variable->Declaration()->Node()->Start(), export_name, name);
+        variable->AddFlag(varbinder::VariableFlags::LOCAL_EXPORT);
+        auto *decl =
+            VarBinder()->AddDecl<varbinder::ExportDecl>(variable->Declaration()->Node()->Start(), export_name, name);
         decl_list.push_back(decl);
     }
 
-    auto *module_scope = Binder()->GetScope()->AsModuleScope();
+    auto *module_scope = VarBinder()->GetScope()->AsModuleScope();
     module_scope->AddExportDecl(export_decl, std::move(decl_list));
 }
 
 void ImportDeclarationContext::BindImportDecl(ir::ImportDeclaration *import_decl)
 {
-    binder::ModuleScope::ImportDeclList decl_list(Allocator()->Adapter());
+    varbinder::ModuleScope::ImportDeclList decl_list(Allocator()->Adapter());
 
-    for (const auto &[name, variable] : Binder()->GetScope()->Bindings()) {
+    for (const auto &[name, variable] : VarBinder()->GetScope()->Bindings()) {
         if (SavedBindings().find(name) != SavedBindings().end()) {
             continue;
         }
@@ -1270,6 +1272,6 @@ void ImportDeclarationContext::BindImportDecl(ir::ImportDeclaration *import_decl
         decl_list.push_back(variable->Declaration()->AsImportDecl());
     }
 
-    Binder()->GetScope()->AsModuleScope()->AddImportDecl(import_decl, std::move(decl_list));
+    VarBinder()->GetScope()->AsModuleScope()->AddImportDecl(import_decl, std::move(decl_list));
 }
 }  // namespace panda::es2panda::parser

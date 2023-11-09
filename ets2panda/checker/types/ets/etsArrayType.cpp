@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 #include "etsArrayType.h"
 
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/conversion.h"
 #include "checker/types/typeRelation.h"

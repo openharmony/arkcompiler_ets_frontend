@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,12 +44,12 @@ public:
     DEFAULT_MOVE_SEMANTIC(DebugInfo);
     ~DebugInfo() = default;
 
-    ArenaVector<const binder::Scope *> &VariableDebugInfo()
+    ArenaVector<const varbinder::Scope *> &VariableDebugInfo()
     {
         return variable_debug_info_;
     }
 
-    const ArenaVector<const binder::Scope *> &VariableDebugInfo() const
+    const ArenaVector<const varbinder::Scope *> &VariableDebugInfo() const
     {
         return variable_debug_info_;
     }
@@ -62,7 +62,7 @@ public:
 private:
     friend class CodeGen;
 
-    ArenaVector<const binder::Scope *> variable_debug_info_;
+    ArenaVector<const varbinder::Scope *> variable_debug_info_;
     const ir::Statement *first_stmt_ {};
 };
 
@@ -71,7 +71,8 @@ public:
     using TypeMap = ArenaUnorderedMap<VReg, const checker::Type *>;
 
     explicit CodeGen(ArenaAllocator *allocator, RegSpiller *spiller, CompilerContext *context,
-                     binder::FunctionScope *scope, ProgramElement *program_element, AstCompiler *astcompiler) noexcept
+                     varbinder::FunctionScope *scope, ProgramElement *program_element,
+                     AstCompiler *astcompiler) noexcept
         : ast_compiler_(astcompiler),
           allocator_(allocator),
           context_(context),
@@ -98,8 +99,8 @@ public:
 
     [[nodiscard]] ArenaAllocator *Allocator() const noexcept;
     [[nodiscard]] const ArenaVector<CatchTable *> &CatchList() const noexcept;
-    [[nodiscard]] const binder::FunctionScope *TopScope() const noexcept;
-    [[nodiscard]] const binder::Scope *Scope() const noexcept;
+    [[nodiscard]] const varbinder::FunctionScope *TopScope() const noexcept;
+    [[nodiscard]] const varbinder::Scope *Scope() const noexcept;
     [[nodiscard]] const ir::AstNode *RootNode() const noexcept;
 
     [[nodiscard]] ArenaVector<IRNode *> &Insns() noexcept;
@@ -123,7 +124,7 @@ public:
     [[nodiscard]] std::uint32_t InternalParamCount() const noexcept;
     [[nodiscard]] const util::StringView &InternalName() const noexcept;
     [[nodiscard]] const util::StringView &FunctionName() const noexcept;
-    [[nodiscard]] binder::Binder *Binder() const noexcept;
+    [[nodiscard]] varbinder::VarBinder *VarBinder() const noexcept;
 
     [[nodiscard]] Label *AllocLabel();
     [[nodiscard]] std::int32_t AddLiteralBuffer(LiteralBuffer &&buf);
@@ -151,7 +152,7 @@ public:
 
     [[nodiscard]] CompilerContext *Context() const noexcept;
 
-    [[nodiscard]] virtual checker::Type const *TypeForVar(binder::Variable const *var) const noexcept;
+    [[nodiscard]] virtual checker::Type const *TypeForVar(varbinder::Variable const *var) const noexcept;
 
     compiler::AstCompiler *GetAstCompiler() const;
 
@@ -171,8 +172,8 @@ private:
     ArenaAllocator *allocator_ {};
     CompilerContext *context_ {};
     DebugInfo debug_info_;
-    binder::FunctionScope *top_scope_ {};
-    binder::Scope *scope_ {};
+    varbinder::FunctionScope *top_scope_ {};
+    varbinder::Scope *scope_ {};
     const ir::AstNode *root_node_ {};
     ArenaVector<IRNode *> insns_;
     ArenaVector<CatchTable *> catch_list_;

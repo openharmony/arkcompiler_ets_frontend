@@ -16,7 +16,7 @@
 #include "numberLiteralType.h"
 
 #include "util/helpers.h"
-#include "binder/variable.h"
+#include "varbinder/variable.h"
 #include "checker/types/ts/enumType.h"
 
 namespace panda::es2panda::checker {
@@ -41,7 +41,7 @@ void NumberLiteralType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (source->IsEnumType()) {
         const EnumType *source_enum_type = source->AsEnumType();
-        const binder::EnumVariable *enum_var = source_enum_type->EnumVar();
+        const varbinder::EnumVariable *enum_var = source_enum_type->EnumVar();
 
         if (std::holds_alternative<double>(enum_var->Value()) && value_ == std::get<double>(enum_var->Value())) {
             relation->Result(true);

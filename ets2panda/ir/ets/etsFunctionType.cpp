@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 
 #include "etsFunctionType.h"
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/signature.h"
@@ -112,7 +112,7 @@ checker::Type *ETSFunctionType::Check(checker::ETSChecker *checker)
             auto *param_ident = param->Ident();
 
             ASSERT(param_ident->Variable());
-            binder::Variable *param_var = param_ident->Variable();
+            varbinder::Variable *param_var = param_ident->Variable();
 
             ASSERT(param->TypeAnnotation());
             param_var->SetTsType(checker->GetTypeFromTypeAnnotation(param->TypeAnnotation()));

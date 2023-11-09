@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 #ifndef ES2PANDA_COMPILER_BASE_JSLREFERENCE_H
 #define ES2PANDA_COMPILER_BASE_JSLREFERENCE_H
 
-#include "binder/scope.h"
+#include "varbinder/scope.h"
 #include "ir/irnode.h"
 
 namespace panda::es2panda::ir {
@@ -63,7 +63,7 @@ public:
         ref_kind_ = ref_kind;
     }
 
-    binder::Variable *Variable() const
+    varbinder::Variable *Variable() const
     {
         return res_.variable;
     }
@@ -73,12 +73,12 @@ public:
         return node_;
     }
 
-    binder::ConstScopeFindResult &Result()
+    varbinder::ConstScopeFindResult &Result()
     {
         return res_;
     }
 
-    const binder::ConstScopeFindResult &Result() const
+    const varbinder::ConstScopeFindResult &Result() const
     {
         return res_;
     }
@@ -90,10 +90,10 @@ public:
 
 protected:
     using LReferenceBase =
-        std::tuple<CodeGen *, const ir::AstNode *, ReferenceKind, binder::ConstScopeFindResult, bool>;
+        std::tuple<CodeGen *, const ir::AstNode *, ReferenceKind, varbinder::ConstScopeFindResult, bool>;
     static LReferenceBase CreateBase(CodeGen *cg, const ir::AstNode *node, bool is_declaration);
 
-    explicit LReference(const ir::AstNode *node, ReferenceKind ref_kind, binder::ConstScopeFindResult res,
+    explicit LReference(const ir::AstNode *node, ReferenceKind ref_kind, varbinder::ConstScopeFindResult res,
                         bool is_declaration)
         : node_(node), ref_kind_(ref_kind), res_(res), is_declaration_(is_declaration)
     {
@@ -102,13 +102,13 @@ protected:
 private:
     const ir::AstNode *node_;
     ReferenceKind ref_kind_;
-    binder::ConstScopeFindResult res_;
+    varbinder::ConstScopeFindResult res_;
     bool is_declaration_;
 };
 
 class JSLReference : public LReference {
 public:
-    JSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind ref_kind, binder::ConstScopeFindResult res,
+    JSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind ref_kind, varbinder::ConstScopeFindResult res,
                  bool is_declaration);
     ~JSLReference() = default;
     NO_COPY_SEMANTIC(JSLReference);
@@ -131,7 +131,7 @@ private:
 
 class ETSLReference : public LReference {
 public:
-    ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind ref_kind, binder::ConstScopeFindResult res,
+    ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind ref_kind, varbinder::ConstScopeFindResult res,
                   bool is_declaration);
     ~ETSLReference() = default;
     NO_COPY_SEMANTIC(ETSLReference);
@@ -141,9 +141,12 @@ public:
     void SetValue() const;
 
     static ETSLReference Create(CodeGen *cg, const ir::AstNode *node, bool is_declaration);
-    static ReferenceKind ResolveReferenceKind(const binder::Variable *variable);
+    static ReferenceKind ResolveReferenceKind(const varbinder::Variable *variable);
 
 private:
+    void SetValueComputed(const ir::MemberExpression *member_expr) const;
+    void SetValueGetterSetter(const ir::MemberExpression *member_expr) const;
+
     ETSGen *etsg_;
     const checker::Type *static_obj_ref_ {};
     VReg base_reg_ {};
