@@ -17,6 +17,7 @@ import * as ts from 'typescript';
 import { CommandLineOptions } from './CommandLineOptions';
 import { IncrementalLintInfo } from './IncrementalLintInfo';
 import { ReportAutofixCallback } from './autofixes/ReportAutofixCallback';
+import { IsFileFromModuleCallback } from "./IsFileFromModuleCallback";
 
 // common options interface, additional fields may be used by plugins
 export interface LintOptions {
@@ -26,5 +27,6 @@ export interface LintOptions {
   incrementalLintInfo?: IncrementalLintInfo;
   tsProgram?: ts.Program;
   reportAutofixCb?: ReportAutofixCallback;
+  isFileFromModuleCb?: IsFileFromModuleCallback;
   [key: string]: any;
 }

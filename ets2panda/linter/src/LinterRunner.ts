@@ -28,7 +28,11 @@ import { TSCCompiledProgram, TSCCompiledProgramSimple, TSCCompiledProgramWithDia
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { getTscDiagnostics } from './ts-diagnostics/GetTscDiagnostics';
 import { transformTscDiagnostics } from './ts-diagnostics/TransformTscDiagnostics';
-import { ARKTS_IGNORE_DIRS, ARKTS_IGNORE_FILES } from './utils/consts/ArktsIgnorePaths';
+import {
+  ARKTS_IGNORE_DIRS_NO_OH_MODULES,
+  ARKTS_IGNORE_DIRS_OH_MODULES,
+  ARKTS_IGNORE_FILES
+} from './utils/consts/ArktsIgnorePaths';
 import { pathContainsDirectory } from './utils/functions/PathHelper';
 
 export function lint(options: LintOptions): LintRunResult {
@@ -52,9 +56,7 @@ export function lint(options: LintOptions): LintRunResult {
   }
 
   // #13436: ignore-list for ArkTS projects.
-  inputFiles = inputFiles.filter(input =>
-    !ARKTS_IGNORE_FILES.some(ignore => path.basename(input) === ignore) &&
-    !ARKTS_IGNORE_DIRS.some(ignore => pathContainsDirectory(path.resolve(input), ignore)));
+  inputFiles = inputFiles.filter(input => shouldProcessFile(options, input));
 
   const srcFiles: ts.SourceFile[] = [];
   for (const inputFile of inputFiles) {
@@ -189,4 +191,17 @@ function logProblemsPercentageByFeatures(linter: TypeScriptLinter) {
 
     consoleLog(faultDesc[i].padEnd(55, ' '), pecentage, '[', nodes, ' constructs / ', lines, ' lines]');
   }
+}
+
+function shouldProcessFile(options: LintOptions, fileFsPath: string) {
+  if (ARKTS_IGNORE_FILES.some(ignore => path.basename(fileFsPath) === ignore)) {
+    return false;
+  }
+
+  if (ARKTS_IGNORE_DIRS_NO_OH_MODULES.some(ignore => pathContainsDirectory(path.resolve(fileFsPath), ignore))) {
+    return false;
+  }
+
+  return !pathContainsDirectory(path.resolve(fileFsPath), ARKTS_IGNORE_DIRS_OH_MODULES) ||
+    (options.isFileFromModuleCb !== undefined && options.isFileFromModuleCb(fileFsPath));
 }

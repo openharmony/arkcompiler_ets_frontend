@@ -1,4 +1,4 @@
-/*
+2/*
  * Copyright (c) 2023-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,4 @@
  * limitations under the License.
  */
 
-export const ARKTS_IGNORE_DIRS_NO_OH_MODULES = ['node_modules', 'build', '.preview'];
-
-export const ARKTS_IGNORE_DIRS_OH_MODULES = 'oh_modules';
-
-export const ARKTS_IGNORE_DIRS = [...ARKTS_IGNORE_DIRS_NO_OH_MODULES, ARKTS_IGNORE_DIRS_OH_MODULES];
-
-export const ARKTS_IGNORE_FILES = ['hvigorfile.ts'];
+export type IsFileFromModuleCallback = (fileFsPath: string) => boolean;
