@@ -1753,8 +1753,9 @@ void ETSChecker::ReplaceIdentifierReferencesInProxyMethod(
 {
     if (node->IsMemberExpression()) {
         auto *member_expr = node->AsMemberExpression();
-        if (member_expr->Property()->IsIdentifier()) {
-            member_expr->Property()->AsIdentifier()->SetVariable(member_expr->PropVar());
+        if (member_expr->Kind() == ir::MemberExpressionKind::PROPERTY_ACCESS) {
+            ReplaceIdentifierReferenceInProxyMethod(member_expr->Object(), proxy_params, merged_target_references);
+            return;
         }
     }
     node->Iterate([this, &proxy_params, &merged_target_references](ir::AstNode *child_node) {
