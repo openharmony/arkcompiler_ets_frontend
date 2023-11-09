@@ -173,11 +173,21 @@ void ETSParser::ParseETSGlobalScript(lexer::SourcePosition start_loc, ArenaVecto
     // remove external sources from paths because already parsed them
     paths.erase(remove_if(begin(paths), end(paths),
                           [this](auto x) {
-                              return find(begin(parsed_sources_), end(parsed_sources_), x) != end(parsed_sources_);
+                              auto resolved = ResolveImportPath(x);
+                              auto path_iter =
+                                  std::find_if(resolved_parsed_sources_.begin(), resolved_parsed_sources_.end(),
+                                               [resolved](const auto &p) { return p.second == resolved; });
+                              auto found = path_iter != resolved_parsed_sources_.end();
+                              if (found) {
+                                  resolved_parsed_sources_.emplace(x, resolved);
+                              }
+                              return found;
                           }),
                 end(paths));
 
-    parsed_sources_.insert(parsed_sources_.end(), paths.begin(), paths.end());
+    for (const auto &path : paths) {
+        parsed_sources_.push_back(ResolveImportPath(path));
+    }
 
     ParseSources(paths, false);
     ParseTopLevelDeclaration(statements);
@@ -231,9 +241,12 @@ ArenaVector<ir::Statement *> ETSParser::PrepareExternalGlobalClass([[maybe_unuse
     if (!statements.empty()) {
         res = ext_sources.find(name);
     } else {
-        const util::UString source_file_path(
-            GetProgram()->SourceFilePath().Mutf8() + GetProgram()->GetPackageName().Mutf8(), Allocator());
-        GetProgram()->SetSource(GetProgram()->SourceCode(), GetProgram()->SourceFile(), source_file_path.View());
+        auto path = GetProgram()->SourceFilePath().Mutf8() + panda::os::file::File::GetPathDelim().at(0) +
+                    GetProgram()->GetPackageName().Mutf8();
+        auto resolved = ResolveImportPath(path);
+        resolved_parsed_sources_.emplace(path, resolved);
+        GetProgram()->SetSource(GetProgram()->SourceCode(), GetProgram()->SourceFile(),
+                                util::UString(resolved, Allocator()).View());
     }
 
     if (res == ext_sources.end()) {
@@ -344,14 +357,30 @@ ETSParser::ImportData ETSParser::GetImportData(const std::string &path)
     return {ToLanguage(Extension()), path, true};
 }
 
+std::string ETSParser::ResolveFullPathFromRelative(const std::string &path)
+{
+    char path_delimiter = panda::os::file::File::GetPathDelim().at(0);
+    auto resolved_fp = GetProgram()->ResolvedFilePath().Mutf8();
+    auto source_fp = GetProgram()->SourceFilePath().Mutf8();
+    if (resolved_fp.empty()) {
+        auto fp = source_fp + path_delimiter + path;
+        return util::Helpers::IsRealPath(fp) ? fp : path;
+    }
+    auto fp = resolved_fp + path_delimiter + path;
+    if (util::Helpers::IsRealPath(fp)) {
+        return fp;
+    }
+    if (path.find(source_fp) == 0) {
+        return resolved_fp + path_delimiter + path.substr(source_fp.size());
+    }
+    return path;
+}
+
 std::string ETSParser::ResolveImportPath(const std::string &path)
 {
     char path_delimiter = panda::os::file::File::GetPathDelim().at(0);
     if (util::Helpers::IsRelativePath(path)) {
-        if (GetProgram()->ResolvedFilePath().Mutf8().empty()) {
-            return GetProgram()->SourceFilePath().Mutf8() + path_delimiter + path;
-        }
-        return GetProgram()->ResolvedFilePath().Mutf8() + path_delimiter + path;
+        return util::Helpers::GetAbsPath(ResolveFullPathFromRelative(path));
     }
 
     std::string base_url;
@@ -395,11 +424,29 @@ std::string ETSParser::ResolveImportPath(const std::string &path)
     return base_url;
 }
 
+std::tuple<std::string, bool> ETSParser::GetSourceRegularPath(const std::string &path, const std::string &resolved_path)
+{
+    if (!panda::os::file::File::IsRegularFile(resolved_path)) {
+        std::string import_extension = ".ets";
+
+        if (!panda::os::file::File::IsRegularFile(resolved_path + import_extension)) {
+            import_extension = ".ts";
+
+            if (!panda::os::file::File::IsRegularFile(resolved_path + import_extension)) {
+                ThrowSyntaxError("Incorrect path: " + resolved_path);
+            }
+        }
+        return {path + import_extension, true};
+    }
+    return {path, false};
+}
+
 std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const std::string &path)
 {
     std::vector<std::string> user_paths;
 
     const std::string resolved_path = ResolveImportPath(path);
+    resolved_parsed_sources_.emplace(path, resolved_path);
     const auto data = GetImportData(resolved_path);
 
     if (!data.has_decl) {
@@ -407,23 +454,11 @@ std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const s
     }
 
     if (!panda::os::file::File::IsDirectory(resolved_path)) {
-        if (!panda::os::file::File::IsRegularFile(resolved_path)) {
-            std::string import_extension = ".ets";
-
-            if (!panda::os::file::File::IsRegularFile(resolved_path + import_extension)) {
-                import_extension = ".ts";
-
-                if (!panda::os::file::File::IsRegularFile(resolved_path + import_extension)) {
-                    ThrowSyntaxError("Incorrect path: " + resolved_path);
-                }
-            }
-
-            user_paths.emplace_back(path + import_extension);
-            return {user_paths, true};
-        }
-
-        user_paths.emplace_back(path);
-        return {user_paths, false};
+        std::string regular_path;
+        bool is_module = false;
+        std::tie(regular_path, is_module) = GetSourceRegularPath(path, resolved_path);
+        user_paths.emplace_back(regular_path);
+        return {user_paths, is_module};
     }
 
 #ifdef USE_UNIX_SYSCALL
@@ -479,6 +514,8 @@ void ETSParser::ParseSources(const std::vector<std::string> &paths, bool is_exte
     const std::size_t path_count = paths.size();
     for (std::size_t idx = 0; idx < path_count; idx++) {
         std::string resolved_path = ResolveImportPath(paths[idx]);
+        resolved_parsed_sources_.emplace(paths[idx], resolved_path);
+
         const auto data = GetImportData(resolved_path);
 
         if (!data.has_decl) {
@@ -2862,6 +2899,7 @@ std::tuple<ir::ImportSource *, std::vector<std::string>> ETSParser::ParseFromCla
     bool is_module = false;
     auto import_path = Lexer()->GetToken().Ident();
     auto resolved_import_path = ResolveImportPath(import_path.Mutf8());
+    resolved_parsed_sources_.emplace(import_path.Mutf8(), resolved_import_path);
 
     ir::StringLiteral *resolved_source;
     if (*import_path.Bytes() == '/') {

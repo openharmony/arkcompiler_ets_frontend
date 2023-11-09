@@ -41,7 +41,10 @@ inline constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
 class ETSParser final : public TypedParser {
 public:
     ETSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
-        : TypedParser(program, options, status), global_program_(GetProgram()), parsed_sources_({})
+        : TypedParser(program, options, status),
+          global_program_(GetProgram()),
+          parsed_sources_({}),
+          resolved_parsed_sources_({})
     {
     }
 
@@ -109,8 +112,10 @@ private:
     void ParseTopLevelDeclaration(ArenaVector<ir::Statement *> &statements);
     void CollectDefaultSources();
     std::string ResolveImportPath(const std::string &path);
+    std::string ResolveFullPathFromRelative(const std::string &path);
     ImportData GetImportData(const std::string &path);
     std::tuple<std::vector<std::string>, bool> CollectUserSources(const std::string &path);
+    std::tuple<std::string, bool> GetSourceRegularPath(const std::string &path, const std::string &resolved_path);
     void ParseSources(const std::vector<std::string> &paths, bool is_external = true);
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool require_from);
     void ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers);
@@ -328,10 +333,17 @@ private:
     friend class ExternalSourceParser;
     friend class InnerSourceParser;
 
+public:
+    const std::unordered_map<std::string, std::string> &ResolvedParsedSourcesMap() const
+    {
+        return resolved_parsed_sources_;
+    }
+
 private:
     parser::Program *global_program_;
     std::vector<std::string> parsed_sources_;
     std::vector<ir::AstNode *> inserting_nodes_ {};
+    std::unordered_map<std::string, std::string> resolved_parsed_sources_;
 };
 
 class ExternalSourceParser {

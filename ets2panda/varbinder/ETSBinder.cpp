@@ -582,6 +582,23 @@ varbinder::Variable *ETSBinder::FindStaticBinding(const ArenaVector<parser::Prog
     return result->second;
 }
 
+ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringView &source_name,
+                                                             const ir::StringLiteral *import_path)
+{
+    const auto &ext_records = global_record_table_.Program()->ExternalSources();
+    auto record_res = [this, ext_records, source_name]() {
+        auto res = ext_records.find(source_name);
+        return (res != ext_records.end()) ? res : ext_records.find(GetResolvedImportPath(source_name));
+    }();
+    if (record_res == ext_records.end()) {
+        ThrowError(import_path->Start(), "Cannot find import: " + std::string(source_name));
+    }
+
+    ASSERT(!record_res->second.empty());
+
+    return record_res->second;
+}
+
 void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import)
 {
     const ir::StringLiteral *const import_path = import->Source();
@@ -591,18 +608,20 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
         return;
     }
 
-    const auto &ext_records = global_record_table_.Program()->ExternalSources();
-    const util::StringView source_name =
-        (import->Module() == nullptr)
-            ? import_path->Str()
-            : util::UString(import_path->Str().Mutf8() + import->Module()->Str().Mutf8(), Allocator()).View();
-    const auto record_res = ext_records.find(source_name);
-    if (record_res == ext_records.end()) {
-        ThrowError(import_path->Start(), "Cannot find import: " + std::string(source_name));
-    }
+    const util::StringView source_name = [import, import_path, this]() {
+        if (import->Module() == nullptr) {
+            return import_path->Str();
+        }
+        char path_delimiter = panda::os::file::File::GetPathDelim().at(0);
+        auto str_import_path = import_path->Str().Mutf8();
+        if (str_import_path.find(path_delimiter) == (str_import_path.size() - 1)) {
+            return util::UString(str_import_path + import->Module()->Str().Mutf8(), Allocator()).View();
+        }
+        return util::UString(str_import_path + path_delimiter + import->Module()->Str().Mutf8(), Allocator()).View();
+    }();
 
-    ASSERT(!record_res->second.empty());
-    const auto *const import_program = record_res->second.front();
+    auto record = GetExternalProgram(source_name, import_path);
+    const auto *const import_program = record.front();
     const auto *const import_global_scope = import_program->GlobalScope();
     const auto &global_bindings = import_global_scope->Bindings();
 
@@ -618,7 +637,7 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
         return;
     }
 
-    if (AddImportSpecifiersToTopBindings(specifier, global_bindings, import, record_res->second)) {
+    if (AddImportSpecifiersToTopBindings(specifier, global_bindings, import, record)) {
         return;
     }
 
@@ -628,7 +647,7 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
     auto item = std::find_if(global_bindings.begin(), global_bindings.end(), predicate_func);
     if (item == global_bindings.end()) {
         insert_foreign_binding(specifier->AsImportDefaultSpecifier()->Local()->Name(),
-                               FindStaticBinding(record_res->second, import_path));
+                               FindStaticBinding(record, import_path));
         return;
     }
 

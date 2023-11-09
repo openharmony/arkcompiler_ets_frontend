@@ -1057,8 +1057,11 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *module_obj
 {
     auto *ets_binder = static_cast<varbinder::ETSBinder *>(VarBinder());
 
-    auto res = ets_binder->GetGlobalRecordTable()->Program()->ExternalSources().find(import_path);
-
+    auto ext_records = ets_binder->GetGlobalRecordTable()->Program()->ExternalSources();
+    auto res = [ets_binder, ext_records, import_path]() {
+        auto r = ext_records.find(import_path);
+        return r != ext_records.end() ? r : ext_records.find(ets_binder->GetResolvedImportPath(import_path));
+    }();
     for (auto [_, var] : res->second.front()->GlobalClassScope()->StaticFieldScope()->Bindings()) {
         (void)_;
         if (var->AsLocalVariable()->Declaration()->Node()->IsExported()) {

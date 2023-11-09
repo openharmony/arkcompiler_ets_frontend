@@ -43,7 +43,8 @@ public:
           dynamic_imports_(Allocator()->Adapter()),
           lambda_objects_(Allocator()->Adapter()),
           dynamic_import_vars_(Allocator()->Adapter()),
-          import_specifiers_(Allocator()->Adapter())
+          import_specifiers_(Allocator()->Adapter()),
+          resolved_import_pathes_map_(Allocator()->Adapter())
     {
         InitImplicitThisParam();
     }
@@ -119,6 +120,8 @@ public:
     void BuildImportDeclaration(ir::ETSImportDeclaration *decl);
     void BuildETSNewClassInstanceExpression(ir::ETSNewClassInstanceExpression *class_instance);
     void AddSpecifiersToTopBindings(ir::AstNode *specifier, const ir::ETSImportDeclaration *import);
+    ArenaVector<parser::Program *> GetExternalProgram(const util::StringView &source_name,
+                                                      const ir::StringLiteral *import_path);
     bool AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *specifier,
                                                    const varbinder::Scope::VariableMap &global_bindings,
                                                    const parser::Program *import_program,
@@ -184,6 +187,26 @@ public:
         default_export_ = default_export;
     }
 
+    const ArenaUnorderedMap<util::StringView, util::StringView> &ResolvedImportPathesMap() const
+    {
+        return resolved_import_pathes_map_;
+    }
+
+    const util::StringView &GetResolvedImportPath(const util::StringView &path) const
+    {
+        ASSERT(resolved_import_pathes_map_.find(path) != resolved_import_pathes_map_.end());
+
+        return resolved_import_pathes_map_.find(path)->second;
+    }
+
+    void FillResolvedImportPathes(const std::unordered_map<std::string, std::string> &map, ArenaAllocator *allocator)
+    {
+        for (const auto &path : map) {
+            resolved_import_pathes_map_.emplace(util::UString(path.first, allocator).View(),
+                                                util::UString(path.second, allocator).View());
+        }
+    }
+
     bool IsDynamicModuleVariable(const Variable *var) const;
     bool IsDynamicNamespaceVariable(const Variable *var) const;
     const DynamicImportData *DynamicImportDataForVar(const Variable *var) const;
@@ -218,6 +241,7 @@ private:
     DynamicImportVariables dynamic_import_vars_;
     ir::Identifier *this_param_ {};
     ArenaVector<std::pair<util::StringView, util::StringView>> import_specifiers_;
+    ArenaUnorderedMap<util::StringView, util::StringView> resolved_import_pathes_map_;
     ir::AstNode *default_export_ {};
 };
 
