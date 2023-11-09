@@ -371,11 +371,19 @@ public:
 
     [[nodiscard]] bool IsExported() const noexcept
     {
+        if (UNLIKELY(IsClassDefinition())) {
+            return parent_->IsExported();
+        }
+
         return (flags_ & ModifierFlags::EXPORT) != 0;
     }
 
     [[nodiscard]] bool IsDefaultExported() const noexcept
     {
+        if (UNLIKELY(IsClassDefinition())) {
+            return parent_->IsDefaultExported();
+        }
+
         return (flags_ & ModifierFlags::DEFAULT_EXPORT) != 0;
     }
 

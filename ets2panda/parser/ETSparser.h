@@ -275,6 +275,8 @@ private:
                                            const lexer::SourcePosition &start_loc,
                                            bool ignore_call_expression) override;
     bool ParsePotentialNonNullExpression(ir::Expression **expression, lexer::SourcePosition start_loc) override;
+    void MarkNodeAsExported(ir::AstNode *node, lexer::SourcePosition start_pos, bool default_export,
+                            std::size_t num_of_elements = 1);
     varbinder::Decl *BindClassName([[maybe_unused]] ir::Identifier *ident_node) override
     {
         return nullptr;

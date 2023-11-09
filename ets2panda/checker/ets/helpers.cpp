@@ -1123,9 +1123,7 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *module_obj
 
     for (auto [_, var] : res->second.front()->GlobalClassScope()->InstanceDeclScope()->Bindings()) {
         (void)_;
-        if (var->AsLocalVariable()->Declaration()->Node()->IsExported() ||
-            (var->AsLocalVariable()->Declaration()->Node()->IsClassDefinition() &&
-             var->AsLocalVariable()->Declaration()->Node()->Parent()->IsExported())) {
+        if (var->AsLocalVariable()->Declaration()->Node()->IsExported()) {
             module_obj_type->AddProperty<checker::PropertyType::STATIC_DECL>(var->AsLocalVariable());
         }
     }

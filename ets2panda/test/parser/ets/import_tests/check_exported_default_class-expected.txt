@@ -9,11 +9,11 @@
         "loc": {
           "start": {
             "line": 16,
-            "column": 33
+            "column": 32
           },
           "end": {
             "line": 16,
-            "column": 77
+            "column": 76
           }
         }
       },
@@ -22,7 +22,7 @@
           "type": "ImportDefaultSpecifier",
           "local": {
             "type": "Identifier",
-            "name": "ExportDefaultStruct",
+            "name": "ExportDefaultClass",
             "decorators": [],
             "loc": {
               "start": {
@@ -31,7 +31,7 @@
               },
               "end": {
                 "line": 16,
-                "column": 27
+                "column": 26
               }
             }
           },
@@ -42,7 +42,7 @@
             },
             "end": {
               "line": 16,
-              "column": 27
+              "column": 26
             }
           }
         }
@@ -54,7 +54,7 @@
         },
         "end": {
           "line": 16,
-          "column": 78
+          "column": 77
         }
       }
     },
@@ -228,45 +228,45 @@
                           "type": "VariableDeclarator",
                           "id": {
                             "type": "Identifier",
-                            "name": "es",
+                            "name": "test_class",
                             "typeAnnotation": {
                               "type": "ETSTypeReference",
                               "part": {
                                 "type": "ETSTypeReferencePart",
                                 "name": {
                                   "type": "Identifier",
-                                  "name": "ExportDefaultStruct",
+                                  "name": "ExportDefaultClass",
                                   "decorators": [],
                                   "loc": {
                                     "start": {
                                       "line": 19,
-                                      "column": 12
+                                      "column": 19
                                     },
                                     "end": {
                                       "line": 19,
-                                      "column": 31
+                                      "column": 37
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 12
+                                    "column": 19
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 33
+                                    "column": 39
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 12
+                                  "column": 19
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 33
+                                  "column": 39
                                 }
                               }
                             },
@@ -274,11 +274,11 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 9
+                                "column": 7
                               },
                               "end": {
                                 "line": 19,
-                                "column": 11
+                                "column": 17
                               }
                             }
                           },
@@ -290,38 +290,38 @@
                                 "type": "ETSTypeReferencePart",
                                 "name": {
                                   "type": "Identifier",
-                                  "name": "ExportDefaultStruct",
+                                  "name": "ExportDefaultClass",
                                   "decorators": [],
                                   "loc": {
                                     "start": {
                                       "line": 19,
-                                      "column": 38
+                                      "column": 44
                                     },
                                     "end": {
                                       "line": 19,
-                                      "column": 57
+                                      "column": 62
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
                                     "line": 19,
-                                    "column": 38
+                                    "column": 44
                                   },
                                   "end": {
                                     "line": 19,
-                                    "column": 58
+                                    "column": 63
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
                                   "line": 19,
-                                  "column": 38
+                                  "column": 44
                                 },
                                 "end": {
                                   "line": 19,
-                                  "column": 58
+                                  "column": 63
                                 }
                               }
                             },
@@ -329,22 +329,22 @@
                             "loc": {
                               "start": {
                                 "line": 19,
-                                "column": 34
+                                "column": 40
                               },
                               "end": {
                                 "line": 19,
-                                "column": 60
+                                "column": 65
                               }
                             }
                           },
                           "loc": {
                             "start": {
                               "line": 19,
-                              "column": 9
+                              "column": 7
                             },
                             "end": {
                               "line": 19,
-                              "column": 60
+                              "column": 65
                             }
                           }
                         }
@@ -353,11 +353,11 @@
                       "loc": {
                         "start": {
                           "line": 19,
-                          "column": 5
+                          "column": 3
                         },
                         "end": {
                           "line": 19,
-                          "column": 60
+                          "column": 65
                         }
                       }
                     }

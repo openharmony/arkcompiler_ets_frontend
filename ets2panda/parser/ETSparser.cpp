@@ -661,14 +661,30 @@ ir::ScriptFunction *ETSParser::AddInitMethod(ArenaVector<ir::AstNode *> &global_
     return init_func;
 }
 
+void ETSParser::MarkNodeAsExported(ir::AstNode *node, lexer::SourcePosition start_pos, bool default_export,
+                                   std::size_t num_of_elements)
+{
+    ir::ModifierFlags flag = default_export ? ir::ModifierFlags::DEFAULT_EXPORT : ir::ModifierFlags::EXPORT;
+
+    if (UNLIKELY(flag == ir::ModifierFlags::DEFAULT_EXPORT)) {
+        if (VarBinder()->AsETSBinder()->DefaultExport() != nullptr || num_of_elements > 1) {
+            ThrowSyntaxError("Only one default export is allowed in a module", start_pos);
+        }
+
+        VarBinder()->AsETSBinder()->SetDefaultExport(node);
+    }
+
+    node->AddModifier(flag);
+}
+
 ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::Statement *> &statements)
 {
     ArenaVector<ir::AstNode *> global_properties(Allocator()->Adapter());
     bool default_export = false;
 
     using ParserFunctionPtr = std::function<ir::Statement *(ETSParser *)>;
-    auto const parse_type = [this, &statements](std::size_t const current_pos,
-                                                ParserFunctionPtr const &parser_function) -> void {
+    auto const parse_type = [this, &statements, &default_export](std::size_t const current_pos,
+                                                                 ParserFunctionPtr const &parser_function) -> void {
         ir::Statement *node = nullptr;
 
         {
@@ -677,7 +693,8 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
             node = parser_function(this);
             if (node != nullptr) {
                 if (current_pos != std::numeric_limits<std::size_t>::max()) {
-                    node->AddModifier(ir::ModifierFlags::EXPORT);
+                    MarkNodeAsExported(node, node->Start(), default_export);
+                    default_export = false;
                 }
                 statements.push_back(node);
             }
@@ -822,19 +839,10 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
         GetContext().Status() &= ~ParserStatus::IN_AMBIENT_CONTEXT;
 
         while (current_pos < global_properties.size()) {
-            if (default_export) {
-                if (VarBinder()->AsETSBinder()->DefaultExport() != nullptr ||
-                    global_properties.size() - current_pos != 1) {
-                    ThrowSyntaxError("Only one default export is allowed in a module");
-                }
-
-                auto current_export = global_properties[current_pos++];
-                current_export->AddModifier(ir::ModifierFlags::DEFAULT_EXPORT);
-                VarBinder()->AsETSBinder()->SetDefaultExport(current_export);
-                default_export = false;
-            } else {
-                global_properties[current_pos++]->AddModifier(ir::ModifierFlags::EXPORT);
-            }
+            MarkNodeAsExported(global_properties[current_pos], start_loc, default_export,
+                               global_properties.size() - current_pos);
+            default_export = false;
+            current_pos++;
         }
     }
 
