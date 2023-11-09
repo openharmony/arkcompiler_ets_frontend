@@ -290,6 +290,11 @@ public:
         return AddBinding(allocator, FindLocal(decl->Name(), ResolveBindingOptions::ALL), decl, extension);
     }
 
+    virtual bool HasParamScope()
+    {
+        return false;
+    }
+
     template <typename T, typename... Args>
     T *NewDecl(ArenaAllocator *allocator, Args &&... args);
 
@@ -571,6 +576,11 @@ public:
         this->bindings_.insert(paramScope_->Bindings().begin(), paramScope_->Bindings().end());
     }
 
+    bool HasParamScope() override
+    {
+        return true;
+    }
+
 protected:
     T *paramScope_;
 };
@@ -679,6 +689,25 @@ public:
 
 protected:
     ScopeType loopType_ {ScopeType::LOOP};
+};
+
+class StaticBlockScope : public VariableScope {
+public:
+    explicit StaticBlockScope(ArenaAllocator *allocator, Scope *parent) : VariableScope(allocator, parent) {}
+
+    ScopeType Type() const override
+    {
+        return staticBlockType_;
+    }
+
+    bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
+                    [[maybe_unused]] ScriptExtension extension) override
+    {
+        return AddLocal(allocator, currentVariable, newDecl, extension);
+    }
+
+protected:
+    ScopeType staticBlockType_ {ScopeType::STATIC_BLOCK};
 };
 
 class GlobalScope : public FunctionScope {

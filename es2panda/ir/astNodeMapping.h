@@ -33,6 +33,7 @@
     _(CLASS_DECLARATION, ClassDeclaration)                           \
     _(CLASS_EXPRESSION, ClassExpression)                             \
     _(CLASS_PROPERTY, ClassProperty)                                 \
+    _(CLASS_STATIC_BLOCK, ClassStaticBlock)                          \
     _(CONDITIONAL_EXPRESSION, ConditionalExpression)                 \
     _(CONTINUE_STATEMENT, ContinueStatement)                         \
     _(DEBUGGER_STATEMENT, DebuggerStatement)                         \

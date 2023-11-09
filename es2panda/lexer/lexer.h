@@ -123,6 +123,7 @@ private:
     void CheckKeyword([[maybe_unused]] TokenType type, [[maybe_unused]] LexerNextTokenFlags flags);
     void CheckKeywordEscape(TokenType type);
     void CheckAwaitKeyword();
+    void CheckArgumentsKeyword();
     void CheckEnumKeyword();
     void CheckLetKeyword();
     void CheckYieldKeyword();
@@ -371,6 +372,10 @@ void Lexer::CheckKeyword([[maybe_unused]] TokenType type, [[maybe_unused]] Lexer
     if constexpr (keyword_type == TokenType::KEYW_AWAIT) {
         CheckAwaitKeyword();
         return;
+    }
+
+    if constexpr (keyword_type == TokenType::KEYW_ARGUMENTS) {
+        CheckArgumentsKeyword();
     }
 
     // NOLINTNEXTLINE

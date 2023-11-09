@@ -22,6 +22,7 @@
 #include <compiler/core/pandagen.h>
 #include <ir/base/classDefinition.h>
 #include <ir/base/classProperty.h>
+#include <ir/base/classStaticBlock.h>
 #include <ir/base/scriptFunction.h>
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/identifier.h>
@@ -121,6 +122,23 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
     }
 }
 
+// TODO(huyunhui): reimplement the compilation of class field
+static void CompileField(PandaGen *pg, const ir::ClassProperty *prop, VReg thisReg)
+{
+    if (!prop->Value()) {
+        pg->LoadConst(prop, Constant::JS_UNDEFINED);
+    } else {
+        RegScope rsProp(pg);
+        prop->Value()->Compile(pg);
+    }
+
+    if (!prop->Key()->IsIdentifier()) {
+        PandaGen::Unimplemented();
+    }
+
+    pg->StoreObjByName(prop, thisReg, prop->Key()->AsIdentifier()->Name());
+}
+
 static void CompileInstanceFields(PandaGen *pg, const ir::ScriptFunction *decl)
 {
     const auto &statements = decl->Parent()->Parent()->Parent()->AsClassDefinition()->Body();
@@ -136,19 +154,36 @@ static void CompileInstanceFields(PandaGen *pg, const ir::ScriptFunction *decl)
             if (prop->IsStatic()) {
                 continue;
             }
-            if (!prop->Value()) {
-                pg->LoadConst(stmt, Constant::JS_UNDEFINED);
-            } else {
-                RegScope rsProp(pg);
-                prop->Value()->Compile(pg);
-            }
-
-            if (!prop->Key()->IsIdentifier()) {
-                PandaGen::Unimplemented();
-            }
-
-            pg->StoreObjByName(stmt, thisReg, prop->Key()->AsIdentifier()->Name());
+            CompileField(pg, prop, thisReg);
         }
+    }
+}
+
+static void CompileStaticInitializer(PandaGen *pg, const ir::ScriptFunction *decl)
+{
+    const auto &statements = decl->Parent()->Parent()->Parent()->AsClassDefinition()->Body();
+
+    RegScope rs(pg);
+    auto thisReg = pg->AllocReg();
+    pg->GetThis(decl);
+    pg->StoreAccumulator(decl, thisReg);
+
+    for (auto const &stmt : statements) {
+        if (stmt->IsMethodDefinition()) {
+            continue;
+        }
+
+        if (stmt->IsClassProperty()) {
+            const auto *prop = stmt->AsClassProperty();
+            if (prop->IsStatic()) {
+                CompileField(pg, prop, thisReg);
+            }
+            continue;
+        }
+
+        ASSERT(stmt->IsClassStaticBlock());
+        const auto *staticBlock = stmt->AsClassStaticBlock();
+        staticBlock->Compile(pg);
     }
 }
 
@@ -159,6 +194,10 @@ static void CompileFunction(PandaGen *pg)
     // TODO(szilagyia): move after super call
     if (decl->IsConstructor() && pg->Binder()->Program()->Extension() != ScriptExtension::TS) {
         CompileInstanceFields(pg, decl);
+    }
+
+    if (decl->IsStaticInitializer()) {
+        CompileStaticInitializer(pg, decl);
     }
 
     auto *funcParamScope = pg->TopScope()->ParamScope();

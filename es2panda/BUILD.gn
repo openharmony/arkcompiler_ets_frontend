@@ -55,6 +55,7 @@ es2panda_src = [
   "ir/base/catchClause.cpp",
   "ir/base/classDefinition.cpp",
   "ir/base/classProperty.cpp",
+  "ir/base/classStaticBlock.cpp",
   "ir/base/decorator.cpp",
   "ir/base/metaProperty.cpp",
   "ir/base/methodDefinition.cpp",

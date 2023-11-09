@@ -81,4 +81,20 @@ void LoopEnvScope::CopyPerIterationCtx()
     }
 }
 
+StaticBlockEnvScope::StaticBlockEnvScope(PandaGen *pg, binder::StaticBlockScope *scope)
+    : scope_(scope->AsVariableScope()->NeedLexEnv() ? scope : nullptr)
+{
+    Initialize(pg);
+    if (HasEnv()) {
+        pg_->NewLexicalEnv(scope_->Node(), scope->LexicalSlots(), scope_);
+    }
+}
+
+StaticBlockEnvScope::~StaticBlockEnvScope()
+{
+    if (HasEnv()) {
+        pg_->PopLexEnv(scope_->Node());
+    }
+}
+
 }  // namespace panda::es2panda::compiler
