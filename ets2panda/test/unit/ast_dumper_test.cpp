@@ -83,8 +83,9 @@ TEST_F(ASTDumperTest, DumpJsonSimple)
             return a + b;\
         }";
 
-    int argc = 0;
-    const char *argv = "";
+    int argc = 1;
+    // NOLINTNEXTLINE(modernize-avoid-c-arrays)
+    const char *argv = "../../../bin/es2panda";
 
     auto program = std::unique_ptr<panda::pandasm::Program> {GetProgram(argc, &argv, FILE_NAME, SRC)};
 
@@ -108,8 +109,9 @@ TEST_F(ASTDumperTest, DumpJsonUTF16Char)
             return 0;\
         }";
 
-    int argc = 0;
-    const char *argv = "";
+    int argc = 1;
+    // NOLINTNEXTLINE(modernize-avoid-c-arrays)
+    const char *argv = "../../../bin/es2panda";
 
     auto program = std::unique_ptr<panda::pandasm::Program> {GetProgram(argc, &argv, FILE_NAME, SRC)};
 

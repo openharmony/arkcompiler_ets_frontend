@@ -24,8 +24,31 @@ set(ES2PANDA_BINARY_ROOT ${CMAKE_CURRENT_BINARY_DIR})
 set(OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(GENERATED_DIR ${OUTPUT_DIR}/generated)
 set(GENERATED_STAMP ${OUTPUT_DIR}/gen_dir.stamp)
+if(CMAKE_CROSSCOMPILING)
+    ExternalProject_Get_Property(panda_host_tools binary_dir)
+    set(DEFAULT_ARKTSCONFIG    "${binary_dir}/tools/es2panda/aot")
+else()
+    set(DEFAULT_ARKTSCONFIG "${CMAKE_BINARY_DIR}/bin")
+endif()
 file(MAKE_DIRECTORY "${GENERATED_DIR}")
 if(PANDA_WITH_ETS)
+  file(WRITE "${DEFAULT_ARKTSCONFIG}/arktsconfig.json"
+      "{\n"
+      "  \"compilerOptions\": {\n"
+      "    \"baseUrl\": \"${PANDA_ROOT}\",\n"
+      "    \"paths\": {\n"
+      "      \"std\": [\"${PANDA_ROOT}/plugins/ets/stdlib/std\"],\n"
+      "      \"escompat\": [\"${PANDA_ROOT}/plugins/ets/stdlib/escompat\"],\n"
+      "      \"import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/import_tests\"],\n"
+      "      \"dynamic_import_tests\": [\"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests\"]\n"
+      "    },\n"
+      "    \"dynamicPaths\": {\n"
+      "      \"dynamic_js_import_tests\": {\"language\": \"js\", \"hasDecl\": false},\n"
+      "      \"${CMAKE_CURRENT_SOURCE_DIR}/test/parser/ets/dynamic_import_tests\": {\"language\": \"js\", \"hasDecl\": true}\n"
+      "    }\n"
+      "  }\n"
+      "}\n"
+  )
   file(WRITE "${GENERATED_DIR}/arktsconfig.json"
       "{\n"
       "  \"compilerOptions\": {\n"
@@ -484,10 +507,6 @@ add_dependencies(es2panda-public es2panda-lib)
 panda_target_include_directories(es2panda-public
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
   PRIVATE ${OUTPUT_DIR}
-)
-
-panda_target_compile_definitions(es2panda-public
-  PRIVATE "DEFAULT_ARKTSCONFIG=\"${GENERATED_DIR}/arktsconfig.json\""
 )
 
 panda_target_compile_options(es2panda-public

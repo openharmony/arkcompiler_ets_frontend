@@ -143,6 +143,10 @@ private:
 // Find source files and compute destination locations
 // Return: vector of path pairs <source file, destination abc file>
 std::vector<std::pair<std::string, std::string>> FindProjectSources(const std::shared_ptr<ArkTsConfig> &arkts_config);
+
+std::string JoinPaths(const std::string &a, const std::string &b);
+std::string ParentPath(const std::string &path);
+
 }  // namespace panda::es2panda
 
 #endif  // ES2PANDA_AOT_TSCONFIG_H

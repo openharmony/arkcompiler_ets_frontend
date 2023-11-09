@@ -57,7 +57,7 @@ static bool IsAbsolute(const std::string &path)
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 }
 
-static std::string JoinPaths(const std::string &a, const std::string &b)
+std::string JoinPaths(const std::string &a, const std::string &b)
 {
 #ifndef ARKTSCONFIG_USE_FILESYSTEM
     return a + '/' + b;
@@ -66,7 +66,7 @@ static std::string JoinPaths(const std::string &a, const std::string &b)
 #endif  // ARKTSCONFIG_USE_FILESYSTEM
 }
 
-static std::string ParentPath(const std::string &path)
+std::string ParentPath(const std::string &path)
 {
 #ifndef ARKTSCONFIG_USE_FILESYSTEM
     auto pos = path.find('/');
