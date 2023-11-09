@@ -23,6 +23,10 @@ class ETSAnalyzer;
 }  // namespace panda::es2panda::checker
 
 namespace panda::es2panda::ir {
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+inline constexpr char const PROXY_PARAMETER_NAME[] = "$proxy_mask$";
+// NOLINTEND(modernize-avoid-c-arrays)
+
 class ETSParameterExpression final : public Expression {
 public:
     ETSParameterExpression() = delete;
@@ -64,6 +68,16 @@ public:
         return spread_ != nullptr;
     }
 
+    [[nodiscard]] std::size_t GetRequiredParams() const noexcept
+    {
+        return extra_value_;
+    }
+
+    void SetRequiredParams(std::size_t const value) noexcept
+    {
+        extra_value_ = value;
+    }
+
     // NOLINTNEXTLINE(google-default-arguments)
     [[nodiscard]] ETSParameterExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
@@ -80,6 +94,7 @@ private:
     Expression *initializer_;
     SpreadElement *spread_ = nullptr;
     util::StringView saved_lexer_ = "";
+    std::size_t extra_value_ = 0U;
 };
 }  // namespace panda::es2panda::ir
 

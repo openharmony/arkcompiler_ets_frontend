@@ -609,6 +609,15 @@ private:
     typename TargetType::UType GetOperand(Type *type);
 
     ETSObjectType *AsETSObjectType(Type *(GlobalTypesHolder::*type_functor)()) const;
+    Signature *GetMostSpecificSignature(ArenaVector<Signature *> &compatible_signatures,
+                                        ArenaVector<Signature *> &proxy_signatures,
+                                        const ArenaVector<ir::Expression *> &arguments,
+                                        std::vector<bool> &arg_type_inference_required,
+                                        const lexer::SourcePosition &pos, TypeRelationFlag resolve_flags);
+    std::pair<ArenaVector<Signature *>, ArenaVector<Signature *>> CollectSignatures(
+        ArenaVector<Signature *> &signatures, const ir::TSTypeParameterInstantiation *type_arguments,
+        const ArenaVector<ir::Expression *> &arguments, std::vector<bool> &arg_type_inference_required,
+        const lexer::SourcePosition &pos, TypeRelationFlag resolve_flags);
 
     // Trailing lambda
     void MoveTrailingBlockToEnclosingBlockStatement(ir::CallExpression *call_expr);

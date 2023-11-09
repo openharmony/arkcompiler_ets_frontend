@@ -2205,13 +2205,15 @@ void ETSParser::CreateClassFunctionDeclaration(ir::MethodDefinition *method)
     method->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
 }
 
-bool ETSParser::HasDefaultParam(const ir::ScriptFunction *const function)
+std::pair<bool, std::size_t> ETSParser::CheckDefaultParameters(const ir::ScriptFunction *const function) const
 {
     bool has_default_parameter = false;
     bool has_rest_parameter = false;
+    std::size_t required_parameters_number = 0U;
 
     for (auto *const it : function->Params()) {
         auto const *const param = it->AsETSParameterExpression();
+
         if (param->IsRestParameter()) {
             has_rest_parameter = true;
             continue;
@@ -2229,23 +2231,58 @@ bool ETSParser::HasDefaultParam(const ir::ScriptFunction *const function)
         if (has_default_parameter) {
             ThrowSyntaxError("Required parameter follows default parameter(s).", param->Start());
         }
+
+        ++required_parameters_number;
     }
 
-    if (!has_default_parameter) {
-        return false;
-    }
-
-    if (has_rest_parameter) {
+    if (has_default_parameter && has_rest_parameter) {
         ThrowSyntaxError("Both optional and rest parameters are not allowed in function's parameter list.",
                          function->Start());
     }
 
-    return true;
+    return std::make_pair(has_default_parameter, required_parameters_number);
 }
 
-std::string ETSParser::CreateProxyMethodName(const ir::ScriptFunction *const function, ir::MethodDefinition *method,
-                                             ir::Identifier *ident_node, varbinder::ClassScope *const cls_scope)
+ir::MethodDefinition *ETSParser::CreateProxyConstructorDefinition(ir::MethodDefinition const *const method)
 {
+    ASSERT(method->IsConstructor());
+
+    const auto *const function = method->Function();
+    std::string proxy_method = function->Id()->Name().Mutf8() + '(';
+
+    for (const auto *const it : function->Params()) {
+        auto const *const param = it->AsETSParameterExpression();
+        proxy_method += param->Ident()->Name().Mutf8() + ": " + GetNameForTypeNode(param->TypeAnnotation()) + ", ";
+    }
+
+    proxy_method += ir::PROXY_PARAMETER_NAME;
+    proxy_method += ": int) { this(";
+
+    auto const parameters_number = function->Params().size();
+    for (size_t i = 0U; i < parameters_number; ++i) {
+        if (auto const *const param = function->Params()[i]->AsETSParameterExpression(); param->IsDefault()) {
+            std::string proxy_if = "(((" + std::string {ir::PROXY_PARAMETER_NAME} + " >> " + std::to_string(i) +
+                                   ") & 0x1) == 0) ? " + param->Ident()->Name().Mutf8() + " : (" +
+                                   param->LexerSaved().Mutf8() + "), ";
+            proxy_method += proxy_if;
+        } else {
+            proxy_method += function->Params()[i]->AsETSParameterExpression()->Ident()->Name().Mutf8() + ", ";
+        }
+    }
+
+    proxy_method.pop_back();  // Note: at least one parameter always should present!
+    proxy_method.pop_back();
+    proxy_method += ") }";
+
+    return CreateConstructorDefinition(method->Modifiers(), proxy_method, DEFAULT_PROXY_FILE);
+}
+
+ir::MethodDefinition *ETSParser::CreateProxyMethodDefinition(ir::MethodDefinition const *const method,
+                                                             ir::Identifier const *const ident_node)
+{
+    ASSERT(!method->IsConstructor());
+
+    const auto *const function = method->Function();
     std::string proxy_method = function->Id()->Name().Mutf8() + "_proxy(";
 
     for (const auto *const it : function->Params()) {
@@ -2253,32 +2290,42 @@ std::string ETSParser::CreateProxyMethodName(const ir::ScriptFunction *const fun
         proxy_method += param->Ident()->Name().Mutf8() + ": " + GetNameForTypeNode(param->TypeAnnotation()) + ", ";
     }
 
-    const bool has_function_return_type = method->Function()->ReturnTypeAnnotation() != nullptr;
+    const bool has_function_return_type = function->ReturnTypeAnnotation() != nullptr;
     const std::string return_type =
-        has_function_return_type ? GetNameForTypeNode(method->Function()->ReturnTypeAnnotation()) : "";
+        has_function_return_type ? GetNameForTypeNode(function->ReturnTypeAnnotation()) : "";
 
-    proxy_method += has_function_return_type ? "proxy_int:int):" + return_type + "{" : "proxy_int:int) {";
+    proxy_method += ir::PROXY_PARAMETER_NAME;
+    proxy_method += ": int)";
+    if (has_function_return_type) {
+        proxy_method += ": " + return_type;
+    }
+    proxy_method += " { ";
 
     auto const parameters_number = function->Params().size();
-    for (size_t i = 0U; i < parameters_number; i++) {
+    for (size_t i = 0U; i < parameters_number; ++i) {
         if (auto const *const param = function->Params()[i]->AsETSParameterExpression(); param->IsDefault()) {
-            std::string proxy_if = "if (((proxy_int >> " + std::to_string(i) + ") & 0x1) == 1) { " +
-                                   param->Ident()->Name().Mutf8() + " = " + param->LexerSaved().Mutf8() + " }";
+            std::string proxy_if = "if (((" + std::string {ir::PROXY_PARAMETER_NAME} + " >> " + std::to_string(i) +
+                                   ") & 0x1) == 1) { " + param->Ident()->Name().Mutf8() + " = " +
+                                   param->LexerSaved().Mutf8() + " } ";
             proxy_method += proxy_if;
         }
     }
 
+    proxy_method += ' ';
     if (return_type != "void") {
-        if (cls_scope->Parent()->IsGlobalScope()) {
+        if (auto *const cls_scope = VarBinder()->GetScope()->AsClassScope(); cls_scope->Parent()->IsGlobalScope()) {
             proxy_method += "return ";
         } else if (method->IsStatic()) {
+            ASSERT(ident_node != nullptr);
             proxy_method += "return " + ident_node->Name().Mutf8() + ".";
         } else {
             proxy_method += "return this.";
         }
     }
 
-    proxy_method += function->Id()->Name().Mutf8() + "(";
+    proxy_method += function->Id()->Name().Mutf8();
+    proxy_method += '(';
+
     for (const auto *const it : function->Params()) {
         proxy_method += it->AsETSParameterExpression()->Ident()->Name().Mutf8() + ", ";
     }
@@ -2286,39 +2333,34 @@ std::string ETSParser::CreateProxyMethodName(const ir::ScriptFunction *const fun
     proxy_method.pop_back();
     proxy_method += ") }";
 
-    return proxy_method;
+    return CreateMethodDefinition(method->Modifiers(), proxy_method, DEFAULT_PROXY_FILE);
 }
 
 void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *ident_node)
 {
-    if (method->IsConstructor()) {
-        return;  // NOTE(szd): Fix constructors not working with default params
+    if (auto const [has_default_parameters, required_parameters] = CheckDefaultParameters(method->Function());
+        has_default_parameters) {
+        if (ir::MethodDefinition *proxy_method_def = !method->IsConstructor()
+                                                         ? CreateProxyMethodDefinition(method, ident_node)
+                                                         : CreateProxyConstructorDefinition(method);
+            proxy_method_def != nullptr) {
+            auto *const proxy_param = proxy_method_def->Function()->Params().back()->AsETSParameterExpression();
+            proxy_param->SetRequiredParams(required_parameters);
+
+            proxy_method_def->Function()->SetDefaultParamProxy();
+            proxy_method_def->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
+
+            auto *const var = method->Id()->Variable();
+            auto *const current_node = var->Declaration()->Node();
+
+            proxy_method_def->Id()->SetVariable(var);
+            proxy_method_def->SetParent(current_node);
+
+            if (!method->IsConstructor()) {
+                current_node->AsMethodDefinition()->AddOverload(proxy_method_def);
+            }
+        }
     }
-
-    const auto *const function = method->Function();
-
-    if (!HasDefaultParam(function)) {
-        return;
-    }
-
-    auto *const cls_scope = VarBinder()->GetScope()->AsClassScope();
-    varbinder::LocalScope *target_scope =
-        method->IsStatic() ? cls_scope->StaticMethodScope() : cls_scope->InstanceMethodScope();
-    auto *const found = target_scope->FindLocal(method->Id()->Name(), varbinder::ResolveBindingOptions::BINDINGS);
-
-    std::string proxy_method = CreateProxyMethodName(function, method, ident_node, cls_scope);
-
-    auto class_ctx =
-        varbinder::LexicalScope<varbinder::ClassScope>::Enter(VarBinder(), GetProgram()->GlobalClassScope());
-
-    auto *const proxy_method_def = CreateMethodDefinition(method->Modifiers(), proxy_method, "<default_methods>.ets");
-    proxy_method_def->Function()->SetDefaultParamProxy();
-
-    auto *const current_node = found->Declaration()->Node();
-    current_node->AsMethodDefinition()->AddOverload(proxy_method_def);
-    proxy_method_def->Id()->SetVariable(found);
-    proxy_method_def->SetParent(current_node);
-    proxy_method_def->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
 }
 
 std::string ETSParser::PrimitiveTypeToName(ir::PrimitiveType type)
@@ -2347,7 +2389,7 @@ std::string ETSParser::PrimitiveTypeToName(ir::PrimitiveType type)
     }
 }
 
-std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *type_annotation)
+std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *type_annotation) const
 {
     if ((type_annotation->IsNullAssignable() || type_annotation->IsUndefinedAssignable()) &&
         type_annotation->IsETSUnionType()) {
@@ -4761,6 +4803,39 @@ ir::MethodDefinition *ETSParser::CreateMethodDefinition(ir::ModifierFlags modifi
         method_definition = ParseClassMethodDefinition(method_name, modifiers);
         method_definition->SetStart(start_loc);
     }
+
+    return method_definition;
+}
+
+ir::MethodDefinition *ETSParser::CreateConstructorDefinition(ir::ModifierFlags modifiers,
+                                                             std::string_view const source_code,
+                                                             std::string_view const file_name)
+{
+    util::UString source {source_code, Allocator()};
+    auto const isp = InnerSourceParser(this);
+    auto const lexer = InitLexer({file_name, source.View().Utf8()});
+
+    auto const start_loc = Lexer()->GetToken().Start();
+    Lexer()->NextToken();
+
+    if (IsClassMethodModifier(Lexer()->GetToken().Type())) {
+        modifiers |= ParseClassMethodModifiers(false);
+    }
+
+    if (Lexer()->GetToken().Type() != lexer::TokenType::KEYW_CONSTRUCTOR) {
+        ThrowSyntaxError({"Unexpected token. 'Constructor' keyword is expected."});
+    }
+
+    if ((modifiers & ir::ModifierFlags::ASYNC) != 0) {
+        ThrowSyntaxError({"Constructor should not be async."});
+    }
+
+    auto *member_name = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
+    modifiers |= ir::ModifierFlags::CONSTRUCTOR;
+    Lexer()->NextToken();
+
+    auto *const method_definition = ParseClassMethodDefinition(member_name, modifiers);
+    method_definition->SetStart(start_loc);
 
     return method_definition;
 }
