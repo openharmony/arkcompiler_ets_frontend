@@ -25,7 +25,8 @@ import {
     padding,
     margin,
     position,
-    IndexedSignatureType
+    IndexedSignatureType,
+    postCardAction
 } from "./dynamic_lib"
 
 function main(): void {
@@ -95,3 +96,12 @@ function typeAliasLitAsPropName(): IndexedSignatureType {
         'c': '3'
     }
 }
+
+// #14399
+postCardAction({}, {
+    "action": 'router',
+    "abilityName": 'SomeAbility',
+    "params": {
+        "message": 'add detail'
+    }
+});
