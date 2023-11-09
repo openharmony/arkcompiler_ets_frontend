@@ -226,10 +226,10 @@ void MemberExpression::Compile(compiler::ETSGen *etsg) const
             auto lang = object_type->AsETSDynamicType()->Language();
             etsg->LoadPropertyDynamic(this, OptionalType(), obj_reg, prop_name, lang);
         } else if (object_type->IsETSUnionType()) {
-            etsg->LoadUnionProperty(this, OptionalType(), obj_reg, prop_name);
+            etsg->LoadUnionProperty(this, OptionalType(), IsGenericField(), obj_reg, prop_name);
         } else {
             const auto full_name = etsg->FormClassPropReference(object_type->AsETSObjectType(), prop_name);
-            etsg->LoadProperty(this, OptionalType(), obj_reg, full_name);
+            etsg->LoadProperty(this, OptionalType(), IsGenericField(), obj_reg, full_name);
         }
     };
 
@@ -485,5 +485,23 @@ MemberExpression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNo
     }
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
+bool MemberExpression::IsGenericField() const
+{
+    const auto obj_t = object_->TsType();
+    if (!obj_t->IsETSObjectType()) {
+        return false;
+    }
+    auto base_class_t = obj_t->AsETSObjectType()->GetBaseType();
+    if (base_class_t == nullptr) {
+        return false;
+    }
+    const auto &prop_name = property_->AsIdentifier()->Name();
+    auto base_prop = base_class_t->GetProperty(prop_name, checker::PropertySearchFlags::SEARCH_FIELD);
+    if (base_prop == nullptr || base_prop->TsType() == nullptr) {
+        return false;
+    }
+    return TsType()->ToAssemblerName().str() != base_prop->TsType()->ToAssemblerName().str();
 }
 }  // namespace panda::es2panda::ir

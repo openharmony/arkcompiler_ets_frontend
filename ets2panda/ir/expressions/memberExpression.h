@@ -176,6 +176,8 @@ private:
     checker::Type *CheckUnionMember(checker::ETSChecker *checker, checker::Type *base_type);
 
     void LoadRhs(compiler::PandaGen *pg) const;
+    bool IsGenericField() const;
+
     Expression *object_ = nullptr;
     Expression *property_ = nullptr;
     MemberExpressionKind kind_;

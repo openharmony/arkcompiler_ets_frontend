@@ -35,7 +35,7 @@ class X {
 function main() {
     foo((): String => { return "XXX" });
 
-    foo((): int => { return 42 });
+    foo((): Int => { return new Int(42) });
 
     X(
     (): String => { return "XXX" },

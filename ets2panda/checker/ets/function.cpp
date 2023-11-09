@@ -190,10 +190,9 @@ Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeP
         }
     }
 
-    if (substituted_sig->ReturnType()->IsETSObjectType() && signature->ReturnType()->IsETSObjectType() &&
-        substituted_sig->ReturnType()->AsETSObjectType()->AssemblerName() !=
-            signature->ReturnType()->AsETSObjectType()->AssemblerName()) {
-        substituted_sig->AddSignatureFlag(SignatureFlags::SUBSTITUTED_RETURN_TYPE);
+    if (substituted_sig->IsBaseReturnDiff() && substituted_sig->ReturnType()->IsETSArrayType()) {
+        CreateBuiltinArraySignature(substituted_sig->ReturnType()->AsETSArrayType(),
+                                    substituted_sig->ReturnType()->AsETSArrayType()->Rank());
     }
 
     // Check all required formal parameter(s) first

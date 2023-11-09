@@ -290,7 +290,7 @@ void ETSGen::LoadVar(const ir::AstNode *node, varbinder::Variable const *const v
         }
         case ReferenceKind::FIELD: {
             const auto full_name = FormClassPropReference(GetVRegType(GetThisReg())->AsETSObjectType(), var->Name());
-            LoadProperty(node, var->TsType(), GetThisReg(), full_name);
+            LoadProperty(node, var->TsType(), false, GetThisReg(), full_name);
             break;
         }
         case ReferenceKind::METHOD:
@@ -422,14 +422,17 @@ void ETSGen::StoreProperty(const ir::AstNode *const node, const checker::Type *p
     }
 }
 
-void ETSGen::LoadProperty(const ir::AstNode *const node, const checker::Type *prop_type, const VReg obj_reg,
-                          const util::StringView &full_name)
+void ETSGen::LoadProperty(const ir::AstNode *const node, const checker::Type *prop_type, bool is_generic,
+                          const VReg obj_reg, const util::StringView &full_name)
 {
     if (node->IsIdentifier() && node->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::BOXED)) {
         prop_type = Checker()->GlobalBuiltinBoxType(prop_type);
     }
     if (prop_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | checker::TypeFlag::ETS_UNION)) {
         Ra().Emit<LdobjObj>(node, obj_reg, full_name);
+        if (is_generic) {
+            EmitCheckCast(node, prop_type);
+        }
     } else if (prop_type->HasTypeFlag(checker::TypeFlag::ETS_WIDE_NUMERIC)) {
         Ra().Emit<LdobjWide>(node, obj_reg, full_name);
     } else {
@@ -450,11 +453,14 @@ void ETSGen::StoreUnionProperty([[maybe_unused]] const ir::AstNode *node, [[mayb
 }
 
 void ETSGen::LoadUnionProperty([[maybe_unused]] const ir::AstNode *const node,
-                               [[maybe_unused]] const checker::Type *prop_type, [[maybe_unused]] const VReg obj_reg,
-                               [[maybe_unused]] const util::StringView &prop_name)
+                               [[maybe_unused]] const checker::Type *prop_type, [[maybe_unused]] bool is_generic,
+                               [[maybe_unused]] const VReg obj_reg, [[maybe_unused]] const util::StringView &prop_name)
 {
 #ifdef PANDA_WITH_ETS
     Ra().Emit<EtsLdobjName>(node, obj_reg, prop_name);
+    if (is_generic) {
+        EmitCheckCast(node, prop_type);
+    }
     SetAccumulatorType(prop_type);
 #else
     UNREACHABLE();
@@ -1154,7 +1160,7 @@ void ETSGen::EmitLocalBoxGet(ir::AstNode const *node, checker::Type const *conte
             break;
         default:
             Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_BOX_GET, dummy_reg_, 0);
-            Ra().Emit<Checkcast>(node, content_type->AsETSObjectType()->AssemblerName());
+            EmitCheckCast(node, content_type);
             break;
     }
     SetAccumulatorType(content_type);
@@ -1774,13 +1780,7 @@ void ETSGen::EmitCheckedNarrowingReferenceConversion(const ir::AstNode *const no
     ASSERT(target_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | checker::TypeFlag::ETS_UNION) &&
            !target_type->IsETSNullLike());
 
-    if (target_type->IsETSObjectType()) {
-        Sa().Emit<Checkcast>(node, target_type->AsETSObjectType()->AssemblerName());
-    } else {
-        std::stringstream ss;
-        target_type->AsETSArrayType()->ToAssemblerTypeWithRank(ss);
-        Sa().Emit<Checkcast>(node, util::UString(ss.str(), Allocator()).View());
-    }
+    Sa().Emit<Checkcast>(node, ToCheckCastTypeView(target_type));
     SetAccumulatorType(target_type);
 }
 
@@ -2244,6 +2244,13 @@ void ETSGen::UnaryDollarDollar(const ir::AstNode *node)
     EmitThrow(node, exception);
 }
 
+void ETSGen::InsertNeededCheckCast(const checker::Signature *signature, const ir::AstNode *node)
+{
+    if (signature->IsBaseReturnDiff()) {
+        EmitCheckCast(node, signature->ReturnType());
+    }
+}
+
 void ETSGen::Update(const ir::AstNode *node, lexer::TokenType op)
 {
     switch (op) {
@@ -2609,6 +2616,25 @@ bool ETSGen::ExtendWithFinalizer(ir::AstNode *node, const ir::AstNode *original_
     }
 
     return ExtendWithFinalizer(parent, original_node, prev_finnaly);
+}
+
+util::StringView ETSGen::ToCheckCastTypeView(const es2panda::checker::Type *type) const
+{
+    auto asm_t = type;
+    if (type->IsETSUnionType()) {
+        asm_t = type->AsETSUnionType()->GetLeastUpperBoundType();
+    }
+    std::stringstream ss;
+    asm_t->ToAssemblerTypeWithRank(ss);
+    return util::UString(ss.str(), Allocator()).View();
+}
+
+void ETSGen::EmitCheckCast(const ir::AstNode *node, const es2panda::checker::Type *type)
+{
+    if (type->IsETSArrayType()) {
+        return;  // Since generic arrays allowed we can't add checkcast for them.
+    }
+    Ra().Emit<Checkcast>(node, ToCheckCastTypeView(type));
 }
 
 }  // namespace panda::es2panda::compiler

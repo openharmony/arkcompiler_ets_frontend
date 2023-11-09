@@ -69,7 +69,7 @@ public:
 
     void StoreProperty(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
                        const util::StringView &name);
-    void LoadProperty(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
+    void LoadProperty(const ir::AstNode *node, const checker::Type *prop_type, bool is_generic, VReg obj_reg,
                       const util::StringView &full_name);
     void StorePropertyDynamic(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
                               const util::StringView &name, Language lang);
@@ -80,7 +80,7 @@ public:
     void LoadElementDynamic(const ir::AstNode *node, VReg object_reg, Language lang);
 
     void StoreUnionProperty(const ir::AstNode *node, VReg obj_reg, const util::StringView &name);
-    void LoadUnionProperty(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
+    void LoadUnionProperty(const ir::AstNode *node, const checker::Type *prop_type, bool is_generic, VReg obj_reg,
                            const util::StringView &prop_name);
 
     void LoadUndefinedDynamic(const ir::AstNode *node, Language lang);
@@ -662,6 +662,12 @@ private:
     void UnaryTilde(const ir::AstNode *node);
     void UnaryDollarDollar(const ir::AstNode *node);
 
+    util::StringView ToCheckCastTypeView(const es2panda::checker::Type *type) const;
+    void EmitCheckCast(const ir::AstNode *node, const es2panda::checker::Type *type);
+
+    // To avoid verifier error checkcast is needed
+    void InsertNeededCheckCast(const checker::Signature *signature, const ir::AstNode *node);
+
     template <typename T>
     void StoreValueIntoArray(const ir::AstNode *const node, const VReg arr, const VReg index)
     {
@@ -962,10 +968,7 @@ private:
             }
         }
 
-        // To avoid verifier error checkcast is needed
-        if (signature->HasSignatureFlag(checker::SignatureFlags::SUBSTITUTED_RETURN_TYPE)) {
-            Ra().Emit<Checkcast>(node, signature->ReturnType()->AsETSObjectType()->AssemblerName());
-        }
+        InsertNeededCheckCast(signature, node);
     }
 
     template <typename Short, typename General, typename Range>
@@ -1021,10 +1024,7 @@ private:
             }
         }
 
-        // To avoid verifier error checkcast is needed
-        if (signature->HasSignatureFlag(checker::SignatureFlags::SUBSTITUTED_RETURN_TYPE)) {
-            Ra().Emit<Checkcast>(node, signature->ReturnType()->AsETSObjectType()->AssemblerName());
-        }
+        InsertNeededCheckCast(signature, node);
     }
 #undef COMPILE_ARG
 
@@ -1079,10 +1079,7 @@ private:
             }
         }
 
-        // To avoid verifier error checkcast is needed
-        if (signature->HasSignatureFlag(checker::SignatureFlags::SUBSTITUTED_RETURN_TYPE)) {
-            Ra().Emit<Checkcast>(node, signature->ReturnType()->AsETSObjectType()->AssemblerName());
-        }
+        InsertNeededCheckCast(signature, node);
     }
 
 #undef COMPILE_ARG

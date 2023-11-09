@@ -84,7 +84,7 @@ Signature *Signature::Substitute(TypeRelation *relation, const Substitution *sub
     if (!any_change) {
         return this;
     }
-    auto *result = allocator->New<Signature>(new_sig_info, new_return_type);
+    auto *result = allocator->New<Signature>(new_sig_info, new_return_type, this);
     result->func_ = func_;
     result->flags_ = flags_;
     result->internal_name_ = internal_name_;
@@ -341,5 +341,13 @@ void Signature::AssignmentTarget(TypeRelation *relation, Signature *source)
     if (relation->IsTrue() && signature_info_->rest_var != nullptr && source->RestVar() != nullptr) {
         relation->IsAssignableTo(source->RestVar()->TsType(), signature_info_->rest_var->TsType());
     }
+}
+
+bool Signature::IsBaseReturnDiff() const
+{
+    if (base_sig_ == nullptr) {
+        return false;
+    }
+    return ReturnType()->ToAssemblerName().str() != base_sig_->ReturnType()->ToAssemblerName().str();
 }
 }  // namespace panda::es2panda::checker
