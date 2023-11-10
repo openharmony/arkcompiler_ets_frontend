@@ -17,6 +17,7 @@
 #define ES2PANDA_PARSER_INCLUDE_AST_METHOD_DEFINITION_H
 
 #include <ir/statement.h>
+#include <ir/expression.h>
 
 namespace panda::es2panda::compiler {
 class PandaGen;
@@ -29,7 +30,6 @@ class Type;
 
 namespace panda::es2panda::ir {
 
-class Expression;
 class FunctionExpression;
 
 enum class MethodDefinitionKind { CONSTRUCTOR, METHOD, GET, SET };
@@ -109,6 +109,11 @@ public:
     bool IsOptional() const
     {
         return (modifiers_ & ModifierFlags::OPTIONAL) != 0;
+    }
+
+    bool IsPrivate() const
+    {
+        return key_->IsPrivateIdentifier();
     }
 
     const ArenaVector<MethodDefinition *> &Overloads() const

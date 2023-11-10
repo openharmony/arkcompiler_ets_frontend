@@ -537,6 +537,16 @@ void Emitter::GenBufferLiterals(ArenaVector<std::pair<int32_t, std::vector<Liter
                 valueLit.value_ = static_cast<uint8_t>(literal->GetInt());
                 break;
             }
+            case ir::LiteralTag::GETTER: {
+                valueLit.tag_ = panda::panda_file::LiteralTag::GETTER;
+                valueLit.value_ = literal->GetMethod().Mutf8();
+                break;
+            }
+            case ir::LiteralTag::SETTER: {
+                valueLit.tag_ = panda::panda_file::LiteralTag::SETTER;
+                valueLit.value_ = literal->GetMethod().Mutf8();
+                break;
+            }
             // TODO: support ir::LiteralTag::ASYNC_GENERATOR_METHOD
             case ir::LiteralTag::NULL_VALUE: {
                 valueLit.tag_ = panda::panda_file::LiteralTag::NULLVALUE;

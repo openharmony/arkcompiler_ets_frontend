@@ -81,8 +81,8 @@ void LoopEnvScope::CopyPerIterationCtx()
     }
 }
 
-StaticBlockEnvScope::StaticBlockEnvScope(PandaGen *pg, binder::StaticBlockScope *scope)
-    : scope_(scope->AsVariableScope()->NeedLexEnv() ? scope : nullptr)
+VariableEnvScope::VariableEnvScope(PandaGen *pg, binder::VariableScope *scope)
+    : scope_(scope->NeedLexEnv() ? scope : nullptr)
 {
     Initialize(pg);
     if (HasEnv()) {
@@ -90,7 +90,7 @@ StaticBlockEnvScope::StaticBlockEnvScope(PandaGen *pg, binder::StaticBlockScope 
     }
 }
 
-StaticBlockEnvScope::~StaticBlockEnvScope()
+VariableEnvScope::~VariableEnvScope()
 {
     if (HasEnv()) {
         pg_->PopLexEnv(scope_->Node());

@@ -46,6 +46,8 @@ enum class LiteralTag {
     LITERALBUFFERINDEX = 23,
     LITERALARRAY = 24,
     BUILTINTYPEINDEX = 25,
+    GETTER = 26,
+    SETTER = 27,
     NULL_VALUE = 255,
 };
 

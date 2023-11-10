@@ -29,12 +29,16 @@ class Type;
 }  // namespace panda::es2panda::checker
 
 namespace panda::es2panda::ir {
+class PrivateNameFindResult;
 
 class BinaryExpression : public Expression {
 public:
     explicit BinaryExpression(Expression *leftExpr, Expression *rightExpr, lexer::TokenType operatorType)
         : Expression(AstNodeType::BINARY_EXPRESSION), left_(leftExpr), right_(rightExpr), operator_(operatorType)
     {
+        if (right_->IsPrivateIdentifier()) {
+            throw Error{ErrorType::SYNTAX, "Unexpect private identifier", right_->Start().line, right_->Start().index};
+        }
     }
 
     const Expression *Left() const
@@ -87,6 +91,7 @@ public:
     void UpdateSelf(const NodeUpdater &cb, [[maybe_unused]] binder::Binder *binder) override;
 
 private:
+    void CompilePrivateIn(compiler::PandaGen *pg) const;
     Expression *left_;
     Expression *right_;
     lexer::TokenType operator_;

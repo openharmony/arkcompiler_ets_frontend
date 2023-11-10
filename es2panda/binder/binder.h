@@ -31,6 +31,7 @@ class Expression;
 class ExportNamedDeclaration;
 class ForUpdateStatement;
 class Identifier;
+class PrivateIdentifier;
 class ScriptFunction;
 class Statement;
 class VariableDeclarator;
@@ -213,6 +214,7 @@ private:
     void ValidateExportDecl(const ir::ExportNamedDeclaration *exportDecl);
     void StoreAndCheckSpecialFunctionName(std::string &internalNameStr, std::string recordName);
     void ReplaceConstReferenceWithInitialization(const ir::Identifier *ident, const Decl *decl);
+    void CheckPrivateDeclaration(const ir::PrivateIdentifier *privateIdent);
 
     // TypeScript specific functions
     void BuildTSSignatureDeclarationBaseParams(const ir::AstNode *typeNode);

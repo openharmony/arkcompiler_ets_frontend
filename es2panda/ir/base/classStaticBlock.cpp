@@ -35,7 +35,7 @@ void ClassStaticBlock::Dump(ir::AstDumper *dumper) const
 
 void ClassStaticBlock::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    compiler::StaticBlockEnvScope envScope(pg, blockStatement_->Scope()->AsStaticBlockScope());
+    compiler::VariableEnvScope envScope(pg, blockStatement_->Scope()->AsVariableScope());
     blockStatement_->Compile(pg);
 }
 

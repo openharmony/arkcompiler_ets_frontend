@@ -32,6 +32,7 @@ class IRNode;
 
 namespace panda::es2panda::ir {
 class ScriptFunction;
+class PrivateNameFindResult;
 } // namespace panda::es2panda::ir
 
 namespace panda::es2panda::binder {
@@ -326,6 +327,10 @@ public:
 
     ScopeFindResult Find(const util::StringView &name,
                          ResolveBindingOptions options = ResolveBindingOptions::BINDINGS) const;
+
+    std::pair<uint32_t, uint32_t> Find(const ir::Expression *expr, bool onlyLevel = false) const;
+
+    ir::PrivateNameFindResult FindPrivateName(const util::StringView &name, bool isSetter = false) const;
 
     Decl *FindDecl(const util::StringView &name) const;
 
@@ -645,6 +650,40 @@ public:
 
     bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                     [[maybe_unused]] ScriptExtension extension) override;
+};
+
+class ClassScope : public VariableScope {
+public:
+    explicit ClassScope(ArenaAllocator *allocator, Scope *parent) : VariableScope(allocator, parent),
+                                                                    computedNames_(allocator->Adapter()) {}
+    ~ClassScope() override = default;
+
+    ScopeType Type() const override
+    {
+        return ScopeType::CLASS;
+    }
+
+    void AddClassVariable(const ir::Expression *key)
+    {
+        computedNames_.insert({key, slotIndex_++});
+    }
+
+    uint32_t GetSlot(const ir::Expression *key) const
+    {
+        ASSERT(computedNames_.find(key) != computedNames_.end());
+        return computedNames_.find(key)->second;
+    }
+    bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
+                    [[maybe_unused]] ScriptExtension extension) override
+    {
+        return AddLocal(allocator, currentVariable, newDecl, extension);
+    }
+
+private:
+    ArenaUnorderedMap<const ir::Expression *, uint32_t> computedNames_;
+    std::unordered_map<util::StringView, uint32_t> privateNames_;
+    std::unordered_map<util::StringView, uint32_t> privateGetters_;
+    std::unordered_map<util::StringView, uint32_t> privateSetters_;
 };
 
 class CatchParamScope : public ParamScope {

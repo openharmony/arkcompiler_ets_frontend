@@ -122,9 +122,21 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
     }
 }
 
-// TODO(huyunhui): reimplement the compilation of class field
-static void CompileField(PandaGen *pg, const ir::ClassProperty *prop, VReg thisReg)
+static void CompileField(PandaGen *pg, const ir::ClassProperty *prop, VReg thisReg, int32_t level)
 {
+    Operand op;
+    ir::PrivateNameFindResult result;
+    if (prop->IsPrivate()) {
+        result = pg->Scope()->FindPrivateName(prop->Key()->AsPrivateIdentifier()->Name());
+    } else if (prop->IsComputed() && prop->NeedCompileKey()) {
+        auto slot = prop->Parent()->AsClassDefinition()->GetSlot(prop->Key());
+        pg->LoadLexicalVar(prop->Key(), level, slot);
+        op = pg->AllocReg();
+        pg->StoreAccumulator(prop->Key(), std::get<VReg>(op));
+    } else {
+        op = pg->ToPropertyKey(prop->Key(), prop->IsComputed());
+    }
+
     if (!prop->Value()) {
         pg->LoadConst(prop, Constant::JS_UNDEFINED);
     } else {
@@ -132,46 +144,29 @@ static void CompileField(PandaGen *pg, const ir::ClassProperty *prop, VReg thisR
         prop->Value()->Compile(pg);
     }
 
-    if (!prop->Key()->IsIdentifier()) {
-        if (pg->Binder()->Program()->Extension() == ScriptExtension::TS) {
-            // TS transformer already handled the cases, so don't throw error
-            return;
-        }
-        PandaGen::Unimplemented();
+    if (prop->IsPrivate()) {
+        pg->DefineClassPrivateField(prop, result.lexLevel, result.result.slot, thisReg);
+    } else {
+        pg->DefineClassField(prop, thisReg, op);
     }
-
-    pg->StoreObjByName(prop, thisReg, prop->Key()->AsIdentifier()->Name());
 }
 
-static void CompileInstanceFields(PandaGen *pg, const ir::ScriptFunction *decl)
+static void CompileClassInitializer(PandaGen *pg, const ir::ScriptFunction *decl, bool isStatic)
 {
-    const auto &statements = decl->Parent()->Parent()->Parent()->AsClassDefinition()->Body();
+    const auto *classDef = decl->Parent()->Parent()->Parent()->AsClassDefinition();
+    const auto &statements = classDef->Body();
 
     RegScope rs(pg);
     auto thisReg = pg->AllocReg();
     pg->GetThis(decl);
     pg->StoreAccumulator(decl, thisReg);
+    auto [level, slot] = pg->Scope()->Find(nullptr, true);
 
-    for (auto const &stmt : statements) {
-        if (stmt->IsClassProperty()) {
-            const auto *prop = stmt->AsClassProperty();
-            if (prop->IsStatic()) {
-                continue;
-            }
-            CompileField(pg, prop, thisReg);
-        }
+    if (!isStatic && classDef->HasInstancePrivateMethod()) {
+        ir::PrivateNameFindResult result = pg->Scope()->FindPrivateName("#method");
+        pg->LoadConst(classDef, Constant::JS_UNDEFINED);
+        pg->DefineClassPrivateField(classDef, result.lexLevel, result.result.slot, thisReg);
     }
-}
-
-static void CompileStaticInitializer(PandaGen *pg, const ir::ScriptFunction *decl)
-{
-    const auto &statements = decl->Parent()->Parent()->Parent()->AsClassDefinition()->Body();
-
-    RegScope rs(pg);
-    auto thisReg = pg->AllocReg();
-    pg->GetThis(decl);
-    pg->StoreAccumulator(decl, thisReg);
-
     for (auto const &stmt : statements) {
         if (stmt->IsMethodDefinition()) {
             continue;
@@ -179,9 +174,13 @@ static void CompileStaticInitializer(PandaGen *pg, const ir::ScriptFunction *dec
 
         if (stmt->IsClassProperty()) {
             const auto *prop = stmt->AsClassProperty();
-            if (prop->IsStatic()) {
-                CompileField(pg, prop, thisReg);
+            if (prop->IsStatic() == isStatic) {
+                CompileField(pg, prop, thisReg, level);
             }
+            continue;
+        }
+
+        if (!isStatic) {
             continue;
         }
 
@@ -195,13 +194,28 @@ static void CompileFunction(PandaGen *pg)
 {
     const auto *decl = pg->RootNode()->AsScriptFunction();
 
-    // TODO(szilagyia): move after super call
-    if (decl->IsConstructor() && pg->Binder()->Program()->Extension() != ScriptExtension::TS) {
-        CompileInstanceFields(pg, decl);
+    if (decl->IsConstructor()) {
+        const auto *classDef = util::Helpers::GetClassDefiniton(decl);
+        if (classDef->Super() == nullptr && classDef->NeedInstanceInitializer()) {
+            RegScope rs(pg);
+            auto callee = pg->AllocReg();
+            auto thisReg = pg->AllocReg();
+
+            pg->GetThis(decl);
+            pg->StoreAccumulator(decl, thisReg);
+
+            auto [level, slot] = pg->Scope()->Find(classDef->InstanceInitializer()->Key());
+            pg->LoadLexicalVar(decl, level, slot);
+            pg->StoreAccumulator(decl, callee);
+
+            pg->CallThis(decl, callee, 1);
+        }
     }
 
-    if (decl->IsStaticInitializer()) {
-        CompileStaticInitializer(pg, decl);
+    if (decl->IsStaticInitializer() || decl->IsInstanceInitializer()) {
+        CompileClassInitializer(pg, decl, decl->IsStaticInitializer());
+        pg->ImplicitReturn(decl);
+        return;
     }
 
     auto *funcParamScope = pg->TopScope()->ParamScope();

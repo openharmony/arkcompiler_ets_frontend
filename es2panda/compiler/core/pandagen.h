@@ -295,6 +295,8 @@ public:
     void LoadObjByName(const ir::AstNode *node, VReg obj, const util::StringView &prop);
 
     void StoreObjProperty(const ir::AstNode *node, VReg obj, const Operand &prop);
+    void DefineClassField(const ir::AstNode *node, VReg obj, const Operand &prop);
+    void DefineClassPrivateField(const ir::AstNode *node, uint32_t level, uint32_t slot, VReg obj);
     void StoreOwnProperty(const ir::AstNode *node, VReg obj, const Operand &prop, bool nameSetting = false);
     void DeleteObjProperty(const ir::AstNode *node, VReg obj, const Operand &prop);
     void LoadAccumulator(const ir::AstNode *node, VReg reg);
@@ -465,6 +467,10 @@ public:
     void StoreObjByIndex(const ir::AstNode *node, VReg obj, int64_t index);
     void StoreObjByValue(const ir::AstNode *node, VReg obj, VReg prop);
 
+    void DefineFieldByName(const ir::AstNode *node, VReg obj, const util::StringView &prop);
+    void DefineFieldByIndex(const ir::AstNode *node, VReg obj, int64_t index);
+    void DefineFieldByValue(const ir::AstNode *node, VReg obj, VReg prop);
+
     void StOwnByName(const ir::AstNode *node, VReg obj, const util::StringView &prop, bool nameSetting = false);
     void StOwnByValue(const ir::AstNode *node, VReg obj, VReg prop, bool nameSetting = false);
     void StOwnByIndex(const ir::AstNode *node, VReg obj, int64_t index);
@@ -472,8 +478,16 @@ public:
     Operand ToNamedPropertyKey(const ir::Expression *prop, bool isComputed);
     Operand ToPropertyKey(const ir::Expression *prop, bool isComputed);
     VReg LoadPropertyKey(const ir::Expression *prop, bool isComputed);
+    void ToComputedPropertyKey(const ir::AstNode *node);
 
     void ReArrangeIc();
+
+    void CreatePrivateProperty(const ir::AstNode *node, uint32_t num, int32_t bufIdx);
+    void TestIn(const ir::AstNode *node, uint32_t level, uint32_t slot);
+    void LoadPrivateProperty(const ir::AstNode *node, uint32_t level, uint32_t slot);
+    void StorePrivateProperty(const ir::AstNode *node, uint32_t level, uint32_t slot, VReg obj);
+    void ThrowTypeErrorIfFalse(const ir::AstNode *node, util::StringView str);
+    void ThrowTypeError(const ir::AstNode *node, util::StringView str);
 
     /*
      * Since the [Function] is not implemented yet, We compile the test262's framework code

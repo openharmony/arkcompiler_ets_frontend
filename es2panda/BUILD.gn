@@ -88,6 +88,7 @@ es2panda_src = [
   "ir/expressions/newExpression.cpp",
   "ir/expressions/objectExpression.cpp",
   "ir/expressions/omittedExpression.cpp",
+  "ir/expressions/privateIdentifier.cpp",
   "ir/expressions/sequenceExpression.cpp",
   "ir/expressions/superExpression.cpp",
   "ir/expressions/taggedTemplateExpression.cpp",

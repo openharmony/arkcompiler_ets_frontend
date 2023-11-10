@@ -106,10 +106,10 @@ private:
     LexEnvContext lexEnvCtx_;
 };
 
-class StaticBlockEnvScope : public EnvScope {
+class VariableEnvScope : public EnvScope {
 public:
-    explicit StaticBlockEnvScope(PandaGen *pg, binder::StaticBlockScope *scope);
-    ~StaticBlockEnvScope();
+    explicit VariableEnvScope(PandaGen *pg, binder::VariableScope *scope);
+    ~VariableEnvScope();
 
     bool HasEnv() const
     {

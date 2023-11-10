@@ -45,6 +45,7 @@
 #include <ir/expressions/newExpression.h>
 #include <ir/expressions/objectExpression.h>
 #include <ir/expressions/omittedExpression.h>
+#include <ir/expressions/privateIdentifier.h>
 #include <ir/expressions/sequenceExpression.h>
 #include <ir/expressions/superExpression.h>
 #include <ir/expressions/taggedTemplateExpression.h>
@@ -1366,6 +1367,14 @@ ir::Expression *ParserImpl::ParseOptionalChain(ir::Expression *leftSideExpr)
     lexer::TokenType tokenType = lexer_->GetToken().Type();
     ir::Expression *returnExpression = nullptr;
 
+    if (tokenType == lexer::TokenType::PUNCTUATOR_HASH_MARK) {
+        auto *privateIdent = ParsePrivateIdentifier();
+        returnExpression = AllocNode<ir::MemberExpression>(
+            leftSideExpr, privateIdent, ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false, true);
+        returnExpression->SetRange({leftSideExpr->Start(), privateIdent->End()});
+        lexer_->NextToken();
+    }
+
     if (tokenType == lexer::TokenType::LITERAL_IDENT) {
         auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
         identNode->SetReference();
@@ -1600,32 +1609,20 @@ ir::Expression *ParserImpl::ParsePostPrimaryExpression(ir::Expression *primaryEx
             }
             case lexer::TokenType::PUNCTUATOR_PERIOD: {
                 lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);  // eat period
-                bool isPrivate = false;
 
-                lexer::SourcePosition memberStart = lexer_->GetToken().Start();
-
-                if (Extension() == ScriptExtension::TS &&
-                    lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_HASH_MARK) {
-                    if (!(context_.Status() & ParserStatus::IN_CLASS_BODY)) {
-                        ThrowSyntaxError("Private identifiers are not allowed outside class bodies.");
+                ir::Expression *property;
+                if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_HASH_MARK) {
+                    if (returnExpression->IsSuperExpression()) {
+                        ThrowSyntaxError("Unexpected private property access in super keyword");
                     }
-                    isPrivate = true;
-                    lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);
-                }
-
-                if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-                    ThrowSyntaxError("Expected an identifier");
-                }
-
-                auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
-                identNode->SetRange(lexer_->GetToken().Loc());
-
-                ir::Expression *property = nullptr;
-                if (isPrivate) {
-                    property = AllocNode<ir::TSPrivateIdentifier>(identNode, nullptr, nullptr);
-                    property->SetRange({memberStart, identNode->End()});
+                    property = ParsePrivateIdentifier();
                 } else {
-                    property = identNode;
+                    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+                        ThrowSyntaxError("Expected an identifier");
+                    }
+                    property = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
+                    property->SetRange(lexer_->GetToken().Loc());
+                    lexer_->NextToken();
                 }
 
                 const lexer::SourcePosition &startPos = returnExpression->Start();
@@ -1633,7 +1630,6 @@ ir::Expression *ParserImpl::ParsePostPrimaryExpression(ir::Expression *primaryEx
                     returnExpression, property, ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false,
                     false);
                 returnExpression->SetRange({startPos, property->End()});
-                lexer_->NextToken();
                 continue;
             }
             case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
@@ -2299,6 +2295,14 @@ ir::Expression *ParserImpl::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFl
         return ParseTsTypeAssertion(flags);
     }
 
+    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_HASH_MARK) {
+        auto privateIdent =  ParsePrivateIdentifier();
+        if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_IN) {
+            ThrowSyntaxError("Unexpected private identifier", privateIdent->Start());
+        }
+        return privateIdent;
+    }
+
     if (!lexer_->GetToken().IsUnary()) {
         return ParseLeftHandSideExpression(flags);
     }
@@ -2312,8 +2316,13 @@ ir::Expression *ParserImpl::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFl
         ValidateUpdateExpression(argument, false);
     }
 
-    if (operatorType == lexer::TokenType::KEYW_DELETE && argument->IsIdentifier()) {
-        ThrowSyntaxError("Deleting local variable in strict mode");
+    if (operatorType == lexer::TokenType::KEYW_DELETE) {
+        if (argument->IsIdentifier()) {
+            ThrowSyntaxError("Deleting local variable in strict mode");
+        }
+        if (argument->IsMemberExpression() && argument->AsMemberExpression()->AccessPrivateProperty()) {
+            ThrowSyntaxError("Delete private property is not allowed");
+        }
     }
 
     lexer::SourcePosition end = argument->End();
@@ -2477,6 +2486,31 @@ ir::FunctionExpression *ParserImpl::ParseFunctionExpression(ParserStatus newStat
     funcExpr->SetRange(functionNode->Range());
 
     return funcExpr;
+}
+
+ir::PrivateIdentifier *ParserImpl::ParsePrivateIdentifier()
+{
+    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_HASH_MARK);
+    if (!(context_.Status() & ParserStatus::IN_CLASS_BODY)) {
+        ThrowSyntaxError("Private identifiers are not allowed outside class bodies.");
+    }
+
+    auto start = lexer_->GetToken().Start();
+    auto idx = start.index;
+
+    lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);
+    auto newIdx = lexer_->GetToken().Start().index;
+    if (newIdx != idx + 1) {
+        ThrowSyntaxError("Unexpected white space");
+    }
+    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        ThrowSyntaxError("Expected an identifier");
+    }
+
+    auto *privateIdent = AllocNode<ir::PrivateIdentifier>(lexer_->GetToken().Ident());
+    privateIdent->SetRange({start, lexer_->GetToken().End()});
+    lexer_->NextToken();
+    return privateIdent;
 }
 
 }  // namespace panda::es2panda::parser

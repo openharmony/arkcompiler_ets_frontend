@@ -442,6 +442,27 @@ void PandaGen::StoreObjProperty(const ir::AstNode *node, VReg obj, const Operand
     StoreObjByName(node, obj, std::get<util::StringView>(prop));
 }
 
+void PandaGen::DefineClassField(const ir::AstNode *node, VReg obj, const Operand &prop)
+{
+    if (std::holds_alternative<VReg>(prop)) {
+        DefineFieldByValue(node, obj, std::get<VReg>(prop));
+        return;
+    }
+
+    if (std::holds_alternative<int64_t>(prop)) {
+        DefineFieldByIndex(node, obj, std::get<int64_t>(prop));
+        return;
+    }
+
+    ASSERT(std::holds_alternative<util::StringView>(prop));
+    DefineFieldByName(node, obj, std::get<util::StringView>(prop));
+}
+
+void PandaGen::DefineClassPrivateField(const ir::AstNode *node, uint32_t level, uint32_t slot, VReg obj)
+{
+    ra_.Emit<CallruntimeDefineprivateproperty>(node, level, slot, obj);
+}
+
 void PandaGen::StoreOwnProperty(const ir::AstNode *node, VReg obj, const Operand &prop, bool nameSetting)
 {
     if (std::holds_alternative<VReg>(prop)) {
@@ -539,6 +560,12 @@ void PandaGen::StoreObjByName(const ir::AstNode *node, VReg obj, const util::Str
     strings_.insert(prop);
 }
 
+void PandaGen::DefineFieldByName(const ir::AstNode *node, VReg obj, const util::StringView &prop)
+{
+    ra_.Emit<CallruntimeDefinefieldbyname>(node, prop, obj);
+    strings_.insert(prop);
+}
+
 void PandaGen::LoadObjByIndex(const ir::AstNode *node, VReg obj, int64_t index)
 {
     LoadAccumulator(node, obj); // object is load to acc
@@ -568,6 +595,16 @@ void PandaGen::StoreObjByIndex(const ir::AstNode *node, VReg obj, int64_t index)
     }
 
     ra_.Emit<WideStobjbyindex>(node, obj, index);
+}
+
+void PandaGen::DefineFieldByValue(const ir::AstNode *node, VReg obj, VReg prop)
+{
+    ra_.Emit<CallruntimeDefinefieldbyvalue>(node, prop, obj);
+}
+
+void PandaGen::DefineFieldByIndex(const ir::AstNode *node, VReg obj, int64_t index)
+{
+    ra_.Emit<CallruntimeDefinefieldbyindex>(node, index, obj);
 }
 
 void PandaGen::StOwnByName(const ir::AstNode *node, VReg obj, const util::StringView &prop, bool nameSetting)
@@ -2057,6 +2094,11 @@ VReg PandaGen::LoadPropertyKey(const ir::Expression *prop, bool isComputed)
     return propReg;
 }
 
+void PandaGen::ToComputedPropertyKey(const ir::AstNode *node)
+{
+    ra_.Emit<CallruntimeTopropertykey>(node);
+}
+
 void PandaGen::StLetOrClassToGlobalRecord(const ir::AstNode *node, const util::StringView &name)
 {
     ra_.Emit<Sttoglobalrecord>(node, 0, name);
@@ -2131,6 +2173,45 @@ void PandaGen::ReArrangeIc()
         auto inc = ins->SetIcSlot(GetCurrentSlot());
         IncreaseCurrentSlot(inc);
     }
+}
+
+void PandaGen::CreatePrivateProperty(const ir::AstNode *node, uint32_t num, int32_t bufIdx)
+{
+    std::string idxStr = std::string(context_->Binder()->Program()->RecordName()) + "_" + std::to_string(bufIdx);
+    util::UString litId(idxStr, allocator_);
+    ra_.Emit<CallruntimeCreateprivateproperty>(node, num, litId.View());
+}
+
+void PandaGen::TestIn(const ir::AstNode *node, uint32_t level, uint32_t slot)
+{
+    ra_.Emit<Testin>(node, 0, level, slot);
+}
+
+void PandaGen::LoadPrivateProperty(const ir::AstNode *node, uint32_t level, uint32_t slot)
+{
+    ra_.Emit<Ldprivateproperty>(node, 0, level, slot);
+}
+
+void PandaGen::StorePrivateProperty(const ir::AstNode *node, uint32_t level, uint32_t slot, VReg obj)
+{
+    ra_.Emit<Stprivateproperty>(node, 0, level, slot, obj);
+}
+void PandaGen::ThrowTypeErrorIfFalse(const ir::AstNode *node, util::StringView str)
+{
+    auto *trueLabel = AllocLabel();
+    BranchIfTrue(node, trueLabel);
+    ThrowTypeError(node, str);
+    SetLabel(node, trueLabel);
+}
+
+void PandaGen::ThrowTypeError(const ir::AstNode *node, util::StringView str)
+{
+    LoadAccumulatorString(node, str);
+    VReg reg = AllocReg();
+    StoreAccumulator(node, reg);
+    TryLoadGlobalByName(node, "TypeError");
+    ra_.Emit<Callarg1>(node, 0, reg);
+    EmitThrow(node);
 }
 
 }  // namespace panda::es2panda::compiler

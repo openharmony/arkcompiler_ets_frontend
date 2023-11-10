@@ -23,6 +23,7 @@
 #include <typescript/types/signature.h>
 #include <typescript/types/type.h>
 #include <ir/astDump.h>
+#include <ir/base/classDefinition.h>
 #include <ir/expressions/chainExpression.h>
 #include <ir/expressions/memberExpression.h>
 #include <ir/ts/tsAsExpression.h>
@@ -120,6 +121,20 @@ void CallExpression::Compile(compiler::PandaGen *pg) const
 
         pg->LoadAccumulator(this, newThis);
         pg->SetThis(this);
+
+        const auto *classDef = util::Helpers::GetClassDefiniton(util::Helpers::GetContainingConstructor(this));
+        if (classDef->NeedInstanceInitializer()) {
+            auto callee = pg->AllocReg();
+            auto thisReg = pg->AllocReg();
+
+            auto [level, slot] = pg->Scope()->Find(classDef->InstanceInitializer()->Key());
+            pg->LoadLexicalVar(this, level, slot);
+            pg->StoreAccumulator(this, callee);
+
+            pg->MoveVreg(this, thisReg, newThis);
+
+            pg->CallThis(this, callee, 1);
+        }
         return;
     }
 
