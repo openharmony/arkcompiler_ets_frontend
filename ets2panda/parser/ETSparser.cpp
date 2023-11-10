@@ -3025,7 +3025,8 @@ ir::AnnotatedExpression *ETSParser::GetAnnotatedExpressionFromParam()
                 parameter->SetRange(
                     {parameter->AsIdentifier()->Decorators().front()->Start(), Lexer()->GetToken().End()});
             }
-        } break;
+            break;
+        }
 
         case lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD: {
             const auto start_loc = Lexer()->GetToken().Start();
@@ -3040,7 +3041,8 @@ ir::AnnotatedExpression *ETSParser::GetAnnotatedExpressionFromParam()
 
             parameter = AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, Allocator(), rest_ident);
             parameter->SetRange({start_loc, Lexer()->GetToken().End()});
-        } break;
+            break;
+        }
 
         default: {
             ThrowSyntaxError("Unexpected token, expected an identifier.");
