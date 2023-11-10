@@ -70,21 +70,9 @@ bool ETSFunctionType::AssignmentSource(TypeRelation *relation, Type *target)
     return false;
 }
 
-void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
+static Signature *ProcessSignatures(TypeRelation *relation, Signature *target, ETSFunctionType *source_func_type)
 {
-    if (!source->IsETSFunctionType() &&
-        (!source->IsETSObjectType() || !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
-        return;
-    }
-
-    ASSERT(call_signatures_.size() == 1 && call_signatures_[0]->HasSignatureFlag(SignatureFlags::TYPE));
-
-    Signature *target = call_signatures_[0];
     Signature *match {};
-    bool source_is_functional = source->IsETSObjectType();
-    auto *source_func_type = source_is_functional ? source->AsETSObjectType()->GetFunctionalInterfaceInvokeType()
-                                                  : source->AsETSFunctionType();
-
     for (auto *it : source_func_type->CallSignatures()) {
         if (target->MinArgCount() != it->MinArgCount()) {
             continue;
@@ -97,15 +85,16 @@ void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
 
         if (!it->GetSignatureInfo()->type_params.empty()) {
             auto *substitution = relation->GetChecker()->AsETSChecker()->NewSubstitution();
+            auto *instantiated_type_params = relation->GetChecker()->AsETSChecker()->NewInstantiatedTypeParamsSet();
             for (size_t ix = 0; ix < target->MinArgCount(); ix++) {
                 relation->GetChecker()->AsETSChecker()->EnhanceSubstitutionForType(
                     it->GetSignatureInfo()->type_params, it->GetSignatureInfo()->params[ix]->TsType(),
-                    target->GetSignatureInfo()->params[ix]->TsType(), substitution);
+                    target->GetSignatureInfo()->params[ix]->TsType(), substitution, instantiated_type_params);
             }
             if (target->RestVar() != nullptr) {
                 relation->GetChecker()->AsETSChecker()->EnhanceSubstitutionForType(
                     it->GetSignatureInfo()->type_params, it->RestVar()->TsType(), target->RestVar()->TsType(),
-                    substitution);
+                    substitution, instantiated_type_params);
             }
             it = it->Substitute(relation, substitution);
         }
@@ -133,6 +122,23 @@ void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
         match = it;
         break;
     }
+    return match;
+}
+
+void ETSFunctionType::AssignmentTarget(TypeRelation *relation, Type *source)
+{
+    if (!source->IsETSFunctionType() &&
+        (!source->IsETSObjectType() || !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
+        return;
+    }
+
+    ASSERT(call_signatures_.size() == 1 && call_signatures_[0]->HasSignatureFlag(SignatureFlags::TYPE));
+
+    Signature *target = call_signatures_[0];
+    bool source_is_functional = source->IsETSObjectType();
+    auto *source_func_type = source_is_functional ? source->AsETSObjectType()->GetFunctionalInterfaceInvokeType()
+                                                  : source->AsETSFunctionType();
+    Signature *match = ProcessSignatures(relation, target, source_func_type);
 
     if (match == nullptr) {
         relation->Result(false);

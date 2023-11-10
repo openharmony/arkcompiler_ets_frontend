@@ -266,8 +266,13 @@ public:
     {
         return Allocator()->New<Substitution>(*src);
     }
+    ArenaUnorderedSet<ETSObjectType *> *NewInstantiatedTypeParamsSet()
+    {
+        return Allocator()->New<ArenaUnorderedSet<ETSObjectType *>>(Allocator()->Adapter());
+    }
     void EnhanceSubstitutionForType(const ArenaVector<Type *> &type_params, Type *param_type, Type *argument_type,
-                                    Substitution *substitution);
+                                    Substitution *substitution,
+                                    ArenaUnorderedSet<ETSObjectType *> *instantiated_type_params);
     Signature *ValidateSignature(Signature *signature, const ir::TSTypeParameterInstantiation *type_arguments,
                                  const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
                                  TypeRelationFlag initial_flags, const std::vector<bool> &arg_type_inference_required);

@@ -96,7 +96,8 @@ bool ETSChecker::IsCompatibleTypeArgument(Type *type_param, Type *type_argument)
 
 /* A very rough and imprecise partial type inference */
 void ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &type_params, Type *param_type,
-                                            Type *argument_type, Substitution *substitution)
+                                            Type *argument_type, Substitution *substitution,
+                                            ArenaUnorderedSet<ETSObjectType *> *instantiated_type_params)
 {
     if (!param_type->IsETSObjectType()) {
         return;
@@ -104,23 +105,46 @@ void ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &type_para
     auto *param_obj_type = param_type->AsETSObjectType();
     if (param_obj_type->HasObjectFlag(ETSObjectFlags::TYPE_PARAMETER)) {
         auto *param_base = GetOriginalBaseType(param_obj_type);
+        if (instantiated_type_params->find(param_obj_type) != instantiated_type_params->end() &&
+            substitution->at(param_base) != argument_type) {
+            ThrowTypeError({"Type parameter already instantiated with another type "},
+                           param_obj_type->GetDeclNode()->Start());
+        }
         if (std::find(type_params.begin(), type_params.end(), param_base) != type_params.end() &&
             substitution->count(param_base) == 0) {
             substitution->emplace(param_base, argument_type);
+            instantiated_type_params->insert(param_obj_type);
             return;
         }
     }
-    if (!argument_type->IsETSObjectType()) {
+    if (argument_type->IsETSObjectType()) {
+        auto *arg_obj_type = argument_type->AsETSObjectType();
+        if (GetOriginalBaseType(arg_obj_type) != GetOriginalBaseType(param_obj_type)) {
+            return;  // don't attempt anything fancy for now
+        }
+        ASSERT(arg_obj_type->TypeArguments().size() == param_obj_type->TypeArguments().size());
+        for (size_t ix = 0; ix < arg_obj_type->TypeArguments().size(); ix++) {
+            EnhanceSubstitutionForType(type_params, param_obj_type->TypeArguments()[ix],
+                                       arg_obj_type->TypeArguments()[ix], substitution, instantiated_type_params);
+        }
+    } else if (argument_type->IsETSFunctionType() &&
+               param_obj_type->HasObjectFlag(ETSObjectFlags::FUNCTIONAL_INTERFACE)) {
+        auto parameter_signatures = param_obj_type->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke")
+                                        ->TsType()
+                                        ->AsETSFunctionType()
+                                        ->CallSignatures();
+        auto argument_signatures = argument_type->AsETSFunctionType()->CallSignatures();
+        ASSERT(argument_signatures.size() == 1);
+        ASSERT(parameter_signatures.size() == 1);
+        for (size_t idx = 0; idx < argument_signatures[0]->GetSignatureInfo()->params.size(); idx++) {
+            EnhanceSubstitutionForType(type_params, parameter_signatures[0]->GetSignatureInfo()->params[idx]->TsType(),
+                                       argument_signatures[0]->GetSignatureInfo()->params[idx]->TsType(), substitution,
+                                       instantiated_type_params);
+        }
+        EnhanceSubstitutionForType(type_params, parameter_signatures[0]->ReturnType(),
+                                   argument_signatures[0]->ReturnType(), substitution, instantiated_type_params);
+    } else {
         return;
-    }
-    auto *arg_obj_type = argument_type->AsETSObjectType();
-    if (GetOriginalBaseType(arg_obj_type) != GetOriginalBaseType(param_obj_type)) {
-        return;  // don't attempt anything fancy for now
-    }
-    ASSERT(arg_obj_type->TypeArguments().size() == param_obj_type->TypeArguments().size());
-    for (size_t ix = 0; ix < arg_obj_type->TypeArguments().size(); ix++) {
-        EnhanceSubstitutionForType(type_params, param_obj_type->TypeArguments()[ix], arg_obj_type->TypeArguments()[ix],
-                                   substitution);
     }
 }
 

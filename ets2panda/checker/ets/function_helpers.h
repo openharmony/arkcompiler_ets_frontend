@@ -86,6 +86,7 @@ static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *che
                                                                  const ArenaVector<ir::Expression *> &arguments)
 {
     Substitution *substitution = checker->NewSubstitution();
+    auto *instantiated_type_params = checker->NewInstantiatedTypeParamsSet();
     auto *sig_info = signature->GetSignatureInfo();
     ArenaVector<Type *> &type_params = sig_info->type_params;
     for (size_t ix = 0; ix < arguments.size(); ix++) {
@@ -100,7 +101,7 @@ static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *che
         if (param_type == nullptr) {
             continue;
         }
-        checker->EnhanceSubstitutionForType(type_params, param_type, arg_type, substitution);
+        checker->EnhanceSubstitutionForType(type_params, param_type, arg_type, substitution, instantiated_type_params);
     }
     return substitution;
 }
