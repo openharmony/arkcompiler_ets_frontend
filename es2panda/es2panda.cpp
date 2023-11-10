@@ -90,7 +90,7 @@ panda::pandasm::Program *Compiler::Compile(const SourceFile &input, const Compil
 
         if (ast.Extension() == ScriptExtension::TS) {
             transformer_->Transform(&ast);
-            ast.Binder()->IdentifierAnalysis(binder::ResolveBindingFlags::ALL);
+            ast.Binder()->IdentifierAnalysis(binder::ResolveBindingFlags::TS_AFTER_TRANSFORM);
             if (options.dumpTransformedAst) {
                 std::cout << ast.Dump() << std::endl;
             }

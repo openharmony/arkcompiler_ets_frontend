@@ -18,8 +18,14 @@ label_0:
 	ldlexvar 0x0, 0x0
 	sta v0
 	throw.undefinedifholewithname a
-	ldai 0x3
+	ldlexvar 0x0, 0x2
+	sta v1
+	throw.undefinedifholewithname c
+	lda v1
 	add2 0x0, v0
+	sta v0
+	ldai 0x3
+	add2 0x1, v0
 	return
 label_2: 
 }
@@ -27,10 +33,14 @@ label_2:
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	newlexenv 0x1
+	newlexenv 0x3
 	definefunc 0x0, .A, 0x0
 	ldai 0x1
+	sta v0
+	lda v0
 	stlexvar 0x0, 0x0
+	lda v0
+	stlexvar 0x0, 0x2
 	ldundefined
 	returnundefined
 label_2: 

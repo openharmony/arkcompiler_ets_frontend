@@ -24,7 +24,7 @@ label_0:
 	lda v1
 	add2 0x0, v0
 	sta v0
-	ldlexvar 0x0, 0x2
+	wide.ldpatchvar 0x0
 	sta v1
 	throw.undefinedifholewithname c
 	lda v1
@@ -33,7 +33,7 @@ label_0:
 	ldai 0x3
 	add2 0x2, v0
 	sta v0
-	ldlexvar 0x0, 0x3
+	wide.ldpatchvar 0x1
 	sta v1
 	throw.undefinedifholewithname n
 	lda v1
@@ -45,7 +45,7 @@ label_2:
 .function any .func_main_0(any a0, any a1, any a2) {
 label_1: 
 label_0: 
-	newlexenv 0x4
+	newlexenv 0x2
 	definefunc 0x0, .A, 0x0
 	ldai 0x1
 	sta v0
@@ -54,9 +54,9 @@ label_0:
 	lda v0
 	stlexvar 0x0, 0x1
 	lda v0
-	stlexvar 0x0, 0x2
+	wide.stpatchvar 0x0
 	ldai 0x2
-	stlexvar 0x0, 0x3
+	wide.stpatchvar 0x1
 	ldundefined
 	returnundefined
 label_2: 

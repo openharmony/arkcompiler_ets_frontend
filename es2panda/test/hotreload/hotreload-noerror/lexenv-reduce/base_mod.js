@@ -2,7 +2,7 @@ let a = 1;
 let b = 1;
 let c = 1;
 function A() {
-    let d = a;
+    let d = a + c;
     let e = 3;
     let m = d + e;
     return m;

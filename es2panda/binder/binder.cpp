@@ -179,8 +179,17 @@ void Binder::IdentifierAnalysis(ResolveBindingFlags flags)
     ASSERT(scope_ == topScope_);
 
     bindingFlags_ = flags;
+    // Bind function main0 first to determine whether a lexical variable is in it or not under hot-reload mode
     if (bindingFlags_ & ResolveBindingFlags::TS_BEFORE_TRANSFORM) {
+        BuildFunction(topScope_, MAIN_FUNC_NAME);
         ResolveReferences(program_->Ast());
+    } else if (bindingFlags_ & ResolveBindingFlags::TS_AFTER_TRANSFORM) {
+        // Basically same as js, except of function main0 will not be bound after transform
+        ResolveReferences(program_->Ast());
+        AddMandatoryParams();
+        if (topScope_->IsModuleScope()) {
+            AssignIndexToModuleVariable();
+        }
     } else if (bindingFlags_ & ResolveBindingFlags::ALL) {
         BuildFunction(topScope_, MAIN_FUNC_NAME);
         ResolveReferences(program_->Ast());
