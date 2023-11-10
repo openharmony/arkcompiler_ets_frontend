@@ -779,6 +779,10 @@ Signature *ETSChecker::ComposeSignature(ir::ScriptFunction *func, SignatureInfo 
         signature->AddSignatureFlag(SignatureFlags::NEED_RETURN_TYPE);
     }
 
+    if (return_type_annotation != nullptr && return_type_annotation->IsTSThisType()) {
+        signature->AddSignatureFlag(SignatureFlags::THIS_RETURN_TYPE);
+    }
+
     if (func->IsAbstract()) {
         signature->AddSignatureFlag(SignatureFlags::ABSTRACT);
         signature->AddSignatureFlag(SignatureFlags::VIRTUAL);

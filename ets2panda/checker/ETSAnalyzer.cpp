@@ -1064,7 +1064,13 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
         expr->SetSignature(signature);
     }
 
-    return signature->ReturnType();
+    auto *return_type = signature->ReturnType();
+
+    if (signature->HasSignatureFlag(SignatureFlags::THIS_RETURN_TYPE)) {
+        return_type = ChooseCalleeObj(checker, expr, callee_type, is_constructor_call);
+    }
+
+    return return_type;
 }
 
 checker::Type *ETSAnalyzer::Check(ir::CallExpression *expr) const
@@ -2165,6 +2171,12 @@ checker::Type *ETSAnalyzer::Check(ir::ReturnStatement *st) const
 
     if (auto *const return_type_annotation = containing_func->ReturnTypeAnnotation();
         return_type_annotation != nullptr) {
+        if (return_type_annotation->IsTSThisType() &&
+            (st->Argument() == nullptr || !st->Argument()->IsThisExpression())) {
+            checker->ThrowTypeError(
+                "The only allowed return value is 'this' if the method's return type is the 'this' type", st->Start());
+        }
+
         // Case when function's return type is defined explicitly:
         func_return_type = checker->GetTypeFromTypeAnnotation(return_type_annotation);
 

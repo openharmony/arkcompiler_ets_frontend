@@ -118,6 +118,7 @@
 #include "ir/ts/tsTypeAliasDeclaration.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/ts/tsNonNullExpression.h"
+#include "ir/ts/tsThisType.h"
 #include "libpandabase/os/file.h"
 #include "generated/signatures.h"
 
@@ -1349,6 +1350,10 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
         new_status |= ParserStatus::ASYNC_FUNCTION;
     }
 
+    if ((modifiers & ir::ModifierFlags::STATIC) == 0) {
+        new_status |= ParserStatus::ALLOW_THIS_TYPE;
+    }
+
     ir::ScriptFunction *func = ParseFunction(new_status, class_name);
     func->SetIdent(method_name);
     auto *func_expr = AllocNode<ir::FunctionExpression>(func);
@@ -1460,8 +1465,9 @@ ir::TypeNode *ETSParser::ParseFunctionReturnType([[maybe_unused]] ParserStatus s
             ThrowSyntaxError("Type annotation isn't allowed for constructor.");
         }
         Lexer()->NextToken();  // eat ':'
-        TypeAnnotationParsingOptions options =
-            TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
+        TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR |
+                                               TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE |
+                                               TypeAnnotationParsingOptions::RETURN_TYPE;
         return ParseTypeAnnotation(&options);
     }
 
@@ -2820,12 +2826,39 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
             type_annotation = ParseETSTupleType(options);
             break;
         }
+        case lexer::TokenType::KEYW_THIS: {
+            type_annotation = ParseThisType(options);
+            break;
+        }
         default: {
             break;
         }
     }
 
     return std::make_pair(type_annotation, true);
+}
+
+ir::TypeNode *ETSParser::ParseThisType(TypeAnnotationParsingOptions *options)
+{
+    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_THIS);
+
+    // A syntax error should be thrown if
+    // - the usage of 'this' as a type is not allowed in the current context, or
+    // - 'this' is not used as a return type, or
+    // - the current context is an arrow function (might be inside a method of a class where 'this' is allowed).
+    if (((*options & TypeAnnotationParsingOptions::THROW_ERROR) != 0) &&
+        (((GetContext().Status() & ParserStatus::ALLOW_THIS_TYPE) == 0) ||
+         ((*options & TypeAnnotationParsingOptions::RETURN_TYPE) == 0) ||
+         ((GetContext().Status() & ParserStatus::ARROW_FUNCTION) != 0))) {
+        ThrowSyntaxError("A 'this' type is available only as return type in a non-static method of a class or struct.");
+    }
+
+    auto *this_type = AllocNode<ir::TSThisType>();
+    this_type->SetRange(Lexer()->GetToken().Loc());
+
+    Lexer()->NextToken();  // eat 'this'
+
+    return this_type;
 }
 
 ir::TypeNode *ETSParser::ParseTypeAnnotation(TypeAnnotationParsingOptions *options)

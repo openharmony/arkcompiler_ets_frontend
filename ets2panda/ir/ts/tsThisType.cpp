@@ -15,6 +15,7 @@
 
 #include "tsThisType.h"
 
+#include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
@@ -57,5 +58,10 @@ checker::Type *TSThisType::GetType([[maybe_unused]] checker::TSChecker *checker)
 checker::Type *TSThisType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *TSThisType::GetType([[maybe_unused]] checker::ETSChecker *checker)
+{
+    return checker->Context().ContainingClass();
 }
 }  // namespace panda::es2panda::ir

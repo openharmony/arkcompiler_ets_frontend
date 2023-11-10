@@ -252,6 +252,7 @@ private:
 
     ir::Statement *ParseInterfaceDeclaration(bool is_static) override;
     ir::ThisExpression *ParseThisExpression() override;
+    ir::TypeNode *ParseThisType(TypeAnnotationParsingOptions *options);
     ir::Statement *ParseFunctionStatement(StatementParsingFlags flags) override;
     std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseClassImplementsElement() override;
     ir::TypeNode *ParseInterfaceExtendsElement() override;

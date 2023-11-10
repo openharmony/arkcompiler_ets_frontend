@@ -79,6 +79,7 @@ enum class SignatureFlags : uint32_t {
     INTERNAL = 1U << 12U,
     NEED_RETURN_TYPE = 1U << 13U,
     INFERRED_RETURN_TYPE = 1U << 14U,
+    THIS_RETURN_TYPE = 1U << 15U,
     GETTER = 1U << 16U,
     SETTER = 1U << 17U,
 

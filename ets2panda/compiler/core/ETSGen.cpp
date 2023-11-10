@@ -2267,6 +2267,10 @@ void ETSGen::InsertNeededCheckCast(const checker::Signature *signature, const ir
 {
     if (signature->IsBaseReturnDiff()) {
         EmitCheckCast(node, signature->ReturnType());
+    } else if (signature->HasSignatureFlag(checker::SignatureFlags::THIS_RETURN_TYPE)) {
+        ASSERT(node->IsCallExpression());
+
+        EmitCheckCast(node, node->AsCallExpression()->TsType());
     }
 }
 

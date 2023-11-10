@@ -1,0 +1,1 @@
+SyntaxError: A 'this' type is available only as return type in a non-static method of a class or struct. [this_type_lambda_declaration_return_invalid.ets:16:31]
