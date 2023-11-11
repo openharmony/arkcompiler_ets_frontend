@@ -181,7 +181,7 @@ int Run(int argc, const char **argv)
         std::string version = options->CompilerOptions().bcVersion ?
             panda::panda_file::GetVersion(panda::panda_file::version) :
             panda::panda_file::GetVersion(panda::panda_file::minVersion);
-        std::cout << version << std::endl;
+        std::cout << version;
         return 0;
     }
 
