@@ -19,6 +19,11 @@
 
 #include <utility>
 
+#ifdef PANDA_WITH_BYTECODE_OPTIMIZER
+#include "bytecode_optimizer/bytecodeopt_options.h"
+#include "compiler/compiler_options.h"
+#endif
+
 namespace panda::es2panda::util {
 template <class T>
 T RemoveExtension(T const &filename)
@@ -55,9 +60,84 @@ static std::unordered_set<std::string> StringToStringSet(const std::string &str)
     return res;
 }
 
+// NOLINTNEXTLINE(modernize-avoid-c-arrays, hicpp-avoid-c-arrays)
+static void SplitArgs(int argc, const char *argv[], std::vector<std::string> &es2panda_args,
+                      std::vector<std::string> &bco_compiler_args, std::vector<std::string> &bytecodeopt_args)
+{
+    constexpr std::string_view COMPILER_PREFIX = "--bco-compiler";
+    constexpr std::string_view OPTIMIZER_PREFIX = "--bco-optimizer";
+
+    enum class OptState { ES2PANDA, JIT_COMPILER, OPTIMIZER };
+    OptState opt_state = OptState::ES2PANDA;
+
+    std::unordered_map<OptState, std::vector<std::string> *> args_map = {{OptState::ES2PANDA, &es2panda_args},
+                                                                         {OptState::JIT_COMPILER, &bco_compiler_args},
+                                                                         {OptState::OPTIMIZER, &bytecodeopt_args}};
+
+    for (int i = 1; i < argc; i++) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        const char *arg_i = argv[i];
+        if (COMPILER_PREFIX == arg_i) {
+            opt_state = OptState::JIT_COMPILER;
+            continue;
+        }
+
+        if (OPTIMIZER_PREFIX == arg_i) {
+            opt_state = OptState::OPTIMIZER;
+            continue;
+        }
+
+        args_map[opt_state]->emplace_back(arg_i);
+        opt_state = OptState::ES2PANDA;
+    }
+}
+
+template <class T>
+static bool ParseComponentArgs(const std::vector<std::string> &args, T &options)
+{
+    panda::PandArgParser parser;
+    options.AddOptions(&parser);
+    if (!parser.Parse(args)) {
+        std::cerr << parser.GetErrorString();
+        std::cerr << parser.GetHelpString();
+        return false;
+    }
+
+    if (auto options_err = options.Validate(); options_err) {
+        std::cerr << "Error: " << options_err.value().GetMessage() << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+static bool ParseBCOCompilerOptions([[maybe_unused]] const std::vector<std::string> &compiler_args,
+                                    [[maybe_unused]] const std::vector<std::string> &bytecodeopt_args)
+{
+#ifdef PANDA_WITH_BYTECODE_OPTIMIZER
+    if (!ParseComponentArgs(compiler_args, panda::compiler::OPTIONS)) {
+        return false;
+    }
+    if (!ParseComponentArgs(bytecodeopt_args, panda::bytecodeopt::OPTIONS)) {
+        return false;
+    }
+#endif
+
+    return true;
+}
+
 // NOLINTNEXTLINE(readability-function-size)
 bool Options::Parse(int argc, const char **argv)
 {
+    std::vector<std::string> es2panda_args;
+    std::vector<std::string> bco_compiler_args;
+    std::vector<std::string> bytecodeopt_args;
+
+    SplitArgs(argc, argv, es2panda_args, bco_compiler_args, bytecodeopt_args);
+    if (!ParseBCOCompilerOptions(bco_compiler_args, bytecodeopt_args)) {
+        return false;
+    }
+
     panda::PandArg<bool> op_help("help", false, "Print this message and exit");
 
     // parser
@@ -125,7 +205,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->EnableTail();
     argparser_->EnableRemainder();
 
-    if (!argparser_->Parse(argc, argv) || op_help.GetValue()) {
+    if (!argparser_->Parse(es2panda_args) || op_help.GetValue()) {
         std::stringstream ss;
 
         ss << argparser_->GetErrorString() << std::endl;
@@ -135,6 +215,12 @@ bool Options::Parse(int argc, const char **argv)
         ss << std::endl;
         ss << "optional arguments:" << std::endl;
         ss << argparser_->GetHelpString() << std::endl;
+
+        ss << std::endl;
+        ss << "--bco-optimizer: Argument directly to bytecode optimizer can be passed after this prefix" << std::endl;
+        ss << "--bco-compiler: Argument directly to jit-compiler inside bytecode optimizer can be passed after this "
+              "prefix"
+           << std::endl;
 
         error_msg_ = ss.str();
         return false;
