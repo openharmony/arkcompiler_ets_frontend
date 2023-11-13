@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "declaration": true,
+    "allowJs": true,
+    "checkJs": true,
+    "experimentalDecorators": true
+  },
+}

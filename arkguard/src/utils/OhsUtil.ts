@@ -53,7 +53,7 @@ import type {
   TypeAliasDeclaration,
 } from 'typescript';
 
-import {OhPackType} from './TransformUtil';
+import { OhPackType } from './TransformUtil';
 
 export const stringPropsSet: Set<string> = new Set();
 /**

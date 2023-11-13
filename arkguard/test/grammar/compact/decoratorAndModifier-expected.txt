@@ -1,0 +1,1 @@
+function a(f: Function) { console.log(`Class name: ${f.name}`); } function b(f: any, g: string) { console.log(`Property name: ${g}`); } function c(f: any, g: string) { console.log(`Property name: ${g}`); }  @a class e {  @b @c private g: string;    @c @b public h: number;  @b async i(): Promise<any> { } } function d() { let f = 1; let g = 2; let h = 3; let i = 4; let j = 5; } 
