@@ -317,33 +317,33 @@ static void CompileLogical(compiler::ETSGen *etsg, const ir::BinaryExpression *e
     auto ttctx = compiler::TargetTypeContext(etsg, expr->OperationType());
     compiler::RegScope rs(etsg);
     auto lhs = etsg->AllocReg();
-    auto rhs = etsg->AllocReg();
+
     expr->Left()->Compile(etsg);
     etsg->ApplyConversionAndStoreAccumulator(expr->Left(), lhs, expr->OperationType());
 
     auto *end_label = etsg->AllocLabel();
 
-    auto left_false_label = etsg->AllocLabel();
+    auto return_left_label = etsg->AllocLabel();
     if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
-        etsg->ResolveConditionalResultIfFalse(expr->Left(), left_false_label);
-        etsg->BranchIfFalse(expr, left_false_label);
+        etsg->ResolveConditionalResultIfFalse(expr->Left(), return_left_label);
+        etsg->BranchIfFalse(expr, return_left_label);
 
         expr->Right()->Compile(etsg);
-        etsg->ApplyConversionAndStoreAccumulator(expr->Right(), rhs, expr->OperationType());
+        etsg->ApplyConversion(expr->Right(), expr->OperationType());
         etsg->Branch(expr, end_label);
 
-        etsg->SetLabel(expr, left_false_label);
+        etsg->SetLabel(expr, return_left_label);
         etsg->LoadAccumulator(expr, lhs);
     } else {
-        etsg->ResolveConditionalResultIfFalse(expr->Left(), left_false_label);
-        etsg->BranchIfFalse(expr, left_false_label);
+        etsg->ResolveConditionalResultIfTrue(expr->Left(), return_left_label);
+        etsg->BranchIfTrue(expr, return_left_label);
 
-        etsg->LoadAccumulator(expr, lhs);
+        expr->Right()->Compile(etsg);
+        etsg->ApplyConversion(expr->Right(), expr->OperationType());
         etsg->Branch(expr, end_label);
 
-        etsg->SetLabel(expr, left_false_label);
-        expr->Right()->Compile(etsg);
-        etsg->ApplyConversionAndStoreAccumulator(expr->Right(), rhs, expr->OperationType());
+        etsg->SetLabel(expr, return_left_label);
+        etsg->LoadAccumulator(expr, lhs);
     }
 
     etsg->SetLabel(expr, end_label);

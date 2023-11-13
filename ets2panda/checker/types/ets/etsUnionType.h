@@ -81,6 +81,16 @@ public:
 
     static Type *HandleUnionType(ETSUnionType *union_type);
 
+    std::tuple<bool, bool> ResolveConditionExpr() const override
+    {
+        for (auto tp : ConstituentTypes()) {
+            if (!tp->IsConditionalExprType()) {
+                return {true, false};
+            }
+        }
+        return {true, true};
+    }
+
 private:
     static bool EachTypeRelatedToSomeType(TypeRelation *relation, ETSUnionType *source, ETSUnionType *target);
     static bool TypeRelatedToSomeType(TypeRelation *relation, Type *source, ETSUnionType *target);

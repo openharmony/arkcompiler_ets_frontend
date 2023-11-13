@@ -126,6 +126,67 @@ Condition::Result Condition::CheckConstantExpr(ETSGen *etsg, const ir::Expressio
     return Result::UNKNOWN;
 }
 
+void Condition::CompileLogicalOrExpr(ETSGen *etsg, const ir::BinaryExpression *bin_expr, Label *false_label)
+{
+    auto ttctx = TargetTypeContext(etsg, bin_expr->OperationType());
+    RegScope rs(etsg);
+    VReg lhs = etsg->AllocReg();
+    VReg rhs = etsg->AllocReg();
+    auto *return_left_label = etsg->AllocLabel();
+    auto *return_right_true_label = etsg->AllocLabel();
+    auto *return_right_false_label = etsg->AllocLabel();
+
+    bin_expr->Left()->Compile(etsg);
+    etsg->ApplyConversionAndStoreAccumulator(bin_expr->Left(), lhs, bin_expr->OperationType());
+    etsg->ResolveConditionalResultIfTrue(bin_expr->Left(), return_left_label);
+    etsg->BranchIfTrue(bin_expr, return_left_label);
+
+    bin_expr->Right()->Compile(etsg);
+    etsg->ApplyConversionAndStoreAccumulator(bin_expr->Right(), rhs, bin_expr->OperationType());
+    etsg->ResolveConditionalResultIfFalse(bin_expr->Right(), return_right_false_label);
+    etsg->BranchIfFalse(bin_expr, return_right_false_label);
+    etsg->LoadAccumulator(bin_expr, rhs);
+    etsg->Branch(bin_expr, return_right_true_label);
+
+    etsg->SetLabel(bin_expr, return_right_false_label);
+    etsg->LoadAccumulator(bin_expr, rhs);
+    etsg->Branch(bin_expr, false_label);
+    etsg->SetLabel(bin_expr, return_left_label);
+    etsg->LoadAccumulator(bin_expr, lhs);
+    etsg->SetLabel(bin_expr, return_right_true_label);
+}
+
+void Condition::CompileLogicalAndExpr(ETSGen *etsg, const ir::BinaryExpression *bin_expr, Label *false_label)
+{
+    auto ttctx = TargetTypeContext(etsg, bin_expr->OperationType());
+    RegScope rs(etsg);
+    VReg lhs = etsg->AllocReg();
+    VReg rhs = etsg->AllocReg();
+    auto *return_left_label = etsg->AllocLabel();
+    auto *return_right_true_label = etsg->AllocLabel();
+    auto *return_right_false_label = etsg->AllocLabel();
+
+    bin_expr->Left()->Compile(etsg);
+    etsg->ApplyConversionAndStoreAccumulator(bin_expr->Left(), lhs, bin_expr->OperationType());
+    etsg->ResolveConditionalResultIfFalse(bin_expr->Left(), return_left_label);
+    etsg->BranchIfFalse(bin_expr, return_left_label);
+
+    bin_expr->Right()->Compile(etsg);
+    etsg->ApplyConversionAndStoreAccumulator(bin_expr->Right(), rhs, bin_expr->OperationType());
+    etsg->ResolveConditionalResultIfFalse(bin_expr->Right(), return_right_false_label);
+    etsg->BranchIfFalse(bin_expr, return_right_false_label);
+    etsg->LoadAccumulator(bin_expr, rhs);
+    etsg->Branch(bin_expr, return_right_true_label);
+
+    etsg->SetLabel(bin_expr, return_left_label);
+    etsg->LoadAccumulator(bin_expr, lhs);
+    etsg->Branch(bin_expr, false_label);
+    etsg->SetLabel(bin_expr, return_right_false_label);
+    etsg->LoadAccumulator(bin_expr, rhs);
+    etsg->Branch(bin_expr, false_label);
+    etsg->SetLabel(bin_expr, return_right_true_label);
+}
+
 bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *bin_expr, Label *false_label)
 {
     switch (bin_expr->OperatorType()) {
@@ -149,30 +210,11 @@ bool Condition::CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *bin_
             return true;
         }
         case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
-            bin_expr->Left()->Compile(etsg);
-            etsg->ApplyConversion(bin_expr->Left(), bin_expr->OperationType());
-            etsg->ResolveConditionalResultIfFalse(bin_expr->Left(), false_label);
-            etsg->BranchIfFalse(bin_expr, false_label);
-
-            bin_expr->Right()->Compile(etsg);
-            etsg->ApplyConversion(bin_expr->Right(), bin_expr->OperationType());
-            etsg->ResolveConditionalResultIfFalse(bin_expr->Right(), false_label);
-            etsg->BranchIfFalse(bin_expr, false_label);
+            CompileLogicalAndExpr(etsg, bin_expr, false_label);
             return true;
         }
         case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-            auto *end_label = etsg->AllocLabel();
-
-            bin_expr->Left()->Compile(etsg);
-            etsg->ApplyConversion(bin_expr->Left(), bin_expr->OperationType());
-            etsg->ResolveConditionalResultIfTrue(bin_expr->Left(), end_label);
-            etsg->BranchIfTrue(bin_expr, end_label);
-
-            bin_expr->Right()->Compile(etsg);
-            etsg->ApplyConversion(bin_expr->Right(), bin_expr->OperationType());
-            etsg->ResolveConditionalResultIfFalse(bin_expr->Right(), false_label);
-            etsg->BranchIfFalse(bin_expr, false_label);
-            etsg->SetLabel(bin_expr, end_label);
+            CompileLogicalOrExpr(etsg, bin_expr, false_label);
             return true;
         }
         default: {

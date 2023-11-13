@@ -67,7 +67,7 @@ export class StringBase64  {
         }
         return result.toString();
     }
-    n1 : int = 8192;
+    n1 : int = 4096;
     n2 : int = 16384;
     public run(): void {
         let str : String = "";

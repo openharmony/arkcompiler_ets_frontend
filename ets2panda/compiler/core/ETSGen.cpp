@@ -2160,6 +2160,7 @@ void ETSGen::LogicalNot(const ir::AstNode *node)
     ASSERT(GetAccumulatorType()->IsConditionalExprType());
     ResolveConditionalResultIfFalse<true, false>(node);
     Sa().Emit<Xori>(node, 1);
+    SetAccumulatorType(Checker()->GlobalETSBooleanType());
 }
 
 void ETSGen::Unary(const ir::AstNode *node, lexer::TokenType op)

@@ -138,6 +138,11 @@ public:
         from_int_method_ = method;
     }
 
+    std::tuple<bool, bool> ResolveConditionExpr() const override
+    {
+        return {true, !GetMembers().empty()};
+    }
+
 private:
     const ir::TSEnumDeclaration *decl_;
     const UType ordinal_;

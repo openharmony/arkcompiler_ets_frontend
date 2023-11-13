@@ -786,8 +786,13 @@ Type *ETSChecker::HandleBooleanLogicalOperatorsExtended(Type *left_type, Type *r
         IsNullLikeOrVoidExpression(expr->Right()) ? std::make_tuple(true, false) : right_type->ResolveConditionExpr();
 
     if (!resolve_left) {
-        // return the UNION type when it is implemented
-        return IsTypeIdenticalTo(left_type, right_type) ? left_type : GlobalETSBooleanType();
+        if (IsTypeIdenticalTo(left_type, right_type)) {
+            return left_type;
+        }
+        ArenaVector<checker::Type *> types(Allocator()->Adapter());
+        types.push_back(left_type);
+        types.push_back(right_type);
+        return CreateETSUnionType(std::move(types));
     }
 
     switch (expr->OperatorType()) {
@@ -1483,18 +1488,6 @@ Type *ETSChecker::ETSBuiltinTypeAsConditionalType(Type *object_type)
 {
     if ((object_type == nullptr) || !object_type->IsConditionalExprType()) {
         return nullptr;
-    }
-
-    if (object_type->IsETSObjectType()) {
-        if (!object_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
-            return object_type;
-        }
-        auto saved_result = Relation()->IsTrue();
-        Relation()->Result(false);
-
-        UnboxingConverter converter = UnboxingConverter(AsETSChecker(), Relation(), object_type, object_type);
-        Relation()->Result(saved_result);
-        return converter.Result();
     }
 
     return object_type;

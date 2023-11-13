@@ -512,11 +512,7 @@ public:
 
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
-        if (IsNullish() || IsETSStringType()) {
-            return {false, false};
-        }
-
-        return {true, true};
+        return {false, false};
     }
 
 protected:
