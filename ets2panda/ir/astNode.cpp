@@ -89,6 +89,27 @@ bool AstNode::IsAnyChild(const NodePredicate &cb) const
     return found;
 }
 
+void FindChildHelper(AstNode *&found, const NodePredicate &cb, AstNode *ast)
+{
+    if (found != nullptr) {
+        return;
+    }
+
+    if (cb(ast)) {
+        found = ast;
+        return;
+    }
+
+    ast->Iterate([&found, cb](AstNode *child) { FindChildHelper(found, cb, child); });
+}
+
+AstNode *AstNode::FindChild(const NodePredicate &cb) const
+{
+    AstNode *found = nullptr;
+    Iterate([&found, cb](AstNode *child) { FindChildHelper(found, cb, child); });
+    return found;
+}
+
 void AnnotatedAstNode::CloneTypeAnnotation(ArenaAllocator *const allocator)
 {
     if (auto *annotation = const_cast<TypeNode *>(TypeAnnotation()); annotation != nullptr) {

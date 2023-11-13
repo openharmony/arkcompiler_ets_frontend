@@ -418,6 +418,7 @@ public:
             ApplyConversion(node, target_type_);
         }
     }
+    void ApplyConversionCast(const ir::AstNode *node, const checker::Type *target_type);
     void ApplyConversion(const ir::AstNode *node, const checker::Type *target_type);
     void ApplyCast(const ir::AstNode *node, const checker::Type *target_type);
     void EmitUnboxingConversion(const ir::AstNode *node);

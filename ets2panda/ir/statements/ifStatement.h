@@ -47,6 +47,11 @@ public:
         return consequent_;
     }
 
+    Statement *Alternate()
+    {
+        return alternate_;
+    }
+
     const Statement *Alternate() const
     {
         return alternate_;

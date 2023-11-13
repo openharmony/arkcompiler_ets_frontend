@@ -15,7 +15,6 @@
 
 #include "ETSGen.h"
 
-#include "checker/ets/boxingConverter.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/classDefinition.h"
 #include "ir/statement.h"
@@ -40,6 +39,7 @@
 #include "checker/types/typeFlag.h"
 #include "checker/checker.h"
 #include "checker/ETSchecker.h"
+#include "checker/ets/boxingConverter.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/types.h"
 #include "parser/program/program.h"
@@ -867,48 +867,8 @@ bool ETSGen::TryLoadConstantExpression(const ir::Expression *node)
     return true;
 }
 
-// NOTE: vpukhov. lower (union_value) as (primitive_type) to be two as-nodes
-static void ApplyUnboxingUnionPrimitive(ETSGen *etsg, const ir::AstNode *node)
+void ETSGen::ApplyConversionCast(const ir::AstNode *node, const checker::Type *target_type)
 {
-    if (node->IsExpression() && node->Parent()->IsTSAsExpression()) {
-        auto const *from_type = node->AsExpression()->TsType();
-        auto const *to_type = node->Parent()->AsTSAsExpression()->TsType();
-        if (from_type->IsETSUnionType() && to_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-            etsg->EmitCheckedNarrowingReferenceConversion(
-                node, checker::BoxingConverter::ETSTypeFromSource(etsg->Checker(), to_type));
-        }
-    }
-}
-
-void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *target_type)
-{
-    auto ttctx = TargetTypeContext(this, target_type);
-
-    if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) {
-        EmitBoxingConversion(node);
-        const auto boxing_flags =
-            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG);
-        node->SetBoxingUnboxingFlags(
-            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ~boxing_flags));
-        return;
-    }
-
-    if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
-        if (GetAccumulatorType()->IsNullishOrNullLike()) {  // NOTE: vpukhov. should be a CTE
-            EmitNullishGuardian(node);
-        }
-        ApplyUnboxingUnionPrimitive(this, node);
-        EmitUnboxingConversion(node);
-        const auto unboxing_flags = static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() &
-                                                                         ir::BoxingUnboxingFlags::UNBOXING_FLAG);
-        node->SetBoxingUnboxingFlags(
-            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ~unboxing_flags));
-    }
-
-    if (target_type == nullptr) {
-        return;
-    }
-
     switch (checker::ETSChecker::TypeKind(target_type)) {
         case checker::TypeFlag::DOUBLE: {
             CastToDouble(node);
@@ -938,6 +898,42 @@ void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targe
             break;
         }
     }
+}
+
+void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *target_type)
+{
+    auto ttctx = TargetTypeContext(this, target_type);
+
+    if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) {
+        EmitBoxingConversion(node);
+        const auto boxing_flags =
+            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG);
+        node->SetBoxingUnboxingFlags(
+            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ~boxing_flags));
+        return;
+    }
+
+    if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
+        if (GetAccumulatorType()->IsNullishOrNullLike()) {  // NOTE: vpukhov. should be a CTE
+            EmitNullishGuardian(node);
+        }
+        EmitUnboxingConversion(node);
+        const auto unboxing_flags = static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() &
+                                                                         ir::BoxingUnboxingFlags::UNBOXING_FLAG);
+        node->SetBoxingUnboxingFlags(
+            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ~unboxing_flags));
+    }
+
+    if (target_type == nullptr) {
+        return;
+    }
+
+    if (target_type->IsETSUnionType()) {
+        SetAccumulatorType(target_type->AsETSUnionType()->GetLeastUpperBoundType());
+        return;
+    }
+
+    ApplyConversionCast(node, target_type);
 }
 
 void ETSGen::ApplyCast(const ir::AstNode *node, const checker::Type *target_type)
@@ -2423,6 +2419,10 @@ void ETSGen::LoadArrayElement(const ir::AstNode *node, VReg object_reg)
 {
     auto *element_type = GetVRegType(object_reg)->AsETSArrayType()->ElementType();
 
+    if (element_type->IsETSUnionType()) {
+        element_type = element_type->AsETSUnionType()->GetLeastUpperBoundType();
+    }
+
     switch (checker::ETSChecker::ETSType(element_type)) {
         case checker::TypeFlag::ETS_BOOLEAN:
         case checker::TypeFlag::BYTE: {
@@ -2473,6 +2473,9 @@ void ETSGen::LoadArrayElement(const ir::AstNode *node, VReg object_reg)
 
 void ETSGen::StoreArrayElement(const ir::AstNode *node, VReg object_reg, VReg index, const checker::Type *element_type)
 {
+    if (element_type->IsETSUnionType()) {
+        element_type = element_type->AsETSUnionType()->GetLeastUpperBoundType();
+    }
     switch (checker::ETSChecker::ETSType(element_type)) {
         case checker::TypeFlag::ETS_BOOLEAN:
         case checker::TypeFlag::BYTE: {

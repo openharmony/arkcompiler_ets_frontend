@@ -460,6 +460,7 @@ public:
     void TransformChildrenRecursively(const NodeTransformer &cb);
     void IterateRecursively(const NodeTraverser &cb) const;
     bool IsAnyChild(const NodePredicate &cb) const;
+    AstNode *FindChild(const NodePredicate &cb) const;
 
     std::string DumpJSON() const;
 

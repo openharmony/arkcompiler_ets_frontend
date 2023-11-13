@@ -469,7 +469,15 @@ MemberExpression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNo
     auto *const object = object_ != nullptr ? object_->Clone(allocator)->AsExpression() : nullptr;
     auto *const property = property_ != nullptr ? property_->Clone(allocator)->AsExpression() : nullptr;
 
-    if (auto *const clone = allocator->New<MemberExpression>(Tag {}, *this, object, property); clone != nullptr) {
+    if (auto *const clone =
+            allocator->New<MemberExpression>(object, property, kind_, computed_, MaybeOptionalExpression::IsOptional());
+        clone != nullptr) {
+        if (object != nullptr) {
+            object->SetParent(clone);
+        }
+        if (property != nullptr) {
+            property->SetParent(clone);
+        }
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
