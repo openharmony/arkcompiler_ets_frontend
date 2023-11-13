@@ -33,7 +33,7 @@ namespace panda::es2panda::compiler {
 
 static void CompileSourceBlock(PandaGen *pg, const ir::BlockStatement *block)
 {
-    bool hasReturn = false;
+    bool endReturn = false;
 
     const auto &statements = block->Statements();
     pg->SetFirstStmt(statements.empty() ? block : statements.front());
@@ -41,12 +41,12 @@ static void CompileSourceBlock(PandaGen *pg, const ir::BlockStatement *block)
     for (const auto *stmt : statements) {
         stmt->Compile(pg);
 
-        if (stmt->IsReturnStatement()) {
-            hasReturn = true;
+        if (stmt->IsReturnStatement() && (stmt == statements[statements.size() - 1])) {
+            endReturn = true;
         }
     }
 
-    if (hasReturn) {
+    if (endReturn) {
         return;
     }
 
