@@ -25,9 +25,35 @@ bool Type::IsETSNullType() const
     return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::NULL_TYPE);
 }
 
-bool Type::IsNullableType() const
+bool Type::IsETSUndefinedType() const
 {
-    return HasTypeFlag(TypeFlag::NULLABLE);
+    return IsETSObjectType() && AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNDEFINED_TYPE);
+}
+
+bool Type::IsETSNullLike() const
+{
+    // NOTE: vpukhov. should be true for 'null|undefined'
+    return IsETSUndefinedType() || IsETSNullType();
+}
+
+bool Type::IsNullish() const
+{
+    return HasTypeFlag(TypeFlag::NULLISH);
+}
+
+bool Type::IsNullishOrNullLike() const
+{
+    return IsNullish() || IsETSNullLike();
+}
+
+bool Type::ContainsNull() const
+{
+    return HasTypeFlag(TypeFlag::NULL_TYPE);
+}
+
+bool Type::ContainsUndefined() const
+{
+    return HasTypeFlag(TypeFlag::UNDEFINED);
 }
 
 bool Type::IsETSStringType() const

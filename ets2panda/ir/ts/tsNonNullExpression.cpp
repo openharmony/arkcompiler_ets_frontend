@@ -43,8 +43,12 @@ void TSNonNullExpression::Compile(compiler::ETSGen *etsg) const
 
     expr_->Compile(etsg);
 
-    if (etsg->GetAccumulatorType()->IsETSNullType()) {
-        etsg->EmitNullPointerException(this);
+    if (!etsg->GetAccumulatorType()->IsNullishOrNullLike()) {
+        return;
+    }
+
+    if (etsg->GetAccumulatorType()->IsETSNullLike()) {
+        etsg->EmitNullishException(this);
         return;
     }
 
@@ -54,11 +58,12 @@ void TSNonNullExpression::Compile(compiler::ETSGen *etsg) const
 
     auto end_label = etsg->AllocLabel();
 
-    etsg->BranchIfNotNull(this, end_label);
-    etsg->EmitNullPointerException(this);
+    etsg->BranchIfNotNullish(this, end_label);
+    etsg->EmitNullishException(this);
 
     etsg->SetLabel(this, end_label);
     etsg->LoadAccumulator(this, arg);
+    etsg->ConvertToNonNullish(this);
 }
 
 checker::Type *TSNonNullExpression::Check([[maybe_unused]] checker::TSChecker *checker)
@@ -70,16 +75,12 @@ checker::Type *TSNonNullExpression::Check(checker::ETSChecker *checker)
 {
     auto expr_type = expr_->Check(checker);
 
-    if (!expr_type->IsNullableType()) {
+    if (!expr_type->IsNullish()) {
         checker->ThrowTypeError("Bad operand type, the operand of the non-null expression must be a nullable type",
                                 expr_->Start());
     }
 
-    auto non_null_type =
-        expr_type->Instantiate(checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder());
-    non_null_type->RemoveTypeFlag(checker::TypeFlag::NULLABLE);
-
-    SetTsType(non_null_type);
+    SetTsType(expr_type->IsNullish() ? checker->GetNonNullishType(expr_type) : expr_type);
     return TsType();
 }
 }  // namespace panda::es2panda::ir

@@ -114,7 +114,7 @@ Condition::Result Condition::CheckConstantExpr(ETSGen *etsg, const ir::Expressio
         return Result::UNKNOWN;
     }
 
-    if (etsg->Checker()->IsNullOrVoidExpression(resulting_expression)) {
+    if (etsg->Checker()->IsNullLikeOrVoidExpression(resulting_expression)) {
         return Result::CONST_FALSE;
     }
 

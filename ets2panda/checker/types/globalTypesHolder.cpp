@@ -93,7 +93,13 @@ GlobalTypesHolder::GlobalTypesHolder(ArenaAllocator *allocator) : builtin_name_m
     auto *global_null_type = allocator->New<ETSObjectType>(allocator);
     global_null_type->AsETSObjectType()->AddObjectFlag(ETSObjectFlags::NULL_TYPE);
     global_null_type->AsETSObjectType()->SetName("null");
+    global_null_type->AsETSObjectType()->SetAssemblerName("null has no symbol!");
     global_types_[static_cast<size_t>(GlobalTypeId::ETS_NULL)] = global_null_type;
+    auto *global_undefined_type = allocator->New<ETSObjectType>(allocator);
+    global_undefined_type->AsETSObjectType()->AddObjectFlag(ETSObjectFlags::UNDEFINED_TYPE);
+    global_undefined_type->AsETSObjectType()->SetName("undefined");
+    global_undefined_type->AsETSObjectType()->SetAssemblerName("undefined has no symbol!");
+    global_types_[static_cast<size_t>(GlobalTypeId::ETS_UNDEFINED)] = global_undefined_type;
     global_types_[static_cast<size_t>(GlobalTypeId::ETS_WILDCARD)] = allocator->New<WildcardType>();
 
     builtin_name_mappings_.emplace("Boolean", GlobalTypeId::ETS_BOOLEAN_BUILTIN);
@@ -333,6 +339,11 @@ Type *GlobalTypesHolder::GlobalETSObjectType()
 Type *GlobalTypesHolder::GlobalETSNullType()
 {
     return global_types_.at(static_cast<size_t>(GlobalTypeId::ETS_NULL));
+}
+
+Type *GlobalTypesHolder::GlobalETSUndefinedType()
+{
+    return global_types_.at(static_cast<size_t>(GlobalTypeId::ETS_UNDEFINED));
 }
 
 Type *GlobalTypesHolder::GlobalWildcardType()

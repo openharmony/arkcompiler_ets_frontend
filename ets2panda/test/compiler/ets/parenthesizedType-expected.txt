@@ -358,38 +358,13 @@
                             "type": "Identifier",
                             "name": "c",
                             "typeAnnotation": {
-                              "type": "ETSUnionType",
-                              "types": [
-                                {
-                                  "type": "ETSTypeReference",
-                                  "part": {
-                                    "type": "ETSTypeReferencePart",
-                                    "name": {
-                                      "type": "Identifier",
-                                      "name": "Object",
-                                      "decorators": [],
-                                      "loc": {
-                                        "start": {
-                                          "line": 19,
-                                          "column": 12
-                                        },
-                                        "end": {
-                                          "line": 19,
-                                          "column": 18
-                                        }
-                                      }
-                                    },
-                                    "loc": {
-                                      "start": {
-                                        "line": 19,
-                                        "column": 12
-                                      },
-                                      "end": {
-                                        "line": 19,
-                                        "column": 20
-                                      }
-                                    }
-                                  },
+                              "type": "ETSTypeReference",
+                              "part": {
+                                "type": "ETSTypeReferencePart",
+                                "name": {
+                                  "type": "Identifier",
+                                  "name": "Object",
+                                  "decorators": [],
                                   "loc": {
                                     "start": {
                                       "line": 19,
@@ -397,11 +372,21 @@
                                     },
                                     "end": {
                                       "line": 19,
-                                      "column": 20
+                                      "column": 18
                                     }
                                   }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 19,
+                                    "column": 12
+                                  },
+                                  "end": {
+                                    "line": 19,
+                                    "column": 20
+                                  }
                                 }
-                              ],
+                              },
                               "loc": {
                                 "start": {
                                   "line": 19,

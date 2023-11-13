@@ -25,9 +25,9 @@ function main():void{
     assert foo5(new Int(5),new Int(10)) == 45;
 
 
-    assert foo6() == null;
-    assert foo7() == null;
-    assert foo8() == null;
+    assert foo6() == undefined;
+    assert foo7() == undefined;
+    assert foo8() == undefined;
 
     assert foo9() == 0;
     assert foo9(new Int(5)) == -1;
@@ -76,23 +76,23 @@ function foo5(a : Int = 10, b : Int = 20, c : Int = 30) : Int {
     return a + b + c;
 }
 
-function foo6(a? : Int) : Int|null {
+function foo6(a? : Int) : Int|undefined {
     return a;
 }
 
-function foo7(a? : string) : string|null {
+function foo7(a? : string) : string|undefined {
     return a;
 }
 
-function foo8(a? : Boolean) : Boolean|null {
+function foo8(a? : Boolean) : Boolean|undefined {
     return a;
 }
 
 function foo9(a? : Int, b? : Int) : Int {
-    if(a == null && b == null){
+    if(a == undefined && b == undefined){
         return 0;
     }
-    if(b == null){
+    if(b == undefined){
         return -1;
     }
     return a! + b!;
@@ -100,10 +100,10 @@ function foo9(a? : Int, b? : Int) : Int {
 
 function foo10(a? : Int, b? : Int, c? : Int) : Int {
     assert a! == 5;
-    if(b == null && c == null){
+    if(b == undefined && c == undefined){
         return 0;
     }
-    if(c == null){
+    if(c == undefined){
         return -1;
     }
 
@@ -111,7 +111,7 @@ function foo10(a? : Int, b? : Int, c? : Int) : Int {
 }
 
 function foo11(a : Int = 5, b? : Int) : Int {
-    if(b == null){
+    if(b == undefined){
         return 0;
     }
     return a + b!;
@@ -120,7 +120,7 @@ function foo11(a : Int = 5, b? : Int) : Int {
 function foo12(a? : Int, b : Int = 5, c? : Int) : Int {
     assert b == 5;
 
-    if(a == null && c == null){
+    if(a == undefined && c == undefined){
         return 0;
     }
 

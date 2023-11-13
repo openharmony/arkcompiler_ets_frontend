@@ -25,6 +25,12 @@ void ETSStringType::Identical(TypeRelation *relation, Type *other)
     }
 }
 
+bool ETSStringType::AssignmentSource([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *target)
+{
+    relation->Result(target->IsETSStringType());
+    return relation->IsTrue();
+}
+
 void ETSStringType::AssignmentTarget([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] Type *source)
 {
     if (source->IsETSStringType()) {

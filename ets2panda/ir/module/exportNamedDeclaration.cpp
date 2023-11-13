@@ -65,8 +65,8 @@ void ExportNamedDeclaration::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ExportNamedDeclaration"},
                  {"decorators", AstDumper::Optional(decorators_)},
-                 {"declaration", AstDumper::Nullable(decl_)},
-                 {"source", AstDumper::Nullable(source_)},
+                 {"declaration", AstDumper::Nullish(decl_)},
+                 {"source", AstDumper::Nullish(source_)},
                  {"specifiers", specifiers_}});
 }
 

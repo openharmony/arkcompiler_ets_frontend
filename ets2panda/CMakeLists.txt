@@ -182,6 +182,7 @@ set(ES2PANDA_LIB_SRC
   ir/expressions/literals/numberLiteral.cpp
   ir/expressions/literals/regExpLiteral.cpp
   ir/expressions/literals/stringLiteral.cpp
+  ir/expressions/literals/undefinedLiteral.cpp
   ir/expressions/memberExpression.cpp
   ir/expressions/newExpression.cpp
   ir/expressions/objectExpression.cpp

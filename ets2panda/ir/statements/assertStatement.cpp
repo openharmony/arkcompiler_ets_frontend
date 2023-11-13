@@ -45,7 +45,7 @@ void AssertStatement::Iterate(const NodeTraverser &cb) const
 
 void AssertStatement::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "AssertStatement"}, {"test", test_}, {"second", AstDumper::Nullable(second_)}});
+    dumper->Add({{"type", "AssertStatement"}, {"test", test_}, {"second", AstDumper::Nullish(second_)}});
 }
 
 void AssertStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
@@ -81,12 +81,16 @@ void AssertStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
         return;
     }
 
-    compiler::Label *end_label = etsg->AllocLabel();
+    compiler::Label *true_label = etsg->AllocLabel();
+    compiler::Label *false_label = etsg->AllocLabel();
 
-    test_->Compile(etsg);
-    etsg->BranchIfTrue(this, end_label);
+    compiler::Condition::Compile(etsg, test_, false_label);
+    etsg->JumpTo(this, true_label);
+
+    etsg->SetLabel(this, false_label);
     ThrowError(etsg);
-    etsg->SetLabel(this, end_label);
+
+    etsg->SetLabel(this, true_label);
 }
 
 checker::Type *AssertStatement::Check([[maybe_unused]] checker::TSChecker *checker)

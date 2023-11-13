@@ -53,7 +53,7 @@ void VariableDeclarator::Iterate(const NodeTraverser &cb) const
 
 void VariableDeclarator::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "VariableDeclarator"}, {"id", id_}, {"init", AstDumper::Nullable(init_)}});
+    dumper->Add({{"type", "VariableDeclarator"}, {"id", id_}, {"init", AstDumper::Nullish(init_)}});
 }
 
 void VariableDeclarator::Compile([[maybe_unused]] compiler::PandaGen *pg) const
@@ -83,6 +83,7 @@ void VariableDeclarator::Compile(compiler::ETSGen *etsg) const
     if (id_->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::BOXED)) {
         etsg->EmitLocalBoxCtor(id_);
         etsg->StoreAccumulator(this, lref.Variable()->AsLocalVariable()->Vreg());
+        etsg->SetAccumulatorType(lref.Variable()->TsType());
     }
 
     if (init_ != nullptr) {

@@ -43,7 +43,7 @@ void SwitchCaseStatement::Iterate(const NodeTraverser &cb) const
 
 void SwitchCaseStatement::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "SwitchCase"}, {"test", AstDumper::Nullable(test_)}, {"consequent", consequent_}});
+    dumper->Add({{"type", "SwitchCase"}, {"test", AstDumper::Nullish(test_)}, {"consequent", consequent_}});
 }
 
 void SwitchCaseStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}

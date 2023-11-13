@@ -67,6 +67,9 @@ void ConditionalExpression::Compile(compiler::ETSGen *etsg) const
     auto *end_label = etsg->AllocLabel();
 
     compiler::Condition::Compile(etsg, Test(), false_label);
+
+    auto ttctx = compiler::TargetTypeContext(etsg, TsType());
+
     Consequent()->Compile(etsg);
     etsg->ApplyConversion(Consequent());
     etsg->Branch(this, end_label);
@@ -74,6 +77,7 @@ void ConditionalExpression::Compile(compiler::ETSGen *etsg) const
     Alternate()->Compile(etsg);
     etsg->ApplyConversion(Alternate());
     etsg->SetLabel(this, end_label);
+    etsg->SetAccumulatorType(TsType());
 }
 
 checker::Type *ConditionalExpression::Check(checker::TSChecker *checker)

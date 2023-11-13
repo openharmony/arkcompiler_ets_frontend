@@ -86,16 +86,16 @@ bool ETSUnionType::AssignmentSource(TypeRelation *relation, Type *target)
 
 void ETSUnionType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
-    // For an unsorted constituent_types_, a less suitable type may first come across than it could be
-    // if the entire array of constituent types was analyzed.
+    auto *const ref_source = source->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)
+                                 ? relation->GetChecker()->AsETSChecker()->PrimitiveTypeAsETSBuiltinType(source)
+                                 : source;
+
     for (auto *it : constituent_types_) {
-        if (!source->IsETSObjectType() && (source->HasTypeFlag(it->TypeFlags()) || it == source)) {
-            relation->IsAssignableTo(source, it);
-            return;
-        }
-    }
-    for (auto *it : constituent_types_) {
-        if (relation->IsAssignableTo(source, it)) {
+        if (relation->IsAssignableTo(ref_source, it)) {
+            if (ref_source != source) {
+                relation->IsAssignableTo(source, it);
+                ASSERT(relation->IsTrue());
+            }
             return;
         }
     }
@@ -115,7 +115,9 @@ Type *ETSUnionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relatio
     ArenaVector<Type *> copied_constituents(constituent_types_.size(), allocator->Adapter());
 
     for (auto *it : constituent_types_) {
-        copied_constituents.push_back(it->Instantiate(allocator, relation, global_types));
+        copied_constituents.push_back(it->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)
+                                          ? relation->GetChecker()->AsETSChecker()->PrimitiveTypeAsETSBuiltinType(it)
+                                          : it->Instantiate(allocator, relation, global_types));
     }
 
     if (copied_constituents.size() == 1) {
@@ -130,18 +132,20 @@ Type *ETSUnionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relatio
 
 void ETSUnionType::Cast(TypeRelation *relation, Type *target)
 {
-    bool is_cast_to_obj = target->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT);
+    auto *const ref_target = target->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)
+                                 ? relation->GetChecker()->AsETSChecker()->PrimitiveTypeAsETSBuiltinType(target)
+                                 : target;
+
     for (auto *source : constituent_types_) {
-        relation->IsCastableTo(source, target);
-        if (relation->IsTrue()) {
-            if (is_cast_to_obj && source->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT)) {
-                GetLeastUpperBoundType(relation->GetChecker()->AsETSChecker())->Cast(relation, target);
-                return;
-            }
-            if (!is_cast_to_obj) {
+        if (relation->IsCastableTo(source, ref_target)) {
+            GetLeastUpperBoundType(relation->GetChecker()->AsETSChecker())->Cast(relation, ref_target);
+            ASSERT(relation->IsTrue());
+            if (ref_target != target) {
                 source->Cast(relation, target);
-                return;
+                ASSERT(relation->IsTrue());
+                ASSERT(relation->GetNode()->GetBoxingUnboxingFlags() != ir::BoxingUnboxingFlags::NONE);
             }
+            return;
         }
     }
 
@@ -235,6 +239,11 @@ Type *ETSUnionType::FindTypeIsCastableToSomeType(ir::Expression *node, TypeRelat
         return *it;
     }
     return nullptr;
+}
+
+void ETSUnionType::ToAssemblerType(std::stringstream &ss) const
+{
+    ss << compiler::Signatures::BUILTIN_OBJECT;
 }
 
 }  // namespace panda::es2panda::checker

@@ -66,6 +66,7 @@
     _(NAMED_TYPE, NamedType)                                                              \
     _(NEW_EXPRESSION, NewExpression)                                                      \
     _(NULL_LITERAL, NullLiteral)                                                          \
+    _(UNDEFINED_LITERAL, UndefinedLiteral)                                                \
     _(NUMBER_LITERAL, NumberLiteral)                                                      \
     _(OMITTED_EXPRESSION, OmittedExpression)                                              \
     _(PREFIX_ASSERTION_EXPRESSION, PrefixAssertionExpression)                             \

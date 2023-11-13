@@ -317,6 +317,10 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqual(
         return {ts_type, left_type};
     }
 
+    if (left_type->IsETSDynamicType() || right_type->IsETSDynamicType()) {
+        return CheckBinaryOperatorEqualDynamic(left, right, pos);
+    }
+
     if (IsReferenceType(left_type) && IsReferenceType(right_type)) {
         ts_type = GlobalETSBooleanType();
         auto *op_type = GlobalETSObjectType();
@@ -340,6 +344,30 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqual(
         return {ts_type, ts_type};
     }
     return {nullptr, nullptr};
+}
+
+std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqualDynamic(ir::Expression *left, ir::Expression *right,
+                                                                       lexer::SourcePosition pos)
+{
+    // NOTE: vpukhov. enforce intrinsic call in any case?
+    // canonicalize
+    auto *const dyn_exp = left->TsType()->IsETSDynamicType() ? left : right;
+    auto *const other_exp = dyn_exp == left ? right : left;
+
+    if (other_exp->TsType()->IsETSDynamicType()) {
+        return {GlobalETSBooleanType(), GlobalBuiltinJSValueType()};
+    }
+    if (dyn_exp->TsType()->AsETSDynamicType()->IsConvertibleTo(other_exp->TsType())) {
+        // NOTE: vpukhov. boxing flags are not set in dynamic values
+        return {GlobalETSBooleanType(), other_exp->TsType()};
+    }
+    if (other_exp->TsType()->IsETSObjectType()) {
+        // have to prevent casting dyn_exp via ApplyCast without nullish flag
+        auto *nullish_obj = CreateNullishType(GlobalETSObjectType(), checker::TypeFlag::NULLISH, Allocator(),
+                                              Relation(), GetGlobalTypesHolder());
+        return {GlobalETSBooleanType(), nullish_obj};
+    }
+    ThrowTypeError("Unimplemented case in dynamic type comparison.", pos);
 }
 
 std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(
@@ -405,14 +433,13 @@ Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *right, le
         ThrowTypeError("Left-hand side expression must be a reference type.", pos);
     }
 
-    checker::Type *non_nullable_left_type = left_type;
+    checker::Type *non_nullish_left_type = left_type;
 
-    if (left_type->IsNullableType()) {
-        non_nullable_left_type = left_type->Instantiate(Allocator(), Relation(), GetGlobalTypesHolder());
-        non_nullable_left_type->RemoveTypeFlag(TypeFlag::NULLABLE);
+    if (left_type->IsNullish()) {
+        non_nullish_left_type = GetNonNullishType(left_type);
     }
 
-    // NOTE: check convertibility and use numeric promotion
+    // NOTE: vpukhov. check convertibility and use numeric promotion
 
     if (right_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
         Relation()->SetNode(right);
@@ -421,10 +448,10 @@ Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *right, le
             ThrowTypeError("Invalid right-hand side expression", pos);
         }
         right->AddBoxingUnboxingFlag(GetBoxingFlag(boxed_right_type));
-        return FindLeastUpperBound(non_nullable_left_type, boxed_right_type);
+        return FindLeastUpperBound(non_nullish_left_type, boxed_right_type);
     }
 
-    return FindLeastUpperBound(non_nullable_left_type, right_type);
+    return FindLeastUpperBound(non_nullish_left_type, right_type);
 }
 
 // NOLINTNEXTLINE(readability-function-size)

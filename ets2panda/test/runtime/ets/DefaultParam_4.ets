@@ -27,9 +27,9 @@ function main():void{
     assert boo.foo5(new Int(5),new Int(10)) == 45;
 
 
-    assert boo.foo6() == null;
-    assert boo.foo7() == null;
-    assert boo.foo8() == null;
+    assert boo.foo6() == undefined;
+    assert boo.foo7() == undefined;
+    assert boo.foo8() == undefined;
 
     assert boo.foo9() == 0;
     assert boo.foo9(new Int(5)) == -1;
@@ -79,23 +79,23 @@ class bar {
         return a + b + c;
     }
 
-    foo6(a? : Int) : Int|null {
+    foo6(a? : Int) : Int|undefined {
         return a;
     }
 
-    foo7(a? : string) : string|null {
+    foo7(a? : string) : string|undefined {
         return a;
     }
 
-    foo8(a? : Boolean) : Boolean|null {
+    foo8(a? : Boolean) : Boolean|undefined {
         return a;
     }
 
     foo9(a? : Int, b? : Int) : Int {
-        if(a == null && b == null){
+        if(a == undefined && b == undefined){
             return 0;
         }
-        if(b == null){
+        if(b == undefined){
             return -1;
         }
         return a! + b!;
@@ -103,10 +103,10 @@ class bar {
 
     foo10(a? : Int, b? : Int, c? : Int) : Int {
         assert a! == 5;
-        if(b == null && c == null){
+        if(b == undefined && c == undefined){
             return 0;
         }
-        if(c == null){
+        if(c == undefined){
             return -1;
         }
 
@@ -114,7 +114,7 @@ class bar {
     }
 
     foo11(a : Int = 5, b? : Int) : Int {
-        if(b == null){
+        if(b == undefined){
             return 0;
         }
         return a + b!;
@@ -123,7 +123,7 @@ class bar {
     foo12(a? : Int, b : Int = 5, c? : Int) : Int {
         assert b == 5;
 
-        if(a == null && c == null){
+        if(a == undefined && c == undefined){
             return 0;
         }
 

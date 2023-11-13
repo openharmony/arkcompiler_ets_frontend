@@ -206,6 +206,11 @@ Type *ETSChecker::GlobalETSNullType() const
     return GetGlobalTypesHolder()->GlobalETSNullType();
 }
 
+Type *ETSChecker::GlobalETSUndefinedType() const
+{
+    return GetGlobalTypesHolder()->GlobalETSUndefinedType();
+}
+
 Type *ETSChecker::GlobalETSStringLiteralType() const
 {
     return GetGlobalTypesHolder()->GlobalETSStringLiteralType();

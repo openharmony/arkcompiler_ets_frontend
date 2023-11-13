@@ -46,6 +46,7 @@
 #include "ir/expressions/literals/regExpLiteral.h"
 #include "ir/expressions/literals/charLiteral.h"
 #include "ir/expressions/literals/stringLiteral.h"
+#include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/newExpression.h"
 #include "ir/expressions/objectExpression.h"
@@ -884,6 +885,16 @@ ir::StringLiteral *ParserImpl::ParseStringLiteral()
     return string_node;
 }
 
+ir::UndefinedLiteral *ParserImpl::ParseUndefinedLiteral()
+{
+    ASSERT(lexer_->GetToken().Type() == lexer::TokenType::KEYW_UNDEFINED);
+    auto *undefined_node = AllocNode<ir::UndefinedLiteral>();
+    undefined_node->SetRange(lexer_->GetToken().Loc());
+
+    lexer_->NextToken();
+    return undefined_node;
+}
+
 ir::ThisExpression *ParserImpl::ParseThisExpression()
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::KEYW_THIS);
@@ -957,6 +968,9 @@ ir::Expression *ParserImpl::ParsePrimaryExpression(ExpressionParseFlags flags)
         }
         case lexer::TokenType::LITERAL_NULL: {
             return ParseNullLiteral();
+        }
+        case lexer::TokenType::KEYW_UNDEFINED: {
+            return ParseUndefinedLiteral();
         }
         case lexer::TokenType::LITERAL_NUMBER: {
             return ParseNumberLiteral();

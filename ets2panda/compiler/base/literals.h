@@ -44,6 +44,7 @@ enum class LiteralTag {
     DOUBLE,
     STRING,
     NULL_VALUE,
+    UNDEFINED_VALUE,
     ACCESSOR,
     METHOD,
     GENERATOR_METHOD,
@@ -68,6 +69,11 @@ public:
     static Literal NullLiteral()
     {
         return Literal(LiteralTag::NULL_VALUE);
+    }
+
+    static Literal UndefinedLiteral()
+    {
+        return Literal(LiteralTag::UNDEFINED_VALUE);
     }
 
     static Literal AccessorLiteral()

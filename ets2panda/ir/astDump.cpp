@@ -170,6 +170,10 @@ void AstDumper::SerializeConstant(Property::Constant constant)
             ss_ << "null";
             break;
         }
+        case Property::Constant::PROP_UNDEFINED: {
+            ss_ << "undefined";
+            break;
+        }
         case Property::Constant::EMPTY_ARRAY: {
             ss_ << "[]";
             break;

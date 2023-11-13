@@ -38,7 +38,7 @@ void BreakStatement::Iterate(const NodeTraverser &cb) const
 
 void BreakStatement::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "BreakStatement"}, {"label", AstDumper::Nullable(ident_)}});
+    dumper->Add({{"type", "BreakStatement"}, {"label", AstDumper::Nullish(ident_)}});
 }
 
 template <typename CodeGen>

@@ -61,6 +61,7 @@ void TSAsExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
 
 void TSAsExpression::Compile(compiler::ETSGen *etsg) const
 {
+    auto ttctx = compiler::TargetTypeContext(etsg, nullptr);
     if (!etsg->TryLoadConstantExpression(expression_)) {
         expression_->Compile(etsg);
     }
@@ -72,8 +73,7 @@ void TSAsExpression::Compile(compiler::ETSGen *etsg) const
         target_type = target_type->AsETSUnionType()->FindTypeIsCastableToThis(expression_, etsg->Checker()->Relation(),
                                                                               expression_->TsType());
     }
-    const auto target_type_kind = checker::ETSChecker::TypeKind(target_type);
-    switch (target_type_kind) {
+    switch (checker::ETSChecker::TypeKind(target_type)) {
         case checker::TypeFlag::ETS_BOOLEAN: {
             etsg->CastToBoolean(this);
             break;

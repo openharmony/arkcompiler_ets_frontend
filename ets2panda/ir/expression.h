@@ -145,6 +145,48 @@ protected:
 
     void CloneTypeAnnotation(ArenaAllocator *allocator);
 };
+
+class MaybeOptionalExpression : public Expression {
+public:
+    MaybeOptionalExpression() = delete;
+    ~MaybeOptionalExpression() override = default;
+
+    NO_COPY_OPERATOR(MaybeOptionalExpression);
+    NO_MOVE_SEMANTIC(MaybeOptionalExpression);
+
+    [[nodiscard]] bool IsOptional() const noexcept
+    {
+        return optional_;
+    }
+
+    void SetOptionalType(checker::Type *optional_type)
+    {
+        optional_type_ = optional_type;
+    }
+
+    [[nodiscard]] const checker::Type *OptionalType() const noexcept
+    {
+        return optional_type_ != nullptr ? optional_type_ : TsType();
+    }
+
+protected:
+    explicit MaybeOptionalExpression(AstNodeType type, bool optional) : Expression(type), optional_(optional) {}
+    explicit MaybeOptionalExpression(AstNodeType type, ModifierFlags flags, bool optional)
+        : Expression(type, flags), optional_(optional)
+    {
+    }
+
+    MaybeOptionalExpression(MaybeOptionalExpression const &other) : Expression(static_cast<Expression const &>(other))
+    {
+        optional_type_ = other.optional_type_;
+        optional_ = other.optional_;
+    }
+
+private:
+    checker::Type *optional_type_ {};
+    bool optional_;
+};
+
 }  // namespace panda::es2panda::ir
 
 #endif /* ES2PANDA_IR_EXPRESSION_H */

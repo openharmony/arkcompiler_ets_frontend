@@ -297,9 +297,14 @@ void ETSObjectType::ToString(std::stringstream &ss) const
         ss << compiler::Signatures::GENERIC_END;
     }
 
-    if (IsNullableType() && this != GetConstOriginalBaseType() && !name_.Is("NullType") && !name_.Is("null") &&
+    if (IsNullish() && this != GetConstOriginalBaseType() && !name_.Is("NullType") && !IsETSNullLike() &&
         !name_.Empty()) {
-        ss << "|null";
+        if (ContainsNull()) {
+            ss << "|null";
+        }
+        if (ContainsUndefined()) {
+            ss << "|undefined";
+        }
     }
 }
 
@@ -327,7 +332,7 @@ void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other
 
     auto const other_type_arguments = other->AsETSObjectType()->TypeArguments();
 
-    if (HasTypeFlag(TypeFlag::GENERIC) || IsNullableType()) {
+    if (HasTypeFlag(TypeFlag::GENERIC) || IsNullish()) {
         if (!HasTypeFlag(TypeFlag::GENERIC)) {
             relation->Result(true);
             return;
@@ -379,7 +384,7 @@ void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other
 
 void ETSObjectType::Identical(TypeRelation *relation, Type *other)
 {
-    if (IsNullableType() != other->IsNullableType()) {
+    if ((ContainsNull() != other->ContainsNull()) || (ContainsUndefined() != other->ContainsUndefined())) {
         return;
     }
     IdenticalUptoNullability(relation, other);
@@ -400,7 +405,8 @@ bool ETSObjectType::CheckIdenticalFlags(ETSObjectFlags target) const
 
 bool ETSObjectType::AssignmentSource(TypeRelation *const relation, Type *const target)
 {
-    relation->Result(IsETSNullType() && target->IsNullableType());
+    relation->Result((IsETSNullType() && target->ContainsNull()) ||
+                     (IsETSUndefinedType() && target->ContainsUndefined()));
 
     return relation->IsTrue();
 }
@@ -408,11 +414,15 @@ bool ETSObjectType::AssignmentSource(TypeRelation *const relation, Type *const t
 void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
 {
     if (source->IsETSNullType()) {
-        relation->Result(IsNullableType());
+        relation->Result(ContainsNull());
+        return;
+    }
+    if (source->IsETSUndefinedType()) {
+        relation->Result(ContainsUndefined());
         return;
     }
 
-    if (source->IsNullableType() && !IsNullableType()) {
+    if ((source->ContainsNull() && !ContainsNull()) || (source->ContainsUndefined() && !ContainsUndefined())) {
         return;
     }
 
@@ -429,7 +439,7 @@ void ETSObjectType::AssignmentTarget(TypeRelation *const relation, Type *source)
 
 bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const target)
 {
-    if (this->IsNullableType()) {
+    if (this->IsNullish()) {
         return false;
     }
 
@@ -569,7 +579,7 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
         return;
     }
 
-    if (this->HasObjectFlag(ETSObjectFlags::NULL_TYPE)) {
+    if (this->IsETSNullLike()) {
         if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
             relation->GetNode()->SetTsType(target);
             relation->Result(true);
@@ -627,10 +637,9 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
         return;
     }
 
-    if (!IsNullableType() && source->IsNullableType()) {
+    if ((!ContainsNull() && source->ContainsNull()) || (!ContainsUndefined() && source->ContainsUndefined())) {
         return;
     }
-
     // All classes and interfaces are subtypes of Object
     if (base == ets_checker->GlobalETSObjectType()) {
         relation->Result(true);
@@ -733,7 +742,7 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     std::lock_guard guard {*checker->Mutex()};
     auto *const base = GetOriginalBaseType();
 
-    if (!relation->TypeInstantiationPossible(base) || IsETSNullType()) {
+    if (!relation->TypeInstantiationPossible(base) || IsETSNullLike()) {
         return this;
     }
     relation->IncreaseTypeRecursionCount(base);
@@ -801,15 +810,15 @@ Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *subs
         /* Any other flags we need to copy? */
 
         /* The check this != base is a kludge to distinguish bare type parameter T
-           with a nullable constraint (like the default Object|null) from explicitly nullable
-           T|null
+           with a nullish constraint (like the default Object?) from explicitly nullish T?
         */
-        if (IsNullableType() && this != base && !repl_type->IsNullableType()) {
-            // this type is explicitly marked as nullable
+        if (this != base && ((ContainsNull() && !repl_type->ContainsNull()) ||
+                             (ContainsUndefined() && !repl_type->ContainsUndefined()))) {
+            // this type is explicitly marked as nullish
             ASSERT(repl_type->IsETSObjectType() || repl_type->IsETSArrayType() || repl_type->IsETSFunctionType());
-            auto *new_repl_type =
-                repl_type->Instantiate(checker->Allocator(), relation, checker->GetGlobalTypesHolder());
-            new_repl_type->AddTypeFlag(TypeFlag::NULLABLE);
+            auto nullish_flags = TypeFlag(TypeFlags() & TypeFlag::NULLISH);
+            auto *new_repl_type = checker->CreateNullishType(repl_type, nullish_flags, checker->Allocator(), relation,
+                                                             checker->GetGlobalTypesHolder());
             repl_type = new_repl_type;
         }
         return repl_type;
@@ -836,7 +845,7 @@ Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *subs
         return inst;
     }
 
-    if ((!relation->TypeInstantiationPossible(base)) || IsETSNullType()) {
+    if (!relation->TypeInstantiationPossible(base) || IsETSNullLike()) {
         return this;
     }
     relation->IncreaseTypeRecursionCount(base);

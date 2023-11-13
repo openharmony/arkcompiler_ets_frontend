@@ -449,22 +449,7 @@
                       "type": "Identifier",
                       "name": "a",
                       "typeAnnotation": {
-                        "type": "ETSUnionType",
-                        "types": [
-                          {
-                            "type": "ETSPrimitiveType",
-                            "loc": {
-                              "start": {
-                                "line": 21,
-                                "column": 18
-                              },
-                              "end": {
-                                "line": 21,
-                                "column": 21
-                              }
-                            }
-                          }
-                        ],
+                        "type": "ETSPrimitiveType",
                         "loc": {
                           "start": {
                             "line": 21,
@@ -501,38 +486,13 @@
                   }
                 ],
                 "returnType": {
-                  "type": "ETSUnionType",
-                  "types": [
-                    {
-                      "type": "ETSTypeReference",
-                      "part": {
-                        "type": "ETSTypeReferencePart",
-                        "name": {
-                          "type": "Identifier",
-                          "name": "Int",
-                          "decorators": [],
-                          "loc": {
-                            "start": {
-                              "line": 21,
-                              "column": 32
-                            },
-                            "end": {
-                              "line": 21,
-                              "column": 35
-                            }
-                          }
-                        },
-                        "loc": {
-                          "start": {
-                            "line": 21,
-                            "column": 32
-                          },
-                          "end": {
-                            "line": 21,
-                            "column": 37
-                          }
-                        }
-                      },
+                  "type": "ETSTypeReference",
+                  "part": {
+                    "type": "ETSTypeReferencePart",
+                    "name": {
+                      "type": "Identifier",
+                      "name": "Int",
+                      "decorators": [],
                       "loc": {
                         "start": {
                           "line": 21,
@@ -540,11 +500,21 @@
                         },
                         "end": {
                           "line": 21,
-                          "column": 37
+                          "column": 35
                         }
                       }
+                    },
+                    "loc": {
+                      "start": {
+                        "line": 21,
+                        "column": 32
+                      },
+                      "end": {
+                        "line": 21,
+                        "column": 37
+                      }
                     }
-                  ],
+                  },
                   "loc": {
                     "start": {
                       "line": 21,
@@ -669,4 +639,4 @@
     }
   }
 }
-TypeError: Non reference types cannot be nullable. [n_nullableTypeInArgNotRef.ets:21:18]
+TypeError: Non reference types cannot be nullish. [n_nullableTypeInArgNotRef.ets:21:18]

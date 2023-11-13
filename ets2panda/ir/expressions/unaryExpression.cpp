@@ -263,7 +263,7 @@ checker::Type *UnaryExpression::Check(checker::ETSChecker *checker)
             break;
         }
         case lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK: {
-            if (checker->IsNullOrVoidExpression(argument_)) {
+            if (checker->IsNullLikeOrVoidExpression(argument_)) {
                 auto ts_type = checker->CreateETSBooleanType(true);
                 ts_type->AddTypeFlag(checker::TypeFlag::CONSTANT);
                 SetTsType(ts_type);

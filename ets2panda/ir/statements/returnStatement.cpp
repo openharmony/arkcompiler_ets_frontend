@@ -37,7 +37,7 @@ void ReturnStatement::Iterate(const NodeTraverser &cb) const
 
 void ReturnStatement::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ReturnStatement"}, {"argument", AstDumper::Nullable(argument_)}});
+    dumper->Add({{"type", "ReturnStatement"}, {"argument", AstDumper::Nullish(argument_)}});
 }
 
 void ReturnStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const

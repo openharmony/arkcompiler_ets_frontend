@@ -32,7 +32,7 @@ public:
             return;
         }
 
-        ETSTypeFromSource(source);
+        SetResult(ETSTypeFromSource(checker, source));
         Relation()->Result(true);
     }
 
@@ -50,12 +50,12 @@ public:
             return;
         }
 
-        ETSTypeFromSource(source);
+        SetResult(ETSTypeFromSource(checker, source));
 
         Relation()->Result(relation->IsAssignableTo(Result(), target));
     }
 
-    void ETSTypeFromSource(Type *source);
+    static checker::ETSObjectType *ETSTypeFromSource(ETSChecker const *checker, Type const *source);
 };
 }  // namespace panda::es2panda::checker
 

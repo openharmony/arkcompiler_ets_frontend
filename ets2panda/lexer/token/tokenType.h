@@ -144,7 +144,6 @@ enum class TokenType {
     KEYW_NATIVE,
     KEYW_NEVER,
     KEYW_NEW,
-    KEYW_NULL,
     KEYW_NUMBER,
     KEYW_OBJECT,
     KEYW_FINAL,

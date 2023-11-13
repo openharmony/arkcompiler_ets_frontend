@@ -47,6 +47,7 @@ enum class ETSObjectFlags : uint32_t {
     ASYNC_FUNC_RETURN_TYPE = 1U << 17U,
     TYPE_PARAMETER = 1U << 18U,
     CHECKED_INVOKE_LEGITIMACY = 1U << 19U,
+    UNDEFINED_TYPE = 1U << 20U,
 
     BUILTIN_STRING = 1U << 23U,
     BUILTIN_BOOLEAN = 1U << 24U,
@@ -511,7 +512,7 @@ public:
 
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
-        if (IsNullableType() || IsETSStringType()) {
+        if (IsNullish() || IsETSStringType()) {
             return {false, false};
         }
 

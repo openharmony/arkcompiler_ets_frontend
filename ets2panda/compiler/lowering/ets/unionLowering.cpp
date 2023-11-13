@@ -43,7 +43,7 @@ std::string const &UnionLowering::Name()
     return NAME;
 }
 
-ir::ClassDefinition *CreateUnionFieldClass(checker::ETSChecker *checker, varbinder::VarBinder *varbinder)
+ir::ClassDefinition *GetUnionFieldClass(checker::ETSChecker *checker, varbinder::VarBinder *varbinder)
 {
     // Create the name for the synthetic class node
     util::UString union_field_class_name(util::StringView(panda_file::GetDummyClassName()), checker->Allocator());
@@ -71,17 +71,19 @@ ir::ClassDefinition *CreateUnionFieldClass(checker::ETSChecker *checker, varbind
     return class_def;
 }
 
-void CreateUnionFieldClassProperty(ArenaAllocator *allocator, varbinder::VarBinder *varbinder,
-                                   ir::ClassDefinition *class_def, checker::Type *field_type,
-                                   const util::StringView &prop_name)
+varbinder::LocalVariable *CreateUnionFieldClassProperty(checker::ETSChecker *checker, varbinder::VarBinder *varbinder,
+                                                        checker::Type *field_type, const util::StringView &prop_name)
 {
-    auto *class_scope = class_def->Scope()->AsClassScope();
+    auto *const allocator = checker->Allocator();
+    auto *const dummy_class = GetUnionFieldClass(checker, varbinder);
+    auto *class_scope = dummy_class->Scope()->AsClassScope();
+
     // Enter the union filed class instance field scope
     auto field_ctx =
         varbinder::LexicalScope<varbinder::LocalScope>::Enter(varbinder, class_scope->InstanceFieldScope());
 
-    if (class_scope->FindLocal(prop_name, varbinder::ResolveBindingOptions::VARIABLES) != nullptr) {
-        return;
+    if (auto *var = class_scope->FindLocal(prop_name, varbinder::ResolveBindingOptions::VARIABLES); var != nullptr) {
+        return var->AsLocalVariable();
     }
 
     // Create field name for synthetic class
@@ -101,27 +103,16 @@ void CreateUnionFieldClassProperty(ArenaAllocator *allocator, varbinder::VarBind
 
     ArenaVector<ir::AstNode *> field_decl {allocator->Adapter()};
     field_decl.push_back(field);
-    class_def->AddProperties(std::move(field_decl));
+    dummy_class->AddProperties(std::move(field_decl));
+    return var->AsLocalVariable();
 }
 
-ir::Expression *HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::VarBinder *varbinder,
-                                          ir::MemberExpression *expr)
+void HandleUnionPropertyAccess(checker::ETSChecker *checker, varbinder::VarBinder *vbind, ir::MemberExpression *expr)
 {
-    auto *class_def = CreateUnionFieldClass(checker, varbinder);
-    CreateUnionFieldClassProperty(checker->Allocator(), varbinder, class_def, expr->PropVar()->TsType(),
-                                  expr->Property()->AsIdentifier()->Name());
-    if (expr->Object()->IsIdentifier()) {
-        auto *new_ts_type = expr->Object()->TsType()->AsETSUnionType()->GetLeastUpperBoundType(checker);
-        expr->Object()->AsIdentifier()->Variable()->SetTsType(new_ts_type);
-    }
-    return expr;
-}
-
-ir::Expression *HandleUnionFunctionParameter(checker::ETSChecker *checker, ir::ETSParameterExpression *param)
-{
-    auto *union_type = param->Ident()->Variable()->TsType()->AsETSUnionType();
-    param->Ident()->Variable()->SetTsType(union_type->GetLeastUpperBoundType(checker));
-    return param;
+    ASSERT(expr->PropVar() == nullptr);
+    expr->SetPropVar(
+        CreateUnionFieldClassProperty(checker, vbind, expr->TsType(), expr->Property()->AsIdentifier()->Name()));
+    ASSERT(expr->PropVar() != nullptr);
 }
 
 ir::Expression *HandleBinaryExpressionWithUnion(checker::ETSChecker *checker, ir::BinaryExpression *expr)
@@ -178,13 +169,8 @@ bool UnionLowering::Perform(CompilerContext *ctx, parser::Program *program)
     program->Ast()->TransformChildrenRecursively([checker, ctx](ir::AstNode *ast) -> ir::AstNode * {
         if (ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr &&
             ast->AsMemberExpression()->Object()->TsType()->IsETSUnionType()) {
-            return HandleUnionPropertyAccess(checker, ctx->VarBinder(), ast->AsMemberExpression());
-        }
-
-        if (ast->IsETSParameterExpression() &&
-            ast->AsETSParameterExpression()->Ident()->Variable()->TsType() != nullptr &&
-            ast->AsETSParameterExpression()->Ident()->Variable()->TsType()->IsETSUnionType()) {
-            return HandleUnionFunctionParameter(checker, ast->AsETSParameterExpression());
+            HandleUnionPropertyAccess(checker, ctx->VarBinder(), ast->AsMemberExpression());
+            return ast;
         }
 
         if (ast->IsBinaryExpression() && ast->AsBinaryExpression()->OperationType() != nullptr &&
@@ -200,13 +186,13 @@ bool UnionLowering::Perform(CompilerContext *ctx, parser::Program *program)
 
 bool UnionLowering::Postcondition(CompilerContext *ctx, const parser::Program *program)
 {
-    if (ctx->Options()->compilation_mode != CompilationMode::GEN_STD_LIB) {
-        return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) {
-            return ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr &&
-                   ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType()->IsETSUnionType() &&
-                   ast->AsMemberExpression()->Object()->IsIdentifier() &&
-                   ast->AsMemberExpression()->Object()->AsIdentifier()->Variable()->TsType()->IsETSUnionType();
-        });
+    bool current = !program->Ast()->IsAnyChild([](const ir::AstNode *ast) {
+        return ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr &&
+               ast->AsMemberExpression()->Object()->TsType()->IsETSUnionType() &&
+               ast->AsMemberExpression()->PropVar() == nullptr;
+    });
+    if (!current || ctx->Options()->compilation_mode != CompilationMode::GEN_STD_LIB) {
+        return current;
     }
 
     for (auto &[_, ext_programs] : program->ExternalSources()) {
@@ -217,13 +203,7 @@ bool UnionLowering::Postcondition(CompilerContext *ctx, const parser::Program *p
             }
         }
     }
-
-    return !program->Ast()->IsAnyChild([](const ir::AstNode *ast) {
-        return ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType() != nullptr &&
-               ast->IsMemberExpression() && ast->AsMemberExpression()->Object()->TsType()->IsETSUnionType() &&
-               ast->AsMemberExpression()->Object()->IsIdentifier() &&
-               ast->AsMemberExpression()->Object()->AsIdentifier()->Variable()->TsType()->IsETSUnionType();
-    });
+    return true;
 }
 
 }  // namespace panda::es2panda::compiler

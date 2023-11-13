@@ -40,7 +40,7 @@ void ExportAllDeclaration::Iterate(const NodeTraverser &cb) const
 
 void ExportAllDeclaration::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ExportAllDeclaration"}, {"source", source_}, {"exported", AstDumper::Nullable(exported_)}});
+    dumper->Add({{"type", "ExportAllDeclaration"}, {"source", source_}, {"exported", AstDumper::Nullish(exported_)}});
 }
 
 void ExportAllDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}

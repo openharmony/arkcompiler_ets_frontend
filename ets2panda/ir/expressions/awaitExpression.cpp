@@ -42,7 +42,7 @@ void AwaitExpression::Iterate(const NodeTraverser &cb) const
 
 void AwaitExpression::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "AwaitExpression"}, {"argument", AstDumper::Nullable(argument_)}});
+    dumper->Add({{"type", "AwaitExpression"}, {"argument", AstDumper::Nullish(argument_)}});
 }
 
 void AwaitExpression::Compile(compiler::PandaGen *pg) const

@@ -450,40 +450,15 @@
                             "type": "Identifier",
                             "name": "an",
                             "typeAnnotation": {
-                              "type": "ETSUnionType",
-                              "types": [
-                                {
-                                  "type": "TSArrayType",
-                                  "elementType": {
-                                    "type": "ETSTypeReference",
-                                    "part": {
-                                      "type": "ETSTypeReferencePart",
-                                      "name": {
-                                        "type": "Identifier",
-                                        "name": "A",
-                                        "decorators": [],
-                                        "loc": {
-                                          "start": {
-                                            "line": 20,
-                                            "column": 14
-                                          },
-                                          "end": {
-                                            "line": 20,
-                                            "column": 15
-                                          }
-                                        }
-                                      },
-                                      "loc": {
-                                        "start": {
-                                          "line": 20,
-                                          "column": 14
-                                        },
-                                        "end": {
-                                          "line": 20,
-                                          "column": 16
-                                        }
-                                      }
-                                    },
+                              "type": "TSArrayType",
+                              "elementType": {
+                                "type": "ETSTypeReference",
+                                "part": {
+                                  "type": "ETSTypeReferencePart",
+                                  "name": {
+                                    "type": "Identifier",
+                                    "name": "A",
+                                    "decorators": [],
                                     "loc": {
                                       "start": {
                                         "line": 20,
@@ -491,22 +466,32 @@
                                       },
                                       "end": {
                                         "line": 20,
-                                        "column": 16
+                                        "column": 15
                                       }
                                     }
                                   },
                                   "loc": {
                                     "start": {
                                       "line": 20,
-                                      "column": 18
+                                      "column": 14
                                     },
                                     "end": {
                                       "line": 20,
-                                      "column": 19
+                                      "column": 16
                                     }
                                   }
+                                },
+                                "loc": {
+                                  "start": {
+                                    "line": 20,
+                                    "column": 14
+                                  },
+                                  "end": {
+                                    "line": 20,
+                                    "column": 16
+                                  }
                                 }
-                              ],
+                              },
                               "loc": {
                                 "start": {
                                   "line": 20,

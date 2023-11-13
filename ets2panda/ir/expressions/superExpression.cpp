@@ -44,7 +44,8 @@ void SuperExpression::Compile(compiler::PandaGen *pg) const
 
 void SuperExpression::Compile(compiler::ETSGen *etsg) const
 {
-    etsg->LoadThis(this);
+    etsg->LoadThis(this);  // remains as long as we consider super 'super' expression
+    etsg->SetAccumulatorType(etsg->GetAccumulatorType()->AsETSObjectType()->SuperType());
 }
 
 checker::Type *SuperExpression::Check(checker::TSChecker *checker)

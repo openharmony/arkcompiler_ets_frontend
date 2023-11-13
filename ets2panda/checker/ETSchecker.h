@@ -96,6 +96,7 @@ public:
     Type *GlobalETSBooleanType() const;
     Type *GlobalVoidType() const;
     Type *GlobalETSNullType() const;
+    Type *GlobalETSUndefinedType() const;
     Type *GlobalETSStringLiteralType() const;
     Type *GlobalWildcardType() const;
 
@@ -136,7 +137,6 @@ public:
                                       const lexer::SourcePosition &pos);
     void ResolveDeclaredMembersOfObject(ETSObjectType *type);
     Type *ValidateArrayIndex(ir::Expression *expr);
-    Type *CheckArrayElementAccess(ir::MemberExpression *expr);
     ETSObjectType *CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *class_type, std::string_view msg);
     void CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type);
     void SetTypeParameterType(ir::TSTypeParameter *type_param, Type *type_param_type);
@@ -230,6 +230,8 @@ public:
                                                         lexer::TokenType operation_type, lexer::SourcePosition pos,
                                                         checker::Type *left_type, checker::Type *right_type,
                                                         Type *unboxed_l, Type *unboxed_r);
+    std::tuple<Type *, Type *> CheckBinaryOperatorEqualDynamic(ir::Expression *left, ir::Expression *right,
+                                                               lexer::SourcePosition pos);
     std::tuple<Type *, Type *> CheckBinaryOperatorLessGreater(ir::Expression *left, ir::Expression *right,
                                                               lexer::TokenType operation_type,
                                                               lexer::SourcePosition pos, bool is_equal_op,
@@ -392,7 +394,7 @@ public:
     Type *GetTypeFromEnumReference(varbinder::Variable *var);
     Type *GetTypeFromTypeParameterReference(varbinder::LocalVariable *var, const lexer::SourcePosition &pos);
     Type *GetNonConstantTypeFromPrimitiveType(Type *type);
-    bool IsNullOrVoidExpression(const ir::Expression *expr) const;
+    bool IsNullLikeOrVoidExpression(const ir::Expression *expr) const;
     bool IsConstantExpression(ir::Expression *expr, Type *type);
     void ValidateUnaryOperatorOperand(varbinder::Variable *variable);
     std::tuple<Type *, bool> ApplyBinaryOperatorPromotion(Type *left, Type *right, TypeFlag test,
@@ -406,6 +408,12 @@ public:
     checker::Type *CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *type_annotation, ir::Expression *init,
                                             ir::ModifierFlags flags);
     void CheckTruthinessOfType(ir::Expression *expr);
+    Type *CreateNullishType(Type *otype, checker::TypeFlag nullish_flags, ArenaAllocator *allocator,
+                            TypeRelation *relation, GlobalTypesHolder *global_types);
+    void CheckNonNullishType(Type *type, lexer::SourcePosition line_info);
+    Type *CreateOptionalResultType(Type *type);
+    Type *GetNonNullishType(Type *type) const;
+    const Type *GetNonNullishType(const Type *type) const;
     void ConcatConstantString(util::UString &target, Type *type);
     Type *HandleStringConcatenation(Type *left_type, Type *right_type);
     Type *ResolveIdentifier(ir::Identifier *ident);
@@ -469,8 +477,9 @@ public:
     util::StringView GetHashFromSubstitution(const Substitution *substitution);
     ETSObjectType *GetOriginalBaseType(Type *object);
     Type *GetTypeFromTypeAnnotation(ir::TypeNode *type_annotation);
-    void AddNullParamsForDefaultParams(const Signature *signature,
-                                       ArenaVector<panda::es2panda::ir::Expression *> &arguments, ETSChecker *checker);
+    void AddUndefinedParamsForDefaultParams(const Signature *signature,
+                                            ArenaVector<panda::es2panda::ir::Expression *> &arguments,
+                                            ETSChecker *checker);
     void SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpression *expr, Type *annotation_type);
     bool ExtensionETSFunctionType(checker::Type *type);
 

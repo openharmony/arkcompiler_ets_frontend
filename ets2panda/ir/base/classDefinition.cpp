@@ -121,9 +121,9 @@ void ClassDefinition::Dump(ir::AstDumper *dumper) const
     auto prop_filter = [](AstNode *prop) -> bool {
         return !prop->IsClassStaticBlock() || !prop->AsClassStaticBlock()->Function()->IsHidden();
     };
-    dumper->Add({{"id", AstDumper::Nullable(ident_)},
+    dumper->Add({{"id", AstDumper::Nullish(ident_)},
                  {"typeParameters", AstDumper::Optional(type_params_)},
-                 {"superClass", AstDumper::Nullable(super_class_)},
+                 {"superClass", AstDumper::Nullish(super_class_)},
                  {"superTypeParameters", AstDumper::Optional(super_type_params_)},
                  {"implements", implements_},
                  {"constructor", AstDumper::Optional(ctor_)},

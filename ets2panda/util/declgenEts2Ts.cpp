@@ -102,6 +102,20 @@ std::string TSDeclGen::GetKeyName(const ir::Expression *key)
 
 void TSDeclGen::GenType(const checker::Type *checker_type)
 {
+    // NOTE: vpukhov. rewrite when nullish type is implemented with union
+    GenTypeNonNullish(checker_type);
+    if (checker_type->IsNullish()) {
+        if (checker_type->ContainsNull()) {
+            Out(" | null");
+        }
+        if (checker_type->ContainsUndefined()) {
+            Out(" | undefined");
+        }
+    }
+}
+
+void TSDeclGen::GenTypeNonNullish(const checker::Type *checker_type)
+{
     ASSERT(checker_type != nullptr);
     DebugPrint("  GenType: ");
 #if DEBUG_PRINT
@@ -209,8 +223,7 @@ void TSDeclGen::GenFunctionType(const checker::ETSFunctionType *ets_function_typ
             Out(param->Name());
             const auto *param_type = param->TsType();
 
-            if (param->HasFlag(varbinder::VariableFlags::OPTIONAL) ||
-                param_type->HasTypeFlag(checker::TypeFlag::NULLABLE)) {
+            if (param->HasFlag(varbinder::VariableFlags::OPTIONAL) || param_type->IsNullish()) {
                 Out("?");
             }
 
@@ -517,13 +530,8 @@ void TSDeclGen::GenPropDeclaration(const ir::ClassProperty *class_prop)
     GenModifier(class_prop);
     Out(prop_name);
 
-    const auto *prop_type = class_prop->TsType();
-    if (prop_type->HasTypeFlag(checker::TypeFlag::NULLABLE)) {
-        Out("?");
-    }
-
     Out(": ");
-    GenType(prop_type);
+    GenType(class_prop->TsType());
     Out(";");
     OutEndl();
 }

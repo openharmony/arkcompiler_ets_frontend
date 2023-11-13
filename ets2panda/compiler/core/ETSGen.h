@@ -42,6 +42,7 @@ public:
 
     void SetAccumulatorType(const checker::Type *type);
     [[nodiscard]] const checker::Type *GetAccumulatorType() const;
+    void CompileAndCheck(const ir::Expression *expr);
 
     [[nodiscard]] VReg StoreException(const ir::AstNode *node);
     void ApplyConversionAndStoreAccumulator(const ir::AstNode *node, VReg vreg, const checker::Type *target_type);
@@ -92,7 +93,7 @@ public:
     void LoadBuiltinVoid(const ir::AstNode *node);
     void ReturnAcc(const ir::AstNode *node);
 
-    void EmitIsInstance(const ir::AstNode *node, VReg lhs);
+    void EmitIsInstance(const ir::AstNode *node, VReg obj_reg);
 
     void Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs);
     void Unary(const ir::AstNode *node, lexer::TokenType op);
@@ -186,7 +187,7 @@ public:
     void ResolveConditionalResultExpression(const ir::AstNode *node, [[maybe_unused]] Label *if_false)
     {
         auto expr_node = node->AsExpression();
-        if (Checker()->IsNullOrVoidExpression(expr_node)) {
+        if (Checker()->IsNullLikeOrVoidExpression(expr_node)) {
             if constexpr (USE_FALSE_LABEL) {
                 Branch(node, if_false);
             } else {
@@ -211,15 +212,15 @@ public:
         if (node->IsExpression()) {
             ResolveConditionalResultExpression<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, if_false);
         }
-        Label *if_nullable {nullptr};
+        Label *if_nullish {nullptr};
         Label *end {nullptr};
-        if (type->IsNullableType()) {
+        if (type->IsNullishOrNullLike()) {
             if constexpr (USE_FALSE_LABEL) {
-                BranchIfNull(node, if_false);
+                BranchIfNullish(node, if_false);
             } else {
-                if_nullable = AllocLabel();
+                if_nullish = AllocLabel();
                 end = AllocLabel();
-                BranchIfNull(node, if_nullable);
+                BranchIfNullish(node, if_nullish);
             }
         }
         if (type->IsETSArrayType()) {
@@ -231,9 +232,9 @@ public:
         } else {
             ResolveConditionalResultNumeric<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, if_false, end);
         }
-        if (if_nullable != nullptr) {
+        if (if_nullish != nullptr) {
             Branch(node, end);
-            SetLabel(node, if_nullable);
+            SetLabel(node, if_nullish);
             Sa().Emit<Ldai>(node, 0);
         }
         if (end != nullptr) {
@@ -258,9 +259,9 @@ public:
         Sa().Emit<Jeqz>(node, if_false);
     }
 
-    void BranchIfTrue(const ir::AstNode *node, Label *if_false)
+    void BranchIfTrue(const ir::AstNode *node, Label *if_true)
     {
-        Sa().Emit<Jnez>(node, if_false);
+        Sa().Emit<Jnez>(node, if_true);
     }
 
     void BranchIfNull(const ir::AstNode *node, Label *if_null)
@@ -273,6 +274,10 @@ public:
         Sa().Emit<JnezObj>(node, if_not_null);
     }
 
+    void BranchIfNullish(const ir::AstNode *node, Label *if_nullish);
+    void BranchIfNotNullish(const ir::AstNode *node, Label *if_not_nullish);
+    void ConvertToNonNullish(const ir::AstNode *node);
+
     void JumpTo(const ir::AstNode *node, Label *label_to)
     {
         Sa().Emit<Jmp>(node, label_to);
@@ -283,7 +288,44 @@ public:
         Ra().Emit<Throw>(node, err);
     }
 
-    void EmitNullPointerException(const ir::AstNode *node);
+    void EmitNullishException(const ir::AstNode *node);
+    void EmitNullishGuardian(const ir::AstNode *node);
+
+    template <typename F>
+    void EmitMaybeOptional(const ir::Expression *node, F const &compile, bool is_optional)
+    {
+        auto *const type = GetAccumulatorType();
+
+        if (!type->IsNullishOrNullLike()) {
+            compile();
+        } else if (type->IsETSNullLike()) {
+            if (is_optional) {
+                LoadAccumulatorUndefined(node);
+            } else {  // NOTE: vpukhov. should be a CTE
+                EmitNullishException(node);
+                LoadAccumulatorUndefined(node);
+            }
+            SetAccumulatorType(node->TsType());
+        } else if (!is_optional) {  // NOTE: vpukhov. should be a CTE
+            EmitNullishGuardian(node);
+            compile();
+        } else {
+            compiler::Label *if_not_nullish = AllocLabel();
+            compiler::Label *end_label = AllocLabel();
+
+            BranchIfNotNullish(node, if_not_nullish);
+            LoadAccumulatorUndefined(node);
+            Branch(node, end_label);
+
+            SetLabel(node, if_not_nullish);
+            SetAccumulatorType(type);
+            ConvertToNonNullish(node);
+            compile();
+            ApplyConversion(node, node->TsType());
+            SetLabel(node, end_label);
+            SetAccumulatorType(node->TsType());
+        }
+    }
 
     void ThrowException(const ir::Expression *expr);
     bool ExtendWithFinalizer(ir::AstNode *node, const ir::AstNode *original_node, Label *prev_finnaly = nullptr);
@@ -338,6 +380,16 @@ public:
     {
         Sa().Emit<LdaNull>(node);
         SetAccumulatorType(type);
+    }
+
+    void LoadAccumulatorUndefined([[maybe_unused]] const ir::AstNode *node)
+    {
+#ifdef PANDA_WITH_ETS
+        Sa().Emit<EtsLdundefined>(node);
+        SetAccumulatorType(Checker()->GlobalETSUndefinedType());
+#else
+        UNREACHABLE();
+#endif  // PANDA_WITH_ETS
     }
 
     void LoadAccumulatorChar(const ir::AstNode *node, char16_t value)
@@ -588,6 +640,8 @@ public:
 private:
     const VReg dummy_reg_ = VReg::RegStart();
 
+    void EmitIsInstanceNonNullish(const ir::AstNode *node, VReg obj_reg, checker::ETSObjectType const *cls_type);
+
     void StringBuilderAppend(const ir::AstNode *node, VReg builder);
     void AppendString(const ir::Expression *bin_expr, VReg builder);
     void StringBuilder(const ir::Expression *left, const ir::Expression *right, VReg builder);
@@ -652,45 +706,8 @@ private:
         }
     }
 
-    template <typename CondCompare>
-    void ConditionalBranching(const ir::AstNode *node, Label *if_false)
-    {
-        if constexpr (std::is_same_v<CondCompare, Jeqz>) {
-            ResolveConditionalResultIfTrue<true>(node, if_false);
-            Sa().Emit<Neg>(node);
-            Sa().Emit<Addi>(node, 1);
-        } else {
-            ResolveConditionalResultIfFalse(node, if_false);
-        }
-        BranchIfFalse(node, if_false);
-    }
-
-    template <typename CondCompare>
-    void BinaryEqualityObj(const ir::AstNode *node, VReg lhs, VReg arg0, Label *if_false)
-    {
-        Label *if_null = AllocLabel();
-        Label *if_true = AllocLabel();
-        LoadAccumulator(node, lhs);
-        BranchIfNull(node, if_null);
-        if (GetVRegType(lhs)->IsETSStringType() && GetVRegType(arg0)->IsETSObjectType()) {
-            CallThisStatic1(node, lhs, Signatures::BUILTIN_STRING_EQUALS, arg0);
-        } else {
-            CallThisVirtual1(node, lhs, Signatures::BUILTIN_OBJECT_EQUALS, arg0);
-        }
-        SetAccumulatorType(Checker()->GlobalETSBooleanType());
-        ConditionalBranching<CondCompare>(node, if_false);
-        JumpTo(node, if_true);
-
-        SetLabel(node, if_null);
-        LoadAccumulator(node, arg0);
-        if constexpr (std::is_same_v<CondCompare, Jeqz>) {
-            BranchIfNull(node, if_false);
-        } else {
-            BranchIfNotNull(node, if_false);
-        }
-
-        SetLabel(node, if_true);
-    }
+    void BinaryEqualityRef(const ir::AstNode *node, bool test_equal, VReg lhs, VReg rhs, Label *if_false);
+    void BinaryEqualityRefDynamic(const ir::AstNode *node, bool test_equal, VReg lhs, VReg rhs, Label *if_false);
 
     template <typename Compare, typename Cond>
     void BinaryNumberComparison(const ir::AstNode *node, VReg lhs, Label *if_false)
@@ -710,12 +727,7 @@ private:
     template <typename ObjCompare, typename IntCompare, typename CondCompare, typename DynCompare>
     void BinaryEquality(const ir::AstNode *node, VReg lhs, Label *if_false)
     {
-        if (GetAccumulatorType()->IsETSDynamicType() || GetVRegType(lhs)->IsETSDynamicType()) {
-            BinaryDynamicStrictEquality<DynCompare>(node, lhs, if_false);
-        } else {
-            BinaryEqualityCondition<ObjCompare, IntCompare, CondCompare>(node, lhs, if_false);
-        }
-
+        BinaryEqualityCondition<ObjCompare, IntCompare, CondCompare>(node, lhs, if_false);
         ToBinaryResult(node, if_false);
         SetAccumulatorType(Checker()->GlobalETSBooleanType());
     }
@@ -726,11 +738,12 @@ private:
         auto type_kind = checker::ETSChecker::TypeKind(target_type_);
 
         switch (type_kind) {
-            case checker::TypeFlag::ETS_OBJECT: {
+            case checker::TypeFlag::ETS_OBJECT:
+            case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
                 RegScope rs(this);
                 VReg arg0 = AllocReg();
                 StoreAccumulator(node, arg0);
-                BinaryEqualityObj<CondCompare>(node, lhs, arg0, if_false);
+                BinaryEqualityRef(node, !std::is_same_v<CondCompare, Jeqz>, lhs, arg0, if_false);
                 return;
             }
             case checker::TypeFlag::DOUBLE: {
@@ -1135,7 +1148,7 @@ void ETSGen::LoadAccumulatorNumber(const ir::AstNode *node, T number, checker::T
         }
     }
 
-    if (target_type_ && target_type_->IsETSObjectType()) {
+    if (target_type_ && (target_type_->IsETSObjectType() || target_type_->IsETSUnionType())) {
         ApplyConversion(node, target_type_);
     }
 }

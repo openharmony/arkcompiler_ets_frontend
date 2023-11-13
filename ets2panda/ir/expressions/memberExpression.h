@@ -36,7 +36,7 @@ enum class MemberExpressionKind : uint32_t {
 
 DEFINE_BITOPS(MemberExpressionKind)
 
-class MemberExpression : public Expression {
+class MemberExpression : public MaybeOptionalExpression {
 private:
     struct Tag {};
 
@@ -49,12 +49,11 @@ public:
 
     explicit MemberExpression(Expression *object, Expression *property, MemberExpressionKind kind, bool computed,
                               bool optional)
-        : Expression(AstNodeType::MEMBER_EXPRESSION),
+        : MaybeOptionalExpression(AstNodeType::MEMBER_EXPRESSION, optional),
           object_(object),
           property_(property),
           kind_(kind),
-          computed_(computed),
-          optional_(optional)
+          computed_(computed)
     {
     }
 
@@ -93,11 +92,6 @@ public:
     [[nodiscard]] bool IsComputed() const noexcept
     {
         return computed_;
-    }
-
-    [[nodiscard]] bool IsOptional() const noexcept
-    {
-        return optional_;
     }
 
     [[nodiscard]] MemberExpressionKind Kind() const noexcept
@@ -147,9 +141,6 @@ public:
 
     [[nodiscard]] bool IsPrivateReference() const noexcept;
 
-    checker::Type *CheckEnumMember(checker::ETSChecker *checker, checker::Type *type);
-    checker::Type *CheckObjectMember(checker::ETSChecker *checker);
-
     // NOLINTNEXTLINE(google-default-arguments)
     [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
@@ -165,11 +156,10 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
 protected:
-    MemberExpression(MemberExpression const &other) : Expression(static_cast<Expression const &>(other))
+    MemberExpression(MemberExpression const &other) : MaybeOptionalExpression(other)
     {
         kind_ = other.kind_;
         computed_ = other.computed_;
-        optional_ = other.optional_;
         ignore_box_ = other.ignore_box_;
         prop_var_ = other.prop_var_;
         // Note! Probably, we need to do 'Instantiate(...)' but we haven't access to 'Relation()' here...
@@ -177,12 +167,19 @@ protected:
     }
 
 private:
+    std::pair<checker::Type *, varbinder::LocalVariable *> ResolveEnumMember(checker::ETSChecker *checker,
+                                                                             checker::Type *type) const;
+    std::pair<checker::Type *, varbinder::LocalVariable *> ResolveObjectMember(checker::ETSChecker *checker) const;
+
+    checker::Type *AdjustOptional(checker::ETSChecker *checker, checker::Type *type);
+    checker::Type *CheckComputed(checker::ETSChecker *checker, checker::Type *base_type);
+    checker::Type *CheckUnionMember(checker::ETSChecker *checker, checker::Type *base_type);
+
     void LoadRhs(compiler::PandaGen *pg) const;
     Expression *object_ = nullptr;
     Expression *property_ = nullptr;
     MemberExpressionKind kind_;
     bool computed_;
-    bool optional_;
     bool ignore_box_ {false};
     varbinder::LocalVariable *prop_var_ {};
     checker::ETSObjectType *obj_type_ {};

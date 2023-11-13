@@ -110,7 +110,7 @@ private:
     ir::TypeNode *ParseTypeReference(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseBaseTypeReference(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParsePrimitiveType(TypeAnnotationParsingOptions *options, ir::PrimitiveType type);
-    ir::ETSUnionType *ParseUnionType(ir::Expression *type);
+    ir::TypeNode *ParseUnionType(ir::TypeNode *first_type);
     ir::TSIntersectionType *ParseIntersectionType(ir::Expression *type);
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseFunctionType();
@@ -119,6 +119,7 @@ private:
     std::string CreateProxyMethodName(const ir::ScriptFunction *function, ir::MethodDefinition *method,
                                       ir::Identifier *ident_node, varbinder::ClassScope *cls_scope);
     void AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *ident_node = nullptr);
+    static std::string PrimitiveTypeToName(ir::PrimitiveType type);
     std::string GetNameForTypeNode(const ir::TypeNode *type_annotation);
     ir::TSInterfaceDeclaration *ParseInterfaceBody(ir::Identifier *name, bool is_static);
     bool IsArrowFunctionExpressionStart();

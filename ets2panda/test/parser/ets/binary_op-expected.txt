@@ -5325,38 +5325,13 @@
             "optional": false,
             "computed": false,
             "typeAnnotation": {
-              "type": "ETSUnionType",
-              "types": [
-                {
-                  "type": "ETSTypeReference",
-                  "part": {
-                    "type": "ETSTypeReferencePart",
-                    "name": {
-                      "type": "Identifier",
-                      "name": "Object",
-                      "decorators": [],
-                      "loc": {
-                        "start": {
-                          "line": 22,
-                          "column": 9
-                        },
-                        "end": {
-                          "line": 22,
-                          "column": 15
-                        }
-                      }
-                    },
-                    "loc": {
-                      "start": {
-                        "line": 22,
-                        "column": 9
-                      },
-                      "end": {
-                        "line": 22,
-                        "column": 17
-                      }
-                    }
-                  },
+              "type": "ETSTypeReference",
+              "part": {
+                "type": "ETSTypeReferencePart",
+                "name": {
+                  "type": "Identifier",
+                  "name": "Object",
+                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 22,
@@ -5364,11 +5339,21 @@
                     },
                     "end": {
                       "line": 22,
-                      "column": 17
+                      "column": 15
                     }
                   }
+                },
+                "loc": {
+                  "start": {
+                    "line": 22,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 22,
+                    "column": 17
+                  }
                 }
-              ],
+              },
               "loc": {
                 "start": {
                   "line": 22,

@@ -88,9 +88,12 @@ checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
     }
 
     checker::Type *type = part_->GetType(checker);
-    if (IsNullable()) {
-        type = type->Instantiate(checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder());
-        type->AddTypeFlag(checker::TypeFlag::NULLABLE);
+    if (IsNullAssignable() || IsUndefinedAssignable()) {
+        auto nullish_flags = (IsNullAssignable() ? checker::TypeFlag::NULL_TYPE : checker::TypeFlag(0)) |
+                             (IsUndefinedAssignable() ? checker::TypeFlag::UNDEFINED : checker::TypeFlag(0));
+
+        type = checker->CreateNullishType(type, nullish_flags, checker->Allocator(), checker->Relation(),
+                                          checker->GetGlobalTypesHolder());
     }
 
     SetTsType(type);

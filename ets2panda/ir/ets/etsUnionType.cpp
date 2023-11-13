@@ -66,7 +66,9 @@ checker::Type *ETSUnionType::GetType([[maybe_unused]] checker::ETSChecker *check
         types.push_back(it->GetType(checker));
     }
 
+    checker->Relation()->SetNode(this);
     SetTsType(checker->CreateETSUnionType(std::move(types)));
+    checker->Relation()->SetNode(nullptr);
     return TsType();
 }
 }  // namespace panda::es2panda::ir
