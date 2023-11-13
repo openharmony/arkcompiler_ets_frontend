@@ -119,3 +119,15 @@ while (!!tmp_arr) {
   console.log(tmp_arr[0])
   tmp_arr = iter_arr.next().value
 }
+
+// #14415
+class ArrayContainer {
+  numbers: number[] = [];
+}
+class NullableArray {
+  container: ArrayContainer | null = null;
+
+  print() {
+    console.log(this.container?.numbers[0]);
+  }
+}

@@ -1456,7 +1456,9 @@ export class TypeScriptLinter {
 
   private handleElementAccessExpression(node: ts.Node): void {
     const tsElementAccessExpr = node as ts.ElementAccessExpression;
-    const tsElemAccessBaseExprType = this.tsUtils.getTypeOrTypeConstraintAtLocation(tsElementAccessExpr.expression);
+    let tsElemAccessBaseExprType = TsUtils.getNonNullableType(
+      this.tsUtils.getTypeOrTypeConstraintAtLocation(tsElementAccessExpr.expression)
+    );
     const tsElemAccessBaseExprTypeNode = this.tsTypeChecker.typeToTypeNode(
       tsElemAccessBaseExprType,
       undefined,
