@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
@@ -38,6 +39,11 @@ void TSQualifiedName::TransformChildren(const NodeTransformer &cb)
 void TSQualifiedName::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSQualifiedName"}, {"left", left_}, {"right", right_}});
+}
+
+void TSQualifiedName::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSQualifiedName");
 }
 
 void TSQualifiedName::Compile([[maybe_unused]] compiler::PandaGen *pg) const

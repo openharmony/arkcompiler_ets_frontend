@@ -20,7 +20,9 @@
 #include "compiler/core/ETSGen.h"
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
+#include <string>
 #include <utility>
 
 namespace panda::es2panda::ir {
@@ -30,6 +32,11 @@ void CharLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 void CharLiteral::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "CharLiteral"}, {"value", char_}});
+}
+
+void CharLiteral::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add(std::to_string(char_));
 }
 
 void CharLiteral::Compile([[maybe_unused]] compiler::PandaGen *pg) const

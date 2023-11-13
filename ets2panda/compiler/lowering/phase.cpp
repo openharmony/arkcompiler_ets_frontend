@@ -130,10 +130,7 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
         return true;
     }
 
-    if (options->dump_before_phases.count(name) > 0) {
-        std::cout << "Before phase " << Name() << ":" << std::endl;
-        std::cout << program->Dump() << std::endl;
-    }
+    CheckOptionsBeforePhase(options, program, name);
 
 #ifndef NDEBUG
     if (!Precondition(ctx, program)) {
@@ -146,10 +143,7 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
         return false;
     }
 
-    if (options->dump_after_phases.count(name) > 0) {
-        std::cout << "After phase " << Name() << ":" << std::endl;
-        std::cout << program->Dump() << std::endl;
-    }
+    CheckOptionsAfterPhase(options, program, name);
 
 #ifndef NDEBUG
     check_program(program);
@@ -161,6 +155,36 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 #endif
 
     return true;
+}
+
+void Phase::CheckOptionsBeforePhase(const CompilerOptions *options, const parser::Program *program,
+                                    const std::string &name) const
+{
+    if (options->dump_after_phases.count(name) > 0) {
+        std::cout << "After phase " << name << ":" << std::endl;
+        std::cout << program->Dump() << std::endl;
+    }
+
+    if (options->dump_ets_src_after_phases.count(name) > 0) {
+        std::cout << "After phase " << name << " ets source"
+                  << ":" << std::endl;
+        std::cout << program->Ast()->DumpEtsSrc() << std::endl;
+    }
+}
+
+void Phase::CheckOptionsAfterPhase(const CompilerOptions *options, const parser::Program *program,
+                                   const std::string &name) const
+{
+    if (options->dump_after_phases.count(name) > 0) {
+        std::cout << "After phase " << name << ":" << std::endl;
+        std::cout << program->Dump() << std::endl;
+    }
+
+    if (options->dump_ets_src_after_phases.count(name) > 0) {
+        std::cout << "After phase " << name << " ets source"
+                  << ":" << std::endl;
+        std::cout << program->Ast()->DumpEtsSrc() << std::endl;
+    }
 }
 
 }  // namespace panda::es2panda::compiler

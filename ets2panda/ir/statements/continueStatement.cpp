@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ContinueStatement::TransformChildren(const NodeTransformer &cb)
@@ -37,6 +39,11 @@ void ContinueStatement::Iterate(const NodeTraverser &cb) const
 void ContinueStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ContinueStatement"}, {"label", AstDumper::Nullish(ident_)}});
+}
+
+void ContinueStatement::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("continue;");
 }
 
 void ContinueStatement::Compile(compiler::PandaGen *pg) const

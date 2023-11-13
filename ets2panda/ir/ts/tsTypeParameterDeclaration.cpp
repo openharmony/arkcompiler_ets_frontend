@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/ts/tsTypeParameter.h"
 
 namespace panda::es2panda::ir {
@@ -40,6 +41,16 @@ void TSTypeParameterDeclaration::Iterate(const NodeTraverser &cb) const
 void TSTypeParameterDeclaration::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSTypeParameterDeclaration"}, {"params", params_}});
+}
+
+void TSTypeParameterDeclaration::Dump(ir::SrcDumper *dumper) const
+{
+    for (auto param : params_) {
+        param->Dump(dumper);
+        if (param != params_.back()) {
+            dumper->Add(", ");
+        }
+    }
 }
 
 void TSTypeParameterDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const

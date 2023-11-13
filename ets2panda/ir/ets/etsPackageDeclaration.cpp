@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ETSPackageDeclaration::TransformChildren(const NodeTransformer &cb)
@@ -34,6 +35,14 @@ void ETSPackageDeclaration::Iterate([[maybe_unused]] const NodeTraverser &cb) co
 void ETSPackageDeclaration::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ETSPackageDeclaration"}, {"name", name_}});
+}
+
+void ETSPackageDeclaration::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("package ");
+    name_->Dump(dumper);
+    dumper->Add(";");
+    dumper->Endl();
 }
 
 void ETSPackageDeclaration::Compile(compiler::PandaGen *pg) const

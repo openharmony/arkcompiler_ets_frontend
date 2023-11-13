@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expression.h"
 #include "ir/expressions/identifier.h"
 
@@ -41,6 +42,11 @@ void TSImportEqualsDeclaration::Dump(ir::AstDumper *dumper) const
                  {"id", id_},
                  {"moduleReference", module_reference_},
                  {"isExport", is_export_}});
+}
+
+void TSImportEqualsDeclaration::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSImportEqualsDeclaration");
 }
 
 void TSImportEqualsDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const

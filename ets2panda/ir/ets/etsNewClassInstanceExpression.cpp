@@ -19,6 +19,7 @@
 #include "compiler/core/pandagen.h"
 #include "checker/TSchecker.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ETSNewClassInstanceExpression::TransformChildren(const NodeTransformer &cb)
@@ -53,6 +54,22 @@ void ETSNewClassInstanceExpression::Dump(ir::AstDumper *dumper) const
                  {"typeReference", type_reference_},
                  {"arguments", arguments_},
                  {"classBody", AstDumper::Optional(class_def_)}});
+}
+
+void ETSNewClassInstanceExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("new ");
+    if (type_reference_ != nullptr) {
+        type_reference_->Dump(dumper);
+    }
+    dumper->Add("(");
+    for (auto argument : arguments_) {
+        argument->Dump(dumper);
+        if (argument != arguments_.back()) {
+            dumper->Add(", ");
+        }
+    }
+    dumper->Add(")");
 }
 
 void ETSNewClassInstanceExpression::Compile(compiler::PandaGen *pg) const

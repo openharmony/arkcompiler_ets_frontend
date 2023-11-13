@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void TSEnumMember::TransformChildren(const NodeTransformer &cb)
@@ -41,6 +43,16 @@ void TSEnumMember::Iterate(const NodeTraverser &cb) const
 void TSEnumMember::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSEnumMember"}, {"id", key_}, {"initializer", AstDumper::Optional(init_)}});
+}
+
+void TSEnumMember::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(key_ != nullptr);
+    key_->Dump(dumper);
+    if (init_ != nullptr) {
+        dumper->Add(" = ");
+        init_->Dump(dumper);
+    }
 }
 
 util::StringView TSEnumMember::Name() const

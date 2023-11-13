@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ConditionalExpression::TransformChildren(const NodeTransformer &cb)
@@ -38,6 +40,26 @@ void ConditionalExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add(
         {{"type", "ConditionalExpression"}, {"test", test_}, {"consequent", consequent_}, {"alternate", alternate_}});
+}
+
+void ConditionalExpression::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(test_ != nullptr);
+    dumper->Add("(");
+    test_->Dump(dumper);
+    dumper->Add(" ? ");
+    if (consequent_ != nullptr) {
+        consequent_->Dump(dumper);
+    }
+    dumper->Add(" : ");
+    if (alternate_ != nullptr) {
+        alternate_->Dump(dumper);
+    }
+    dumper->Add(")");
+    if ((parent_ != nullptr) && (parent_->IsBlockStatement() || parent_->IsBlockExpression())) {
+        dumper->Add(";");
+        dumper->Endl();
+    }
 }
 
 void ConditionalExpression::Compile(compiler::PandaGen *pg) const

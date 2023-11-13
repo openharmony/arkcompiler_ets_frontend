@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ClassDeclaration::TransformChildren(const NodeTransformer &cb)
@@ -41,6 +43,15 @@ void ClassDeclaration::Iterate(const NodeTraverser &cb) const
 void ClassDeclaration::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ClassDeclaration"}, {"definition", def_}, {"decorators", AstDumper::Optional(decorators_)}});
+}
+
+void ClassDeclaration::Dump(ir::SrcDumper *dumper) const
+{
+    if (def_ != nullptr) {
+        def_->Dump(dumper);
+    }
+    // NOTE(nsizov): support decorators when supported in ArkTS
+    ASSERT(decorators_.empty());
 }
 
 void ClassDeclaration::Compile(compiler::PandaGen *pg) const

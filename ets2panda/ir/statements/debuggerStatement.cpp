@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void DebuggerStatement::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -26,6 +28,11 @@ void DebuggerStatement::Iterate([[maybe_unused]] const NodeTraverser &cb) const 
 void DebuggerStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "DebuggerStatement"}});
+}
+
+void DebuggerStatement::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("DebuggerStatement");
 }
 
 void DebuggerStatement::Compile(compiler::PandaGen *pg) const

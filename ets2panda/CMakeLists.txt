@@ -175,6 +175,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/expandBrackets.cpp
   compiler/lowering/ets/promiseVoid.cpp
   ir/astDump.cpp
+  ir/srcDump.cpp
   ir/astNode.cpp
   ir/irnode.cpp
   ir/typeNode.cpp

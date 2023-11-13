@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void LabelledStatement::TransformChildren(const NodeTransformer &cb)
@@ -35,6 +37,15 @@ void LabelledStatement::Iterate(const NodeTraverser &cb) const
 void LabelledStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "LabelledStatement"}, {"label", ident_}, {"body", body_}});
+}
+
+void LabelledStatement::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(ident_ != nullptr);
+    ident_->Dump(dumper);
+    dumper->Add(":");
+    dumper->Endl();
+    body_->Dump(dumper);
 }
 
 const ir::AstNode *LabelledStatement::GetReferencedStatement() const

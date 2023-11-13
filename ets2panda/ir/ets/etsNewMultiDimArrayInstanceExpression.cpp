@@ -19,6 +19,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ETSNewMultiDimArrayInstanceExpression::TransformChildren(const NodeTransformer &cb)
@@ -42,6 +44,18 @@ void ETSNewMultiDimArrayInstanceExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ETSNewMultiDimArrayInstanceExpression"},
                  {"typeReference", type_reference_},
                  {"dimensions", dimensions_}});
+}
+
+void ETSNewMultiDimArrayInstanceExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("new ");
+    ASSERT(type_reference_);
+    type_reference_->Dump(dumper);
+    for (auto dim : dimensions_) {
+        dumper->Add("[");
+        dim->Dump(dumper);
+        dumper->Add("]");
+    }
 }
 
 void ETSNewMultiDimArrayInstanceExpression::Compile(compiler::PandaGen *pg) const

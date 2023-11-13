@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/typeNode.h"
 
 namespace panda::es2panda::ir {
@@ -39,6 +40,17 @@ void ETSNewArrayInstanceExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add(
         {{"type", "ETSNewArrayInstanceExpression"}, {"typeReference", type_reference_}, {"dimension", dimension_}});
+}
+
+void ETSNewArrayInstanceExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("new ");
+    ASSERT(type_reference_);
+    type_reference_->Dump(dumper);
+    ASSERT(dimension_);
+    dumper->Add("[");
+    dimension_->Dump(dumper);
+    dumper->Add("]");
 }
 
 void ETSNewArrayInstanceExpression::Compile(compiler::PandaGen *pg) const

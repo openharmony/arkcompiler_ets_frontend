@@ -20,6 +20,8 @@
 #include "checker/ETSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ETSFunctionType::TransformChildren(const NodeTransformer &cb)
@@ -41,6 +43,27 @@ void ETSFunctionType::Dump(ir::AstDumper *dumper) const
 
     if (IsThrowing()) {
         dumper->Add({"throwMarker", "throws"});
+    }
+}
+
+void ETSFunctionType::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("(");
+    for (auto *param : Params()) {
+        param->Dump(dumper);
+        if (param != Params().back()) {
+            dumper->Add(", ");
+        }
+    }
+    dumper->Add(")");
+
+    if (TypeParams() != nullptr) {
+        TypeParams()->Dump(dumper);
+    }
+
+    if (ReturnType() != nullptr) {
+        dumper->Add("=> ");
+        ReturnType()->Dump(dumper);
     }
 }
 

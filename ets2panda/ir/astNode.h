@@ -75,6 +75,7 @@ DEFINE_BITOPS(BoxingUnboxingFlags)
 // Forward declarations
 class AstDumper;
 class Expression;
+class SrcDumper;
 class Statement;
 class ClassElement;
 
@@ -478,8 +479,10 @@ public:
     AstNode *FindChild(const NodePredicate &cb) const;
 
     std::string DumpJSON() const;
+    std::string DumpEtsSrc() const;
 
     virtual void Dump(ir::AstDumper *dumper) const = 0;
+    virtual void Dump(ir::SrcDumper *dumper) const = 0;
     virtual void Compile([[maybe_unused]] compiler::PandaGen *pg) const = 0;
     virtual void Compile([[maybe_unused]] compiler::ETSGen *etsg) const {};
     virtual checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) = 0;

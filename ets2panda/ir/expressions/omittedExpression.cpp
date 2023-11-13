@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void OmittedExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -26,6 +28,11 @@ void OmittedExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const 
 void OmittedExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "OmittedExpression"}});
+}
+
+void OmittedExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("OmittedExpression");
 }
 
 void OmittedExpression::Compile(compiler::PandaGen *pg) const

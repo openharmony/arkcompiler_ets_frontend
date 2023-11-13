@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/base/decorator.h"
 #include "ir/expression.h"
 
@@ -58,6 +59,11 @@ void TSModuleDeclaration::Dump(ir::AstDumper *dumper) const
                  {"body", AstDumper::Optional(body_)},
                  {"declare", declare_},
                  {"global", global_}});
+}
+
+void TSModuleDeclaration::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSModuleDeclaration");
 }
 
 void TSModuleDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const

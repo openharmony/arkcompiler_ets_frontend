@@ -15,6 +15,7 @@
 
 #include "variableDeclaration.h"
 
+#include "macros.h"
 #include "varbinder/scope.h"
 #include "varbinder/variable.h"
 #include "checker/TSchecker.h"
@@ -22,6 +23,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/base/decorator.h"
 #include "ir/expressions/arrayExpression.h"
 #include "ir/expressions/identifier.h"
@@ -78,6 +80,34 @@ void VariableDeclaration::Dump(ir::AstDumper *dumper) const
                  {"kind", kind},
                  {"decorators", AstDumper::Optional(decorators_)},
                  {"declare", AstDumper::Optional(declare_)}});
+}
+
+void VariableDeclaration::Dump(ir::SrcDumper *dumper) const
+{
+    switch (kind_) {
+        case VariableDeclarationKind::CONST:
+            dumper->Add("const ");
+            break;
+        case VariableDeclarationKind::LET:
+            dumper->Add("let ");
+            break;
+        case VariableDeclarationKind::VAR:
+            dumper->Add("var ");
+            break;
+        default:
+            UNREACHABLE();
+    }
+
+    for (auto declarator : declarators_) {
+        declarator->Dump(dumper);
+        if (declarator != declarators_.back()) {
+            dumper->Add(", ");
+        }
+    }
+
+    if ((parent_ != nullptr) && (parent_->IsBlockStatement() || parent_->IsBlockExpression())) {
+        dumper->Add(";");
+    }
 }
 
 void VariableDeclaration::Compile(compiler::PandaGen *pg) const

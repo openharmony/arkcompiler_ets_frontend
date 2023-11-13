@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void TSTypeOperator::TransformChildren(const NodeTransformer &cb)
@@ -38,6 +39,11 @@ void TSTypeOperator::Dump(ir::AstDumper *dumper) const
         {"operator", AstDumper::TypeOperatorToString(operator_type_)},
         {"typeAnnotation", type_},
     });
+}
+
+void TSTypeOperator::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSTypeOperator");
 }
 
 void TSTypeOperator::Compile([[maybe_unused]] compiler::PandaGen *pg) const

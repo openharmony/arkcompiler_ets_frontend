@@ -14,10 +14,14 @@
  */
 
 #include "stringLiteral.h"
+#include <cstddef>
 
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
+#include "macros.h"
 
 namespace panda::es2panda::ir {
 void StringLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -26,6 +30,41 @@ void StringLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 void StringLiteral::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "StringLiteral"}, {"value", str_}});
+}
+
+void StringLiteral::Dump(ir::SrcDumper *dumper) const
+{
+    std::string str(str_);
+    std::string escaped_str;
+    escaped_str.push_back('\"');
+    for (size_t i = 0, j = str_.Length(); i < j; ++i) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        const char c = str_.Bytes()[i];
+        // check if a given character is printable
+        // the cast is necessary to avoid undefined behaviour
+        if (std::isprint(static_cast<unsigned char>(c)) != 0U) {
+            escaped_str.push_back(c);
+        } else {
+            escaped_str.push_back('\\');
+            if (c == '\n') {
+                escaped_str.push_back('n');
+            } else if (c == '\t') {
+                escaped_str.push_back('t');
+            } else if (c == '\v') {
+                escaped_str.push_back('v');
+            } else if (c == '\f') {
+                escaped_str.push_back('f');
+            } else if (c == '\r') {
+                escaped_str.push_back('r');
+            } else if (c == '\0') {
+                escaped_str.push_back('0');
+            } else {
+                UNREACHABLE();
+            }
+        }
+    }
+    escaped_str.push_back('\"');
+    dumper->Add(escaped_str);
 }
 
 void StringLiteral::Compile(compiler::PandaGen *pg) const

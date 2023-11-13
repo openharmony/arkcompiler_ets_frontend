@@ -18,8 +18,10 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
+#include "macros.h"
 
 namespace panda::es2panda::ir {
 void TSArrayType::TransformChildren(const NodeTransformer &cb)
@@ -35,6 +37,13 @@ void TSArrayType::Iterate(const NodeTraverser &cb) const
 void TSArrayType::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSArrayType"}, {"elementType", element_type_}});
+}
+
+void TSArrayType::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(element_type_);
+    element_type_->Dump(dumper);
+    dumper->Add("[]");
 }
 
 void TSArrayType::Compile([[maybe_unused]] compiler::PandaGen *pg) const

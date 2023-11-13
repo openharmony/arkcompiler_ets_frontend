@@ -20,6 +20,7 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/base/decorator.h"
 #include "ir/typeNode.h"
 #include "ir/expressions/arrayExpression.h"
@@ -138,6 +139,17 @@ void SpreadElement::Dump(ir::AstDumper *dumper) const
                  {"decorators", AstDumper::Optional(decorators_)},
                  {"argument", argument_},
                  {"typeAnnotation", AstDumper::Optional(TypeAnnotation())}});
+}
+
+void SpreadElement::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("...");
+    argument_->Dump(dumper);
+    auto type = TypeAnnotation();
+    if (type != nullptr) {
+        dumper->Add(": ");
+        type->Dump(dumper);
+    }
 }
 
 void SpreadElement::Compile([[maybe_unused]] compiler::PandaGen *pg) const

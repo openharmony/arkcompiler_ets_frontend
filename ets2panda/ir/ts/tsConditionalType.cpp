@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void TSConditionalType::TransformChildren(const NodeTransformer &cb)
@@ -44,6 +45,11 @@ void TSConditionalType::Dump(ir::AstDumper *dumper) const
                  {"extendsType", extends_type_},
                  {"trueType", true_type_},
                  {"falseType", false_type_}});
+}
+
+void TSConditionalType::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSConditionalType");
 }
 
 void TSConditionalType::Compile([[maybe_unused]] compiler::PandaGen *pg) const

@@ -20,6 +20,7 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/astNode.h"
 #include "ir/typeNode.h"
 #include "ir/expression.h"
@@ -54,6 +55,24 @@ void VariableDeclarator::Iterate(const NodeTraverser &cb) const
 void VariableDeclarator::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "VariableDeclarator"}, {"id", id_}, {"init", AstDumper::Nullish(init_)}});
+}
+
+void VariableDeclarator::Dump(ir::SrcDumper *dumper) const
+{
+    if (id_ != nullptr) {
+        id_->Dump(dumper);
+        if (id_->IsAnnotatedExpression()) {
+            auto *type = id_->AsAnnotatedExpression()->TypeAnnotation();
+            if (type != nullptr) {
+                dumper->Add(": ");
+                type->Dump(dumper);
+            }
+        }
+    }
+    if (init_ != nullptr) {
+        dumper->Add(" = ");
+        init_->Dump(dumper);
+    }
 }
 
 void VariableDeclarator::Compile([[maybe_unused]] compiler::PandaGen *pg) const

@@ -19,6 +19,8 @@
 #include "compiler/core/ETSGen.h"
 #include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 ETSLaunchExpression::ETSLaunchExpression(CallExpression *expr)
@@ -39,6 +41,11 @@ void ETSLaunchExpression::Iterate(const NodeTraverser &cb) const
 void ETSLaunchExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ETSLaunchExpression"}, {"expr", expr_}});
+}
+
+void ETSLaunchExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("ETSLaunchExpression");
 }
 
 void ETSLaunchExpression::Compile(compiler::PandaGen *pg) const

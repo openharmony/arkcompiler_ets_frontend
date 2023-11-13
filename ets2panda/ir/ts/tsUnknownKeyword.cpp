@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void TSUnknownKeyword::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -26,6 +28,11 @@ void TSUnknownKeyword::Iterate([[maybe_unused]] const NodeTraverser &cb) const {
 void TSUnknownKeyword::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSUnknownKeyword"}});
+}
+
+void TSUnknownKeyword::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSUnknownKeyword");
 }
 
 void TSUnknownKeyword::Compile(compiler::PandaGen *pg) const

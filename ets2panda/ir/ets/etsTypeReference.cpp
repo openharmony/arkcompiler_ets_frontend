@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/ts/tsQualifiedName.h"
 #include "ir/ets/etsTypeReferencePart.h"
 
@@ -34,7 +35,7 @@ void ETSTypeReference::Iterate(const NodeTraverser &cb) const
     cb(part_);
 }
 
-ir::Identifier *ETSTypeReference::BaseName()
+ir::Identifier *ETSTypeReference::BaseName() const
 {
     ir::ETSTypeReferencePart *part_iter = part_;
 
@@ -60,6 +61,12 @@ ir::Identifier *ETSTypeReference::BaseName()
 void ETSTypeReference::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ETSTypeReference"}, {"part", part_}});
+}
+
+void ETSTypeReference::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(part_ != nullptr);
+    part_->Dump(dumper);
 }
 
 void ETSTypeReference::Compile(compiler::PandaGen *pg) const

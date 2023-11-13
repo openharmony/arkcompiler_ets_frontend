@@ -14,6 +14,7 @@
  */
 
 #include "forUpdateStatement.h"
+#include <cstddef>
 
 #include "varbinder/scope.h"
 #include "compiler/base/condition.h"
@@ -23,6 +24,8 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/dynamicContext.h"
 #include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ForUpdateStatement::TransformChildren(const NodeTransformer &cb)
@@ -64,6 +67,33 @@ void ForUpdateStatement::Dump(ir::AstDumper *dumper) const
                  {"test", AstDumper::Nullish(test_)},
                  {"update", AstDumper::Nullish(update_)},
                  {"body", body_}});
+}
+
+void ForUpdateStatement::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("for ");
+    dumper->Add("(");
+    if (init_ != nullptr) {
+        init_->Dump(dumper);
+    }
+    dumper->Add(";");
+    if (test_ != nullptr) {
+        test_->Dump(dumper);
+    }
+    dumper->Add(";");
+    if (update_ != nullptr) {
+        update_->Dump(dumper);
+    }
+    dumper->Add(") ");
+    dumper->Add("{");
+    if (body_ != nullptr) {
+        dumper->IncrIndent();
+        dumper->Endl();
+        body_->Dump(dumper);
+        dumper->DecrIndent();
+        dumper->Endl();
+    }
+    dumper->Add("}");
 }
 
 void ForUpdateStatement::Compile(compiler::PandaGen *pg) const

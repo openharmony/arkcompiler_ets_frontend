@@ -20,6 +20,7 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/decorator.h"
 #include "ir/expressions/identifier.h"
@@ -47,6 +48,11 @@ void ETSStructDeclaration::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add(
         {{"type", "ETSStructDeclaration"}, {"definition", def_}, {"decorators", AstDumper::Optional(decorators_)}});
+}
+
+void ETSStructDeclaration::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("ETSStructDeclaration");
 }
 
 void ETSStructDeclaration::Compile(compiler::PandaGen *pg) const

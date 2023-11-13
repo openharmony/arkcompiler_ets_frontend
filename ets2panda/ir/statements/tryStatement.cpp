@@ -21,6 +21,7 @@
 #include "compiler/core/dynamicContext.h"
 #include "compiler/base/catchTable.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/base/catchClause.h"
 #include "ir/statements/blockStatement.h"
 
@@ -57,6 +58,31 @@ void TryStatement::Dump(ir::AstDumper *dumper) const
                  {"block", block_},
                  {"handler", catch_clauses_},
                  {"finalizer", AstDumper::Nullish(finalizer_)}});
+}
+
+void TryStatement::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(block_ != nullptr);
+    dumper->Add("try {");
+    dumper->IncrIndent();
+    dumper->Endl();
+    block_->Dump(dumper);
+    dumper->DecrIndent();
+    dumper->Endl();
+    dumper->Add("}");
+    for (auto clause : catch_clauses_) {
+        dumper->Add(" catch ");
+        clause->Dump(dumper);
+    }
+    if (finalizer_ != nullptr) {
+        dumper->Add(" finally {");
+        dumper->IncrIndent();
+        dumper->Endl();
+        finalizer_->Dump(dumper);
+        dumper->DecrIndent();
+        dumper->Endl();
+        dumper->Add("}");
+    }
 }
 
 bool TryStatement::HasDefaultCatchClause() const

@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/regScope.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/spreadElement.h"
 #include "ir/expressions/identifier.h"
@@ -117,6 +118,17 @@ void AssignmentExpression::Dump(ir::AstDumper *dumper) const
     } else {
         dumper->Add({{"type", "AssignmentPattern"}, {"left", left_}, {"right", right_}});
     }
+}
+
+void AssignmentExpression::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(left_);
+    left_->Dump(dumper);
+    dumper->Add(" ");
+    dumper->Add(TokenToString(operator_));
+    dumper->Add(" ");
+    ASSERT(right_);
+    right_->Dump(dumper);
 }
 
 void AssignmentExpression::Compile(compiler::PandaGen *pg) const

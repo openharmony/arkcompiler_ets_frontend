@@ -20,6 +20,8 @@
 #include "compiler/core/pandagen.h"
 #include "varbinder/scope.h"
 #include "util/helpers.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void TSEnumDeclaration::TransformChildren(const NodeTransformer &cb)
@@ -55,6 +57,30 @@ void TSEnumDeclaration::Dump(ir::AstDumper *dumper) const
                  {"id", key_},
                  {"members", members_},
                  {"const", is_const_}});
+}
+
+void TSEnumDeclaration::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(is_const_ == false);
+    ASSERT(key_ != nullptr);
+    dumper->Add("enum ");
+    key_->Dump(dumper);
+    dumper->Add(" {");
+    if (!members_.empty()) {
+        dumper->IncrIndent();
+        dumper->Endl();
+        for (auto member : members_) {
+            member->Dump(dumper);
+            if (member != members_.back()) {
+                dumper->Add(",");
+                dumper->Endl();
+            }
+        }
+        dumper->DecrIndent();
+        dumper->Endl();
+    }
+    dumper->Add("}");
+    dumper->Endl();
 }
 
 // NOTE (csabahurton): this method has not been moved to TSAnalyizer.cpp, because it is not used.

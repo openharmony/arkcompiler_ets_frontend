@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expressions/memberExpression.h"
 
 namespace panda::es2panda::ir {
@@ -35,6 +36,11 @@ void ChainExpression::Iterate(const NodeTraverser &cb) const
 void ChainExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ChainExpression"}, {"expression", expression_}});
+}
+
+void ChainExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("ChainExpression");
 }
 
 void ChainExpression::Compile(compiler::PandaGen *pg) const

@@ -14,7 +14,8 @@
  */
 
 #include "tsMethodSignature.h"
-
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
@@ -42,6 +43,11 @@ void TSMethodSignature::Dump(ir::AstDumper *dumper) const
                  {"params", Params()},
                  {"typeParameters", AstDumper::Optional(TypeParams())},
                  {"typeAnnotation", AstDumper::Optional(ReturnTypeAnnotation())}});
+}
+
+void TSMethodSignature::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSMethodSignature");
 }
 
 void TSMethodSignature::Compile(compiler::PandaGen *pg) const

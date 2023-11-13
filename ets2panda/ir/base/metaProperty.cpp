@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void MetaProperty::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -47,6 +49,11 @@ void MetaProperty::Dump(ir::AstDumper *dumper) const
 void MetaProperty::Compile(compiler::PandaGen *pg) const
 {
     pg->GetAstCompiler()->Compile(this);
+}
+
+void MetaProperty::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("MetaProperty");
 }
 
 void MetaProperty::Compile(compiler::ETSGen *etsg) const

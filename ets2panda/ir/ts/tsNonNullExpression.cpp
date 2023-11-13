@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void TSNonNullExpression::TransformChildren(const NodeTransformer &cb)
@@ -35,6 +36,13 @@ void TSNonNullExpression::Iterate(const NodeTraverser &cb) const
 void TSNonNullExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSNonNullExpression"}, {"expression", expr_}});
+}
+
+void TSNonNullExpression::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(expr_ != nullptr);
+    expr_->Dump(dumper);
+    dumper->Add("!");
 }
 
 void TSNonNullExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const

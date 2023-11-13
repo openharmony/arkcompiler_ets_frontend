@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/typeNode.h"
 
 namespace panda::es2panda::ir {
@@ -37,6 +38,11 @@ void TSTypeAssertion::Iterate(const NodeTraverser &cb) const
 void TSTypeAssertion::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSTypeAssertion"}, {"typeAnnotation", TypeAnnotation()}, {"expression", expression_}});
+}
+
+void TSTypeAssertion::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSTypeAssertion");
 }
 
 void TSTypeAssertion::Compile([[maybe_unused]] compiler::PandaGen *pg) const

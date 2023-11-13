@@ -21,6 +21,8 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
+#include "macros.h"
 
 namespace panda::es2panda::ir {
 void ETSTypeReferencePart::TransformChildren(const NodeTransformer &cb)
@@ -55,6 +57,15 @@ void ETSTypeReferencePart::Dump(ir::AstDumper *dumper) const
                  {"name", name_},
                  {"typeParams", AstDumper::Optional(type_params_)},
                  {"previous", AstDumper::Optional(prev_)}});
+}
+
+void ETSTypeReferencePart::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(name_ != nullptr);
+    name_->Dump(dumper);
+    if (type_params_ != nullptr) {
+        type_params_->Dump(dumper);
+    }
 }
 
 void ETSTypeReferencePart::Compile(compiler::PandaGen *pg) const

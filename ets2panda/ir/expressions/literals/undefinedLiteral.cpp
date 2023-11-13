@@ -20,6 +20,7 @@
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void UndefinedLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -28,6 +29,11 @@ void UndefinedLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {
 void UndefinedLiteral::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "UndefinedLiteral"}, {"value", AstDumper::Property::Constant::PROP_UNDEFINED}});
+}
+
+void UndefinedLiteral::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("undefined");
 }
 
 void UndefinedLiteral::Compile(compiler::PandaGen *pg) const

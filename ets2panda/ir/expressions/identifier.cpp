@@ -20,6 +20,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, ArenaAllocator *const allocator)
@@ -89,6 +91,17 @@ void Identifier::Dump(ir::AstDumper *dumper) const
                  {"typeAnnotation", AstDumper::Optional(TypeAnnotation())},
                  {"optional", AstDumper::Optional(IsOptional())},
                  {"decorators", decorators_}});
+}
+
+void Identifier::Dump(ir::SrcDumper *dumper) const
+{
+    if (IsPrivateIdent()) {
+        dumper->Add("private ");
+    }
+    dumper->Add(std::string(name_));
+    if (IsOptional()) {
+        dumper->Add("?");
+    }
 }
 
 void Identifier::Compile(compiler::PandaGen *pg) const

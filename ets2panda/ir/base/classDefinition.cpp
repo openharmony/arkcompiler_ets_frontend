@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/base/classStaticBlock.h"
 #include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
@@ -128,6 +129,62 @@ void ClassDefinition::Dump(ir::AstDumper *dumper) const
                  {"implements", implements_},
                  {"constructor", AstDumper::Optional(ctor_)},
                  {"body", body_, prop_filter}});
+}
+
+void ClassDefinition::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(ident_ != nullptr);
+
+    if (IsExtern()) {
+        dumper->Add("extern ");
+    }
+
+    if (IsFinal()) {
+        dumper->Add("final ");
+    }
+
+    if (IsAbstract()) {
+        dumper->Add("abstract ");
+    }
+
+    dumper->Add("class ");
+    ident_->Dump(dumper);
+
+    if (type_params_ != nullptr) {
+        dumper->Add("<");
+        type_params_->Dump(dumper);
+        dumper->Add("> ");
+    }
+
+    if (super_class_ != nullptr) {
+        dumper->Add(" extends ");
+        super_class_->Dump(dumper);
+    }
+
+    if (!implements_.empty()) {
+        dumper->Add(" implements ");
+        for (auto interface : implements_) {
+            interface->Dump(dumper);
+            if (interface != implements_.back()) {
+                dumper->Add(", ");
+            }
+        }
+    }
+
+    dumper->Add(" {");
+    if (!body_.empty()) {
+        dumper->IncrIndent();
+        dumper->Endl();
+        for (auto elem : body_) {
+            elem->Dump(dumper);
+            if (elem == body_.back()) {
+                dumper->DecrIndent();
+            }
+            dumper->Endl();
+        }
+    }
+    dumper->Add("}");
+    dumper->Endl();
 }
 
 void ClassDefinition::Compile(compiler::PandaGen *pg) const

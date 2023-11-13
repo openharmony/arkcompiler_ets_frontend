@@ -19,6 +19,7 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ReturnStatement::TransformChildren(const NodeTransformer &cb)
@@ -38,6 +39,16 @@ void ReturnStatement::Iterate(const NodeTraverser &cb) const
 void ReturnStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ReturnStatement"}, {"argument", AstDumper::Nullish(argument_)}});
+}
+
+void ReturnStatement::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("return");
+    if (argument_ != nullptr) {
+        dumper->Add(" ");
+        argument_->Dump(dumper);
+    }
+    dumper->Add(";");
 }
 
 void ReturnStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const

@@ -22,6 +22,7 @@
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void BlockStatement::TransformChildren(const NodeTransformer &cb)
@@ -41,6 +42,17 @@ void BlockStatement::Iterate(const NodeTraverser &cb) const
 void BlockStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", IsProgram() ? "Program" : "BlockStatement"}, {"statements", statements_}});
+}
+
+void BlockStatement::Dump(ir::SrcDumper *dumper) const
+{
+    // NOTE(nsizov): trailing blocks
+    for (auto statement : statements_) {
+        statement->Dump(dumper);
+        if (statement != statements_.back()) {
+            dumper->Endl();
+        }
+    }
 }
 
 void BlockStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const

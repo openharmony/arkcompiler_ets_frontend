@@ -19,6 +19,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 
@@ -118,6 +120,56 @@ void MethodDefinition::Dump(ir::AstDumper *dumper) const
                  {"value", value_},
                  {"overloads", overloads_},
                  {"decorators", decorators_}});
+}
+
+void MethodDefinition::Dump(ir::SrcDumper *dumper) const
+{
+    for (auto method : overloads_) {
+        method->Dump(dumper);
+        dumper->Endl();
+    }
+
+    if (IsPrivate()) {
+        dumper->Add("private ");
+    } else if (IsProtected()) {
+        dumper->Add("protected ");
+    } else if (IsInternal()) {
+        dumper->Add("internal ");
+    } else {
+        dumper->Add("public ");
+    }
+
+    if (IsStatic()) {
+        dumper->Add("static ");
+    }
+
+    if (IsAbstract()) {
+        dumper->Add("abstract ");
+    }
+
+    if (IsFinal()) {
+        dumper->Add("final ");
+    }
+
+    if (IsNative()) {
+        dumper->Add("native ");
+    }
+
+    if (IsAsync()) {
+        dumper->Add("async ");
+    }
+
+    if (IsOverride()) {
+        dumper->Add("override ");
+    }
+
+    if (key_ != nullptr) {
+        key_->Dump(dumper);
+    }
+
+    if (value_ != nullptr) {
+        value_->Dump(dumper);
+    }
 }
 
 void MethodDefinition::Compile(compiler::PandaGen *pg) const

@@ -21,6 +21,7 @@
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/literals/bigIntLiteral.h"
 #include "ir/expressions/literals/numberLiteral.h"
@@ -41,6 +42,12 @@ void UnaryExpression::Iterate(const NodeTraverser &cb) const
 void UnaryExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "UnaryExpression"}, {"operator", operator_}, {"prefix", true}, {"argument", argument_}});
+}
+
+void UnaryExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add(TokenToString(operator_));
+    argument_->Dump(dumper);
 }
 
 void UnaryExpression::Compile(compiler::PandaGen *pg) const

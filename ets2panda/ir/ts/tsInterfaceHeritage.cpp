@@ -14,6 +14,7 @@
  */
 
 #include "tsInterfaceHeritage.h"
+#include <cstddef>
 
 #include "varbinder/scope.h"
 #include "checker/TSchecker.h"
@@ -21,6 +22,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "ir/ts/tsTypeReference.h"
@@ -42,6 +44,12 @@ void TSInterfaceHeritage::Dump(ir::AstDumper *dumper) const
         {"type", "TSInterfaceHeritage"},
         {"expression", expr_},
     });
+}
+
+void TSInterfaceHeritage::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(expr_ != nullptr);
+    expr_->Dump(dumper);
 }
 
 void TSInterfaceHeritage::Compile([[maybe_unused]] compiler::PandaGen *pg) const

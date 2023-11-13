@@ -20,6 +20,8 @@
 #include "compiler/core/regScope.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void RegExpLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -28,6 +30,11 @@ void RegExpLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 void RegExpLiteral::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "RegExpLiteral"}, {"source", pattern_}, {"flags", flags_str_}});
+}
+
+void RegExpLiteral::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add(std::string(pattern_));
 }
 
 void RegExpLiteral::Compile(compiler::PandaGen *pg) const

@@ -20,6 +20,7 @@
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/base/templateElement.h"
 
 namespace panda::es2panda::ir {
@@ -75,6 +76,11 @@ void TemplateLiteral::Iterate(const NodeTraverser &cb) const
 void TemplateLiteral::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TemplateLiteral"}, {"expressions", expressions_}, {"quasis", quasis_}});
+}
+
+void TemplateLiteral::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TemplateLiteral");
 }
 
 void TemplateLiteral::Compile([[maybe_unused]] compiler::PandaGen *pg) const

@@ -17,6 +17,7 @@
 
 #include "checker/ETSchecker.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ETSUnionType::TransformChildren(const NodeTransformer &cb)
@@ -36,6 +37,16 @@ void ETSUnionType::Iterate(const NodeTraverser &cb) const
 void ETSUnionType::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ETSUnionType"}, {"types", types_}});
+}
+
+void ETSUnionType::Dump(ir::SrcDumper *dumper) const
+{
+    for (auto type : types_) {
+        type->Dump(dumper);
+        if (type != types_.back()) {
+            dumper->Add(" | ");
+        }
+    }
 }
 
 void ETSUnionType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}

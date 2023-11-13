@@ -14,10 +14,13 @@
  */
 
 #include "numberLiteral.h"
+#include <string>
 
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void NumberLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -26,6 +29,29 @@ void NumberLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 void NumberLiteral::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "NumberLiteral"}, {"value", number_}});
+}
+
+void NumberLiteral::Dump(ir::SrcDumper *dumper) const
+{
+    if (number_.IsInt()) {
+        dumper->Add(number_.GetInt());
+        return;
+    }
+
+    if (number_.IsLong()) {
+        dumper->Add(number_.GetLong());
+        return;
+    }
+
+    if (number_.IsFloat()) {
+        dumper->Add(number_.GetFloat());
+        return;
+    }
+
+    if (number_.IsDouble()) {
+        dumper->Add(number_.GetDouble());
+        return;
+    }
 }
 
 void NumberLiteral::Compile(compiler::PandaGen *pg) const

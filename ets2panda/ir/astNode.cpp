@@ -15,6 +15,7 @@
 
 #include "astNode.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "typeNode.h"
 
 namespace panda::es2panda::ir {
@@ -113,6 +114,12 @@ AstNode *AstNode::FindChild(const NodePredicate &cb) const
 std::string AstNode::DumpJSON() const
 {
     ir::AstDumper dumper {this};
+    return dumper.Str();
+}
+
+std::string AstNode::DumpEtsSrc() const
+{
+    ir::SrcDumper dumper {this};
     return dumper.Str();
 }
 }  // namespace panda::es2panda::ir

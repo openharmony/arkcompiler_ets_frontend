@@ -26,6 +26,7 @@
 #include "ir/base/methodDefinition.h"
 #include "ir/statements/blockStatement.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expressions/callExpression.h"
 
 namespace panda::es2panda::ir {
@@ -35,6 +36,11 @@ void ThisExpression::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 void ThisExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ThisExpression"}});
+}
+
+void ThisExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("this");
 }
 
 void ThisExpression::Compile(compiler::PandaGen *pg) const

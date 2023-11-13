@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterInstantiation.h"
 
@@ -56,6 +57,11 @@ void TSImportType::Dump(ir::AstDumper *dumper) const
                  {"qualifier", AstDumper::Optional(qualifier_)},
                  {"typeParameters", AstDumper::Optional(type_params_)},
                  {"isTypeOf", is_typeof_}});
+}
+
+void TSImportType::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSImportType");
 }
 
 void TSImportType::Compile([[maybe_unused]] compiler::PandaGen *pg) const

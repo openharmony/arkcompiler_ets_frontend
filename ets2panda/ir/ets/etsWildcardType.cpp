@@ -20,6 +20,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/ets/etsTypeReference.h"
 
 namespace panda::es2panda::ir {
@@ -43,6 +44,11 @@ void ETSWildcardType::Dump(ir::AstDumper *dumper) const
                  {"typeReference", AstDumper::Optional(type_reference_)},
                  {"in", AstDumper::Optional(IsIn())},
                  {"out", AstDumper::Optional(IsOut())}});
+}
+
+void ETSWildcardType::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("ETSWildcardType");
 }
 
 void ETSWildcardType::Compile(compiler::PandaGen *pg) const

@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ImportSpecifier::TransformChildren(const NodeTransformer &cb)
@@ -39,6 +41,11 @@ void ImportSpecifier::Iterate(const NodeTraverser &cb) const
 void ImportSpecifier::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ImportSpecifier"}, {"local", ir::AstDumper::Optional(local_)}, {"imported", imported_}});
+}
+
+void ImportSpecifier::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("ImportSpecifier");
 }
 
 void ImportSpecifier::Compile(compiler::PandaGen *pg) const

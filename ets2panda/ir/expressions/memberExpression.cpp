@@ -19,6 +19,8 @@
 #include "checker/ets/castingContext.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 MemberExpression::MemberExpression([[maybe_unused]] Tag const tag, MemberExpression const &other,
@@ -60,6 +62,29 @@ void MemberExpression::Dump(ir::AstDumper *dumper) const
                  {"property", property_},
                  {"computed", computed_},
                  {"optional", IsOptional()}});
+}
+
+void MemberExpression::Dump(ir::SrcDumper *dumper) const
+{
+    ASSERT(object_ != nullptr);
+    ASSERT(property_ != nullptr);
+
+    object_->Dump(dumper);
+    if (IsOptional()) {
+        dumper->Add("?");
+    }
+    if ((MemberExpressionKind::ELEMENT_ACCESS & kind_) != 0U) {
+        dumper->Add("[");
+        property_->Dump(dumper);
+        dumper->Add("]");
+    } else {
+        dumper->Add(".");
+        property_->Dump(dumper);
+    }
+    if ((parent_ != nullptr) && (parent_->IsBlockStatement() || parent_->IsBlockExpression())) {
+        dumper->Add(";");
+        dumper->Endl();
+    }
 }
 
 void MemberExpression::LoadRhs(compiler::PandaGen *pg) const

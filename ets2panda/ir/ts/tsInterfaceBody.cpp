@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void TSInterfaceBody::TransformChildren(const NodeTransformer &cb)
@@ -38,6 +39,13 @@ void TSInterfaceBody::Iterate(const NodeTraverser &cb) const
 void TSInterfaceBody::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSInterfaceBody"}, {"body", body_}});
+}
+
+void TSInterfaceBody::Dump(ir::SrcDumper *dumper) const
+{
+    for (auto b : body_) {
+        b->Dump(dumper);
+    }
 }
 
 void TSInterfaceBody::Compile([[maybe_unused]] compiler::PandaGen *pg) const

@@ -58,6 +58,11 @@ void TSAsExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSAsExpression"}, {"expression", expression_}, {"typeAnnotation", TypeAnnotation()}});
 }
 
+void TSAsExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSAsExpression");
+}
+
 void TSAsExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
     pg->GetAstCompiler()->Compile(this);

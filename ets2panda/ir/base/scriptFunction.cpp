@@ -19,6 +19,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 
@@ -76,6 +78,49 @@ void ScriptFunction::Dump(ir::AstDumper *dumper) const
         dumper->Add({"throwMarker", "throws"});
     } else if (IsRethrowing()) {
         dumper->Add({"throwMarker", "rethrows"});
+    }
+}
+
+void ScriptFunction::Dump(ir::SrcDumper *dumper) const
+{
+    if (TypeParams() != nullptr) {
+        TypeParams()->Dump(dumper);
+    }
+    dumper->Add("(");
+    for (auto param : Params()) {
+        param->Dump(dumper);
+        if (param != Params().back()) {
+            dumper->Add(", ");
+        }
+    }
+    dumper->Add(")");
+    if (ReturnTypeAnnotation() != nullptr) {
+        dumper->Add(": ");
+        ReturnTypeAnnotation()->Dump(dumper);
+    }
+
+    if (IsThrowing()) {
+        dumper->Add(" throws");
+    }
+
+    if (HasBody()) {
+        if (body_->IsBlockStatement()) {
+            dumper->Add(" {");
+            if (!body_->AsBlockStatement()->Statements().empty()) {
+                dumper->IncrIndent();
+                dumper->Endl();
+                body_->Dump(dumper);
+                dumper->DecrIndent();
+                dumper->Endl();
+            }
+            dumper->Add("}");
+        } else {
+            dumper->Add(" ");
+            body_->Dump(dumper);
+        }
+    }
+    if (!IsArrow()) {
+        dumper->Endl();
     }
 }
 

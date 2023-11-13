@@ -104,7 +104,9 @@ struct CompilerOptions {
     std::vector<std::string> plugins {};
     std::unordered_set<std::string> skip_phases {};
     std::unordered_set<std::string> dump_before_phases {};
+    std::unordered_set<std::string> dump_ets_src_before_phases {};
     std::unordered_set<std::string> dump_after_phases {};
+    std::unordered_set<std::string> dump_ets_src_after_phases {};
     std::shared_ptr<ArkTsConfig> arkts_config {};
     CompilationMode compilation_mode {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)

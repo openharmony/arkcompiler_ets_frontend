@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/typeNode.h"
 #include "ir/expression.h"
 
@@ -45,6 +46,10 @@ void TSTypePredicate::Dump(ir::AstDumper *dumper) const
                  {"parameterName", parameter_name_},
                  {"typeAnnotation", AstDumper::Nullish(type_annotation_)},
                  {"asserts", asserts_}});
+}
+void TSTypePredicate::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSTypePredicate");
 }
 
 void TSTypePredicate::Compile([[maybe_unused]] compiler::PandaGen *pg) const

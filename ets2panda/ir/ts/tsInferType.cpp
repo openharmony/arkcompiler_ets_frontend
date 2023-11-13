@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/ts/tsTypeParameter.h"
 
 namespace panda::es2panda::ir {
@@ -35,6 +36,11 @@ void TSInferType::Iterate(const NodeTraverser &cb) const
 void TSInferType::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSInferType"}, {"typeParameter", type_param_}});
+}
+
+void TSInferType::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSInferType");
 }
 
 void TSInferType::Compile([[maybe_unused]] compiler::PandaGen *pg) const

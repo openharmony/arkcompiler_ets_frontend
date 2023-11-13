@@ -19,6 +19,8 @@
 #include "varbinder/scope.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
@@ -45,6 +47,11 @@ void FunctionDeclaration::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", func_->IsOverload() ? "TSDeclareFunction" : "FunctionDeclaration"},
                  {"decorators", AstDumper::Optional(decorators_)},
                  {"function", func_}});
+}
+
+void FunctionDeclaration::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("FunctionDeclaration");
 }
 
 void FunctionDeclaration::Compile(compiler::PandaGen *pg) const

@@ -19,6 +19,8 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "util/helpers.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 NewExpression::NewExpression([[maybe_unused]] Tag const tag, NewExpression const &other,
@@ -67,6 +69,11 @@ void NewExpression::Iterate(const NodeTraverser &cb) const
 void NewExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "NewExpression"}, {"callee", callee_}, {"arguments", arguments_}});
+}
+
+void NewExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("NewExpression");
 }
 
 void NewExpression::Compile(compiler::PandaGen *pg) const

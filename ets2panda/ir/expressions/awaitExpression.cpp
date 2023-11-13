@@ -19,6 +19,7 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void AwaitExpression::TransformChildren(const NodeTransformer &cb)
@@ -38,6 +39,11 @@ void AwaitExpression::Iterate(const NodeTraverser &cb) const
 void AwaitExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "AwaitExpression"}, {"argument", AstDumper::Nullish(argument_)}});
+}
+
+void AwaitExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("AwaitExpression");
 }
 
 void AwaitExpression::Compile(compiler::PandaGen *pg) const

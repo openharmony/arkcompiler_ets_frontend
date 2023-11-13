@@ -16,6 +16,7 @@
 #include "blockExpression.h"
 
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/ETSchecker.h"
 #include "ir/astNode.h"
@@ -68,6 +69,16 @@ void BlockExpression::Iterate(const NodeTraverser &cb) const
 void BlockExpression::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "BlockExpression"}, {"statements", statements_}});
+}
+
+void BlockExpression::Dump(ir::SrcDumper *dumper) const
+{
+    for (auto *statement : statements_) {
+        statement->Dump(dumper);
+        if (statement != statements_.back()) {
+            dumper->Endl();
+        }
+    }
 }
 
 void BlockExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const

@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void BigIntLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -27,6 +28,11 @@ void BigIntLiteral::Iterate([[maybe_unused]] const NodeTraverser &cb) const {}
 void BigIntLiteral::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "BigIntLiteral"}, {"value", src_}});
+}
+
+void BigIntLiteral::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add(std::string(src_));
 }
 
 void BigIntLiteral::Compile(compiler::PandaGen *pg) const

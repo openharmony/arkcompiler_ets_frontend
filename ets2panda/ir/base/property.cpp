@@ -19,6 +19,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 Property::Property([[maybe_unused]] Tag const tag, Property const &other, Expression *const key,
@@ -175,6 +177,11 @@ void Property::Compile(compiler::PandaGen *pg) const
 void Property::Compile(compiler::ETSGen *etsg) const
 {
     etsg->GetAstCompiler()->Compile(this);
+}
+
+void Property::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("Property");
 }
 
 checker::Type *Property::Check(checker::TSChecker *checker)

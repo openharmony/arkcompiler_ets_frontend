@@ -19,6 +19,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ImportNamespaceSpecifier::TransformChildren(const NodeTransformer &cb)
@@ -34,6 +36,11 @@ void ImportNamespaceSpecifier::Iterate(const NodeTraverser &cb) const
 void ImportNamespaceSpecifier::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ImportNamespaceSpecifier"}, {"local", local_}});
+}
+
+void ImportNamespaceSpecifier::Dump(ir::SrcDumper *dumper) const
+{
+    local_->Dump(dumper);
 }
 
 void ImportNamespaceSpecifier::Compile(compiler::PandaGen *pg) const

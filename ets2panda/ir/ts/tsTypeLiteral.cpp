@@ -18,6 +18,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 #include "varbinder/variable.h"
 #include "varbinder/declaration.h"
@@ -42,6 +43,11 @@ void TSTypeLiteral::Iterate(const NodeTraverser &cb) const
 void TSTypeLiteral::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSTypeLiteral"}, {"members", members_}});
+}
+
+void TSTypeLiteral::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSTypeLiteral");
 }
 
 void TSTypeLiteral::Compile([[maybe_unused]] compiler::PandaGen *pg) const

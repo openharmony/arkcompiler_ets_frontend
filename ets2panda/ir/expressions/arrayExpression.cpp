@@ -24,11 +24,12 @@
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/base/decorator.h"
+#include "ir/srcDump.h"
+#include "ir/typeNode.h"
 #include "ir/base/spreadElement.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/objectExpression.h"
-#include "ir/typeNode.h"
 #include "util/helpers.h"
 
 namespace panda::es2panda::ir {
@@ -202,6 +203,18 @@ void ArrayExpression::Dump(ir::AstDumper *dumper) const
                  {"elements", elements_},
                  {"typeAnnotation", AstDumper::Optional(TypeAnnotation())},
                  {"optional", AstDumper::Optional(optional_)}});
+}
+
+void ArrayExpression::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("[");
+    for (auto element : elements_) {
+        element->Dump(dumper);
+        if (element != elements_.back()) {
+            dumper->Add(", ");
+        }
+    }
+    dumper->Add("]");
 }
 
 void ArrayExpression::Compile(compiler::PandaGen *pg) const

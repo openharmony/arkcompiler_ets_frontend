@@ -50,6 +50,22 @@ void ETSTuple::Dump(ir::AstDumper *const dumper) const
                  {"spreadType", AstDumper::Nullish(spread_type_)}});
 }
 
+void ETSTuple::Dump(ir::SrcDumper *const dumper) const
+{
+    dumper->Add("[");
+    for (auto type_annot : type_annotation_list_) {
+        type_annot->Dump(dumper);
+        if (type_annot != type_annotation_list_.back() || spread_type_ != nullptr) {
+            dumper->Add(", ");
+        }
+    }
+    if (spread_type_ != nullptr) {
+        dumper->Add("...");
+        spread_type_->Dump(dumper);
+    }
+    dumper->Add(("]"));
+}
+
 void ETSTuple::Compile([[maybe_unused]] compiler::PandaGen *const pg) const {}
 void ETSTuple::Compile([[maybe_unused]] compiler::ETSGen *const etsg) const {}
 

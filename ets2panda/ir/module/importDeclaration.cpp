@@ -18,6 +18,8 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
+#include "ir/srcDump.h"
 
 namespace panda::es2panda::ir {
 void ImportDeclaration::TransformChildren(const NodeTransformer &cb)
@@ -41,6 +43,23 @@ void ImportDeclaration::Iterate(const NodeTraverser &cb) const
 void ImportDeclaration::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ImportDeclaration"}, {"source", source_}, {"specifiers", specifiers_}});
+}
+
+void ImportDeclaration::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("import ");
+    for (auto specifier : specifiers_) {
+        specifier->Dump(dumper);
+        if (specifier != specifiers_.back()) {
+            dumper->Add(", ");
+        } else {
+            dumper->Add(" ");
+        }
+    }
+    dumper->Add("from ");
+    source_->Dump(dumper);
+    dumper->Add(";");
+    dumper->Endl();
 }
 
 void ImportDeclaration::Compile(compiler::PandaGen *pg) const

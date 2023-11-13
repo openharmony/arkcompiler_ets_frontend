@@ -19,6 +19,7 @@
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
+#include "ir/srcDump.h"
 #include "ir/expression.h"
 
 namespace panda::es2panda::ir {
@@ -43,6 +44,11 @@ void TSParameterProperty::Dump(ir::AstDumper *dumper) const
                  {"static", static_},
                  {"export", export_},
                  {"parameter", parameter_}});
+}
+
+void TSParameterProperty::Dump(ir::SrcDumper *dumper) const
+{
+    dumper->Add("TSParameterProperty");
 }
 
 void TSParameterProperty::Compile([[maybe_unused]] compiler::PandaGen *pg) const
