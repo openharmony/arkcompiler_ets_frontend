@@ -26,16 +26,16 @@ case "$ARGUMENT" in
 esac
 done
 
-python $PANDA_ROOT/plugins/ecmascript/es2panda/scripts/test_runner.py \
+python $PANDA_ROOT/tools/es2panda/scripts/test_runner.py \
     --builddir $PANDA_BINARY_ROOT --arkdir $PANDA_ROOT --all
 
-gcov $PANDA_BINARY_ROOT/plugins/ecmascript/es2panda/CMakeFiles/es2panda-lib.dir/*/*
+gcov $PANDA_BINARY_ROOT/tools/es2panda/CMakeFiles/es2panda-lib.dir/*/*
 
 if [ -x "$(command -v gcovr)" ]; then
     echo "gcovr found"
     gcovr --version
-    gcovr -v -r $PANDA_ROOT/plugins/ecmascript/es2panda \
-        -e $PANDA_ROOT/plugins/ecmascript/es2panda/test \
+    gcovr -v -r $PANDA_ROOT/tools/es2panda/ \
+        -e $PANDA_ROOT/tools/es2panda/test \
         --object-directory=$PANDA_BINARY_ROOT --html-details --html -o report.html
 
 else
