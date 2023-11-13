@@ -1,0 +1,1 @@
+SyntaxError: Variable 'foo' has already been declared. [class-static-field-redeclaration.ets:18:12]
