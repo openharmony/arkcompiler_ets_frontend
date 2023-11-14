@@ -328,7 +328,7 @@ std::string ArkTsConfig::ResolvePath(const std::string &path)
         size_t pos = path.rfind(trimmed_alias, 0);
         if (pos == 0) {
             std::string resolved = path;
-            // TODO(ivagin): arktsconfig contains array of paths for each prefix, for now just get first one
+            // NOTE(ivagin): arktsconfig contains array of paths for each prefix, for now just get first one
             std::string new_prefix = TrimPath(paths[0]);
             resolved.replace(pos, trimmed_alias.length(), new_prefix);
             return resolved;

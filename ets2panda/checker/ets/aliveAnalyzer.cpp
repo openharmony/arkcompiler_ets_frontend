@@ -428,7 +428,7 @@ void AliveAnalyzer::AnalyzeSwitch(const ir::SwitchStatement *switch_stmt)
         AnalyzeStats(case_clause->Consequent());
 
         if (status_ == LivenessStatus::ALIVE && !case_clause->Consequent().empty() && i < size - 1) {
-            // NOTE Add lint categories and option to enable/disable compiler warnings
+            // NOTE(user) Add lint categories and option to enable/disable compiler warnings
             checker_->Warning("Possible fall-through into case", case_clause->Start());
         }
     }

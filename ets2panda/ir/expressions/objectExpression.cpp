@@ -676,7 +676,7 @@ checker::Type *ObjectExpression::Check(checker::TSChecker *checker)
         checker::Type *const spread_type = it->AsSpreadElement()->Argument()->Check(checker);
         seen_spread = true;
 
-        // N OTE: aszilagyi. handle union of object types
+        // NOTE: aszilagyi. handle union of object types
         if (!spread_type->IsObjectType()) {
             checker->ThrowTypeError("Spread types may only be created from object types.", it->Start());
         }
