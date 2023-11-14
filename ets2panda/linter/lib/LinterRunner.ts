@@ -21,7 +21,7 @@ import { faultDesc } from './FaultDesc';
 import { faultsAttrs } from './FaultAttrs';
 import type { LintRunResult } from './LintRunResult';
 import * as path from 'node:path';
-import { compile } from './CompilerWrapper';
+import { Compiler } from './Compiler';
 import type { LintOptions } from './LintOptions';
 import type { CommandLineOptions } from './CommandLineOptions';
 import { AutofixInfoSet } from './Autofixer';
@@ -137,7 +137,7 @@ export function createLinter(options: LintOptions): TSCCompiledProgram {
   if (options.tscDiagnosticsLinter) {
     return options.tscDiagnosticsLinter;
   }
-  const tsProgram = options.tsProgram ?? compile(options, getStrictOptions());
+  const tsProgram = options.tsProgram ?? Compiler.compile(options, getStrictOptions());
   if (options.realtimeLint) {
     return new TSCCompiledProgramSimple(tsProgram);
   }

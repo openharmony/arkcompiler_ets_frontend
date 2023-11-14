@@ -13,20 +13,25 @@
  * limitations under the License.
  */
 
-import { TypeScriptLinter } from './TypeScriptLinter';
-import { lint } from './LinterRunner';
+import { Logger } from '../lib/Logger';
+import { LoggerImpl } from './LoggerImpl';
+Logger.init(new LoggerImpl());
+
+import { Compiler } from '../lib/Compiler';
+import { CompilerImpl } from './CompilerImpl';
+Compiler.init(new CompilerImpl());
+
+import { TypeScriptLinter } from '../lib/TypeScriptLinter';
+import { lint } from '../lib/LinterRunner';
 import { parseCommandLine } from './CommandLineParser';
-import type { Autofix } from './Autofixer';
-import Logger from '../utils/logger';
+import type { Autofix } from '../lib/Autofixer';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as ts from 'typescript';
-import type { CommandLineOptions } from './CommandLineOptions';
+import type { CommandLineOptions } from '../lib/CommandLineOptions';
 
 const TEST_DIR = 'test';
 const TAB = '    ';
-
-const logger = Logger.getLogger();
 
 interface TestNodeInfo {
   line: number;
@@ -76,7 +81,7 @@ function runTests(testDirs: string[]): number {
         x.trimEnd().endsWith(ts.Extension.Tsx)
       );
     });
-    logger.info(`\nProcessing "${testDir}" directory:\n`);
+    Logger.info(`\nProcessing "${testDir}" directory:\n`);
     // Run each test in Strict, Autofix, and Relax mode:
     for (const testFile of testFiles) {
       if (runTest(testDir, testFile, Mode.STRICT)) {
@@ -99,8 +104,8 @@ function runTests(testDirs: string[]): number {
       }
     }
   }
-  logger.info(`\nSUMMARY: ${passed + failed} total, ${passed} passed or skipped, ${failed} failed.`);
-  logger.info(failed > 0 ? '\nTEST FAILED' : '\nTEST SUCCESSFUL');
+  Logger.info(`\nSUMMARY: ${passed + failed} total, ${passed} passed or skipped, ${failed} failed.`);
+  Logger.info(failed > 0 ? '\nTEST FAILED' : '\nTEST SUCCESSFUL');
   process.exit(hasComparisonFailures ? -1 : 0);
 }
 
@@ -143,16 +148,16 @@ function compareExpectedAndActual(testDir: string, testFile: string, mode: Mode,
     if (!expectedResult?.nodes || expectedResult.nodes.length !== resultNodes.length) {
       const expectedResultCount = expectedResult?.nodes ? expectedResult.nodes.length : 0;
       diff = `Expected count: ${expectedResultCount} vs actual count: ${resultNodes.length}`;
-      logger.info(`${TAB}${diff}`);
+      Logger.info(`${TAB}${diff}`);
     } else {
       diff = expectedAndActualMatch(expectedResult.nodes, resultNodes);
     }
 
     if (diff) {
-      logger.info(`${TAB}Test failed. Expected and actual results differ.`);
+      Logger.info(`${TAB}Test failed. Expected and actual results differ.`);
     }
   } catch (error) {
-    logger.info(`${TAB}Test failed. `, error);
+    Logger.info(`${TAB}Test failed. ` + error);
   }
 
   return diff;
@@ -160,10 +165,10 @@ function compareExpectedAndActual(testDir: string, testFile: string, mode: Mode,
 
 function runTest(testDir: string, testFile: string, mode: Mode): boolean {
   if (mode === Mode.AUTOFIX && fs.existsSync(path.join(testDir, testFile + AUTOFIX_SKIP_EXT))) {
-    logger.info(`Skipping test ${testFile} (${Mode[mode]} mode)`);
+    Logger.info(`Skipping test ${testFile} (${Mode[mode]} mode)`);
     return false;
   }
-  logger.info(`Running test ${testFile} (${Mode[mode]} mode)`);
+  Logger.info(`Running test ${testFile} (${Mode[mode]} mode)`);
 
   TypeScriptLinter.initGlobals();
 
@@ -271,7 +276,7 @@ ${expectedNode}
 Actual:
 ${actualNode}`;
 
-  logger.info(diff);
+  Logger.info(diff);
   return diff;
 }
 

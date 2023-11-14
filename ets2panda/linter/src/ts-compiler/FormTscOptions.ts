@@ -14,7 +14,7 @@
  */
 
 import * as ts from 'typescript';
-import type { CommandLineOptions } from '../CommandLineOptions';
+import type { CommandLineOptions } from '../../lib/CommandLineOptions';
 
 export function formTscOptions(cmdOptions: CommandLineOptions, extraOptions?: unknown): ts.CreateProgramOptions {
   if (cmdOptions.parsedConfigFile) {

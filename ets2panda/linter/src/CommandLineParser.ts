@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
-import Logger from '../utils/logger';
-import { logTscDiagnostic } from './utils/functions/LogTscDiagnostic';
-import { decodeAutofixInfo } from './utils/functions/LinterInfo';
-import type { CommandLineOptions } from './CommandLineOptions';
-import { AUTOFIX_ALL } from './Autofixer';
+import { Logger } from '../lib/Logger';
+import { logTscDiagnostic } from '../lib/utils/functions/LogTscDiagnostic';
+import { decodeAutofixInfo } from '../lib/utils/functions/LinterInfo';
+import type { CommandLineOptions } from '../lib/CommandLineOptions';
+import { AUTOFIX_ALL } from '../lib/Autofixer';
 import { Command, Option } from 'commander';
 import * as ts from 'typescript';
 import * as fs from 'node:fs';
@@ -27,8 +27,6 @@ const TS_EXT = '.ts';
 const TSX_EXT = '.tsx';
 const ETS_EXT = '.ets';
 const JSON_EXT = '.json';
-
-const logger = Logger.getLogger();
 
 let inputFiles: string[];
 let responseFile = '';
@@ -132,7 +130,7 @@ export function parseCommandLine(commandLineArgs: string[]): CommandLineOptions 
       cmdArgs.push(...commandLineArgs);
       program.parse(cmdArgs);
     } catch (error) {
-      logger.error('Failed to read response file: ', error);
+      Logger.error('Failed to read response file: ' + error);
       process.exit(-1);
     }
   }
@@ -146,7 +144,7 @@ function doProjectFolderArg(prjFolders: string[], opts: CommandLineOptions): voi
     try {
       opts.inputFiles.push(...getFiles(prjFolderPath));
     } catch (error) {
-      logger.error('Failed to read folder: ', error);
+      Logger.error('Failed to read folder: ' + error);
       process.exit(-1);
     }
   }
@@ -174,12 +172,12 @@ function doProjectArg(cfgPath: string, opts: CommandLineOptions): void {
 
     if (diagnostics.length > 0) {
       // Log all diagnostic messages and exit program.
-      logger.error('Failed to read config file.');
-      logTscDiagnostic(diagnostics, logger.info);
+      Logger.error('Failed to read config file.');
+      logTscDiagnostic(diagnostics, Logger.info);
       process.exit(-1);
     }
   } catch (error) {
-    logger.error('Failed to read config file: ', error);
+    Logger.error('Failed to read config file: ' + error);
     process.exit(-1);
   }
 }

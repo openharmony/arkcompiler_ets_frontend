@@ -18,7 +18,7 @@ import type { ProblemInfo } from '../ProblemInfo';
 import { ProblemSeverity } from '../ProblemSeverity';
 import type { LintOptions } from '../LintOptions';
 import { TypeScriptDiagnosticsExtractor } from './TypeScriptDiagnosticsExtractor';
-import { compile } from '../CompilerWrapper';
+import { Compiler } from '../Compiler';
 import { FaultID } from '../Problems';
 import { faultsAttrs } from '../FaultAttrs';
 
@@ -94,7 +94,7 @@ function getTwoCompiledVersions(
 
   const wasStrict = inverseStrictOptions(compilerOptions);
   const inversedOptions = getStrictOptions(!wasStrict);
-  const withInversedOptions = compile(options, inversedOptions);
+  const withInversedOptions = Compiler.compile(options, inversedOptions);
 
   return {
     strict: wasStrict ? program : withInversedOptions,

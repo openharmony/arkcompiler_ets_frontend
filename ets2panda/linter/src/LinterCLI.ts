@@ -13,22 +13,20 @@
  * limitations under the License.
  */
 
-import { TypeScriptLinter } from './TypeScriptLinter';
+import { TypeScriptLinter } from '../lib/TypeScriptLinter';
 import { parseCommandLine } from './CommandLineParser';
-import Logger from '../utils/logger';
+import { Logger } from '../lib/Logger';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as readline from 'node:readline';
 import * as path from 'node:path';
-import type { CommandLineOptions } from './CommandLineOptions';
-import { lint } from './LinterRunner';
-
-const logger = Logger.getLogger();
+import type { CommandLineOptions } from '../lib/CommandLineOptions';
+import { lint } from '../lib/LinterRunner';
 
 export function run(): void {
   const commandLineArgs = process.argv.slice(2);
   if (commandLineArgs.length === 0) {
-    logger.info('Command line error: no arguments');
+    Logger.info('Command line error: no arguments');
     process.exit(-1);
   }
 
@@ -90,9 +88,9 @@ function runIDEMode(cmdOptions: CommandLineOptions): void {
           autofix: x.autofix
         };
       });
-      logger.info(`{"linter messages":${JSON.stringify(jsonMessage)}}`);
+      Logger.info(`{"linter messages":${JSON.stringify(jsonMessage)}}`);
     } else {
-      logger.error('Unexpected error: could not lint file');
+      Logger.error('Unexpected error: could not lint file');
     }
     fs.unlinkSync(tmpFileName);
   });

@@ -21,9 +21,9 @@
     "test_main": "npm run compile && rimraf test/results && node build/src/TestRunner.js test",
     "test_rules": "npm run compile && rimraf test_rules/results && node build/src/TestRunner.js test_rules",
     "update-tests": "node scripts/update-test-results.mjs test test_rules",
-    "eslint-check": "npx eslint --ext .ts src",
+    "eslint-check": "npx eslint --ext .ts src lib",
     "eslint-fix": "npm run eslint-check -- --fix",
-    "prettier-fix": "prettier src --write",
+    "prettier-fix": "prettier src lib --write",
     "fix": "npm run prettier-fix && npm run eslint-fix"
   },
   "dependencies": {

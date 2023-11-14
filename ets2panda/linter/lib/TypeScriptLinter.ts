@@ -25,7 +25,7 @@ import type { Autofix, AutofixInfoSet } from './Autofixer';
 import * as Autofixer from './Autofixer';
 import type { ProblemInfo } from './ProblemInfo';
 import { ProblemSeverity } from './ProblemSeverity';
-import Logger from '../utils/logger';
+import { Logger } from './Logger';
 import { ARKUI_DECORATORS } from './utils/consts/ArkUIDecorators';
 import { LIMITED_STD_GLOBAL_FUNC } from './utils/consts/LimitedStdGlobalFunc';
 import { LIMITED_STD_OBJECT_API } from './utils/consts/LimitedStdObjectAPI';
@@ -58,8 +58,6 @@ import {
 } from './utils/functions/LibraryTypeCallDiagnosticChecker';
 import { forEachNodeInSubtree } from './utils/functions/ForEachNodeInSubtree';
 
-const logger = Logger.getLogger();
-
 export function consoleLog(...args: unknown[]): void {
   if (TypeScriptLinter.ideMode) {
     return;
@@ -68,7 +66,7 @@ export function consoleLog(...args: unknown[]): void {
   for (let k = 0; k < args.length; k++) {
     outLine += `${args[k]} `;
   }
-  logger.info(outLine);
+  Logger.info(outLine);
 }
 
 export class TypeScriptLinter {
@@ -202,7 +200,7 @@ export class TypeScriptLinter {
     } else {
       const faultDescr = faultDesc[faultId];
       const faultType = LinterConfig.tsSyntaxKindNames[node.kind];
-      logger.info(
+      Logger.info(
         `Warning: ${this.sourceFile!.fileName} (${line}, ${character}): ${faultDescr ? faultDescr : faultType}`
       );
     }
@@ -1456,7 +1454,7 @@ export class TypeScriptLinter {
 
   private handleElementAccessExpression(node: ts.Node): void {
     const tsElementAccessExpr = node as ts.ElementAccessExpression;
-    let tsElemAccessBaseExprType = TsUtils.getNonNullableType(
+    const tsElemAccessBaseExprType = TsUtils.getNonNullableType(
       this.tsUtils.getTypeOrTypeConstraintAtLocation(tsElementAccessExpr.expression)
     );
     const tsElemAccessBaseExprTypeNode = this.tsTypeChecker.typeToTypeNode(

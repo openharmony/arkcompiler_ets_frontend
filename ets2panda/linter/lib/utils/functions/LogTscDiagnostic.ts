@@ -15,10 +15,7 @@
 
 import * as ts from 'typescript';
 
-export function logTscDiagnostic(
-  diagnostics: readonly ts.Diagnostic[],
-  log: (message: unknown, ...args: unknown[]) => void
-): void {
+export function logTscDiagnostic(diagnostics: readonly ts.Diagnostic[], log: (message: string) => void): void {
   diagnostics.forEach((diagnostic) => {
     let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, '\n');
 

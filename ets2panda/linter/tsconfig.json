@@ -12,5 +12,5 @@
     "strict": true
   },
 
-  "include": ["src/**/*", "utils/*"]
+  "include": ["src/**/*", "lib/**/*", "utils/*"]
 }
