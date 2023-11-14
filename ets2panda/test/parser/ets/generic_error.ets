@@ -15,6 +15,10 @@
 
 class C {}
 
+class OldMap<K extends Comparable<Object>, V> {
+   constructor() {}
+}
+
 function main(): void {
-   let m = new Map<C, string>;
+   let m = new OldMap<C, string>();
 }
