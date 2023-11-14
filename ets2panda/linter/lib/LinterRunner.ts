@@ -111,7 +111,6 @@ export function lint(options: LintOptions): LintRunResult {
     tsProgram.getTypeChecker(),
     new AutofixInfoSet(cmdOptions.autofixInfo),
     !!cmdOptions.strictMode,
-    cmdOptions.warningsAsErrors,
     cancellationToken,
     options.incrementalLintInfo,
     tscStrictDiagnostics,

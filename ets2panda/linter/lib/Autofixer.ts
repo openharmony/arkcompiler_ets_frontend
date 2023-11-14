@@ -125,32 +125,6 @@ export function dropTypeOnVarDecl(varDecl: ts.VariableDeclaration): Autofix {
   return { start: varDecl.getStart(), end: varDecl.getEnd(), replacementText: text };
 }
 
-export function dropTypeOnlyFlag(
-  impExpNode: ts.ImportClause | ts.ImportSpecifier | ts.ExportDeclaration | ts.ExportSpecifier
-): Autofix {
-  let text: string;
-  if (ts.isImportClause(impExpNode)) {
-    const newImportClause = ts.factory.createImportClause(false, impExpNode.name, impExpNode.namedBindings);
-    text = printer.printNode(ts.EmitHint.Unspecified, newImportClause, impExpNode.getSourceFile());
-  } else if (ts.isImportSpecifier(impExpNode)) {
-    const newImportSpec = ts.factory.createImportSpecifier(false, impExpNode.propertyName, impExpNode.name);
-    text = printer.printNode(ts.EmitHint.Unspecified, newImportSpec, impExpNode.getSourceFile());
-  } else if (ts.isExportDeclaration(impExpNode)) {
-    const newExportDecl = ts.factory.createExportDeclaration(
-      impExpNode.modifiers,
-      false,
-      impExpNode.exportClause,
-      impExpNode.moduleSpecifier,
-      impExpNode.assertClause
-    );
-    text = printer.printNode(ts.EmitHint.Unspecified, newExportDecl, impExpNode.getSourceFile());
-  } else {
-    const newExportSpec = ts.factory.createExportSpecifier(false, impExpNode.propertyName, impExpNode.name);
-    text = printer.printNode(ts.EmitHint.Unspecified, newExportSpec, impExpNode.getSourceFile());
-  }
-  return { start: impExpNode.getStart(), end: impExpNode.getEnd(), replacementText: text };
-}
-
 export function fixDefaultImport(
   importClause: ts.ImportClause,
   defaultSpec: ts.ImportSpecifier,

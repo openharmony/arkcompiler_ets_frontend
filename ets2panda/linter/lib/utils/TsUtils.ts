@@ -34,13 +34,6 @@ export class TsUtils {
     private readonly advancedClassChecks: boolean
   ) {}
 
-  isType(tsType: ts.TypeNode | undefined, checkType: string): boolean {
-    if (tsType === undefined || !ts.isTypeReferenceNode(tsType)) {
-      return false;
-    }
-    return this.entityNameToString(tsType.typeName) === checkType;
-  }
-
   entityNameToString(name: ts.EntityName): string {
     if (ts.isIdentifier(name)) {
       return name.escapedText.toString();
@@ -62,63 +55,6 @@ export class TsUtils {
 
   static isBooleanType(tsType: ts.Type): boolean {
     return (tsType.getFlags() & ts.TypeFlags.BooleanLike) !== 0;
-  }
-
-  static isStringLikeType(tsType: ts.Type): boolean {
-    if (tsType.isUnion()) {
-      for (const tsCompType of tsType.types) {
-        if ((tsCompType.flags & ts.TypeFlags.StringLike) === 0) {
-          return false;
-        }
-      }
-      return true;
-    }
-    return (tsType.getFlags() & ts.TypeFlags.StringLike) !== 0;
-  }
-
-  static isStringType(type: ts.Type): boolean {
-    return (type.getFlags() & ts.TypeFlags.String) !== 0;
-  }
-
-  static isPrimitiveEnumType(type: ts.Type, primitiveType: ts.TypeFlags): boolean {
-    const isNonPrimitive = (type.flags & ts.TypeFlags.NonPrimitive) !== 0;
-    if (!TsUtils.isEnumType(type) || !type.isUnion() || isNonPrimitive) {
-      return false;
-    }
-    for (const t of type.types) {
-      if ((t.flags & primitiveType) === 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  static isPrimitiveEnumMemberType(type: ts.Type, primitiveType: ts.TypeFlags): boolean {
-    const isNonPrimitive = (type.flags & ts.TypeFlags.NonPrimitive) !== 0;
-    if (!TsUtils.isEnumMemberType(type) || isNonPrimitive) {
-      return false;
-    }
-    return (type.flags & primitiveType) !== 0;
-  }
-
-  static unwrapParenthesizedType(tsType: ts.TypeNode): ts.TypeNode {
-    while (ts.isParenthesizedTypeNode(tsType)) {
-      tsType = tsType.type;
-    }
-    return tsType;
-  }
-
-  static findParentIf(asExpr: ts.AsExpression): ts.IfStatement | null {
-    let node = asExpr.parent;
-    while (node) {
-      if (node.kind === ts.SyntaxKind.IfStatement) {
-        return node as ts.IfStatement;
-      }
-
-      node = node.parent;
-    }
-
-    return null;
   }
 
   static isDestructuringAssignmentLHS(tsExpr: ts.ArrayLiteralExpression | ts.ObjectLiteralExpression): boolean {
@@ -160,23 +96,6 @@ export class TsUtils {
      * Must use SymbolFlags to figure out if this is an enum type.
      */
     return tsType.symbol && (tsType.symbol.flags & ts.SymbolFlags.Enum) !== 0;
-  }
-
-  static isEnumMemberType(tsType: ts.Type): boolean {
-
-    /*
-     * Note: For some reason, test (tsType.flags & ts.TypeFlags.Enum) != 0 doesn't work here.
-     * Must use SymbolFlags to figure out if this is an enum type.
-     */
-    return tsType.symbol && (tsType.symbol.flags & ts.SymbolFlags.EnumMember) !== 0;
-  }
-
-  static isObjectLiteralType(tsType: ts.Type): boolean {
-    return tsType.symbol && (tsType.symbol.flags & ts.SymbolFlags.ObjectLiteral) !== 0;
-  }
-
-  static isNumberLikeType(tsType: ts.Type): boolean {
-    return (tsType.getFlags() & ts.TypeFlags.NumberLike) !== 0;
   }
 
   static hasModifier(tsModifiers: readonly ts.Modifier[] | undefined, tsModifierKind: number): boolean {
@@ -264,19 +183,6 @@ export class TsUtils {
     }
 
     return false;
-  }
-
-  static isReferenceType(tsType: ts.Type): boolean {
-    const f = tsType.getFlags();
-    return (
-      (f & ts.TypeFlags.InstantiableNonPrimitive) !== 0 ||
-      (f & ts.TypeFlags.Object) !== 0 ||
-      (f & ts.TypeFlags.Boolean) !== 0 ||
-      (f & ts.TypeFlags.Enum) !== 0 ||
-      (f & ts.TypeFlags.NonPrimitive) !== 0 ||
-      (f & ts.TypeFlags.Number) !== 0 ||
-      (f & ts.TypeFlags.String) !== 0
-    );
   }
 
   static isPrimitiveType(type: ts.Type): boolean {
@@ -367,14 +273,6 @@ export class TsUtils {
     );
   }
 
-  static isNullType(tsTypeNode: ts.TypeNode): boolean {
-    return ts.isLiteralTypeNode(tsTypeNode) && tsTypeNode.literal.kind === ts.SyntaxKind.NullKeyword;
-  }
-
-  static isThisOrSuperExpr(tsExpr: ts.Expression): boolean {
-    return tsExpr.kind === ts.SyntaxKind.ThisKeyword || tsExpr.kind === ts.SyntaxKind.SuperKeyword;
-  }
-
   static isPrototypeSymbol(symbol: ts.Symbol | undefined): boolean {
     return !!symbol && !!symbol.flags && (symbol.flags & ts.SymbolFlags.Prototype) !== 0;
   }
@@ -415,12 +313,6 @@ export class TsUtils {
       }
     }
     return false;
-  }
-
-  static isFunctionOrMethod(tsSymbol: ts.Symbol | undefined): boolean {
-    return (
-      !!tsSymbol && ((tsSymbol.flags & ts.SymbolFlags.Function) !== 0 || (tsSymbol.flags & ts.SymbolFlags.Method) !== 0)
-    );
   }
 
   static isMethodAssignment(tsSymbol: ts.Symbol | undefined): boolean {
@@ -846,18 +738,6 @@ export class TsUtils {
     return undefined;
   }
 
-  checkTypeSet(uType: ts.Type, predicate: (t: ts.Type) => boolean): boolean {
-    if (!uType.isUnionOrIntersection()) {
-      return predicate(uType);
-    }
-    for (const elemType of uType.types) {
-      if (!this.checkTypeSet(elemType, predicate)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   static getNonNullableType(t: ts.Type): ts.Type {
     if (TsUtils.isNullableUnionType(t)) {
       return t.getNonNullableType();
@@ -920,11 +800,6 @@ export class TsUtils {
     return (
       TsUtils.validateObjectLiteralType(lhsType) && !this.hasMethods(lhsType) && this.validateFields(lhsType, rhsExpr)
     );
-  }
-
-  static isFunctionalType(type: ts.Type): boolean {
-    const callSigns = type.getCallSignatures();
-    return callSigns && callSigns.length > 0;
   }
 
   private isDynamicObjectAssignedToStdType(lhsType: ts.Type, rhsExpr: ts.Expression): boolean {
@@ -1079,11 +954,6 @@ export class TsUtils {
   isSymbolAPI(symbol: ts.Symbol): boolean {
     const parentName = this.getParentSymbolName(symbol);
     return !!parentName && (parentName === 'Symbol' || parentName === 'SymbolConstructor');
-  }
-
-  isStdSymbol(symbol: ts.Symbol): boolean {
-    const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
-    return name === 'Symbol' && this.isGlobalSymbol(symbol);
   }
 
   isSymbolIterator(symbol: ts.Symbol): boolean {
@@ -1417,36 +1287,6 @@ export class TsUtils {
       return this.trueSymbolAtLocation(signDecl.name);
     }
     return undefined;
-  }
-
-  // has to be re-implemented with local loop detection
-  typeIsRecursive(topType: ts.Type, type: ts.Type | undefined = undefined): boolean {
-    if (type === undefined) {
-      type = topType;
-    } else if (type === topType) {
-      return true;
-    } else if (type.aliasSymbol) {
-      return false;
-    }
-
-    if (type.isUnion()) {
-      for (const unionElem of type.types) {
-        if (this.typeIsRecursive(topType, unionElem)) {
-          return true;
-        }
-      }
-    }
-    if (type.flags & ts.TypeFlags.Object && (type as ts.ObjectType).objectFlags & ts.ObjectFlags.Reference) {
-      const typeArgs = this.tsTypeChecker.getTypeArguments(type as ts.TypeReference);
-      if (typeArgs) {
-        for (const typeArg of typeArgs) {
-          if (this.typeIsRecursive(topType, typeArg)) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
   }
 
   static isClassValueType(type: ts.Type): boolean {

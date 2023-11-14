@@ -13,12 +13,7 @@
  * limitations under the License.
  */
 
-import type { ProblemInfo } from '../lib/ProblemInfo';
 import type { AutofixInfo } from '../lib/autofixes/AutofixInfo';
-
-export function encodeProblemInfo(problem: ProblemInfo): string {
-  return `${problem.problem}%${problem.start}%${problem.end}`;
-}
 
 export function decodeAutofixInfo(info: string): AutofixInfo {
   const infos = info.split('%');

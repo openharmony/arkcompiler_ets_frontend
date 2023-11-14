@@ -16,9 +16,3 @@
 import type { ProblemInfo } from '../ProblemInfo';
 
 export type ReportAutofixCallback = (p: ProblemInfo) => void;
-
-export function getDefaultCallback(withAutofixes: ProblemInfo[]): ReportAutofixCallback {
-  return (p: ProblemInfo) => {
-    withAutofixes.push(p);
-  };
-}

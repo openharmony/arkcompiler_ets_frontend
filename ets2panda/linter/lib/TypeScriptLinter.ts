@@ -104,7 +104,6 @@ export class TypeScriptLinter {
     private readonly tsTypeChecker: ts.TypeChecker,
     private readonly autofixesInfo: AutofixInfoSet,
     public strictMode: boolean,
-    public warningsAsErrors: boolean,
     private readonly cancellationToken?: ts.CancellationToken,
     private readonly incrementalLintInfo?: IncrementalLintInfo,
     private readonly tscStrictDiagnostics?: Map<string, ts.Diagnostic[]>,
@@ -1853,8 +1852,7 @@ export class TypeScriptLinter {
      * spread element is allowed only for arrays as rest parameter
      */
     if (ts.isSpreadElement(node)) {
-      const spreadElemNode = node;
-      const spreadExprType = this.tsTypeChecker.getTypeAtLocation(spreadElemNode.expression);
+      const spreadExprType = this.tsTypeChecker.getTypeAtLocation(node.expression);
       if (spreadExprType) {
         if (ts.isCallLikeExpression(node.parent) || ts.isArrayLiteralExpression(node.parent)) {
           if (this.tsUtils.isOrDerivedFrom(spreadExprType, this.tsUtils.isArray)) {
