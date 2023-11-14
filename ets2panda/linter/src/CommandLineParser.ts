@@ -14,8 +14,8 @@
  */
 
 import { Logger } from '../lib/Logger';
-import { logTscDiagnostic } from '../lib/utils/functions/LogTscDiagnostic';
-import { decodeAutofixInfo } from '../lib/utils/functions/LinterInfo';
+import { logTscDiagnostic } from './LogTscDiagnostic';
+import { decodeAutofixInfo } from './LinterInfo';
 import type { CommandLineOptions } from '../lib/CommandLineOptions';
 import { AUTOFIX_ALL } from '../lib/Autofixer';
 import { Command, Option } from 'commander';

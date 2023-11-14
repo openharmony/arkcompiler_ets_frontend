@@ -15,7 +15,7 @@
 
 import { Compiler as CompilerInterface } from '../lib/Compiler';
 import * as ts from 'typescript';
-import { logTscDiagnostic } from '../lib/utils/functions/LogTscDiagnostic';
+import { logTscDiagnostic } from './LogTscDiagnostic';
 import { consoleLog } from '../lib/TypeScriptLinter';
 import { formTscOptions } from './ts-compiler/FormTscOptions';
 import type { LintOptions } from '../lib/LintOptions';

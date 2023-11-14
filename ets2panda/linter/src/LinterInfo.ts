@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-import type { ProblemInfo } from '../../ProblemInfo';
-import type { AutofixInfo } from '../../autofixes/AutofixInfo';
+import type { ProblemInfo } from '../lib/ProblemInfo';
+import type { AutofixInfo } from '../lib/autofixes/AutofixInfo';
 
 export function encodeProblemInfo(problem: ProblemInfo): string {
   return `${problem.problem}%${problem.start}%${problem.end}`;
