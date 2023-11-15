@@ -2037,11 +2037,18 @@ export class TypeScriptLinter {
     const pragmas = (sourceFile as any).pragmas;
     if (pragmas && pragmas instanceof Map) {
       for (const pragma of pragmas) {
-        if (pragma[0] !== 'ts-nocheck' || !pragma[1]?.range.kind || !pragma[1]?.range.pos || !pragma[1]?.range.end) {
+        if (pragma[0] !== 'ts-nocheck' || !pragma[1]) {
           continue;
         }
 
-        this.incrementCounters(pragma[1].range as ts.CommentRange, FaultID.ErrorSuppression);
+        /*
+         * The value is either a single entry or an array of entries.
+         * Wrap up single entry with array to simplify processing.
+         */
+        const noCheckEntries: any[] = Array.isArray(pragma[1]) ? pragma[1] : [pragma[1]];
+        for (const entry of noCheckEntries) {
+          this.processNoCheckEntry(entry);
+        }
       }
     }
 
@@ -2049,7 +2056,7 @@ export class TypeScriptLinter {
     const commentDirectives = (sourceFile as any).commentDirectives;
     if (commentDirectives && Array.isArray(commentDirectives)) {
       for (const directive of commentDirectives) {
-        if (!directive.range?.pos || !directive.range?.end) {
+        if (directive.range?.pos === undefined || directive.range?.end === undefined) {
           continue;
         }
 
@@ -2067,6 +2074,14 @@ export class TypeScriptLinter {
         this.incrementCounters(commentRange, FaultID.ErrorSuppression);
       }
     }
+  }
+
+  private processNoCheckEntry(entry: any): void {
+    if (entry.range?.kind === undefined || entry.range?.pos === undefined || entry.range?.end === undefined) {
+      return;
+    }
+
+    this.incrementCounters(entry.range as ts.CommentRange, FaultID.ErrorSuppression);
   }
 
   private reportThisKeywordsInScope(scope: ts.Block | ts.Expression): void {
