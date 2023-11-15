@@ -58,7 +58,7 @@ uint32_t ETSArrayType::Rank() const
 {
     uint32_t rank = 1;
     auto iter = element_;
-    while (iter->IsETSArrayType()) {
+    while (iter->IsETSArrayType() && iter->AsETSArrayType()->ElementType() != iter) {
         iter = iter->AsETSArrayType()->ElementType();
         rank++;
     }

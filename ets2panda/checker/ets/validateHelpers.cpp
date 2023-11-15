@@ -280,6 +280,13 @@ void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaratio
 {
     static std::string_view const TRANSFORMATION_NAME = __func__;
 
+    RecursionPreserver<ir::TSTypeAliasDeclaration> recursionPreserver(elementStack_, typeAliasNode);
+
+    if (*recursionPreserver) {
+        // NOTE(SM): We in recursion for type alias. So isn't make sense check the same type alias twice;
+        return;
+    }
+
     // SUPPRESS_CSA_NEXTLINE(alpha.core.AllocatorETSCheckerHint)
     auto *const clonedNode = typeAliasNode->TypeAnnotation()->Clone(Allocator(), typeAliasNode);
 

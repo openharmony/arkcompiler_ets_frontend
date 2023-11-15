@@ -86,6 +86,7 @@ enum class TypeFlag : uint64_t {
     ETS_READONLY = 1ULL << 57ULL,                 // ETS readonly type parameter
     ETS_REQUIRED_TYPE_PARAMETER = 1ULL << 58ULL,  // ETS Required type parameter
     TYPE_ERROR = 1ULL << 59ULL,                   // type error
+    ETS_TYPE_ALIAS = 1ULL << 60ULL,               // ETS Type alias
     ETS_DYNAMIC_TYPE = ETS_OBJECT | ETS_DYNAMIC_FLAG,
     ETS_DYNAMIC_FUNCTION_TYPE = FUNCTION | ETS_DYNAMIC_FLAG,
     ETS_TYPE = BYTE | SHORT | INT | LONG | FLOAT | DOUBLE | CHAR | ETS_BOOLEAN | ETS_VOID | ETS_OBJECT | ETS_ARRAY |

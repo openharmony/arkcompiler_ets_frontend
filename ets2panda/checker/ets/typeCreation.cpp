@@ -313,6 +313,12 @@ Type *ETSChecker::CreateETSUnionType(Span<Type *const> constituentTypes)
     return Allocator()->New<ETSUnionType>(this, std::move(newConstituentTypes));
 }
 
+ETSTypeAliasType *ETSChecker::CreateETSTypeAliasType(util::StringView name, const ir::AstNode *declNode,
+                                                     bool isRecursive)
+{
+    return Allocator()->New<ETSTypeAliasType>(this, name, declNode, isRecursive);
+}
+
 ETSFunctionType *ETSChecker::CreateETSFunctionType(ArenaVector<Signature *> &signatures)
 {
     auto *funcType = Allocator()->New<ETSFunctionType>(signatures[0]->Function()->Id()->Name(), Allocator());

@@ -372,15 +372,24 @@ void ETSUnionType::IsSubtypeOf(TypeRelation *relation, Type *target)
     }
 }
 
+bool ETSUnionType::IsAssignableType(checker::Type *sourceType) const noexcept
+{
+    if (sourceType->IsETSTypeParameter() || sourceType->IsTypeError()) {
+        return true;
+    }
+
+    if (sourceType->IsETSUnionType() || sourceType->IsETSArrayType() || sourceType->IsETSFunctionType()) {
+        return true;
+    }
+
+    return false;
+}
+
 //  NOTE! When calling this method we assume that 'AssignmentTarget(...)' check was passes successfully,
 //  thus the required assignable type always exists.
 checker::Type *ETSUnionType::GetAssignableType(checker::ETSChecker *checker, checker::Type *sourceType) const noexcept
 {
-    if (sourceType->IsETSTypeParameter()) {
-        return sourceType;
-    }
-
-    if (sourceType->IsETSUnionType() || sourceType->IsETSArrayType() || sourceType->IsETSFunctionType()) {
+    if (IsAssignableType(sourceType)) {
         return sourceType;
     }
 

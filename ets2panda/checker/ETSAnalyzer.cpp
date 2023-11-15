@@ -672,11 +672,38 @@ static bool CheckElement(ir::ArrayExpression *expr, ETSChecker *checker, std::ve
     return ok;
 }
 
+void ETSAnalyzer::GetUnionPreferredType(ir::ArrayExpression *expr) const
+{
+    ASSERT(expr->preferredType_->IsETSUnionType());
+    checker::Type *preferredType = nullptr;
+    for (auto &type : expr->preferredType_->AsETSUnionType()->ConstituentTypes()) {
+        if (type->IsETSArrayType()) {
+            if (preferredType != nullptr) {
+                preferredType = nullptr;
+                break;
+            }
+            preferredType = type->AsETSArrayType();
+        }
+    }
+
+    expr->preferredType_ = preferredType;
+}
+
 checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
 {
     ETSChecker *checker = GetETSChecker();
     if (expr->TsTypeOrError() != nullptr) {
         return expr->TsTypeOrError();
+    }
+
+    if (expr->preferredType_ != nullptr) {
+        if (expr->preferredType_->IsETSTypeAliasType()) {
+            expr->preferredType_ = expr->preferredType_->AsETSTypeAliasType()->GetTargetType();
+        }
+
+        if (expr->preferredType_->IsETSUnionType()) {
+            GetUnionPreferredType(expr);
+        }
     }
 
     if (expr->preferredType_ != nullptr && !expr->preferredType_->IsETSArrayType() &&
@@ -692,6 +719,11 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
 
     if (!expr->Elements().empty()) {
         if (expr->preferredType_ == nullptr || expr->preferredType_ == checker->GlobalETSObjectType()) {
+            /*
+             * NOTE(SM): If elements has different types
+             *           should calculated as union of types from each element,
+             *           otherwise don't properly work with array from union type
+             */
             expr->preferredType_ = checker->CreateETSArrayType(expr->Elements()[0]->Check(checker));
         }
 

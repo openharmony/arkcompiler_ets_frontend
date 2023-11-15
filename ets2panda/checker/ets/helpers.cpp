@@ -680,7 +680,7 @@ bool ETSChecker::CheckInit(ir::Identifier *ident, ir::TypeNode *typeAnnotation, 
         SetArrayPreferredTypeForNestedMemberExpressions(init->AsMemberExpression(), annotationType);
     }
 
-    if (init->IsArrayExpression() && (annotationType != nullptr) && annotationType->IsETSArrayType()) {
+    if (init->IsArrayExpression() && (annotationType != nullptr) && !annotationType->IsETSDynamicType()) {
         if (annotationType->IsETSTupleType()) {
             if (!ValidateTupleMinElementSize(init->AsArrayExpression(), annotationType->AsETSTupleType())) {
                 return false;
@@ -1174,37 +1174,34 @@ void ETSChecker::SetArrayPreferredTypeForNestedMemberExpressions(ir::MemberExpre
     }
 }
 
-static void CheckExpandedType(Type *expandedAliasType, std::set<util::StringView> &parametersNeedToBeBoxed,
-                              bool needToBeBoxed)
+static void CollectAliasParametersForBoxing(Type *expandedAliasType, std::set<Type *> &parametersNeedToBeBoxed,
+                                            bool needToBeBoxed)
 {
-    if (expandedAliasType->IsETSTypeParameter()) {
-        auto paramName = expandedAliasType->AsETSTypeParameter()->GetDeclNode()->Name()->Name();
-        if (needToBeBoxed) {
-            parametersNeedToBeBoxed.insert(paramName);
-        }
+    if (expandedAliasType->IsETSTypeParameter() && needToBeBoxed) {
+        parametersNeedToBeBoxed.insert(expandedAliasType);
     } else if (expandedAliasType->IsETSObjectType()) {
         auto objectType = expandedAliasType->AsETSObjectType();
         needToBeBoxed =
             objectType->GetDeclNode()->IsClassDefinition() || objectType->GetDeclNode()->IsTSInterfaceDeclaration();
         for (const auto typeArgument : objectType->TypeArguments()) {
-            CheckExpandedType(typeArgument, parametersNeedToBeBoxed, needToBeBoxed);
+            CollectAliasParametersForBoxing(typeArgument, parametersNeedToBeBoxed, needToBeBoxed);
         }
     } else if (expandedAliasType->IsETSTupleType()) {
         auto tupleType = expandedAliasType->AsETSTupleType();
         needToBeBoxed = false;
         for (auto type : tupleType->GetTupleTypesList()) {
-            CheckExpandedType(type, parametersNeedToBeBoxed, needToBeBoxed);
+            CollectAliasParametersForBoxing(type, parametersNeedToBeBoxed, needToBeBoxed);
         }
     } else if (expandedAliasType->IsETSArrayType()) {
         auto arrayType = expandedAliasType->AsETSArrayType();
         needToBeBoxed = false;
         auto elementType = arrayType->ElementType();
-        CheckExpandedType(elementType, parametersNeedToBeBoxed, needToBeBoxed);
+        CollectAliasParametersForBoxing(elementType, parametersNeedToBeBoxed, needToBeBoxed);
     } else if (expandedAliasType->IsETSUnionType()) {
         auto unionType = expandedAliasType->AsETSUnionType();
         needToBeBoxed = false;
         for (auto type : unionType->ConstituentTypes()) {
-            CheckExpandedType(type, parametersNeedToBeBoxed, needToBeBoxed);
+            CollectAliasParametersForBoxing(type, parametersNeedToBeBoxed, needToBeBoxed);
         }
     }
 }
@@ -1245,9 +1242,9 @@ Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypePa
         return GlobalTypeError();
     }
 
-    std::set<util::StringView> parametersNeedToBeBoxed;
+    std::set<Type *> parametersNeedToBeBoxed;
     auto expandedAliasType = aliasType->Substitute(Relation(), aliasSub);
-    CheckExpandedType(expandedAliasType, parametersNeedToBeBoxed, false);
+    CollectAliasParametersForBoxing(expandedAliasType, parametersNeedToBeBoxed, false);
 
     for (std::size_t idx = 0; idx < typeAliasNode->TypeParams()->Params().size(); ++idx) {
         auto *typeAliasTypeName = typeAliasNode->TypeParams()->Params().at(idx)->Name();
@@ -1256,7 +1253,7 @@ Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypePa
             continue;
         }
         auto paramType = typeParams->Params().at(idx)->TsType();
-        if (parametersNeedToBeBoxed.find(typeAliasTypeName->Name()) != parametersNeedToBeBoxed.end()) {
+        if (parametersNeedToBeBoxed.find(typeAliasType) != parametersNeedToBeBoxed.end()) {
             auto boxedType = PrimitiveTypeAsETSBuiltinType(typeParams->Params().at(idx)->GetType(this));
             if (boxedType != nullptr) {
                 paramType = boxedType;

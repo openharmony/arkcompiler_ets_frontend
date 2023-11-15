@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
-function main(){
-    let x: ()=>int[] = [
-        ():int =>{return 1}
-    ]
+class B<T> {}
+
+type A<K,T> = string | B<A<K,T>>
+
+function cmp(a: A<Int,Char>, b: string) { return a == b }
+function main() {
+    assert(cmp("test", "test"));
 }
 
-/* @@? 17:24 Error TypeError: Expected type for array literal should be an array type, got () => int[]  */

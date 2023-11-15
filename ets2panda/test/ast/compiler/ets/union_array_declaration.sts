@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
-function main(){
-    let x: ()=>int[] = [
-        ():int =>{return 1}
-    ]
+type A = string | string[] | int[]
+
+function main(): int {
+  let b: A = [];
+
+  return 0;
 }
 
-/* @@? 17:24 Error TypeError: Expected type for array literal should be an array type, got () => int[]  */
+/* @@? 19:14 Error TypeError: Can't resolve array type  */
