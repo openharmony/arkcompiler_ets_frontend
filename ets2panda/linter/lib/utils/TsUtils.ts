@@ -26,7 +26,7 @@ import { ARKTS_IGNORE_DIRS, ARKTS_IGNORE_FILES } from './consts/ArktsIgnorePaths
 import { isAssignmentOperator } from './functions/isAssignmentOperator';
 import { forEachNodeInSubtree } from './functions/ForEachNodeInSubtree';
 
-export type CheckType = ((this: TsUtils, t: ts.Type) => boolean);
+export type CheckType = (this: TsUtils, t: ts.Type) => boolean;
 export class TsUtils {
   constructor(
     private readonly tsTypeChecker: ts.TypeChecker,
@@ -238,9 +238,7 @@ export class TsUtils {
 
   // does something similar to relatedByInheritanceOrIdentical function
   isOrDerivedFrom(tsType: ts.Type, checkType: CheckType): tsType is ts.TypeReference {
-    if (TsUtils.isTypeReference(tsType) && tsType.target !== tsType) {
-      tsType = tsType.target;
-    }
+    tsType = TsUtils.reduceReference(tsType);
 
     if (checkType.call(this, tsType)) {
       return true;
@@ -482,12 +480,8 @@ export class TsUtils {
 
   // Returns true iff typeA is a subtype of typeB
   relatedByInheritanceOrIdentical(typeA: ts.Type, typeB: ts.Type): boolean {
-    if (TsUtils.isTypeReference(typeA) && typeA.target !== typeA) {
-      typeA = typeA.target;
-    }
-    if (TsUtils.isTypeReference(typeB) && typeB.target !== typeB) {
-      typeB = typeB.target;
-    }
+    typeA = TsUtils.reduceReference(typeA);
+    typeB = TsUtils.reduceReference(typeB);
 
     if (typeA === typeB || this.isObject(typeB)) {
       return true;
@@ -509,6 +503,10 @@ export class TsUtils {
     }
 
     return false;
+  }
+
+  static reduceReference(t: ts.Type): ts.Type {
+    return TsUtils.isTypeReference(t) && t.target !== t ? t.target : t;
   }
 
   private needToDeduceStructuralIdentityHandleUnions(
@@ -582,10 +580,7 @@ export class TsUtils {
     processInterfaces: boolean
   ): boolean {
     for (const baseTypeExpr of parentTypes) {
-      let baseType = this.tsTypeChecker.getTypeAtLocation(baseTypeExpr);
-      if (TsUtils.isTypeReference(baseType) && baseType.target !== baseType) {
-        baseType = baseType.target;
-      }
+      const baseType = TsUtils.reduceReference(this.tsTypeChecker.getTypeAtLocation(baseTypeExpr));
       if (
         baseType &&
         baseType.isClass() !== processInterfaces &&
@@ -599,10 +594,7 @@ export class TsUtils {
 
   private processParentTypesCheck(parentTypes: ts.NodeArray<ts.Expression>, checkType: CheckType): boolean {
     for (const baseTypeExpr of parentTypes) {
-      let baseType = this.tsTypeChecker.getTypeAtLocation(baseTypeExpr);
-      if (TsUtils.isTypeReference(baseType) && baseType.target !== baseType) {
-        baseType = baseType.target;
-      }
+      const baseType = TsUtils.reduceReference(this.tsTypeChecker.getTypeAtLocation(baseTypeExpr));
       if (baseType && this.isOrDerivedFrom(baseType, checkType)) {
         return true;
       }
@@ -704,7 +696,7 @@ export class TsUtils {
     if (!type) {
       return false;
     }
-    type = TsUtils.getTargetType(type);
+    type = TsUtils.reduceReference(type);
     return (
       type.isClassOrInterface() &&
       TsUtils.hasDefaultCtor(type) &&
@@ -868,12 +860,6 @@ export class TsUtils {
       }
     }
     return true;
-  }
-
-  static getTargetType(type: ts.Type): ts.Type {
-    return type.getFlags() & ts.TypeFlags.Object && (type as ts.ObjectType).objectFlags & ts.ObjectFlags.Reference ?
-      (type as ts.TypeReference).target :
-      type;
   }
 
   private static isSupportedTypeNodeKind(kind: ts.SyntaxKind): boolean {
