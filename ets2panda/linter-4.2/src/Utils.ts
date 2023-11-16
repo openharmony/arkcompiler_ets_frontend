@@ -18,7 +18,7 @@ import * as ts from 'typescript';
 import { ProblemInfo } from './ProblemInfo';
 import { AutofixInfo } from './AutofixInfo';
 import { LinterConfig } from './TypeScriptLinterConfig'
-import { FaultID } from "./Problems";
+import { FaultID } from './Problems';
 
 export function logTscDiagnostic(diagnostics: readonly ts.Diagnostic[], log: (message: any, ...args: any[]) => void) {
   diagnostics.forEach((diagnostic) => {
@@ -104,7 +104,7 @@ export enum CheckType {
 };
 
 export class TsUtils {
-  static readonly ES_OBJECT = 'ESObject'
+  static readonly ES_OBJECT = 'ESObject';
 
   private static readonly LIMITED_STD_ARRAYBUFFER_API = [
     // properties
@@ -211,7 +211,7 @@ export class TsUtils {
     'eval',
   ];
 
-  static readonly LIMITED_STD_API = new Map<string, {arr: Array<string>, fault: FaultID}> ([
+  static readonly LIMITED_STD_API = new Map<string, {arr: Array<string>, fault: FaultID}>([
     ['Object', {arr: TsUtils.LIMITED_STD_OBJECT_API, fault: FaultID.LimitedStdLibApi}],
     ['ObjectConstructor', {arr: TsUtils.LIMITED_STD_OBJECT_API, fault: FaultID.LimitedStdLibApi}],
     ['Reflect', {arr: TsUtils.LIMITED_STD_REFLECT_API, fault: FaultID.LimitedStdLibApi}],
@@ -222,11 +222,11 @@ export class TsUtils {
     ['SymbolConstructor', {arr: TsUtils.LIMITED_STD_SYMBOL_API, fault: FaultID.SymbolType}],
     ['Function', {arr: TsUtils.LIMITED_STD_FUNCTION_API, fault: FaultID.FunctionApplyBindCall}],
     ['CallableFunction', {arr: TsUtils.LIMITED_STD_FUNCTION_API, fault: FaultID.FunctionApplyBindCall}],
-  ])
+  ]);
 
   static readonly NON_INITIALIZABLE_PROPERTY_DECORATORS = ['Link', 'Consume', 'ObjectLink', 'Prop', 'BuilderParam'];
 
-  static readonly NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS = ['CustomDialog']
+  static readonly NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS = ['CustomDialog'];
 
   static readonly NON_RETURN_FUNCTION_DECORATORS = ['AnimatableExtend', 'Builder', 'Extend', 'Styles'];
 
@@ -787,8 +787,12 @@ export class TsUtils {
     if (this.isTypeReference(typeA) && typeA.target !== typeA) typeA = typeA.target;
     if (this.isTypeReference(typeB) && typeB.target !== typeB) typeB = typeB.target;
 
-    if (typeA === typeB || this.isObject(typeB)) return true;
-    if (!typeA.symbol || !typeA.symbol.declarations) return false;
+    if (typeA === typeB || this.isObject(typeB)) {
+      return true;
+    }
+    if (!typeA.symbol || !typeA.symbol.declarations) {
+      return false;
+    }
 
     for (let typeADecl of typeA.symbol.declarations) {
       if (
@@ -1082,7 +1086,7 @@ export class TsUtils {
 
     return true;
   }
-  
+
   private validateField(type: ts.Type, prop: ts.PropertyAssignment): boolean {
     const propName = prop.name.getText();
     const propSym = this.findProperty(type, propName);
@@ -1095,7 +1099,7 @@ export class TsUtils {
     if (ts.isObjectLiteralExpression(initExpr)) {
       if (!this.isObjectLiteralAssignable(propType, initExpr)) {
         return false;
-      } 
+      }
     } else {
       // Only check for structural sub-typing.
       if (this.needToDeduceStructuralIdentity(propType, this.tsTypeChecker.getTypeAtLocation(initExpr), initExpr)) {
@@ -1144,8 +1148,12 @@ export class TsUtils {
 
     if (ts.isTupleTypeNode(typeNode)) {
       for (const elem of typeNode.elements) {
-        if (ts.isTypeNode(elem) && !this.isSupportedType(elem)) return false;
-        if (ts.isNamedTupleMember(elem) && !this.isSupportedType(elem.type)) return false;
+        if (ts.isTypeNode(elem) && !this.isSupportedType(elem)) {
+          return false;
+        }
+        if (ts.isNamedTupleMember(elem) && !this.isSupportedType(elem.type)) {
+          return false;
+        }
       }
       return true;
     }
@@ -1169,7 +1177,7 @@ export class TsUtils {
   public isStructDeclarationKind(kind: ts.SyntaxKind) {
     return LinterConfig.tsSyntaxKindNames[kind] === 'StructDeclaration';
   }
-  
+
   public isStructDeclaration(node: ts.Node) {
     return this.isStructDeclarationKind(node.kind);
   }
@@ -1220,7 +1228,7 @@ export class TsUtils {
   }
 
   public isStdSymbol(symbol: ts.Symbol): boolean {
-    const name = this.tsTypeChecker.getFullyQualifiedName(symbol)
+    const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
     return name === 'Symbol';
   }
 
@@ -1267,12 +1275,12 @@ export class TsUtils {
 
   public isStdRequiredType(type: ts.Type): boolean {
     const sym = type.aliasSymbol;
-    return !!sym && sym.getName() === "Required" && this.isGlobalSymbol(sym);
+    return !!sym && sym.getName() === 'Required' && this.isGlobalSymbol(sym);
   }
-  
+
   public isStdReadonlyType(type: ts.Type): boolean {
     const sym = type.aliasSymbol;
-    return !!sym && sym.getName() === "Readonly" && this.isGlobalSymbol(sym);
+    return !!sym && sym.getName() === 'Readonly' && this.isGlobalSymbol(sym);
   }
 
   public isLibraryType(type: ts.Type): boolean {
@@ -1377,7 +1385,7 @@ export class TsUtils {
 
     if (type.isUnion()) {
       for (let compType of type.types) {
-        let isDynamic = this.isDynamicType(compType); 
+        let isDynamic = this.isDynamicType(compType);
         if (isDynamic || isDynamic === undefined) {
           return isDynamic;
         }
@@ -1397,7 +1405,7 @@ export class TsUtils {
   }
 
   public isObjectType(type: ts.Type): type is ts.ObjectType {
-    return !!(type.flags & ts.TypeFlags.Object)
+    return !!(type.flags & ts.TypeFlags.Object);
   }
 
   private isAnonymous(type: ts.Type): boolean {
@@ -1417,7 +1425,7 @@ export class TsUtils {
     let curNode: ts.Node = expr;
     while (ts.isObjectLiteralExpression(curNode) || ts.isArrayLiteralExpression(curNode)) {
       const exprType = this.tsTypeChecker.getContextualType(curNode);
-      if (exprType !== undefined  && !this.isAnonymous(exprType)) {
+      if (exprType !== undefined && !this.isAnonymous(exprType)) {
         const res = this.isDynamicType(exprType)
         if (res !== undefined) {
           return res;
@@ -1478,7 +1486,7 @@ export class TsUtils {
   }
 
   public isInsideBlock(node: ts.Node): boolean {
-    let par = node.parent
+    let par = node.parent;
     while (par) {
       if (ts.isBlock(par)) {
         return true;
@@ -1497,7 +1505,7 @@ export class TsUtils {
       return false;
     }
     const valueType = this.tsTypeChecker.getTypeAtLocation(node);
-    return this.isUnsupportedType(valueType) || this.isAnonymousType(valueType)
+    return this.isUnsupportedType(valueType) || this.isAnonymousType(valueType);
   }
 
   public getVariableDeclarationTypeNode(node: ts.Node): ts.TypeNode | undefined {
@@ -1584,7 +1592,7 @@ export class TsUtils {
     }
     return false;
   }
-  
+
   public isFunctionCalledRecursively(funcExpr: ts.FunctionExpression): boolean {
     if (!funcExpr.name) return false;
 

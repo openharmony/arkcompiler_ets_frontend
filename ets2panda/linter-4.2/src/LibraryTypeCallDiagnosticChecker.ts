@@ -35,7 +35,7 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
   constructor(filteredDiagnosticMessages: Set<ts.DiagnosticMessageChain>) {
     this.filteredDiagnosticMessages = filteredDiagnosticMessages;
   }
-  
+
   configure(inLibCall: boolean, diagnosticMessages: Array<ts.DiagnosticMessageChain>) {
     this.inLibCall = inLibCall;
     this.diagnosticMessages = diagnosticMessages;
@@ -53,7 +53,7 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
   }
 
   checkMessageChain(chain: ts.DiagnosticMessageChain): boolean {
-    if (chain.code == TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE) {
+    if (chain.code === TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE) {
       if (chain.messageText.match(TYPE_UNKNOWN_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE)) {
         return false;
       }
@@ -64,11 +64,11 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
         return false;
       }
     }
-    return chain.next == undefined ? true : this.checkMessageChain(chain.next[0]);
+    return chain.next === undefined ? true : this.checkMessageChain(chain.next[0]);
   };
 
   checkFilteredDiagnosticMessages(msgText: ts.DiagnosticMessageChain | string) {
-    if (this.filteredDiagnosticMessages.size == 0) {
+    if (this.filteredDiagnosticMessages.size === 0) {
       return true;
     }
 
@@ -77,8 +77,8 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
     }
 
     for (const msgChain of this.filteredDiagnosticMessages) {
-      if (typeof msgText == 'string') {
-        if (msgText == msgChain.messageText) {
+      if (typeof msgText === 'string') {
+        if (msgText === msgChain.messageText) {
           return false;
         }
         continue;
@@ -99,8 +99,8 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
           return true;
         }
 
-        curMsg = curMsg.next ? curMsg.next[0]: undefined;
-        curFilteredMsg = curFilteredMsg.next ? curFilteredMsg.next[0]: undefined;
+        curMsg = curMsg.next ? curMsg.next[0] : undefined;
+        curFilteredMsg = curFilteredMsg.next ? curFilteredMsg.next[0] : undefined;
       }
 
       return false;
