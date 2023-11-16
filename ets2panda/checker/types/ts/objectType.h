@@ -56,7 +56,7 @@ public:
 #define OBJECT_TYPE_IS_CHECKS(object_kind, type_name) \
     bool Is##type_name() const                        \
     {                                                 \
-        return kind_ == object_kind;                  \
+        return kind_ == (object_kind);                \
     }
     OBJECT_TYPE_MAPPING(OBJECT_TYPE_IS_CHECKS)
 #undef OBJECT_TYPE_IS_CHECKS
