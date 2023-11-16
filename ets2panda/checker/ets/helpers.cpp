@@ -1825,7 +1825,7 @@ void ETSChecker::CheckUnboxedTypesAssignable(TypeRelation *relation, Type *sourc
 void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *source, Type *target)
 {
     checker::SavedTypeRelationFlagsContext saved_type_relation_flag_ctx(
-        relation, TypeRelationFlag::ONLY_CHECK_WIDENING |
+        relation, (relation->ApplyWidening() ? TypeRelationFlag::WIDENING : TypeRelationFlag::NONE) |
                       (relation->ApplyNarrowing() ? TypeRelationFlag::NARROWING : TypeRelationFlag::NONE));
     auto *boxed_source_type = relation->GetChecker()->AsETSChecker()->PrimitiveTypeAsETSBuiltinType(source);
     if (boxed_source_type == nullptr) {
@@ -1843,7 +1843,7 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
         if (unboxed_target_type == nullptr) {
             return;
         }
-        NarrowingConverter(this, relation, unboxed_target_type, source);
+        NarrowingWideningConverter(this, relation, unboxed_target_type, source);
         if (relation->IsTrue()) {
             AddBoxingFlagToPrimitiveType(relation, target);
         }
