@@ -25,7 +25,7 @@ declare function AssertType(value:any, type:string):void;
 
     let a : number = 1;
     for (let i : number = 0 ; i < 10; i++) {
-        AssertType(a, "any");
         a = a + p(10);
+        AssertType(a, "any");
     }
 }
