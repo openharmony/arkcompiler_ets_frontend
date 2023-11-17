@@ -116,3 +116,8 @@ let s2: string = NS.E[s];
 for (let item = 0; item < Object.keys(NS.E).length; item++) {
     console.log(item);
 }
+
+/**
+ * {@link C} - should not report error
+ */
+class JSDocClass {}

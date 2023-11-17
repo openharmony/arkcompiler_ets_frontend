@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import type * as ts from 'typescript';
+import * as ts from 'typescript';
 
 export function forEachNodeInSubtree(
   node: ts.Node,
@@ -25,12 +25,7 @@ export function forEachNodeInSubtree(
     return;
   }
 
-  /*
-   * #13972: The 'ts.forEachChild' doesn't iterate over in-between punctuation tokens.
-   * As result, we can miss comment directives attached to those. Instead, use 'node.getChildren()'.
-   * to traverse child nodes.
-   */
-  for (const child of node.getChildren()) {
+  ts.forEachChild(node, (child) => {
     forEachNodeInSubtree(child, cb, stopCond);
-  }
+  });
 }
