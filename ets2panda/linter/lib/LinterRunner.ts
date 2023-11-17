@@ -21,16 +21,9 @@ import { faultDesc } from './FaultDesc';
 import { faultsAttrs } from './FaultAttrs';
 import type { LintRunResult } from './LintRunResult';
 import * as path from 'node:path';
-import { Compiler } from './Compiler';
 import type { LintOptions } from './LintOptions';
 import type { CommandLineOptions } from './CommandLineOptions';
 import { AutofixInfoSet } from './Autofixer';
-import type { TSCCompiledProgram } from './ts-diagnostics/TSCCompiledProgram';
-import {
-  TSCCompiledProgramSimple,
-  TSCCompiledProgramWithDiagnostics,
-  getStrictOptions
-} from './ts-diagnostics/TSCCompiledProgram';
 import { mergeArrayMaps } from './utils/functions/MergeArrayMaps';
 import { getTscDiagnostics } from './ts-diagnostics/GetTscDiagnostics';
 import { transformTscDiagnostics } from './ts-diagnostics/TransformTscDiagnostics';
@@ -94,8 +87,8 @@ function countProblems(linter: TypeScriptLinter): [number, number] {
 export function lint(options: LintOptions): LintRunResult {
   const cmdOptions = options.cmdOptions;
   const cancellationToken = options.cancellationToken;
-  const tscDiagnosticsLinter = createLinter(options);
-  const tsProgram = tscDiagnosticsLinter.getOriginalProgram();
+  const tscCompiledProgram = options.tscCompiledProgram;
+  const tsProgram = tscCompiledProgram.getProgram();
 
   // Prepare list of input files for linter and retrieve AST for those files.
   let inputFiles = prepareInputFilesList(cmdOptions);
@@ -110,7 +103,7 @@ export function lint(options: LintOptions): LintRunResult {
     }
   }
 
-  const tscStrictDiagnostics = getTscDiagnostics(tscDiagnosticsLinter, srcFiles);
+  const tscStrictDiagnostics = getTscDiagnostics(tscCompiledProgram, srcFiles);
   const linter = new TypeScriptLinter(
     tsProgram.getTypeChecker(),
     new AutofixInfoSet(cmdOptions.autofixInfo),
@@ -134,44 +127,6 @@ export function lint(options: LintOptions): LintRunResult {
     errorNodes: errorNodesTotal,
     problemsInfos: mergeArrayMaps(problemsInfos, transformTscDiagnostics(tscStrictDiagnostics))
   };
-}
-
-/*
- * We want linter to accept program with no strict options set at all
- * due to them affecting type deduction.
- */
-function clearStrictOptions(options: LintOptions): LintOptions {
-  if (!options.parserOptions) {
-    return options;
-  }
-  const newOptions = { ...options };
-  newOptions.parserOptions.strict = false;
-  newOptions.parserOptions.alwaysStrict = false;
-  newOptions.parserOptions.noImplicitAny = false;
-  newOptions.parserOptions.noImplicitThis = false;
-  newOptions.parserOptions.strictBindCallApply = false;
-  newOptions.parserOptions.strictFunctionTypes = false;
-  newOptions.parserOptions.strictNullChecks = false;
-  newOptions.parserOptions.strictPropertyInitialization = false;
-  newOptions.parserOptions.useUnknownInCatchVariables = false;
-  return newOptions;
-}
-
-export function createLinter(options: LintOptions): TSCCompiledProgram {
-  if (options.tscDiagnosticsLinter) {
-    return options.tscDiagnosticsLinter;
-  }
-
-  /*
-   * if we are provided with the pre-compiled program, don't tamper with options
-   * otherwise, clear all strict related options to avoid differences in type deduction
-   */
-  const newOptions = options.tsProgram ? options : clearStrictOptions(options);
-  const tsProgram = newOptions.tsProgram ?? Compiler.compile(newOptions, getStrictOptions());
-  if (newOptions.realtimeLint) {
-    return new TSCCompiledProgramSimple(tsProgram);
-  }
-  return new TSCCompiledProgramWithDiagnostics(tsProgram, newOptions);
 }
 
 function lintFiles(srcFiles: ts.SourceFile[], linter: TypeScriptLinter): LintRunResult {

@@ -17,10 +17,6 @@ import { Logger } from '../lib/Logger';
 import { LoggerImpl } from './LoggerImpl';
 Logger.init(new LoggerImpl());
 
-import { Compiler } from '../lib/Compiler';
-import { CompilerImpl } from './CompilerImpl';
-Compiler.init(new CompilerImpl());
-
 import { TypeScriptLinter } from '../lib/TypeScriptLinter';
 import { lint } from '../lib/LinterRunner';
 import { parseCommandLine } from './CommandLineParser';
@@ -29,6 +25,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as ts from 'typescript';
 import type { CommandLineOptions } from '../lib/CommandLineOptions';
+import { compileLintOptions } from './Compiler';
 
 const TEST_DIR = 'test';
 const TAB = '    ';
@@ -175,7 +172,7 @@ function runTest(testDir: string, testFile: string, mode: Mode): boolean {
   const currentTestMode = TypeScriptLinter.testMode;
 
   const cmdOptions = parseArgs(testDir, testFile, mode);
-  const result = lint({ cmdOptions: cmdOptions, realtimeLint: false });
+  const result = lint(compileLintOptions(cmdOptions));
   const fileProblems = result.problemsInfos.get(path.normalize(cmdOptions.inputFiles[0]));
   if (fileProblems === undefined) {
     return true;

@@ -18,15 +18,14 @@ import type { CommandLineOptions } from './CommandLineOptions';
 import type { IncrementalLintInfo } from './IncrementalLintInfo';
 import type { ReportAutofixCallback } from './autofixes/ReportAutofixCallback';
 import type { IsFileFromModuleCallback } from './IsFileFromModuleCallback';
+import type { TSCCompiledProgram } from './ts-diagnostics/TSCCompiledProgram';
 
 // common options interface, additional fields may be used by plugins
 export interface LintOptions {
   cmdOptions: CommandLineOptions;
-  realtimeLint: boolean;
+  tscCompiledProgram: TSCCompiledProgram;
   cancellationToken?: ts.CancellationToken;
   incrementalLintInfo?: IncrementalLintInfo;
-  tsProgram?: ts.Program;
   reportAutofixCb?: ReportAutofixCallback;
   isFileFromModuleCb?: IsFileFromModuleCallback;
-  [key: string]: any;
 }

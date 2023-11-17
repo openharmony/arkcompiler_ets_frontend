@@ -22,6 +22,7 @@ import * as readline from 'node:readline';
 import * as path from 'node:path';
 import type { CommandLineOptions } from '../lib/CommandLineOptions';
 import { lint } from '../lib/LinterRunner';
+import { compileLintOptions } from './Compiler';
 
 export function run(): void {
   const commandLineArgs = process.argv.slice(2);
@@ -39,7 +40,7 @@ export function run(): void {
   TypeScriptLinter.initGlobals();
 
   if (!cmdOptions.ideMode) {
-    const result = lint({ cmdOptions: cmdOptions, realtimeLint: false });
+    const result = lint(compileLintOptions(cmdOptions));
     process.exit(result.errorNodes > 0 ? 1 : 0);
   } else {
     runIDEMode(cmdOptions);
@@ -71,7 +72,7 @@ function runIDEMode(cmdOptions: CommandLineOptions): void {
     if (cmdOptions.parsedConfigFile) {
       cmdOptions.parsedConfigFile.fileNames.push(tmpFileName);
     }
-    const result = lint({ cmdOptions: cmdOptions, realtimeLint: false });
+    const result = lint(compileLintOptions(cmdOptions));
     const problems = Array.from(result.problemsInfos.values());
     if (problems.length === 1) {
       const jsonMessage = problems[0].map((x) => {

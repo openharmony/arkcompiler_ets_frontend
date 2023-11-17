@@ -15,36 +15,33 @@
 
 import type * as ts from 'typescript';
 
-export class TypeScriptDiagnosticsExtractor {
-  constructor(
-    public strictProgram: ts.Program,
-    public nonStrictProgram: ts.Program
-  ) {}
+/**
+ * Returns diagnostics which appear in strict compilation mode only
+ */
+export function getStrictDiagnostics(
+  strictProgram: ts.Program,
+  nonStrictProgram: ts.Program,
+  fileName: string
+): ts.Diagnostic[] {
+  // applying filter is a workaround for tsc bug
+  const strict = getAllDiagnostics(strictProgram, fileName).filter((diag) => {
+    return !(diag.length === 0 && diag.start === 0);
+  });
+  const nonStrict = getAllDiagnostics(nonStrictProgram, fileName);
 
-  /**
-   * Returns diagnostics which appear in strict compilation mode only
-   */
-  getStrictDiagnostics(fileName: string): ts.Diagnostic[] {
-    // applying filter is a workaround for tsc bug
-    const strict = getAllDiagnostics(this.strictProgram, fileName).filter((diag) => {
-      return !(diag.length === 0 && diag.start === 0);
-    });
-    const nonStrict = getAllDiagnostics(this.nonStrictProgram, fileName);
-
-    // collect hashes for later easier comparison
-    const nonStrictHashes = nonStrict.reduce((result, value) => {
-      const hash = hashDiagnostic(value);
-      if (hash) {
-        result.add(hash);
-      }
-      return result;
-    }, new Set<string>());
-    // return diagnostics which weren't detected in non-strict mode
-    return strict.filter((value) => {
-      const hash = hashDiagnostic(value);
-      return hash && !nonStrictHashes.has(hash);
-    });
-  }
+  // collect hashes for later easier comparison
+  const nonStrictHashes = nonStrict.reduce((result, value) => {
+    const hash = hashDiagnostic(value);
+    if (hash) {
+      result.add(hash);
+    }
+    return result;
+  }, new Set<string>());
+  // return diagnostics which weren't detected in non-strict mode
+  return strict.filter((value) => {
+    const hash = hashDiagnostic(value);
+    return hash && !nonStrictHashes.has(hash);
+  });
 }
 
 function getAllDiagnostics(program: ts.Program, fileName: string): ts.Diagnostic[] {

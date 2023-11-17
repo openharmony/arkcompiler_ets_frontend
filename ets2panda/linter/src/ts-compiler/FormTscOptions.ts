@@ -16,7 +16,10 @@
 import * as ts from 'typescript';
 import type { CommandLineOptions } from '../../lib/CommandLineOptions';
 
-export function formTscOptions(cmdOptions: CommandLineOptions, extraOptions?: unknown): ts.CreateProgramOptions {
+export function formTscOptions(
+  cmdOptions: CommandLineOptions,
+  overrideCompilerOptions: ts.CompilerOptions
+): ts.CreateProgramOptions {
   if (cmdOptions.parsedConfigFile) {
     const options: ts.CreateProgramOptions = {
       rootNames: cmdOptions.parsedConfigFile.fileNames,
@@ -24,9 +27,7 @@ export function formTscOptions(cmdOptions: CommandLineOptions, extraOptions?: un
       projectReferences: cmdOptions.parsedConfigFile.projectReferences,
       configFileParsingDiagnostics: ts.getConfigFileParsingDiagnostics(cmdOptions.parsedConfigFile)
     };
-    if (extraOptions) {
-      options.options = Object.assign(options.options, extraOptions);
-    }
+    options.options = Object.assign(options.options, overrideCompilerOptions);
     return options;
   }
   const options: ts.CreateProgramOptions = {
@@ -38,8 +39,6 @@ export function formTscOptions(cmdOptions: CommandLineOptions, extraOptions?: un
       checkJs: true
     }
   };
-  if (extraOptions) {
-    options.options = Object.assign(options.options, extraOptions);
-  }
+  options.options = Object.assign(options.options, overrideCompilerOptions);
   return options;
 }

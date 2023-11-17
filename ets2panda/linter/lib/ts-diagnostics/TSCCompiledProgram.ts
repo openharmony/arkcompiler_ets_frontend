@@ -16,108 +16,70 @@
 import * as ts from 'typescript';
 import type { ProblemInfo } from '../ProblemInfo';
 import { ProblemSeverity } from '../ProblemSeverity';
-import type { LintOptions } from '../LintOptions';
-import { TypeScriptDiagnosticsExtractor } from './TypeScriptDiagnosticsExtractor';
-import { Compiler } from '../Compiler';
+import { getStrictDiagnostics } from './TypeScriptDiagnosticsExtractor';
 import { FaultID } from '../Problems';
 import { faultsAttrs } from '../FaultAttrs';
 
 export interface TSCCompiledProgram {
-  getOriginalProgram: () => ts.Program;
+  getProgram: () => ts.Program;
   getStrictDiagnostics: (fileName: string) => ts.Diagnostic[];
 }
 
 export class TSCCompiledProgramSimple implements TSCCompiledProgram {
-  private readonly tsProgram: ts.Program;
+  private readonly program: ts.Program;
 
   constructor(program: ts.Program) {
-    this.tsProgram = program;
+    this.program = program;
   }
 
-  getOriginalProgram(): ts.Program {
-    return this.tsProgram;
+  getProgram(): ts.Program {
+    return this.program;
   }
 
   getStrictDiagnostics(fileName: string): ts.Diagnostic[] {
-    void fileName;
     void this;
+    void fileName;
     return [];
   }
 }
 
 export class TSCCompiledProgramWithDiagnostics implements TSCCompiledProgram {
-  private readonly diagnosticsExtractor: TypeScriptDiagnosticsExtractor;
-  private readonly wasStrict: boolean;
-  private readonly cachedDiagnostics: Map<string, ts.Diagnostic[]>;
+  private readonly program: ts.Program;
+  private readonly cachedDiagnostics: Map<string, ts.Diagnostic[]> = new Map();
 
-  constructor(program: ts.Program, options: LintOptions) {
-    const { strict, nonStrict, wasStrict } = getTwoCompiledVersions(program, options);
-    this.diagnosticsExtractor = new TypeScriptDiagnosticsExtractor(strict, nonStrict);
-    this.wasStrict = wasStrict;
-    this.cachedDiagnostics = new Map();
+  constructor(strict: ts.Program, nonStrict: ts.Program, inputFiles: string[]) {
+    this.program = strict;
+
+    inputFiles.forEach((fileName) => {
+      const sourceFile = this.program.getSourceFile(fileName);
+      if (sourceFile !== undefined) {
+        this.cachedDiagnostics.set(sourceFile.fileName, getStrictDiagnostics(strict, nonStrict, sourceFile.fileName));
+      }
+    });
   }
 
-  getOriginalProgram(): ts.Program {
-    return this.wasStrict ? this.diagnosticsExtractor.strictProgram : this.diagnosticsExtractor.nonStrictProgram;
+  static getOverrideCompilerOptions(strict: boolean): ts.CompilerOptions {
+    return {
+      strict: false,
+      alwaysStrict: false,
+      noImplicitAny: false,
+      noImplicitThis: false,
+      strictBindCallApply: false,
+      useUnknownInCatchVariables: false,
+      strictNullChecks: strict,
+      strictFunctionTypes: strict,
+      strictPropertyInitialization: strict,
+      noImplicitReturns: strict
+    };
+  }
+
+  getProgram(): ts.Program {
+    return this.program;
   }
 
   getStrictDiagnostics(fileName: string): ts.Diagnostic[] {
-    const cachedDiagnostic = this.cachedDiagnostics.get(fileName);
-    if (cachedDiagnostic) {
-      return cachedDiagnostic;
-    }
-    const diagnostic = this.diagnosticsExtractor.getStrictDiagnostics(fileName);
-    this.cachedDiagnostics.set(fileName, diagnostic);
-    return diagnostic;
+    return this.cachedDiagnostics.get(fileName) ?? [];
   }
-}
-
-export function getStrictOptions(): {
-  strictNullChecks: boolean;
-  strictFunctionTypes: boolean;
-  strictPropertyInitialization: boolean;
-  noImplicitReturns: boolean;
-} {
-  return {
-    strictNullChecks: true,
-    strictFunctionTypes: true,
-    strictPropertyInitialization: true,
-    noImplicitReturns: true
-  };
-}
-
-function isStrict(compilerOptions: ts.CompilerOptions): boolean {
-  const strictOptions = getStrictOptions();
-  let wasStrict = false;
-  // wasStrict evaluates true if any of the strict options was set
-  Object.keys(strictOptions).forEach((x) => {
-    wasStrict = wasStrict || !!compilerOptions[x];
-  });
-  return wasStrict;
-}
-
-function getTwoCompiledVersions(
-  program: ts.Program,
-  options: LintOptions
-): { strict: ts.Program; nonStrict: ts.Program; wasStrict: boolean } {
-  const compilerOptions = program.getCompilerOptions();
-  const inversedOptions = getInversedOptions(compilerOptions);
-  const withInversedOptions = Compiler.compile(options, inversedOptions);
-  const wasStrict = isStrict(compilerOptions);
-  return {
-    strict: wasStrict ? program : withInversedOptions,
-    nonStrict: wasStrict ? withInversedOptions : program,
-    wasStrict: wasStrict
-  };
-}
-
-function getInversedOptions(compilerOptions: ts.CompilerOptions): ts.CompilerOptions {
-  const newOptions = { ...compilerOptions };
-  const wasStrict = isStrict(compilerOptions);
-  Object.keys(getStrictOptions()).forEach((key) => {
-    newOptions[key] = !wasStrict;
-  });
-  return newOptions;
 }
 
 export function transformDiagnostic(diagnostic: ts.Diagnostic): ProblemInfo {
