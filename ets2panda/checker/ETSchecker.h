@@ -537,6 +537,9 @@ public:
 
     // Static invoke
     void CheckInvokeMethodsLegitimacy(ETSObjectType *class_type);
+    checker::Type *CheckArrayElements(ir::Identifier *ident, ir::ArrayExpression *init);
+    void ResolveReturnStatement(checker::Type *func_return_type, checker::Type *argument_type,
+                                ir::ScriptFunction *containing_func, ir::ReturnStatement *st);
 
     std::recursive_mutex *Mutex()
     {
