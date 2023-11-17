@@ -78,8 +78,8 @@ struct SourceFile {
     SourceFile(std::string_view fn, std::string_view s, std::string_view rp, bool m);
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
-    std::string_view file_name {};
     std::string_view file_path {};
+    std::string_view file_folder {};
     std::string_view source {};
     std::string_view resolved_path {};
     bool is_module {};

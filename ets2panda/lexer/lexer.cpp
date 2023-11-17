@@ -216,7 +216,7 @@ void Lexer::SkipSingleLineComment()
     lexer::LineIndex index(source_);
     lexer::SourceLocation loc = index.GetLocation(SourcePosition(Iterator().Index(), pos_.line_));
 
-    throw Error(es2panda::ErrorType::SYNTAX, parser_context_->GetProgram()->SourceFile().Utf8(), message, loc.line,
+    throw Error(es2panda::ErrorType::SYNTAX, parser_context_->GetProgram()->SourceFilePath().Utf8(), message, loc.line,
                 loc.col);
 }
 

@@ -324,7 +324,7 @@ void ScopesInitPhase::ThrowSyntaxError(std::string_view error_message, const lex
     lexer::LineIndex index(program_->SourceCode());
     lexer::SourceLocation loc = index.GetLocation(pos);
 
-    throw Error {ErrorType::SYNTAX, program_->SourceFile().Utf8(), error_message, loc.line, loc.col};
+    throw Error {ErrorType::SYNTAX, program_->SourceFilePath().Utf8(), error_message, loc.line, loc.col};
 }
 
 void ScopesInitPhase::CreateFuncDecl(ir::ScriptFunction *func)

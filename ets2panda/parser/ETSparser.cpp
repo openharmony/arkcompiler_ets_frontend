@@ -155,7 +155,7 @@ void ETSParser::ParseProgram(ScriptKind kind)
     Lexer()->NextToken();
     GetProgram()->SetKind(kind);
 
-    if (GetProgram()->SourceFile().Utf8()[0] == '@') {
+    if (GetProgram()->SourceFilePath().Utf8()[0] == '@') {
         // NOTE(user): handle multiple sourceFiles
     }
 
@@ -249,23 +249,23 @@ ArenaVector<ir::Statement *> ETSParser::PrepareExternalGlobalClass([[maybe_unuse
     }
 
     auto &ext_sources = global_program_->ExternalSources();
-    const util::StringView name = GetProgram()->SourceFilePath();
+    const util::StringView name = GetProgram()->SourceFileFolder();
 
     auto res = ext_sources.end();
     if (!statements.empty()) {
         res = ext_sources.find(name);
     } else {
-        auto path = GetProgram()->SourceFilePath().Mutf8() + panda::os::file::File::GetPathDelim().at(0) +
+        auto path = GetProgram()->SourceFileFolder().Mutf8() + panda::os::file::File::GetPathDelim().at(0) +
                     GetProgram()->GetPackageName().Mutf8();
         auto resolved = ResolveImportPath(path);
         resolved_parsed_sources_.emplace(path, resolved);
-        GetProgram()->SetSource(GetProgram()->SourceCode(), GetProgram()->SourceFile(),
+        GetProgram()->SetSource(GetProgram()->SourceCode(), GetProgram()->SourceFilePath(),
                                 util::UString(resolved, Allocator()).View());
     }
 
     if (res == ext_sources.end()) {
         CreateGlobalClass();
-        auto ins_res = ext_sources.emplace(GetProgram()->SourceFilePath(), Allocator()->Adapter());
+        auto ins_res = ext_sources.emplace(GetProgram()->SourceFileFolder(), Allocator()->Adapter());
         ins_res.first->second.push_back(GetProgram());
     } else {
         res->second.push_back(GetProgram());
@@ -371,7 +371,7 @@ std::string ETSParser::ResolveFullPathFromRelative(const std::string &path)
 {
     char path_delimiter = panda::os::file::File::GetPathDelim().at(0);
     auto resolved_fp = GetProgram()->ResolvedFilePath().Mutf8();
-    auto source_fp = GetProgram()->SourceFilePath().Mutf8();
+    auto source_fp = GetProgram()->SourceFileFolder().Mutf8();
     if (resolved_fp.empty()) {
         auto fp = source_fp + path_delimiter + path;
         return util::Helpers::IsRealPath(fp) ? fp : path;
@@ -534,7 +534,7 @@ void ETSParser::ParseSources(const std::vector<std::string> &paths, bool is_exte
 
         std::ifstream input_stream(resolved_path.c_str());
 
-        if (GetProgram()->SourceFile().Is(resolved_path)) {
+        if (GetProgram()->SourceFilePath().Is(resolved_path)) {
             break;
         }
 
@@ -2800,7 +2800,7 @@ void ETSParser::ParseReExport(lexer::SourcePosition start_loc)
     ConsumeSemicolon(re_export_declaration);
 
     auto *re_export = Allocator()->New<ir::ETSReExportDeclaration>(re_export_declaration, user_paths,
-                                                                   GetProgram()->SourceFile(), Allocator());
+                                                                   GetProgram()->SourceFilePath(), Allocator());
     varbinder->AddReExportImport(re_export);
 }
 
@@ -2819,7 +2819,7 @@ void ETSParser::ParsePackageDeclaration(ArenaVector<ir::Statement *> &statements
             return;
         }
 
-        auto base_name = GetProgram()->SourceFile().Utf8();
+        auto base_name = GetProgram()->SourceFilePath().Utf8();
         base_name = base_name.substr(base_name.find_last_of(panda::os::file::File::GetPathDelim()) + 1);
         const size_t idx = base_name.find_last_of('.');
         if (idx != std::string::npos) {
@@ -2964,7 +2964,7 @@ void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, boo
     }
     Lexer()->NextToken();  // eat '{'
 
-    auto file_name = GetProgram()->SourceFile().Mutf8();
+    auto file_name = GetProgram()->SourceFilePath().Mutf8();
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
@@ -4814,8 +4814,8 @@ InnerSourceParser::InnerSourceParser(ETSParser *parser)
     : parser_(parser),
       saved_lexer_(parser_->Lexer()),
       saved_source_code_(parser_->GetProgram()->SourceCode()),
-      saved_source_file_(parser_->GetProgram()->SourceFile()),
-      saved_source_file_path_(parser_->GetProgram()->SourceFilePath())
+      saved_source_file_(parser_->GetProgram()->SourceFilePath()),
+      saved_source_file_path_(parser_->GetProgram()->SourceFileFolder())
 {
 }
 

@@ -352,6 +352,7 @@ libes2panda_sources = [
   "util/bitset.cpp",
   "util/declgenEts2Ts.cpp",
   "util/helpers.cpp",
+  "util/path.cpp",
   "util/plugin.cpp",
   "util/ustring.cpp",
   "varbinder/ASBinder.cpp",
