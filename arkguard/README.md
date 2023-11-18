@@ -138,6 +138,15 @@ except the following:
 * the global names that are specified by [keep options](#keep-options).
 * the global names in system API list.
 
+`-enable-filename-obfuscation`
+
+Specifies to obfuscate the file/folder names. This option only takes effect in OpenHarmony Archive(HAR) scenarios. If you use this option, all file/folder names will be obfuscated except the following:
+* the file/folder names configured in the 'main' and 'types' fields in the oh-package.json5.
+* the file/folder names configured in the 'srcEntry' field in the module.json5.
+* the file/folder names that are specified by [keep options](#keep-file-name-link).
+* non-ECMAScript module reference (ECMAScript module example: `import {foo} from './filename'`)
+* non-path reference, such as json5 will not be obfuscated `import module from 'json5'`
+
 `-compact`
 
 Specifies to remove unnecessary blank spaces and all line feeds. If you use this option, all code will be compressed into
@@ -235,6 +244,21 @@ bar();                      // bar can be safely obfuscated
 
 class MyClass {}
 let d = new MyClass();      // MyClass can be safely obfuscated
+```
+
+<a id="keep-file-name-link">`-keep-file-name` [,identifiers,...]</a>
+
+Specify the name of files/folders to keep (no need to write the file suffix). for example,
+```
+-keep-file-name
+index
+entry
+```
+**What file names should be kept?**
+```
+const module1 = require('./file1')   // ARKTs doesn't support CommonJS, this path reference should be kept.
+const moduleName = './file2'
+const module2 = import(moduleName)   // dynamic reference cannot identify whether moduleName is a path and should be retained.
 ```
 
 `-keep-dts` filepath
