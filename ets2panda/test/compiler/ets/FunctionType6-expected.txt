@@ -446,12 +446,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 23,
+                "column": 3
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 23,
+                "column": 17
               }
             }
           },

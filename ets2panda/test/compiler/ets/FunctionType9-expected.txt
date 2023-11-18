@@ -338,12 +338,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 22,
+                "column": 11
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 22,
+                "column": 37
               }
             }
           },

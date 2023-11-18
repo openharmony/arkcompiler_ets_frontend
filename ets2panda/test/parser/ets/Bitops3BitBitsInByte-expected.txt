@@ -893,12 +893,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 26,
+                "column": 11
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 26,
+                "column": 24
               }
             }
           },
@@ -956,12 +956,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 27,
+                "column": 11
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 27,
+                "column": 24
               }
             }
           },
@@ -1019,12 +1019,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 28,
+                "column": 27
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 28,
+                "column": 49
               }
             }
           },

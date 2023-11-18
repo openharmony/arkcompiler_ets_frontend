@@ -145,12 +145,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 21
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 45
               }
             }
           },
@@ -889,4 +889,4 @@
     }
   }
 }
-TypeError: Cannot assign to a constant variable date [global_const_vars4.ets:1:1]
+TypeError: Cannot assign to a constant variable date [global_const_vars4.ets:17:21]

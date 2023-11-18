@@ -408,12 +408,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 24,
+                "column": 21
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 24,
+                "column": 29
               }
             }
           },
@@ -626,12 +626,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 28,
+                "column": 21
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 28,
+                "column": 29
               }
             }
           },
