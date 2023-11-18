@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import type {Expression, Node, ObjectBindingPattern} from 'typescript';
+import type {Expression, Node, ObjectBindingPattern, SourceFile} from 'typescript';
 import {
   isBindingElement,
   isCallExpression,
@@ -159,5 +159,9 @@ export class NodeUtils {
 
     const initializer: Expression = node.parent.initializer;
     return initializer && isCallExpression(initializer);
+  }
+
+  public static isDeclarationFile(node: SourceFile): boolean {
+    return node.isDeclarationFile;
   }
 }

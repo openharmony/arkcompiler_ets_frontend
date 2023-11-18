@@ -28,7 +28,8 @@ import {
   isTypeNode,
   setParentRecursive,
   visitEachChild,
-  isStringLiteral
+  isStringLiteral,
+  isSourceFile
 } from 'typescript';
 
 import type {
@@ -50,6 +51,7 @@ import type {INameObfuscationOption} from '../../configs/INameObfuscationOption'
 import type {INameGenerator, NameGeneratorOptions} from '../../generator/INameGenerator';
 import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import type {TransformPlugin} from '../TransformPlugin';
+import {TransformerOrder} from '../TransformPlugin';
 import {NodeUtils} from '../../utils/NodeUtils';
 import {collectPropertyNamesAndStrings, isViewPUBasedClass} from '../../utils/OhsUtil';
 
@@ -92,6 +94,10 @@ namespace secharmony {
       return renamePropertiesTransformer;
 
       function renamePropertiesTransformer(node: Node): Node {
+        if (isSourceFile(node) && NodeUtils.isDeclarationFile(node)) {
+          return node;
+        }
+
         collectReservedNames(node);
         if (globalMangledTable === undefined) {
           globalMangledTable = new Map<string, string>();
@@ -262,10 +268,9 @@ namespace secharmony {
     }
   };
 
-  const TRANSFORMER_ORDER: number = 6;
   export let transformerPlugin: TransformPlugin = {
     'name': 'renamePropertiesPlugin',
-    'order': (1 << TRANSFORMER_ORDER),
+    'order': (1 << TransformerOrder.RENAME_PROPERTIES_TRANSFORMER),
     'createTransformerFactory': createRenamePropertiesFactory
   };
 }
