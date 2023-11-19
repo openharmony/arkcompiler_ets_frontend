@@ -17,6 +17,7 @@ import {FileUtils} from './FileUtils';
 
 export const NAME_CACHE_SUFFIX: string = '.cache.json';
 export const PROPERTY_CACHE_FILE: string = 'property.cache.json';
+const spaceOfNameCache: number = 2;
 
 export function writeCache(cache: Map<string, string>, destFileName: string): void {
   // convert map to json string
@@ -24,7 +25,7 @@ export function writeCache(cache: Map<string, string>, destFileName: string): vo
     return;
   }
 
-  const cacheString: string = JSON.stringify(Object.fromEntries(cache));
+  const cacheString: string = JSON.stringify(Object.fromEntries(cache), null, spaceOfNameCache);
   FileUtils.writeFile(destFileName, cacheString);
 }
 

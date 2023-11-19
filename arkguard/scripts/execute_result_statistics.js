@@ -16,6 +16,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+import { Extension } from '../src/common/type';
 
 const testDirectory = path.resolve('./test/local');
 
@@ -59,18 +60,16 @@ function runTestsInDirectory(directoryPath) {
 
     if (fs.statSync(filePath).isDirectory()) {
       runTestsInDirectory(filePath);
-    } else if (filePath.includes('obfuscation_validation')) {
-      if (filePath.includes('assert.ts')) {
-        const isSuccess = runTest(filePath);
-        if (isSuccess) {
-          successCount++;
-        } else {
-          failureCount++;
-          failedFiles.push(filePath);
-        }
+    } else if (filePath.includes('assert-expectation.ts')) {
+      const isSuccess = runTest(filePath);
+      if (isSuccess) {
+        successCount++;
+      } else {
+        failureCount++;
+        failedFiles.push(filePath);
       }
-    } else if ((path.extname(filePath) === '.ts' || path.extname(filePath) === '.js') && (!filePath.endsWith('.d.ets') &&
-      !filePath.endsWith('.d.ts'))) {
+    } else if ((filePath.endsWith(Extension.TS) || filePath.endsWith(Extension.JS)) && !(filePath.endsWith(Extension.DETS) ||
+      filePath.endsWith(Extension.DTS))) {
       const isSuccess = runTest(filePath);
       if (isSuccess) {
         successCount++;
