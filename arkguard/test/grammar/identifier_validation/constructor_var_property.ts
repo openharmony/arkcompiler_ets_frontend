@@ -13,8 +13,26 @@
  * limitations under the License.
  */
 
-function foo() {
-}
+import assert from 'assert';
+namespace ts {
+  class X {
+    n: string = "";
+    constructor(s:string) {
+      this.n = s;
+    }
+    method(){
+      return (this.n);
+    }
+  }
+  let name1 = new X("global");
 
-function main() {
+  class A {
+    name0:string = '';
+    constructor(name2:string, public name3: X) {
+      name3.method();
+    }
+  }
+  let a = new A('aa',new X("param"));
+  assert(a.name3.n === 'param', 'success');
+  assert(name1.n === 'global', 'success');
 }

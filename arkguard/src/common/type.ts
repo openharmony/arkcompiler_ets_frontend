@@ -13,8 +13,14 @@
  * limitations under the License.
  */
 
-function foo() {
+export const enum Extension {
+  TS = '.ts',
+  DTS = '.d.ts',
+  JS = '.js',
+  JSON = '.json',
+  ETS = '.ets',
+  DETS = '.d.ets'
 }
 
-function main() {
-}
+export const supportedRunningExtension: readonly string[] = [Extension.TS, Extension.JS];
+export const supportedDeclarationExtension: readonly string[] = [Extension.DTS, Extension.DETS];

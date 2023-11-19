@@ -16,4 +16,3 @@
 export declare function declaration_func(n1: number, n2: number): void;
 
 export declare class declaration_class{}
-

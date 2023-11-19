@@ -41,7 +41,8 @@ import {
   isGlobalScope,
   isEnumScope,
   isInterfaceScope,
-  isObjectLiteralScope
+  isObjectLiteralScope,
+  mangledIdentifierNames
 } from '../../utils/ScopeAnalyzer';
 
 import type {
@@ -154,10 +155,6 @@ namespace secharmony {
 
       function renameNamesInScope(scope: Scope): void {
         if (scope.parent) {
-          scope.parent.mangledNames.forEach((value) => {
-            scope.mangledNames.add(value);
-          });
-
           scope.parent.importNames.forEach((value) => {
             scope.importNames.add(value);
           });
@@ -186,7 +183,7 @@ namespace secharmony {
           let mangled: string = original;
           // No allow to rename reserved names.
           if (reservedNames.includes(original) || scope.exportNames.has(def.name) || isSkippedGlobal(openTopLevel, scope)) {
-            scope.mangledNames.add(mangled);
+            mangledIdentifierNames.add(mangled);
             mangledSymbolNames.set(def, mangled);
             return;
           }
@@ -207,7 +204,7 @@ namespace secharmony {
 
           // add new names to name cache
           nameCache.set(path, mangled);
-          scope.mangledNames.add(mangled);
+          mangledIdentifierNames.add(mangled);
           mangledSymbolNames.set(def, mangled);
           localCache.set(original, mangled);
         });
@@ -255,7 +252,7 @@ namespace secharmony {
           }
 
           // the anme has already been generated in the current scope
-          if (scope.mangledNames.has(mangled)) {
+          if (mangledIdentifierNames.has(mangled)) {
             mangled = '';
           }
         } while (mangled === '');
@@ -338,7 +335,7 @@ namespace secharmony {
 
           const sym: Symbol | undefined = checker.getSymbolAtLocation(targetNode);
           if (!sym) {
-            scope.mangledNames.add((targetNode as Identifier).escapedText.toString());
+            mangledIdentifierNames.add((targetNode as Identifier).escapedText.toString());
           }
         };
 

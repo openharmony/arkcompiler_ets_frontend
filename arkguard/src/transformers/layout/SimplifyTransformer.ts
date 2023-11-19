@@ -44,8 +44,9 @@ import type {
 
 import type { IOptions } from '../../configs/IOptions';
 import type { TransformPlugin } from '../TransformPlugin';
-import {TransformerOrder} from '../TransformPlugin';
+import { TransformerOrder } from '../TransformPlugin';
 import { isCommentedNode, isSuperCallStatement } from '../../utils/TransformUtil';
+import { NodeUtils } from '../../utils/NodeUtils';
 
 namespace secharmony {
   export let transformerPlugin: TransformPlugin = {
@@ -67,7 +68,7 @@ namespace secharmony {
       return transformer;
 
       function transformer(node: Node): Node {
-        if (!isSourceFile(node) || node.fileName.endsWith('.d.ts')) {
+        if (!isSourceFile(node) || NodeUtils.isDeclarationFile(node)) {
           return node;
         }
 

@@ -1,7 +1,7 @@
 {
     "mCompact": false,
     "mRemoveComments": false,
-    "mOutputDir": "../test/local",
+    "mOutputDir": "../../local",
     "mDisableHilog": false,
     "mDisableConsole":false,
     "mSimplify": false,
@@ -9,9 +9,9 @@
         "mEnable": true,
         "mNameGeneratorType": 1,
         "mDictionaryList": [],
-        "mReservedNames": ["moduleName01", "stringLiteralObj02", "Interface11", "class11", "enum11", "Object11"],
+        "mReservedNames": [],
         "mRenameProperties": true,
-        "mReservedProperties": ["strictEqual", "readFileSync"],
+        "mReservedProperties": [],
         "mKeepStringProperty": true
     },
     "mEnableSourceMap": false,
