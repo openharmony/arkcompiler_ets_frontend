@@ -84,8 +84,13 @@ public:
 
     bool IsETSStringType() const;
     bool IsETSNullType() const;
+    bool IsETSUndefinedType() const;
+    bool IsETSNullLike() const;
     bool IsETSAsyncFuncReturnType() const;
-    bool IsNullableType() const;
+    bool IsNullish() const;
+    bool IsNullishOrNullLike() const;
+    bool ContainsNull() const;
+    bool ContainsUndefined() const;
 
     ETSStringType *AsETSStringType()
     {

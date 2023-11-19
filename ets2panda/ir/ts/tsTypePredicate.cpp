@@ -40,7 +40,7 @@ void TSTypePredicate::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSTypePredicate"},
                  {"parameterName", parameter_name_},
-                 {"typeAnnotation", AstDumper::Nullable(type_annotation_)},
+                 {"typeAnnotation", AstDumper::Nullish(type_annotation_)},
                  {"asserts", asserts_}});
 }
 

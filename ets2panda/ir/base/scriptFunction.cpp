@@ -100,7 +100,7 @@ void ScriptFunction::Iterate(const NodeTraverser &cb) const
 void ScriptFunction::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ScriptFunction"},
-                 {"id", AstDumper::Nullable(id_)},
+                 {"id", AstDumper::Nullish(id_)},
                  {"generator", IsGenerator()},
                  {"async", IsAsyncFunc()},
                  {"expression", ((func_flags_ & ir::ScriptFunctionFlags::EXPRESSION) != 0)},

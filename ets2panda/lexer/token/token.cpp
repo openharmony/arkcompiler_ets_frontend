@@ -327,7 +327,6 @@ const char *TokenToString(TokenType type)  // NOLINT(readability-function-size)
         case TokenType::KEYW_NEW:
             return "new";
         case TokenType::LITERAL_NULL:
-        case TokenType::KEYW_NULL:
             return "null";
         case TokenType::KEYW_NUMBER:
             return "number";

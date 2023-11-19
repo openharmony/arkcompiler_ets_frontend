@@ -143,17 +143,41 @@ void BinaryExpression::Compile(compiler::ETSGen *etsg) const
     etsg->Binary(this, operator_, lhs);
 }
 
+static void CompileNullishCoalescing(BinaryExpression const *const node, compiler::ETSGen *etsg)
+{
+    auto const compile_operand = [etsg, optype = node->OperationType()](ir::Expression const *expr) {
+        etsg->CompileAndCheck(expr);
+        etsg->ApplyConversion(expr, optype);
+    };
+
+    compile_operand(node->Left());
+
+    if (!node->Left()->TsType()->IsNullishOrNullLike()) {
+        // fallthrough
+    } else if (node->Left()->TsType()->IsETSNullLike()) {
+        compile_operand(node->Right());
+    } else {
+        auto *if_left_nullish = etsg->AllocLabel();
+        auto *end_label = etsg->AllocLabel();
+
+        etsg->BranchIfNullish(node, if_left_nullish);
+
+        etsg->ConvertToNonNullish(node);
+        etsg->ApplyConversion(node->Left(), node->OperationType());
+        etsg->JumpTo(node, end_label);
+
+        etsg->SetLabel(node, if_left_nullish);
+        compile_operand(node->Right());
+
+        etsg->SetLabel(node, end_label);
+    }
+    etsg->SetAccumulatorType(node->TsType());
+}
+
 void BinaryExpression::CompileLogical(compiler::ETSGen *etsg) const
 {
-    auto *end_label = etsg->AllocLabel();
-
     if (operator_ == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING) {
-        left_->Compile(etsg);
-        etsg->ApplyConversion(left_, operation_type_);
-        etsg->BranchIfNotNull(this, end_label);
-        right_->Compile(etsg);
-        etsg->ApplyConversion(right_, operation_type_);
-        etsg->SetLabel(this, end_label);
+        CompileNullishCoalescing(this, etsg);
         return;
     }
 
@@ -164,6 +188,8 @@ void BinaryExpression::CompileLogical(compiler::ETSGen *etsg) const
     auto rhs = etsg->AllocReg();
     left_->Compile(etsg);
     etsg->ApplyConversionAndStoreAccumulator(left_, lhs, OperationType());
+
+    auto *end_label = etsg->AllocLabel();
 
     auto left_false_label = etsg->AllocLabel();
     if (operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
@@ -189,6 +215,7 @@ void BinaryExpression::CompileLogical(compiler::ETSGen *etsg) const
     }
 
     etsg->SetLabel(this, end_label);
+    etsg->SetAccumulatorType(TsType());
 }
 
 checker::Type *BinaryExpression::Check(checker::TSChecker *checker)

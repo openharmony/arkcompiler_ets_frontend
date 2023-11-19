@@ -24,7 +24,7 @@ struct cls {
 }
 
 struct cls2 {
-  member_cls: cls;
+  member_cls: cls | null = null;
   member_int: int;
 }
 

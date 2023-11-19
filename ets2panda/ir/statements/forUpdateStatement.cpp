@@ -62,9 +62,9 @@ void ForUpdateStatement::Iterate(const NodeTraverser &cb) const
 void ForUpdateStatement::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "ForUpdateStatement"},
-                 {"init", AstDumper::Nullable(init_)},
-                 {"test", AstDumper::Nullable(test_)},
-                 {"update", AstDumper::Nullable(update_)},
+                 {"init", AstDumper::Nullish(init_)},
+                 {"test", AstDumper::Nullish(test_)},
+                 {"update", AstDumper::Nullish(update_)},
                  {"body", body_}});
 }
 

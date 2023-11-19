@@ -749,6 +749,13 @@ void JSCompiler::Compile(const ir::StringLiteral *expr) const
     (void)expr;
     UNREACHABLE();
 }
+
+void JSCompiler::Compile(const ir::UndefinedLiteral *expr) const
+{
+    (void)expr;
+    UNREACHABLE();
+}
+
 // Compile methods for MODULE-related nodes in alphabetical order
 void JSCompiler::Compile(const ir::ExportAllDeclaration *st) const
 {

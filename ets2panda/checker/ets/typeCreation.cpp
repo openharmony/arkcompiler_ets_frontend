@@ -109,7 +109,10 @@ ETSArrayType *ETSChecker::CreateETSArrayType(Type *element_type)
     }
 
     auto *array_type = Allocator()->New<ETSArrayType>(element_type);
-    array_types_.insert({element_type, array_type});
+    auto it = array_types_.insert({element_type, array_type});
+    if (it.second && !element_type->IsTypeParameter()) {
+        CreateBuiltinArraySignature(array_type, array_type->Rank());
+    }
 
     return array_type;
 }
@@ -123,7 +126,7 @@ Type *ETSChecker::CreateETSUnionType(ArenaVector<Type *> &&constituent_types)
     ArenaVector<Type *> new_constituent_types(Allocator()->Adapter());
 
     for (auto *it : constituent_types) {
-        if (it->IsUnionType()) {
+        if (it->IsETSUnionType()) {
             for (auto *type : it->AsETSUnionType()->ConstituentTypes()) {
                 new_constituent_types.push_back(type);
             }
@@ -131,7 +134,8 @@ Type *ETSChecker::CreateETSUnionType(ArenaVector<Type *> &&constituent_types)
             continue;
         }
 
-        new_constituent_types.push_back(it);
+        new_constituent_types.push_back(
+            it->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) ? PrimitiveTypeAsETSBuiltinType(it) : it);
     }
 
     if (new_constituent_types.size() == 1) {

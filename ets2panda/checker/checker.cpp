@@ -198,7 +198,7 @@ bool Checker::AreTypesComparable(Type *source, Type *target)
 
 bool Checker::IsTypeEqualityComparableTo(Type *source, Type *target)
 {
-    return target->HasTypeFlag(TypeFlag::NULLABLE) || IsTypeComparableTo(source, target);
+    return target->IsNullish() || IsTypeComparableTo(source, target);
 }
 
 parser::Program *Checker::Program() const

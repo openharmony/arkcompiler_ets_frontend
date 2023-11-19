@@ -37,7 +37,7 @@ void YieldExpression::Iterate(const NodeTraverser &cb) const
 
 void YieldExpression::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "YieldExpression"}, {"delegate", delegate_}, {"argument", AstDumper::Nullable(argument_)}});
+    dumper->Add({{"type", "YieldExpression"}, {"delegate", delegate_}, {"argument", AstDumper::Nullish(argument_)}});
 }
 
 void YieldExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const

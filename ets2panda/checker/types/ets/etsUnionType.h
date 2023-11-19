@@ -69,6 +69,8 @@ public:
     Type *FindTypeIsCastableToThis(ir::Expression *node, TypeRelation *relation, Type *source) const;
     Type *FindTypeIsCastableToSomeType(ir::Expression *node, TypeRelation *relation, Type *target) const;
 
+    void ToAssemblerType(std::stringstream &ss) const override;
+
     Type *GetLeastUpperBoundType(ETSChecker *checker);
 
     Type *GetLeastUpperBoundType() const

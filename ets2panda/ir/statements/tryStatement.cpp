@@ -55,7 +55,7 @@ void TryStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TryStatement"},
                  {"block", block_},
                  {"handler", catch_clauses_},
-                 {"finalizer", AstDumper::Nullable(finalizer_)}});
+                 {"finalizer", AstDumper::Nullish(finalizer_)}});
 }
 
 bool TryStatement::HasDefaultCatchClause() const

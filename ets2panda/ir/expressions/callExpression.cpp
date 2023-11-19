@@ -75,7 +75,7 @@ void CallExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "CallExpression"},
                  {"callee", callee_},
                  {"arguments", arguments_},
-                 {"optional", optional_},
+                 {"optional", IsOptional()},
                  {"typeParameters", AstDumper::Optional(type_params_)}});
 }
 
@@ -177,7 +177,7 @@ void CallExpression::Compile(compiler::PandaGen *pg) const
     }
 
     pg->StoreAccumulator(this, callee);
-    pg->OptionalChainCheck(optional_, callee);
+    pg->OptionalChainCheck(IsOptional(), callee);
 
     if (contains_spread || arguments_.size() >= compiler::PandaGen::MAX_RANGE_CALL_ARG) {
         if (this_reg.IsInvalid()) {
@@ -257,7 +257,7 @@ void CallExpression::Compile(compiler::ETSGen *etsg) const
     compiler::VReg dyn_param2;
 
     // Helper function to avoid branching in non optional cases
-    auto emit_arguments = [this, etsg, is_static, is_dynamic, &callee_reg, &dyn_param2]() {
+    auto emit_call = [this, etsg, is_static, is_dynamic, &callee_reg, &dyn_param2]() {
         if (is_dynamic) {
             etsg->CallDynamic(this, callee_reg, dyn_param2, signature_, arguments_);
         } else if (is_static) {
@@ -268,12 +268,7 @@ void CallExpression::Compile(compiler::ETSGen *etsg) const
         } else {
             etsg->CallThisVirtual(this, callee_reg, signature_, arguments_);
         }
-
-        if (GetBoxingUnboxingFlags() != ir::BoxingUnboxingFlags::NONE) {
-            etsg->ApplyConversion(this, nullptr);
-        } else {
-            etsg->SetAccumulatorType(signature_->ReturnType());
-        }
+        etsg->SetAccumulatorType(TsType());
     };
 
     if (is_dynamic) {
@@ -323,7 +318,7 @@ void CallExpression::Compile(compiler::ETSGen *etsg) const
 
         etsg->StoreAccumulator(this, dyn_param2);
 
-        emit_arguments();
+        emit_call();
 
         if (signature_->ReturnType() != TsType()) {
             etsg->ApplyConversion(this, TsType());
@@ -333,24 +328,23 @@ void CallExpression::Compile(compiler::ETSGen *etsg) const
             etsg->LoadThis(this);
             etsg->StoreAccumulator(this, callee_reg);
         }
-        emit_arguments();
+        emit_call();
     } else if (!is_reference && callee_->IsMemberExpression()) {
         if (!is_static) {
             callee_->AsMemberExpression()->Object()->Compile(etsg);
             etsg->StoreAccumulator(this, callee_reg);
         }
-        emit_arguments();
+        emit_call();
+    } else if (callee_->IsSuperExpression() || callee_->IsThisExpression()) {
+        ASSERT(!is_reference && IsETSConstructorCall());
+        callee_->Compile(etsg);  // ctor is not a value!
+        etsg->SetVRegType(callee_reg, etsg->GetAccumulatorType());
+        emit_call();
     } else {
-        callee_->Compile(etsg);
+        ASSERT(is_reference);
+        etsg->CompileAndCheck(callee_);
         etsg->StoreAccumulator(this, callee_reg);
-        if (optional_) {
-            compiler::Label *end_label = etsg->AllocLabel();
-            etsg->BranchIfNull(this, end_label);
-            emit_arguments();
-            etsg->SetLabel(this, end_label);
-        } else {
-            emit_arguments();
-        }
+        etsg->EmitMaybeOptional(this, emit_call, IsOptional());
     }
 }
 
@@ -419,7 +413,9 @@ checker::Type *CallExpression::Check(checker::ETSChecker *checker)
         // Type check the callee again for member expression
         callee_type = callee_->Check(checker);
     }
-
+    if (!IsOptional()) {
+        checker->CheckNonNullishType(callee_type, callee_->Start());
+    }
     checker::Type *return_type;
     if (callee_type->IsETSDynamicType() && !callee_type->AsETSDynamicType()->HasDecl()) {
         // Trailing lambda for js function call is not supported, check the correctness of `foo() {}`
@@ -470,7 +466,7 @@ checker::Type *CallExpression::Check(checker::ETSChecker *checker)
 
         checker->CheckObjectLiteralArguments(signature, arguments_);
 
-        checker->AddNullParamsForDefaultParams(signature, arguments_, checker);
+        checker->AddUndefinedParamsForDefaultParams(signature, arguments_, checker);
 
         if (!functional_interface) {
             checker::ETSObjectType *callee_obj {};
@@ -510,6 +506,16 @@ checker::Type *CallExpression::Check(checker::ETSChecker *checker)
         checker->CreateBuiltinArraySignature(array_type, array_type->Rank());
     }
 
+    if (signature_->HasSignatureFlag(checker::SignatureFlags::NEED_RETURN_TYPE)) {
+        signature_->OwnerVar()->Declaration()->Node()->Check(checker);
+        return_type = signature_->ReturnType();
+    }
+    SetOptionalType(return_type);
+    if (IsOptional() && callee_type->IsNullishOrNullLike()) {
+        checker->Relation()->SetNode(this);
+        return_type = checker->CreateOptionalResultType(return_type);
+        checker->Relation()->SetNode(nullptr);
+    }
     SetTsType(return_type);
     return TsType();
 }

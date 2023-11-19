@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,19 +13,22 @@
  * limitations under the License.
  */
 
-class A {
-    num: int = 42;
-    foo() {}
-}
-
-class B {}
+function test_n(v: Object | null) { return v ? true : false }
+function test_u(v: Object | undefined) { return v ? true : false }
+function test_nu(v: Object | null | undefined) { return v ? true : false }
 
 function main() {
-    let x : String | short | A = 5 as short;
-    assert (x as short) * 2 == 10: "Error! Must be 10";
-    x = "STRSTR";
-    assert (x as String).equals("STRSTR"): "Error! Must be `STRSTR`";
-    x = new A();
-    assert (x as A).num == 42: "Error! Field of A must be `42`";
-    x = new B();  // CTE
+    assert(test_n({}));
+    assert(test_u({}));
+    assert(test_nu({}));
+
+    assert(!null);
+    if (null) { assert(false) }
+    assert(!test_n(null));
+    assert(!test_nu(null));
+
+    assert(!undefined);
+    if (undefined) { assert(false) }
+    assert(!test_u(undefined));
+    assert(!test_nu(undefined));
 }

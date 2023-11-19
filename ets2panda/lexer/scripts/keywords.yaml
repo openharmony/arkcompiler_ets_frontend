@@ -456,6 +456,7 @@ keywords:
 
   - name: 'undefined'
     token: KEYW_UNDEFINED
+    keyword: [ets]
     keyword_like: [js, ts]
 
   - name: 'unknown'

@@ -156,38 +156,13 @@
         }
       },
       "typeAnnotation": {
-        "type": "ETSUnionType",
-        "types": [
-          {
-            "type": "ETSTypeReference",
-            "part": {
-              "type": "ETSTypeReferencePart",
-              "name": {
-                "type": "Identifier",
-                "name": "A",
-                "decorators": [],
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 11
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 12
-                  }
-                }
-              },
-              "loc": {
-                "start": {
-                  "line": 18,
-                  "column": 11
-                },
-                "end": {
-                  "line": 18,
-                  "column": 14
-                }
-              }
-            },
+        "type": "ETSTypeReference",
+        "part": {
+          "type": "ETSTypeReferencePart",
+          "name": {
+            "type": "Identifier",
+            "name": "A",
+            "decorators": [],
             "loc": {
               "start": {
                 "line": 18,
@@ -195,11 +170,21 @@
               },
               "end": {
                 "line": 18,
-                "column": 14
+                "column": 12
               }
             }
+          },
+          "loc": {
+            "start": {
+              "line": 18,
+              "column": 11
+            },
+            "end": {
+              "line": 18,
+              "column": 14
+            }
           }
-        ],
+        },
         "loc": {
           "start": {
             "line": 18,

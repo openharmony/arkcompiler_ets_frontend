@@ -243,6 +243,7 @@ void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
 void ETSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
 {
     ETSGen *etsg = GetETSGen();
+    ASSERT(expr->TsType()->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::FUNCTIONAL_INTERFACE));
     ASSERT(expr->ResolvedLambda() != nullptr);
     auto *ctor = expr->ResolvedLambda()->TsType()->AsETSObjectType()->ConstructSignatures()[0];
     std::vector<compiler::VReg> arguments;
@@ -258,7 +259,7 @@ void ETSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
     }
 
     etsg->InitLambdaObject(expr, ctor, arguments);
-    etsg->SetAccumulatorType(expr->resolved_lambda_->TsType());
+    etsg->SetAccumulatorType(expr->TsType());
 }
 
 void ETSCompiler::Compile(const ir::AssignmentExpression *expr) const
@@ -446,6 +447,13 @@ void ETSCompiler::Compile(const ir::StringLiteral *expr) const
     (void)expr;
     UNREACHABLE();
 }
+
+void ETSCompiler::Compile(const ir::UndefinedLiteral *expr) const
+{
+    (void)expr;
+    UNREACHABLE();
+}
+
 // compile methods for MODULE-related nodes in alphabetical order
 void ETSCompiler::Compile(const ir::ExportAllDeclaration *st) const
 {

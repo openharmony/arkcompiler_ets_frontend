@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,18 +14,30 @@
  * limitations under the License.
  */
 
+class Bar {
+    cb: (() => int) | undefined = () => { return 3 };
+}
+
+function foo(a: Int | null): (() => Int) | undefined {
+    let cb: () => Int = () => { return a!; };
+    return a != null ? cb : undefined;
+}
+
 function main(): void {
-  let x: int = 0;
+    let a = new Int(3);
+    // assert foo(a)?.() == 3; // bug
+    assert foo(a)?.() == a;
 
-  let potentiallyNullObj: Int[] | null = null;
-  let number: Int | undefined = potentiallyNullObj?.[x++] ?? 2;
-  assert(number == 2);
-  assert(x == 0); // 0 as x was not incremented
+    assert foo(null)?.() == null;
+    assert null == foo(null)?.();
 
-  let obj: Int[] = [11, 21, 31];
-  number = obj?.[x++];
+    assert foo(null)?.() == undefined;
+    assert undefined == foo(null)?.();
 
-  let a : Int = 11;
-  assert(number == a);
-  assert(x == 1); // 1 as x was incremented
+    assert new Int(3) != foo(null)?.();
+
+    let b = new Bar();
+    assert b.cb?.() == 3;
+    b.cb = undefined;
+    assert b.cb?.() == undefined;
 }

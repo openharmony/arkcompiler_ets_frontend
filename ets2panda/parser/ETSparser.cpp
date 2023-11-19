@@ -61,6 +61,7 @@
 #include "ir/expressions/literals/nullLiteral.h"
 #include "ir/expressions/literals/numberLiteral.h"
 #include "ir/expressions/literals/stringLiteral.h"
+#include "ir/expressions/literals/undefinedLiteral.h"
 #include "ir/expressions/templateLiteral.h"
 #include "ir/expressions/objectExpression.h"
 #include "ir/module/importDeclaration.h"
@@ -1714,6 +1715,7 @@ ir::Statement *ETSParser::ParseTypeDeclaration(bool allow_static)
         }
         case lexer::TokenType::LITERAL_NUMBER:
         case lexer::TokenType::LITERAL_NULL:
+        case lexer::TokenType::KEYW_UNDEFINED:
         case lexer::TokenType::LITERAL_STRING:
         case lexer::TokenType::LITERAL_FALSE:
         case lexer::TokenType::LITERAL_TRUE:
@@ -2263,41 +2265,56 @@ void ETSParser::AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *
     proxy_method_def->Function()->AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
 }
 
+std::string ETSParser::PrimitiveTypeToName(ir::PrimitiveType type)
+{
+    switch (type) {
+        case ir::PrimitiveType::BYTE:
+            return "byte";
+        case ir::PrimitiveType::INT:
+            return "int";
+        case ir::PrimitiveType::LONG:
+            return "long";
+        case ir::PrimitiveType::SHORT:
+            return "short";
+        case ir::PrimitiveType::FLOAT:
+            return "float";
+        case ir::PrimitiveType::DOUBLE:
+            return "double";
+        case ir::PrimitiveType::BOOLEAN:
+            return "boolean";
+        case ir::PrimitiveType::CHAR:
+            return "char";
+        case ir::PrimitiveType::VOID:
+            return "void";
+        default:
+            UNREACHABLE();
+    }
+}
+
 std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *type_annotation)
 {
-    const std::string optional_nullable = type_annotation->IsNullable() ? "|null" : "";
-
-    // NOTE(aakmaev): Support nullable types as unions
-    if (type_annotation->IsNullable() && type_annotation->IsETSUnionType()) {
+    if ((type_annotation->IsNullAssignable() || type_annotation->IsUndefinedAssignable()) &&
+        type_annotation->IsETSUnionType()) {
         type_annotation = type_annotation->AsETSUnionType()->Types().front();
     }
 
-    if (type_annotation->IsETSPrimitiveType()) {
-        switch (type_annotation->AsETSPrimitiveType()->GetPrimitiveType()) {
-            case ir::PrimitiveType::BYTE:
-                return "byte" + optional_nullable;
-            case ir::PrimitiveType::INT:
-                return "int" + optional_nullable;
-            case ir::PrimitiveType::LONG:
-                return "long" + optional_nullable;
-            case ir::PrimitiveType::SHORT:
-                return "short" + optional_nullable;
-            case ir::PrimitiveType::FLOAT:
-                return "float" + optional_nullable;
-            case ir::PrimitiveType::DOUBLE:
-                return "double" + optional_nullable;
-            case ir::PrimitiveType::BOOLEAN:
-                return "boolean" + optional_nullable;
-            case ir::PrimitiveType::CHAR:
-                return "char" + optional_nullable;
-            case ir::PrimitiveType::VOID:
-                return "void" + optional_nullable;
+    const auto adjust_nullish = [type_annotation](std::string const &s) {
+        std::string newstr = s;
+        if (type_annotation->IsNullAssignable()) {
+            newstr += "|null";
         }
+        if (type_annotation->IsUndefinedAssignable()) {
+            newstr += "|undefined";
+        }
+        return newstr;
+    };
+
+    if (type_annotation->IsETSPrimitiveType()) {
+        return adjust_nullish(PrimitiveTypeToName(type_annotation->AsETSPrimitiveType()->GetPrimitiveType()));
     }
 
     if (type_annotation->IsETSTypeReference()) {
-        return type_annotation->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Mutf8() +
-               optional_nullable;
+        return adjust_nullish(type_annotation->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Mutf8());
     }
 
     if (type_annotation->IsETSFunctionType()) {
@@ -2313,7 +2330,7 @@ std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *type_annotation)
         lambda_params.pop_back();
         const std::string return_type_name = GetNameForTypeNode(type_annotation->AsETSFunctionType()->ReturnType());
 
-        return "((" + lambda_params + ") => " + return_type_name + ")" + optional_nullable;
+        return adjust_nullish("((" + lambda_params + ") => " + return_type_name + ")");
     }
 
     if (type_annotation->IsTSArrayType()) {
@@ -2494,39 +2511,39 @@ ir::TypeNode *ETSParser::ParsePrimitiveType(TypeAnnotationParsingOptions *option
     return type_annotation;
 }
 
-ir::ETSUnionType *ETSParser::ParseUnionType(ir::Expression *type)
+ir::TypeNode *ETSParser::ParseUnionType(ir::TypeNode *const first_type)
 {
-    TypeAnnotationParsingOptions options =
-        TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::DISALLOW_UNION;
-    lexer::SourcePosition start_loc = type->Start();
     ArenaVector<ir::TypeNode *> types(Allocator()->Adapter());
-    ASSERT(type->IsTypeNode());
-    types.push_back(type->AsTypeNode());
+    types.push_back(first_type->AsTypeNode());
 
-    bool is_nullable {false};
-    while (true) {
-        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
-            break;
-        }
+    ir::ModifierFlags nullish_modifiers {};
 
+    while (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
         Lexer()->NextToken();  // eat '|'
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_NULL) {
-            Lexer()->NextToken();  // eat 'null'
-            type->AddModifier(ir::ModifierFlags::NULLABLE);
-            is_nullable = true;
-            continue;
+            nullish_modifiers |= ir::ModifierFlags::NULL_ASSIGNABLE;
+            Lexer()->NextToken();
+        } else if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_UNDEFINED) {
+            nullish_modifiers |= ir::ModifierFlags::UNDEFINED_ASSIGNABLE;
+            Lexer()->NextToken();
+        } else {
+            auto options = TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::DISALLOW_UNION;
+            types.push_back(ParseTypeAnnotation(&options));
         }
-
-        types.push_back(ParseTypeAnnotation(&options));
     }
 
-    lexer::SourcePosition end_loc = types.back()->End();
-    auto *union_type = AllocNode<ir::ETSUnionType>(std::move(types));
-    union_type->SetRange({start_loc, end_loc});
-    if (is_nullable) {
-        union_type->AddModifier(ir::ModifierFlags::NULLABLE);
+    lexer::SourcePosition const end_loc = types.back()->End();
+
+    if (types.size() == 1) {  // Workaround until nullability is a typeflag
+        first_type->AddModifier(nullish_modifiers);
+        first_type->SetRange({first_type->Start(), end_loc});
+        return first_type;
     }
+
+    auto *const union_type = AllocNode<ir::ETSUnionType>(std::move(types));
+    union_type->AddModifier(nullish_modifiers);
+    union_type->SetRange({first_type->Start(), end_loc});
     return union_type;
 }
 
@@ -3064,12 +3081,12 @@ ir::Expression *ETSParser::ParseFunctionParameter()
     ir::ETSParameterExpression *param_expression;
     auto *const param_ident = GetAnnotatedExpressionFromParam();
 
-    bool default_null = false;
+    bool default_undefined = false;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
         if (param_ident->IsRestElement()) {
             ThrowSyntaxError(NO_DEFAULT_FOR_REST);
         }
-        default_null = true;
+        default_undefined = true;
         Lexer()->NextToken();  // eat '?'
     }
 
@@ -3089,7 +3106,7 @@ ir::Expression *ETSParser::ParseFunctionParameter()
         param_ident->SetTsTypeAnnotation(type_annotation);
         param_ident->SetEnd(type_annotation->End());
 
-    } else if (!is_arrow && !default_null) {
+    } else if (!is_arrow && !default_undefined) {
         ThrowSyntaxError(EXPLICIT_PARAM_TYPE);
     }
 
@@ -3101,8 +3118,8 @@ ir::Expression *ETSParser::ParseFunctionParameter()
         auto const lexer_pos = Lexer()->Save().Iterator();
         Lexer()->NextToken();  // eat '='
 
-        if (default_null) {
-            ThrowSyntaxError("Not enable default value with default null");
+        if (default_undefined) {
+            ThrowSyntaxError("Not enable default value with default undefined");
         }
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS ||
@@ -3130,7 +3147,7 @@ ir::Expression *ETSParser::ParseFunctionParameter()
                 return std::make_pair(nullptr, "");
             }
             if (!type_annotation->IsETSPrimitiveType()) {
-                return std::make_pair(AllocNode<ir::NullLiteral>(), "null");
+                return std::make_pair(AllocNode<ir::UndefinedLiteral>(), "undefined");
             }
             // NOTE(ttamas) : after nullable fix, fix this scope
             switch (type_annotation->AsETSPrimitiveType()->GetPrimitiveType()) {
@@ -3151,14 +3168,14 @@ ir::Expression *ETSParser::ParseFunctionParameter()
             }
         }();
 
-        if (default_null && !type_annotation->IsETSPrimitiveType()) {
-            type_annotation->AddModifier(ir::ModifierFlags::NULLABLE);
+        if (default_undefined && !type_annotation->IsETSPrimitiveType()) {
+            type_annotation->AddModifier(ir::ModifierFlags::UNDEFINED_ASSIGNABLE);
         }
 
         param_expression = AllocNode<ir::ETSParameterExpression>(
-            param_ident->AsIdentifier(), default_null ? std::get<0>(type_annotation_value) : nullptr);
+            param_ident->AsIdentifier(), default_undefined ? std::get<0>(type_annotation_value) : nullptr);
 
-        if (default_null) {
+        if (default_undefined) {
             param_expression->SetLexerSaved(util::UString(std::get<1>(type_annotation_value), Allocator()).View());
         }
 
@@ -3593,6 +3610,9 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
         }
         case lexer::TokenType::LITERAL_NULL: {
             return ParseNullLiteral();
+        }
+        case lexer::TokenType::KEYW_UNDEFINED: {
+            return ParseUndefinedLiteral();
         }
         case lexer::TokenType::LITERAL_NUMBER: {
             return ParseNumberLiteral();

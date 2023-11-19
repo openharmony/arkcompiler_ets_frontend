@@ -47,6 +47,7 @@ private:
     std::string GetKeyName(const ir::Expression *key);
 
     void GenType(const checker::Type *checker_type);
+    void GenTypeNonNullish(const checker::Type *checker_type);
     void GenFunctionType(const checker::ETSFunctionType *function_type,
                          const ir::MethodDefinition *method_def = nullptr);
     void GenObjectType(const checker::ETSObjectType *object_type);

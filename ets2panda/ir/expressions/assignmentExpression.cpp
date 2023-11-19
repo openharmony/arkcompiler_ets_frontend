@@ -290,14 +290,7 @@ checker::Type *AssignmentExpression::Check([[maybe_unused]] checker::ETSChecker 
                 right_->AsObjectExpression()->SetPreferredType(left_type);
             }
 
-            auto *const right_type = right_->Check(checker);
-
-            if (left_type->IsETSDynamicType() && right_type->HasTypeFlag(checker::TypeFlag::ETS_TYPE_TO_DYNAMIC)) {
-                // Update the left dynamic type if it can be converted to the right type
-                left_->SetTsType(right_type);
-            }
-
-            source_type = right_type;
+            source_type = right_->Check(checker);
             break;
         }
         default: {

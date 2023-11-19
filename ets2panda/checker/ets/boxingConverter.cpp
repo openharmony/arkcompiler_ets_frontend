@@ -21,56 +21,41 @@
 
 namespace panda::es2panda::checker {
 
-void BoxingConverter::ETSTypeFromSource(Type *source)
+checker::ETSObjectType *BoxingConverter::ETSTypeFromSource(ETSChecker const *checker, Type const *source)
 {
-    auto type_kind = checker::ETSChecker::TypeKind(source);
+    auto get_signature = [](checker::TypeFlag type_kind) {
+        switch (type_kind) {
+            case checker::TypeFlag::ETS_BOOLEAN: {
+                return compiler::Signatures::BUILTIN_BOOLEAN_CLASS;
+            }
+            case checker::TypeFlag::BYTE: {
+                return compiler::Signatures::BUILTIN_BYTE_CLASS;
+            }
+            case checker::TypeFlag::SHORT: {
+                return compiler::Signatures::BUILTIN_SHORT_CLASS;
+            }
+            case checker::TypeFlag::CHAR: {
+                return compiler::Signatures::BUILTIN_CHAR_CLASS;
+            }
+            case checker::TypeFlag::INT: {
+                return compiler::Signatures::BUILTIN_INT_CLASS;
+            }
+            case checker::TypeFlag::LONG: {
+                return compiler::Signatures::BUILTIN_LONG_CLASS;
+            }
+            case checker::TypeFlag::FLOAT: {
+                return compiler::Signatures::BUILTIN_FLOAT_CLASS;
+            }
+            case checker::TypeFlag::DOUBLE: {
+                return compiler::Signatures::BUILTIN_DOUBLE_CLASS;
+            }
+            default:
+                UNREACHABLE();
+        }
+    };
 
-    auto wrap_map = Checker()->PrimitiveWrapper();
-
-    switch (type_kind) {
-        case checker::TypeFlag::ETS_BOOLEAN: {
-            auto res = wrap_map.find(compiler::Signatures::BUILTIN_BOOLEAN_CLASS);
-            SetResult(res->second.first);
-            break;
-        }
-        case checker::TypeFlag::BYTE: {
-            auto res = wrap_map.find(compiler::Signatures::BUILTIN_BYTE_CLASS);
-            SetResult(res->second.first);
-            break;
-        }
-        case checker::TypeFlag::SHORT: {
-            auto res = wrap_map.find(compiler::Signatures::BUILTIN_SHORT_CLASS);
-            SetResult(res->second.first);
-            break;
-        }
-        case checker::TypeFlag::CHAR: {
-            auto res = wrap_map.find(compiler::Signatures::BUILTIN_CHAR_CLASS);
-            SetResult(res->second.first);
-            break;
-        }
-        case checker::TypeFlag::INT: {
-            auto res = wrap_map.find(compiler::Signatures::BUILTIN_INT_CLASS);
-            SetResult(res->second.first);
-            break;
-        }
-        case checker::TypeFlag::LONG: {
-            auto res = wrap_map.find(compiler::Signatures::BUILTIN_LONG_CLASS);
-            SetResult(res->second.first);
-            break;
-        }
-        case checker::TypeFlag::FLOAT: {
-            auto res = wrap_map.find(compiler::Signatures::BUILTIN_FLOAT_CLASS);
-            SetResult(res->second.first);
-            break;
-        }
-        case checker::TypeFlag::DOUBLE: {
-            auto res = wrap_map.find(compiler::Signatures::BUILTIN_DOUBLE_CLASS);
-            SetResult(res->second.first);
-            break;
-        }
-        default:
-            UNREACHABLE();
-    }
+    auto wrap_map = checker->PrimitiveWrapper();
+    return wrap_map.find(get_signature(checker::ETSChecker::TypeKind(source)))->second.first;
 }
 
 }  // namespace panda::es2panda::checker

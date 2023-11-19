@@ -43,7 +43,7 @@ bool IntType::AssignmentSource([[maybe_unused]] TypeRelation *relation, [[maybe_
         }
     }
 
-    if (relation->ApplyBoxing() && (target->IsETSObjectType())) {
+    if (relation->ApplyBoxing() && (target->IsETSObjectType() || target->IsETSUnionType())) {
         relation->GetChecker()->AsETSChecker()->CheckBoxedSourceTypeAssignable(relation, this, target);
     }
 

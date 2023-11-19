@@ -28,9 +28,9 @@
 namespace panda::es2panda::ir {
 class AstDumper {
 public:
-    class Nullable {
+    class Nullish {
     public:
-        explicit Nullable(const ir::AstNode *node) : node_(node) {}
+        explicit Nullish(const ir::AstNode *node) : node_(node) {}
 
         const ir::AstNode *Node() const
         {
@@ -79,12 +79,13 @@ public:
 
         enum class Constant {
             PROP_NULL,
+            PROP_UNDEFINED,
             EMPTY_ARRAY,
         };
 
         using Val = std::variant<const char *, lexer::TokenType, std::initializer_list<Property>, util::StringView,
                                  bool, char16_t, lexer::Number, const ir::AstNode *, std::vector<const ir::AstNode *>,
-                                 Constant, Nullable, Ignore>;
+                                 Constant, Nullish, Ignore>;
 
         Property(const char *key, const char *string) : key_(key), value_(string) {}
         Property(const char *key, util::StringView str) : key_(key), value_(str) {}
@@ -96,10 +97,10 @@ public:
         Property(const char *key, const ir::AstNode *node) : key_(key), value_(const_cast<ir::AstNode *>(node)) {}
 
         Property(const char *key, Constant constant) : key_(key), value_(constant) {}
-        Property(const char *key, Nullable nullable) : key_(key)
+        Property(const char *key, Nullish nullish) : key_(key)
         {
-            if (nullable.Node() != nullptr) {
-                value_ = nullable.Node();
+            if (nullish.Node() != nullptr) {
+                value_ = nullish.Node();
             } else {
                 value_ = Property::Constant::PROP_NULL;
             }

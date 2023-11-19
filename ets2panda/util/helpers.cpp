@@ -73,6 +73,9 @@ util::StringView Helpers::LiteralToPropName(const ir::Expression *lit)
         case ir::AstNodeType::NULL_LITERAL: {
             return "null";
         }
+        case ir::AstNodeType::UNDEFINED_LITERAL: {
+            return "undefined";
+        }
         default: {
             UNREACHABLE();
         }
@@ -396,6 +399,9 @@ compiler::Literal Helpers::ToConstantLiteral(const ir::Expression *expr)
         }
         case ir::AstNodeType::NULL_LITERAL: {
             return compiler::Literal::NullLiteral();
+        }
+        case ir::AstNodeType::UNDEFINED_LITERAL: {
+            return compiler::Literal::UndefinedLiteral();
         }
         default:
             break;

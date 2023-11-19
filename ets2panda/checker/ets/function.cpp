@@ -1256,6 +1256,7 @@ void ETSChecker::CreateLambdaObjectForLambdaReference(ir::ArrowFunctionExpressio
         Allocator()->New<ir::ClassDefinition>(Allocator(), class_scope, ident_node, std::move(properties),
                                               ir::ClassDefinitionModifiers::DECLARATION, Language(Language::Id::ETS));
     lambda->SetResolvedLambda(lambda_object);
+    lambda->SetTsType(functional_interface);
     lambda_object->SetParent(current_class_def);
 
     // if we should save 'this', then propagate this information to the lambda node, so when we are compiling it,

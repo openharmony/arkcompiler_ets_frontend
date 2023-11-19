@@ -27,15 +27,14 @@ class Signature;
 namespace panda::es2panda::ir {
 class TSTypeParameterInstantiation;
 
-class CallExpression : public Expression {
+class CallExpression : public MaybeOptionalExpression {
 public:
     explicit CallExpression(Expression *callee, ArenaVector<Expression *> &&arguments,
                             TSTypeParameterInstantiation *type_params, bool optional, bool trailing_comma = false)
-        : Expression(AstNodeType::CALL_EXPRESSION),
+        : MaybeOptionalExpression(AstNodeType::CALL_EXPRESSION, optional),
           callee_(callee),
           arguments_(std::move(arguments)),
           type_params_(type_params),
-          optional_(optional),
           trailing_comma_(trailing_comma)
     {
     }
@@ -140,7 +139,6 @@ protected:
     ArenaVector<Expression *> arguments_;
     TSTypeParameterInstantiation *type_params_;
     checker::Signature *signature_ {};
-    bool optional_;
     bool trailing_comma_;
     // for trailing lambda feature in ets
     ir::BlockStatement *trailing_block_ {};

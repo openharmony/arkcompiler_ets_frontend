@@ -446,6 +446,13 @@ checker::Type *TSAnalyzer::Check(ir::StringLiteral *expr) const
     (void)expr;
     UNREACHABLE();
 }
+
+checker::Type *TSAnalyzer::Check(ir::UndefinedLiteral *expr) const
+{
+    (void)expr;
+    UNREACHABLE();
+}
+
 // compile methods for MODULE-related nodes in alphabetical order
 checker::Type *TSAnalyzer::Check(ir::ExportAllDeclaration *st) const
 {

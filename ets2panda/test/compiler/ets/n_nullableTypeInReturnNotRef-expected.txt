@@ -429,22 +429,7 @@
                 "expression": false,
                 "params": [],
                 "returnType": {
-                  "type": "ETSUnionType",
-                  "types": [
-                    {
-                      "type": "ETSPrimitiveType",
-                      "loc": {
-                        "start": {
-                          "line": 21,
-                          "column": 18
-                        },
-                        "end": {
-                          "line": 21,
-                          "column": 22
-                        }
-                      }
-                    }
-                  ],
+                  "type": "ETSPrimitiveType",
                   "loc": {
                     "start": {
                       "line": 21,
@@ -568,4 +553,4 @@
     }
   }
 }
-TypeError: Non reference types cannot be nullable. [n_nullableTypeInReturnNotRef.ets:21:18]
+TypeError: Non reference types cannot be nullish. [n_nullableTypeInReturnNotRef.ets:21:18]

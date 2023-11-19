@@ -48,7 +48,7 @@ void IfStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "IfStatement"},
                  {"test", test_},
                  {"consequent", consequent_},
-                 {"alternate", AstDumper::Nullable(alternate_)}});
+                 {"alternate", AstDumper::Nullish(alternate_)}});
 }
 
 void IfStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const

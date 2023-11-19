@@ -25,6 +25,7 @@ public:
         : ETSObjectType(allocator, ETSObjectFlags::CLASS | ETSObjectFlags::STRING | ETSObjectFlags::RESOLVED_SUPER)
     {
         SetSuperType(super);
+        SetAssemblerName(compiler::Signatures::BUILTIN_STRING);
     }
 
     explicit ETSStringType(ArenaAllocator *allocator, ETSObjectType *super, util::StringView value)
@@ -32,11 +33,13 @@ public:
           value_(value)
     {
         SetSuperType(super);
+        SetAssemblerName(compiler::Signatures::BUILTIN_STRING);
         AddTypeFlag(TypeFlag::CONSTANT);
         variable_ = super->Variable();
     }
 
     void Identical(TypeRelation *relation, Type *other) override;
+    bool AssignmentSource(TypeRelation *relation, Type *target) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
 
@@ -57,7 +60,7 @@ public:
 
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
-        if (IsNullableType()) {
+        if (IsNullish()) {
             return {false, false};
         }
 

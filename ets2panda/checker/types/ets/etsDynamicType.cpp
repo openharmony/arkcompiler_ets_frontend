@@ -50,7 +50,7 @@ bool ETSDynamicType::AssignmentSource(TypeRelation *relation, Type *target)
         return ETSObjectType::AssignmentSource(relation, target);
     }
 
-    if (target->HasTypeFlag(checker::TypeFlag::ETS_TYPE_TO_DYNAMIC)) {
+    if (target->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC) || target->IsETSStringType()) {
         relation->Result(true);
     }
     return relation->IsTrue();
@@ -67,15 +67,15 @@ void ETSDynamicType::Cast(TypeRelation *relation, Type *target)
         return;
     }
 
-    if (IsConvertableTo(target)) {
+    if (IsConvertibleTo(target)) {
         relation->Result(true);
     }
 }
 
-bool ETSDynamicType::IsConvertableTo(Type *target) const
+bool ETSDynamicType::IsConvertibleTo(Type *target)
 {
     return target->IsETSStringType() || target->IsLambdaObject() || target->IsETSDynamicType() ||
-           target->HasTypeFlag(checker::TypeFlag::ETS_TYPE_TO_DYNAMIC | checker::TypeFlag::ETS_BOOLEAN);
+           target->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC | checker::TypeFlag::ETS_BOOLEAN);
 }
 
 ETSFunctionType *ETSDynamicType::CreateETSFunctionType(const util::StringView &name) const

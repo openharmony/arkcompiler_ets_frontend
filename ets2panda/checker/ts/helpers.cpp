@@ -132,8 +132,8 @@ Type *TSChecker::ExtractDefinitelyFalsyTypes(Type *type)
         return GlobalZeroBigintType();
     }
 
-    if (type == GlobalFalseType() || type->HasTypeFlag(TypeFlag::NULLABLE) ||
-        type->HasTypeFlag(TypeFlag::ANY_OR_UNKNOWN) || type->HasTypeFlag(TypeFlag::VOID) ||
+    if (type == GlobalFalseType() || type->IsNullish() || type->HasTypeFlag(TypeFlag::ANY_OR_UNKNOWN) ||
+        type->HasTypeFlag(TypeFlag::VOID) ||
         (type->IsStringLiteralType() && IsTypeIdenticalTo(type, GlobalEmptyStringType())) ||
         (type->IsNumberLiteralType() && IsTypeIdenticalTo(type, GlobalZeroType())) ||
         (type->IsBigintLiteralType() && IsTypeIdenticalTo(type, GlobalZeroBigintType()))) {

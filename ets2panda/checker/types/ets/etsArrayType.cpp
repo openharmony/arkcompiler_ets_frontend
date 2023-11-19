@@ -61,7 +61,7 @@ uint32_t ETSArrayType::Rank() const
 
 void ETSArrayType::Identical(TypeRelation *relation, Type *other)
 {
-    if (IsNullableType() != other->IsNullableType()) {
+    if ((ContainsNull() != other->ContainsNull()) || (ContainsUndefined() != other->ContainsUndefined())) {
         return;
     }
 
@@ -78,11 +78,15 @@ void ETSArrayType::Identical(TypeRelation *relation, Type *other)
 void ETSArrayType::AssignmentTarget(TypeRelation *relation, Type *source)
 {
     if (source->IsETSNullType()) {
-        relation->Result(IsNullableType());
+        relation->Result(ContainsNull());
+        return;
+    }
+    if (source->IsETSUndefinedType()) {
+        relation->Result(ContainsUndefined());
         return;
     }
 
-    if (source->IsNullableType() && !IsNullableType()) {
+    if ((source->ContainsNull() && !ContainsNull()) || (source->ContainsUndefined() && !ContainsUndefined())) {
         return;
     }
 

@@ -31,8 +31,6 @@ public:
         AddTypeFlag(TypeFlag::ETS_DYNAMIC_TYPE);
     }
 
-    static bool IsDynamicType(util::StringView assembler_name);
-
     varbinder::LocalVariable *GetPropertyDynamic(const util::StringView &name, const ETSChecker *checker) const;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
@@ -52,9 +50,9 @@ public:
 
     void ToAssemblerType(std::stringstream &ss) const override;
 
-private:
-    bool IsConvertableTo(Type *target) const;
+    static bool IsConvertibleTo(Type *target);
 
+private:
     mutable PropertyMap properties_cache_;
     es2panda::Language lang_;
     bool has_decl_;

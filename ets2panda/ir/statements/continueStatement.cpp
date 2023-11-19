@@ -37,7 +37,7 @@ void ContinueStatement::Iterate(const NodeTraverser &cb) const
 
 void ContinueStatement::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "ContinueStatement"}, {"label", AstDumper::Nullable(ident_)}});
+    dumper->Add({{"type", "ContinueStatement"}, {"label", AstDumper::Nullish(ident_)}});
 }
 
 template <typename CodeGen>

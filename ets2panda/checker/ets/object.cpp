@@ -184,15 +184,16 @@ ArenaVector<Type *> ETSChecker::CreateTypeForTypeParameters(ir::TSTypeParameterD
 
 Type *ETSChecker::CreateTypeParameterType(ir::TSTypeParameter *const param)
 {
+    auto const instantiate_supertype = [this](TypeFlag nullish_flags) {
+        return CreateNullishType(GlobalETSObjectType(), nullish_flags, Allocator(), Relation(), GetGlobalTypesHolder())
+            ->AsETSObjectType();
+    };
+
     ETSObjectType *param_type =
         CreateNewETSObjectType(param->Name()->Name(), param, GlobalETSObjectType()->ObjectFlags());
     param_type->SetAssemblerName(GlobalETSObjectType()->AssemblerName());
     param_type->AddTypeFlag(TypeFlag::GENERIC);
     param_type->AddObjectFlag(ETSObjectFlags::TYPE_PARAMETER);
-    // We'll decide whether to make the supertype nullable after looking at constraint
-    ETSObjectType *maybe_nullable_object =
-        GlobalETSObjectType()->Instantiate(Allocator(), Relation(), GetGlobalTypesHolder())->AsETSObjectType();
-    param_type->SetSuperType(maybe_nullable_object);
     param_type->SetVariable(param->Variable());
 
     if (param->Constraint() != nullptr) {
@@ -224,15 +225,13 @@ Type *ETSChecker::CreateTypeParameterType(ir::TSTypeParameter *const param)
         param_type->SetAssemblerName(constraint_obj_type->AssemblerName());
         if (constraint_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
             param_type->AddInterface(constraint_obj_type);
+            param_type->SetSuperType(instantiate_supertype(TypeFlag(TypeFlag::NULLISH & constraint_type->TypeFlags())));
         } else {
             param_type->SetSuperType(constraint_obj_type);
         }
-        if (constraint_obj_type->IsNullableType()) {
-            param_type->SuperType()->AddTypeFlag(TypeFlag::NULLABLE);
-        }
     } else {
-        // No constraint, so it's Object|null
-        param_type->SuperType()->AddTypeFlag(TypeFlag::NULLABLE);
+        // No constraint, so it's Object|null|undefined
+        param_type->SetSuperType(instantiate_supertype(TypeFlag::NULLISH));
     }
 
     SetTypeParameterType(param, param_type);
@@ -895,31 +894,6 @@ Type *ETSChecker::ValidateArrayIndex(ir::Expression *expr)
     return index_type;
 }
 
-Type *ETSChecker::CheckArrayElementAccess(ir::MemberExpression *expr)
-{
-    Type *array_type = expr->Object()->Check(this);
-
-    if (!array_type->IsETSArrayType() && !array_type->IsETSDynamicType()) {
-        ThrowTypeError("Indexed access expression can only be used in array type.", expr->Object()->Start());
-    }
-
-    ValidateArrayIndex(expr->Property());
-
-    if (expr->Property()->IsIdentifier()) {
-        expr->SetPropVar(expr->Property()->AsIdentifier()->Variable()->AsLocalVariable());
-    } else if (auto var = expr->Property()->Variable(); (var != nullptr) && var->IsLocalVariable()) {
-        expr->SetPropVar(var->AsLocalVariable());
-    }
-
-    // NOTE: apply capture conversion on this type
-    if (array_type->IsETSArrayType()) {
-        return array_type->AsETSArrayType()->ElementType();
-    }
-
-    // Dynamic
-    return GlobalBuiltinDynamicType(array_type->AsETSDynamicType()->Language());
-}
-
 ETSObjectType *ETSChecker::CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *class_type, std::string_view msg)
 {
     if ((Context().Status() & CheckerStatus::IGNORE_VISIBILITY) != 0U) {
@@ -1387,11 +1361,11 @@ Type *ETSChecker::GetCommonClass(Type *source, Type *target)
     }
 
     if (source->IsETSObjectType() && target->IsETSObjectType()) {
-        if (source->IsETSNullType()) {
+        if (source->IsETSNullLike()) {
             return target;
         }
 
-        if (target->IsETSNullType()) {
+        if (target->IsETSNullLike()) {
             return source;
         }
 

@@ -214,22 +214,7 @@
                             "type": "Identifier",
                             "name": "a",
                             "typeAnnotation": {
-                              "type": "ETSUnionType",
-                              "types": [
-                                {
-                                  "type": "ETSPrimitiveType",
-                                  "loc": {
-                                    "start": {
-                                      "line": 17,
-                                      "column": 11
-                                    },
-                                    "end": {
-                                      "line": 17,
-                                      "column": 14
-                                    }
-                                  }
-                                }
-                              ],
+                              "type": "ETSPrimitiveType",
                               "loc": {
                                 "start": {
                                   "line": 17,
@@ -360,4 +345,4 @@
     }
   }
 }
-TypeError: Non reference types cannot be nullable. [n_nullableTypeNotRef.ets:17:11]
+TypeError: Non reference types cannot be nullish. [n_nullableTypeNotRef.ets:17:11]

@@ -198,8 +198,10 @@ ETSLReference::ETSLReference(CodeGen *cg, const ir::AstNode *node, ReferenceKind
     if (member_expr->IsComputed()) {
         TargetTypeContext pttctx(etsg_, member_expr->Property()->TsType());
         member_expr->Property()->Compile(etsg_);
+        etsg_->ApplyConversion(member_expr->Property());
+        ASSERT(etsg_->GetAccumulatorType()->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL));
         prop_reg_ = etsg_->AllocReg();
-        etsg_->ApplyConversionAndStoreAccumulator(node, prop_reg_, member_expr->Property()->TsType());
+        etsg_->StoreAccumulator(node, prop_reg_);
     }
 }
 

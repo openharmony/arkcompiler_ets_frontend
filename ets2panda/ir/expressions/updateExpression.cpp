@@ -71,8 +71,9 @@ void UpdateExpression::Compile(compiler::ETSGen *etsg) const
         static_cast<BoxingUnboxingFlags>(argument_->GetBoxingUnboxingFlags() & BoxingUnboxingFlags::UNBOXING_FLAG);
 
     if (prefix_) {
-        argument_->SetBoxingUnboxingFlags(argument_unboxing_flags);
         lref.GetValue();
+        argument_->SetBoxingUnboxingFlags(argument_unboxing_flags);
+        etsg->ApplyConversion(argument_, nullptr);
         etsg->Update(this, operator_);
         argument_->SetBoxingUnboxingFlags(argument_boxing_flags);
         etsg->ApplyConversion(argument_, argument_->TsType());

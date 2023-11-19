@@ -38,6 +38,7 @@ void StringLiteral::Compile(compiler::PandaGen *pg) const
 void StringLiteral::Compile(compiler::ETSGen *etsg) const
 {
     etsg->LoadAccumulatorString(this, str_);
+    etsg->SetAccumulatorType(TsType());
 }
 
 checker::Type *StringLiteral::Check(checker::TSChecker *checker)

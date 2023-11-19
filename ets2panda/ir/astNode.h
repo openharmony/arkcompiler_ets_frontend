@@ -313,9 +313,14 @@ public:
         return (flags_ & ModifierFlags::NATIVE) != 0;
     }
 
-    [[nodiscard]] bool IsNullable() const noexcept
+    [[nodiscard]] bool IsNullAssignable() const noexcept
     {
-        return (flags_ & ModifierFlags::NULLABLE) != 0;
+        return (flags_ & ModifierFlags::NULL_ASSIGNABLE) != 0;
+    }
+
+    [[nodiscard]] bool IsUndefinedAssignable() const noexcept
+    {
+        return (flags_ & ModifierFlags::UNDEFINED_ASSIGNABLE) != 0;
     }
 
     [[nodiscard]] bool IsConst() const noexcept

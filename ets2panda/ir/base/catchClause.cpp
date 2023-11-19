@@ -43,7 +43,7 @@ void CatchClause::Iterate(const NodeTraverser &cb) const
 
 void CatchClause::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "CatchClause"}, {"body", body_}, {"param", AstDumper::Nullable(param_)}});
+    dumper->Add({{"type", "CatchClause"}, {"body", body_}, {"param", AstDumper::Nullish(param_)}});
 }
 
 bool CatchClause::IsDefaultCatchClause() const

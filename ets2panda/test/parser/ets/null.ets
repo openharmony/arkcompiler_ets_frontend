@@ -15,7 +15,6 @@
 
 class cls {}
 
-let a : cls;
 let b : cls | null = null;
 let c : cls = new cls();
 
@@ -23,25 +22,22 @@ function foo(arg: cls | null) : void {
 }
 
 function main(): void {
-    foo(a);
     foo(b);
     foo(c);
 
-    let d : cls;
     let e : cls | null = null;
     let f : cls = new cls();
 
-    foo(d);
     foo(e);
     foo(f);
 
     foo(null);
     foo(new cls());
 
-    assert (a == null && b == null && c != null)
-    assert (null == a && null != c)
-    assert (d == null && e == null && f != null)
-    assert (a == b && b == d && d == e)
+    assert (b == null && c != null)
+    assert (null != c)
+    assert (e == null && f != null)
+    assert (b == e)
     assert (null == null)
 
     return;
