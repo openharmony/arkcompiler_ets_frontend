@@ -123,6 +123,15 @@ Arkguard只混淆参数名和局部变量名(通过将它们重新命名为随�
 * 被[保留选项](#保留选项)指定的顶层作用域名称不会被混淆。
 * 系统API列表中的顶层作用域名称不会被混淆。
 
+`-enable-filename-obfuscation`
+
+开启文件/文件夹名称混淆。这个选项只在闭源HAR场景下生效，如果你使用这个选项，那么闭源HAR所有的文件/文件夹名称都会被混淆，除了下面场景:
+* oh-package.json5文件中'main'、'types'字段配置的文件/文件夹名称不会被混淆。
+* 模块内module.json5文件中'srcEntry'字段配置的文件/文件夹名称不会被混淆。
+* 被[保留选项](#keep-file-name-link)指定的文件/文件夹名称不会被混淆。
+* 非ECMAScript模块引用方式（ECMAScript模块示例：`import {foo} from './filename'`）
+* 非路径引用方式，比如例子中的json5不会被混淆 `import module from 'json5'`
+
 `-compact`
 
 去除不必要的空格符和所有的换行符。如果你使用这个选项，那么所有代码会被压缩到一行。
@@ -217,6 +226,21 @@ bar();                      // bar 可以被正确地混淆
 
 class MyClass {}
 let d = new MyClass();      // MyClass 可以被正确地混淆
+```
+
+<a id="keep-file-name-link">`-keep-file-name` [,identifiers,...]</a>
+
+指定要保留的文件/文件夹的名称(不需要写文件后缀)。比如，
+```
+-keep-file-name
+index
+entry
+```
+**哪些文件名应该被保留?**
+```
+const module1 = require('./file1')   // ARKTs不支持CommonJS语法，这种路径引用应该被保留
+const moduleName = './file2'
+const module2 = import(moduleName)    // 动态引用方式无法识别moduleName是否是路径，应该被保留
 ```
 
 `-keep-dts` filepath
