@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 - Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -175,9 +175,20 @@ ArenaVector<Type *> ETSChecker::CreateTypeForTypeParameters(ir::TSTypeParameterD
     ArenaVector<Type *> result {Allocator()->Adapter()};
     checker::ScopeContext scope_ctx(this, type_params->Scope());
 
-    for (auto *const param : type_params->Params()) {
-        result.push_back(CreateTypeParameterType(param));
+    // Note: we have to run pure check loop first to avoid endless loop because of possible circular dependencies
+    Type2TypeMap extends {};
+    for (auto *const type_param : type_params->Params()) {
+        if (auto *const constraint = type_param->Constraint();
+            constraint != nullptr && constraint->IsETSTypeReference() &&
+            constraint->AsETSTypeReference()->Part()->Name()->IsIdentifier()) {
+            CheckTypeParameterConstraint(type_param, extends);
+        }
     }
+
+    for (auto *const type_param : type_params->Params()) {
+        result.emplace_back(CreateTypeParameterType(type_param));
+    }
+
     // The type parameter might be used in the constraint, like 'K extend Comparable<K>',
     // so we need to create their type first, then set up the constraint
     for (auto *const param : type_params->Params()) {
@@ -185,6 +196,34 @@ ArenaVector<Type *> ETSChecker::CreateTypeForTypeParameters(ir::TSTypeParameterD
     }
 
     return result;
+}
+
+void ETSChecker::CheckTypeParameterConstraint(ir::TSTypeParameter *param, Type2TypeMap &extends)
+{
+    const auto type_param_name = param->Name()->Name().Utf8();
+    const auto constraint_name =
+        param->Constraint()->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name().Utf8();
+    if (type_param_name == constraint_name) {
+        ThrowTypeError({"Type parameter '", type_param_name, "' cannot extend/implement itself."},
+                       param->Constraint()->Start());
+    }
+
+    auto it = extends.find(type_param_name);
+    if (it != extends.cend()) {
+        ThrowTypeError({"Type parameter '", type_param_name, "' is duplicated in the list."},
+                       param->Constraint()->Start());
+    }
+
+    it = extends.find(constraint_name);
+    while (it != extends.cend()) {
+        if (it->second == type_param_name) {
+            ThrowTypeError({"Type parameter '", type_param_name, "' has circular constraint dependency."},
+                           param->Constraint()->Start());
+        }
+        it = extends.find(it->second);
+    }
+
+    extends.emplace(type_param_name, constraint_name);
 }
 
 Type *ETSChecker::CreateTypeParameterType(ir::TSTypeParameter *const param)
@@ -217,19 +256,10 @@ void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
         param_type = param->Name()->Variable()->TsType()->AsETSObjectType();
     }
     if (param->Constraint() != nullptr) {
-        if (param->Constraint()->IsETSTypeReference() &&
-            param->Constraint()->AsETSTypeReference()->Part()->Name()->IsIdentifier() &&
-            param->Name()->Name() ==
-                param->Constraint()->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name()) {
-            ThrowTypeError({"Type variable '", param->Name()->Name(), "' cannot depend on itself"},
-                           param->Constraint()->Start());
-        }
-
         if (param->Constraint()->IsETSTypeReference()) {
             const auto constraint_name =
                 param->Constraint()->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name();
             const auto *const type_param_scope = param->Parent()->AsTSTypeParameterDeclaration()->Scope();
-
             if (auto *const found_param =
                     type_param_scope->FindLocal(constraint_name, varbinder::ResolveBindingOptions::BINDINGS);
                 found_param != nullptr) {
