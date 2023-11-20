@@ -13,23 +13,23 @@
  * limitations under the License.
  */
 
-import * as ts from "typescript";
-import * as path from "node:path";
-import { TsUtils, getNodeOrLineEnd, CheckType, isAssignmentOperator } from "./Utils";
-import { FaultID, faultsAttrs } from "./Problems";
-import { cookBookMsg, cookBookTag } from "./CookBookMsg";
-import { LinterConfig } from "./TypeScriptLinterConfig";
-import { Autofix, AutofixInfoSet } from "./Autofixer";
-import * as Autofixer from "./Autofixer";
-import { ProblemInfo } from "./ProblemInfo";
-import { ProblemSeverity } from "./ProblemSeverity";
-import Logger from "../utils/logger";
-import { DiagnosticChecker } from "./DiagnosticChecker";
+import * as ts from 'typescript';
+import * as path from 'node:path';
+import { TsUtils, getNodeOrLineEnd, CheckType, isAssignmentOperator } from './Utils';
+import { FaultID, faultsAttrs } from './Problems';
+import { cookBookMsg, cookBookTag } from './CookBookMsg';
+import { LinterConfig } from './TypeScriptLinterConfig';
+import type { Autofix, AutofixInfoSet } from './Autofixer';
+import * as Autofixer from './Autofixer';
+import type { ProblemInfo } from './ProblemInfo';
+import { ProblemSeverity } from './ProblemSeverity';
+import Logger from '../utils/logger';
+import type { DiagnosticChecker } from './DiagnosticChecker';
 import {
   ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE,
   TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE,
   LibraryTypeCallDiagnosticChecker
-} from "./LibraryTypeCallDiagnosticChecker";
+} from './LibraryTypeCallDiagnosticChecker';
 
 const logger = Logger.getLogger();
 
@@ -597,8 +597,9 @@ export class TypeScriptLinter {
         this.incrementCounters(node, FaultID.InterfaceMerging);
     }
 
-    if (interfaceNode.heritageClauses)
+    if (interfaceNode.heritageClauses) {
       this.interfaceInheritanceLint(node, interfaceNode.heritageClauses);
+    }
 
     this.countDeclarationsWithDuplicateName(interfaceNode.name, interfaceNode);
   }
@@ -677,7 +678,7 @@ export class TypeScriptLinter {
     if (!!baseExprSym && this.tsUtils.symbolHasEsObjectType(baseExprSym)) {
       this.incrementCounters(propertyAccessNode, FaultID.EsObjectType);
     }
-    if (this.isPrototypePropertyAccess(propertyAccessNode, exprSym, baseExprSym, baseExprType)) { 
+    if (this.isPrototypePropertyAccess(propertyAccessNode, exprSym, baseExprSym, baseExprType)) {
       this.incrementCounters(propertyAccessNode.name, FaultID.Prototype);
     }
   }
@@ -759,7 +760,7 @@ export class TypeScriptLinter {
             ts.isIdentifier(x.expression.expression)
           )
             decoratorName = x.expression.expression.text;
-          
+
           // special case for property of type CustomDialogController of the @CustomDialog-decorated class
           if (expectedDecorators.includes(TsUtils.NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS[0])) {
             return expectedDecorators.includes(decoratorName) && propType === 'CustomDialogController'
@@ -939,7 +940,7 @@ export class TypeScriptLinter {
     // Note: Return type can't be inferred for function without body.
     if (ts.isMethodSignature(funcLikeDecl) || !funcLikeDecl.body) {
       // Ambient flag is not exposed, so we apply dirty hack to make it visible
-      const isAmbientDeclaration = !!(funcLikeDecl.flags & (ts.NodeFlags as any)['Ambient']);
+      const isAmbientDeclaration = !!(funcLikeDecl.flags & (ts.NodeFlags as any).Ambient);
       const isSignature = ts.isMethodSignature(funcLikeDecl);
       if ((isSignature || isAmbientDeclaration) && !funcLikeDecl.type) {
         this.incrementCounters(funcLikeDecl, FaultID.LimitedReturnTypeInference);
@@ -1197,7 +1198,7 @@ export class TypeScriptLinter {
       this.incrementCounters(node, FaultID.VarDeclaration);
   }
 
-  private handleVariableDeclaration(node: ts.Node) {
+  private handleVariableDeclaration(node: ts.Node): void {
     let tsVarDecl = node as ts.VariableDeclaration;
     if (
       ts.isArrayBindingPattern(tsVarDecl.name) ||
@@ -1237,11 +1238,11 @@ export class TypeScriptLinter {
     this.handleDefiniteAssignmentAssertion(tsVarDecl);
   }
 
-  private handleEsObjectDelaration(node: ts.VariableDeclaration) {
+  private handleEsObjectDelaration(node: ts.VariableDeclaration): void {
     const isDeclaredESObject = !!node.type && this.tsUtils.isEsObjectType(node.type);
     const initalizerTypeNode = node.initializer && this.tsUtils.getVariableDeclarationTypeNode(node.initializer);
     const isInitializedWithESObject = !!initalizerTypeNode && this.tsUtils.isEsObjectType(initalizerTypeNode);
-    const isLocal = this.tsUtils.isInsideBlock(node)
+    const isLocal = this.tsUtils.isInsideBlock(node);
     if ((isDeclaredESObject || isInitializedWithESObject) && !isLocal) {
       this.incrementCounters(node, FaultID.EsObjectType);
       return;
@@ -1440,7 +1441,7 @@ export class TypeScriptLinter {
       ]);
   }
 
-  private handleMethodDeclaration(node: ts.Node) {
+  private handleMethodDeclaration(node: ts.Node): void {
     const tsMethodDecl = node as ts.MethodDeclaration;
     const hasThis = this.scopeContainsThis(tsMethodDecl);
     let isStatic = false;
@@ -1596,7 +1597,7 @@ export class TypeScriptLinter {
     );
     const checkClassOrInterface = tsElemAccessBaseExprType.isClassOrInterface() &&
                                   !this.tsUtils.isGenericArrayType(tsElemAccessBaseExprType) &&
-                                  !this.tsUtils.isDerivedFrom(tsElemAccessBaseExprType, CheckType.Array);   
+                                  !this.tsUtils.isDerivedFrom(tsElemAccessBaseExprType, CheckType.Array);
     const checkThisOrSuper = this.tsUtils.isThisOrSuperExpr(tsElementAccessExpr.expression) &&
                              !this.tsUtils.isDerivedFrom(tsElemAccessBaseExprType, CheckType.Array);
 
@@ -1699,7 +1700,7 @@ export class TypeScriptLinter {
 
     this.handleImportCall(tsCallExpr);
     this.handleRequireCall(tsCallExpr);
-    if (!!calleeSym) {  
+    if (!!calleeSym) {
       if (this.tsUtils.symbolHasEsObjectType(calleeSym)) {
         this.incrementCounters(tsCallExpr, FaultID.EsObjectType);
       }
@@ -1739,7 +1740,7 @@ export class TypeScriptLinter {
     }
   }
 
-  private handleRequireCall(tsCallExpr: ts.CallExpression) {
+  private handleRequireCall(tsCallExpr: ts.CallExpression): void {
     if (
       ts.isIdentifier(tsCallExpr.expression) &&
       tsCallExpr.expression.text === "require" &&
@@ -1754,7 +1755,7 @@ export class TypeScriptLinter {
     }
   }
 
-  private handleGenericCallWithNoTypeArgs(callLikeExpr: ts.CallExpression | ts.NewExpression, callSignature: ts.Signature) {
+  private handleGenericCallWithNoTypeArgs(callLikeExpr: ts.CallExpression | ts.NewExpression, callSignature: ts.Signature): void {
     let tsSyntaxKind = ts.isNewExpression(callLikeExpr)
       ? ts.SyntaxKind.Constructor
       : ts.SyntaxKind.FunctionDeclaration;
@@ -1776,7 +1777,7 @@ export class TypeScriptLinter {
         //   2. Compiler infer 'unknown' from arguments
         // We report error in both cases. It is ok because we cannot use 'unknown'
         // in ArkTS and already have separate check for it.
-        if (typeNode.kind == ts.SyntaxKind.UnknownKeyword) {
+        if (typeNode.kind === ts.SyntaxKind.UnknownKeyword) {
           this.incrementCounters(callLikeExpr, FaultID.GenericCallNoTypeArgs);
           break;
         }
@@ -1784,7 +1785,7 @@ export class TypeScriptLinter {
     }
   }
 
-  private handleStructIdentAndUndefinedInArgs(tsCallOrNewExpr: ts.CallExpression | ts.NewExpression, callSignature: ts.Signature) {
+  private handleStructIdentAndUndefinedInArgs(tsCallOrNewExpr: ts.CallExpression | ts.NewExpression, callSignature: ts.Signature): void {
     if (!tsCallOrNewExpr.arguments) {
       return;
     }
@@ -1797,7 +1798,7 @@ export class TypeScriptLinter {
       let tsArgType = this.tsTypeChecker.getTypeAtLocation(tsArg);
       if (!tsArgType) continue;
 
-      let paramIndex = argIndex < callSignature.parameters.length ? argIndex : callSignature.parameters.length-1;
+      let paramIndex = argIndex < callSignature.parameters.length ? argIndex : callSignature.parameters.length - 1;
       let tsParamSym = callSignature.parameters[paramIndex];
       if (!tsParamSym) continue;
 
@@ -1832,7 +1833,7 @@ export class TypeScriptLinter {
     }
     const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
     if (TsUtils.LIMITED_STD_GLOBAL_API.includes(name)) {
-      this.incrementCounters(node, FaultID.LimitedStdLibApi)
+      this.incrementCounters(node, FaultID.LimitedStdLibApi);
       return;
     }
   }
@@ -1854,20 +1855,20 @@ export class TypeScriptLinter {
 
   private handleLibraryTypeCall(callExpr: ts.CallExpression, calleeType: ts.Type) {
     let inLibCall = this.tsUtils.isLibraryType(calleeType);
-    const diagnosticMessages: Array<ts.DiagnosticMessageChain> = []
+    const diagnosticMessages: Array<ts.DiagnosticMessageChain> = [];
     this.libraryTypeCallDiagnosticChecker.configure(inLibCall, diagnosticMessages);
 
     let nonFilteringRanges = this.findNonFilteringRangesFunctionCalls(callExpr);
     let rangesToFilter: { begin: number, end: number }[] = [];
     if (nonFilteringRanges.length !== 0) {
       let rangesSize = nonFilteringRanges.length;
-      rangesToFilter.push({ begin: callExpr.pos, end: nonFilteringRanges[0].begin })
-      rangesToFilter.push({ begin: nonFilteringRanges[rangesSize - 1].end, end: callExpr.end })
+      rangesToFilter.push({ begin: callExpr.pos, end: nonFilteringRanges[0].begin });
+      rangesToFilter.push({ begin: nonFilteringRanges[rangesSize - 1].end, end: callExpr.end });
       for (let i = 0; i < rangesSize - 1; i++) {
-        rangesToFilter.push({ begin: nonFilteringRanges[i].end, end: nonFilteringRanges[i + 1].begin })
+        rangesToFilter.push({ begin: nonFilteringRanges[i].end, end: nonFilteringRanges[i + 1].begin });
       }
     } else {
-      rangesToFilter.push({ begin: callExpr.pos, end: callExpr.end })
+      rangesToFilter.push({ begin: callExpr.pos, end: callExpr.end });
     }
 
     this.filterStrictDiagnostics({
@@ -2115,9 +2116,9 @@ export class TypeScriptLinter {
     // option is enabled, compiler attempts to infer type from variable references:
     // see https://github.com/microsoft/TypeScript/pull/11263.
     // In this case, we still want to report the error, since ArkTS doesn't allow
-    // to omit both type annotation and initializer. 
-    if (((ts.isVariableDeclaration(decl) && ts.isVariableStatement(decl.parent.parent)) || ts.isPropertyDeclaration(decl))
-      && !decl.initializer) {
+    // to omit both type annotation and initializer.
+    if (((ts.isVariableDeclaration(decl) && ts.isVariableStatement(decl.parent.parent)) || ts.isPropertyDeclaration(decl)) &&
+           !decl.initializer) {
       this.incrementCounters(decl, FaultID.AnyType);
       return;
     }

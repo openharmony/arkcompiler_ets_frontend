@@ -15,7 +15,7 @@
 
 
 /*
-TODO: this test is disabled because it is not comaptible with the current implementation of the destructuring yet
+NOTE: this test is disabled because it is not comaptible with the current implementation of the destructuring yet
 var a: { a: number, b?: string };
 var a: { a: number, b: string };
 */
