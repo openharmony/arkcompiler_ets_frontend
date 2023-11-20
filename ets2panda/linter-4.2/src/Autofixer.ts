@@ -45,7 +45,9 @@ export class AutofixInfoSet {
   public shouldAutofix(node: ts.Node, faultID: FaultID): boolean {
     if (UNSAFE_FIXES.includes(faultID)) return false;
     if (this.autofixInfo.length === 0) return false;
-    if (this.autofixInfo.length === 1 && this.autofixInfo[0] == AUTOFIX_ALL) return true;
+    if (this.autofixInfo.length === 1 && this.autofixInfo[0] === AUTOFIX_ALL) {
+      return true;
+    }
     return this.autofixInfo.findIndex(
       value => value.start === node.getStart() && value.end === node.getEnd() && value.problemID === FaultID[faultID]
     ) !== -1;
@@ -56,7 +58,7 @@ export function fixLiteralAsPropertyName(node: ts.Node): Autofix[] | undefined {
   if (ts.isPropertyDeclaration(node) || ts.isPropertyAssignment(node)) {
     let propName = (node as (ts.PropertyDeclaration | ts.PropertyAssignment)).name;
     let identName = propertyName2IdentifierName(propName);
-    if (identName) 
+    if (identName)
       return [{ replacementText: identName, start: propName.getStart(), end: propName.getEnd() }];
   }
   return undefined;
@@ -66,21 +68,21 @@ export function fixPropertyAccessByIndex(node: ts.Node): Autofix[] | undefined {
   if (ts.isElementAccessExpression(node)) {
     let elemAccess = node as ts.ElementAccessExpression;
     let identifierName = indexExpr2IdentifierName(elemAccess.argumentExpression);
-    if (identifierName) 
-      return [{ 
-        replacementText: elemAccess.expression.getText() + '.' + identifierName, 
-        start: elemAccess.getStart(), end: elemAccess.getEnd() 
+    if (identifierName)
+      return [{
+        replacementText: elemAccess.expression.getText() + '.' + identifierName,
+        start: elemAccess.getStart(), end: elemAccess.getEnd()
       }];
   }
   return undefined;
 }
 
-export function fixFunctionExpression(funcExpr: ts.FunctionExpression, 
-  params: ts.NodeArray<ts.ParameterDeclaration> = funcExpr.parameters, 
+export function fixFunctionExpression(funcExpr: ts.FunctionExpression,
+  params: ts.NodeArray<ts.ParameterDeclaration> = funcExpr.parameters,
   retType: ts.TypeNode | undefined = funcExpr.type,
   modifiers: readonly ts.Modifier[] | undefined): Autofix {
   let arrowFunc: ts.Expression = ts.factory.createArrowFunction(
-    modifiers, undefined, params, retType, ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken), 
+    modifiers, undefined, params, retType, ts.factory.createToken(ts.SyntaxKind.EqualsGreaterThanToken),
     funcExpr.body
   );
   if (needsParentheses(funcExpr)) {
@@ -118,7 +120,7 @@ export function dropTypeOnlyFlag(
   return { start: impExpNode.getStart(), end: impExpNode.getEnd(), replacementText: text };
 }
 
-export function fixDefaultImport(importClause: ts.ImportClause, 
+export function fixDefaultImport(importClause: ts.ImportClause,
   defaultSpec: ts.ImportSpecifier, nonDefaultSpecs: ts.ImportSpecifier[]): Autofix {
   let nameBindings = nonDefaultSpecs.length > 0 ? ts.factory.createNamedImports(nonDefaultSpecs) : undefined;
   let newImportClause = ts.factory.createImportClause(importClause.isTypeOnly, defaultSpec.name, nameBindings);
@@ -144,22 +146,22 @@ function stringLiteral2IdentifierName(str: ts.StringLiteral) {
 }
 
 function propertyName2IdentifierName(name: ts.PropertyName): string {
-  if (name.kind === ts.SyntaxKind.NumericLiteral) 
+  if (name.kind === ts.SyntaxKind.NumericLiteral)
     return numericLiteral2IdentifierName(name as ts.NumericLiteral);
 
-  if (name.kind === ts.SyntaxKind.StringLiteral) 
+  if (name.kind === ts.SyntaxKind.StringLiteral)
     return stringLiteral2IdentifierName(name as ts.StringLiteral);
-        
+
   return '';
 }
 
 function indexExpr2IdentifierName(index: ts.Expression) {
-  if (index.kind === ts.SyntaxKind.NumericLiteral) 
+  if (index.kind === ts.SyntaxKind.NumericLiteral)
     return numericLiteral2IdentifierName(index as ts.NumericLiteral);
 
-  if (index.kind === ts.SyntaxKind.StringLiteral) 
+  if (index.kind === ts.SyntaxKind.StringLiteral)
     return stringLiteral2IdentifierName(index as ts.StringLiteral);
-    
+
   return '';
 }
 
@@ -171,7 +173,7 @@ function getReturnTypePosition(funcLikeDecl: ts.FunctionLikeDeclaration): number
     let postParametersPosition = ts.isArrowFunction(funcLikeDecl)
       ? funcLikeDecl.equalsGreaterThanToken.getStart()
       : funcLikeDecl.body.getStart();
-    
+
     const children = funcLikeDecl.getChildren();
     for (let i = children.length - 1; i >= 0; i--) {
       const child = children[i];

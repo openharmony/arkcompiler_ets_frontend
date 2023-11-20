@@ -36,7 +36,7 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
     this.filteredDiagnosticMessages = filteredDiagnosticMessages;
   }
 
-  configure(inLibCall: boolean, diagnosticMessages: Array<ts.DiagnosticMessageChain>) {
+  configure(inLibCall: boolean, diagnosticMessages: Array<ts.DiagnosticMessageChain>): void {
     this.inLibCall = inLibCall;
     this.diagnosticMessages = diagnosticMessages;
   }
@@ -65,9 +65,9 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
       }
     }
     return chain.next === undefined ? true : this.checkMessageChain(chain.next[0]);
-  };
+  }
 
-  checkFilteredDiagnosticMessages(msgText: ts.DiagnosticMessageChain | string) {
+  checkFilteredDiagnosticMessages(msgText: ts.DiagnosticMessageChain | string): boolean {
     if (this.filteredDiagnosticMessages.size === 0) {
       return true;
     }
@@ -91,11 +91,11 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
           return true;
         }
 
-        if (curMsg.code != curFilteredMsg.code) {
+        if (curMsg.code !== curFilteredMsg.code) {
           return true;
         }
 
-        if (curMsg.messageText != curFilteredMsg.messageText) {
+        if (curMsg.messageText !== curFilteredMsg.messageText) {
           return true;
         }
 
@@ -117,7 +117,7 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
       return false;
     }
 
-    if (typeof msgText == 'string') {
+    if (typeof msgText === 'string') {
       return this.checkMessageText(msgText);
     }
 

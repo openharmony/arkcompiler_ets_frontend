@@ -215,12 +215,12 @@ export class TypeScriptLinter {
     this.lineCounters[faultId]++;
 
     if (faultsAttrs[faultId].warning) {
-      if (line != this.currentWarningLine) {
+      if (line !== this.currentWarningLine) {
         this.currentWarningLine = line;
         ++this.totalWarningLines;
         this.warningLineNumbersString += line + ", ";
       }
-    } else if (line != this.currentErrorLine) {
+    } else if (line !== this.currentErrorLine) {
       this.currentErrorLine = line;
       ++this.totalErrorLines;
       this.errorLineNumbersString += line + ", ";
@@ -474,7 +474,7 @@ export class TypeScriptLinter {
           p.name,
           (decl as ts.PropertyDeclaration).type
         );
-      } else if (decl.kind == ts.SyntaxKind.PropertySignature) {
+      } else if (decl.kind === ts.SyntaxKind.PropertySignature) {
         this.countInterfaceExtendsDifferentPropertyTypes(
           node,
           prop2type,
@@ -710,7 +710,7 @@ export class TypeScriptLinter {
       if (!isRecordObjectInitializer && !isDynamicLiteralInitializer) {
         let autofix: Autofix[] | undefined =
           Autofixer.fixLiteralAsPropertyName(node);
-        let autofixable = autofix != undefined;
+        let autofixable = autofix !== undefined;
         if (
           !this.autofixesInfo.shouldAutofix(node, FaultID.LiteralAsPropertyName)
         ) {
@@ -1253,7 +1253,7 @@ export class TypeScriptLinter {
     }
   }
 
-  private handleEsObjectAssignment(node: ts.Node, nodeDeclType: ts.TypeNode | undefined, initializer: ts.Node) {
+  private handleEsObjectAssignment(node: ts.Node, nodeDeclType: ts.TypeNode | undefined, initializer: ts.Node): void {
     const isTypeAnnotated = !!nodeDeclType;
     const isDeclaredESObject = !!nodeDeclType && this.tsUtils.isEsObjectType(nodeDeclType);
     const initalizerTypeNode = this.tsUtils.getVariableDeclarationTypeNode(initializer);
@@ -1305,7 +1305,7 @@ export class TypeScriptLinter {
     const visitHClause = (hClause: ts.HeritageClause) => {
       for (const tsTypeExpr of hClause.types) {
         const tsExprType = this.tsTypeChecker.getTypeAtLocation(tsTypeExpr.expression);
-        if (tsExprType.isClass() && hClause.token == ts.SyntaxKind.ImplementsKeyword) {
+        if (tsExprType.isClass() && hClause.token === ts.SyntaxKind.ImplementsKeyword) {
           this.incrementCounters(tsTypeExpr, FaultID.ImplementsClass);
         }
       }
@@ -1470,7 +1470,7 @@ export class TypeScriptLinter {
       TsUtils.FUNCTION_HAS_NO_RETURN_ERROR_CODE);
   }
 
-  private handleMethodSignature(node: ts.MethodSignature) {
+  private handleMethodSignature(node: ts.MethodSignature): void {
     const tsMethodSign = node as ts.MethodSignature;
     if (!tsMethodSign.type) {
       this.handleMissingReturnType(tsMethodSign);
@@ -1503,13 +1503,13 @@ export class TypeScriptLinter {
     if (ts.isPropertyAssignment(ctx.parent) && ts.isObjectLiteralExpression(ctx.parent.parent)) {
       ctx = ctx.parent.parent;
     }
-    if (ts.isArrowFunction(ctx.parent) && ctx.parent.body == ctx) {
+    if (ts.isArrowFunction(ctx.parent) && ctx.parent.body === ctx) {
       ctx = ctx.parent;
     }
 
     if (ts.isCallExpression(ctx.parent) || ts.isNewExpression(ctx.parent)) {
       let callee = ctx.parent.expression;
-      if (callee != ctx && this.tsUtils.hasLibraryType(callee)) {
+      if (callee !== ctx && this.tsUtils.hasLibraryType(callee)) {
         return true;
       }
     }
@@ -1521,18 +1521,18 @@ export class TypeScriptLinter {
 
     // If module name is duplicated by another declaration, this increases the possibility
     // of finding a lot of false positives. Thus, do not check further in that case.
-    if ((tsIdentSym.flags & ts.SymbolFlags.ValueModule) != 0) {
+    if ((tsIdentSym.flags & ts.SymbolFlags.ValueModule) !== 0) {
       if (!!tsIdentSym && this.tsUtils.symbolHasDuplicateName(tsIdentSym, ts.SyntaxKind.ModuleDeclaration)) {
         return;
       }
     }
 
-    if ((tsIdentSym.flags & illegalValues) == 0 || this.tsUtils.isStruct(tsIdentSym) ||
+    if ((tsIdentSym.flags & illegalValues) === 0 || this.tsUtils.isStruct(tsIdentSym) ||
       !this.identiferUseInValueContext(tsIdentifier, tsIdentSym)) {
       return;
     }
 
-    if ((tsIdentSym.flags & ts.SymbolFlags.Class) != 0) {
+    if ((tsIdentSym.flags & ts.SymbolFlags.Class) !== 0) {
       if (this.isAllowedClassValueContext(tsIdentifier, tsIdentSym)) {
         return;
       }
@@ -1560,8 +1560,8 @@ export class TypeScriptLinter {
       // treat TypeQuery as valid because it's already forbidden (FaultID.TypeQuery)
       (ts.isTypeNode(parent) && !ts.isTypeOfExpression(parent)) ||
       // ElementAccess is allowed for enum types
-      (ts.isElementAccessExpression(parent)
-        && (parent as ts.ElementAccessExpression).expression == ident && (tsSym.flags & ts.SymbolFlags.Enum)) ||
+      (ts.isElementAccessExpression(parent) &&
+      (parent as ts.ElementAccessExpression).expression === ident && (tsSym.flags & ts.SymbolFlags.Enum)) ||
       ts.isExpressionWithTypeArguments(parent) ||
       ts.isExportAssignment(parent) ||
       ts.isExportSpecifier(parent) ||
@@ -1601,15 +1601,6 @@ export class TypeScriptLinter {
     const checkThisOrSuper = this.tsUtils.isThisOrSuperExpr(tsElementAccessExpr.expression) &&
                              !this.tsUtils.isDerivedFrom(tsElemAccessBaseExprType, CheckType.Array);
 
-    // if (this.tsUtils.isEnumType(tsElemAccessBaseExprType)) {
-    //   implement argument expression type check
-    //   let argType = this.tsTypeChecker.getTypeAtLocation(tsElementAccessExpr.argumentExpression);
-    //   if (argType.aliasSymbol == this.tsUtils.trueSymbolAtLocation(tsElementAccessExpr.expression)) {
-    //     return;
-    //   }
-    //   check if constant EnumMember inferred ...
-    //   this.incrementCounters(node, FaultID.PropertyAccessByIndex, autofixable, autofix);
-    // }
     if (
       !this.tsUtils.isLibraryType(tsElemAccessBaseExprType) &&
       !this.tsUtils.isTypedArray(tsElemAccessBaseExprTypeNode) &&
@@ -1617,7 +1608,7 @@ export class TypeScriptLinter {
         this.tsUtils.isObjectLiteralType(tsElemAccessBaseExprType) || checkThisOrSuper)
     ) {
       let autofix = Autofixer.fixPropertyAccessByIndex(node);
-      const autofixable = autofix != undefined;
+      const autofixable = autofix !== undefined;
       if (
         !this.autofixesInfo.shouldAutofix(node, FaultID.PropertyAccessByIndex)
       )
@@ -1721,7 +1712,6 @@ export class TypeScriptLinter {
   private handleImportCall(tsCallExpr: ts.CallExpression) {
     if (tsCallExpr.expression.kind === ts.SyntaxKind.ImportKeyword) {
       // relax rule#133 "arkts-no-runtime-import"
-      // this.incrementCounters(tsCallExpr, FaultID.DynamicImport);
       const tsArgs = tsCallExpr.arguments;
       if (tsArgs.length > 1 && ts.isObjectLiteralExpression(tsArgs[1])) {
         let objLitExpr = tsArgs[1] as ts.ObjectLiteralExpression;
@@ -1824,7 +1814,7 @@ export class TypeScriptLinter {
     }
   }
 
-  private checkLimitedStdLib(node: ts.Node, symbol: ts.Symbol) {
+  private checkLimitedStdLib(node: ts.Node, symbol: ts.Symbol): void {
     const parName = this.tsUtils.getParentSymbolName(symbol);
     const res = parName ? TsUtils.LIMITED_STD_API.get(parName) : undefined;
     if (res && res.arr.includes(symbol.name)) {
@@ -1853,7 +1843,7 @@ export class TypeScriptLinter {
     return result;
   }
 
-  private handleLibraryTypeCall(callExpr: ts.CallExpression, calleeType: ts.Type) {
+  private handleLibraryTypeCall(callExpr: ts.CallExpression, calleeType: ts.Type): void {
     let inLibCall = this.tsUtils.isLibraryType(calleeType);
     const diagnosticMessages: Array<ts.DiagnosticMessageChain> = [];
     this.libraryTypeCallDiagnosticChecker.configure(inLibCall, diagnosticMessages);
@@ -1946,7 +1936,7 @@ export class TypeScriptLinter {
 
   private handleMetaProperty(node: ts.Node) {
     let tsMetaProperty = node as ts.MetaProperty;
-    if (tsMetaProperty.name.text === "target") {
+    if (tsMetaProperty.name.text === 'target') {
       this.incrementCounters(node, FaultID.NewTarget);
     }
   }
@@ -2172,7 +2162,7 @@ export class TypeScriptLinter {
       | ts.PropertyDeclaration
       | ts.ParameterDeclaration
   ): void {
-    if (type.aliasSymbol != undefined) {
+    if (type.aliasSymbol !== undefined) {
       return;
     }
     const isObject = type.flags & ts.TypeFlags.Object;

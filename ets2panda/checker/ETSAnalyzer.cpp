@@ -831,7 +831,6 @@ void ProcessReturnStatements(ETSChecker *checker, ir::ScriptFunction *containing
                         "type(s).",
                         st_argument->Start());
                 }
-
             } else {
                 checker->ThrowTypeError("Invalid return statement type(s).", st->Start());
             }

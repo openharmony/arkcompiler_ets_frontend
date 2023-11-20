@@ -35,16 +35,10 @@ class C {}
 let c = new C();
 
 /// Object
-//Object.__proto__(),
-//Object.__defineGetter__(),
-//Object.__defineSetter__();
-//Object.__lookupGetter__();
-//Object.__lookupSetter__();
 Object.assign<C, C>(c, c);
 Object.create(c);
 Object.defineProperties<C>(c, {});
 Object.defineProperty<C>(c, 'p', c);
-// Object.entries<C>([]);
 Object.freeze(() => {});
 Object.fromEntries<number>([]);
 Object.getOwnPropertyDescriptor(c, 'p');
