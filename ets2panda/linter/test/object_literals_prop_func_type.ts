@@ -44,3 +44,11 @@ a = {
   c: e,
   d: r,
 }
+
+// #14569 - initialize field with 'Function' object
+class B {
+  f: Function = () => {};
+}
+let b: B = {
+  f: Function
+};

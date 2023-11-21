@@ -552,6 +552,10 @@ export class TsUtils {
     if (this.isDynamicObjectAssignedToStdType(lhsType, rhsExpr)) {
       return false;
     }
+    // #14569: Check for Function type.
+    if (this.areCompatibleFunctionals(lhsType, rhsType)) {
+      return false;
+    }
     if (rhsType.isUnion() || lhsType.isUnion()) {
       return this.needToDeduceStructuralIdentityHandleUnions(lhsType, rhsType, rhsExpr, allowPromotion);
     }
@@ -1348,5 +1352,22 @@ export class TsUtils {
       }
     }
     return type;
+  }
+
+  private areCompatibleFunctionals(lhsType: ts.Type, rhsType: ts.Type): boolean {
+    return (
+      (this.isStdFunctionType(lhsType) || TsUtils.isFunctionalType(lhsType)) &&
+      (this.isStdFunctionType(rhsType) || TsUtils.isFunctionalType(rhsType))
+    );
+  }
+
+  private static isFunctionalType(type: ts.Type): boolean {
+    const callSigns = type.getCallSignatures();
+    return callSigns && callSigns.length > 0;
+  }
+
+  private isStdFunctionType(type: ts.Type): boolean {
+    const sym = type.getSymbol();
+    return !!sym && sym.getName() === 'Function' && this.isGlobalSymbol(sym);
   }
 }
