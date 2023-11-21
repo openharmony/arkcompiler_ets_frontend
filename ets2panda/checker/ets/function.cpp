@@ -464,6 +464,35 @@ Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
         }
     }
 
+    if ((resolve_flags & TypeRelationFlag::NO_THROW) == 0 && !arguments.empty() && !signatures.empty()) {
+        std::stringstream ss;
+
+        if (signatures[0]->Function()->IsConstructor()) {
+            ss << util::Helpers::GetClassDefiniton(signatures[0]->Function())->PrivateId().Mutf8();
+        } else {
+            ss << signatures[0]->Function()->Id()->Name().Mutf8();
+        }
+
+        ss << "(";
+
+        for (uint32_t index = 0; index < arguments.size(); ++index) {
+            if (arguments[index]->IsArrowFunctionExpression()) {
+                // NOTE(peterseres): Refactor this case and add test case
+                break;
+            }
+
+            arguments[index]->Check(this);
+            arguments[index]->TsType()->ToString(ss);
+
+            if (index == arguments.size() - 1) {
+                ss << ")";
+                ThrowTypeError({"No matching ", signature_kind, " signature for ", ss.str().c_str()}, pos);
+            }
+
+            ss << ", ";
+        }
+    }
+
     if ((resolve_flags & TypeRelationFlag::NO_THROW) == 0) {
         ThrowTypeError({"No matching ", signature_kind, " signature"}, pos);
     }

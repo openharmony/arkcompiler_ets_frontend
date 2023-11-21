@@ -267,105 +267,6 @@
                             }
                           },
                           "init": {
-                            "type": "NumberLiteral",
-                            "value": 2,
-                            "loc": {
-                              "start": {
-                                "line": 17,
-                                "column": 19
-                              },
-                              "end": {
-                                "line": 17,
-                                "column": 20
-                              }
-                            }
-                          },
-                          "loc": {
-                            "start": {
-                              "line": 17,
-                              "column": 9
-                            },
-                            "end": {
-                              "line": 17,
-                              "column": 20
-                            }
-                          }
-                        }
-                      ],
-                      "kind": "let",
-                      "loc": {
-                        "start": {
-                          "line": 17,
-                          "column": 5
-                        },
-                        "end": {
-                          "line": 17,
-                          "column": 21
-                        }
-                      }
-                    },
-                    {
-                      "type": "VariableDeclaration",
-                      "declarations": [
-                        {
-                          "type": "VariableDeclarator",
-                          "id": {
-                            "type": "Identifier",
-                            "name": "b",
-                            "typeAnnotation": {
-                              "type": "ETSTypeReference",
-                              "part": {
-                                "type": "ETSTypeReferencePart",
-                                "name": {
-                                  "type": "Identifier",
-                                  "name": "Byte",
-                                  "decorators": [],
-                                  "loc": {
-                                    "start": {
-                                      "line": 18,
-                                      "column": 12
-                                    },
-                                    "end": {
-                                      "line": 18,
-                                      "column": 16
-                                    }
-                                  }
-                                },
-                                "loc": {
-                                  "start": {
-                                    "line": 18,
-                                    "column": 12
-                                  },
-                                  "end": {
-                                    "line": 18,
-                                    "column": 18
-                                  }
-                                }
-                              },
-                              "loc": {
-                                "start": {
-                                  "line": 18,
-                                  "column": 12
-                                },
-                                "end": {
-                                  "line": 18,
-                                  "column": 18
-                                }
-                              }
-                            },
-                            "decorators": [],
-                            "loc": {
-                              "start": {
-                                "line": 18,
-                                "column": 9
-                              },
-                              "end": {
-                                "line": 18,
-                                "column": 10
-                              }
-                            }
-                          },
-                          "init": {
                             "type": "ETSNewClassInstanceExpression",
                             "typeReference": {
                               "type": "ETSTypeReference",
@@ -377,33 +278,33 @@
                                   "decorators": [],
                                   "loc": {
                                     "start": {
-                                      "line": 18,
+                                      "line": 17,
                                       "column": 23
                                     },
                                     "end": {
-                                      "line": 18,
+                                      "line": 17,
                                       "column": 27
                                     }
                                   }
                                 },
                                 "loc": {
                                   "start": {
-                                    "line": 18,
+                                    "line": 17,
                                     "column": 23
                                   },
                                   "end": {
-                                    "line": 18,
+                                    "line": 17,
                                     "column": 28
                                   }
                                 }
                               },
                               "loc": {
                                 "start": {
-                                  "line": 18,
+                                  "line": 17,
                                   "column": 23
                                 },
                                 "end": {
-                                  "line": 18,
+                                  "line": 17,
                                   "column": 28
                                 }
                               }
@@ -414,11 +315,11 @@
                                 "value": 2,
                                 "loc": {
                                   "start": {
-                                    "line": 18,
+                                    "line": 17,
                                     "column": 28
                                   },
                                   "end": {
-                                    "line": 18,
+                                    "line": 17,
                                     "column": 29
                                   }
                                 }
@@ -426,22 +327,22 @@
                             ],
                             "loc": {
                               "start": {
-                                "line": 18,
+                                "line": 17,
                                 "column": 19
                               },
                               "end": {
-                                "line": 18,
+                                "line": 17,
                                 "column": 31
                               }
                             }
                           },
                           "loc": {
                             "start": {
-                              "line": 18,
+                              "line": 17,
                               "column": 9
                             },
                             "end": {
-                              "line": 18,
+                              "line": 17,
                               "column": 31
                             }
                           }
@@ -450,11 +351,11 @@
                       "kind": "let",
                       "loc": {
                         "start": {
-                          "line": 18,
+                          "line": 17,
                           "column": 5
                         },
                         "end": {
-                          "line": 18,
+                          "line": 17,
                           "column": 31
                         }
                       }
@@ -466,7 +367,7 @@
                       "column": 24
                     },
                     "end": {
-                      "line": 19,
+                      "line": 18,
                       "column": 2
                     }
                   }
@@ -477,7 +378,7 @@
                     "column": 14
                   },
                   "end": {
-                    "line": 19,
+                    "line": 18,
                     "column": 2
                   }
                 }
@@ -488,7 +389,7 @@
                   "column": 14
                 },
                 "end": {
-                  "line": 19,
+                  "line": 18,
                   "column": 2
                 }
               }
@@ -501,7 +402,7 @@
                 "column": 1
               },
               "end": {
-                "line": 19,
+                "line": 18,
                 "column": 2
               }
             }
@@ -536,9 +437,9 @@
       "column": 1
     },
     "end": {
-      "line": 20,
+      "line": 19,
       "column": 1
     }
   }
 }
-TypeError: No matching construct signature for std.core.Byte(int) [boxingConversion1.ets:18:19]
+TypeError: No matching construct signature for std.core.Byte(int) [validate_signatures_throw_type_error.ets:17:19]

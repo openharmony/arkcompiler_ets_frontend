@@ -965,4 +965,4 @@
     }
   }
 }
-TypeError: No matching construct signature [boxingConversion4.ets:19:20]
+TypeError: No matching construct signature for std.core.Short(int) [boxingConversion4.ets:19:20]
