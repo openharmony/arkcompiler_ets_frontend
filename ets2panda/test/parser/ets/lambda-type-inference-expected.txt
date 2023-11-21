@@ -1611,8 +1611,8 @@
                                   {
                                     "type": "ExpressionStatement",
                                     "expression": {
-                                      "type": "CallExpression",
-                                      "callee": {
+                                      "type": "TSAsExpression",
+                                      "expression": {
                                         "type": "MemberExpression",
                                         "object": {
                                           "type": "ETSNewClassInstanceExpression",
@@ -1712,8 +1712,19 @@
                                           }
                                         }
                                       },
-                                      "arguments": [],
-                                      "optional": false,
+                                      "typeAnnotation": {
+                                        "type": "ETSPrimitiveType",
+                                        "loc": {
+                                          "start": {
+                                            "line": 37,
+                                            "column": 39
+                                          },
+                                          "end": {
+                                            "line": 37,
+                                            "column": 42
+                                          }
+                                        }
+                                      },
                                       "loc": {
                                         "start": {
                                           "line": 37,
@@ -1721,7 +1732,7 @@
                                         },
                                         "end": {
                                           "line": 37,
-                                          "column": 37
+                                          "column": 35
                                         }
                                       }
                                     },
@@ -1732,7 +1743,7 @@
                                       },
                                       "end": {
                                         "line": 37,
-                                        "column": 38
+                                        "column": 43
                                       }
                                     }
                                   }
@@ -1829,8 +1840,8 @@
                                   {
                                     "type": "ExpressionStatement",
                                     "expression": {
-                                      "type": "CallExpression",
-                                      "callee": {
+                                      "type": "TSAsExpression",
+                                      "expression": {
                                         "type": "MemberExpression",
                                         "object": {
                                           "type": "ETSNewClassInstanceExpression",
@@ -1930,8 +1941,19 @@
                                           }
                                         }
                                       },
-                                      "arguments": [],
-                                      "optional": false,
+                                      "typeAnnotation": {
+                                        "type": "ETSPrimitiveType",
+                                        "loc": {
+                                          "start": {
+                                            "line": 40,
+                                            "column": 39
+                                          },
+                                          "end": {
+                                            "line": 40,
+                                            "column": 42
+                                          }
+                                        }
+                                      },
                                       "loc": {
                                         "start": {
                                           "line": 40,
@@ -1939,7 +1961,7 @@
                                         },
                                         "end": {
                                           "line": 40,
-                                          "column": 37
+                                          "column": 35
                                         }
                                       }
                                     },
@@ -1950,7 +1972,7 @@
                                       },
                                       "end": {
                                         "line": 40,
-                                        "column": 38
+                                        "column": 43
                                       }
                                     }
                                   }
@@ -2174,41 +2196,11 @@
                                       "type": "BinaryExpression",
                                       "operator": "==",
                                       "left": {
-                                        "type": "CallExpression",
-                                        "callee": {
-                                          "type": "MemberExpression",
-                                          "object": {
-                                            "type": "Identifier",
-                                            "name": "y",
-                                            "decorators": [],
-                                            "loc": {
-                                              "start": {
-                                                "line": 44,
-                                                "column": 16
-                                              },
-                                              "end": {
-                                                "line": 44,
-                                                "column": 17
-                                              }
-                                            }
-                                          },
-                                          "property": {
-                                            "type": "Identifier",
-                                            "name": "length",
-                                            "decorators": [],
-                                            "loc": {
-                                              "start": {
-                                                "line": 44,
-                                                "column": 18
-                                              },
-                                              "end": {
-                                                "line": 44,
-                                                "column": 24
-                                              }
-                                            }
-                                          },
-                                          "computed": false,
-                                          "optional": false,
+                                        "type": "MemberExpression",
+                                        "object": {
+                                          "type": "Identifier",
+                                          "name": "y",
+                                          "decorators": [],
                                           "loc": {
                                             "start": {
                                               "line": 44,
@@ -2216,11 +2208,26 @@
                                             },
                                             "end": {
                                               "line": 44,
+                                              "column": 17
+                                            }
+                                          }
+                                        },
+                                        "property": {
+                                          "type": "Identifier",
+                                          "name": "length",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 44,
+                                              "column": 18
+                                            },
+                                            "end": {
+                                              "line": 44,
                                               "column": 24
                                             }
                                           }
                                         },
-                                        "arguments": [],
+                                        "computed": false,
                                         "optional": false,
                                         "loc": {
                                           "start": {
@@ -2229,7 +2236,7 @@
                                           },
                                           "end": {
                                             "line": 44,
-                                            "column": 26
+                                            "column": 24
                                           }
                                         }
                                       },
@@ -2240,11 +2247,11 @@
                                         "loc": {
                                           "start": {
                                             "line": 44,
-                                            "column": 30
+                                            "column": 28
                                           },
                                           "end": {
                                             "line": 44,
-                                            "column": 31
+                                            "column": 29
                                           }
                                         }
                                       },
@@ -2255,7 +2262,7 @@
                                         },
                                         "end": {
                                           "line": 44,
-                                          "column": 31
+                                          "column": 29
                                         }
                                       }
                                     },
@@ -2266,7 +2273,7 @@
                                       },
                                       "end": {
                                         "line": 44,
-                                        "column": 32
+                                        "column": 30
                                       }
                                     }
                                   }
@@ -2423,41 +2430,11 @@
                                       "type": "BinaryExpression",
                                       "operator": "==",
                                       "left": {
-                                        "type": "CallExpression",
-                                        "callee": {
-                                          "type": "MemberExpression",
-                                          "object": {
-                                            "type": "Identifier",
-                                            "name": "y",
-                                            "decorators": [],
-                                            "loc": {
-                                              "start": {
-                                                "line": 47,
-                                                "column": 16
-                                              },
-                                              "end": {
-                                                "line": 47,
-                                                "column": 17
-                                              }
-                                            }
-                                          },
-                                          "property": {
-                                            "type": "Identifier",
-                                            "name": "length",
-                                            "decorators": [],
-                                            "loc": {
-                                              "start": {
-                                                "line": 47,
-                                                "column": 18
-                                              },
-                                              "end": {
-                                                "line": 47,
-                                                "column": 24
-                                              }
-                                            }
-                                          },
-                                          "computed": false,
-                                          "optional": false,
+                                        "type": "MemberExpression",
+                                        "object": {
+                                          "type": "Identifier",
+                                          "name": "y",
+                                          "decorators": [],
                                           "loc": {
                                             "start": {
                                               "line": 47,
@@ -2465,11 +2442,26 @@
                                             },
                                             "end": {
                                               "line": 47,
+                                              "column": 17
+                                            }
+                                          }
+                                        },
+                                        "property": {
+                                          "type": "Identifier",
+                                          "name": "length",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 47,
+                                              "column": 18
+                                            },
+                                            "end": {
+                                              "line": 47,
                                               "column": 24
                                             }
                                           }
                                         },
-                                        "arguments": [],
+                                        "computed": false,
                                         "optional": false,
                                         "loc": {
                                           "start": {
@@ -2478,7 +2470,7 @@
                                           },
                                           "end": {
                                             "line": 47,
-                                            "column": 26
+                                            "column": 24
                                           }
                                         }
                                       },
@@ -2489,11 +2481,11 @@
                                         "loc": {
                                           "start": {
                                             "line": 47,
-                                            "column": 30
+                                            "column": 28
                                           },
                                           "end": {
                                             "line": 47,
-                                            "column": 31
+                                            "column": 29
                                           }
                                         }
                                       },
@@ -2504,7 +2496,7 @@
                                         },
                                         "end": {
                                           "line": 47,
-                                          "column": 31
+                                          "column": 29
                                         }
                                       }
                                     },
@@ -2515,7 +2507,7 @@
                                       },
                                       "end": {
                                         "line": 47,
-                                        "column": 32
+                                        "column": 30
                                       }
                                     }
                                   }

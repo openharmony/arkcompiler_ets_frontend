@@ -745,41 +745,11 @@
                                       "type": "BinaryExpression",
                                       "operator": "==",
                                       "left": {
-                                        "type": "CallExpression",
-                                        "callee": {
-                                          "type": "MemberExpression",
-                                          "object": {
-                                            "type": "Identifier",
-                                            "name": "y",
-                                            "decorators": [],
-                                            "loc": {
-                                              "start": {
-                                                "line": 22,
-                                                "column": 16
-                                              },
-                                              "end": {
-                                                "line": 22,
-                                                "column": 17
-                                              }
-                                            }
-                                          },
-                                          "property": {
-                                            "type": "Identifier",
-                                            "name": "length",
-                                            "decorators": [],
-                                            "loc": {
-                                              "start": {
-                                                "line": 22,
-                                                "column": 18
-                                              },
-                                              "end": {
-                                                "line": 22,
-                                                "column": 24
-                                              }
-                                            }
-                                          },
-                                          "computed": false,
-                                          "optional": false,
+                                        "type": "MemberExpression",
+                                        "object": {
+                                          "type": "Identifier",
+                                          "name": "y",
+                                          "decorators": [],
                                           "loc": {
                                             "start": {
                                               "line": 22,
@@ -787,11 +757,26 @@
                                             },
                                             "end": {
                                               "line": 22,
+                                              "column": 17
+                                            }
+                                          }
+                                        },
+                                        "property": {
+                                          "type": "Identifier",
+                                          "name": "length",
+                                          "decorators": [],
+                                          "loc": {
+                                            "start": {
+                                              "line": 22,
+                                              "column": 18
+                                            },
+                                            "end": {
+                                              "line": 22,
                                               "column": 24
                                             }
                                           }
                                         },
-                                        "arguments": [],
+                                        "computed": false,
                                         "optional": false,
                                         "loc": {
                                           "start": {
@@ -800,7 +785,7 @@
                                           },
                                           "end": {
                                             "line": 22,
-                                            "column": 26
+                                            "column": 24
                                           }
                                         }
                                       },
@@ -811,11 +796,11 @@
                                         "loc": {
                                           "start": {
                                             "line": 22,
-                                            "column": 30
+                                            "column": 28
                                           },
                                           "end": {
                                             "line": 22,
-                                            "column": 31
+                                            "column": 29
                                           }
                                         }
                                       },
@@ -826,7 +811,7 @@
                                         },
                                         "end": {
                                           "line": 22,
-                                          "column": 31
+                                          "column": 29
                                         }
                                       }
                                     },
@@ -837,7 +822,7 @@
                                       },
                                       "end": {
                                         "line": 22,
-                                        "column": 32
+                                        "column": 30
                                       }
                                     }
                                   }

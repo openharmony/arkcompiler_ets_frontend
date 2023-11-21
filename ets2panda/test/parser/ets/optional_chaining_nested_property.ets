@@ -24,4 +24,4 @@ let car: Car = {
     company: "Mercedes"
 }
 
-let companyLength = car?.company?.length();
+let companyLength = car?.company?.length;

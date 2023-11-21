@@ -68,14 +68,14 @@ export class StringFasta  {
             if (n < lenOut) {
                 lenOut = n;
             }
-            if (seqi + lenOut < seq.length()) {
-                ret += seq.substring(seqi, seqi + lenOut).length();
+            if (seqi + lenOut < seq.length as int) {
+                ret += seq.substring(seqi, seqi + lenOut).length as int;
                 seqi += lenOut;
             }
             else {
                 let s : String = seq.substring(seqi);
-                seqi = lenOut - s.length();
-                ret += (s + seq.substring(0, seqi)).length();
+                seqi = lenOut - s.length as int;
+                ret += (s + seq.substring(0, seqi)).length as int;
             }
             n -= lenOut;
         }
@@ -100,7 +100,7 @@ export class StringFasta  {
                     }
                 }
             }
-            ret += new String(line).length();
+            ret += new String(line).length as int;
             n -= line.length;
         }
         return ret;

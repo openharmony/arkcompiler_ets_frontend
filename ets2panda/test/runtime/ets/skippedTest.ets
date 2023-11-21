@@ -26,7 +26,7 @@ function main(): void {
     console.println();
     console.print(str.charAt(2));
     console.println();
-    console.print(str.length());
+    console.print(str.length as int);
     console.println();
     console.print(a.equals(b));
     console.println();

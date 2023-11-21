@@ -19,6 +19,6 @@ function foo(callback: (x: int, y: String) => boolean): void {
 
 function main(): void {
     foo((x: int, y: String) => {
-        return y.length() == x;
+        return y.length == x;
     });
 }

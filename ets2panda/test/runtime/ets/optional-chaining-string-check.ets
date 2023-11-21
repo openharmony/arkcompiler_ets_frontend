@@ -22,14 +22,14 @@ function main(): void {
   let name = bill?.name;
 
   assert(name == "Bill");
-  assert(name.length() == 4);
+  assert(name.length == 4);
 
   name = bill.name;
   assert(name == "Bill");
 
   let juan: Person | null = null;
   name = juan?.name ?? "Juan";
-  assert (name.length() == 4);
+  assert (name.length == 4);
 
   let test = false;
 
