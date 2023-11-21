@@ -18,6 +18,7 @@
 
 #include "ir/astNodeFlags.h"
 #include "ir/astNodeMapping.h"
+#include "ir/visitor/AstVisitor.h"
 #include "lexer/token/sourceLocation.h"
 #include "util/enumbitops.h"
 
@@ -484,6 +485,16 @@ public:
     virtual checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) = 0;
     virtual checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) = 0;
 
+    using ASTVisitorT = visitor::ASTAbstractVisitor;
+
+    virtual void Accept(ASTVisitorT *v) = 0;
+
+    /**
+     * On each node you should implement:
+     *  void accept(AV* v) override {
+     *      ASTVisitorT::accept(this, v);
+     *  }
+     */
 protected:
     AstNode(AstNode const &other);
 

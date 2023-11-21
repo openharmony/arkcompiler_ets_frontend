@@ -134,6 +134,11 @@ public:
     void HandleNestedArrayExpression(checker::ETSChecker *checker, ArrayExpression *current_element, bool is_array,
                                      bool is_preferred_tuple, std::size_t idx);
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     ArenaVector<Decorator *> decorators_;
     ArenaVector<Expression *> elements_;

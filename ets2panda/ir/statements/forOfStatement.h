@@ -27,13 +27,8 @@ class Expression;
 
 class ForOfStatement : public LoopStatement {
 public:
-    explicit ForOfStatement(varbinder::LoopScope *scope, AstNode *left, Expression *right, Statement *body,
-                            bool is_await)
-        : LoopStatement(AstNodeType::FOR_OF_STATEMENT, scope),
-          left_(left),
-          right_(right),
-          body_(body),
-          is_await_(is_await)
+    explicit ForOfStatement(AstNode *left, Expression *right, Statement *body, bool is_await)
+        : LoopStatement(AstNodeType::FOR_OF_STATEMENT), left_(left), right_(right), body_(body), is_await_(is_await)
     {
     }
 
@@ -86,6 +81,11 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
+
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
 
 private:
     AstNode *left_;

@@ -43,6 +43,7 @@ enum class ClassDefinitionModifiers : uint32_t {
     GLOBAL_INITIALIZED = 1U << 7U,
     CLASS_DECL = 1U << 8U,
     INNER = 1U << 9U,
+    FROM_EXTERNAL = 1U << 10U,
     DECLARATION_ID_REQUIRED = DECLARATION | ID_REQUIRED
 };
 
@@ -56,13 +57,12 @@ public:
     NO_COPY_SEMANTIC(ClassDefinition);
     NO_MOVE_SEMANTIC(ClassDefinition);
 
-    explicit ClassDefinition(varbinder::LocalScope *scope, const util::StringView &private_id, Identifier *ident,
+    explicit ClassDefinition(const util::StringView &private_id, Identifier *ident,
                              TSTypeParameterDeclaration *type_params, TSTypeParameterInstantiation *super_type_params,
                              ArenaVector<TSClassImplements *> &&implements, MethodDefinition *ctor,
                              Expression *super_class, ArenaVector<AstNode *> &&body, ClassDefinitionModifiers modifiers,
                              ModifierFlags flags, Language lang)
         : TypedAstNode(AstNodeType::CLASS_DEFINITION, flags),
-          scope_(scope),
           private_id_(private_id),
           ident_(ident),
           type_params_(type_params),
@@ -76,10 +76,9 @@ public:
     {
     }
 
-    explicit ClassDefinition(ArenaAllocator *allocator, varbinder::LocalScope *scope, Identifier *ident,
-                             ArenaVector<AstNode *> &&body, ClassDefinitionModifiers modifiers, Language lang)
+    explicit ClassDefinition(ArenaAllocator *allocator, Identifier *ident, ArenaVector<AstNode *> &&body,
+                             ClassDefinitionModifiers modifiers, Language lang)
         : TypedAstNode(AstNodeType::CLASS_DEFINITION),
-          scope_(scope),
           ident_(ident),
           implements_(allocator->Adapter()),
           body_(std::move(body)),
@@ -88,10 +87,9 @@ public:
     {
     }
 
-    explicit ClassDefinition(ArenaAllocator *allocator, varbinder::LocalScope *scope, Identifier *ident,
-                             ClassDefinitionModifiers modifiers, ModifierFlags flags, Language lang)
+    explicit ClassDefinition(ArenaAllocator *allocator, Identifier *ident, ClassDefinitionModifiers modifiers,
+                             ModifierFlags flags, Language lang)
         : TypedAstNode(AstNodeType::CLASS_DEFINITION, flags),
-          scope_(scope),
           ident_(ident),
           implements_(allocator->Adapter()),
           body_(allocator->Adapter()),
@@ -108,6 +106,11 @@ public:
     varbinder::LocalScope *Scope() const override
     {
         return scope_;
+    }
+
+    void SetScope(varbinder::LocalScope *scope)
+    {
+        scope_ = scope;
     }
 
     [[nodiscard]] const Identifier *Ident() const noexcept
@@ -165,6 +168,10 @@ public:
         return (modifiers_ & ClassDefinitionModifiers::EXTERN) != 0;
     }
 
+    [[nodiscard]] bool IsFromExternal() const noexcept
+    {
+        return (modifiers_ & ClassDefinitionModifiers::FROM_EXTERNAL) != 0;
+    }
     [[nodiscard]] bool IsInner() const noexcept
     {
         return (modifiers_ & ClassDefinitionModifiers::INNER) != 0;
@@ -249,6 +256,16 @@ public:
         type_params_ = type_params;
     }
 
+    const TSTypeParameterInstantiation *SuperTypeParams() const
+    {
+        return super_type_params_;
+    }
+
+    TSTypeParameterInstantiation *SuperTypeParams()
+    {
+        return super_type_params_;
+    }
+
     const FunctionExpression *Ctor() const;
     bool HasPrivateMethod() const;
     bool HasComputedInstanceField() const;
@@ -264,11 +281,16 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     void CompileStaticFieldInitializers(compiler::PandaGen *pg, compiler::VReg class_reg,
                                         const std::vector<compiler::VReg> &static_computed_field_keys) const;
 
-    varbinder::LocalScope *scope_;
+    varbinder::LocalScope *scope_ {nullptr};
     util::StringView private_id_ {};
     Identifier *ident_ {};
     TSTypeParameterDeclaration *type_params_ {};

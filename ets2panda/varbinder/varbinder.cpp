@@ -483,7 +483,6 @@ void VarBinder::AddCompilableFunctionScope(varbinder::FunctionScope *func_scope)
 void VarBinder::VisitScriptFunction(ir::ScriptFunction *func)
 {
     auto *func_scope = func->Scope();
-
     {
         auto param_scope_ctx = LexicalScope<FunctionParamScope>::Enter(this, func_scope->ParamScope());
 

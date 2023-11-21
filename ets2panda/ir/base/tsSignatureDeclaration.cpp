@@ -24,32 +24,12 @@
 namespace panda::es2panda::ir {
 void TSSignatureDeclaration::TransformChildren(const NodeTransformer &cb)
 {
-    if (type_params_ != nullptr) {
-        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
-    }
-
-    for (auto *&it : params_) {
-        it = cb(it)->AsExpression();
-    }
-
-    if (return_type_annotation_ != nullptr) {
-        return_type_annotation_ = static_cast<TypeNode *>(cb(return_type_annotation_));
-    }
+    signature_.TransformChildren(cb);
 }
 
 void TSSignatureDeclaration::Iterate(const NodeTraverser &cb) const
 {
-    if (type_params_ != nullptr) {
-        cb(type_params_);
-    }
-
-    for (auto *it : params_) {
-        cb(it);
-    }
-
-    if (return_type_annotation_ != nullptr) {
-        cb(return_type_annotation_);
-    }
+    signature_.Iterate(cb);
 }
 
 void TSSignatureDeclaration::Dump(ir::AstDumper *dumper) const
@@ -57,9 +37,9 @@ void TSSignatureDeclaration::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", (kind_ == TSSignatureDeclaration::TSSignatureDeclarationKind::CALL_SIGNATURE)
                               ? "TSCallSignatureDeclaration"
                               : "TSConstructSignatureDeclaration"},
-                 {"params", params_},
-                 {"typeParameters", AstDumper::Optional(type_params_)},
-                 {"returnType", AstDumper::Optional(return_type_annotation_)}});
+                 {"params", Params()},
+                 {"typeParameters", AstDumper::Optional(TypeParams())},
+                 {"returnType", AstDumper::Optional(ReturnTypeAnnotation())}});
 }
 
 void TSSignatureDeclaration::Compile(compiler::PandaGen *pg) const

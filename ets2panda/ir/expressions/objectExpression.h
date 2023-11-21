@@ -112,6 +112,11 @@ public:
     checker::Type *Check(checker::ETSChecker *checker) override;
     checker::Type *CheckPattern(checker::TSChecker *checker);
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     ArenaVector<Decorator *> decorators_;
     ArenaVector<Expression *> properties_;

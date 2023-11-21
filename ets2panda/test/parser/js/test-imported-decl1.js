@@ -19,4 +19,4 @@ flags: [module]
 ---*/
 
 import * as b from "foo"
-import b from "bar"
+import {b} from "bar"

@@ -30,6 +30,11 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
 };
 }  // namespace panda::es2panda::ir
 

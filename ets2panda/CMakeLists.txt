@@ -137,6 +137,8 @@ set(ES2PANDA_LIB_SRC
   compiler/function/functionBuilder.cpp
   compiler/function/generatorFunctionBuilder.cpp
   compiler/lowering/checkerPhase.cpp
+  compiler/lowering/scopesInit/savedBindingsCtx.cpp
+  compiler/lowering/scopesInit/scopesInitPhase.cpp
   compiler/lowering/phase.cpp
   compiler/lowering/plugin_phase.cpp
   compiler/lowering/util.cpp
@@ -161,6 +163,7 @@ set(ES2PANDA_LIB_SRC
   ir/base/methodDefinition.cpp
   ir/base/property.cpp
   ir/base/scriptFunction.cpp
+  ir/base/scriptFunctionSignature.cpp
   ir/base/spreadElement.cpp
   ir/base/templateElement.cpp
   ir/base/tsIndexSignature.cpp

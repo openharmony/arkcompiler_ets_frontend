@@ -30,9 +30,8 @@ class SwitchCaseStatement;
 
 class SwitchStatement : public Statement {
 public:
-    explicit SwitchStatement(varbinder::LocalScope *scope, Expression *discriminant,
-                             ArenaVector<SwitchCaseStatement *> &&cases)
-        : Statement(AstNodeType::SWITCH_STATEMENT), scope_(scope), discriminant_(discriminant), cases_(std::move(cases))
+    explicit SwitchStatement(Expression *discriminant, ArenaVector<SwitchCaseStatement *> &&cases)
+        : Statement(AstNodeType::SWITCH_STATEMENT), discriminant_(discriminant), cases_(std::move(cases))
     {
     }
 
@@ -45,7 +44,17 @@ public:
         return discriminant_;
     }
 
+    Expression *Discriminant()
+    {
+        return discriminant_;
+    }
+
     const ArenaVector<SwitchCaseStatement *> &Cases() const
+    {
+        return cases_;
+    }
+
+    ArenaVector<SwitchCaseStatement *> &Cases()
     {
         return cases_;
     }
@@ -60,6 +69,11 @@ public:
         return scope_;
     }
 
+    void SetScope(varbinder::LocalScope *scope)
+    {
+        scope_ = scope;
+    }
+
     void TransformChildren(const NodeTransformer &cb) override;
     void SetReturnType(checker::ETSChecker *checker, checker::Type *type) override;
 
@@ -70,8 +84,13 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
-    varbinder::LocalScope *scope_;
+    varbinder::LocalScope *scope_ {nullptr};
     Expression *discriminant_;
     ArenaVector<SwitchCaseStatement *> cases_;
 };

@@ -77,6 +77,11 @@ public:
         return source_->Module();
     }
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     ImportSource *source_;
     util::StringView assembler_name_ {};

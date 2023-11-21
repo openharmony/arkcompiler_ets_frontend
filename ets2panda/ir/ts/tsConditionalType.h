@@ -60,6 +60,11 @@ public:
     checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     Expression *check_type_;
     Expression *extends_type_;

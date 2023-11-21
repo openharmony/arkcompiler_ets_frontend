@@ -149,14 +149,15 @@ checker::Type *TSAnalyzer::Check(ir::TSMethodSignature *node) const
     auto *call_signature = checker->Allocator()->New<checker::Signature>(signature_info, checker->GlobalAnyType());
     node->Variable()->SetTsType(checker->CreateFunctionTypeWithSignature(call_signature));
 
-    if (node->ReturnTypeAnnotation() == nullptr) {
+    auto return_type = node->ReturnTypeAnnotation();
+    if (return_type == nullptr) {
         checker->ThrowTypeError(
             "Method signature, which lacks return-type annotation, implicitly has an 'any' return type.",
             node->Start());
     }
 
-    node->return_type_annotation_->Check(checker);
-    call_signature->SetReturnType(node->return_type_annotation_->GetType(checker));
+    return_type->Check(checker);
+    call_signature->SetReturnType(return_type->GetType(checker));
 
     return nullptr;
 }
@@ -207,8 +208,8 @@ checker::Type *TSAnalyzer::Check(ir::TSSignatureDeclaration *node) const
             node->Start());
     }
 
-    node->return_type_annotation_->Check(checker);
-    checker::Type *return_type = node->return_type_annotation_->GetType(checker);
+    node->ReturnTypeAnnotation()->Check(checker);
+    checker::Type *return_type = node->ReturnTypeAnnotation()->GetType(checker);
 
     auto *signature = checker->Allocator()->New<checker::Signature>(signature_info, return_type);
 
@@ -1714,9 +1715,9 @@ checker::Type *TSAnalyzer::Check(ir::TSConstructorType *node) const
 
     auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
     checker->CheckFunctionParameterDeclarations(node->Params(), signature_info);
-    node->return_type_->Check(checker);
+    node->ReturnType()->Check(checker);
     auto *construct_signature =
-        checker->Allocator()->New<checker::Signature>(signature_info, node->return_type_->GetType(checker));
+        checker->Allocator()->New<checker::Signature>(signature_info, node->ReturnType()->GetType(checker));
 
     return checker->CreateConstructorTypeWithSignature(construct_signature);
 }
@@ -2068,9 +2069,9 @@ checker::Type *TSAnalyzer::Check(ir::TSFunctionType *node) const
 
     auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
     checker->CheckFunctionParameterDeclarations(node->Params(), signature_info);
-    node->return_type_->Check(checker);
+    node->ReturnType()->Check(checker);
     auto *call_signature =
-        checker->Allocator()->New<checker::Signature>(signature_info, node->return_type_->GetType(checker));
+        checker->Allocator()->New<checker::Signature>(signature_info, node->ReturnType()->GetType(checker));
 
     return checker->CreateFunctionTypeWithSignature(call_signature);
 }

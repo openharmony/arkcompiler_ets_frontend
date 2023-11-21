@@ -194,14 +194,11 @@ ir::TSTypeAliasDeclaration *TSParser::ParseTypeAliasDeclaration()
     }
 
     const util::StringView &ident = Lexer()->GetToken().Ident();
-    varbinder::TSBinding ts_binding(Allocator(), ident);
-    auto *decl = VarBinder()->AddTsDecl<varbinder::TypeAliasDecl>(Lexer()->GetToken().Start(), ts_binding.View());
 
     auto *id = AllocNode<ir::Identifier>(ident, Allocator());
     id->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
 
-    auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         auto options = TypeAnnotationParsingOptions::THROW_ERROR;
@@ -220,7 +217,6 @@ ir::TSTypeAliasDeclaration *TSParser::ParseTypeAliasDeclaration()
     auto *type_alias_decl =
         AllocNode<ir::TSTypeAliasDeclaration>(Allocator(), id, type_param_decl, type_annotation, InAmbientContext());
     type_alias_decl->SetRange({type_start, Lexer()->GetToken().End()});
-    decl->BindNode(type_alias_decl);
 
     return type_alias_decl;
 }
@@ -1429,8 +1425,6 @@ ir::TypeNode *TSParser::ParseParenthesizedOrFunctionType(ir::TypeNode *type_anno
 ir::TypeNode *TSParser::ParseFunctionType(lexer::SourcePosition start_loc, bool is_construction_type, bool throw_error,
                                           bool abstract_constructor)
 {
-    auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
-
     ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         auto options = throw_error ? TypeAnnotationParsingOptions::THROW_ERROR : TypeAnnotationParsingOptions::NO_OPTS;
@@ -1445,8 +1439,6 @@ ir::TypeNode *TSParser::ParseFunctionType(lexer::SourcePosition start_loc, bool 
         }
     }
 
-    FunctionParameterContext func_param_context(&GetContext(), VarBinder());
-    auto *func_param_scope = func_param_context.LexicalScope().GetScope();
     auto params = ParseFunctionParams();
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
@@ -1461,16 +1453,15 @@ ir::TypeNode *TSParser::ParseFunctionType(lexer::SourcePosition start_loc, bool 
 
     ir::TypeNode *func_type = nullptr;
 
+    ir::FunctionSignature signature(type_param_decl, std::move(params), return_type_annotation);
+
     if (is_construction_type) {
-        func_type = AllocNode<ir::TSConstructorType>(func_param_scope, std::move(params), type_param_decl,
-                                                     return_type_annotation, abstract_constructor);
+        func_type = AllocNode<ir::TSConstructorType>(std::move(signature), abstract_constructor);
     } else {
-        func_type =
-            AllocNode<ir::TSFunctionType>(func_param_scope, std::move(params), type_param_decl, return_type_annotation);
+        func_type = AllocNode<ir::TSFunctionType>(std::move(signature));
     }
 
     func_type->SetRange({start_loc, return_type_annotation->End()});
-    func_param_scope->BindNode(func_type);
 
     return func_type;
 }
@@ -1639,7 +1630,6 @@ ir::ArrowFunctionExpression *TSParser::ParsePotentialArrowExpression(ir::Express
         case lexer::TokenType::PUNCTUATOR_LESS_THAN: {
             const auto saved_pos = Lexer()->Save();
 
-            auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
             auto options = TypeAnnotationParsingOptions::NO_OPTS;
             type_param_decl = ParseTypeParameterDeclaration(&options);
             if (type_param_decl == nullptr) {
@@ -1783,7 +1773,6 @@ ir::TSSignatureDeclaration *TSParser::ParseSignatureMember(bool is_call_signatur
         Lexer()->NextToken();  // eat 'new' keyword
     }
 
-    auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         auto options = TypeAnnotationParsingOptions::THROW_ERROR;
@@ -1794,8 +1783,7 @@ ir::TSSignatureDeclaration *TSParser::ParseSignatureMember(bool is_call_signatur
         }
     }
 
-    FunctionParameterContext func_param_context(&GetContext(), VarBinder());
-    auto *func_param_scope = func_param_context.LexicalScope().GetScope();
+    FunctionParameterContext func_param_context(&GetContext());
     auto params = ParseFunctionParams();
 
     ir::TypeNode *type_annotation = nullptr;
@@ -1808,10 +1796,8 @@ ir::TSSignatureDeclaration *TSParser::ParseSignatureMember(bool is_call_signatur
 
     auto kind = is_call_signature ? ir::TSSignatureDeclaration::TSSignatureDeclarationKind::CALL_SIGNATURE
                                   : ir::TSSignatureDeclaration::TSSignatureDeclarationKind::CONSTRUCT_SIGNATURE;
-    auto *signature_member = AllocNode<ir::TSSignatureDeclaration>(func_param_scope, kind, type_param_decl,
-                                                                   std::move(params), type_annotation);
-    func_param_scope->BindNode(signature_member);
-
+    auto *signature_member = AllocNode<ir::TSSignatureDeclaration>(
+        kind, ir::FunctionSignature(type_param_decl, std::move(params), type_annotation));
     signature_member->SetRange({member_start_loc, Lexer()->GetToken().End()});
 
     return signature_member;
@@ -1983,7 +1969,6 @@ ir::AstNode *TSParser::ParsePropertyOrMethodSignature(const lexer::SourcePositio
                              start_loc);
         }
 
-        auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
         ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
             auto options = TypeAnnotationParsingOptions::THROW_ERROR;
@@ -1994,8 +1979,7 @@ ir::AstNode *TSParser::ParsePropertyOrMethodSignature(const lexer::SourcePositio
             ThrowExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS);
         }
 
-        FunctionParameterContext func_param_context(&GetContext(), VarBinder());
-        auto *func_param_scope = func_param_context.LexicalScope().GetScope();
+        FunctionParameterContext func_param_context(&GetContext());
         auto params = ParseFunctionParams();
 
         ir::TypeNode *return_type = nullptr;
@@ -2007,8 +1991,7 @@ ir::AstNode *TSParser::ParsePropertyOrMethodSignature(const lexer::SourcePositio
         }
 
         auto *method_signature = AllocNode<ir::TSMethodSignature>(
-            func_param_scope, key, type_param_decl, std::move(params), return_type, isComputed, is_optional);
-        func_param_scope->BindNode(method_signature);
+            key, ir::FunctionSignature(type_param_decl, std::move(params), return_type), isComputed, is_optional);
         CreateTSVariableForProperty(method_signature, key, flags | varbinder::VariableFlags::METHOD);
         method_signature->SetRange({start_loc, Lexer()->GetToken().End()});
         return method_signature;
@@ -2215,8 +2198,6 @@ ir::Expression *TSParser::ParseFunctionParameter()
         function_parameter->SetRange(
             {parameter_start, function_parameter->AsTSParameterProperty()->Parameter()->End()});
     }
-
-    VarBinder()->AddParamDecl(function_parameter);
 
     return function_parameter;
 }
@@ -2459,8 +2440,7 @@ void TSParser::ValidateFunctionOverloadParams(const ArenaVector<ir::Expression *
 }
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> TSParser::ParseFunctionBody(
-    const ArenaVector<ir::Expression *> &params, ParserStatus new_status, ParserStatus context_status,
-    varbinder::FunctionScope *func_scope)
+    const ArenaVector<ir::Expression *> &params, ParserStatus new_status, ParserStatus context_status)
 {
     bool is_declare = InAmbientContext();
     bool is_overload = false;
@@ -2481,7 +2461,7 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> TSParser::Pa
     } else if (is_declare) {
         ThrowSyntaxError("An implementation cannot be declared in ambient contexts.");
     } else {
-        body = ParseBlockStatement(func_scope);
+        body = ParseBlockStatement();
         end_loc = body->End();
     }
 
@@ -2545,8 +2525,6 @@ ir::AstNode *TSParser::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *s
     auto *specifier = AllocNode<ir::ImportDefaultSpecifier>(local);
     specifier->SetRange(specifier->Local()->Range());
     specifiers->push_back(specifier);
-
-    VarBinder()->AddDecl<varbinder::ImportDecl>(local->Start(), "default", local->Name(), specifier);
 
     Lexer()->NextToken();  // eat specifier name
 
@@ -2796,31 +2774,6 @@ void TSParser::ThrowIfBodyEmptyError(ir::Statement *consequent)
     }
 }
 
-void TSParser::CreateFunctionDeclaration(ir::Identifier *ident_node, util::StringView &name, ir::ScriptFunction *func,
-                                         const lexer::SourcePosition &start_loc)
-{
-    const auto &bindings = VarBinder()->GetScope()->Bindings();
-    auto res = bindings.find(name);
-    varbinder::FunctionDecl *decl {};
-
-    if (res == bindings.end()) {
-        decl = VarBinder()->AddDecl<varbinder::FunctionDecl>(ident_node->Start(), Allocator(), name, func);
-    } else {
-        varbinder::Decl *current_decl = res->second->Declaration();
-
-        if (!current_decl->IsFunctionDecl()) {
-            VarBinder()->ThrowRedeclaration(start_loc, current_decl->Name());
-        }
-
-        decl = current_decl->AsFunctionDecl();
-        if (!decl->Node()->AsScriptFunction()->IsOverload()) {
-            VarBinder()->ThrowRedeclaration(start_loc, current_decl->Name());
-        }
-    }
-
-    decl->Add(func);
-}
-
 // NOLINTNEXTLINE(google-default-arguments)
 ir::ExportDefaultDeclaration *TSParser::ParseExportDefaultDeclaration(const lexer::SourcePosition &start_loc,
                                                                       bool is_export_equals)
@@ -2829,8 +2782,6 @@ ir::ExportDefaultDeclaration *TSParser::ParseExportDefaultDeclaration(const lexe
 
     ir::AstNode *decl_node = nullptr;
     bool eat_semicolon = false;
-
-    ExportDeclarationContext export_decl_ctx(VarBinder());
 
     switch (Lexer()->GetToken().KeywordType()) {
         case lexer::TokenType::KEYW_FUNCTION: {
@@ -2886,8 +2837,6 @@ ir::ExportNamedDeclaration *TSParser::ParseNamedExportDeclaration(const lexer::S
         Lexer()->NextToken();  // eat 'abstract'
         flags |= ir::ModifierFlags::ABSTRACT;
     }
-
-    ExportDeclarationContext export_decl_ctx(VarBinder());
 
     switch (Lexer()->GetToken().KeywordType()) {
         case lexer::TokenType::KEYW_VAR: {
@@ -2952,8 +2901,6 @@ ir::ExportNamedDeclaration *TSParser::ParseNamedExportDeclaration(const lexer::S
 
 ir::Statement *TSParser::ParseImportDeclaration([[maybe_unused]] StatementParsingFlags flags)
 {
-    ImportDeclarationContext import_ctx(VarBinder());
-
     char32_t next_char = Lexer()->Lookahead();
     if (next_char == lexer::LEX_CHAR_LEFT_PAREN || next_char == lexer::LEX_CHAR_DOT) {
         return ParseExpressionStatement();

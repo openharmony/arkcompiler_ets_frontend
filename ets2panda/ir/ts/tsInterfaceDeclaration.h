@@ -32,17 +32,17 @@ class TSTypeParameterDeclaration;
 
 class TSInterfaceDeclaration : public TypedStatement {
 public:
-    explicit TSInterfaceDeclaration(ArenaAllocator *allocator, varbinder::LocalScope *scope, Identifier *id,
-                                    TSTypeParameterDeclaration *type_params, TSInterfaceBody *body,
-                                    ArenaVector<TSInterfaceHeritage *> &&extends, bool is_static, Language lang)
+    explicit TSInterfaceDeclaration(ArenaAllocator *allocator, Identifier *id, TSTypeParameterDeclaration *type_params,
+                                    TSInterfaceBody *body, ArenaVector<TSInterfaceHeritage *> &&extends, bool is_static,
+                                    bool is_external, Language lang)
         : TypedStatement(AstNodeType::TS_INTERFACE_DECLARATION),
           decorators_(allocator->Adapter()),
-          scope_(scope),
           id_(id),
           type_params_(type_params),
           body_(body),
           extends_(std::move(extends)),
           is_static_(is_static),
+          is_external_(is_external),
           lang_(lang)
     {
         if (is_static_) {
@@ -58,6 +58,11 @@ public:
     varbinder::LocalScope *Scope() const override
     {
         return scope_;
+    }
+
+    void SetScope(varbinder::LocalScope *scope)
+    {
+        scope_ = scope;
     }
 
     TSInterfaceBody *Body()
@@ -93,6 +98,11 @@ public:
     bool IsStatic() const
     {
         return is_static_;
+    }
+
+    bool IsFromExternal() const
+    {
+        return is_external_;
     }
 
     const TSTypeParameterDeclaration *TypeParams() const
@@ -150,15 +160,21 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
     checker::Type *InferType(checker::TSChecker *checker, varbinder::Variable *binding_var) const;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     ArenaVector<Decorator *> decorators_;
-    varbinder::LocalScope *scope_;
+    varbinder::LocalScope *scope_ {nullptr};
     Identifier *id_;
     TSTypeParameterDeclaration *type_params_;
     TSInterfaceBody *body_;
     ArenaVector<TSInterfaceHeritage *> extends_;
     util::StringView internal_name_ {};
     bool is_static_;
+    bool is_external_;
     es2panda::Language lang_;
 };
 }  // namespace panda::es2panda::ir

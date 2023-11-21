@@ -25,8 +25,8 @@ class Expression;
 
 class CatchClause : public TypedStatement {
 public:
-    explicit CatchClause(varbinder::CatchScope *scope, Expression *param, BlockStatement *body)
-        : TypedStatement(AstNodeType::CATCH_CLAUSE), scope_(scope), param_(param), body_(body)
+    explicit CatchClause(Expression *param, BlockStatement *body)
+        : TypedStatement(AstNodeType::CATCH_CLAUSE), param_(param), body_(body)
     {
     }
 
@@ -60,6 +60,11 @@ public:
         return scope_;
     }
 
+    void SetScope(varbinder::CatchScope *scope)
+    {
+        scope_ = scope;
+    }
+
     bool IsDefaultCatchClause() const;
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -69,8 +74,13 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
-    varbinder::CatchScope *scope_;
+    varbinder::CatchScope *scope_ {nullptr};
     Expression *param_;
     BlockStatement *body_;
 };

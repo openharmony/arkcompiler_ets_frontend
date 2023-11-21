@@ -27,36 +27,20 @@
 namespace panda::es2panda::ir {
 void TSConstructorType::TransformChildren(const NodeTransformer &cb)
 {
-    if (type_params_ != nullptr) {
-        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
-    }
-
-    for (auto *&it : params_) {
-        it = cb(it)->AsExpression();
-    }
-
-    return_type_ = static_cast<TypeNode *>(cb(return_type_));
+    signature_.TransformChildren(cb);
 }
 
 void TSConstructorType::Iterate(const NodeTraverser &cb) const
 {
-    if (type_params_ != nullptr) {
-        cb(type_params_);
-    }
-
-    for (auto *it : params_) {
-        cb(it);
-    }
-
-    cb(return_type_);
+    signature_.Iterate(cb);
 }
 
 void TSConstructorType::Dump(ir::AstDumper *dumper) const
 {
     dumper->Add({{"type", "TSConstructorType"},
-                 {"params", params_},
-                 {"typeParameters", AstDumper::Optional(type_params_)},
-                 {"returnType", return_type_},
+                 {"params", signature_.Params()},
+                 {"typeParameters", AstDumper::Optional(signature_.TypeParams())},
+                 {"returnType", signature_.ReturnType()},
                  {"abstract", AstDumper::Optional(abstract_)}});
 }
 

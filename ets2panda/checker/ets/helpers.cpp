@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "varbinder/variableFlags.h"
 #include "checker/checker.h"
 #include "checker/checkerContext.h"
@@ -2424,6 +2425,7 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
         es2panda::CompilerOptions options;
         auto parser = parser::ETSParser(&program, options, parser::ParserStatus::NO_OPTS);
         auto *arg_expr = parser.CreateExpression(implicit_instantiate_argument);
+        compiler::ScopesInitPhaseETS::RunExternalNode(arg_expr, &program);
 
         arg_expr->SetParent(call_expr);
         arg_expr->SetRange(ident->Range());

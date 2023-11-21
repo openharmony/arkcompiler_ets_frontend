@@ -41,6 +41,7 @@ typedef struct es2panda_Scope es2panda_Scope;
 enum es2panda_ContextState {
     ES2PANDA_STATE_NEW,
     ES2PANDA_STATE_PARSED,
+    ES2PANDA_STATE_SCOPE_INITED,
     ES2PANDA_STATE_CHECKED,
     ES2PANDA_STATE_LOWERED,
     ES2PANDA_STATE_ASM_GENERATED,
@@ -179,7 +180,7 @@ struct es2panda_Impl {
     void (*BinaryExpressionSetOperator)(es2panda_AstNode *ast, char const *operator_type);
 
     bool (*IsBlockStatement)(es2panda_AstNode *ast);
-    es2panda_AstNode *(*CreateBlockStatement)(es2panda_Context *context, es2panda_AstNode *in_scope_of);
+    es2panda_AstNode *(*CreateBlockStatement)(es2panda_Context *context);
     es2panda_AstNode **(*BlockStatementStatements)(es2panda_AstNode *ast, size_t *size_p);
     void (*BlockStatementAddStatement)(es2panda_AstNode *ast, es2panda_AstNode *statement);
 
@@ -202,8 +203,8 @@ struct es2panda_Impl {
     es2panda_AstNode *(*ClassDeclarationDefinition)(es2panda_AstNode *ast);
 
     bool (*IsClassDefinition)(es2panda_AstNode *ast);
-    es2panda_AstNode *(*CreateClassDefinition)(es2panda_Context *context, es2panda_AstNode *in_scope_of,
-                                               es2panda_AstNode *identifier, es2panda_ModifierFlags flags);
+    es2panda_AstNode *(*CreateClassDefinition)(es2panda_Context *context, es2panda_AstNode *identifier,
+                                               es2panda_ModifierFlags flags);
     es2panda_AstNode *(*ClassDefinitionIdentifier)(es2panda_AstNode *ast);
     es2panda_AstNode *(*ClassDefinitionTypeParameters)(es2panda_AstNode *ast);
     es2panda_AstNode *(*ClassDefinitionSuperClass)(es2panda_AstNode *ast);
@@ -247,10 +248,9 @@ struct es2panda_Impl {
     es2panda_AstNode *(*FunctionExpressionFunction)(es2panda_AstNode *ast);
 
     bool (*IsFunctionTypeNode)(es2panda_AstNode *ast);
-    es2panda_AstNode *(*CreateFunctionTypeNode)(es2panda_Context *context, es2panda_AstNode *in_scope_of,
-                                                es2panda_AstNode *type_params, es2panda_AstNode **params,
-                                                size_t n_params, es2panda_AstNode *return_type,
-                                                es2panda_ScriptFunctionFlags func_flags);
+    es2panda_AstNode *(*CreateFunctionTypeNode)(es2panda_Context *context, es2panda_AstNode *type_params,
+                                                es2panda_AstNode **params, size_t n_params,
+                                                es2panda_AstNode *return_type, es2panda_ScriptFunctionFlags func_flags);
     es2panda_AstNode const *(*FunctionTypeNodeTypeParams)(es2panda_AstNode *ast);
     es2panda_AstNode *const *(*FunctionTypeNodeParams)(es2panda_AstNode *ast, size_t *size_p);
     es2panda_AstNode *(*FunctionTypeNodeReturnType)(es2panda_AstNode *ast);
@@ -355,8 +355,7 @@ struct es2panda_Impl {
                                               es2panda_AstNode **params, size_t n_params,
                                               es2panda_AstNode *return_type_annotation,
                                               es2panda_ScriptFunctionFlags function_flags,
-                                              es2panda_ModifierFlags modifier_flags, bool is_declare,
-                                              es2panda_AstNode *in_scope_of);
+                                              es2panda_ModifierFlags modifier_flags, bool is_declare);
     es2panda_AstNode *(*ScriptFunctionTypeParams)(es2panda_AstNode *ast);
     es2panda_AstNode *const *(*ScriptFunctionParams)(es2panda_AstNode *ast, size_t *size_p);
     es2panda_AstNode *(*ScriptFunctionReturnTypeAnnotation)(es2panda_AstNode *ast);
@@ -384,7 +383,7 @@ struct es2panda_Impl {
     es2panda_AstNode const *(*TypeParameterDefaultType)(es2panda_AstNode *ast);
 
     bool (*IsTypeParameterDeclaration)(es2panda_AstNode *ast);
-    es2panda_AstNode *(*CreateTypeParameterDeclaration)(es2panda_Context *context, es2panda_AstNode *in_scope_of);
+    es2panda_AstNode *(*CreateTypeParameterDeclaration)(es2panda_Context *context);
     void (*TypeParameterDeclarationAddTypeParameter)(es2panda_AstNode *ast, es2panda_AstNode *type_parameter);
     es2panda_AstNode *const *(*TypeParameterDeclarationTypeParameters)(es2panda_AstNode *ast, size_t *size_p);
 

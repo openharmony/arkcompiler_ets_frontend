@@ -292,14 +292,10 @@ ParserStatus ParserImpl::ValidateArrowParameter(ir::Expression *expr, [[maybe_un
 }
 
 ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(
-    ArrowFunctionContext *arrow_function_context, varbinder::FunctionScope *function_scope,
-    ArrowFunctionDescriptor *desc, ir::TSTypeParameterDeclaration *type_param_decl,
-    ir::TypeNode *return_type_annotation)
+    ArrowFunctionContext *arrow_function_context, ArrowFunctionDescriptor *desc,
+    ir::TSTypeParameterDeclaration *type_param_decl, ir::TypeNode *return_type_annotation)
 {
     context_.Status() |= desc->new_status;
-
-    function_scope->BindParamScope(desc->param_scope);
-    desc->param_scope->BindFunctionScope(function_scope);
 
     lexer_->NextToken();  // eat '=>'
     ir::ScriptFunction *func_node {};
@@ -315,7 +311,7 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(
     } else {
         lexer_->NextToken();
         auto statements = ParseStatementList();
-        body = AllocNode<ir::BlockStatement>(Allocator(), function_scope, std::move(statements));
+        body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
         body->SetRange({body_start, lexer_->GetToken().End()});
 
         if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
@@ -326,12 +322,10 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(
         end_loc = body->End();
     }
 
-    func_node = AllocNode<ir::ScriptFunction>(function_scope, std::move(desc->params), type_param_decl, body,
-                                              return_type_annotation, arrow_function_context->Flags(), false,
-                                              context_.GetLanguge());
+    func_node = AllocNode<ir::ScriptFunction>(
+        ir::FunctionSignature(type_param_decl, std::move(desc->params), return_type_annotation), body,
+        arrow_function_context->Flags(), false, context_.GetLanguge());
     func_node->SetRange({desc->start_loc, end_loc});
-    function_scope->BindNode(func_node);
-    desc->param_scope->BindNode(func_node);
 
     auto *arrow_func_node = AllocNode<ir::ArrowFunctionExpression>(Allocator(), func_node);
     arrow_func_node->SetRange(func_node->Range());
@@ -339,14 +333,13 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpressionBody(
     return arrow_func_node;
 }
 
-ArrowFunctionDescriptor ParserImpl::ConvertToArrowParameter(ir::Expression *expr, bool is_async,
-                                                            varbinder::FunctionParamScope *param_scope)
+ArrowFunctionDescriptor ParserImpl::ConvertToArrowParameter(ir::Expression *expr, bool is_async)
 {
     auto arrow_status = is_async ? ParserStatus::ASYNC_FUNCTION : ParserStatus::NO_OPTS;
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
     if (expr == nullptr) {
-        return ArrowFunctionDescriptor {std::move(params), param_scope, lexer_->GetToken().Start(), arrow_status};
+        return ArrowFunctionDescriptor {std::move(params), lexer_->GetToken().Start(), arrow_status};
     }
 
     bool seen_optional = false;
@@ -397,11 +390,7 @@ ArrowFunctionDescriptor ParserImpl::ConvertToArrowParameter(ir::Expression *expr
         }
     }
 
-    for (auto *param : params) {
-        VarBinder()->AddParamDecl(param);
-    }
-
-    return ArrowFunctionDescriptor {std::move(params), param_scope, expr->Start(), arrow_status};
+    return ArrowFunctionDescriptor {std::move(params), expr->Start(), arrow_status};
 }
 
 ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpression(ir::Expression *expr,
@@ -418,13 +407,10 @@ ir::ArrowFunctionExpression *ParserImpl::ParseArrowFunctionExpression(ir::Expres
     }
 
     ArrowFunctionContext arrow_function_context(this, is_async);
-    FunctionParameterContext function_param_context(&context_, VarBinder());
-    ArrowFunctionDescriptor desc =
-        ConvertToArrowParameter(expr, is_async, function_param_context.LexicalScope().GetScope());
+    FunctionParameterContext function_param_context(&context_);
+    ArrowFunctionDescriptor desc = ConvertToArrowParameter(expr, is_async);
 
-    auto function_ctx = varbinder::LexicalScope<varbinder::FunctionScope>(VarBinder());
-    return ParseArrowFunctionExpressionBody(&arrow_function_context, function_ctx.GetScope(), &desc, type_param_decl,
-                                            return_type_annotation);
+    return ParseArrowFunctionExpressionBody(&arrow_function_context, &desc, type_param_decl, return_type_annotation);
 }
 
 void ParserImpl::ValidateArrowFunctionRestParameter([[maybe_unused]] ir::SpreadElement *rest_element)
@@ -1300,8 +1286,6 @@ ir::CallExpression *ParserImpl::ParseCallExpression(ir::Expression *callee, bool
             auto parser_status = static_cast<uint32_t>(context_.Status() | ParserStatus::DIRECT_EVAL);
             call_expr = AllocNode<ir::DirectEvalExpression>(callee, std::move(arguments), nullptr, is_optional_chain,
                                                             parser_status);
-
-            VarBinder()->PropagateDirectEval();
         } else {
             call_expr =
                 AllocNode<ir::CallExpression>(callee, std::move(arguments), nullptr, is_optional_chain, trailing_comma);
@@ -2168,7 +2152,7 @@ ir::Expression *ParserImpl::ParseImportExpression()
     if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
         if (!context_.IsModule()) {
             ThrowSyntaxError("'import.Meta' may appear only with 'sourceType: module'");
-        } else if (VarBinder()->GetCompilerContext()->IsDirectEval()) {
+        } else if (GetOptions().is_direct_eval) {
             ThrowSyntaxError("'import.Meta' is not allowed in direct eval in module code.");
         }
 
@@ -2237,13 +2221,7 @@ ir::FunctionExpression *ParserImpl::ParseFunctionExpression(ParserStatus new_sta
     ir::ScriptFunction *function_node = ParseFunction(new_status);
     function_node->SetStart(start_loc);
 
-    if (ident != nullptr) {
-        auto *func_param_scope = function_node->Scope()->ParamScope();
-        func_param_scope->BindName(Allocator(), ident->Name());
-        function_node->SetIdent(ident);
-    }
-
-    auto *func_expr = AllocNode<ir::FunctionExpression>(function_node);
+    auto *func_expr = AllocNode<ir::FunctionExpression>(ident, function_node);
     func_expr->SetRange(function_node->Range());
 
     return func_expr;

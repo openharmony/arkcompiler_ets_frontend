@@ -124,7 +124,6 @@ private:
     ArenaVector<ir::Statement *> PrepareGlobalClass();
     ArenaVector<ir::Statement *> PrepareExternalGlobalClass(const SourceFile &source_file);
     void ParseETSGlobalScript(lexer::SourcePosition start_loc, ArenaVector<ir::Statement *> &statements);
-    void AddGlobalDeclaration(ir::AstNode *node);
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers) override;
 
     ir::MethodDefinition *ParseClassGetterSetterMethod(const ArenaVector<ir::AstNode *> &properties,
@@ -133,7 +132,7 @@ private:
     ir::Statement *ParseTypeDeclaration(bool allow_static = false);
     ir::ModifierFlags ParseClassModifiers();
     ir::ModifierFlags ParseInterfaceMethodModifiers();
-    ir::ClassProperty *ParseInterfaceField(const lexer::SourcePosition &start_loc);
+    ir::ClassProperty *ParseInterfaceField();
     ir::Expression *ParseInitializer();
     ir::ArrayExpression *ParseArrayLiteral();
     ir::Expression *ParseCoercedNumberLiteral();
@@ -148,8 +147,7 @@ private:
     ir::MethodDefinition *ParseClassMethod(ClassElementDescriptor *desc, const ArenaVector<ir::AstNode *> &properties,
                                            ir::Expression *prop_name, lexer::SourcePosition *prop_end) override;
     std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
-        const ArenaVector<ir::Expression *> &params, ParserStatus new_status, ParserStatus context_status,
-        varbinder::FunctionScope *func_scope) override;
+        const ArenaVector<ir::Expression *> &params, ParserStatus new_status, ParserStatus context_status) override;
     ir::TypeNode *ParseFunctionReturnType(ParserStatus status) override;
     ir::ScriptFunctionFlags ParseFunctionThrowMarker(bool is_rethrows_allowed) override;
     ir::Expression *CreateParameterThis(util::StringView class_name) override;
@@ -188,8 +186,6 @@ private:
     void ValidateForInStatement() override;
 
     ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList() override;
-    void AddVariableDeclarationBindings(ir::Expression *init, lexer::SourcePosition start_loc,
-                                        VariableParsingFlags flags) override;
     ir::Statement *ParseTryStatement() override;
     ir::DebuggerStatement *ParseDebuggerStatement() override;
     void ParseReExport(lexer::SourcePosition start_loc);
@@ -266,8 +262,8 @@ private:
     bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,
                            ArenaVector<ir::AstNode *> &properties) override;
     // NOLINTNEXTLINE(google-default-arguments)
-    void CreateCCtor(varbinder::LocalScope *class_scope, ArenaVector<ir::AstNode *> &properties,
-                     const lexer::SourcePosition &loc, bool in_global_class = false) override;
+    void CreateCCtor(ArenaVector<ir::AstNode *> &properties, const lexer::SourcePosition &loc,
+                     bool in_global_class = false) override;
     void CreateImplicitConstructor(ir::MethodDefinition *&ctor, ArenaVector<ir::AstNode *> &properties,
                                    ir::ClassDefinitionModifiers modifiers,
                                    const lexer::SourcePosition &start_loc) override;
@@ -277,10 +273,6 @@ private:
     bool ParsePotentialNonNullExpression(ir::Expression **expression, lexer::SourcePosition start_loc) override;
     void MarkNodeAsExported(ir::AstNode *node, lexer::SourcePosition start_pos, bool default_export,
                             std::size_t num_of_elements = 1);
-    varbinder::Decl *BindClassName([[maybe_unused]] ir::Identifier *ident_node) override
-    {
-        return nullptr;
-    }
 
     std::shared_ptr<ArkTsConfig> ArkTSConfig() const
     {
@@ -293,8 +285,6 @@ private:
     }
 
     bool IsStructKeyword() const;
-
-    util::StringView FormInterfaceOrEnumDeclarationIdBinding(ir::Identifier *id) override;
 
     // NOLINTNEXTLINE(google-default-arguments)
     ir::Expression *ParseExpression(ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS) override;
@@ -321,6 +311,7 @@ private:
     ir::Statement *CreateStatement(std::string_view source_code, std::string_view file_name = DEFAULT_SOURCE_FILE);
     ir::Statement *CreateFormattedStatement(std::string_view source_code, std::vector<ir::AstNode *> &inserting_nodes,
                                             std::string_view file_name = DEFAULT_SOURCE_FILE);
+    // NOLINTEND(google-default-arguments)
 
     template <typename... Args>
     ir::Statement *CreateFormattedStatement(std::string_view const source_code, std::string_view const file_name,

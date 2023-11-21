@@ -15,6 +15,7 @@
 
 #include "es2panda_lib.h"
 #include <memory>
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 
 #include "varbinder/varbinder.h"
 #include "varbinder/scope.h"
@@ -46,6 +47,7 @@
 #include "ir/base/classElement.h"
 #include "ir/ts/tsClassImplements.h"
 #include "ir/base/classProperty.h"
+#include "ir/base/scriptFunctionSignature.h"
 #include "ir/statements/expressionStatement.h"
 #include "ir/statements/functionDeclaration.h"
 #include "ir/expressions/functionExpression.h"
@@ -318,7 +320,7 @@ static es2panda_Context *CreateContext(es2panda_Config *config, std::string cons
         res->compiler_context =
             new compiler::CompilerContext(varbinder, res->checker, cfg->options->CompilerOptions(), CompileJob);
         varbinder->SetCompilerContext(res->compiler_context);
-        res->phases = compiler::GetETSPhaseList();
+        res->phases = compiler::GetPhaseList(ScriptExtension::ETS);
         res->current_phase = 0;
         res->emitter = new compiler::ETSEmitter(res->compiler_context);
         res->compiler_context->SetEmitter(res->emitter);
@@ -383,6 +385,37 @@ static Context *Parse(Context *ctx)
     return ctx;
 }
 
+static Context *InitScopes(Context *ctx)
+{
+    // NOTE: Remove duplicated code in all phases
+    if (ctx->state < ES2PANDA_STATE_PARSED) {
+        ctx = Parse(ctx);
+    }
+    if (ctx->state == ES2PANDA_STATE_ERROR) {
+        return ctx;
+    }
+
+    ASSERT(ctx->state == ES2PANDA_STATE_PARSED);
+
+    try {
+        compiler::ScopesInitPhaseETS scopes_init;
+        scopes_init.Perform(ctx, ctx->parser_program);
+        do {
+            if (ctx->current_phase >= ctx->phases.size()) {
+                break;
+            }
+            ctx->phases[ctx->current_phase]->Apply(ctx, ctx->parser_program);
+        } while (ctx->phases[ctx->current_phase++]->Name() != "scopes");
+        ctx->state = ES2PANDA_STATE_SCOPE_INITED;
+    } catch (Error &e) {
+        std::stringstream ss;
+        ss << e.TypeString() << ": " << e.Message() << "[" << e.File() << ":" << e.Line() << "," << e.Col() << "]";
+        ctx->error_message = ss.str();
+        ctx->state = ES2PANDA_STATE_ERROR;
+    }
+    return ctx;
+}
+
 static Context *Check(Context *ctx)
 {
     if (ctx->state < ES2PANDA_STATE_PARSED) {
@@ -393,7 +426,7 @@ static Context *Check(Context *ctx)
         return ctx;
     }
 
-    ASSERT(ctx->state == ES2PANDA_STATE_PARSED);
+    ASSERT(ctx->state >= ES2PANDA_STATE_PARSED && ctx->state < ES2PANDA_STATE_CHECKED);
 
     try {
         do {
@@ -518,6 +551,9 @@ extern "C" es2panda_Context *ProceedToState(es2panda_Context *context, es2panda_
             break;
         case ES2PANDA_STATE_PARSED:
             ctx = Parse(ctx);
+            break;
+        case ES2PANDA_STATE_SCOPE_INITED:
+            ctx = InitScopes(ctx);
             break;
         case ES2PANDA_STATE_CHECKED:
             ctx = Check(ctx);
@@ -901,16 +937,14 @@ extern "C" void BinaryExpressionSetOperator(es2panda_AstNode *ast, char const *o
     node->SetOperator(op);
 }
 
-extern "C" es2panda_AstNode *CreateBlockStatement(es2panda_Context *context, es2panda_AstNode *in_scope_of)
+extern "C" es2panda_AstNode *CreateBlockStatement(es2panda_Context *context)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *parent = reinterpret_cast<ir::AstNode *>(in_scope_of);
-    auto *parent_scope = compiler::NearestScope(parent);
 
-    auto *scope = allocator->New<varbinder::LocalScope>(allocator, parent_scope);
     ArenaVector<ir::Statement *> stmts {allocator->Adapter()};
-    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::BlockStatement>(allocator, scope, std::move(stmts)));
+    auto block = allocator->New<ir::BlockStatement>(allocator, std::move(stmts));
+    return reinterpret_cast<es2panda_AstNode *>(block);
 }
 
 extern "C" es2panda_AstNode **BlockStatementStatements(es2panda_AstNode *ast, size_t *size_p)
@@ -1011,19 +1045,17 @@ extern "C" es2panda_AstNode *ClassDeclarationDefinition(es2panda_AstNode *ast)
     return reinterpret_cast<es2panda_AstNode *>(node->Definition());
 }
 
-extern "C" es2panda_AstNode *CreateClassDefinition(es2panda_Context *context, es2panda_AstNode *in_scope_of,
-                                                   es2panda_AstNode *identifier, es2panda_ModifierFlags flags)
+extern "C" es2panda_AstNode *CreateClassDefinition(es2panda_Context *context, es2panda_AstNode *identifier,
+                                                   es2panda_ModifierFlags flags)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *parent = reinterpret_cast<ir::AstNode *>(in_scope_of);
-    auto *parent_scope = compiler::NearestScope(parent);
     auto *id = reinterpret_cast<ir::AstNode *>(identifier)->AsIdentifier();
 
-    auto *scope = allocator->New<varbinder::LocalScope>(allocator, parent_scope);
-    return reinterpret_cast<es2panda_AstNode *>(
-        allocator->New<ir::ClassDefinition>(allocator, scope, id, ir::ClassDefinitionModifiers::NONE,
-                                            E2pToIrModifierFlags(flags), Language::FromString("ets").value()));
+    auto class_def =
+        allocator->New<ir::ClassDefinition>(allocator, id, ir::ClassDefinitionModifiers::NONE,
+                                            E2pToIrModifierFlags(flags), Language::FromString("ets").value());
+    return reinterpret_cast<es2panda_AstNode *>(class_def);
 }
 
 extern "C" es2panda_AstNode *ClassDefinitionIdentifier(es2panda_AstNode *ast)
@@ -1236,22 +1268,18 @@ extern "C" es2panda_AstNode *FunctionExpressionFunction(es2panda_AstNode *ast)
     return reinterpret_cast<es2panda_AstNode *>(node->Function());
 }
 
-extern "C" es2panda_AstNode *CreateFunctionTypeNode(es2panda_Context *context, es2panda_AstNode *in_scope_of,
-                                                    es2panda_AstNode *type_params, es2panda_AstNode **params,
-                                                    size_t n_params, es2panda_AstNode *return_type,
+extern "C" es2panda_AstNode *CreateFunctionTypeNode(es2panda_Context *context, es2panda_AstNode *type_params,
+                                                    es2panda_AstNode **params, size_t n_params,
+                                                    es2panda_AstNode *return_type,
                                                     es2panda_ScriptFunctionFlags func_flags)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *parent = reinterpret_cast<ir::AstNode *>(in_scope_of);
-    auto *parent_scope = compiler::NearestScope(parent);
     auto *tpar =
         type_params == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(type_params)->AsTSTypeParameterDeclaration();
     auto *tret =
         return_type == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(return_type)->AsExpression()->AsTypeNode();
     auto flags = E2pToIrScriptFunctionFlags(func_flags);
-
-    auto *scope = allocator->New<varbinder::FunctionParamScope>(allocator, parent_scope);
 
     ArenaVector<ir::Expression *> par {allocator->Adapter()};
     for (size_t i = 0; i < n_params; i++) {
@@ -1259,8 +1287,9 @@ extern "C" es2panda_AstNode *CreateFunctionTypeNode(es2panda_Context *context, e
         par.push_back(reinterpret_cast<ir::AstNode *>(params[i])->AsExpression());
     }
 
-    return reinterpret_cast<es2panda_AstNode *>(
-        allocator->New<ir::ETSFunctionType>(scope, std::move(par), tpar, tret, flags));
+    auto signature = ir::FunctionSignature(tpar, std::move(par), tret);
+    auto func = allocator->New<ir::ETSFunctionType>(std::move(signature), flags);
+    return reinterpret_cast<es2panda_AstNode *>(func);
 }
 
 extern "C" es2panda_AstNode const *FunctionTypeNodeTypeParams(es2panda_AstNode *ast)
@@ -1849,15 +1878,13 @@ extern "C" es2panda_AstNode *CreateScriptFunction(es2panda_Context *context, es2
                                                   es2panda_AstNode **params, size_t n_params,
                                                   es2panda_AstNode *return_type_annotation,
                                                   es2panda_ScriptFunctionFlags function_flags,
-                                                  es2panda_ModifierFlags modifier_flags, bool is_declare,
-                                                  es2panda_AstNode *in_scope_of)
+                                                  es2panda_ModifierFlags modifier_flags, bool is_declare)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
     auto *ir_type_params =
         type_params == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(type_params)->AsTSTypeParameterDeclaration();
 
-    // NOTE(gogabr): without explicit reference to scope, scopes within params will be broken
     ArenaVector<ir::Expression *> ir_params {allocator->Adapter()};
     for (size_t i = 0; i < n_params; i++) {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
@@ -1868,19 +1895,14 @@ extern "C" es2panda_AstNode *CreateScriptFunction(es2panda_Context *context, es2
         return_type_annotation == nullptr
             ? nullptr
             : reinterpret_cast<ir::AstNode *>(return_type_annotation)->AsExpression()->AsTypeNode();
+
     auto ir_function_flags = E2pToIrScriptFunctionFlags(function_flags);
     auto ir_modifier_flags = E2pToIrModifierFlags(modifier_flags);
 
-    auto *outer_scope = ir_type_params == nullptr ? compiler::NearestScope(reinterpret_cast<ir::AstNode *>(in_scope_of))
-                                                  : ir_type_params->Scope();
-    auto *parameter_scope = allocator->New<varbinder::FunctionParamScope>(allocator, outer_scope);
-    auto *body_scope = allocator->New<varbinder::FunctionScope>(allocator, parameter_scope);
-    parameter_scope->BindFunctionScope(body_scope);
-    body_scope->BindParamScope(parameter_scope);
-
-    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::ScriptFunction>(
-        body_scope, std::move(ir_params), ir_type_params, nullptr, ir_return_type_annotation, ir_function_flags,
-        ir_modifier_flags, is_declare, Language::FromString("ets").value()));
+    ir::FunctionSignature sig(ir_type_params, std::move(ir_params), ir_return_type_annotation);
+    auto func = allocator->New<ir::ScriptFunction>(std::move(sig), nullptr, ir_function_flags, ir_modifier_flags,
+                                                   is_declare, Language::FromString("ets").value());
+    return reinterpret_cast<es2panda_AstNode *>(func);
 }
 
 extern "C" es2panda_AstNode *ScriptFunctionTypeParams(es2panda_AstNode *ast)
@@ -2021,17 +2043,14 @@ extern "C" es2panda_AstNode const *TypeParameterDefaultType(es2panda_AstNode *as
     return reinterpret_cast<es2panda_AstNode const *>(tp->DefaultType());
 }
 
-extern "C" es2panda_AstNode *CreateTypeParameterDeclaration(es2panda_Context *context, es2panda_AstNode *in_scope_of)
+extern "C" es2panda_AstNode *CreateTypeParameterDeclaration(es2panda_Context *context)
 {
     auto *ctx = reinterpret_cast<Context *>(context);
     auto *allocator = ctx->allocator;
-    auto *parent = reinterpret_cast<ir::AstNode *>(in_scope_of);
-    auto *parent_scope = compiler::NearestScope(parent);
 
-    auto *scope = allocator->New<varbinder::LocalScope>(allocator, parent_scope);
     ArenaVector<ir::TSTypeParameter *> params {allocator->Adapter()};
-    return reinterpret_cast<es2panda_AstNode *>(
-        allocator->New<ir::TSTypeParameterDeclaration>(scope, std::move(params), 0));
+    auto type_params = allocator->New<ir::TSTypeParameterDeclaration>(std::move(params), 0);
+    return reinterpret_cast<es2panda_AstNode *>(type_params);
 }
 
 extern "C" void TypeParameterDeclarationAddTypeParameter(es2panda_AstNode *ast, es2panda_AstNode *type_parameter)
@@ -2222,7 +2241,8 @@ extern "C" es2panda_AstNode *CreateVariableDeclarator(es2panda_Context *context,
     auto *ident = reinterpret_cast<ir::AstNode *>(identifier)->AsExpression();
     auto *init = initializer == nullptr ? nullptr : reinterpret_cast<ir::AstNode *>(initializer)->AsExpression();
 
-    return reinterpret_cast<es2panda_AstNode *>(allocator->New<ir::VariableDeclarator>(ident, init));
+    auto var_decl = allocator->New<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::UNKNOWN, ident, init);
+    return reinterpret_cast<es2panda_AstNode *>(var_decl);
 }
 
 extern "C" es2panda_AstNode *VariableDeclaratorIdentifier(es2panda_AstNode *ast)

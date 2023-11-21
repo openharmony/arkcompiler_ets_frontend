@@ -46,7 +46,7 @@ public:
     NO_COPY_SEMANTIC(ASTVerifier);
     NO_MOVE_SEMANTIC(ASTVerifier);
 
-    explicit ASTVerifier(ArenaAllocator *allocator, util::StringView source_code = "");
+    explicit ASTVerifier(ArenaAllocator *allocator, bool save_errors = true, util::StringView source_code = "");
     ~ASTVerifier() = default;
 
     using CheckSet = ArenaSet<util::StringView>;
@@ -93,8 +93,10 @@ private:
 
     void AddError(const std::string &message, const lexer::SourcePosition &from)
     {
-        const auto loc = index_.has_value() ? index_->GetLocation(from) : lexer::SourceLocation {};
-        encountered_errors_.emplace_back(Error {message, loc});
+        if (save_errors_) {
+            const auto loc = index_.has_value() ? index_->GetLocation(from) : lexer::SourceLocation {};
+            encountered_errors_.emplace_back(Error {message, loc});
+        }
     }
 
     bool ScopeEncloseVariable(const varbinder::LocalVariable *var);
@@ -103,6 +105,7 @@ private:
 private:
     std::optional<const lexer::LineIndex> index_;
 
+    bool save_errors_;
     ArenaAllocator *allocator_;
     Errors named_errors_;
     ArenaVector<Error> encountered_errors_;

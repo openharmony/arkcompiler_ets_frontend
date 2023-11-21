@@ -25,10 +25,8 @@ class ETSAnalyzer;
 namespace panda::es2panda::ir {
 class BlockStatement : public Statement {
 public:
-    explicit BlockStatement(ArenaAllocator *allocator, varbinder::Scope *scope,
-                            ArenaVector<Statement *> &&statement_list)
+    explicit BlockStatement(ArenaAllocator *allocator, ArenaVector<Statement *> &&statement_list)
         : Statement(AstNodeType::BLOCK_STATEMENT),
-          scope_(scope),
           statements_(std::move(statement_list)),
           trailing_blocks_(allocator->Adapter())
     {
@@ -84,8 +82,13 @@ public:
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
-    varbinder::Scope *scope_;
+    varbinder::Scope *scope_ {};
     ArenaVector<Statement *> statements_;
     ArenaUnorderedMap<AstNode *, BlockStatement *> trailing_blocks_;
 };

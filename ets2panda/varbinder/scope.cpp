@@ -99,11 +99,13 @@ Variable *Scope::FindLocal(const util::StringView &name, ResolveBindingOptions o
 
 Scope::InsertResult Scope::InsertBinding(const util::StringView &name, Variable *const var)
 {
+    ASSERT(var != nullptr);
     return bindings_.emplace(name, var);
 }
 
 Scope::InsertResult Scope::TryInsertBinding(const util::StringView &name, Variable *const var)
 {
+    ASSERT(var != nullptr);
     return bindings_.try_emplace(name, var);
 }
 
@@ -175,7 +177,7 @@ std::tuple<Scope *, bool> Scope::IterateShadowedVariables(const util::StringView
 {
     auto *iter = this;
 
-    while (true) {
+    while (iter != nullptr) {
         auto *v = iter->FindLocal(name, varbinder::ResolveBindingOptions::BINDINGS);
 
         if (v != nullptr && visitor(v)) {

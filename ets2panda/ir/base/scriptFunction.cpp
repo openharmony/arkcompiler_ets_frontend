@@ -26,7 +26,7 @@ std::size_t ScriptFunction::FormalParamsLength() const noexcept
 {
     std::size_t length = 0U;
 
-    for (const auto *param : params_) {
+    for (const auto *param : ir_signature_.Params()) {
         if (param->IsRestElement() || param->IsAssignmentPattern()) {
             break;
         }
@@ -42,19 +42,7 @@ void ScriptFunction::TransformChildren(const NodeTransformer &cb)
     if (id_ != nullptr) {
         id_ = cb(id_)->AsIdentifier();
     }
-
-    if (type_params_ != nullptr) {
-        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
-    }
-
-    for (auto *&it : params_) {
-        it = cb(it)->AsExpression();
-    }
-
-    if (return_type_annotation_ != nullptr) {
-        return_type_annotation_ = static_cast<TypeNode *>(cb(return_type_annotation_));
-    }
-
+    ir_signature_.TransformChildren(cb);
     if (body_ != nullptr) {
         body_ = cb(body_);
     }
@@ -65,19 +53,7 @@ void ScriptFunction::Iterate(const NodeTraverser &cb) const
     if (id_ != nullptr) {
         cb(id_);
     }
-
-    if (type_params_ != nullptr) {
-        cb(type_params_);
-    }
-
-    for (auto *it : params_) {
-        cb(it);
-    }
-
-    if (return_type_annotation_ != nullptr) {
-        cb(return_type_annotation_);
-    }
-
+    ir_signature_.Iterate(cb);
     if (body_ != nullptr) {
         cb(body_);
     }
@@ -90,9 +66,9 @@ void ScriptFunction::Dump(ir::AstDumper *dumper) const
                  {"generator", IsGenerator()},
                  {"async", IsAsyncFunc()},
                  {"expression", ((func_flags_ & ir::ScriptFunctionFlags::EXPRESSION) != 0)},
-                 {"params", params_},
-                 {"returnType", AstDumper::Optional(return_type_annotation_)},
-                 {"typeParameters", AstDumper::Optional(type_params_)},
+                 {"params", ir_signature_.Params()},
+                 {"returnType", AstDumper::Optional(ir_signature_.ReturnType())},
+                 {"typeParameters", AstDumper::Optional(ir_signature_.TypeParams())},
                  {"declare", AstDumper::Optional(declare_)},
                  {"body", AstDumper::Optional(body_)}});
 

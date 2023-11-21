@@ -229,14 +229,12 @@ ir::Statement *ParserImpl::ParseFunctionStatement(StatementParsingFlags flags)
         return ParseFunctionDeclaration(false, ParserStatus::NO_OPTS);
     }
 
-    auto local_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     ArenaVector<ir::Statement *> stmts(Allocator()->Adapter());
     auto *func_decl = ParseFunctionDeclaration(false, ParserStatus::NO_OPTS);
     stmts.push_back(func_decl);
 
-    auto *local_block_stmt = AllocNode<ir::BlockStatement>(Allocator(), local_ctx.GetScope(), std::move(stmts));
+    auto *local_block_stmt = AllocNode<ir::BlockStatement>(Allocator(), std::move(stmts));
     local_block_stmt->SetRange(func_decl->Range());
-    local_ctx.GetScope()->BindNode(local_block_stmt);
 
     return func_decl;
 }
@@ -271,12 +269,15 @@ ir::ETSStructDeclaration *ParserImpl::ParseStructDeclaration(ir::ClassDefinition
 {
     const lexer::SourcePosition start_loc = lexer_->GetToken().Start();
     modifiers |= ir::ClassDefinitionModifiers::DECLARATION;
+    if ((GetContext().Status() & ParserStatus::IN_EXTERNAL) != 0) {
+        modifiers |= ir::ClassDefinitionModifiers::FROM_EXTERNAL;
+    }
 
     if ((flags & ir::ModifierFlags::ABSTRACT) != 0U) {
         ThrowSyntaxError("struct declaration is not allowed to use 'abstract' modifiers.");
     }
 
-    ir::ClassDefinition *class_definition = GetAndBindClassDefinition(modifiers, flags);
+    ir::ClassDefinition *class_definition = ParseClassDefinition(modifiers, flags);
 
     if ((class_definition->Modifiers() & ir::ClassDefinitionModifiers::HAS_SUPER) != 0U) {
         ThrowSyntaxError("struct declaration cannot extends form other class");
@@ -292,29 +293,16 @@ ir::ClassDeclaration *ParserImpl::ParseClassDeclaration(ir::ClassDefinitionModif
 {
     const lexer::SourcePosition start_loc = lexer_->GetToken().Start();
     modifiers |= ir::ClassDefinitionModifiers::DECLARATION;
-    ir::ClassDefinition *class_definition = GetAndBindClassDefinition(modifiers, flags);
+    if ((GetContext().Status() & ParserStatus::IN_EXTERNAL) != 0) {
+        modifiers |= ir::ClassDefinitionModifiers::FROM_EXTERNAL;
+    }
+
+    ir::ClassDefinition *class_definition = ParseClassDefinition(modifiers, flags);
 
     lexer::SourcePosition end_loc = class_definition->End();
     auto *class_decl = AllocNode<ir::ClassDeclaration>(class_definition, Allocator());
     class_decl->SetRange({start_loc, end_loc});
     return class_decl;
-}
-
-ir::ClassDefinition *ParserImpl::GetAndBindClassDefinition(ir::ClassDefinitionModifiers modifiers,
-                                                           ir::ModifierFlags flags)
-{
-    ir::ClassDefinition *class_definition = ParseClassDefinition(modifiers, flags);
-
-    auto *ident = class_definition->Ident();
-    util::StringView class_name = ident->Name();
-
-    if ((modifiers & ir::ClassDefinitionModifiers::CLASS_DECL) != 0U) {
-        VarBinder()->AddDecl<varbinder::ClassDecl>(ident->Start(), class_name, class_definition);
-    } else {
-        VarBinder()->AddDecl<varbinder::LetDecl>(ident->Start(), class_name, class_definition);
-    }
-
-    return class_definition;
 }
 
 void ParserImpl::CheckFunctionDeclaration(StatementParsingFlags flags)
@@ -411,7 +399,7 @@ ir::Statement *ParserImpl::ParseAssertStatement()
 
 void ParserImpl::ValidateLabeledStatement([[maybe_unused]] lexer::TokenType type) {}
 
-ir::BlockStatement *ParserImpl::ParseBlockStatement(varbinder::Scope *scope)
+ir::BlockStatement *ParserImpl::ParseBlockStatement()
 {
     ASSERT(lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
 
@@ -423,18 +411,11 @@ ir::BlockStatement *ParserImpl::ParseBlockStatement(varbinder::Scope *scope)
         ThrowSyntaxError("Expected a '}'");
     }
 
-    auto *block_node = AllocNode<ir::BlockStatement>(Allocator(), scope, std::move(statements));
+    auto *block_node = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     block_node->SetRange({start_loc, lexer_->GetToken().End()});
-    scope->BindNode(block_node);
 
     lexer_->NextToken();
     return block_node;
-}
-
-ir::BlockStatement *ParserImpl::ParseBlockStatement()
-{
-    auto local_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
-    return ParseBlockStatement(local_ctx.GetScope());
 }
 
 void ParserImpl::ThrowPossibleOutOfBoundaryJumpError([[maybe_unused]] bool allow_break) {}
@@ -549,7 +530,7 @@ ir::ContinueStatement *ParserImpl::ParseContinueStatement()
 
 ir::DoWhileStatement *ParserImpl::ParseDoWhileStatement()
 {
-    IterationContext<varbinder::LoopScope> iter_ctx(&context_, VarBinder());
+    IterationContext iter_ctx(&context_);
 
     lexer::SourcePosition start_loc = lexer_->GetToken().Start();
     lexer_->NextToken();
@@ -572,9 +553,8 @@ ir::DoWhileStatement *ParserImpl::ParseDoWhileStatement()
         ThrowSyntaxError("Missing right parenthesis in a 'DoWhileStatement'");
     }
 
-    auto *do_while_statement = AllocNode<ir::DoWhileStatement>(iter_ctx.LexicalScope().GetScope(), body, test);
+    auto *do_while_statement = AllocNode<ir::DoWhileStatement>(body, test);
     do_while_statement->SetRange({start_loc, lexer_->GetToken().End()});
-    iter_ctx.LexicalScope().GetScope()->BindNode(do_while_statement);
 
     lexer_->NextToken();
 
@@ -584,12 +564,6 @@ ir::DoWhileStatement *ParserImpl::ParseDoWhileStatement()
     }
 
     return do_while_statement;
-}
-
-void ParserImpl::CreateFunctionDeclaration(ir::Identifier *ident_node, util::StringView &name, ir::ScriptFunction *func,
-                                           [[maybe_unused]] const lexer::SourcePosition &start_loc)
-{
-    VarBinder()->AddDecl<varbinder::FunctionDecl>(ident_node->Start(), Allocator(), name, func);
 }
 
 ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool can_be_anonymous, ParserStatus new_status)
@@ -613,15 +587,13 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool can_be_anonym
             ir::ScriptFunction *func = ParseFunction(new_status | ParserStatus::NEED_RETURN_TYPE);
             func->SetStart(start_loc);
 
-            auto *func_decl = AllocNode<ir::FunctionDeclaration>(Allocator(), func);
+            auto *func_decl = AllocNode<ir::FunctionDeclaration>(Allocator(), func, true);
             func_decl->SetRange(func->Range());
             return func_decl;
         }
 
         ThrowSyntaxError("Unexpected token, expected identifier after 'function' keyword");
     }
-
-    util::StringView ident = lexer_->GetToken().Ident();
 
     CheckRestrictedBinding();
     auto *ident_node = ExpectIdentifier();
@@ -633,8 +605,6 @@ ir::FunctionDeclaration *ParserImpl::ParseFunctionDeclaration(bool can_be_anonym
     func->SetStart(start_loc);
     auto *func_decl = AllocNode<ir::FunctionDeclaration>(Allocator(), func);
     func_decl->SetRange(func->Range());
-
-    CreateFunctionDeclaration(ident_node, ident, func, start_loc);
 
     if (func->IsOverload() && lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
         lexer_->NextToken();
@@ -904,8 +874,6 @@ ir::Statement *ParserImpl::ParseForStatement()
              token_type != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS && token_type != lexer::TokenType::EOS);
     lexer_->Rewind(current_position);
 
-    auto decl_ctx = varbinder::LexicalScope<varbinder::LoopDeclarationScope>(VarBinder());
-
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::KEYW_VAR: {
             init_node = ParseVariableDeclaration(var_flags | VariableParsingFlags::VAR);
@@ -935,8 +903,7 @@ ir::Statement *ParserImpl::ParseForStatement()
         }
     }
 
-    IterationContext<varbinder::LoopScope> iter_ctx(&context_, VarBinder());
-    iter_ctx.LexicalScope().GetScope()->BindDecls(decl_ctx.GetScope());
+    IterationContext iter_ctx(&context_);
 
     if (init_node != nullptr) {
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_SEMI_COLON) {
@@ -974,19 +941,16 @@ ir::Statement *ParserImpl::ParseForStatement()
     lexer::SourcePosition end_loc = body_node->End();
 
     ir::Statement *for_statement = nullptr;
-    auto *loop_scope = iter_ctx.LexicalScope().GetScope();
 
     if (for_kind == ForStatementKind::UPDATE) {
-        for_statement = AllocNode<ir::ForUpdateStatement>(loop_scope, init_node, right_node, update_node, body_node);
+        for_statement = AllocNode<ir::ForUpdateStatement>(init_node, right_node, update_node, body_node);
     } else if (for_kind == ForStatementKind::IN) {
-        for_statement = AllocNode<ir::ForInStatement>(loop_scope, init_node, right_node, body_node);
+        for_statement = AllocNode<ir::ForInStatement>(init_node, right_node, body_node);
     } else {
-        for_statement = AllocNode<ir::ForOfStatement>(loop_scope, init_node, right_node, body_node, is_await);
+        for_statement = AllocNode<ir::ForOfStatement>(init_node, right_node, body_node, is_await);
     }
 
     for_statement->SetRange({start_loc, end_loc});
-    loop_scope->BindNode(for_statement);
-    loop_scope->DeclScope()->BindNode(for_statement);
 
     return for_statement;
 }
@@ -1164,16 +1128,14 @@ ir::SwitchStatement *ParserImpl::ParseSwitchStatement()
 
     lexer_->NextToken();
     bool seen_default = false;
-    auto local_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     ArenaVector<ir::SwitchCaseStatement *> cases(Allocator()->Adapter());
 
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         cases.push_back(ParseSwitchCaseStatement(&seen_default));
     }
 
-    auto *switch_statement = AllocNode<ir::SwitchStatement>(local_ctx.GetScope(), discriminant, std::move(cases));
+    auto *switch_statement = AllocNode<ir::SwitchStatement>(discriminant, std::move(cases));
     switch_statement->SetRange({start_loc, lexer_->GetToken().End()});
-    local_ctx.GetScope()->BindNode(switch_statement);
 
     lexer_->NextToken();
 
@@ -1227,12 +1189,6 @@ ir::Expression *ParserImpl::ParseCatchParam()
         ThrowSyntaxError("Unexpected token in catch parameter");
     }
 
-    auto param_decl = VarBinder()->AddParamDecl(param);
-
-    if (param->IsIdentifier()) {
-        param->AsIdentifier()->SetVariable(std::get<1>(param_decl));
-    }
-
     ParseCatchParamTypeAnnotation(param);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
@@ -1249,29 +1205,17 @@ ir::CatchClause *ParserImpl::ParseCatchClause()
     lexer::SourcePosition catch_start_loc = lexer_->GetToken().Start();
     lexer_->NextToken();  // eat 'catch' keyword
 
-    auto catch_param_ctx = varbinder::LexicalScope<varbinder::CatchParamScope>(VarBinder());
-    auto *catch_param_scope = catch_param_ctx.GetScope();
-
     ir::Expression *param = ParseCatchParam();
-    if (param != nullptr && param->IsIdentifier()) {
-        param->AsIdentifier()->Variable()->SetScope(catch_param_scope);
-    }
-    catch_param_scope->BindNode(param);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         ThrowSyntaxError("Unexpected token, expected '{'");
     }
 
-    auto catch_ctx = varbinder::LexicalScope<varbinder::CatchScope>(VarBinder());
-    auto *catch_scope = catch_ctx.GetScope();
-    catch_scope->AssignParamScope(catch_param_scope);
-
-    ir::BlockStatement *catch_block = ParseBlockStatement(catch_scope);
+    ir::BlockStatement *catch_block = ParseBlockStatement();
     lexer::SourcePosition end_loc = catch_block->End();
 
-    auto *catch_clause = AllocNode<ir::CatchClause>(catch_scope, param, catch_block);
+    auto *catch_clause = AllocNode<ir::CatchClause>(param, catch_block);
     catch_clause->SetRange({catch_start_loc, end_loc});
-    catch_scope->BindNode(catch_clause);
 
     return catch_clause;
 }
@@ -1351,30 +1295,10 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclaratorInitializer(ir::Expre
     ir::Expression *initializer = ParseExpression(expr_flags);
     lexer::SourcePosition end_loc = initializer->End();
 
-    auto *declarator = AllocNode<ir::VariableDeclarator>(init, initializer);
+    auto *declarator = AllocNode<ir::VariableDeclarator>(GetFlag(flags), init, initializer);
     declarator->SetRange({start_loc, end_loc});
 
     return declarator;
-}
-
-void ParserImpl::AddVariableDeclarationBindings(ir::Expression *init, lexer::SourcePosition start_loc,
-                                                VariableParsingFlags flags)
-{
-    std::vector<ir::Identifier *> bindings = util::Helpers::CollectBindingNames(init);
-
-    for (const auto *binding : bindings) {
-        varbinder::Decl *decl = nullptr;
-
-        if ((flags & VariableParsingFlags::VAR) != 0U) {
-            decl = VarBinder()->AddDecl<varbinder::VarDecl>(start_loc, binding->Name());
-        } else if ((flags & VariableParsingFlags::LET) != 0U) {
-            decl = VarBinder()->AddDecl<varbinder::LetDecl>(start_loc, binding->Name());
-        } else {
-            decl = VarBinder()->AddDecl<varbinder::ConstDecl>(start_loc, binding->Name());
-        }
-
-        decl->BindNode(init);
-    }
 }
 
 ir::AnnotatedExpression *ParserImpl::ParseVariableDeclaratorKey([[maybe_unused]] VariableParsingFlags flags)
@@ -1399,6 +1323,22 @@ ir::AnnotatedExpression *ParserImpl::ParseVariableDeclaratorKey([[maybe_unused]]
     return nullptr;
 }
 
+ir::VariableDeclaratorFlag ParserImpl::GetFlag(VariableParsingFlags flags)
+{
+    constexpr auto VARIABLE_FLAGS =
+        (VariableParsingFlags::VAR | VariableParsingFlags::LET | VariableParsingFlags::CONST);
+    switch (static_cast<VariableParsingFlags>(flags & VARIABLE_FLAGS)) {
+        case VariableParsingFlags::CONST:
+            return ir::VariableDeclaratorFlag::CONST;
+        case VariableParsingFlags::VAR:
+            return ir::VariableDeclaratorFlag::VAR;
+        case VariableParsingFlags::LET:
+            return ir::VariableDeclaratorFlag::LET;
+        default:
+            UNREACHABLE();
+    }
+}
+
 ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(ir::Expression *init, lexer::SourcePosition start_loc,
                                                             VariableParsingFlags flags)
 {
@@ -1415,7 +1355,7 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(ir::Expression *init
     }
 
     lexer::SourcePosition end_loc = init->End();
-    auto declarator = AllocNode<ir::VariableDeclarator>(init);
+    auto declarator = AllocNode<ir::VariableDeclarator>(GetFlag(flags), init);
     declarator->SetRange({start_loc, end_loc});
 
     return declarator;
@@ -1426,7 +1366,6 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
     lexer::SourcePosition start_loc = lexer_->GetToken().Start();
     ir::Expression *init = ParseVariableDeclaratorKey(flags);
     ir::VariableDeclarator *declarator = ParseVariableDeclarator(init, start_loc, flags);
-    AddVariableDeclarationBindings(init, start_loc, flags);
 
     return declarator;
 }
@@ -1497,13 +1436,12 @@ ir::WhileStatement *ParserImpl::ParseWhileStatement()
     }
 
     lexer_->NextToken();
-    IterationContext<varbinder::LoopScope> iter_ctx(&context_, VarBinder());
+    IterationContext iter_ctx(&context_);
     ir::Statement *body = ParseStatement();
 
     lexer::SourcePosition end_loc = body->End();
-    auto *while_statement = AllocNode<ir::WhileStatement>(iter_ctx.LexicalScope().GetScope(), test, body);
+    auto *while_statement = AllocNode<ir::WhileStatement>(test, body);
     while_statement->SetRange({start_loc, end_loc});
-    iter_ctx.LexicalScope().GetScope()->BindNode(while_statement);
 
     return while_statement;
 }
@@ -1516,8 +1454,6 @@ ir::ExportDefaultDeclaration *ParserImpl::ParseExportDefaultDeclaration(const le
 
     ir::AstNode *decl_node = nullptr;
     bool eat_semicolon = false;
-
-    ExportDeclarationContext export_decl_ctx(VarBinder());
 
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::KEYW_FUNCTION: {
@@ -1562,7 +1498,6 @@ ir::ExportDefaultDeclaration *ParserImpl::ParseExportDefaultDeclaration(const le
     lexer::SourcePosition end_loc = decl_node->End();
     auto *export_declaration = AllocNode<ir::ExportDefaultDeclaration>(decl_node, is_export_equals);
     export_declaration->SetRange({start_loc, end_loc});
-    export_decl_ctx.BindExportDecl(export_declaration);
 
     if (eat_semicolon) {
         ConsumeSemicolon(export_declaration);
@@ -1604,9 +1539,6 @@ ir::ExportAllDeclaration *ParserImpl::ParseExportAllDeclaration(const lexer::Sou
 
     auto *export_declaration = AllocNode<ir::ExportAllDeclaration>(source, exported);
     export_declaration->SetRange({start_loc, end_loc});
-    auto *decl =
-        VarBinder()->AddDecl<varbinder::ExportDecl>(start_loc, exported != nullptr ? exported->Name() : "*", "*");
-    VarBinder()->GetScope()->AsModuleScope()->AddExportDecl(export_declaration, decl);
 
     ConsumeSemicolon(export_declaration);
 
@@ -1618,7 +1550,6 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
     lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat `{` character
 
     ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
-    varbinder::ModuleScope::ExportDeclList export_decls(Allocator()->Adapter());
 
     while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
@@ -1645,8 +1576,6 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
         specifier->SetRange({local->Start(), exported->End()});
 
         specifiers.push_back(specifier);
-        auto *decl = VarBinder()->AddDecl<varbinder::ExportDecl>(start_loc, exported->Name(), local->Name(), specifier);
-        export_decls.push_back(decl);
 
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
             lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat comma
@@ -1664,7 +1593,6 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
 
     auto *export_declaration = AllocNode<ir::ExportNamedDeclaration>(Allocator(), source, std::move(specifiers));
     export_declaration->SetRange({start_loc, end_pos});
-    VarBinder()->GetScope()->AsModuleScope()->AddExportDecl(export_declaration, std::move(export_decls));
     ConsumeSemicolon(export_declaration);
 
     return export_declaration;
@@ -1673,7 +1601,6 @@ ir::ExportNamedDeclaration *ParserImpl::ParseExportNamedSpecifiers(const lexer::
 ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer::SourcePosition &start_loc)
 {
     ir::Statement *decl = nullptr;
-    ExportDeclarationContext export_decl_ctx(VarBinder());
 
     switch (lexer_->GetToken().Type()) {
         case lexer::TokenType::KEYW_VAR: {
@@ -1721,7 +1648,6 @@ ir::ExportNamedDeclaration *ParserImpl::ParseNamedExportDeclaration(const lexer:
     ArenaVector<ir::ExportSpecifier *> specifiers(Allocator()->Adapter());
     auto *export_declaration = AllocNode<ir::ExportNamedDeclaration>(Allocator(), decl, std::move(specifiers));
     export_declaration->SetRange({start_loc, end_loc});
-    export_decl_ctx.BindExportDecl(export_declaration);
 
     return export_declaration;
 }
@@ -1772,8 +1698,6 @@ void ParserImpl::ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers)
     specifier->SetRange({namespace_start, lexer_->GetToken().End()});
     specifiers->push_back(specifier);
 
-    VarBinder()->AddDecl<varbinder::ImportDecl>(namespace_start, "*", local->Name(), specifier);
-
     lexer_->NextToken();  // eat local name
 }
 
@@ -1819,8 +1743,6 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
         specifier->SetRange({imported->Start(), local->End()});
         specifiers->push_back(specifier);
 
-        VarBinder()->AddDecl<varbinder::ImportDecl>(imported->Start(), imported->Name(), local->Name(), specifier);
-
         if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
             lexer_->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat comma
         }
@@ -1837,8 +1759,6 @@ ir::AstNode *ParserImpl::ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> 
     auto *specifier = AllocNode<ir::ImportDefaultSpecifier>(local);
     specifier->SetRange(specifier->Local()->Range());
     specifiers->push_back(specifier);
-
-    VarBinder()->AddDecl<varbinder::ImportDecl>(local->Start(), "default", local->Name(), specifier);
 
     lexer_->NextToken();  // eat specifier name
 
@@ -1895,8 +1815,6 @@ ir::AstNode *ParserImpl::ParseImportSpecifiers(ArenaVector<ir::AstNode *> *speci
 
 ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
 {
-    ImportDeclarationContext import_ctx(VarBinder());
-
     if ((flags & StatementParsingFlags::GLOBAL) == 0) {
         ThrowSyntaxError("'import' and 'export' may only appear at the top level");
     }
@@ -1927,7 +1845,6 @@ ir::Statement *ParserImpl::ParseImportDeclaration(StatementParsingFlags flags)
     lexer::SourcePosition end_loc = source->End();
     auto *import_declaration = AllocNode<ir::ImportDeclaration>(source, std::move(specifiers));
     import_declaration->SetRange({start_loc, end_loc});
-    import_ctx.BindImportDecl(import_declaration);
 
     ConsumeSemicolon(import_declaration);
 

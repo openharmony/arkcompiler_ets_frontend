@@ -119,6 +119,22 @@ if(PANDA_WITH_ETS)
             ${PANDA_SANITIZERS_LIST}
     )
 
+    if(PANDA_WITH_ETS)
+            panda_add_gtest(
+                NAME scopes_initialization_test
+                SOURCES
+                    unit/lowerings/scopes_initialization.cpp
+                LIBRARIES
+                    es2panda-lib es2panda-public arkassembler arkbytecodeopt
+                INCLUDE_DIRS
+                    ${ES2PANDA_PATH}
+                    ${OUTPUT_DIR}
+
+                    SANITIZERS
+                    ${PANDA_SANITIZERS_LIST}
+           )
+    endif()
+
     panda_add_gtest(
         NAME es2panda_astdumper_tests
         SOURCES

@@ -27,6 +27,7 @@
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
 #include "compiler/lowering/util.h"
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "ir/opaqueTypeNode.h"
 #include "ir/expressions/assignmentExpression.h"
 #include "ir/expressions/identifier.h"
@@ -91,7 +92,7 @@ void AdjustBoxingUnboxingFlags(ir::Expression *new_expr, const ir::Expression *o
     }
 }
 
-ir::Expression *HandleOpAssignment(checker::ETSChecker *checker, parser::ETSParser *parser,
+ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker *checker, parser::ETSParser *parser,
                                    ir::AssignmentExpression *assignment)
 {
     if (assignment->TsType() == nullptr) {  // hasn't been through checker
@@ -175,6 +176,7 @@ ir::Expression *HandleOpAssignment(checker::ETSChecker *checker, parser::ETSPars
         ident1->Clone(allocator), ident2 != nullptr ? ident2->Clone(allocator) : nullptr, ident1->Clone(allocator),
         ident2 != nullptr ? ident2->Clone(allocator) : nullptr, right, expr_type);
     lowering_result->SetParent(assignment->Parent());
+    ScopesInitPhaseETS::RunExternalNode(lowering_result, ctx->compiler_context->VarBinder());
 
     checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(lowering_result, scope);
     lowering_result->Check(checker);
@@ -222,10 +224,10 @@ bool OpAssignmentLowering::Perform(public_lib::Context *ctx, parser::Program *pr
     auto *const parser = ctx->parser->AsETSParser();
     checker::ETSChecker *checker = ctx->checker->AsETSChecker();
 
-    program->Ast()->TransformChildrenRecursively([checker, parser](ir::AstNode *ast) -> ir::AstNode * {
+    program->Ast()->TransformChildrenRecursively([ctx, checker, parser](ir::AstNode *ast) -> ir::AstNode * {
         if (ast->IsAssignmentExpression() &&
             ast->AsAssignmentExpression()->OperatorType() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-            return HandleOpAssignment(checker, parser, ast->AsAssignmentExpression());
+            return HandleOpAssignment(ctx, checker, parser, ast->AsAssignmentExpression());
         }
 
         return ast;

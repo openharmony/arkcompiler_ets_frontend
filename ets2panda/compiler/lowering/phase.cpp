@@ -21,6 +21,7 @@
 #include "lexer/token/sourceLocation.h"
 #include "compiler/lowering/checkerPhase.h"
 #include "compiler/lowering/plugin_phase.h"
+#include "compiler/lowering/scopesInit/scopesInitPhase.h"
 #include "compiler/lowering/ets/generateDeclarations.h"
 #include "compiler/lowering/ets/lambdaLowering.h"
 #include "compiler/lowering/ets/opAssignment.h"
@@ -50,27 +51,46 @@ static PluginPhase PLUGINS_AFTER_CHECK {"plugins-after-check", ES2PANDA_STATE_CH
 static PluginPhase PLUGINS_AFTER_LOWERINGS {"plugins-after-lowering", ES2PANDA_STATE_LOWERED,
                                             &util::Plugin::AfterLowerings};
 
-std::vector<Phase *> GetETSPhaseList()
+std::vector<Phase *> GetPhaseList(ScriptExtension ext)
 {
-    return std::vector<Phase *> {
-        &PLUGINS_AFTER_PARSE,
-        &LAMBDA_LOWERING,
-        &CHECKER_PHASE,
-        &PLUGINS_AFTER_CHECK,
-        &GENERATE_TS_DECLARATIONS_PHASE,
-        &OP_ASSIGNMENT_LOWERING,
-        &OBJECT_INDEX_LOWERING,
-        &TUPLE_LOWERING,
-        &UNION_LOWERING,
-        &PLUGINS_AFTER_LOWERINGS,
-    };
+    static ScopesInitPhaseETS scopes_phase_ets;
+    static ScopesInitPhaseAS scopes_phase_as;
+    static ScopesInitPhaseTs scopes_phase_ts;
+    static ScopesInitPhaseJs scopes_phase_js;
+
+    switch (ext) {
+        case ScriptExtension::ETS:
+            return {
+                &scopes_phase_ets,       &PLUGINS_AFTER_PARSE,     &LAMBDA_LOWERING,
+                &CHECKER_PHASE,          &PLUGINS_AFTER_CHECK,     &GENERATE_TS_DECLARATIONS_PHASE,
+                &OP_ASSIGNMENT_LOWERING, &OBJECT_INDEX_LOWERING,   &TUPLE_LOWERING,
+                &UNION_LOWERING,         &PLUGINS_AFTER_LOWERINGS,
+            };
+        case ScriptExtension::AS:
+            return std::vector<Phase *> {
+                &scopes_phase_as,
+                &CHECKER_PHASE,
+            };
+        case ScriptExtension::TS:
+            return std::vector<Phase *> {
+                &scopes_phase_ts,
+                &CHECKER_PHASE,
+            };
+        case ScriptExtension::JS:
+            return std::vector<Phase *> {
+                &scopes_phase_js,
+                &CHECKER_PHASE,
+            };
+        default:
+            UNREACHABLE();
+    }
 }
 
 bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 {
 #ifndef NDEBUG
     const auto check_program = [](const parser::Program *p) {
-        ASTVerifier verifier {p->Allocator(), p->SourceCode()};
+        ASTVerifier verifier {p->Allocator(), false, p->SourceCode()};
         ArenaVector<const ir::BlockStatement *> to_check {p->Allocator()->Adapter()};
         to_check.push_back(p->Ast());
         for (const auto &external_source : p->ExternalSources()) {

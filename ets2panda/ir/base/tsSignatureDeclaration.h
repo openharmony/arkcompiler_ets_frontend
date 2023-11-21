@@ -17,6 +17,8 @@
 #define ES2PANDA_PARSER_INCLUDE_AST_TS_SIGNATURE_DECLARATION_H
 
 #include "ir/astNode.h"
+#include "ir/base/scriptFunctionSignature.h"
+#include "ir/statement.h"
 
 namespace panda::es2panda::checker {
 class TSAnalyzer;
@@ -35,15 +37,8 @@ public:
     NO_COPY_SEMANTIC(TSSignatureDeclaration);
     NO_MOVE_SEMANTIC(TSSignatureDeclaration);
 
-    explicit TSSignatureDeclaration(varbinder::Scope *const scope, TSSignatureDeclarationKind const kind,
-                                    TSTypeParameterDeclaration *const type_params, ArenaVector<Expression *> &&params,
-                                    TypeNode *const return_type_annotation)
-        : TypedAstNode(AstNodeType::TS_SIGNATURE_DECLARATION),
-          scope_(scope),
-          kind_(kind),
-          type_params_(type_params),
-          params_(std::move(params)),
-          return_type_annotation_(return_type_annotation)
+    explicit TSSignatureDeclaration(TSSignatureDeclarationKind const kind, FunctionSignature &&signature)
+        : TypedAstNode(AstNodeType::TS_SIGNATURE_DECLARATION), kind_(kind), signature_(std::move(signature))
     {
     }
     // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
@@ -59,19 +54,34 @@ public:
         return scope_;
     }
 
+    void SetScope(varbinder::Scope *scope)
+    {
+        scope_ = scope;
+    }
+
     [[nodiscard]] const TSTypeParameterDeclaration *TypeParams() const noexcept
     {
-        return type_params_;
+        return signature_.TypeParams();
+    }
+
+    [[nodiscard]] TSTypeParameterDeclaration *TypeParams()
+    {
+        return signature_.TypeParams();
     }
 
     [[nodiscard]] const ArenaVector<Expression *> &Params() const noexcept
     {
-        return params_;
+        return signature_.Params();
     }
 
     [[nodiscard]] const TypeNode *ReturnTypeAnnotation() const noexcept
     {
-        return return_type_annotation_;
+        return signature_.ReturnType();
+    }
+
+    TypeNode *ReturnTypeAnnotation() noexcept
+    {
+        return signature_.ReturnType();
     }
 
     [[nodiscard]] TSSignatureDeclarationKind Kind() const noexcept
@@ -89,12 +99,15 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
-    varbinder::Scope *scope_;
+    varbinder::Scope *scope_ {nullptr};
     TSSignatureDeclarationKind kind_;
-    TSTypeParameterDeclaration *type_params_;
-    ArenaVector<Expression *> params_;
-    TypeNode *return_type_annotation_;
+    ir::FunctionSignature signature_;
 };
 }  // namespace panda::es2panda::ir
 

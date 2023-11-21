@@ -20,17 +20,21 @@
 #include "varbinder/scope.h"
 #include "util/enumbitops.h"
 #include "util/language.h"
+#include "scriptFunctionSignature.h"
 
 namespace panda::es2panda::checker {
 class Signature;
+
 }  // namespace panda::es2panda::checker
+namespace panda::es2panda::compiler {
+class ScopesInitPhase;
+}  // namespace panda::es2panda::compiler
 
 namespace panda::es2panda::ir {
 class TSTypeParameterDeclaration;
 class TypeNode;
 
 class ScriptFunction : public AstNode {
-private:
 public:
     ScriptFunction() = delete;
     ~ScriptFunction() override = default;
@@ -38,30 +42,22 @@ public:
     NO_COPY_SEMANTIC(ScriptFunction);
     NO_MOVE_SEMANTIC(ScriptFunction);
 
-    explicit ScriptFunction(varbinder::FunctionScope *scope, ArenaVector<Expression *> &&params,
-                            TSTypeParameterDeclaration *type_params, AstNode *body, TypeNode *return_type_annotation,
-                            ir::ScriptFunctionFlags func_flags, bool declare, Language lang)
+    explicit ScriptFunction(FunctionSignature &&signature, AstNode *body, ir::ScriptFunctionFlags func_flags,
+                            bool declare, Language lang)
         : AstNode(AstNodeType::SCRIPT_FUNCTION),
-          scope_(scope),
-          params_(std::move(params)),
-          type_params_(type_params),
+          ir_signature_(std::move(signature)),
           body_(body),
-          return_type_annotation_(return_type_annotation),
           func_flags_(func_flags),
           declare_(declare),
           lang_(lang)
     {
     }
 
-    explicit ScriptFunction(varbinder::FunctionScope *scope, ArenaVector<Expression *> &&params,
-                            TSTypeParameterDeclaration *type_params, AstNode *body, TypeNode *return_type_annotation,
-                            ir::ScriptFunctionFlags func_flags, ir::ModifierFlags flags, bool declare, Language lang)
+    explicit ScriptFunction(FunctionSignature &&signature, AstNode *body, ir::ScriptFunctionFlags func_flags,
+                            ir::ModifierFlags flags, bool declare, Language lang)
         : AstNode(AstNodeType::SCRIPT_FUNCTION, flags),
-          scope_(scope),
-          params_(std::move(params)),
-          type_params_(type_params),
+          ir_signature_(std::move(signature)),
           body_(body),
-          return_type_annotation_(return_type_annotation),
           func_flags_(func_flags),
           declare_(declare),
           lang_(lang)
@@ -90,22 +86,22 @@ public:
 
     [[nodiscard]] const ArenaVector<Expression *> &Params() const noexcept
     {
-        return params_;
+        return ir_signature_.Params();
     }
 
     [[nodiscard]] ArenaVector<Expression *> &Params() noexcept
     {
-        return params_;
+        return ir_signature_.Params();
     }
 
     [[nodiscard]] const TSTypeParameterDeclaration *TypeParams() const noexcept
     {
-        return type_params_;
+        return ir_signature_.TypeParams();
     }
 
     [[nodiscard]] TSTypeParameterDeclaration *TypeParams() noexcept
     {
-        return type_params_;
+        return ir_signature_.TypeParams();
     }
 
     [[nodiscard]] const AstNode *Body() const noexcept
@@ -125,17 +121,17 @@ public:
 
     [[nodiscard]] const TypeNode *ReturnTypeAnnotation() const noexcept
     {
-        return return_type_annotation_;
+        return ir_signature_.ReturnType();
     }
 
     [[nodiscard]] TypeNode *ReturnTypeAnnotation() noexcept
     {
-        return return_type_annotation_;
+        return ir_signature_.ReturnType();
     }
 
     void SetReturnTypeAnnotation(TypeNode *node) noexcept
     {
-        return_type_annotation_ = node;
+        ir_signature_.SetReturnType(node);
     }
 
     [[nodiscard]] bool IsEntryPoint() const noexcept
@@ -290,6 +286,11 @@ public:
         return scope_;
     }
 
+    void SetScope(varbinder::FunctionScope *scope)
+    {
+        scope_ = scope;
+    }
+
     [[nodiscard]] es2panda::Language Language() const
     {
         return lang_;
@@ -304,13 +305,19 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
-    varbinder::FunctionScope *scope_;
+    friend panda::es2panda::compiler::ScopesInitPhase;
+
+private:
     Identifier *id_ {};
-    ArenaVector<Expression *> params_;
-    TSTypeParameterDeclaration *type_params_;
+    FunctionSignature ir_signature_;
     AstNode *body_;
-    TypeNode *return_type_annotation_;
+    varbinder::FunctionScope *scope_ {nullptr};
     ir::ScriptFunctionFlags func_flags_;
     checker::Signature *signature_ {};
     bool declare_;

@@ -341,9 +341,9 @@ void ETSBinder::BuildClassDefinitionImpl(ir::ClassDefinition *class_def)
             continue;
         }
 
-        auto field_var =
-            ResolvePropertyReference(stmt->AsClassProperty(), class_def->Scope()->AsClassScope())
-                ->FindLocal(stmt->AsClassProperty()->Id()->Name(), varbinder::ResolveBindingOptions::BINDINGS);
+        auto field_scope = ResolvePropertyReference(stmt->AsClassProperty(), class_def->Scope()->AsClassScope());
+        auto field_name = stmt->AsClassProperty()->Id()->Name();
+        auto field_var = field_scope->FindLocal(field_name, varbinder::ResolveBindingOptions::BINDINGS);
         field_var->AddFlag(VariableFlags::INITIALIZED);
         if (field_var->Declaration()->IsConstDecl() && stmt->AsClassProperty()->Value() == nullptr) {
             field_var->AddFlag(VariableFlags::EXPLICIT_INIT_REQUIRED);

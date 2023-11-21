@@ -41,8 +41,7 @@ public:
     }
 };
 
-std::vector<Phase *> GetTrivialPhaseList();
-std::vector<Phase *> GetETSPhaseList();
+std::vector<Phase *> GetPhaseList(ScriptExtension ext);
 
 }  // namespace panda::es2panda::compiler
 

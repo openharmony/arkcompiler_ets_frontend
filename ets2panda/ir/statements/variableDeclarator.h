@@ -24,12 +24,22 @@ class TSAnalyzer;
 namespace panda::es2panda::ir {
 class Expression;
 
+enum class VariableDeclaratorFlag {
+    LET,
+    CONST,
+    VAR,
+    UNKNOWN,
+};
+
 class VariableDeclarator : public TypedStatement {
 public:
-    explicit VariableDeclarator(Expression *ident) : TypedStatement(AstNodeType::VARIABLE_DECLARATOR), id_(ident) {}
+    explicit VariableDeclarator(VariableDeclaratorFlag flag, Expression *ident)
+        : TypedStatement(AstNodeType::VARIABLE_DECLARATOR), id_(ident), flag_(flag)
+    {
+    }
 
-    explicit VariableDeclarator(Expression *ident, Expression *init)
-        : TypedStatement(AstNodeType::VARIABLE_DECLARATOR), id_(ident), init_(init)
+    explicit VariableDeclarator(VariableDeclaratorFlag flag, Expression *ident, Expression *init)
+        : TypedStatement(AstNodeType::VARIABLE_DECLARATOR), id_(ident), init_(init), flag_(flag)
     {
     }
 
@@ -56,6 +66,11 @@ public:
         return id_;
     }
 
+    VariableDeclaratorFlag Flag()
+    {
+        return flag_;
+    }
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -64,9 +79,15 @@ public:
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     Expression *id_;
     Expression *init_ {};
+    const VariableDeclaratorFlag flag_;
 };
 }  // namespace panda::es2panda::ir
 

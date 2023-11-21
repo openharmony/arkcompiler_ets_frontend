@@ -27,8 +27,8 @@ class Expression;
 
 class DoWhileStatement : public LoopStatement {
 public:
-    explicit DoWhileStatement(varbinder::LoopScope *scope, Statement *body, Expression *test)
-        : LoopStatement(AstNodeType::DO_WHILE_STATEMENT, scope), body_(body), test_(test)
+    explicit DoWhileStatement(Statement *body, Expression *test)
+        : LoopStatement(AstNodeType::DO_WHILE_STATEMENT), body_(body), test_(test)
     {
     }
 
@@ -66,6 +66,11 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
+
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
 
 private:
     Statement *body_;

@@ -33,7 +33,8 @@ static ir::AstNode *ConvertExpression(checker::ETSChecker *const checker, ir::Ar
 
     ArenaVector<ir::Statement *> statements(checker->Allocator()->Adapter());
     statements.emplace_back(checker->AllocNode<ir::ReturnStatement>(expr));
-    auto *const block = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), scope, std::move(statements));
+    auto *const block = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(statements));
+    block->SetScope(scope);
     block->SetParent(function);
 
     function->SetBody(block);

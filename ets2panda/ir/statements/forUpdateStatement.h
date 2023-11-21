@@ -27,13 +27,8 @@ class Expression;
 
 class ForUpdateStatement : public LoopStatement {
 public:
-    explicit ForUpdateStatement(varbinder::LoopScope *scope, AstNode *init, Expression *test, Expression *update,
-                                Statement *body)
-        : LoopStatement(AstNodeType::FOR_UPDATE_STATEMENT, scope),
-          init_(init),
-          test_(test),
-          update_(update),
-          body_(body)
+    explicit ForUpdateStatement(AstNode *init, Expression *test, Expression *update, Statement *body)
+        : LoopStatement(AstNodeType::FOR_UPDATE_STATEMENT), init_(init), test_(test), update_(update), body_(body)
     {
     }
 
@@ -91,6 +86,11 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
+
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
 
 private:
     AstNode *init_;

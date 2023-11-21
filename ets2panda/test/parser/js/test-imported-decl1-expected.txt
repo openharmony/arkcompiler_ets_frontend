@@ -1,1 +1,1 @@
-SyntaxError: Variable 'b' has already been declared. [test-imported-decl1.js:22:8]
+SyntaxError: Variable 'b' has already been declared. [test-imported-decl1.js:22:9]

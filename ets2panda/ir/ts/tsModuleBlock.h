@@ -22,8 +22,8 @@
 namespace panda::es2panda::ir {
 class TSModuleBlock : public Statement {
 public:
-    explicit TSModuleBlock(varbinder::LocalScope *scope, ArenaVector<Statement *> &&statements)
-        : Statement(AstNodeType::TS_MODULE_BLOCK), scope_(scope), statements_(std::move(statements))
+    explicit TSModuleBlock(ArenaVector<Statement *> &&statements)
+        : Statement(AstNodeType::TS_MODULE_BLOCK), statements_(std::move(statements))
     {
     }
 
@@ -32,9 +32,14 @@ public:
         return true;
     }
 
-    varbinder::LocalScope *Scope() const override
+    varbinder::Scope *Scope() const override
     {
         return scope_;
+    }
+
+    void SetScope(varbinder::LocalScope *scope)
+    {
+        scope_ = scope;
     }
 
     const ArenaVector<Statement *> &Statements() const
@@ -50,8 +55,13 @@ public:
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
-    varbinder::LocalScope *scope_;
+    varbinder::LocalScope *scope_ {nullptr};
     ArenaVector<Statement *> statements_;
 };
 }  // namespace panda::es2panda::ir

@@ -56,7 +56,6 @@ public:
     void SetKind(ScriptKind kind)
     {
         kind_ = kind;
-        varbinder_->InitTopScope();
     }
 
     NO_COPY_SEMANTIC(Program);
