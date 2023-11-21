@@ -282,6 +282,26 @@ void UnboxingWideningPrimitive(TypeRelation *const relation, ETSObjectType *cons
     RollbackBoxingIfFailed(relation);
 }
 
+void UnboxingNarrowingPrimitive(TypeRelation *const relation, ETSObjectType *const source, Type *const target)
+{
+    auto *const unboxed_source = Unboxing(relation, source);
+    if (!relation->IsTrue()) {
+        return;
+    }
+    ASSERT(unboxed_source != nullptr);
+    NarrowingPrimitive(relation, target, unboxed_source);
+}
+
+void UnboxingWideningNarrowingPrimitive(TypeRelation *const relation, ETSObjectType *const source, Type *const target)
+{
+    auto *const unboxed_source = Unboxing(relation, source);
+    if (!relation->IsTrue()) {
+        return;
+    }
+    ASSERT(unboxed_source != nullptr);
+    WideningNarrowingPrimitive(relation, unboxed_source->AsByteType(), target->AsCharType());
+}
+
 void NarrowingReferenceUnboxing(TypeRelation *const relation, ETSObjectType *const source, Type *const target)
 {
     auto *const boxed_target = relation->GetChecker()->AsETSChecker()->PrimitiveTypeAsETSBuiltinType(target);

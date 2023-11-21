@@ -37,6 +37,8 @@ void NarrowingReference(TypeRelation *relation, ETSArrayType *source, ETSArrayTy
 ETSObjectType *Boxing(TypeRelation *relation, Type *source);
 Type *Unboxing(TypeRelation *relation, ETSObjectType *source);
 
+void UnboxingWideningNarrowingPrimitive(TypeRelation *relation, ETSObjectType *source, Type *target);
+void UnboxingNarrowingPrimitive(TypeRelation *relation, ETSObjectType *source, Type *target);
 void UnboxingWideningPrimitive(TypeRelation *relation, ETSObjectType *source, Type *target);
 void NarrowingReferenceUnboxing(TypeRelation *relation, ETSObjectType *source, Type *target);
 void BoxingWideningReference(TypeRelation *relation, Type *source, ETSObjectType *target);

@@ -412,6 +412,8 @@ public:
 
     void LoadAccumulatorDynamicModule(const ir::AstNode *node, const ir::ETSImportDeclaration *import);
 
+    void ApplyBoxingConversion(const ir::AstNode *node);
+    void ApplyUnboxingConversion(const ir::AstNode *node);
     void ApplyConversion(const ir::AstNode *node)
     {
         if (target_type_ != nullptr) {

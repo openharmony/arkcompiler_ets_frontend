@@ -74,6 +74,16 @@ void ShortType::Cast(TypeRelation *const relation, Type *const target)
         }
 
         if (target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_TYPE)) {
+            auto unboxed_target = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(target);
+            if (unboxed_target == nullptr) {
+                conversion::Forbidden(relation);
+                return;
+            }
+            Cast(relation, unboxed_target);
+            if (relation->IsTrue()) {
+                conversion::Boxing(relation, unboxed_target);
+                return;
+            }
             conversion::Forbidden(relation);
             return;
         }

@@ -1678,9 +1678,61 @@ void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
         expr->Expr()->Compile(etsg);
     }
 
-    etsg->ApplyConversion(expr->Expr(), nullptr);
-
     auto *target_type = expr->TsType();
+
+    if ((expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
+        etsg->ApplyUnboxingConversion(expr->Expr());
+    }
+
+    if (target_type->IsETSObjectType() &&
+        ((expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U ||
+         (expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) &&
+        checker::ETSChecker::TypeKind(etsg->GetAccumulatorType()) != checker::TypeFlag::ETS_OBJECT) {
+        if (target_type->AsETSObjectType()->HasObjectFlag(checker::ETSObjectFlags::UNBOXABLE_TYPE)) {
+            switch (target_type->AsETSObjectType()->BuiltInKind()) {
+                case checker::ETSObjectFlags::BUILTIN_BOOLEAN: {
+                    etsg->CastToBoolean(expr);
+                    break;
+                }
+                case checker::ETSObjectFlags::BUILTIN_BYTE: {
+                    etsg->CastToChar(expr);
+                    break;
+                }
+                case checker::ETSObjectFlags::BUILTIN_CHAR: {
+                    etsg->CastToByte(expr);
+                    break;
+                }
+                case checker::ETSObjectFlags::BUILTIN_SHORT: {
+                    etsg->CastToShort(expr);
+                    break;
+                }
+                case checker::ETSObjectFlags::BUILTIN_INT: {
+                    etsg->CastToInt(expr);
+                    break;
+                }
+                case checker::ETSObjectFlags::BUILTIN_LONG: {
+                    etsg->CastToLong(expr);
+                    break;
+                }
+                case checker::ETSObjectFlags::BUILTIN_FLOAT: {
+                    etsg->CastToFloat(expr);
+                    break;
+                }
+                case checker::ETSObjectFlags::BUILTIN_DOUBLE: {
+                    etsg->CastToDouble(expr);
+                    break;
+                }
+                default: {
+                    UNREACHABLE();
+                }
+            }
+        }
+    }
+
+    if ((expr->Expr()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) {
+        etsg->ApplyBoxingConversion(expr->Expr());
+    }
+
     if (target_type->IsETSUnionType()) {
         target_type = target_type->AsETSUnionType()->FindTypeIsCastableToThis(
             expr->expression_, etsg->Checker()->Relation(), expr->expression_->TsType());

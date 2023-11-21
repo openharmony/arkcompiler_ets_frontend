@@ -453,12 +453,10 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
             conversion::UnboxingWideningPrimitive(relation, this, target);
             return true;
         }
-        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-            conversion::WideningReference(relation, this, target->AsETSObjectType());
+        if (target->HasTypeFlag(TypeFlag::CHAR)) {
+            conversion::UnboxingWideningNarrowingPrimitive(relation, this, target);
             return true;
         }
-        conversion::Forbidden(relation);
-        return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_SHORT)) {
         if (target->HasTypeFlag(TypeFlag::SHORT)) {
@@ -469,12 +467,10 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
             conversion::UnboxingWideningPrimitive(relation, this, target);
             return true;
         }
-        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-            conversion::WideningReference(relation, this, target->AsETSObjectType());
+        if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::CHAR)) {
+            conversion::UnboxingNarrowingPrimitive(relation, this, target);
             return true;
         }
-        conversion::Forbidden(relation);
-        return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_CHAR)) {
         if (target->HasTypeFlag(TypeFlag::CHAR)) {
@@ -485,12 +481,10 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
             conversion::UnboxingWideningPrimitive(relation, this, target);
             return true;
         }
-        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-            conversion::WideningReference(relation, this, target->AsETSObjectType());
+        if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT)) {
+            conversion::UnboxingNarrowingPrimitive(relation, this, target);
             return true;
         }
-        conversion::Forbidden(relation);
-        return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_INT)) {
         if (target->HasTypeFlag(TypeFlag::INT)) {
@@ -501,12 +495,10 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
             conversion::UnboxingWideningPrimitive(relation, this, target);
             return true;
         }
-        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-            conversion::WideningReference(relation, this, target->AsETSObjectType());
+        if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR)) {
+            conversion::UnboxingNarrowingPrimitive(relation, this, target);
             return true;
         }
-        conversion::Forbidden(relation);
-        return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_LONG)) {
         if (target->HasTypeFlag(TypeFlag::LONG)) {
@@ -517,12 +509,10 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
             conversion::UnboxingWideningPrimitive(relation, this, target);
             return true;
         }
-        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-            conversion::WideningReference(relation, this, target->AsETSObjectType());
+        if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT)) {
+            conversion::UnboxingNarrowingPrimitive(relation, this, target);
             return true;
         }
-        conversion::Forbidden(relation);
-        return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_FLOAT)) {
         if (target->HasTypeFlag(TypeFlag::FLOAT)) {
@@ -533,31 +523,40 @@ bool ETSObjectType::CastNumericObject(TypeRelation *const relation, Type *const 
             conversion::UnboxingWideningPrimitive(relation, this, target);
             return true;
         }
-        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-            conversion::WideningReference(relation, this, target->AsETSObjectType());
+        if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG)) {
+            conversion::UnboxingNarrowingPrimitive(relation, this, target);
             return true;
         }
-        conversion::Forbidden(relation);
-        return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE)) {
         if (target->HasTypeFlag(TypeFlag::DOUBLE)) {
             conversion::Unboxing(relation, this);
             return true;
         }
-        if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
-            conversion::WideningReference(relation, this, target->AsETSObjectType());
+        if (target->HasTypeFlag(TypeFlag::BYTE | TypeFlag::SHORT | TypeFlag::CHAR | TypeFlag::INT | TypeFlag::LONG |
+                                TypeFlag::FLOAT)) {
+            conversion::UnboxingNarrowingPrimitive(relation, this, target);
             return true;
         }
-        conversion::Forbidden(relation);
-        return true;
     }
     if (this->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN)) {
         if (target->HasTypeFlag(TypeFlag::ETS_BOOLEAN)) {
             conversion::Unboxing(relation, this);
             return true;
         }
+    }
+    if (this->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
         if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
+            if (!target->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE)) {
+                conversion::WideningReference(relation, this, target->AsETSObjectType());
+                return true;
+            }
+            auto unboxed_target = relation->GetChecker()->AsETSChecker()->ETSBuiltinTypeAsPrimitiveType(target);
+            CastNumericObject(relation, unboxed_target);
+            if (relation->IsTrue()) {
+                conversion::Boxing(relation, unboxed_target);
+                return true;
+            }
             conversion::WideningReference(relation, this, target->AsETSObjectType());
             return true;
         }

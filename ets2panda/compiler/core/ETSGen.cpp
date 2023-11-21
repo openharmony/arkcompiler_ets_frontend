@@ -917,28 +917,34 @@ void ETSGen::ApplyConversionCast(const ir::AstNode *node, const checker::Type *t
     }
 }
 
+void ETSGen::ApplyBoxingConversion(const ir::AstNode *node)
+{
+    EmitBoxingConversion(node);
+    node->SetBoxingUnboxingFlags(
+        static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ~(ir::BoxingUnboxingFlags::BOXING_FLAG)));
+}
+
+void ETSGen::ApplyUnboxingConversion(const ir::AstNode *node)
+{
+    if (GetAccumulatorType()->IsNullishOrNullLike()) {  // NOTE: vpukhov. should be a CTE
+        EmitNullishGuardian(node);
+    }
+    EmitUnboxingConversion(node);
+    node->SetBoxingUnboxingFlags(static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() &
+                                                                      ~(ir::BoxingUnboxingFlags::UNBOXING_FLAG)));
+}
+
 void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *target_type)
 {
     auto ttctx = TargetTypeContext(this, target_type);
 
     if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) {
-        EmitBoxingConversion(node);
-        const auto boxing_flags =
-            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG);
-        node->SetBoxingUnboxingFlags(
-            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ~boxing_flags));
+        ApplyBoxingConversion(node);
         return;
     }
 
     if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
-        if (GetAccumulatorType()->IsNullishOrNullLike()) {  // NOTE: vpukhov. should be a CTE
-            EmitNullishGuardian(node);
-        }
-        EmitUnboxingConversion(node);
-        const auto unboxing_flags = static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() &
-                                                                         ir::BoxingUnboxingFlags::UNBOXING_FLAG);
-        node->SetBoxingUnboxingFlags(
-            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ~unboxing_flags));
+        ApplyUnboxingConversion(node);
     }
 
     if (target_type == nullptr) {
