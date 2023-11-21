@@ -2314,13 +2314,15 @@ ir::MethodDefinition *ETSParser::CreateProxyMethodDefinition(ir::MethodDefinitio
 
     proxy_method += ' ';
     if (return_type != "void") {
-        if (auto *const cls_scope = VarBinder()->GetScope()->AsClassScope(); cls_scope->Parent()->IsGlobalScope()) {
-            proxy_method += "return ";
-        } else if (method->IsStatic()) {
+        proxy_method += "return ";
+    }
+
+    if (auto *const cls_scope = VarBinder()->GetScope()->AsClassScope(); !cls_scope->Parent()->IsGlobalScope()) {
+        if (method->IsStatic()) {
             ASSERT(ident_node != nullptr);
-            proxy_method += "return " + ident_node->Name().Mutf8() + ".";
+            proxy_method += ident_node->Name().Mutf8() + ".";
         } else {
-            proxy_method += "return this.";
+            proxy_method += "this.";
         }
     }
 
