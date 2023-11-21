@@ -359,6 +359,18 @@ std::string ToStringParamsHelper(const ir::AstNode *parent, const ArenaVector<T 
     return name + ")";
 }
 
+template <typename T>
+std::string ToStringParamsHelper(const ArenaVector<T *> &params)
+{
+    std::string name = "(";
+
+    for (auto const *param : params) {
+        name += ToStringHelper(param);
+    }
+
+    return name + ")";
+}
+
 std::string ToStringHelper(const ir::AstNode *ast)
 {
     if (ast == nullptr) {
@@ -458,8 +470,7 @@ std::string ToStringHelper(const ir::AstNode *ast)
             return "TS_INTERFACE_BODY ";
         }
         case ir::AstNodeType::ETS_FUNCTION_TYPE: {
-            return "ETS_FUNC_TYPE " +
-                   ToStringParamsHelper<ir::Expression>(ast->Parent(), ast->AsETSFunctionType()->Params());
+            return "ETS_FUNC_TYPE " + ToStringParamsHelper<ir::Expression>(ast->AsETSFunctionType()->Params());
         }
         case ir::AstNodeType::TS_CLASS_IMPLEMENTS: {
             return "TS_CLASS_IMPL " + ToStringHelper(ast->AsTSClassImplements()->Expr());
