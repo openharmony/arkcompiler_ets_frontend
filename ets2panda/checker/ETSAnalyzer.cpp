@@ -2037,7 +2037,9 @@ void InferReturnType(ETSChecker *checker, ir::ScriptFunction *containing_func, c
                      ir::Expression *st_argument)
 {
     //  First (or single) return statement in the function:
-    func_return_type = st_argument == nullptr ? checker->GlobalBuiltinVoidType() : st_argument->Check(checker);
+    func_return_type = st_argument == nullptr ? containing_func->IsEntryPoint() ? checker->GlobalVoidType()
+                                                                                : checker->GlobalBuiltinVoidType()
+                                              : st_argument->Check(checker);
     if (func_return_type->HasTypeFlag(checker::TypeFlag::CONSTANT)) {
         // remove CONSTANT type modifier if exists
         func_return_type =
