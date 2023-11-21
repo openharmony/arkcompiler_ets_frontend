@@ -881,6 +881,43 @@ checker::ETSFunctionType *ETSChecker::BuildFunctionSignature(ir::ScriptFunction 
     func_type->SetVariable(name_var);
     VarBinder()->AsETSBinder()->BuildFunctionName(func);
 
+    if (func->IsAbstract()) {
+        signature->AddSignatureFlag(SignatureFlags::ABSTRACT);
+        signature->AddSignatureFlag(SignatureFlags::VIRTUAL);
+    }
+
+    if (func->IsStatic()) {
+        signature->AddSignatureFlag(SignatureFlags::STATIC);
+    }
+
+    if (func->IsConstructor()) {
+        signature->AddSignatureFlag(SignatureFlags::CONSTRUCTOR);
+    }
+
+    if (func->Signature()->Owner()->GetDeclNode()->IsFinal() || func->IsFinal()) {
+        signature->AddSignatureFlag(SignatureFlags::FINAL);
+    }
+
+    if (func->IsPublic()) {
+        signature->AddSignatureFlag(SignatureFlags::PUBLIC);
+    } else if (func->IsInternal()) {
+        if (func->IsProtected()) {
+            signature->AddSignatureFlag(SignatureFlags::INTERNAL_PROTECTED);
+        } else {
+            signature->AddSignatureFlag(SignatureFlags::INTERNAL);
+        }
+    } else if (func->IsProtected()) {
+        signature->AddSignatureFlag(SignatureFlags::PROTECTED);
+    } else if (func->IsPrivate()) {
+        signature->AddSignatureFlag(SignatureFlags::PRIVATE);
+    }
+
+    if (func->IsSetter()) {
+        signature->AddSignatureFlag(SignatureFlags::SETTER);
+    } else if (func->IsGetter()) {
+        signature->AddSignatureFlag(SignatureFlags::GETTER);
+    }
+
     if (!is_arrow) {
         name_var->SetTsType(func_type);
     }
@@ -1053,11 +1090,13 @@ bool ETSChecker::CheckOverride(Signature *signature, ETSObjectType *site)
         if (it_subst == nullptr) {
             continue;
         }
+
         if (it_subst->HasSignatureFlag(SignatureFlags::ABSTRACT) || site->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
             if (site->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
                 CheckThrowMarkers(it_subst, signature);
-            } else if ((it_subst->Function()->IsSetter() && !signature->Function()->IsSetter()) ||
-                       (it_subst->Function()->IsGetter() && !signature->Function()->IsGetter())) {
+            }
+            if ((it_subst->Function()->IsSetter() && !signature->Function()->IsSetter()) ||
+                (it_subst->Function()->IsGetter() && !signature->Function()->IsGetter())) {
                 continue;
             }
         } else if (!IsMethodOverridesOther(it_subst, signature)) {

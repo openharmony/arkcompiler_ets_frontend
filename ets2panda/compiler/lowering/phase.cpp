@@ -25,6 +25,7 @@
 #include "compiler/lowering/ets/expandBrackets.h"
 #include "compiler/lowering/ets/generateDeclarations.h"
 #include "compiler/lowering/ets/lambdaLowering.h"
+#include "compiler/lowering/ets/interfacePropertyDeclarations.h"
 #include "compiler/lowering/ets/opAssignment.h"
 #include "compiler/lowering/ets/tupleLowering.h"
 #include "compiler/lowering/ets/unionLowering.h"
@@ -42,6 +43,7 @@ std::vector<Phase *> GetTrivialPhaseList()
     };
 }
 
+static InterfacePropertyDeclarationsPhase INTERFACE_PROP_DECL_PHASE;
 static GenerateTsDeclarationsPhase GENERATE_TS_DECLARATIONS_PHASE;
 static LambdaLowering LAMBDA_LOWERING;
 static OpAssignmentLowering OP_ASSIGNMENT_LOWERING;
@@ -69,6 +71,7 @@ std::vector<Phase *> GetPhaseList(ScriptExtension ext)
                 &PLUGINS_AFTER_PARSE,
                 &PROMISE_VOID_LOWERING,
                 &LAMBDA_LOWERING,
+                &INTERFACE_PROP_DECL_PHASE,
                 &CHECKER_PHASE,
                 &PLUGINS_AFTER_CHECK,
                 &GENERATE_TS_DECLARATIONS_PHASE,
@@ -79,6 +82,7 @@ std::vector<Phase *> GetPhaseList(ScriptExtension ext)
                 &EXPAND_BRACKETS_PHASE,
                 &PLUGINS_AFTER_LOWERINGS,
             };
+
         case ScriptExtension::AS:
             return std::vector<Phase *> {
                 &scopes_phase_as,

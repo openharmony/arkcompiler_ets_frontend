@@ -14,8 +14,8 @@
  */
 
 interface I {
-  RED: int = 1;
-  BLUE = 2;
+  RED: int;
+  BLUE:int;
 }
 
 interface I0 {

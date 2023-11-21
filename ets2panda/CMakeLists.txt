@@ -168,6 +168,7 @@ set(ES2PANDA_LIB_SRC
   compiler/lowering/ets/lambdaLowering.cpp
   compiler/lowering/ets/generateDeclarations.cpp
   compiler/lowering/ets/objectIndexAccess.cpp
+  compiler/lowering/ets/interfacePropertyDeclarations.cpp
   compiler/lowering/ets/opAssignment.cpp
   compiler/lowering/ets/tupleLowering.cpp
   compiler/lowering/ets/unionLowering.cpp
