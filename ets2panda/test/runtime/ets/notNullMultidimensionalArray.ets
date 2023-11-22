@@ -13,8 +13,14 @@
  * limitations under the License.
  */
 
-let arr: Int[] | null = [1, 4, 5];
-let test = arr?.[1] ?? "unknown";
+function main() {
+    testLocalArray()
+}
 
-let arr2: String[] | null;
-let test2 = arr2?.[100] ?? "unknown2";
+function testLocalArray() : void {
+    let arr : Int[][] | null = new Int[3][2];
+
+    arr![2][1] = 42;
+
+    assert arr[2][1].toString() == "42" : "arr[2][1].toString() must be '42'";
+}

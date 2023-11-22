@@ -13,8 +13,7 @@
  * limitations under the License.
  */
 
-let arr: Int[] | null = [1, 4, 5];
-let test = arr?.[1] ?? "unknown";
+class A {}
 
-let arr2: String[] | null;
-let test2 = arr2?.[100] ?? "unknown2";
+let arr : Object[] = [new Object(), new A()];
+let elem : Object = arr[0];

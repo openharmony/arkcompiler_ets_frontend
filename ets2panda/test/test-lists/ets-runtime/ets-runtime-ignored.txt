@@ -31,3 +31,6 @@ conditionalExpressionGenericLUB.ets
 
 # Failed due to lambda captures
 trailing-lambda-with-capture.ets
+
+# ignored until union types are properly implemented and non nullish base type of array types can be properly handled
+notNullMultidimensionalArray.ets

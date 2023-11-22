@@ -1322,6 +1322,19 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
         return expr->TsType();
     }
     auto *const left_type = expr->Object()->Check(checker);
+
+    if (expr->Kind() == ir::MemberExpressionKind::ELEMENT_ACCESS) {
+        if (expr->IsOptional() && !left_type->IsNullish()) {
+            checker->ThrowTypeError("The type of the object reference must be a nullish array or Record type",
+                                    expr->Object()->Start());
+        }
+
+        if (!expr->IsOptional() && left_type->IsNullish()) {
+            checker->ThrowTypeError("The type of the object reference must be a non-nullish array or Record type",
+                                    expr->Object()->Start());
+        }
+    }
+
     auto *const base_type = expr->IsOptional() ? checker->GetNonNullishType(left_type) : left_type;
     if (!expr->IsOptional()) {
         checker->CheckNonNullishType(left_type, expr->Object()->Start());
