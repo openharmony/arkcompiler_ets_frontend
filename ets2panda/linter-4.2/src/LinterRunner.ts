@@ -156,7 +156,7 @@ function getTscDiagnostics(
   const strictDiagnostics = new Map<string, ts.Diagnostic[]>();
   sourceFiles.forEach(file => {
     const diagnostics = tscDiagnosticsLinter.getStrictDiagnostics(file.fileName);
-    if (diagnostics.length != 0) {
+    if (diagnostics.length !== 0) {
       strictDiagnostics.set(path.normalize(file.fileName), diagnostics);
     }
   });
@@ -174,7 +174,7 @@ function transformTscDiagnostics(
 }
 
 function countProblemFiles(
-  nodeCounters: number[], filesNumber: number, tsSrcFile: ts.SourceFile, 
+  nodeCounters: number[], filesNumber: number, tsSrcFile: ts.SourceFile,
   fileNodes: number, fileErrorLines: number, fileWarningLines: number, linter: TypeScriptLinter,
 ) {
   let errorNodes = 0, warningNodes = 0;
@@ -212,7 +212,7 @@ function logProblemsPercentageByFeatures(linter: TypeScriptLinter) {
     // if Strict mode - count all cases
     if (!linter.strictMode && faultsAttrs[i].migratable)
       continue;
-    
+
     let nodes = linter.nodeCounters[i];
     let lines = linter.lineCounters[i];
     let pecentage = ((nodes / linter.totalVisitedNodes) * 100).toFixed(2).padEnd(7, ' ');

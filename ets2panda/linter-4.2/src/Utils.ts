@@ -63,15 +63,15 @@ export function getNodeOrLineEnd(
 }
 
 export function mergeArrayMaps<K, V>(lhs: Map<K, V[]>, rhs: Map<K, V[]>): Map<K, V[]> {
-  if (lhs.size == 0) {
+  if (lhs.size === 0) {
     return rhs;
   }
-  if (rhs.size == 0) {
+  if (rhs.size === 0) {
     return lhs;
   }
 
   rhs.forEach((values, key) => {
-    if (values.length != 0) {
+    if (values.length !== 0) {
       if (lhs.has(key)) {
         lhs.get(key)!.push(...values);
       } else {
@@ -314,7 +314,7 @@ export class TsUtils {
     if (tsType === undefined || !ts.isTypeReferenceNode(tsType)) {
       return false;
     }
-    return this.entityNameToString(tsType.typeName) == checkType;
+    return this.entityNameToString(tsType.typeName) === checkType;
   }
 
   public entityNameToString(name: ts.EntityName): string {
@@ -421,7 +421,7 @@ export class TsUtils {
   }
 
   public isEnumType(tsType: ts.Type): boolean {
-    // Note: For some reason, test (tsType.flags & ts.TypeFlags.Enum) != 0 doesn't work here.
+    // Note: For some reason, test (tsType.flags & ts.TypeFlags.Enum) !== 0 doesn't work here.
     // Must use SymbolFlags to figure out if this is an enum type.
     return tsType.symbol && (tsType.symbol.flags & ts.SymbolFlags.Enum) !== 0;
   }
@@ -517,17 +517,17 @@ export class TsUtils {
   public isReferenceType(tsType: ts.Type): boolean {
     const f = tsType.getFlags();
     return (
-      (f & ts.TypeFlags.InstantiableNonPrimitive) != 0 || (f & ts.TypeFlags.Object) != 0 ||
-      (f & ts.TypeFlags.Boolean) != 0 || (f & ts.TypeFlags.Enum) != 0 || (f & ts.TypeFlags.NonPrimitive) != 0 ||
-      (f & ts.TypeFlags.Number) != 0 || (f & ts.TypeFlags.String) != 0
+      (f & ts.TypeFlags.InstantiableNonPrimitive) !== 0 || (f & ts.TypeFlags.Object) !== 0 ||
+      (f & ts.TypeFlags.Boolean) !== 0 || (f & ts.TypeFlags.Enum) !== 0 || (f & ts.TypeFlags.NonPrimitive) !== 0 ||
+      (f & ts.TypeFlags.Number) !== 0 || (f & ts.TypeFlags.String) !== 0
     );
   }
 
   public isPrimitiveType(type: ts.Type): boolean {
     const f = type.getFlags();
     return (
-      (f & ts.TypeFlags.Boolean) != 0 || (f & ts.TypeFlags.BooleanLiteral) != 0 ||
-      (f & ts.TypeFlags.Number) != 0 || (f & ts.TypeFlags.NumberLiteral) != 0
+      (f & ts.TypeFlags.Boolean) !== 0 || (f & ts.TypeFlags.BooleanLiteral) !== 0 ||
+      (f & ts.TypeFlags.Number) !== 0 || (f & ts.TypeFlags.NumberLiteral) !== 0
       // In ArkTS 'string' is not a primitive type. So for the common subset 'string'
       // should be considered as a reference type. That is why next line is commented out.
       //(f & ts.TypeFlags.String) != 0 || (f & ts.TypeFlags.StringLiteral) != 0
@@ -554,9 +554,9 @@ export class TsUtils {
     if (this.isTypeReference(tsType) && tsType.target !== tsType) tsType = tsType.target;
 
     const tsTypeNode = this.tsTypeChecker.typeToTypeNode(tsType, undefined, ts.NodeBuilderFlags.None);
-    if (checkType == CheckType.Array && (this.isGenericArrayType(tsType) || this.isTypedArray(tsTypeNode)))
+    if (checkType === CheckType.Array && (this.isGenericArrayType(tsType) || this.isTypedArray(tsTypeNode)))
       return true;
-    if (checkType != CheckType.Array && this.isType(tsTypeNode, checkType.toString()))
+    if (checkType !== CheckType.Array && this.isType(tsTypeNode, checkType.toString()))
       return true;
     if (!tsType.symbol || !tsType.symbol.declarations) return false;
 
@@ -585,7 +585,7 @@ export class TsUtils {
   }
 
   public isThisOrSuperExpr(tsExpr: ts.Expression): boolean {
-    return (tsExpr.kind == ts.SyntaxKind.ThisKeyword || tsExpr.kind == ts.SyntaxKind.SuperKeyword);
+    return (tsExpr.kind === ts.SyntaxKind.ThisKeyword || tsExpr.kind === ts.SyntaxKind.SuperKeyword);
   }
 
   public isPrototypeSymbol(symbol: ts.Symbol | undefined): boolean {
@@ -800,7 +800,7 @@ export class TsUtils {
         !typeADecl.heritageClauses
       ) continue;
       for (let heritageClause of typeADecl.heritageClauses) {
-        let processInterfaces = typeA.isClass() ? (heritageClause.token != ts.SyntaxKind.ExtendsKeyword) : true;
+        let processInterfaces = typeA.isClass() ? (heritageClause.token !== ts.SyntaxKind.ExtendsKeyword) : true;
         if (this.processParentTypes(heritageClause.types, typeB, processInterfaces)) return true;
       }
     }
@@ -867,7 +867,9 @@ export class TsUtils {
     for (let baseTypeExpr of parentTypes) {
       let baseType = this.tsTypeChecker.getTypeAtLocation(baseTypeExpr);
       if (this.isTypeReference(baseType) && baseType.target !== baseType) baseType = baseType.target;
-      if (baseType && (baseType.isClass() != processInterfaces) && this.relatedByInheritanceOrIdentical(baseType, typeB)) return true;
+      if (baseType && (baseType.isClass() !== processInterfaces) && this.relatedByInheritanceOrIdentical(baseType, typeB)) {
+        return true;
+      }
     }
     return false;
   }
@@ -889,7 +891,7 @@ export class TsUtils {
       return true;
     }
     let node = this.tsTypeChecker.typeToTypeNode(tsType, undefined, undefined);
-    return node != undefined && node.kind === ts.SyntaxKind.ObjectKeyword;
+    return node !== undefined && node.kind === ts.SyntaxKind.ObjectKeyword;
   }
 
   public isCallToFunctionWithOmittedReturnType(tsExpr: ts.Expression): boolean {
@@ -1003,7 +1005,7 @@ export class TsUtils {
     return true;
   }
 
-  private getNonNullableType(t: ts.Type) {
+  private getNonNullableType(t: ts.Type): ts.Type {
     if (this.isNullableUnionType(t)) {
       return t.getNonNullableType();
     }
@@ -1482,7 +1484,7 @@ export class TsUtils {
 
   public isEsObjectType(typeNode: ts.TypeNode): boolean {
     return ts.isTypeReferenceNode(typeNode) && ts.isIdentifier(typeNode.typeName) &&
-      typeNode.typeName.text == TsUtils.ES_OBJECT;
+      typeNode.typeName.text === TsUtils.ES_OBJECT;
   }
 
   public isInsideBlock(node: ts.Node): boolean {
@@ -1536,8 +1538,8 @@ export class TsUtils {
 
   public isEsObjectSymbol(sym: ts.Symbol): boolean {
     let decl = this.getDeclaration(sym);
-    return !!decl && ts.isTypeAliasDeclaration(decl) && decl.name.escapedText == TsUtils.ES_OBJECT &&
-      decl.type.kind == ts.SyntaxKind.AnyKeyword;
+    return !!decl && ts.isTypeAliasDeclaration(decl) && decl.name.escapedText === TsUtils.ES_OBJECT &&
+      decl.type.kind === ts.SyntaxKind.AnyKeyword;
   }
 
   public isAnonymousType(type: ts.Type): boolean {
@@ -1565,9 +1567,9 @@ export class TsUtils {
 
   // has to be re-implemented with local loop detection
   public typeIsRecursive(topType: ts.Type, type: ts.Type | undefined = undefined): boolean {
-    if (type == undefined) {
+    if (type === undefined) {
       type = topType;
-    } else if (type == topType) {
+    } else if (type === topType) {
       return true;
     } else if (type.aliasSymbol) {
       return false;
