@@ -84,13 +84,13 @@ void PatchFix::ValidateModuleInfo(const std::string &recordName,
     std::vector<panda::pandasm::LiteralArray::Literal> &moduleBuffer)
 {
     auto it = originModuleInfo_->find(recordName);
-    if (it == originModuleInfo_->end()) {
+    if (!IsHotReload() && it == originModuleInfo_->end()) {
         std::cerr << "[Patch] Found new import/export expression in " << recordName << ", not supported!" << std::endl;
         patchError_ = true;
         return;
     }
 
-    if (Helpers::GetHashString(ConvertLiteralToString(moduleBuffer)) != it->second) {
+    if (!IsHotReload() && Helpers::GetHashString(ConvertLiteralToString(moduleBuffer)) != it->second) {
         std::cerr << "[Patch] Found import/export expression changed in " << recordName << ", not supported!" <<
             std::endl;
         patchError_ = true;
@@ -109,14 +109,14 @@ void PatchFix::DumpJsonContentRecInfo(const std::string &recordName, const std::
 void PatchFix::ValidateJsonContentRecInfo(const std::string &recordName, const std::string &jsonFileContent)
 {
     auto it = originModuleInfo_->find(recordName);
-    if (it == originModuleInfo_->end()) {
+    if (!IsHotReload() && it == originModuleInfo_->end()) {
         std::cerr << "[Patch] Found new import/require json file expression in " << recordName <<
             ", not supported!" << std::endl;
         patchError_ = true;
         return;
     }
 
-    if (Helpers::GetHashString(jsonFileContent) != it->second) {
+    if (!IsHotReload() && Helpers::GetHashString(jsonFileContent) != it->second) {
         std::cerr << "[Patch] Found imported/required json file content changed in " << recordName <<
             ", not supported!" << std::endl;
         patchError_ = true;
