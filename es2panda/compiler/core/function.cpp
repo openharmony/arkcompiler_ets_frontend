@@ -133,6 +133,10 @@ static void CompileField(PandaGen *pg, const ir::ClassProperty *prop, VReg thisR
     }
 
     if (!prop->Key()->IsIdentifier()) {
+        if (pg->Binder()->Program()->Extension() == ScriptExtension::TS) {
+            // TS transformer already handled the cases, so don't throw error
+            return;
+        }
         PandaGen::Unimplemented();
     }
 

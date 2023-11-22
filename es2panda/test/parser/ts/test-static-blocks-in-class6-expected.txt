@@ -1,0 +1,1 @@
+SyntaxError: Unexpected token '{' [test-static-blocks-in-class6.ts:18:17]

@@ -337,7 +337,7 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
 
     CompileMissingProperties(pg, compiled, classReg);
 
-    if (NeedStaticInitializer() && pg->Binder()->Program()->Extension() == ScriptExtension::JS) {
+    if (NeedStaticInitializer()) {
         StaticInitialize(pg, classReg);
     }
 }

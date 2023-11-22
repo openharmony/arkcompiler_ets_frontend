@@ -981,6 +981,10 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitStaticProperty(ir::Clas
         if (!classProperty->IsStatic()) {
             continue;
         }
+        if (classProperty->Key()->IsIdentifier()) {
+            // The corresponding bytecode will be generated in common logic of js and ts, so no need to process here
+            continue;
+        }
         if (classProperty->IsComputed()) {
             res.push_back(AllocNode<ir::ExpressionStatement>(classProperty->Key()));
         }
