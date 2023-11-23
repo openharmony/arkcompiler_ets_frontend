@@ -574,7 +574,7 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
     }
 
     // api limitation for new class compilation
-    if (Program()->TargetApiVersion() > 10) {
+    if (!(bindingFlags_ & ResolveBindingFlags::TS_BEFORE_TRANSFORM)) {
         classDef->BuildClassEnvironment();
     }
 
@@ -672,7 +672,9 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             break;
         }
         case ir::AstNodeType::PRIVATE_IDENTIFIER: {
-            CheckPrivateDeclaration(childNode->AsPrivateIdentifier());
+            if (Program()->Extension()==ScriptExtension::JS) {
+                CheckPrivateDeclaration(childNode->AsPrivateIdentifier());
+            }
             break;
         }
         case ir::AstNodeType::SUPER_EXPRESSION: {
@@ -740,7 +742,7 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
         }
         case ir::AstNodeType::CLASS_PROPERTY: {
             // api limitation for new class compilation
-            if (Program()->TargetApiVersion() <= 10) {
+            if (Program()->Extension() == ScriptExtension::TS) {
                 const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(childNode->AsClassProperty());
                 auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, ctor->Scope());
                 ResolveReferences(childNode);
@@ -1029,9 +1031,9 @@ void Binder::CheckPrivateDeclaration(const ir::PrivateIdentifier *privateIdent)
     auto name = privateIdent->Name();
     auto scope = scope_;
     while (scope != nullptr) {
-        if (scope->Node() && scope->Node()->IsClassDefinition()) {
-            const auto *classDef = scope->Node()->AsClassDefinition();
-            if (classDef->Find(name)) {
+        if (scope->Type() == ScopeType::CLASS) {
+            const auto *classScope = scope->AsClassScope();
+            if (classScope->HasPrivateName(name)) {
                 return;
             }
         }

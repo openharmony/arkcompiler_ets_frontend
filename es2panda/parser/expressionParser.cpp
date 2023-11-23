@@ -1611,20 +1611,37 @@ ir::Expression *ParserImpl::ParsePostPrimaryExpression(ir::Expression *primaryEx
                 lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);  // eat period
 
                 ir::Expression *property;
-                if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_HASH_MARK) {
+                if (Extension() == ScriptExtension::JS &&
+                    lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_HASH_MARK) {
                     if (returnExpression->IsSuperExpression()) {
                         ThrowSyntaxError("Unexpected private property access in super keyword");
                     }
                     property = ParsePrivateIdentifier();
                 } else {
+                    bool isPrivate = false;
+                    lexer::SourcePosition memberStart = lexer_->GetToken().Start();
+                    if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_HASH_MARK) {
+                        if (!(context_.Status() & ParserStatus::IN_CLASS_BODY)) {
+                            ThrowSyntaxError("Private identifiers are not allowed outside class bodies.");
+                        }
+                        isPrivate = true;
+                        lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);
+                    }
+
                     if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
                         ThrowSyntaxError("Expected an identifier");
                     }
-                    property = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
-                    property->SetRange(lexer_->GetToken().Loc());
+                    auto *identNode = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
+                    identNode->SetRange(lexer_->GetToken().Loc());
                     lexer_->NextToken();
-                }
 
+                    if (isPrivate) {
+                        property = AllocNode<ir::TSPrivateIdentifier>(identNode, nullptr, nullptr);
+                        property->SetRange({memberStart, identNode->End()});
+                    } else {
+                        property = identNode;
+                    }
+                }
                 const lexer::SourcePosition &startPos = returnExpression->Start();
                 returnExpression = AllocNode<ir::MemberExpression>(
                     returnExpression, property, ir::MemberExpression::MemberExpressionKind::PROPERTY_ACCESS, false,

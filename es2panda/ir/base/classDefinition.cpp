@@ -404,8 +404,11 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
     compiler::VariableEnvScope envScope(pg, scope_);
     if (hasComputedKey_) {
         CompileComputedKeys(pg);
+    }
+
+    if (hasPrivateElement_) {
         int32_t bufIdx = CreateClassPrivateBuffer(pg);
-        pg->CreatePrivateProperty(this, privateFieldCnt_, bufIdx);
+        pg->CreatePrivateProperty(this, scope_->privateFieldCnt_, bufIdx);
     }
 
     compiler::VReg baseReg = CompileHeritageClause(pg);
@@ -418,7 +421,7 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
     pg->StoreAccumulator(this, classReg);
 
     if (HasStaticPrivateMethod()) {
-        pg->StoreLexicalVar(this, 0, staticMethodValidation_);
+        pg->StoreLexicalVar(this, 0, scope_->staticMethodValidation_);
     }
 
     InitializeClassName(pg);
@@ -471,46 +474,12 @@ void ClassDefinition::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
     }
 }
 
-Result ClassDefinition::GetPrivateProperty(const util::StringView &name, bool isSetter) const
-{
-    if (name.Is("#method")) {
-        return {instanceMethodValidation_, false, false, false, false, 0};
-    }
-
-    uint32_t slot{0};
-    bool setter{false};
-    bool getter{false};
-
-    if (privateNames_.find(name) != privateNames_.end()) {
-        slot = privateNames_.find(name)->second;
-    } else {
-        auto accessor = isSetter ? privateSetters_ :privateGetters_;
-        auto unexpectedAccessor = isSetter ? privateGetters_ :privateSetters_;
-
-        if (accessor.find(name) != accessor.end()) {
-            setter = isSetter;
-            getter = !setter;
-            slot = accessor.find(name)->second;
-        } else {
-            getter = isSetter;
-            setter = !getter;
-            slot = unexpectedAccessor.find(name)->second;
-        }
-    }
-
-    uint32_t validateMethodSlot{0};
-
-    if (IsMethod(slot)) {
-        validateMethodSlot = IsStaticMethod(slot) ? staticMethodValidation_ : instanceMethodValidation_;
-    }
-
-    return {slot, IsMethod(slot), IsStaticMethod(slot), getter, setter, validateMethodSlot};
-}
 
 void ClassDefinition::BuildClassEnvironment()
 {
     int instancePrivateMethodCnt = 0;
     int staticPrivateMethodCnt = 0;
+    int privateFieldCnt = 0;
     std::vector<const Statement *> privateProperties;
     for (const auto *stmt : body_) {
         if (stmt->IsMethodDefinition()) {
@@ -539,48 +508,19 @@ void ClassDefinition::BuildClassEnvironment()
             needInstanceInitializer_ = true;
         }
         if (prop->Key()->IsPrivateIdentifier()) {
-            privateFieldCnt_++;
+            privateFieldCnt++;
             privateProperties.push_back(stmt);
         }
     }
 
-    instancePrivateMethodStartSlot_ = slot_ + privateFieldCnt_;
-    staticPrivateMethodStartSlot_ = instancePrivateMethodStartSlot_ + instancePrivateMethodCnt;
-    uint32_t instancePrivateMethodSlot = instancePrivateMethodStartSlot_;
-    uint32_t staticPrivateMethodSlot = staticPrivateMethodStartSlot_;
-    for (auto stmt : privateProperties) {
-        if (stmt->IsClassProperty()) {
-            privateNames_[stmt->AsClassProperty()->Key()->AsPrivateIdentifier()->Name()] = slot_++;
-            continue;
-        }
-        ASSERT(stmt->IsMethodDefinition());
-        auto *methodDef = stmt->AsMethodDefinition();
-        uint32_t *start = methodDef->IsStatic() ? &staticPrivateMethodSlot : &instancePrivateMethodSlot;
-        auto name = methodDef->Key()->AsPrivateIdentifier()->Name();
-        switch (methodDef->Kind()) {
-                case MethodDefinitionKind::GET: {
-                    privateGetters_[name] =  (*start)++;
-                    continue;
-                }
-                case MethodDefinitionKind::SET: {
-                    privateSetters_[name] =  (*start)++;
-                    continue;
-                }
-                default: {
-                    privateNames_[name]=  (*start)++;
-                    continue;
-                }
-            }
-    }
-    slot_ = staticPrivateMethodSlot;
-    privateMethodEndSlot_ = slot_;
-    if (instancePrivateMethodCnt != 0) {
-        needInstanceInitializer_ = true;
-        instanceMethodValidation_ = slot_++;
+    if (!privateProperties.empty()) {
+        hasPrivateElement_ = true;
+        scope_->AddPrivateName(privateProperties, privateFieldCnt, instancePrivateMethodCnt, staticPrivateMethodCnt);
     }
 
-    if (staticPrivateMethodCnt != 0) {
-        staticMethodValidation_ = slot_++;
+    if (instancePrivateMethodCnt > 0)
+    {
+        needInstanceInitializer_ = true;
     }
 
     if (NeedInstanceInitializer()) {

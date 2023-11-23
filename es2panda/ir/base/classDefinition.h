@@ -44,22 +44,6 @@ class TSTypeParameterInstantiation;
 class TSClassImplements;
 class TSIndexSignature;
 
-class Result {
-public:
-    uint32_t slot;
-    bool isMethod;
-    bool isStatic;
-    bool isGetter;
-    bool isSetter;
-    uint32_t validateMethodSlot;
-};
-
-class PrivateNameFindResult {
-public:
-    int32_t lexLevel;
-    ir::Result result;
-};
-
 class ClassDefinition : public AstNode {
 public:
     explicit ClassDefinition(binder::ClassScope *scope, Identifier *ident, TSTypeParameterDeclaration *typeParams,
@@ -212,19 +196,14 @@ public:
         return scope_->GetSlot(key);
     }
 
-    bool Find(const util::StringView &name) const
-    {
-        return (privateNames_.count(name) + privateGetters_.count(name) + privateSetters_.count(name) != 0);
-    }
-
     bool HasInstancePrivateMethod() const
     {
-        return instanceMethodValidation_ != 0;
+        return scope_->instanceMethodValidation_ != 0;
     }
 
     bool HasStaticPrivateMethod() const
     {
-        return staticMethodValidation_ != 0;
+        return scope_->staticMethodValidation_ != 0;
     }
 
     const FunctionExpression *Ctor() const;
@@ -232,7 +211,6 @@ public:
     util::StringView GetName() const;
 
     void BuildClassEnvironment();
-    Result GetPrivateProperty(const util::StringView &name, bool isSetter) const;
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -250,15 +228,6 @@ private:
     void InstanceInitialize(compiler::PandaGen *pg, compiler::VReg classReg) const;
     void CompileComputedKeys(compiler::PandaGen *pg) const;
 
-    bool IsMethod(uint32_t slot) const
-    {
-        return slot >= instancePrivateMethodStartSlot_ && slot < privateMethodEndSlot_;
-    }
-
-    bool IsStaticMethod(uint32_t slot) const
-    {
-        return slot >= staticPrivateMethodStartSlot_;
-    }
 
     binder::ClassScope *scope_;
     Identifier *ident_;
@@ -277,12 +246,7 @@ private:
     bool needStaticInitializer_ {false};
     bool needInstanceInitializer_ {false};
     bool hasComputedKey_ {false};
-    uint32_t privateFieldCnt_ {0};
-    uint32_t instancePrivateMethodStartSlot_ {0};
-    uint32_t staticPrivateMethodStartSlot_ {0};
-    uint32_t privateMethodEndSlot_ {0};
-    uint32_t instanceMethodValidation_ {0};
-    uint32_t staticMethodValidation_ {0};
+    bool hasPrivateElement_ {false};
 };
 
 }  // namespace panda::es2panda::ir

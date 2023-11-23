@@ -2262,9 +2262,10 @@ void ParserImpl::ValidateClassKey(ClassElmentDescriptor *desc, bool isDeclare)
 
 ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDeclare)
 {
-    if (desc->isPrivateIdent) {
+    if (desc->isPrivateIdent && Extension() == ScriptExtension::JS) {
         return ParsePrivateIdentifier();
     }
+
     ir::Expression *propName = nullptr;
     if (lexer_->GetToken().IsKeyword()) {
         lexer_->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
@@ -2280,13 +2281,13 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDe
         }
         case lexer::TokenType::LITERAL_STRING: {
             ValidateClassKey(desc, isDeclare);
-
+            ThrowIfPrivateIdent(desc, "Private identifier name can not be string");
             propName = AllocNode<ir::StringLiteral>(lexer_->GetToken().String());
             propName->SetRange(lexer_->GetToken().Loc());
             break;
         }
         case lexer::TokenType::LITERAL_NUMBER: {
-
+            ThrowIfPrivateIdent(desc, "Private identifier name can not be number");
             if (lexer_->GetToken().Flags() & lexer::TokenFlags::NUMBER_BIGINT) {
                 propName = AllocNode<ir::BigIntLiteral>(lexer_->GetToken().BigInt());
             } else {
@@ -2297,6 +2298,7 @@ ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDe
             break;
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
+            ThrowIfPrivateIdent(desc, "Unexpected character in private identifier");
             lexer_->NextToken();  // eat left square bracket
 
             if (Extension() == ScriptExtension::TS && lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT &&
@@ -2598,6 +2600,12 @@ ir::Statement *ParserImpl::ParseClassProperty(ClassElmentDescriptor *desc,
         propEnd = value->End();
     }
 
+    if(Extension() == ScriptExtension::TS && desc->isPrivateIdent) {
+        auto *privateId = AllocNode<ir::TSPrivateIdentifier>(propName, value, typeAnnotation);
+        privateId->SetRange({desc->propStart, propName->End()});
+        propName = privateId;
+    }
+
     property = AllocNode<ir::ClassProperty>(propName, value, typeAnnotation,
                                             desc->modifiers, std::move(decorators), desc->isComputed,
                                             desc->modifiers & ir::ModifierFlags::DEFINITE);
@@ -2627,6 +2635,10 @@ void ParserImpl::CheckClassPrivateIdentifier(ClassElmentDescriptor *desc)
     }
 
     desc->isPrivateIdent = true;
+
+    if (Extension() == ScriptExtension::TS) {
+        lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);
+    }
 }
 
 void ParserImpl::CheckFieldKey(ir::Expression *propName)
