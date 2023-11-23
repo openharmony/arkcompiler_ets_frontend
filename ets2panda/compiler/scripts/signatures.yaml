@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2023 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -22,6 +22,10 @@ defines:
     ref: ETS_GLOBAL
   - name: _$init$_
     ref: INIT_METHOD
+  - name: $_get
+    ref: GET_INDEX_METHOD
+  - name: $_set
+    ref: SET_INDEX_METHOD
   - name: 'ETSGLOBAL.main:'
     ref: ETS_MAIN_WITH_MANGLE_BEGIN
   - name: 'main'

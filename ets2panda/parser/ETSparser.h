@@ -19,7 +19,6 @@
 #include <optional>
 #include "util/arktsconfig.h"
 #include "TypedParser.h"
-#include "ir/ets/etsParameterExpression.h"
 
 namespace panda::es2panda::ir {
 class ETSPackageDeclaration;
@@ -264,6 +263,7 @@ private:
     ir::Statement *ParseEnumDeclaration(bool is_const = false, bool is_static = false) override;
     ir::Expression *ParseLaunchExpression(ExpressionParseFlags flags);
     void ValidateRestParameter(ir::Expression *param) override;
+    void CheckIndexAccessMethod(ir::ScriptFunction const *function, const lexer::SourcePosition &position) const;
 
     bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,
                            ArenaVector<ir::AstNode *> &properties) override;
@@ -304,7 +304,6 @@ private:
     ir::ModifierFlags ParseTypeVarianceModifier(TypeAnnotationParsingOptions *options);
 
     ir::ScriptFunction *AddInitMethod(ArenaVector<ir::AstNode *> &global_properties);
-    // NOLINTNEXTLINE(google-default-arguments)
     ir::Statement *ParseTopLevelStatement(StatementParsingFlags flags = StatementParsingFlags::NONE);
 
     void ParseTrailingBlock([[maybe_unused]] ir::CallExpression *call_expr) override;
@@ -318,7 +317,7 @@ private:
     inline static constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
     inline static constexpr char const DEFAULT_PROXY_FILE[] = "<default_method>.ets";
     // NOLINTEND(modernize-avoid-c-arrays)
-    // NOLINTBEGIN(google-default-arguments)
+
     ir::Statement *CreateStatement(std::string_view source_code, std::string_view file_name = DEFAULT_SOURCE_FILE);
     ir::Statement *CreateFormattedStatement(std::string_view source_code, std::vector<ir::AstNode *> &inserting_nodes,
                                             std::string_view file_name = DEFAULT_SOURCE_FILE);

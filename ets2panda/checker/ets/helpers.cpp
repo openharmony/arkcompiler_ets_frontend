@@ -1530,7 +1530,7 @@ void ETSChecker::AddBoxingUnboxingFlagToNode(ir::AstNode *node, Type *boxing_unb
     }
 }
 
-ir::BoxingUnboxingFlags ETSChecker::GetBoxingFlag(Type *boxing_type)
+ir::BoxingUnboxingFlags ETSChecker::GetBoxingFlag(Type *const boxing_type)
 {
     auto type_kind = TypeKind(ETSBuiltinTypeAsPrimitiveType(boxing_type));
     switch (type_kind) {
@@ -1563,7 +1563,7 @@ ir::BoxingUnboxingFlags ETSChecker::GetBoxingFlag(Type *boxing_type)
     }
 }
 
-ir::BoxingUnboxingFlags ETSChecker::GetUnboxingFlag(Type *unboxing_type)
+ir::BoxingUnboxingFlags ETSChecker::GetUnboxingFlag(Type const *const unboxing_type) const
 {
     auto type_kind = TypeKind(unboxing_type);
     switch (type_kind) {

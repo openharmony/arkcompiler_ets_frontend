@@ -42,9 +42,6 @@
 #include "util/ustring.h"
 #include "generated/signatures.h"
 
-#include <algorithm>
-#include <sstream>
-
 namespace panda::es2panda::varbinder {
 VariableScope *Scope::EnclosingVariableScope()
 {
@@ -123,16 +120,18 @@ Scope::VariableMap::size_type Scope::EraseBinding(const util::StringView &name)
 ConstScopeFindResult Scope::FindInGlobal(const util::StringView &name, const ResolveBindingOptions options) const
 {
     const auto *scope_iter = this;
+    const auto *scope_parent = this->Parent();
     // One scope below true global is ETSGLOBAL
-    while (!scope_iter->Parent()->IsGlobalScope()) {
-        scope_iter = scope_iter->Parent();
+    while (scope_parent != nullptr && !scope_parent->IsGlobalScope()) {
+        scope_iter = scope_parent;
+        scope_parent = scope_iter->Parent();
     }
 
     auto *resolved = scope_iter->FindLocal(name, options);
-    if (resolved == nullptr) {
+    if (resolved == nullptr && scope_parent != nullptr) {
         // If the variable cannot be found in the scope of the local ETSGLOBAL, than we still need to check the true
         // global scope which contains all the imported ETSGLOBALs
-        resolved = scope_iter->Parent()->FindLocal(name, options);
+        resolved = scope_parent->FindLocal(name, options);
     }
 
     return {name, scope_iter, 0, 0, resolved};
