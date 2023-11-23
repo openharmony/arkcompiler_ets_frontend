@@ -500,15 +500,10 @@ bool PatchFix::CompareClassHash(std::vector<std::pair<std::string, std::string>>
     for (size_t i = 0; i < hashList.size() - 1; ++i) {
         auto &className = hashList[i].first;
         auto classIter = classInfo.find(className);
-        if (classIter != classInfo.end() && classIter->second != hashList[i].second) {
+        if (!IsHotReload() && classIter != classInfo.end() && classIter->second != hashList[i].second) {
             if (IsColdFix()) {
                 modifiedClassNames_.insert(className);
                 continue;
-            } else if (IsHotReload()) {
-                std::cerr << "[Patch] Found class " << hashList[i].first << " changed, not supported! If " <<
-                    hashList[i].first << " is not changed and you are changing UI Component, please only " <<
-                    "change one Component at a time and make sure the Component is placed at the bottom " <<
-                    "of the file." << std::endl;
             } else {
                 ASSERT(IsHotFix());
                 std::cerr << "[Patch] Found class " << hashList[i].first << " changed, not supported!" << std::endl;
