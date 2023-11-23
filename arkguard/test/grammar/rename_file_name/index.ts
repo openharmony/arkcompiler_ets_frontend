@@ -13,21 +13,8 @@
  * limitations under the License.
  */
 
-import type {IOptions} from '../configs/IOptions';
-import type {Node, TransformerFactory} from 'typescript';
-
-export interface TransformPlugin {
-  name: string;
-  order: number
-  createTransformerFactory: (option: IOptions) => TransformerFactory<Node>;
+function foo() {
 }
 
-export enum TransformerOrder {
-  SHORTHAND_PROPERTY_TRANSFORMER = 0,
-  DISABLE_CONSOLE_TRANSFORMER = 1,
-  DISABLE_HILOG_TRANSFORMER = 2,
-  SIMPLIFY_TRANSFORMER = 3,
-  RENAME_PROPERTIES_TRANSFORMER = 4,
-  RENAME_IDENTIFIER_TRANSFORMER = 5,
-  RENAME_FILE_NAME_TRANSFORMER = 6,
+function main() {
 }

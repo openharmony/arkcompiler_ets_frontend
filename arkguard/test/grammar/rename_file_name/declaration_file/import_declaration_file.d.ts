@@ -13,21 +13,17 @@
  * limitations under the License.
  */
 
-import type {IOptions} from '../configs/IOptions';
-import type {Node, TransformerFactory} from 'typescript';
+import { declaration_class, declaration_func } from './export_func_class'
+import { tomAddr, tomAge } from './folder_declaration/export_var'
+import { MainPage, DogClass } from './declaration_struct'
 
-export interface TransformPlugin {
-  name: string;
-  order: number
-  createTransformerFactory: (option: IOptions) => TransformerFactory<Node>;
-}
+declare function printName(name: string): void;
 
-export enum TransformerOrder {
-  SHORTHAND_PROPERTY_TRANSFORMER = 0,
-  DISABLE_CONSOLE_TRANSFORMER = 1,
-  DISABLE_HILOG_TRANSFORMER = 2,
-  SIMPLIFY_TRANSFORMER = 3,
-  RENAME_PROPERTIES_TRANSFORMER = 4,
-  RENAME_IDENTIFIER_TRANSFORMER = 5,
-  RENAME_FILE_NAME_TRANSFORMER = 6,
+declare function printFunc(funcName: string): void;
+
+declare function defaultFunction01(para1: string, para2: number): void
+
+declare class myClassTemp {
+    tempPapa1: string;
+    tempPara2: number;
 }

@@ -40,10 +40,12 @@ import type {
   ImportSpecifier,
   InterfaceDeclaration,
   LabeledStatement,
+  Modifier,
   ModuleDeclaration,
   Node,
   ObjectBindingPattern,
   ObjectLiteralExpression,
+  ParameterDeclaration,
   SourceFile,
   Symbol,
   SymbolTable,
@@ -53,7 +55,7 @@ import type {
 } from 'typescript';
 
 import {NodeUtils} from './NodeUtils';
-import {isViewPUBasedClass} from './OhsUtil';
+import {isParameterPropertyModifier, isViewPUBasedClass} from './OhsUtil';
 
 /**
  * kind of a scope
@@ -103,6 +105,7 @@ namespace secharmony {
     return scope.kind === ScopeKind.OBJECT_LITERAL;
   }
 
+  export const mangledIdentifierNames: Set<string> = new Set();
   /**
    * Structure of a scope
    */
@@ -150,8 +153,6 @@ namespace secharmony {
     importNames?: Set<string>;
 
     exportNames?: Set<string>;
-
-    mangledNames?: Set<string>;
 
     /**
      * add a sub scope to current scope
@@ -228,7 +229,6 @@ namespace secharmony {
       'loc': loc,
       'importNames': importNames,
       'exportNames': exportNames,
-      'mangledNames': mangledNames,
       addChild,
       addDefinition,
       addLabel,
@@ -631,17 +631,19 @@ namespace secharmony {
         return;
       }
 
-      const visitParam = (param: Node): void => {
-        if (isIdentifier(param)) {
-          current.defs.forEach((def) => {
-            if (def.name === param.text) {
-              current.defs.delete(def);
-              current.mangledNames.add(def.name);
-            }
-          });
+      const visitParam = (param: ParameterDeclaration): void => {
+        const modifiers = param.modifiers;
+        if (modifiers && modifiers.length > 0) {
+          const hasParameterPropertyModifier: boolean = modifiers.find(modifier => isParameterPropertyModifier(modifier)) !== undefined;
+          if (isIdentifier(param.name) && hasParameterPropertyModifier) {
+            current.defs.forEach((def) => {
+              if (def.name === param.name.getText()) {
+                current.defs.delete(def);
+                mangledIdentifierNames.add(def.name);
+              }
+            });
+          }
         }
-
-        forEachChild(param, visitParam);
       };
 
       node.parameters.forEach((param) => {

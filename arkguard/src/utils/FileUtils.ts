@@ -115,4 +115,31 @@ export class FileUtils {
 
     return filePath.slice(prefix.length);
   }
+
+  public static splitFilePath(filePath: string): string[] {
+    if (!filePath.includes('\\') && !filePath.includes('\/')) {
+      return [filePath];
+    }
+    const directories = filePath.split(/[\/\\]/);
+    const output: string[] = [];
+    /* path: /foo//bar; the target output is ['', 'foo', '', 'bar'].
+     * if the first empty string is deleted, the path joining of the Linux platform folder is 'foo/bar'.
+     */
+    if (directories.length > 0 && directories[0] === '') {
+      output.push('');
+    }
+
+    output.push(...(directories.filter(part => part !== '')));
+    return directories;
+  }
+
+  static relativePathBegins: string[] = ['./', '../', '.\\', '..\\'];
+  public static isRelativePath(filePath: string): boolean {
+    for (const bebin of this.relativePathBegins) {
+      if (filePath.startsWith(bebin)) {
+        return true;
+      }
+    }
+    return false;
+  }
 }

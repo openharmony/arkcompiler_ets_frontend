@@ -13,21 +13,36 @@
  * limitations under the License.
  */
 
-import type {IOptions} from '../configs/IOptions';
-import type {Node, TransformerFactory} from 'typescript';
+namespace ts {
+  let friendA: { getX(o: A): number, setX(o: A, v: number): void };
+  class A { 
+    x: number;
 
-export interface TransformPlugin {
-  name: string;
-  order: number
-  createTransformerFactory: (option: IOptions) => TransformerFactory<Node>;
-}
+    constructor (v: number) {
+      this.x = v;
+    }
 
-export enum TransformerOrder {
-  SHORTHAND_PROPERTY_TRANSFORMER = 0,
-  DISABLE_CONSOLE_TRANSFORMER = 1,
-  DISABLE_HILOG_TRANSFORMER = 2,
-  SIMPLIFY_TRANSFORMER = 3,
-  RENAME_PROPERTIES_TRANSFORMER = 4,
-  RENAME_IDENTIFIER_TRANSFORMER = 5,
-  RENAME_FILE_NAME_TRANSFORMER = 6,
+    getX () {
+      return this.x;
+    }
+
+    obj() {
+      friendA = {
+        getX(obj) { return obj.x },
+        setX(obj, value) { obj.x = value }
+      };
+    }
+  };
+
+  class B {
+    constructor(a: A) {
+      const x = friendA.getX(a); // ok
+      friendA.setX(a, x + 1); // ok
+    }
+  };
+
+  const a = new A(41);
+  a.obj();
+  const b = new B(a);
+  a.getX();
 }

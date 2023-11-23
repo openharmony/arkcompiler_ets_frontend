@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import type {INameObfuscationOption} from './INameObfuscationOption';
+import type {IFileNameObfuscationOption, INameObfuscationOption} from './INameObfuscationOption';
 
 export interface IOptions {
   // Whether to generate compact code
@@ -47,4 +47,6 @@ export interface IOptions {
   readonly apiSavedDir?: string;
 
   readonly applyReservedNamePath?: string;
+
+  readonly mRenameFileName?: IFileNameObfuscationOption;
 }

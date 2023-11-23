@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import type {Expression, Node, ObjectBindingPattern} from 'typescript';
+import type {Expression, Node, ObjectBindingPattern, SourceFile} from 'typescript';
 import {
   isBindingElement,
   isCallExpression,
@@ -34,6 +34,7 @@ import {
   isSetAccessor,
   isVariableDeclaration
 } from 'typescript';
+import { isParameterPropertyModifier } from './OhsUtil';
 
 export class NodeUtils {
   public static isPropertyDeclarationNode(node: Node): boolean {
@@ -123,6 +124,11 @@ export class NodeUtils {
       return false;
     }
 
+    const modifiers = node.parent.modifiers;
+    if (!modifiers || modifiers.length === 0 || !modifiers.find(modifier => isParameterPropertyModifier(modifier))) {
+      return false;
+    }
+
     return node.parent.parent && isConstructorDeclaration(node.parent.parent);
   }
 
@@ -159,5 +165,9 @@ export class NodeUtils {
 
     const initializer: Expression = node.parent.initializer;
     return initializer && isCallExpression(initializer);
+  }
+
+  public static isDeclarationFile(node: SourceFile): boolean {
+    return node.isDeclarationFile;
   }
 }

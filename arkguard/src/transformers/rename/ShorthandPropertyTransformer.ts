@@ -18,6 +18,7 @@ import {
   isBindingElement,
   isObjectBindingPattern,
   isShorthandPropertyAssignment,
+  isSourceFile,
   setParentRecursive,
   visitEachChild
 } from 'typescript';
@@ -33,6 +34,7 @@ import type {
 
 import type {INameObfuscationOption} from '../../configs/INameObfuscationOption';
 import type {TransformPlugin} from '../TransformPlugin';
+import {TransformerOrder} from '../TransformPlugin';
 import type {IOptions} from '../../configs/IOptions';
 import {NodeUtils} from '../../utils/NodeUtils';
 
@@ -49,6 +51,9 @@ namespace secharmony {
       return shorthandPropertyTransformer;
 
       function shorthandPropertyTransformer(node: Node): Node {
+        if (isSourceFile(node) && NodeUtils.isDeclarationFile(node)) {
+          return node;
+        }
         return setParentRecursive(transformShortHandProperty(node), true);
       }
 
@@ -92,10 +97,9 @@ namespace secharmony {
     }
   };
 
-  const TRANSFORMER_ORDER: number = 0;
   export let transformerPlugin: TransformPlugin = {
     'name': 'ShortHandPropertyTransformer',
-    'order': (1 << TRANSFORMER_ORDER),
+    'order': (1 << TransformerOrder.SHORTHAND_PROPERTY_TRANSFORMER),
     'createTransformerFactory': createShorthandPropertyTransformerFactory,
   };
 }

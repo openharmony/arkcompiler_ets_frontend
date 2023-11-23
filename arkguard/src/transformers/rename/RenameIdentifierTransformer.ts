@@ -41,7 +41,8 @@ import {
   isGlobalScope,
   isEnumScope,
   isInterfaceScope,
-  isObjectLiteralScope
+  isObjectLiteralScope,
+  mangledIdentifierNames
 } from '../../utils/ScopeAnalyzer';
 
 import type {
@@ -54,6 +55,7 @@ import type {INameGenerator, NameGeneratorOptions} from '../../generator/INameGe
 import type {IOptions} from '../../configs/IOptions';
 import type {INameObfuscationOption} from '../../configs/INameObfuscationOption';
 import type {TransformPlugin} from '../TransformPlugin';
+import {TransformerOrder} from '../TransformPlugin';
 import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import {TypeUtils} from '../../utils/TypeUtils';
 import {collectIdentifiers} from '../../utils/TransformUtil';
@@ -112,7 +114,7 @@ namespace secharmony {
        * @param node ast node of a file.
        */
       function renameTransformer(node: Node): Node {
-        if (!isSourceFile(node)) {
+        if (!isSourceFile(node) || NodeUtils.isDeclarationFile(node)) {
           return node;
         }
 
@@ -153,10 +155,6 @@ namespace secharmony {
 
       function renameNamesInScope(scope: Scope): void {
         if (scope.parent) {
-          scope.parent.mangledNames.forEach((value) => {
-            scope.mangledNames.add(value);
-          });
-
           scope.parent.importNames.forEach((value) => {
             scope.importNames.add(value);
           });
@@ -185,7 +183,7 @@ namespace secharmony {
           let mangled: string = original;
           // No allow to rename reserved names.
           if (reservedNames.includes(original) || scope.exportNames.has(def.name) || isSkippedGlobal(openTopLevel, scope)) {
-            scope.mangledNames.add(mangled);
+            mangledIdentifierNames.add(mangled);
             mangledSymbolNames.set(def, mangled);
             return;
           }
@@ -206,7 +204,7 @@ namespace secharmony {
 
           // add new names to name cache
           nameCache.set(path, mangled);
-          scope.mangledNames.add(mangled);
+          mangledIdentifierNames.add(mangled);
           mangledSymbolNames.set(def, mangled);
           localCache.set(original, mangled);
         });
@@ -254,7 +252,7 @@ namespace secharmony {
           }
 
           // the anme has already been generated in the current scope
-          if (scope.mangledNames.has(mangled)) {
+          if (mangledIdentifierNames.has(mangled)) {
             mangled = '';
           }
         } while (mangled === '');
@@ -337,7 +335,7 @@ namespace secharmony {
 
           const sym: Symbol | undefined = checker.getSymbolAtLocation(targetNode);
           if (!sym) {
-            scope.mangledNames.add((targetNode as Identifier).escapedText.toString());
+            mangledIdentifierNames.add((targetNode as Identifier).escapedText.toString());
           }
         };
 
@@ -383,10 +381,9 @@ namespace secharmony {
     return !enableTopLevel && isGlobalScope(scope);
   }
 
-  const TRANSFORMER_ORDER: number = 9;
   export let transformerPlugin: TransformPlugin = {
     'name': 'renameIdentifierPlugin',
-    'order': (1 << TRANSFORMER_ORDER),
+    'order': (1 << TransformerOrder.RENAME_IDENTIFIER_TRANSFORMER),
     'createTransformerFactory': createRenameIdentifierFactory
   };
 

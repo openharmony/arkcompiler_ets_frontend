@@ -13,21 +13,26 @@
  * limitations under the License.
  */
 
-import type {IOptions} from '../configs/IOptions';
-import type {Node, TransformerFactory} from 'typescript';
+import assert from 'assert';
+namespace ts {
+  class X {
+    n: string = "";
+    constructor(s:string) {
+      this.n = s;
+    }
+    method(){
+      return (this.n);
+    }
+  }
+  let name1 = new X("global");
 
-export interface TransformPlugin {
-  name: string;
-  order: number
-  createTransformerFactory: (option: IOptions) => TransformerFactory<Node>;
-}
-
-export enum TransformerOrder {
-  SHORTHAND_PROPERTY_TRANSFORMER = 0,
-  DISABLE_CONSOLE_TRANSFORMER = 1,
-  DISABLE_HILOG_TRANSFORMER = 2,
-  SIMPLIFY_TRANSFORMER = 3,
-  RENAME_PROPERTIES_TRANSFORMER = 4,
-  RENAME_IDENTIFIER_TRANSFORMER = 5,
-  RENAME_FILE_NAME_TRANSFORMER = 6,
+  class A {
+    name0:string = '';
+    constructor(name2:string, public name3: X) {
+      name3.method();
+    }
+  }
+  let a = new A('aa',new X("param"));
+  assert(a.name3.n === 'param', 'success');
+  assert(name1.n === 'global', 'success');
 }
