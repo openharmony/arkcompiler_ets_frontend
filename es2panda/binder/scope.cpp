@@ -187,8 +187,8 @@ Result ClassScope::GetPrivateProperty(const util::StringView &name, bool isSette
     if (privateNames_.find(name) != privateNames_.end()) {
         slot = privateNames_.find(name)->second;
     } else {
-        auto accessor = isSetter ? privateSetters_ :privateGetters_;
-        auto unexpectedAccessor = isSetter ? privateGetters_ :privateSetters_;
+        auto accessor = isSetter ? privateSetters_ : privateGetters_;
+        auto unexpectedAccessor = isSetter ? privateGetters_ : privateSetters_;
 
         if (accessor.find(name) != accessor.end()) {
             setter = isSetter;
@@ -228,19 +228,19 @@ void ClassScope::AddPrivateName(std::vector<const ir::Statement *> privateProper
         uint32_t *start = methodDef->IsStatic() ? &staticPrivateMethodSlot : &instancePrivateMethodSlot;
         auto name = methodDef->Key()->AsPrivateIdentifier()->Name();
         switch (methodDef->Kind()) {
-                case ir::MethodDefinitionKind::GET: {
-                    privateGetters_[name] =  (*start)++;
-                    continue;
-                }
-                case ir::MethodDefinitionKind::SET: {
-                    privateSetters_[name] =  (*start)++;
-                    continue;
-                }
-                default: {
-                    privateNames_[name]=  (*start)++;
-                    continue;
-                }
+            case ir::MethodDefinitionKind::GET: {
+                privateGetters_[name] =  (*start)++;
+                continue;
             }
+            case ir::MethodDefinitionKind::SET: {
+                privateSetters_[name] =  (*start)++;
+                continue;
+            }
+            default: {
+                privateNames_[name]=  (*start)++;
+                continue;
+            }
+        }
     }
     slotIndex_ = staticPrivateMethodSlot;
     privateMethodEndSlot_ = slotIndex_;
@@ -258,7 +258,7 @@ PrivateNameFindResult Scope::FindPrivateName(const util::StringView &name, bool 
     uint32_t lexLevel = 0;
     const auto *iter = this;
 
-    while(iter != nullptr) {
+    while (iter != nullptr) {
         if (iter->Type() == ScopeType::CLASS) {
             const auto *classScope = iter->AsClassScope();
             if (name.Is("#method") || classScope->HasPrivateName(name)) {

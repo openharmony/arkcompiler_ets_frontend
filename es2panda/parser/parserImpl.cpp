@@ -2263,6 +2263,7 @@ void ParserImpl::ValidateClassKey(ClassElmentDescriptor *desc, bool isDeclare)
 ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDeclare)
 {
     if (desc->isPrivateIdent && Extension() == ScriptExtension::JS) {
+        ValidateClassKey(desc, isDeclare);
         return ParsePrivateIdentifier();
     }
 
@@ -2436,7 +2437,7 @@ void ParserImpl::ValidatePrivateProperty(ir::Statement *stmt, std::unordered_set
         }
         auto name = prop->Key()->AsPrivateIdentifier()->Name();
         if (usedPrivateNames.find(name) != usedPrivateNames.end()) {
-            ThrowSyntaxError("Redeclaration of class private property", prop->Start());
+            ThrowSyntaxError({"Redeclaration of class private property #", name.Utf8()}, prop->Start());
         }
         usedPrivateNames.insert(name);
         return;
@@ -2451,7 +2452,7 @@ void ParserImpl::ValidatePrivateProperty(ir::Statement *stmt, std::unordered_set
 
         if (methodDef->Kind() == ir::MethodDefinitionKind::METHOD) {
             if (usedPrivateNames.find(name) != usedPrivateNames.end()) {
-                ThrowSyntaxError("Redeclaration of class private property", methodDef->Start());
+                ThrowSyntaxError({"Redeclaration of class private property #", name.Utf8()}, methodDef->Start());
             }
             usedPrivateNames.insert(name);
             return;
@@ -2476,7 +2477,7 @@ void ParserImpl::ValidatePrivateProperty(ir::Statement *stmt, std::unordered_set
 
         auto result = unusedGetterSetterPairs.find(name);
         if (result == unusedGetterSetterPairs.end() || unusedGetterSetterPairs[name] != type) {
-            ThrowSyntaxError("Redeclaration of class private property", methodDef->Start());
+            ThrowSyntaxError({"Redeclaration of class private property #", name.Utf8()}, methodDef->Start());
         }
         unusedGetterSetterPairs.erase(result);
     }
@@ -2600,9 +2601,10 @@ ir::Statement *ParserImpl::ParseClassProperty(ClassElmentDescriptor *desc,
         propEnd = value->End();
     }
 
-    if(Extension() == ScriptExtension::TS && desc->isPrivateIdent) {
+    if (Extension() == ScriptExtension::TS && desc->isPrivateIdent && program_.TargetApiVersion() <= 10) {
         auto *privateId = AllocNode<ir::TSPrivateIdentifier>(propName, value, typeAnnotation);
-        privateId->SetRange({desc->propStart, propName->End()});
+        auto privateIdStart = lexer::SourcePosition(propName->Start().index - 1, propName->Start().line);
+        privateId->SetRange({privateIdStart, propName->End()});
         propName = privateId;
     }
 

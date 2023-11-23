@@ -41,7 +41,9 @@ LReference::LReference(const ir::AstNode *node, PandaGen *pg, bool isDeclaration
         obj_ = pg_->AllocReg();
 
         node_->AsMemberExpression()->CompileObject(pg_, obj_);
-        prop_ = node->AsMemberExpression()->CompileKey(pg_);
+        if (!node_->AsMemberExpression()->AccessPrivateProperty()) {
+            prop_ = node->AsMemberExpression()->CompileKey(pg_);
+        }
     }
 }
 
@@ -79,7 +81,6 @@ void LReference::GetValue()
                     break;
                 }
                 pg_->LoadLexicalVar(node_, result.lexLevel, result.result.slot);
-
             } else {
                 pg_->LoadObjProperty(node_, obj_, prop_);
             }
@@ -107,7 +108,7 @@ void LReference::SetValue()
                 
                 auto name = node_->AsMemberExpression()->Property()->AsPrivateIdentifier()->Name();
                 auto result = pg_->Scope()->FindPrivateName(name, true);
-                if (!result.result.isMethod ) {
+                if (!result.result.isMethod) {
                     pg_->StorePrivateProperty(node_, result.lexLevel, result.result.slot, obj_);
                     break;
                 }

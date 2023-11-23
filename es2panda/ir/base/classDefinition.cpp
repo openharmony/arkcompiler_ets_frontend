@@ -350,8 +350,6 @@ void ClassDefinition::CompileMissingProperties(compiler::PandaGen *pg, const uti
     if (NeedInstanceInitializer()) {
         InstanceInitialize(pg, protoReg);
     }
-
-    pg->LoadAccumulator(this, classReg);
 }
 
 void ClassDefinition::StaticInitialize(compiler::PandaGen *pg, compiler::VReg classReg) const
@@ -402,14 +400,6 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
     compiler::LocalRegScope lrs(pg, scope_);
 
     compiler::VariableEnvScope envScope(pg, scope_);
-    if (hasComputedKey_) {
-        CompileComputedKeys(pg);
-    }
-
-    if (hasPrivateElement_) {
-        int32_t bufIdx = CreateClassPrivateBuffer(pg);
-        pg->CreatePrivateProperty(this, scope_->privateFieldCnt_, bufIdx);
-    }
 
     compiler::VReg baseReg = CompileHeritageClause(pg);
     util::StringView ctorId = ctor_->Function()->Scope()->InternalName();
@@ -427,6 +417,17 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
     InitializeClassName(pg);
 
     CompileMissingProperties(pg, compiled, classReg);
+
+    if (hasComputedKey_) {
+        CompileComputedKeys(pg);
+    }
+
+    if (hasPrivateElement_) {
+        int32_t bufIdx = CreateClassPrivateBuffer(pg);
+        pg->CreatePrivateProperty(this, scope_->privateFieldCnt_, bufIdx);
+    }
+
+    pg->LoadAccumulator(this, classReg);
 
     if (NeedStaticInitializer()) {
         StaticInitialize(pg, classReg);
@@ -518,8 +519,7 @@ void ClassDefinition::BuildClassEnvironment()
         scope_->AddPrivateName(privateProperties, privateFieldCnt, instancePrivateMethodCnt, staticPrivateMethodCnt);
     }
 
-    if (instancePrivateMethodCnt > 0)
-    {
+    if (instancePrivateMethodCnt > 0) {
         needInstanceInitializer_ = true;
     }
 

@@ -2516,15 +2516,24 @@ ir::PrivateIdentifier *ParserImpl::ParsePrivateIdentifier()
     auto idx = start.index;
 
     lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);
-    auto newIdx = lexer_->GetToken().Start().index;
+
+    auto token = lexer_->GetToken();
+
+    auto newIdx = token.Start().index;
     if (newIdx != idx + 1) {
         ThrowSyntaxError("Unexpected white space");
     }
-    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+
+    if (token.Type() != lexer::TokenType::LITERAL_IDENT) {
         ThrowSyntaxError("Expected an identifier");
     }
 
-    auto *privateIdent = AllocNode<ir::PrivateIdentifier>(lexer_->GetToken().Ident());
+    auto identName = token.Ident();
+    if (identName.Is("constructor")) {
+        ThrowSyntaxError("Private identifier may not be '#constructor'");
+    }
+
+    auto *privateIdent = AllocNode<ir::PrivateIdentifier>(identName);
     privateIdent->SetRange({start, lexer_->GetToken().End()});
     lexer_->NextToken();
     return privateIdent;

@@ -573,8 +573,8 @@ void Binder::BuildClassDefinition(ir::ClassDefinition *classDef)
         ResolveReference(classDef, iter);
     }
 
-    // api limitation for new class compilation
-    if (!(bindingFlags_ & ResolveBindingFlags::TS_BEFORE_TRANSFORM)) {
+    // new class features in ecma2022 are only supported for api11 and above
+    if (Program()->TargetApiVersion() > 10 && !(bindingFlags_ & ResolveBindingFlags::TS_BEFORE_TRANSFORM)) {
         classDef->BuildClassEnvironment();
     }
 
@@ -672,7 +672,7 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             break;
         }
         case ir::AstNodeType::PRIVATE_IDENTIFIER: {
-            if (Program()->Extension()==ScriptExtension::JS) {
+            if (Program()->Extension() == ScriptExtension::JS) {
                 CheckPrivateDeclaration(childNode->AsPrivateIdentifier());
             }
             break;
@@ -741,7 +741,7 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
             break;
         }
         case ir::AstNodeType::CLASS_PROPERTY: {
-            // api limitation for new class compilation
+            // for ts tranformer cases
             if (Program()->Extension() == ScriptExtension::TS) {
                 const ir::ScriptFunction *ctor = util::Helpers::GetContainingConstructor(childNode->AsClassProperty());
                 auto scopeCtx = LexicalScope<FunctionScope>::Enter(this, ctor->Scope());

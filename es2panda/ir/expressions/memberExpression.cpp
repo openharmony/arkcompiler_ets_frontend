@@ -50,9 +50,6 @@ void MemberExpression::CompileObject(compiler::PandaGen *pg, compiler::VReg dest
 
 compiler::Operand MemberExpression::CompileKey(compiler::PandaGen *pg) const
 {
-    if (AccessPrivateProperty()) {
-        return "";
-    }
     return pg->ToPropertyKey(property_, computed_);
 }
 

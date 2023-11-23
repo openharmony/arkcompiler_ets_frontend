@@ -671,12 +671,12 @@ public:
 
 class ClassScope : public VariableScope {
 public:
-    explicit ClassScope(ArenaAllocator *allocator, Scope *parent) 
+    explicit ClassScope(ArenaAllocator *allocator, Scope *parent)
         : VariableScope(allocator, parent),
           computedNames_(allocator->Adapter()),
           privateNames_(allocator->Adapter()),
           privateGetters_(allocator->Adapter()),
-          privateSetters_(allocator->Adapter()) 
+          privateSetters_(allocator->Adapter())
     {
     }
 

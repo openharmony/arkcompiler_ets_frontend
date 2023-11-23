@@ -131,6 +131,7 @@ static void CompileField(PandaGen *pg, const ir::ClassProperty *prop, VReg thisR
     } else if (prop->IsComputed() && prop->NeedCompileKey()) {
         auto slot = prop->Parent()->AsClassDefinition()->GetSlot(prop->Key());
         pg->LoadLexicalVar(prop->Key(), level, slot);
+        RegScope rs(pg);
         op = pg->AllocReg();
         pg->StoreAccumulator(prop->Key(), std::get<VReg>(op));
     } else {
