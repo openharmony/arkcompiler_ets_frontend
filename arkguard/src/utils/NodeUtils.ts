@@ -15,6 +15,7 @@
 
 import type {Expression, Node, ObjectBindingPattern, SourceFile} from 'typescript';
 import {
+  getModifiers,
   isBindingElement,
   isCallExpression,
   isComputedPropertyName,
@@ -34,6 +35,7 @@ import {
   isSetAccessor,
   isVariableDeclaration
 } from 'typescript';
+import { isParameterPropertyModifier } from './OhsUtil';
 
 export class NodeUtils {
   public static isPropertyDeclarationNode(node: Node): boolean {
@@ -120,6 +122,11 @@ export class NodeUtils {
     }
 
     if (!node.parent || !isParameter(node.parent)) {
+      return false;
+    }
+
+    const modifiers = getModifiers(node.parent);
+    if (!modifiers || modifiers.length === 0 || !modifiers.find(modifier => isParameterPropertyModifier(modifier))) {
       return false;
     }
 

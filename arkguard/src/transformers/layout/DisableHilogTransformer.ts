@@ -43,6 +43,7 @@ import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import {OhPackType, isCommentedNode} from '../../utils/TransformUtil';
 import {findOhImportStatement} from '../../utils/OhsUtil';
+import { NodeUtils } from '../../utils/NodeUtils';
 
 namespace secharmony {
   export let transformerPlugin: TransformPlugin = {
@@ -63,7 +64,7 @@ namespace secharmony {
       return transformer;
 
       function transformer(node: Node): Node {
-        if (!isSourceFile(node) || node.fileName.endsWith('.d.ts')) {
+        if (!isSourceFile(node) || NodeUtils.isDeclarationFile(node)) {
           return node;
         }
 

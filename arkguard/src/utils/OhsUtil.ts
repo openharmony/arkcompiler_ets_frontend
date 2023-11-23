@@ -250,7 +250,7 @@ export function getInterfaceProperties(interfaceNode: InterfaceDeclaration, prop
   });
 }
 
-function isParameterPropertyModifier(modifier: Modifier): boolean {
+export function isParameterPropertyModifier(modifier: Modifier): boolean {
   if (modifier.kind === SyntaxKind.PublicKeyword ||
     modifier.kind === SyntaxKind.PrivateKeyword ||
     modifier.kind === SyntaxKind.ProtectedKeyword ||

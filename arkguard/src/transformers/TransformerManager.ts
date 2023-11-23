@@ -19,6 +19,7 @@ import {join, resolve} from 'path';
 
 import type {IOptions} from '../configs/IOptions';
 import type {TransformPlugin} from './TransformPlugin';
+import { Extension } from '../common/type';
 
 export class TransformerManager {
   private static sInstance: TransformerManager | null = null;
@@ -51,10 +52,11 @@ export class TransformerManager {
 
       let subDir: string[] = readdirSync(subPath);
       for (const file of subDir) {
-        if (!file.endsWith('.ts')) {
+        if (!file.endsWith(Extension.TS)) {
           continue;
         }
-        const fileNameNoSuffix = file.lastIndexOf('.d.ts') > -1 ? file.slice(0, file.lastIndexOf('.d.ts')) : file.slice(0, file.lastIndexOf('.ts'));
+        const fileNameNoSuffix = file.lastIndexOf(Extension.DTS) > -1 ? file.slice(0, file.lastIndexOf(Extension.DTS)) :
+          file.slice(0, file.lastIndexOf(Extension.TS));
         let path: string = join(subPath, fileNameNoSuffix);
         let module = require(path);
         let plugin: TransformPlugin = module?.transformerPlugin;
