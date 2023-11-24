@@ -268,7 +268,7 @@ void ETSGen::LoadDynamicModuleVariable(const ir::AstNode *node, varbinder::Varia
 
     auto *id = data->specifier->AsImportSpecifier()->Imported();
     auto lang = import->Language();
-    LoadPropertyDynamic(node, Checker()->GlobalBuiltinDynamicType(lang), obj_reg, id->Name(), lang);
+    LoadPropertyDynamic(node, Checker()->GlobalBuiltinDynamicType(lang), obj_reg, id->Name());
 
     ApplyConversion(node);
 }
@@ -478,9 +478,9 @@ void ETSGen::LoadUnionProperty([[maybe_unused]] const ir::AstNode *const node,
 }
 
 void ETSGen::StorePropertyDynamic(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
-                                  const util::StringView &prop_name, Language lang)
+                                  const util::StringView &prop_name)
 {
-    auto *type = prop_type;
+    auto const lang = GetVRegType(obj_reg)->AsETSDynamicType()->Language();
     std::string_view method_name {};
     if (prop_type->IsETSBooleanType()) {
         method_name = Signatures::Dynamic::SetPropertyBooleanBuiltin(lang);
@@ -502,35 +502,33 @@ void ETSGen::StorePropertyDynamic(const ir::AstNode *node, const checker::Type *
         method_name = Signatures::Dynamic::SetPropertyStringBuiltin(lang);
     } else if (prop_type->IsETSObjectType()) {
         method_name = Signatures::Dynamic::SetPropertyDynamicBuiltin(lang);
-        type = Checker()->GlobalBuiltinDynamicType(lang);
+        // NOTE: vpukhov. add non-dynamic builtin
+        if (!prop_type->IsETSDynamicType()) {
+            CastToDynamic(node, Checker()->GlobalBuiltinDynamicType(lang)->AsETSDynamicType());
+        }
     } else {
         ASSERT_PRINT(false, "Unsupported property type");
     }
 
     RegScope rs(this);
-
-    // Load property value
     VReg prop_value_reg = AllocReg();
-
-    if (prop_type != type && !prop_type->IsETSDynamicType()) {
-        CastToDynamic(node, type->AsETSDynamicType());
-    }
+    VReg prop_name_reg = AllocReg();
 
     StoreAccumulator(node, prop_value_reg);
 
     // Load property name
     LoadAccumulatorString(node, prop_name);
-    VReg prop_name_reg = AllocReg();
     StoreAccumulator(node, prop_name_reg);
 
     // Set property by name
     Ra().Emit<Call, 3U>(node, method_name, obj_reg, prop_name_reg, prop_value_reg, dummy_reg_);
-    SetAccumulatorType(Checker()->GlobalVoidType());
+    SetAccumulatorType(nullptr);
 }
 
 void ETSGen::LoadPropertyDynamic(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
-                                 const util::StringView &prop_name, Language lang)
+                                 const util::StringView &prop_name)
 {
+    auto const lang = GetVRegType(obj_reg)->AsETSDynamicType()->Language();
     auto *type = prop_type;
     std::string_view method_name {};
     if (prop_type->IsETSBooleanType()) {
@@ -574,8 +572,9 @@ void ETSGen::LoadPropertyDynamic(const ir::AstNode *node, const checker::Type *p
     }
 }
 
-void ETSGen::StoreElementDynamic(const ir::AstNode *node, VReg object_reg, VReg index, Language lang)
+void ETSGen::StoreElementDynamic(const ir::AstNode *node, VReg object_reg, VReg index)
 {
+    auto const lang = GetVRegType(object_reg)->AsETSDynamicType()->Language();
     std::string_view method_name = Signatures::Dynamic::SetElementDynamicBuiltin(lang);
 
     RegScope rs(this);
@@ -588,8 +587,9 @@ void ETSGen::StoreElementDynamic(const ir::AstNode *node, VReg object_reg, VReg 
     SetAccumulatorType(Checker()->GlobalVoidType());
 }
 
-void ETSGen::LoadElementDynamic(const ir::AstNode *node, VReg object_reg, Language lang)
+void ETSGen::LoadElementDynamic(const ir::AstNode *node, VReg object_reg)
 {
+    auto const lang = GetVRegType(object_reg)->AsETSDynamicType()->Language();
     std::string_view method_name = Signatures::Dynamic::GetElementDynamicBuiltin(lang);
 
     RegScope rs(this);
@@ -1245,7 +1245,7 @@ void ETSGen::CastToBoolean([[maybe_unused]] const ir::AstNode *node)
             break;
         }
         case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
-            CastDynamicTo(node, checker::TypeFlag::BOOLEAN);
+            CastDynamicTo(node, checker::TypeFlag::ETS_BOOLEAN);
             ASSERT(GetAccumulatorType() == Checker()->GlobalETSBooleanType());
             break;
         }
@@ -1556,10 +1556,6 @@ void ETSGen::CastToArrayOrObject(const ir::AstNode *const node, const checker::T
     ASSERT(GetAccumulatorType()->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | checker::TypeFlag::ETS_UNION));
 
     const auto *const source_type = GetAccumulatorType();
-    if (source_type->IsETSDynamicType() && target_type->IsETSDynamicType()) {
-        SetAccumulatorType(target_type);
-        return;
-    }
 
     if (source_type->IsETSDynamicType()) {
         CastDynamicToObject(node, target_type);
@@ -1622,6 +1618,7 @@ void ETSGen::CastDynamicToObject(const ir::AstNode *node, const checker::Type *t
         StoreAccumulator(node, type_reg);
 
         Ra().Emit<CallShort, 2U>(node, method_name, dyn_obj_reg, type_reg);
+        Sa().Emit<Checkcast>(node, util::UString(ss.str(), Allocator()).View());  // trick verifier
         SetAccumulatorType(target_type);
         return;
     }
@@ -1694,6 +1691,7 @@ void ETSGen::CastToDynamic(const ir::AstNode *node, const checker::ETSDynamicTyp
             break;
         }
         case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
+            SetAccumulatorType(type);
             return;
         }
         default: {
@@ -1719,8 +1717,6 @@ void ETSGen::CastDynamicTo(const ir::AstNode *node, enum checker::TypeFlag type_
     checker::Type *object_type {};
     auto type = GetAccumulatorType()->AsETSDynamicType();
     switch (type_flag) {
-        case checker::TypeFlag::BOOLEAN:
-            [[fallthrough]];
         case checker::TypeFlag::ETS_BOOLEAN: {
             method_name = compiler::Signatures::Dynamic::GetBooleanBuiltin(type->Language());
             object_type = Checker()->GlobalETSBooleanType();
@@ -1765,10 +1761,6 @@ void ETSGen::CastDynamicTo(const ir::AstNode *node, enum checker::TypeFlag type_
             method_name = compiler::Signatures::Dynamic::GetStringBuiltin(type->Language());
             object_type = Checker()->GlobalBuiltinETSStringType();
             break;
-        }
-        case checker::TypeFlag::OBJECT: {
-            SetAccumulatorType(Checker()->GlobalETSObjectType());
-            return;
         }
         default: {
             UNREACHABLE();

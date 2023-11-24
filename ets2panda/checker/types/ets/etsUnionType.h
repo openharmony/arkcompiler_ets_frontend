@@ -67,7 +67,7 @@ public:
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
     void Cast(TypeRelation *relation, Type *target) override;
-    void CastToThis(TypeRelation *relation, Type *source);
+    void CastTarget(TypeRelation *relation, Type *source) override;
     Type *FindTypeIsCastableToThis(ir::Expression *node, TypeRelation *relation, Type *source) const;
     Type *FindTypeIsCastableToSomeType(ir::Expression *node, TypeRelation *relation, Type *target) const;
     Type *FindUnboxableType() const;

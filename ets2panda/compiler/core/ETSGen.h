@@ -72,12 +72,12 @@ public:
     void LoadProperty(const ir::AstNode *node, const checker::Type *prop_type, bool is_generic, VReg obj_reg,
                       const util::StringView &full_name);
     void StorePropertyDynamic(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
-                              const util::StringView &name, Language lang);
+                              const util::StringView &name);
     void LoadPropertyDynamic(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
-                             const util::StringView &prop_name, Language lang);
+                             const util::StringView &prop_name);
 
-    void StoreElementDynamic(const ir::AstNode *node, VReg object_reg, VReg index, Language lang);
-    void LoadElementDynamic(const ir::AstNode *node, VReg object_reg, Language lang);
+    void StoreElementDynamic(const ir::AstNode *node, VReg object_reg, VReg index);
+    void LoadElementDynamic(const ir::AstNode *node, VReg object_reg);
 
     void StoreUnionProperty(const ir::AstNode *node, VReg obj_reg, const util::StringView &name);
     void LoadUnionProperty(const ir::AstNode *node, const checker::Type *prop_type, bool is_generic, VReg obj_reg,

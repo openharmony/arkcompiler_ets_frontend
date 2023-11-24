@@ -198,7 +198,7 @@ void ETSUnionType::Cast(TypeRelation *relation, Type *target)
     conversion::Forbidden(relation);
 }
 
-void ETSUnionType::CastToThis(TypeRelation *relation, Type *source)
+void ETSUnionType::CastTarget(TypeRelation *relation, Type *source)
 {
     Type *target_type = FindTypeIsCastableToThis(relation->GetNode(), relation, source);
     if (target_type != nullptr) {

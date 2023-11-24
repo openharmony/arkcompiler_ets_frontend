@@ -105,6 +105,11 @@ void Type::Cast(TypeRelation *const relation, [[maybe_unused]] Type *target)
     relation->Result(false);
 }
 
+void Type::CastTarget(TypeRelation *const relation, [[maybe_unused]] Type *source)
+{
+    relation->Result(false);
+}
+
 void Type::IsSupertypeOf(TypeRelation *const relation, [[maybe_unused]] Type *source)
 {
     relation->Result(false);

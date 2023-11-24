@@ -633,7 +633,7 @@ signatures:
 
   - callee: BUILTIN_JSRUNTIME
     method_name: getValueObject
-    params: [BUILTIN_JSVALUE, BUILTIN_TYPE]
+    params: [BUILTIN_JSVALUE, BUILTIN_OBJECT] # 2nd argument is ClassClass
     return_type: BUILTIN_OBJECT
     ref: BUILTIN_JSRUNTIME_GET_VALUE_OBJECT
 

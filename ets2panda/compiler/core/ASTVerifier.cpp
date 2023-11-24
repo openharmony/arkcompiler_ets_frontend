@@ -751,6 +751,12 @@ bool ASTVerifier::CheckImportExportMethod(const varbinder::Variable *var_callee,
                                           util::StringView name)
 {
     auto *signature = call_expr->AsCallExpression()->Signature();
+    if (signature->Owner() == nullptr) {
+        // NOTE(vpukhov): Add a synthetic owner for dynamic signatures
+        ASSERT(call_expr->AsCallExpression()->Callee()->TsType()->HasTypeFlag(checker::TypeFlag::ETS_DYNAMIC_FLAG));
+        return true;
+    }
+
     if (signature != nullptr && var_callee->Declaration() != nullptr && var_callee->Declaration()->Node() != nullptr &&
         !IsContainedIn(var_callee->Declaration()->Node(), signature->Owner()->GetDeclNode()) &&
         var_callee->Declaration()->Node() != signature->Owner()->GetDeclNode()) {

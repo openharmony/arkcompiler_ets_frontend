@@ -240,6 +240,7 @@ public:
     virtual bool AssignmentSource(TypeRelation *relation, Type *target);
     virtual void Compare(TypeRelation *relation, Type *other);
     virtual void Cast(TypeRelation *relation, Type *target);
+    virtual void CastTarget(TypeRelation *relation, Type *source);
     virtual void IsSupertypeOf(TypeRelation *relation, Type *source);
     virtual Type *AsSuper(Checker *checker, varbinder::Variable *source_var);
 

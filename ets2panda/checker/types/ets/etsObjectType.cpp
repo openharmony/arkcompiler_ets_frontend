@@ -611,11 +611,6 @@ void ETSObjectType::Cast(TypeRelation *const relation, Type *const target)
         }
     }
 
-    if (target->IsETSUnionType()) {
-        target->AsETSUnionType()->CastToThis(relation, this);
-        return;
-    }
-
     conversion::Forbidden(relation);
 }
 

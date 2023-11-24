@@ -660,9 +660,8 @@ void ETSCompiler::CompileDynamic(const ir::CallExpression *expr, compiler::VReg 
     }
     etsg->StoreAccumulator(expr, dyn_param2);
     etsg->CallDynamic(expr, callee_reg, dyn_param2, expr->Signature(), expr->Arguments());
-    etsg->SetAccumulatorType(expr->TsType());
-
-    if (expr->Signature()->ReturnType() != expr->TsType()) {
+    etsg->SetAccumulatorType(expr->Signature()->ReturnType());
+    if (etsg->GetAccumulatorType() != expr->TsType()) {
         etsg->ApplyConversion(expr, expr->TsType());
     }
 }
@@ -817,8 +816,7 @@ static bool CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpression *
             auto ttctx = compiler::TargetTypeContext(etsg, expr->OptionalType());
 
             if (object_type->IsETSDynamicType()) {
-                auto lang = object_type->AsETSDynamicType()->Language();
-                etsg->LoadElementDynamic(expr, obj_reg, lang);
+                etsg->LoadElementDynamic(expr, obj_reg);
             } else {
                 etsg->LoadArrayElement(expr, obj_reg);
             }
@@ -917,8 +915,7 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
             etsg->CallThisVirtual0(expr, obj_reg, sig->InternalName());
             etsg->SetAccumulatorType(expr->TsType());
         } else if (object_type->IsETSDynamicType()) {
-            auto lang = object_type->AsETSDynamicType()->Language();
-            etsg->LoadPropertyDynamic(expr, expr->OptionalType(), obj_reg, prop_name, lang);
+            etsg->LoadPropertyDynamic(expr, expr->OptionalType(), obj_reg, prop_name);
         } else if (object_type->IsETSUnionType()) {
             etsg->LoadUnionProperty(expr, expr->OptionalType(), expr->IsGenericField(), obj_reg, prop_name);
         } else {
@@ -982,8 +979,7 @@ void ETSCompiler::Compile(const ir::ObjectExpression *expr) const
         value->Compile(etsg);
         etsg->ApplyConversion(value, key->TsType());
         if (expr->TsType()->IsETSDynamicType()) {
-            etsg->StorePropertyDynamic(expr, value->TsType(), obj_reg, pname,
-                                       expr->TsType()->AsETSDynamicType()->Language());
+            etsg->StorePropertyDynamic(expr, value->TsType(), obj_reg, pname);
         } else {
             etsg->StoreProperty(expr, key->TsType(), obj_reg, pname);
         }
@@ -1723,9 +1719,12 @@ void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
             break;
         }
         case checker::TypeFlag::ETS_ARRAY:
-        case checker::TypeFlag::ETS_OBJECT:
-        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
+        case checker::TypeFlag::ETS_OBJECT: {
             etsg->CastToArrayOrObject(expr, target_type, expr->is_unchecked_cast_);
+            break;
+        }
+        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
+            etsg->CastToDynamic(expr, target_type->AsETSDynamicType());
             break;
         }
         case checker::TypeFlag::ETS_STRING_ENUM:
