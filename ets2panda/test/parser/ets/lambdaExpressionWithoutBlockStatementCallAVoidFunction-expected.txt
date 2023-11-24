@@ -466,32 +466,60 @@
                                 }
                               },
                               "body": {
-                                "type": "CallExpression",
-                                "callee": {
-                                  "type": "Identifier",
-                                  "name": "test_void",
-                                  "decorators": [],
-                                  "loc": {
-                                    "start": {
-                                      "line": 19,
-                                      "column": 41
+                                "type": "BlockStatement",
+                                "statements": [
+                                  {
+                                    "type": "ReturnStatement",
+                                    "argument": {
+                                      "type": "CallExpression",
+                                      "callee": {
+                                        "type": "Identifier",
+                                        "name": "test_void",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 19,
+                                            "column": 41
+                                          },
+                                          "end": {
+                                            "line": 19,
+                                            "column": 50
+                                          }
+                                        }
+                                      },
+                                      "arguments": [],
+                                      "optional": false,
+                                      "loc": {
+                                        "start": {
+                                          "line": 19,
+                                          "column": 41
+                                        },
+                                        "end": {
+                                          "line": 19,
+                                          "column": 52
+                                        }
+                                      }
                                     },
-                                    "end": {
-                                      "line": 19,
-                                      "column": 50
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 1
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 1
+                                      }
                                     }
                                   }
-                                },
-                                "arguments": [],
-                                "optional": false,
+                                ],
                                 "loc": {
                                   "start": {
-                                    "line": 19,
-                                    "column": 41
+                                    "line": 1,
+                                    "column": 1
                                   },
                                   "end": {
-                                    "line": 19,
-                                    "column": 52
+                                    "line": 1,
+                                    "column": 1
                                   }
                                 }
                               },

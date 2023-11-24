@@ -1628,33 +1628,6 @@ ir::ModifierFlags ETSChecker::GetFlagsForProxyLambda(bool is_static)
     return flags;
 }
 
-ir::AstNode *ETSChecker::GetProxyMethodBody(ir::ArrowFunctionExpression *lambda, varbinder::FunctionScope *scope)
-{
-    // Copy the lambda function body for the proxy method and replace the bodies scope to the proxy function
-    auto *body = lambda->Function()->Body();
-
-    if (body->IsBlockStatement()) {
-        body->AsBlockStatement()->SetScope(scope);
-    } else {
-        const auto lambda_return_type = lambda->Function()->ReturnTypeAnnotation() != nullptr
-                                            ? lambda->Function()->ReturnTypeAnnotation()->GetType(this)
-                                            : body->Check(this);
-
-        ASSERT(lambda_return_type != nullptr);
-        ArenaVector<ir::Statement *> lambda_block_statements(Allocator()->Adapter());
-
-        if (lambda_return_type->IsETSVoidType()) {
-            lambda_block_statements.push_back(AllocNode<ir::ExpressionStatement>(body->AsExpression()));
-        } else {
-            lambda_block_statements.push_back(AllocNode<ir::ReturnStatement>(body->AsExpression()));
-        }
-
-        body = AllocNode<ir::BlockStatement>(Allocator(), scope, std::move(lambda_block_statements));
-    }
-
-    return body;
-}
-
 ir::ScriptFunction *ETSChecker::CreateProxyFunc(ir::ArrowFunctionExpression *lambda,
                                                 ArenaVector<ir::AstNode *> &captured, bool is_static)
 {
@@ -1666,8 +1639,8 @@ ir::ScriptFunction *ETSChecker::CreateProxyFunc(ir::ArrowFunctionExpression *lam
     auto param_ctx =
         varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(VarBinder(), func_param_scope, false);
     auto *scope = VarBinder()->Allocator()->New<varbinder::FunctionScope>(Allocator(), func_param_scope);
-
-    auto *body = GetProxyMethodBody(lambda, scope);
+    auto *body = lambda->Function()->Body();
+    body->AsBlockStatement()->SetScope(scope);
 
     ir::ScriptFunctionFlags func_flags = ir::ScriptFunctionFlags::METHOD | ir::ScriptFunctionFlags::PROXY;
     if (lambda->Function()->IsAsyncFunc()) {

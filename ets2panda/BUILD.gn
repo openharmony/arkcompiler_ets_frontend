@@ -156,6 +156,7 @@ libes2panda_sources = [
   "compiler/function/generatorFunctionBuilder.cpp",
   "compiler/lowering/checkerPhase.cpp",
   "compiler/lowering/ets/generateDeclarations.cpp",
+  "compiler/lowering/ets/lambdaLowering.cpp",
   "compiler/lowering/ets/opAssignment.cpp",
   "compiler/lowering/ets/tupleLowering.cpp",
   "compiler/lowering/ets/unionLowering.cpp",

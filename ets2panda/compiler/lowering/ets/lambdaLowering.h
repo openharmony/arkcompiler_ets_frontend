@@ -13,7 +13,20 @@
  * limitations under the License.
  */
 
-function main(): void {
-    let test1: () => int = (): string => "10";
-    test1();
-}
+#ifndef ES2PANDA_COMPILER_LOWERING_LAMDBA_LOWERING_H
+#define ES2PANDA_COMPILER_LOWERING_LAMDBA_LOWERING_H
+
+#include "compiler/lowering/phase.h"
+
+namespace panda::es2panda::compiler {
+
+class LambdaLowering : public Phase {
+public:
+    std::string_view Name() override;
+    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
+};
+
+}  // namespace panda::es2panda::compiler
+
+#endif

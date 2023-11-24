@@ -441,46 +441,74 @@
                                 }
                               },
                               "body": {
-                                "type": "BinaryExpression",
-                                "operator": "+",
-                                "left": {
-                                  "type": "Identifier",
-                                  "name": "a",
-                                  "decorators": [],
-                                  "loc": {
-                                    "start": {
-                                      "line": 17,
-                                      "column": 61
+                                "type": "BlockStatement",
+                                "statements": [
+                                  {
+                                    "type": "ReturnStatement",
+                                    "argument": {
+                                      "type": "BinaryExpression",
+                                      "operator": "+",
+                                      "left": {
+                                        "type": "Identifier",
+                                        "name": "a",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 17,
+                                            "column": 61
+                                          },
+                                          "end": {
+                                            "line": 17,
+                                            "column": 62
+                                          }
+                                        }
+                                      },
+                                      "right": {
+                                        "type": "Identifier",
+                                        "name": "b",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 17,
+                                            "column": 63
+                                          },
+                                          "end": {
+                                            "line": 17,
+                                            "column": 64
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 17,
+                                          "column": 61
+                                        },
+                                        "end": {
+                                          "line": 17,
+                                          "column": 64
+                                        }
+                                      }
                                     },
-                                    "end": {
-                                      "line": 17,
-                                      "column": 62
+                                    "loc": {
+                                      "start": {
+                                        "line": 1,
+                                        "column": 1
+                                      },
+                                      "end": {
+                                        "line": 1,
+                                        "column": 1
+                                      }
                                     }
                                   }
-                                },
-                                "right": {
-                                  "type": "Identifier",
-                                  "name": "b",
-                                  "decorators": [],
-                                  "loc": {
-                                    "start": {
-                                      "line": 17,
-                                      "column": 63
-                                    },
-                                    "end": {
-                                      "line": 17,
-                                      "column": 64
-                                    }
-                                  }
-                                },
+                                ],
                                 "loc": {
                                   "start": {
-                                    "line": 17,
-                                    "column": 61
+                                    "line": 1,
+                                    "column": 1
                                   },
                                   "end": {
-                                    "line": 17,
-                                    "column": 64
+                                    "line": 1,
+                                    "column": 1
                                   }
                                 }
                               },
