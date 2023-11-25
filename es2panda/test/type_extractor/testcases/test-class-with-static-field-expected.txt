@@ -31,7 +31,7 @@ slot _.func_main_0_-1
 {
   index: 1
     tag: 2
-    val: 3
+    val: 4
 },
 {
   index: 2
@@ -42,6 +42,28 @@ slot _.func_main_0_-1
   index: 3
     tag: 24
     val: _1
+},
+------------------------------------
+slot _.instance_initializer_-1
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: -2
+},
+{
+  index: 2
+    tag: 0
+    val: 24
+},
+{
+  index: 3
+    tag: 24
+    val: _2
 },
 ------------------------------------
 slot _.static_initializer_-1

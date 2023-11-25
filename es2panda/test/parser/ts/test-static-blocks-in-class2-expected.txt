@@ -160,35 +160,9 @@
           {
             "type": "ClassProperty",
             "key": {
-              "type": "TSPrivateIdentifier",
-              "key": {
-                "type": "Identifier",
-                "name": "count",
-                "loc": {
-                  "start": {
-                    "line": 20,
-                    "column": 11
-                  },
-                  "end": {
-                    "line": 20,
-                    "column": 16
-                  }
-                }
-              },
-              "value": {
-                "type": "NumberLiteral",
-                "value": 0,
-                "loc": {
-                  "start": {
-                    "line": 20,
-                    "column": 19
-                  },
-                  "end": {
-                    "line": 20,
-                    "column": 20
-                  }
-                }
-              },
+              "type": "PrivateIdentifier",
+              "prefix": "#",
+              "name": "count",
               "loc": {
                 "start": {
                   "line": 20,
@@ -282,21 +256,9 @@
                           }
                         },
                         "property": {
-                          "type": "TSPrivateIdentifier",
-                          "key": {
-                            "type": "Identifier",
-                            "name": "count",
-                            "loc": {
-                              "start": {
-                                "line": 22,
-                                "column": 24
-                              },
-                              "end": {
-                                "line": 22,
-                                "column": 29
-                              }
-                            }
-                          },
+                          "type": "PrivateIdentifier",
+                          "prefix": "#",
+                          "name": "count",
                           "loc": {
                             "start": {
                               "line": 22,
@@ -430,21 +392,9 @@
                           }
                         },
                         "property": {
-                          "type": "TSPrivateIdentifier",
-                          "key": {
-                            "type": "Identifier",
-                            "name": "count",
-                            "loc": {
-                              "start": {
-                                "line": 25,
-                                "column": 24
-                              },
-                              "end": {
-                                "line": 25,
-                                "column": 29
-                              }
-                            }
-                          },
+                          "type": "PrivateIdentifier",
+                          "prefix": "#",
+                          "name": "count",
                           "loc": {
                             "start": {
                               "line": 25,
@@ -559,21 +509,9 @@
                               }
                             },
                             "property": {
-                              "type": "TSPrivateIdentifier",
-                              "key": {
-                                "type": "Identifier",
-                                "name": "count",
-                                "loc": {
-                                  "start": {
-                                    "line": 29,
-                                    "column": 19
-                                  },
-                                  "end": {
-                                    "line": 29,
-                                    "column": 24
-                                  }
-                                }
-                              },
+                              "type": "PrivateIdentifier",
+                              "prefix": "#",
+                              "name": "count",
                               "loc": {
                                 "start": {
                                   "line": 29,

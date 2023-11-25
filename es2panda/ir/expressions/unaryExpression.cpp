@@ -135,7 +135,7 @@ checker::Type *UnaryExpression::Check(checker::Checker *checker) const
 
         const ir::MemberExpression *memberArg = argument_->AsMemberExpression();
 
-        if (memberArg->Property()->IsTSPrivateIdentifier()) {
+        if (memberArg->Property()->IsTSPrivateIdentifier() || memberArg->Property()->IsPrivateIdentifier()) {
             checker->ThrowTypeError("The operand of a delete operator cannot be a private identifier.",
                                     argument_->Start());
         }

@@ -640,7 +640,7 @@ ir::Expression *ParserImpl::ParsePostfixTypeOrHigher(ir::Expression *typeAnnotat
             return ParseTsParenthesizedOrFunctionType(typeAnnotation,
                                                       *options & TypeAnnotationParsingOptions::THROW_ERROR);
         }
-        
+
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
             if (typeAnnotation) {
                 if (lexer_->GetToken().NewLine()) {
@@ -2234,6 +2234,16 @@ void ParserImpl::ValidateClassKey(ClassElmentDescriptor *desc, bool isDeclare)
         ThrowSyntaxError("Async method can not be getter nor setter");
     }
 
+    if (desc->isPrivateIdent) {
+        if (desc->modifiers & ir::ModifierFlags::ACCESS) {
+            ThrowSyntaxError("An accessibility modifier cannot be used with a private identifier.");
+        }
+
+        if (desc->modifiers & ir::ModifierFlags::DECLARE) {
+            ThrowSyntaxError("'declare' modifier cannot be used with a private identifier.");
+        }
+    }
+
     const util::StringView &propNameStr = lexer_->GetToken().Ident();
 
     if (propNameStr.Is("constructor")) {
@@ -2262,7 +2272,7 @@ void ParserImpl::ValidateClassKey(ClassElmentDescriptor *desc, bool isDeclare)
 
 ir::Expression *ParserImpl::ParseClassKey(ClassElmentDescriptor *desc, bool isDeclare)
 {
-    if (desc->isPrivateIdent && Extension() == ScriptExtension::JS) {
+    if (desc->isPrivateIdent && program_.TargetApiVersion() > 10) {
         ValidateClassKey(desc, isDeclare);
         return ParsePrivateIdentifier();
     }
@@ -2531,7 +2541,7 @@ ir::MethodDefinition *ParserImpl::ParseClassMethod(ClassElmentDescriptor *desc,
 
     ir::MethodDefinition *method = nullptr;
 
-    if (desc->isPrivateIdent && Extension() == ScriptExtension::TS) {
+    if (desc->isPrivateIdent && Extension() == ScriptExtension::TS && program_.TargetApiVersion() <= 10) {
         ir::Expression *privateId = AllocNode<ir::TSPrivateIdentifier>(propName, nullptr, nullptr);
         auto privateIdStart = lexer::SourcePosition(propName->Start().index - 1, propName->Start().line);
         privateId->SetRange({privateIdStart, propName->End()});
@@ -2638,7 +2648,7 @@ void ParserImpl::CheckClassPrivateIdentifier(ClassElmentDescriptor *desc)
 
     desc->isPrivateIdent = true;
 
-    if (Extension() == ScriptExtension::TS) {
+    if (Extension() == ScriptExtension::TS && program_.TargetApiVersion() <= 10) {
         lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);
     }
 }
@@ -2748,6 +2758,10 @@ ir::Statement *ParserImpl::ParseClassElement(const ArenaVector<ir::Statement *> 
     CheckClassGeneratorMethod(&desc);
     ParseClassKeyModifiers(&desc);
     CheckClassPrivateIdentifier(&desc);
+
+    if (desc.isPrivateIdent && !decorators.empty()) {
+        ThrowSyntaxError("Decorators are not valid here.", decorators.front()->Start());
+    }
 
     if (!(desc.modifiers & ir::ModifierFlags::STATIC)) {
         context_.Status() |= ParserStatus::ALLOW_THIS_TYPE;
@@ -3234,9 +3248,13 @@ bool ParserImpl::SuperCallShouldBeRootLevel(const ir::MethodDefinition *ctor,
                                             const ArenaVector<ir::Statement *> &properties)
 {
     for (const auto *property : properties) {
-        if (property->IsClassProperty() && (property->AsClassProperty()->Value() != nullptr ||
-            property->AsClassProperty()->Key()->IsTSPrivateIdentifier())) {
-            return true;
+        if (property->IsClassProperty()) {
+            auto *classProperty = property->AsClassProperty();
+            bool isPrivateProperty = program_.TargetApiVersion() > 10 ?
+                classProperty->Key()->IsPrivateIdentifier() : classProperty->Key()->IsTSPrivateIdentifier();
+            if (classProperty->Value() != nullptr || isPrivateProperty) {
+                return true;
+            }
         }
     }
 

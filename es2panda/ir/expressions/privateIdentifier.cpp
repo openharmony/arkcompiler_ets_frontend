@@ -28,7 +28,7 @@ void PrivateIdentifier::Iterate(const NodeTraverser &cb) const
 
 void PrivateIdentifier::Dump(ir::AstDumper *dumper) const
 {
-    dumper->Add({{"type", "PrivatePrivateIdentifier"},
+    dumper->Add({{"type", "PrivateIdentifier"},
                  {"prefix", "#"},
                  {"name", name_},
                  {"typeAnnotation", AstDumper::Optional(typeAnnotation_)}});

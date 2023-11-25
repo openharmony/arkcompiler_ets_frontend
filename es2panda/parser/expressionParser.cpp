@@ -1611,7 +1611,7 @@ ir::Expression *ParserImpl::ParsePostPrimaryExpression(ir::Expression *primaryEx
                 lexer_->NextToken(lexer::LexerNextTokenFlags::KEYWORD_TO_IDENT);  // eat period
 
                 ir::Expression *property;
-                if (Extension() == ScriptExtension::JS &&
+                if (program_.TargetApiVersion() > 10 &&
                     lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_HASH_MARK) {
                     if (returnExpression->IsSuperExpression()) {
                         ThrowSyntaxError("Unexpected private property access in super keyword");

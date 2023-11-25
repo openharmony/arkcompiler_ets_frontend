@@ -674,6 +674,9 @@ void Binder::ResolveReference(const ir::AstNode *parent, ir::AstNode *childNode)
         case ir::AstNodeType::PRIVATE_IDENTIFIER: {
             if (Program()->Extension() == ScriptExtension::JS) {
                 CheckPrivateDeclaration(childNode->AsPrivateIdentifier());
+            } else if (Program()->Extension() == ScriptExtension::TS &&
+                       bindingFlags_ == ResolveBindingFlags::TS_AFTER_TRANSFORM) {
+                CheckPrivateDeclaration(childNode->AsPrivateIdentifier());
             }
             break;
         }

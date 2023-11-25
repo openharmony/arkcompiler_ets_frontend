@@ -1,0 +1,1 @@
+SyntaxError: Decorators are not valid here. [test_decorator9.ts:20:5]
