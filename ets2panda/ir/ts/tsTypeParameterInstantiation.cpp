@@ -27,12 +27,13 @@ TSTypeParameterInstantiation::TSTypeParameterInstantiation([[maybe_unused]] Tag 
     : Expression(static_cast<Expression const &>(other)), params_(allocator->Adapter())
 {
     for (auto *param : other.params_) {
-        params_.emplace_back(param->Clone(allocator, this)->AsTypeNode());
+        params_.emplace_back(param->Clone(allocator, this));
     }
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *TSTypeParameterInstantiation::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+TSTypeParameterInstantiation *TSTypeParameterInstantiation::Clone(ArenaAllocator *const allocator,
+                                                                  AstNode *const parent)
 {
     if (auto *const clone = allocator->New<TSTypeParameterInstantiation>(Tag {}, *this, allocator); clone != nullptr) {
         if (parent != nullptr) {

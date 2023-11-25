@@ -15,10 +15,9 @@
 
 #include "continueStatement.h"
 
-#include "compiler/core/pandagen.h"
+#include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "checker/ETSchecker.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void ContinueStatement::TransformChildren(const NodeTransformer &cb)
@@ -40,34 +39,23 @@ void ContinueStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ContinueStatement"}, {"label", AstDumper::Nullish(ident_)}});
 }
 
-template <typename CodeGen>
-void CompileImpl(const ContinueStatement *self, [[maybe_unused]] CodeGen *cg)
+void ContinueStatement::Compile(compiler::PandaGen *pg) const
 {
-    compiler::Label *target = cg->ControlFlowChangeContinue(self->Ident());
-    cg->Branch(self, target);
+    pg->GetAstCompiler()->Compile(this);
 }
 
-void ContinueStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ContinueStatement::Compile(compiler::ETSGen *etsg) const
 {
-    CompileImpl(this, pg);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-void ContinueStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+checker::Type *ContinueStatement::Check(checker::TSChecker *checker)
 {
-    if (etsg->ExtendWithFinalizer(parent_, this)) {
-        return;
-    }
-    CompileImpl(this, etsg);
-}
-
-checker::Type *ContinueStatement::Check([[maybe_unused]] checker::TSChecker *checker)
-{
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *ContinueStatement::Check(checker::ETSChecker *checker)
 {
-    target_ = checker->FindJumpTarget(Type(), this, ident_);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

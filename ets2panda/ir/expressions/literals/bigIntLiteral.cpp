@@ -51,7 +51,7 @@ checker::Type *BigIntLiteral::Check([[maybe_unused]] checker::ETSChecker *checke
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *BigIntLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+BigIntLiteral *BigIntLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<BigIntLiteral>(src_); clone != nullptr) {
         if (parent != nullptr) {

@@ -395,12 +395,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 21,
+                "column": 12
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 21,
+                "column": 21
               }
             }
           },

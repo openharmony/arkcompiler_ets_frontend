@@ -29,6 +29,11 @@ bool JSChecker::StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, c
         std::cout << Program()->Dump() << std::endl;
     }
 
+    if (options.op_dump_ast_only_silent) {
+        Program()->DumpSilent();
+        return false;
+    }
+
     return !options.parse_only;
 }
 

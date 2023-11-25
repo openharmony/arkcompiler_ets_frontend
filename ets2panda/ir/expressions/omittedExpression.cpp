@@ -40,7 +40,7 @@ checker::Type *OmittedExpression::Check([[maybe_unused]] checker::ETSChecker *ch
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *OmittedExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+OmittedExpression *OmittedExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<OmittedExpression>(); clone != nullptr) {
         if (parent != nullptr) {

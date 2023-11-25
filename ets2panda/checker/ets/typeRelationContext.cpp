@@ -39,30 +39,36 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
                                                  ir::TSTypeParameterInstantiation *type_args,
                                                  const lexer::SourcePosition &pos)
 {
-    if (type_param_decl != nullptr && type_args == nullptr) {
-        checker_->ThrowTypeError({"Type '", type, "' is generic but type argument were not provided."}, pos);
-    }
-
-    if (type_param_decl == nullptr && type_args != nullptr) {
-        checker_->ThrowTypeError({"Type '", type, "' is not generic."}, pos);
-    }
+    checker_->CheckNumberOfTypeArguments(type, type_param_decl, type_args, pos);
 
     if (type_args == nullptr) {
         result_ = type;
         return true;
     }
 
-    ASSERT(type_param_decl != nullptr && type_args != nullptr);
-    if (type_param_decl->Params().size() != type_args->Params().size()) {
-        checker_->ThrowTypeError({"Type '", type, "' has ", type_param_decl->Params().size(),
-                                  " number of type parameters, but ", type_args->Params().size(),
-                                  " type arguments were provided."},
-                                 pos);
+    auto *substitution = checker_->NewSubstitution();
+    /*
+    The first loop is to create a substitution of type_params & type_args.
+    so that we can replace the type_params in constaints by the right type.
+    e.g:
+        class X <K extends Comparable<T>,T> {}
+        function main(){
+            const myCharClass = new X<Char,String>();
+        }
+    In the case above, the constraints_substitution should store "K->Char" and "T->String".
+    And in the second loop, we use this substitution to replace type_params in constraints.
+    In this case, we will check "Comparable<String>" with "Char", since "Char" doesn't
+    extends "Comparable<String>", we will get an error here.
+    */
+    for (size_t type_param_iter = 0; type_param_iter < type_param_decl->Params().size(); ++type_param_iter) {
+        auto *const type_arg_type = type_args->Params().at(type_param_iter)->GetType(checker_);
+        checker_->CheckValidGenericTypeParameter(type_arg_type, pos);
+        auto *const type_param_type = type->TypeArguments().at(type_param_iter);
+        substitution->emplace(type_param_type, type_arg_type);
     }
 
     for (size_t type_param_iter = 0; type_param_iter < type_param_decl->Params().size(); ++type_param_iter) {
-        auto *const param_type = type_args->Params().at(type_param_iter)->GetType(checker_);
-        checker_->CheckValidGenericTypeParameter(param_type, pos);
+        auto *const type_arg_type = type_args->Params().at(type_param_iter)->GetType(checker_);
         auto *const type_param_constraint =
             type_param_decl->Params().at(type_param_iter)->AsTSTypeParameter()->Constraint();
         if (type_param_constraint == nullptr) {
@@ -71,10 +77,15 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
 
         bool assignable = false;
         auto *constraint_type = type_param_constraint->GetType(checker_);
-        if (constraint_type->IsETSObjectType() && param_type->IsETSObjectType()) {
-            assignable = ValidateTypeArg(constraint_type->AsETSObjectType(), param_type->AsETSObjectType());
-        } else if (param_type->IsETSUnionType() && !constraint_type->IsETSUnionType()) {
-            auto constituent_types = param_type->AsETSUnionType()->ConstituentTypes();
+
+        if (!constraint_type->AsETSObjectType()->TypeArguments().empty()) {
+            constraint_type = constraint_type->Substitute(checker_->Relation(), substitution);
+        }
+
+        if (constraint_type->IsETSObjectType() && type_arg_type->IsETSObjectType()) {
+            assignable = ValidateTypeArg(constraint_type->AsETSObjectType(), type_arg_type->AsETSObjectType());
+        } else if (type_arg_type->IsETSUnionType() && !constraint_type->IsETSUnionType()) {
+            auto constituent_types = type_arg_type->AsETSUnionType()->ConstituentTypes();
             assignable =
                 std::all_of(constituent_types.begin(), constituent_types.end(), [this, constraint_type](Type *c_type) {
                     return c_type->IsETSObjectType() &&
@@ -83,7 +94,7 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
         }
 
         if (!assignable) {
-            checker_->ThrowTypeError({"Type '", param_type->AsETSObjectType(),
+            checker_->ThrowTypeError({"Type '", type_arg_type->AsETSObjectType(),
                                       "' is not assignable to constraint type '", constraint_type, "'."},
                                      type_args->Params().at(type_param_iter)->Start());
         }
@@ -146,17 +157,23 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ArenaVector<Type
     }
 
     auto *substitution = checker_->NewSubstitution();
+    auto *constraints_substitution = checker_->NewSubstitution();
+    for (size_t ix = 0; ix < type_params.size(); ix++) {
+        constraints_substitution->emplace(type_params[ix], type_arg_types[ix]);
+    }
     for (size_t ix = 0; ix < type_params.size(); ix++) {
         auto *type_param = type_params[ix];
         bool is_compatible_type_arg;
         if (type_arg_types[ix]->IsETSUnionType()) {
             auto union_constituent_types = type_arg_types[ix]->AsETSUnionType()->ConstituentTypes();
             is_compatible_type_arg = std::all_of(union_constituent_types.begin(), union_constituent_types.end(),
-                                                 [this, type_param](Type *type_arg) {
-                                                     return checker_->IsCompatibleTypeArgument(type_param, type_arg);
+                                                 [this, type_param, constraints_substitution](Type *type_arg) {
+                                                     return checker_->IsCompatibleTypeArgument(
+                                                         type_param, type_arg, constraints_substitution);
                                                  });
         } else {
-            is_compatible_type_arg = checker_->IsCompatibleTypeArgument(type_param, type_arg_types[ix]);
+            is_compatible_type_arg =
+                checker_->IsCompatibleTypeArgument(type_param, type_arg_types[ix], constraints_substitution);
         }
         if (!is_compatible_type_arg) {
             checker_->ThrowTypeError(

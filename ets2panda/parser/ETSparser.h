@@ -16,6 +16,7 @@
 #ifndef ES2PANDA_PARSER_CORE_ETS_PARSER_H
 #define ES2PANDA_PARSER_CORE_ETS_PARSER_H
 
+#include <optional>
 #include "util/arktsconfig.h"
 #include "TypedParser.h"
 #include "ir/ets/etsParameterExpression.h"
@@ -27,6 +28,16 @@ enum class PrimitiveType;
 }  // namespace panda::es2panda::ir
 
 namespace panda::es2panda::parser {
+
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+inline constexpr char const FORMAT_SIGNATURE = '@';
+inline constexpr char const TYPE_FORMAT_NODE = 'T';
+inline constexpr char const STATEMENT_FORMAT_NODE = 'S';
+inline constexpr char const EXPRESSION_FORMAT_NODE = 'E';
+inline constexpr char const IDENTIFIER_FORMAT_NODE = 'I';
+inline constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
+// NOLINTEND(modernize-avoid-c-arrays)
+
 class ETSParser final : public TypedParser {
 public:
     ETSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
@@ -34,13 +45,52 @@ public:
     {
     }
 
+    ETSParser() = delete;
     NO_COPY_SEMANTIC(ETSParser);
     NO_MOVE_SEMANTIC(ETSParser);
-
     ~ETSParser() = default;
 
-    ir::Expression *CreateExpression(ExpressionParseFlags flags, std::string_view source_code,
+    [[nodiscard]] bool IsETSParser() const noexcept override
+    {
+        return true;
+    }
+
+    //  Methods to create AST node(s) from the specified string (part of valid ETS-code!)
+    //  NOTE: the correct initial scope should be entered BEFORE calling any of these methods,
+    //  and correct parent and, probably, variable set to the node(s) after obtaining
+
+    ir::Expression *CreateExpression(std::string_view source_code,
+                                     ExpressionParseFlags flags = ExpressionParseFlags::NO_OPTS,
                                      std::string_view file_name = DEFAULT_SOURCE_FILE);
+
+    ir::Expression *CreateFormattedExpression(std::string_view source_code, std::vector<ir::AstNode *> &inserting_nodes,
+                                              std::string_view file_name = DEFAULT_SOURCE_FILE);
+
+    template <typename... Args>
+    ir::Expression *CreateFormattedExpression(std::string_view const source_code, std::string_view const file_name,
+                                              Args &&...args)
+    {
+        std::vector<ir::AstNode *> inserting_nodes {};
+        inserting_nodes.reserve(sizeof...(Args));
+        (inserting_nodes.emplace_back(std::forward<Args>(args)), ...);
+        return CreateFormattedExpression(source_code, inserting_nodes, file_name);
+    }
+
+    ArenaVector<ir::Statement *> CreateStatements(std::string_view source_code,
+                                                  std::string_view file_name = DEFAULT_SOURCE_FILE);
+
+    ArenaVector<ir::Statement *> CreateFormattedStatements(std::string_view source_code,
+                                                           std::vector<ir::AstNode *> &inserting_nodes,
+                                                           std::string_view file_name = DEFAULT_SOURCE_FILE);
+
+    template <typename... Args>
+    ArenaVector<ir::Statement *> CreateFormattedStatements(std::string_view const source_code,
+                                                           std::string_view const file_name, Args &&...args)
+    {
+        std::vector<ir::AstNode *> inserting_nodes {};
+        (inserting_nodes.emplace(std::forward<Args>(args)), ...);
+        return CreateFormattedStatements(source_code, inserting_nodes, file_name);
+    }
 
 private:
     struct ImportData {
@@ -103,8 +153,8 @@ private:
 
     // NOLINTNEXTLINE(google-default-arguments)
     void ParseClassFieldDefiniton(ir::Identifier *field_name, ir::ModifierFlags modifiers,
-                                  ArenaVector<ir::AstNode *> *declarations,
-                                  ir::ScriptFunction *init_function = nullptr);
+                                  ArenaVector<ir::AstNode *> *declarations, ir::ScriptFunction *init_function = nullptr,
+                                  lexer::SourcePosition *let_loc = nullptr);
     std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParseTypeReferencePart(
         TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseTypeReference(TypeAnnotationParsingOptions *options);
@@ -126,6 +176,7 @@ private:
     ir::ArrowFunctionExpression *ParseArrowFunctionExpression();
 
     void ThrowIfVarDeclaration(VariableParsingFlags flags) override;
+    std::pair<ir::TypeNode *, bool> GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseTypeAnnotation(TypeAnnotationParsingOptions *options) override;
     ir::TSTypeAliasDeclaration *ParseTypeAliasDeclaration() override;
 
@@ -178,6 +229,14 @@ private:
     ir::Expression *ParseAsyncExpression();
     ir::Expression *ParseAwaitExpression();
     ir::TSTypeParameter *ParseTypeParameter(TypeAnnotationParsingOptions *options) override;
+
+    NodeFormatType GetFormatPlaceholderIdent() const;
+    ir::AstNode *ParseFormatPlaceholder();
+    ir::Statement *ParseStatementFormatPlaceholder(std::optional<NodeFormatType> node_format = std::nullopt);
+    ir::Expression *ParseExpressionFormatPlaceholder(std::optional<NodeFormatType> node_format = std::nullopt);
+    // NOLINTNEXTLINE(google-default-arguments)
+    ir::Identifier *ParseIdentifierFormatPlaceholder(std::optional<NodeFormatType> node_format = std::nullopt) override;
+    ir::TypeNode *ParseTypeFormatPlaceholder(std::optional<NodeFormatType> node_format = std::nullopt);
 
     ir::TSEnumDeclaration *ParseEnumMembers(ir::Identifier *key, const lexer::SourcePosition &enum_start, bool is_const,
                                             bool is_static) override;
@@ -246,17 +305,25 @@ private:
     //  Methods to create AST node(s) from the specified string (part of valid ETS-code!)
     //  NOTE: the correct initial scope should be entered BEFORE calling any of these methods,
     //  and correct parent and, probably, variable set to the node(s) after obtaining
-    // NOLINTNEXTLINE(modernize-avoid-c-arrays)
-    inline static constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
-    // NOLINTBEGIN(google-default-arguments)
+
     ir::Statement *CreateStatement(std::string_view source_code, std::string_view file_name = DEFAULT_SOURCE_FILE);
-    ArenaVector<ir::Statement *> CreateStatements(std::string_view source_code,
-                                                  std::string_view file_name = DEFAULT_SOURCE_FILE);
+    ir::Statement *CreateFormattedStatement(std::string_view source_code, std::vector<ir::AstNode *> &inserting_nodes,
+                                            std::string_view file_name = DEFAULT_SOURCE_FILE);
+
+    template <typename... Args>
+    ir::Statement *CreateFormattedStatement(std::string_view const source_code, std::string_view const file_name,
+                                            Args &&...args)
+    {
+        std::vector<ir::AstNode *> inserting_nodes {};
+        (inserting_nodes.emplace(std::forward<Args>(args)), ...);
+        return CreateFormattedStatement(source_code, inserting_nodes, file_name);
+    }
+
     ir::MethodDefinition *CreateMethodDefinition(ir::ModifierFlags modifiers, std::string_view source_code,
                                                  std::string_view file_name = DEFAULT_SOURCE_FILE);
+
     ir::TypeNode *CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view source_code,
                                        std::string_view file_name = DEFAULT_SOURCE_FILE);
-    // NOLINTEND(google-default-arguments)
 
     friend class ExternalSourceParser;
     friend class InnerSourceParser;
@@ -264,6 +331,7 @@ private:
 private:
     parser::Program *global_program_;
     std::vector<std::string> parsed_sources_;
+    std::vector<ir::AstNode *> inserting_nodes_ {};
 };
 
 class ExternalSourceParser {

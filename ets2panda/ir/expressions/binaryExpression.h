@@ -19,6 +19,10 @@
 #include "ir/expression.h"
 #include "lexer/token/tokenType.h"
 
+namespace panda::es2panda::checker {
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
+
 namespace panda::es2panda::ir {
 class BinaryExpression : public Expression {
 public:
@@ -32,6 +36,9 @@ public:
         : Expression(AstNodeType::BINARY_EXPRESSION), left_(left), right_(right), operator_(operator_type)
     {
     }
+
+    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
 
     [[nodiscard]] const Expression *Left() const noexcept
     {
@@ -113,17 +120,15 @@ public:
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] BinaryExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
-    void CompileLogical(compiler::PandaGen *pg) const;
-    void CompileLogical(compiler::ETSGen *etsg) const;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     Expression *left_ = nullptr;

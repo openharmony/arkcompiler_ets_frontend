@@ -15,28 +15,14 @@
 
 #include "memberExpression.h"
 
-#include "checker/types/typeRelation.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "compiler/core/function.h"
 #include "checker/TSchecker.h"
-#include "checker/ETSchecker.h"
-#include "checker/types/ets/etsExtensionFuncHelperType.h"
-#include "checker/types/ets/etsFunctionType.h"
-#include "checker/types/signature.h"
-#include "ir/astDump.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/expressions/callExpression.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/literals/numberLiteral.h"
-#include "ir/expressions/literals/stringLiteral.h"
-#include "ir/ts/tsEnumMember.h"
-#include "util/helpers.h"
 
 namespace panda::es2panda::ir {
-MemberExpression::MemberExpression([[maybe_unused]] Tag const tag, Expression *const object, Expression *const property)
-    : MemberExpression(*this)
+MemberExpression::MemberExpression([[maybe_unused]] Tag const tag, MemberExpression const &other,
+                                   Expression *const object, Expression *const property)
+    : MemberExpression(other)
 {
     object_ = object;
     if (object_ != nullptr) {
@@ -469,12 +455,12 @@ checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+MemberExpression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const object = object_ != nullptr ? object_->Clone(allocator) : nullptr;
-    auto *const property = property_ != nullptr ? property_->Clone(allocator) : nullptr;
+    auto *const object = object_ != nullptr ? object_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const property = property_ != nullptr ? property_->Clone(allocator)->AsExpression() : nullptr;
 
-    if (auto *const clone = allocator->New<MemberExpression>(Tag {}, object, property); clone != nullptr) {
+    if (auto *const clone = allocator->New<MemberExpression>(Tag {}, *this, object, property); clone != nullptr) {
         if (parent != nullptr) {
             clone->SetParent(parent);
         }

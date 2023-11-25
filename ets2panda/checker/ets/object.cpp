@@ -178,6 +178,11 @@ ArenaVector<Type *> ETSChecker::CreateTypeForTypeParameters(ir::TSTypeParameterD
     for (auto *const param : type_params->Params()) {
         result.push_back(CreateTypeParameterType(param));
     }
+    // The type parameter might be used in the constraint, like 'K extend Comparable<K>',
+    // so we need to create their type first, then set up the constraint
+    for (auto *const param : type_params->Params()) {
+        SetUpTypeParameterConstraint(param);
+    }
 
     return result;
 }
@@ -189,13 +194,28 @@ Type *ETSChecker::CreateTypeParameterType(ir::TSTypeParameter *const param)
             ->AsETSObjectType();
     };
 
-    ETSObjectType *param_type =
-        CreateNewETSObjectType(param->Name()->Name(), param, GlobalETSObjectType()->ObjectFlags());
-    param_type->SetAssemblerName(GlobalETSObjectType()->AssemblerName());
-    param_type->AddTypeFlag(TypeFlag::GENERIC);
-    param_type->AddObjectFlag(ETSObjectFlags::TYPE_PARAMETER);
-    param_type->SetVariable(param->Variable());
+    ETSObjectType *param_type = SetUpParameterType(param);
+    if (param->Constraint() == nullptr) {
+        // No constraint, so it's Object|null
+        param_type->SetSuperType(instantiate_supertype(TypeFlag::NULLISH));
+    }
 
+    return param_type;
+}
+
+void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
+{
+    auto const instantiate_supertype = [this](TypeFlag nullish_flags) {
+        return CreateNullishType(GlobalETSObjectType(), nullish_flags, Allocator(), Relation(), GetGlobalTypesHolder())
+            ->AsETSObjectType();
+    };
+
+    ETSObjectType *param_type = nullptr;
+    if (param->Name()->Variable()->TsType() == nullptr) {
+        param_type = SetUpParameterType(param);
+    } else {
+        param_type = param->Name()->Variable()->TsType()->AsETSObjectType();
+    }
     if (param->Constraint() != nullptr) {
         if (param->Constraint()->IsETSTypeReference() &&
             param->Constraint()->AsETSTypeReference()->Part()->Name()->IsIdentifier() &&
@@ -213,7 +233,7 @@ Type *ETSChecker::CreateTypeParameterType(ir::TSTypeParameter *const param)
             if (auto *const found_param =
                     type_param_scope->FindLocal(constraint_name, varbinder::ResolveBindingOptions::BINDINGS);
                 found_param != nullptr) {
-                CreateTypeParameterType(found_param->Declaration()->Node()->AsTSTypeParameter());
+                SetUpTypeParameterConstraint(found_param->Declaration()->Node()->AsTSTypeParameter());
             }
         }
 
@@ -233,7 +253,16 @@ Type *ETSChecker::CreateTypeParameterType(ir::TSTypeParameter *const param)
         // No constraint, so it's Object|null|undefined
         param_type->SetSuperType(instantiate_supertype(TypeFlag::NULLISH));
     }
+}
 
+ETSObjectType *ETSChecker::SetUpParameterType(ir::TSTypeParameter *const param)
+{
+    ETSObjectType *param_type =
+        CreateNewETSObjectType(param->Name()->Name(), param, GlobalETSObjectType()->ObjectFlags());
+    param_type->SetAssemblerName(GlobalETSObjectType()->AssemblerName());
+    param_type->AddTypeFlag(TypeFlag::GENERIC);
+    param_type->AddObjectFlag(ETSObjectFlags::TYPE_PARAMETER);
+    param_type->SetVariable(param->Variable());
     SetTypeParameterType(param, param_type);
     return param_type;
 }

@@ -226,6 +226,8 @@ const char *TokenToString(TokenType type)  // NOLINT(readability-function-size)
             return "?.";
         case TokenType::PUNCTUATOR_AT:
             return "@";
+        case TokenType::PUNCTUATOR_FORMAT:
+            return "@@";
         case TokenType::PUNCTUATOR_RIGHT_PARENTHESIS:
             return ")";
         case TokenType::PUNCTUATOR_LEFT_PARENTHESIS:

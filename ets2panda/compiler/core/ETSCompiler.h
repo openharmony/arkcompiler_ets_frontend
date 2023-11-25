@@ -34,6 +34,10 @@ public:
 #undef DECLARE_ETSCOMPILER_COMPILE_METHOD
 
 private:
+    bool IsSucceedCompilationProxyMemberExpr(const ir::CallExpression *expr) const;
+    void CompileDynamic(const ir::CallExpression *expr, compiler::VReg &callee_reg) const;
+    void EmitCall(const ir::CallExpression *expr, compiler::VReg &callee_reg, bool is_static) const;
+
     ETSGen *GetETSGen() const;
 };
 

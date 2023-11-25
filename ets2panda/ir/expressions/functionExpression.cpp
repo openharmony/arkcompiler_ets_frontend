@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,13 +15,10 @@
 
 #include "functionExpression.h"
 
-#include "compiler/core/pandagen.h"
-#include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/variableDeclarator.h"
 
 namespace panda::es2panda::ir {
 void FunctionExpression::TransformChildren(const NodeTransformer &cb)
@@ -41,45 +38,37 @@ void FunctionExpression::Dump(ir::AstDumper *dumper) const
 
 void FunctionExpression::Compile(compiler::PandaGen *pg) const
 {
-    pg->DefineFunction(func_, func_, func_->Scope()->InternalName());
+    pg->GetAstCompiler()->Compile(this);
 }
 
-void FunctionExpression::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void FunctionExpression::Compile(compiler::ETSGen *etsg) const
 {
-    UNREACHABLE();
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *FunctionExpression::Check(checker::TSChecker *checker)
 {
-    varbinder::Variable *func_var = nullptr;
-
-    if (func_->Parent()->Parent() != nullptr && func_->Parent()->Parent()->IsVariableDeclarator() &&
-        func_->Parent()->Parent()->AsVariableDeclarator()->Id()->IsIdentifier()) {
-        func_var = func_->Parent()->Parent()->AsVariableDeclarator()->Id()->AsIdentifier()->Variable();
-    }
-
-    checker::ScopeContext scope_ctx(checker, func_->Scope());
-
-    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(func_->Params(), signature_info);
-
-    auto *signature =
-        checker->Allocator()->New<checker::Signature>(signature_info, checker->GlobalResolvingReturnType(), func_);
-    checker::Type *func_type = checker->CreateFunctionTypeWithSignature(signature);
-
-    if (func_var != nullptr && func_var->TsType() == nullptr) {
-        func_var->SetTsType(func_type);
-    }
-
-    signature->SetReturnType(checker->HandleFunctionReturn(func_));
-
-    func_->Body()->Check(checker);
-
-    return func_type;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *FunctionExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+FunctionExpression *FunctionExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const func = func_->Clone(allocator)->AsScriptFunction();
+
+    if (auto *const clone = allocator->New<FunctionExpression>(func); clone != nullptr) {
+        func->SetParent(clone);
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

@@ -305,9 +305,9 @@ checker::Type *UnaryExpression::Check(checker::ETSChecker *checker)
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *UnaryExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+UnaryExpression *UnaryExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const argument = argument_ != nullptr ? argument_->Clone(allocator) : nullptr;
+    auto *const argument = argument_ != nullptr ? argument_->Clone(allocator)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<UnaryExpression>(argument, operator_); clone != nullptr) {
         if (argument != nullptr) {

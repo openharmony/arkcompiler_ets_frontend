@@ -18,6 +18,10 @@
 
 #include "ir/expression.h"
 
+namespace panda::es2panda::checker {
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
+
 namespace panda::es2panda::ir {
 class AwaitExpression : public Expression {
 public:
@@ -29,13 +33,16 @@ public:
 
     explicit AwaitExpression(Expression *argument) : Expression(AstNodeType::AWAIT_EXPRESSION), argument_(argument) {}
 
+    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
+
     [[nodiscard]] const Expression *Argument() const noexcept
     {
         return argument_;
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] AwaitExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
@@ -43,7 +50,7 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     Expression *argument_;

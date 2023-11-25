@@ -15,8 +15,9 @@
 
 #include "switchCaseStatement.h"
 
-#include "ir/astDump.h"
-#include "ir/expression.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void SwitchCaseStatement::TransformChildren(const NodeTransformer &cb)
@@ -46,15 +47,23 @@ void SwitchCaseStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "SwitchCase"}, {"test", AstDumper::Nullish(test_)}, {"consequent", consequent_}});
 }
 
-void SwitchCaseStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *SwitchCaseStatement::Check([[maybe_unused]] checker::TSChecker *checker)
+void SwitchCaseStatement::Compile(compiler::PandaGen *pg) const
 {
-    return nullptr;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *SwitchCaseStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+void SwitchCaseStatement::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *SwitchCaseStatement::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *SwitchCaseStatement::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

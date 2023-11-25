@@ -99,7 +99,7 @@ public:
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] ArrayExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     [[nodiscard]] bool ConvertibleToArrayPattern();
     [[nodiscard]] ValidationInfo ValidateExpression();

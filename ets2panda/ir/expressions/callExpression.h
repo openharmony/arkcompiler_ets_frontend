@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,16 +21,30 @@
 #include "ir/expression.h"
 
 namespace panda::es2panda::checker {
+class ETSAnalyzer;
+class TSAnalyzer;
 class Signature;
 }  // namespace panda::es2panda::checker
+
+namespace panda::es2panda::compiler {
+class JSCompiler;
+class ETSCompiler;
+}  // namespace panda::es2panda::compiler
 
 namespace panda::es2panda::ir {
 class TSTypeParameterInstantiation;
 
 class CallExpression : public MaybeOptionalExpression {
 public:
-    explicit CallExpression(Expression *callee, ArenaVector<Expression *> &&arguments,
-                            TSTypeParameterInstantiation *type_params, bool optional, bool trailing_comma = false)
+    CallExpression() = delete;
+    ~CallExpression() override = default;
+
+    NO_COPY_SEMANTIC(CallExpression);
+    NO_MOVE_SEMANTIC(CallExpression);
+
+    explicit CallExpression(Expression *const callee, ArenaVector<Expression *> &&arguments,
+                            TSTypeParameterInstantiation *const type_params, bool const optional,
+                            bool const trailing_comma = false)
         : MaybeOptionalExpression(AstNodeType::CALL_EXPRESSION, optional),
           callee_(callee),
           arguments_(std::move(arguments)),
@@ -39,101 +53,107 @@ public:
     {
     }
 
+    explicit CallExpression(CallExpression const &other, ArenaAllocator *allocator);
+
+    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
+    friend class checker::TSAnalyzer;
+    friend class checker::ETSAnalyzer;
+    friend class compiler::JSCompiler;
+    friend class compiler::ETSCompiler;
+
     const Expression *Callee() const
     {
         return callee_;
     }
 
-    Expression *Callee()
+    [[nodiscard]] Expression *Callee() noexcept
     {
         return callee_;
     }
 
-    void SetCallee(Expression *callee)
+    void SetCallee(Expression *callee) noexcept
     {
         callee_ = callee;
     }
 
-    const TSTypeParameterInstantiation *TypeParams() const
+    [[nodiscard]] const TSTypeParameterInstantiation *TypeParams() const noexcept
     {
         return type_params_;
     }
 
-    TSTypeParameterInstantiation *TypeParams()
+    [[nodiscard]] TSTypeParameterInstantiation *TypeParams() noexcept
     {
         return type_params_;
     }
 
-    const ArenaVector<Expression *> &Arguments() const
+    [[nodiscard]] const ArenaVector<Expression *> &Arguments() const noexcept
     {
         return arguments_;
     }
 
-    ArenaVector<Expression *> &Arguments()
+    [[nodiscard]] ArenaVector<Expression *> &Arguments() noexcept
     {
         return arguments_;
     }
 
-    bool HasTrailingComma() const
+    [[nodiscard]] bool HasTrailingComma() const noexcept
     {
         return trailing_comma_;
     }
 
-    checker::Signature *Signature()
+    [[nodiscard]] checker::Signature *Signature() noexcept
     {
         return signature_;
     }
 
-    checker::Signature *Signature() const
+    [[nodiscard]] checker::Signature *Signature() const noexcept
     {
         return signature_;
     }
 
-    void SetSignature(checker::Signature *signature)
+    void SetSignature(checker::Signature *const signature) noexcept
     {
         signature_ = signature;
     }
 
-    void SetTypeParams(TSTypeParameterInstantiation *type_params)
+    void SetTypeParams(TSTypeParameterInstantiation *const type_params) noexcept
     {
         type_params_ = type_params;
     }
 
-    void SetTrailingBlock(ir::BlockStatement *block)
+    void SetTrailingBlock(ir::BlockStatement *const block) noexcept
     {
         trailing_block_ = block;
     }
 
-    ir::BlockStatement *TrailingBlock() const
+    [[nodiscard]] ir::BlockStatement *TrailingBlock() const noexcept
     {
         return trailing_block_;
     }
 
-    void SetIsTrailingBlockInNewLine(bool is_new_line)
+    void SetIsTrailingBlockInNewLine(bool const is_new_line) noexcept
     {
         is_trailing_block_in_new_line_ = is_new_line;
     }
 
-    bool IsTrailingBlockInNewLine() const
+    [[nodiscard]] bool IsTrailingBlockInNewLine() const noexcept
     {
         return is_trailing_block_in_new_line_;
     }
 
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] CallExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
+
     void Dump(ir::AstDumper *dumper) const override;
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
-    checker::Signature *ResolveCallExtensionFunction(checker::ETSFunctionType *function_type,
-                                                     checker::ETSChecker *checker);
-    checker::Signature *ResolveCallForETSExtensionFuncHelperType(checker::ETSExtensionFuncHelperType *type,
-                                                                 checker::ETSChecker *checker);
+    void Compile(compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 protected:
-    compiler::VReg CreateSpreadArguments(compiler::PandaGen *pg) const;
-
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     Expression *callee_;
     ArenaVector<Expression *> arguments_;
@@ -149,7 +169,6 @@ private:
     bool IsETSConstructorCall() const;
     checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, Expression *callee,
                                              checker::Type *callee_type);
-    void ConvertRestArguments(checker::ETSChecker *checker) const;
 };
 }  // namespace panda::es2panda::ir
 

@@ -76,12 +76,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 3
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 16
               }
             }
           },
@@ -345,12 +345,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 21,
+                "column": 3
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 21,
+                "column": 18
               }
             }
           },

@@ -19,6 +19,10 @@
 #include "ir/expression.h"
 #include "ir/irnode.h"
 
+namespace panda::es2panda::checker {
+class TSAnalyzer;
+}  // namespace panda::es2panda::checker
+
 namespace panda::es2panda::ir {
 class ChainExpression : public Expression {
 public:
@@ -33,21 +37,25 @@ public:
     {
     }
 
+    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
+    friend class checker::TSAnalyzer;
+
     const Expression *GetExpression() const noexcept
     {
         return expression_;
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] ChainExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
+    void Compile(compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
     void CompileToReg(compiler::PandaGen *pg, compiler::VReg &obj_reg) const;
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     Expression *expression_;

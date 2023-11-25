@@ -42,8 +42,7 @@
 #include "ir/ets/etsParameterExpression.h"
 #include "ir/module/importDeclaration.h"
 #include "lexer/token/letters.h"
-#include <locale>
-#include <codecvt>
+#include "libpandabase/utils/utf.h"
 
 namespace panda::es2panda::util {
 // Helpers
@@ -654,8 +653,8 @@ std::string Helpers::CreateEscapedString(const std::string &str)
 
 std::string Helpers::UTF16toUTF8(const char16_t c)
 {
-    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert {};
-    return convert.to_bytes(c);
+    const utf::Utf8Char utf8_ch = utf::ConvertUtf16ToUtf8(c, 0, false);
+    return std::string(reinterpret_cast<const char *>(utf8_ch.ch.data()), utf8_ch.n);
 }
 
 std::pair<std::string_view, std::string_view> Helpers::SplitSignature(std::string_view signature)

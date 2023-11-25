@@ -97,14 +97,6 @@ public:
         return reinterpret_cast<const AnnotatedExpression *>(this);
     }
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] virtual Expression *Clone([[maybe_unused]] ArenaAllocator *const allocator,
-                                            [[maybe_unused]] AstNode *const parent = nullptr)
-    {
-        UNREACHABLE();
-        return nullptr;
-    }
-
 protected:
     explicit Expression(AstNodeType const type) : TypedAstNode(type) {}
     explicit Expression(AstNodeType const type, ModifierFlags const flags) : TypedAstNode(type, flags) {}

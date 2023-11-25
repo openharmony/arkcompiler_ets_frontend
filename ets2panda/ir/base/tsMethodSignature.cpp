@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,12 +16,9 @@
 #include "tsMethodSignature.h"
 
 #include "varbinder/scope.h"
-#include "ir/astDump.h"
-#include "ir/typeNode.h"
-#include "ir/ts/tsTypeParameter.h"
-#include "ir/ts/tsTypeParameterDeclaration.h"
-
 #include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void TSMethodSignature::TransformChildren(const NodeTransformer &cb)
@@ -69,35 +66,23 @@ void TSMethodSignature::Dump(ir::AstDumper *dumper) const
                  {"typeAnnotation", AstDumper::Optional(return_type_annotation_)}});
 }
 
-void TSMethodSignature::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSMethodSignature::Check([[maybe_unused]] checker::TSChecker *checker)
+void TSMethodSignature::Compile(compiler::PandaGen *pg) const
 {
-    if (computed_) {
-        checker->CheckComputedPropertyName(key_);
-    }
-
-    checker::ScopeContext scope_ctx(checker, scope_);
-
-    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(params_, signature_info);
-
-    auto *call_signature = checker->Allocator()->New<checker::Signature>(signature_info, checker->GlobalAnyType());
-    Variable()->SetTsType(checker->CreateFunctionTypeWithSignature(call_signature));
-
-    if (return_type_annotation_ == nullptr) {
-        checker->ThrowTypeError(
-            "Method signature, which lacks return-type annotation, implicitly has an 'any' return type.", Start());
-    }
-
-    return_type_annotation_->Check(checker);
-    call_signature->SetReturnType(return_type_annotation_->GetType(checker));
-
-    return nullptr;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *TSMethodSignature::Check([[maybe_unused]] checker::ETSChecker *checker)
+void TSMethodSignature::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *TSMethodSignature::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *TSMethodSignature::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

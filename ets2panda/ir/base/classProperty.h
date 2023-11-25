@@ -28,28 +28,37 @@ class TypeNode;
 
 class ClassProperty : public ClassElement {
 public:
-    explicit ClassProperty(Expression *key, Expression *value, TypeNode *type_annotation, ModifierFlags modifiers,
-                           ArenaAllocator *allocator, bool is_computed)
+    ClassProperty() = delete;
+    ~ClassProperty() override = default;
+
+    NO_COPY_SEMANTIC(ClassProperty);
+    NO_MOVE_SEMANTIC(ClassProperty);
+
+    explicit ClassProperty(Expression *const key, Expression *const value, TypeNode *const type_annotation,
+                           ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const is_computed)
         : ClassElement(AstNodeType::CLASS_PROPERTY, key, value, modifiers, allocator, is_computed),
           type_annotation_(type_annotation)
     {
     }
-    // NOTE: csabahurton. friend relationship can be removed once there are getters for private fields
-    friend class checker::ETSAnalyzer;
 
-    TypeNode *TypeAnnotation() const
+    [[nodiscard]] TypeNode *TypeAnnotation() const noexcept
     {
         return type_annotation_;
     }
 
-    PrivateFieldKind ToPrivateFieldKind(bool is_static) const override
+    [[nodiscard]] PrivateFieldKind ToPrivateFieldKind(bool const is_static) const override
     {
         return is_static ? PrivateFieldKind::STATIC_FIELD : PrivateFieldKind::FIELD;
     }
 
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] ClassProperty *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
+
     void Dump(ir::AstDumper *dumper) const override;
+
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;

@@ -19,7 +19,7 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/regScope.h"
 #include "checker/TSchecker.h"
-#include "ir/astDump.h"
+#include "compiler/core/ETSGen.h"
 
 namespace panda::es2panda::ir {
 void RegExpLiteral::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -32,21 +32,26 @@ void RegExpLiteral::Dump(ir::AstDumper *dumper) const
 
 void RegExpLiteral::Compile(compiler::PandaGen *pg) const
 {
-    pg->CreateRegExpWithLiteral(this, pattern_, static_cast<uint8_t>(flags_));
+    pg->GetAstCompiler()->Compile(this);
+}
+
+void RegExpLiteral::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *RegExpLiteral::Check(checker::TSChecker *checker)
 {
-    return checker->GlobalAnyType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *RegExpLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *RegExpLiteral::Check(checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *RegExpLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+RegExpLiteral *RegExpLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<RegExpLiteral>(pattern_, flags_, flags_str_); clone != nullptr) {
         if (parent != nullptr) {

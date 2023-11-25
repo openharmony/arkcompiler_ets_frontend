@@ -24,12 +24,12 @@ SequenceExpression::SequenceExpression([[maybe_unused]] Tag const tag, SequenceE
     : Expression(static_cast<Expression const &>(other)), sequence_(allocator->Adapter())
 {
     for (auto *sequence : other.sequence_) {
-        sequence_.emplace_back(sequence->Clone(allocator, this));
+        sequence_.emplace_back(sequence->Clone(allocator, this)->AsExpression());
     }
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *SequenceExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+SequenceExpression *SequenceExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<SequenceExpression>(Tag {}, *this, allocator); clone != nullptr) {
         if (parent != nullptr) {

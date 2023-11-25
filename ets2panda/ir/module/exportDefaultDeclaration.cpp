@@ -15,8 +15,9 @@
 
 #include "exportDefaultDeclaration.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void ExportDefaultDeclaration::TransformChildren(const NodeTransformer &cb)
@@ -35,19 +36,23 @@ void ExportDefaultDeclaration::Dump(ir::AstDumper *dumper) const
         {{"type", IsExportEquals() ? "TSExportAssignment" : "ExportDefaultDeclaration"}, {"declaration", decl_}});
 }
 
-void ExportDefaultDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ExportDefaultDeclaration::Compile(compiler::PandaGen *pg) const
 {
-    decl_->Compile(pg);
-    pg->StoreModuleVar(this, "default");
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ExportDefaultDeclaration::Check([[maybe_unused]] checker::TSChecker *checker)
+void ExportDefaultDeclaration::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ExportDefaultDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ExportDefaultDeclaration::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *ExportDefaultDeclaration::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

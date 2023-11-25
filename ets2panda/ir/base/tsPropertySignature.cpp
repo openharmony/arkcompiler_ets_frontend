@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,10 +15,9 @@
 
 #include "tsPropertySignature.h"
 
-#include "ir/astDump.h"
-#include "ir/typeNode.h"
-
 #include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void TSPropertySignature::TransformChildren(const NodeTransformer &cb)
@@ -49,29 +48,44 @@ void TSPropertySignature::Dump(ir::AstDumper *dumper) const
                  {"typeAnnotation", AstDumper::Optional(TypeAnnotation())}});
 }
 
-void TSPropertySignature::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSPropertySignature::Check([[maybe_unused]] checker::TSChecker *checker)
+void TSPropertySignature::Compile(compiler::PandaGen *pg) const
 {
-    if (TypeAnnotation() != nullptr) {
-        TypeAnnotation()->Check(checker);
-    }
-
-    if (computed_) {
-        checker->CheckComputedPropertyName(key_);
-    }
-
-    if (TypeAnnotation() != nullptr) {
-        Variable()->SetTsType(TypeAnnotation()->GetType(checker));
-        return nullptr;
-    }
-
-    checker->ThrowTypeError("Property implicitly has an 'any' type.", Start());
-    return nullptr;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *TSPropertySignature::Check([[maybe_unused]] checker::ETSChecker *checker)
+void TSPropertySignature::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *TSPropertySignature::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *TSPropertySignature::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+TSPropertySignature *TSPropertySignature::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const key = key_ != nullptr ? key_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const type_annotation = TypeAnnotation()->Clone(allocator);
+
+    if (auto *const clone = allocator->New<TSPropertySignature>(key, type_annotation, computed_, optional_, readonly_);
+        clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        if (key != nullptr) {
+            key->SetParent(clone);
+        }
+        type_annotation->SetParent(clone);
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

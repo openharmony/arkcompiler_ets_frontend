@@ -90,12 +90,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 19,
+                "column": 3
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 19,
+                "column": 13
               }
             }
           },
@@ -689,23 +689,23 @@
                         },
                         "loc": {
                           "start": {
-                            "line": 1,
-                            "column": 1
+                            "line": 16,
+                            "column": 5
                           },
                           "end": {
-                            "line": 1,
-                            "column": 1
+                            "line": 16,
+                            "column": 16
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 16,
                           "column": 1
                         },
                         "end": {
-                          "line": 1,
-                          "column": 1
+                          "line": 16,
+                          "column": 17
                         }
                       }
                     }
@@ -796,12 +796,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 16,
+                "column": 5
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 16,
+                "column": 11
               }
             }
           }

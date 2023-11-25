@@ -15,8 +15,9 @@
 
 #include "tsUnknownKeyword.h"
 
-#include "ir/astDump.h"
 #include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void TSUnknownKeyword::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -27,11 +28,19 @@ void TSUnknownKeyword::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSUnknownKeyword"}});
 }
 
-void TSUnknownKeyword::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSUnknownKeyword::Check([[maybe_unused]] checker::TSChecker *checker)
+void TSUnknownKeyword::Compile(compiler::PandaGen *pg) const
 {
-    return nullptr;
+    pg->GetAstCompiler()->Compile(this);
+}
+
+void TSUnknownKeyword::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *TSUnknownKeyword::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSUnknownKeyword::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -39,8 +48,8 @@ checker::Type *TSUnknownKeyword::GetType([[maybe_unused]] checker::TSChecker *ch
     return checker->GlobalUnknownType();
 }
 
-checker::Type *TSUnknownKeyword::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *TSUnknownKeyword::Check(checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

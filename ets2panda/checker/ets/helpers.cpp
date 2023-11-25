@@ -2068,6 +2068,30 @@ void ETSChecker::CheckValidGenericTypeParameter(Type *const arg_type, const lexe
     ThrowTypeError("Type '" + ss.str() + "' is not valid for generic type arguments", pos);
 }
 
+void ETSChecker::CheckNumberOfTypeArguments(Type *const type, ir::TSTypeParameterDeclaration *const type_param_decl,
+                                            ir::TSTypeParameterInstantiation *const type_args,
+                                            const lexer::SourcePosition &pos)
+{
+    if (type_param_decl != nullptr && type_args == nullptr) {
+        ThrowTypeError({"Type '", type, "' is generic but type argument were not provided."}, pos);
+    }
+
+    if (type_param_decl == nullptr && type_args != nullptr) {
+        ThrowTypeError({"Type '", type, "' is not generic."}, pos);
+    }
+
+    if (type_args == nullptr) {
+        return;
+    }
+
+    ASSERT(type_param_decl != nullptr && type_args != nullptr);
+    if (type_param_decl->Params().size() != type_args->Params().size()) {
+        ThrowTypeError({"Type '", type, "' has ", type_param_decl->Params().size(), " number of type parameters, but ",
+                        type_args->Params().size(), " type arguments were provided."},
+                       pos);
+    }
+}
+
 bool ETSChecker::NeedTypeInference(const ir::ScriptFunction *lambda)
 {
     if (lambda->ReturnTypeAnnotation() == nullptr) {
@@ -2282,7 +2306,7 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
         parser::Program program(Allocator(), VarBinder());
         es2panda::CompilerOptions options;
         auto parser = parser::ETSParser(&program, options, parser::ParserStatus::NO_OPTS);
-        auto *arg_expr = parser.CreateExpression(parser::ExpressionParseFlags::NO_OPTS, implicit_instantiate_argument);
+        auto *arg_expr = parser.CreateExpression(implicit_instantiate_argument);
 
         arg_expr->SetParent(call_expr);
         arg_expr->SetRange(ident->Range());

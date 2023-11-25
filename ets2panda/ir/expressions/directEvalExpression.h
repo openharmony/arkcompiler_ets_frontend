@@ -16,6 +16,10 @@
 #ifndef ES2PANDA_IR_EXPRESSION_DIRECT_EVAL_H
 #define ES2PANDA_IR_EXPRESSION_DIRECT_EVAL_H
 
+namespace panda::es2panda::compiler {
+class JSCompiler;
+}  // namespace panda::es2panda::compiler
+
 #include "ir/expressions/callExpression.h"
 
 namespace panda::es2panda::ir {
@@ -28,7 +32,13 @@ public:
         type_ = AstNodeType::DIRECT_EVAL;
     }
 
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
+    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
+    friend class compiler::JSCompiler;
+
+    void Compile(compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     uint32_t parser_status_ {};

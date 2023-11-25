@@ -36,14 +36,6 @@ public:
 
     virtual void SetReturnType([[maybe_unused]] checker::ETSChecker *checker, [[maybe_unused]] checker::Type *type) {}
 
-    // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] virtual Statement *Clone([[maybe_unused]] ArenaAllocator *const allocator,
-                                           [[maybe_unused]] AstNode *const parent = nullptr)
-    {
-        UNREACHABLE();
-        return nullptr;
-    }
-
 protected:
     explicit Statement(AstNodeType type) : AstNode(type) {}
     explicit Statement(AstNodeType type, ModifierFlags flags) : AstNode(type, flags) {}

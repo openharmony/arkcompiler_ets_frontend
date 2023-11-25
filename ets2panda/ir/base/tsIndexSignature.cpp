@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,14 +15,12 @@
 
 #include "tsIndexSignature.h"
 
-#include "ir/astDump.h"
-#include "ir/typeNode.h"
-#include "ir/expressions/identifier.h"
-
 #include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
-TSIndexSignature::TSIndexSignatureKind TSIndexSignature::Kind() const
+TSIndexSignature::TSIndexSignatureKind TSIndexSignature::Kind() const noexcept
 {
     return param_->AsIdentifier()->TypeAnnotation()->IsTSNumberKeyword() ? TSIndexSignatureKind::NUMBER
                                                                          : TSIndexSignatureKind::STRING;
@@ -48,34 +46,43 @@ void TSIndexSignature::Dump(ir::AstDumper *dumper) const
                  {"readonly", readonly_}});
 }
 
-void TSIndexSignature::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSIndexSignature::Check([[maybe_unused]] checker::TSChecker *checker)
+void TSIndexSignature::Compile(compiler::PandaGen *pg) const
 {
-    if (TsType() != nullptr) {
-        return TsType();
-    }
-
-    const util::StringView &param_name = param_->AsIdentifier()->Name();
-    type_annotation_->Check(checker);
-    checker::Type *index_type = type_annotation_->GetType(checker);
-    checker::IndexInfo *info =
-        checker->Allocator()->New<checker::IndexInfo>(index_type, param_name, readonly_, this->Start());
-    checker::ObjectDescriptor *desc = checker->Allocator()->New<checker::ObjectDescriptor>(checker->Allocator());
-    checker::ObjectType *placeholder = checker->Allocator()->New<checker::ObjectLiteralType>(desc);
-
-    if (Kind() == ir::TSIndexSignature::TSIndexSignatureKind::NUMBER) {
-        placeholder->Desc()->number_index_info = info;
-    } else {
-        placeholder->Desc()->string_index_info = info;
-    }
-
-    SetTsType(placeholder);
-    return placeholder;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *TSIndexSignature::Check([[maybe_unused]] checker::ETSChecker *checker)
+void TSIndexSignature::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *TSIndexSignature::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *TSIndexSignature::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+TSIndexSignature *TSIndexSignature::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const param = param_ != nullptr ? param_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const type_annotation = type_annotation_->Clone(allocator);
+
+    if (auto *const clone = allocator->New<TSIndexSignature>(param, type_annotation, readonly_); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+        if (param != nullptr) {
+            param->SetParent(clone);
+        }
+        type_annotation->SetParent(clone);
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

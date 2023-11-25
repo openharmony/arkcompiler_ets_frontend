@@ -15,10 +15,9 @@
 
 #include "templateElement.h"
 
-#include "es2panda.h"
+#include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "util/ustring.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void TemplateElement::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -32,26 +31,28 @@ void TemplateElement::Dump(ir::AstDumper *dumper) const
     });
 }
 
-void TemplateElement::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-void TemplateElement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void TemplateElement::Compile(compiler::PandaGen *pg) const
 {
-    etsg->LoadAccumulatorString(this, raw_);
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *TemplateElement::Check([[maybe_unused]] checker::TSChecker *checker)
+void TemplateElement::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *TemplateElement::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *TemplateElement::Check(checker::TSChecker *checker)
 {
-    SetTsType(checker->CreateETSStringLiteralType(raw_));
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *TemplateElement::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *TemplateElement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+TemplateElement *TemplateElement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<TemplateElement>(raw_, cooked_); clone != nullptr) {
         if (parent != nullptr) {

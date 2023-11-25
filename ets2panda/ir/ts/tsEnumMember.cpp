@@ -15,9 +15,9 @@
 
 #include "tsEnumMember.h"
 
-#include "ir/astDump.h"
-#include "ir/expression.h"
-#include "ir/expressions/identifier.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void TSEnumMember::TransformChildren(const NodeTransformer &cb)
@@ -49,15 +49,23 @@ util::StringView TSEnumMember::Name() const
     return key_->AsIdentifier()->Name();
 }
 
-void TSEnumMember::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-checker::Type *TSEnumMember::Check([[maybe_unused]] checker::TSChecker *checker)
+void TSEnumMember::Compile(compiler::PandaGen *pg) const
 {
-    return nullptr;
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *TSEnumMember::Check([[maybe_unused]] checker::ETSChecker *checker)
+void TSEnumMember::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+
+checker::Type *TSEnumMember::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
+}
+
+checker::Type *TSEnumMember::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

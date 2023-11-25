@@ -31,16 +31,16 @@ SpreadElement::SpreadElement([[maybe_unused]] Tag const tag, SpreadElement const
     optional_ = other.optional_;
 
     if (other.argument_ != nullptr) {
-        argument_ = other.argument_->Clone(allocator, this);
+        argument_ = other.argument_->Clone(allocator, this)->AsExpression();
     }
 
     for (auto *decorator : other.decorators_) {
-        decorators_.emplace_back(decorator->Clone(allocator, this)->AsDecorator());
+        decorators_.emplace_back(decorator->Clone(allocator, this));
     }
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *SpreadElement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+SpreadElement *SpreadElement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<SpreadElement>(Tag {}, *this, allocator); clone != nullptr) {
         if (parent != nullptr) {

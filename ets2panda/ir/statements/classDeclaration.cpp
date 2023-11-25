@@ -15,13 +15,9 @@
 
 #include "classDeclaration.h"
 
-#include "compiler/base/lreference.h"
-#include "compiler/core/pandagen.h"
+#include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/base/classDefinition.h"
-#include "ir/base/decorator.h"
-#include "ir/expressions/identifier.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void ClassDeclaration::TransformChildren(const NodeTransformer &cb)
@@ -47,26 +43,23 @@ void ClassDeclaration::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ClassDeclaration"}, {"definition", def_}, {"decorators", AstDumper::Optional(decorators_)}});
 }
 
-void ClassDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ClassDeclaration::Compile(compiler::PandaGen *pg) const
 {
-    auto lref = compiler::JSLReference::Create(pg, def_->Ident(), true);
-    def_->Compile(pg);
-    lref.SetValue();
+    pg->GetAstCompiler()->Compile(this);
 }
 
-void ClassDeclaration::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ClassDeclaration::Compile(compiler::ETSGen *etsg) const
 {
-    UNREACHABLE();
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ClassDeclaration::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *ClassDeclaration::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *ClassDeclaration::Check(checker::ETSChecker *checker)
 {
-    def_->Check(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

@@ -15,11 +15,9 @@
 
 #include "importSpecifier.h"
 
+#include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/literals/stringLiteral.h"
-#include "ir/module/importDeclaration.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void ImportSpecifier::TransformChildren(const NodeTransformer &cb)
@@ -43,19 +41,22 @@ void ImportSpecifier::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ImportSpecifier"}, {"local", ir::AstDumper::Optional(local_)}, {"imported", imported_}});
 }
 
-void ImportSpecifier::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-void ImportSpecifier::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ImportSpecifier::Compile(compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    pg->GetAstCompiler()->Compile(this);
+}
+void ImportSpecifier::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ImportSpecifier::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *ImportSpecifier::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ImportSpecifier::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ImportSpecifier::Check(checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

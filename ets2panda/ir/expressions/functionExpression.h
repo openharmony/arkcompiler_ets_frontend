@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,25 +23,37 @@ class ScriptFunction;
 
 class FunctionExpression : public Expression {
 public:
-    explicit FunctionExpression(ScriptFunction *func) : Expression(AstNodeType::FUNCTION_EXPRESSION), func_(func) {}
+    FunctionExpression() = delete;
+    ~FunctionExpression() override = default;
 
-    const ScriptFunction *Function() const
+    NO_COPY_SEMANTIC(FunctionExpression);
+    NO_MOVE_SEMANTIC(FunctionExpression);
+
+    explicit FunctionExpression(ScriptFunction *const func) : Expression(AstNodeType::FUNCTION_EXPRESSION), func_(func)
+    {
+    }
+
+    [[nodiscard]] const ScriptFunction *Function() const noexcept
     {
         return func_;
     }
 
-    ScriptFunction *Function()
+    [[nodiscard]] ScriptFunction *Function() noexcept
     {
         return func_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] FunctionExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
+
     void Dump(ir::AstDumper *dumper) const override;
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
+    void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     ScriptFunction *func_;

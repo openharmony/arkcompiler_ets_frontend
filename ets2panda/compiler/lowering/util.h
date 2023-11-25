@@ -16,14 +16,13 @@
 #ifndef ES2PANDA_COMPILER_LOWERING_UTIL_H
 #define ES2PANDA_COMPILER_LOWERING_UTIL_H
 
-#include "varbinder/scope.h"
-#include "checker/types/ets/etsObjectType.h"
 #include "ir/astNode.h"
 
 namespace panda::es2panda::compiler {
 
 varbinder::Scope *NearestScope(const ir::AstNode *ast);
 ir::Identifier *Gensym(ArenaAllocator *allocator);
+util::UString GenName(ArenaAllocator *allocator);
 
 }  // namespace panda::es2panda::compiler
 

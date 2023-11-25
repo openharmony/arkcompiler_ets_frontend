@@ -166,6 +166,7 @@ set(ES2PANDA_LIB_SRC
   ir/expressions/assignmentExpression.cpp
   ir/expressions/awaitExpression.cpp
   ir/expressions/binaryExpression.cpp
+  ir/expressions/blockExpression.cpp
   ir/expressions/callExpression.cpp
   ir/expressions/chainExpression.cpp
   ir/expressions/classExpression.cpp

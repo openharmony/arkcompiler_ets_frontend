@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1274,6 +1274,8 @@ ir::Expression *TypedParser::ParseQualifiedReference(ir::Expression *type_name, 
             Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
             Lexer()->NextToken();  // eat '*'
             prop_name = AllocNode<ir::Identifier>(varbinder::VarBinder::STAR_IMPORT, Allocator());
+        } else if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_FORMAT) {
+            prop_name = ParseIdentifierFormatPlaceholder();
         } else if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
             if ((flags & ExpressionParseFlags::POTENTIAL_CLASS_LITERAL) != 0) {
                 if (Lexer()->GetToken().Type() == lexer::TokenType::KEYW_CLASS) {

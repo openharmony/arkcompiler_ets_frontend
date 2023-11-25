@@ -15,11 +15,9 @@
 
 #include "importDeclaration.h"
 
+#include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/expressions/literals/stringLiteral.h"
-#include "ir/module/importNamespaceSpecifier.h"
-#include "ir/module/importSpecifier.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void ImportDeclaration::TransformChildren(const NodeTransformer &cb)
@@ -45,27 +43,23 @@ void ImportDeclaration::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ImportDeclaration"}, {"source", source_}, {"specifiers", specifiers_}});
 }
 
-void ImportDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-void ImportDeclaration::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ImportDeclaration::Compile(compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ImportDeclaration::Check([[maybe_unused]] checker::TSChecker *checker)
+void ImportDeclaration::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ImportDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ImportDeclaration::Check(checker::TSChecker *checker)
 {
-    checker::Type *type = nullptr;
-    for (auto *spec : specifiers_) {
-        if (spec->IsImportNamespaceSpecifier()) {
-            type = spec->AsImportNamespaceSpecifier()->Check(checker);
-        }
-    }
+    return checker->GetAnalyzer()->Check(this);
+}
 
-    return type;
+checker::Type *ImportDeclaration::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

@@ -78,7 +78,7 @@ if(PANDA_WITH_ETS)
     panda_add_gtest(
         NAME es2panda_public_tests
         SOURCES
-            public/es2panda_public_test.cpp
+            unit/public/es2panda_public_test.cpp
         LIBRARIES
             es2panda-public es2panda-lib arkassembler arkbytecodeopt
         INCLUDE_DIRS
@@ -95,9 +95,21 @@ if(PANDA_WITH_ETS)
     panda_add_gtest(
         NAME es2panda_astverifier_tests
         SOURCES
-            public/ast_verifier_test.cpp
+            unit/public/ast_verifier_test.cpp
         LIBRARIES
             es2panda-lib
+        INCLUDE_DIRS
+            ${ES2PANDA_PATH}
+        SANITIZERS
+            ${PANDA_SANITIZERS_LIST}
+    )
+
+    panda_add_gtest(
+        NAME es2panda_astdumper_tests
+        SOURCES
+            unit/ast_dumper_test.cpp
+        LIBRARIES
+            es2panda-public es2panda-lib arkassembler arkbytecodeopt
         INCLUDE_DIRS
             ${ES2PANDA_PATH}
         SANITIZERS

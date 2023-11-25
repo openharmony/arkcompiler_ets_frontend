@@ -92,7 +92,7 @@ bool AstNode::IsAnyChild(const NodePredicate &cb) const
 void AnnotatedAstNode::CloneTypeAnnotation(ArenaAllocator *const allocator)
 {
     if (auto *annotation = const_cast<TypeNode *>(TypeAnnotation()); annotation != nullptr) {
-        SetTsTypeAnnotation(annotation->Clone(allocator, this)->AsTypeNode());
+        SetTsTypeAnnotation(annotation->Clone(allocator, this));
     }
 }
 

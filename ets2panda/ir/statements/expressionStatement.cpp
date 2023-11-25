@@ -15,8 +15,9 @@
 
 #include "expressionStatement.h"
 
-#include "ir/astDump.h"
-#include "ir/expression.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void ExpressionStatement::TransformChildren(const NodeTransformer &cb)
@@ -34,23 +35,23 @@ void ExpressionStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ExpressionStatement"}, {"expression", expression_}});
 }
 
-void ExpressionStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ExpressionStatement::Compile(compiler::PandaGen *pg) const
 {
-    expression_->Compile(pg);
+    pg->GetAstCompiler()->Compile(this);
 }
 
-void ExpressionStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ExpressionStatement::Compile(compiler::ETSGen *etsg) const
 {
-    expression_->Compile(etsg);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ExpressionStatement::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *ExpressionStatement::Check(checker::TSChecker *checker)
 {
-    return expression_->Check(checker);
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ExpressionStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ExpressionStatement::Check(checker::ETSChecker *checker)
 {
-    return expression_->Check(checker);
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

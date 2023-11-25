@@ -14,13 +14,14 @@
  */
 
 #include "typeNode.h"
+#include "astNode.h"
 #include "opaqueTypeNode.h"
 #include "es2panda.h"
 
 namespace panda::es2panda::ir {
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *TypeNode::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+TypeNode *TypeNode::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const type = TsType(); type != nullptr) {
         if (auto *const clone = allocator->New<OpaqueTypeNode>(type); clone != nullptr) {

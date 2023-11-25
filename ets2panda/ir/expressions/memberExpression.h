@@ -57,7 +57,7 @@ public:
     {
     }
 
-    explicit MemberExpression(Tag tag, Expression *object, Expression *property);
+    explicit MemberExpression(Tag tag, MemberExpression const &other, Expression *object, Expression *property);
 
     [[nodiscard]] Expression *Object() noexcept
     {
@@ -142,7 +142,7 @@ public:
     [[nodiscard]] bool IsPrivateReference() const noexcept;
 
     // NOLINTNEXTLINE(google-default-arguments)
-    [[nodiscard]] Expression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+    [[nodiscard]] MemberExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

@@ -30,16 +30,16 @@ TemplateLiteral::TemplateLiteral([[maybe_unused]] Tag const tag, TemplateLiteral
       expressions_(allocator->Adapter())
 {
     for (auto *quasy : other.quasis_) {
-        quasis_.emplace_back(quasy->Clone(allocator, this)->AsTemplateElement());
+        quasis_.emplace_back(quasy->Clone(allocator, this));
     }
 
     for (auto *expression : other.expressions_) {
-        expressions_.emplace_back(expression->Clone(allocator, this));
+        expressions_.emplace_back(expression->Clone(allocator, this)->AsExpression());
     }
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *TemplateLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+TemplateLiteral *TemplateLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<TemplateLiteral>(Tag {}, *this, allocator); clone != nullptr) {
         if (parent != nullptr) {

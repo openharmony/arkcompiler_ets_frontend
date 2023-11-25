@@ -21,22 +21,28 @@
 namespace panda::es2panda::ir {
 class ETSStructDeclaration : public Statement {
 public:
-    explicit ETSStructDeclaration(ClassDefinition *def, ArenaAllocator *allocator)
+    ETSStructDeclaration() = delete;
+    ~ETSStructDeclaration() override = default;
+
+    NO_COPY_SEMANTIC(ETSStructDeclaration);
+    NO_MOVE_SEMANTIC(ETSStructDeclaration);
+
+    explicit ETSStructDeclaration(ClassDefinition *const def, ArenaAllocator *const allocator)
         : Statement(AstNodeType::STRUCT_DECLARATION), def_(def), decorators_(allocator->Adapter())
     {
     }
 
-    ClassDefinition *Definition()
+    [[nodiscard]] ClassDefinition *Definition() noexcept
     {
         return def_;
     }
 
-    const ClassDefinition *Definition() const
+    [[nodiscard]] const ClassDefinition *Definition() const noexcept
     {
         return def_;
     }
 
-    const ArenaVector<Decorator *> &Decorators() const
+    [[nodiscard]] const ArenaVector<Decorator *> &Decorators() const noexcept
     {
         return decorators_;
     }
@@ -46,14 +52,24 @@ public:
         decorators_ = std::move(decorators);
     }
 
+    void AddDecorator(Decorator *const decorator)
+    {
+        decorators_.emplace_back(decorator);
+    }
+
     bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
     {
         return true;
     }
 
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] ETSStructDeclaration *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
+
     void Dump(ir::AstDumper *dumper) const override;
+
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
 

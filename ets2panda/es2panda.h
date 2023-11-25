@@ -93,6 +93,7 @@ struct CompilerOptions {
     bool is_direct_eval {};
     bool is_function_eval {};
     bool dump_ast {};
+    bool op_dump_ast_only_silent {};
     bool dump_checked_ast {};
     bool dump_asm {};
     bool dump_debug_info {};

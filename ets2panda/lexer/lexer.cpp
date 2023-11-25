@@ -779,6 +779,16 @@ void Lexer::ScanAmpersandPunctuator()
     }
 }
 
+void Lexer::ScanAtPunctuator()
+{
+    GetToken().type_ = TokenType::PUNCTUATOR_AT;
+
+    if (Iterator().Peek() == LEX_CHAR_AT) {
+        GetToken().type_ = TokenType::PUNCTUATOR_FORMAT;
+        Iterator().Forward(1U);
+    }
+}
+
 void Lexer::ScanVLinePunctuator()
 {
     GetToken().type_ = TokenType::PUNCTUATOR_BITWISE_OR;
@@ -1360,7 +1370,7 @@ void Lexer::NextToken(Keywords *kws)
             break;
         }
         case LEX_CHAR_AT: {
-            GetToken().type_ = TokenType::PUNCTUATOR_AT;
+            ScanAtPunctuator();
             break;
         }
         case LEX_CHAR_DOLLAR_SIGN: {

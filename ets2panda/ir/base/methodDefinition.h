@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,41 +16,54 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_METHOD_DEFINITION_H
 #define ES2PANDA_PARSER_INCLUDE_AST_METHOD_DEFINITION_H
 
-#include "checker/types/ets/etsObjectType.h"
-#include "checker/types/signature.h"
 #include "ir/base/classElement.h"
 
+namespace panda::es2panda::checker {
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
+
 namespace panda::es2panda::ir {
+
 class Expression;
+class ScriptFunction;
 
 enum class MethodDefinitionKind { NONE, CONSTRUCTOR, METHOD, EXTENSION_METHOD, GET, SET };
 
 class MethodDefinition : public ClassElement {
 public:
-    explicit MethodDefinition(MethodDefinitionKind kind, Expression *key, Expression *value, ModifierFlags modifiers,
-                              ArenaAllocator *allocator, bool is_computed)
+    MethodDefinition() = delete;
+    ~MethodDefinition() override = default;
+
+    NO_COPY_SEMANTIC(MethodDefinition);
+    NO_MOVE_SEMANTIC(MethodDefinition);
+
+    explicit MethodDefinition(MethodDefinitionKind const kind, Expression *const key, Expression *const value,
+                              ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const is_computed)
         : ClassElement(AstNodeType::METHOD_DEFINITION, key, value, modifiers, allocator, is_computed),
           kind_(kind),
           overloads_(allocator->Adapter())
     {
     }
 
+    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
+
     MethodDefinitionKind Kind() const
     {
         return kind_;
     }
 
-    bool IsConstructor() const
+    [[nodiscard]] bool IsConstructor() const noexcept
     {
         return kind_ == MethodDefinitionKind::CONSTRUCTOR;
     }
 
-    bool IsExtensionMethod() const
+    [[nodiscard]] bool IsExtensionMethod() const noexcept
     {
         return kind_ == MethodDefinitionKind::EXTENSION_METHOD;
     }
 
-    const ArenaVector<MethodDefinition *> &Overloads() const
+    [[nodiscard]] const ArenaVector<MethodDefinition *> &Overloads() const noexcept
     {
         return overloads_;
     }
@@ -60,12 +73,12 @@ public:
         overloads_ = std::move(overloads);
     }
 
-    void AddOverload(MethodDefinition *overload)
+    void AddOverload(MethodDefinition *const overload)
     {
-        overloads_.push_back(overload);
+        overloads_.emplace_back(overload);
     }
 
-    bool HasOverload(MethodDefinition *overload)
+    [[nodiscard]] bool HasOverload(MethodDefinition *overload) noexcept
     {
         return std::find(overloads_.begin(), overloads_.end(), overload) != overloads_.end();
     }
@@ -73,22 +86,18 @@ public:
     ScriptFunction *Function();
     const ScriptFunction *Function() const;
     PrivateFieldKind ToPrivateFieldKind(bool is_static) const override;
-    void CheckMethodModifiers(checker::ETSChecker *checker);
-    void CheckExtensionMethod(checker::ETSChecker *checker, ScriptFunction *extension_func);
-    void CheckExtensionIsShadowedByMethod(checker::ETSChecker *checker, checker::ETSObjectType *obj_type,
-                                          ScriptFunction *extension_func, checker::Signature *sigature);
-    void CheckExtensionIsShadowedInCurrentClassOrInterface(checker::ETSChecker *checker,
-                                                           checker::ETSObjectType *obj_type,
-                                                           ScriptFunction *extension_func,
-                                                           checker::Signature *sigature);
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] MethodDefinition *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
+
     void Dump(ir::AstDumper *dumper) const override;
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    void Compile(compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     MethodDefinitionKind kind_;

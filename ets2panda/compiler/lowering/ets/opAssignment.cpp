@@ -15,9 +15,6 @@
 
 //
 // This is a sample lowering, of little value by itself.
-// NOTE: gobabr.
-//   - temporary variables are inserted into the current scope without any accompanying definition
-//     construction; most likely, a proper AST checker would complain.
 //
 // desc: A compound assignment expression of the form E1 op= E2 is equivalent to E1 =
 //   	 ((E1) op (E2)) as T, where T is the type of E1, except that E1 is evaluated only
@@ -25,22 +22,18 @@
 //
 
 #include "opAssignment.h"
-#include "checker/types/typeFlag.h"
-#include "varbinder/variableFlags.h"
+
+#include "parser/ETSparser.h"
+#include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
-#include "compiler/core/compilerContext.h"
 #include "compiler/lowering/util.h"
-#include "ir/astNode.h"
-#include "ir/expression.h"
 #include "ir/opaqueTypeNode.h"
 #include "ir/expressions/assignmentExpression.h"
-#include "ir/expressions/binaryExpression.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/memberExpression.h"
-#include "ir/expressions/sequenceExpression.h"
+#include "ir/expressions/blockExpression.h"
 #include "ir/statements/blockStatement.h"
-#include "ir/ts/tsAsExpression.h"
-#include "lexer/token/tokenType.h"
+#include "ir/statements/expressionStatement.h"
 
 namespace panda::es2panda::compiler {
 
@@ -83,52 +76,6 @@ static lexer::TokenType OpEqualToOp(const lexer::TokenType op_equal)
     UNREACHABLE();
 }
 
-// This should probably be a virtual method of AstNode
-static ir::AstNode *CloneNode(checker::ETSChecker *checker, ir::AstNode *ast)
-{
-    if (ast->IsIdentifier()) {
-        const auto *id = ast->AsIdentifier();
-        auto *res = checker->AllocNode<ir::Identifier>(id->Name(), id->TypeAnnotation(), checker->Allocator());
-        res->SetVariable(id->Variable());
-        res->SetOptional(id->IsOptional());
-        res->SetReference(id->IsReference());
-
-        if (id->IsTdz()) {
-            res->SetTdz();
-        }
-
-        if (id->IsAccessor()) {
-            res->SetAccessor();
-        }
-
-        if (id->IsMutator()) {
-            res->SetMutator();
-        }
-
-        res->SetPrivate(id->IsPrivate());
-        if (id->IsIgnoreBox()) {
-            res->SetIgnoreBox();
-        }
-
-        return res;
-    }
-
-    ASSERT(ast->IsMemberExpression());
-
-    auto *me = ast->AsMemberExpression();
-    auto *object = CloneNode(checker, me->Object())->AsExpression();
-    auto *property = CloneNode(checker, me->Property())->AsExpression();
-
-    auto *res =
-        checker->AllocNode<ir::MemberExpression>(object, property, me->Kind(), me->IsComputed(), me->IsOptional());
-    res->SetPropVar(me->PropVar());
-    if (me->IsIgnoreBox()) {
-        res->SetIgnoreBox();
-    }
-
-    return res;
-}
-
 void AdjustBoxingUnboxingFlags(ir::Expression *new_expr, const ir::Expression *old_expr)
 {
     // NOTE: gogabr. make sure that the checker never puts both a boxing and an unboxing flag on the same node.
@@ -138,112 +85,128 @@ void AdjustBoxingUnboxingFlags(ir::Expression *new_expr, const ir::Expression *o
     const ir::BoxingUnboxingFlags old_unboxing_flag {old_expr->GetBoxingUnboxingFlags() &
                                                      ir::BoxingUnboxingFlags::UNBOXING_FLAG};
 
-    if (new_expr->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) &&
-        old_boxing_flag != ir::BoxingUnboxingFlags::NONE) {
+    if (new_expr->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
         new_expr->SetBoxingUnboxingFlags(old_boxing_flag);
-    } else if (new_expr->TsType()->IsETSObjectType() && old_unboxing_flag != ir::BoxingUnboxingFlags::NONE) {
+    } else if (new_expr->TsType()->IsETSObjectType()) {
         new_expr->SetBoxingUnboxingFlags(old_unboxing_flag);
     }
 }
 
-ir::Expression *HandleOpAssignment(checker::ETSChecker *checker, ir::AssignmentExpression *assignment)
+ir::Expression *HandleOpAssignment(checker::ETSChecker *checker, parser::ETSParser *parser,
+                                   ir::AssignmentExpression *assignment)
 {
     if (assignment->TsType() == nullptr) {  // hasn't been through checker
         return assignment;
     }
 
-    checker::SavedCheckerContext scc {checker, checker::CheckerStatus::IGNORE_VISIBILITY};
-
-    ir::Expression *tmp_assignment_for_obj = nullptr;
-    ir::Expression *tmp_assignment_for_prop = nullptr;
-    ir::Expression *left_adjusted = nullptr;
-
-    auto *left = assignment->Left();
-    auto *right = assignment->Right();
-
     const auto op_equal = assignment->OperatorType();
     ASSERT(op_equal != lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    ASSERT(parser != nullptr);
 
-    if (left->IsIdentifier() || (left->IsMemberExpression() && left->AsMemberExpression()->Object()->IsIdentifier() &&
-                                 left->AsMemberExpression()->Property()->IsIdentifier())) {
-        left_adjusted = left->AsExpression();
+    auto *const allocator = checker->Allocator();
+
+    auto *const left = assignment->Left();
+    auto *const right = assignment->Right();
+    auto *const scope = NearestScope(assignment);
+
+    std::string new_assignment_statements {};
+
+    ir::Identifier *ident1;
+    ir::Identifier *ident2 = nullptr;
+    ir::Expression *object = nullptr;
+    ir::Expression *property = nullptr;
+
+    checker::SavedCheckerContext scc {checker, checker::CheckerStatus::IGNORE_VISIBILITY};
+
+    // Create temporary variable(s) if left hand of assignment is not defined by simple identifier[s]
+    if (left->IsIdentifier()) {
+        ident1 = left->AsIdentifier();
+    } else if (left->IsMemberExpression()) {
+        auto *const member_expression = left->AsMemberExpression();
+
+        if (object = member_expression->Object(); object->IsIdentifier()) {
+            ident1 = object->AsIdentifier();
+        } else {
+            ident1 = Gensym(allocator);
+            new_assignment_statements = "let @@I1 = (@@E2); ";
+        }
+
+        if (property = member_expression->Property(); property->IsIdentifier()) {
+            ident2 = property->AsIdentifier();
+        } else {
+            ident2 = Gensym(allocator);
+            new_assignment_statements += "let @@I3 = (@@E4); ";
+        }
     } else {
-        ASSERT(left->IsMemberExpression());
-
-        auto *left_memb = left->AsMemberExpression();
-        auto *scope = NearestScope(assignment);
-
-        auto *tmp_obj_var_id = Gensym(checker->Allocator());
-        auto *tmp_obj_var = scope->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(
-            checker->Allocator(), tmp_obj_var_id->Name(), varbinder::VariableFlags::LOCAL);
-        tmp_obj_var->SetTsType(left_memb->Object()->TsType());
-        tmp_obj_var_id->SetVariable(tmp_obj_var);
-        tmp_obj_var_id->SetTsType(tmp_obj_var->TsType());
-        tmp_assignment_for_obj = checker->AllocNode<ir::AssignmentExpression>(
-            tmp_obj_var_id, left_memb->Object(), lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-
-        tmp_assignment_for_obj->SetTsType(tmp_obj_var->TsType());
-
-        auto *property = left_memb->Property();
-        if (!property->IsIdentifier()) {
-            auto *tmp_prop_var_id = Gensym(checker->Allocator());
-            auto *tmp_prop_var = scope->AddDecl<varbinder::LetDecl, varbinder::LocalVariable>(
-                checker->Allocator(), tmp_prop_var_id->Name(), varbinder::VariableFlags::LOCAL);
-            tmp_prop_var->SetTsType(left_memb->Property()->TsType());
-            tmp_prop_var_id->SetVariable(tmp_prop_var);
-            tmp_prop_var_id->SetTsType(tmp_prop_var->TsType());
-
-            tmp_assignment_for_prop = checker->AllocNode<ir::AssignmentExpression>(
-                tmp_prop_var_id, left_memb->Property(), lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
-            tmp_assignment_for_prop->SetTsType(tmp_prop_var->TsType());
-            property = tmp_prop_var_id;
-        }
-
-        left_adjusted = checker->AllocNode<ir::MemberExpression>(tmp_obj_var_id, property, left_memb->Kind(),
-                                                                 left_memb->IsComputed(), left_memb->IsOptional());
-        left_adjusted->AsMemberExpression()->SetPropVar(left_memb->PropVar());
-        left_adjusted->AsMemberExpression()->SetObjectType(left_memb->ObjType());
-        left_adjusted->SetTsType(left->TsType());
-
-        if (left_memb->IsIgnoreBox()) {
-            left_adjusted->AsMemberExpression()->SetIgnoreBox();
-        }
+        UNREACHABLE();
     }
 
-    left_adjusted->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);  // to be recomputed
-    auto *left_cloned = CloneNode(checker, left_adjusted)->AsExpression();
-    auto *new_right = checker->AllocNode<ir::BinaryExpression>(left_cloned, right, OpEqualToOp(op_equal));
-
-    auto *lc_type = left_cloned->Check(checker);
-
+    // Create proxy TypeNode for left hand of assignment expression
+    auto *lc_type = left->TsType();
     if (auto *lc_type_as_primitive = checker->ETSBuiltinTypeAsPrimitiveType(lc_type); lc_type_as_primitive != nullptr) {
         lc_type = lc_type_as_primitive;
     }
+    auto *expr_type = checker->AllocNode<ir::OpaqueTypeNode>(lc_type);
 
-    auto *lc_type_node = checker->AllocNode<ir::OpaqueTypeNode>(lc_type);
-    auto *new_right_converted = checker->AllocNode<ir::TSAsExpression>(new_right, lc_type_node, false);
-    auto *new_assignment = checker->AllocNode<ir::AssignmentExpression>(left_adjusted, new_right_converted,
-                                                                        lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    // Generate ArkTS code string for new lowered assignment expression:
+    std::string left_hand = "@@I5";
+    std::string right_hand = "@@I7";
 
-    ir::Expression *res = new_assignment;
-    if (tmp_assignment_for_obj != nullptr) {
-        ArenaVector<ir::Expression *> seq_exprs {checker->Allocator()->Adapter()};
-        seq_exprs.push_back(tmp_assignment_for_obj);
-
-        if (tmp_assignment_for_prop != nullptr) {
-            seq_exprs.push_back(tmp_assignment_for_prop);
+    if (ident2 != nullptr) {
+        if (auto const kind = left->AsMemberExpression()->Kind(); kind == ir::MemberExpressionKind::PROPERTY_ACCESS) {
+            left_hand += ".@@I6";
+            right_hand += ".@@I8";
+        } else if (kind == ir::MemberExpressionKind::ELEMENT_ACCESS) {
+            left_hand += "[@@I6]";
+            right_hand += "[@@I8]";
+        } else {
+            UNREACHABLE();
         }
-
-        seq_exprs.push_back(new_assignment);
-        auto *seq = checker->AllocNode<ir::SequenceExpression>(std::move(seq_exprs));
-        res = seq;
     }
 
-    res->SetParent(assignment->Parent());
-    new_assignment->Check(checker);
+    new_assignment_statements += left_hand + " = (" + right_hand + ' ' +
+                                 std::string {lexer::TokenToString(OpEqualToOp(op_equal))} + " (@@E9)) as @@T10";
+    // std::cout << "Lowering statements: " << new_assignment_statements << std::endl;
+
+    // Parse ArkTS code string and create and process corresponding AST node(s)
+    auto expression_ctx = varbinder::LexicalScope<varbinder::Scope>::Enter(checker->VarBinder(), scope);
+
+    auto *lowering_result = parser->CreateFormattedExpression(
+        new_assignment_statements, parser::DEFAULT_SOURCE_FILE, ident1, object, ident2, property,
+        ident1->Clone(allocator), ident2 != nullptr ? ident2->Clone(allocator) : nullptr, ident1->Clone(allocator),
+        ident2 != nullptr ? ident2->Clone(allocator) : nullptr, right, expr_type);
+    lowering_result->SetParent(assignment->Parent());
+
+    checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(lowering_result, scope);
+    lowering_result->Check(checker);
+
+    // Adjust [un]boxing flag
+    ir::AssignmentExpression *new_assignment;
+    if (lowering_result->IsAssignmentExpression()) {
+        new_assignment = lowering_result->AsAssignmentExpression();
+    } else if (lowering_result->IsBlockExpression() && !lowering_result->AsBlockExpression()->Statements().empty() &&
+               lowering_result->AsBlockExpression()->Statements().back()->IsExpressionStatement() &&
+               lowering_result->AsBlockExpression()
+                   ->Statements()
+                   .back()
+                   ->AsExpressionStatement()
+                   ->GetExpression()
+                   ->IsAssignmentExpression()) {
+        new_assignment = lowering_result->AsBlockExpression()
+                             ->Statements()
+                             .back()
+                             ->AsExpressionStatement()
+                             ->GetExpression()
+                             ->AsAssignmentExpression();
+    } else {
+        UNREACHABLE();
+    }
+
+    // NOTE(gogabr): make sure that the checker never puts both a boxing and an unboxing flag on the same node.
+    // Then this code will become unnecessary.
     AdjustBoxingUnboxingFlags(new_assignment, assignment);
 
-    return res;
+    return lowering_result;
 }
 
 bool OpAssignmentLowering::Perform(CompilerContext *ctx, parser::Program *program)
@@ -257,12 +220,13 @@ bool OpAssignmentLowering::Perform(CompilerContext *ctx, parser::Program *progra
         }
     }
 
-    checker::ETSChecker *checker = ctx->Checker()->AsETSChecker();
+    auto *const checker = ctx->Checker()->AsETSChecker();
+    auto *const parser = ctx->GetParser()->AsETSParser();
 
-    program->Ast()->TransformChildrenRecursively([checker](ir::AstNode *ast) -> ir::AstNode * {
+    program->Ast()->TransformChildrenRecursively([checker, parser](ir::AstNode *ast) -> ir::AstNode * {
         if (ast->IsAssignmentExpression() &&
             ast->AsAssignmentExpression()->OperatorType() != lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
-            return HandleOpAssignment(checker, ast->AsAssignmentExpression());
+            return HandleOpAssignment(checker, parser, ast->AsAssignmentExpression());
         }
 
         return ast;

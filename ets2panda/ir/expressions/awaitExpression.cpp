@@ -15,15 +15,10 @@
 
 #include "awaitExpression.h"
 
+#include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "compiler/core/regScope.h"
-#include "checker/TSchecker.h"
-#include "checker/ETSchecker.h"
 #include "ir/astDump.h"
-#include "ir/base/methodDefinition.h"
-#include "ir/base/scriptFunction.h"
-#include "ir/expressions/arrowFunctionExpression.h"
 
 namespace panda::es2panda::ir {
 void AwaitExpression::TransformChildren(const NodeTransformer &cb)
@@ -47,56 +42,28 @@ void AwaitExpression::Dump(ir::AstDumper *dumper) const
 
 void AwaitExpression::Compile(compiler::PandaGen *pg) const
 {
-    compiler::RegScope rs(pg);
-
-    if (argument_ != nullptr) {
-        argument_->Compile(pg);
-    } else {
-        pg->LoadConst(this, compiler::Constant::JS_UNDEFINED);
-    }
-
-    pg->EmitAwait(this);
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void AwaitExpression::Compile(compiler::ETSGen *etsg) const
 {
-    static constexpr bool IS_UNCHECKED_CAST = false;
-    compiler::RegScope rs(etsg);
-    compiler::VReg argument_reg = etsg->AllocReg();
-    argument_->Compile(etsg);
-    etsg->StoreAccumulator(this, argument_reg);
-    etsg->CallThisVirtual0(argument_, argument_reg, compiler::Signatures::BUILTIN_PROMISE_AWAIT_RESOLUTION);
-    etsg->CastToArrayOrObject(argument_, TsType(), IS_UNCHECKED_CAST);
-    etsg->SetAccumulatorType(TsType());
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *AwaitExpression::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *AwaitExpression::Check(checker::TSChecker *checker)
 {
-    // NOTE: aszilagyi
-    return checker->GlobalAnyType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *AwaitExpression::Check(checker::ETSChecker *checker)
 {
-    if (TsType() != nullptr) {
-        return TsType();
-    }
-
-    checker::Type *arg_type = argument_->Check(checker);
-    // Check the argument type of await expression
-    if (!arg_type->IsETSObjectType() ||
-        (arg_type->AsETSObjectType()->AssemblerName() != compiler::Signatures::BUILTIN_PROMISE)) {
-        checker->ThrowTypeError("'await' expressions require Promise object as argument.", argument_->Start());
-    }
-
-    SetTsType(arg_type->AsETSObjectType()->TypeArguments().at(0));
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *AwaitExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+AwaitExpression *AwaitExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const argument = argument_ != nullptr ? argument_->Clone(allocator) : nullptr;
+    auto *const argument = argument_ != nullptr ? argument_->Clone(allocator)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<AwaitExpression>(argument); clone != nullptr) {
         if (argument != nullptr) {

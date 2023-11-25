@@ -106,23 +106,23 @@
                         },
                         "loc": {
                           "start": {
-                            "line": 1,
-                            "column": 1
+                            "line": 17,
+                            "column": 5
                           },
                           "end": {
-                            "line": 1,
-                            "column": 1
+                            "line": 17,
+                            "column": 26
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 17,
                           "column": 1
                         },
                         "end": {
-                          "line": 1,
-                          "column": 1
+                          "line": 17,
+                          "column": 27
                         }
                       }
                     },
@@ -162,23 +162,23 @@
                         },
                         "loc": {
                           "start": {
-                            "line": 1,
-                            "column": 1
+                            "line": 18,
+                            "column": 5
                           },
                           "end": {
-                            "line": 1,
-                            "column": 1
+                            "line": 18,
+                            "column": 31
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 18,
                           "column": 1
                         },
                         "end": {
-                          "line": 1,
-                          "column": 1
+                          "line": 18,
+                          "column": 32
                         }
                       }
                     },
@@ -218,23 +218,23 @@
                         },
                         "loc": {
                           "start": {
-                            "line": 1,
-                            "column": 1
+                            "line": 19,
+                            "column": 5
                           },
                           "end": {
-                            "line": 1,
-                            "column": 1
+                            "line": 19,
+                            "column": 27
                           }
                         }
                       },
                       "loc": {
                         "start": {
-                          "line": 1,
+                          "line": 19,
                           "column": 1
                         },
                         "end": {
-                          "line": 1,
-                          "column": 1
+                          "line": 19,
+                          "column": 28
                         }
                       }
                     }
@@ -325,12 +325,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 5
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 17,
+                "column": 22
               }
             }
           },
@@ -374,12 +374,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 18,
+                "column": 5
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 18,
+                "column": 27
               }
             }
           },
@@ -423,12 +423,12 @@
             "decorators": [],
             "loc": {
               "start": {
-                "line": 1,
-                "column": 1
+                "line": 19,
+                "column": 5
               },
               "end": {
-                "line": 1,
-                "column": 1
+                "line": 19,
+                "column": 23
               }
             }
           }

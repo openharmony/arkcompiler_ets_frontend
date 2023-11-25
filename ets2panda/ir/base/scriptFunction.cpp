@@ -16,36 +16,22 @@
 #include "scriptFunction.h"
 
 #include "varbinder/scope.h"
+#include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/expression.h"
-#include "ir/typeNode.h"
-#include "ir/expressions/identifier.h"
-#include "ir/statements/blockStatement.h"
-#include "ir/ts/tsTypeParameter.h"
-#include "ir/ts/tsTypeParameterDeclaration.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
-bool ScriptFunction::HasBody() const
-{
-    return body_ != nullptr;
-}
 
-ir::ScriptFunctionFlags ScriptFunction::Flags() const
+std::size_t ScriptFunction::FormalParamsLength() const noexcept
 {
-    return func_flags_;
-}
-
-size_t ScriptFunction::FormalParamsLength() const
-{
-    size_t length = 0;
+    std::size_t length = 0U;
 
     for (const auto *param : params_) {
         if (param->IsRestElement() || param->IsAssignmentPattern()) {
             break;
         }
 
-        length++;
+        ++length;
     }
 
     return length;
@@ -117,19 +103,22 @@ void ScriptFunction::Dump(ir::AstDumper *dumper) const
     }
 }
 
-void ScriptFunction::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-void ScriptFunction::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ScriptFunction::Compile(compiler::PandaGen *pg) const
 {
-    UNREACHABLE();
+    pg->GetAstCompiler()->Compile(this);
+}
+void ScriptFunction::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ScriptFunction::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *ScriptFunction::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ScriptFunction::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ScriptFunction::Check(checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

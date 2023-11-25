@@ -15,14 +15,9 @@
 
 #include "binaryExpression.h"
 
-#include "varbinder/variable.h"
-#include "compiler/core/function.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "compiler/core/regScope.h"
 #include "checker/TSchecker.h"
-#include "ir/astDump.h"
-#include "ir/expressions/identifier.h"
 
 namespace panda::es2panda::ir {
 void BinaryExpression::TransformChildren(const NodeTransformer &cb)
@@ -45,261 +40,31 @@ void BinaryExpression::Dump(ir::AstDumper *dumper) const
                  {"right", right_}});
 }
 
-void BinaryExpression::CompileLogical(compiler::PandaGen *pg) const
-{
-    compiler::RegScope rs(pg);
-    compiler::VReg lhs = pg->AllocReg();
-
-    ASSERT(operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_AND ||
-           operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_OR ||
-           operator_ == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING);
-
-    auto *skip_right = pg->AllocLabel();
-    auto *end_label = pg->AllocLabel();
-
-    // left -> acc -> lhs -> toboolean -> acc -> bool_lhs
-    left_->Compile(pg);
-    pg->StoreAccumulator(this, lhs);
-
-    if (operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
-        pg->ToBoolean(this);
-        pg->BranchIfFalse(this, skip_right);
-    } else if (operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_OR) {
-        pg->ToBoolean(this);
-        pg->BranchIfTrue(this, skip_right);
-    } else if (operator_ == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING) {
-        pg->BranchIfCoercible(this, skip_right);
-    }
-
-    // left is true/false(and/or) then right -> acc
-    right_->Compile(pg);
-    pg->Branch(this, end_label);
-
-    // left is false/true(and/or) then lhs -> acc
-    pg->SetLabel(this, skip_right);
-    pg->LoadAccumulator(this, lhs);
-    pg->SetLabel(this, end_label);
-}
-
 void BinaryExpression::Compile(compiler::PandaGen *pg) const
 {
-    if (IsLogical()) {
-        CompileLogical(pg);
-        return;
-    }
-
-    if (operator_ == lexer::TokenType::KEYW_IN && left_->IsIdentifier() && left_->AsIdentifier()->IsPrivateIdent()) {
-        compiler::RegScope rs(pg);
-        compiler::VReg ctor = pg->AllocReg();
-        const auto &name = left_->AsIdentifier()->Name();
-        compiler::Function::LoadClassContexts(this, pg, ctor, name);
-        right_->Compile(pg);
-        pg->ClassPrivateFieldIn(this, ctor, name);
-        return;
-    }
-
-    compiler::RegScope rs(pg);
-    compiler::VReg lhs = pg->AllocReg();
-
-    left_->Compile(pg);
-    pg->StoreAccumulator(this, lhs);
-    right_->Compile(pg);
-
-    pg->Binary(this, operator_, lhs);
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void BinaryExpression::Compile(compiler::ETSGen *etsg) const
 {
-    if (etsg->TryLoadConstantExpression(this)) {
-        return;
-    }
-
-    auto ttctx = compiler::TargetTypeContext(etsg, operation_type_);
-
-    if (IsLogical()) {
-        CompileLogical(etsg);
-        etsg->ApplyConversion(this, operation_type_);
-        return;
-    }
-
-    compiler::RegScope rs(etsg);
-    compiler::VReg lhs = etsg->AllocReg();
-
-    if (operator_ == lexer::TokenType::PUNCTUATOR_PLUS &&
-        (left_->TsType()->IsETSStringType() || right_->TsType()->IsETSStringType())) {
-        etsg->BuildString(this);
-        return;
-    }
-
-    left_->Compile(etsg);
-    etsg->ApplyConversionAndStoreAccumulator(left_, lhs, operation_type_);
-    right_->Compile(etsg);
-    etsg->ApplyConversion(right_, operation_type_);
-    if (operator_ >= lexer::TokenType::PUNCTUATOR_LEFT_SHIFT &&
-        operator_ <= lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT) {
-        etsg->ApplyCast(right_, operation_type_);
-    }
-
-    etsg->Binary(this, operator_, lhs);
-}
-
-static void CompileNullishCoalescing(BinaryExpression const *const node, compiler::ETSGen *etsg)
-{
-    auto const compile_operand = [etsg, optype = node->OperationType()](ir::Expression const *expr) {
-        etsg->CompileAndCheck(expr);
-        etsg->ApplyConversion(expr, optype);
-    };
-
-    compile_operand(node->Left());
-
-    if (!node->Left()->TsType()->IsNullishOrNullLike()) {
-        // fallthrough
-    } else if (node->Left()->TsType()->IsETSNullLike()) {
-        compile_operand(node->Right());
-    } else {
-        auto *if_left_nullish = etsg->AllocLabel();
-        auto *end_label = etsg->AllocLabel();
-
-        etsg->BranchIfNullish(node, if_left_nullish);
-
-        etsg->ConvertToNonNullish(node);
-        etsg->ApplyConversion(node->Left(), node->OperationType());
-        etsg->JumpTo(node, end_label);
-
-        etsg->SetLabel(node, if_left_nullish);
-        compile_operand(node->Right());
-
-        etsg->SetLabel(node, end_label);
-    }
-    etsg->SetAccumulatorType(node->TsType());
-}
-
-void BinaryExpression::CompileLogical(compiler::ETSGen *etsg) const
-{
-    if (operator_ == lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING) {
-        CompileNullishCoalescing(this, etsg);
-        return;
-    }
-
-    ASSERT(IsLogicalExtended());
-    auto ttctx = compiler::TargetTypeContext(etsg, OperationType());
-    compiler::RegScope rs(etsg);
-    auto lhs = etsg->AllocReg();
-    auto rhs = etsg->AllocReg();
-    left_->Compile(etsg);
-    etsg->ApplyConversionAndStoreAccumulator(left_, lhs, OperationType());
-
-    auto *end_label = etsg->AllocLabel();
-
-    auto left_false_label = etsg->AllocLabel();
-    if (operator_ == lexer::TokenType::PUNCTUATOR_LOGICAL_AND) {
-        etsg->ResolveConditionalResultIfFalse(left_, left_false_label);
-        etsg->BranchIfFalse(this, left_false_label);
-
-        right_->Compile(etsg);
-        etsg->ApplyConversionAndStoreAccumulator(right_, rhs, OperationType());
-        etsg->Branch(this, end_label);
-
-        etsg->SetLabel(this, left_false_label);
-        etsg->LoadAccumulator(this, lhs);
-    } else {
-        etsg->ResolveConditionalResultIfFalse(left_, left_false_label);
-        etsg->BranchIfFalse(this, left_false_label);
-
-        etsg->LoadAccumulator(this, lhs);
-        etsg->Branch(this, end_label);
-
-        etsg->SetLabel(this, left_false_label);
-        right_->Compile(etsg);
-        etsg->ApplyConversionAndStoreAccumulator(right_, rhs, OperationType());
-    }
-
-    etsg->SetLabel(this, end_label);
-    etsg->SetAccumulatorType(TsType());
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *BinaryExpression::Check(checker::TSChecker *checker)
 {
-    auto *left_type = left_->Check(checker);
-    auto *right_type = right_->Check(checker);
-
-    switch (operator_) {
-        case lexer::TokenType::PUNCTUATOR_MULTIPLY:
-        case lexer::TokenType::PUNCTUATOR_EXPONENTIATION:
-        case lexer::TokenType::PUNCTUATOR_DIVIDE:
-        case lexer::TokenType::PUNCTUATOR_MOD:
-        case lexer::TokenType::PUNCTUATOR_MINUS:
-        case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT:
-        case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT:
-        case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_AND:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_XOR:
-        case lexer::TokenType::PUNCTUATOR_BITWISE_OR: {
-            return checker->CheckBinaryOperator(left_type, right_type, left_, right_, this, operator_);
-        }
-        case lexer::TokenType::PUNCTUATOR_PLUS: {
-            return checker->CheckPlusOperator(left_type, right_type, left_, right_, this, operator_);
-        }
-        case lexer::TokenType::PUNCTUATOR_LESS_THAN:
-        case lexer::TokenType::PUNCTUATOR_GREATER_THAN: {
-            return checker->CheckCompareOperator(left_type, right_type, left_, right_, this, operator_);
-        }
-        case lexer::TokenType::PUNCTUATOR_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL: {
-            if (checker->IsTypeEqualityComparableTo(left_type, right_type) ||
-                checker->IsTypeEqualityComparableTo(right_type, left_type)) {
-                return checker->GlobalBooleanType();
-            }
-
-            checker->ThrowBinaryLikeError(operator_, left_type, right_type, Start());
-        }
-        case lexer::TokenType::KEYW_INSTANCEOF: {
-            return checker->CheckInstanceofExpression(left_type, right_type, right_, this);
-        }
-        case lexer::TokenType::KEYW_IN: {
-            return checker->CheckInExpression(left_type, right_type, left_, right_, this);
-        }
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_AND: {
-            return checker->CheckAndOperator(left_type, right_type, left_);
-        }
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR: {
-            return checker->CheckOrOperator(left_type, right_type, left_);
-        }
-        case lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING: {
-            // NOTE: Csaba Repasi. Implement checker for nullish coalescing
-            return checker->GlobalAnyType();
-        }
-        case lexer::TokenType::PUNCTUATOR_SUBSTITUTION: {
-            checker->CheckAssignmentOperator(operator_, left_, left_type, right_type);
-            return right_type;
-        }
-        default: {
-            UNREACHABLE();
-            break;
-        }
-    }
-
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *BinaryExpression::Check(checker::ETSChecker *checker)
 {
-    if (TsType() != nullptr) {
-        return TsType();
-    }
-    checker::Type *new_ts_type {nullptr};
-    std::tie(new_ts_type, operation_type_) = checker->CheckBinaryOperator(left_, right_, this, operator_, Start());
-    SetTsType(new_ts_type);
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *BinaryExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+BinaryExpression *BinaryExpression::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
-    auto *const left = left_ != nullptr ? left_->Clone(allocator) : nullptr;
-    auto *const right = right_ != nullptr ? right_->Clone(allocator) : nullptr;
+    auto *const left = left_ != nullptr ? left_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const right = right_ != nullptr ? right_->Clone(allocator)->AsExpression() : nullptr;
 
     if (auto *const clone = allocator->New<BinaryExpression>(left, right, operator_); clone != nullptr) {
         if (operation_type_ != nullptr) {

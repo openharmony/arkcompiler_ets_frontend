@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,13 +16,24 @@
 #ifndef ES2PANDA_PARSER_INCLUDE_AST_TS_METHOD_SIGNATURE_H
 #define ES2PANDA_PARSER_INCLUDE_AST_TS_METHOD_SIGNATURE_H
 
-#include "ir/statement.h"
+#include "ir/typeNode.h"
+
+namespace panda::es2panda::checker {
+class TSAnalyzer;
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
 
 namespace panda::es2panda::ir {
 class TSTypeParameterDeclaration;
 
 class TSMethodSignature : public AstNode {
 public:
+    TSMethodSignature() = delete;
+    ~TSMethodSignature() override = default;
+
+    NO_COPY_SEMANTIC(TSMethodSignature);
+    NO_MOVE_SEMANTIC(TSMethodSignature);
+
     explicit TSMethodSignature(varbinder::Scope *scope, Expression *key, TSTypeParameterDeclaration *type_params,
                                ArenaVector<Expression *> &&params, TypeNode *return_type_annotation, bool computed,
                                bool optional)
@@ -37,6 +48,9 @@ public:
     {
     }
 
+    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
+    friend class checker::TSAnalyzer;
+
     bool IsScopeBearer() const override
     {
         return true;
@@ -47,47 +61,49 @@ public:
         return scope_;
     }
 
-    const Expression *Key() const
+    [[nodiscard]] const Expression *Key() const noexcept
     {
         return key_;
     }
 
-    Expression *Key()
+    [[nodiscard]] Expression *Key() noexcept
     {
         return key_;
     }
 
-    const TSTypeParameterDeclaration *TypeParams() const
+    [[nodiscard]] const TSTypeParameterDeclaration *TypeParams() const noexcept
     {
         return type_params_;
     }
 
-    const ArenaVector<Expression *> &Params() const
+    [[nodiscard]] const ArenaVector<Expression *> &Params() const noexcept
     {
         return params_;
     }
 
-    const TypeNode *ReturnTypeAnnotation() const
+    [[nodiscard]] const TypeNode *ReturnTypeAnnotation() const noexcept
     {
         return return_type_annotation_;
     }
 
-    bool Computed() const
+    [[nodiscard]] bool Computed() const noexcept
     {
         return computed_;
     }
 
-    bool Optional() const
+    [[nodiscard]] bool Optional() const noexcept
     {
         return optional_;
     }
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
+
     void Dump(ir::AstDumper *dumper) const override;
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    void Compile(compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     varbinder::Scope *scope_;

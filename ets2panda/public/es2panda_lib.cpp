@@ -132,6 +132,7 @@ static es2panda_Context *CreateContext(es2panda_Config *config, std::string cons
         varbinder->SetCompilerContext(res->compiler_context.get());
         res->emitter = std::make_unique<compiler::ETSEmitter>(res->compiler_context.get());
         res->compiler_context->SetEmitter(res->emitter.get());
+        res->compiler_context->SetParser(res->parser.get());
         res->program = nullptr;
         res->state = ES2PANDA_STATE_NEW;
     } catch (Error &e) {

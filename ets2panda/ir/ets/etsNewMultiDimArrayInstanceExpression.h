@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,7 +26,13 @@ namespace panda::es2panda::ir {
 
 class ETSNewMultiDimArrayInstanceExpression : public Expression {
 public:
-    explicit ETSNewMultiDimArrayInstanceExpression(ir::TypeNode *type_reference,
+    ETSNewMultiDimArrayInstanceExpression() = delete;
+    ~ETSNewMultiDimArrayInstanceExpression() override = default;
+
+    NO_COPY_SEMANTIC(ETSNewMultiDimArrayInstanceExpression);
+    NO_MOVE_SEMANTIC(ETSNewMultiDimArrayInstanceExpression);
+
+    explicit ETSNewMultiDimArrayInstanceExpression(ir::TypeNode *const type_reference,
                                                    ArenaVector<ir::Expression *> &&dimensions)
         : Expression(AstNodeType::ETS_NEW_MULTI_DIM_ARRAY_INSTANCE_EXPRESSION),
           type_reference_(type_reference),
@@ -34,19 +40,28 @@ public:
     {
     }
 
-    checker::Signature *Signature()
+    explicit ETSNewMultiDimArrayInstanceExpression(ETSNewMultiDimArrayInstanceExpression const &other,
+                                                   ArenaAllocator *allocator);
+
+    [[nodiscard]] checker::Signature *Signature() noexcept
     {
         return signature_;
     }
 
-    const checker::Signature *Signature() const
+    [[nodiscard]] const checker::Signature *Signature() const noexcept
     {
         return signature_;
     }
+
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] ETSNewMultiDimArrayInstanceExpression *Clone(ArenaAllocator *allocator,
+                                                               AstNode *parent = nullptr) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
+
     void Dump(ir::AstDumper *dumper) const override;
+
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
     void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;

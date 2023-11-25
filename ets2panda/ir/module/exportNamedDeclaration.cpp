@@ -15,12 +15,9 @@
 
 #include "exportNamedDeclaration.h"
 
-#include "compiler/core/pandagen.h"
+#include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
-#include "ir/astDump.h"
-#include "ir/base/decorator.h"
-#include "ir/expressions/literals/stringLiteral.h"
-#include "ir/module/exportSpecifier.h"
+#include "compiler/core/pandagen.h"
 
 namespace panda::es2panda::ir {
 void ExportNamedDeclaration::TransformChildren(const NodeTransformer &cb)
@@ -70,27 +67,23 @@ void ExportNamedDeclaration::Dump(ir::AstDumper *dumper) const
                  {"specifiers", specifiers_}});
 }
 
-void ExportNamedDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ExportNamedDeclaration::Compile(compiler::PandaGen *pg) const
 {
-    if (decl_ == nullptr) {
-        return;
-    }
-
-    decl_->Compile(pg);
+    pg->GetAstCompiler()->Compile(this);
 }
 
-void ExportNamedDeclaration::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ExportNamedDeclaration::Compile(compiler::ETSGen *etsg) const
 {
-    UNREACHABLE();
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ExportNamedDeclaration::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *ExportNamedDeclaration::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ExportNamedDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ExportNamedDeclaration::Check(checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

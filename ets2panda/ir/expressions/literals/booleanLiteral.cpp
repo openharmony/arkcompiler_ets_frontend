@@ -54,7 +54,7 @@ checker::Type *BooleanLiteral::Check([[maybe_unused]] checker::ETSChecker *check
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
-Expression *BooleanLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+BooleanLiteral *BooleanLiteral::Clone(ArenaAllocator *const allocator, AstNode *const parent)
 {
     if (auto *const clone = allocator->New<BooleanLiteral>(boolean_); clone != nullptr) {
         if (parent != nullptr) {
