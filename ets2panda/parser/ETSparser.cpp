@@ -646,6 +646,8 @@ void ETSParser::MarkNodeAsExported(ir::AstNode *node, lexer::SourcePosition star
 ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::Statement *> &statements)
 {
     ArenaVector<ir::AstNode *> global_properties(Allocator()->Adapter());
+    field_map_.clear();
+    export_name_map_.clear();
     bool default_export = false;
 
     using ParserFunctionPtr = std::function<ir::Statement *(ETSParser *)>;
@@ -685,7 +687,7 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
 
             if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
                 Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-                ParseReExport(Lexer()->GetToken().Start());
+                ParseExport(Lexer()->GetToken().Start());
                 continue;
             }
 
@@ -797,7 +799,17 @@ ArenaVector<ir::AstNode *> ETSParser::ParseTopLevelStatements(ArenaVector<ir::St
             current_pos++;
         }
     }
-
+    // Add export modifier flag to nodes exported in previous statements.
+    for (auto &iter : export_name_map_) {
+        util::StringView export_name = iter.first;
+        lexer::SourcePosition start_loc = export_name_map_[export_name];
+        if (field_map_.count(export_name) == 0) {
+            ThrowSyntaxError("Cannot find name '" + std::string {export_name.Utf8()} + "' to export.", start_loc);
+        }
+        auto field = field_map_[export_name];
+        // selective export does not support default
+        MarkNodeAsExported(field, start_loc, false);
+    }
     return global_properties;
 }
 
@@ -1288,6 +1300,7 @@ void ETSParser::ParseClassFieldDefiniton(ir::Identifier *field_name, ir::Modifie
     }
     field->SetRange({start_loc, end_loc});
 
+    field_map_.insert({field_name->Name(), field});
     declarations->push_back(field);
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
@@ -1328,6 +1341,8 @@ ir::MethodDefinition *ETSParser::ParseClassMethodDefinition(ir::Identifier *meth
     }
     auto *method = AllocNode<ir::MethodDefinition>(method_kind, method_name, func_expr, modifiers, Allocator(), false);
     method->SetRange(func_expr->Range());
+
+    field_map_.insert({method_name->Name(), method});
     AddProxyOverloadToMethodWithDefaultParams(method, ident_node);
 
     return method;
@@ -2843,7 +2858,7 @@ ir::DebuggerStatement *ETSParser::ParseDebuggerStatement()
     ThrowUnexpectedToken(lexer::TokenType::KEYW_DEBUGGER);
 }
 
-void ETSParser::ParseReExport(lexer::SourcePosition start_loc)
+void ETSParser::ParseExport(lexer::SourcePosition start_loc)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY ||
            Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
@@ -2855,10 +2870,12 @@ void ETSParser::ParseReExport(lexer::SourcePosition start_loc)
         ParseNamedSpecifiers(&specifiers, true);
 
         if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM) {
-            ThrowSyntaxError("Selective export directive is not implemented yet");
+            // selective export directive
+            return;
         }
     }
 
+    // re-export directive
     ir::ImportSource *re_export_source = nullptr;
     std::vector<std::string> user_paths;
 
@@ -3032,8 +3049,9 @@ std::vector<std::string> ETSParser::ParseImportDeclarations(ArenaVector<ir::Stat
     return all_user_paths;
 }
 
-void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool is_re_export)
+void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool is_export)
 {
+    lexer::SourcePosition start_loc = Lexer()->GetToken().Start();
     // NOTE(user): handle qualifiedName in file bindings: qualifiedName '.' '*'
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         ThrowExpectedToken(lexer::TokenType::PUNCTUATOR_LEFT_BRACE);
@@ -3041,6 +3059,7 @@ void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, boo
     Lexer()->NextToken();  // eat '{'
 
     auto file_name = GetProgram()->SourceFilePath().Mutf8();
+    std::vector<util::StringView> exported_idents;
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_MULTIPLY) {
@@ -3056,7 +3075,7 @@ void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, boo
         ir::Identifier *local = nullptr;
         imported->SetRange(Lexer()->GetToken().Loc());
 
-        Lexer()->NextToken();  // eat import name
+        Lexer()->NextToken();  // eat import/export name
 
         if (CheckModuleAsModifier() && Lexer()->GetToken().Type() == lexer::TokenType::KEYW_AS) {
             Lexer()->NextToken();  // eat `as` literal
@@ -3071,6 +3090,10 @@ void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, boo
 
         util::Helpers::CheckImportedName(specifiers, specifier, file_name);
 
+        if (is_export) {
+            util::StringView member_name = local->Name();
+            exported_idents.push_back(member_name);
+        }
         specifiers->push_back(specifier);
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
@@ -3080,8 +3103,11 @@ void ETSParser::ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, boo
 
     Lexer()->NextToken();  // eat '}'
 
-    if (Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM && !is_re_export) {
-        ThrowSyntaxError("Unexpected token, expected 'from'");
+    if (is_export && Lexer()->GetToken().KeywordType() != lexer::TokenType::KEYW_FROM) {
+        // update exported idents to export name map when it is not the case of re-export
+        for (auto member_name : exported_idents) {
+            export_name_map_.insert({member_name, start_loc});
+        }
     }
 }
 

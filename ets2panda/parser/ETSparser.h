@@ -99,6 +99,8 @@ private:
         bool has_decl;
     };
 
+    std::map<util::StringView, ir::AstNode *> field_map_;
+    std::map<util::StringView, lexer::SourcePosition> export_name_map_;
     void ParseProgram(ScriptKind kind) override;
     [[nodiscard]] std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &source_file) override;
     void ParsePackageDeclaration(ArenaVector<ir::Statement *> &statements);
@@ -115,7 +117,8 @@ private:
     std::tuple<std::string, bool> GetSourceRegularPath(const std::string &path, const std::string &resolved_path);
     void ParseSources(const std::vector<std::string> &paths, bool is_external = true);
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool require_from);
-    void ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool is_re_export = false);
+    void ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool is_export = false);
+    void ParseNamedExportSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool default_export);
     void ParseUserSources(std::vector<std::string> user_parths);
     std::vector<std::string> ParseImportDeclarations(ArenaVector<ir::Statement *> &statements);
     void ParseDefaultSources();
@@ -189,7 +192,7 @@ private:
     ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList() override;
     ir::Statement *ParseTryStatement() override;
     ir::DebuggerStatement *ParseDebuggerStatement() override;
-    void ParseReExport(lexer::SourcePosition start_loc);
+    void ParseExport(lexer::SourcePosition start_loc);
     ir::Statement *ParseImportDeclaration(StatementParsingFlags flags) override;
     ir::Statement *ParseExportDeclaration(StatementParsingFlags flags) override;
     ir::AnnotatedExpression *ParseVariableDeclaratorKey(VariableParsingFlags flags) override;
