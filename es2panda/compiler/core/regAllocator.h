@@ -49,8 +49,9 @@ public:
     }
 
     ArenaAllocator *Allocator() const;
+    bool HasSpill() const;
     uint16_t GetSpillRegsCount() const;
-    
+
     void AdjustInsRegWhenHasSpill();
 
     Label *AllocLabel(std::string &&id);

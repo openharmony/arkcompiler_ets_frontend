@@ -241,6 +241,14 @@ public:
         totalRegs_ += ra_.GetSpillRegsCount();
     }
 
+    uint16_t GetSpillRegsCount() const
+    {
+        if (ra_.HasSpill()) {
+            return ra_.GetSpillRegsCount();
+        }
+        return 0;
+    }
+
     panda::panda_file::FunctionKind GetFunctionKind() const
     {
         return funcKind_;
