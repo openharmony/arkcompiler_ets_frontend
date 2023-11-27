@@ -106,4 +106,26 @@ checker::Type *ETSTypeReference::GetType(checker::ETSChecker *checker)
     SetTsType(type);
     return type;
 }
+
+// NOLINTNEXTLINE(google-default-arguments)
+ETSTypeReference *ETSTypeReference::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const part_clone = part_ != nullptr ? part_->Clone(allocator)->AsETSTypeReferencePart() : nullptr;
+
+    if (auto *const clone = allocator->New<ETSTypeReference>(part_clone); clone != nullptr) {
+        if (part_clone != nullptr) {
+            part_clone->SetParent(clone);
+        }
+
+        clone->flags_ = flags_;
+
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
 }  // namespace panda::es2panda::ir

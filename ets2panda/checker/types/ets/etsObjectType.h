@@ -477,6 +477,10 @@ public:
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    bool SubstituteTypeArgs(TypeRelation *relation, ArenaVector<Type *> &new_type_args,
+                            const Substitution *substitution);
+    void SetCopiedTypeProperties(TypeRelation *relation, ETSObjectType *copied_type, ArenaVector<Type *> &new_type_args,
+                                 const Substitution *substitution);
     Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
     void Cast(TypeRelation *relation, Type *target) override;
     bool CastNumericObject(TypeRelation *relation, Type *target);

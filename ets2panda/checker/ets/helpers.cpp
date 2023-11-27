@@ -1092,6 +1092,7 @@ Type *ETSChecker::GetTypeFromTypeAliasReference(varbinder::Variable *var)
 
     auto *const alias_type_node = var->Declaration()->Node()->AsTSTypeAliasDeclaration();
     TypeStackElement tse(this, alias_type_node, "Circular type alias reference", alias_type_node->Start());
+    alias_type_node->Check(this);
     auto *const aliased_type = GetTypeFromTypeAnnotation(alias_type_node->TypeAnnotation());
 
     var->SetTsType(aliased_type);
@@ -1118,6 +1119,98 @@ Type *ETSChecker::GetTypeFromClassReference(varbinder::Variable *var)
     auto *class_type = BuildClassProperties(var->Declaration()->Node()->AsClassDefinition());
     var->SetTsType(class_type);
     return class_type;
+}
+
+void ETSChecker::ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaration *const type_alias_node,
+                                                       const ir::TSTypeParameterInstantiation *const exact_type_params)
+{
+    auto *const cloned_node = type_alias_node->TypeAnnotation()->Clone(Allocator(), type_alias_node);
+
+    // Basic check, we really don't want to change the original type nodes, more precise checking should be made
+    ASSERT(cloned_node != type_alias_node->TypeAnnotation());
+
+    // Currently only reference types are checked. This should be extended for other types in a follow up patch, but for
+    // complete usability, if the type isn't a simple reference type, then doN't check type alias declaration at all.
+    bool check_typealias = true;
+
+    // Only transforming a temporary cloned node, so no modification is made in the AST
+    cloned_node->TransformChildrenRecursively(
+        [&check_typealias, &exact_type_params, type_alias_node](ir::AstNode *const node) -> ir::AstNode * {
+            if (!node->IsETSTypeReference()) {
+                return node;
+            }
+
+            const auto *const node_ident = node->AsETSTypeReference()->Part()->Name()->AsIdentifier();
+
+            size_t type_param_idx = 0;
+            for (const auto *const type_param : type_alias_node->TypeParams()->Params()) {
+                if (type_param->Name()->AsIdentifier()->Variable() == node_ident->Variable()) {
+                    break;
+                }
+                type_param_idx++;
+            }
+
+            if (type_param_idx == type_alias_node->TypeParams()->Params().size()) {
+                return node;
+            }
+
+            auto *const type_param_type = exact_type_params->Params().at(type_param_idx);
+
+            if (!type_param_type->IsETSTypeReference()) {
+                check_typealias = false;
+                return node;
+            }
+
+            return type_param_type;
+        });
+
+    if (check_typealias) {
+        cloned_node->Check(this);
+    }
+}
+
+Type *ETSChecker::HandleTypeAlias(ir::Expression *const name, const ir::TSTypeParameterInstantiation *const type_params)
+{
+    ASSERT(name->IsIdentifier() && name->AsIdentifier()->Variable() &&
+           name->AsIdentifier()->Variable()->Declaration()->IsTypeAliasDecl());
+
+    auto *const type_alias_node =
+        name->AsIdentifier()->Variable()->Declaration()->AsTypeAliasDecl()->Node()->AsTSTypeAliasDeclaration();
+
+    // NOTE (mmartin): modify for default params
+    if ((type_params == nullptr) != (type_alias_node->TypeParams() == nullptr)) {
+        if (type_params == nullptr) {
+            ThrowTypeError("Type alias declaration is generic, but no type parameters were provided", name->Start());
+        }
+
+        ThrowTypeError("Type alias declaration is not generic, but type parameters were provided",
+                       type_params->Start());
+    }
+
+    if (type_params == nullptr) {
+        return GetReferencedTypeBase(name);
+    }
+
+    for (auto *const orig_type_param : type_params->Params()) {
+        orig_type_param->Check(this);
+    }
+
+    Type *const alias_type = GetReferencedTypeBase(name);
+    auto *const alias_sub = NewSubstitution();
+
+    if (type_alias_node->TypeParams()->Params().size() != type_params->Params().size()) {
+        ThrowTypeError("Wrong number of type parameters for generic type alias", type_params->Start());
+    }
+
+    for (std::size_t idx = 0; idx < type_alias_node->TypeParams()->Params().size(); ++idx) {
+        alias_sub->insert(
+            {type_alias_node->TypeParams()->Params().at(idx)->Name()->AsIdentifier()->Variable()->TsType(),
+             type_params->Params().at(idx)->TsType()});
+    }
+
+    ValidateGenericTypeAliasForClonedNode(type_alias_node->AsTSTypeAliasDeclaration(), type_params);
+
+    return alias_type->Substitute(Relation(), alias_sub);
 }
 
 Type *ETSChecker::GetTypeFromEnumReference([[maybe_unused]] varbinder::Variable *var)

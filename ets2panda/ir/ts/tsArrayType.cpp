@@ -78,4 +78,24 @@ checker::Type *TSArrayType::GetType(checker::ETSChecker *checker)
     return checker->CreateETSArrayType(element_type);
 }
 
+// NOLINTNEXTLINE(google-default-arguments)
+TSArrayType *TSArrayType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const element_type_clone = element_type_ != nullptr ? element_type_->Clone(allocator) : nullptr;
+
+    if (auto *const clone = allocator->New<TSArrayType>(element_type_clone); clone != nullptr) {
+        if (element_type_clone != nullptr) {
+            element_type_clone->SetParent(clone);
+        }
+
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 }  // namespace panda::es2panda::ir

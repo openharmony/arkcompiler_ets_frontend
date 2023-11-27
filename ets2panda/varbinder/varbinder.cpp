@@ -51,6 +51,7 @@
 #include "ir/ts/tsFunctionType.h"
 #include "ir/ts/tsConstructorType.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
+#include "ir/ts/tsTypeAliasDeclaration.h"
 #include "ir/ts/tsTypeReference.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
 #include "ir/ets/etsNewClassInstanceExpression.h"
@@ -465,6 +466,17 @@ void VarBinder::BuildCatchClause(ir::CatchClause *catch_clause_stmt)
     ResolveReference(catch_clause_stmt->Body());
 }
 
+void VarBinder::BuildTypeAliasDeclaration(ir::TSTypeAliasDeclaration *const type_alias_decl)
+{
+    if (type_alias_decl->TypeParams() != nullptr) {
+        const auto type_alias_scope = LexicalScope<LocalScope>::Enter(this, type_alias_decl->TypeParams()->Scope());
+        ResolveReferences(type_alias_decl);
+        return;
+    }
+
+    ResolveReferences(type_alias_decl);
+}
+
 void VarBinder::AddCompilableFunction(ir::ScriptFunction *func)
 {
     if (func->IsArrow()) {
@@ -600,6 +612,10 @@ void VarBinder::ResolveReference(ir::AstNode *child_node)
         }
         case ir::AstNodeType::CATCH_CLAUSE: {
             BuildCatchClause(child_node->AsCatchClause());
+            break;
+        }
+        case ir::AstNodeType::TS_TYPE_ALIAS_DECLARATION: {
+            BuildTypeAliasDeclaration(child_node->AsTSTypeAliasDeclaration());
             break;
         }
         default: {

@@ -90,6 +90,11 @@ checker::Type *ETSTypeReferencePart::Check(checker::ETSChecker *checker)
 checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
 {
     if (prev_ == nullptr) {
+        if ((name_->IsIdentifier()) && (name_->AsIdentifier()->Variable() != nullptr) &&
+            (name_->AsIdentifier()->Variable()->Declaration()->IsTypeAliasDecl())) {
+            return checker->HandleTypeAlias(name_, type_params_);
+        }
+
         checker::Type *base_type = checker->GetReferencedTypeBase(name_);
 
         ASSERT(base_type != nullptr);
@@ -103,5 +108,37 @@ checker::Type *ETSTypeReferencePart::GetType(checker::ETSChecker *checker)
 
     checker::Type *base_type = prev_->GetType(checker);
     return checker->GetReferencedTypeFromBase(base_type, name_);
+}
+
+// NOLINTNEXTLINE(google-default-arguments)
+ETSTypeReferencePart *ETSTypeReferencePart::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const name_clone = name_ != nullptr ? name_->Clone(allocator)->AsExpression() : nullptr;
+    auto *const type_params_clone =
+        type_params_ != nullptr ? type_params_->Clone(allocator)->AsTSTypeParameterInstantiation() : nullptr;
+    auto *const prev_clone = prev_ != nullptr ? prev_->Clone(allocator)->AsETSTypeReferencePart() : nullptr;
+
+    if (auto *const clone = allocator->New<ETSTypeReferencePart>(name_clone, type_params_clone, prev_clone);
+        clone != nullptr) {
+        if (name_clone != nullptr) {
+            name_clone->SetParent(clone);
+        }
+
+        if (type_params_clone != nullptr) {
+            type_params_clone->SetParent(clone);
+        }
+
+        if (prev_clone != nullptr) {
+            prev_clone->SetParent(clone);
+        }
+
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 }  // namespace panda::es2panda::ir

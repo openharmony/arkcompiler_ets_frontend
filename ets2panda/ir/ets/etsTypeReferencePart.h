@@ -70,6 +70,9 @@ public:
         v->Accept(this);
     }
 
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] ETSTypeReferencePart *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
 private:
     ir::Expression *name_;
     ir::TSTypeParameterInstantiation *type_params_ {};

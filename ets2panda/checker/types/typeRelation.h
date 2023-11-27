@@ -61,6 +61,7 @@ enum class TypeRelationFlag : uint32_t {
     IGNORE_TYPE_PARAMETERS = 1U << 20U,
     CHECK_PROXY = 1U << 21U,
     NO_CHECK_TRAILING_LAMBDA = 1U << 23U,
+    NO_THROW_GENERIC_TYPEALIAS = 1U << 24U,
 
     ASSIGNMENT_CONTEXT = WIDENING | BOXING | UNBOXING,
     CASTING_CONTEXT = NARROWING | WIDENING | BOXING | UNBOXING | UNCHECKED_CAST,
@@ -199,6 +200,11 @@ public:
     [[nodiscard]] bool UncheckedCast() const noexcept
     {
         return (flags_ & TypeRelationFlag::UNCHECKED_CAST) != 0;
+    }
+
+    [[nodiscard]] bool NoThrowGenericTypeAlias() const noexcept
+    {
+        return (flags_ & TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS) != 0;
     }
 
     const Checker *GetChecker() const

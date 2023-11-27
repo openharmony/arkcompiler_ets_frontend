@@ -407,6 +407,9 @@ public:
     Type *GetTypeFromInterfaceReference(varbinder::Variable *var);
     Type *GetTypeFromTypeAliasReference(varbinder::Variable *var);
     Type *GetTypeFromClassReference(varbinder::Variable *var);
+    void ValidateGenericTypeAliasForClonedNode(ir::TSTypeAliasDeclaration *type_alias_node,
+                                               const ir::TSTypeParameterInstantiation *exact_type_params);
+    Type *HandleTypeAlias(ir::Expression *name, const ir::TSTypeParameterInstantiation *type_params);
     Type *GetTypeFromEnumReference(varbinder::Variable *var);
     Type *GetTypeFromTypeParameterReference(varbinder::LocalVariable *var, const lexer::SourcePosition &pos);
     Type *GetNonConstantTypeFromPrimitiveType(Type *type);

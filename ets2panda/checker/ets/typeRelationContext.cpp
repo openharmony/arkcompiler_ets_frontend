@@ -96,7 +96,7 @@ bool InstantiationContext::ValidateTypeArguments(ETSObjectType *type, ir::TSType
                 });
         }
 
-        if (!assignable) {
+        if (!assignable && !checker_->Relation()->NoThrowGenericTypeAlias()) {
             checker_->ThrowTypeError({"Type '", type_arg_type->AsETSObjectType(),
                                       "' is not assignable to constraint type '", constraint_type, "'."},
                                      type_args->Params().at(type_param_iter)->Start());
@@ -178,7 +178,7 @@ void InstantiationContext::InstantiateType(ETSObjectType *type, ArenaVector<Type
             is_compatible_type_arg =
                 checker_->IsCompatibleTypeArgument(type_param, type_arg_types[ix], constraints_substitution);
         }
-        if (!is_compatible_type_arg) {
+        if (!is_compatible_type_arg && !checker_->Relation()->NoThrowGenericTypeAlias()) {
             checker_->ThrowTypeError(
                 {"Type ", type_arg_types[ix], " is not assignable to", " type parameter ", type_params[ix]}, pos);
         }

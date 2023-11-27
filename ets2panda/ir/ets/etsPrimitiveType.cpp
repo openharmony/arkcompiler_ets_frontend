@@ -131,4 +131,19 @@ checker::Type *ETSPrimitiveType::GetType([[maybe_unused]] checker::ETSChecker *c
         }
     }
 }
+
+// NOLINTNEXTLINE(google-default-arguments)
+ETSPrimitiveType *ETSPrimitiveType::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    if (auto *const clone = allocator->New<ETSPrimitiveType>(type_); clone != nullptr) {
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
 }  // namespace panda::es2panda::ir

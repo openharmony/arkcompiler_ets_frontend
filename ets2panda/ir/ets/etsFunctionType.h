@@ -109,6 +109,9 @@ public:
         v->Accept(this);
     }
 
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] ETSFunctionType *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
 private:
     varbinder::Scope *scope_ {};
     FunctionSignature signature_;

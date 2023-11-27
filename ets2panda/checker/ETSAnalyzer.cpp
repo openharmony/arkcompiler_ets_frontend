@@ -2633,7 +2633,33 @@ checker::Type *ETSAnalyzer::Check([[maybe_unused]] ir::TSTupleType *node) const
 checker::Type *ETSAnalyzer::Check(ir::TSTypeAliasDeclaration *st) const
 {
     ETSChecker *checker = GetETSChecker();
+    if (st->TypeParams() != nullptr) {
+        for (const auto *const param : st->TypeParams()->Params()) {
+            const auto *const res = st->TypeAnnotation()->FindChild([&param](const ir::AstNode *const node) {
+                if (!node->IsIdentifier()) {
+                    return false;
+                }
+
+                return param->Name()->AsIdentifier()->Variable() == node->AsIdentifier()->Variable();
+            });
+
+            if (res == nullptr) {
+                checker->ThrowTypeError(
+                    {"Type alias generic parameter '", param->Name()->Name(), "' is not used in type annotation"},
+                    param->Start());
+            }
+
+            param->Name()->Variable()->SetTsType(
+                checker->CreateNullishType(checker->GlobalETSObjectType(), checker::TypeFlag::NULLISH,
+                                           checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder()));
+        }
+    }
+
+    const checker::SavedTypeRelationFlagsContext saved_flags_ctx(checker->Relation(),
+                                                                 checker::TypeRelationFlag::NO_THROW_GENERIC_TYPEALIAS);
+
     st->TypeAnnotation()->Check(checker);
+
     return nullptr;
 }
 

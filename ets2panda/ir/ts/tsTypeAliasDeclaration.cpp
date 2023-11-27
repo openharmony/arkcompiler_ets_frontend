@@ -113,4 +113,5 @@ checker::Type *TSTypeAliasDeclaration::Check([[maybe_unused]] checker::ETSChecke
 {
     return checker->GetAnalyzer()->Check(this);
 }
+
 }  // namespace panda::es2panda::ir

@@ -53,6 +53,9 @@ public:
         v->Accept(this);
     }
 
+    // NOLINTNEXTLINE(google-default-arguments)
+    [[nodiscard]] ETSTypeReference *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
 private:
     ir::ETSTypeReferencePart *part_;
 };

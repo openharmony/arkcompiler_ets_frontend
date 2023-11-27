@@ -221,6 +221,7 @@ protected:
     void BuildForInOfLoop(varbinder::LoopScope *loop_scope, ir::AstNode *left, ir::Expression *right,
                           ir::Statement *body);
     void BuildCatchClause(ir::CatchClause *catch_clause_stmt);
+    void BuildTypeAliasDeclaration(ir::TSTypeAliasDeclaration *type_alias_decl);
     void ResolveReference(ir::AstNode *child_node);
     void ResolveReferences(const ir::AstNode *parent);
     void VisitScriptFunctionWithPotentialTypeParams(ir::ScriptFunction *func);
