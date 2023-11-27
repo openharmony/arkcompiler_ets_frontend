@@ -75,6 +75,10 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
     checker::Type *type = expr->Check(this);
     auto *unboxed_type = ETSBuiltinTypeAsConditionalType(type);
 
+    if (unboxed_type == GlobalBuiltinVoidType() || unboxed_type->IsETSVoidType()) {
+        ThrowTypeError("An expression of type 'void' cannot be tested for truthiness", expr->Start());
+    }
+
     if (unboxed_type != nullptr && !unboxed_type->IsConditionalExprType()) {
         ThrowTypeError("Condition must be of possible condition type", expr->Start());
     }

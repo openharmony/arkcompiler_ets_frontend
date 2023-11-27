@@ -494,3 +494,4 @@
     }
   }
 }
+TypeError: An expression of type 'void' cannot be tested for truthiness [voidTypeInBinaryOperation.ets:20:19]
