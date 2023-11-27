@@ -139,6 +139,11 @@ public:
         return type_stack_;
     }
 
+    virtual bool IsETSChecker()
+    {
+        return false;
+    }
+
     ETSChecker *AsETSChecker()
     {
         return reinterpret_cast<ETSChecker *>(this);

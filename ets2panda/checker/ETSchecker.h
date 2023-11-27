@@ -124,6 +124,10 @@ public:
     Type *CheckTypeCached(ir::Expression *expr) override;
     void ResolveStructuredTypeMembers([[maybe_unused]] Type *type) override {}
     Type *GetTypeOfVariable([[maybe_unused]] varbinder::Variable *var) override;
+    bool IsETSChecker() override
+    {
+        return true;
+    }
 
     // Object
     ETSObjectType *BuildClassProperties(ir::ClassDefinition *class_def);

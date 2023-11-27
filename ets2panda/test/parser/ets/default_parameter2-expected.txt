@@ -1261,4 +1261,4 @@
     }
   }
 }
-TypeError: No matching call signature [default_parameter2.ets:18:5]
+TypeError: Function already declared. [default_parameter2.ets:26:1]

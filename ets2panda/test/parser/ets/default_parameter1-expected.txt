@@ -1276,4 +1276,4 @@
     }
   }
 }
-TypeError: Reference to foo is ambiguous [default_parameter1.ets:18:5]
+TypeError: Function already declared. [default_parameter1.ets:26:1]

@@ -172,12 +172,44 @@ void Signature::ToString(std::stringstream &ss, const varbinder::Variable *varia
     return_type_->ToString(ss);
 }
 
+namespace {
+std::size_t GetToCheckParamCount(Signature *signature, bool is_ets)
+{
+    auto param_number = static_cast<ssize_t>(signature->Params().size());
+    if (!is_ets || signature->Function() == nullptr) {
+        return param_number;
+    }
+    for (auto i = param_number - 1; i >= 0; i--) {
+        if (!signature->Function()->Params()[i]->AsETSParameterExpression()->IsDefault()) {
+            return static_cast<std::size_t>(i + 1);
+        }
+    }
+    return 0;
+}
+}  // namespace
+
+bool Signature::IdenticalParameter(TypeRelation *relation, Type *type1, Type *type2)
+{
+    if (!CheckFunctionalInterfaces(relation, type1, type2)) {
+        relation->IsIdenticalTo(type1, type2);
+    }
+    return relation->IsTrue();
+}
+
 void Signature::Identical(TypeRelation *relation, Signature *other)
 {
-    if ((this->MinArgCount() != other->MinArgCount() || this->Params().size() != other->Params().size()) &&
+    bool is_ets = relation->GetChecker()->IsETSChecker();
+    auto const this_to_check_parameters_number = GetToCheckParamCount(this, is_ets);
+    auto const other_to_check_parameters_number = GetToCheckParamCount(other, is_ets);
+    if ((this_to_check_parameters_number != other_to_check_parameters_number ||
+         this->MinArgCount() != other->MinArgCount()) &&
         this->RestVar() == nullptr && other->RestVar() == nullptr) {
-        relation->Result(false);
-        return;
+        // skip check for ets cases only when all parameters are mandatory
+        if (!is_ets || (this_to_check_parameters_number == this->Params().size() &&
+                        other_to_check_parameters_number == other->Params().size())) {
+            relation->Result(false);
+            return;
+        }
     }
 
     if (relation->NoReturnTypeCheck()) {
@@ -187,51 +219,63 @@ void Signature::Identical(TypeRelation *relation, Signature *other)
     }
 
     if (relation->IsTrue()) {
-        // Lambda to check parameter types
-        auto const identical_parameters = [this, relation](checker::Type *const type1,
-                                                           checker::Type *const type2) -> bool {
-            if (!CheckFunctionalInterfaces(relation, type1, type2)) {
-                relation->IsIdenticalTo(type1, type2);
-            }
-            return relation->IsTrue();
-        };
+        /* In ETS, the functions "foo(a: int)" and "foo(a: int, b: int = 1)" should be considered as having an
+           equivalent signature. Hence, we only need to check if the mandatory parameters of the signature with
+           more mandatory parameters can match the parameters of the other signature (including the optional
+           parameter or rest parameters) here.
 
-        auto const this_parameters_number = this->Params().size();
-        auto const other_parameters_number = other->Params().size();
-        auto const parameters_number = std::min(this_parameters_number, other_parameters_number);
+           XXX_to_check_parameters_number is calculated beforehand by counting mandatory parameters.
+           Signature::params() stores all parameters (mandatory and optional), excluding the rest parameter.
+           Signature::restVar() stores the rest parameters of the function.
+
+           For example:
+           foo(a: int): params().size: 1, to_check_param_number: 1, restVar: nullptr
+           foo(a: int, b: int = 0): params().size: 2, to_check_param_number: 1, restVar: nullptr
+           foo(a: int, ...b: int[]): params().size: 1, to_check_param_number: 1, restVar: ...b: int[]
+
+           Note that optional parameters always come after mandatory parameters, and signatures containing both
+           optional and rest parameters are not allowed.
+
+           "to_check_parameters_number" is the number of parameters that need to be checked to ensure identical.
+           "parameters_number" is the number of parameters that can be checked in Signature::params().
+        */
+        auto const to_check_parameters_number =
+            std::max(this_to_check_parameters_number, other_to_check_parameters_number);
+        auto const parameters_number =
+            std::min({this->Params().size(), other->Params().size(), to_check_parameters_number});
 
         std::size_t i = 0U;
         for (; i < parameters_number; ++i) {
-            auto *const this_sig_param_type = this->Params()[i]->TsType();
-            auto *const other_sig_param_type = other->Params()[i]->TsType();
-            if (!identical_parameters(this_sig_param_type, other_sig_param_type)) {
+            if (!IdenticalParameter(relation, this->Params()[i]->TsType(), other->Params()[i]->TsType())) {
                 return;
             }
         }
 
-        // Lambda to check the rest parameters
-        auto const identical_rest_parameters =
-            [&i, &identical_parameters, relation](std::size_t const parameter_number,
-                                                  ArenaVector<varbinder::LocalVariable *> const &parameters,
-                                                  varbinder::LocalVariable const *const rest_parameter) -> void {
-            if (rest_parameter != nullptr) {
-                auto *const other_sig_param_type = rest_parameter->TsType()->AsETSArrayType()->ElementType();
-
-                for (; i < parameter_number; ++i) {
-                    auto *const this_sig_param_type = parameters[i]->TsType();
-                    if (!identical_parameters(this_sig_param_type, other_sig_param_type)) {
-                        break;
-                    }
-                }
-            } else {
-                relation->Result(false);
+        /* "i" could be one of the following three cases:
+            1. == to_check_parameters_number, we have finished the checking and can directly return.
+            2. == other->Params().size(), must be < this_to_check_parameters_number in this case since
+            xxx->Params().size() always >= xxx_to_check_parameters_number. We need to check the remaining
+            mandatory parameters of "this" against ths RestVar of "other".
+            3. == this->Params().size(), must be < other_to_check_parameters_number as described in 2, and
+            we need to check the remaining mandatory parameters of "other" against the RestVar of "this".
+        */
+        if (i == to_check_parameters_number) {
+            return;
+        }
+        bool is_other_mandatory_params_matched = i < this_to_check_parameters_number;
+        ArenaVector<varbinder::LocalVariable *> const &parameters =
+            is_other_mandatory_params_matched ? this->Params() : other->Params();
+        varbinder::LocalVariable const *rest_parameter =
+            is_other_mandatory_params_matched ? other->RestVar() : this->RestVar();
+        if (rest_parameter == nullptr) {
+            relation->Result(false);
+            return;
+        }
+        auto *const rest_parameter_type = rest_parameter->TsType()->AsETSArrayType()->ElementType();
+        for (; i < to_check_parameters_number; ++i) {
+            if (!IdenticalParameter(relation, parameters[i]->TsType(), rest_parameter_type)) {
+                return;
             }
-        };
-
-        if (i < this_parameters_number) {
-            identical_rest_parameters(this_parameters_number, this->Params(), other->RestVar());
-        } else if (i < other_parameters_number) {
-            identical_rest_parameters(other_parameters_number, other->Params(), this->RestVar());
         }
     }
 }

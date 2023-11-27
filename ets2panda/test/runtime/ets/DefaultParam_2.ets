@@ -43,15 +43,6 @@ function main():void{
 
     assert foo15(new Int(10),new Int(5)) == 20;
     assert foo16(new Int(10),new Int(5)) == 30;
-
-    assert foo17(new Int(1),new Int(2)) == 1;
-    assert foo17(new Int(1),new Long(9999999999)) == 2;
-
-    assert foo18(new Int(1),new Int(2)) == 1;
-    assert foo18(new Int(1),new Boolean(true)) == 2;
-
-    assert foo19(new Int(1),new Int(1)) == 1;
-    assert foo19(new Int(1),"a") == 2;
 }
 
 function foo1(a : Int = 10) : Int {
@@ -141,28 +132,4 @@ function foo15(a : Int, b : Int, c : Int = 5) : Int {
 
 function foo16(a : Int, b : Int, c : Int = 10, d : Int = 5) : Int {
     return a + b + c + d;
-}
-
-function foo17(a : Int, b : Int = 20, c : Int = 30) : Int {
-    return 1;
-}
-
-function foo17(a : Int, b : Long = 9999999999, c : Int = 30) : Int {
-    return 2;
-}
-
-function foo18(a : Int, b : Int = 20, c : Int = 30) : Int {
-    return 1;
-}
-
-function foo18(a : Int, b : Boolean = true, c : Int = 30) : Int {
-    return 2;
-}
-
-function foo19(a : Int, b : Int = 20, c : Int = 30) : Int {
-    return 1;
-}
-
-function foo19(a : Int, b : string = "a", c : Int = 30) : Int {
-    return 2;
 }

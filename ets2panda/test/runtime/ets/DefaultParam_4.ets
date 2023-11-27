@@ -45,15 +45,6 @@ function main():void{
 
     assert boo.foo15(new Int(10),new Int(5)) == 20;
     assert boo.foo16(new Int(10),new Int(5)) == 30;
-
-    assert boo.foo17(new Int(1),new Int(2)) == 1;
-    assert boo.foo17(new Int(1),new Long(9999999999)) == 2;
-
-    assert boo.foo18(new Int(1),new Int(2)) == 1;
-    assert boo.foo18(new Int(1),new Boolean(true)) == 2;
-
-    assert boo.foo19(new Int(1),new Int(1)) == 1;
-    assert boo.foo19(new Int(1),"a") == 2;
 }
 
 class bar {
@@ -144,29 +135,5 @@ class bar {
 
     foo16(a : Int, b : Int, c : Int = 10, d : Int = 5) : Int {
         return a + b + c + d;
-    }
-
-    foo17(a : Int, b : Int = 20, c : Int = 30) : Int {
-        return 1;
-    }
-
-    foo17(a : Int, b : Long = 9999999999, c : Int = 30) : Int {
-        return 2;
-    }
-
-    foo18(a : Int, b : Int = 20, c : Int = 30) : Int {
-        return 1;
-    }
-
-    foo18(a : Int, b : Boolean = true, c : Int = 30) : Int {
-        return 2;
-    }
-
-    foo19(a : Int, b : Int = 20, c : Int = 30) : Int {
-        return 1;
-    }
-
-    foo19(a : Int, b : string = "a", c : Int = 30) : Int {
-        return 2;
     }
 }
