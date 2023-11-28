@@ -2090,16 +2090,14 @@ export class TypeScriptLinter {
     // Handle comment directive '@ts-nocheck'
     const pragmas = (sourceFile as any).pragmas;
     if (pragmas && pragmas instanceof Map) {
-      for (const pragma of pragmas) {
-        if (pragma[0] !== 'ts-nocheck' || !pragma[1]) {
-          continue;
-        }
+      const noCheckPragma = pragmas.get('ts-nocheck');
+      if (noCheckPragma) {
 
         /*
          * The value is either a single entry or an array of entries.
          * Wrap up single entry with array to simplify processing.
          */
-        const noCheckEntries: any[] = Array.isArray(pragma[1]) ? pragma[1] : [pragma[1]];
+        const noCheckEntries: any[] = Array.isArray(noCheckPragma) ? noCheckPragma : [noCheckPragma];
         for (const entry of noCheckEntries) {
           this.processNoCheckEntry(entry);
         }
