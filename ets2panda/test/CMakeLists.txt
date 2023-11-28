@@ -118,3 +118,5 @@ if(PANDA_WITH_ETS)
 
     add_subdirectory(tsconfig)
 endif()
+
+add_subdirectory(options)
