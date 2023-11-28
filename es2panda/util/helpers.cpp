@@ -594,7 +594,12 @@ bool Helpers::IsChild(const ir::AstNode *parent, const ir::AstNode *child)
 bool Helpers::IsObjectPropertyValue(const ArenaVector<ir::Expression *> &properties, const ir::AstNode *ident)
 {
     for (const auto *prop : properties) {
-        if (prop->AsProperty()->Value() == ident) {
+        ASSERT(prop->IsProperty() || prop->IsSpreadElement());
+        if (prop->IsProperty() && (prop->AsProperty()->Value() == ident)) {
+            return true;
+        }
+
+        if (prop->IsSpreadElement() && (prop->AsSpreadElement()->Argument() == ident)) {
             return true;
         }
     }
