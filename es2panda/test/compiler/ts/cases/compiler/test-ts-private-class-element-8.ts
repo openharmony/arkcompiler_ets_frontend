@@ -14,15 +14,21 @@
  */
 
 
-class C1 {
-    static s = new C1().#method();
-    #method() { return 10; }
-}
-print(C1.s);
+// 1. non-static methods can be named with a private identifier
 
-
-class C2 {
-    static s = C2.#method();
-    static #method() { return 20; }
+let cc = class C1 {
+  #value: number = 0;
+  #add() {
+    this.#value += 1;
+  }
+  publicAdd() {
+    this.#add();
+  }
+  publicPrint() {
+    print(this.#value);
+  }
 }
-print(C2.s);
+
+let c1 = new cc();
+c1.publicAdd();
+c1.publicPrint();

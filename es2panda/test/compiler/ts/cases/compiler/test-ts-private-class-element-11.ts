@@ -14,15 +14,25 @@
  */
 
 
-class C1 {
-    static s = new C1().#method();
-    #method() { return 10; }
-}
-print(C1.s);
+// 4. static accessors can be named with a private identifier
 
+let CC4 = class C4 {
+  static #message: string = "";
+  static get #msg() {
+    return this.#message;
+  }
 
-class C2 {
-    static s = C2.#method();
-    static #method() { return 20; }
+  static set #msg(msg: string) {
+    this.#message = msg;
+  }
+
+  static set publicMsg(msg: string) {
+    this.#msg = msg;
+  }
+  static get publicMsg() {
+    return this.#msg;
+  }
 }
-print(C2.s);
+
+CC4.publicMsg = 'hi';
+print(CC4.publicMsg);

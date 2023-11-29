@@ -14,15 +14,6 @@
  */
 
 
-class C1 {
-    static s = new C1().#method();
-    #method() { return 10; }
+class PublicModifierTest {
+  public #count: number = 0;
 }
-print(C1.s);
-
-
-class C2 {
-    static s = C2.#method();
-    static #method() { return 20; }
-}
-print(C2.s);

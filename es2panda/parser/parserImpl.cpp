@@ -2242,6 +2242,10 @@ void ParserImpl::ValidateClassKey(ClassElmentDescriptor *desc, bool isDeclare)
         if (desc->modifiers & ir::ModifierFlags::DECLARE) {
             ThrowSyntaxError("'declare' modifier cannot be used with a private identifier.");
         }
+
+        if (desc->modifiers & ir::ModifierFlags::ABSTRACT) {
+            ThrowSyntaxError("'abstract' modifier cannot be used with a private identifier.");
+        }
     }
 
     const util::StringView &propNameStr = lexer_->GetToken().Ident();

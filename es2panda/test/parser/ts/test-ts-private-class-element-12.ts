@@ -14,15 +14,26 @@
  */
 
 
-class C1 {
-    static s = new C1().#method();
-    #method() { return 10; }
+class BaseClass {
+  #count: number = 1;
 }
-print(C1.s);
 
-
-class C2 {
-    static s = C2.#method();
-    static #method() { return 20; }
+class OverrideModifierTest extends BaseClass {
+  override #count: number = 0;
 }
-print(C2.s);
+
+class StaticModifierTest {
+  static #count = 0;
+}
+
+class AccessorModifierTest {
+  accessor #count = 0;
+}
+
+class ReadonlyModifierTest {
+  readonly #count = 0;
+}
+
+class AsyncModifierTest {
+  async #foo(){};
+}

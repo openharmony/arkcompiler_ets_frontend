@@ -1,0 +1,1 @@
+SyntaxError: ';' expected. [test-ts-private-class-element-9.ts:18:10]

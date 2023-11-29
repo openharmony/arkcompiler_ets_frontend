@@ -14,15 +14,16 @@
  */
 
 
-class C1 {
-    static s = new C1().#method();
-    #method() { return 10; }
-}
-print(C1.s);
+// 2. static properties and methods can be named with a private identifier
 
-
-class C2 {
-    static s = C2.#method();
-    static #method() { return 20; }
+let cc = class C2 {
+  static #message: string = "hello";
+  static #say() {
+    return this.#message;
+  }
+  static publicSay() {
+    print(this.#say());
+  }
 }
-print(C2.s);
+
+cc.publicSay();
