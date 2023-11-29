@@ -41,7 +41,10 @@ inline constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
 class ETSParser final : public TypedParser {
 public:
     ETSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
-        : TypedParser(program, options, status), global_program_(GetProgram()), parsed_sources_({})
+        : TypedParser(program, options, status),
+          global_program_(GetProgram()),
+          parsed_sources_({}),
+          resolved_parsed_sources_({})
     {
     }
 
@@ -109,8 +112,10 @@ private:
     void ParseTopLevelDeclaration(ArenaVector<ir::Statement *> &statements);
     void CollectDefaultSources();
     std::string ResolveImportPath(const std::string &path);
+    std::string ResolveFullPathFromRelative(const std::string &path);
     ImportData GetImportData(const std::string &path);
     std::tuple<std::vector<std::string>, bool> CollectUserSources(const std::string &path);
+    std::tuple<std::string, bool> GetSourceRegularPath(const std::string &path, const std::string &resolved_path);
     void ParseSources(const std::vector<std::string> &paths, bool is_external = true);
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool require_from);
     void ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers);
@@ -165,12 +170,13 @@ private:
     ir::TypeNode *ParseWildcardType(TypeAnnotationParsingOptions *options);
     ir::TypeNode *ParseFunctionType();
     void CreateClassFunctionDeclaration(ir::MethodDefinition *method);
-    bool HasDefaultParam(const ir::ScriptFunction *function);
-    std::string CreateProxyMethodName(const ir::ScriptFunction *function, ir::MethodDefinition *method,
-                                      ir::Identifier *ident_node, varbinder::ClassScope *cls_scope);
+    std::pair<bool, std::size_t> CheckDefaultParameters(const ir::ScriptFunction *function) const;
+    ir::MethodDefinition *CreateProxyMethodDefinition(ir::MethodDefinition const *method,
+                                                      ir::Identifier const *ident_node);
+    ir::MethodDefinition *CreateProxyConstructorDefinition(ir::MethodDefinition const *method);
     void AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *ident_node = nullptr);
     static std::string PrimitiveTypeToName(ir::PrimitiveType type);
-    std::string GetNameForTypeNode(const ir::TypeNode *type_annotation);
+    std::string GetNameForTypeNode(const ir::TypeNode *type_annotation) const;
     ir::TSInterfaceDeclaration *ParseInterfaceBody(ir::Identifier *name, bool is_static);
     bool IsArrowFunctionExpressionStart();
     ir::ArrowFunctionExpression *ParseArrowFunctionExpression();
@@ -302,10 +308,14 @@ private:
 
     void CheckDeclare();
 
-    //  Methods to create AST node(s) from the specified string (part of valid ETS-code!)
-    //  NOTE: the correct initial scope should be entered BEFORE calling any of these methods,
-    //  and correct parent and, probably, variable set to the node(s) after obtaining
-
+    // Methods to create AST node(s) from the specified string (part of valid ETS-code!)
+    // NOTE: the correct initial scope should be entered BEFORE calling any of these methods,
+    // and correct parent and, probably, variable set to the node(s) after obtaining
+    // NOLINTBEGIN(modernize-avoid-c-arrays)
+    inline static constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
+    inline static constexpr char const DEFAULT_PROXY_FILE[] = "<default_method>.ets";
+    // NOLINTEND(modernize-avoid-c-arrays)
+    // NOLINTBEGIN(google-default-arguments)
     ir::Statement *CreateStatement(std::string_view source_code, std::string_view file_name = DEFAULT_SOURCE_FILE);
     ir::Statement *CreateFormattedStatement(std::string_view source_code, std::vector<ir::AstNode *> &inserting_nodes,
                                             std::string_view file_name = DEFAULT_SOURCE_FILE);
@@ -321,17 +331,25 @@ private:
 
     ir::MethodDefinition *CreateMethodDefinition(ir::ModifierFlags modifiers, std::string_view source_code,
                                                  std::string_view file_name = DEFAULT_SOURCE_FILE);
-
+    ir::MethodDefinition *CreateConstructorDefinition(ir::ModifierFlags modifiers, std::string_view source_code,
+                                                      std::string_view file_name = DEFAULT_SOURCE_FILE);
     ir::TypeNode *CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view source_code,
                                        std::string_view file_name = DEFAULT_SOURCE_FILE);
 
     friend class ExternalSourceParser;
     friend class InnerSourceParser;
 
+public:
+    const std::unordered_map<std::string, std::string> &ResolvedParsedSourcesMap() const
+    {
+        return resolved_parsed_sources_;
+    }
+
 private:
     parser::Program *global_program_;
     std::vector<std::string> parsed_sources_;
     std::vector<ir::AstNode *> inserting_nodes_ {};
+    std::unordered_map<std::string, std::string> resolved_parsed_sources_;
 };
 
 class ExternalSourceParser {

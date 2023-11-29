@@ -171,12 +171,16 @@ ETSParameterExpression *ETSParameterExpression::Clone(ArenaAllocator *const allo
 
     if (auto *const clone = allocator->New<ETSParameterExpression>(ident_or_spread, initializer); clone != nullptr) {
         ident_or_spread->SetParent(clone);
+
         if (initializer != nullptr) {
             initializer->SetParent(clone);
         }
+
         if (parent != nullptr) {
             clone->SetParent(parent);
         }
+
+        clone->SetRequiredParams(extra_value_);
         return clone;
     }
 

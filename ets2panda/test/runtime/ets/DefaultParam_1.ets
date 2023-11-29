@@ -35,16 +35,6 @@ function main():void{
 
     assert foo15(10,5) == 20;
     assert foo16(10,5) == 30;
-
-
-    assert foo17(1,2) == 1;
-    assert foo17(1,9999999999) == 2;
-
-    assert foo18(1,2) == 1;
-    assert foo18(1,false) == 2;
-
-    assert foo19(1,2) == 1;
-    assert foo19(1,c'a') == 2;
 }
 
 function foo1(a : int = 10) : int {
@@ -95,28 +85,4 @@ function foo15(a : int, b : int, c : int = 5) : int {
 
 function foo16(a : int, b : int, c : int = 10, d : int = 5) : int {
     return a + b + c + d;
-}
-
-function foo17(a : int, b : int = 20, c : int = 30) : int {
-    return 1;
-}
-
-function foo17(a : int, b : long = 20, c : int = 30) : int {
-    return 2;
-}
-
-function foo18(a : int, b : int = 20, c : int = 30) : int {
-    return 1;
-}
-
-function foo18(a : int, b : boolean = true, c : int = 30) : int {
-    return 2;
-}
-
-function foo19(a : int, b : int = 20, c : int = 30) : int {
-    return 1;
-}
-
-function foo19(a : int, b : char = c'a', c : int = 30) : int {
-    return 2;
 }

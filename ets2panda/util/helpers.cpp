@@ -43,6 +43,7 @@
 #include "ir/module/importDeclaration.h"
 #include "lexer/token/letters.h"
 #include "libpandabase/utils/utf.h"
+#include "libpandabase/os/filesystem.h"
 
 namespace panda::es2panda::util {
 // Helpers
@@ -167,6 +168,40 @@ bool Helpers::IsRelativePath(const std::string &path)
     parent_dir_reference.append(path_delimiter);
 
     return ((path.find(current_dir_reference) == 0) || (path.find(parent_dir_reference) == 0));
+}
+
+std::string Helpers::GetAbsPath(const std::string &path)
+{
+    std::string full_file_path = path;
+    std::string import_extension;
+    if (!panda::os::file::File::IsRegularFile(path) && (panda::os::GetAbsolutePath(path).empty())) {
+        import_extension = ".ets";
+        full_file_path = path + import_extension;
+        if (!panda::os::file::File::IsRegularFile(full_file_path)) {
+            import_extension = ".ts";
+            full_file_path = path + import_extension;
+            if (!panda::os::file::File::IsRegularFile(full_file_path)) {
+                return path;
+            }
+        }
+    }
+    std::string abs_file_path = panda::os::GetAbsolutePath(full_file_path);
+    abs_file_path.erase(abs_file_path.find(import_extension), import_extension.size());
+    return abs_file_path;
+}
+
+bool Helpers::IsRealPath(const std::string &path)
+{
+    if (!panda::os::file::File::IsRegularFile(path) && (panda::os::GetAbsolutePath(path).empty())) {
+        auto import_extension = ".ets";
+        if (!panda::os::file::File::IsRegularFile(path + import_extension)) {
+            import_extension = ".ts";
+            if (!panda::os::file::File::IsRegularFile(path + import_extension)) {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 const ir::ScriptFunction *Helpers::GetContainingConstructor(const ir::AstNode *node)

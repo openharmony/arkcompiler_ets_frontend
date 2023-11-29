@@ -290,10 +290,12 @@ bool ETSChecker::ValidateProxySignature(Signature *const signature,
         return false;
     }
 
-    const auto num_non_default_params =
-        signature->Params().size() - signature->Function()->Body()->AsBlockStatement()->Statements().size();
+    auto const *const proxy_param = signature->Function()->Params().back()->AsETSParameterExpression();
+    if (!proxy_param->Ident()->Name().Is(ir::PROXY_PARAMETER_NAME)) {
+        return false;
+    }
 
-    if (arguments.size() < num_non_default_params) {
+    if (arguments.size() < proxy_param->GetRequiredParams()) {
         return false;
     }
 
@@ -303,14 +305,12 @@ bool ETSChecker::ValidateProxySignature(Signature *const signature,
                              arg_type_inference_required) != nullptr;
 }
 
-Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
-                                          const ir::TSTypeParameterInstantiation *type_arguments,
-                                          const ArenaVector<ir::Expression *> &arguments,
-                                          const lexer::SourcePosition &pos, std::string_view signature_kind,
-                                          TypeRelationFlag resolve_flags)
+std::pair<ArenaVector<Signature *>, ArenaVector<Signature *>> ETSChecker::CollectSignatures(
+    ArenaVector<Signature *> &signatures, const ir::TSTypeParameterInstantiation *type_arguments,
+    const ArenaVector<ir::Expression *> &arguments, std::vector<bool> &arg_type_inference_required,
+    const lexer::SourcePosition &pos, TypeRelationFlag resolve_flags)
 {
     ArenaVector<Signature *> compatible_signatures(Allocator()->Adapter());
-    std::vector<bool> arg_type_inference_required = FindTypeInferenceArguments(arguments);
     ArenaVector<Signature *> proxy_signatures(Allocator()->Adapter());
 
     for (auto *sig : signatures) {
@@ -352,35 +352,63 @@ Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
             }
         }
     }
+    return std::make_pair(compatible_signatures, proxy_signatures);
+}
+
+Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compatible_signatures,
+                                                ArenaVector<Signature *> &proxy_signatures,
+                                                const ArenaVector<ir::Expression *> &arguments,
+                                                std::vector<bool> &arg_type_inference_required,
+                                                const lexer::SourcePosition &pos, TypeRelationFlag resolve_flags)
+{
+    Signature *most_specific_signature =
+        ChooseMostSpecificSignature(compatible_signatures, arguments, arg_type_inference_required, pos);
+
+    if (most_specific_signature == nullptr) {
+        ThrowTypeError({"Reference to ", compatible_signatures.front()->Function()->Id()->Name(), " is ambiguous"},
+                       pos);
+    }
+
+    if (!TypeInference(most_specific_signature, arguments, resolve_flags)) {
+        return nullptr;
+    }
+
+    // Just to avoid extra nesting level
+    auto const check_ambiguous = [this, most_specific_signature, &pos](Signature const *const proxy_signature) -> void {
+        auto const *const proxy_param = proxy_signature->Function()->Params().back()->AsETSParameterExpression();
+        if (!proxy_param->Ident()->Name().Is(ir::PROXY_PARAMETER_NAME)) {
+            ThrowTypeError({"Proxy parameter '", proxy_param->Ident()->Name(), "' has invalid name."}, pos);
+        }
+
+        if (most_specific_signature->Params().size() == proxy_param->GetRequiredParams()) {
+            ThrowTypeError({"Reference to ", most_specific_signature->Function()->Id()->Name(), " is ambiguous"}, pos);
+        }
+    };
+
+    if (!proxy_signatures.empty()) {
+        auto *const proxy_signature = ChooseMostSpecificProxySignature(
+            proxy_signatures, arguments, arg_type_inference_required, pos, arguments.size());
+        if (proxy_signature != nullptr) {
+            check_ambiguous(proxy_signature);
+        }
+    }
+
+    return most_specific_signature;
+}
+
+Signature *ETSChecker::ValidateSignatures(ArenaVector<Signature *> &signatures,
+                                          const ir::TSTypeParameterInstantiation *type_arguments,
+                                          const ArenaVector<ir::Expression *> &arguments,
+                                          const lexer::SourcePosition &pos, std::string_view signature_kind,
+                                          TypeRelationFlag resolve_flags)
+{
+    std::vector<bool> arg_type_inference_required = FindTypeInferenceArguments(arguments);
+    auto [compatible_signatures, proxy_signatures] =
+        CollectSignatures(signatures, type_arguments, arguments, arg_type_inference_required, pos, resolve_flags);
 
     if (!compatible_signatures.empty()) {
-        Signature *most_specific_signature =
-            ChooseMostSpecificSignature(compatible_signatures, arguments, arg_type_inference_required, pos);
-
-        if (most_specific_signature == nullptr) {
-            ThrowTypeError({"Reference to ", compatible_signatures.front()->Function()->Id()->Name(), " is ambiguous"},
-                           pos);
-        }
-
-        if (!TypeInference(most_specific_signature, arguments, resolve_flags)) {
-            return nullptr;
-        }
-
-        if (!proxy_signatures.empty()) {
-            auto *const proxy_signature = ChooseMostSpecificProxySignature(
-                proxy_signatures, arguments, arg_type_inference_required, pos, arguments.size());
-            if (proxy_signature != nullptr) {
-                const size_t num_non_default_params =
-                    proxy_signature->Params().size() -
-                    proxy_signature->Function()->Body()->AsBlockStatement()->Statements().size();
-                if (most_specific_signature->Params().size() == num_non_default_params) {
-                    ThrowTypeError(
-                        {"Reference to ", most_specific_signature->Function()->Id()->Name(), " is ambiguous"}, pos);
-                }
-            }
-        }
-
-        return most_specific_signature;
+        return GetMostSpecificSignature(compatible_signatures, proxy_signatures, arguments, arg_type_inference_required,
+                                        pos, resolve_flags);
     }
 
     if (!proxy_signatures.empty()) {

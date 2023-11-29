@@ -124,6 +124,10 @@ public:
     Type *CheckTypeCached(ir::Expression *expr) override;
     void ResolveStructuredTypeMembers([[maybe_unused]] Type *type) override {}
     Type *GetTypeOfVariable([[maybe_unused]] varbinder::Variable *var) override;
+    bool IsETSChecker() override
+    {
+        return true;
+    }
 
     // Object
     ETSObjectType *BuildClassProperties(ir::ClassDefinition *class_def);
@@ -550,6 +554,16 @@ private:
     using MethodBuilder = std::function<void(varbinder::FunctionScope *, ArenaVector<ir::Statement *> *,
                                              ArenaVector<ir::Expression *> *, Type **)>;
 
+    std::pair<const ir::Identifier *, ir::TypeNode *> GetTargetIdentifierAndType(ir::Identifier *ident);
+    void ThrowError(ir::Identifier *ident);
+    void CheckEtsFunctionType(ir::Identifier *ident, ir::Identifier const *id, ir::TypeNode const *annotation);
+    void NotResolvedError(ir::Identifier *ident);
+    void ValidateCallExpressionIdentifier(ir::Identifier *ident, Type *type);
+    void ValidateNewClassInstanceIdentifier(ir::Identifier *ident, varbinder::Variable *resolved);
+    void ValidateMemberIdentifier(ir::Identifier *ident, varbinder::Variable *resolved, Type *type);
+    void ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *ident, varbinder::Variable *resolved);
+    void ValidateAssignmentIdentifier(ir::Identifier *ident, varbinder::Variable *resolved, Type *type);
+    bool ValidateBinaryExpressionIdentifier(ir::Identifier *ident, Type *type);
     void BuildClass(util::StringView name, const ClassBuilder &builder);
     template <bool IS_STATIC>
     std::conditional_t<IS_STATIC, ir::ClassStaticBlock *, ir::MethodDefinition *> CreateClassInitializer(
@@ -587,7 +601,12 @@ private:
     }
 
     ArenaVector<Type *> CreateTypeForTypeParameters(ir::TSTypeParameterDeclaration *type_params);
+
     Type *CreateTypeParameterType(ir::TSTypeParameter *param);
+
+    using Type2TypeMap = std::unordered_map<std::string_view, std::string_view>;
+    void CheckTypeParameterConstraint(ir::TSTypeParameter *param, Type2TypeMap &extends);
+
     void SetUpTypeParameterConstraint(ir::TSTypeParameter *param);
     ETSObjectType *SetUpParameterType(ir::TSTypeParameter *param);
     ETSObjectType *CreateETSObjectTypeCheckBuiltins(util::StringView name, ir::AstNode *decl_node,
@@ -604,6 +623,15 @@ private:
     typename TargetType::UType GetOperand(Type *type);
 
     ETSObjectType *AsETSObjectType(Type *(GlobalTypesHolder::*type_functor)()) const;
+    Signature *GetMostSpecificSignature(ArenaVector<Signature *> &compatible_signatures,
+                                        ArenaVector<Signature *> &proxy_signatures,
+                                        const ArenaVector<ir::Expression *> &arguments,
+                                        std::vector<bool> &arg_type_inference_required,
+                                        const lexer::SourcePosition &pos, TypeRelationFlag resolve_flags);
+    std::pair<ArenaVector<Signature *>, ArenaVector<Signature *>> CollectSignatures(
+        ArenaVector<Signature *> &signatures, const ir::TSTypeParameterInstantiation *type_arguments,
+        const ArenaVector<ir::Expression *> &arguments, std::vector<bool> &arg_type_inference_required,
+        const lexer::SourcePosition &pos, TypeRelationFlag resolve_flags);
 
     // Trailing lambda
     void MoveTrailingBlockToEnclosingBlockStatement(ir::CallExpression *call_expr);

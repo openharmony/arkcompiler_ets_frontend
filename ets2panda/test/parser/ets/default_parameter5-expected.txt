@@ -861,7 +861,7 @@
                         "type": "ETSParameterExpression",
                         "name": {
                           "type": "Identifier",
-                          "name": "proxy_int",
+                          "name": "$proxy_mask$",
                           "typeAnnotation": {
                             "type": "ETSPrimitiveType",
                             "loc": {
@@ -928,7 +928,7 @@
                                 "operator": ">>",
                                 "left": {
                                   "type": "Identifier",
-                                  "name": "proxy_int",
+                                  "name": "$proxy_mask$",
                                   "decorators": [],
                                   "loc": {
                                     "start": {

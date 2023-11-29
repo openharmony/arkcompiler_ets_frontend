@@ -250,6 +250,7 @@ public:
     void AssignmentTarget(TypeRelation *relation, Signature *source);
 
 private:
+    bool IdenticalParameter(TypeRelation *relation, Type *type1, Type *type2);
     checker::SignatureInfo *signature_info_;
     Type *return_type_;
     ir::ScriptFunction *func_ {};

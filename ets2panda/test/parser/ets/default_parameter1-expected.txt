@@ -691,7 +691,7 @@
                         "type": "ETSParameterExpression",
                         "name": {
                           "type": "Identifier",
-                          "name": "proxy_int",
+                          "name": "$proxy_mask$",
                           "typeAnnotation": {
                             "type": "ETSPrimitiveType",
                             "loc": {
@@ -758,7 +758,7 @@
                                 "operator": ">>",
                                 "left": {
                                   "type": "Identifier",
-                                  "name": "proxy_int",
+                                  "name": "$proxy_mask$",
                                   "decorators": [],
                                   "loc": {
                                     "start": {
@@ -1276,4 +1276,4 @@
     }
   }
 }
-TypeError: Reference to foo is ambiguous [default_parameter1.ets:18:5]
+TypeError: Function already declared. [default_parameter1.ets:26:1]

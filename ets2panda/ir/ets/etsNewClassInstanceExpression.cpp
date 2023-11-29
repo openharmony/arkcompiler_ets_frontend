@@ -164,6 +164,8 @@ checker::Type *ETSNewClassInstanceExpression::Check([[maybe_unused]] checker::ET
         auto *signature = checker->ResolveConstructExpression(callee_obj, arguments_, Start());
 
         checker->CheckObjectLiteralArguments(signature, arguments_);
+        checker->AddUndefinedParamsForDefaultParams(signature, arguments_, checker);
+
         checker->ValidateSignatureAccessibility(callee_obj, signature, Start());
 
         ASSERT(signature->Function() != nullptr);

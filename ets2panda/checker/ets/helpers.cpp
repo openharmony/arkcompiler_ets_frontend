@@ -75,6 +75,10 @@ void ETSChecker::CheckTruthinessOfType(ir::Expression *expr)
     checker::Type *type = expr->Check(this);
     auto *unboxed_type = ETSBuiltinTypeAsConditionalType(type);
 
+    if (unboxed_type == GlobalBuiltinVoidType() || unboxed_type->IsETSVoidType()) {
+        ThrowTypeError("An expression of type 'void' cannot be tested for truthiness", expr->Start());
+    }
+
     if (unboxed_type != nullptr && !unboxed_type->IsConditionalExprType()) {
         ThrowTypeError("Condition must be of possible condition type", expr->Start());
     }
@@ -367,92 +371,171 @@ bool ETSChecker::IsVariableGetterSetter(const varbinder::Variable *var) const
     return var->TsType() != nullptr && var->TsType()->HasTypeFlag(TypeFlag::GETTER_SETTER);
 }
 
-void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved)
+void ETSChecker::ThrowError(ir::Identifier *const ident)
 {
-    const auto throw_error = [this, ident]() {
-        ThrowTypeError({"Unresolved reference ", ident->Name()}, ident->Start());
-    };
+    ThrowTypeError({"Unresolved reference ", ident->Name()}, ident->Start());
+}
 
-    // Just to avoid extra nested level
-    const auto check_ets_function_type = [this, &throw_error](ir::Identifier const *const id,
-                                                              ir::TypeNode const *const annotation) -> void {
-        if (annotation == nullptr) {
-            ThrowTypeError(
-                {"Cannot infer type for ", id->Name(), " because method reference needs an explicit target type"},
-                id->Start());
+void ETSChecker::CheckEtsFunctionType(ir::Identifier *const ident, ir::Identifier const *const id,
+                                      ir::TypeNode const *const annotation)
+{
+    if (annotation == nullptr) {
+        ThrowTypeError(
+            {"Cannot infer type for ", id->Name(), " because method reference needs an explicit target type"},
+            id->Start());
+    }
+
+    const auto *const target_type = GetTypeOfVariable(id->Variable());
+    ASSERT(target_type != nullptr);
+
+    if (!target_type->IsETSObjectType() || !target_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+        ThrowError(ident);
+    }
+}
+
+void ETSChecker::NotResolvedError(ir::Identifier *const ident)
+{
+    const auto [class_var, class_type] = FindVariableInClassOrEnclosing(ident->Name(), Context().ContainingClass());
+    if (class_var == nullptr) {
+        ThrowError(ident);
+    }
+
+    if (IsVariableStatic(class_var)) {
+        ThrowTypeError(
+            {"Static property '", ident->Name(), "' must be accessed through it's class '", class_type->Name(), "'"},
+            ident->Start());
+    } else {
+        ThrowTypeError({"Property '", ident->Name(), "' must be accessed through 'this'"}, ident->Start());
+    }
+}
+
+void ETSChecker::ValidateCallExpressionIdentifier(ir::Identifier *const ident, Type *const type)
+{
+    if (ident->Parent()->AsCallExpression()->Callee() == ident && !type->IsETSFunctionType() &&
+        !type->IsETSDynamicType() &&
+        (!type->IsETSObjectType() || !type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) &&
+        !TryTransformingToStaticInvoke(ident, type)) {
+        ThrowError(ident);
+    }
+}
+
+void ETSChecker::ValidateNewClassInstanceIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved)
+{
+    if (ident->Parent()->AsETSNewClassInstanceExpression()->GetTypeRef() == ident &&
+        !resolved->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)) {
+        ThrowError(ident);
+    }
+}
+
+void ETSChecker::ValidateMemberIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved,
+                                          Type *const type)
+{
+    if (ident->Parent()->AsMemberExpression()->IsComputed()) {
+        if (!resolved->Declaration()->PossibleTDZ()) {
+            ThrowError(ident);
         }
 
-        const auto *const target_type = GetTypeOfVariable(id->Variable());
+        return;
+    }
+
+    if (!type->IsETSObjectType() && !type->IsETSArrayType() && !type->IsETSEnumType() && !type->IsETSStringEnumType() &&
+        !type->IsETSUnionType() && !type->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        ThrowError(ident);
+    }
+}
+
+std::pair<const ir::Identifier *, ir::TypeNode *> ETSChecker::GetTargetIdentifierAndType(ir::Identifier *const ident)
+{
+    if (ident->Parent()->IsClassProperty()) {
+        const auto *const class_prop = ident->Parent()->AsClassProperty();
+        ASSERT(class_prop->Value() && class_prop->Value() == ident);
+        return std::make_pair(class_prop->Key()->AsIdentifier(), class_prop->TypeAnnotation());
+    }
+    const auto *const variable_decl = ident->Parent()->AsVariableDeclarator();
+    ASSERT(variable_decl->Init() && variable_decl->Init() == ident);
+    return std::make_pair(variable_decl->Id()->AsIdentifier(), variable_decl->Id()->AsIdentifier()->TypeAnnotation());
+}
+
+void ETSChecker::ValidatePropertyOrDeclaratorIdentifier(ir::Identifier *const ident,
+                                                        varbinder::Variable *const resolved)
+{
+    const auto [target_ident, type_annotation] = GetTargetIdentifierAndType(ident);
+
+    if (resolved->TsType()->IsETSFunctionType()) {
+        CheckEtsFunctionType(ident, target_ident, type_annotation);
+        return;
+    }
+
+    if (!resolved->Declaration()->PossibleTDZ()) {
+        ThrowError(ident);
+    }
+}
+
+void ETSChecker::ValidateAssignmentIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved,
+                                              Type *const type)
+{
+    const auto *const assignment_expr = ident->Parent()->AsAssignmentExpression();
+    if (assignment_expr->Left() == ident && !resolved->Declaration()->PossibleTDZ()) {
+        ThrowError(ident);
+    }
+
+    if (assignment_expr->Right() == ident) {
+        const auto *const target_type = assignment_expr->Left()->TsType();
         ASSERT(target_type != nullptr);
 
-        if (!target_type->IsETSObjectType() ||
-            !target_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-            throw_error();
-        }
-    };
+        if (target_type->IsETSObjectType() &&
+            target_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
+            if (!type->IsETSFunctionType() &&
+                !(type->IsETSObjectType() && type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
+                ThrowError(ident);
+            }
 
+            return;
+        }
+
+        if (!resolved->Declaration()->PossibleTDZ()) {
+            ThrowError(ident);
+        }
+    }
+}
+
+bool ETSChecker::ValidateBinaryExpressionIdentifier(ir::Identifier *const ident, Type *const type)
+{
+    const auto *const binary_expr = ident->Parent()->AsBinaryExpression();
+    bool is_finished = false;
+    if (binary_expr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF && binary_expr->Right() == ident) {
+        if (!type->IsETSObjectType()) {
+            ThrowError(ident);
+        }
+        is_finished = true;
+    }
+    return is_finished;
+}
+
+void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbinder::Variable *const resolved)
+{
     if (resolved == nullptr) {
-        const auto [class_var, class_type] = FindVariableInClassOrEnclosing(ident->Name(), Context().ContainingClass());
-        if (class_var == nullptr) {
-            throw_error();
-        }
-
-        if (IsVariableStatic(class_var)) {
-            ThrowTypeError({"Static property '", ident->Name(), "' must be accessed through it's class '",
-                            class_type->Name(), "'"},
-                           ident->Start());
-        } else {
-            ThrowTypeError({"Property '", ident->Name(), "' must be accessed through 'this'"}, ident->Start());
-        }
+        NotResolvedError(ident);
     }
 
     auto *const resolved_type = GetTypeOfVariable(resolved);
 
     switch (ident->Parent()->Type()) {
         case ir::AstNodeType::CALL_EXPRESSION: {
-            if (ident->Parent()->AsCallExpression()->Callee() == ident && !resolved_type->IsETSFunctionType() &&
-                !resolved_type->IsETSDynamicType() &&
-                (!resolved_type->IsETSObjectType() ||
-                 !resolved_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) &&
-                !TryTransformingToStaticInvoke(ident, resolved_type)) {
-                throw_error();
-            }
-
+            ValidateCallExpressionIdentifier(ident, resolved_type);
             break;
         }
         case ir::AstNodeType::ETS_NEW_CLASS_INSTANCE_EXPRESSION: {
-            if (ident->Parent()->AsETSNewClassInstanceExpression()->GetTypeRef() == ident &&
-                !resolved->HasFlag(varbinder::VariableFlags::CLASS_OR_INTERFACE)) {
-                throw_error();
-            }
-
+            ValidateNewClassInstanceIdentifier(ident, resolved);
             break;
         }
         case ir::AstNodeType::MEMBER_EXPRESSION: {
-            if (ident->Parent()->AsMemberExpression()->IsComputed()) {
-                if (!resolved->Declaration()->PossibleTDZ()) {
-                    throw_error();
-                }
-
-                break;
-            }
-
-            if (!resolved_type->IsETSObjectType() && !resolved_type->IsETSArrayType() &&
-                !resolved_type->IsETSEnumType() && !resolved_type->IsETSStringEnumType() &&
-                !resolved_type->IsETSUnionType()) {
-                throw_error();
-            }
-
+            ValidateMemberIdentifier(ident, resolved, resolved_type);
             break;
         }
         case ir::AstNodeType::BINARY_EXPRESSION: {
-            const auto *const binary_expr = ident->Parent()->AsBinaryExpression();
-            if (binary_expr->OperatorType() == lexer::TokenType::KEYW_INSTANCEOF && binary_expr->Right() == ident) {
-                if (!resolved_type->IsETSObjectType()) {
-                    throw_error();
-                }
-
-                break;
+            if (ValidateBinaryExpressionIdentifier(ident, resolved_type)) {
+                return;
             }
 
             [[fallthrough]];
@@ -460,70 +543,23 @@ void ETSChecker::ValidateResolvedIdentifier(ir::Identifier *const ident, varbind
         case ir::AstNodeType::UPDATE_EXPRESSION:
         case ir::AstNodeType::UNARY_EXPRESSION: {
             if (!resolved->Declaration()->PossibleTDZ()) {
-                throw_error();
+                ThrowError(ident);
             }
-
             break;
         }
         case ir::AstNodeType::CLASS_PROPERTY:
         case ir::AstNodeType::VARIABLE_DECLARATOR: {
-            const auto [target_ident, type_annotation] = [ident]() {
-                if (ident->Parent()->IsClassProperty()) {
-                    const auto *const class_prop = ident->Parent()->AsClassProperty();
-                    ASSERT(class_prop->Value() && class_prop->Value() == ident);
-                    return std::make_pair(class_prop->Key()->AsIdentifier(), class_prop->TypeAnnotation());
-                }
-                const auto *const variable_decl = ident->Parent()->AsVariableDeclarator();
-                ASSERT(variable_decl->Init() && variable_decl->Init() == ident);
-                return std::make_pair(variable_decl->Id()->AsIdentifier(),
-                                      variable_decl->Id()->AsIdentifier()->TypeAnnotation());
-            }();
-
-            if (resolved->TsType()->IsETSFunctionType()) {
-                check_ets_function_type(target_ident, type_annotation);
-                break;
-            }
-
-            if (!resolved->Declaration()->PossibleTDZ()) {
-                throw_error();
-            }
-
+            ValidatePropertyOrDeclaratorIdentifier(ident, resolved);
             break;
         }
         case ir::AstNodeType::ASSIGNMENT_EXPRESSION: {
-            const auto *const assignment_expr = ident->Parent()->AsAssignmentExpression();
-
-            if (assignment_expr->Left() == ident && !resolved->Declaration()->PossibleTDZ()) {
-                throw_error();
-            }
-
-            if (assignment_expr->Right() == ident) {
-                const auto *const target_type = assignment_expr->Left()->TsType();
-                ASSERT(target_type != nullptr);
-
-                if (target_type->IsETSObjectType() &&
-                    target_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL)) {
-                    if (!resolved_type->IsETSFunctionType() &&
-                        !(resolved_type->IsETSObjectType() &&
-                          resolved_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::FUNCTIONAL))) {
-                        throw_error();
-                    }
-
-                    break;
-                }
-
-                if (!resolved->Declaration()->PossibleTDZ()) {
-                    throw_error();
-                }
-            }
-
+            ValidateAssignmentIdentifier(ident, resolved, resolved_type);
             break;
         }
         default: {
             if (!resolved->Declaration()->PossibleTDZ() && !resolved_type->IsETSFunctionType()) {
-                throw_error();
+                ThrowError(ident);
             }
-
             break;
         }
     }
@@ -1057,8 +1093,11 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *module_obj
 {
     auto *ets_binder = static_cast<varbinder::ETSBinder *>(VarBinder());
 
-    auto res = ets_binder->GetGlobalRecordTable()->Program()->ExternalSources().find(import_path);
-
+    auto ext_records = ets_binder->GetGlobalRecordTable()->Program()->ExternalSources();
+    auto res = [ets_binder, ext_records, import_path]() {
+        auto r = ext_records.find(import_path);
+        return r != ext_records.end() ? r : ext_records.find(ets_binder->GetResolvedImportPath(import_path));
+    }();
     for (auto [_, var] : res->second.front()->GlobalClassScope()->StaticFieldScope()->Bindings()) {
         (void)_;
         if (var->AsLocalVariable()->Declaration()->Node()->IsExported()) {
@@ -1786,7 +1825,7 @@ void ETSChecker::CheckUnboxedTypesAssignable(TypeRelation *relation, Type *sourc
 void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *source, Type *target)
 {
     checker::SavedTypeRelationFlagsContext saved_type_relation_flag_ctx(
-        relation, TypeRelationFlag::ONLY_CHECK_WIDENING |
+        relation, (relation->ApplyWidening() ? TypeRelationFlag::WIDENING : TypeRelationFlag::NONE) |
                       (relation->ApplyNarrowing() ? TypeRelationFlag::NARROWING : TypeRelationFlag::NONE));
     auto *boxed_source_type = relation->GetChecker()->AsETSChecker()->PrimitiveTypeAsETSBuiltinType(source);
     if (boxed_source_type == nullptr) {
@@ -1804,7 +1843,7 @@ void ETSChecker::CheckBoxedSourceTypeAssignable(TypeRelation *relation, Type *so
         if (unboxed_target_type == nullptr) {
             return;
         }
-        NarrowingConverter(this, relation, unboxed_target_type, source);
+        NarrowingWideningConverter(this, relation, unboxed_target_type, source);
         if (relation->IsTrue()) {
             AddBoxingFlagToPrimitiveType(relation, target);
         }
