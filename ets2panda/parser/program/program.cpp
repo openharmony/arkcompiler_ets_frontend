@@ -57,4 +57,21 @@ const varbinder::GlobalScope *Program::GlobalScope() const
     return static_cast<const varbinder::GlobalScope *>(ast_->Scope());
 }
 
+void Program::AddNodeToETSNolintCollection(const ir::AstNode *node, const std::set<ETSWarnings> &warningsCollection)
+{
+    ArenaSet<ETSWarnings> tmp(allocator_->Adapter());
+    tmp.insert(warningsCollection.begin(), warningsCollection.end());
+    etsnolintCollection_.insert({node, tmp});
+}
+
+bool Program::NodeContainsETSNolint(const ir::AstNode *node, ETSWarnings warning)
+{
+    auto nodeEtsnolints = etsnolintCollection_.find(node);
+    if (nodeEtsnolints == etsnolintCollection_.end()) {
+        return false;
+    }
+
+    return nodeEtsnolints->second.find(warning) != nodeEtsnolints->second.end();
+}
+
 }  // namespace ark::es2panda::parser

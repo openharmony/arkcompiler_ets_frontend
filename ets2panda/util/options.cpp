@@ -138,6 +138,11 @@ static bool ParseBCOCompilerOptions([[maybe_unused]] const std::vector<std::stri
     return true;
 }
 
+static inline bool ETSWarningsGroupSetter(const ark::PandArg<bool> &option)
+{
+    return !option.WasSet() || (option.WasSet() && option.GetValue());
+}
+
 // NOLINTNEXTLINE(readability-function-size)
 bool Options::Parse(int argc, const char **argv)
 {
@@ -170,6 +175,26 @@ bool Options::Parse(int argc, const char **argv)
     ark::PandArg<bool> opDumpDebugInfo("dump-debug-info", false, "Dump debug info");
     ark::PandArg<int> opOptLevel("opt-level", 0, "Compiler optimization level (options: 0 | 1 | 2)");
     ark::PandArg<bool> opEtsModule("ets-module", false, "Compile the input as ets-module");
+
+    // ETS-warnings
+    ark::PandArg<bool> opEtsEnableAll("ets-warnings-all", false, "Show performance-related ets-warnings");
+    ark::PandArg<bool> opEtsWerror("ets-werror", false, "Treat all enabled performance-related ets-warnings as error");
+    ark::PandArg<bool> opEtsSubsetWarnings("ets-subset-warnings", false, "Show ETS-warnings that keep you in subset");
+    ark::PandArg<bool> opEtsNonsubsetWarnings("ets-nonsubset-warnings", false,
+                                              "Show ETS-warnings that do not keep you in subset");
+    ark::PandArg<bool> opEtsSuggestFinal("ets-suggest-final", false,
+                                         "Suggest final keyword warning - ETS non-subset warning");
+    ark::PandArg<bool> opEtsProhibitTopLevelStatements("ets-prohibit-top-level-statements", false,
+                                                       "Prohibit top-level statements - ETS subset Warning");
+    ark::PandArg<bool> opEtsBoostEqualityStatement("ets-boost-equality-statement", false,
+                                                   "Suggest boosting Equality Statements - ETS Subset Warning");
+    ark::PandArg<bool> opEtsRemoveAsync("ets-remove-async", false,
+                                        "Suggests replacing async functions with coroutines - ETS Non Subset Warnings");
+    ark::PandArg<bool> opEtsRemoveLambda("ets-remove-lambda", false,
+                                         "Suggestions to replace lambda with regular functions - ETS Subset Warning");
+    ark::PandArg<bool> opEtsImplicitBoxingUnboxing(
+        "ets-implicit-boxing-unboxing", false,
+        "Check if a program contains implicit boxing or unboxing - ETS Subset Warning");
 
     auto constexpr DEFAULT_THREAD_COUNT = 0;
     ark::PandArg<int> opThreadCount("thread", DEFAULT_THREAD_COUNT, "Number of worker threads");
@@ -254,6 +279,21 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&dumpAfterPhases);
     argparser_->Add(&dumpEtsSrcAfterPhases);
     argparser_->Add(&arktsConfig);
+
+    argparser_->Add(&opEtsEnableAll);
+    argparser_->Add(&opEtsWerror);
+    argparser_->Add(&opEtsSubsetWarnings);
+    argparser_->Add(&opEtsNonsubsetWarnings);
+
+    // ETS-subset warnings
+    argparser_->Add(&opEtsProhibitTopLevelStatements);
+    argparser_->Add(&opEtsBoostEqualityStatement);
+    argparser_->Add(&opEtsRemoveLambda);
+    argparser_->Add(&opEtsImplicitBoxingUnboxing);
+
+    // ETS-non-subset warnings
+    argparser_->Add(&opEtsSuggestFinal);
+    argparser_->Add(&opEtsRemoveAsync);
 
     argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
@@ -370,6 +410,61 @@ bool Options::Parse(int argc, const char **argv)
     compilerOptions_.dumpEtsSrcBeforePhases = SplitToStringSet(dumpEtsSrcBeforePhases.GetValue());
     compilerOptions_.dumpAfterPhases = SplitToStringSet(dumpAfterPhases.GetValue());
     compilerOptions_.dumpEtsSrcAfterPhases = SplitToStringSet(dumpEtsSrcAfterPhases.GetValue());
+
+    // ETS-Warnings
+    compilerOptions_.etsSubsetWarnings = opEtsSubsetWarnings.GetValue();
+    compilerOptions_.etsWerror = opEtsWerror.GetValue();
+    compilerOptions_.etsNonsubsetWarnings = opEtsNonsubsetWarnings.GetValue();
+    compilerOptions_.etsEnableAll = opEtsEnableAll.GetValue();
+
+    if (compilerOptions_.etsEnableAll || compilerOptions_.etsSubsetWarnings) {
+        // Adding subset warnings
+        compilerOptions_.etsProhibitTopLevelStatements = ETSWarningsGroupSetter(opEtsProhibitTopLevelStatements);
+        compilerOptions_.etsBoostEqualityStatement = ETSWarningsGroupSetter(opEtsBoostEqualityStatement);
+        compilerOptions_.etsRemoveLambda = ETSWarningsGroupSetter(opEtsRemoveLambda);
+        compilerOptions_.etsImplicitBoxingUnboxing = ETSWarningsGroupSetter(opEtsImplicitBoxingUnboxing);
+    }
+
+    if (compilerOptions_.etsEnableAll || compilerOptions_.etsNonsubsetWarnings) {
+        // Adding non-subset warnings
+        compilerOptions_.etsSuggestFinal = ETSWarningsGroupSetter(opEtsSuggestFinal);
+        compilerOptions_.etsRemoveAsync = ETSWarningsGroupSetter(opEtsRemoveAsync);
+    }
+
+    if (!compilerOptions_.etsEnableAll && !compilerOptions_.etsSubsetWarnings &&
+        !compilerOptions_.etsNonsubsetWarnings) {
+        // If no warnings groups enabled - check all if enabled
+        compilerOptions_.etsSuggestFinal = opEtsSuggestFinal.GetValue();
+        compilerOptions_.etsProhibitTopLevelStatements = opEtsProhibitTopLevelStatements.GetValue();
+        compilerOptions_.etsBoostEqualityStatement = opEtsBoostEqualityStatement.GetValue();
+        compilerOptions_.etsRemoveAsync = opEtsRemoveAsync.GetValue();
+        compilerOptions_.etsRemoveLambda = opEtsRemoveLambda.GetValue();
+        compilerOptions_.etsImplicitBoxingUnboxing = opEtsImplicitBoxingUnboxing.GetValue();
+    }
+
+    // Pushing enabled warnings to warning collection
+    if (compilerOptions_.etsSuggestFinal) {
+        compilerOptions_.etsWarningCollection.push_back(ETSWarnings::SUGGEST_FINAL);
+    }
+    if (compilerOptions_.etsProhibitTopLevelStatements) {
+        compilerOptions_.etsWarningCollection.push_back(ETSWarnings::PROHIBIT_TOP_LEVEL_STATEMENTS);
+    }
+    if (compilerOptions_.etsBoostEqualityStatement) {
+        compilerOptions_.etsWarningCollection.push_back(ETSWarnings::BOOST_EQUALITY_STATEMENT);
+    }
+    if (compilerOptions_.etsRemoveAsync) {
+        compilerOptions_.etsWarningCollection.push_back(ETSWarnings::REMOVE_ASYNC_FUNCTIONS);
+    }
+    if (compilerOptions_.etsRemoveLambda) {
+        compilerOptions_.etsWarningCollection.push_back(ETSWarnings::REMOVE_LAMBDA);
+    }
+    if (compilerOptions_.etsImplicitBoxingUnboxing) {
+        compilerOptions_.etsWarningCollection.push_back(ETSWarnings::IMPLICIT_BOXING_UNBOXING);
+    }
+
+    if (!compilerOptions_.etsWarningCollection.empty()) {
+        compilerOptions_.etsHasWarnings = true;
+    }
 
     return true;
 }

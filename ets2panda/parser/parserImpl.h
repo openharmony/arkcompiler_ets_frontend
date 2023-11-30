@@ -272,6 +272,7 @@ protected:
     friend class SavedParserContext;
     friend class SavedClassPrivateContext;
     friend class ArrowFunctionContext;
+    friend class ETSNolintParser;
 
     [[noreturn]] void ThrowParameterModifierError(ir::ModifierFlags status) const;
     [[noreturn]] void ThrowUnexpectedToken(lexer::TokenType tokenType) const;

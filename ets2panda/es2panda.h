@@ -89,6 +89,16 @@ struct SourceFile {
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 };
 
+enum ETSWarnings {
+    NONE,
+    IMPLICIT_BOXING_UNBOXING,
+    PROHIBIT_TOP_LEVEL_STATEMENTS,
+    BOOST_EQUALITY_STATEMENT,
+    REMOVE_LAMBDA,
+    SUGGEST_FINAL,
+    REMOVE_ASYNC_FUNCTIONS,
+};
+
 struct CompilerOptions {
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     bool isDebug {};
@@ -116,6 +126,25 @@ struct CompilerOptions {
     std::shared_ptr<ArkTsConfig> arktsConfig {};
     CompilationMode compilationMode {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
+
+    // ETS Warning Groups
+    bool etsEnableAll {};          // Enable all ETS-warnings for System ArkTS
+    bool etsSubsetWarnings {};     // Enable only ETS-warnings that keep you in subset
+    bool etsNonsubsetWarnings {};  // Enable only ETS-warnings that do not keep you in subset
+    bool etsHasWarnings = false;
+
+    // Subset ETS-Warnings
+    bool etsProhibitTopLevelStatements {};
+    bool etsBoostEqualityStatement {};
+    bool etsRemoveLambda {};
+    bool etsImplicitBoxingUnboxing {};
+
+    // Non-subset ETS-Warnings
+    bool etsSuggestFinal {};
+    bool etsRemoveAsync {};
+
+    bool etsWerror {};  // Treat all enabled ETS-warnings as errors
+    std::vector<ETSWarnings> etsWarningCollection = {};
 };
 
 enum class ErrorType {
@@ -123,6 +152,7 @@ enum class ErrorType {
     GENERIC,
     SYNTAX,
     TYPE,
+    ETS_WARNING,
 };
 
 class Error : public std::exception {
@@ -152,6 +182,8 @@ public:
                 return "SyntaxError";
             case ErrorType::TYPE:
                 return "TypeError";
+            case ErrorType::ETS_WARNING:
+                return "System ArkTS: warning treated as error.";
             default:
                 break;
         }

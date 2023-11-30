@@ -14,6 +14,8 @@
  */
 
 #include "ETSparser.h"
+#include "ETSNolintParser.h"
+#include <utility>
 
 #include "macros.h"
 #include "parser/parserFlags.h"
@@ -161,11 +163,16 @@ void ETSParser::ParseProgram(ScriptKind kind)
 
 ir::ETSScript *ETSParser::ParseETSGlobalScript(lexer::SourcePosition startLoc, ArenaVector<ir::Statement *> &statements)
 {
+    ETSNolintParser etsnolintParser(this);
+    etsnolintParser.CollectETSNolints();
+
     auto imports = ParseImportDeclarations();
     statements.insert(statements.end(), imports.begin(), imports.end());
 
     auto topLevelStatements = ParseTopLevelDeclaration();
     statements.insert(statements.end(), topLevelStatements.begin(), topLevelStatements.end());
+
+    etsnolintParser.ApplyETSNolintsToStatements(statements);
 
     auto *etsScript = AllocNode<ir::ETSScript>(Allocator(), std::move(statements), GetProgram());
     etsScript->SetRange({startLoc, Lexer()->GetToken().End()});

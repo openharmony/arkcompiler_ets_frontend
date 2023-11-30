@@ -25,6 +25,8 @@
 
 #include "es2panda.h"
 
+#include <set>
+
 namespace ark::es2panda::ir {
 class BlockStatement;
 }  // namespace ark::es2panda::ir
@@ -39,6 +41,8 @@ enum class ScriptKind { SCRIPT, MODULE, STDLIB };
 class Program {
 public:
     using ExternalSource = ArenaUnorderedMap<util::StringView, ArenaVector<Program *>>;
+    using ETSNolintsCollectionMap = ArenaUnorderedMap<const ir::AstNode *, ArenaSet<ETSWarnings>>;
+
     template <typename T>
     static Program NewProgram(ArenaAllocator *allocator)
     {
@@ -50,7 +54,8 @@ public:
         : allocator_(allocator),
           varbinder_(varbinder),
           externalSources_(allocator_->Adapter()),
-          extension_(varbinder->Extension())
+          extension_(varbinder->Extension()),
+          etsnolintCollection_(allocator_->Adapter())
     {
     }
 
@@ -210,6 +215,9 @@ public:
 
     void DumpSilent() const;
 
+    void AddNodeToETSNolintCollection(const ir::AstNode *node, const std::set<ETSWarnings> &warningsCollection);
+    bool NodeContainsETSNolint(const ir::AstNode *node, ETSWarnings warning);
+
 private:
     ArenaAllocator *allocator_ {};
     varbinder::VarBinder *varbinder_ {};
@@ -224,6 +232,7 @@ private:
     ScriptKind kind_ {};
     ScriptExtension extension_ {};
     bool entryPoint_ {};
+    ETSNolintsCollectionMap etsnolintCollection_;
 };
 }  // namespace ark::es2panda::parser
 
