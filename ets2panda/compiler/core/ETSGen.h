@@ -837,6 +837,7 @@ private:
             case checker::TypeFlag::ETS_BOOLEAN:
             case checker::TypeFlag::BYTE:
             case checker::TypeFlag::SHORT:
+            case checker::TypeFlag::CHAR:
             case checker::TypeFlag::INT: {
                 Ra().Emit<IntCompare>(node, lhs, ifFalse);
                 break;
