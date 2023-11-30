@@ -385,8 +385,8 @@ Signature *ETSChecker::GetMostSpecificSignature(ArenaVector<Signature *> &compat
     };
 
     if (!proxy_signatures.empty()) {
-        auto *const proxy_signature = ChooseMostSpecificProxySignature(
-            proxy_signatures, arg_type_inference_required, pos, arguments.size());
+        auto *const proxy_signature =
+            ChooseMostSpecificProxySignature(proxy_signatures, arg_type_inference_required, pos, arguments.size());
         if (proxy_signature != nullptr) {
             check_ambiguous(proxy_signature);
         }
