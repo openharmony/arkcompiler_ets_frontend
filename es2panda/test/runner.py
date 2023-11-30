@@ -1459,9 +1459,8 @@ class TypeExtractorWithAOTTest(Test):
         ld_library_path = runner.ld_library_path
         os.environ.setdefault("LD_LIBRARY_PATH", ld_library_path)
         aot_abc_cmd = [runner.ark_aot_compiler]
-        if self.with_running:
-            aot_abc_cmd.extend(["--aot-file=%s" % file_name])
-        else:
+        aot_abc_cmd.extend(["--aot-file=%s" % file_name])
+        if not self.with_running:
             aot_abc_cmd.extend(["--compiler-assert-types=true"])
             aot_abc_cmd.extend(["--compiler-opt-type-lowering=false"])
         aot_abc_cmd.extend([test_abc_name])
@@ -1480,10 +1479,10 @@ class TypeExtractorWithAOTTest(Test):
 
         if os.path.isfile(test_abc_name):
             os.remove(test_abc_name)
-        if os.path.isfile("aot_file.an"):
-            os.remove("aot_file.an")
-        if os.path.isfile(".ai"):
-            os.remove(".ai")
+        if os.path.isfile("%s.an" % (file_name)):
+            os.remove("%s.an" % (file_name))
+        if os.path.isfile("%s.ai" % (file_name)):
+            os.remove("%s.ai" % (file_name))
 
         return self
 
