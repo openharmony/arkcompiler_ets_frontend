@@ -35,7 +35,6 @@ public:
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
 
-private:
     const Type *GetPromiseTypeArg() const
     {
         return promise_type_->TypeArguments()[0];
@@ -46,6 +45,7 @@ private:
         return promise_type_->TypeArguments()[0];
     }
 
+private:
     ETSObjectType *promise_type_;
 };
 }  // namespace panda::es2panda::checker

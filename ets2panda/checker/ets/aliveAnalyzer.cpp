@@ -16,6 +16,7 @@
 #include "aliveAnalyzer.h"
 #include <cstddef>
 
+#include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
 #include "ir/base/methodDefinition.h"
@@ -272,11 +273,17 @@ void AliveAnalyzer::AnalyzeMethodDef(const ir::MethodDefinition *method_def)
     status_ = LivenessStatus::ALIVE;
     AnalyzeStat(func->Body());
     ASSERT(method_def->TsType() && method_def->TsType()->IsETSFunctionType());
+    const auto *return_type = method_def->TsType()->AsETSFunctionType()->FindSignature(func)->ReturnType();
+    const auto is_void = return_type->IsETSVoidType() || return_type == checker_->GlobalBuiltinVoidType();
 
-    if (status_ == LivenessStatus::ALIVE &&
-        (!method_def->TsType()->AsETSFunctionType()->FindSignature(func)->ReturnType()->IsETSVoidType() &&
-         method_def->TsType()->AsETSFunctionType()->FindSignature(func)->ReturnType() !=
-             checker_->GlobalBuiltinVoidType())) {
+    auto is_promise_void = false;
+
+    if (return_type->IsETSAsyncFuncReturnType()) {
+        const auto *as_async = return_type->AsETSAsyncFuncReturnType();
+        is_promise_void = as_async->GetPromiseTypeArg() == checker_->GlobalBuiltinVoidType();
+    }
+
+    if (status_ == LivenessStatus::ALIVE && !is_void && !is_promise_void) {
         checker_->ThrowTypeError("Function with a non void return type must return a value.", func->Id()->Start());
     }
 

@@ -118,6 +118,8 @@ defines:
     ref: STATIC_INVOKE_METHOD
   - name: instantiate
     ref: STATIC_INSTANTIATE_METHOD
+  - name: Void
+    ref: VOID_OBJECT
 
 packages:
   - name: 'std.core'

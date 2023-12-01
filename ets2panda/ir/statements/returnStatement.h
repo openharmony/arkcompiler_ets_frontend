@@ -63,6 +63,7 @@ public:
 
     void TransformChildren(const NodeTransformer &cb) override;
     void SetReturnType(checker::ETSChecker *checker, checker::Type *type) override;
+    void SetArgument(Expression *arg);
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
