@@ -47,13 +47,21 @@ export class TSCCompiledProgramWithDiagnostics implements TSCCompiledProgram {
   private readonly program: ts.Program;
   private readonly cachedDiagnostics: Map<string, ts.Diagnostic[]> = new Map();
 
-  constructor(strict: ts.Program, nonStrict: ts.Program, inputFiles: string[]) {
+  constructor(
+    strict: ts.Program,
+    nonStrict: ts.Program,
+    inputFiles: string[],
+    cancellationToken?: ts.CancellationToken
+  ) {
     this.program = strict;
 
     inputFiles.forEach((fileName) => {
       const sourceFile = this.program.getSourceFile(fileName);
       if (sourceFile !== undefined) {
-        this.cachedDiagnostics.set(sourceFile.fileName, getStrictDiagnostics(strict, nonStrict, sourceFile.fileName));
+        this.cachedDiagnostics.set(
+          sourceFile.fileName,
+          getStrictDiagnostics(strict, nonStrict, sourceFile.fileName, cancellationToken)
+        );
       }
     });
   }
