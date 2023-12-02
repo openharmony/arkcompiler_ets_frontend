@@ -124,6 +124,7 @@ static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFu
 
 static void CompileField(PandaGen *pg, const ir::ClassProperty *prop, VReg thisReg, int32_t level)
 {
+    RegScope rs(pg);
     Operand op;
     binder::PrivateNameFindResult result;
     if (prop->IsPrivate()) {
@@ -131,7 +132,6 @@ static void CompileField(PandaGen *pg, const ir::ClassProperty *prop, VReg thisR
     } else if (prop->IsComputed() && prop->NeedCompileKey()) {
         auto slot = prop->Parent()->AsClassDefinition()->GetSlot(prop->Key());
         pg->LoadLexicalVar(prop->Key(), level, slot);
-        RegScope rs(pg);
         op = pg->AllocReg();
         pg->StoreAccumulator(prop->Key(), std::get<VReg>(op));
     } else {
