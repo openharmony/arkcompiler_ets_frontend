@@ -14,7 +14,7 @@
  */
 
 function main() : void {
-  let cond: Boolean = true;
+  let cond: boolean = true;
 
   // Check conditional expression
   let a: String = "foo";
@@ -39,13 +39,14 @@ function main() : void {
   assert(i == 3);
 
   // Check while statement
-  while (cond) {
-    cond = false;
+  let while_cond = true
+  while (while_cond) {
+    while_cond = !cond;
   }
-  assert (cond == false);
+  assert (while_cond == false);
 
   // Check do-while statement
   do {
-    assert (cond == false);
-  } while (cond);
+    assert (while_cond == false);
+  } while (while_cond);
 }

@@ -80,8 +80,6 @@ protected:
         : Annotated<Statement>(static_cast<Annotated<Statement> const &>(other))
     {
     }
-
-    void CloneTypeAnnotation(ArenaAllocator *allocator);
 };
 }  // namespace panda::es2panda::ir
 

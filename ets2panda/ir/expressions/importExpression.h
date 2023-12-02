@@ -29,6 +29,11 @@ public:
 
     explicit ImportExpression(Expression *source) : Expression(AstNodeType::IMPORT_EXPRESSION), source_(source) {}
 
+    Expression *Source()
+    {
+        return source_;
+    }
+
     // NOLINTNEXTLINE(google-default-arguments)
     [[nodiscard]] ImportExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 

@@ -139,6 +139,10 @@ checker::Type *ETSChecker::CheckBinaryOperatorMulDivMod(ir::Expression *left, ir
     FlagExpressionWithUnboxing(left_type, unboxed_l, left);
     FlagExpressionWithUnboxing(right_type, unboxed_r, right);
 
+    if (left_type->IsETSUnionType() || right_type->IsETSUnionType()) {
+        ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+    }
+
     if (promotedType == nullptr && !bothConst) {
         ThrowTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
     }
@@ -156,6 +160,10 @@ checker::Type *ETSChecker::CheckBinaryOperatorPlus(ir::Expression *left, ir::Exp
                                                    bool is_equal_op, checker::Type *const left_type,
                                                    checker::Type *const right_type, Type *unboxed_l, Type *unboxed_r)
 {
+    if (left_type->IsETSUnionType() || right_type->IsETSUnionType()) {
+        ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+    }
+
     if (left_type->IsETSStringType() || right_type->IsETSStringType()) {
         return HandleStringConcatenation(left_type, right_type);
     }
@@ -182,6 +190,10 @@ checker::Type *ETSChecker::CheckBinaryOperatorShift(ir::Expression *left, ir::Ex
                                                     bool is_equal_op, checker::Type *const left_type,
                                                     checker::Type *const right_type, Type *unboxed_l, Type *unboxed_r)
 {
+    if (left_type->IsETSUnionType() || right_type->IsETSUnionType()) {
+        ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+    }
+
     auto promoted_left_type = ApplyUnaryOperatorPromotion(unboxed_l, false, !is_equal_op);
     auto promoted_right_type = ApplyUnaryOperatorPromotion(unboxed_r, false, !is_equal_op);
 
@@ -225,6 +237,10 @@ checker::Type *ETSChecker::CheckBinaryOperatorBitwise(ir::Expression *left, ir::
                                                       bool is_equal_op, checker::Type *const left_type,
                                                       checker::Type *const right_type, Type *unboxed_l, Type *unboxed_r)
 {
+    if (left_type->IsETSUnionType() || right_type->IsETSUnionType()) {
+        ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+    }
+
     if (unboxed_l != nullptr && unboxed_l->HasTypeFlag(checker::TypeFlag::ETS_BOOLEAN) && unboxed_r != nullptr &&
         unboxed_r->HasTypeFlag(checker::TypeFlag::ETS_BOOLEAN)) {
         FlagExpressionWithUnboxing(left_type, unboxed_l, left);
@@ -253,6 +269,10 @@ checker::Type *ETSChecker::CheckBinaryOperatorLogical(ir::Expression *left, ir::
                                                       lexer::SourcePosition pos, checker::Type *const left_type,
                                                       checker::Type *const right_type, Type *unboxed_l, Type *unboxed_r)
 {
+    if (left_type->IsETSUnionType() || right_type->IsETSUnionType()) {
+        ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+    }
+
     if (unboxed_l == nullptr || !unboxed_l->IsConditionalExprType() || unboxed_r == nullptr ||
         !unboxed_r->IsConditionalExprType()) {
         ThrowTypeError("Bad operand type, the types of the operands must be of possible condition type.", pos);
@@ -278,8 +298,8 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorStrictEqual(ir::Expres
                                                                       checker::Type *const right_type)
 {
     checker::Type *ts_type {};
-    if (!(left_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) ||
-        !(right_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT))) {
+    if (!(left_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) || left_type->IsETSUnionType()) ||
+        !(right_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) || right_type->IsETSUnionType())) {
         ThrowTypeError("Both operands have to be reference types", pos);
     }
 
@@ -374,6 +394,12 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorLessGreater(
     ir::Expression *left, ir::Expression *right, lexer::TokenType operation_type, lexer::SourcePosition pos,
     bool is_equal_op, checker::Type *const left_type, checker::Type *const right_type, Type *unboxed_l, Type *unboxed_r)
 {
+    if ((left_type->IsETSUnionType() || right_type->IsETSUnionType()) &&
+        operation_type != lexer::TokenType::PUNCTUATOR_EQUAL &&
+        operation_type != lexer::TokenType::PUNCTUATOR_NOT_EQUAL) {
+        ThrowTypeError("Bad operand type, unions are not allowed in binary expressions except equality.", pos);
+    }
+
     checker::Type *ts_type {};
     auto [promotedType, bothConst] =
         ApplyBinaryOperatorPromotion(unboxed_l, unboxed_r, TypeFlag::ETS_NUMERIC, !is_equal_op);

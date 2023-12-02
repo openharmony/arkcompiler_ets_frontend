@@ -23,6 +23,10 @@ namespace panda::es2panda::compiler {
 
 varbinder::Scope *NearestScope(const ir::AstNode *ast)
 {
+    if (ast == nullptr) {
+        return nullptr;
+    }
+
     while (!ast->IsScopeBearer()) {
         ast = ast->Parent();
         ASSERT(ast != nullptr);

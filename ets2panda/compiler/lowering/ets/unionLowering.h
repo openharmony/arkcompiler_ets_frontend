@@ -22,9 +22,9 @@ namespace panda::es2panda::compiler {
 
 class UnionLowering : public Phase {
 public:
-    std::string const &Name() override;
-    bool Perform(CompilerContext *ctx, parser::Program *program) override;
-    bool Postcondition(CompilerContext *ctx, const parser::Program *program) override;
+    std::string_view Name() override;
+    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
+    bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
 };
 
 }  // namespace panda::es2panda::compiler

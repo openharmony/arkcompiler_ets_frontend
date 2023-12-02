@@ -35,6 +35,26 @@ public:
     {
     }
 
+    ir::TypeNode *TypeReference()
+    {
+        return type_reference_;
+    }
+
+    ir::TypeNode const *TypeReference() const
+    {
+        return type_reference_;
+    }
+
+    ir::Expression *Dimension()
+    {
+        return dimension_;
+    }
+
+    ir::Expression const *Dimension() const
+    {
+        return dimension_;
+    }
+
     // NOLINTNEXTLINE(google-default-arguments)
     [[nodiscard]] ETSNewArrayInstanceExpression *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 

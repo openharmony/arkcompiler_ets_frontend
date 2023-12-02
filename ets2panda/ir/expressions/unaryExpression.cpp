@@ -283,7 +283,7 @@ checker::Type *UnaryExpression::Check(checker::ETSChecker *checker)
                 break;
             }
 
-            SetTsType(operand_type);
+            SetTsType(checker->GlobalETSBooleanType());
             break;
         }
         case lexer::TokenType::PUNCTUATOR_DOLLAR_DOLLAR: {

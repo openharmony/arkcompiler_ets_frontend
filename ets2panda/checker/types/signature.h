@@ -79,7 +79,6 @@ enum class SignatureFlags : uint32_t {
     INTERNAL = 1U << 12U,
     NEED_RETURN_TYPE = 1U << 13U,
     INFERRED_RETURN_TYPE = 1U << 14U,
-    SUBSTITUTED_RETURN_TYPE = 1U << 15U,
 
     INTERNAL_PROTECTED = INTERNAL | PROTECTED,
     FUNCTIONAL_INTERFACE_SIGNATURE = VIRTUAL | ABSTRACT | CALL | PUBLIC | TYPE
@@ -89,8 +88,8 @@ DEFINE_BITOPS(SignatureFlags)
 
 class Signature {
 public:
-    Signature(SignatureInfo *signature_info, Type *return_type)
-        : signature_info_(signature_info), return_type_(return_type)
+    Signature(SignatureInfo *signature_info, Type *return_type, Signature *base_sig = nullptr)
+        : signature_info_(signature_info), return_type_(return_type), base_sig_(base_sig)
     {
     }
 
@@ -221,6 +220,8 @@ public:
         return (flags_ & flag) != 0U;
     }
 
+    bool IsBaseReturnDiff() const;
+
     bool IsFinal() const noexcept
     {
         return HasSignatureFlag(SignatureFlags::FINAL);
@@ -258,6 +259,7 @@ private:
     util::StringView internal_name_ {};
     ETSObjectType *owner_obj_ {};
     varbinder::Variable *owner_var_ {};
+    const Signature *base_sig_ = nullptr;
 };
 }  // namespace panda::es2panda::checker
 

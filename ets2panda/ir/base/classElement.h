@@ -70,6 +70,11 @@ public:
         return decorators_;
     }
 
+    const ArenaVector<Decorator *> *DecoratorsPtr() const override
+    {
+        return &Decorators();
+    }
+
     [[nodiscard]] bool IsComputed() const noexcept
     {
         return is_computed_;
@@ -85,6 +90,11 @@ public:
         if (decorator != nullptr) {
             decorators_.emplace_back(decorator);
         }
+    }
+
+    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    {
+        return true;
     }
 
     [[nodiscard]] virtual PrivateFieldKind ToPrivateFieldKind(bool is_static) const = 0;

@@ -55,6 +55,11 @@ public:
         return decorators_;
     }
 
+    const ArenaVector<Decorator *> *DecoratorsPtr() const override
+    {
+        return &Decorators();
+    }
+
     void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators) override
     {
         decorators_ = std::move(decorators);

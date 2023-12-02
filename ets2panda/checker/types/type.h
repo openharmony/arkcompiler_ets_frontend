@@ -207,6 +207,13 @@ public:
         return util::UString(ss.str(), allocator).View();
     }
 
+    std::stringstream ToAssemblerName() const
+    {
+        std::stringstream ss;
+        ToAssemblerType(ss);
+        return ss;
+    }
+
     bool IsLambdaObject() const;
     virtual void ToString(std::stringstream &ss) const = 0;
     virtual void ToStringAsSrc(std::stringstream &ss) const;

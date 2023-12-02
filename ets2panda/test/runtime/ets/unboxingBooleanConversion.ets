@@ -24,7 +24,7 @@ function returnRefBool(a: boolean): Boolean {
 function main(): void {
     let a: Boolean = false;
 
-    let b: Boolean = a || returnTrue();
+    let b: Boolean = a && returnTrue();
     assert b == true
 
     let c: Boolean = returnRefBool(a || returnRefBool(returnTrue() && returnRefBool(a)));

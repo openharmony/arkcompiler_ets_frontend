@@ -92,6 +92,12 @@ public:
         SetStart(left_->Start());
     }
 
+    void SetRight(Expression *expr) noexcept
+    {
+        right_ = expr;
+        SetEnd(right_->End());
+    }
+
     void SetResult(Expression *expr) noexcept
     {
         left_ = expr;

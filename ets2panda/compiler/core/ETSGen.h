@@ -69,7 +69,7 @@ public:
 
     void StoreProperty(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
                        const util::StringView &name);
-    void LoadProperty(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
+    void LoadProperty(const ir::AstNode *node, const checker::Type *prop_type, bool is_generic, VReg obj_reg,
                       const util::StringView &full_name);
     void StorePropertyDynamic(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
                               const util::StringView &name, Language lang);
@@ -80,7 +80,7 @@ public:
     void LoadElementDynamic(const ir::AstNode *node, VReg object_reg, Language lang);
 
     void StoreUnionProperty(const ir::AstNode *node, VReg obj_reg, const util::StringView &name);
-    void LoadUnionProperty(const ir::AstNode *node, const checker::Type *prop_type, VReg obj_reg,
+    void LoadUnionProperty(const ir::AstNode *node, const checker::Type *prop_type, bool is_generic, VReg obj_reg,
                            const util::StringView &prop_name);
 
     void LoadUndefinedDynamic(const ir::AstNode *node, Language lang);
@@ -102,10 +102,11 @@ public:
     bool TryLoadConstantExpression(const ir::Expression *node);
     void Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, Label *if_false);
 
-    template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
-    void ResolveConditionalResultFloat(const ir::AstNode *node, [[maybe_unused]] Label *if_false, Label *end)
+    template <typename CondCompare, bool BEFORE_LOGICAL_NOT>
+    void ResolveConditionalResultFloat(const ir::AstNode *node, Label *real_end_label)
     {
-        auto type = node->IsExpression() ? node->AsExpression()->TsType() : GetAccumulatorType();
+        auto type = node->IsExpression() && !node->AsExpression()->IsUnaryExpression() ? node->AsExpression()->TsType()
+                                                                                       : GetAccumulatorType();
         VReg tmp_reg = AllocReg();
         StoreAccumulator(node, tmp_reg);
         if (type->IsFloatType()) {
@@ -113,17 +114,8 @@ public:
         } else {
             DoubleIsNaN(node);
         }
-
         Sa().Emit<Xori>(node, 1);
-        auto real_end_label = [](Label *end_label, Label *if_false_label, ETSGen *etsgn, bool use_false_label) {
-            if (use_false_label) {
-                return if_false_label;
-            }
-            if (end_label == nullptr) {
-                end_label = etsgn->AllocLabel();
-            }
-            return end_label;
-        }(end, if_false, this, USE_FALSE_LABEL);
+
         BranchIfFalse(node, real_end_label);
         LoadAccumulator(node, tmp_reg);
         VReg zero_reg = AllocReg();
@@ -138,39 +130,40 @@ public:
     }
 
     template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
-    void ResolveConditionalResultNumeric(const ir::AstNode *node, [[maybe_unused]] Label *if_false, Label *end)
+    void ResolveConditionalResultNumeric(const ir::AstNode *node, [[maybe_unused]] Label *if_false, Label **end)
     {
-        auto type = node->IsExpression() ? node->AsExpression()->TsType() : GetAccumulatorType();
-        switch (type->TypeFlags()) {
-            case checker::TypeFlag::LONG: {
-                CastToInt(node);
-                [[fallthrough]];
+        auto type = node->IsExpression() && !node->AsExpression()->IsUnaryExpression() ? node->AsExpression()->TsType()
+                                                                                       : GetAccumulatorType();
+
+        auto real_end_label = [end, if_false, this](bool use_false_label) {
+            if (use_false_label) {
+                return if_false;
             }
-            case checker::TypeFlag::BYTE:
-            case checker::TypeFlag::CHAR:
-            case checker::TypeFlag::SHORT:
-            case checker::TypeFlag::INT: {
-                if constexpr (BEFORE_LOGICAL_NOT) {
-                    Label *zero_primitive = AllocLabel();
-                    BranchIfFalse(node, zero_primitive);
-                    ToBinaryResult(node, zero_primitive);
-                }
-                break;
+            if ((*end) == nullptr) {
+                (*end) = AllocLabel();
             }
-            case checker::TypeFlag::DOUBLE:
-            case checker::TypeFlag::FLOAT: {
-                ResolveConditionalResultFloat<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, if_false, end);
-                break;
-            }
-            default:
-                break;
+            return (*end);
+        }(USE_FALSE_LABEL);
+        if (type->IsDoubleType() || type->IsFloatType()) {
+            ResolveConditionalResultFloat<CondCompare, BEFORE_LOGICAL_NOT>(node, real_end_label);
+        }
+        if (type->IsLongType()) {
+            VReg zero_reg = AllocReg();
+            MoveImmediateToRegister(node, zero_reg, checker::TypeFlag::LONG, 0);
+            BinaryNumberComparison<CmpWide, CondCompare>(node, zero_reg, real_end_label);
+        }
+        if constexpr (BEFORE_LOGICAL_NOT) {
+            Label *zero_primitive = AllocLabel();
+            BranchIfFalse(node, zero_primitive);
+            ToBinaryResult(node, zero_primitive);
         }
     }
 
-    template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
-    void ResolveConditionalResultObject(const ir::AstNode *node, [[maybe_unused]] Label *if_false)
+    template <typename CondCompare, bool BEFORE_LOGICAL_NOT>
+    void ResolveConditionalResultObject(const ir::AstNode *node)
     {
-        auto type = node->IsExpression() ? node->AsExpression()->TsType() : GetAccumulatorType();
+        auto type = node->IsExpression() && !node->AsExpression()->IsUnaryExpression() ? node->AsExpression()->TsType()
+                                                                                       : GetAccumulatorType();
         if (type->IsETSStringType()) {
             LoadStringLength(node);
             if constexpr (BEFORE_LOGICAL_NOT) {
@@ -178,6 +171,27 @@ public:
                 BranchIfFalse(node, zero_lenth);
                 ToBinaryResult(node, zero_lenth);
             }
+        } else if (node->IsExpression() && node->AsExpression()->IsIdentifier() &&
+                   node->AsExpression()->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::VAR)) {
+            Label *is_string = AllocLabel();
+            Label *end = AllocLabel();
+            compiler::VReg obj_reg = AllocReg();
+            StoreAccumulator(node, obj_reg);
+
+            Sa().Emit<Isinstance>(node, Checker()->GlobalBuiltinETSStringType()->AsETSStringType()->AssemblerName());
+            BranchIfTrue(node, is_string);
+            Sa().Emit<Ldai>(node, 1);
+            Branch(node, end);
+            SetLabel(node, is_string);
+            LoadAccumulator(node, obj_reg);
+            CastToString(node);
+            LoadStringLength(node);
+            if constexpr (BEFORE_LOGICAL_NOT) {
+                Label *zero_lenth = AllocLabel();
+                BranchIfFalse(node, zero_lenth);
+                ToBinaryResult(node, zero_lenth);
+            }
+            SetLabel(node, end);
         } else {
             Sa().Emit<Ldai>(node, 1);
         }
@@ -200,11 +214,8 @@ public:
     template <typename CondCompare, bool BEFORE_LOGICAL_NOT, bool USE_FALSE_LABEL>
     void ResolveConditionalResult(const ir::AstNode *node, [[maybe_unused]] Label *if_false)
     {
-        auto type = node->IsExpression() ? node->AsExpression()->TsType() : GetAccumulatorType();
-        if (type->IsETSObjectType() &&
-            type->AsETSObjectType()->HasObjectFlag(panda::es2panda::checker::ETSObjectFlags::UNBOXABLE_TYPE)) {
-            type = GetAccumulatorType();
-        }
+        auto type = node->IsExpression() && !node->AsExpression()->IsUnaryExpression() ? node->AsExpression()->TsType()
+                                                                                       : GetAccumulatorType();
         if (type->IsETSBooleanType()) {
             return;
         }
@@ -228,9 +239,9 @@ public:
             StoreAccumulator(node, obj_reg);
             LoadArrayLength(node, obj_reg);
         } else if (type->IsETSObjectType()) {
-            ResolveConditionalResultObject<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, if_false);
+            ResolveConditionalResultObject<CondCompare, BEFORE_LOGICAL_NOT>(node);
         } else {
-            ResolveConditionalResultNumeric<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, if_false, end);
+            ResolveConditionalResultNumeric<CondCompare, BEFORE_LOGICAL_NOT, USE_FALSE_LABEL>(node, if_false, &end);
         }
         if (if_nullish != nullptr) {
             Branch(node, end);
@@ -248,10 +259,10 @@ public:
         ResolveConditionalResult<Jeqz, BEFORE_LOGICAL_NOT, FALSE_LABEL_EXISTED>(node, if_false);
     }
 
-    template <bool BEFORE_LOGICAL_NOT = false>
+    template <bool BEFORE_LOGICAL_NOT = false, bool FALSE_LABEL_EXISTED = true>
     void ResolveConditionalResultIfTrue(const ir::AstNode *node, Label *if_false = nullptr)
     {
-        ResolveConditionalResult<Jnez, BEFORE_LOGICAL_NOT, false>(node, if_false);
+        ResolveConditionalResult<Jnez, BEFORE_LOGICAL_NOT, FALSE_LABEL_EXISTED>(node, if_false);
     }
 
     void BranchIfFalse(const ir::AstNode *node, Label *if_false)
@@ -407,6 +418,7 @@ public:
             ApplyConversion(node, target_type_);
         }
     }
+    void ApplyConversionCast(const ir::AstNode *node, const checker::Type *target_type);
     void ApplyConversion(const ir::AstNode *node, const checker::Type *target_type);
     void ApplyCast(const ir::AstNode *node, const checker::Type *target_type);
     void EmitUnboxingConversion(const ir::AstNode *node);
@@ -649,6 +661,12 @@ private:
     void UnaryMinus(const ir::AstNode *node);
     void UnaryTilde(const ir::AstNode *node);
     void UnaryDollarDollar(const ir::AstNode *node);
+
+    util::StringView ToCheckCastTypeView(const es2panda::checker::Type *type) const;
+    void EmitCheckCast(const ir::AstNode *node, const es2panda::checker::Type *type);
+
+    // To avoid verifier error checkcast is needed
+    void InsertNeededCheckCast(const checker::Signature *signature, const ir::AstNode *node);
 
     template <typename T>
     void StoreValueIntoArray(const ir::AstNode *const node, const VReg arr, const VReg index)
@@ -950,10 +968,7 @@ private:
             }
         }
 
-        // To avoid verifier error checkcast is needed
-        if (signature->HasSignatureFlag(checker::SignatureFlags::SUBSTITUTED_RETURN_TYPE)) {
-            Ra().Emit<Checkcast>(node, signature->ReturnType()->AsETSObjectType()->AssemblerName());
-        }
+        InsertNeededCheckCast(signature, node);
     }
 
     template <typename Short, typename General, typename Range>
@@ -1009,10 +1024,7 @@ private:
             }
         }
 
-        // To avoid verifier error checkcast is needed
-        if (signature->HasSignatureFlag(checker::SignatureFlags::SUBSTITUTED_RETURN_TYPE)) {
-            Ra().Emit<Checkcast>(node, signature->ReturnType()->AsETSObjectType()->AssemblerName());
-        }
+        InsertNeededCheckCast(signature, node);
     }
 #undef COMPILE_ARG
 
@@ -1067,10 +1079,7 @@ private:
             }
         }
 
-        // To avoid verifier error checkcast is needed
-        if (signature->HasSignatureFlag(checker::SignatureFlags::SUBSTITUTED_RETURN_TYPE)) {
-            Ra().Emit<Checkcast>(node, signature->ReturnType()->AsETSObjectType()->AssemblerName());
-        }
+        InsertNeededCheckCast(signature, node);
     }
 
 #undef COMPILE_ARG

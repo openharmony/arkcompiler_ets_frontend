@@ -40,6 +40,8 @@ public:
 private:
     static bool CompileBinaryExpr(PandaGen *pg, const ir::BinaryExpression *bin_expr, Label *false_label);
     static bool CompileBinaryExpr(ETSGen *etsg, const ir::BinaryExpression *bin_expr, Label *false_label);
+    static void CompileLogicalAndExpr(ETSGen *etsg, const ir::BinaryExpression *bin_expr, Label *false_label);
+    static void CompileLogicalOrExpr(ETSGen *etsg, const ir::BinaryExpression *bin_expr, Label *false_label);
 };
 }  // namespace panda::es2panda::compiler
 

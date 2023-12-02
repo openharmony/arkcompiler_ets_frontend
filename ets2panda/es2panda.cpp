@@ -16,6 +16,7 @@
 #include "es2panda.h"
 
 #include "compiler/core/compilerImpl.h"
+#include "util/options.h"
 
 #include <iostream>
 #include <thread>
@@ -56,10 +57,12 @@ SourceFile::SourceFile(std::string_view fn, std::string_view s, std::string_view
 {
 }
 
-Compiler::Compiler(ScriptExtension ext) : Compiler(ext, DEFAULT_THREAD_COUNT) {}
+Compiler::Compiler(ScriptExtension ext) : Compiler(ext, DEFAULT_THREAD_COUNT, {}) {}
 
-Compiler::Compiler(ScriptExtension ext, size_t thread_count)
-    : compiler_(new compiler::CompilerImpl(thread_count)), ext_(ext)
+Compiler::Compiler(ScriptExtension ext, size_t thread_count) : Compiler(ext, thread_count, {}) {}
+
+Compiler::Compiler(ScriptExtension ext, size_t thread_count, std::vector<util::Plugin> &&plugins)
+    : plugins_(std::move(plugins)), compiler_(new compiler::CompilerImpl(thread_count, &plugins_)), ext_(ext)
 {
 }
 

@@ -17,22 +17,25 @@
 #define ES2PANDA_COMPILER_LOWERING_PHASE_H
 
 #include "parser/program/program.h"
+#include "public/public.h"
 
 namespace panda::es2panda::compiler {
 
 class Phase {
 public:
     /* If Apply returns false, processing is stopped. */
-    bool Apply(CompilerContext *ctx, parser::Program *program);
+    bool Apply(public_lib::Context *ctx, parser::Program *program);
 
-    virtual std::string const &Name() = 0;
+    virtual std::string_view Name() = 0;
 
-    virtual bool Precondition([[maybe_unused]] CompilerContext *ctx, [[maybe_unused]] const parser::Program *program)
+    virtual bool Precondition([[maybe_unused]] public_lib::Context *ctx,
+                              [[maybe_unused]] const parser::Program *program)
     {
         return true;
     }
-    virtual bool Perform(CompilerContext *ctx, parser::Program *program) = 0;
-    virtual bool Postcondition([[maybe_unused]] CompilerContext *ctx, [[maybe_unused]] const parser::Program *program)
+    virtual bool Perform(public_lib::Context *ctx, parser::Program *program) = 0;
+    virtual bool Postcondition([[maybe_unused]] public_lib::Context *ctx,
+                               [[maybe_unused]] const parser::Program *program)
     {
         return true;
     }

@@ -15,6 +15,7 @@
 
 #include "compilerImpl.h"
 
+#include "es2panda.h"
 #include "compiler/core/compilerContext.h"
 #include "compiler/core/compileQueue.h"
 #include "compiler/core/compilerImpl.h"
@@ -41,7 +42,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/ASchecker.h"
 #include "checker/JSchecker.h"
-#include "es2panda.h"
+#include "public/public.h"
 #include "util/declgenEts2Ts.h"
 
 namespace panda::es2panda::compiler {
@@ -86,13 +87,28 @@ static CompilerContext::CodeGenCb MakeCompileJob()
     };
 }
 
+static void SetupPublicContext(public_lib::Context *context, const SourceFile *source_file, ArenaAllocator *allocator,
+                               CompileQueue *queue, std::vector<util::Plugin> const *plugins,
+                               parser::ParserImpl *parser, CompilerContext *compiler_context)
+{
+    context->source_file = source_file;
+    context->allocator = allocator;
+    context->queue = queue;
+    context->plugins = plugins;
+    context->parser = parser;
+    context->checker = compiler_context->Checker();
+    context->analyzer = context->checker->GetAnalyzer();
+    context->compiler_context = compiler_context;
+    context->emitter = compiler_context->GetEmitter();
+}
+
 using EmitCb = std::function<pandasm::Program *(compiler::CompilerContext *)>;
 using PhaseListGetter = std::function<std::vector<compiler::Phase *>()>;
 
 template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
           typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
 static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const PhaseListGetter &get_phases,
-                                        const EmitCb &emit_cb)
+                                        CompilerImpl *compiler_impl)
 {
     ArenaAllocator allocator(SpaceType::SPACE_TYPE_COMPILER, nullptr, true);
     auto program = parser::Program::NewProgram<VarBinder>(&allocator);
@@ -111,8 +127,11 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
 
     auto emitter = Emitter(&context);
     context.SetEmitter(&emitter);
-
     context.SetParser(&parser);
+
+    public_lib::Context public_context;
+    SetupPublicContext(&public_context, &unit.input, &allocator, compiler_impl->Queue(), &compiler_impl->Plugins(),
+                       &parser, &context);
 
     parser.ParseScript(unit.input, unit.options.compilation_mode == CompilationMode::GEN_STD_LIB);
     if constexpr (std::is_same_v<Parser, parser::ETSParser> && std::is_same_v<VarBinder, varbinder::ETSBinder>) {
@@ -120,44 +139,42 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
                                                                                       &allocator);
     }
     for (auto *phase : get_phases()) {
-        if (!phase->Apply(&context, &program)) {
+        if (!phase->Apply(&public_context, &program)) {
             return nullptr;
         }
     }
 
     emitter.GenAnnotation();
 
-    return emit_cb(&context);
+    return compiler_impl->Emit(&context);
 }
 
 pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit)
 {
-    auto emit_cb = [this](CompilerContext *context) -> pandasm::Program * { return Emit(context); };
-
     switch (unit.ext) {
         case ScriptExtension::TS: {
             return CreateCompiler<parser::TSParser, varbinder::TSBinder, checker::TSChecker, checker::TSAnalyzer,
                                   compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
                                   compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetTrivialPhaseList,
-                                                                                    emit_cb);
+                                                                                    this);
         }
         case ScriptExtension::AS: {
             return CreateCompiler<parser::ASParser, varbinder::ASBinder, checker::ASChecker, checker::TSAnalyzer,
                                   compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
                                   compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetTrivialPhaseList,
-                                                                                    emit_cb);
+                                                                                    this);
         }
         case ScriptExtension::ETS: {
             return CreateCompiler<parser::ETSParser, varbinder::ETSBinder, checker::ETSChecker, checker::ETSAnalyzer,
                                   compiler::ETSCompiler, compiler::ETSGen, compiler::StaticRegSpiller,
                                   compiler::ETSFunctionEmitter, compiler::ETSEmitter>(unit, compiler::GetETSPhaseList,
-                                                                                      emit_cb);
+                                                                                      this);
         }
         case ScriptExtension::JS: {
             return CreateCompiler<parser::JSParser, varbinder::JSBinder, checker::JSChecker, checker::TSAnalyzer,
                                   compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
                                   compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetTrivialPhaseList,
-                                                                                    emit_cb);
+                                                                                    this);
         }
         default: {
             UNREACHABLE();

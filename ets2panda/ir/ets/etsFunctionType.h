@@ -80,6 +80,11 @@ public:
         functional_interface_ = functional_interface;
     }
 
+    ir::ScriptFunctionFlags Flags()
+    {
+        return func_flags_;
+    }
+
     bool IsThrowing() const
     {
         return (func_flags_ & ir::ScriptFunctionFlags::THROWS) != 0;

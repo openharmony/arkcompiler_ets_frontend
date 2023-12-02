@@ -22,9 +22,11 @@
 #include "util/arktsconfig.h"
 #include "util/generateBin.h"
 #include "util/options.h"
+#include "util/plugin.h"
 
 #include <iostream>
 #include <memory>
+#include <optional>
 
 namespace panda::es2panda::aot {
 using mem::MemConfig;
@@ -106,6 +108,21 @@ static int CompileFromConfig(es2panda::Compiler &compiler, util::Options *option
     return overall_res;
 }
 
+static std::optional<std::vector<util::Plugin>> InitializePlugins(std::vector<std::string> const &names)
+{
+    std::vector<util::Plugin> res;
+    for (auto &name : names) {
+        auto plugin = util::Plugin(util::StringView {name});
+        if (!plugin.IsOk()) {
+            std::cerr << "Error: Failed to load plugin " << name << std::endl;
+            return {};
+        }
+        plugin.Initialize();
+        res.push_back(std::move(plugin));
+    }
+    return {std::move(res)};
+}
+
 static int Run(int argc, const char **argv)
 {
     auto options = std::make_unique<util::Options>();
@@ -118,7 +135,11 @@ static int Run(int argc, const char **argv)
     Logger::ComponentMask mask {};
     mask.set(Logger::Component::ES2PANDA);
     Logger::InitializeStdLogging(Logger::LevelFromString(options->LogLevel()), mask);
-    es2panda::Compiler compiler(options->Extension(), options->ThreadCount());
+    auto plugins_opt = InitializePlugins(options->CompilerOptions().plugins);
+    if (!plugins_opt.has_value()) {
+        return 1;
+    }
+    es2panda::Compiler compiler(options->Extension(), options->ThreadCount(), std::move(plugins_opt.value()));
 
     if (options->CompilerOptions().compilation_mode == CompilationMode::PROJECT) {
         return CompileFromConfig(compiler, options.get());

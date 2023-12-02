@@ -17,6 +17,7 @@
 #define ES2PANDA_COMPILER_CHECKER_TYPES_ETS_UNION_TYPE_H
 
 #include "checker/types/type.h"
+#include "checker/types/ets/etsObjectType.h"
 
 namespace panda::es2panda::checker {
 class GlobalTypesHolder;
@@ -60,6 +61,7 @@ public:
     }
 
     void ToString(std::stringstream &ss) const override;
+    void ToAssemblerType(std::stringstream &ss) const override;
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
@@ -68,10 +70,18 @@ public:
     void CastToThis(TypeRelation *relation, Type *source);
     Type *FindTypeIsCastableToThis(ir::Expression *node, TypeRelation *relation, Type *source) const;
     Type *FindTypeIsCastableToSomeType(ir::Expression *node, TypeRelation *relation, Type *target) const;
+    Type *FindUnboxableType() const;
 
-    void ToAssemblerType(std::stringstream &ss) const override;
+    void SetLeastUpperBoundType(ETSChecker *checker);
 
-    Type *GetLeastUpperBoundType(ETSChecker *checker);
+    Type *GetLeastUpperBoundType(ETSChecker *checker)
+    {
+        if (lub_type_ == nullptr) {
+            SetLeastUpperBoundType(checker);
+        }
+        ASSERT(lub_type_ != nullptr);
+        return lub_type_;
+    }
 
     Type *GetLeastUpperBoundType() const
     {
@@ -79,7 +89,21 @@ public:
         return lub_type_;
     }
 
+    bool HasObjectType(ETSObjectFlags flag) const;
+
+    Type *FindExactOrBoxedType(ETSChecker *checker, Type *type) const;
+
     static Type *HandleUnionType(ETSUnionType *union_type);
+
+    std::tuple<bool, bool> ResolveConditionExpr() const override
+    {
+        for (auto tp : ConstituentTypes()) {
+            if (!tp->IsConditionalExprType()) {
+                return {true, false};
+            }
+        }
+        return {true, true};
+    }
 
 private:
     static bool EachTypeRelatedToSomeType(TypeRelation *relation, ETSUnionType *source, ETSUnionType *target);

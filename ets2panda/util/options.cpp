@@ -41,21 +41,31 @@ Options::~Options()
     delete argparser_;
 }
 
-static std::unordered_set<std::string> StringToStringSet(const std::string &str)
+static std::vector<std::string> SplitToStringVector(std::string const &str)
 {
-    std::unordered_set<std::string> res;
+    std::vector<std::string> res;
     std::string_view curr_str {str};
     auto ix = curr_str.find(',');
     while (ix != std::string::npos) {
         if (ix != 0) {
-            res.insert(std::string(curr_str.substr(0, ix)));
+            res.emplace_back(curr_str.substr(0, ix));
         }
         curr_str = curr_str.substr(ix + 1);
         ix = curr_str.find(',');
     }
 
     if (!curr_str.empty()) {
-        res.insert(std::string(curr_str));
+        res.emplace_back(curr_str);
+    }
+    return res;
+}
+
+static std::unordered_set<std::string> SplitToStringSet(std::string const &str)
+{
+    std::vector<std::string> vec = SplitToStringVector(str);
+    std::unordered_set<std::string> res;
+    for (auto &elem : vec) {
+        res.emplace(elem);
     }
     return res;
 }
@@ -167,6 +177,7 @@ bool Options::Parse(int argc, const char **argv)
     panda::PandArg<std::string> log_level("log-level", "error", "Log-level");
     panda::PandArg<std::string> std_lib("stdlib", "", "Path to standard library");
     panda::PandArg<bool> gen_std_lib("gen-stdlib", false, "Gen standard library");
+    panda::PandArg<std::string> plugins("plugins", "", "Plugins");
     panda::PandArg<std::string> skip_phases("skip-phases", "", "Phases to skip");
     panda::PandArg<std::string> dump_before_phases("dump-before-phases", "",
                                                    "Generate program dump before running phases in the list");
@@ -198,6 +209,7 @@ bool Options::Parse(int argc, const char **argv)
     argparser_->Add(&log_level);
     argparser_->Add(&std_lib);
     argparser_->Add(&gen_std_lib);
+    argparser_->Add(&plugins);
     argparser_->Add(&skip_phases);
     argparser_->Add(&dump_before_phases);
     argparser_->Add(&dump_after_phases);
@@ -387,9 +399,10 @@ bool Options::Parse(int argc, const char **argv)
     compiler_options_.std_lib = std_lib.GetValue();
     compiler_options_.compilation_mode = compilation_mode;
     compiler_options_.is_ets_module = op_ets_module.GetValue();
-    compiler_options_.skip_phases = StringToStringSet(skip_phases.GetValue());
-    compiler_options_.dump_before_phases = StringToStringSet(dump_before_phases.GetValue());
-    compiler_options_.dump_after_phases = StringToStringSet(dump_after_phases.GetValue());
+    compiler_options_.plugins = SplitToStringVector(plugins.GetValue());
+    compiler_options_.skip_phases = SplitToStringSet(skip_phases.GetValue());
+    compiler_options_.dump_before_phases = SplitToStringSet(dump_before_phases.GetValue());
+    compiler_options_.dump_after_phases = SplitToStringSet(dump_after_phases.GetValue());
 
     return true;
 }

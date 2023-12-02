@@ -263,6 +263,12 @@ public:
         variable_ = variable;
     }
 
+    // When no decorators are allowed, we cannot return a reference to an empty vector.
+    virtual const ArenaVector<ir::Decorator *> *DecoratorsPtr() const
+    {
+        return nullptr;
+    }
+
     virtual void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators)
     {
         UNREACHABLE();
@@ -460,6 +466,7 @@ public:
     void TransformChildrenRecursively(const NodeTransformer &cb);
     void IterateRecursively(const NodeTraverser &cb) const;
     bool IsAnyChild(const NodePredicate &cb) const;
+    AstNode *FindChild(const NodePredicate &cb) const;
 
     std::string DumpJSON() const;
 
@@ -582,8 +589,6 @@ public:
 
     NO_COPY_OPERATOR(AnnotatedAstNode);
     NO_MOVE_SEMANTIC(AnnotatedAstNode);
-
-    void CloneTypeAnnotation(ArenaAllocator *allocator);
 
 protected:
     explicit AnnotatedAstNode(AstNodeType const type, TypeNode *const type_annotation)

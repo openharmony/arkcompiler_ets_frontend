@@ -762,7 +762,6 @@ Type *ETSObjectType::Instantiate(ArenaAllocator *const allocator, TypeRelation *
     for (auto *const type_argument : TypeArguments()) {
         copied_type->TypeArguments().emplace_back(type_argument->Instantiate(allocator, relation, global_types));
     }
-
     copied_type->SetBaseType(this);
     copied_type->properties_instantiated_ = false;
     copied_type->relation_ = relation;

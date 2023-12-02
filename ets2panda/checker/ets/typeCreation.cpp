@@ -143,6 +143,7 @@ Type *ETSChecker::CreateETSUnionType(ArenaVector<Type *> &&constituent_types)
     }
 
     auto *new_union_type = Allocator()->New<ETSUnionType>(std::move(new_constituent_types));
+    new_union_type->SetLeastUpperBoundType(this);
 
     return ETSUnionType::HandleUnionType(new_union_type);
 }

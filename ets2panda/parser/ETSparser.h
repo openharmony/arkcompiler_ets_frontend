@@ -51,7 +51,8 @@ public:
     ETSParser() = delete;
     NO_COPY_SEMANTIC(ETSParser);
     NO_MOVE_SEMANTIC(ETSParser);
-    ~ETSParser() = default;
+
+    ~ETSParser() final = default;
 
     [[nodiscard]] bool IsETSParser() const noexcept override
     {

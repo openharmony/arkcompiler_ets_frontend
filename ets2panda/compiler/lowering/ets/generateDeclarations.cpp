@@ -19,11 +19,12 @@
 #include "util/declgenEts2Ts.h"
 
 namespace panda::es2panda::compiler {
-bool GenerateTsDeclarationsPhase::Perform(CompilerContext *ctx, parser::Program *program)
+bool GenerateTsDeclarationsPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
-    auto *checker = ctx->Checker();
-    return (ctx->Options()->ts_decl_out.empty() ||
-            util::GenerateTsDeclarations(checker->AsETSChecker(), program, ctx->Options()->ts_decl_out));
+    auto *checker = ctx->checker;
+    return (
+        ctx->compiler_context->Options()->ts_decl_out.empty() ||
+        util::GenerateTsDeclarations(checker->AsETSChecker(), program, ctx->compiler_context->Options()->ts_decl_out));
 }
 
 }  // namespace panda::es2panda::compiler

@@ -72,6 +72,11 @@ public:
         return decorators_;
     }
 
+    const ArenaVector<Decorator *> *DecoratorsPtr() const override
+    {
+        return &Decorators();
+    }
+
     void AddTypeParameters(ir::TSTypeParameterDeclaration *type_params)
     {
         type_params_ = type_params;

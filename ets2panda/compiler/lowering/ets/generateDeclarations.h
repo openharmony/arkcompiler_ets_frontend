@@ -22,12 +22,11 @@ namespace panda::es2panda::compiler {
 
 class GenerateTsDeclarationsPhase : public Phase {
 public:
-    std::string const &Name() override
+    std::string_view Name() override
     {
-        static std::string const NAME = "generate-ts-declarations";
-        return NAME;
+        return "generate-ts-declarations";
     }
-    bool Perform(CompilerContext *ctx, parser::Program *program) override;
+    bool Perform(public_lib::Context *ctx, parser::Program *program) override;
 };
 
 }  // namespace panda::es2panda::compiler

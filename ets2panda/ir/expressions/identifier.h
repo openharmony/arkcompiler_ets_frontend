@@ -83,6 +83,11 @@ public:
         return decorators_;
     }
 
+    const ArenaVector<Decorator *> *DecoratorsPtr() const override
+    {
+        return &Decorators();
+    }
+
     [[nodiscard]] bool IsOptional() const noexcept
     {
         return (flags_ & IdentifierFlags::OPTIONAL) != 0;
@@ -187,6 +192,11 @@ public:
 
     // NOLINTNEXTLINE(google-default-arguments)
     [[nodiscard]] Identifier *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
+
+    bool CanHaveDecorator([[maybe_unused]] bool in_ts) const override
+    {
+        return true;
+    }
 
     [[nodiscard]] ValidationInfo ValidateExpression();
 

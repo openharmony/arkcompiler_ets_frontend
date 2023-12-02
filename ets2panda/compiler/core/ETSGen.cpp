@@ -15,7 +15,6 @@
 
 #include "ETSGen.h"
 
-#include "checker/ets/boxingConverter.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/base/classDefinition.h"
 #include "ir/statement.h"
@@ -40,6 +39,7 @@
 #include "checker/types/typeFlag.h"
 #include "checker/checker.h"
 #include "checker/ETSchecker.h"
+#include "checker/ets/boxingConverter.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "checker/types/ets/types.h"
 #include "parser/program/program.h"
@@ -290,7 +290,7 @@ void ETSGen::LoadVar(const ir::AstNode *node, varbinder::Variable const *const v
         }
         case ReferenceKind::FIELD: {
             const auto full_name = FormClassPropReference(GetVRegType(GetThisReg())->AsETSObjectType(), var->Name());
-            LoadProperty(node, var->TsType(), GetThisReg(), full_name);
+            LoadProperty(node, var->TsType(), false, GetThisReg(), full_name);
             break;
         }
         case ReferenceKind::METHOD:
@@ -422,14 +422,17 @@ void ETSGen::StoreProperty(const ir::AstNode *const node, const checker::Type *p
     }
 }
 
-void ETSGen::LoadProperty(const ir::AstNode *const node, const checker::Type *prop_type, const VReg obj_reg,
-                          const util::StringView &full_name)
+void ETSGen::LoadProperty(const ir::AstNode *const node, const checker::Type *prop_type, bool is_generic,
+                          const VReg obj_reg, const util::StringView &full_name)
 {
     if (node->IsIdentifier() && node->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::BOXED)) {
         prop_type = Checker()->GlobalBuiltinBoxType(prop_type);
     }
     if (prop_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | checker::TypeFlag::ETS_UNION)) {
         Ra().Emit<LdobjObj>(node, obj_reg, full_name);
+        if (is_generic) {
+            EmitCheckCast(node, prop_type);
+        }
     } else if (prop_type->HasTypeFlag(checker::TypeFlag::ETS_WIDE_NUMERIC)) {
         Ra().Emit<LdobjWide>(node, obj_reg, full_name);
     } else {
@@ -450,11 +453,14 @@ void ETSGen::StoreUnionProperty([[maybe_unused]] const ir::AstNode *node, [[mayb
 }
 
 void ETSGen::LoadUnionProperty([[maybe_unused]] const ir::AstNode *const node,
-                               [[maybe_unused]] const checker::Type *prop_type, [[maybe_unused]] const VReg obj_reg,
-                               [[maybe_unused]] const util::StringView &prop_name)
+                               [[maybe_unused]] const checker::Type *prop_type, [[maybe_unused]] bool is_generic,
+                               [[maybe_unused]] const VReg obj_reg, [[maybe_unused]] const util::StringView &prop_name)
 {
 #ifdef PANDA_WITH_ETS
     Ra().Emit<EtsLdobjName>(node, obj_reg, prop_name);
+    if (is_generic) {
+        EmitCheckCast(node, prop_type);
+    }
     SetAccumulatorType(prop_type);
 #else
     UNREACHABLE();
@@ -867,48 +873,8 @@ bool ETSGen::TryLoadConstantExpression(const ir::Expression *node)
     return true;
 }
 
-// NOTE: vpukhov. lower (union_value) as (primitive_type) to be two as-nodes
-static void ApplyUnboxingUnionPrimitive(ETSGen *etsg, const ir::AstNode *node)
+void ETSGen::ApplyConversionCast(const ir::AstNode *node, const checker::Type *target_type)
 {
-    if (node->IsExpression() && node->Parent()->IsTSAsExpression()) {
-        auto const *from_type = node->AsExpression()->TsType();
-        auto const *to_type = node->Parent()->AsTSAsExpression()->TsType();
-        if (from_type->IsETSUnionType() && to_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-            etsg->EmitCheckedNarrowingReferenceConversion(
-                node, checker::BoxingConverter::ETSTypeFromSource(etsg->Checker(), to_type));
-        }
-    }
-}
-
-void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *target_type)
-{
-    auto ttctx = TargetTypeContext(this, target_type);
-
-    if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) {
-        EmitBoxingConversion(node);
-        const auto boxing_flags =
-            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG);
-        node->SetBoxingUnboxingFlags(
-            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ~boxing_flags));
-        return;
-    }
-
-    if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
-        if (GetAccumulatorType()->IsNullishOrNullLike()) {  // NOTE: vpukhov. should be a CTE
-            EmitNullishGuardian(node);
-        }
-        ApplyUnboxingUnionPrimitive(this, node);
-        EmitUnboxingConversion(node);
-        const auto unboxing_flags = static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() &
-                                                                         ir::BoxingUnboxingFlags::UNBOXING_FLAG);
-        node->SetBoxingUnboxingFlags(
-            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ~unboxing_flags));
-    }
-
-    if (target_type == nullptr) {
-        return;
-    }
-
     switch (checker::ETSChecker::TypeKind(target_type)) {
         case checker::TypeFlag::DOUBLE: {
             CastToDouble(node);
@@ -938,6 +904,42 @@ void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *targe
             break;
         }
     }
+}
+
+void ETSGen::ApplyConversion(const ir::AstNode *node, const checker::Type *target_type)
+{
+    auto ttctx = TargetTypeContext(this, target_type);
+
+    if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG) != 0U) {
+        EmitBoxingConversion(node);
+        const auto boxing_flags =
+            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::BOXING_FLAG);
+        node->SetBoxingUnboxingFlags(
+            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ~boxing_flags));
+        return;
+    }
+
+    if ((node->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
+        if (GetAccumulatorType()->IsNullishOrNullLike()) {  // NOTE: vpukhov. should be a CTE
+            EmitNullishGuardian(node);
+        }
+        EmitUnboxingConversion(node);
+        const auto unboxing_flags = static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() &
+                                                                         ir::BoxingUnboxingFlags::UNBOXING_FLAG);
+        node->SetBoxingUnboxingFlags(
+            static_cast<ir::BoxingUnboxingFlags>(node->GetBoxingUnboxingFlags() & ~unboxing_flags));
+    }
+
+    if (target_type == nullptr) {
+        return;
+    }
+
+    if (target_type->IsETSUnionType()) {
+        SetAccumulatorType(target_type->AsETSUnionType()->GetLeastUpperBoundType());
+        return;
+    }
+
+    ApplyConversionCast(node, target_type);
 }
 
 void ETSGen::ApplyCast(const ir::AstNode *node, const checker::Type *target_type)
@@ -1158,7 +1160,7 @@ void ETSGen::EmitLocalBoxGet(ir::AstNode const *node, checker::Type const *conte
             break;
         default:
             Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_BOX_GET, dummy_reg_, 0);
-            Ra().Emit<Checkcast>(node, content_type->AsETSObjectType()->AssemblerName());
+            EmitCheckCast(node, content_type);
             break;
     }
     SetAccumulatorType(content_type);
@@ -1778,13 +1780,7 @@ void ETSGen::EmitCheckedNarrowingReferenceConversion(const ir::AstNode *const no
     ASSERT(target_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | checker::TypeFlag::ETS_UNION) &&
            !target_type->IsETSNullLike());
 
-    if (target_type->IsETSObjectType()) {
-        Sa().Emit<Checkcast>(node, target_type->AsETSObjectType()->AssemblerName());
-    } else {
-        std::stringstream ss;
-        target_type->AsETSArrayType()->ToAssemblerTypeWithRank(ss);
-        Sa().Emit<Checkcast>(node, util::UString(ss.str(), Allocator()).View());
-    }
+    Sa().Emit<Checkcast>(node, ToCheckCastTypeView(target_type));
     SetAccumulatorType(target_type);
 }
 
@@ -2160,6 +2156,7 @@ void ETSGen::LogicalNot(const ir::AstNode *node)
     ASSERT(GetAccumulatorType()->IsConditionalExprType());
     ResolveConditionalResultIfFalse<true, false>(node);
     Sa().Emit<Xori>(node, 1);
+    SetAccumulatorType(Checker()->GlobalETSBooleanType());
 }
 
 void ETSGen::Unary(const ir::AstNode *node, lexer::TokenType op)
@@ -2245,6 +2242,13 @@ void ETSGen::UnaryDollarDollar(const ir::AstNode *node)
     Sa().Emit<LdaStr>(node, "$$ operator can only be used with ARKUI plugin");
     StoreAccumulator(node, exception);
     EmitThrow(node, exception);
+}
+
+void ETSGen::InsertNeededCheckCast(const checker::Signature *signature, const ir::AstNode *node)
+{
+    if (signature->IsBaseReturnDiff()) {
+        EmitCheckCast(node, signature->ReturnType());
+    }
 }
 
 void ETSGen::Update(const ir::AstNode *node, lexer::TokenType op)
@@ -2422,6 +2426,10 @@ void ETSGen::LoadArrayElement(const ir::AstNode *node, VReg object_reg)
 {
     auto *element_type = GetVRegType(object_reg)->AsETSArrayType()->ElementType();
 
+    if (element_type->IsETSUnionType()) {
+        element_type = element_type->AsETSUnionType()->GetLeastUpperBoundType();
+    }
+
     switch (checker::ETSChecker::ETSType(element_type)) {
         case checker::TypeFlag::ETS_BOOLEAN:
         case checker::TypeFlag::BYTE: {
@@ -2472,6 +2480,9 @@ void ETSGen::LoadArrayElement(const ir::AstNode *node, VReg object_reg)
 
 void ETSGen::StoreArrayElement(const ir::AstNode *node, VReg object_reg, VReg index, const checker::Type *element_type)
 {
+    if (element_type->IsETSUnionType()) {
+        element_type = element_type->AsETSUnionType()->GetLeastUpperBoundType();
+    }
     switch (checker::ETSChecker::ETSType(element_type)) {
         case checker::TypeFlag::ETS_BOOLEAN:
         case checker::TypeFlag::BYTE: {
@@ -2605,6 +2616,25 @@ bool ETSGen::ExtendWithFinalizer(ir::AstNode *node, const ir::AstNode *original_
     }
 
     return ExtendWithFinalizer(parent, original_node, prev_finnaly);
+}
+
+util::StringView ETSGen::ToCheckCastTypeView(const es2panda::checker::Type *type) const
+{
+    auto asm_t = type;
+    if (type->IsETSUnionType()) {
+        asm_t = type->AsETSUnionType()->GetLeastUpperBoundType();
+    }
+    std::stringstream ss;
+    asm_t->ToAssemblerTypeWithRank(ss);
+    return util::UString(ss.str(), Allocator()).View();
+}
+
+void ETSGen::EmitCheckCast(const ir::AstNode *node, const es2panda::checker::Type *type)
+{
+    if (type->IsETSArrayType()) {
+        return;  // Since generic arrays allowed we can't add checkcast for them.
+    }
+    Ra().Emit<Checkcast>(node, ToCheckCastTypeView(type));
 }
 
 }  // namespace panda::es2panda::compiler

@@ -19,9 +19,11 @@
 #include "compiler/core/compilerContext.h"
 #include "lexer/token/sourceLocation.h"
 #include "compiler/lowering/checkerPhase.h"
+#include "compiler/lowering/plugin_phase.h"
 #include "compiler/lowering/ets/generateDeclarations.h"
 #include "compiler/lowering/ets/opAssignment.h"
 #include "compiler/lowering/ets/unionLowering.h"
+#include "public/es2panda_lib.h"
 
 namespace panda::es2panda::compiler {
 
@@ -37,25 +39,28 @@ std::vector<Phase *> GetTrivialPhaseList()
 static GenerateTsDeclarationsPhase GENERATE_TS_DECLARATIONS_PHASE;
 static OpAssignmentLowering OP_ASSIGNMENT_LOWERING;
 static UnionLowering UNION_LOWERING;
+static PluginPhase PLUGINS_AFTER_PARSE {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
+static PluginPhase PLUGINS_AFTER_CHECK {"plugins-after-check", ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck};
+static PluginPhase PLUGINS_AFTER_LOWERINGS {"plugins-after-lowering", ES2PANDA_STATE_LOWERED,
+                                            &util::Plugin::AfterLowerings};
 
 std::vector<Phase *> GetETSPhaseList()
 {
     return std::vector<Phase *> {
-        &CHECKER_PHASE,
-        &GENERATE_TS_DECLARATIONS_PHASE,
-        &OP_ASSIGNMENT_LOWERING,
-        &UNION_LOWERING,
+        &PLUGINS_AFTER_PARSE,    &CHECKER_PHASE,  &PLUGINS_AFTER_CHECK,     &GENERATE_TS_DECLARATIONS_PHASE,
+        &OP_ASSIGNMENT_LOWERING, &UNION_LOWERING, &PLUGINS_AFTER_LOWERINGS,
     };
 }
 
-bool Phase::Apply(CompilerContext *ctx, parser::Program *program)
+bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 {
-    const auto *options = ctx->Options();
-    if (options->skip_phases.count(Name()) > 0) {
+    const auto *options = ctx->compiler_context->Options();
+    const auto name = std::string {Name()};
+    if (options->skip_phases.count(name) > 0) {
         return true;
     }
 
-    if (options->dump_before_phases.count(Name()) > 0) {
+    if (options->dump_before_phases.count(name) > 0) {
         std::cout << "Before phase " << Name() << ":" << std::endl;
         std::cout << program->Dump() << std::endl;
     }
@@ -66,8 +71,8 @@ bool Phase::Apply(CompilerContext *ctx, parser::Program *program)
         // NOTE(tatiana): Add some error processing
     }
     if (!Precondition(ctx, program)) {
-        ctx->Checker()->ThrowTypeError({"Precondition check failed for ", util::StringView {Name()}},
-                                       lexer::SourcePosition {});
+        ctx->checker->ThrowTypeError({"Precondition check failed for ", util::StringView {Name()}},
+                                     lexer::SourcePosition {});
     }
 #endif
 
@@ -75,7 +80,7 @@ bool Phase::Apply(CompilerContext *ctx, parser::Program *program)
         return false;
     }
 
-    if (options->dump_after_phases.count(Name()) > 0) {
+    if (options->dump_after_phases.count(name) > 0) {
         std::cout << "After phase " << Name() << ":" << std::endl;
         std::cout << program->Dump() << std::endl;
     }
@@ -86,8 +91,8 @@ bool Phase::Apply(CompilerContext *ctx, parser::Program *program)
         // NOTE(tatiana): Add some error processing
     }
     if (!Postcondition(ctx, program)) {
-        ctx->Checker()->ThrowTypeError({"Postcondition check failed for ", util::StringView {Name()}},
-                                       lexer::SourcePosition {});
+        ctx->checker->ThrowTypeError({"Postcondition check failed for ", util::StringView {Name()}},
+                                     lexer::SourcePosition {});
     }
 #endif
 
