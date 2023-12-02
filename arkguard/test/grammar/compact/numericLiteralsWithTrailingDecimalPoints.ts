@@ -18,37 +18,33 @@
 1. + 2.0 + 3.;
 
 var i: number = 1;
-var case1 = i.toString();
-var case3 = 3 .toString();
-var case4 = 3    .toString();
-var case5 = 3	.toString();
-var case6 = 3.['toString']();
-var case7 = 3
+var test1 = i.toString();
+var test3 = 3 .toString();
+var test4 = 3    .toString();
+var test5 = 3	.toString();
+var test6 = 3.['toString']();
+var test7 = 3
   .toString();
-var case8 = new Number(4).toString();
-var case9 = 3. + 3.;
-var case10 = 0 /* comment */.toString();
-var case11 = 3. /* comment */.toString();
-var case12 = 3
+var test8 = new Number(4).toString();
+var test9 = 3. + 3.;
+var test10 = 0 /* comment */.toString();
+var test11 = 3. /* comment */.toString();
+var test12 = 3
   /* comment */ .toString();
-var case122 = 3
+var test122 = 3
 /* comment */.toString();
-var case1222 = 3
+var test1222 = 3
 
   .toString();
-var case13 = 3.
+var test13 = 3.
   /* comment */.toString();
-var case14 = 3
+var test14 = 3
   // comment
   .toString();
-var case15 = 3.
+var test15 = 3.
   // comment
   .toString();
-var case16 = 3  // comment time
+var test16 = 3  // comment time
   .toString();
-var case17 = 3. // comment time again
+var test17 = 3. // comment time again
   .toString();
-
-
-
-
