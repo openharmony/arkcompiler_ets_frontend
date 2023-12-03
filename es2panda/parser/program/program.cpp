@@ -43,7 +43,9 @@ Program::Program(Program &&other)
       moduleRecord_(other.moduleRecord_),
       typeModuleRecord_(other.typeModuleRecord_),
       patchFixHelper_(other.patchFixHelper_),
-      isDtsFile_(other.isDtsFile_)
+      isDtsFile_(other.isDtsFile_),
+      isDebug_(other.isDebug_),
+      targetApiVersion_(other.targetApiVersion_)
 {
     other.binder_ = nullptr;
     other.ast_ = nullptr;

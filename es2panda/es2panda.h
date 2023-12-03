@@ -94,6 +94,7 @@ struct CompilerOptions {
     PatchFixOptions patchFixOptions;
     bool bcVersion {false};
     bool bcMinVersion {false};
+    int targetApiVersion {0};
     std::unordered_map<std::string, std::string> cacheFiles;
 };
 

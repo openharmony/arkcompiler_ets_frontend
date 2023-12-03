@@ -165,6 +165,16 @@ public:
         isDebug_ = isDebug;
     }
 
+    int TargetApiVersion() const
+    {
+        return targetApiVersion_;
+    }
+
+    void SetTargetApiVersion(int targetApiVersion)
+    {
+        targetApiVersion_ = targetApiVersion;
+    }
+
     std::string Dump() const;
     void SetKind(ScriptKind kind);
 
@@ -184,6 +194,7 @@ private:
     util::PatchFix *patchFixHelper_ {nullptr};
     bool isDtsFile_ {false};
     bool isDebug_ {false};
+    int targetApiVersion_ {0};
 };
 
 }  // namespace panda::es2panda::parser

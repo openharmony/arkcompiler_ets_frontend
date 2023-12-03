@@ -241,6 +241,8 @@ bool Options::Parse(int argc, const char **argv)
     // version
     panda::PandArg<bool> bcVersion("bc-version", false, "Print ark bytecode version");
     panda::PandArg<bool> bcMinVersion("bc-min-version", false, "Print ark bytecode minimum supported version");
+    panda::PandArg<int> targetApiVersion("target-api-version", 11, "Specify the targeting api version for es2abc to "\
+        "generated the corresponding version of bytecode");
 
     // tail arguments
     panda::PandArg<std::string> inputFile("input", "", "input file");
@@ -286,6 +288,7 @@ bool Options::Parse(int argc, const char **argv)
 
     argparser_->Add(&bcVersion);
     argparser_->Add(&bcMinVersion);
+    argparser_->Add(&targetApiVersion);
 
     argparser_->PushBackTail(&inputFile);
     argparser_->EnableTail();
@@ -456,6 +459,7 @@ bool Options::Parse(int argc, const char **argv)
         base64Output.GetValue()) ? 0 : opOptLevel.GetValue();
     compilerOptions_.sourceFiles = sourceFiles_;
     compilerOptions_.mergeAbc = opMergeAbc.GetValue();
+    compilerOptions_.targetApiVersion = targetApiVersion.GetValue();
 
     compilerOptions_.patchFixOptions.dumpSymbolTable = opDumpSymbolTable.GetValue();
     compilerOptions_.patchFixOptions.symbolTable = opInputSymbolTable.GetValue();

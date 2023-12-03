@@ -126,11 +126,13 @@ std::unique_ptr<lexer::Lexer> ParserImpl::InitLexer(const std::string &fileName,
     return lexer;
 }
 
-Program ParserImpl::Parse(const std::string &fileName, const std::string &source,
-                          const std::string &recordName, ScriptKind kind)
+Program ParserImpl::Parse(const std::string &fileName, const std::string &source, const std::string &recordName,
+                          const CompilerOptions &options, ScriptKind kind)
 {
     program_.SetKind(kind);
     program_.SetRecordName(recordName);
+    program_.SetDebug(options.isDebug);
+    program_.SetTargetApiVersion(options.targetApiVersion);
 
     /*
      * In order to make the lexer's memory alive, the return value 'lexer' can not be omitted.

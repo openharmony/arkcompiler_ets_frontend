@@ -179,8 +179,8 @@ public:
     NO_MOVE_SEMANTIC(ParserImpl);
     ~ParserImpl() = default;
 
-    Program Parse(const std::string &fileName, const std::string &source,
-                  const std::string &recordName, ScriptKind kind);
+    Program Parse(const std::string &fileName, const std::string &source, const std::string &recordName,
+                  const CompilerOptions &options, ScriptKind kind);
 
     ScriptExtension Extension() const;
 
@@ -191,10 +191,6 @@ public:
         return program_.Allocator();
     }
     bool IsDtsFile() const;
-    void SetDebug(bool isDebug)
-    {
-        program_.SetDebug(isDebug);
-    }
 
 private:
     bool IsStartOfMappedType() const;
