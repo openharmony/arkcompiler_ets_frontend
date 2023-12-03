@@ -102,21 +102,9 @@
           {
             "type": "ClassProperty",
             "key": {
-              "type": "TSPrivateIdentifier",
-              "key": {
-                "type": "Identifier",
-                "name": "a",
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 13
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 14
-                  }
-                }
-              },
+              "type": "PrivateIdentifier",
+              "prefix": "#",
+              "name": "a",
               "loc": {
                 "start": {
                   "line": 18,

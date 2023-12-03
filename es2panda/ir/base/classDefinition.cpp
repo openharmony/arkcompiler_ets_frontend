@@ -130,11 +130,10 @@ void ClassDefinition::InitializeClassName(compiler::PandaGen *pg) const
 }
 
 // NOLINTNEXTLINE(google-runtime-references)
-int32_t ClassDefinition::CreateClassStaticProperties(compiler::PandaGen *pg, util::BitSet &compiled) const
+int32_t ClassDefinition::CreateClassPublicBuffer(compiler::PandaGen *pg, util::BitSet &compiled) const
 {
     auto *buf = pg->NewLiteralBuffer();
     compiler::LiteralBuffer staticBuf(pg->Allocator());
-    bool seenComputed = false;
     uint32_t instancePropertyCount = 0;
     std::unordered_map<util::StringView, size_t> propNameMap;
     std::unordered_map<util::StringView, size_t> staticPropNameMap;
@@ -148,12 +147,15 @@ int32_t ClassDefinition::CreateClassStaticProperties(compiler::PandaGen *pg, uti
         const ir::MethodDefinition *prop = properties[i]->AsMethodDefinition();
 
         if (prop->Computed()) {
-            seenComputed = true;
-            continue;
+            break;
         }
 
         if (prop->IsAccessor()) {
             break;
+        }
+
+        if (prop->IsPrivate()) {
+            continue;
         }
 
         if (prop->IsAbstract()) {
@@ -173,10 +175,6 @@ int32_t ClassDefinition::CreateClassStaticProperties(compiler::PandaGen *pg, uti
         size_t bufferPos = literalBuf->Literals().size();
         auto res = nameMap.insert({name, bufferPos});
         if (res.second) {
-            if (seenComputed) {
-                break;
-            }
-
             if (!prop->IsStatic()) {
                 instancePropertyCount++;
             }
@@ -226,6 +224,55 @@ int32_t ClassDefinition::CreateClassStaticProperties(compiler::PandaGen *pg, uti
     return pg->AddLiteralBuffer(buf);
 }
 
+int32_t ClassDefinition::CreateClassPrivateBuffer(compiler::PandaGen *pg) const
+{
+    auto *buf = pg->NewLiteralBuffer();
+    compiler::LiteralBuffer staticBuf(pg->Allocator());
+    uint32_t instancePropertyCount = 0;
+
+    for (const auto *prop : body_) {
+        if (!prop->IsMethodDefinition()) {
+            continue;
+        }
+
+        const auto *methodDef = prop->AsMethodDefinition();
+        if (!methodDef->IsPrivate()) {
+            continue;
+        }
+
+        compiler::LiteralBuffer *literalBuf = methodDef->IsStatic() ? &staticBuf : (instancePropertyCount++, buf);
+        const ir::FunctionExpression *func = methodDef->Value()->AsFunctionExpression();
+        const util::StringView &internalName = func->Function()->Scope()->InternalName();
+        Literal *value = nullptr;
+        Literal *methodAffiliate = pg->Allocator()->New<TaggedLiteral>(LiteralTag::METHODAFFILIATE,
+                                                                       func->Function()->FormalParamsLength());
+        switch (methodDef->Kind()) {
+            case MethodDefinitionKind::METHOD: {
+                value = pg->Allocator()->New<TaggedLiteral>(LiteralTag::METHOD, internalName);
+                break;
+            }
+            case MethodDefinitionKind::GET: {
+                value = pg->Allocator()->New<TaggedLiteral>(LiteralTag::GETTER, internalName);
+                break;
+            }
+            case MethodDefinitionKind::SET: {
+                value = pg->Allocator()->New<TaggedLiteral>(LiteralTag::SETTER, internalName);
+                break;
+            }
+            default: {
+                UNREACHABLE();
+            }
+        }
+        literalBuf->Add(value);
+        literalBuf->Add(methodAffiliate);
+    }
+
+    buf->Insert(&staticBuf);
+    buf->Add(pg->Allocator()->New<NumberLiteral>(instancePropertyCount));
+
+    return pg->AddLiteralBuffer(buf);
+}
+
 void ClassDefinition::CompileMissingProperties(compiler::PandaGen *pg, const util::BitSet &compiled,
                                                compiler::VReg classReg) const
 {
@@ -243,6 +290,10 @@ void ClassDefinition::CompileMissingProperties(compiler::PandaGen *pg, const uti
 
         const ir::MethodDefinition *prop = properties[i]->AsMethodDefinition();
         if (prop->IsOptional() && prop->Value()->Function()->IsOverload()) {
+            continue;
+        }
+
+        if (prop->IsPrivate()) {
             continue;
         }
 
@@ -296,7 +347,9 @@ void ClassDefinition::CompileMissingProperties(compiler::PandaGen *pg, const uti
         }
     }
 
-    pg->LoadAccumulator(this, classReg);
+    if (NeedInstanceInitializer()) {
+        InstanceInitialize(pg, protoReg);
+    }
 }
 
 void ClassDefinition::StaticInitialize(compiler::PandaGen *pg, compiler::VReg classReg) const
@@ -314,6 +367,27 @@ void ClassDefinition::StaticInitialize(compiler::PandaGen *pg, compiler::VReg cl
     pg->LoadAccumulator(this, classReg);
 }
 
+void ClassDefinition::InstanceInitialize(compiler::PandaGen *pg, compiler::VReg protoReg) const
+{
+    pg->StoreAccumulator(this, protoReg);
+    instanceInitializer_->Value()->Compile(pg);
+    pg->StoreLexicalVar(instanceInitializer_, 0, GetSlot(instanceInitializer_->Key()));
+}
+
+void ClassDefinition::CompileComputedKeys(compiler::PandaGen *pg) const
+{
+    for (const auto &stmt : body_) {
+        if (stmt->IsClassProperty()) {
+            const ir::ClassProperty *prop = stmt->AsClassProperty();
+            if (prop->IsComputed() && prop->NeedCompileKey()) {
+                prop->Key()->Compile(pg);
+                pg->ToComputedPropertyKey(prop->Key());
+                pg->StoreLexicalVar(prop->Key(), 0, GetSlot(prop->Key()));
+            }
+        }
+    }
+}
+
 void ClassDefinition::Compile(compiler::PandaGen *pg) const
 {
     if (declare_) {
@@ -325,17 +399,35 @@ void ClassDefinition::Compile(compiler::PandaGen *pg) const
 
     compiler::LocalRegScope lrs(pg, scope_);
 
+    compiler::VariableEnvScope envScope(pg, scope_);
+
     compiler::VReg baseReg = CompileHeritageClause(pg);
     util::StringView ctorId = ctor_->Function()->Scope()->InternalName();
     util::BitSet compiled(body_.size());
 
-    int32_t bufIdx = CreateClassStaticProperties(pg, compiled);
+    int32_t bufIdx = CreateClassPublicBuffer(pg, compiled);
     pg->DefineClassWithBuffer(this, ctorId, bufIdx, baseReg);
 
     pg->StoreAccumulator(this, classReg);
+
+    if (HasStaticPrivateMethod()) {
+        pg->StoreLexicalVar(this, 0, scope_->staticMethodValidation_);
+    }
+
     InitializeClassName(pg);
 
     CompileMissingProperties(pg, compiled, classReg);
+
+    if (hasComputedKey_) {
+        CompileComputedKeys(pg);
+    }
+
+    if (hasPrivateElement_) {
+        int32_t bufIdx = CreateClassPrivateBuffer(pg);
+        pg->CreatePrivateProperty(this, scope_->privateFieldCnt_, bufIdx);
+    }
+
+    pg->LoadAccumulator(this, classReg);
 
     if (NeedStaticInitializer()) {
         StaticInitialize(pg, classReg);
@@ -350,7 +442,7 @@ checker::Type *ClassDefinition::Check(checker::Checker *checker) const
 
 void ClassDefinition::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 {
-    auto scopeCtx = binder::LexicalScope<binder::LocalScope>::Enter(binder, scope_);
+    auto scopeCtx = binder::LexicalScope<binder::ClassScope>::Enter(binder, scope_);
 
     if (ident_) {
         ident_ = std::get<ir::AstNode *>(cb(ident_))->AsIdentifier();
@@ -380,6 +472,59 @@ void ClassDefinition::UpdateSelf(const NodeUpdater &cb, binder::Binder *binder)
 
     for (auto iter = indexSignatures_.begin(); iter != indexSignatures_.end(); iter++) {
         *iter = std::get<ir::AstNode *>(cb(*iter))->AsTSIndexSignature();
+    }
+}
+
+
+void ClassDefinition::BuildClassEnvironment()
+{
+    int instancePrivateMethodCnt = 0;
+    int staticPrivateMethodCnt = 0;
+    int privateFieldCnt = 0;
+    std::vector<const Statement *> privateProperties;
+    for (const auto *stmt : body_) {
+        if (stmt->IsMethodDefinition()) {
+            auto *methodDef = stmt->AsMethodDefinition();
+            if (methodDef->IsPrivate()) {
+                privateProperties.push_back(stmt);
+                methodDef->IsStatic() ? staticPrivateMethodCnt ++ : instancePrivateMethodCnt++;
+            }
+            continue;
+        }
+
+        if (stmt->IsClassStaticBlock()) {
+            needStaticInitializer_ = true;
+            continue;
+        }
+
+        ASSERT(stmt->IsClassProperty());
+        const auto *prop = stmt->AsClassProperty();
+        if (prop->IsComputed() && prop->NeedCompileKey()) {
+            hasComputedKey_ = true;
+            scope_->AddClassVariable(prop->Key());
+        }
+        if (prop->IsStatic()) {
+            needStaticInitializer_ = true;
+        } else {
+            needInstanceInitializer_ = true;
+        }
+        if (prop->Key()->IsPrivateIdentifier()) {
+            privateFieldCnt++;
+            privateProperties.push_back(stmt);
+        }
+    }
+
+    if (!privateProperties.empty()) {
+        hasPrivateElement_ = true;
+        scope_->AddPrivateName(privateProperties, privateFieldCnt, instancePrivateMethodCnt, staticPrivateMethodCnt);
+    }
+
+    if (instancePrivateMethodCnt > 0) {
+        needInstanceInitializer_ = true;
+    }
+
+    if (NeedInstanceInitializer()) {
+        scope_->AddClassVariable(instanceInitializer_->Key());
     }
 }
 

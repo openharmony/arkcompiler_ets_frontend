@@ -18,7 +18,9 @@
 #include <compiler/core/pandagen.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
+#include <ir/base/classDefinition.h>
 #include <ir/expressions/identifier.h>
+#include <ir/expressions/privateIdentifier.h>
 #include <ir/expressions/literals/numberLiteral.h>
 #include <ir/expressions/literals/stringLiteral.h>
 
@@ -61,6 +63,34 @@ void MemberExpression::Compile(compiler::PandaGen *pg) const
 void MemberExpression::Compile(compiler::PandaGen *pg, compiler::VReg objReg) const
 {
     CompileObject(pg, objReg);
+    if (AccessPrivateProperty()) {
+        auto name = property_->AsPrivateIdentifier()->Name();
+        auto result = pg->Scope()->FindPrivateName(name);
+        if (!result.result.isMethod) {
+            pg->LoadAccumulator(this, objReg);
+            pg->LoadPrivateProperty(this, result.lexLevel, result.result.slot);
+            return;
+        }
+        if (result.result.isSetter) {
+            pg->ThrowTypeError(this, "Property is not defined with Getter");
+        }
+        if (result.result.isStatic) {
+            pg->LoadLexicalVar(this, result.lexLevel, result.result.validateMethodSlot);
+            pg->Equal(this, objReg);
+            pg->ThrowTypeErrorIfFalse(this, "Object does not have private property");
+        } else {
+            pg->LoadAccumulator(this, objReg);
+            pg->LoadPrivateProperty(this, result.lexLevel, result.result.validateMethodSlot);
+        }
+        
+        if (result.result.isGetter) {
+            pg->LoadAccumulator(this, objReg);
+            pg->LoadPrivateProperty(this, result.lexLevel, result.result.slot);
+            return;
+        }
+        pg->LoadLexicalVar(this, result.lexLevel, result.result.slot);
+        return;
+    }
     compiler::Operand prop = CompileKey(pg);
 
     if (object_->IsSuperExpression()) {

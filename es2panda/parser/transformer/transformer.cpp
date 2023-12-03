@@ -643,7 +643,8 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitInstanceProperty(ir::Cl
     // Non-null computed properties need to be added outside the class. It is a subset of addToCtor.
     std::vector<ir::ExpressionStatement *> computedProps;
     for (auto *it : node->Body()) {
-        if (it->IsClassProperty() && !it->AsClassProperty()->IsStatic() && it->AsClassProperty()->Value() != nullptr) {
+        if (it->IsClassProperty() && !it->AsClassProperty()->IsStatic() &&
+            !it->AsClassProperty()->Key()->IsPrivateIdentifier() && it->AsClassProperty()->Value() != nullptr) {
             addToCtor.push_back(it->AsClassProperty());
         }
     }
@@ -755,6 +756,16 @@ ir::Expression *Transformer::CopyClassKeyExpression(ir::Expression *orginalExpr)
     switch (orginalExpr->Type()) {
         case ir::AstNodeType::IDENTIFIER: {
             ir::Identifier *ident = orginalExpr->AsIdentifier();
+            newExpr = AllocNode<ir::Identifier>(ident->Name());
+            break;
+        }
+        case ir::AstNodeType::PRIVATE_IDENTIFIER: {
+            ir::PrivateIdentifier *ident = orginalExpr->AsPrivateIdentifier();
+            newExpr = AllocNode<ir::Identifier>(ident->Name());
+            break;
+        }
+        case ir::AstNodeType::TS_PRIVATE_IDENTIFIER: {
+            ir::Identifier *ident = orginalExpr->AsTSPrivateIdentifier()->Key()->AsIdentifier();
             newExpr = AllocNode<ir::Identifier>(ident->Name());
             break;
         }
@@ -971,6 +982,10 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitStaticProperty(ir::Clas
      *
      *  TODO(xucheng): should support static private property
      */
+    if (program_->TargetApiVersion() > 10) {
+        return {};
+    }
+
     std::vector<ir::ExpressionStatement *> res;
     auto classDefinitionBody = node->Body();
     for (auto *it : classDefinitionBody) {
@@ -981,10 +996,7 @@ std::vector<ir::ExpressionStatement *> Transformer::VisitStaticProperty(ir::Clas
         if (!classProperty->IsStatic()) {
             continue;
         }
-        if (classProperty->Key()->IsIdentifier()) {
-            // The corresponding bytecode will be generated in common logic of js and ts, so no need to process here
-            continue;
-        }
+
         if (classProperty->IsComputed()) {
             res.push_back(AllocNode<ir::ExpressionStatement>(classProperty->Key()));
         }

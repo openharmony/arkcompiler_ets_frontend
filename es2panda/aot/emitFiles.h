@@ -25,8 +25,8 @@ namespace panda::es2panda::aot {
 class EmitSingleAbcJob : public util::WorkerJob {
 public:
     explicit EmitSingleAbcJob(const std::string &outputFileName, panda::pandasm::Program *prog,
-                              std::map<std::string, size_t> *statp)
-        : outputFileName_(outputFileName), prog_(prog), statp_(statp) {};
+                              std::map<std::string, size_t> *statp, uint8_t targetApi)
+        : outputFileName_(outputFileName), prog_(prog), statp_(statp), targetApiVersion_(targetApi) {};
     NO_COPY_SEMANTIC(EmitSingleAbcJob);
     NO_MOVE_SEMANTIC(EmitSingleAbcJob);
     ~EmitSingleAbcJob() override = default;
@@ -36,13 +36,15 @@ private:
     std::string outputFileName_;
     panda::pandasm::Program *prog_;
     std::map<std::string, size_t> *statp_;
+    uint8_t targetApiVersion_ = 0;
 };
 
 class EmitMergedAbcJob : public util::WorkerJob {
 public:
     explicit EmitMergedAbcJob(const std::string &outputFileName,
-                              const std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo)
-        : outputFileName_(outputFileName), progsInfo_(progsInfo) {};
+                              const std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo,
+                              uint8_t targetApi)
+        : outputFileName_(outputFileName), progsInfo_(progsInfo), targetApiVersion_(targetApi) {};
     NO_COPY_SEMANTIC(EmitMergedAbcJob);
     NO_MOVE_SEMANTIC(EmitMergedAbcJob);
     ~EmitMergedAbcJob() override = default;
@@ -51,6 +53,7 @@ public:
 private:
     std::string outputFileName_;
     const std::map<std::string, panda::es2panda::util::ProgramCache*> &progsInfo_;
+    uint8_t targetApiVersion_ = 0;
 };
 
 class EmitCacheJob : public util::WorkerJob {

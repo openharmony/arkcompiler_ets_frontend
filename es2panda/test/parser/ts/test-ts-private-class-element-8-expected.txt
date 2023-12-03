@@ -1,0 +1,1 @@
+SyntaxError: An accessibility modifier cannot be used with a private identifier. [test-ts-private-class-element-8.ts:18:13]

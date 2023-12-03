@@ -1,0 +1,1 @@
+SyntaxError: 'abstract' modifier cannot be used with a private identifier. [test-ts-private-class-element-11.ts:18:12]

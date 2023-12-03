@@ -172,6 +172,14 @@ DEFINE_BITOPS(TypeAnnotationParsingOptions)
 
 class ArrowFunctionContext;
 
+enum class PrivateGetterSetterType {
+    GETTER = 0,
+    SETTER = 1 << 0,
+    STATIC = 1 << 1,
+};
+
+DEFINE_BITOPS(PrivateGetterSetterType)
+
 class ParserImpl {
 public:
     explicit ParserImpl(es2panda::ScriptExtension extension);
@@ -293,23 +301,27 @@ private:
     void ValidateClassGetter(ClassElmentDescriptor *desc, const ArenaVector<ir::Statement *> &properties,
                              ir::Expression *propName, ir::ScriptFunction *func, bool hasDecorator,
                              lexer::SourcePosition errorInfo);
+    void ValidatePrivateProperty(ir::Statement *stmt, std::unordered_set<util::StringView> &privateNames,
+        std::unordered_map<util::StringView, PrivateGetterSetterType> &unusedGetterSetterPairs);
     ir::MethodDefinition *ParseClassMethod(ClassElmentDescriptor *desc, const ArenaVector<ir::Statement *> &properties,
                                            ir::Expression *propName, lexer::SourcePosition *propEnd,
                                            ArenaVector<ir::Decorator *> &&decorators, bool isDeclare);
     ir::ClassStaticBlock *ParseStaticBlock(ClassElmentDescriptor *desc);
     ir::Statement *ParseClassProperty(ClassElmentDescriptor *desc, const ArenaVector<ir::Statement *> &properties,
                                       ir::Expression *propName, ir::Expression *typeAnnotation,
-                                      ArenaVector<ir::Decorator *> &&decorators, bool isDeclare);
+                                      ArenaVector<ir::Decorator *> &&decorators, bool isDeclare,
+                                      std::pair<binder::FunctionScope *, binder::FunctionScope *> implicitScopes);
     void ParseClassKeyModifiers(ClassElmentDescriptor *desc);
     void CheckClassGeneratorMethod(ClassElmentDescriptor *desc);
     void CheckClassPrivateIdentifier(ClassElmentDescriptor *desc);
+    void CheckFieldKey(ir::Expression *propName);
     ir::Expression *ParseClassKeyAnnotation();
     ir::Decorator *ParseDecorator();
     ArenaVector<ir::Decorator *> ParseDecorators();
     ir::Statement *ParseClassElement(const ArenaVector<ir::Statement *> &properties,
                                      ArenaVector<ir::TSIndexSignature *> *indexSignatures, bool hasSuperClass,
                                      bool isDeclare, bool isAbstractClass, bool isExtendsFromNull,
-                                     binder::Scope *scope);
+                                     std::pair<binder::FunctionScope *, binder::FunctionScope *> implicitScopes);
     ir::MethodDefinition *CreateImplicitMethod(ir::Expression *superClass, bool hasSuperClass,
                                                ir::ScriptFunctionFlags funcFlag, bool isDeclare = false);
     ir::MethodDefinition *CheckClassMethodOverload(ir::Statement *property, ir::MethodDefinition **ctor, bool isDeclare,
@@ -450,6 +462,7 @@ private:
                                                             ArenaVector<ir::Decorator *> &&decorators);
     ir::Identifier *ParseNamedExport(const lexer::Token &exportedToken);
     void CheckStrictReservedWord() const;
+    ir::PrivateIdentifier *ParsePrivateIdentifier();
 
     // Discard the DISALLOW_CONDITIONAL_TYPES in current status to call function.
     template<class Function,  typename... Args>

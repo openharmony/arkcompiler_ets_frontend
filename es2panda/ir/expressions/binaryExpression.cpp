@@ -20,6 +20,8 @@
 #include <compiler/core/regScope.h>
 #include <typescript/checker.h>
 #include <ir/astDump.h>
+#include <ir/base/classDefinition.h>
+#include <ir/expressions/privateIdentifier.h>
 #include <lexer/token/tokenType.h>
 
 namespace panda::es2panda::ir {
@@ -78,8 +80,37 @@ void BinaryExpression::CompileLogical(compiler::PandaGen *pg) const
     pg->SetLabel(this, endLabel);
 }
 
+void BinaryExpression::CompilePrivateIn(compiler::PandaGen *pg) const
+{
+    ASSERT(operator_ == lexer::TokenType::KEYW_IN);
+    auto name = left_->AsPrivateIdentifier()->Name();
+    auto result = pg->Scope()->FindPrivateName(name);
+
+    right_->Compile(pg);
+    if (!result.result.isMethod) {
+        pg->TestIn(this, result.lexLevel, result.result.slot);
+        return;
+    }
+    // Instance private method check symbol("#method")
+    if (!result.result.isStatic) {
+        pg->TestIn(this, result.lexLevel, result.result.validateMethodSlot);
+        return;
+    }
+    // Static private method check whether equals the class object
+    compiler::RegScope rs(pg);
+    compiler::VReg rhs = pg->AllocReg();
+    pg->StoreAccumulator(right_, rhs);
+    pg->LoadLexicalVar(this, result.lexLevel, result.result.validateMethodSlot);
+    pg->Equal(this, rhs);
+}
+
 void BinaryExpression::Compile(compiler::PandaGen *pg) const
 {
+    if (left_->IsPrivateIdentifier()) {
+        CompilePrivateIn(pg);
+        return;
+    }
+
     if (IsLogical()) {
         CompileLogical(pg);
         return;

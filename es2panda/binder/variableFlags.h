@@ -53,6 +53,7 @@ enum class DeclType {
     _(CATCH, CatchScope)                  \
     _(LOCAL, LocalScope)                  \
     /* Variable Scopes */                 \
+    _(CLASS, ClassScope)                  \
     _(LOOP, LoopScope)                    \
     _(FUNCTION, FunctionScope)            \
     _(STATIC_BLOCK, StaticBlockScope)     \

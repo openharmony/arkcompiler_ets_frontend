@@ -22,7 +22,9 @@
 #include <binder/variableFlags.h>
 #include <ir/astNode.h>
 #include <ir/base/scriptFunction.h>
+#include <ir/base/classDefinition.h>
 #include <ir/expressions/identifier.h>
+#include <ir/expressions/privateIdentifier.h>
 #include <ir/module/exportAllDeclaration.h>
 #include <ir/module/exportNamedDeclaration.h>
 #include <ir/module/exportSpecifier.h>
@@ -146,6 +148,133 @@ ScopeFindResult Scope::Find(const util::StringView &name, ResolveBindingOptions 
     }
 
     return {name, nullptr, 0, 0, nullptr, concurrentFunc};
+}
+
+std::pair<uint32_t, uint32_t> Scope::Find(const ir::Expression *expr, bool onlyLevel) const
+{
+    uint32_t lexLevel = 0;
+    const auto *iter = this;
+
+    while (iter != nullptr) {
+        if (iter->Type() == ScopeType::CLASS) {
+            if (onlyLevel) {
+                return {lexLevel, 0};
+            }
+            return {lexLevel, iter->AsClassScope()->GetSlot(expr)};
+        }
+
+        if (iter->IsVariableScope()) {
+            if (iter->AsVariableScope()->NeedLexEnv()) {
+                lexLevel++;
+            }
+        }
+        iter = iter->Parent();
+    }
+
+    UNREACHABLE();
+}
+
+Result ClassScope::GetPrivateProperty(const util::StringView &name, bool isSetter) const
+{
+    if (name.Is("#method")) {
+        return {instanceMethodValidation_, false, false, false, false, 0};
+    }
+
+    uint32_t slot{0};
+    bool setter{false};
+    bool getter{false};
+
+    if (privateNames_.find(name) != privateNames_.end()) {
+        slot = privateNames_.find(name)->second;
+    } else {
+        auto accessor = isSetter ? privateSetters_ : privateGetters_;
+        auto unexpectedAccessor = isSetter ? privateGetters_ : privateSetters_;
+
+        if (accessor.find(name) != accessor.end()) {
+            setter = isSetter;
+            getter = !setter;
+            slot = accessor.find(name)->second;
+        } else {
+            getter = isSetter;
+            setter = !getter;
+            slot = unexpectedAccessor.find(name)->second;
+        }
+    }
+
+    uint32_t validateMethodSlot{0};
+
+    if (IsMethod(slot)) {
+        validateMethodSlot = IsStaticMethod(slot) ? staticMethodValidation_ : instanceMethodValidation_;
+    }
+
+    return {slot, IsMethod(slot), IsStaticMethod(slot), getter, setter, validateMethodSlot};
+}
+
+void ClassScope::AddPrivateName(std::vector<const ir::Statement *> privateProperties, uint32_t privateFieldCnt,
+                                uint32_t instancePrivateMethodCnt, uint32_t staticPrivateMethodCnt)
+{
+    privateFieldCnt_ = privateFieldCnt;
+    instancePrivateMethodStartSlot_ = slotIndex_ + privateFieldCnt_;
+    staticPrivateMethodStartSlot_ = instancePrivateMethodStartSlot_ + instancePrivateMethodCnt;
+    uint32_t instancePrivateMethodSlot = instancePrivateMethodStartSlot_;
+    uint32_t staticPrivateMethodSlot = staticPrivateMethodStartSlot_;
+    for (const auto *stmt : privateProperties) {
+        if (stmt->IsClassProperty()) {
+            privateNames_[stmt->AsClassProperty()->Key()->AsPrivateIdentifier()->Name()] = slotIndex_++;
+            continue;
+        }
+        ASSERT(stmt->IsMethodDefinition());
+        auto *methodDef = stmt->AsMethodDefinition();
+        uint32_t *start = methodDef->IsStatic() ? &staticPrivateMethodSlot : &instancePrivateMethodSlot;
+        auto name = methodDef->Key()->AsPrivateIdentifier()->Name();
+        switch (methodDef->Kind()) {
+            case ir::MethodDefinitionKind::GET: {
+                privateGetters_[name] =  (*start)++;
+                continue;
+            }
+            case ir::MethodDefinitionKind::SET: {
+                privateSetters_[name] =  (*start)++;
+                continue;
+            }
+            default: {
+                privateNames_[name]=  (*start)++;
+                continue;
+            }
+        }
+    }
+    slotIndex_ = staticPrivateMethodSlot;
+    privateMethodEndSlot_ = slotIndex_;
+    if (instancePrivateMethodCnt != 0) {
+        instanceMethodValidation_ = slotIndex_++;
+    }
+
+    if (staticPrivateMethodCnt != 0) {
+        staticMethodValidation_ = slotIndex_++;
+    }
+}
+
+PrivateNameFindResult Scope::FindPrivateName(const util::StringView &name, bool isSetter) const
+{
+    uint32_t lexLevel = 0;
+    const auto *iter = this;
+
+    while (iter != nullptr) {
+        if (iter->Type() == ScopeType::CLASS) {
+            const auto *classScope = iter->AsClassScope();
+            if (name.Is("#method") || classScope->HasPrivateName(name)) {
+                return {lexLevel, classScope->GetPrivateProperty(name, isSetter)};
+            }
+        }
+
+        if (iter->IsVariableScope()) {
+            if (iter->AsVariableScope()->NeedLexEnv()) {
+                lexLevel++;
+            }
+        }
+        iter = iter->Parent();
+    }
+
+    UNREACHABLE();
 }
 
 Decl *Scope::FindDecl(const util::StringView &name) const

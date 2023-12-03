@@ -65,6 +65,7 @@
     _(NULL_LITERAL, NullLiteral)                                     \
     _(NUMBER_LITERAL, NumberLiteral)                                 \
     _(OMITTED_EXPRESSION, OmittedExpression)                         \
+    _(PRIVATE_IDENTIFIER, PrivateIdentifier)                         \
     _(PROPERTY, Property)                                            \
     _(REGEXP_LITERAL, RegExpLiteral)                                 \
     _(RETURN_STATEMENT, ReturnStatement)                             \

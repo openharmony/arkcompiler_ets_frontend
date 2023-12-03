@@ -18,6 +18,8 @@
 
 #include <binder/variable.h>
 #include <ir/base/classProperty.h>
+#include <ir/base/methodDefinition.h>
+#include <ir/expressions/privateIdentifier.h>
 #include <util/bitset.h>
 
 namespace panda::es2panda::compiler {
@@ -44,12 +46,12 @@ class TSIndexSignature;
 
 class ClassDefinition : public AstNode {
 public:
-    explicit ClassDefinition(binder::LocalScope *scope, Identifier *ident, TSTypeParameterDeclaration *typeParams,
+    explicit ClassDefinition(binder::ClassScope *scope, Identifier *ident, TSTypeParameterDeclaration *typeParams,
                              TSTypeParameterInstantiation *superTypeParams,
                              ArenaVector<TSClassImplements *> &&implements, MethodDefinition *ctor,
-                             MethodDefinition *staticInitializer, Expression *superClass,
-                             ArenaVector<Statement *> &&body, ArenaVector<TSIndexSignature *> &&indexSignatures,
-                             bool declare, bool abstract)
+                             MethodDefinition *staticInitializer, MethodDefinition *instanceInitializer,
+                             Expression *superClass, ArenaVector<Statement *> &&body,
+                             ArenaVector<TSIndexSignature *> &&indexSignatures, bool declare, bool abstract)
         : AstNode(AstNodeType::CLASS_DEFINITION),
           scope_(scope),
           ident_(ident),
@@ -58,6 +60,7 @@ public:
           implements_(std::move(implements)),
           ctor_(ctor),
           staticInitializer_(staticInitializer),
+          instanceInitializer_(instanceInitializer),
           superClass_(superClass),
           body_(std::move(body)),
           indexSignatures_(std::move(indexSignatures)),
@@ -65,15 +68,9 @@ public:
           abstract_(abstract),
           exportDefault_(false)
     {
-        for (const auto *stmt : body_) {
-            if (stmt->IsClassStaticBlock() || (stmt->IsClassProperty() && stmt->AsClassProperty()->IsStatic())) {
-                needStaticInitializer_ = true;
-                break;
-            }
-        }
     }
 
-    binder::LocalScope *Scope() const
+    binder::ClassScope *Scope() const
     {
         return scope_;
     }
@@ -169,9 +166,9 @@ public:
         return staticInitializer_;
     }
 
-    bool NeedStaticInitializer() const
+    MethodDefinition *InstanceInitializer() const
     {
-        return needStaticInitializer_;
+        return instanceInitializer_;
     }
 
     const TSTypeParameterInstantiation *SuperTypeParams() const
@@ -184,9 +181,36 @@ public:
         return superTypeParams_;
     }
 
+    bool NeedStaticInitializer() const
+    {
+        return needStaticInitializer_;
+    }
+
+    bool NeedInstanceInitializer() const
+    {
+        return needInstanceInitializer_;
+    }
+
+    uint32_t GetSlot(const Expression *key) const
+    {
+        return scope_->GetSlot(key);
+    }
+
+    bool HasInstancePrivateMethod() const
+    {
+        return scope_->instanceMethodValidation_ != 0;
+    }
+
+    bool HasStaticPrivateMethod() const
+    {
+        return scope_->staticMethodValidation_ != 0;
+    }
+
     const FunctionExpression *Ctor() const;
 
     util::StringView GetName() const;
+
+    void BuildClassEnvironment();
 
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -197,17 +221,22 @@ public:
 private:
     compiler::VReg CompileHeritageClause(compiler::PandaGen *pg) const;
     void InitializeClassName(compiler::PandaGen *pg) const;
-    int32_t CreateClassStaticProperties(compiler::PandaGen *pg, util::BitSet &compiled) const;
+    int32_t CreateClassPublicBuffer(compiler::PandaGen *pg, util::BitSet &compiled) const;
+    int32_t CreateClassPrivateBuffer(compiler::PandaGen *pg) const;
     void CompileMissingProperties(compiler::PandaGen *pg, const util::BitSet &compiled, compiler::VReg classReg) const;
     void StaticInitialize(compiler::PandaGen *pg, compiler::VReg classReg) const;
+    void InstanceInitialize(compiler::PandaGen *pg, compiler::VReg classReg) const;
+    void CompileComputedKeys(compiler::PandaGen *pg) const;
 
-    binder::LocalScope *scope_;
+
+    binder::ClassScope *scope_;
     Identifier *ident_;
     TSTypeParameterDeclaration *typeParams_;
     TSTypeParameterInstantiation *superTypeParams_;
     ArenaVector<TSClassImplements *> implements_;
     MethodDefinition *ctor_;
     MethodDefinition *staticInitializer_;
+    MethodDefinition *instanceInitializer_;
     Expression *superClass_;
     ArenaVector<Statement *> body_;
     ArenaVector<TSIndexSignature *> indexSignatures_;
@@ -215,6 +244,9 @@ private:
     bool abstract_;
     bool exportDefault_;
     bool needStaticInitializer_ {false};
+    bool needInstanceInitializer_ {false};
+    bool hasComputedKey_ {false};
+    bool hasPrivateElement_ {false};
 };
 
 }  // namespace panda::es2panda::ir

@@ -32,6 +32,7 @@ class IRNode;
 
 namespace panda::es2panda::ir {
 class ScriptFunction;
+class Statement;
 } // namespace panda::es2panda::ir
 
 namespace panda::es2panda::binder {
@@ -158,6 +159,23 @@ public:
     Variable *variable {};
     ir::ScriptFunction *concurrentFunc {};
 };
+
+class Result {
+public:
+    uint32_t slot;
+    bool isMethod;
+    bool isStatic;
+    bool isGetter;
+    bool isSetter;
+    uint32_t validateMethodSlot;
+};
+
+class PrivateNameFindResult {
+public:
+    int32_t lexLevel;
+    Result result;
+};
+
 
 class Scope {
 public:
@@ -326,6 +344,10 @@ public:
 
     ScopeFindResult Find(const util::StringView &name,
                          ResolveBindingOptions options = ResolveBindingOptions::BINDINGS) const;
+
+    std::pair<uint32_t, uint32_t> Find(const ir::Expression *expr, bool onlyLevel = false) const;
+
+    PrivateNameFindResult FindPrivateName(const util::StringView &name, bool isSetter = false) const;
 
     Decl *FindDecl(const util::StringView &name) const;
 
@@ -645,6 +667,73 @@ public:
 
     bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
                     [[maybe_unused]] ScriptExtension extension) override;
+};
+
+class ClassScope : public VariableScope {
+public:
+    explicit ClassScope(ArenaAllocator *allocator, Scope *parent)
+        : VariableScope(allocator, parent),
+          computedNames_(allocator->Adapter()),
+          privateNames_(allocator->Adapter()),
+          privateGetters_(allocator->Adapter()),
+          privateSetters_(allocator->Adapter())
+    {
+    }
+
+    ~ClassScope() override = default;
+
+    ScopeType Type() const override
+    {
+        return ScopeType::CLASS;
+    }
+
+    void AddClassVariable(const ir::Expression *key)
+    {
+        computedNames_.insert({key, slotIndex_++});
+    }
+
+    uint32_t GetSlot(const ir::Expression *key) const
+    {
+        ASSERT(computedNames_.find(key) != computedNames_.end());
+        return computedNames_.find(key)->second;
+    }
+
+    bool AddBinding(ArenaAllocator *allocator, Variable *currentVariable, Decl *newDecl,
+                    [[maybe_unused]] ScriptExtension extension) override
+    {
+        return AddLocal(allocator, currentVariable, newDecl, extension);
+    }
+
+    bool HasPrivateName(const util::StringView &name) const
+    {
+        return (privateNames_.count(name) + privateGetters_.count(name) + privateSetters_.count(name) != 0);
+    }
+
+    Result GetPrivateProperty(const util::StringView &name, bool isSetter) const;
+    void AddPrivateName(std::vector<const ir::Statement *> privateProperties, uint32_t privateFieldCnt,
+                        uint32_t instancePrivateMethodCnt, uint32_t staticPrivateMethodCnt);
+    friend class ir::ClassDefinition;
+private:
+    bool IsMethod(uint32_t slot) const
+    {
+        return slot >= instancePrivateMethodStartSlot_ && slot < privateMethodEndSlot_;
+    }
+
+    bool IsStaticMethod(uint32_t slot) const
+    {
+        return slot >= staticPrivateMethodStartSlot_;
+    }
+
+    ArenaUnorderedMap<const ir::Expression *, uint32_t> computedNames_;
+    ArenaUnorderedMap<util::StringView, uint32_t> privateNames_;
+    ArenaUnorderedMap<util::StringView, uint32_t> privateGetters_;
+    ArenaUnorderedMap<util::StringView, uint32_t> privateSetters_;
+    uint32_t privateFieldCnt_ {0};
+    uint32_t instancePrivateMethodStartSlot_ {0};
+    uint32_t staticPrivateMethodStartSlot_ {0};
+    uint32_t privateMethodEndSlot_ {0};
+    uint32_t instanceMethodValidation_ {0};
+    uint32_t staticMethodValidation_ {0};
 };
 
 class CatchParamScope : public ParamScope {

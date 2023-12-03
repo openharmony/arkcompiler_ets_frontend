@@ -60,7 +60,7 @@ public:
     const util::StringView &Method() const
     {
         ASSERT(tag_ == LiteralTag::ACCESSOR || tag_ == LiteralTag::METHOD || tag_ == LiteralTag::GENERATOR_METHOD ||
-               tag_ == LiteralTag::ASYNC_GENERATOR_METHOD);
+               tag_ == LiteralTag::ASYNC_GENERATOR_METHOD || tag_== LiteralTag::GETTER || tag_ == LiteralTag::SETTER);
         return str_;
     }
 

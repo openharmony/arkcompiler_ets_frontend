@@ -25,10 +25,11 @@ void EmitFileQueue::Schedule()
 {
     ASSERT(jobsCount_ == 0);
     std::unique_lock<std::mutex> lock(m_);
+    auto targetApi = options_->CompilerOptions().targetApiVersion;
 
     if (mergeAbc_) {
         // generate merged abc
-        auto emitMergedAbcJob = new EmitMergedAbcJob(options_->CompilerOutput(), progsInfo_);
+        auto emitMergedAbcJob = new EmitMergedAbcJob(options_->CompilerOutput(), progsInfo_, targetApi);
         for (const auto &info: progsInfo_) {
             // generate cache protoBins and set dependencies
             if (!info.second->needUpdateCache) {
@@ -51,7 +52,8 @@ void EmitFileQueue::Schedule()
                 // generate multi abcs
                 auto outputFileName = options_->OutputFiles().empty() ? options_->CompilerOutput() :
                     options_->OutputFiles().at(info.first);
-                auto emitSingleAbcJob = new EmitSingleAbcJob(outputFileName, &(info.second->program), statp_);
+                auto emitSingleAbcJob = new EmitSingleAbcJob(outputFileName, &(info.second->program), statp_,
+                                                             targetApi);
                 jobs_.push_back(emitSingleAbcJob);
                 jobsCount_++;
             } catch (std::exception &error) {
@@ -67,7 +69,7 @@ void EmitFileQueue::Schedule()
 void EmitSingleAbcJob::Run()
 {
     if (!panda::pandasm::AsmEmitter::Emit(panda::os::file::File::GetExtendedFilePath(outputFileName_), *prog_, statp_,
-        nullptr, true)) {
+        nullptr, true, nullptr, targetApiVersion_)) {
         throw Error(ErrorType::GENERIC, "Failed to emit " + outputFileName_ + ", error: " +
             panda::pandasm::AsmEmitter::GetLastError());
     }
@@ -84,7 +86,7 @@ void EmitMergedAbcJob::Run()
         progs.push_back(&(info.second->program));
     }
     if (!panda::pandasm::AsmEmitter::EmitPrograms(panda::os::file::File::GetExtendedFilePath(outputFileName_), progs,
-        true)) {
+        true, targetApiVersion_)) {
         throw Error(ErrorType::GENERIC, "Failed to emit " + outputFileName_ + ", error: " +
             panda::pandasm::AsmEmitter::GetLastError());
     }

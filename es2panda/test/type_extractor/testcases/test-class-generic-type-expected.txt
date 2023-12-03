@@ -93,7 +93,7 @@ slot _.func_main_0_-1
 {
   index: 1
     tag: 2
-    val: 3
+    val: 4
 },
 {
   index: 2
@@ -113,7 +113,7 @@ slot _.func_main_0_-1
 {
   index: 5
     tag: 2
-    val: 9
+    val: 13
 },
 {
   index: 6
@@ -133,7 +133,7 @@ slot _.func_main_0_-1
 {
   index: 9
     tag: 2
-    val: 14
+    val: 18
 },
 {
   index: 10
@@ -144,6 +144,28 @@ slot _.func_main_0_-1
   index: 11
     tag: 24
     val: _8
+},
+------------------------------------
+slot _.instance_initializer_-1
+{
+  index: 0
+    tag: 0
+    val: 2
+},
+{
+  index: 1
+    tag: 2
+    val: -2
+},
+{
+  index: 2
+    tag: 0
+    val: 24
+},
+{
+  index: 3
+    tag: 24
+    val: _4
 },
 ------------------------------------
 slot _0

@@ -102,35 +102,9 @@
           {
             "type": "ClassProperty",
             "key": {
-              "type": "TSPrivateIdentifier",
-              "key": {
-                "type": "Identifier",
-                "name": "b",
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 6
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 7
-                  }
-                }
-              },
-              "value": {
-                "type": "StringLiteral",
-                "value": "b",
-                "loc": {
-                  "start": {
-                    "line": 18,
-                    "column": 10
-                  },
-                  "end": {
-                    "line": 18,
-                    "column": 13
-                  }
-                }
-              },
+              "type": "PrivateIdentifier",
+              "prefix": "#",
+              "name": "b",
               "loc": {
                 "start": {
                   "line": 18,
@@ -223,35 +197,9 @@
           {
             "type": "ClassProperty",
             "key": {
-              "type": "TSPrivateIdentifier",
-              "key": {
-                "type": "Identifier",
-                "name": "c",
-                "loc": {
-                  "start": {
-                    "line": 20,
-                    "column": 15
-                  },
-                  "end": {
-                    "line": 20,
-                    "column": 16
-                  }
-                }
-              },
-              "value": {
-                "type": "StringLiteral",
-                "value": "c",
-                "loc": {
-                  "start": {
-                    "line": 20,
-                    "column": 19
-                  },
-                  "end": {
-                    "line": 20,
-                    "column": 22
-                  }
-                }
-              },
+              "type": "PrivateIdentifier",
+              "prefix": "#",
+              "name": "c",
               "loc": {
                 "start": {
                   "line": 20,

@@ -18,6 +18,7 @@
 #include <binder/declaration.h>
 #include <compiler/base/destructuring.h>
 #include <compiler/core/pandagen.h>
+#include <ir/base/classDefinition.h>
 #include <ir/base/spreadElement.h>
 #include <ir/expressions/assignmentExpression.h>
 #include <ir/expressions/identifier.h>
@@ -40,7 +41,9 @@ LReference::LReference(const ir::AstNode *node, PandaGen *pg, bool isDeclaration
         obj_ = pg_->AllocReg();
 
         node_->AsMemberExpression()->CompileObject(pg_, obj_);
-        prop_ = node->AsMemberExpression()->CompileKey(pg_);
+        if (!node_->AsMemberExpression()->AccessPrivateProperty()) {
+            prop_ = node->AsMemberExpression()->CompileKey(pg_);
+        }
     }
 }
 
@@ -52,7 +55,35 @@ void LReference::GetValue()
             break;
         }
         case ReferenceKind::MEMBER: {
-            pg_->LoadObjProperty(node_, obj_, prop_);
+            if (node_->AsMemberExpression()->AccessPrivateProperty()) {
+                auto name = node_->AsMemberExpression()->Property()->AsPrivateIdentifier()->Name();
+                auto result = pg_->Scope()->FindPrivateName(name);
+                if (!result.result.isMethod) {
+                    pg_->LoadAccumulator(node_, obj_);
+                    pg_->LoadPrivateProperty(node_, result.lexLevel, result.result.slot);
+                    break;
+                }
+
+                if (result.result.isStatic) {
+                    pg_->LoadLexicalVar(node_, result.lexLevel, result.result.validateMethodSlot);
+                    pg_->Equal(node_, obj_);
+                    pg_->ThrowTypeErrorIfFalse(node_, "Object does not have private property");
+                } else {
+                    pg_->LoadAccumulator(node_, obj_);
+                    pg_->LoadPrivateProperty(node_, result.lexLevel, result.result.validateMethodSlot);
+                }
+                if (result.result.isSetter) {
+                    pg_->ThrowTypeError(node_, "Property is not defined with Getter");
+                }
+                if (result.result.isGetter) {
+                    pg_->LoadAccumulator(node_, obj_);
+                    pg_->LoadPrivateProperty(node_, result.lexLevel, result.result.slot);
+                    break;
+                }
+                pg_->LoadLexicalVar(node_, result.lexLevel, result.result.slot);
+            } else {
+                pg_->LoadObjProperty(node_, obj_, prop_);
+            }
             break;
         }
         default: {
@@ -71,6 +102,32 @@ void LReference::SetValue()
         case ReferenceKind::MEMBER: {
             if (node_->AsMemberExpression()->Object()->IsSuperExpression()) {
                 pg_->StoreSuperProperty(node_, obj_, prop_);
+            } else if (node_->AsMemberExpression()->AccessPrivateProperty()) {
+                compiler::RegScope rs(pg_);
+                VReg valueReg =  pg_->AllocReg();
+                
+                auto name = node_->AsMemberExpression()->Property()->AsPrivateIdentifier()->Name();
+                auto result = pg_->Scope()->FindPrivateName(name, true);
+                if (!result.result.isMethod) {
+                    pg_->StorePrivateProperty(node_, result.lexLevel, result.result.slot, obj_);
+                    break;
+                }
+                if (!result.result.isSetter) {
+                    pg_->ThrowTypeError(node_, "Method is not writable");
+                }
+                // store value
+                pg_->StoreAccumulator(node_, valueReg);
+
+                if (result.result.isStatic) {
+                    pg_->LoadLexicalVar(node_, result.lexLevel, result.result.validateMethodSlot);
+                    pg_->Equal(node_, obj_);
+                    pg_->ThrowTypeErrorIfFalse(node_, "Object does not have private property");
+                } else {
+                    pg_->LoadAccumulator(node_, obj_);
+                    pg_->LoadPrivateProperty(node_, result.lexLevel, result.result.validateMethodSlot);
+                }
+                pg_->LoadAccumulator(node_, valueReg);
+                pg_->StorePrivateProperty(node_, result.lexLevel, result.result.slot, obj_);
             } else {
                 pg_->StoreObjProperty(node_, obj_, prop_);
             }

@@ -93,6 +93,7 @@ enum class ScriptFunctionFlags {
     CONCURRENT = 1 << 7,
     SHOW_SOURCE = 1 << 8,
     STATIC_INITIALIZER = 1 << 9,
+    INSTANCE_INITIALIZER = 1 << 10,
 };
 
 DEFINE_BITOPS(ScriptFunctionFlags)

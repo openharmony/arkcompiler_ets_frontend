@@ -71,6 +71,11 @@ public:
         return optional_;
     }
 
+    bool AccessPrivateProperty() const
+    {
+        return property_->IsPrivateIdentifier();
+    }
+
     MemberExpressionKind Kind() const
     {
         return kind_;
