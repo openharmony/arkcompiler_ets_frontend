@@ -15,8 +15,10 @@
 
 const fs = require('fs');
 const path = require('path');
+const diff = require('diff');
 const { execSync } = require('child_process');
 import { Extension } from '../src/common/type';
+import { FileUtils } from '../src/utils/FileUtils';
 
 const testDirectory = path.resolve('./test/local');
 
@@ -37,20 +39,18 @@ function runTest(filePath) {
   try {
     const command = `node ./node_modules/ts-node/dist/bin.js ${filePath}`;
     execSync(command);
-    if (compareWithExpected(filePath)) {
-      return true;
-    } else {
-      console.error(`Test case ${filePath} failed: Content does not match`);
-      return false;
-    }
   } catch (error) {
     console.error(`Test case ${filePath} failed:`, error);
     return false;
   }
+  return true;
 }
 let successCount = 0;
 let failureCount = 0;
+let contentcomparationSuccessCount = 0;
+let contentcomparationFailureCount = 0;
 const failedFiles = [];
+const contentComparisionFailureFiles = [];
 
 function runTestsInDirectory(directoryPath) {
   const files = fs.readdirSync(directoryPath);
@@ -77,6 +77,30 @@ function runTestsInDirectory(directoryPath) {
         failureCount++;
         failedFiles.push(filePath);
       }
+      compareContent(filePath);
+    } else if (filePath.endsWith(Extension.DETS) || filePath.endsWith(Extension.DTS)) {
+      compareContent(filePath);
+    }
+  }
+}
+
+function compareContent(filePath) {
+  const sourcePath = filePath.replace('/test/local/', '/test/grammar/');
+  const sourcePathAndExtension = FileUtils.getFileSuffix(sourcePath);
+  const expectationPath = sourcePathAndExtension.path + '_expected.txt';
+  if (fs.existsSync(expectationPath)) {
+    const actual = fs.readFileSync(filePath).toString();
+    const expectation = fs.readFileSync(expectationPath).toString();
+    if (actual === expectation) {
+      contentcomparationSuccessCount++;
+    } else {
+      contentcomparationFailureCount++;
+      contentComparisionFailureFiles.push(filePath);
+      const differences = diff.diffLines(actual, expectation);
+      differences.forEach(part => {
+        const color = part.added ? '\x1b[32m' : part.removed ? '\x1b[31m' : '\x1b[0m';
+        console.log(color + part.value + '\x1b[0m');
+      });
     }
   }
 }
@@ -87,8 +111,17 @@ console.log('--- Grammar Test Results ---');
 console.log(`Success count: ${successCount}`);
 console.log(`Failure count: ${failureCount}`);
 if (failureCount > 0) {
-  console.log('Failed files:');
+  console.log('Execution failed files:');
   for (const failedFile of failedFiles) {
+    console.log(failedFile);
+  }
+}
+
+console.log(`Content fomparison success count: ${contentcomparationSuccessCount}`);
+console.log(`Content fomparison sailure count: ${contentcomparationFailureCount}`);
+if (contentcomparationFailureCount > 0) {
+  console.log('Content comparision failed files:');
+  for (const failedFile of contentComparisionFailureFiles) {
     console.log(failedFile);
   }
 }

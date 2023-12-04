@@ -13,21 +13,22 @@
  * limitations under the License.
  */
 
-export const enum Extension {
-  TS = '.ts',
-  DTS = '.d.ts',
-  JS = '.js',
-  JSON = '.json',
-  ETS = '.ets',
-  DETS = '.d.ets'
+class SortMethod {
+    constructor() {
+        this.head = false;
+    }
+    compare(leftIndex, rightIndex) {
+        if (!this.head) {
+            throw new Error('List is empty');
+        }
+        return leftIndex > rightIndex;
+    }
+    swap(leftIndex, rightIndex) {
+        const leftHand = rightIndex;
+        rightIndex = leftIndex;
+    }
 }
 
-export interface PathAndExtension {
-  path: string;
-  ext: string | undefined;
+function plus01(n1, n2) {
+    return n1 + n2;
 }
-
-export const supportedRunningExtension: readonly string[] = [Extension.TS, Extension.JS];
-export const supportedDeclarationExtension: readonly string[] = [Extension.DTS, Extension.DETS];
-
-export const fileExtensions: string[] = [Extension.DETS, Extension.ETS, Extension.DTS, Extension.TS, Extension.JS, Extension.JSON];

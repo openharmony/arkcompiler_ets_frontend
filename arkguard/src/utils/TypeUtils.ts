@@ -31,6 +31,9 @@ import type {
 } from 'typescript';
 
 import path from 'path';
+import { Extension } from '../common/type';
+import type { PathAndExtension } from '../common/type';
+import { FileUtils } from './FileUtils';
 
 export class TypeUtils {
   /**
@@ -42,7 +45,8 @@ export class TypeUtils {
     let printer: Printer = createPrinter();
     let content: string = printer.printFile(oldAst);
 
-    const fileSuffix: string = '.ts';
+    const pathOrExtension: PathAndExtension = FileUtils.getFileSuffix(oldAst.fileName);
+    const fileSuffix = pathOrExtension.ext === Extension.DETS ? Extension.DETS : Extension.TS;
     const { dir, name } = path.parse(oldAst.fileName);
     const targetName: string = path.join(dir, name) + '__tmp' + fileSuffix;
     return createSourceFile(targetName, content, ScriptTarget.ES2015, true);

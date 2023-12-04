@@ -17,17 +17,21 @@ import {
   factory,
   forEachChild,
   isBreakOrContinueStatement,
+  isConstructorDeclaration,
   isIdentifier,
   isLabeledStatement,
   isSourceFile,
+  isStructDeclaration,
   setParentRecursive,
   visitEachChild,
 } from 'typescript';
 
 import type {
+  ClassElement,
   Identifier,
   Node,
   SourceFile,
+  StructDeclaration,
   Symbol,
   TransformationContext,
   Transformer,
@@ -58,7 +62,7 @@ import type {TransformPlugin} from '../TransformPlugin';
 import {TransformerOrder} from '../TransformPlugin';
 import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import {TypeUtils} from '../../utils/TypeUtils';
-import {collectIdentifiers} from '../../utils/TransformUtil';
+import {collectIdentifiersAndStructs} from '../../utils/TransformUtil';
 import {NodeUtils} from '../../utils/NodeUtils';
 
 namespace secharmony {
@@ -82,6 +86,7 @@ namespace secharmony {
     }
 
     const openTopLevel: boolean = option?.mTopLevel;
+    const exportObfuscation: boolean = option?.mExportObfuscation;
     return renameIdentifierFactory;
 
     function renameIdentifierFactory(context: TransformationContext): Transformer<Node> {
@@ -104,8 +109,10 @@ namespace secharmony {
       let checker: TypeChecker = undefined;
       let manager: ScopeManager = createScopeManager();
       let shadowIdentifiers: Identifier[] = undefined;
+      let shadowStructs: StructDeclaration[] = undefined;
 
       let identifierIndex: number = 0;
+      let structIndex: number = 0;
       return renameTransformer;
 
       /**
@@ -114,7 +121,7 @@ namespace secharmony {
        * @param node ast node of a file.
        */
       function renameTransformer(node: Node): Node {
-        if (!isSourceFile(node) || NodeUtils.isDeclarationFile(node)) {
+        if (!isSourceFile(node)) {
           return node;
         }
 
@@ -122,11 +129,16 @@ namespace secharmony {
         checker = TypeUtils.createChecker(shadowSourceAst);
         manager.analyze(shadowSourceAst, checker);
 
-        manager.getReservedNames().forEach((name) => {
-          reservedNames.push(name);
-        });
+        // the reservedNames of manager contain the struct name.
+        if (!exportObfuscation) {
+          manager.getReservedNames().forEach((name) => {
+            reservedNames.push(name);
+          });
+        }
         // collect all identifiers of shadow sourceFile
-        shadowIdentifiers = collectIdentifiers(shadowSourceAst, context);
+        const identifiersAndStructs = collectIdentifiersAndStructs(shadowSourceAst, context);
+        shadowIdentifiers = identifiersAndStructs.shadowIdentifiers;
+        shadowStructs = identifiersAndStructs.shadowStructs;
 
         if (nameCache === undefined) {
           nameCache = new Map<string, string>();
@@ -134,7 +146,9 @@ namespace secharmony {
 
         let root: Scope = manager.getRootScope();
         renameInScope(root);
-        return setParentRecursive(visit(node), true);
+        let ret: Node = visit(node);
+        ret = tryRemoveVirtualConstructor(ret);
+        return setParentRecursive(ret, true);
       }
 
       /**
@@ -164,13 +178,14 @@ namespace secharmony {
           return;
         }
 
-        scope.defs.forEach((def) => {
-          if (scope.importNames.has(def.name)) {
-            scope.defs.delete(def);
-          }
-        });
+        if (!exportObfuscation) {
+          scope.defs.forEach((def) => {
+            if (scope.importNames.has(def.name)) {
+              scope.defs.delete(def);
+            }
+          });
+        }
 
-        generator.reset();
         renames(scope, scope.defs, generator);
       }
 
@@ -182,7 +197,7 @@ namespace secharmony {
           const original: string = def.name;
           let mangled: string = original;
           // No allow to rename reserved names.
-          if (reservedNames.includes(original) || scope.exportNames.has(def.name) || isSkippedGlobal(openTopLevel, scope)) {
+          if (reservedNames.includes(original) || (!exportObfuscation && scope.exportNames.has(def.name)) || isSkippedGlobal(openTopLevel, scope)) {
             mangledIdentifierNames.add(mangled);
             mangledSymbolNames.set(def, mangled);
             return;
@@ -194,7 +209,9 @@ namespace secharmony {
 
           const path: string = scope.loc + '#' + original;
           const historyName: string = historyNameCache?.get(path);
-          const specifyName: string = historyName ? historyName : nameCache.get(path);
+          let specifyName: string = historyName ? historyName : nameCache.get(path);
+          specifyName = specifyName ? specifyName : globalNameCache.get(original);
+
           if (specifyName) {
             mangled = specifyName;
           } else {
@@ -204,6 +221,7 @@ namespace secharmony {
 
           // add new names to name cache
           nameCache.set(path, mangled);
+          globalNameCache.set(original, mangled);
           mangledIdentifierNames.add(mangled);
           mangledSymbolNames.set(def, mangled);
           localCache.set(original, mangled);
@@ -321,6 +339,29 @@ namespace secharmony {
         return updateNameNode(node, shadowNode);
       }
 
+      function tryRemoveVirtualConstructor(node: Node): Node {
+        if (isStructDeclaration(node)) {
+          const shadowNode: StructDeclaration = shadowStructs[structIndex];
+          structIndex++;
+          const sourceFile = NodeUtils.getSourceFileOfNode(shadowNode);
+          const tempStructMembers: ClassElement[] = [];
+          if (sourceFile && sourceFile.isDeclarationFile) {
+            for (let index = 0; index < node.members.length; index++) {
+              const member = node.members[index];
+              // @ts-ignore
+              if (isConstructorDeclaration(member) && shadowNode.members[index].virtual) {
+                continue;
+              }
+              tempStructMembers.push(member);
+            }
+            const structMembersWithVirtualConstructor = factory.createNodeArray(tempStructMembers);
+            return factory.updateStructDeclaration(node, node.modifiers, node.name, node.typeParameters, node.heritageClauses,
+              structMembersWithVirtualConstructor);
+          }
+        }
+        return visitEachChild(node, tryRemoveVirtualConstructor, context);
+      }
+
       function findNoSymbolIdentifiers(scope: Scope): void {
         const noSymbolVisit = (targetNode: Node): void => {
           if (!isIdentifier(targetNode)) {
@@ -389,6 +430,7 @@ namespace secharmony {
 
   export let nameCache: Map<string, string> = undefined;
   export let historyNameCache: Map<string, string> = undefined;
+  export let globalNameCache: Map<string, string> = new Map();
 }
 
 export = secharmony;

@@ -13,21 +13,16 @@
  * limitations under the License.
  */
 
-export const enum Extension {
-  TS = '.ts',
-  DTS = '.d.ts',
-  JS = '.js',
-  JSON = '.json',
-  ETS = '.ets',
-  DETS = '.d.ets'
+import { PersonClass01, foo01 } from './export_obfuscation_1';
+
+let instance01 = new PersonClass01();
+const getedName: string = instance01.name
+foo01(1, 2);
+
+export function actionBarProp1(): void {
+    return;
 }
 
-export interface PathAndExtension {
-  path: string;
-  ext: string | undefined;
+export function actionBarProp2():void {
+    return;
 }
-
-export const supportedRunningExtension: readonly string[] = [Extension.TS, Extension.JS];
-export const supportedDeclarationExtension: readonly string[] = [Extension.DTS, Extension.DETS];
-
-export const fileExtensions: string[] = [Extension.DETS, Extension.ETS, Extension.DTS, Extension.TS, Extension.JS, Extension.JSON];

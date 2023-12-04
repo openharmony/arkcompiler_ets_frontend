@@ -13,21 +13,18 @@
  * limitations under the License.
  */
 
-export const enum Extension {
-  TS = '.ts',
-  DTS = '.d.ts',
-  JS = '.js',
-  JSON = '.json',
-  ETS = '.ets',
-  DETS = '.d.ets'
+export declare struct IndexUI1 {
+    param1: string;
+    message1: string;
+    method1(): void;
 }
 
-export interface PathAndExtension {
-  path: string;
-  ext: string | undefined;
+export declare function foo01(para3, para4);
+
+export declare const value04;
+
+export declare struct IndexUI2 {
+    param2: string;
+    message2: string;
+    method2(): void;
 }
-
-export const supportedRunningExtension: readonly string[] = [Extension.TS, Extension.JS];
-export const supportedDeclarationExtension: readonly string[] = [Extension.DTS, Extension.DETS];
-
-export const fileExtensions: string[] = [Extension.DETS, Extension.ETS, Extension.DTS, Extension.TS, Extension.JS, Extension.JSON];

@@ -13,9 +13,10 @@
  * limitations under the License.
  */
 
-import type {Expression, Node, ObjectBindingPattern, SourceFile} from 'typescript';
+import type {ClassElement, Expression, Node, ObjectBindingPattern, SourceFile, StructDeclaration} from 'typescript';
 import {
   SyntaxKind,
+  factory,
   getModifiers,
   isBinaryExpression,
   isBindingElement,
@@ -198,5 +199,16 @@ export class NodeUtils {
 
   public static isDeclarationFile(node: SourceFile): boolean {
     return node.isDeclarationFile;
+  }
+
+  public static getSourceFileOfNode(node: Node): SourceFile {
+    while (node && node.kind !== SyntaxKind.SourceFile) {
+      node = node.parent;
+    }
+    return <SourceFile>node;
+  }
+
+  public static isInETSFile(node: Node | undefined): boolean {
+    return !!node && NodeUtils.getSourceFileOfNode(node).fileName.endsWith('.ets');
   }
 }

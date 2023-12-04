@@ -19,10 +19,8 @@ import {FileUtils} from '../utils/FileUtils';
 import {ApiExtractor} from './ApiExtractor';
 import {ListUtil} from '../utils/ListUtil';
 import type {IOptions} from '../configs/IOptions';
-import es6Info from '../configs/preset/es6_reserved_properties.json';
 
-
-export const scanProjectConfig: {mKeepStringProperty?: boolean} = {};
+export const scanProjectConfig: {mKeepStringProperty?: boolean, mExportObfuscation?: boolean} = {};
 
 /**
  * if rename property is not open, api read and extract can be skipped
@@ -50,9 +48,10 @@ export function initPlugin(sdkDir: string, outputDir: string): void {
  * @param customProfiles
  */
 export function needReadApiInfo(customProfiles: IOptions): boolean {
-  return customProfiles.mNameObfuscation &&
+  return (customProfiles.mNameObfuscation &&
     customProfiles.mNameObfuscation.mEnable &&
-    customProfiles.mNameObfuscation.mRenameProperties;
+    customProfiles.mNameObfuscation.mRenameProperties) ||
+    customProfiles.mExportObfuscation;
 }
 
 /**
@@ -60,23 +59,25 @@ export function needReadApiInfo(customProfiles: IOptions): boolean {
  * @param projectPaths can be dir or file
  * @param customProfiles
  */
-export function readProjectProperties(projectPaths: string[], customProfiles: IOptions, isOHProject?: boolean): string[] {
+export function readProjectProperties(projectPaths: string[], customProfiles: IOptions, isOHProject?: boolean):
+  {projectAndLibsReservedProperties: string[]; libExportNames: string[]} {
   if (!needReadApiInfo(customProfiles) && !isOHProject) {
-    return [];
+    return {projectAndLibsReservedProperties:[], libExportNames: []};
   }
 
   scanProjectConfig.mKeepStringProperty = customProfiles.mNameObfuscation?.mKeepStringProperty;
+  scanProjectConfig.mExportObfuscation = customProfiles.mExportObfuscation;
 
   for (const projectPath of projectPaths) {
     if (!fs.existsSync(projectPath)) {
       console.error(`File ${FileUtils.getFileName(projectPath)} is not found.`);
-      return [];
+      return {projectAndLibsReservedProperties:[], libExportNames: []};
     }
 
     const sourcPath = isOHProject ? path.join(projectPath, 'src', 'main') : projectPath;
-    const projProperties: string[] = ApiExtractor.parseCommonProject(sourcPath);
-    const sdkProperties: string[] = readThirdPartyLibProperties(projectPath);
-
+    const projProperties: string[] = ApiExtractor.parseCommonProject(sourcPath, customProfiles);
+    const libExportNamesAndReservedProps = readThirdPartyLibProperties(projectPath);
+    const sdkProperties = libExportNamesAndReservedProps?.reservedProperties;
     // read project code export names
     customProfiles.mNameObfuscation.mReservedProperties = ListUtil.uniqueMergeList(projProperties,
       customProfiles.mNameObfuscation.mReservedProperties);
@@ -86,12 +87,20 @@ export function readProjectProperties(projectPaths: string[], customProfiles: IO
       customProfiles.mNameObfuscation.mReservedProperties = ListUtil.uniqueMergeList(sdkProperties,
         customProfiles.mNameObfuscation.mReservedProperties);
     }
+
+    if (scanProjectConfig.mExportObfuscation && libExportNamesAndReservedProps?.reservedLibExportNames) {
+      customProfiles.mNameObfuscation.mReservedNames = ListUtil.uniqueMergeList(libExportNamesAndReservedProps.reservedLibExportNames,
+        customProfiles.mNameObfuscation.mReservedNames);
+    }
   }
-  return customProfiles.mNameObfuscation.mReservedProperties;
+
+  return {
+    projectAndLibsReservedProperties: customProfiles.mNameObfuscation.mReservedProperties,
+    libExportNames: customProfiles.mNameObfuscation.mReservedNames
+  };
 }
 
-function readThirdPartyLibProperties(projectPath: string): string[] {
-  let reservedProperties: string[] = [];
+function readThirdPartyLibProperties(projectPath: string): {reservedProperties: string[]; reservedLibExportNames: string[] | undefined} {
 
   if (!fs.lstatSync(projectPath).isDirectory()) {
     return undefined;
@@ -115,9 +124,5 @@ function readThirdPartyLibProperties(projectPath: string): string[] {
     filePath = path.join(projectPath, 'oh_modules');
   }
 
-  const properties: string[] = ApiExtractor.parseThirdPartyLibs(filePath);
-  reservedProperties = [...reservedProperties, ...properties];
-  const propertySet: Set<string> = new Set<string>(reservedProperties);
-
-  return Array.from(propertySet);
+  return ApiExtractor.parseThirdPartyLibs(filePath);
 }

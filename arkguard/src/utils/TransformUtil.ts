@@ -19,6 +19,7 @@ import {
   isCallExpression,
   isExpressionStatement,
   isIdentifier,
+  isStructDeclaration,
   SyntaxKind,
   visitEachChild
 } from 'typescript';
@@ -28,6 +29,7 @@ import type {
   Identifier,
   Node,
   SourceFile,
+  StructDeclaration,
   TransformationContext 
 } from 'typescript';
 
@@ -50,15 +52,25 @@ export function collectExistNames(sourceFile: SourceFile): Set<string> {
   return identifiers;
 }
 
+type IdentifiersAndStructs = {shadowIdentifiers: Identifier[], shadowStructs: StructDeclaration[]};
+
 /**
  * collect exist identifiers in current source file
  * @param sourceFile
  * @param context
  */
-export function collectIdentifiers(sourceFile: SourceFile, context: TransformationContext): Identifier[] {
+export function collectIdentifiersAndStructs(sourceFile: SourceFile, context: TransformationContext): IdentifiersAndStructs {
   const identifiers: Identifier[] = [];
+  const structs: StructDeclaration[] = [];
 
   let visit = (node: Node): Node => {
+    if (isStructDeclaration(node)) {
+      structs.push(node);
+    }
+    // @ts-ignore
+    if (node.virtual) {
+      return node;
+    }
     if (!isIdentifier(node) || !node.parent) {
       return visitEachChild(node, visit, context);
     }
@@ -68,7 +80,7 @@ export function collectIdentifiers(sourceFile: SourceFile, context: Transformati
   };
 
   visit(sourceFile);
-  return identifiers;
+  return {shadowIdentifiers: identifiers, shadowStructs: structs};
 }
 
 export enum OhPackType {

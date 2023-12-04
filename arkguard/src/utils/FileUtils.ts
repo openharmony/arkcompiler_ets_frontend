@@ -13,9 +13,11 @@
  * limitations under the License.
  */
 
-import {existsSync, readFileSync, writeFileSync} from 'fs';
-import {readJsonSync} from 'fs-extra';
-import type {IOptions} from '../configs/IOptions';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
+import { readJsonSync } from 'fs-extra';
+import type { IOptions } from '../configs/IOptions';
+import { fileExtensions } from '../common/type';
+import type { PathAndExtension } from '../common/type';
 
 export class FileUtils {
   /**
@@ -141,5 +143,15 @@ export class FileUtils {
       }
     }
     return false;
+  }
+
+  public static getFileSuffix(filePath: string): PathAndExtension {
+    for (let ext of fileExtensions) {
+      if (filePath.endsWith(ext)) {
+        const filePathWithoutSuffix: string = filePath.replace(new RegExp(`${ext}$`), '');
+        return { path: filePathWithoutSuffix, ext: ext };
+      }
+    }
+    return { path: filePath, ext: undefined };
   }
 }

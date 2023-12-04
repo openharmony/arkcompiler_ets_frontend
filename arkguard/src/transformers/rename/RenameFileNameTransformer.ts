@@ -52,7 +52,9 @@ import type { IFileNameObfuscationOption } from '../../configs/INameObfuscationO
 import { NameGeneratorType, getNameGenerator } from '../../generator/NameFactory';
 import type { INameGenerator, NameGeneratorOptions } from '../../generator/INameGenerator';
 import { FileUtils } from '../../utils/FileUtils';
+import { NodeUtils } from '../../utils/NodeUtils';
 import { orignalFilePathForSearching } from '../../ArkObfuscator';
+import type { PathAndExtension } from '../../common/type';
 namespace secharmony {
 
   // global mangled file name table used by all files in a project
@@ -91,7 +93,7 @@ namespace secharmony {
           const directories = FileUtils.splitFilePath(fileNameOrPath);
           directories.forEach(directory => {
             tempReservedFileName.push(directory);
-            const pathOrExtension: PathAndExtension = removeFileSuffix(directory);
+            const pathOrExtension: PathAndExtension = FileUtils.getFileSuffix(directory);
             if (pathOrExtension.ext) {
               tempReservedFileName.push(pathOrExtension.ext);
               tempReservedFileName.push(pathOrExtension.path);
@@ -189,7 +191,7 @@ namespace secharmony {
 
   export function getMangleCompletePath(originalCompletePath: string): string {
     originalCompletePath = toUnixPath(originalCompletePath);
-    const { path: filePathWithoutSuffix, ext: extension } = removeFileSuffix(originalCompletePath);
+    const { path: filePathWithoutSuffix, ext: extension } = FileUtils.getFileSuffix(originalCompletePath);
     const mangleFilePath = manglFileName(filePathWithoutSuffix);
     return mangleFilePath + extension;
   }
@@ -204,7 +206,7 @@ namespace secharmony {
       const mangleFilePath = manglFileName(pathAndExtension.path);
       return mangleFilePath;
     } else {
-      const { path: filePathWithoutSuffix, ext: extension } = removeFileSuffix(pathAndExtension.path);
+      const { path: filePathWithoutSuffix, ext: extension } = FileUtils.getFileSuffix(pathAndExtension.path);
       const mangleFilePath = manglFileName(filePathWithoutSuffix);
       return mangleFilePath + extension;
     }
@@ -286,27 +288,10 @@ function tryValidateFileExisting(importPath: string): PathAndExtension | undefin
   return undefined;
 }
 
-interface PathAndExtension {
-  path: string;
-  ext: string | undefined;
-}
-
-const fileExtensions: string[] = ['.d.ets', '.ets', '.d.ts', '.ts', '.js', '.json'];
-
-function removeFileSuffix(filePath: string): PathAndExtension {
-  for (let ext of fileExtensions) {
-    if (filePath.endsWith(ext)) {
-      const filePathWithoutSuffix: string = filePath.replace(new RegExp(`${ext}$`), '');
-      return { path: filePathWithoutSuffix, ext: ext };
-    }
-  }
-  return { path: filePath, ext: undefined };
-}
-
 function tryRemoveVirtualConstructor(node: StructDeclaration): StructDeclaration {
-  const sourceFile = getSourceFileOfNode(node);
+  const sourceFile = NodeUtils.getSourceFileOfNode(node);
   const tempStructMembers: ClassElement[] = [];
-  if (sourceFile && sourceFile.isDeclarationFile && isInETSFile(sourceFile)) {
+  if (sourceFile && sourceFile.isDeclarationFile && NodeUtils.isInETSFile(sourceFile)) {
     for (let member of node.members) {
       // @ts-ignore
       if (!isConstructorDeclaration(member) || !member.virtual) {
@@ -317,17 +302,6 @@ function tryRemoveVirtualConstructor(node: StructDeclaration): StructDeclaration
     return factory.updateStructDeclaration(node, node.modifiers, node.name, node.typeParameters, node.heritageClauses, structMembersWithVirtualConstructor);
   }
   return node;
-}
-
-function getSourceFileOfNode(node: Node): SourceFile {
-  while (node && node.kind !== SyntaxKind.SourceFile) {
-    node = node.parent;
-  }
-  return <SourceFile>node;
-}
-
-function isInETSFile(node: Node | undefined): boolean {
-  return !!node && getSourceFileOfNode(node).fileName.endsWith('.ets');
 }
 
 function toUnixPath(data: string): string {

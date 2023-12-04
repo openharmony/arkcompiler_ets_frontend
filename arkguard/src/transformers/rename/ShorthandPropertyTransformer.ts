@@ -51,9 +51,6 @@ namespace secharmony {
       return shorthandPropertyTransformer;
 
       function shorthandPropertyTransformer(node: Node): Node {
-        if (isSourceFile(node) && NodeUtils.isDeclarationFile(node)) {
-          return node;
-        }
         return setParentRecursive(transformShortHandProperty(node), true);
       }
 

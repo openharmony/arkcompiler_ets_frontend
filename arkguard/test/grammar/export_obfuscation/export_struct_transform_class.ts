@@ -13,21 +13,24 @@
  * limitations under the License.
  */
 
-export const enum Extension {
-  TS = '.ts',
-  DTS = '.d.ts',
-  JS = '.js',
-  JSON = '.json',
-  ETS = '.ets',
-  DETS = '.d.ets'
+class ViewPU {
+
 }
 
-export interface PathAndExtension {
-  path: string;
-  ext: string | undefined;
+export class Retransmission1 extends ViewPU {
+    constructor() {
+        super();
+    }
+    scroller1: string;
+    controller1: number;
+    callMethod1(): void {};
 }
 
-export const supportedRunningExtension: readonly string[] = [Extension.TS, Extension.JS];
-export const supportedDeclarationExtension: readonly string[] = [Extension.DTS, Extension.DETS];
-
-export const fileExtensions: string[] = [Extension.DETS, Extension.ETS, Extension.DTS, Extension.TS, Extension.JS, Extension.JSON];
+class Retransmission2 extends ViewPU {
+    constructor() {
+        super();
+    }
+    scroller2: string;
+    controller2: number;
+    callMethod2(): void {};
+}

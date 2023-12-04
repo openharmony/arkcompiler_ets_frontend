@@ -94,10 +94,6 @@ namespace secharmony {
       return renamePropertiesTransformer;
 
       function renamePropertiesTransformer(node: Node): Node {
-        if (isSourceFile(node) && NodeUtils.isDeclarationFile(node)) {
-          return node;
-        }
-
         collectReservedNames(node);
         if (globalMangledTable === undefined) {
           globalMangledTable = new Map<string, string>();

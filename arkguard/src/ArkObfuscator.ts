@@ -320,7 +320,7 @@ export class ArkObfuscator {
       } else {
         relativePath = sourceFilePath.replace(testCasesRootPath, '');
       }
-      resultPath = path.join(outputDir, relativePath);
+      resultPath = path.join(this.mCustomProfiles.mOutputDir, relativePath);
       fs.mkdirSync(path.dirname(resultPath), {recursive: true});
       fs.writeFileSync(resultPath, mixedInfo.content);
 
