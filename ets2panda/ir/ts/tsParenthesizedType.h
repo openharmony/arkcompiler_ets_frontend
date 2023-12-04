@@ -25,7 +25,7 @@ class TSParenthesizedType : public TypeNode {
 public:
     explicit TSParenthesizedType(TypeNode *type) : TypeNode(AstNodeType::TS_PARENT_TYPE), type_(type) {}
 
-    // TODO (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
     friend class checker::TSAnalyzer;
 
     const Expression *Type() const

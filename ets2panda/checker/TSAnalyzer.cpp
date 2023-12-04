@@ -1013,7 +1013,7 @@ checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TaggedTemplateExpression *
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::TemplateLiteral *expr) const
 {
     TSChecker *checker = GetTSChecker();
-    // TODO(aszilagyi)
+    // NOTE(aszilagyi)
     return checker->GlobalAnyType();
 }
 

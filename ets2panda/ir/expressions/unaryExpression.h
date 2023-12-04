@@ -44,7 +44,7 @@ public:
         : Expression(AstNodeType::UNARY_EXPRESSION), argument_(argument), operator_(unary_operator)
     {
     }
-    // TODO (somasimon): these friend relationships can be removed once there are getters for private fields
+    // NOTE (somasimon): these friend relationships can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
     friend class checker::TSAnalyzer;
 

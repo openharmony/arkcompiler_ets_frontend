@@ -177,7 +177,6 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) 
     checker::Signature *signature = expr->expr_->Signature();
     bool is_static = signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
     bool is_reference = signature->HasSignatureFlag(checker::SignatureFlags::TYPE);
-
     if (!is_reference && expr->expr_->Callee()->IsIdentifier()) {
         if (!is_static) {
             etsg->LoadThis(expr->expr_);

@@ -31,7 +31,7 @@ public:
         : Statement(AstNodeType::ASSERT_STATEMENT), test_(test), second_(second)
     {
     }
-    // TODO (somas): this friend relationship can be removed once there are getters for private fields
+    // NOTE (somas): this friend relationship can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
 
     const Expression *Test() const

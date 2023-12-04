@@ -131,7 +131,7 @@ void ETSTupleType::AssignmentTarget(TypeRelation *const relation, Type *const so
 
 void ETSTupleType::Cast(TypeRelation *const relation, Type *const target)
 {
-    // TODO(mmartin): Might be not the correct casting rules, as these aren't defined yet
+    // NOTE(mmartin): Might be not the correct casting rules, as these aren't defined yet
 
     if (!(target->IsETSTupleType() || target->IsETSArrayType())) {
         conversion::Forbidden(relation);

@@ -46,7 +46,7 @@ public:
           return_type_annotation_(return_type_annotation)
     {
     }
-    // TODO (csabahurton): friend relationship can be removed once there are getters for private fields
+    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
     friend class checker::TSAnalyzer;
 
     bool IsScopeBearer() const override

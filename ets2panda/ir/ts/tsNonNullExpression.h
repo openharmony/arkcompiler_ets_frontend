@@ -26,7 +26,7 @@ class TSNonNullExpression : public Expression {
 public:
     explicit TSNonNullExpression(Expression *expr) : Expression(AstNodeType::TS_NON_NULL_EXPRESSION), expr_(expr) {}
 
-    // TODO (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
 
     const Expression *Expr() const

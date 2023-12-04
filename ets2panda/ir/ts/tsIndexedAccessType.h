@@ -29,7 +29,7 @@ public:
         : TypeNode(AstNodeType::TS_INDEXED_ACCESS_TYPE), object_type_(object_type), index_type_(index_type)
     {
     }
-    // TODO (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
     friend class checker::TSAnalyzer;
 
     const TypeNode *ObjectType() const

@@ -18,7 +18,6 @@
 #include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-// #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void OmittedExpression::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}

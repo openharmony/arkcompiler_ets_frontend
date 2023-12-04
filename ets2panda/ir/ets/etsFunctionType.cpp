@@ -20,7 +20,6 @@
 #include "checker/ETSchecker.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-// #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void ETSFunctionType::TransformChildren(const NodeTransformer &cb)

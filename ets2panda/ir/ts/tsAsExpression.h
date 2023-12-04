@@ -34,7 +34,7 @@ public:
           is_const_(is_const)
     {
     }
-    // TODO (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
     friend class compiler::ETSCompiler;
     const Expression *Expr() const

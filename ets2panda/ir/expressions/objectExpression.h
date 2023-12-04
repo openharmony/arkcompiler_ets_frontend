@@ -48,7 +48,7 @@ public:
     }
     explicit ObjectExpression(Tag tag, ObjectExpression const &other, ArenaAllocator *allocator);
 
-    // TODO (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
 
     [[nodiscard]] const ArenaVector<Expression *> &Properties() const noexcept

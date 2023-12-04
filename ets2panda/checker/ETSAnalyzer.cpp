@@ -654,7 +654,6 @@ checker::Type *ETSAnalyzer::Check(ir::ArrayExpression *expr) const
 
     const bool is_array = (expr->preferred_type_ != nullptr) && expr->preferred_type_->IsETSArrayType() &&
                           !expr->preferred_type_->IsETSTupleType();
-
     if (is_array) {
         expr->preferred_type_ = expr->preferred_type_->AsETSArrayType()->ElementType();
     }
@@ -1280,7 +1279,7 @@ static checker::Type *CheckComputed(checker::ETSChecker *checker, checker::Type 
             const checker::CastingContext cast(checker->Relation(), expr, base_type->AsETSArrayType()->ElementType(),
                                                tuple_type_at_idx, expr->Start(), {"Tuple type couldn't be converted "});
 
-            // TODO(mmartin): this can be replaced with the general type mapper, once implemented
+            // NOTE(mmartin): this can be replaced with the general type mapper, once implemented
             if ((expr->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
                 auto *const saved_node = checker->Relation()->GetNode();
                 if (saved_node == nullptr) {
@@ -1678,7 +1677,6 @@ checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
     }
 
     auto unboxed_type = checker->ETSBuiltinTypeAsPrimitiveType(operand_type);
-
     if (unboxed_type == nullptr || !unboxed_type->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
         checker->ThrowTypeError("Bad operand type, the type of the operand must be numeric type.",
                                 expr->Argument()->Start());
@@ -2406,7 +2404,6 @@ checker::Type *ETSAnalyzer::Check(ir::TryStatement *st) const
 
     for (auto *catch_clause : st->CatchClauses()) {
         auto exception_type = catch_clause->Check(checker);
-
         if ((exception_type != nullptr) && (catch_clause->Param() != nullptr)) {
             auto *clause_type = exception_type->AsETSObjectType();
 

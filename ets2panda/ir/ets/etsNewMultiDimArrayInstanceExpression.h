@@ -44,7 +44,7 @@ public:
           dimensions_(std::move(dimensions))
     {
     }
-    // TODO (csabahurton): these friend relationships can be removed once there are getters for private fields
+    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
     friend class compiler::ETSCompiler;
 

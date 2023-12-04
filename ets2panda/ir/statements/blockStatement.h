@@ -34,7 +34,7 @@ public:
     {
     }
 
-    // TODO (somas): this friend relationship can be removed once there are getters for private fields
+    // NOTE (somas): this friend relationship can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
 
     bool IsScopeBearer() const override

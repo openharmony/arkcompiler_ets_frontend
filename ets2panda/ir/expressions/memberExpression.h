@@ -64,7 +64,7 @@ public:
 
     explicit MemberExpression(Tag tag, MemberExpression const &other, Expression *object, Expression *property);
 
-    // TODO (csabahurton): these friend relationships can be removed once there are getters for private fields
+    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
     friend class compiler::JSCompiler;
     friend class compiler::ETSCompiler;
 

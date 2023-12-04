@@ -41,7 +41,7 @@ public:
                update_operator == lexer::TokenType::PUNCTUATOR_MINUS_MINUS);
     }
 
-    // TODO (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
     friend class checker::TSAnalyzer;
     friend class checker::ETSAnalyzer;
 

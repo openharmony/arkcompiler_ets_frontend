@@ -988,7 +988,6 @@ void ETSChecker::ValidateTupleIndex(const ETSTupleType *const tuple, const ir::M
     }
 
     const int32_t expr_value = GetTupleElementAccessValue(expr_type);
-
     if (((expr_value >= tuple->GetTupleSize()) && !tuple->HasSpreadType()) || (expr_value < 0)) {
         ThrowTypeError("Element accessor value is out of tuple size bounds.", expr->Property()->Start());
     }

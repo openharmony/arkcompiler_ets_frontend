@@ -47,7 +47,7 @@ public:
 
     explicit AssignmentExpression(Tag tag, AssignmentExpression const &other, Expression *left, Expression *right);
 
-    // TODO (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
     friend class checker::ETSAnalyzer;
 
     [[nodiscard]] const Expression *Left() const noexcept

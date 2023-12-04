@@ -2755,7 +2755,7 @@ ir::TypeNode *ETSParser::ParseETSTupleType(TypeAnnotationParsingOptions *const o
         current_type_annotation->SetParent(tuple_type);
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
-            // TODO(mmartin): implement optional types for tuples
+            // NOTE(mmartin): implement optional types for tuples
             ThrowSyntaxError("Optional types in tuples are not yet implemented.");
         }
 
