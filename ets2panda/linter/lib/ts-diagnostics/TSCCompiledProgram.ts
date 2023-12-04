@@ -43,6 +43,8 @@ export class TSCCompiledProgramSimple implements TSCCompiledProgram {
   }
 }
 
+export type ProgressCallback = (message: string) => void;
+
 export class TSCCompiledProgramWithDiagnostics implements TSCCompiledProgram {
   private readonly program: ts.Program;
   private readonly cachedDiagnostics: Map<string, ts.Diagnostic[]> = new Map();
@@ -51,11 +53,14 @@ export class TSCCompiledProgramWithDiagnostics implements TSCCompiledProgram {
     strict: ts.Program,
     nonStrict: ts.Program,
     inputFiles: string[],
-    cancellationToken?: ts.CancellationToken
+    cancellationToken?: ts.CancellationToken,
+    progressCb?: ProgressCallback
   ) {
     this.program = strict;
 
     inputFiles.forEach((fileName) => {
+      progressCb?.(fileName);
+
       const sourceFile = this.program.getSourceFile(fileName);
       if (sourceFile !== undefined) {
         this.cachedDiagnostics.set(
