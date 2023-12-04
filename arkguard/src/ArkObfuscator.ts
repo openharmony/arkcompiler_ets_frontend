@@ -276,11 +276,16 @@ export class ArkObfuscator {
   public createObfsPrinter(isDeclarationFile: boolean): Printer {
     // set print options
     let printerOptions: PrinterOptions = {};
-    if (this.mCustomProfiles.mRemoveComments || (this.mCustomProfiles.mRemoveDeclarationComments && 
-      (this.mCustomProfiles.mRemoveDeclarationComments.mEnable && !this.mCustomProfiles.mRemoveDeclarationComments.mReservedComments))) {
+    let removeOption = this.mCustomProfiles.mRemoveDeclarationComments;
+    let keepDeclarationComments = !removeOption || !removeOption.mEnable || (removeOption.mReservedComments && removeOption.mReservedComments.length > 0);
+    
+    if (isDeclarationFile && keepDeclarationComments) {
       printerOptions.removeComments = false;
     }
-    printerOptions.removeComments = false;
+    if ((!isDeclarationFile && this.mCustomProfiles.mRemoveComments) || (isDeclarationFile && !keepDeclarationComments)) {
+      printerOptions.removeComments = true;
+    }
+
     return createPrinter(printerOptions);
   }
 
@@ -371,7 +376,7 @@ export class ArkObfuscator {
       orignalFilePathForSearching = originalFilePath ? originalFilePath : ast.fileName;
     }
 
-    if (!this.mCustomProfiles.mRemoveDeclarationComments || !this.mCustomProfiles.mRemoveDeclarationComments.mEnable){
+    if (!this.mCustomProfiles.mRemoveDeclarationComments || !this.mCustomProfiles.mRemoveDeclarationComments.mEnable) {
       //@ts-ignore
       ast.reservedComments = undefined;
     } else {
