@@ -1,0 +1,60 @@
+/*
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * A variable declaration.
+ * @type {string}
+ */
+declare let myVariable: string;
+
+/**
+ * A function with parameter declarations.
+ * @param {number} x - The first parameter.
+ * @param {string} y - The second parameter.
+ */
+declare function myFunction(x: number, y: string): void;
+
+/**
+ * An interface with a property signature.
+ * @interface
+ */
+declare interface MyInterface {
+  myProperty: number;
+}
+
+/**
+ * A class with get and set accessor declarations.
+ * @class
+ */
+declare class MyClass {
+  private _myProperty: number;
+
+  /**
+   * Get accessor for myProperty.
+   * @returns {number} The value of myProperty.
+   */
+  get myProperty(): number;
+
+  /**
+   * Set accessor for myProperty.
+   * @param {number} value - The value to set.
+   */
+  set myProperty(value: number);
+
+  /**
+   * A static block in the class.
+   */
+  static {}
+}
