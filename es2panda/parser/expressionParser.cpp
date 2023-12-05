@@ -2350,6 +2350,10 @@ ir::Expression *ParserImpl::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFl
         returnExpr = AllocNode<ir::UpdateExpression>(argument, operatorType, true);
     } else if (operatorType == lexer::TokenType::KEYW_AWAIT) {
         returnExpr = AllocNode<ir::AwaitExpression>(argument);
+        if (context_.IsModule() && !(context_.Status() & ParserStatus::FUNCTION)) {
+            program_.SetHasTLA(true);
+            GetSourceTextModuleRecord()->SetHasTLA(true);
+        }
     } else {
         returnExpr = AllocNode<ir::UnaryExpression>(argument, operatorType);
     }

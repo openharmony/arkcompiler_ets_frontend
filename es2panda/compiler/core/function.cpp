@@ -252,7 +252,7 @@ static void CompileFunctionOrProgram(PandaGen *pg)
     const auto *topScope = pg->TopScope();
 
     if (pg->FunctionHasFinalizer()) {
-        ASSERT(topScope->IsFunctionScope());
+        ASSERT(topScope->IsFunctionScope() || topScope->IsModuleScope());
 
         if (!pg->IsAsyncFunction()) {
             CompileFunctionParameterDeclaration(pg, pg->RootNode()->AsScriptFunction());
@@ -260,7 +260,12 @@ static void CompileFunctionOrProgram(PandaGen *pg)
 
         TryContext tryCtx(pg);
         pg->FunctionInit(tryCtx.GetCatchTable());
-
+        if (topScope->IsModuleScope()) {
+            pg->FunctionEnter();
+            CompileSourceBlock(pg, pg->RootNode()->AsBlockStatement());
+            pg->FunctionExit();
+            return;
+        }
         CompileFunction(pg);
     } else {
         pg->FunctionInit(nullptr);

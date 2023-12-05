@@ -154,7 +154,17 @@ public:
     {
         return isDtsFile_;
     }
-    
+
+    bool HasTLA() const
+    {
+        return hasTLA_;
+    }
+
+    void SetHasTLA(bool hasTLA)
+    {
+        hasTLA_ = hasTLA;
+    }
+ 
     bool IsDebug() const
     {
         return isDebug_;
@@ -193,6 +203,7 @@ private:
     SourceTextModuleRecord *typeModuleRecord_ {nullptr};
     util::PatchFix *patchFixHelper_ {nullptr};
     bool isDtsFile_ {false};
+    bool hasTLA_ {false};
     bool isDebug_ {false};
     int targetApiVersion_ {0};
 };

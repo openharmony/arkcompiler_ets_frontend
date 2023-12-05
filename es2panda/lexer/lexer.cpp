@@ -1180,7 +1180,8 @@ void Lexer::CheckAwaitKeyword()
     if (parserContext_->IsStaticBlock()) {
         ThrowError("'await' is not allowed in class static block");
     }
-    if (!parserContext_->IsAsync()) {
+    // support top level await for module
+    if (!parserContext_->IsAsync() && !parserContext_->IsModule()) {
         GetToken().type_ = TokenType::LITERAL_IDENT;
         return;
     }
@@ -1188,7 +1189,9 @@ void Lexer::CheckAwaitKeyword()
     if (parserContext_->DisallowAwait()) {
         ThrowError("'await' is not allowed");
     }
-
+    if (GetToken().flags_ & TokenFlags::HAS_ESCAPE) {
+        ThrowError("Keyword must not contain escaped characters");
+    }
     GetToken().type_ = TokenType::KEYW_AWAIT;
 }
 

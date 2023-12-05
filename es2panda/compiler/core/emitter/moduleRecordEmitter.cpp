@@ -126,6 +126,14 @@ void ModuleRecordEmitter::GenStarExportEntries()
     }
 }
 
+void ModuleRecordEmitter::GenHasTLA()
+{
+    ASSERT(moduleRecord_ != nullptr);
+    panda::pandasm::LiteralArray::Literal hasTLA = {
+        .tag_ = panda::panda_file::LiteralTag::INTEGER, .value_ = static_cast<uint32_t>(moduleRecord_->HasTLA())};
+    buffer_.emplace_back(hasTLA);
+}
+
 void ModuleRecordEmitter::Generate()
 {
     GenModuleRequests();
@@ -134,5 +142,6 @@ void ModuleRecordEmitter::Generate()
     GenLocalExportEntries();
     GenIndirectExportEntries();
     GenStarExportEntries();
+    GenHasTLA();
 }
 }  // namespace panda::es2panda::compiler

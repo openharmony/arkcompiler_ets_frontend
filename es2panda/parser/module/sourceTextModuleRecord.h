@@ -144,6 +144,16 @@ public:
         return indirectExportEntries_;
     }
 
+    bool HasTLA() const
+    {
+        return hasTLA_;
+    }
+
+    void SetHasTLA(bool hasTLA)
+    {
+        hasTLA_ = hasTLA;
+    }
+
     static constexpr std::string_view DEFAULT_LOCAL_NAME = "*default*";
     static constexpr std::string_view DEFAULT_EXTERNAL_NAME = "default";
     static constexpr std::string_view ANONY_NAMESPACE_NAME = "=ens";
@@ -163,6 +173,7 @@ private:
     NamespaceImportEntryList namespaceImportEntries_;
     SpecialExportEntryList starExportEntries_;
     SpecialExportEntryList indirectExportEntries_;
+    bool hasTLA_ {false};
 };
 } // namespace panda::es2panda::parser
 

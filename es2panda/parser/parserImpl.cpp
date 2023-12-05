@@ -3016,8 +3016,9 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
 
     auto classCtx = binder::LexicalScope<binder::ClassScope>(Binder());
 
-    if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT && (Extension() != ScriptExtension::TS ||
-        lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_IMPLEMENTS)) {
+    if ((lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
+            lexer_->GetToken().Type() == lexer:: TokenType::KEYW_AWAIT) && (Extension() != ScriptExtension::TS ||
+	    lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_IMPLEMENTS)) {
         identNode = SetIdentNodeInClassDefinition(isDeclare, &decl);
     } else if (isDeclaration && idRequired) {
         ThrowSyntaxError("Unexpected token, expected an identifier.");
@@ -3810,7 +3811,7 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus,
         ThrowSyntaxError("Unexpected token, expected '('");
     }
 
-    if (newStatus & (ParserStatus::ASYNC_FUNCTION | ParserStatus::FUNCTION_DECLARATION)) {
+    if (newStatus & (ParserStatus::ASYNC_FUNCTION | ParserStatus::FUNCTION_DECLARATION) | context_.IsModule()) {
         context_.Status() |= ParserStatus::DISALLOW_AWAIT;
     }
 

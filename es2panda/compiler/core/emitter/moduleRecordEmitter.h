@@ -49,6 +49,7 @@ private:
     void GenLocalExportEntries();
     void GenIndirectExportEntries();
     void GenStarExportEntries();
+    void GenHasTLA();
 
     parser::SourceTextModuleRecord *moduleRecord_;
     int32_t bufferIdx_ {};
