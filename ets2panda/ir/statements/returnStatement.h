@@ -26,6 +26,11 @@ namespace panda::es2panda::compiler {
 class ETSCompiler;
 }  // namespace panda::es2panda::compiler
 
+namespace panda::es2panda::compiler {
+class JSCompiler;
+class ETSCompiler;
+}  // namespace panda::es2panda::compiler
+
 namespace panda::es2panda::ir {
 class ReturnStatement : public Statement {
 public:

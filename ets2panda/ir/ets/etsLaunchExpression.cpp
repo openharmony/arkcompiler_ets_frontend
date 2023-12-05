@@ -19,10 +19,6 @@
 #include "compiler/core/ETSGen.h"
 #include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
-#include "ir/astDump.h"
-#include "ir/expressions/identifier.h"
-#include "ir/expressions/callExpression.h"
-#include "ir/expressions/memberExpression.h"
 
 namespace panda::es2panda::ir {
 ETSLaunchExpression::ETSLaunchExpression(CallExpression *expr)
@@ -45,70 +41,26 @@ void ETSLaunchExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ETSLaunchExpression"}, {"expr", expr_}});
 }
 
-void ETSLaunchExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void ETSLaunchExpression::Compile(compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
 
 void ETSLaunchExpression::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 {
 #ifdef PANDA_WITH_ETS
-    compiler::RegScope rs(etsg);
-    compiler::VReg callee_reg = etsg->AllocReg();
-    checker::Signature *signature = expr_->Signature();
-    bool is_static = signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
-    bool is_reference = signature->HasSignatureFlag(checker::SignatureFlags::TYPE);
-    if (!is_reference && expr_->Callee()->IsIdentifier()) {
-        if (!is_static) {
-            etsg->LoadThis(expr_);
-            etsg->StoreAccumulator(this, callee_reg);
-        }
-    } else if (!is_reference && expr_->Callee()->IsMemberExpression()) {
-        if (!is_static) {
-            expr_->Callee()->AsMemberExpression()->Object()->Compile(etsg);
-            etsg->StoreAccumulator(this, callee_reg);
-        }
-    } else {
-        expr_->Callee()->Compile(etsg);
-        etsg->StoreAccumulator(this, callee_reg);
-    }
-
-    if (is_static) {
-        etsg->LaunchStatic(this, signature, expr_->Arguments());
-    } else if (signature->HasSignatureFlag(checker::SignatureFlags::PRIVATE)) {
-        etsg->LaunchThisStatic(this, callee_reg, signature, expr_->Arguments());
-    } else {
-        etsg->LaunchThisVirtual(this, callee_reg, signature, expr_->Arguments());
-    }
-
-    etsg->SetAccumulatorType(TsType());
+    etsg->GetAstCompiler()->Compile(this);
 #endif  // PANDA_WITH_ETS
 }
 
-checker::Type *ETSLaunchExpression::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *ETSLaunchExpression::Check(checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *ETSLaunchExpression::Check(checker::ETSChecker *checker)
 {
-    expr_->Check(checker);
-    auto *const launch_promise_type =
-        checker->GlobalBuiltinPromiseType()
-            ->Instantiate(checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder())
-            ->AsETSObjectType();
-    launch_promise_type->AddTypeFlag(checker::TypeFlag::GENERIC);
-
-    // Launch expression returns a Promise<T> type, so we need to insert the expression's type
-    // as type parameter for the Promise class.
-
-    auto *expr_type =
-        expr_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) && !expr_->TsType()->IsETSVoidType()
-            ? checker->PrimitiveTypeAsETSBuiltinType(expr_->TsType())
-            : expr_->TsType();
-    checker::Substitution *substitution = checker->NewSubstitution();
-    ASSERT(launch_promise_type->TypeArguments().size() == 1);
-    substitution->emplace(checker->GetOriginalBaseType(launch_promise_type->TypeArguments()[0]), expr_type);
-
-    SetTsType(launch_promise_type->Substitute(checker->Relation(), substitution));
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 bool ETSLaunchExpression::IsStaticCall() const

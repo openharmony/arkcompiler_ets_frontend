@@ -15,6 +15,7 @@
 
 #include "charLiteral.h"
 
+#include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/ETSchecker.h"
@@ -31,24 +32,24 @@ void CharLiteral::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "CharLiteral"}, {"value", char_}});
 }
 
-void CharLiteral::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void CharLiteral::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
 
 void CharLiteral::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 {
-    etsg->LoadAccumulatorChar(this, char_);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *CharLiteral::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *CharLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    if (TsType() == nullptr) {
-        SetTsType(checker->Allocator()->New<checker::CharType>(char_));
-    }
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

@@ -18,6 +18,8 @@
 #include "varbinder/scope.h"
 #include "checker/TSchecker.h"
 #include "checker/types/signature.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/ts/tsTypeParameter.h"
 #include "ir/ts/tsTypeParameterDeclaration.h"
@@ -58,19 +60,18 @@ void TSConstructorType::Dump(ir::AstDumper *dumper) const
                  {"abstract", AstDumper::Optional(abstract_)}});
 }
 
-void TSConstructorType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSConstructorType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void TSConstructorType::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSConstructorType::Check(checker::TSChecker *checker)
 {
-    checker::ScopeContext scope_ctx(checker, scope_);
-
-    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(params_, signature_info);
-    return_type_->Check(checker);
-    auto *construct_signature =
-        checker->Allocator()->New<checker::Signature>(signature_info, return_type_->GetType(checker));
-
-    return checker->CreateConstructorTypeWithSignature(construct_signature);
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSConstructorType::GetType(checker::TSChecker *checker)
@@ -80,6 +81,6 @@ checker::Type *TSConstructorType::GetType(checker::TSChecker *checker)
 
 checker::Type *TSConstructorType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

@@ -16,6 +16,9 @@
 #include "spreadElement.h"
 #include "es2panda.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/pandagen.h"
+#include "compiler/core/ETSGen.h"
 #include "ir/astDump.h"
 #include "ir/base/decorator.h"
 #include "ir/typeNode.h"
@@ -137,15 +140,22 @@ void SpreadElement::Dump(ir::AstDumper *dumper) const
                  {"typeAnnotation", AstDumper::Optional(TypeAnnotation())}});
 }
 
-void SpreadElement::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void SpreadElement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void SpreadElement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *SpreadElement::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *SpreadElement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

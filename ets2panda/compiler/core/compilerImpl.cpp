@@ -16,6 +16,8 @@
 #include "compilerImpl.h"
 
 #include "es2panda.h"
+#include "checker/ETSAnalyzer.h"
+#include "checker/TSAnalyzer.h"
 #include "compiler/core/compilerContext.h"
 #include "compiler/core/compileQueue.h"
 #include "compiler/core/compilerImpl.h"
@@ -36,9 +38,7 @@
 #include "varbinder/ASBinder.h"
 #include "varbinder/TSBinder.h"
 #include "varbinder/ETSBinder.h"
-#include "checker/TSAnalyzer.h"
 #include "checker/TSchecker.h"
-#include "checker/ETSAnalyzer.h"
 #include "checker/ETSchecker.h"
 #include "checker/ASchecker.h"
 #include "checker/JSchecker.h"

@@ -16,6 +16,9 @@
 #include "tsModuleBlock.h"
 
 #include "varbinder/scope.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
@@ -38,15 +41,22 @@ void TSModuleBlock::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSModuleBlock"}, {"body", statements_}});
 }
 
-void TSModuleBlock::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSModuleBlock::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void TSModuleBlock::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSModuleBlock::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSModuleBlock::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

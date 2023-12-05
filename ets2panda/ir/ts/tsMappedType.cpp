@@ -15,6 +15,9 @@
 
 #include "tsMappedType.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/typeNode.h"
 #include "ir/ts/tsTypeParameter.h"
@@ -49,11 +52,18 @@ void TSMappedType::Dump(ir::AstDumper *dumper) const
                                                                  : AstDumper::Optional("-")}});
 }
 
-void TSMappedType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSMappedType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void TSMappedType::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSMappedType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSMappedType::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -63,6 +73,6 @@ checker::Type *TSMappedType::GetType([[maybe_unused]] checker::TSChecker *checke
 
 checker::Type *TSMappedType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

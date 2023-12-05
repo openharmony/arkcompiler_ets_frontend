@@ -15,8 +15,9 @@
 
 #include "importExpression.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
-#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void ImportExpression::TransformChildren(const NodeTransformer &cb)
@@ -34,19 +35,23 @@ void ImportExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ImportExpression"}, {"source", source_}});
 }
 
-void ImportExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+void ImportExpression::Compile(compiler::PandaGen *pg) const
 {
-    pg->Unimplemented();
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ImportExpression::Check([[maybe_unused]] checker::TSChecker *checker)
+void ImportExpression::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
+}
+checker::Type *ImportExpression::Check(checker::TSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *ImportExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ImportExpression::Check(checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

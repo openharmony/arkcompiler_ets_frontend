@@ -16,6 +16,9 @@
 #include "es2panda.h"
 #include "tsTypeParameterInstantiation.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/expression.h"
 #include "ir/typeNode.h"
@@ -63,16 +66,23 @@ void TSTypeParameterInstantiation::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSTypeParameterInstantiation"}, {"params", params_}});
 }
 
-void TSTypeParameterInstantiation::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSTypeParameterInstantiation::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void TSTypeParameterInstantiation::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSTypeParameterInstantiation::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSTypeParameterInstantiation::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 }  // namespace panda::es2panda::ir

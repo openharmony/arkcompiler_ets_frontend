@@ -21,6 +21,11 @@
 #include "ir/expression.h"
 #include "ir/irnode.h"
 
+namespace panda::es2panda::compiler {
+class JSCompiler;
+class ETSCompiler;
+}  // namespace panda::es2panda::compiler
+
 namespace panda::es2panda::checker {
 class ETSObjectType;
 }  // namespace panda::es2panda::checker
@@ -58,6 +63,10 @@ public:
     }
 
     explicit MemberExpression(Tag tag, MemberExpression const &other, Expression *object, Expression *property);
+
+    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
+    friend class compiler::JSCompiler;
+    friend class compiler::ETSCompiler;
 
     [[nodiscard]] Expression *Object() noexcept
     {
@@ -139,6 +148,16 @@ public:
         ignore_box_ = true;
     }
 
+    checker::Type *GetTupleConvertedType() const noexcept
+    {
+        return tuple_converted_type_;
+    }
+
+    void SetTupleConvertedType(checker::Type *conv_type) noexcept
+    {
+        tuple_converted_type_ = conv_type;
+    }
+
     [[nodiscard]] bool IsPrivateReference() const noexcept;
 
     // NOLINTNEXTLINE(google-default-arguments)
@@ -153,7 +172,7 @@ public:
     void CompileToReg(compiler::PandaGen *pg, compiler::VReg obj_reg) const;
     void CompileToRegs(compiler::PandaGen *pg, compiler::VReg object, compiler::VReg property) const;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 protected:
     MemberExpression(MemberExpression const &other) : MaybeOptionalExpression(other)
@@ -167,14 +186,6 @@ protected:
     }
 
 private:
-    std::pair<checker::Type *, varbinder::LocalVariable *> ResolveEnumMember(checker::ETSChecker *checker,
-                                                                             checker::Type *type) const;
-    std::pair<checker::Type *, varbinder::LocalVariable *> ResolveObjectMember(checker::ETSChecker *checker) const;
-
-    checker::Type *AdjustOptional(checker::ETSChecker *checker, checker::Type *type);
-    checker::Type *CheckComputed(checker::ETSChecker *checker, checker::Type *base_type);
-    checker::Type *CheckUnionMember(checker::ETSChecker *checker, checker::Type *base_type);
-
     void LoadRhs(compiler::PandaGen *pg) const;
     bool IsGenericField() const;
 
@@ -185,6 +196,7 @@ private:
     bool ignore_box_ {false};
     varbinder::LocalVariable *prop_var_ {};
     checker::ETSObjectType *obj_type_ {};
+    checker::Type *tuple_converted_type_ {};
 };
 }  // namespace panda::es2panda::ir
 

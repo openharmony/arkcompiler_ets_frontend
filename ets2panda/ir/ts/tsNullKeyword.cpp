@@ -15,6 +15,8 @@
 
 #include "tsNullKeyword.h"
 
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "checker/TSchecker.h"
 
@@ -27,11 +29,18 @@ void TSNullKeyword::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSNullKeyword"}});
 }
 
-void TSNullKeyword::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSNullKeyword::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void TSNullKeyword::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSNullKeyword::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSNullKeyword::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -41,6 +50,6 @@ checker::Type *TSNullKeyword::GetType([[maybe_unused]] checker::TSChecker *check
 
 checker::Type *TSNullKeyword::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

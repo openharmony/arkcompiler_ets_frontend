@@ -17,11 +17,16 @@
 #define ES2PANDA_IR_TS_PARENT_TYPE_H
 
 #include "ir/typeNode.h"
-
+namespace panda::es2panda::checker {
+class TSAnalyzer;
+}  // namespace panda::es2panda::checker
 namespace panda::es2panda::ir {
 class TSParenthesizedType : public TypeNode {
 public:
     explicit TSParenthesizedType(TypeNode *type) : TypeNode(AstNodeType::TS_PARENT_TYPE), type_(type) {}
+
+    // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    friend class checker::TSAnalyzer;
 
     const Expression *Type() const
     {
@@ -32,6 +37,7 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;

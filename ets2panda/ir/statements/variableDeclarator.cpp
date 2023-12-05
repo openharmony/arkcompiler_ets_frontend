@@ -58,144 +58,21 @@ void VariableDeclarator::Dump(ir::AstDumper *dumper) const
 
 void VariableDeclarator::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    auto lref = compiler::JSLReference::Create(pg, id_, true);
-    const ir::VariableDeclaration *decl = parent_->AsVariableDeclaration();
-
-    if (init_ != nullptr) {
-        init_->Compile(pg);
-    } else {
-        if (decl->Kind() == ir::VariableDeclaration::VariableDeclarationKind::VAR) {
-            return;
-        }
-        if (decl->Kind() == ir::VariableDeclaration::VariableDeclarationKind::LET && !decl->Parent()->IsCatchClause()) {
-            pg->LoadConst(this, compiler::Constant::JS_UNDEFINED);
-        }
-    }
-
-    lref.SetValue();
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void VariableDeclarator::Compile(compiler::ETSGen *etsg) const
 {
-    auto lref = compiler::ETSLReference::Create(etsg, id_, true);
-    auto ttctx = compiler::TargetTypeContext(etsg, TsType());
-
-    if (id_->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::BOXED)) {
-        etsg->EmitLocalBoxCtor(id_);
-        etsg->StoreAccumulator(this, lref.Variable()->AsLocalVariable()->Vreg());
-        etsg->SetAccumulatorType(lref.Variable()->TsType());
-    }
-
-    if (init_ != nullptr) {
-        if (!etsg->TryLoadConstantExpression(init_)) {
-            init_->Compile(etsg);
-            etsg->ApplyConversion(init_, nullptr);
-        }
-    } else {
-        etsg->LoadDefaultValue(this, id_->AsIdentifier()->Variable()->TsType());
-    }
-
-    etsg->ApplyConversion(this, TsType());
-    lref.SetValue();
-}
-
-static void CheckSimpleVariableDeclaration(checker::TSChecker *checker, ir::VariableDeclarator *declarator)
-{
-    varbinder::Variable *const binding_var = declarator->Id()->AsIdentifier()->Variable();
-    checker::Type *previous_type = binding_var->TsType();
-    auto *const type_annotation = declarator->Id()->AsIdentifier()->TypeAnnotation();
-    auto *const initializer = declarator->Init();
-    const bool is_const = declarator->Parent()->AsVariableDeclaration()->Kind() ==
-                          ir::VariableDeclaration::VariableDeclarationKind::CONST;
-
-    if (is_const) {
-        checker->AddStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
-    }
-
-    if (type_annotation != nullptr) {
-        type_annotation->Check(checker);
-    }
-
-    if (type_annotation != nullptr && initializer != nullptr) {
-        checker::Type *const annotation_type = type_annotation->GetType(checker);
-        checker->ElaborateElementwise(annotation_type, initializer, declarator->Id()->Start());
-        binding_var->SetTsType(annotation_type);
-    } else if (type_annotation != nullptr) {
-        binding_var->SetTsType(type_annotation->GetType(checker));
-    } else if (initializer != nullptr) {
-        checker::Type *initializer_type = checker->CheckTypeCached(initializer);
-
-        if (!is_const) {
-            initializer_type = checker->GetBaseTypeOfLiteralType(initializer_type);
-        }
-
-        if (initializer_type->IsNullType()) {
-            checker->ThrowTypeError(
-                {"Cannot infer type for variable '", declarator->Id()->AsIdentifier()->Name(), "'."},
-                declarator->Id()->Start());
-        }
-
-        binding_var->SetTsType(initializer_type);
-    } else {
-        checker->ThrowTypeError({"Variable ", declarator->Id()->AsIdentifier()->Name(), " implicitly has an any type."},
-                                declarator->Id()->Start());
-    }
-
-    if (previous_type != nullptr) {
-        checker->IsTypeIdenticalTo(binding_var->TsType(), previous_type,
-                                   {"Subsequent variable declaration must have the same type. Variable '",
-                                    binding_var->Name(), "' must be of type '", previous_type, "', but here has type '",
-                                    binding_var->TsType(), "'."},
-                                   declarator->Id()->Start());
-    }
-
-    checker->RemoveStatus(checker::CheckerStatus::IN_CONST_CONTEXT);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *VariableDeclarator::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    if (TsType() == CHECKED) {
-        return nullptr;
-    }
-
-    if (id_->IsIdentifier()) {
-        CheckSimpleVariableDeclaration(checker, this);
-        SetTsType(CHECKED);
-        return nullptr;
-    }
-
-    if (id_->IsArrayPattern()) {
-        auto context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
-        checker::ArrayDestructuringContext(checker, id_, false, id_->AsArrayPattern()->TypeAnnotation() == nullptr,
-                                           id_->AsArrayPattern()->TypeAnnotation(), init_)
-            .Start();
-
-        SetTsType(CHECKED);
-        return nullptr;
-    }
-
-    ASSERT(id_->IsObjectPattern());
-    auto context = checker::SavedCheckerContext(checker, checker::CheckerStatus::FORCE_TUPLE);
-    checker::ObjectDestructuringContext(checker, id_, false, id_->AsObjectPattern()->TypeAnnotation() == nullptr,
-                                        id_->AsObjectPattern()->TypeAnnotation(), init_)
-        .Start();
-
-    SetTsType(CHECKED);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *VariableDeclarator::Check(checker::ETSChecker *checker)
 {
-    ASSERT(id_->IsIdentifier());
-    ir::ModifierFlags flags = ir::ModifierFlags::NONE;
-
-    if (id_->Parent()->Parent()->AsVariableDeclaration()->Kind() ==
-        ir::VariableDeclaration::VariableDeclarationKind::CONST) {
-        flags |= ir::ModifierFlags::CONST;
-    }
-
-    SetTsType(
-        checker->CheckVariableDeclaration(id_->AsIdentifier(), id_->AsIdentifier()->TypeAnnotation(), init_, flags));
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

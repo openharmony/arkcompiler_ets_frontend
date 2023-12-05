@@ -15,12 +15,10 @@
 
 #include "etsClassLiteral.h"
 
-#include "ir/astNode.h"
-#include "ir/astDump.h"
-#include "ir/typeNode.h"
 #include "checker/TSchecker.h"
-#include "checker/ets/typeRelationContext.h"
 #include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
+#include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
 void ETSClassLiteral::TransformChildren(const NodeTransformer &cb)
@@ -38,42 +36,24 @@ void ETSClassLiteral::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "ETSClassLiteral"}});
 }
 
-void ETSClassLiteral::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
-
-void ETSClassLiteral::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void ETSClassLiteral::Compile(compiler::PandaGen *pg) const
 {
-    if (expr_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
-        expr_->Compile(etsg);
-        etsg->GetType(this, false);
-    } else {
-        ASSERT(expr_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE));
-        etsg->SetAccumulatorType(expr_->TsType());
-        etsg->GetType(this, true);
-    }
+    pg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ETSClassLiteral::Check([[maybe_unused]] checker::TSChecker *checker)
+void ETSClassLiteral::Compile(compiler::ETSGen *etsg) const
 {
-    return nullptr;
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *ETSClassLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *ETSClassLiteral::Check(checker::TSChecker *checker)
 {
-    checker->ThrowTypeError("Class literal is not yet supported.", expr_->Start());
+    return checker->GetAnalyzer()->Check(this);
+}
 
-    expr_->Check(checker);
-    auto *expr_type = expr_->GetType(checker);
-
-    if (expr_type->IsETSVoidType()) {
-        checker->ThrowTypeError("Invalid .class reference", expr_->Start());
-    }
-
-    ArenaVector<checker::Type *> type_arg_types(checker->Allocator()->Adapter());
-    type_arg_types.push_back(expr_type);  // NOTE: Box it if it's a primitive type
-
-    checker::InstantiationContext ctx(checker, checker->GlobalBuiltinTypeType(), type_arg_types, range_.start);
-    SetTsType(ctx.Result());
-    return TsType();
+checker::Type *ETSClassLiteral::Check(checker::ETSChecker *checker)
+{
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

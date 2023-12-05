@@ -16,7 +16,9 @@
 #include "tsNonNullExpression.h"
 
 #include "checker/ETSchecker.h"
+#include "checker/TSchecker.h"
 #include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
@@ -35,52 +37,23 @@ void TSNonNullExpression::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSNonNullExpression"}, {"expression", expr_}});
 }
 
-void TSNonNullExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSNonNullExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
 
 void TSNonNullExpression::Compile(compiler::ETSGen *etsg) const
 {
-    compiler::RegScope rs(etsg);
-
-    expr_->Compile(etsg);
-
-    if (!etsg->GetAccumulatorType()->IsNullishOrNullLike()) {
-        return;
-    }
-
-    if (etsg->GetAccumulatorType()->IsETSNullLike()) {
-        etsg->EmitNullishException(this);
-        return;
-    }
-
-    auto arg = etsg->AllocReg();
-    etsg->StoreAccumulator(this, arg);
-    etsg->LoadAccumulator(this, arg);
-
-    auto end_label = etsg->AllocLabel();
-
-    etsg->BranchIfNotNullish(this, end_label);
-    etsg->EmitNullishException(this);
-
-    etsg->SetLabel(this, end_label);
-    etsg->LoadAccumulator(this, arg);
-    etsg->ConvertToNonNullish(this);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *TSNonNullExpression::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSNonNullExpression::Check(checker::ETSChecker *checker)
 {
-    auto expr_type = expr_->Check(checker);
-
-    if (!expr_type->IsNullish()) {
-        checker->ThrowTypeError("Bad operand type, the operand of the non-null expression must be a nullable type",
-                                expr_->Start());
-    }
-
-    SetTsType(expr_type->IsNullish() ? checker->GetNonNullishType(expr_type) : expr_type);
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

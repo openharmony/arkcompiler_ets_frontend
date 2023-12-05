@@ -15,6 +15,9 @@
 
 #include "tsTypePredicate.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/typeNode.h"
 #include "ir/expression.h"
@@ -44,11 +47,18 @@ void TSTypePredicate::Dump(ir::AstDumper *dumper) const
                  {"asserts", asserts_}});
 }
 
-void TSTypePredicate::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSTypePredicate::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void TSTypePredicate::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSTypePredicate::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSTypePredicate::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -58,6 +68,6 @@ checker::Type *TSTypePredicate::GetType([[maybe_unused]] checker::TSChecker *che
 
 checker::Type *TSTypePredicate::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

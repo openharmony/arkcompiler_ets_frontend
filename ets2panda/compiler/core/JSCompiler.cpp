@@ -15,13 +15,15 @@
 
 #include "JSCompiler.h"
 
+#include "varbinder/varbinder.h"
+#include "compiler/base/catchTable.h"
 #include "compiler/base/condition.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/switchBuilder.h"
 #include "compiler/function/functionBuilder.h"
+#include "util/bitset.h"
 #include "util/helpers.h"
-
 namespace panda::es2panda::compiler {
 
 PandaGen *JSCompiler::GetPandaGen() const
@@ -437,9 +439,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ScriptFunction *node) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::SpreadElement *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::SpreadElement *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -463,57 +464,54 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSPropertySignature *node) c
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSSignatureDeclaration *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSSignatureDeclaration *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 // from ets folder
-void JSCompiler::Compile(const ir::ETSClassLiteral *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSClassLiteral *expr) const
+{
+    UNREACHABLE();
+}
+
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSFunctionType *expr) const
+{
+    UNREACHABLE();
+}
+
+void JSCompiler::Compile(const ir::ETSTuple *expr) const
 {
     (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSFunctionType *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSImportDeclaration *node) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSImportDeclaration *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSLaunchExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSNewArrayInstanceExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSNewClassInstanceExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSNewClassInstanceExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSNewMultiDimArrayInstanceExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::ETSNewMultiDimArrayInstanceExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ETSPackageDeclaration *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile(const ir::ETSPackageDeclaration *expr) const
-{
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -556,8 +554,11 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ETSWildcardType *expr) const
 // JSCompiler::compile methods for EXPRESSIONS in alphabetical order
 void JSCompiler::Compile(const ir::ArrayExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::RegScope rs(pg);
+    compiler::VReg array_obj = pg->AllocReg();
+
+    pg->CreateArray(expr, expr->Elements(), array_obj);
 }
 
 void JSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
@@ -568,8 +569,29 @@ void JSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
 
 void JSCompiler::Compile(const ir::AssignmentExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::RegScope rs(pg);
+    auto lref = compiler::JSLReference::Create(pg, expr->Left(), false);
+
+    if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_AND_EQUAL ||
+        expr->OperatorType() == lexer::TokenType::PUNCTUATOR_LOGICAL_OR_EQUAL) {
+        compiler::PandaGen::Unimplemented();
+    }
+
+    if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION) {
+        expr->Right()->Compile(pg);
+        lref.SetValue();
+        return;
+    }
+
+    compiler::VReg lhs_reg = pg->AllocReg();
+
+    lref.GetValue();
+    pg->StoreAccumulator(expr->Left(), lhs_reg);
+    expr->Right()->Compile(pg);
+    pg->Binary(expr, expr->OperatorType(), lhs_reg);
+
+    lref.SetValue();
 }
 
 void JSCompiler::Compile(const ir::AwaitExpression *expr) const
@@ -820,109 +842,516 @@ void JSCompiler::Compile(const ir::FunctionExpression *expr) const
 
 void JSCompiler::Compile(const ir::Identifier *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    auto res = pg->Scope()->Find(expr->Name());
+    if (res.variable != nullptr) {
+        pg->LoadVar(expr, res);
+        return;
+    }
+
+    if (pg->IsDirectEval()) {
+        pg->LoadEvalVariable(expr, expr->Name());
+        return;
+    }
+
+    if (expr->Name().Is("NaN")) {
+        pg->LoadConst(expr, compiler::Constant::JS_NAN);
+        return;
+    }
+
+    if (expr->Name().Is("Infinity")) {
+        pg->LoadConst(expr, compiler::Constant::JS_INFINITY);
+        return;
+    }
+
+    if (expr->Name().Is("globalThis")) {
+        pg->LoadConst(expr, compiler::Constant::JS_GLOBAL);
+        return;
+    }
+
+    if (expr->Name().Is("undefined")) {
+        pg->LoadConst(expr, compiler::Constant::JS_UNDEFINED);
+        return;
+    }
+
+    pg->TryLoadGlobalByName(expr, expr->Name());
 }
 
-void JSCompiler::Compile(const ir::ImportExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::ImportExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    pg->Unimplemented();
 }
 
 void JSCompiler::Compile(const ir::MemberExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    expr->Object()->Compile(pg);
+    pg->OptionalChainCheck(expr->IsOptional(), compiler::VReg::Invalid());
+    expr->LoadRhs(pg);
 }
 
 void JSCompiler::Compile(const ir::NewExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::RegScope rs(pg);
+    compiler::VReg ctor = pg->AllocReg();
+    compiler::VReg new_target = pg->AllocReg();
+
+    expr->Callee()->Compile(pg);
+    pg->StoreAccumulator(expr, ctor);
+
+    // new.Target will be the same as ctor
+    pg->StoreAccumulator(expr, new_target);
+
+    if (!util::Helpers::ContainSpreadElement(expr->Arguments()) &&
+        expr->Arguments().size() < compiler::PandaGen::MAX_RANGE_CALL_ARG) {
+        for (const auto *it : expr->Arguments()) {
+            compiler::VReg arg = pg->AllocReg();
+            it->Compile(pg);
+            pg->StoreAccumulator(expr, arg);
+        }
+
+        pg->NewObject(expr, ctor, expr->Arguments().size() + 2);
+    } else {
+        compiler::VReg args_obj = pg->AllocReg();
+
+        pg->CreateArray(expr, expr->Arguments(), args_obj);
+        pg->NewObjSpread(expr, ctor, new_target);
+    }
 }
 
 void JSCompiler::Compile(const ir::ObjectExpression *expr) const
 {
-    (void)expr;
+    PandaGen *pg = GetPandaGen();
+    if (expr->Properties().empty()) {
+        pg->CreateEmptyObject(expr);
+        return;
+    }
+
+    util::BitSet compiled(expr->Properties().size());
+    CompileStaticProperties(pg, &compiled, expr);
+
+    if (compiled.Any(false)) {
+        CompileRemainingProperties(pg, &compiled, expr);
+    }
+}
+
+static compiler::Literal CreateLiteral(const ir::Property *prop, util::BitSet *compiled, size_t prop_index)
+{
+    compiler::Literal lit = util::Helpers::ToConstantLiteral(prop->Value());
+    if (!lit.IsInvalid()) {
+        compiled->Set(prop_index);
+        return lit;
+    }
+
+    if (prop->Kind() != ir::PropertyKind::INIT) {
+        ASSERT(prop->IsAccessor());
+        return compiler::Literal::AccessorLiteral();
+    }
+
+    if (!prop->Value()->IsFunctionExpression()) {
+        return compiler::Literal::NullLiteral();
+    }
+
+    const ir::ScriptFunction *method = prop->Value()->AsFunctionExpression()->Function();
+
+    compiler::LiteralTag tag = compiler::LiteralTag::METHOD;
+
+    if (method->IsGenerator()) {
+        tag = compiler::LiteralTag::GENERATOR_METHOD;
+
+        if (method->IsAsyncFunc()) {
+            tag = compiler::LiteralTag::ASYNC_GENERATOR_METHOD;
+        }
+    }
+
+    compiled->Set(prop_index);
+    return compiler::Literal(tag, method->Scope()->InternalName());
+}
+
+static bool IsLiteralBufferCompatible(const ir::Expression *expr)
+{
+    if (expr->IsSpreadElement()) {
+        return false;
+    }
+
+    const ir::Property *prop = expr->AsProperty();
+    if (prop->Value()->IsFunctionExpression() && !prop->Value()->AsFunctionExpression()->Function()->IsMethod()) {
+        return false;
+    }
+
+    return util::Helpers::IsConstantPropertyKey(prop->Key(), prop->IsComputed()) &&
+           prop->Kind() != ir::PropertyKind::PROTO;
+}
+
+void JSCompiler::CompileStaticProperties(compiler::PandaGen *pg, util::BitSet *compiled,
+                                         const ir::ObjectExpression *expr) const
+{
+    bool has_method = false;
+    bool seen_computed = false;
+    compiler::LiteralBuffer buf;
+    std::unordered_map<util::StringView, size_t> prop_name_map;
+
+    for (size_t i = 0; i < expr->Properties().size(); i++) {
+        if (!IsLiteralBufferCompatible(expr->Properties()[i])) {
+            seen_computed = true;
+            continue;
+        }
+
+        const ir::Property *prop = expr->Properties()[i]->AsProperty();
+
+        util::StringView name = util::Helpers::LiteralToPropName(prop->Key());
+        size_t buffer_pos = buf.size();
+        auto res = prop_name_map.insert({name, buffer_pos});
+        if (res.second) {
+            if (seen_computed) {
+                break;
+            }
+
+            buf.emplace_back(name);
+            buf.emplace_back();
+        } else {
+            buffer_pos = res.first->second;
+        }
+
+        compiler::Literal lit = CreateLiteral(prop, compiled, i);
+        if (lit.IsTagMethod()) {
+            has_method = true;
+        }
+
+        buf[buffer_pos + 1] = std::move(lit);
+    }
+
+    if (buf.empty()) {
+        pg->CreateEmptyObject(expr);
+        return;
+    }
+
+    uint32_t buf_idx = pg->AddLiteralBuffer(std::move(buf));
+
+    if (has_method) {
+        pg->CreateObjectHavingMethod(expr, buf_idx);
+    } else {
+        pg->CreateObjectWithBuffer(expr, buf_idx);
+    }
+}
+
+void JSCompiler::CompileRemainingProperties(compiler::PandaGen *pg, const util::BitSet *compiled,
+                                            const ir::ObjectExpression *expr) const
+{
+    compiler::RegScope rs(pg);
+    compiler::VReg obj_reg = pg->AllocReg();
+
+    pg->StoreAccumulator(expr, obj_reg);
+
+    for (size_t i = 0; i < expr->Properties().size(); i++) {
+        if (compiled->Test(i)) {
+            continue;
+        }
+
+        compiler::RegScope prs(pg);
+
+        if (expr->Properties()[i]->IsSpreadElement()) {
+            compiler::VReg src_obj = pg->AllocReg();
+            auto const *const spread = expr->Properties()[i]->AsSpreadElement();
+
+            spread->Argument()->Compile(pg);
+            pg->StoreAccumulator(spread, src_obj);
+
+            pg->CopyDataProperties(spread, obj_reg, src_obj);
+            continue;
+        }
+
+        const ir::Property *prop = expr->Properties()[i]->AsProperty();
+
+        switch (prop->Kind()) {
+            case ir::PropertyKind::GET:
+            case ir::PropertyKind::SET: {
+                compiler::VReg key = pg->LoadPropertyKey(prop->Key(), prop->IsComputed());
+
+                compiler::VReg undef = pg->AllocReg();
+                pg->LoadConst(expr, compiler::Constant::JS_UNDEFINED);
+                pg->StoreAccumulator(expr, undef);
+
+                compiler::VReg getter = undef;
+                compiler::VReg setter = undef;
+
+                compiler::VReg accessor = pg->AllocReg();
+                pg->LoadAccumulator(prop->Value(), obj_reg);
+                prop->Value()->Compile(pg);
+                pg->StoreAccumulator(prop->Value(), accessor);
+
+                if (prop->Kind() == ir::PropertyKind::GET) {
+                    getter = accessor;
+                } else {
+                    setter = accessor;
+                }
+
+                pg->DefineGetterSetterByValue(expr, obj_reg, key, getter, setter, prop->IsComputed());
+                break;
+            }
+            case ir::PropertyKind::INIT: {
+                compiler::Operand key = pg->ToOwnPropertyKey(prop->Key(), prop->IsComputed());
+
+                if (prop->IsMethod()) {
+                    pg->LoadAccumulator(prop->Value(), obj_reg);
+                }
+
+                prop->Value()->Compile(pg);
+                pg->StoreOwnProperty(expr, obj_reg, key);
+                break;
+            }
+            case ir::PropertyKind::PROTO: {
+                prop->Value()->Compile(pg);
+                compiler::VReg proto = pg->AllocReg();
+                pg->StoreAccumulator(expr, proto);
+
+                pg->SetObjectWithProto(expr, proto, obj_reg);
+                break;
+            }
+            default: {
+                UNREACHABLE();
+            }
+        }
+    }
+
+    pg->LoadAccumulator(expr, obj_reg);
+}
+
+void JSCompiler::Compile([[maybe_unused]] const ir::OpaqueTypeNode *node) const
+{
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::OpaqueTypeNode *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::OmittedExpression *expr) const
 {
-    (void)node;
-    UNREACHABLE();
-}
-
-void JSCompiler::Compile(const ir::OmittedExpression *expr) const
-{
-    (void)expr;
     UNREACHABLE();
 }
 
 void JSCompiler::Compile(const ir::SequenceExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    for (const auto *it : expr->Sequence()) {
+        it->Compile(pg);
+    }
 }
 
 void JSCompiler::Compile(const ir::SuperExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    pg->GetThis(expr);
+
+    const ir::ScriptFunction *func = util::Helpers::GetContainingConstructor(expr);
+
+    if (func != nullptr) {
+        pg->ThrowIfSuperNotCorrectCall(expr, 0);
+    }
 }
 
 void JSCompiler::Compile(const ir::TaggedTemplateExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::RegScope rs(pg);
+    compiler::VReg callee = pg->AllocReg();
+    compiler::VReg this_reg = compiler::VReg::Invalid();
+
+    if (expr->Tag()->IsMemberExpression()) {
+        this_reg = pg->AllocReg();
+        compiler::RegScope mrs(pg);
+        expr->Tag()->AsMemberExpression()->CompileToReg(pg, this_reg);
+    } else {
+        expr->Tag()->Compile(pg);
+    }
+
+    pg->CallTagged(expr, callee, this_reg, expr->Quasi()->Expressions());
 }
 
 void JSCompiler::Compile(const ir::TemplateLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    auto quasis_it = expr->Quasis().begin();
+    auto expression_it = expr->Expressions().begin();
+
+    pg->LoadAccumulatorString(expr, (*quasis_it)->Raw());
+
+    quasis_it++;
+
+    bool is_quais = false;
+    size_t total = expr->Quasis().size() + expr->Expressions().size();
+
+    compiler::RegScope rs(pg);
+    compiler::VReg lhs = pg->AllocReg();
+
+    while (total != 1) {
+        const ir::AstNode *node = nullptr;
+
+        if (is_quais) {
+            pg->StoreAccumulator(*quasis_it, lhs);
+            pg->LoadAccumulatorString(expr, (*quasis_it)->Raw());
+
+            node = *quasis_it;
+            quasis_it++;
+        } else {
+            const ir::Expression *element = *expression_it;
+            pg->StoreAccumulator(element, lhs);
+
+            element->Compile(pg);
+
+            node = element;
+            expression_it++;
+        }
+
+        pg->Binary(node, lexer::TokenType::PUNCTUATOR_PLUS, lhs);
+
+        is_quais = !is_quais;
+        total--;
+    }
 }
 
 void JSCompiler::Compile(const ir::ThisExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    auto res = pg->Scope()->Find(varbinder::VarBinder::MANDATORY_PARAM_THIS);
+
+    ASSERT(res.variable && res.variable->IsLocalVariable());
+    pg->LoadAccFromLexEnv(expr, res);
+
+    const ir::ScriptFunction *func = util::Helpers::GetContainingConstructor(expr);
+
+    if (func != nullptr) {
+        pg->ThrowIfSuperNotCorrectCall(expr, 0);
+    }
 }
 
 void JSCompiler::Compile(const ir::UnaryExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    switch (expr->OperatorType()) {
+        case lexer::TokenType::KEYW_DELETE: {
+            if (expr->Argument()->IsIdentifier()) {
+                auto result = pg->Scope()->Find(expr->Argument()->AsIdentifier()->Name());
+                if (result.variable == nullptr ||
+                    (result.scope->IsGlobalScope() && result.variable->IsGlobalVariable())) {
+                    compiler::RegScope rs(pg);
+                    compiler::VReg variable = pg->AllocReg();
+                    compiler::VReg global = pg->AllocReg();
+
+                    pg->LoadConst(expr, compiler::Constant::JS_GLOBAL);
+                    pg->StoreAccumulator(expr, global);
+
+                    pg->LoadAccumulatorString(expr, expr->Argument()->AsIdentifier()->Name());
+                    pg->StoreAccumulator(expr, variable);
+
+                    pg->DeleteObjProperty(expr, global, variable);
+                } else {
+                    // Otherwise it is a local variable which can't be deleted and we just
+                    // return false.
+                    pg->LoadConst(expr, compiler::Constant::JS_FALSE);
+                }
+            } else if (expr->Argument()->IsMemberExpression()) {
+                compiler::RegScope rs(pg);
+                compiler::VReg object = pg->AllocReg();
+                compiler::VReg property = pg->AllocReg();
+
+                expr->Argument()->AsMemberExpression()->CompileToRegs(pg, object, property);
+                pg->DeleteObjProperty(expr, object, property);
+            } else {
+                // compile the delete operand.
+                expr->Argument()->Compile(pg);
+                // Deleting any value or a result of an expression returns True.
+                pg->LoadConst(expr, compiler::Constant::JS_TRUE);
+            }
+            break;
+        }
+        case lexer::TokenType::KEYW_TYPEOF: {
+            if (expr->Argument()->IsIdentifier()) {
+                const auto *ident = expr->Argument()->AsIdentifier();
+
+                auto res = pg->Scope()->Find(ident->Name());
+                if (res.variable == nullptr) {
+                    pg->LoadConst(expr, compiler::Constant::JS_GLOBAL);
+                    pg->LoadObjByName(expr, ident->Name());
+                } else {
+                    pg->LoadVar(ident, res);
+                }
+            } else {
+                expr->Argument()->Compile(pg);
+            }
+
+            pg->TypeOf(expr);
+            break;
+        }
+        case lexer::TokenType::KEYW_VOID: {
+            expr->Argument()->Compile(pg);
+            pg->LoadConst(expr, compiler::Constant::JS_UNDEFINED);
+            break;
+        }
+        default: {
+            expr->Argument()->Compile(pg);
+
+            compiler::RegScope rs(pg);
+            compiler::VReg operand_reg = pg->AllocReg();
+            pg->StoreAccumulator(expr, operand_reg);
+            pg->Unary(expr, expr->OperatorType(), operand_reg);
+            break;
+        }
+    }
 }
 
 void JSCompiler::Compile(const ir::UpdateExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::RegScope rs(pg);
+    compiler::VReg operand_reg = pg->AllocReg();
+
+    auto lref = compiler::JSLReference::Create(pg, expr->Argument(), false);
+    lref.GetValue();
+
+    pg->StoreAccumulator(expr, operand_reg);
+    pg->Unary(expr, expr->OperatorType(), operand_reg);
+
+    lref.SetValue();
+
+    if (!expr->IsPrefix()) {
+        pg->ToNumber(expr, operand_reg);
+    }
 }
 
 void JSCompiler::Compile(const ir::YieldExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::RegScope rs(pg);
+
+    if (expr->Argument() != nullptr) {
+        expr->Argument()->Compile(pg);
+    } else {
+        pg->LoadConst(expr, compiler::Constant::JS_UNDEFINED);
+    }
+
+    if (expr->HasDelegate()) {
+        ASSERT(expr->Argument());
+        pg->FuncBuilder()->YieldStar(expr);
+    } else {
+        pg->FuncBuilder()->Yield(expr);
+    }
 }
+
 // Compile methods for LITERAL EXPRESSIONS in alphabetical order
 void JSCompiler::Compile(const ir::BigIntLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    pg->LoadAccumulatorBigInt(expr, expr->Str());
 }
 
 void JSCompiler::Compile(const ir::BooleanLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    pg->LoadConst(expr, expr->Value() ? compiler::Constant::JS_TRUE : compiler::Constant::JS_FALSE);
 }
 
-void JSCompiler::Compile(const ir::CharLiteral *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::CharLiteral *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1006,22 +1435,31 @@ void JSCompiler::Compile([[maybe_unused]] const ir::ImportSpecifier *st) const
     UNREACHABLE();
 }
 // Compile methods for STATEMENTS in alphabetical order
-void JSCompiler::Compile(const ir::AssertStatement *st) const
+void JSCompiler::Compile([[maybe_unused]] const ir::AssertStatement *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
 void JSCompiler::Compile(const ir::BlockStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    compiler::LocalRegScope lrs(pg, st->Scope());
+
+    for (const auto *it : st->Statements()) {
+        it->Compile(pg);
+    }
 }
 
+template <typename CodeGen>
+static void CompileImpl(const ir::BreakStatement *self, [[maybe_unused]] CodeGen *cg)
+{
+    compiler::Label *target = cg->ControlFlowChangeBreak(self->Ident());
+    cg->Branch(self, target);
+}
 void JSCompiler::Compile(const ir::BreakStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    CompileImpl(st, pg);
 }
 
 void JSCompiler::Compile(const ir::ClassDeclaration *st) const
@@ -1295,54 +1733,194 @@ void JSCompiler::Compile(const ir::SwitchStatement *st) const
 
 void JSCompiler::Compile(const ir::ThrowStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    st->Argument()->Compile(pg);
+    pg->EmitThrow(st);
+}
+
+static void CompileTryCatch(compiler::PandaGen *pg, const ir::TryStatement *st)
+{
+    ASSERT(st->CatchClauses().size() == 1);
+    ASSERT(st->CatchClauses().front() && !st->FinallyBlock());
+
+    compiler::TryContext try_ctx(pg, st);
+    const auto &label_set = try_ctx.LabelSet();
+
+    pg->SetLabel(st, label_set.TryBegin());
+    st->Block()->Compile(pg);
+    pg->SetLabel(st, label_set.TryEnd());
+
+    pg->Branch(st, label_set.CatchEnd());
+
+    pg->SetLabel(st, label_set.CatchBegin());
+    st->CatchClauses().front()->Compile(pg);
+    pg->SetLabel(st, label_set.CatchEnd());
+}
+
+static void CompileFinally(compiler::PandaGen *pg, compiler::TryContext *try_ctx,
+                           const compiler::TryLabelSet &label_set, const ir::TryStatement *st)
+{
+    compiler::RegScope rs(pg);
+    compiler::VReg exception = pg->AllocReg();
+    pg->StoreConst(st, exception, compiler::Constant::JS_HOLE);
+    pg->Branch(st, label_set.CatchEnd());
+
+    pg->SetLabel(st, label_set.CatchBegin());
+    pg->StoreAccumulator(st, exception);
+
+    pg->SetLabel(st, label_set.CatchEnd());
+
+    compiler::Label *label = pg->AllocLabel();
+    pg->LoadAccumulator(st, try_ctx->FinalizerRun());
+
+    pg->BranchIfNotUndefined(st, label);
+    pg->StoreAccumulator(st, try_ctx->FinalizerRun());
+    try_ctx->EmitFinalizer();
+    pg->SetLabel(st, label);
+
+    pg->LoadAccumulator(st, exception);
+    pg->EmitRethrow(st);
+}
+
+static void CompileTryCatchFinally(compiler::PandaGen *pg, const ir::TryStatement *st)
+{
+    ASSERT(st->CatchClauses().size() == 1);
+    ASSERT(st->CatchClauses().front() && st->FinallyBlock());
+
+    compiler::TryContext try_ctx(pg, st);
+    const auto &label_set = try_ctx.LabelSet();
+
+    pg->SetLabel(st, label_set.TryBegin());
+    {
+        compiler::TryContext inner_try_ctx(pg, st, false);
+        const auto &inner_label_set = inner_try_ctx.LabelSet();
+
+        pg->SetLabel(st, inner_label_set.TryBegin());
+        st->Block()->Compile(pg);
+        pg->SetLabel(st, inner_label_set.TryEnd());
+
+        pg->Branch(st, inner_label_set.CatchEnd());
+
+        pg->SetLabel(st, inner_label_set.CatchBegin());
+        st->CatchClauses().front()->Compile(pg);
+        pg->SetLabel(st, inner_label_set.CatchEnd());
+    }
+    pg->SetLabel(st, label_set.TryEnd());
+
+    CompileFinally(pg, &try_ctx, label_set, st);
+}
+
+static void CompileTryFinally(compiler::PandaGen *pg, const ir::TryStatement *st)
+{
+    ASSERT(st->CatchClauses().empty() && st->FinallyBlock());
+
+    compiler::TryContext try_ctx(pg, st);
+    const auto &label_set = try_ctx.LabelSet();
+
+    pg->SetLabel(st, label_set.TryBegin());
+    {
+        compiler::TryContext inner_try_ctx(pg, st, false);
+        const auto &inner_label_set = inner_try_ctx.LabelSet();
+
+        pg->SetLabel(st, inner_label_set.TryBegin());
+        st->Block()->Compile(pg);
+        pg->SetLabel(st, inner_label_set.TryEnd());
+
+        pg->Branch(st, inner_label_set.CatchEnd());
+
+        pg->SetLabel(st, inner_label_set.CatchBegin());
+        pg->EmitThrow(st);
+        pg->SetLabel(st, inner_label_set.CatchEnd());
+    }
+    pg->SetLabel(st, label_set.TryEnd());
+
+    CompileFinally(pg, &try_ctx, label_set, st);
 }
 
 void JSCompiler::Compile(const ir::TryStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    if (st->finalizer_ != nullptr) {
+        if (!st->CatchClauses().empty()) {
+            CompileTryCatchFinally(pg, st);
+        } else {
+            CompileTryFinally(pg, st);
+        }
+    } else {
+        CompileTryCatch(pg, st);
+    }
 }
 
 void JSCompiler::Compile(const ir::VariableDeclarator *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    auto lref = compiler::JSLReference::Create(pg, st->Id(), true);
+    const ir::VariableDeclaration *decl = st->Parent()->AsVariableDeclaration();
+
+    if (st->Init() != nullptr) {
+        st->Init()->Compile(pg);
+    } else {
+        if (decl->Kind() == ir::VariableDeclaration::VariableDeclarationKind::VAR) {
+            return;
+        }
+        if (decl->Kind() == ir::VariableDeclaration::VariableDeclarationKind::LET && !decl->Parent()->IsCatchClause()) {
+            pg->LoadConst(st, compiler::Constant::JS_UNDEFINED);
+        }
+    }
+
+    lref.SetValue();
 }
 
 void JSCompiler::Compile(const ir::VariableDeclaration *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    for (const auto *it : st->Declarators()) {
+        it->Compile(pg);
+    }
+}
+
+template <typename CodeGen>
+void CompileImpl(const ir::WhileStatement *while_stmt, [[maybe_unused]] CodeGen *cg)
+{
+    compiler::LabelTarget label_target(cg);
+
+    cg->SetLabel(while_stmt, label_target.ContinueTarget());
+    compiler::Condition::Compile(cg, while_stmt->Test(), label_target.BreakTarget());
+
+    {
+        compiler::LocalRegScope reg_scope(cg, while_stmt->Scope());
+        compiler::LabelContext label_ctx(cg, label_target);
+        while_stmt->Body()->Compile(cg);
+    }
+
+    cg->Branch(while_stmt, label_target.ContinueTarget());
+    cg->SetLabel(while_stmt, label_target.BreakTarget());
 }
 
 void JSCompiler::Compile(const ir::WhileStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    PandaGen *pg = GetPandaGen();
+    CompileImpl(st, pg);
 }
+
 // from ts folder
 void JSCompiler::Compile([[maybe_unused]] const ir::TSAnyKeyword *node) const
 {
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSArrayType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSArrayType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSAsExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSAsExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSBigintKeyword *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSBigintKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1351,21 +1929,18 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSBooleanKeyword *node) cons
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSClassImplements *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSClassImplements *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSConditionalType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSConditionalType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSConstructorType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSConstructorType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1384,105 +1959,88 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSExternalModuleReference *e
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSFunctionType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSFunctionType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSImportEqualsDeclaration *st) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSImportEqualsDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSImportType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSImportType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSIndexedAccessType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSIndexedAccessType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSInferType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSInferType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSInterfaceBody *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceBody *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSInterfaceDeclaration *st) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSInterfaceHeritage *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceHeritage *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSIntersectionType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSIntersectionType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSLiteralType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSLiteralType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSMappedType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSMappedType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSModuleBlock *st) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSModuleBlock *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSModuleDeclaration *st) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSModuleDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSNamedTupleMember *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSNamedTupleMember *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSNeverKeyword *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSNeverKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSNonNullExpression *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSNonNullExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSNullKeyword *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSNullKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1496,21 +2054,18 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSObjectKeyword *node) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSParameterProperty *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSParameterProperty *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSParenthesizedType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSParenthesizedType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSQualifiedName *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSQualifiedName *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1519,75 +2074,63 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSStringKeyword *node) const
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSThisType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSThisType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTupleType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTupleType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeAliasDeclaration *st) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeAliasDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeAssertion *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeAssertion *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeLiteral *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeLiteral *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeOperator *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeOperator *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeParameter *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameter *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeParameterDeclaration *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameterDeclaration *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeParameterInstantiation *expr) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameterInstantiation *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypePredicate *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypePredicate *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeQuery *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeQuery *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSTypeReference *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSTypeReference *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1596,9 +2139,8 @@ void JSCompiler::Compile([[maybe_unused]] const ir::TSUndefinedKeyword *node) co
     UNREACHABLE();
 }
 
-void JSCompiler::Compile(const ir::TSUnionType *node) const
+void JSCompiler::Compile([[maybe_unused]] const ir::TSUnionType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 

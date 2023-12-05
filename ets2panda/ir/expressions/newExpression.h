@@ -18,6 +18,10 @@
 
 #include "ir/expression.h"
 
+namespace panda::es2panda::checker {
+class TSAnalyzer;
+}  // namespace panda::es2panda::checker
+
 namespace panda::es2panda::ir {
 class NewExpression : public Expression {
 private:
@@ -34,8 +38,10 @@ public:
         : Expression(AstNodeType::NEW_EXPRESSION), callee_(callee), arguments_(std::move(arguments))
     {
     }
-
     explicit NewExpression(Tag tag, NewExpression const &other, ArenaAllocator *allocator);
+
+    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
+    friend class checker::TSAnalyzer;
 
     [[nodiscard]] const Expression *Callee() const noexcept
     {
@@ -56,7 +62,7 @@ public:
     void Compile(compiler::PandaGen *pg) const override;
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     Expression *callee_ = nullptr;

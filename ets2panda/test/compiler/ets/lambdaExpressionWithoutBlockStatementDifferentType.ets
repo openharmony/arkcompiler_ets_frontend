@@ -14,6 +14,6 @@
  */
 
 function main(): void {
-    let test1: () => int = (): void => 10;
+    let test1: () => int = (): string => "10";
     test1();
 }

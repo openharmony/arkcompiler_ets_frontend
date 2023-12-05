@@ -16,6 +16,8 @@
 #include "tsUnionType.h"
 
 #include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
@@ -38,21 +40,24 @@ void TSUnionType::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSUnionType"}, {"types", types_}});
 }
 
-void TSUnionType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSUnionType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+
+void TSUnionType::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSUnionType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    for (auto *it : types_) {
-        it->Check(checker);
-    }
-
-    GetType(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSUnionType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSUnionType::GetType(checker::TSChecker *checker)

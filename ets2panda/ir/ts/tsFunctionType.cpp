@@ -19,6 +19,8 @@
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
 #include "checker/types/signature.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/base/spreadElement.h"
 #include "ir/expressions/identifier.h"
@@ -61,19 +63,18 @@ void TSFunctionType::Dump(ir::AstDumper *dumper) const
                  {"isNullable", AstDumper::Optional(nullable_)}});
 }
 
-void TSFunctionType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSFunctionType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void TSFunctionType::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSFunctionType::Check(checker::TSChecker *checker)
 {
-    checker::ScopeContext scope_ctx(checker, scope_);
-
-    auto *signature_info = checker->Allocator()->New<checker::SignatureInfo>(checker->Allocator());
-    checker->CheckFunctionParameterDeclarations(params_, signature_info);
-    return_type_->Check(checker);
-    auto *call_signature =
-        checker->Allocator()->New<checker::Signature>(signature_info, return_type_->GetType(checker));
-
-    return checker->CreateFunctionTypeWithSignature(call_signature);
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSFunctionType::GetType(checker::TSChecker *checker)
@@ -83,7 +84,7 @@ checker::Type *TSFunctionType::GetType(checker::TSChecker *checker)
 
 checker::Type *TSFunctionType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSFunctionType::GetType([[maybe_unused]] checker::ETSChecker *checker)

@@ -16,14 +16,10 @@
 #include "identifier.h"
 
 #include "varbinder/scope.h"
+#include "checker/ETSchecker.h"
+#include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
-#include "checker/TSchecker.h"
-#include "checker/ETSchecker.h"
-#include "ir/astDump.h"
-#include "ir/typeNode.h"
-#include "ir/base/decorator.h"
-#include "ir/expression.h"
 
 namespace panda::es2panda::ir {
 Identifier::Identifier([[maybe_unused]] Tag const tag, Identifier const &other, ArenaAllocator *const allocator)
@@ -97,85 +93,21 @@ void Identifier::Dump(ir::AstDumper *dumper) const
 
 void Identifier::Compile(compiler::PandaGen *pg) const
 {
-    auto res = pg->Scope()->Find(name_);
-    if (res.variable != nullptr) {
-        pg->LoadVar(this, res);
-        return;
-    }
-
-    if (pg->IsDirectEval()) {
-        pg->LoadEvalVariable(this, name_);
-        return;
-    }
-
-    if (name_.Is("NaN")) {
-        pg->LoadConst(this, compiler::Constant::JS_NAN);
-        return;
-    }
-
-    if (name_.Is("Infinity")) {
-        pg->LoadConst(this, compiler::Constant::JS_INFINITY);
-        return;
-    }
-
-    if (name_.Is("globalThis")) {
-        pg->LoadConst(this, compiler::Constant::JS_GLOBAL);
-        return;
-    }
-
-    if (name_.Is("undefined")) {
-        pg->LoadConst(this, compiler::Constant::JS_UNDEFINED);
-        return;
-    }
-
-    pg->TryLoadGlobalByName(this, name_);
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void Identifier::Compile(compiler::ETSGen *etsg) const
 {
-    auto lambda = etsg->VarBinder()->LambdaObjects().find(this);
-    if (lambda != etsg->VarBinder()->LambdaObjects().end()) {
-        etsg->CreateLambdaObjectFromIdentReference(this, lambda->second.first);
-        return;
-    }
-
-    auto ttctx = compiler::TargetTypeContext(etsg, TsType());
-
-    ASSERT(variable_ != nullptr);
-    if (!variable_->HasFlag(varbinder::VariableFlags::TYPE_ALIAS)) {
-        etsg->LoadVar(this, variable_);
-    } else {
-        etsg->LoadVar(this, TsType()->Variable());
-    }
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *Identifier::Check(checker::TSChecker *checker)
 {
-    if (Variable() == nullptr) {
-        if (name_.Is("undefined")) {
-            return checker->GlobalUndefinedType();
-        }
-
-        checker->ThrowTypeError({"Cannot find name ", name_}, Start());
-    }
-
-    const varbinder::Decl *decl = Variable()->Declaration();
-
-    if (decl->IsTypeAliasDecl() || decl->IsInterfaceDecl()) {
-        checker->ThrowTypeError({name_, " only refers to a type, but is being used as a value here."}, Start());
-    }
-
-    SetTsType(checker->GetTypeOfVariable(Variable()));
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *Identifier::Check(checker::ETSChecker *checker)
 {
-    if (TsType() != nullptr) {
-        return TsType();
-    }
-
-    SetTsType(checker->ResolveIdentifier(this));
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

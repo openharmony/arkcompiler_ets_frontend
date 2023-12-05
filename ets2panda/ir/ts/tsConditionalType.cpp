@@ -15,6 +15,9 @@
 
 #include "tsConditionalType.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
@@ -43,11 +46,18 @@ void TSConditionalType::Dump(ir::AstDumper *dumper) const
                  {"falseType", false_type_}});
 }
 
-void TSConditionalType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSConditionalType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void TSConditionalType::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSConditionalType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSConditionalType::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -57,6 +67,6 @@ checker::Type *TSConditionalType::GetType([[maybe_unused]] checker::TSChecker *c
 
 checker::Type *TSConditionalType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

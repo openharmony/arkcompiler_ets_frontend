@@ -15,11 +15,11 @@
 
 #include "yieldExpression.h"
 
+#include "compiler/core/ETSGen.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/function/generatorFunctionBuilder.h"
 #include "checker/TSchecker.h"
 #include "ir/astDump.h"
-
 namespace panda::es2panda::ir {
 void YieldExpression::TransformChildren(const NodeTransformer &cb)
 {
@@ -42,31 +42,22 @@ void YieldExpression::Dump(ir::AstDumper *dumper) const
 
 void YieldExpression::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    compiler::RegScope rs(pg);
+    pg->GetAstCompiler()->Compile(this);
+}
 
-    if (argument_ != nullptr) {
-        argument_->Compile(pg);
-    } else {
-        pg->LoadConst(this, compiler::Constant::JS_UNDEFINED);
-    }
-
-    if (delegate_) {
-        ASSERT(argument_);
-        pg->FuncBuilder()->YieldStar(this);
-    } else {
-        pg->FuncBuilder()->Yield(this);
-    }
+void YieldExpression::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *YieldExpression::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    // NOTE: aszilagyi.
-    return checker->GlobalAnyType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *YieldExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

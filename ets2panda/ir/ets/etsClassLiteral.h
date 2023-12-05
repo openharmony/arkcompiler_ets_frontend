@@ -18,6 +18,14 @@
 
 #include "ir/expression.h"
 
+namespace panda::es2panda::checker {
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
+
+namespace panda::es2panda::compiler {
+class ETSCompiler;
+}  // namespace panda::es2panda::compiler
+
 namespace panda::es2panda::ir {
 
 class ETSClassLiteral : public Expression {
@@ -33,13 +41,17 @@ public:
     // NOLINTNEXTLINE(google-default-arguments)
     [[nodiscard]] ETSClassLiteral *Clone(ArenaAllocator *allocator, AstNode *parent = nullptr) override;
 
+    // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
+    friend class compiler::ETSCompiler;
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
-    void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
-    void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
-    checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
-    checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+    void Compile(compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
+    checker::Type *Check(checker::TSChecker *checker) override;
+    checker::Type *Check(checker::ETSChecker *checker) override;
 
 private:
     ir::TypeNode *expr_;

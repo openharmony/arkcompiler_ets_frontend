@@ -15,6 +15,8 @@
 
 #include "tsLiteralType.h"
 
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "checker/TSchecker.h"
 
@@ -34,12 +36,19 @@ void TSLiteralType::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSLiteralType"}, {"literal", literal_}});
 }
 
-void TSLiteralType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSLiteralType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+
+void TSLiteralType::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSLiteralType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    GetType(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSLiteralType::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -54,6 +63,6 @@ checker::Type *TSLiteralType::GetType([[maybe_unused]] checker::TSChecker *check
 
 checker::Type *TSLiteralType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

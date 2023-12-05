@@ -15,8 +15,9 @@
 
 #include "bigIntLiteral.h"
 
-#include "compiler/core/pandagen.h"
 #include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
@@ -30,24 +31,22 @@ void BigIntLiteral::Dump(ir::AstDumper *dumper) const
 
 void BigIntLiteral::Compile(compiler::PandaGen *pg) const
 {
-    pg->LoadAccumulatorBigInt(this, src_);
+    pg->GetAstCompiler()->Compile(this);
+}
+
+void BigIntLiteral::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *BigIntLiteral::Check(checker::TSChecker *checker)
 {
-    auto search = checker->BigintLiteralMap().find(src_);
-    if (search != checker->BigintLiteralMap().end()) {
-        return search->second;
-    }
-
-    auto *new_bigint_literal_type = checker->Allocator()->New<checker::BigintLiteralType>(src_, false);
-    checker->BigintLiteralMap().insert({src_, new_bigint_literal_type});
-    return new_bigint_literal_type;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *BigIntLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 // NOLINTNEXTLINE(google-default-arguments)

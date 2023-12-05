@@ -16,6 +16,7 @@
 #include "blockStatement.h"
 
 #include "varbinder/scope.h"
+#include "compiler/core/pandagen.h"
 #include "compiler/core/regScope.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
@@ -44,46 +45,21 @@ void BlockStatement::Dump(ir::AstDumper *dumper) const
 
 void BlockStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    compiler::LocalRegScope lrs(pg, scope_);
-
-    for (const auto *it : statements_) {
-        it->Compile(pg);
-    }
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void BlockStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 {
-    compiler::LocalRegScope lrs(etsg, scope_);
-
-    etsg->CompileStatements(statements_);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *BlockStatement::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    checker::ScopeContext scope_ctx(checker, scope_);
-
-    for (auto *it : statements_) {
-        it->Check(checker);
-    }
-
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *BlockStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    checker::ScopeContext scope_ctx(checker, scope_);
-
-    for (auto *it : statements_) {
-        it->Check(checker);
-    }
-
-    for (auto [stmt, trailing_block] : trailing_blocks_) {
-        auto iterator = std::find(statements_.begin(), statements_.end(), stmt);
-        ASSERT(iterator != statements_.end());
-        statements_.insert(iterator + 1, trailing_block);
-        trailing_block->Check(checker);
-    }
-
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

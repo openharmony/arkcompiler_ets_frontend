@@ -48,6 +48,7 @@ public:
         }
     }
 
+    void CheckNumberLiteralEnd() override;
     void CheckUtf16Compatible(char32_t cp) const;
     void ConvertNumber(const std::string &utf8, NumberFlags flags) override;
 

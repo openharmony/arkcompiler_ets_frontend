@@ -16,6 +16,9 @@
 #include "tsModuleDeclaration.h"
 
 #include "varbinder/scope.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/base/decorator.h"
 #include "ir/expression.h"
@@ -57,15 +60,23 @@ void TSModuleDeclaration::Dump(ir::AstDumper *dumper) const
                  {"global", global_}});
 }
 
-void TSModuleDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSModuleDeclaration::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+
+void TSModuleDeclaration::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSModuleDeclaration::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSModuleDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

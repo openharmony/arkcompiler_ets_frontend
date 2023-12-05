@@ -15,6 +15,9 @@
 
 #include "tsTypeParameter.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/typeNode.h"
 #include "ir/expressions/identifier.h"
@@ -58,15 +61,22 @@ void TSTypeParameter::Dump(ir::AstDumper *dumper) const
     });
 }
 
-void TSTypeParameter::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSTypeParameter::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void TSTypeParameter::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSTypeParameter::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSTypeParameter::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

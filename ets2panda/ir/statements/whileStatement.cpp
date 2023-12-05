@@ -43,52 +43,23 @@ void WhileStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "WhileStatement"}, {"test", test_}, {"body", body_}});
 }
 
-template <typename CodeGen>
-void CompileImpl(const WhileStatement *while_stmt, [[maybe_unused]] CodeGen *cg)
-{
-    compiler::LabelTarget label_target(cg);
-
-    cg->SetLabel(while_stmt, label_target.ContinueTarget());
-    compiler::Condition::Compile(cg, while_stmt->Test(), label_target.BreakTarget());
-
-    {
-        compiler::LocalRegScope reg_scope(cg, while_stmt->Scope());
-        compiler::LabelContext label_ctx(cg, label_target);
-        while_stmt->Body()->Compile(cg);
-    }
-
-    cg->Branch(while_stmt, label_target.ContinueTarget());
-    cg->SetLabel(while_stmt, label_target.BreakTarget());
-}
-
 void WhileStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    CompileImpl(this, pg);
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void WhileStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 {
-    CompileImpl(this, etsg);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *WhileStatement::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    checker::ScopeContext scope_ctx(checker, Scope());
-
-    checker::Type *test_type = Test()->Check(checker);
-    checker->CheckTruthinessOfType(test_type, Test()->Start());
-
-    Body()->Check(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *WhileStatement::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    checker::ScopeContext scope_ctx(checker, Scope());
-
-    checker->CheckTruthinessOfType(Test());
-
-    Body()->Check(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

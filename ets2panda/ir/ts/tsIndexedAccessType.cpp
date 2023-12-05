@@ -15,6 +15,8 @@
 
 #include "tsIndexedAccessType.h"
 
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 
 #include "checker/TSchecker.h"
@@ -37,30 +39,18 @@ void TSIndexedAccessType::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSIndexedAccessType"}, {"objectType", object_type_}, {"indexType", index_type_}});
 }
 
-void TSIndexedAccessType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSIndexedAccessType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void TSIndexedAccessType::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSIndexedAccessType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    object_type_->Check(checker);
-    index_type_->Check(checker);
-    checker::Type *resolved = GetType(checker);
-
-    if (resolved != nullptr) {
-        return nullptr;
-    }
-
-    checker::Type *index_type = checker->CheckTypeCached(index_type_);
-
-    if (!index_type->HasTypeFlag(checker::TypeFlag::STRING_LIKE | checker::TypeFlag::NUMBER_LIKE)) {
-        checker->ThrowTypeError({"Type ", index_type, " cannot be used as index type"}, index_type_->Start());
-    }
-
-    if (index_type->IsNumberType()) {
-        checker->ThrowTypeError("Type has no matching signature for type 'number'", Start());
-    }
-
-    checker->ThrowTypeError("Type has no matching signature for type 'string'", Start());
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSIndexedAccessType::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -79,6 +69,6 @@ checker::Type *TSIndexedAccessType::GetType([[maybe_unused]] checker::TSChecker 
 
 checker::Type *TSIndexedAccessType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

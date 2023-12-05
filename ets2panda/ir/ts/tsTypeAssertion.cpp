@@ -15,6 +15,9 @@
 
 #include "tsTypeAssertion.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/typeNode.h"
 
@@ -36,15 +39,23 @@ void TSTypeAssertion::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSTypeAssertion"}, {"typeAnnotation", TypeAnnotation()}, {"expression", expression_}});
 }
 
-void TSTypeAssertion::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSTypeAssertion::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+
+void TSTypeAssertion::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSTypeAssertion::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSTypeAssertion::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

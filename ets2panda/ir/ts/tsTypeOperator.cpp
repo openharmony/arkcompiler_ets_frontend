@@ -15,6 +15,9 @@
 
 #include "tsTypeOperator.h"
 
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 
 namespace panda::es2panda::ir {
@@ -37,11 +40,18 @@ void TSTypeOperator::Dump(ir::AstDumper *dumper) const
     });
 }
 
-void TSTypeOperator::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSTypeOperator::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void TSTypeOperator::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSTypeOperator::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSTypeOperator::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -51,6 +61,6 @@ checker::Type *TSTypeOperator::GetType([[maybe_unused]] checker::TSChecker *chec
 
 checker::Type *TSTypeOperator::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

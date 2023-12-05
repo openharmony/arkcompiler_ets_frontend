@@ -15,6 +15,8 @@
 
 #include "tsParenthesizedType.h"
 
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "checker/TSchecker.h"
 
@@ -34,12 +36,19 @@ void TSParenthesizedType::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSParenthesizedType"}, {"typeAnnotation", type_}});
 }
 
-void TSParenthesizedType::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSParenthesizedType::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+
+void TSParenthesizedType::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSParenthesizedType::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    type_->Check(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSParenthesizedType::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -54,6 +63,6 @@ checker::Type *TSParenthesizedType::GetType([[maybe_unused]] checker::TSChecker 
 
 checker::Type *TSParenthesizedType::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

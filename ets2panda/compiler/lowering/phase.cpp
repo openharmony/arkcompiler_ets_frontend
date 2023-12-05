@@ -21,7 +21,9 @@
 #include "compiler/lowering/checkerPhase.h"
 #include "compiler/lowering/plugin_phase.h"
 #include "compiler/lowering/ets/generateDeclarations.h"
+#include "compiler/lowering/ets/lambdaLowering.h"
 #include "compiler/lowering/ets/opAssignment.h"
+#include "compiler/lowering/ets/tupleLowering.h"
 #include "compiler/lowering/ets/unionLowering.h"
 #include "public/es2panda_lib.h"
 
@@ -37,7 +39,9 @@ std::vector<Phase *> GetTrivialPhaseList()
 }
 
 static GenerateTsDeclarationsPhase GENERATE_TS_DECLARATIONS_PHASE;
+static LambdaLowering LAMBDA_LOWERING;
 static OpAssignmentLowering OP_ASSIGNMENT_LOWERING;
+static TupleLowering TUPLE_LOWERING;  // Can be only applied after checking phase, and OP_ASSIGNMENT_LOWERING phase
 static UnionLowering UNION_LOWERING;
 static PluginPhase PLUGINS_AFTER_PARSE {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
 static PluginPhase PLUGINS_AFTER_CHECK {"plugins-after-check", ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck};
@@ -47,8 +51,15 @@ static PluginPhase PLUGINS_AFTER_LOWERINGS {"plugins-after-lowering", ES2PANDA_S
 std::vector<Phase *> GetETSPhaseList()
 {
     return std::vector<Phase *> {
-        &PLUGINS_AFTER_PARSE,    &CHECKER_PHASE,  &PLUGINS_AFTER_CHECK,     &GENERATE_TS_DECLARATIONS_PHASE,
-        &OP_ASSIGNMENT_LOWERING, &UNION_LOWERING, &PLUGINS_AFTER_LOWERINGS,
+        &PLUGINS_AFTER_PARSE,
+        &LAMBDA_LOWERING,
+        &CHECKER_PHASE,
+        &PLUGINS_AFTER_CHECK,
+        &GENERATE_TS_DECLARATIONS_PHASE,
+        &OP_ASSIGNMENT_LOWERING,
+        &TUPLE_LOWERING,
+        &UNION_LOWERING,
+        &PLUGINS_AFTER_LOWERINGS,
     };
 }
 

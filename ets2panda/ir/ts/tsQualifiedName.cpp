@@ -17,6 +17,8 @@
 
 #include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/expressions/identifier.h"
 
@@ -38,42 +40,23 @@ void TSQualifiedName::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "TSQualifiedName"}, {"left", left_}, {"right", right_}});
 }
 
-void TSQualifiedName::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSQualifiedName::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void TSQualifiedName::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 checker::Type *TSQualifiedName::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    checker::Type *base_type = checker->CheckNonNullType(left_->Check(checker), left_->Start());
-    varbinder::Variable *prop = checker->GetPropertyOfType(base_type, right_->Name());
-
-    if (prop != nullptr) {
-        return checker->GetTypeOfVariable(prop);
-    }
-
-    if (base_type->IsObjectType()) {
-        checker::ObjectType *obj_type = base_type->AsObjectType();
-
-        if (obj_type->StringIndexInfo() != nullptr) {
-            return obj_type->StringIndexInfo()->GetType();
-        }
-    }
-
-    checker->ThrowTypeError({"Property ", right_->Name(), " does not exist on this type."}, right_->Start());
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSQualifiedName::Check(checker::ETSChecker *checker)
 {
-    checker::Type *base_type = left_->Check(checker);
-    if (base_type->IsETSObjectType()) {
-        varbinder::Variable *prop =
-            base_type->AsETSObjectType()->GetProperty(right_->Name(), checker::PropertySearchFlags::SEARCH_DECL);
-
-        if (prop != nullptr) {
-            return checker->GetTypeOfVariable(prop);
-        }
-    }
-
-    checker->ThrowTypeError({"'", right_->Name(), "' type does not exist."}, right_->Start());
+    return checker->GetAnalyzer()->Check(this);
 }
 
 util::StringView TSQualifiedName::ToString(ArenaAllocator *allocator) const

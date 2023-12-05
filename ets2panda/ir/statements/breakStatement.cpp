@@ -15,6 +15,7 @@
 
 #include "breakStatement.h"
 
+#include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "ir/astDump.h"
@@ -41,34 +42,23 @@ void BreakStatement::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "BreakStatement"}, {"label", AstDumper::Nullish(ident_)}});
 }
 
-template <typename CodeGen>
-void CompileImpl(const BreakStatement *self, [[maybe_unused]] CodeGen *cg)
-{
-    compiler::Label *target = cg->ControlFlowChangeBreak(self->Ident());
-    cg->Branch(self, target);
-}
-
 void BreakStatement::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    CompileImpl(this, pg);
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void BreakStatement::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 {
-    if (etsg->ExtendWithFinalizer(parent_, this)) {
-        return;
-    }
-    CompileImpl(this, etsg);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *BreakStatement::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *BreakStatement::Check(checker::ETSChecker *checker)
 {
-    target_ = checker->FindJumpTarget(Type(), this, ident_);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

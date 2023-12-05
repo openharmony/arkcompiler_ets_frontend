@@ -267,7 +267,7 @@ protected:
     virtual void ConvertNumber(const std::string &utf8, NumberFlags flags);
     void ScanDecimalLiteral();
     void ScanDecimalDigits(bool allow_numeric_separator);
-    void CheckNumberLiteralEnd();
+    virtual void CheckNumberLiteralEnd();
 
     inline static uint32_t HexValue(char32_t ch);
     inline static bool IsDecimalDigit(uint32_t cp);

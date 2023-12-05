@@ -14,8 +14,10 @@
  */
 
 #include "opaqueTypeNode.h"
+#include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
-
 namespace panda::es2panda::ir {
 
 void OpaqueTypeNode::TransformChildren([[maybe_unused]] const NodeTransformer &cb) {}
@@ -26,16 +28,19 @@ void OpaqueTypeNode::Dump(ir::AstDumper *dumper) const
     dumper->Add({{"type", "OpaqueType"}});
 }
 
-void OpaqueTypeNode::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void OpaqueTypeNode::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
 
 void OpaqueTypeNode::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 {
-    UNREACHABLE();
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *OpaqueTypeNode::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *OpaqueTypeNode::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -50,6 +55,6 @@ checker::Type *OpaqueTypeNode::GetType([[maybe_unused]] checker::ETSChecker *che
 
 checker::Type *OpaqueTypeNode::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

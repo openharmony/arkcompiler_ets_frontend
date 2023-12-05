@@ -18,7 +18,13 @@
 
 #include "ir/astDump.h"
 #include "ir/expression.h"
+namespace panda::es2panda::checker {
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
 
+namespace panda::es2panda::compiler {
+class ETSCompiler;
+}  // namespace panda::es2panda::compiler
 namespace panda::es2panda::ir {
 class TSAsExpression : public AnnotatedExpression {
 public:
@@ -28,7 +34,9 @@ public:
           is_const_(is_const)
     {
     }
-
+    // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
+    friend class compiler::ETSCompiler;
     const Expression *Expr() const
     {
         return expression_;

@@ -88,6 +88,7 @@
 #include "ir/ets/etsPackageDeclaration.h"
 #include "ir/ets/etsWildcardType.h"
 #include "ir/ets/etsNewArrayInstanceExpression.h"
+#include "ir/ets/etsTuple.h"
 #include "ir/ets/etsFunctionType.h"
 #include "ir/ets/etsNewClassInstanceExpression.h"
 #include "ir/ets/etsNewMultiDimArrayInstanceExpression.h"
@@ -2313,13 +2314,15 @@ ir::MethodDefinition *ETSParser::CreateProxyMethodDefinition(ir::MethodDefinitio
 
     proxy_method += ' ';
     if (return_type != "void") {
-        if (auto *const cls_scope = VarBinder()->GetScope()->AsClassScope(); cls_scope->Parent()->IsGlobalScope()) {
-            proxy_method += "return ";
-        } else if (method->IsStatic()) {
+        proxy_method += "return ";
+    }
+
+    if (auto *const cls_scope = VarBinder()->GetScope()->AsClassScope(); !cls_scope->Parent()->IsGlobalScope()) {
+        if (method->IsStatic()) {
             ASSERT(ident_node != nullptr);
-            proxy_method += "return " + ident_node->Name().Mutf8() + ".";
+            proxy_method += ident_node->Name().Mutf8() + ".";
         } else {
-            proxy_method += "return this.";
+            proxy_method += "this.";
         }
     }
 
@@ -2714,6 +2717,77 @@ ir::TypeNode *ETSParser::ParseFunctionType()
     return func_type;
 }
 
+ir::TypeNode *ETSParser::ParseETSTupleType(TypeAnnotationParsingOptions *const options)
+{
+    ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET);
+
+    const auto start_loc = Lexer()->GetToken().Start();
+    Lexer()->NextToken();  // eat '['
+
+    ArenaVector<ir::TypeNode *> tuple_type_list(Allocator()->Adapter());
+    auto *const tuple_type = AllocNode<ir::ETSTuple>(Allocator());
+
+    bool spread_type_present = false;
+
+    while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
+        // Parse named parameter if name presents
+        if ((Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) &&
+            (Lexer()->Lookahead() == lexer::LEX_CHAR_COLON)) {
+            ExpectIdentifier();
+            Lexer()->NextToken();  // eat ':'
+        }
+
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD_PERIOD_PERIOD) {
+            if (spread_type_present) {
+                ThrowSyntaxError("Only one spread type declaration allowed, at the last index");
+            }
+
+            spread_type_present = true;
+            Lexer()->NextToken();  // eat '...'
+        } else if (spread_type_present) {
+            // This can't be implemented to any index, with type consistency. If a spread type is in the middle of the
+            // tuple, then bounds check can't be made for element access, so the type of elements after the spread can't
+            // be determined in compile time.
+            ThrowSyntaxError("Spread type must be at the last index in the tuple type");
+        }
+
+        auto *const current_type_annotation = ParseTypeAnnotation(options);
+        current_type_annotation->SetParent(tuple_type);
+
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_QUESTION_MARK) {
+            // NOTE(mmartin): implement optional types for tuples
+            ThrowSyntaxError("Optional types in tuples are not yet implemented.");
+        }
+
+        if (spread_type_present) {
+            if (!current_type_annotation->IsTSArrayType()) {
+                ThrowSyntaxError("Spread type must be an array type");
+            }
+
+            tuple_type->SetSpreadType(current_type_annotation);
+        } else {
+            tuple_type_list.push_back(current_type_annotation);
+        }
+
+        if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
+            Lexer()->NextToken();  // eat comma
+            continue;
+        }
+
+        if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_SQUARE_BRACKET) {
+            ThrowSyntaxError("Comma is mandatory between elements in a tuple type declaration");
+        }
+    }
+
+    Lexer()->NextToken();  // eat ']'
+
+    tuple_type->SetTypeAnnotationsList(tuple_type_list);
+    const auto end_loc = Lexer()->GetToken().End();
+    tuple_type->SetRange({start_loc, end_loc});
+
+    return tuple_type;
+}
+
 // Just to reduce the size of ParseTypeAnnotation(...) method
 std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnotationParsingOptions *options)
 {
@@ -2797,6 +2871,10 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
         }
         case lexer::TokenType::PUNCTUATOR_FORMAT: {
             type_annotation = ParseTypeFormatPlaceholder();
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
+            type_annotation = ParseETSTupleType(options);
             break;
         }
         default: {
@@ -3732,7 +3810,7 @@ ir::Expression *ETSParser::ParsePrimaryExpression(ExpressionParseFlags flags)
             return ParseUndefinedLiteral();
         }
         case lexer::TokenType::LITERAL_NUMBER: {
-            return ParseNumberLiteral();
+            return ParseCoercedNumberLiteral();
         }
         case lexer::TokenType::LITERAL_STRING: {
             return ParseStringLiteral();
@@ -4543,6 +4621,22 @@ void ETSParser::ParseTrailingBlock(ir::CallExpression *call_expr)
         call_expr->SetIsTrailingBlockInNewLine(Lexer()->GetToken().NewLine());
         call_expr->SetTrailingBlock(ParseBlockStatement());
     }
+}
+
+ir::Expression *ETSParser::ParseCoercedNumberLiteral()
+{
+    if ((Lexer()->GetToken().Flags() & lexer::TokenFlags::NUMBER_FLOAT) != 0U) {
+        auto *number = AllocNode<ir::NumberLiteral>(Lexer()->GetToken().GetNumber());
+        number->SetRange(Lexer()->GetToken().Loc());
+        auto *float_type = AllocNode<ir::ETSPrimitiveType>(ir::PrimitiveType::FLOAT);
+        float_type->SetRange(Lexer()->GetToken().Loc());
+        auto *as_expression = AllocNode<ir::TSAsExpression>(number, float_type, true);
+        as_expression->SetRange(Lexer()->GetToken().Loc());
+
+        Lexer()->NextToken();
+        return as_expression;
+    }
+    return ParseNumberLiteral();
 }
 
 void ETSParser::CheckDeclare()

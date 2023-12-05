@@ -79,43 +79,7 @@ void TemplateLiteral::Dump(ir::AstDumper *dumper) const
 
 void TemplateLiteral::Compile([[maybe_unused]] compiler::PandaGen *pg) const
 {
-    auto quasis_it = quasis_.begin();
-    auto expression_it = expressions_.begin();
-
-    pg->LoadAccumulatorString(this, (*quasis_it)->Raw());
-
-    quasis_it++;
-
-    bool is_quais = false;
-    size_t total = quasis_.size() + expressions_.size();
-
-    compiler::RegScope rs(pg);
-    compiler::VReg lhs = pg->AllocReg();
-
-    while (total != 1) {
-        const ir::AstNode *node = nullptr;
-
-        if (is_quais) {
-            pg->StoreAccumulator(*quasis_it, lhs);
-            pg->LoadAccumulatorString(this, (*quasis_it)->Raw());
-
-            node = *quasis_it;
-            quasis_it++;
-        } else {
-            const ir::Expression *element = *expression_it;
-            pg->StoreAccumulator(element, lhs);
-
-            element->Compile(pg);
-
-            node = element;
-            expression_it++;
-        }
-
-        pg->Binary(node, lexer::TokenType::PUNCTUATOR_PLUS, lhs);
-
-        is_quais = !is_quais;
-        total--;
-    }
+    pg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *TemplateLiteral::Check([[maybe_unused]] checker::TSChecker *checker)
@@ -126,28 +90,11 @@ checker::Type *TemplateLiteral::Check([[maybe_unused]] checker::TSChecker *check
 
 void TemplateLiteral::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
 {
-    etsg->BuildTemplateString(this);
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *TemplateLiteral::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    if (TsType() != nullptr) {
-        return TsType();
-    }
-
-    if (quasis_.size() != expressions_.size() + 1U) {
-        checker->ThrowTypeError("Invalid string template expression", this->Start());
-    }
-
-    for (auto *it : expressions_) {
-        it->Check(checker);
-    }
-
-    for (auto *it : quasis_) {
-        it->Check(checker);
-    }
-
-    SetTsType(checker->GlobalBuiltinETSStringType());
-    return TsType();
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

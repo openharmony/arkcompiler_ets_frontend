@@ -18,6 +18,10 @@
 
 #include "ir/statement.h"
 
+namespace panda::es2panda::checker {
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
+
 namespace panda::es2panda::ir {
 class Expression;
 
@@ -29,6 +33,8 @@ public:
     {
         return argument_;
     }
+
+    friend class checker::ETSAnalyzer;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;

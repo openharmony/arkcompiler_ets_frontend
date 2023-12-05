@@ -34,6 +34,8 @@ public:
     virtual checker::Type *Check(ir::nodeType *node) const override;
     AST_NODE_REINTERPRET_MAPPING(DECLARE_ETSANALYZER_CHECK_METHOD)
 #undef DECLARE_ETSANALYZER_CHECK_METHOD
+    checker::Type *PreferredType(ir::ObjectExpression *expr) const;
+    checker::Type *GetPreferredType(ir::ArrayExpression *expr) const;
 
 private:
     ETSChecker *GetETSChecker() const;

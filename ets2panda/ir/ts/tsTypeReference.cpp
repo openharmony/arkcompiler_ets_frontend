@@ -19,6 +19,8 @@
 #include "varbinder/scope.h"
 #include "varbinder/variable.h"
 #include "checker/TSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/expressions/identifier.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
@@ -52,7 +54,14 @@ void TSTypeReference::Dump(ir::AstDumper *dumper) const
         {{"type", "TSTypeReference"}, {"typeName", type_name_}, {"typeParameters", AstDumper::Optional(type_params_)}});
 }
 
-void TSTypeReference::Compile([[maybe_unused]] compiler::PandaGen *pg) const {}
+void TSTypeReference::Compile([[maybe_unused]] compiler::PandaGen *pg) const
+{
+    pg->GetAstCompiler()->Compile(this);
+}
+void TSTypeReference::Compile(compiler::ETSGen *etsg) const
+{
+    etsg->GetAstCompiler()->Compile(this);
+}
 
 ir::Identifier *TSTypeReference::BaseName() const
 {
@@ -71,8 +80,7 @@ ir::Identifier *TSTypeReference::BaseName() const
 
 checker::Type *TSTypeReference::Check([[maybe_unused]] checker::TSChecker *checker)
 {
-    GetType(checker);
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *TSTypeReference::GetType([[maybe_unused]] checker::TSChecker *checker)
@@ -98,6 +106,6 @@ checker::Type *TSTypeReference::GetType([[maybe_unused]] checker::TSChecker *che
 
 checker::Type *TSTypeReference::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

@@ -18,6 +18,10 @@
 
 #include "ir/typeNode.h"
 
+namespace panda::es2panda::checker {
+class TSAnalyzer;
+}  // namespace panda::es2panda::checker
+
 namespace panda::es2panda::ir {
 class TSIndexedAccessType : public TypeNode {
 public:
@@ -25,6 +29,8 @@ public:
         : TypeNode(AstNodeType::TS_INDEXED_ACCESS_TYPE), object_type_(object_type), index_type_(index_type)
     {
     }
+    // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    friend class checker::TSAnalyzer;
 
     const TypeNode *ObjectType() const
     {
@@ -40,6 +46,7 @@ public:
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
     void Compile([[maybe_unused]] compiler::PandaGen *pg) const override;
+    void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;

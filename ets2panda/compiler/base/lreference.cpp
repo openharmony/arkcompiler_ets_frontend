@@ -273,13 +273,26 @@ void ETSLReference::GetValue() const
 
 void ETSLReference::SetValueComputed(const ir::MemberExpression *member_expr) const
 {
-    auto object_type = member_expr->Object()->TsType();
+    const auto *const object_type = member_expr->Object()->TsType();
+
     if (object_type->IsETSDynamicType()) {
-        auto lang = object_type->AsETSDynamicType()->Language();
+        const auto lang = object_type->AsETSDynamicType()->Language();
         etsg_->StoreElementDynamic(Node(), base_reg_, prop_reg_, lang);
-    } else {
-        etsg_->StoreArrayElement(Node(), base_reg_, prop_reg_,
-                                 etsg_->GetVRegType(base_reg_)->AsETSArrayType()->ElementType());
+        return;
+    }
+
+    // Same bypass for tuples, as at MemberExpression::Compile
+    const auto *const saved_vreg_type = etsg_->GetVRegType(base_reg_);
+
+    if (object_type->IsETSTupleType()) {
+        etsg_->SetVRegType(base_reg_, object_type);
+    }
+
+    etsg_->StoreArrayElement(Node(), base_reg_, prop_reg_,
+                             etsg_->GetVRegType(base_reg_)->AsETSArrayType()->ElementType());
+
+    if (object_type->IsETSTupleType()) {
+        etsg_->SetVRegType(base_reg_, saved_vreg_type);
     }
 }
 
@@ -299,49 +312,62 @@ void ETSLReference::SetValueGetterSetter(const ir::MemberExpression *member_expr
 
 void ETSLReference::SetValue() const
 {
-    if (Kind() == ReferenceKind::MEMBER) {
-        auto *member_expr = Node()->AsMemberExpression();
-        if (!member_expr->IsIgnoreBox()) {
-            etsg_->ApplyConversion(Node(), member_expr->TsType());
-        }
+    if (Kind() != ReferenceKind::MEMBER) {
+        etsg_->StoreVar(Node()->AsIdentifier(), Result());
+        return;
+    }
 
-        if (member_expr->IsComputed()) {
-            SetValueComputed(member_expr);
-            return;
-        }
+    const auto *const member_expr = Node()->AsMemberExpression();
+    const auto *const member_expr_ts_type = member_expr->Object()->TsType()->IsETSTupleType()
+                                                ? member_expr->Object()->TsType()->AsETSTupleType()->ElementType()
+                                                : member_expr->TsType();
 
-        if (member_expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
-            SetValueGetterSetter(member_expr);
-            return;
-        }
+    if (!member_expr->IsIgnoreBox()) {
+        etsg_->ApplyConversion(Node(), member_expr_ts_type);
+    }
 
-        auto &prop_name = member_expr->Property()->AsIdentifier()->Name();
-        if (member_expr->PropVar()->HasFlag(varbinder::VariableFlags::STATIC)) {
-            util::StringView full_name = etsg_->FormClassPropReference(static_obj_ref_->AsETSObjectType(), prop_name);
-            if (static_obj_ref_->IsETSDynamicType()) {
-                auto lang = static_obj_ref_->AsETSDynamicType()->Language();
-                etsg_->StorePropertyDynamic(Node(), member_expr->TsType(), base_reg_, prop_name, lang);
-            } else {
-                etsg_->StoreStaticProperty(Node(), member_expr->TsType(), full_name);
-            }
-            return;
-        }
+    if (member_expr->IsComputed()) {
+        SetValueComputed(member_expr);
+        return;
+    }
+
+    if (member_expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
+        SetValueGetterSetter(member_expr);
+        return;
+    }
+
+    const auto &prop_name = member_expr->Property()->AsIdentifier()->Name();
+    if (member_expr->PropVar()->HasFlag(varbinder::VariableFlags::STATIC)) {
+        const util::StringView full_name = etsg_->FormClassPropReference(static_obj_ref_->AsETSObjectType(), prop_name);
 
         if (static_obj_ref_->IsETSDynamicType()) {
-            auto lang = static_obj_ref_->AsETSDynamicType()->Language();
-            etsg_->StorePropertyDynamic(Node(), member_expr->TsType(), base_reg_, prop_name, lang);
-        } else if (static_obj_ref_->IsETSUnionType()) {
-            etsg_->StoreUnionProperty(Node(), base_reg_, prop_name);
+            const auto lang = static_obj_ref_->AsETSDynamicType()->Language();
+            etsg_->StorePropertyDynamic(Node(), member_expr_ts_type, base_reg_, prop_name, lang);
         } else {
-            auto type = etsg_->Checker()->MaybeBoxedType(member_expr->PropVar(), etsg_->Allocator());
-            if (type->IsETSUnionType()) {
-                type = type->AsETSUnionType()->GetLeastUpperBoundType();
-            }
-            etsg_->StoreProperty(Node(), type, base_reg_, prop_name);
+            etsg_->StoreStaticProperty(Node(), member_expr_ts_type, full_name);
         }
-    } else {
-        etsg_->StoreVar(Node()->AsIdentifier(), Result());
+
+        return;
     }
+
+    if (static_obj_ref_->IsETSDynamicType()) {
+        const auto lang = static_obj_ref_->AsETSDynamicType()->Language();
+        etsg_->StorePropertyDynamic(Node(), member_expr_ts_type, base_reg_, prop_name, lang);
+        return;
+    }
+
+    if (static_obj_ref_->IsETSUnionType()) {
+        etsg_->StoreUnionProperty(Node(), base_reg_, prop_name);
+        return;
+    }
+
+    const auto *type = etsg_->Checker()->MaybeBoxedType(member_expr->PropVar(), etsg_->Allocator());
+
+    if (type->IsETSUnionType()) {
+        type = type->AsETSUnionType()->GetLeastUpperBoundType();
+    }
+
+    etsg_->StoreProperty(Node(), type, base_reg_, prop_name);
 }
 
 }  // namespace panda::es2panda::compiler

@@ -15,12 +15,10 @@
 
 #include "newExpression.h"
 
-#include "util/helpers.h"
-#include "compiler/core/pandagen.h"
-#include "compiler/core/ETSGen.h"
-#include "compiler/core/regScope.h"
 #include "checker/TSchecker.h"
-#include "ir/astDump.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
+#include "util/helpers.h"
 
 namespace panda::es2panda::ir {
 NewExpression::NewExpression([[maybe_unused]] Tag const tag, NewExpression const &other,
@@ -73,53 +71,21 @@ void NewExpression::Dump(ir::AstDumper *dumper) const
 
 void NewExpression::Compile(compiler::PandaGen *pg) const
 {
-    compiler::RegScope rs(pg);
-    compiler::VReg ctor = pg->AllocReg();
-    compiler::VReg new_target = pg->AllocReg();
-
-    callee_->Compile(pg);
-    pg->StoreAccumulator(this, ctor);
-
-    // new.Target will be the same as ctor
-    pg->StoreAccumulator(this, new_target);
-
-    if (!util::Helpers::ContainSpreadElement(arguments_) &&
-        arguments_.size() < compiler::PandaGen::MAX_RANGE_CALL_ARG) {
-        for (const auto *it : arguments_) {
-            compiler::VReg arg = pg->AllocReg();
-            it->Compile(pg);
-            pg->StoreAccumulator(this, arg);
-        }
-
-        pg->NewObject(this, ctor, arguments_.size() + 2U);
-    } else {
-        compiler::VReg args_obj = pg->AllocReg();
-
-        pg->CreateArray(this, arguments_, args_obj);
-        pg->NewObjSpread(this, ctor, new_target);
-    }
+    pg->GetAstCompiler()->Compile(this);
 }
 
-void NewExpression::Compile([[maybe_unused]] compiler::ETSGen *etsg) const
+void NewExpression::Compile(compiler::ETSGen *etsg) const
 {
-    UNREACHABLE();
+    etsg->GetAstCompiler()->Compile(this);
 }
 
-checker::Type *NewExpression::Check([[maybe_unused]] checker::TSChecker *checker)
+checker::Type *NewExpression::Check(checker::TSChecker *checker)
 {
-    checker::Type *callee_type = callee_->Check(checker);
-
-    if (callee_type->IsObjectType()) {
-        checker::ObjectType *callee_obj = callee_type->AsObjectType();
-        return checker->ResolveCallOrNewExpression(callee_obj->ConstructSignatures(), arguments_, Start());
-    }
-
-    checker->ThrowTypeError("This expression is not callable.", Start());
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
-checker::Type *NewExpression::Check([[maybe_unused]] checker::ETSChecker *checker)
+checker::Type *NewExpression::Check(checker::ETSChecker *checker)
 {
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

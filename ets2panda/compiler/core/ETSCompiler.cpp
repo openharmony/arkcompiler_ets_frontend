@@ -16,12 +16,13 @@
 #include "ETSCompiler.h"
 
 #include "checker/types/ets/etsDynamicFunctionType.h"
+#include "compiler/base/catchTable.h"
+#include "checker/types/ts/enumLiteralType.h"
 #include "compiler/base/condition.h"
 #include "compiler/base/lreference.h"
 #include "compiler/core/ETSGen.h"
 #include "compiler/core/switchBuilder.h"
 #include "compiler/function/functionBuilder.h"
-
 namespace panda::es2panda::compiler {
 
 ETSGen *ETSCompiler::GetETSGen() const
@@ -107,9 +108,8 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ScriptFunction *node) const
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::SpreadElement *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::SpreadElement *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -134,57 +134,156 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSPropertySignature *node) 
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSSignatureDeclaration *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSSignatureDeclaration *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 // from ets folder
 void ETSCompiler::Compile(const ir::ETSClassLiteral *expr) const
 {
-    (void)expr;
+    ETSGen *etsg = GetETSGen();
+    if (expr->expr_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+        expr->expr_->Compile(etsg);
+        etsg->GetType(expr, false);
+    } else {
+        ASSERT(expr->expr_->TsType()->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE));
+        etsg->SetAccumulatorType(expr->expr_->TsType());
+        etsg->GetType(expr, true);
+    }
+}
+
+void ETSCompiler::Compile([[maybe_unused]] const ir::ETSFunctionType *node) const
+{
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ETSFunctionType *node) const
+void ETSCompiler::Compile(const ir::ETSTuple *node) const
 {
     (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ETSImportDeclaration *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ETSImportDeclaration *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ETSLaunchExpression *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ETSLaunchExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+#ifdef PANDA_WITH_ETS
+    ETSGen *etsg = GetETSGen();
+    compiler::RegScope rs(etsg);
+    compiler::VReg callee_reg = etsg->AllocReg();
+    checker::Signature *signature = expr->expr_->Signature();
+    bool is_static = signature->HasSignatureFlag(checker::SignatureFlags::STATIC);
+    bool is_reference = signature->HasSignatureFlag(checker::SignatureFlags::TYPE);
+    if (!is_reference && expr->expr_->Callee()->IsIdentifier()) {
+        if (!is_static) {
+            etsg->LoadThis(expr->expr_);
+            etsg->StoreAccumulator(expr, callee_reg);
+        }
+    } else if (!is_reference && expr->expr_->Callee()->IsMemberExpression()) {
+        if (!is_static) {
+            expr->expr_->Callee()->AsMemberExpression()->Object()->Compile(etsg);
+            etsg->StoreAccumulator(expr, callee_reg);
+        }
+    } else {
+        expr->expr_->Callee()->Compile(etsg);
+        etsg->StoreAccumulator(expr, callee_reg);
+    }
+
+    if (is_static) {
+        etsg->LaunchStatic(expr, signature, expr->expr_->Arguments());
+    } else if (signature->HasSignatureFlag(checker::SignatureFlags::PRIVATE)) {
+        etsg->LaunchThisStatic(expr, callee_reg, signature, expr->expr_->Arguments());
+    } else {
+        etsg->LaunchThisVirtual(expr, callee_reg, signature, expr->expr_->Arguments());
+    }
+
+    etsg->SetAccumulatorType(expr->TsType());
+#endif  // PANDA_WITH_ETS
 }
 
 void ETSCompiler::Compile(const ir::ETSNewArrayInstanceExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    compiler::RegScope rs(etsg);
+    compiler::TargetTypeContext ttctx(etsg, etsg->Checker()->GlobalIntType());
+
+    expr->dimension_->Compile(etsg);
+
+    compiler::VReg arr = etsg->AllocReg();
+    compiler::VReg dim = etsg->AllocReg();
+    etsg->ApplyConversionAndStoreAccumulator(expr, dim, expr->dimension_->TsType());
+    etsg->NewArray(expr, arr, dim, expr->TsType());
+    etsg->SetVRegType(arr, expr->TsType());
+    etsg->LoadAccumulator(expr, arr);
+}
+
+static void CreateDynamicObject(const ir::AstNode *node, compiler::ETSGen *etsg, compiler::VReg &obj_reg,
+                                ir::Expression *name, checker::Signature *signature,
+                                const ArenaVector<ir::Expression *> &arguments)
+{
+    auto qname_reg = etsg->AllocReg();
+
+    std::vector<util::StringView> parts;
+
+    while (name->IsTSQualifiedName()) {
+        auto *qname = name->AsTSQualifiedName();
+        name = qname->Left();
+        parts.push_back(qname->Right()->AsIdentifier()->Name());
+    }
+
+    auto *var = name->AsIdentifier()->Variable();
+    auto *data = etsg->VarBinder()->DynamicImportDataForVar(var);
+    if (data != nullptr) {
+        auto *import = data->import;
+        auto *specifier = data->specifier;
+        ASSERT(import->Language().IsDynamic());
+        etsg->LoadAccumulatorDynamicModule(node, import);
+        if (specifier->IsImportSpecifier()) {
+            parts.push_back(specifier->AsImportSpecifier()->Imported()->Name());
+        }
+    } else {
+        name->Compile(etsg);
+    }
+
+    etsg->StoreAccumulator(node, obj_reg);
+
+    std::stringstream ss;
+    std::for_each(parts.rbegin(), parts.rend(), [&ss](util::StringView sv) { ss << "." << sv; });
+
+    etsg->LoadAccumulatorString(node, util::UString(ss.str(), etsg->Allocator()).View());
+    etsg->StoreAccumulator(node, qname_reg);
+
+    etsg->CallDynamic(node, obj_reg, qname_reg, signature, arguments);
 }
 
 void ETSCompiler::Compile(const ir::ETSNewClassInstanceExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    if (expr->TsType()->IsETSDynamicType()) {
+        auto obj_reg = etsg->AllocReg();
+        auto *name = expr->GetTypeRef()->AsETSTypeReference()->Part()->Name();
+        CreateDynamicObject(expr, etsg, obj_reg, name, expr->signature_, expr->GetArguments());
+    } else {
+        etsg->InitObject(expr, expr->signature_, expr->GetArguments());
+    }
+
+    if (expr->GetBoxingUnboxingFlags() == ir::BoxingUnboxingFlags::NONE) {
+        etsg->SetAccumulatorType(expr->TsType());
+    }
 }
 
 void ETSCompiler::Compile(const ir::ETSNewMultiDimArrayInstanceExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    etsg->InitObject(expr, expr->signature_, expr->dimensions_);
+    etsg->SetAccumulatorType(expr->TsType());
 }
 
-void ETSCompiler::Compile(const ir::ETSPackageDeclaration *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::ETSPackageDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
@@ -230,8 +329,39 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ETSWildcardType *node) cons
 // compile methods for EXPRESSIONS in alphabetical order
 void ETSCompiler::Compile(const ir::ArrayExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    const compiler::RegScope rs(etsg);
+
+    const auto arr = etsg->AllocReg();
+    const auto dim = etsg->AllocReg();
+
+    const compiler::TargetTypeContext ttctx(etsg, etsg->Checker()->GlobalIntType());
+    etsg->LoadAccumulatorInt(expr, static_cast<std::int32_t>(expr->Elements().size()));
+    etsg->StoreAccumulator(expr, dim);
+    etsg->NewArray(expr, arr, dim, expr->TsType());
+
+    const auto index_reg = etsg->AllocReg();
+    for (std::uint32_t i = 0; i < expr->Elements().size(); ++i) {
+        const auto *const expression = expr->Elements()[i];
+        etsg->LoadAccumulatorInt(expr, i);
+        etsg->StoreAccumulator(expr, index_reg);
+
+        const compiler::TargetTypeContext ttctx2(etsg, expr->preferred_type_);
+        if (!etsg->TryLoadConstantExpression(expression)) {
+            expression->Compile(etsg);
+        }
+
+        etsg->ApplyConversion(expression, nullptr);
+        etsg->ApplyConversion(expression);
+
+        if (expression->TsType()->IsETSArrayType()) {
+            etsg->StoreArrayElement(expr, arr, index_reg, expression->TsType());
+        } else {
+            etsg->StoreArrayElement(expr, arr, index_reg, expr->TsType()->AsETSArrayType()->ElementType());
+        }
+    }
+
+    etsg->LoadAccumulator(expr, arr);
 }
 
 void ETSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
@@ -258,8 +388,20 @@ void ETSCompiler::Compile(const ir::ArrowFunctionExpression *expr) const
 
 void ETSCompiler::Compile(const ir::AssignmentExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    // All other operations are handled in OpAssignmentLowering
+    ASSERT(expr->OperatorType() == lexer::TokenType::PUNCTUATOR_SUBSTITUTION);
+    compiler::RegScope rs(etsg);
+    auto lref = compiler::ETSLReference::Create(etsg, expr->Left(), false);
+    auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
+
+    if (expr->Right()->IsNullLiteral()) {
+        etsg->LoadAccumulatorNull(expr, expr->Left()->TsType());
+    } else {
+        expr->Right()->Compile(etsg);
+        etsg->ApplyConversion(expr->Right(), expr->TsType());
+    }
+    lref.SetValue();
 }
 
 void ETSCompiler::Compile(const ir::AwaitExpression *expr) const
@@ -630,110 +772,335 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::FunctionExpression *expr) c
 
 void ETSCompiler::Compile(const ir::Identifier *expr) const
 {
-    (void)expr;
+    ETSGen *etsg = GetETSGen();
+    auto lambda = etsg->VarBinder()->LambdaObjects().find(expr);
+    if (lambda != etsg->VarBinder()->LambdaObjects().end()) {
+        etsg->CreateLambdaObjectFromIdentReference(expr, lambda->second.first);
+        return;
+    }
+
+    auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
+
+    ASSERT(expr->Variable() != nullptr);
+    if (!expr->Variable()->HasFlag(varbinder::VariableFlags::TYPE_ALIAS)) {
+        etsg->LoadVar(expr, expr->Variable());
+    } else {
+        etsg->LoadVar(expr, expr->TsType()->Variable());
+    }
+}
+
+void ETSCompiler::Compile([[maybe_unused]] const ir::ImportExpression *expr) const
+{
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::ImportExpression *expr) const
+static bool CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpression *expr)
 {
-    (void)expr;
-    UNREACHABLE();
+    if (expr->IsComputed()) {
+        auto *const object_type = etsg->Checker()->GetNonNullishType(expr->Object()->TsType());
+
+        auto ottctx = compiler::TargetTypeContext(etsg, expr->Object()->TsType());
+        etsg->CompileAndCheck(expr->Object());
+
+        auto const load_element = [expr, etsg, object_type]() {
+            compiler::VReg obj_reg = etsg->AllocReg();
+            etsg->StoreAccumulator(expr, obj_reg);
+
+            etsg->CompileAndCheck(expr->Property());
+            etsg->ApplyConversion(expr->Property(), expr->Property()->TsType());
+
+            auto ttctx = compiler::TargetTypeContext(etsg, expr->OptionalType());
+
+            if (object_type->IsETSDynamicType()) {
+                auto lang = object_type->AsETSDynamicType()->Language();
+                etsg->LoadElementDynamic(expr, obj_reg, lang);
+            } else {
+                etsg->LoadArrayElement(expr, obj_reg);
+            }
+
+            if (expr->Object()->TsType()->IsETSTupleType() && (expr->GetTupleConvertedType() != nullptr)) {
+                etsg->EmitCheckedNarrowingReferenceConversion(expr, expr->GetTupleConvertedType());
+            }
+
+            etsg->ApplyConversion(expr);
+        };
+
+        etsg->EmitMaybeOptional(expr, load_element, expr->IsOptional());
+        return true;
+    }
+    return false;
 }
 
 void ETSCompiler::Compile(const ir::MemberExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    auto lambda = etsg->VarBinder()->LambdaObjects().find(expr);
+    if (lambda != etsg->VarBinder()->LambdaObjects().end()) {
+        etsg->CreateLambdaObjectFromMemberReference(expr, expr->object_, lambda->second.first);
+        etsg->SetAccumulatorType(expr->TsType());
+        return;
+    }
+
+    compiler::RegScope rs(etsg);
+
+    auto *const object_type = etsg->Checker()->GetNonNullishType(expr->Object()->TsType());
+
+    if (CompileComputed(etsg, expr)) {
+        return;
+    }
+
+    auto &prop_name = expr->Property()->AsIdentifier()->Name();
+
+    if (object_type->IsETSArrayType() && prop_name.Is("length")) {
+        auto ottctx = compiler::TargetTypeContext(etsg, object_type);
+        etsg->CompileAndCheck(expr->Object());
+
+        auto const load_length = [expr, etsg]() {
+            compiler::VReg obj_reg = etsg->AllocReg();
+            etsg->StoreAccumulator(expr, obj_reg);
+
+            auto ttctx = compiler::TargetTypeContext(etsg, expr->OptionalType());
+            etsg->LoadArrayLength(expr, obj_reg);
+            etsg->ApplyConversion(expr, expr->TsType());
+        };
+
+        etsg->EmitMaybeOptional(expr, load_length, expr->IsOptional());
+        return;
+    }
+
+    if (object_type->IsETSEnumType() || object_type->IsETSStringEnumType()) {
+        auto const *const enum_interface = [object_type, expr]() -> checker::ETSEnumInterface const * {
+            if (object_type->IsETSEnumType()) {
+                return expr->OptionalType()->AsETSEnumType();
+            }
+            return expr->OptionalType()->AsETSStringEnumType();
+        }();
+
+        auto ttctx = compiler::TargetTypeContext(etsg, expr->OptionalType());
+        etsg->LoadAccumulatorInt(expr, enum_interface->GetOrdinal());
+        return;
+    }
+
+    if (etsg->Checker()->IsVariableStatic(expr->PropVar())) {
+        auto ttctx = compiler::TargetTypeContext(etsg, expr->OptionalType());
+
+        if (expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
+            checker::Signature *sig = expr->PropVar()->TsType()->AsETSFunctionType()->FindGetter();
+            etsg->CallStatic0(expr, sig->InternalName());
+            etsg->SetAccumulatorType(expr->TsType());
+            return;
+        }
+
+        util::StringView full_name =
+            etsg->FormClassPropReference(expr->Object()->TsType()->AsETSObjectType(), prop_name);
+        etsg->LoadStaticProperty(expr, expr->OptionalType(), full_name);
+        return;
+    }
+
+    auto ottctx = compiler::TargetTypeContext(etsg, expr->Object()->TsType());
+    etsg->CompileAndCheck(expr->Object());
+
+    auto const load_property = [expr, etsg, prop_name, object_type]() {
+        etsg->ApplyConversion(expr->Object());
+        compiler::VReg obj_reg = etsg->AllocReg();
+        etsg->StoreAccumulator(expr, obj_reg);
+
+        auto ttctx = compiler::TargetTypeContext(etsg, expr->OptionalType());
+
+        if (expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
+            checker::Signature *sig = expr->PropVar()->TsType()->AsETSFunctionType()->FindGetter();
+            etsg->CallThisVirtual0(expr, obj_reg, sig->InternalName());
+            etsg->SetAccumulatorType(expr->TsType());
+        } else if (object_type->IsETSDynamicType()) {
+            auto lang = object_type->AsETSDynamicType()->Language();
+            etsg->LoadPropertyDynamic(expr, expr->OptionalType(), obj_reg, prop_name, lang);
+        } else if (object_type->IsETSUnionType()) {
+            etsg->LoadUnionProperty(expr, expr->OptionalType(), expr->IsGenericField(), obj_reg, prop_name);
+        } else {
+            const auto full_name = etsg->FormClassPropReference(object_type->AsETSObjectType(), prop_name);
+            etsg->LoadProperty(expr, expr->OptionalType(), expr->IsGenericField(), obj_reg, full_name);
+        }
+    };
+
+    etsg->EmitMaybeOptional(expr, load_property, expr->IsOptional());
 }
 
-void ETSCompiler::Compile(const ir::NewExpression *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::NewExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::ObjectExpression *expr) const
 {
-    (void)expr;
+    ETSGen *etsg = GetETSGen();
+    compiler::RegScope rs {etsg};
+    checker::ETSObjectType const *obj_type = expr->TsType()->AsETSObjectType();
+    compiler::VReg obj_reg = etsg->AllocReg();
+    if (expr->TsType()->IsETSDynamicType()) {
+        auto *signature_info = etsg->Allocator()->New<checker::SignatureInfo>(etsg->Allocator());
+        auto *create_obj_sig = etsg->Allocator()->New<checker::Signature>(
+            signature_info, nullptr, compiler::Signatures::BUILTIN_JSRUNTIME_CREATE_OBJECT);
+        compiler::VReg dummy_reg = compiler::VReg::RegStart();
+        etsg->CallDynamic(expr, dummy_reg, dummy_reg, create_obj_sig,
+                          ArenaVector<ir::Expression *>(etsg->Allocator()->Adapter()));
+    } else {
+        checker::Signature *empty_sig = nullptr;
+        for (checker::Signature *sig : obj_type->ConstructSignatures()) {
+            if (sig->Params().empty()) {
+                empty_sig = sig;
+                break;
+            }
+        }
+        if (empty_sig == nullptr) {  // Would have already thrown in the checker.
+            UNREACHABLE();
+        }
+        etsg->InitObject(expr, empty_sig, ArenaVector<ir::Expression *>(etsg->Allocator()->Adapter()));
+    }
+    etsg->SetAccumulatorType(expr->TsType());
+    etsg->StoreAccumulator(expr, obj_reg);
+
+    for (ir::Expression *prop_expr : expr->Properties()) {
+        ASSERT(prop_expr->IsProperty());
+        ir::Property *prop = prop_expr->AsProperty();
+        ir::Expression *key = prop->Key();
+        ir::Expression *value = prop->Value();
+
+        util::StringView pname;
+        if (key->IsStringLiteral()) {
+            pname = key->AsStringLiteral()->Str();
+        } else if (key->IsIdentifier()) {
+            pname = key->AsIdentifier()->Name();
+        } else {
+            UNREACHABLE();
+        }
+
+        value->Compile(etsg);
+        etsg->ApplyConversion(value, key->TsType());
+        if (expr->TsType()->IsETSDynamicType()) {
+            etsg->StorePropertyDynamic(expr, value->TsType(), obj_reg, pname,
+                                       expr->TsType()->AsETSDynamicType()->Language());
+        } else {
+            etsg->StoreProperty(expr, key->TsType(), obj_reg, pname);
+        }
+    }
+
+    etsg->LoadAccumulator(expr, obj_reg);
+}
+
+void ETSCompiler::Compile([[maybe_unused]] const ir::OmittedExpression *expr) const
+{
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::OmittedExpression *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::OpaqueTypeNode *node) const
 {
-    (void)expr;
-    UNREACHABLE();
-}
-
-void ETSCompiler::Compile(const ir::OpaqueTypeNode *node) const
-{
-    (void)node;
     UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::SequenceExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    for (const auto *it : expr->Sequence()) {
+        it->Compile(etsg);
+    }
 }
 
 void ETSCompiler::Compile(const ir::SuperExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    etsg->LoadThis(expr);
+    etsg->SetAccumulatorType(etsg->GetAccumulatorType()->AsETSObjectType()->SuperType());
 }
 
-void ETSCompiler::Compile(const ir::TaggedTemplateExpression *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TaggedTemplateExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::TemplateLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    etsg->BuildTemplateString(expr);
 }
 
 void ETSCompiler::Compile(const ir::ThisExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    etsg->LoadThis(expr);
 }
 
 void ETSCompiler::Compile(const ir::UnaryExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
+    if (!etsg->TryLoadConstantExpression(expr->Argument())) {
+        expr->Argument()->Compile(etsg);
+    }
+    etsg->ApplyConversion(expr->Argument(), nullptr);
+    etsg->Unary(expr, expr->OperatorType());
 }
 
 void ETSCompiler::Compile(const ir::UpdateExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+
+    auto lref = compiler::ETSLReference::Create(etsg, expr->Argument(), false);
+
+    const auto argument_boxing_flags = static_cast<ir::BoxingUnboxingFlags>(expr->Argument()->GetBoxingUnboxingFlags() &
+                                                                            ir::BoxingUnboxingFlags::BOXING_FLAG);
+    const auto argument_unboxing_flags = static_cast<ir::BoxingUnboxingFlags>(
+        expr->Argument()->GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG);
+
+    if (expr->IsPrefix()) {
+        lref.GetValue();
+        expr->Argument()->SetBoxingUnboxingFlags(argument_unboxing_flags);
+        etsg->ApplyConversion(expr->Argument(), nullptr);
+        etsg->Update(expr, expr->OperatorType());
+        expr->Argument()->SetBoxingUnboxingFlags(argument_boxing_flags);
+        etsg->ApplyConversion(expr->Argument(), expr->Argument()->TsType());
+        lref.SetValue();
+        return;
+    }
+
+    // workaround so argument_ does not get auto unboxed by lref.GetValue()
+    expr->Argument()->SetBoxingUnboxingFlags(ir::BoxingUnboxingFlags::NONE);
+    lref.GetValue();
+
+    compiler::RegScope rs(etsg);
+    compiler::VReg original_value_reg = etsg->AllocReg();
+    etsg->StoreAccumulator(expr->Argument(), original_value_reg);
+
+    expr->Argument()->SetBoxingUnboxingFlags(argument_unboxing_flags);
+    etsg->ApplyConversion(expr->Argument(), nullptr);
+    etsg->Update(expr, expr->OperatorType());
+
+    expr->Argument()->SetBoxingUnboxingFlags(argument_boxing_flags);
+    etsg->ApplyConversion(expr->Argument(), expr->Argument()->TsType());
+    lref.SetValue();
+
+    etsg->LoadAccumulator(expr->Argument(), original_value_reg);
 }
 
-void ETSCompiler::Compile(const ir::YieldExpression *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::YieldExpression *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 // compile methods for LITERAL EXPRESSIONS in alphabetical order
-void ETSCompiler::Compile(const ir::BigIntLiteral *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::BigIntLiteral *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::BooleanLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    etsg->LoadAccumulatorBoolean(expr, expr->Value());
 }
 
 void ETSCompiler::Compile(const ir::CharLiteral *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    etsg->LoadAccumulatorChar(expr, expr->Char());
 }
 
 void ETSCompiler::Compile(const ir::NullLiteral *expr) const
@@ -834,23 +1201,73 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::ImportSpecifier *st) const
 {
     UNREACHABLE();
 }
+
+static void ThrowError(compiler::ETSGen *const etsg, const ir::AssertStatement *st)
+{
+    const compiler::RegScope rs(etsg);
+
+    if (st->Second() != nullptr) {
+        st->Second()->Compile(etsg);
+    } else {
+        etsg->LoadAccumulatorString(st, "Assertion failed.");
+    }
+
+    const auto message = etsg->AllocReg();
+    etsg->StoreAccumulator(st, message);
+
+    const auto assertion_error = etsg->AllocReg();
+    etsg->NewObject(st, assertion_error, compiler::Signatures::BUILTIN_ASSERTION_ERROR);
+    etsg->CallThisStatic1(st, assertion_error, compiler::Signatures::BUILTIN_ASSERTION_ERROR_CTOR, message);
+    etsg->EmitThrow(st, assertion_error);
+}
 // compile methods for STATEMENTS in alphabetical order
 void ETSCompiler::Compile(const ir::AssertStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    auto res = compiler::Condition::CheckConstantExpr(etsg, st->Test());
+    if (res == compiler::Condition::Result::CONST_TRUE) {
+        return;
+    }
+
+    if (res == compiler::Condition::Result::CONST_FALSE) {
+        ThrowError(etsg, st);
+        return;
+    }
+
+    compiler::Label *true_label = etsg->AllocLabel();
+    compiler::Label *false_label = etsg->AllocLabel();
+
+    compiler::Condition::Compile(etsg, st->Test(), false_label);
+    etsg->JumpTo(st, true_label);
+
+    etsg->SetLabel(st, false_label);
+    ThrowError(etsg, st);
+
+    etsg->SetLabel(st, true_label);
 }
 
 void ETSCompiler::Compile(const ir::BlockStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    compiler::LocalRegScope lrs(etsg, st->Scope());
+
+    etsg->CompileStatements(st->Statements());
+}
+
+template <typename CodeGen>
+static void CompileImpl(const ir::BreakStatement *self, [[maybe_unused]] CodeGen *cg)
+{
+    compiler::Label *target = cg->ControlFlowChangeBreak(self->Ident());
+    cg->Branch(self, target);
 }
 
 void ETSCompiler::Compile(const ir::BreakStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    if (etsg->ExtendWithFinalizer(st->parent_, st)) {
+        return;
+    }
+    CompileImpl(st, etsg);
 }
 
 void ETSCompiler::Compile([[maybe_unused]] const ir::ClassDeclaration *st) const
@@ -1143,32 +1560,102 @@ void ETSCompiler::Compile(const ir::SwitchStatement *st) const
 
 void ETSCompiler::Compile(const ir::ThrowStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    etsg->ThrowException(st->Argument());
 }
 
 void ETSCompiler::Compile(const ir::TryStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+
+    compiler::ETSTryContext try_ctx(etsg, etsg->Allocator(), st, st->FinallyBlock() != nullptr);
+
+    compiler::LabelPair try_label_pair(etsg->AllocLabel(), etsg->AllocLabel());
+
+    for (ir::CatchClause *clause : st->CatchClauses()) {
+        try_ctx.AddNewCathTable(clause->TsType()->AsETSObjectType()->AssemblerName(), try_label_pair);
+    }
+
+    compiler::Label *statement_end = etsg->AllocLabel();
+    auto catch_tables = try_ctx.GetETSCatchTable();
+
+    etsg->SetLabel(st, try_label_pair.Begin());
+    st->Block()->Compile(etsg);
+    etsg->Branch(st, statement_end);
+    etsg->SetLabel(st, try_label_pair.End());
+
+    ASSERT(st->CatchClauses().size() == catch_tables.size());
+
+    for (uint32_t i = 0; i < st->CatchClauses().size(); i++) {
+        etsg->SetLabel(st, catch_tables.at(i)->LabelSet().CatchBegin());
+
+        st->CatchClauses().at(i)->Compile(etsg);
+
+        etsg->Branch(st, statement_end);
+    }
+
+    etsg->SetLabel(st, statement_end);
+
+    auto trycatch_label_pair = compiler::LabelPair(try_label_pair.Begin(), statement_end);
+
+    try_ctx.EmitFinalizer(trycatch_label_pair, st->finalizer_insertions_);
 }
 
 void ETSCompiler::Compile(const ir::VariableDeclarator *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    auto lref = compiler::ETSLReference::Create(etsg, st->Id(), true);
+    auto ttctx = compiler::TargetTypeContext(etsg, st->TsType());
+
+    if (st->Id()->AsIdentifier()->Variable()->HasFlag(varbinder::VariableFlags::BOXED)) {
+        etsg->EmitLocalBoxCtor(st->Id());
+        etsg->StoreAccumulator(st, lref.Variable()->AsLocalVariable()->Vreg());
+        etsg->SetAccumulatorType(lref.Variable()->TsType());
+    }
+
+    if (st->Init() != nullptr) {
+        if (!etsg->TryLoadConstantExpression(st->Init())) {
+            st->Init()->Compile(etsg);
+            etsg->ApplyConversion(st->Init(), nullptr);
+        }
+    } else {
+        etsg->LoadDefaultValue(st, st->Id()->AsIdentifier()->Variable()->TsType());
+    }
+
+    etsg->ApplyConversion(st, st->TsType());
+    lref.SetValue();
 }
 
 void ETSCompiler::Compile(const ir::VariableDeclaration *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    for (const auto *it : st->Declarators()) {
+        it->Compile(etsg);
+    }
+}
+
+template <typename CodeGen>
+void CompileImpl(const ir::WhileStatement *while_stmt, [[maybe_unused]] CodeGen *cg)
+{
+    compiler::LabelTarget label_target(cg);
+
+    cg->SetLabel(while_stmt, label_target.ContinueTarget());
+    compiler::Condition::Compile(cg, while_stmt->Test(), label_target.BreakTarget());
+
+    {
+        compiler::LocalRegScope reg_scope(cg, while_stmt->Scope());
+        compiler::LabelContext label_ctx(cg, label_target);
+        while_stmt->Body()->Compile(cg);
+    }
+
+    cg->Branch(while_stmt, label_target.ContinueTarget());
+    cg->SetLabel(while_stmt, label_target.BreakTarget());
 }
 
 void ETSCompiler::Compile(const ir::WhileStatement *st) const
 {
-    (void)st;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    CompileImpl(st, etsg);
 }
 // from ts folder
 void ETSCompiler::Compile([[maybe_unused]] const ir::TSAnyKeyword *node) const
@@ -1176,21 +1663,86 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSAnyKeyword *node) const
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSArrayType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSArrayType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+
+    auto ttctx = compiler::TargetTypeContext(etsg, nullptr);
+    if (!etsg->TryLoadConstantExpression(expr->Expr())) {
+        expr->Expr()->Compile(etsg);
+    }
+
+    etsg->ApplyConversion(expr->Expr(), nullptr);
+
+    auto *target_type = expr->TsType();
+    if (target_type->IsETSUnionType()) {
+        target_type = target_type->AsETSUnionType()->FindTypeIsCastableToThis(
+            expr->expression_, etsg->Checker()->Relation(), expr->expression_->TsType());
+    }
+    switch (checker::ETSChecker::TypeKind(target_type)) {
+        case checker::TypeFlag::ETS_BOOLEAN: {
+            etsg->CastToBoolean(expr);
+            break;
+        }
+        case checker::TypeFlag::CHAR: {
+            etsg->CastToChar(expr);
+            break;
+        }
+        case checker::TypeFlag::BYTE: {
+            etsg->CastToByte(expr);
+            break;
+        }
+        case checker::TypeFlag::SHORT: {
+            etsg->CastToShort(expr);
+            break;
+        }
+        case checker::TypeFlag::INT: {
+            etsg->CastToInt(expr);
+            break;
+        }
+        case checker::TypeFlag::LONG: {
+            etsg->CastToLong(expr);
+            break;
+        }
+        case checker::TypeFlag::FLOAT: {
+            etsg->CastToFloat(expr);
+            break;
+        }
+        case checker::TypeFlag::DOUBLE: {
+            etsg->CastToDouble(expr);
+            break;
+        }
+        case checker::TypeFlag::ETS_ARRAY:
+        case checker::TypeFlag::ETS_OBJECT:
+        case checker::TypeFlag::ETS_DYNAMIC_TYPE: {
+            etsg->CastToArrayOrObject(expr, target_type, expr->is_unchecked_cast_);
+            break;
+        }
+        case checker::TypeFlag::ETS_STRING_ENUM:
+            [[fallthrough]];
+        case checker::TypeFlag::ETS_ENUM: {
+            auto *const signature = expr->TsType()->IsETSEnumType()
+                                        ? expr->TsType()->AsETSEnumType()->FromIntMethod().global_signature
+                                        : expr->TsType()->AsETSStringEnumType()->FromIntMethod().global_signature;
+            ArenaVector<ir::Expression *> arguments(etsg->Allocator()->Adapter());
+            arguments.push_back(expr->expression_);
+            etsg->CallStatic(expr, signature, arguments);
+            etsg->SetAccumulatorType(signature->ReturnType());
+            break;
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
 }
 
-void ETSCompiler::Compile(const ir::TSBigintKeyword *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSBigintKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1199,21 +1751,18 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSBooleanKeyword *node) con
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSClassImplements *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSClassImplements *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSConditionalType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSConditionalType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSConstructorType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSConstructorType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1232,105 +1781,113 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSExternalModuleReference *
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSFunctionType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSFunctionType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSImportEqualsDeclaration *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSImportEqualsDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSImportType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSImportType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSIndexedAccessType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSIndexedAccessType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSInferType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSInferType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSInterfaceBody *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceBody *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSInterfaceDeclaration *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSInterfaceHeritage *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSInterfaceHeritage *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSIntersectionType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSIntersectionType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSLiteralType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSLiteralType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSMappedType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSMappedType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSModuleBlock *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSModuleBlock *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSModuleDeclaration *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSModuleDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSNamedTupleMember *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSNamedTupleMember *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSNeverKeyword *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSNeverKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
 void ETSCompiler::Compile(const ir::TSNonNullExpression *expr) const
 {
-    (void)expr;
-    UNREACHABLE();
+    ETSGen *etsg = GetETSGen();
+    compiler::RegScope rs(etsg);
+
+    expr->Expr()->Compile(etsg);
+
+    if (!etsg->GetAccumulatorType()->IsNullishOrNullLike()) {
+        return;
+    }
+
+    if (etsg->GetAccumulatorType()->IsETSNullLike()) {
+        etsg->EmitNullishException(expr);
+        return;
+    }
+
+    auto arg = etsg->AllocReg();
+    etsg->StoreAccumulator(expr, arg);
+    etsg->LoadAccumulator(expr, arg);
+
+    auto end_label = etsg->AllocLabel();
+
+    etsg->BranchIfNotNullish(expr, end_label);
+    etsg->EmitNullishException(expr);
+
+    etsg->SetLabel(expr, end_label);
+    etsg->LoadAccumulator(expr, arg);
+    etsg->ConvertToNonNullish(expr);
 }
 
-void ETSCompiler::Compile(const ir::TSNullKeyword *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSNullKeyword *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1344,21 +1901,18 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSObjectKeyword *node) cons
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSParameterProperty *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSParameterProperty *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSParenthesizedType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSParenthesizedType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSQualifiedName *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSQualifiedName *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
@@ -1367,75 +1921,63 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSStringKeyword *node) cons
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSThisType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSThisType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSTupleType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSTupleType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSTypeAliasDeclaration *st) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeAliasDeclaration *st) const
 {
-    (void)st;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSTypeAssertion *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeAssertion *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSTypeLiteral *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeLiteral *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSTypeOperator *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeOperator *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSTypeParameter *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameter *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSTypeParameterDeclaration *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameterDeclaration *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSTypeParameterInstantiation *expr) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeParameterInstantiation *expr) const
 {
-    (void)expr;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSTypePredicate *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypePredicate *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSTypeQuery *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeQuery *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSTypeReference *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSTypeReference *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 
@@ -1444,9 +1986,8 @@ void ETSCompiler::Compile([[maybe_unused]] const ir::TSUndefinedKeyword *node) c
     UNREACHABLE();
 }
 
-void ETSCompiler::Compile(const ir::TSUnionType *node) const
+void ETSCompiler::Compile([[maybe_unused]] const ir::TSUnionType *node) const
 {
-    (void)node;
     UNREACHABLE();
 }
 

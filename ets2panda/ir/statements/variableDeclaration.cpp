@@ -19,6 +19,8 @@
 #include "varbinder/variable.h"
 #include "checker/TSchecker.h"
 #include "checker/ETSchecker.h"
+#include "compiler/core/ETSGen.h"
+#include "compiler/core/pandagen.h"
 #include "ir/astDump.h"
 #include "ir/base/decorator.h"
 #include "ir/expressions/arrayExpression.h"
@@ -80,33 +82,21 @@ void VariableDeclaration::Dump(ir::AstDumper *dumper) const
 
 void VariableDeclaration::Compile(compiler::PandaGen *pg) const
 {
-    for (const auto *it : declarators_) {
-        it->Compile(pg);
-    }
+    pg->GetAstCompiler()->Compile(this);
 }
 
 void VariableDeclaration::Compile(compiler::ETSGen *etsg) const
 {
-    for (const auto *it : declarators_) {
-        it->Compile(etsg);
-    }
+    etsg->GetAstCompiler()->Compile(this);
 }
 
 checker::Type *VariableDeclaration::Check(checker::TSChecker *checker)
 {
-    for (auto *it : declarators_) {
-        it->Check(checker);
-    }
-
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 
 checker::Type *VariableDeclaration::Check([[maybe_unused]] checker::ETSChecker *checker)
 {
-    for (auto *it : declarators_) {
-        it->Check(checker);
-    }
-
-    return nullptr;
+    return checker->GetAnalyzer()->Check(this);
 }
 }  // namespace panda::es2panda::ir

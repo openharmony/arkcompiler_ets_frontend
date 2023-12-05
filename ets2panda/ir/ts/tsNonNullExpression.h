@@ -18,10 +18,16 @@
 
 #include "ir/expression.h"
 
+namespace panda::es2panda::checker {
+class ETSAnalyzer;
+}  // namespace panda::es2panda::checker
 namespace panda::es2panda::ir {
 class TSNonNullExpression : public Expression {
 public:
     explicit TSNonNullExpression(Expression *expr) : Expression(AstNodeType::TS_NON_NULL_EXPRESSION), expr_(expr) {}
+
+    // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
+    friend class checker::ETSAnalyzer;
 
     const Expression *Expr() const
     {
