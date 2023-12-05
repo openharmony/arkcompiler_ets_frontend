@@ -121,6 +121,7 @@ public:
                                                                    "InterfacePropertyDeclarationsPhase",
                                                                    "LambdaConstructionPhase",
                                                                    "ObjectIndexLowering",
+                                                                   "ObjectIteratorLowering",
                                                                    "OpAssignmentLowering",
                                                                    "PromiseVoidInferencePhase",
                                                                    "TupleLowering",

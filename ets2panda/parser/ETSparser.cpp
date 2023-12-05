@@ -14,7 +14,6 @@
  */
 
 #include "ETSparser.h"
-#include <utility>
 
 #include "macros.h"
 #include "parser/parserFlags.h"
@@ -76,6 +75,7 @@
 #include "ir/statements/throwStatement.h"
 #include "ir/statements/tryStatement.h"
 #include "ir/statements/whileStatement.h"
+#include "ir/statements/forOfStatement.h"
 #include "ir/statements/doWhileStatement.h"
 #include "ir/statements/breakStatement.h"
 #include "ir/statements/continueStatement.h"
@@ -4168,22 +4168,26 @@ bool ETSParser::CheckClassElement(ir::AstNode *property, [[maybe_unused]] ir::Me
 
     //  Check the special '$_get' and '$_set' methods using for object's index access
     if (method->Kind() == ir::MethodDefinitionKind::METHOD) {
-        CheckIndexAccessMethod(function, property->Start());
+        CheckPredefinedMethods(function, property->Start());
     }
 
     return false;  // resolve overloads later on scopes stage
 }
 
-void ETSParser::CheckIndexAccessMethod(ir::ScriptFunction const *function, const lexer::SourcePosition &position) const
+void ETSParser::CheckPredefinedMethods(ir::ScriptFunction const *function, const lexer::SourcePosition &position) const
 {
     auto const name = function->Id()->Name();
 
-    if (name.Is(compiler::Signatures::GET_INDEX_METHOD)) {
+    auto const checkAsynchronous = [this, function, &name, &position]() -> void {
         if (function->IsAsyncFunc()) {
-            ThrowSyntaxError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
-                                 std::string {ir::INDEX_ACCESS_ERROR_2},
+            ThrowSyntaxError(std::string {ir::PREDEFINED_METHOD} + std::string {name.Utf8()} +
+                                 std::string {"' cannot be asynchronous."},
                              position);
         }
+    };
+
+    if (name.Is(compiler::Signatures::GET_INDEX_METHOD)) {
+        checkAsynchronous();
 
         bool isValid = function->Params().size() == 1U;
         if (isValid) {
@@ -4192,16 +4196,12 @@ void ETSParser::CheckIndexAccessMethod(ir::ScriptFunction const *function, const
         }
 
         if (!isValid) {
-            ThrowSyntaxError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
+            ThrowSyntaxError(std::string {ir::PREDEFINED_METHOD} + std::string {name.Utf8()} +
                                  std::string {"' should have exactly one required parameter."},
                              position);
         }
     } else if (name.Is(compiler::Signatures::SET_INDEX_METHOD)) {
-        if (function->IsAsyncFunc()) {
-            ThrowSyntaxError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
-                                 std::string {ir::INDEX_ACCESS_ERROR_2},
-                             position);
-        }
+        checkAsynchronous();
 
         bool isValid = function->Params().size() == 2U;
         if (isValid) {
@@ -4212,8 +4212,16 @@ void ETSParser::CheckIndexAccessMethod(ir::ScriptFunction const *function, const
         }
 
         if (!isValid) {
-            ThrowSyntaxError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
+            ThrowSyntaxError(std::string {ir::PREDEFINED_METHOD} + std::string {name.Utf8()} +
                                  std::string {"' should have exactly two required parameters."},
+                             position);
+        }
+    } else if (name.Is(compiler::Signatures::ITERATOR_METHOD)) {
+        checkAsynchronous();
+
+        if (!function->Params().empty()) {
+            ThrowSyntaxError(std::string {ir::PREDEFINED_METHOD} + std::string {name.Utf8()} +
+                                 std::string {"' should not have parameters."},
                              position);
         }
     }
@@ -4544,6 +4552,10 @@ ir::Statement *ETSParser::CreateStatement(std::string_view const sourceCode, std
 
     auto *const blockStmt = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     blockStmt->SetRange({startLoc, lexer->GetToken().End()});
+
+    for (auto *statement : blockStmt->Statements()) {
+        statement->SetParent(blockStmt);
+    }
 
     return blockStmt;
 }

@@ -84,6 +84,19 @@ public:
         return CreateFormattedExpression(sourceCode, insertingNodes, fileName);
     }
 
+    ir::Statement *CreateFormattedStatement(std::string_view sourceCode, std::vector<ir::AstNode *> &insertingNodes,
+                                            std::string_view fileName = DEFAULT_SOURCE_FILE);
+
+    template <typename... Args>
+    ir::Statement *CreateFormattedStatement(std::string_view const sourceCode, std::string_view const fileName,
+                                            Args &&...args)
+    {
+        std::vector<ir::AstNode *> insertingNodes {};
+        insertingNodes.reserve(sizeof...(Args));
+        (insertingNodes.emplace_back(std::forward<Args>(args)), ...);
+        return CreateFormattedStatement(sourceCode, insertingNodes, fileName);
+    }
+
     ArenaVector<ir::Statement *> CreateStatements(std::string_view sourceCode,
                                                   std::string_view fileName = DEFAULT_SOURCE_FILE);
 
@@ -299,7 +312,7 @@ private:
     ir::Expression *ParseLaunchExpression(ExpressionParseFlags flags);
     void ValidateInstanceOfExpression(ir::Expression *expr);
     void ValidateRestParameter(ir::Expression *param) override;
-    void CheckIndexAccessMethod(ir::ScriptFunction const *function, const lexer::SourcePosition &position) const;
+    void CheckPredefinedMethods(ir::ScriptFunction const *function, const lexer::SourcePosition &position) const;
 
     bool CheckClassElement(ir::AstNode *property, ir::MethodDefinition *&ctor,
                            ArenaVector<ir::AstNode *> &properties) override;
@@ -349,29 +362,14 @@ private:
     inline static constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
     // NOLINTEND(modernize-avoid-c-arrays)
 
-    // NOLINTBEGIN(google-default-arguments)
     ir::Statement *CreateStatement(std::string_view sourceCode, std::string_view fileName = DEFAULT_SOURCE_FILE);
-    ir::Statement *CreateFormattedStatement(std::string_view sourceCode, std::vector<ir::AstNode *> &insertingNodes,
-                                            std::string_view fileName = DEFAULT_SOURCE_FILE);
-    // NOLINTEND(google-default-arguments)
 
-    template <typename... Args>
-    ir::Statement *CreateFormattedStatement(std::string_view const sourceCode, std::string_view const fileName,
-                                            Args &&...args)
-    {
-        std::vector<ir::AstNode *> insertingNodes {};
-        (insertingNodes.emplace(std::forward<Args>(args)), ...);
-        return CreateFormattedStatement(sourceCode, insertingNodes, fileName);
-    }
-
-    // NOLINTBEGIN(google-default-arguments)
     ir::MethodDefinition *CreateMethodDefinition(ir::ModifierFlags modifiers, std::string_view sourceCode,
                                                  std::string_view fileName = DEFAULT_SOURCE_FILE);
     ir::MethodDefinition *CreateConstructorDefinition(ir::ModifierFlags modifiers, std::string_view sourceCode,
                                                       std::string_view fileName = DEFAULT_SOURCE_FILE);
     ir::TypeNode *CreateTypeAnnotation(TypeAnnotationParsingOptions *options, std::string_view sourceCode,
                                        std::string_view fileName = DEFAULT_SOURCE_FILE);
-    // NOLINTEND(google-default-arguments)
 
     friend class ExternalSourceParser;
     friend class InnerSourceParser;

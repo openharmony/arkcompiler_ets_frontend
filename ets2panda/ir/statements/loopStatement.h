@@ -22,6 +22,12 @@
 namespace ark::es2panda::ir {
 class LoopStatement : public Statement {
 public:
+    LoopStatement() = delete;
+    ~LoopStatement() override = default;
+
+    NO_COPY_SEMANTIC(LoopStatement);
+    NO_MOVE_SEMANTIC(LoopStatement);
+
     bool IsScopeBearer() const override
     {
         return true;

@@ -26,6 +26,8 @@ defines:
     ref: GET_INDEX_METHOD
   - name: $_set
     ref: SET_INDEX_METHOD
+  - name: $_iterator
+    ref: ITERATOR_METHOD
   - name: 'ETSGLOBAL.main:'
     ref: ETS_MAIN_WITH_MANGLE_BEGIN
   - name: 'main'

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,50 +22,71 @@ namespace ark::es2panda::varbinder {
 class LoopScope;
 }  // namespace ark::es2panda::varbinder
 
+namespace ark::es2panda::checker {
+class ETSAnalyzer;
+class ETSObjectType;
+}  // namespace ark::es2panda::checker
+
 namespace ark::es2panda::ir {
 class Expression;
 
-class ForOfStatement : public LoopStatement {
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+inline constexpr char const ITERATOR_INTERFACE_NAME[] = "Iterator";
+inline constexpr char const ITERATOR_INTERFACE_METHOD[] = "next";
+inline constexpr char const ITERATOR_RESULT_NAME[] = "IteratorResult";
+// NOLINTEND(modernize-avoid-c-arrays)
+
+class ForOfStatement final : public LoopStatement {
+    friend class checker::ETSAnalyzer;
+
 public:
-    explicit ForOfStatement(AstNode *left, Expression *right, Statement *body, bool isAwait)
+    ForOfStatement() = delete;
+    ~ForOfStatement() override = default;
+
+    NO_COPY_SEMANTIC(ForOfStatement);
+    NO_MOVE_SEMANTIC(ForOfStatement);
+
+    explicit ForOfStatement(AstNode *left, Expression *right, Statement *body, bool const isAwait)
         : LoopStatement(AstNodeType::FOR_OF_STATEMENT), left_(left), right_(right), body_(body), isAwait_(isAwait)
     {
     }
 
-    AstNode *Left()
+    [[nodiscard]] AstNode *Left() noexcept
     {
         return left_;
     }
 
-    const AstNode *Left() const
+    [[nodiscard]] const AstNode *Left() const noexcept
     {
         return left_;
     }
 
-    Expression *Right()
+    [[nodiscard]] Expression *Right() noexcept
     {
         return right_;
     }
 
-    const Expression *Right() const
+    [[nodiscard]] const Expression *Right() const noexcept
     {
         return right_;
     }
 
-    Statement *Body()
+    [[nodiscard]] Statement *Body() noexcept
     {
         return body_;
     }
 
-    const Statement *Body() const
+    [[nodiscard]] const Statement *Body() const noexcept
     {
         return body_;
     }
 
-    bool IsAwait() const
+    [[nodiscard]] bool IsAwait() const noexcept
     {
         return isAwait_;
     }
+
+    [[nodiscard]] ForOfStatement *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
     void TransformChildren(const NodeTransformer &cb) override;
     void SetReturnType(checker::ETSChecker *checker, checker::Type *type) override
@@ -87,6 +108,11 @@ public:
     {
         v->Accept(this);
     }
+
+protected:
+    [[nodiscard]] checker::Type *CheckIteratorMethod(checker::ETSChecker *checker);
+    [[nodiscard]] checker::Type *CheckIteratorMethodForObject(checker::ETSChecker *checker,
+                                                              checker::ETSObjectType *sourceType);
 
 private:
     AstNode *left_;

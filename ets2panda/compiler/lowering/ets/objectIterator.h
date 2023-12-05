@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_COMPILER_LOWERING_OBJECT_INDEX_ACCESS_H
-#define ES2PANDA_COMPILER_LOWERING_OBJECT_INDEX_ACCESS_H
+#ifndef ES2PANDA_COMPILER_LOWERING_OBJECT_ITERATOR_H
+#define ES2PANDA_COMPILER_LOWERING_OBJECT_ITERATOR_H
 
 #include "compiler/lowering/phase.h"
 
@@ -24,21 +24,17 @@ class ETSParser;
 
 namespace ark::es2panda::compiler {
 
-class ObjectIndexLowering : public Phase {
+class ObjectIteratorLowering : public Phase {
 public:
-    std::string_view Name() const override
-    {
-        return "ObjectIndexLowering";
-    }
-
+    std::string_view Name() const override;
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
-    bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
 
 private:
-    ir::Expression *ProcessIndexGetAccess(parser::ETSParser *parser, checker::ETSChecker *checker,
-                                          ir::MemberExpression *memberExpression) const;
-    ir::Expression *ProcessIndexSetAccess(parser::ETSParser *parser, checker::ETSChecker *checker,
-                                          ir::AssignmentExpression *assignmentExpression) const;
+    [[nodiscard]] ir::Statement *ProcessObjectIterator(parser::ETSParser *parser, checker::ETSChecker *checker,
+                                                       varbinder::ETSBinder *varbinder,
+                                                       ir::ForOfStatement *forOfStatement) const;
+
+    void TransferForOfLoopBody(ir::Statement *forBody, ir::BlockStatement *whileBody, bool needCleaning) const noexcept;
 };
 
 }  // namespace ark::es2panda::compiler

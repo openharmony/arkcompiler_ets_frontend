@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,11 +15,6 @@
 
 #include "forOfStatement.h"
 
-#include "macros.h"
-#include "varbinder/scope.h"
-#include "compiler/base/iterators.h"
-#include "compiler/base/lreference.h"
-#include "compiler/core/labelTarget.h"
 #include "checker/TSchecker.h"
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
@@ -87,5 +82,119 @@ checker::Type *ForOfStatement::Check(checker::TSChecker *checker)
 checker::Type *ForOfStatement::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);
+}
+
+ForOfStatement *ForOfStatement::Clone(ArenaAllocator *const allocator, AstNode *const parent)
+{
+    auto *const left = left_ != nullptr ? left_->Clone(allocator, nullptr) : nullptr;
+    auto *const right = right_ != nullptr ? right_->Clone(allocator, nullptr)->AsExpression() : nullptr;
+    auto *const body = body_ != nullptr ? body_->Clone(allocator, nullptr)->AsStatement() : nullptr;
+
+    if (auto *const clone = allocator->New<ForOfStatement>(left, right, body, isAwait_); clone != nullptr) {
+        if (left != nullptr) {
+            left->SetParent(clone);
+        }
+
+        if (right != nullptr) {
+            right->SetParent(clone);
+        }
+
+        if (body != nullptr) {
+            body->SetParent(clone);
+        }
+
+        if (parent != nullptr) {
+            clone->SetParent(parent);
+        }
+
+        clone->SetRange(Range());
+        return clone;
+    }
+
+    throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
+checker::Type *ForOfStatement::CheckIteratorMethodForObject(checker::ETSChecker *checker,
+                                                            checker::ETSObjectType *sourceType)
+{
+    auto const &position = right_->Start();
+
+    checker::PropertySearchFlags searchFlag =
+        checker::PropertySearchFlags::SEARCH_METHOD | checker::PropertySearchFlags::IS_FUNCTIONAL;
+    searchFlag |= checker::PropertySearchFlags::SEARCH_IN_BASE | checker::PropertySearchFlags::SEARCH_IN_INTERFACES;
+    // NOTE: maybe we need to exclude static methods: search_flag &= ~(checker::PropertySearchFlags::SEARCH_STATIC)
+
+    if (sourceType->HasTypeFlag(checker::TypeFlag::GENERIC)) {
+        searchFlag |= checker::PropertySearchFlags::SEARCH_ALL;
+    }
+
+    auto *const method = sourceType->GetProperty(compiler::Signatures::ITERATOR_METHOD, searchFlag);
+    if (method == nullptr || !method->HasFlag(varbinder::VariableFlags::METHOD)) {
+        checker->ThrowTypeError("Object type doesn't have proper iterator method.", position);
+    }
+
+    ArenaVector<Expression *> arguments {checker->Allocator()->Adapter()};
+    auto &signatures = checker->GetTypeOfVariable(method)->AsETSFunctionType()->CallSignatures();
+
+    checker::Signature *signature = checker->ValidateSignatures(signatures, nullptr, arguments, position, "iterator",
+                                                                checker::TypeRelationFlag::NO_THROW);
+    if (signature == nullptr) {
+        checker->ThrowTypeError("Cannot find iterator method with the required signature.", position);
+    }
+    checker->ValidateSignatureAccessibility(sourceType, nullptr, signature, position,
+                                            "Iterator method is not visible here.");
+
+    ASSERT(signature->Function() != nullptr);
+
+    if (signature->Function()->IsThrowing() || signature->Function()->IsRethrowing()) {
+        checker->CheckThrowingStatements(this);
+    }
+
+    // From here on we assume that '$_iterator()' function returns the valid 'Iterator<T>' implementation :)
+    // Otherwise a plenty of checks required for each line of code below...
+    auto *const nextMethod =
+        signature->ReturnType()->AsETSObjectType()->GetProperty(ITERATOR_INTERFACE_METHOD, searchFlag);
+    auto &nextSignatures = checker->GetTypeOfVariable(nextMethod)->AsETSFunctionType()->CallSignatures();
+
+    auto const *const nextSignature = checker->ValidateSignatures(nextSignatures, nullptr, arguments, position,
+                                                                  "iterator", checker::TypeRelationFlag::NO_THROW);
+    if (nextSignature != nullptr && nextSignature->ReturnType()->IsETSObjectType()) {
+        if (auto const *const resultType = nextSignature->ReturnType()->AsETSObjectType();
+            resultType->Name().Is(ITERATOR_RESULT_NAME)) {
+            return resultType->TypeArguments()[0];
+        }
+    }
+
+    return nullptr;
+}
+
+checker::Type *ForOfStatement::CheckIteratorMethod(checker::ETSChecker *const checker)
+{
+    if (auto *exprType = right_->TsType(); exprType != nullptr) {
+        if (exprType->IsETSTypeParameter()) {
+            exprType = checker->GetApparentType(exprType->AsETSTypeParameter()->GetConstraintType());
+        }
+
+        if (exprType->IsETSObjectType()) {
+            return CheckIteratorMethodForObject(checker, exprType->AsETSObjectType());
+        }
+
+        if (exprType->IsETSUnionType()) {
+            auto *const returnType = CheckIteratorMethodForObject(
+                checker, exprType->AsETSUnionType()->ConstituentTypes()[0]->AsETSObjectType());
+
+            if (returnType != nullptr &&
+                exprType->AsETSUnionType()->AllOfConstituentTypes([this, checker, returnType](
+                                                                      checker::Type *const constituentType) -> bool {
+                    return constituentType->IsETSObjectType() &&
+                           checker->Relation()->IsIdenticalTo(
+                               returnType, CheckIteratorMethodForObject(checker, constituentType->AsETSObjectType()));
+                })) {
+                return returnType;
+            }
+        }
+    }
+
+    return nullptr;
 }
 }  // namespace ark::es2panda::ir
