@@ -1183,31 +1183,31 @@ void ETSGen::EmitLocalBoxSet(ir::AstNode const *node, varbinder::LocalVariable *
     auto vreg = lhs_var->Vreg();
     switch (checker::ETSChecker::TypeKind(content_type)) {
         case checker::TypeFlag::ETS_BOOLEAN:
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_BOOLEAN_BOX_SET, vreg, 1);
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_BOOLEAN_BOX_SET, vreg, 1);
             break;
         case checker::TypeFlag::BYTE:
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_BYTE_BOX_SET, vreg, 1);
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_BYTE_BOX_SET, vreg, 1);
             break;
         case checker::TypeFlag::CHAR:
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_CHAR_BOX_SET, vreg, 1);
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_CHAR_BOX_SET, vreg, 1);
             break;
         case checker::TypeFlag::SHORT:
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_SHORT_BOX_SET, vreg, 1);
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_SHORT_BOX_SET, vreg, 1);
             break;
         case checker::TypeFlag::INT:
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_INT_BOX_SET, vreg, 1);
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_INT_BOX_SET, vreg, 1);
             break;
         case checker::TypeFlag::LONG:
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_LONG_BOX_SET, vreg, 1);
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_LONG_BOX_SET, vreg, 1);
             break;
         case checker::TypeFlag::FLOAT:
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_FLOAT_BOX_SET, vreg, 1);
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_FLOAT_BOX_SET, vreg, 1);
             break;
         case checker::TypeFlag::DOUBLE:
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_DOUBLE_BOX_SET, vreg, 1);
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_DOUBLE_BOX_SET, vreg, 1);
             break;
         default:
-            Ra().Emit<CallAccShort, 0>(node, Signatures::BUILTIN_BOX_SET, vreg, 1);
+            Ra().Emit<CallAccShort, 1>(node, Signatures::BUILTIN_BOX_SET, vreg, 1);
             break;
     }
     SetAccumulatorType(Checker()->GetGlobalTypesHolder()->GlobalVoidType());
