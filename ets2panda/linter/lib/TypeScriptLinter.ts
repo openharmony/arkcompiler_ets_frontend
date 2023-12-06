@@ -1756,7 +1756,7 @@ export class TypeScriptLinter {
           return TypeScriptLinter.checkInRange(rangesToFilter, pos);
         },
         [NO_OVERLOAD_MATCHES_THIS_CALL_ERROR_CODE]: (pos: number) => {
-          return TypeScriptLinter.checkInRange([{ begin: callExpr.pos, end: callExpr.end }], pos);
+          return TypeScriptLinter.checkInRange(rangesToFilter, pos);
         },
         [TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE]: (pos: number) => {
           return TypeScriptLinter.checkInRange(rangesToFilter, pos);

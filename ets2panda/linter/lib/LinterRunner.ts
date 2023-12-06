@@ -132,15 +132,42 @@ export function lint(options: LintOptions): LintRunResult {
   };
 }
 
+/*
+ * We want linter to accept program with no strict options set at all
+ * due to them affecting type deduction.
+ */
+function clearStrictOptions(options: LintOptions): LintOptions {
+  if (!options.parserOptions) {
+    return options;
+  }
+  const newOptions = { ...options };
+  newOptions.parserOptions.strict = false;
+  newOptions.parserOptions.alwaysStrict = false;
+  newOptions.parserOptions.noImplicitAny = false;
+  newOptions.parserOptions.noImplicitThis = false;
+  newOptions.parserOptions.strictBindCallApply = false;
+  newOptions.parserOptions.strictFunctionTypes = false;
+  newOptions.parserOptions.strictNullChecks = false;
+  newOptions.parserOptions.strictPropertyInitialization = false;
+  newOptions.parserOptions.useUnknownInCatchVariables = false;
+  return newOptions;
+}
+
 export function createLinter(options: LintOptions): TSCCompiledProgram {
   if (options.tscDiagnosticsLinter) {
     return options.tscDiagnosticsLinter;
   }
-  const tsProgram = options.tsProgram ?? Compiler.compile(options, getStrictOptions());
-  if (options.realtimeLint) {
+
+  /*
+   * if we are provided with the pre-compiled program, don't tamper with options
+   * otherwise, clear all strict related options to avoid differences in type deduction
+   */
+  const newOptions = options.tsProgram ? options : clearStrictOptions(options);
+  const tsProgram = newOptions.tsProgram ?? Compiler.compile(newOptions, getStrictOptions());
+  if (newOptions.realtimeLint) {
     return new TSCCompiledProgramSimple(tsProgram);
   }
-  return new TSCCompiledProgramWithDiagnostics(tsProgram, options);
+  return new TSCCompiledProgramWithDiagnostics(tsProgram, newOptions);
 }
 
 function lintFiles(srcFiles: ts.SourceFile[], linter: TypeScriptLinter): LintRunResult {
