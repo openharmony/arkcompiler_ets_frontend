@@ -13,8 +13,4 @@
  * limitations under the License.
  */
 
-export const LIMITED_STANDARD_UTILITY_TYPES = [
-  'Awaited', 'Pick', 'Omit', 'Exclude', 'Extract', 'NonNullable', 'Parameters',
-  'ConstructorParameters', 'ReturnType', 'InstanceType', 'ThisParameterType', 'OmitThisParameter',
-  'ThisType', 'Uppercase', 'Lowercase', 'Capitalize', 'Uncapitalize',
-];
+export const ALLOWED_STD_SYMBOL_API  = ['iterator'];

@@ -23,234 +23,234 @@
         },
         {
             "line": 20,
-            "column": 5,
+            "column": 9,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 21,
             "column": 9,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 22,
             "column": 11,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 25,
             "column": 9,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 26,
             "column": 9,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 27,
             "column": 11,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 29,
             "column": 21,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 29,
             "column": 35,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 29,
             "column": 53,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 35,
             "column": 14,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 35,
             "column": 28,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 35,
             "column": 46,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 35,
             "column": 58,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 39,
             "column": 14,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 39,
             "column": 28,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 39,
             "column": 46,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 39,
             "column": 58,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 43,
             "column": 14,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 43,
             "column": 28,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 43,
             "column": 46,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 43,
             "column": 60,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 48,
             "column": 19,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 48,
             "column": 33,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 48,
             "column": 51,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 48,
             "column": 63,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 52,
             "column": 19,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 52,
             "column": 33,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 52,
             "column": 51,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 52,
             "column": 63,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 56,
             "column": 19,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 56,
             "column": 33,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 56,
             "column": 51,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 56,
             "column": 65,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 60,
@@ -271,175 +271,175 @@
             "column": 18,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 64,
             "column": 32,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 64,
             "column": 50,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 66,
             "column": 15,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 67,
             "column": 17,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 70,
             "column": 13,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 71,
             "column": 15,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 77,
             "column": 5,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAccess",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 78,
             "column": 5,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAccess",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 79,
             "column": 5,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAccess",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 80,
             "column": 5,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAccess",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 82,
             "column": 5,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 83,
             "column": 5,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 85,
             "column": 5,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 86,
             "column": 5,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 87,
             "column": 5,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 88,
             "column": 5,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 90,
             "column": 9,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 91,
             "column": 9,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 93,
             "column": 9,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 94,
             "column": 9,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 95,
             "column": 9,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 96,
             "column": 9,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 98,
             "column": 9,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 99,
             "column": 5,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 103,
@@ -453,28 +453,28 @@
             "column": 11,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 106,
             "column": 11,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 108,
             "column": 18,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 109,
             "column": 18,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 114,
@@ -486,37 +486,37 @@
         {
             "line": 115,
             "column": 9,
-            "problem": "EsObjectType",
+            "problem": "EsObjectAssignment",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 119,
             "column": 25,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 119,
             "column": 36,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 136,
             "column": 25,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 136,
             "column": 38,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 148,
@@ -530,63 +530,63 @@
             "column": 32,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 154,
             "column": 45,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 154,
             "column": 58,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 162,
             "column": 32,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 162,
             "column": 47,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 162,
             "column": 60,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 170,
             "column": 28,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 172,
             "column": 22,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 174,
             "column": 30,
             "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
             "line": 176,
@@ -594,83 +594,6 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
-        },
-        {
-            "line": 177,
-            "column": 5,
-            "problem": "EsObjectType",
-            "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
-        },
-        {
-            "line": 178,
-            "column": 5,
-            "problem": "EsObjectType",
-            "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
-        },
-        {
-            "line": 179,
-            "column": 5,
-            "problem": "EsObjectType",
-            "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
-        },
-        {
-            "line": 181,
-            "column": 9,
-            "problem": "AnyType",
-            "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
-        },
-        {
-            "line": 182,
-            "column": 9,
-            "problem": "EsObjectType",
-            "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
-        },
-        {
-            "line": 183,
-            "column": 9,
-            "problem": "EsObjectType",
-            "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
-        },
-        {
-            "line": 184,
-            "column": 9,
-            "problem": "EsObjectType",
-            "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
-        },
-        {
-            "line": 185,
-            "column": 9,
-            "problem": "EsObjectType",
-            "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
-        },
-        {
-            "line": 188,
-            "column": 5,
-            "problem": "EsObjectType",
-            "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
-        },
-        {
-            "line": 189,
-            "column": 5,
-            "problem": "EsObjectType",
-            "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
-        },
-        {
-            "line": 190,
-            "column": 5,
-            "problem": "EsObjectType",
-            "suggest": "",
-            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobject)"
         }
     ]
 }

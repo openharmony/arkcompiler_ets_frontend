@@ -2,7 +2,7 @@
     "nodes": [
         {
             "line": 7,
-            "column": 16,
+            "column": 9,
             "problem": "LimitedStdLibApi",
             "autofixable": false,
             "suggest": "",

@@ -902,7 +902,7 @@ export class TsUtils {
 
   public isStdObjectAPI(symbol: ts.Symbol): boolean {
     let parentName = this.getParentSymbolName(symbol);
-    return !!parentName && (parentName === 'Object');
+    return !!parentName && (parentName === 'Object' || parentName === 'ObjectConstructor');
   }
 
   public isStdReflectAPI(symbol: ts.Symbol): boolean {
@@ -917,22 +917,18 @@ export class TsUtils {
 
   public isStdArrayAPI(symbol: ts.Symbol): boolean {
     let parentName = this.getParentSymbolName(symbol);
-    return !!parentName && (parentName === 'Array');
+    return !!parentName && (parentName === 'Array' || parentName === 'ArrayConstructor');
   }
 
   public isStdArrayBufferAPI(symbol: ts.Symbol): boolean {
     let parentName = this.getParentSymbolName(symbol);
-    return !!parentName && (parentName === 'ArrayBuffer');
+    return !!parentName && (parentName === 'ArrayBuffer' || parentName === 'ArrayBufferConstructor');
   }
 
-  public isStdSymbol(symbol: ts.Symbol): boolean {
-    const name = this.tsTypeChecker.getFullyQualifiedName(symbol)
-    return name === 'Symbol';
-  }
-
-  public isStdSymbolAPI(symbol: ts.Symbol): boolean {
+  public isSymbolAPI(symbol: ts.Symbol): boolean {
     let parentName = this.getParentSymbolName(symbol);
-    return !!parentName && (parentName === 'Symbol');
+    let name = parentName ? parentName : symbol.escapedName;
+    return name === 'Symbol' || name === 'SymbolConstructor';
   }
 
   public isDefaultImport(importSpec: ts.ImportSpecifier): boolean {
@@ -1141,27 +1137,20 @@ export class TsUtils {
       typeNode.typeName.text == ES_OBJECT;
   }
 
-  public isInsideBlock(node: ts.Node): boolean {
-    let par = node.parent
-    while (par) {
-      if (ts.isBlock(par)) {
-        return true;
-      }
-      par = par.parent;
-    }
-    return false;
-  }
+  public isEsObjectAllowed(typeRef: ts.TypeReferenceNode): boolean {
+    let node = typeRef.parent;
 
-  public isEsObjectPossiblyAllowed(typeRef: ts.TypeReferenceNode): boolean {
-    return ts.isVariableDeclaration(typeRef.parent);
-  }
-
-  public isValueAssignableToESObject(node: ts.Node): boolean {
-    if (ts.isArrayLiteralExpression(node) || ts.isObjectLiteralExpression(node)) {
+    if (!this.isVarDeclaration(node)) {
       return false;
     }
-    const valueType = this.tsTypeChecker.getTypeAtLocation(node);
-    return this.isUnsupportedType(valueType) || this.isAnonymousType(valueType)
+
+    while (node) {
+      if (ts.isBlock(node)) {
+        return true;
+      }
+      node = node.parent;
+    }
+    return false;
   }
 
   public getVariableDeclarationTypeNode(node: ts.Node): ts.TypeNode | undefined {
@@ -1193,7 +1182,7 @@ export class TsUtils {
   public isEsObjectSymbol(sym: ts.Symbol): boolean {
     let decl = this.getDeclaration(sym);
     return !!decl && ts.isTypeAliasDeclaration(decl) && decl.name.escapedText == ES_OBJECT &&
-      decl.type.kind === ts.SyntaxKind.AnyKeyword;
+      decl.type.kind == ts.SyntaxKind.AnyKeyword;
   }
 
   public isAnonymousType(type: ts.Type): boolean {

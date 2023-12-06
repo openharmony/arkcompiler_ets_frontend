@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { FaultID } from './utils/consts/Problems';
+import { FaultID } from './Problems';
 
 export const faultDesc: string[] = [];
 
@@ -102,4 +102,6 @@ faultDesc[FaultID.ErrorSuppression] = 'Error suppression annotation';
 faultDesc[FaultID.StrictDiagnostic] = 'Strict diagnostic';
 faultDesc[FaultID.UnsupportedDecorators] = 'Unsupported decorators';
 faultDesc[FaultID.ImportAfterStatement] = 'Import declaration after other declaration or statement';
-faultDesc[FaultID.EsObjectType] = 'Restricted "ESObject" type';
+faultDesc[FaultID.EsObjectType] = '"ESObject" type';
+faultDesc[FaultID.EsObjectAssignment] = '"ESObject" type assignment';
+faultDesc[FaultID.EsObjectAccess] = '"ESObject" access';

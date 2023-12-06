@@ -35,6 +35,3 @@ export interface OhosI {
 
 export function ohFunction1({d: OhosI}): void {} // incorrect usage, but it was an issue, so we check it too
 export function ohFunction2(p: {d: OhosI}): void {}
-
-export function fooOh(): any {}
-export function barOh(a: any) {}
