@@ -1477,11 +1477,14 @@ export class TypeScriptLinter {
 
   private handleElementAccessExpression(node: ts.Node): void {
     const tsElementAccessExpr = node as ts.ElementAccessExpression;
+    const tsElementAccessExprSymbol = this.tsUtils.trueSymbolAtLocation(tsElementAccessExpr.expression);
     const tsElemAccessBaseExprType = TsUtils.getNonNullableType(
       this.tsUtils.getTypeOrTypeConstraintAtLocation(tsElementAccessExpr.expression)
     );
 
     if (
+      // unnamed types do not have symbol, so need to check that explicitly
+      !this.tsUtils.isLibrarySymbol(tsElementAccessExprSymbol) &&
       !ts.isArrayLiteralExpression(tsElementAccessExpr.expression) &&
       !this.isElementAcessAllowed(tsElemAccessBaseExprType)
     ) {

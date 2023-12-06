@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import {OhosInterface} from './oh_modules/ohos_lib'
 // #14071
 class A {
   v: string = '';
@@ -150,10 +150,14 @@ class AString extends String {}
 let str7 = new AString('dwdd')
 str7[1]
 
-type IndexableUnion = string[] | number[] | Uint8Array;
+type IndexableUnion = string[] | (number | string)[] | Uint8Array;
 type NonIndexableUnion = string[] | number[] | Uint8Array | number;
 
 function indexUnion(iu: IndexableUnion, niu: NonIndexableUnion) {
   iu[0];
   niu[0];
+}
+
+function testLibraryUnnamedType(a: OhosInterface) {
+  a['kek'];
 }
