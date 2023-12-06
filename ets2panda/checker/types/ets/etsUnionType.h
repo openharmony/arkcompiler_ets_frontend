@@ -62,10 +62,12 @@ public:
 
     void ToString(std::stringstream &ss) const override;
     void ToAssemblerType(std::stringstream &ss) const override;
+    void ToDebugInfoType(std::stringstream &ss) const override;
     void Identical(TypeRelation *relation, Type *other) override;
     void AssignmentTarget(TypeRelation *relation, Type *source) override;
     bool AssignmentSource(TypeRelation *relation, Type *target) override;
     Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types) override;
+    Type *Substitute(TypeRelation *relation, const Substitution *substitution) override;
     void Cast(TypeRelation *relation, Type *target) override;
     void CastTarget(TypeRelation *relation, Type *source) override;
     Type *FindTypeIsCastableToThis(ir::Expression *node, TypeRelation *relation, Type *source) const;

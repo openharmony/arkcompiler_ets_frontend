@@ -34,7 +34,12 @@ void ETSUnionType::ToString(std::stringstream &ss) const
 
 void ETSUnionType::ToAssemblerType(std::stringstream &ss) const
 {
-    ss << compiler::Signatures::BUILTIN_OBJECT;
+    lub_type_->ToAssemblerType(ss);
+}
+
+void ETSUnionType::ToDebugInfoType(std::stringstream &ss) const
+{
+    lub_type_->ToDebugInfoType(ss);
 }
 
 bool ETSUnionType::EachTypeRelatedToSomeType(TypeRelation *relation, ETSUnionType *source, ETSUnionType *target)
@@ -56,6 +61,10 @@ void ETSUnionType::SetLeastUpperBoundType(ETSChecker *checker)
         lub_type_ = constituent_types_.front();
         for (auto *t : constituent_types_) {
             if (!t->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+                lub_type_ = checker->GetGlobalTypesHolder()->GlobalETSObjectType();
+                return;
+            }
+            if (t->IsETSObjectType() && t->AsETSObjectType()->SuperType() == nullptr) {
                 lub_type_ = checker->GetGlobalTypesHolder()->GlobalETSObjectType();
                 return;
             }
@@ -140,7 +149,7 @@ Type *ETSUnionType::HandleUnionType(ETSUnionType *union_type)
 
 Type *ETSUnionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types)
 {
-    ArenaVector<Type *> copied_constituents(constituent_types_.size(), allocator->Adapter());
+    ArenaVector<Type *> copied_constituents(allocator->Adapter());
 
     for (auto *it : constituent_types_) {
         copied_constituents.push_back(it->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)
@@ -156,6 +165,16 @@ Type *ETSUnionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relatio
 
     new_union_type->SetLeastUpperBoundType(relation->GetChecker()->AsETSChecker());
     return HandleUnionType(new_union_type);
+}
+
+Type *ETSUnionType::Substitute(TypeRelation *relation, const Substitution *substitution)
+{
+    auto *const checker = relation->GetChecker()->AsETSChecker();
+    ArenaVector<Type *> substituted_constituents(checker->Allocator()->Adapter());
+    for (auto *ctype : constituent_types_) {
+        substituted_constituents.push_back(ctype->Substitute(relation, substitution));
+    }
+    return checker->CreateETSUnionType(std::move(substituted_constituents));
 }
 
 void ETSUnionType::Cast(TypeRelation *relation, Type *target)
