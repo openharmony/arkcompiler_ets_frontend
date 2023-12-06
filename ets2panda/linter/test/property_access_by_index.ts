@@ -161,3 +161,13 @@ function indexUnion(iu: IndexableUnion, niu: NonIndexableUnion) {
 function testLibraryUnnamedType(a: OhosInterface) {
   a['kek'];
 }
+
+class MMap<T, U> extends Map<T, U> {}
+
+let mmap1 = new Map<number, string>();
+let mmap2 = new Map<string, number>();
+let mmap3 = new MMap<string, string>();
+
+mmap1[1];
+mmap2['222'];
+mmap3["kkr"];

@@ -133,6 +133,30 @@
             "autofixable": true,
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
+        },
+        {
+            "line": 171,
+            "column": 1,
+            "problem": "PropertyAccessByIndex",
+            "autofixable": true,
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
+        },
+        {
+            "line": 172,
+            "column": 1,
+            "problem": "PropertyAccessByIndex",
+            "autofixable": true,
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
+        },
+        {
+            "line": 173,
+            "column": 1,
+            "problem": "PropertyAccessByIndex",
+            "autofixable": true,
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         }
     ]
 }
