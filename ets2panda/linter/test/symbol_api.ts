@@ -50,3 +50,9 @@ class TestClass {
     return Symbol();
   }
 }
+
+class BIter  {
+  [Symbol.iterator] = () => {
+    return 1;
+  };
+}

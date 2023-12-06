@@ -171,6 +171,7 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.SetAccessor, this.handleSetAccessor],
     [ts.SyntaxKind.ConstructSignature, this.handleConstructSignature],
     [ts.SyntaxKind.ExpressionWithTypeArguments, this.handleExpressionWithTypeArguments],
+    [ts.SyntaxKind.ComputedPropertyName, this.handleComputedPropertyName],
   ]);
 
   public incrementCounters(node: ts.Node | ts.CommentRange, faultId: number, autofixable: boolean = false, autofix?: Autofix[],) {
@@ -1753,11 +1754,20 @@ export class TypeScriptLinter {
   }
 
   private handleExpressionWithTypeArguments(node: ts.Node) {
-    let tsTypeExpr = node as ts.ExpressionWithTypeArguments;
-    let symbol = this.tsUtils.trueSymbolAtLocation(tsTypeExpr.expression);
+    const tsTypeExpr = node as ts.ExpressionWithTypeArguments;
+    const symbol = this.tsUtils.trueSymbolAtLocation(tsTypeExpr.expression);
     if (!!symbol && this.tsUtils.isEsObjectSymbol(symbol)) {
       this.incrementCounters(tsTypeExpr, FaultID.EsObjectType);
     }
+  }
+
+  private handleComputedPropertyName(node: ts.Node) {
+    const computedProperty = node as ts.ComputedPropertyName;
+    const symbol = this.tsUtils.trueSymbolAtLocation(computedProperty.expression);
+    if (!!symbol && this.tsUtils.isSymbolIterator(symbol)) {
+      return
+    }
+    this.incrementCounters(node, FaultID.ComputedPropertyName);
   }
 
   private checkErrorSuppressingAnnotation(comment: ts.CommentRange, srcText: string) {

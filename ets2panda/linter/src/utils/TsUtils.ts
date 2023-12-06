@@ -900,35 +900,18 @@ export class TsUtils {
     return !parentName || parentName === 'global';
   }
 
-  public isStdObjectAPI(symbol: ts.Symbol): boolean {
-    let parentName = this.getParentSymbolName(symbol);
-    return !!parentName && (parentName === 'Object' || parentName === 'ObjectConstructor');
-  }
-
-  public isStdReflectAPI(symbol: ts.Symbol): boolean {
-    let parentName = this.getParentSymbolName(symbol);
-    return !!parentName && (parentName === 'Reflect');
-  }
-
-  public isStdProxyHandlerAPI(symbol: ts.Symbol): boolean {
-    let parentName = this.getParentSymbolName(symbol);
-    return !!parentName && (parentName === 'ProxyHandler');
-  }
-
-  public isStdArrayAPI(symbol: ts.Symbol): boolean {
-    let parentName = this.getParentSymbolName(symbol);
-    return !!parentName && (parentName === 'Array' || parentName === 'ArrayConstructor');
-  }
-
-  public isStdArrayBufferAPI(symbol: ts.Symbol): boolean {
-    let parentName = this.getParentSymbolName(symbol);
-    return !!parentName && (parentName === 'ArrayBuffer' || parentName === 'ArrayBufferConstructor');
-  }
-
   public isSymbolAPI(symbol: ts.Symbol): boolean {
     let parentName = this.getParentSymbolName(symbol);
-    let name = parentName ? parentName : symbol.escapedName;
-    return name === 'Symbol' || name === 'SymbolConstructor';
+    return !!parentName && (parentName === 'Symbol' || parentName === 'SymbolConstructor');
+  }
+
+  public isStdSymbol(symbol: ts.Symbol): boolean {
+    const name = this.tsTypeChecker.getFullyQualifiedName(symbol)
+    return name === 'Symbol' && this.isGlobalSymbol(symbol);
+  }
+
+  public isSymbolIterator(symbol: ts.Symbol): boolean {
+    return this.isSymbolAPI(symbol) && symbol.name === 'iterator'
   }
 
   public isDefaultImport(importSpec: ts.ImportSpecifier): boolean {
@@ -1018,11 +1001,6 @@ export class TsUtils {
         !STANDARD_LIBRARIES.includes(path.basename(fileName).toLowerCase());
     }
     return false;
-  }
-
-  public isStdFunctionType(type: ts.Type) {
-    const sym = type.getSymbol();
-    return sym && sym.getName() === 'Function' && this.isGlobalSymbol(sym);
   }
 
   public isDynamicType(type: ts.Type | undefined): boolean | undefined {
