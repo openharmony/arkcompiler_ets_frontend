@@ -474,6 +474,8 @@ std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const s
 
 #ifdef USE_UNIX_SYSCALL
     DIR *dir = opendir(resolved_path.c_str());
+    bool is_index = false;
+    std::vector<std::string> tmp_paths;
 
     if (dir == nullptr) {
         ThrowSyntaxError({"Cannot open folder: ", resolved_path});
@@ -494,25 +496,41 @@ std::tuple<std::vector<std::string>, bool> ETSParser::CollectUserSources(const s
 
         std::string file_path = path + "/" + entry->d_name;
 
-        if (file_name == "Object.ets") {
-            user_paths.emplace(user_paths.begin(), file_path);
-        } else {
+        if (file_name == "index.ets" || file_name == "index.ts") {
             user_paths.emplace_back(file_path);
+            is_index = true;
+            break;
+        } else if (file_name == "Object.ets") {
+            tmp_paths.emplace(user_paths.begin(), file_path);
+        } else {
+            tmp_paths.emplace_back(file_path);
         }
     }
 
     closedir(dir);
+
+    if (is_index) {
+        return {user_paths, false};
+    }
+
+    user_paths.insert(user_paths.end(), tmp_paths.begin(), tmp_paths.end());
 #else
-    for (auto const &entry : fs::directory_iterator(resolved_path)) {
-        if (!fs::is_regular_file(entry) || !IsCompitableExtension(entry.path().extension().string())) {
-            continue;
+    if (fs::exists(resolved_path + "/index.ets")) {
+        user_paths.emplace_back(path + "/index.ets");
+    } else if (fs::exists(resolved_path + "/index.ts")) {
+        user_paths.emplace_back(path + "/index.ts");
+    } else {
+        for (auto const &entry : fs::directory_iterator(resolved_path)) {
+            if (!fs::is_regular_file(entry) || !IsCompitableExtension(entry.path().extension().string())) {
+                continue;
+            }
+
+            std::string base_name = path;
+            std::size_t pos = entry.path().string().find_last_of(panda::os::file::File::GetPathDelim());
+
+            base_name.append(entry.path().string().substr(pos, entry.path().string().size()));
+            user_paths.emplace_back(base_name);
         }
-
-        std::string base_name = path;
-        std::size_t pos = entry.path().string().find_last_of(panda::os::file::File::GetPathDelim());
-
-        base_name.append(entry.path().string().substr(pos, entry.path().string().size()));
-        user_paths.emplace_back(base_name);
     }
 #endif
     return {user_paths, false};

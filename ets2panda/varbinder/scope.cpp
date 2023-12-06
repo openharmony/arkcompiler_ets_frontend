@@ -753,6 +753,13 @@ Variable *ClassScope::AddBinding(ArenaAllocator *allocator, [[maybe_unused]] Var
         return nullptr;
     }
 
+    if (auto node = new_decl->Node();
+        node->IsStatement() &&
+        (node->AsStatement()->IsMethodDefinition() || node->IsClassProperty() || node->IsClassStaticBlock()) &&
+        node->AsStatement()->AsClassElement()->Value() != nullptr) {
+        props.SetFlagsType(VariableFlags::INITIALIZED);
+    }
+
     var->SetScope(this);
     var->AddFlag(props.GetFlags());
 
