@@ -235,45 +235,55 @@ export class TypeScriptLinter {
     }
   }
 
-  private visitTSNode(node: ts.Node): void {
-    const self = this;
-    visitTSNodeImpl(node);
-    function visitTSNodeImpl(node: ts.Node): void {
-      if (node === null || node.kind === null) {
-        return;
-      }
-      if (self.incrementalLintInfo?.shouldSkipCheck(node)) {
-        return;
-      }
+  private forEachNodeInSubtree(node: ts.Node, cb: (n: ts.Node) => void, stopCond?: (n: ts.Node) => boolean) {
+    cb.call(this, node);
+    if (stopCond?.call(this, node)) {
+      return;
+    }
+    // #13972: The 'ts.forEachChild' doesn't iterate over in-between punctuation tokens.
+    // As result, we can miss comment directives attached to those. Instead, use 'node.getChildren()'.
+    // to traverse child nodes.
+    for (const child of node.getChildren()) {
+      this.forEachNodeInSubtree(child, cb, stopCond)
+    }
+  }
 
-      self.totalVisitedNodes++;
+  private visitSourceFile(sf: ts.SourceFile): void {
+    const callback = (node: ts.Node) => {
+      this.totalVisitedNodes++;
       if (isStructDeclaration(node)) {
-        self.handleStructDeclaration(node);
-        return;
+        // early exit via exception if cancellation was requested
+        this.cancellationToken?.throwIfCancellationRequested();
       }
-
-      if (LinterConfig.terminalTokens.has(node.kind)) {
-        return;
-      }
-      let incrementedType = LinterConfig.incrementOnlyTokens.get(node.kind);
+      const incrementedType = LinterConfig.incrementOnlyTokens.get(node.kind);
       if (incrementedType !== undefined) {
-        self.incrementCounters(node, incrementedType);
+        this.incrementCounters(node, incrementedType);
       } else {
-        let handler = self.handlersMap.get(node.kind);
+        const handler = this.handlersMap.get(node.kind);
         if (handler !== undefined) {
           // possibly requested cancellation will be checked in a limited number of handlers
           // checked nodes are selected as construct nodes, similar to how TSC does
-          handler.call(self, node);
+          handler.call(this, node);
         }
       }
-
-      // #13972: The 'ts.forEachChild' doesn't iterate over in-between punctuation tokens.
-      // As result, we can miss comment directives attached to those. Instead, use 'node.getChildren()'.
-      // to traverse child nodes.
-      for (const child of node.getChildren()) {
-        visitTSNodeImpl(child);
-      }
     }
+    const stopCondition = (node: ts.Node) => {
+      if (node === null || node.kind === null) {
+        return true;
+      }
+      if (this.incrementalLintInfo?.shouldSkipCheck(node)) {
+        return true;
+      }
+      // Skip synthetic constructor in Struct declaration.
+      if (node.parent && isStructDeclaration(node.parent) && ts.isConstructorDeclaration(node)) {
+        return true;
+      }
+      if (LinterConfig.terminalTokens.has(node.kind)) {
+        return true;
+      }
+      return false;
+    }
+    this.forEachNodeInSubtree(sf, callback, stopCondition);
   }
 
   private countInterfaceExtendsDifferentPropertyTypes(
@@ -736,30 +746,31 @@ export class TypeScriptLinter {
     return true;
   }
 
+  private static isClassLikeOrIface(node: ts.Node): boolean {
+    return ts.isClassLike(node) || ts.isInterfaceDeclaration(node);
+  }
+
   private handleFunctionExpression(node: ts.Node) {
     const funcExpr = node as ts.FunctionExpression;
-    const isGenerator = funcExpr.asteriskToken !== undefined;
-    const containsThis = scopeContainsThis(funcExpr.body);
-    const hasValidContext = hasPredecessor(funcExpr, ts.isClassLike) ||
-                            hasPredecessor(funcExpr, ts.isInterfaceDeclaration);
     const isGeneric = funcExpr.typeParameters !== undefined && funcExpr.typeParameters.length > 0;
+    const isGenerator = funcExpr.asteriskToken !== undefined;
+    const hasThisKeyword = scopeContainsThis(funcExpr.body);
     const isCalledRecursively = this.tsUtils.isFunctionCalledRecursively(funcExpr);
     const [hasUnfixableReturnType, newRetTypeNode] = this.handleMissingReturnType(funcExpr);
-    const autofixable = !isGeneric && !isGenerator && !containsThis && !hasUnfixableReturnType &&
-      !isCalledRecursively;
+    const autofixable = !isGeneric && !isGenerator && !hasThisKeyword && !isCalledRecursively && !hasUnfixableReturnType;
     let autofix: Autofix[] | undefined;
-    if (autofixable && this.autofixesInfo.shouldAutofix(node, FaultID.FunctionExpression)) {
-      autofix = [ Autofixer.fixFunctionExpression(funcExpr, funcExpr.parameters, newRetTypeNode, ts.getModifiers(funcExpr)) ];
+    if (autofixable && this.autofixesInfo.shouldAutofix(funcExpr, FaultID.FunctionExpression)) {
+      autofix = [Autofixer.fixFunctionExpression(funcExpr, funcExpr.parameters, newRetTypeNode, ts.getModifiers(funcExpr))];
     }
-    this.incrementCounters(node, FaultID.FunctionExpression, autofixable, autofix);
+    this.incrementCounters(funcExpr, FaultID.FunctionExpression, autofixable, autofix);
     if (isGeneric) {
       this.incrementCounters(funcExpr, FaultID.LambdaWithTypeParameters);
     }
     if (isGenerator) {
       this.incrementCounters(funcExpr, FaultID.GeneratorFunction);
     }
-    if (containsThis && !hasValidContext) {
-      this.incrementCounters(funcExpr, FaultID.FunctionContainsThis);
+    if (!hasPredecessor(funcExpr, TypeScriptLinter.isClassLikeOrIface)) {
+      this.reportThisKeywordsInScope(funcExpr.body);
     }
     if (hasUnfixableReturnType) {
       this.incrementCounters(funcExpr, FaultID.LimitedReturnTypeInference);
@@ -768,11 +779,8 @@ export class TypeScriptLinter {
 
   private handleArrowFunction(node: ts.Node) {
     const arrowFunc = node as ts.ArrowFunction;
-    const containsThis = scopeContainsThis(arrowFunc.body);
-    const hasValidContext = hasPredecessor(arrowFunc, ts.isClassLike) ||
-                            hasPredecessor(arrowFunc, ts.isInterfaceDeclaration);
-    if (containsThis && !hasValidContext) {
-      this.incrementCounters(arrowFunc, FaultID.FunctionContainsThis);
+    if (!hasPredecessor(arrowFunc, TypeScriptLinter.isClassLikeOrIface)) {
+      this.reportThisKeywordsInScope(arrowFunc.body);
     }
     const contextType = this.tsTypeChecker.getContextualType(arrowFunc);
     if (!(contextType && this.tsUtils.isLibraryType(contextType))) {
@@ -795,17 +803,18 @@ export class TypeScriptLinter {
     // early exit via exception if cancellation was requested
     this.cancellationToken?.throwIfCancellationRequested();
 
-    let tsFunctionDeclaration = node as ts.FunctionDeclaration;
+    const tsFunctionDeclaration = node as ts.FunctionDeclaration;
     if (!tsFunctionDeclaration.type) {
       this.handleMissingReturnType(tsFunctionDeclaration);
     }
     if (tsFunctionDeclaration.name) {
       this.countDeclarationsWithDuplicateName(tsFunctionDeclaration.name, tsFunctionDeclaration);
     }
-    if (tsFunctionDeclaration.body && scopeContainsThis(tsFunctionDeclaration.body)) {
-      this.incrementCounters(node, FaultID.FunctionContainsThis);
+    if (tsFunctionDeclaration.body) {
+      this.reportThisKeywordsInScope(tsFunctionDeclaration.body);
     }
-    if (!ts.isSourceFile(tsFunctionDeclaration.parent) && !ts.isModuleBlock(tsFunctionDeclaration.parent)) {
+    const funcDeclParent = tsFunctionDeclaration.parent;
+    if (!ts.isSourceFile(funcDeclParent) && !ts.isModuleBlock(funcDeclParent)) {
       this.incrementCounters(tsFunctionDeclaration, FaultID.LocalFunction);
     }
     if (tsFunctionDeclaration.asteriskToken) {
@@ -857,30 +866,27 @@ export class TypeScriptLinter {
 
   private hasLimitedTypeInferenceFromReturnExpr(funBody: ts.ConciseBody): boolean {
     let hasLimitedTypeInference = false;
-    const self = this;
-    function visitNode(tsNode: ts.Node): void {
+    const callback = (node: ts.Node) => {
       if (hasLimitedTypeInference) {
         return;
       }
       if (
-        ts.isReturnStatement(tsNode) && tsNode.expression &&
-        self.tsUtils.isCallToFunctionWithOmittedReturnType(self.tsUtils.unwrapParenthesized(tsNode.expression))
+        ts.isReturnStatement(node) && node.expression &&
+        this.tsUtils.isCallToFunctionWithOmittedReturnType(this.tsUtils.unwrapParenthesized(node.expression))
       ) {
         hasLimitedTypeInference = true;
-        return;
       }
-      // Visit children nodes. Don't traverse other nested function-like declarations.
-      if (
-        !ts.isFunctionDeclaration(tsNode) &&
-        !ts.isFunctionExpression(tsNode) &&
-        !ts.isMethodDeclaration(tsNode) &&
-        !ts.isAccessor(tsNode) &&
-        !ts.isArrowFunction(tsNode)
-      )
-        tsNode.forEachChild(visitNode);
+    }
+    // Don't traverse other nested function-like declarations.
+    const stopCondition = (node: ts.Node) => {
+      return ts.isFunctionDeclaration(node) ||
+        ts.isFunctionExpression(node) ||
+        ts.isMethodDeclaration(node) ||
+        ts.isAccessor(node) ||
+        ts.isArrowFunction(node);
     }
     if (ts.isBlock(funBody)) {
-      visitNode(funBody);
+      this.forEachNodeInSubtree(funBody, callback, stopCondition);
     } else {
       const tsExpr = this.tsUtils.unwrapParenthesized(funBody);
       hasLimitedTypeInference = this.tsUtils.isCallToFunctionWithOmittedReturnType(tsExpr);
@@ -1187,18 +1193,17 @@ export class TypeScriptLinter {
 
   private handleMethodDeclaration(node: ts.Node) {
     const tsMethodDecl = node as ts.MethodDeclaration;
-    const hasThis = scopeContainsThis(tsMethodDecl);
     let isStatic = false
     if (tsMethodDecl.modifiers) {
-      for (let mod of tsMethodDecl.modifiers) {
+      for (const mod of tsMethodDecl.modifiers) {
         if (mod.kind === ts.SyntaxKind.StaticKeyword) {
           isStatic = true;
           break;
         }
       }
     }
-    if (isStatic && hasThis) {
-      this.incrementCounters(node, FaultID.FunctionContainsThis);
+    if (tsMethodDecl.body && isStatic) {
+      this.reportThisKeywordsInScope(tsMethodDecl.body);
     }
     if (!tsMethodDecl.type) {
       this.handleMissingReturnType(tsMethodDecl);
@@ -1220,19 +1225,18 @@ export class TypeScriptLinter {
   }
 
   private handleClassStaticBlockDeclaration(node: ts.Node) {
-    if (ts.isClassDeclaration(node.parent)) {
-      const tsClassDecl = node.parent as ts.ClassDeclaration;
-      let className = '';
-      if (tsClassDecl.name)
-        // May be undefined in `export default class { ... }`.
-        className = tsClassDecl.name.text;
-      if (scopeContainsThis(node)) {
-        this.incrementCounters(node, FaultID.FunctionContainsThis);
-      }
-      if (this.staticBlocks.has(className))
-        this.incrementCounters(node, FaultID.MultipleStaticBlocks);
-      else
-        this.staticBlocks.add(className);
+    const classStaticBlockDecl = node as ts.ClassStaticBlockDeclaration;
+    const parent = classStaticBlockDecl.parent;
+    if (!ts.isClassDeclaration(parent)) {
+      return;
+    }
+    this.reportThisKeywordsInScope(classStaticBlockDecl.body);
+    // May be undefined in `export default class { ... }`.
+    const className = parent.name?.text ?? '';
+    if (this.staticBlocks.has(className)) {
+      this.incrementCounters(classStaticBlockDecl, FaultID.MultipleStaticBlocks);
+    } else {
+      this.staticBlocks.add(className);
     }
   }
 
@@ -1650,16 +1654,6 @@ export class TypeScriptLinter {
     }
   }
 
-  private handleStructDeclaration(node: ts.Node) {
-    // early exit via exception if cancellation was requested
-    this.cancellationToken?.throwIfCancellationRequested();
-
-    node.forEachChild(child => {
-      // Skip synthetic constructor in Struct declaration.
-      if (!ts.isConstructorDeclaration(child)) this.visitTSNode(child);
-    });
-  }
-
   private handleSpreadOp(node: ts.Node) {
     // spread assignment is disabled
     // spread element is allowed only for arrays as rest parameter
@@ -1917,11 +1911,25 @@ export class TypeScriptLinter {
       }
     }
   }
+  private reportThisKeywordsInScope(scope: ts.Block | ts.Expression): void {
+    const callback = (node: ts.Node) => {
+      if (node.kind === ts.SyntaxKind.ThisKeyword) {
+        this.incrementCounters(node, FaultID.FunctionContainsThis);
+      }
+    }
+    const stopCondition = (node: ts.Node) => {
+      const isClassLike = ts.isClassDeclaration(node) || ts.isClassExpression(node);
+      const isFunctionLike = ts.isFunctionDeclaration(node) || ts.isFunctionExpression(node);
+      const isModuleDecl = ts.isModuleDeclaration(node);
+      return isClassLike || isFunctionLike || isModuleDecl;
+    }
+    this.forEachNodeInSubtree(scope, callback, stopCondition);
+  }
 
   public lint(sourceFile: ts.SourceFile) {
     this.walkedComments.clear();
     this.sourceFile = sourceFile;
-    this.visitTSNode(this.sourceFile);
+    this.visitSourceFile(this.sourceFile);
     this.handleCommentDirectives(this.sourceFile);
   }
 }

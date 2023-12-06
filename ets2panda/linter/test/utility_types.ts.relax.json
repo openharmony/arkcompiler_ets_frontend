@@ -250,8 +250,8 @@
             "problem": "UtilityType"
         },
         {
-            "line": 173,
-            "column": 3,
+            "line": 174,
+            "column": 12,
             "problem": "FunctionContainsThis"
         },
         {
@@ -270,8 +270,8 @@
             "problem": "FunctionApplyBindCall"
         },
         {
-            "line": 183,
-            "column": 3,
+            "line": 184,
+            "column": 12,
             "problem": "FunctionContainsThis"
         },
         {
@@ -290,8 +290,13 @@
             "problem": "FunctionApplyBindCall"
         },
         {
-            "line": 192,
-            "column": 1,
+            "line": 208,
+            "column": 9,
+            "problem": "FunctionContainsThis"
+        },
+        {
+            "line": 209,
+            "column": 9,
             "problem": "FunctionContainsThis"
         },
         {

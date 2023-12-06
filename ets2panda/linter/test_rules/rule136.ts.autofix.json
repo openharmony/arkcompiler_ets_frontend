@@ -17,8 +17,8 @@
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
         {
-            "line": 1,
-            "column": 9,
+            "line": 2,
+            "column": 5,
             "problem": "FunctionContainsThis",
             "autofixable": false,
             "suggest": "",
@@ -49,8 +49,8 @@
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"
         },
         {
-            "line": 11,
-            "column": 17,
+            "line": 12,
+            "column": 12,
             "problem": "FunctionContainsThis",
             "autofixable": false,
             "suggest": "",

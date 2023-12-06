@@ -190,29 +190,29 @@
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
         },
         {
-            "line": 118,
-            "column": 7,
+            "line": 119,
+            "column": 12,
             "problem": "FunctionContainsThis",
             "suggest": "",
             "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"
         },
         {
-            "line": 121,
-            "column": 7,
+            "line": 122,
+            "column": 12,
             "problem": "FunctionContainsThis",
             "suggest": "",
             "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"
         },
         {
-            "line": 124,
-            "column": 7,
+            "line": 125,
+            "column": 12,
             "problem": "FunctionContainsThis",
             "suggest": "",
             "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"
         },
         {
-            "line": 127,
-            "column": 7,
+            "line": 128,
+            "column": 12,
             "problem": "FunctionContainsThis",
             "suggest": "",
             "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"

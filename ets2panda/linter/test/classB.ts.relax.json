@@ -15,8 +15,8 @@
   ],
   "nodes": [
     {
-      "line": 24,
-      "column": 5,
+      "line": 25,
+      "column": 16,
       "problem": "FunctionContainsThis",
       "suggest": "",
       "rule": "Using \"this\" inside stand-alone functions is not supported (arkts-no-standalone-this)"

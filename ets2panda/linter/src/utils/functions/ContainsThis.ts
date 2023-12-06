@@ -15,28 +15,29 @@
 
 import * as ts from 'typescript';
 
-export function scopeContainsThis(tsNode: ts.Node): boolean {
-  let found = false;
-  function visitNode(tsNode: ts.Node) {
-    // Stop visiting child nodes if finished searching.
-    if (found) {
-      return;
-    }
-    if (tsNode.kind === ts.SyntaxKind.ThisKeyword) {
-      found = true;
-      return;
-    }
-    // Visit children nodes. Skip any local declaration that defines
-    // its own scope as it needs to be checked separately.
-    if (
-      !ts.isClassDeclaration(tsNode) &&
-      !ts.isClassExpression(tsNode) &&
-      !ts.isModuleDeclaration(tsNode) &&
-      !ts.isFunctionDeclaration(tsNode) &&
-      !ts.isFunctionExpression(tsNode)
-    )
-      tsNode.forEachChild(visitNode);
+function scopeContainsThisVisitor(tsNode: ts.Node): boolean {
+  if (tsNode.kind === ts.SyntaxKind.ThisKeyword) {
+    return true;
   }
-  visitNode(tsNode);
-  return found;
+
+  // Visit children nodes. Skip any local declaration that defines
+  // its own scope as it needs to be checked separately.
+  const isClassLike = ts.isClassDeclaration(tsNode) || ts.isClassExpression(tsNode);
+  const isFunctionLike = ts.isFunctionDeclaration(tsNode) || ts.isFunctionExpression(tsNode);
+  const isModuleDecl = ts.isModuleDeclaration(tsNode);
+  if (isClassLike || isFunctionLike || isModuleDecl) {
+    return false;
+  }
+
+  for (const child of tsNode.getChildren()) {
+    if (scopeContainsThisVisitor(child)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function scopeContainsThis(tsNode: ts.Expression | ts.Block): boolean {
+  return scopeContainsThisVisitor(tsNode);
 }
