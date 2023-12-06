@@ -412,13 +412,6 @@
             "problem": "LimitedStdLibApi",
             "suggest": "",
             "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
-        },
-        {
-            "line": 120,
-            "column": 1,
-            "problem": "LimitedStdLibApi",
-            "suggest": "",
-            "rule": "Usage of standard library is restricted (arkts-limited-stdlib)"
         }
     ]
 }

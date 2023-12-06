@@ -32,7 +32,6 @@ import { LIMITED_STD_GLOBAL_VAR } from './utils/consts/LimitedStdGlobalVar';
 import { LIMITED_STD_OBJECT_API } from './utils/consts/LimitedStdObjectAPI';
 import { LIMITED_STD_REFLECT_API } from './utils/consts/LimitedStdReflectAPI';
 import { LIMITED_STD_PROXYHANDLER_API } from './utils/consts/LimitedStdProxyHandlerAPI';
-import { LIMITED_STD_ARRAYBUFFER_API } from './utils/consts/LimitedStdArrayBufferAPI';
 import { ALLOWED_STD_SYMBOL_API } from './utils/consts/AllowedStdSymbolAPI';
 import { NON_INITIALIZABLE_PROPERTY_DECORATORS,
   NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS } from './utils/consts/NonInitializablePropertyDecorators';
@@ -1543,8 +1542,6 @@ export class TypeScriptLinter {
     ['ObjectConstructor', {arr: LIMITED_STD_OBJECT_API, fault: FaultID.LimitedStdLibApi}],
     ['Reflect', {arr: LIMITED_STD_REFLECT_API, fault: FaultID.LimitedStdLibApi}],
     ['ProxyHandler', {arr: LIMITED_STD_PROXYHANDLER_API, fault: FaultID.LimitedStdLibApi}],
-    ['ArrayBuffer', {arr: LIMITED_STD_ARRAYBUFFER_API, fault: FaultID.LimitedStdLibApi}],
-    ['ArrayBufferConstructor', {arr: LIMITED_STD_ARRAYBUFFER_API, fault: FaultID.LimitedStdLibApi}],
     ['Symbol', {arr: null, fault: FaultID.SymbolType}],
     ['SymbolConstructor', {arr: null, fault: FaultID.SymbolType}],
   ])
