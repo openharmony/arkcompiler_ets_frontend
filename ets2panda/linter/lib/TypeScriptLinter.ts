@@ -1451,25 +1451,39 @@ export class TypeScriptLinter {
     }
   }
 
+  private isElementAcessAllowed(type: ts.Type): boolean {
+    if (type.isUnion()) {
+      for (const t of type.types) {
+        if (!this.isElementAcessAllowed(t)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    const typeNode = this.tsTypeChecker.typeToTypeNode(type, undefined, ts.NodeBuilderFlags.None);
+
+    return (
+      this.tsUtils.isLibraryType(type) ||
+      TsUtils.isAnyType(type) ||
+      this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isArray) ||
+      this.tsUtils.isOrDerivedFrom(type, TsUtils.isTuple) ||
+      this.tsUtils.isOrDerivedFrom(type, this.tsUtils.isStdRecordType) ||
+      TsUtils.isEnumType(type) ||
+      // we allow EsObject here beacuse it is reported later using FaultId.EsObjectType
+      TsUtils.isEsObjectType(typeNode)
+    );
+  }
+
   private handleElementAccessExpression(node: ts.Node): void {
     const tsElementAccessExpr = node as ts.ElementAccessExpression;
     const tsElemAccessBaseExprType = TsUtils.getNonNullableType(
       this.tsUtils.getTypeOrTypeConstraintAtLocation(tsElementAccessExpr.expression)
     );
-    const tsElemAccessBaseExprTypeNode = this.tsTypeChecker.typeToTypeNode(
-      tsElemAccessBaseExprType,
-      undefined,
-      ts.NodeBuilderFlags.None
-    );
+
     if (
-      !this.tsUtils.isLibraryType(tsElemAccessBaseExprType) &&
-      !TsUtils.isAnyType(tsElemAccessBaseExprType) &&
       !ts.isArrayLiteralExpression(tsElementAccessExpr.expression) &&
-      !this.tsUtils.isOrDerivedFrom(tsElemAccessBaseExprType, this.tsUtils.isArray) &&
-      !this.tsUtils.isOrDerivedFrom(tsElemAccessBaseExprType, TsUtils.isTuple) &&
-      !this.tsUtils.isOrDerivedFrom(tsElemAccessBaseExprType, this.tsUtils.isStdRecordType) &&
-      !TsUtils.isEnumType(tsElemAccessBaseExprType) &&
-      !TsUtils.isEsObjectType(tsElemAccessBaseExprTypeNode)
+      !this.isElementAcessAllowed(tsElemAccessBaseExprType)
     ) {
       let autofix = Autofixer.fixPropertyAccessByIndex(node);
       const autofixable = autofix !== undefined;

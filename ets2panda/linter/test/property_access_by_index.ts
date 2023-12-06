@@ -145,3 +145,15 @@ str3[1]
 str4[1]
 str5[1]
 str6[1]
+
+class AString extends String {}
+let str7 = new AString('dwdd')
+str7[1]
+
+type IndexableUnion = string[] | number[] | Uint8Array;
+type NonIndexableUnion = string[] | number[] | Uint8Array | number;
+
+function indexUnion(iu: IndexableUnion, niu: NonIndexableUnion) {
+  iu[0];
+  niu[0];
+}
