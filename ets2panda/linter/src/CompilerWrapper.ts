@@ -17,9 +17,9 @@ import * as ts from 'typescript';
 import { logTscDiagnostic } from './utils/functions/LogTscDiagnostic';
 import { consoleLog } from './TypeScriptLinter';
 import { formTscOptions } from './ts-compiler/FormTscOptions';
-import { LintOptions } from './LintOptions';
+import type { LintOptions } from './LintOptions';
 
-export function compile(options: LintOptions, extraOptions?: any): ts.Program {
+export function compile(options: LintOptions, extraOptions?: unknown): ts.Program {
   const createProgramOptions = formTscOptions(options.cmdOptions, extraOptions);
   const program = ts.createProgram(createProgramOptions);
   // Log Tsc errors if needed

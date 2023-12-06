@@ -13,4 +13,4 @@
  * limitations under the License.
  */
 
-export const ALLOWED_STD_SYMBOL_API  = ['iterator'];
+export const ALLOWED_STD_SYMBOL_API = ['iterator'];

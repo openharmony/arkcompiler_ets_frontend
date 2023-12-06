@@ -14,9 +14,29 @@
  */
 
 export const LIMITED_STD_OBJECT_API = [
-  '__proto__', '__defineGetter__', '__defineSetter__', '__lookupGetter__', '__lookupSetter__', 'assign', 'create',
-  'defineProperties', 'defineProperty', 'freeze', 'fromEntries', 'getOwnPropertyDescriptor',
-  'getOwnPropertyDescriptors', 'getOwnPropertySymbols', 'getPrototypeOf',
-  'hasOwnProperty', 'is', 'isExtensible', 'isFrozen', 'isPrototypeOf', 'isSealed', 'preventExtensions',
-  'propertyIsEnumerable', 'seal', 'setPrototypeOf'
+  '__proto__',
+  '__defineGetter__',
+  '__defineSetter__',
+  '__lookupGetter__',
+  '__lookupSetter__',
+  'assign',
+  'create',
+  'defineProperties',
+  'defineProperty',
+  'freeze',
+  'fromEntries',
+  'getOwnPropertyDescriptor',
+  'getOwnPropertyDescriptors',
+  'getOwnPropertySymbols',
+  'getPrototypeOf',
+  'hasOwnProperty',
+  'is',
+  'isExtensible',
+  'isFrozen',
+  'isPrototypeOf',
+  'isSealed',
+  'preventExtensions',
+  'propertyIsEnumerable',
+  'seal',
+  'setPrototypeOf'
 ];

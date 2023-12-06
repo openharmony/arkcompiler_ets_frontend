@@ -13,10 +13,7 @@
  * limitations under the License.
  */
 
-export function mergeArrayMaps<K, V>(
-  lhs: Map<K, V[]>,
-  rhs: Map<K, V[]>
-): Map<K, V[]> {
+export function mergeArrayMaps<K, V>(lhs: Map<K, V[]>, rhs: Map<K, V[]>): Map<K, V[]> {
   if (lhs.size == 0) {
     return rhs;
   }

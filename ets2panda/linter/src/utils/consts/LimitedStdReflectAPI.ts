@@ -14,6 +14,13 @@
  */
 
 export const LIMITED_STD_REFLECT_API = [
-  'apply', 'construct', 'defineProperty', 'deleteProperty', 'getOwnPropertyDescriptor', 'getPrototypeOf',
-  'isExtensible', 'preventExtensions', 'setPrototypeOf'
+  'apply',
+  'construct',
+  'defineProperty',
+  'deleteProperty',
+  'getOwnPropertyDescriptor',
+  'getPrototypeOf',
+  'isExtensible',
+  'preventExtensions',
+  'setPrototypeOf'
 ];

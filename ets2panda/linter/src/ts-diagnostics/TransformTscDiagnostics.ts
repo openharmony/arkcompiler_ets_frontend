@@ -13,16 +13,19 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
-import { ProblemInfo } from '../ProblemInfo';
+import type * as ts from 'typescript';
+import type { ProblemInfo } from '../ProblemInfo';
 import { transformDiagnostic } from './TSCCompiledProgram';
 
-export function transformTscDiagnostics(
-  strictDiagnostics: Map<string, ts.Diagnostic[]>
-): Map<string, ProblemInfo[]> {
+export function transformTscDiagnostics(strictDiagnostics: Map<string, ts.Diagnostic[]>): Map<string, ProblemInfo[]> {
   const problemsInfos = new Map<string, ProblemInfo[]>();
-  strictDiagnostics.forEach((diagnostics, file, map) => {
-    problemsInfos.set(file, diagnostics.map(x => transformDiagnostic(x)));
+  strictDiagnostics.forEach((diagnostics, file) => {
+    problemsInfos.set(
+      file,
+      diagnostics.map((x) => {
+        return transformDiagnostic(x);
+      })
+    );
   });
   return problemsInfos;
 }

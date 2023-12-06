@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { Autofix } from './Autofixer';
+import type { Autofix } from './Autofixer';
 
 export interface ProblemInfo {
   line: number;

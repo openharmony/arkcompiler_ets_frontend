@@ -1,16 +1,16 @@
-/* 
- * Copyright (c) 2022-2023 Huawei Device Co., Ltd. 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
- * http://www.apache.org/licenses/LICENSE-2.0 
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
+/*
+ * Copyright (c) 2022-2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 export const cookBookMsg: string[] = [];
@@ -20,7 +20,8 @@ for (let i = 0; i <= 151; i++) {
   cookBookMsg[i] = '';
 }
 
-cookBookTag[1] = 'Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)';
+cookBookTag[1] =
+  'Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)';
 cookBookTag[2] = '"Symbol()" API is not supported (arkts-no-symbol)';
 cookBookTag[3] = 'Private \'#\' identifiers are not supported (arkts-no-private-identifiers)';
 cookBookTag[4] = 'Use unique names for types and namespaces. (arkts-unique-names)';
@@ -57,7 +58,8 @@ cookBookTag[34] = 'Type inference in case of generic function calls is limited (
 cookBookTag[35] = '';
 cookBookTag[36] = '';
 cookBookTag[37] = 'RegExp literals are not supported (arkts-no-regexp-literals)';
-cookBookTag[38] = 'Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)';
+cookBookTag[38] =
+  'Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)';
 cookBookTag[39] = '';
 cookBookTag[40] = 'Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types)';
 cookBookTag[41] = '';
@@ -118,7 +120,8 @@ cookBookTag[95] = '';
 cookBookTag[96] = 'Type guarding is supported with "instanceof" and "as" (arkts-no-is)';
 cookBookTag[97] = '';
 cookBookTag[98] = '';
-cookBookTag[99] = 'It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)';
+cookBookTag[99] =
+  'It is possible to spread only arrays or classes derived from arrays into the rest parameter or array literals (arkts-no-spread)';
 cookBookTag[100] = '';
 cookBookTag[101] = '';
 cookBookTag[102] = 'Interface can not extend interfaces with the same method (arkts-no-extend-same-prop)';
@@ -130,12 +133,14 @@ cookBookTag[107] = '';
 cookBookTag[108] = '';
 cookBookTag[109] = '';
 cookBookTag[110] = '';
-cookBookTag[111] = 'Enumeration members can be initialized only with compile time expressions of the same type (arkts-no-enum-mixed-types)';
+cookBookTag[111] =
+  'Enumeration members can be initialized only with compile time expressions of the same type (arkts-no-enum-mixed-types)';
 cookBookTag[112] = '';
 cookBookTag[113] = '"enum" declaration merging is not supported (arkts-no-enum-merging)';
 cookBookTag[114] = 'Namespaces cannot be used as objects (arkts-no-ns-as-obj)';
 cookBookTag[115] = '';
-cookBookTag[116] = 'Non-declaration statements in namespaces are not supported (single semicolons are considered as empty non-declaration statements) (arkts-no-ns-statements)';
+cookBookTag[116] =
+  'Non-declaration statements in namespaces are not supported (single semicolons are considered as empty non-declaration statements) (arkts-no-ns-statements)';
 cookBookTag[117] = '';
 cookBookTag[118] = '';
 cookBookTag[119] = 'Importing a module for side-effects only is not supported (arkts-no-side-effects-imports)';
@@ -159,7 +164,8 @@ cookBookTag[136] = 'Prototype assignment is not supported (arkts-no-prototype-as
 cookBookTag[137] = '"globalThis" is not supported (arkts-no-globalthis)';
 cookBookTag[138] = 'Some of utility types are not supported (arkts-no-utility-types)';
 cookBookTag[139] = 'Declaring properties on functions is not supported (arkts-no-func-props)';
-cookBookTag[140] = '"Function.apply", "Function.bind", "Function.call" are not supported (arkts-no-func-apply-bind-call)';
+cookBookTag[140] =
+  '"Function.apply", "Function.bind", "Function.call" are not supported (arkts-no-func-apply-bind-call)';
 cookBookTag[141] = '';
 cookBookTag[142] = '"as const" assertions are not supported (arkts-no-as-const)';
 cookBookTag[143] = 'Import assertions are not supported (arkts-no-import-assertions)';

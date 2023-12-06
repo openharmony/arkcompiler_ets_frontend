@@ -13,19 +13,22 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
+import type * as ts from 'typescript';
 
 export class TypeScriptDiagnosticsExtractor {
-  constructor(public strictProgram: ts.Program, public nonStrictProgram: ts.Program) {
-  }
+  constructor(
+    public strictProgram: ts.Program,
+    public nonStrictProgram: ts.Program
+  ) {}
 
   /**
    * Returns diagnostics which appear in strict compilation mode only
    */
-  public getStrictDiagnostics(fileName: string): ts.Diagnostic[] {
+  getStrictDiagnostics(fileName: string): ts.Diagnostic[] {
     // applying filter is a workaround for tsc bug
-    const strict = getAllDiagnostics(this.strictProgram, fileName)
-      .filter(diag => !(diag.length === 0 && diag.start === 0));
+    const strict = getAllDiagnostics(this.strictProgram, fileName).filter((diag) => {
+      return !(diag.length === 0 && diag.start === 0);
+    });
     const nonStrict = getAllDiagnostics(this.nonStrictProgram, fileName);
 
     // collect hashes for later easier comparison
@@ -37,18 +40,21 @@ export class TypeScriptDiagnosticsExtractor {
       return result;
     }, new Set<string>());
     // return diagnostics which weren't detected in non-strict mode
-    return strict.filter(value => {
+    return strict.filter((value) => {
       const hash = hashDiagnostic(value);
-      return (hash && !nonStrictHashes.has(hash));
+      return hash && !nonStrictHashes.has(hash);
     });
   }
 }
 
 function getAllDiagnostics(program: ts.Program, fileName: string): ts.Diagnostic[] {
   const sourceFile = program.getSourceFile(fileName);
-  return program.getSemanticDiagnostics(sourceFile)
-    .concat(program.getSyntacticDiagnostics(sourceFile))
-    .filter(diag => diag.file === sourceFile);
+  return program.
+    getSemanticDiagnostics(sourceFile).
+    concat(program.getSyntacticDiagnostics(sourceFile)).
+    filter((diag) => {
+      return diag.file === sourceFile;
+    });
 }
 
 function hashDiagnostic(diagnostic: ts.Diagnostic): string | undefined {

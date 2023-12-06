@@ -25,10 +25,13 @@ import { pathContainsDirectory } from './functions/PathHelper';
 import { ARKTS_IGNORE_DIRS, ARKTS_IGNORE_FILES } from './consts/ArktsIgnorePaths';
 import { isAssignmentOperator } from './functions/isAssignmentOperator';
 
-export type CheckType = ((t: ts.Type) => boolean);
+export type CheckType = (t: ts.Type) => boolean;
 export class TsUtils {
-  constructor(private tsTypeChecker: ts.TypeChecker, private testMode: boolean, private advancedClassChecks: boolean) {
-  }
+  constructor(
+    private tsTypeChecker: ts.TypeChecker,
+    private testMode: boolean,
+    private advancedClassChecks: boolean
+  ) {}
 
   public isType(tsType: ts.TypeNode | undefined, checkType: string): boolean {
     if (tsType === undefined || !ts.isTypeReferenceNode(tsType)) {
@@ -104,8 +107,7 @@ export class TsUtils {
   public findParentIf(asExpr: ts.AsExpression): ts.IfStatement | null {
     let node = asExpr.parent;
     while (node) {
-      if (node.kind === ts.SyntaxKind.IfStatement)
-        return node as ts.IfStatement;
+      if (node.kind === ts.SyntaxKind.IfStatement) return node as ts.IfStatement;
 
       node = node.parent;
     }
@@ -113,23 +115,23 @@ export class TsUtils {
     return null;
   }
 
-  public isDestructuringAssignmentLHS(
-    tsExpr: ts.ArrayLiteralExpression | ts.ObjectLiteralExpression
-  ): boolean {
+  public isDestructuringAssignmentLHS(tsExpr: ts.ArrayLiteralExpression | ts.ObjectLiteralExpression): boolean {
     // Check whether given expression is the LHS part of the destructuring
     // assignment (or is a nested element of destructuring pattern).
     let tsParent = tsExpr.parent;
     let tsCurrentExpr: ts.Node = tsExpr;
     while (tsParent) {
       if (
-        ts.isBinaryExpression(tsParent) && isAssignmentOperator(tsParent.operatorToken) &&
+        ts.isBinaryExpression(tsParent) &&
+        isAssignmentOperator(tsParent.operatorToken) &&
         tsParent.left === tsCurrentExpr
       )
         return true;
 
       if (
         (ts.isForStatement(tsParent) || ts.isForInStatement(tsParent) || ts.isForOfStatement(tsParent)) &&
-        tsParent.initializer && tsParent.initializer === tsCurrentExpr
+        tsParent.initializer &&
+        tsParent.initializer === tsCurrentExpr
       )
         return true;
 
@@ -173,8 +175,7 @@ export class TsUtils {
 
   public unwrapParenthesized(tsExpr: ts.Expression): ts.Expression {
     let unwrappedExpr = tsExpr;
-    while (ts.isParenthesizedExpression(unwrappedExpr))
-      unwrappedExpr = unwrappedExpr.expression;
+    while (ts.isParenthesizedExpression(unwrappedExpr)) unwrappedExpr = unwrappedExpr.expression;
 
     return unwrappedExpr;
   }
@@ -185,7 +186,7 @@ export class TsUtils {
     }
     return sym;
   }
-  
+
   private trueSymbolAtLocationCache = new Map<ts.Node, ts.Symbol | null>();
 
   public trueSymbolAtLocation(node: ts.Node): ts.Symbol | undefined {
@@ -205,11 +206,13 @@ export class TsUtils {
   }
 
   private isTypeDeclSyntaxKind(kind: ts.SyntaxKind) {
-    return isStructDeclarationKind(kind) ||
+    return (
+      isStructDeclarationKind(kind) ||
       kind === ts.SyntaxKind.EnumDeclaration ||
       kind === ts.SyntaxKind.ClassDeclaration ||
       kind === ts.SyntaxKind.InterfaceDeclaration ||
-      kind === ts.SyntaxKind.TypeAliasDeclaration;
+      kind === ts.SyntaxKind.TypeAliasDeclaration
+    );
   }
 
   public symbolHasDuplicateName(symbol: ts.Symbol, tsDeclKind: ts.SyntaxKind): boolean {
@@ -223,7 +226,7 @@ export class TsUtils {
         // we relax arkts-unique-names for namespace collision with class/interface/enum/type/struct
         const isNamespaceTypeCollision =
           (this.isTypeDeclSyntaxKind(declKind) && tsDeclKind === ts.SyntaxKind.ModuleDeclaration) ||
-          (this.isTypeDeclSyntaxKind(tsDeclKind) && declKind === ts.SyntaxKind.ModuleDeclaration)
+          (this.isTypeDeclSyntaxKind(tsDeclKind) && declKind === ts.SyntaxKind.ModuleDeclaration);
 
         // Don't count declarations with 'Identifier' syntax kind as those
         // usually depict declaring an object's property through assignment.
@@ -237,17 +240,23 @@ export class TsUtils {
   public isReferenceType(tsType: ts.Type): boolean {
     const f = tsType.getFlags();
     return (
-      (f & ts.TypeFlags.InstantiableNonPrimitive) != 0 || (f & ts.TypeFlags.Object) != 0 ||
-      (f & ts.TypeFlags.Boolean) != 0 || (f & ts.TypeFlags.Enum) != 0 || (f & ts.TypeFlags.NonPrimitive) != 0 ||
-      (f & ts.TypeFlags.Number) != 0 || (f & ts.TypeFlags.String) != 0
+      (f & ts.TypeFlags.InstantiableNonPrimitive) != 0 ||
+      (f & ts.TypeFlags.Object) != 0 ||
+      (f & ts.TypeFlags.Boolean) != 0 ||
+      (f & ts.TypeFlags.Enum) != 0 ||
+      (f & ts.TypeFlags.NonPrimitive) != 0 ||
+      (f & ts.TypeFlags.Number) != 0 ||
+      (f & ts.TypeFlags.String) != 0
     );
   }
 
   public isPrimitiveType(type: ts.Type): boolean {
     const f = type.getFlags();
     return (
-      (f & ts.TypeFlags.Boolean) != 0 || (f & ts.TypeFlags.BooleanLiteral) != 0 ||
-      (f & ts.TypeFlags.Number) != 0 || (f & ts.TypeFlags.NumberLiteral) != 0
+      (f & ts.TypeFlags.Boolean) != 0 ||
+      (f & ts.TypeFlags.BooleanLiteral) != 0 ||
+      (f & ts.TypeFlags.Number) != 0 ||
+      (f & ts.TypeFlags.NumberLiteral) != 0
       // In ArkTS 'string' is not a primitive type. So for the common subset 'string'
       // should be considered as a reference type. That is why next line is commented out.
       //(f & ts.TypeFlags.String) != 0 || (f & ts.TypeFlags.StringLiteral) != 0
@@ -256,7 +265,8 @@ export class TsUtils {
 
   public isTypeSymbol(symbol: ts.Symbol | undefined): boolean {
     return (
-      !!symbol && !!symbol.flags &&
+      !!symbol &&
+      !!symbol.flags &&
       ((symbol.flags & ts.SymbolFlags.Class) !== 0 || (symbol.flags & ts.SymbolFlags.Interface) !== 0)
     );
   }
@@ -264,7 +274,9 @@ export class TsUtils {
   // Check whether type is generic 'Array<T>' type defined in TypeScript standard library.
   public isGenericArrayType(tsType: ts.Type): tsType is ts.TypeReference {
     return (
-      this.isTypeReference(tsType) && tsType.typeArguments?.length === 1 && tsType.target.typeParameters?.length === 1 &&
+      this.isTypeReference(tsType) &&
+      tsType.typeArguments?.length === 1 &&
+      tsType.target.typeParameters?.length === 1 &&
       tsType.getSymbol()?.getName() === 'Array'
     );
   }
@@ -324,25 +336,24 @@ export class TsUtils {
   }
 
   public isNullType(tsTypeNode: ts.TypeNode): boolean {
-    return (ts.isLiteralTypeNode(tsTypeNode) && tsTypeNode.literal.kind === ts.SyntaxKind.NullKeyword);
+    return ts.isLiteralTypeNode(tsTypeNode) && tsTypeNode.literal.kind === ts.SyntaxKind.NullKeyword;
   }
 
   public isThisOrSuperExpr(tsExpr: ts.Expression): boolean {
-    return (tsExpr.kind == ts.SyntaxKind.ThisKeyword || tsExpr.kind == ts.SyntaxKind.SuperKeyword);
+    return tsExpr.kind == ts.SyntaxKind.ThisKeyword || tsExpr.kind == ts.SyntaxKind.SuperKeyword;
   }
 
   public isPrototypeSymbol(symbol: ts.Symbol | undefined): boolean {
-    return (!!symbol && !!symbol.flags && (symbol.flags & ts.SymbolFlags.Prototype) !== 0);
+    return !!symbol && !!symbol.flags && (symbol.flags & ts.SymbolFlags.Prototype) !== 0;
   }
 
   public isFunctionSymbol(symbol: ts.Symbol | undefined): boolean {
-    return (!!symbol && !!symbol.flags && (symbol.flags & ts.SymbolFlags.Function) !== 0);
+    return !!symbol && !!symbol.flags && (symbol.flags & ts.SymbolFlags.Function) !== 0;
   }
 
   public isInterfaceType(tsType: ts.Type | undefined): boolean {
     return (
-      !!tsType && !!tsType.symbol && !!tsType.symbol.flags &&
-      (tsType.symbol.flags & ts.SymbolFlags.Interface) !== 0
+      !!tsType && !!tsType.symbol && !!tsType.symbol.flags && (tsType.symbol.flags & ts.SymbolFlags.Interface) !== 0
     );
   }
 
@@ -356,7 +367,9 @@ export class TsUtils {
 
   public isUnsupportedType(tsType: ts.Type): boolean {
     return (
-      !!tsType.flags && ((tsType.flags & ts.TypeFlags.Any) !== 0 || (tsType.flags & ts.TypeFlags.Unknown) !== 0 ||
+      !!tsType.flags &&
+      ((tsType.flags & ts.TypeFlags.Any) !== 0 ||
+        (tsType.flags & ts.TypeFlags.Unknown) !== 0 ||
         (tsType.flags & ts.TypeFlags.Intersection) !== 0)
     );
   }
@@ -374,21 +387,18 @@ export class TsUtils {
 
   public isFunctionOrMethod(tsSymbol: ts.Symbol | undefined): boolean {
     return (
-      !!tsSymbol &&
-      ((tsSymbol.flags & ts.SymbolFlags.Function) !== 0 || (tsSymbol.flags & ts.SymbolFlags.Method) !== 0)
+      !!tsSymbol && ((tsSymbol.flags & ts.SymbolFlags.Function) !== 0 || (tsSymbol.flags & ts.SymbolFlags.Method) !== 0)
     );
   }
 
   public isMethodAssignment(tsSymbol: ts.Symbol | undefined): boolean {
     return (
-      !!tsSymbol &&
-      ((tsSymbol.flags & ts.SymbolFlags.Method) !== 0 && (tsSymbol.flags & ts.SymbolFlags.Assignment) !== 0)
+      !!tsSymbol && (tsSymbol.flags & ts.SymbolFlags.Method) !== 0 && (tsSymbol.flags & ts.SymbolFlags.Assignment) !== 0
     );
   }
 
   public getDeclaration(tsSymbol: ts.Symbol | undefined): ts.Declaration | undefined {
-    if (tsSymbol && tsSymbol.declarations && tsSymbol.declarations.length > 0)
-      return tsSymbol.declarations[0];
+    if (tsSymbol && tsSymbol.declarations && tsSymbol.declarations.length > 0) return tsSymbol.declarations[0];
     return undefined;
   }
 
@@ -397,17 +407,16 @@ export class TsUtils {
   }
 
   public isValidEnumMemberInit(tsExpr: ts.Expression): boolean {
-    if (this.isNumberConstantValue(tsExpr.parent as ts.EnumMember))
-      return true;
-    if (this.isStringConstantValue(tsExpr.parent as ts.EnumMember))
-      return true;
+    if (this.isNumberConstantValue(tsExpr.parent as ts.EnumMember)) return true;
+    if (this.isStringConstantValue(tsExpr.parent as ts.EnumMember)) return true;
     return this.isCompileTimeExpression(tsExpr);
   }
 
   public isCompileTimeExpression(tsExpr: ts.Expression): boolean {
     if (
       ts.isParenthesizedExpression(tsExpr) ||
-      (ts.isAsExpression(tsExpr) && tsExpr.type.kind === ts.SyntaxKind.NumberKeyword))
+      (ts.isAsExpression(tsExpr) && tsExpr.type.kind === ts.SyntaxKind.NumberKeyword)
+    )
       return this.isCompileTimeExpression(tsExpr.expression);
 
     switch (tsExpr.kind) {
@@ -428,14 +437,11 @@ export class TsUtils {
         // if enum member is in current enum declaration try to get value
         // if it comes from another enum consider as constant
         const propertyAccess = tsExpr as ts.PropertyAccessExpression;
-        if (this.isNumberConstantValue(propertyAccess))
-          return true;
+        if (this.isNumberConstantValue(propertyAccess)) return true;
         const leftHandSymbol = this.trueSymbolAtLocation(propertyAccess.expression);
-        if (!leftHandSymbol)
-          return false;
+        if (!leftHandSymbol) return false;
         const decls = leftHandSymbol.getDeclarations();
-        if (!decls || decls.length !== 1)
-          return false;
+        if (!decls || decls.length !== 1) return false;
         return ts.isEnumDeclaration(decls[0]);
       }
       default:
@@ -444,46 +450,53 @@ export class TsUtils {
   }
 
   private isPrefixUnaryExprValidEnumMemberInit(tsExpr: ts.PrefixUnaryExpression): boolean {
-    return (this.isUnaryOpAllowedForEnumMemberInit(tsExpr.operator) && this.isCompileTimeExpression(tsExpr.operand));
+    return this.isUnaryOpAllowedForEnumMemberInit(tsExpr.operator) && this.isCompileTimeExpression(tsExpr.operand);
   }
 
   private isBinaryExprValidEnumMemberInit(tsExpr: ts.BinaryExpression): boolean {
     return (
-      this.isBinaryOpAllowedForEnumMemberInit(tsExpr.operatorToken) && this.isCompileTimeExpression(tsExpr.left) &&
+      this.isBinaryOpAllowedForEnumMemberInit(tsExpr.operatorToken) &&
+      this.isCompileTimeExpression(tsExpr.left) &&
       this.isCompileTimeExpression(tsExpr.right)
     );
   }
 
   private isConditionalExprValidEnumMemberInit(tsExpr: ts.ConditionalExpression): boolean {
-    return (this.isCompileTimeExpression(tsExpr.whenTrue) && this.isCompileTimeExpression(tsExpr.whenFalse));
+    return this.isCompileTimeExpression(tsExpr.whenTrue) && this.isCompileTimeExpression(tsExpr.whenFalse);
   }
 
   private isIdentifierValidEnumMemberInit(tsExpr: ts.Identifier): boolean {
     let tsSymbol = this.trueSymbolAtLocation(tsExpr);
     let tsDecl = this.getDeclaration(tsSymbol);
-    return (!!tsDecl &&
-      ((this.isVarDeclaration(tsDecl) && this.isConst(tsDecl.parent)) ||
-        (tsDecl.kind === ts.SyntaxKind.EnumMember)
-      )
+    return (
+      !!tsDecl &&
+      ((this.isVarDeclaration(tsDecl) && this.isConst(tsDecl.parent)) || tsDecl.kind === ts.SyntaxKind.EnumMember)
     );
   }
 
   private isUnaryOpAllowedForEnumMemberInit(tsPrefixUnaryOp: ts.PrefixUnaryOperator): boolean {
     return (
-      tsPrefixUnaryOp === ts.SyntaxKind.PlusToken || tsPrefixUnaryOp === ts.SyntaxKind.MinusToken ||
+      tsPrefixUnaryOp === ts.SyntaxKind.PlusToken ||
+      tsPrefixUnaryOp === ts.SyntaxKind.MinusToken ||
       tsPrefixUnaryOp === ts.SyntaxKind.TildeToken
     );
   }
 
   private isBinaryOpAllowedForEnumMemberInit(tsBinaryOp: ts.BinaryOperatorToken): boolean {
     return (
-      tsBinaryOp.kind === ts.SyntaxKind.AsteriskToken || tsBinaryOp.kind === ts.SyntaxKind.SlashToken ||
-      tsBinaryOp.kind === ts.SyntaxKind.PercentToken || tsBinaryOp.kind === ts.SyntaxKind.MinusToken ||
-      tsBinaryOp.kind === ts.SyntaxKind.PlusToken || tsBinaryOp.kind === ts.SyntaxKind.LessThanLessThanToken ||
-      tsBinaryOp.kind === ts.SyntaxKind.GreaterThanGreaterThanToken || tsBinaryOp.kind === ts.SyntaxKind.BarBarToken ||
+      tsBinaryOp.kind === ts.SyntaxKind.AsteriskToken ||
+      tsBinaryOp.kind === ts.SyntaxKind.SlashToken ||
+      tsBinaryOp.kind === ts.SyntaxKind.PercentToken ||
+      tsBinaryOp.kind === ts.SyntaxKind.MinusToken ||
+      tsBinaryOp.kind === ts.SyntaxKind.PlusToken ||
+      tsBinaryOp.kind === ts.SyntaxKind.LessThanLessThanToken ||
+      tsBinaryOp.kind === ts.SyntaxKind.GreaterThanGreaterThanToken ||
+      tsBinaryOp.kind === ts.SyntaxKind.BarBarToken ||
       tsBinaryOp.kind === ts.SyntaxKind.GreaterThanGreaterThanGreaterThanToken ||
-      tsBinaryOp.kind === ts.SyntaxKind.AmpersandToken || tsBinaryOp.kind === ts.SyntaxKind.CaretToken ||
-      tsBinaryOp.kind === ts.SyntaxKind.BarToken || tsBinaryOp.kind === ts.SyntaxKind.AmpersandAmpersandToken
+      tsBinaryOp.kind === ts.SyntaxKind.AmpersandToken ||
+      tsBinaryOp.kind === ts.SyntaxKind.CaretToken ||
+      tsBinaryOp.kind === ts.SyntaxKind.BarToken ||
+      tsBinaryOp.kind === ts.SyntaxKind.AmpersandAmpersandToken
     );
   }
 
@@ -494,23 +507,24 @@ export class TsUtils {
   public isNumberConstantValue(
     tsExpr: ts.EnumMember | ts.PropertyAccessExpression | ts.ElementAccessExpression | ts.NumericLiteral
   ): boolean {
+    const tsConstValue =
+      tsExpr.kind === ts.SyntaxKind.NumericLiteral
+        ? Number(tsExpr.getText())
+        : this.tsTypeChecker.getConstantValue(tsExpr);
 
-    const tsConstValue = (tsExpr.kind === ts.SyntaxKind.NumericLiteral) ?
-      Number(tsExpr.getText()) :
-      this.tsTypeChecker.getConstantValue(tsExpr);
-
-    return  tsConstValue !== undefined && typeof tsConstValue === 'number';
+    return tsConstValue !== undefined && typeof tsConstValue === 'number';
   }
 
   public isIntegerConstantValue(
     tsExpr: ts.EnumMember | ts.PropertyAccessExpression | ts.ElementAccessExpression | ts.NumericLiteral
   ): boolean {
-
-    const tsConstValue = (tsExpr.kind === ts.SyntaxKind.NumericLiteral) ?
-      Number(tsExpr.getText()) :
-      this.tsTypeChecker.getConstantValue(tsExpr);
+    const tsConstValue =
+      tsExpr.kind === ts.SyntaxKind.NumericLiteral
+        ? Number(tsExpr.getText())
+        : this.tsTypeChecker.getConstantValue(tsExpr);
     return (
-      tsConstValue !== undefined && typeof tsConstValue === 'number' &&
+      tsConstValue !== undefined &&
+      typeof tsConstValue === 'number' &&
       tsConstValue.toFixed(0) === tsConstValue.toString()
     );
   }
@@ -519,9 +533,7 @@ export class TsUtils {
     tsExpr: ts.EnumMember | ts.PropertyAccessExpression | ts.ElementAccessExpression
   ): boolean {
     const tsConstValue = this.tsTypeChecker.getConstantValue(tsExpr);
-    return (
-      tsConstValue !== undefined && typeof tsConstValue === 'string'
-    );
+    return tsConstValue !== undefined && typeof tsConstValue === 'string';
   }
 
   // Returns true iff typeA is a subtype of typeB
@@ -533,12 +545,10 @@ export class TsUtils {
     if (!typeA.symbol || !typeA.symbol.declarations) return false;
 
     for (let typeADecl of typeA.symbol.declarations) {
-      if (
-        (!ts.isClassDeclaration(typeADecl) && !ts.isInterfaceDeclaration(typeADecl)) ||
-        !typeADecl.heritageClauses
-      ) continue;
+      if ((!ts.isClassDeclaration(typeADecl) && !ts.isInterfaceDeclaration(typeADecl)) || !typeADecl.heritageClauses)
+        continue;
       for (let heritageClause of typeADecl.heritageClauses) {
-        let processInterfaces = typeA.isClass() ? (heritageClause.token != ts.SyntaxKind.ExtendsKeyword) : true;
+        let processInterfaces = typeA.isClass() ? heritageClause.token != ts.SyntaxKind.ExtendsKeyword : true;
         if (this.processParentTypes(heritageClause.types, typeB, processInterfaces)) return true;
       }
     }
@@ -547,8 +557,12 @@ export class TsUtils {
   }
 
   // return true if two class types are not related by inheritance and structural identity check is needed
-  public needToDeduceStructuralIdentity(lhsType: ts.Type, rhsType: ts.Type, rhsExpr: ts.Expression,
-    allowPromotion: boolean = false): boolean {
+  public needToDeduceStructuralIdentity(
+    lhsType: ts.Type,
+    rhsType: ts.Type,
+    rhsExpr: ts.Expression,
+    allowPromotion: boolean = false
+  ): boolean {
     // Compare non-nullable version of types.
     lhsType = this.getNonNullableType(lhsType);
     rhsType = this.getNonNullableType(rhsType);
@@ -581,12 +595,20 @@ export class TsUtils {
       return true;
     }
 
-    if (this.advancedClassChecks && this.isClassValueType(rhsType) && lhsType != rhsType && !this.isObjectType(lhsType)) {
+    if (
+      this.advancedClassChecks &&
+      this.isClassValueType(rhsType) &&
+      lhsType != rhsType &&
+      !this.isObjectType(lhsType)
+    ) {
       // missing exact rule
       return true;
     }
 
-    let res = lhsType.isClassOrInterface() && rhsType.isClassOrInterface() && !this.relatedByInheritanceOrIdentical(rhsType, lhsType);
+    let res =
+      lhsType.isClassOrInterface() &&
+      rhsType.isClassOrInterface() &&
+      !this.relatedByInheritanceOrIdentical(rhsType, lhsType);
 
     if (allowPromotion) {
       res &&= !this.relatedByInheritanceOrIdentical(lhsType, rhsType);
@@ -595,11 +617,16 @@ export class TsUtils {
     return res;
   }
 
-  private processParentTypes(parentTypes: ts.NodeArray<ts.Expression>, typeB: ts.Type, processInterfaces: boolean): boolean {
+  private processParentTypes(
+    parentTypes: ts.NodeArray<ts.Expression>,
+    typeB: ts.Type,
+    processInterfaces: boolean
+  ): boolean {
     for (let baseTypeExpr of parentTypes) {
       let baseType = this.tsTypeChecker.getTypeAtLocation(baseTypeExpr);
       if (this.isTypeReference(baseType) && baseType.target !== baseType) baseType = baseType.target;
-      if (baseType && (baseType.isClass() != processInterfaces) && this.relatedByInheritanceOrIdentical(baseType, typeB)) return true;
+      if (baseType && baseType.isClass() != processInterfaces && this.relatedByInheritanceOrIdentical(baseType, typeB))
+        return true;
     }
     return false;
   }
@@ -621,7 +648,7 @@ export class TsUtils {
     if (!tsType) {
       return false;
     }
-    if (tsType.symbol && (tsType.isClassOrInterface() && tsType.symbol.name === 'Object')) {
+    if (tsType.symbol && tsType.isClassOrInterface() && tsType.symbol.name === 'Object') {
       return true;
     }
     let node = this.tsTypeChecker.typeToTypeNode(tsType, undefined, undefined);
@@ -648,7 +675,8 @@ export class TsUtils {
 
     type.symbol.members.forEach((value, key) => {
       if (
-        value.declarations !== undefined && value.declarations.length > 0 &&
+        value.declarations !== undefined &&
+        value.declarations.length > 0 &&
         ts.isPropertyDeclaration(value.declarations[0])
       ) {
         let propmMods = ts.getModifiers(value.declarations[0] as ts.PropertyDeclaration);
@@ -689,8 +717,7 @@ export class TsUtils {
     if (type.isClass() && type.symbol.declarations && type.symbol.declarations.length > 0) {
       let declClass = type.symbol.declarations[0] as ts.ClassDeclaration;
       let classMods = ts.getModifiers(declClass);
-      if (this.hasModifier(classMods, ts.SyntaxKind.AbstractKeyword))
-        return true;
+      if (this.hasModifier(classMods, ts.SyntaxKind.AbstractKeyword)) return true;
     }
 
     return false;
@@ -702,8 +729,10 @@ export class TsUtils {
     }
     type = this.getTargetType(type);
     return (
-      type.isClassOrInterface() && this.hasDefaultCtor(type) &&
-      !this.hasReadonlyFields(type) && !this.isAbstractClass(type)
+      type.isClassOrInterface() &&
+      this.hasDefaultCtor(type) &&
+      !this.hasReadonlyFields(type) &&
+      !this.isAbstractClass(type)
     );
   }
 
@@ -792,7 +821,9 @@ export class TsUtils {
       return this.validateRecordObjectKeys(rhsExpr);
     }
 
-    return this.validateObjectLiteralType(lhsType) && !this.hasMethods(lhsType) && this.validateFields(lhsType, rhsExpr);
+    return (
+      this.validateObjectLiteralType(lhsType) && !this.hasMethods(lhsType) && this.validateFields(lhsType, rhsExpr)
+    );
   }
 
   isFunctionalType(type: ts.Type): boolean {
@@ -805,8 +836,7 @@ export class TsUtils {
       let rhsSym = ts.isCallExpression(rhsExpr)
         ? this.getSymbolOfCallExpression(rhsExpr)
         : this.trueSymbolAtLocation(rhsExpr);
-      if (rhsSym && this.isLibrarySymbol(rhsSym))
-        return true;
+      if (rhsSym && this.isLibrarySymbol(rhsSym)) return true;
     }
     return false;
   }
@@ -818,7 +848,7 @@ export class TsUtils {
           return false;
         }
       }
-    };
+    }
 
     return true;
   }
@@ -835,7 +865,7 @@ export class TsUtils {
     if (ts.isObjectLiteralExpression(initExpr)) {
       if (!this.isObjectLiteralAssignable(propType, initExpr)) {
         return false;
-      } 
+      }
     } else {
       // Only check for structural sub-typing.
       if (this.needToDeduceStructuralIdentity(propType, this.tsTypeChecker.getTypeAtLocation(initExpr), initExpr)) {
@@ -854,15 +884,21 @@ export class TsUtils {
   }
 
   getTargetType(type: ts.Type): ts.Type {
-    return (type.getFlags() & ts.TypeFlags.Object) &&
-    (type as ts.ObjectType).objectFlags & ts.ObjectFlags.Reference ? (type as ts.TypeReference).target : type;
+    return type.getFlags() & ts.TypeFlags.Object && (type as ts.ObjectType).objectFlags & ts.ObjectFlags.Reference
+      ? (type as ts.TypeReference).target
+      : type;
   }
 
   private isSupportedTypeNodeKind(kind: ts.SyntaxKind): boolean {
-    return kind !== ts.SyntaxKind.AnyKeyword && kind !== ts.SyntaxKind.UnknownKeyword &&
-      kind !== ts.SyntaxKind.SymbolKeyword && kind !== ts.SyntaxKind.IndexedAccessType &&
-      kind !== ts.SyntaxKind.ConditionalType && kind !== ts.SyntaxKind.MappedType &&
-      kind !== ts.SyntaxKind.InferType;
+    return (
+      kind !== ts.SyntaxKind.AnyKeyword &&
+      kind !== ts.SyntaxKind.UnknownKeyword &&
+      kind !== ts.SyntaxKind.SymbolKeyword &&
+      kind !== ts.SyntaxKind.IndexedAccessType &&
+      kind !== ts.SyntaxKind.ConditionalType &&
+      kind !== ts.SyntaxKind.MappedType &&
+      kind !== ts.SyntaxKind.InferType
+    );
   }
 
   public isSupportedType(typeNode: ts.TypeNode): boolean {
@@ -871,14 +907,12 @@ export class TsUtils {
     if (ts.isArrayTypeNode(typeNode)) return this.isSupportedType(typeNode.elementType);
 
     if (ts.isTypeReferenceNode(typeNode) && typeNode.typeArguments) {
-      for (const typeArg of typeNode.typeArguments)
-        if (!this.isSupportedType(typeArg)) return false;
+      for (const typeArg of typeNode.typeArguments) if (!this.isSupportedType(typeArg)) return false;
       return true;
     }
 
     if (ts.isUnionTypeNode(typeNode)) {
-      for (const unionTypeElem of typeNode.types)
-        if (!this.isSupportedType(unionTypeElem)) return false;
+      for (const unionTypeElem of typeNode.types) if (!this.isSupportedType(unionTypeElem)) return false;
       return true;
     }
 
@@ -890,8 +924,12 @@ export class TsUtils {
       return true;
     }
 
-    return !ts.isTypeLiteralNode(typeNode) && (this.advancedClassChecks || !ts.isTypeQueryNode(typeNode)) &&
-      !ts.isIntersectionTypeNode(typeNode) && this.isSupportedTypeNodeKind(typeNode.kind);
+    return (
+      !ts.isTypeLiteralNode(typeNode) &&
+      (this.advancedClassChecks || !ts.isTypeQueryNode(typeNode)) &&
+      !ts.isIntersectionTypeNode(typeNode) &&
+      this.isSupportedTypeNodeKind(typeNode.kind)
+    );
   }
 
   public isStructObjectInitializer(objectLiteral: ts.ObjectLiteralExpression): boolean {
@@ -906,7 +944,7 @@ export class TsUtils {
   public getParentSymbolName(symbol: ts.Symbol): string | undefined {
     const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
     const dotPosition = name.lastIndexOf('.');
-    return (dotPosition === -1) ? undefined : name.substring(0, dotPosition);
+    return dotPosition === -1 ? undefined : name.substring(0, dotPosition);
   }
 
   public isGlobalSymbol(symbol: ts.Symbol): boolean {
@@ -920,12 +958,12 @@ export class TsUtils {
   }
 
   public isStdSymbol(symbol: ts.Symbol): boolean {
-    const name = this.tsTypeChecker.getFullyQualifiedName(symbol)
+    const name = this.tsTypeChecker.getFullyQualifiedName(symbol);
     return name === 'Symbol' && this.isGlobalSymbol(symbol);
   }
 
   public isSymbolIterator(symbol: ts.Symbol): boolean {
-    return this.isSymbolAPI(symbol) && symbol.name === 'iterator'
+    return this.isSymbolAPI(symbol) && symbol.name === 'iterator';
   }
 
   public isDefaultImport(importSpec: ts.ImportSpecifier): boolean {
@@ -933,13 +971,15 @@ export class TsUtils {
   }
 
   public getStartPos(nodeOrComment: ts.Node | ts.CommentRange): number {
-    return (nodeOrComment.kind === ts.SyntaxKind.SingleLineCommentTrivia || nodeOrComment.kind === ts.SyntaxKind.MultiLineCommentTrivia)
+    return nodeOrComment.kind === ts.SyntaxKind.SingleLineCommentTrivia ||
+      nodeOrComment.kind === ts.SyntaxKind.MultiLineCommentTrivia
       ? (nodeOrComment as ts.CommentRange).pos
       : (nodeOrComment as ts.Node).getStart();
   }
 
   public getEndPos(nodeOrComment: ts.Node | ts.CommentRange): number {
-    return (nodeOrComment.kind === ts.SyntaxKind.SingleLineCommentTrivia || nodeOrComment.kind === ts.SyntaxKind.MultiLineCommentTrivia)
+    return nodeOrComment.kind === ts.SyntaxKind.SingleLineCommentTrivia ||
+      nodeOrComment.kind === ts.SyntaxKind.MultiLineCommentTrivia
       ? (nodeOrComment as ts.CommentRange).end
       : (nodeOrComment as ts.Node).getEnd();
   }
@@ -977,7 +1017,7 @@ export class TsUtils {
     const sym = type.aliasSymbol;
     return !!sym && sym.getName() === 'Required' && this.isGlobalSymbol(sym);
   }
-  
+
   public isStdReadonlyType(type: ts.Type): boolean {
     const sym = type.aliasSymbol;
     return !!sym && sym.getName() === 'Readonly' && this.isGlobalSymbol(sym);
@@ -1006,16 +1046,16 @@ export class TsUtils {
       if (!srcFile) {
         return false;
       }
-      const fileName = srcFile.fileName
+      const fileName = srcFile.fileName;
       // Symbols from both *.ts and *.d.ts files should obey interop rules.
       // We disable such behavior for *.ts files in the test mode due to lack of 'ets'
       // extension support.
       const ext = path.extname(fileName).toLowerCase();
       const isThirdPartyCode =
-        ARKTS_IGNORE_DIRS.some(ignore => pathContainsDirectory(path.normalize(fileName), ignore)) ||
-        ARKTS_IGNORE_FILES.some(ignore => path.basename(fileName) === ignore);
-      const isEts = (ext === '.ets');
-      const isTs = (ext === '.ts' && !srcFile.isDeclarationFile);
+        ARKTS_IGNORE_DIRS.some((ignore) => pathContainsDirectory(path.normalize(fileName), ignore)) ||
+        ARKTS_IGNORE_FILES.some((ignore) => path.basename(fileName) === ignore);
+      const isEts = ext === '.ets';
+      const isTs = ext === '.ts' && !srcFile.isDeclarationFile;
       const isStatic = (isEts || (isTs && this.testMode)) && !isThirdPartyCode;
       const isStdLib = STANDARD_LIBRARIES.includes(path.basename(fileName).toLowerCase());
       // We still need to confirm support for certain API from the
@@ -1041,7 +1081,7 @@ export class TsUtils {
 
     if (type.isUnion()) {
       for (let compType of type.types) {
-        let isDynamic = this.isDynamicType(compType); 
+        let isDynamic = this.isDynamicType(compType);
         if (isDynamic || isDynamic === undefined) {
           return isDynamic;
         }
@@ -1061,7 +1101,7 @@ export class TsUtils {
   }
 
   public isObjectType(type: ts.Type): type is ts.ObjectType {
-    return !!(type.flags & ts.TypeFlags.Object)
+    return !!(type.flags & ts.TypeFlags.Object);
   }
 
   private isAnonymous(type: ts.Type): boolean {
@@ -1082,7 +1122,7 @@ export class TsUtils {
     while (ts.isObjectLiteralExpression(curNode) || ts.isArrayLiteralExpression(curNode)) {
       const exprType = this.tsTypeChecker.getContextualType(curNode);
       if (exprType !== undefined && !this.isAnonymous(exprType)) {
-        const res = this.isDynamicType(exprType)
+        const res = this.isDynamicType(exprType);
         if (res !== undefined) {
           return res;
         }
@@ -1098,14 +1138,14 @@ export class TsUtils {
     // foo({ ... })
     if (ts.isCallExpression(curNode)) {
       const callExpr = curNode as ts.CallExpression;
-      const type = this.tsTypeChecker.getTypeAtLocation(callExpr.expression)
+      const type = this.tsTypeChecker.getTypeAtLocation(callExpr.expression);
 
       if (this.isAnyType(type)) {
         return true;
       }
 
       let sym: ts.Symbol | undefined = type.symbol;
-      if(this.isLibrarySymbol(sym)) {
+      if (this.isLibrarySymbol(sym)) {
         return true;
       }
 
@@ -1134,12 +1174,16 @@ export class TsUtils {
   }
 
   public isEsObjectType(typeNode: ts.TypeNode | undefined): boolean {
-    return !!typeNode && ts.isTypeReferenceNode(typeNode) && ts.isIdentifier(typeNode.typeName) &&
-      typeNode.typeName.text == ES_OBJECT;
+    return (
+      !!typeNode &&
+      ts.isTypeReferenceNode(typeNode) &&
+      ts.isIdentifier(typeNode.typeName) &&
+      typeNode.typeName.text == ES_OBJECT
+    );
   }
 
   public isInsideBlock(node: ts.Node): boolean {
-    let par = node.parent
+    let par = node.parent;
     while (par) {
       if (ts.isBlock(par)) {
         return true;
@@ -1158,7 +1202,7 @@ export class TsUtils {
       return false;
     }
     const valueType = this.tsTypeChecker.getTypeAtLocation(node);
-    return this.isUnsupportedType(valueType) || this.isAnonymousType(valueType)
+    return this.isUnsupportedType(valueType) || this.isAnonymousType(valueType);
   }
 
   public getVariableDeclarationTypeNode(node: ts.Node): ts.TypeNode | undefined {
@@ -1178,7 +1222,7 @@ export class TsUtils {
   }
 
   public hasEsObjectType(node: ts.Node): boolean {
-    const typeNode = this.getVariableDeclarationTypeNode(node)
+    const typeNode = this.getVariableDeclarationTypeNode(node);
     return typeNode !== undefined && this.isEsObjectType(typeNode);
   }
 
@@ -1189,8 +1233,12 @@ export class TsUtils {
 
   public isEsObjectSymbol(sym: ts.Symbol): boolean {
     let decl = this.getDeclaration(sym);
-    return !!decl && ts.isTypeAliasDeclaration(decl) && decl.name.escapedText == ES_OBJECT &&
-      decl.type.kind === ts.SyntaxKind.AnyKeyword;
+    return (
+      !!decl &&
+      ts.isTypeAliasDeclaration(decl) &&
+      decl.name.escapedText == ES_OBJECT &&
+      decl.type.kind === ts.SyntaxKind.AnyKeyword
+    );
   }
 
   public isAnonymousType(type: ts.Type): boolean {
@@ -1203,8 +1251,9 @@ export class TsUtils {
       return false;
     }
 
-    return (type.flags & ts.TypeFlags.Object) !== 0 &&
-      ((type as ts.ObjectType).objectFlags & ts.ObjectFlags.Anonymous) !== 0;
+    return (
+      (type.flags & ts.TypeFlags.Object) !== 0 && ((type as ts.ObjectType).objectFlags & ts.ObjectFlags.Anonymous) !== 0
+    );
   }
 
   public getSymbolOfCallExpression(callExpr: ts.CallExpression): ts.Symbol | undefined {
@@ -1247,7 +1296,10 @@ export class TsUtils {
   }
 
   public isClassValueType(type: ts.Type): boolean {
-    if ((type.flags & ts.TypeFlags.Object) === 0 || ((type as ts.ObjectType).objectFlags & ts.ObjectFlags.Anonymous) === 0) {
+    if (
+      (type.flags & ts.TypeFlags.Object) === 0 ||
+      ((type as ts.ObjectType).objectFlags & ts.ObjectFlags.Anonymous) === 0
+    ) {
       return false;
     }
     return type.symbol && (type.symbol.flags & ts.SymbolFlags.Class) !== 0;

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
+import type * as ts from 'typescript';
 
 export interface IncrementalLintInfo {
-  shouldSkipCheck(node: ts.Node): boolean;
+  shouldSkipCheck: (node: ts.Node) => boolean;
 }

@@ -14,6 +14,17 @@
  */
 
 export const LIMITED_STD_PROXYHANDLER_API = [
-  'apply', 'construct', 'defineProperty', 'deleteProperty', 'get', 'getOwnPropertyDescriptor', 'getPrototypeOf',
-  'has', 'isExtensible', 'ownKeys', 'preventExtensions', 'set', 'setPrototypeOf'
+  'apply',
+  'construct',
+  'defineProperty',
+  'deleteProperty',
+  'get',
+  'getOwnPropertyDescriptor',
+  'getPrototypeOf',
+  'has',
+  'isExtensible',
+  'ownKeys',
+  'preventExtensions',
+  'set',
+  'setPrototypeOf'
 ];

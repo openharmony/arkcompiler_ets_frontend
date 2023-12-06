@@ -16,22 +16,24 @@
 import * as ts from 'typescript';
 
 function isInstanceofContext(tsIdentStart: ts.Node): boolean {
-  return ts.isBinaryExpression(tsIdentStart.parent) &&
+  return (
+    ts.isBinaryExpression(tsIdentStart.parent) &&
     tsIdentStart.parent.operatorToken.kind === ts.SyntaxKind.InstanceOfKeyword
+  );
 }
 
 function isNewExpressionContext(tsIdentStart: ts.Node): boolean {
-  return ts.isNewExpression(tsIdentStart.parent) && tsIdentStart === tsIdentStart.parent.expression
+  return ts.isNewExpression(tsIdentStart.parent) && tsIdentStart === tsIdentStart.parent.expression;
 }
 
 function isQualifiedNameContext(tsIdentStart: ts.Node, tsIdentifier: ts.Identifier): boolean {
   // rightmost in AST is rightmost in qualified name chain
-  return ts.isQualifiedName(tsIdentStart) && tsIdentifier !== tsIdentStart.right
+  return ts.isQualifiedName(tsIdentStart) && tsIdentifier !== tsIdentStart.right;
 }
 
 function isPropertyAccessContext(tsIdentStart: ts.Node, tsIdentifier: ts.Identifier): boolean {
   // rightmost in AST is rightmost in qualified name chain
-  return ts.isPropertyAccessExpression(tsIdentStart) && tsIdentifier !== tsIdentStart.name
+  return ts.isPropertyAccessExpression(tsIdentStart) && tsIdentifier !== tsIdentStart.name;
 }
 
 function getQualifiedStart(ident: ts.Node): ts.Node {
@@ -43,41 +45,44 @@ function getQualifiedStart(ident: ts.Node): ts.Node {
 }
 
 function isEnumPropAccess(ident: ts.Identifier, tsSym: ts.Symbol, context: ts.Node): boolean {
-  return ts.isElementAccessExpression(context) && !!(tsSym.flags & ts.SymbolFlags.Enum) &&
+  return (
+    ts.isElementAccessExpression(context) &&
+    !!(tsSym.flags & ts.SymbolFlags.Enum) &&
     (context.expression == ident ||
-      (ts.isPropertyAccessExpression(context.expression) && context.expression.name == ident));
+      (ts.isPropertyAccessExpression(context.expression) && context.expression.name == ident))
+  );
 }
 function isValidTypeNode(node: ts.TypeNode): boolean {
   return !ts.isTypeOfExpression(node);
 }
 
-export function identiferUseInValueContext(
-  ident: ts.Identifier, tsSym: ts.Symbol
-) {
+export function identiferUseInValueContext(ident: ts.Identifier, tsSym: ts.Symbol) {
   let qualifiedStart = getQualifiedStart(ident);
   let parent = qualifiedStart.parent;
 
   return !(
     // treat TypeQuery as valid because it's already forbidden (FaultID.TypeQuery)
-    ts.isTypeNode(parent) && isValidTypeNode(parent) ||
-    // If identifier is the right-most name of Property Access chain or Qualified name,
-    // or it's a separate identifier expression, then identifier is being referenced as an value.
-    isEnumPropAccess(ident, tsSym, parent) ||
-    ts.isExpressionWithTypeArguments(parent) ||
-    ts.isExportAssignment(parent) ||
-    ts.isExportSpecifier(parent) ||
-    ts.isMetaProperty(parent) ||
-    ts.isImportClause(parent) ||
-    ts.isClassLike(parent) ||
-    ts.isInterfaceDeclaration(parent) ||
-    ts.isModuleDeclaration(parent) ||
-    ts.isEnumDeclaration(parent) ||
-    ts.isNamespaceImport(parent) ||
-    ts.isImportSpecifier(parent) ||
-    isQualifiedNameContext(qualifiedStart, ident) ||
-    isPropertyAccessContext(qualifiedStart, ident) ||
-    isNewExpressionContext(qualifiedStart) ||
-    isInstanceofContext(qualifiedStart) ||
-    ts.isImportEqualsDeclaration(parent)
+    (
+      (ts.isTypeNode(parent) && isValidTypeNode(parent)) ||
+      // If identifier is the right-most name of Property Access chain or Qualified name,
+      // or it's a separate identifier expression, then identifier is being referenced as an value.
+      isEnumPropAccess(ident, tsSym, parent) ||
+      ts.isExpressionWithTypeArguments(parent) ||
+      ts.isExportAssignment(parent) ||
+      ts.isExportSpecifier(parent) ||
+      ts.isMetaProperty(parent) ||
+      ts.isImportClause(parent) ||
+      ts.isClassLike(parent) ||
+      ts.isInterfaceDeclaration(parent) ||
+      ts.isModuleDeclaration(parent) ||
+      ts.isEnumDeclaration(parent) ||
+      ts.isNamespaceImport(parent) ||
+      ts.isImportSpecifier(parent) ||
+      isQualifiedNameContext(qualifiedStart, ident) ||
+      isPropertyAccessContext(qualifiedStart, ident) ||
+      isNewExpressionContext(qualifiedStart) ||
+      isInstanceofContext(qualifiedStart) ||
+      ts.isImportEqualsDeclaration(parent)
+    )
   );
 }

@@ -16,7 +16,7 @@
 import Logger from '../utils/logger';
 import { logTscDiagnostic } from './utils/functions/LogTscDiagnostic';
 import { decodeAutofixInfo } from './utils/functions/LinterInfo';
-import { CommandLineOptions } from './CommandLineOptions';
+import type { CommandLineOptions } from './CommandLineOptions';
 import { AUTOFIX_ALL } from './Autofixer';
 import { Command, Option } from 'commander';
 import * as ts from 'typescript';
@@ -32,11 +32,12 @@ const logger = Logger.getLogger();
 
 let inputFiles: string[];
 let responseFile = '';
-function addSrcFile(value: string, dummy: string) {
-  if(value.startsWith('@'))
+function addSrcFile(value: string): void {
+  if (value.startsWith('@')) {
     responseFile = value;
-  else
+  } else {
     inputFiles.push(value);
+  }
 }
 
 const getFiles = (dir: string): string[] => {
@@ -44,87 +45,114 @@ const getFiles = (dir: string): string[] => {
 
   const files = fs.readdirSync(dir);
   for (let i = 0; i < files.length; ++i) {
-    let name = path.join(dir, files[i]);
+    const name = path.join(dir, files[i]);
     if (fs.statSync(name).isDirectory()) {
       resultFiles.push(...getFiles(name));
     } else {
-      let extension = path.extname(name);
-      if (extension === TS_EXT || extension === TSX_EXT || extension === ETS_EXT)
+      const extension = path.extname(name);
+      if (extension === TS_EXT || extension === TSX_EXT || extension === ETS_EXT) {
         resultFiles.push(name);
+      }
     }
   }
 
   return resultFiles;
 };
 
-function addProjectFolder(projectFolder: string, previous: any ) {
+function addProjectFolder(projectFolder: string, previous: string[]): string[] {
   return previous.concat([projectFolder]);
 }
 
-export function parseCommandLine(commandLineArgs: string[]): CommandLineOptions {
+function formCommandLineOptions(program: Command): CommandLineOptions {
   const opts: CommandLineOptions = { inputFiles: [], warningsAsErrors: false };
+  // Default mode of the linter.
+  opts.strictMode = true;
+  opts.inputFiles = inputFiles;
 
+  const options = program.opts();
+  if (options.relax) {
+    opts.strictMode = false;
+  }
+  if (options.TSC_Errors) {
+    opts.logTscErrors = true;
+  }
+  if (options.devecoPluginMode) {
+    opts.ideMode = true;
+  }
+  if (options.testMode) {
+    opts.testMode = true;
+  }
+  if (options.projectFolder) {
+    doProjectFolderArg(options.projectFolder, opts);
+  }
+  if (options.project) {
+    doProjectArg(options.project, opts);
+  }
+  if (options.autofix) {
+    doAutofixArg(options.autofix, opts);
+  }
+  if (options.warningsAsErrors) {
+    opts.warningsAsErrors = true;
+  }
+  return opts;
+}
+
+export function parseCommandLine(commandLineArgs: string[]): CommandLineOptions {
   const program = new Command();
-  program
-    .name('tslinter')
-    .description('Linter for TypeScript sources')
-    .version('0.0.1');
-  program
-    .option('-E, --TSC_Errors', 'show error messages from Tsc')
-    .option('--relax', 'relax mode On')
-    .option('--test-mode', 'run linter as if running TS test files')
-    .option('--deveco-plugin-mode', 'run as IDE plugin')
-    .option('-p, --project <project_file>', 'path to TS project config file')
-    .option('--project-folder <project_folder>', 'path to folder containig TS files to verify', addProjectFolder, [])
-    .option('--autofix [autofix.json]', 'fix errors specified by JSON file (all if file is omitted)',
-      (val: string, prev: string|boolean) => { return val.endsWith(JSON_EXT) ? val : true; })
-    .addOption(new Option('--warnings-as-errors', 'treat warnings as errors').hideHelp(true));
-  program
-    .argument('[srcFile...]', 'files to be verified', addSrcFile);
+  program.name('tslinter').description('Linter for TypeScript sources').
+    version('0.0.1');
+  program.
+    option('-E, --TSC_Errors', 'show error messages from Tsc').
+    option('--relax', 'relax mode On').
+    option('--test-mode', 'run linter as if running TS test files').
+    option('--deveco-plugin-mode', 'run as IDE plugin').
+    option('-p, --project <project_file>', 'path to TS project config file').
+    option('--project-folder <project_folder>', 'path to folder containig TS files to verify', addProjectFolder, []).
+    option('--autofix [autofix.json]', 'fix errors specified by JSON file (all if file is omitted)', (val: string) => {
+      return val.endsWith(JSON_EXT) ? val : true;
+    }).
+    addOption(new Option('--warnings-as-errors', 'treat warnings as errors').hideHelp(true));
+  program.argument('[srcFile...]', 'files to be verified', addSrcFile);
 
-  opts.strictMode = true; // Default mode of the linter.
   inputFiles = [];
-  let cmdArgs: string[] = ['dummy', 'dummy']; // method parse() eats two first args, so make them dummy
+  // method parse() eats two first args, so make them dummy
+  let cmdArgs: string[] = ['dummy', 'dummy'];
   cmdArgs.push(...commandLineArgs);
   program.parse(cmdArgs);
   if (responseFile !== '') {
     try {
-      commandLineArgs = fs.readFileSync(responseFile.slice(1)).toString().split('\n').filter((e) => e.trimEnd());
+      commandLineArgs = fs.
+        readFileSync(responseFile.slice(1)).
+        toString().
+        split('\n').
+        filter((e) => {
+          return e.trimEnd();
+        });
       cmdArgs = ['dummy', 'dummy'];
       cmdArgs.push(...commandLineArgs);
-      program.parse( cmdArgs);
-    } catch (error: any) {
-      logger.error('Failed to read response file: ' + (error.message ?? error));
-      process.exit(-1)
+      program.parse(cmdArgs);
+    } catch (error) {
+      logger.error('Failed to read response file: ', error);
+      process.exit(-1);
     }
   }
-  opts.inputFiles = inputFiles;
 
-  const options = program.opts();
-  if (options.relax) opts.strictMode = false;
-  if (options.TSC_Errors) opts.logTscErrors = true;
-  if (options.devecoPluginMode) opts.ideMode = true;
-  if (options.testMode) opts.testMode = true;
-  if (options.projectFolder) doProjectFolderArg(options.projectFolder, opts); 
-  if (options.project) doProjectArg(options.project, opts);
-  if (options.autofix) doAutofixArg(options.autofix, opts);
-  if (options.warningsAsErrors) opts.warningsAsErrors = true;
-  return opts;
+  return formCommandLineOptions(program);
 }
 
-function doProjectFolderArg(prjFolders: string[], opts: CommandLineOptions) {
-  for( let i = 0; i < prjFolders.length; i++ ) {
-    var prjFolderPath = prjFolders[ i ];
+function doProjectFolderArg(prjFolders: string[], opts: CommandLineOptions): void {
+  for (let i = 0; i < prjFolders.length; i++) {
+    const prjFolderPath = prjFolders[i];
     try {
       opts.inputFiles.push(...getFiles(prjFolderPath));
-    } catch (error: any) {
-      logger.error('Failed to read folder: ' + (error.message ?? error));
+    } catch (error) {
+      logger.error('Failed to read folder: ', error);
       process.exit(-1);
     }
   }
 }
 
-function doProjectArg(cfgPath: string, opts: CommandLineOptions) {
+function doProjectArg(cfgPath: string, opts: CommandLineOptions): void {
   // Process project file (tsconfig.json) and retrieve config arguments.
   const configFile = cfgPath;
 
@@ -134,12 +162,15 @@ function doProjectArg(cfgPath: string, opts: CommandLineOptions) {
 
   try {
     const oldUnrecoverableDiagnostic = host.onUnRecoverableConfigFileDiagnostic;
-    host.onUnRecoverableConfigFileDiagnostic = (diagnostic: ts.Diagnostic) => { diagnostics.push(diagnostic); };
+    host.onUnRecoverableConfigFileDiagnostic = (diagnostic: ts.Diagnostic): void => {
+      diagnostics.push(diagnostic);
+    };
     opts.parsedConfigFile = ts.getParsedCommandLineOfConfigFile(configFile, {}, host);
     host.onUnRecoverableConfigFileDiagnostic = oldUnrecoverableDiagnostic;
 
-    if (opts.parsedConfigFile)
+    if (opts.parsedConfigFile) {
       diagnostics.push(...ts.getConfigFileParsingDiagnostics(opts.parsedConfigFile));
+    }
 
     if (diagnostics.length > 0) {
       // Log all diagnostic messages and exit program.
@@ -147,17 +178,20 @@ function doProjectArg(cfgPath: string, opts: CommandLineOptions) {
       logTscDiagnostic(diagnostics, logger.info);
       process.exit(-1);
     }
-  } catch (error: any) {
-    logger.error('Failed to read config file: ' + (error.message ?? error));
+  } catch (error) {
+    logger.error('Failed to read config file: ', error);
     process.exit(-1);
   }
 }
 
-function doAutofixArg(autofixOptVal: string|boolean, opts: CommandLineOptions) {
+function doAutofixArg(autofixOptVal: string | boolean, opts: CommandLineOptions): void {
   if (typeof autofixOptVal === 'string') {
-    let autofixInfoStr = fs.readFileSync(autofixOptVal).toString();
-    let autofixInfos = JSON.parse(autofixInfoStr);
-    opts.autofixInfo = autofixInfos.autofixInfo.map((x: string) => decodeAutofixInfo(x));
+    const autofixInfoStr = fs.readFileSync(autofixOptVal).toString();
+    const autofixInfos = JSON.parse(autofixInfoStr);
+    opts.autofixInfo = autofixInfos.autofixInfo.map((x: string) => {
+      return decodeAutofixInfo(x);
+    });
+  } else {
+    opts.autofixInfo = [AUTOFIX_ALL];
   }
-  else opts.autofixInfo = [AUTOFIX_ALL];
 }

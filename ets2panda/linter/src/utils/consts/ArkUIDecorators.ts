@@ -36,5 +36,5 @@ export const ARKUI_DECORATORS = [
   'StorageLink',
   'StorageProp',
   'Styles',
-  'Watch',
+  'Watch'
 ];

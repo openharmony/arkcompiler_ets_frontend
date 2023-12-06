@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
+import type * as ts from 'typescript';
 import * as path from 'node:path';
-import { TSCCompiledProgram } from './TSCCompiledProgram';
+import type { TSCCompiledProgram } from './TSCCompiledProgram';
 
 /**
  * Extracts TSC diagnostics emitted by strict checks.
@@ -26,12 +26,12 @@ import { TSCCompiledProgram } from './TSCCompiledProgram';
  */
 export function getTscDiagnostics(
   tscDiagnosticsLinter: TSCCompiledProgram,
-  sourceFiles: ts.SourceFile[],
+  sourceFiles: ts.SourceFile[]
 ): Map<string, ts.Diagnostic[]> {
   const strictDiagnostics = new Map<string, ts.Diagnostic[]>();
-  sourceFiles.forEach(file => {
+  sourceFiles.forEach((file) => {
     const diagnostics = tscDiagnosticsLinter.getStrictDiagnostics(file.fileName);
-    if (diagnostics.length != 0) {
+    if (diagnostics.length > 0) {
       strictDiagnostics.set(path.normalize(file.fileName), diagnostics);
     }
   });

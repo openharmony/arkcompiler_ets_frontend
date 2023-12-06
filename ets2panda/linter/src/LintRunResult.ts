@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import { ProblemInfo } from './ProblemInfo';
+import type { ProblemInfo } from './ProblemInfo';
 
 export interface LintRunResult {
   errorNodes: number;

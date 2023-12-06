@@ -17,8 +17,8 @@ import * as ts from 'typescript';
 import * as path from 'node:path';
 
 export function getScriptKind(srcFile: ts.SourceFile): ts.ScriptKind {
-  const fileName = srcFile.fileName
-  const ext = path.extname(fileName).toLowerCase()
+  const fileName = srcFile.fileName;
+  const ext = path.extname(fileName).toLowerCase();
   switch (ext) {
     case ts.Extension.Ts:
       return ts.ScriptKind.TS;

@@ -13,4 +13,7 @@
  * limitations under the License.
  */
 
-export enum ProblemSeverity { WARNING = 1, ERROR = 2 }
+export enum ProblemSeverity {
+  WARNING = 1,
+  ERROR = 2
+}

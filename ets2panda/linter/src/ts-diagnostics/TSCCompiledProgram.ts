@@ -14,39 +14,41 @@
  */
 
 import * as ts from 'typescript';
-import { ProblemInfo } from '../ProblemInfo';
+import type { ProblemInfo } from '../ProblemInfo';
 import { ProblemSeverity } from '../ProblemSeverity';
-import { LintOptions } from '../LintOptions';
+import type { LintOptions } from '../LintOptions';
 import { TypeScriptDiagnosticsExtractor } from './TypeScriptDiagnosticsExtractor';
 import { compile } from '../CompilerWrapper';
 import { FaultID } from '../Problems';
 import { faultsAttrs } from '../FaultAttrs';
 
 export interface TSCCompiledProgram {
-  getOriginalProgram(): ts.Program;
-  getStrictDiagnostics(fileName: string): ts.Diagnostic[];
+  getOriginalProgram: () => ts.Program;
+  getStrictDiagnostics: (fileName: string) => ts.Diagnostic[];
 }
 
 export class TSCCompiledProgramSimple implements TSCCompiledProgram {
-  private tsProgram: ts.Program;
+  private readonly tsProgram: ts.Program;
 
   constructor(program: ts.Program) {
     this.tsProgram = program;
   }
 
-  public getOriginalProgram(): ts.Program {
+  getOriginalProgram(): ts.Program {
     return this.tsProgram;
   }
 
-  public getStrictDiagnostics(fileName: string): ts.Diagnostic[] {
+  getStrictDiagnostics(fileName: string): ts.Diagnostic[] {
+    void fileName;
+    void this;
     return [];
   }
 }
 
 export class TSCCompiledProgramWithDiagnostics implements TSCCompiledProgram {
-  private diagnosticsExtractor: TypeScriptDiagnosticsExtractor;
-  private wasStrict: boolean;
-  private cachedDiagnostics: Map<string, ts.Diagnostic[]>;
+  private readonly diagnosticsExtractor: TypeScriptDiagnosticsExtractor;
+  private readonly wasStrict: boolean;
+  private readonly cachedDiagnostics: Map<string, ts.Diagnostic[]>;
 
   constructor(program: ts.Program, options: LintOptions) {
     const { strict, nonStrict, wasStrict } = getTwoCompiledVersions(program, options);
@@ -55,35 +57,40 @@ export class TSCCompiledProgramWithDiagnostics implements TSCCompiledProgram {
     this.cachedDiagnostics = new Map();
   }
 
-  public getOriginalProgram(): ts.Program {
+  getOriginalProgram(): ts.Program {
     return this.wasStrict ? this.diagnosticsExtractor.strictProgram : this.diagnosticsExtractor.nonStrictProgram;
   }
 
-  public getStrictDiagnostics(fileName: string): ts.Diagnostic[] {
+  getStrictDiagnostics(fileName: string): ts.Diagnostic[] {
     const cachedDiagnostic = this.cachedDiagnostics.get(fileName);
     if (cachedDiagnostic) {
-      return cachedDiagnostic
+      return cachedDiagnostic;
     }
     const diagnostic = this.diagnosticsExtractor.getStrictDiagnostics(fileName);
-    this.cachedDiagnostics.set(fileName, diagnostic)
+    this.cachedDiagnostics.set(fileName, diagnostic);
     return diagnostic;
   }
 }
 
-export function getStrictOptions(strict: boolean = true) {
+export function getStrictOptions(strict: boolean = true): {
+  strictNullChecks: boolean;
+  strictFunctionTypes: boolean;
+  strictPropertyInitialization: boolean;
+  noImplicitReturns: boolean;
+} {
   return {
     strictNullChecks: strict,
     strictFunctionTypes: strict,
     strictPropertyInitialization: strict,
-    noImplicitReturns: strict,
-  }
+    noImplicitReturns: strict
+  };
 }
 
 function getTwoCompiledVersions(
   program: ts.Program,
-  options: LintOptions,
+  options: LintOptions
 ): { strict: ts.Program; nonStrict: ts.Program; wasStrict: boolean } {
-  const compilerOptions = { ...program.getCompilerOptions()};
+  const compilerOptions = { ...program.getCompilerOptions() };
 
   const wasStrict = inverseStrictOptions(compilerOptions);
   const inversedOptions = getStrictOptions(!wasStrict);
@@ -92,8 +99,8 @@ function getTwoCompiledVersions(
   return {
     strict: wasStrict ? program : withInversedOptions,
     nonStrict: wasStrict ? withInversedOptions : program,
-    wasStrict: wasStrict,
-  }
+    wasStrict: wasStrict
+  };
 }
 
 /**
@@ -102,7 +109,7 @@ function getTwoCompiledVersions(
 function inverseStrictOptions(compilerOptions: ts.CompilerOptions): boolean {
   const strictOptions = getStrictOptions();
   let wasStrict = false;
-  Object.keys(strictOptions).forEach(x => {
+  Object.keys(strictOptions).forEach((x) => {
     wasStrict = wasStrict || !!compilerOptions[x];
   });
   // wasStrict evaluates true if any of the strict options was set
@@ -125,12 +132,13 @@ export function transformDiagnostic(diagnostic: ts.Diagnostic): ProblemInfo {
     start: startPos,
     end: endPos,
     type: 'StrictModeError',
-    severity: ProblemSeverity.ERROR,  // expect strict options to always present
+    // expect strict options to always present
+    severity: ProblemSeverity.ERROR,
     problem: FaultID[faultId],
     suggest: messageText,
     rule: messageText,
     ruleTag: faultsAttrs[faultId] ? Number(faultsAttrs[faultId].cookBookRef) : 0,
-    autofixable: false,
+    autofixable: false
   };
 }
 
@@ -138,10 +146,10 @@ export function transformDiagnostic(diagnostic: ts.Diagnostic): ProblemInfo {
  * Returns line and column of the position, counts from 1
  */
 function getLineAndColumn(file: ts.SourceFile, position: number): { line: number; column: number } {
-  let { line, character } = file.getLineAndCharacterOfPosition(position);
+  const { line, character } = file.getLineAndCharacterOfPosition(position);
   // TSC counts lines and columns from zero
   return {
     line: line + 1,
-    column: character + 1,
-  }
+    column: character + 1
+  };
 }

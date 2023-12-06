@@ -13,6 +13,4 @@
  * limitations under the License.
  */
 
-export const LIMITED_STD_GLOBAL_FUNC = [
-  'eval'
-];
+export const LIMITED_STD_GLOBAL_FUNC = ['eval'];

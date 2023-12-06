@@ -16,27 +16,31 @@
     "build": "npm run clean && npm run compile && npm run webpack && npm run pack:linter",
     "postinstall": "npm run build",
     "pack:linter": "rimraf bundle && mkdir bundle && npm pack --pack-destination bundle",
+    "pretest": "npm run eslint-check",
     "test": "npm run compile && rimraf test/results test_rules/results && node build/src/TestRunner.js test test_rules",
     "test_main": "npm run compile && rimraf test/results && node build/src/TestRunner.js test",
     "test_rules": "npm run compile && rimraf test_rules/results && node build/src/TestRunner.js test_rules",
-    "update-tests": "node scripts/update-test-results.mjs test test_rules"
+    "update-tests": "node scripts/update-test-results.mjs test test_rules",
+    "eslint-check": "npx eslint --ext .ts src",
+    "eslint-fix": "npm run eslint-check -- --fix",
+    "prettier-fix": "prettier src --write",
+    "fix": "npm run prettier-fix && npm run eslint-fix"
   },
   "dependencies": {
-    "typescript": "4.8.4",
+    "commander": "9.4.0",
     "log4js": "6.4.0",
-    "commander": "9.4.0"
+    "typescript": "4.8.4"
   },
   "devDependencies": {
+    "@stylistic/eslint-plugin": "latest",
     "@types/node": "18.11.7",
+    "@typescript-eslint/eslint-plugin": "latest",
+    "@typescript-eslint/parser": "latest",
+    "eslint": "latest",
+    "prettier": "latest",
     "rimraf": "^3.0.2",
     "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1",
-    "@typescript-eslint/eslint-plugin": "5.51.0",
-    "@typescript-eslint/parser": "5.51.0",
-    "eslint": "7.32.0",
-    "eslint-config-prettier": "^6.15.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "prettier": "^2.0.5"
+    "webpack-cli": "^5.0.1"
   },
   "bundledDependencies": [
     "typescript",

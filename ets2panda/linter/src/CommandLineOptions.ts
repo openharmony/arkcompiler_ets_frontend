@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
-import { AutofixInfo } from './autofixes/AutofixInfo';
+import type * as ts from 'typescript';
+import type { AutofixInfo } from './autofixes/AutofixInfo';
 
 export interface CommandLineOptions {
   testMode?: boolean;
