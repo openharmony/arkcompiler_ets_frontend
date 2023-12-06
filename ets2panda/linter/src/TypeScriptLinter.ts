@@ -603,8 +603,8 @@ export class TypeScriptLinter {
       // missing exact rule
       this.incrementCounters(propertyAccessNode.expression, FaultID.ClassAsObject);
     }
-    if (baseExprSym !== undefined && this.tsUtils.symbolHasEsObjectType(baseExprSym)) {
-      this.incrementCounters(propertyAccessNode, FaultID.EsObjectAccess);
+    if (!!baseExprSym && this.tsUtils.symbolHasEsObjectType(baseExprSym)) {
+      this.incrementCounters(propertyAccessNode, FaultID.EsObjectType);
     }
   }
 
@@ -930,9 +930,7 @@ export class TypeScriptLinter {
         if (this.tsUtils.needToDeduceStructuralIdentity(leftOperandType, rightOperandType, tsRhsExpr)) {
           this.incrementCounters(tsBinaryExpr, FaultID.StructuralIdentity);
         }
-        if (typeNode) {
-          this.handleEsObjectAssignment(tsBinaryExpr, typeNode, tsRhsExpr);
-        }
+        this.handleEsObjectAssignment(tsBinaryExpr, typeNode, tsRhsExpr);
         break;
       default:
         return;
@@ -1019,38 +1017,40 @@ export class TypeScriptLinter {
       if (this.tsUtils.needToDeduceStructuralIdentity(tsVarType, tsInitType, tsVarInit)) {
         this.incrementCounters(tsVarDecl, FaultID.StructuralIdentity);
       }
-
-      this.handleEsObjectAssignment(tsVarDecl, tsVarDecl.type, tsVarInit);
     }
+    this.handleEsObjectDelaration(tsVarDecl);
     this.handleDeclarationInferredType(tsVarDecl);
     this.handleDefiniteAssignmentAssertion(tsVarDecl);
   }
 
-  private handleEsObjectAssignment(node: ts.Node, type: ts.TypeNode, value: ts.Node) {
-    if (!this.tsUtils.isEsObjectType(type)) {
-      let valueTypeNode = this.tsUtils.getVariableDeclarationTypeNode(value);
-      if (!!valueTypeNode && this.tsUtils.isEsObjectType(valueTypeNode)) {
-        this.incrementCounters(node, FaultID.EsObjectAssignment);
-      }
-
-      return
-    }
-
-    if (ts.isArrayLiteralExpression(value) || ts.isObjectLiteralExpression(value)) {
-      this.incrementCounters(node, FaultID.EsObjectAssignment);
+  private handleEsObjectDelaration(node: ts.VariableDeclaration) {
+    const isDeclaredESObject = !!node.type && this.tsUtils.isEsObjectType(node.type);
+    const initalizerTypeNode = node.initializer && this.tsUtils.getVariableDeclarationTypeNode(node.initializer);
+    const isInitializedWithESObject = !!initalizerTypeNode && this.tsUtils.isEsObjectType(initalizerTypeNode);
+    const isLocal = this.tsUtils.isInsideBlock(node)
+    if ((isDeclaredESObject || isInitializedWithESObject) && !isLocal) {
+      this.incrementCounters(node, FaultID.EsObjectType);
       return;
     }
 
-    const valueType = this.tsTypeChecker.getTypeAtLocation(value);
-    if (this.tsUtils.isUnsupportedType(valueType)) {
+    if (node.initializer) {
+      this.handleEsObjectAssignment(node, node.type, node.initializer);
+    }
+  }
+
+  private handleEsObjectAssignment(node: ts.Node, nodeDeclType: ts.TypeNode | undefined, initializer: ts.Node) {
+    const isTypeAnnotated = !!nodeDeclType;
+    const isDeclaredESObject = isTypeAnnotated && this.tsUtils.isEsObjectType(nodeDeclType);
+    const initalizerTypeNode = this.tsUtils.getVariableDeclarationTypeNode(initializer);
+    const isInitializedWithESObject = !!initalizerTypeNode && this.tsUtils.isEsObjectType(initalizerTypeNode);
+    if (isTypeAnnotated && !isDeclaredESObject && isInitializedWithESObject) {
+      this.incrementCounters(node, FaultID.EsObjectType);
       return;
     }
 
-    if (this.tsUtils.isAnonymousType(valueType)) {
-      return;
+    if (isDeclaredESObject && !this.tsUtils.isValueAssignableToESObject(initializer)) {
+      this.incrementCounters(node, FaultID.EsObjectType);
     }
-
-    this.incrementCounters(node, FaultID.EsObjectAssignment);
   }
 
   private handleCatchClause(node: ts.Node) {
@@ -1237,18 +1237,19 @@ export class TypeScriptLinter {
   }
 
   private handleIdentifier(node: ts.Node) {
-    let tsIdentifier = node as ts.Identifier;
-    let tsIdentSym = this.tsUtils.trueSymbolAtLocation(tsIdentifier);
-    if (tsIdentSym !== undefined) {
-      if (
-        (tsIdentSym.flags & ts.SymbolFlags.Module) !== 0 &&
-        (tsIdentSym.flags & ts.SymbolFlags.Transient) !== 0 &&
-        tsIdentifier.text === 'globalThis'
-      ) {
-        this.incrementCounters(node, FaultID.GlobalThis);
-      } else {
-        this.handleRestrictedValues(tsIdentifier, tsIdentSym);
-      }
+    const tsIdentifier = node as ts.Identifier;
+    const tsIdentSym = this.tsUtils.trueSymbolAtLocation(tsIdentifier);
+    if (!tsIdentSym) {
+      return
+    }
+    if (
+      (tsIdentSym.flags & ts.SymbolFlags.Module) !== 0 &&
+      (tsIdentSym.flags & ts.SymbolFlags.Transient) !== 0 &&
+      tsIdentifier.text === 'globalThis'
+    ) {
+      this.incrementCounters(node, FaultID.GlobalThis);
+    } else {
+      this.handleRestrictedValues(tsIdentifier, tsIdentSym);
     }
   }
 
@@ -1330,7 +1331,7 @@ export class TypeScriptLinter {
     }
 
     if (this.tsUtils.hasEsObjectType(tsElementAccessExpr.expression)) {
-      this.incrementCounters(node, FaultID.EsObjectAccess);
+      this.incrementCounters(node, FaultID.EsObjectType);
     }
   }
 
@@ -1379,7 +1380,7 @@ export class TypeScriptLinter {
       this.handleStdlibAPICall(tsCallExpr, calleeSym);
       this.handleFunctionApplyBindPropCall(tsCallExpr, calleeSym);
       if (this.tsUtils.symbolHasEsObjectType(calleeSym)) {
-        this.incrementCounters(tsCallExpr, FaultID.EsObjectAccess);
+        this.incrementCounters(tsCallExpr, FaultID.EsObjectType);
       }
     }
     if (callSignature !== undefined) {
@@ -1391,7 +1392,7 @@ export class TypeScriptLinter {
     this.handleLibraryTypeCall(tsCallExpr, calleeType);
 
     if (ts.isPropertyAccessExpression(tsCallExpr.expression) && this.tsUtils.hasEsObjectType(tsCallExpr.expression.expression)) {
-      this.incrementCounters(node, FaultID.EsObjectAccess);
+      this.incrementCounters(node, FaultID.EsObjectType);
     }
   }
 
@@ -1617,26 +1618,37 @@ export class TypeScriptLinter {
   }
 
   private handleTypeReference(node: ts.Node) {
-    let typeRef = node as ts.TypeReferenceNode;
-    if (this.tsUtils.isEsObjectType(typeRef) && !this.tsUtils.isEsObjectAllowed(typeRef)) {
+    const typeRef = node as ts.TypeReferenceNode;
+
+    const isESObject = this.tsUtils.isEsObjectType(typeRef);
+    const isPossiblyValidContext = this.tsUtils.isEsObjectPossiblyAllowed(typeRef);
+    if (isESObject && !isPossiblyValidContext) {
       this.incrementCounters(node, FaultID.EsObjectType);
-    } else if (ts.isIdentifier(typeRef.typeName) && LIMITED_STANDARD_UTILITY_TYPES.includes(typeRef.typeName.text))
+      return;
+    }
+
+    const typeName = this.tsUtils.entityNameToString(typeRef.typeName);
+    const isStdUtilityType = LIMITED_STANDARD_UTILITY_TYPES.includes(typeName);
+    if (isStdUtilityType) {
       this.incrementCounters(node, FaultID.UtilityType);
-    else if (
-      ts.isIdentifier(typeRef.typeName) && typeRef.typeName.text === 'Partial' &&
-      typeRef.typeArguments && typeRef.typeArguments.length === 1
-    ) {
-      // Using Partial<T> type is allowed only when its argument type is either Class or Interface.
-      let argType = this.tsTypeChecker.getTypeFromTypeNode(typeRef.typeArguments[0]);
-      if (!argType || !argType.isClassOrInterface())
-        this.incrementCounters(node, FaultID.UtilityType);
+      return;
+    }
+
+    // Using Partial<T> type is allowed only when its argument type is either Class or Interface.
+    const isStdPartial = this.tsUtils.entityNameToString(typeRef.typeName) === 'Partial';
+    const hasSingleTypeArgument = !!typeRef.typeArguments && typeRef.typeArguments.length === 1;
+    const argType = hasSingleTypeArgument && this.tsTypeChecker.getTypeFromTypeNode(typeRef.typeArguments[0]);
+    if (isStdPartial && argType && !argType.isClassOrInterface()) {
+      this.incrementCounters(node, FaultID.UtilityType);
+      return;
     }
   }
 
   private handleMetaProperty(node: ts.Node) {
     let tsMetaProperty = node as ts.MetaProperty;
-    if (tsMetaProperty.name.text === 'target')
+    if (tsMetaProperty.name.text === 'target') {
       this.incrementCounters(node, FaultID.NewTarget);
+    }
   }
 
   private handleStructDeclaration(node: ts.Node) {

@@ -1115,20 +1115,27 @@ export class TsUtils {
       typeNode.typeName.text == ES_OBJECT;
   }
 
-  public isEsObjectAllowed(typeRef: ts.TypeReferenceNode): boolean {
-    let node = typeRef.parent;
-
-    if (!this.isVarDeclaration(node)) {
-      return false;
-    }
-
-    while (node) {
-      if (ts.isBlock(node)) {
+  public isInsideBlock(node: ts.Node): boolean {
+    let par = node.parent
+    while (par) {
+      if (ts.isBlock(par)) {
         return true;
       }
-      node = node.parent;
+      par = par.parent;
     }
     return false;
+  }
+
+  public isEsObjectPossiblyAllowed(typeRef: ts.TypeReferenceNode): boolean {
+    return ts.isVariableDeclaration(typeRef.parent);
+  }
+
+  public isValueAssignableToESObject(node: ts.Node): boolean {
+    if (ts.isArrayLiteralExpression(node) || ts.isObjectLiteralExpression(node)) {
+      return false;
+    }
+    const valueType = this.tsTypeChecker.getTypeAtLocation(node);
+    return this.isUnsupportedType(valueType) || this.isAnonymousType(valueType)
   }
 
   public getVariableDeclarationTypeNode(node: ts.Node): ts.TypeNode | undefined {
@@ -1160,7 +1167,7 @@ export class TsUtils {
   public isEsObjectSymbol(sym: ts.Symbol): boolean {
     let decl = this.getDeclaration(sym);
     return !!decl && ts.isTypeAliasDeclaration(decl) && decl.name.escapedText == ES_OBJECT &&
-      decl.type.kind == ts.SyntaxKind.AnyKeyword;
+      decl.type.kind === ts.SyntaxKind.AnyKeyword;
   }
 
   public isAnonymousType(type: ts.Type): boolean {

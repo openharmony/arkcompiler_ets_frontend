@@ -34,6 +34,6 @@ export enum FaultID {
   NewTarget, DefiniteAssignment, Prototype, GlobalThis,
   UtilityType, PropertyDeclOnFunction, FunctionApplyBindCall, ConstAssertion, ImportAssertion, 
   SpreadOperator, LimitedStdLibApi, ErrorSuppression, StrictDiagnostic, UnsupportedDecorators, ImportAfterStatement,
-  EsObjectType, EsObjectAssignment, EsObjectAccess,
+  EsObjectType,
   LAST_ID, // this should always be last enum`
 }
