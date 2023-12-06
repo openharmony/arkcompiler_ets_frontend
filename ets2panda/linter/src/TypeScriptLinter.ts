@@ -159,7 +159,6 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.ElementAccessExpression, this.handleElementAccessExpression],
     [ts.SyntaxKind.EnumMember, this.handleEnumMember],
     [ts.SyntaxKind.TypeReference, this.handleTypeReference],
-    [ts.SyntaxKind.ExportDeclaration, this.handleExportDeclaration],
     [ts.SyntaxKind.ExportAssignment, this.handleExportAssignment],
     [ts.SyntaxKind.CallExpression, this.handleCallExpression],
     [ts.SyntaxKind.MetaProperty, this.handleMetaProperty],
@@ -1165,27 +1164,11 @@ export class TypeScriptLinter {
         this.incrementCounters(defaultSpec, FaultID.DefaultImport, true, autofix);
       }
     }
-    if (tsImportClause.isTypeOnly) {
-      let autofix: Autofix[] | undefined;
-      if (this.autofixesInfo.shouldAutofix(node, FaultID.TypeOnlyImport))
-        autofix = [ Autofixer.dropTypeOnlyFlag(tsImportClause) ];
-      this.incrementCounters(node, FaultID.TypeOnlyImport, true, autofix);
-    }
   }
 
   private handleImportSpecifier(node: ts.Node) {
     let importSpec = node as ts.ImportSpecifier;
     this.countDeclarationsWithDuplicateName(importSpec.name, importSpec);
-    // Don't report or autofix type-only flag on default import if the latter has been autofixed already.
-    if (
-      importSpec.isTypeOnly &&
-      (!this.tsUtils.isDefaultImport(importSpec) || !this.autofixesInfo.shouldAutofix(importSpec, FaultID.DefaultImport))
-    ) {
-      let autofix: Autofix[] | undefined;
-      if (this.autofixesInfo.shouldAutofix(node, FaultID.TypeOnlyImport))
-        autofix = [ Autofixer.dropTypeOnlyFlag(importSpec) ];
-      this.incrementCounters(node, FaultID.TypeOnlyImport, true, autofix);
-    }
   }
 
   private handleNamespaceImport(node: ts.Node) {
@@ -1372,27 +1355,6 @@ export class TypeScriptLinter {
       return;
     if(firstEnumMemberType !== tsEnumMemberType) {
       this.incrementCounters(node, FaultID.EnumMemberNonConstInit);
-    }
-  }
-
-  private handleExportDeclaration(node: ts.Node) {
-    let tsExportDecl = node as ts.ExportDeclaration;
-    if (tsExportDecl.isTypeOnly) {
-      let autofix: Autofix[] | undefined;
-      if (this.autofixesInfo.shouldAutofix(node, FaultID.TypeOnlyExport))
-        autofix = [ Autofixer.dropTypeOnlyFlag(tsExportDecl) ];
-      this.incrementCounters(node, FaultID.TypeOnlyExport, true, autofix);
-    }
-    let exportClause = tsExportDecl.exportClause;
-    if (exportClause && ts.isNamedExports(exportClause)) {
-      for (const exportSpec of exportClause.elements) {
-        if (exportSpec.isTypeOnly) {
-          let autofix: Autofix[] | undefined;
-          if (this.autofixesInfo.shouldAutofix(exportSpec, FaultID.TypeOnlyExport))
-            autofix = [ Autofixer.dropTypeOnlyFlag(exportSpec) ];
-          this.incrementCounters(exportSpec, FaultID.TypeOnlyExport, true, autofix);
-        }
-      }
     }
   }
 

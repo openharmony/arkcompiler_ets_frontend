@@ -76,8 +76,6 @@ faultDesc[FaultID.MultipleStaticBlocks] = 'Multiple static blocks';
 faultDesc[FaultID.ThisType] = '"this" type';
 faultDesc[FaultID.IntefaceExtendDifProps] = 'Extends same properties with different types';
 faultDesc[FaultID.StructuralIdentity] = 'Use of type structural identity';
-faultDesc[FaultID.TypeOnlyImport] = 'Type-only imports';
-faultDesc[FaultID.TypeOnlyExport] = 'Type-only exports';
 faultDesc[FaultID.DefaultImport] = 'Default import declarations';
 faultDesc[FaultID.ExportAssignment] = 'Export assignments (export = ..)';
 faultDesc[FaultID.ImportAssignment] = 'Import assignments (import = ..)';

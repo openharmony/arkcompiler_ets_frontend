@@ -112,94 +112,16 @@
             "autofixable": false
         },
         {
-            "line": 92,
-            "column": 8,
-            "problem": "TypeOnlyImport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 1923,
-                    "end": 1947,
-                    "replacementText": "{ APIResponseType }"
-                }
-            ]
-        },
-        {
             "line": 93,
             "column": 1,
             "problem": "ImportAfterStatement",
             "autofixable": false
         },
         {
-            "line": 93,
-            "column": 8,
-            "problem": "TypeOnlyImport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 1969,
-                    "end": 1980,
-                    "replacementText": "* as P"
-                }
-            ]
-        },
-        {
             "line": 94,
             "column": 1,
             "problem": "ImportAfterStatement",
             "autofixable": false
-        },
-        {
-            "line": 94,
-            "column": 10,
-            "problem": "TypeOnlyImport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 2002,
-                    "end": 2009,
-                    "replacementText": "T1"
-                }
-            ]
-        },
-        {
-            "line": 94,
-            "column": 19,
-            "problem": "TypeOnlyImport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 2011,
-                    "end": 2024,
-                    "replacementText": "T2 as T3"
-                }
-            ]
-        },
-        {
-            "line": 97,
-            "column": 1,
-            "problem": "TypeOnlyExport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 2063,
-                    "end": 2094,
-                    "replacementText": "export { TypeA as TypeB };"
-                }
-            ]
-        },
-        {
-            "line": 98,
-            "column": 10,
-            "problem": "TypeOnlyExport",
-            "autofixable": true,
-            "autofix": [
-                {
-                    "start": 2104,
-                    "end": 2127,
-                    "replacementText": "TypeFoo as TypeBar"
-                }
-            ]
         },
         {
             "line": 106,
