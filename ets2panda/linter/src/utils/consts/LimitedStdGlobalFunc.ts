@@ -14,5 +14,5 @@
  */
 
 export const LIMITED_STD_GLOBAL_FUNC = [
-  'eval', 'isFinite', 'isNaN', 'parseFloat', 'parseInt'
+  'eval'
 ];

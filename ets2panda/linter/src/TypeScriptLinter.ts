@@ -28,7 +28,6 @@ import { ProblemSeverity } from './ProblemSeverity';
 import Logger from '../utils/logger';
 import { ARKUI_DECORATORS } from './utils/consts/ArkUIDecorators';
 import { LIMITED_STD_GLOBAL_FUNC } from './utils/consts/LimitedStdGlobalFunc';
-import { LIMITED_STD_GLOBAL_VAR } from './utils/consts/LimitedStdGlobalVar';
 import { LIMITED_STD_OBJECT_API } from './utils/consts/LimitedStdObjectAPI';
 import { LIMITED_STD_REFLECT_API } from './utils/consts/LimitedStdReflectAPI';
 import { LIMITED_STD_PROXYHANDLER_API } from './utils/consts/LimitedStdProxyHandlerAPI';
@@ -1245,12 +1244,11 @@ export class TypeScriptLinter {
         (tsIdentSym.flags & ts.SymbolFlags.Module) !== 0 &&
         (tsIdentSym.flags & ts.SymbolFlags.Transient) !== 0 &&
         tsIdentifier.text === 'globalThis'
-      )
+      ) {
         this.incrementCounters(node, FaultID.GlobalThis);
-      else if (this.tsUtils.isGlobalSymbol(tsIdentSym) && LIMITED_STD_GLOBAL_VAR.includes(tsIdentSym.getName()))
-        this.incrementCounters(node, FaultID.LimitedStdLibApi);
-      else
+      } else {
         this.handleRestrictedValues(tsIdentifier, tsIdentSym);
+      }
     }
   }
 
