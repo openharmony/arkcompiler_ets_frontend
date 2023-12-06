@@ -100,3 +100,22 @@ CCCCCCCCC['ROB']
 CCCCCCCCC[CCCCCCCCC.KATE]
 CCCCCCCCC[CCCCCCCCC.BOB]
 CCCCCCCCC[CCCCCCCCC.ROB]
+
+let arr32 = new Float32Array([1,2,3])
+
+let iter_arr32 = arr32[Symbol.iterator]()
+let tmp_arr32 = iter_arr32.next().value;
+while (!!tmp_arr32) {
+  console.log(tmp_arr32[0])
+
+  tmp_arr32 = iter_arr32.next().value
+}
+
+let arr = new Array<string>()
+arr = ['a','f','g']
+let iter_arr = arr[Symbol.iterator]()
+let tmp_arr = iter_arr.next().value;
+while (!!tmp_arr) {
+  console.log(tmp_arr[0])
+  tmp_arr = iter_arr.next().value
+}

@@ -332,13 +332,6 @@
         {
             "line": 79,
             "column": 5,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
-            "line": 79,
-            "column": 5,
             "problem": "EsObjectType",
             "suggest": "",
             "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)"
@@ -668,23 +661,9 @@
         {
             "line": 188,
             "column": 5,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
-        },
-        {
-            "line": 188,
-            "column": 5,
             "problem": "EsObjectType",
             "suggest": "",
             "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)"
-        },
-        {
-            "line": 189,
-            "column": 5,
-            "problem": "PropertyAccessByIndex",
-            "suggest": "",
-            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
         },
         {
             "line": 189,
