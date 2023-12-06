@@ -171,6 +171,13 @@
         {
             "line": 82,
             "column": 19,
+            "problem": "PropertyAccessByIndex",
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
+        },
+        {
+            "line": 82,
+            "column": 19,
             "problem": "FunctionExpression",
             "suggest": "",
             "rule": "Use arrow functions instead of function expressions (arkts-no-func-expressions)"

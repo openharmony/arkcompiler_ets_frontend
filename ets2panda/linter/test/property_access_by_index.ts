@@ -28,3 +28,75 @@ function test() {
   SetProperty(a, 'u', 'def');
   return GetProperty<A, string>(a, 'v') + GetProperty<A, string>(a, 'u');
 }
+
+let ar1 = [1, 2, 3, 4];
+let ar2 = [1, '2', 3, 4];
+let ar3: number[] = [];
+
+ar1[2];
+ar2[2];
+ar3[2];
+
+const r0 = [1, 2, 3][1];
+let r1 = [1, 2, 3, 4][0]
+let r2 = [1, '2', 3, 4][0]
+
+function fobject1(o: object) {
+  o['j']
+}
+
+function fobject2(o: Object) {
+  o['k']
+}
+
+let array1 = [0,1]
+let array2 = [1,2,3,4,5]
+let array3: number[] = [1,2,3,4,5]
+let array4: Array<number> = [1,2,3,4,5]
+let array5 = new Array(10)
+let array6 = new Int8Array(10)
+let array7 = new Uint8Array(10)
+let array8 = new Uint8ClampedArray(10)
+let array9 = new Int16Array(10)
+let array10 = new Uint16Array(10)
+let array11 = new Int32Array(10)
+let array12 = new Uint32Array(10)
+let array13 = new Float32Array(10)
+let array14 = new Float64Array(10)
+let array15 = new BigInt64Array(10)
+let array16 = new BigUint64Array(10)
+
+array1[0];
+array2[0];
+array3[0];
+array4[0];
+array5[0];
+array6[0];
+array7[0];
+array8[0];
+array9[0];
+array10[0];
+array11[0];
+array12[0];
+array13[0];
+array14[0];
+array15[0];
+array16[0];
+
+function fff1(r: Record<string, number>) {
+    r['bob']
+}
+
+enum CCCCCCCCC {
+  KATE,
+  BOB,
+  ROB,
+}
+
+CCCCCCCCC['KATE']
+CCCCCCCCC['BOB']
+CCCCCCCCC['ROB']
+
+CCCCCCCCC[CCCCCCCCC.KATE]
+CCCCCCCCC[CCCCCCCCC.BOB]
+CCCCCCCCC[CCCCCCCCC.ROB]

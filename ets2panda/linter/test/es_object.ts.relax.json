@@ -521,9 +521,16 @@
         {
             "line": 148,
             "column": 5,
-            "problem": "AnyType",
+            "problem": "EsObjectType",
             "suggest": "",
-            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
+            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)"
+        },
+        {
+            "line": 149,
+            "column": 1,
+            "problem": "EsObjectType",
+            "suggest": "",
+            "rule": "Usage of \"ESObject\" type is restricted (arkts-limited-esobj)"
         },
         {
             "line": 154,

@@ -124,4 +124,3 @@ class P {
 let a1 = [ { n:1, s:"1" } as P,  { n:2, s:"2" } as P ]; // OK
 let a2: P[] =  [ { n:3, s:"3" },  { n:4, s:"4" } ]; // OK
 let a3 =  [ { n:1, s:"1" },  { n:2, s:"2" } ]; // NOT OK
-  

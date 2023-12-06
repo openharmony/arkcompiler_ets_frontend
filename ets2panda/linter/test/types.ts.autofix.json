@@ -215,6 +215,14 @@
             "rule": "\"in\" operator is not supported (arkts-no-in)"
         },
         {
+            "line": 78,
+            "column": 5,
+            "problem": "PropertyAccessByIndex",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
+        },
+        {
             "line": 92,
             "column": 22,
             "problem": "IntersectionType",

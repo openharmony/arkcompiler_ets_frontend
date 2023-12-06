@@ -145,7 +145,7 @@ foo4([2, 3])
 foo5([2, 3])
 foo4(["str1", "str2"])
 foo5(["str1", "str2"])
-let n = new ESObject[0]
+let n: ESObject
 n = null
 
 foo4(n)

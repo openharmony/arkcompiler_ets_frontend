@@ -10,9 +10,13 @@ that are either declared in the class, or accessible via inheritance. Accessing
 any other fields is prohibited, and causes compile-time errors.
 
 To access a field, use ``obj.field`` syntax, indexed access (``obj["field"]``)
-is not supported. An exception are all typed arrays from the standard library
-(for example, ``Int32Array``), which support access to their elements through
-``container[index]`` syntax.
+is not supported. An exception are: 
+
+- All typed arrays from the standard library (for example, ``Int32Array``), which
+support access to their elements through ``container[index]`` syntax.
+- Tuples.
+- Records.
+- Enums.
 
 
 ## TypeScript

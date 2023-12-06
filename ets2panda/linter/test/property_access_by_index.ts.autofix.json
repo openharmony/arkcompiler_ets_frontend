@@ -29,6 +29,30 @@
             "autofixable": false,
             "suggest": "",
             "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
+        },
+        {
+            "line": 45,
+            "column": 3,
+            "problem": "PropertyAccessByIndex",
+            "autofixable": true,
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
+        },
+        {
+            "line": 49,
+            "column": 3,
+            "problem": "PropertyAccessByIndex",
+            "autofixable": true,
+            "suggest": "",
+            "rule": "Indexed access is not supported for fields (arkts-no-props-by-index)"
+        },
+        {
+            "line": 56,
+            "column": 5,
+            "problem": "AnyType",
+            "autofixable": false,
+            "suggest": "",
+            "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         }
     ]
 }
