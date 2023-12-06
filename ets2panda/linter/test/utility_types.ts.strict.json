@@ -292,7 +292,7 @@
         {
             "line": 178,
             "column": 12,
-            "problem": "FunctionApplyBindCall"
+            "problem": "FunctionApplyCall"
         },
         {
             "line": 184,
@@ -317,7 +317,7 @@
         {
             "line": 187,
             "column": 54,
-            "problem": "FunctionApplyBindCall"
+            "problem": "FunctionBind"
         },
         {
             "line": 208,

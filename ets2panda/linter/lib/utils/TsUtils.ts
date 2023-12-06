@@ -90,12 +90,15 @@ export class TsUtils {
   }
 
   static isEnumType(tsType: ts.Type): boolean {
+    // when type equals `typeof <Enum>`, only symbol contains information about it's type.
+    const isEnumSymbol = tsType.symbol && this.isEnum(tsType.symbol);
+    // otherwise, we should analyze flags of the type itself
+    const isEnumType = !!(tsType.flags & ts.TypeFlags.Enum) || !!(tsType.flags & ts.TypeFlags.EnumLiteral);
+    return isEnumSymbol || isEnumType;
+  }
 
-    /*
-     * Note: For some reason, test (tsType.flags & ts.TypeFlags.Enum) != 0 doesn't work here.
-     * Must use SymbolFlags to figure out if this is an enum type.
-     */
-    return tsType.symbol && (tsType.symbol.flags & ts.SymbolFlags.Enum) !== 0;
+  static isEnum(tsSymbol: ts.Symbol): boolean {
+    return !!(tsSymbol.flags & ts.SymbolFlags.Enum);
   }
 
   static hasModifier(tsModifiers: readonly ts.Modifier[] | undefined, tsModifierKind: number): boolean {
@@ -835,7 +838,8 @@ export class TsUtils {
   }
 
   private validateField(type: ts.Type, prop: ts.PropertyAssignment): boolean {
-    const propName = prop.name.getText();
+    const propNameSymbol = this.tsTypeChecker.getSymbolAtLocation(prop.name);
+    const propName = propNameSymbol?.escapedName.toString() ?? prop.name.getText();
     const propSym = this.findProperty(type, propName);
     if (!propSym?.declarations?.length) {
       return false;

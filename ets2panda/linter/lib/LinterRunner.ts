@@ -40,6 +40,7 @@ import {
   ARKTS_IGNORE_FILES
 } from './utils/consts/ArktsIgnorePaths';
 import { pathContainsDirectory } from './utils/functions/PathHelper';
+import { ProblemSeverity } from './ProblemSeverity';
 
 function prepareInputFilesList(cmdOptions: CommandLineOptions): string[] {
   let inputFiles = cmdOptions.inputFiles;
@@ -77,10 +78,13 @@ function countProblems(linter: TypeScriptLinter): [number, number] {
       // In relax mode skip migratable
       continue;
     }
-    if (faultsAttrs[i].warning) {
-      warningNodes += linter.nodeCounters[i];
-    } else {
-      errorNodesTotal += linter.nodeCounters[i];
+    switch (faultsAttrs[i].severity) {
+      case ProblemSeverity.ERROR:
+        errorNodesTotal += linter.nodeCounters[i];
+        break;
+      case ProblemSeverity.WARNING:
+        warningNodes += linter.nodeCounters[i];
+        break;
     }
   }
 
@@ -226,13 +230,15 @@ function countProblemFiles(
   let warningNodes = 0;
   for (let i = 0; i < FaultID.LAST_ID; i++) {
     const nodeCounterDiff = linter.nodeCounters[i] - nodeCounters[i];
-    if (faultsAttrs[i].warning) {
-      warningNodes += nodeCounterDiff;
-    } else {
-      errorNodes += nodeCounterDiff;
+    switch (faultsAttrs[i].severity) {
+      case ProblemSeverity.ERROR:
+        errorNodes += nodeCounterDiff;
+        break;
+      case ProblemSeverity.WARNING:
+        warningNodes += nodeCounterDiff;
+        break;
     }
   }
-
   if (errorNodes > 0) {
     filesNumber++;
     const errorRate = (errorNodes / fileNodes * 100).toFixed(2);

@@ -59,7 +59,7 @@
         {
             "line": 102,
             "column": 15,
-            "problem": "FunctionApplyBindCall",
+            "problem": "FunctionBind",
             "suggest": "",
             "rule": "\"Function.apply\", \"Function.bind\", \"Function.call\" are not supported (arkts-no-func-apply-bind-call)"
         }

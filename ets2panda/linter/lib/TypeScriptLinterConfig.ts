@@ -123,7 +123,6 @@ export class LinterConfig {
     [ts.SyntaxKind.ThisType, FaultID.ThisType],
     [ts.SyntaxKind.TypeQuery, FaultID.TypeQuery],
     [ts.SyntaxKind.DeleteExpression, FaultID.DeleteOperator],
-    [ts.SyntaxKind.RegularExpressionLiteral, FaultID.RegexLiteral],
     [ts.SyntaxKind.TypePredicate, FaultID.IsOperator],
     [ts.SyntaxKind.YieldExpression, FaultID.YieldExpression],
     [ts.SyntaxKind.IndexSignature, FaultID.IndexMember],

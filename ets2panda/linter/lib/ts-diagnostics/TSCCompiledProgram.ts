@@ -141,7 +141,7 @@ export function transformDiagnostic(diagnostic: ts.Diagnostic): ProblemInfo {
     problem: FaultID[faultId],
     suggest: messageText,
     rule: messageText,
-    ruleTag: faultsAttrs[faultId] ? Number(faultsAttrs[faultId].cookBookRef) : 0,
+    ruleTag: faultsAttrs[faultId] ? faultsAttrs[faultId].cookBookRef : 0,
     autofixable: false
   };
 }
