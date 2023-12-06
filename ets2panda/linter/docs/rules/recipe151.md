@@ -1,18 +1,18 @@
-
 #  Usage of ``ESObject`` type is restricted
 
-Rule ``arkts-limited-esobject``
+Rule ``arkts-limited-esobj``
 
 **Severity: warning**
 
-ArkTS does not allow using ``ESObject`` type in some cases. The most part of limitations
-are put in place in order to prevent spread of dynamic objects in the static codebase.
-The only scenario where it is permited to use ``ESObject`` as type specifier is in local
-variable declaration. Initialization of variables with ``ESObject`` type is also limited.
-Such variables can only be initialized with values that originate from interop:
-other ``ESObject`` typed variables, any, unknown, variables with anonymous type, etc.
-It is prohibited to initialize ``ESObject`` typed variable with statically typed value.
-Varaible of type ``ESObject`` can only be passed to interop calls and assigned to other
+ArkTS does not allow using ``ESObject`` type in some cases. The most part of
+limitations are put in place in order to prevent spread of dynamic objects in
+the static codebase. The only scenario where it is permited to use ``ESObject``
+as type specifier is in local variable declaration. Initialization of variables
+with ``ESObject`` type is also limited. Such variables can only be initialized
+with values that originate from interop: other ``ESObject`` typed variables,
+any, unknown, variables with anonymous type, etc. It is prohibited to
+initialize ``ESObject`` typed variable with statically typed value. Varaible
+of type ``ESObject`` can only be passed to interop calls and assigned to other
 variables of type ``ESObject``.
 
 
@@ -33,12 +33,13 @@ variables of type ``ESObject``.
         let e3: ESObject = {}; // CTE - can't initialize ESObject with not dynamic values
         let e4: ESObject = []; // CTE - can't initialize ESObject with not dynamic values
         let e5: ESObject = ""; // CTE - can't initialize ESObject with not dynamic values
+        e5['prop'] // CTE - can't access dynamic properties of ESObject
+        e5[1] // CTE - can't access dynamic properties of ESObject
+        e5.prop // CTE - can't access dynamic properties of ESObject
+
         let e6: ESObject = foo(); // OK - explicitly annotaded as ESObject
         let e7 = e6; // OK - initialize ESObject with ESObject
-        e6['prop'] // CTE - can't access dynamic properties of ESObject
-        e6[1] // CTE - can't access dynamic properties of ESObject
-        e6.prop // CTE - can't access dynamic properties of ESObject
-        bar(e6) // OK - ESObject is passed to interop call
+        bar(e7) // OK - ESObject is passed to interop call
     }
 ```
 
