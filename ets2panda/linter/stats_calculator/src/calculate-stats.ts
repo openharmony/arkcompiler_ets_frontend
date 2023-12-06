@@ -44,7 +44,7 @@ interface ArkTsIssueType {
   description: string;
   type: string;
   count: number;
-};
+}
 
 interface Statistics {
   totalErrors: number;
@@ -52,22 +52,22 @@ interface Statistics {
   linesWithErrors: number;
   linesWithWarnings: number;
   issues: Map<number, ArkTsIssueType>;
-};
+}
 
 function isError(defectInfo: DefectInfo): boolean {
   return defectInfo.category === ARK_TS_ISSUES_ERROR_CATEGORY;
 }
 
-function fillIssueInfo(statistics: Statistics, defectInfo: DefectInfo) {
-  const recipeNo = parseInt(defectInfo.ruleDocPath!!.substring(
-    'docs/recipe'.length,
-    defectInfo.ruleDocPath!!.length - '.md'.length));
-  let issueInfo = statistics.issues.get(recipeNo);
+function fillIssueInfo(statistics: Statistics, defectInfo: DefectInfo): void {
+  const recipeNo = parseInt(
+    defectInfo.ruleDocPath.substring('docs/recipe'.length, defectInfo.ruleDocPath.length - '.md'.length)
+  );
+  const issueInfo = statistics.issues.get(recipeNo);
   if (!issueInfo) {
     statistics.issues.set(recipeNo, {
       description: defectInfo.description,
       type: isError(defectInfo) ? 'error' : 'warn',
-      count: 1,
+      count: 1
     });
   } else {
     issueInfo.count += 1;
@@ -75,7 +75,7 @@ function fillIssueInfo(statistics: Statistics, defectInfo: DefectInfo) {
 }
 
 function parse(reportJson: ReportJson): Statistics {
-  let statistics: Statistics = {
+  const statistics: Statistics = {
     totalErrors: 0,
     totalWarnings: 0,
     linesWithErrors: 0,
@@ -93,7 +93,7 @@ function parse(reportJson: ReportJson): Statistics {
         continue;
       }
 
-      fillIssueInfo(statistics, defectInfo)
+      fillIssueInfo(statistics, defectInfo);
 
       if (isError(defectInfo)) {
         statistics.totalErrors += 1;
@@ -114,7 +114,7 @@ function read(filePath: string): ReportJson {
   return JSON.parse(fs.readFileSync(filePath, { encoding: 'utf8', flag: 'r' }));
 }
 
-function main() {
+function main(): void {
   if (process.argv.length < 3) {
     console.error('Path to input json was not provided, exiting');
     process.exit(1);
@@ -122,6 +122,8 @@ function main() {
   console.log(parse(read(process.argv[2])));
 }
 
-// file is stored in project's directory under the following path:
-// <PROJECT_ROOT_DIR>/.idea/code-linter/eslintAgent/output.json
-main()
+/*
+ * file is stored in project's directory under the following path:
+ * <PROJECT_ROOT_DIR>/.idea/code-linter/eslintAgent/output.json
+ */
+main();
