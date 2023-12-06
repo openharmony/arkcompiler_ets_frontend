@@ -131,3 +131,17 @@ class NullableArray {
     console.log(this.container?.numbers[0]);
   }
 }
+
+let str1 = 'sssss'
+let str2 = "aaaaa"
+let str3 = `sssss`
+let str4 = new String('sssss')
+let str5 = str1
+let str6 = str2
+
+str1[1]
+str2[1]
+str3[1]
+str4[1]
+str5[1]
+str6[1]
