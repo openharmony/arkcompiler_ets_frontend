@@ -46,11 +46,13 @@ export class TSCCompiledProgramSimple implements TSCCompiledProgram {
 export class TSCCompiledProgramWithDiagnostics implements TSCCompiledProgram {
   private diagnosticsExtractor: TypeScriptDiagnosticsExtractor;
   private wasStrict: boolean;
+  private cachedDiagnostics: Map<string, ts.Diagnostic[]>;
 
   constructor(program: ts.Program, options: LintOptions) {
     const { strict, nonStrict, wasStrict } = getTwoCompiledVersions(program, options);
     this.diagnosticsExtractor = new TypeScriptDiagnosticsExtractor(strict, nonStrict);
     this.wasStrict = wasStrict;
+    this.cachedDiagnostics = new Map();
   }
 
   public getOriginalProgram(): ts.Program {
@@ -58,7 +60,13 @@ export class TSCCompiledProgramWithDiagnostics implements TSCCompiledProgram {
   }
 
   public getStrictDiagnostics(fileName: string): ts.Diagnostic[] {
-    return this.diagnosticsExtractor.getStrictDiagnostics(fileName);
+    const cachedDiagnostic = this.cachedDiagnostics.get(fileName);
+    if (!!cachedDiagnostic) {
+      return cachedDiagnostic
+    }
+    const diagnostic = this.diagnosticsExtractor.getStrictDiagnostics(fileName);
+    this.cachedDiagnostics.set(fileName, diagnostic)
+    return diagnostic;
   }
 }
 
