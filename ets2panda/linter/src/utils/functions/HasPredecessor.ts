@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
+import type * as ts from 'typescript';
 
 export function hasPredecessor(node: ts.Node, predicate: (node: ts.Node) => boolean): boolean {
   let parent = node.parent;

@@ -14,17 +14,23 @@
  */
 
 import type * as ts from 'typescript';
-import * as path from 'node:path';
-import { STANDARD_LIBRARIES } from '../consts/StandardLibraries';
 
-export function isStdLibraryType(type: ts.Type): boolean {
-  return isStdLibrarySymbol(type.aliasSymbol ?? type.getSymbol());
-}
-
-export function isStdLibrarySymbol(sym: ts.Symbol | undefined): boolean {
-  if (sym?.declarations && sym.declarations.length > 0) {
-    const srcFile = sym.declarations[0].getSourceFile();
-    return srcFile && STANDARD_LIBRARIES.includes(path.basename(srcFile.fileName).toLowerCase());
+export function forEachNodeInSubtree(
+  node: ts.Node,
+  cb: (n: ts.Node) => void,
+  stopCond?: (n: ts.Node) => boolean
+): void {
+  cb(node);
+  if (stopCond && stopCond(node)) {
+    return;
   }
-  return false;
+
+  /*
+   * #13972: The 'ts.forEachChild' doesn't iterate over in-between punctuation tokens.
+   * As result, we can miss comment directives attached to those. Instead, use 'node.getChildren()'.
+   * to traverse child nodes.
+   */
+  for (const child of node.getChildren()) {
+    forEachNodeInSubtree(child, cb, stopCond);
+  }
 }

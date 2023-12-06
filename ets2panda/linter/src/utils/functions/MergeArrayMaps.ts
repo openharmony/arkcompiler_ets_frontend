@@ -14,15 +14,15 @@
  */
 
 export function mergeArrayMaps<K, V>(lhs: Map<K, V[]>, rhs: Map<K, V[]>): Map<K, V[]> {
-  if (lhs.size == 0) {
+  if (lhs.size === 0) {
     return rhs;
   }
-  if (rhs.size == 0) {
+  if (rhs.size === 0) {
     return lhs;
   }
 
   rhs.forEach((values, key) => {
-    if (values.length != 0) {
+    if (values.length !== 0) {
       if (lhs.has(key)) {
         lhs.get(key)!.push(...values);
       } else {

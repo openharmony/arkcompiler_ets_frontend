@@ -20,8 +20,10 @@ function scopeContainsThisVisitor(tsNode: ts.Node): boolean {
     return true;
   }
 
-  // Visit children nodes. Skip any local declaration that defines
-  // its own scope as it needs to be checked separately.
+  /*
+   * Visit children nodes. Skip any local declaration that defines
+   * its own scope as it needs to be checked separately.
+   */
   const isClassLike = ts.isClassDeclaration(tsNode) || ts.isClassExpression(tsNode);
   const isFunctionLike = ts.isFunctionDeclaration(tsNode) || ts.isFunctionExpression(tsNode);
   const isModuleDecl = ts.isModuleDeclaration(tsNode);

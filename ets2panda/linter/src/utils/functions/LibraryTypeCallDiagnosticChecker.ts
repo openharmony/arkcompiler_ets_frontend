@@ -13,11 +13,13 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
-import { DiagnosticChecker } from './DiagnosticChecker';
+import type * as ts from 'typescript';
+import type { DiagnosticChecker } from './DiagnosticChecker';
 
-// Current approach relates on error code and error message matching and it is quite fragile,
-// so this place should be checked thoroughly in the case of typescript upgrade
+/*
+ * Current approach relates on error code and error message matching and it is quite fragile,
+ * so this place should be checked thoroughly in the case of typescript upgrade
+ */
 export const TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE = 2322;
 export const TYPE_UNKNOWN_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE =
   /^Type '(.*)\bunknown\b(.*)' is not assignable to type '.*'\.$/;
@@ -40,7 +42,7 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
     this.filteredDiagnosticMessages = filteredDiagnosticMessages;
   }
 
-  configure(inLibCall: boolean, diagnosticMessages: Array<ts.DiagnosticMessageChain>) {
+  configure(inLibCall: boolean, diagnosticMessages: Array<ts.DiagnosticMessageChain>): void {
     this.inLibCall = inLibCall;
     this.diagnosticMessages = diagnosticMessages;
   }
@@ -58,7 +60,7 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
   }
 
   checkMessageChain(chain: ts.DiagnosticMessageChain): boolean {
-    if (chain.code == TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE) {
+    if (chain.code === TYPE_0_IS_NOT_ASSIGNABLE_TO_TYPE_1_ERROR_CODE) {
       if (chain.messageText.match(TYPE_UNKNOWN_IS_NOT_ASSIGNABLE_TO_TYPE_1_RE)) {
         return false;
       }
@@ -69,7 +71,7 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
         return false;
       }
     }
-    if (chain.code == ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE) {
+    if (chain.code === ARGUMENT_OF_TYPE_0_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_ERROR_CODE) {
       if (
         this.inLibCall &&
         chain.messageText.match(ARGUMENT_OF_TYPE_UNDEFINED_IS_NOT_ASSIGNABLE_TO_PARAMETER_OF_TYPE_1_RE)
@@ -83,11 +85,11 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
         return false;
       }
     }
-    return chain.next == undefined ? true : this.checkMessageChain(chain.next[0]);
+    return chain.next === undefined ? true : this.checkMessageChain(chain.next[0]);
   }
 
-  checkFilteredDiagnosticMessages(msgText: ts.DiagnosticMessageChain | string) {
-    if (this.filteredDiagnosticMessages.size == 0) {
+  checkFilteredDiagnosticMessages(msgText: ts.DiagnosticMessageChain | string): boolean {
+    if (this.filteredDiagnosticMessages.size === 0) {
       return true;
     }
 
@@ -97,7 +99,7 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
 
     for (const msgChain of this.filteredDiagnosticMessages) {
       if (typeof msgText == 'string') {
-        if (msgText == msgChain.messageText) {
+        if (msgText === msgChain.messageText) {
           return false;
         }
         continue;
@@ -110,11 +112,11 @@ export class LibraryTypeCallDiagnosticChecker implements DiagnosticChecker {
           return true;
         }
 
-        if (curMsg.code != curFilteredMsg.code) {
+        if (curMsg.code !== curFilteredMsg.code) {
           return true;
         }
 
-        if (curMsg.messageText != curFilteredMsg.messageText) {
+        if (curMsg.messageText !== curFilteredMsg.messageText) {
           return true;
         }
 

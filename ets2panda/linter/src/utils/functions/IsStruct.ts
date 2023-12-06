@@ -13,10 +13,10 @@
  * limitations under the License.
  */
 
-import * as ts from 'typescript';
+import type * as ts from 'typescript';
 import { LinterConfig } from '../../TypeScriptLinterConfig';
 
-export function isStruct(symbol: ts.Symbol) {
+export function isStruct(symbol: ts.Symbol): boolean {
   if (!symbol.declarations) {
     return false;
   }
@@ -28,10 +28,10 @@ export function isStruct(symbol: ts.Symbol) {
   return false;
 }
 
-export function isStructDeclarationKind(kind: ts.SyntaxKind) {
+export function isStructDeclarationKind(kind: ts.SyntaxKind): boolean {
   return LinterConfig.tsSyntaxKindNames[kind] === 'StructDeclaration';
 }
 
-export function isStructDeclaration(node: ts.Node) {
+export function isStructDeclaration(node: ts.Node): boolean {
   return isStructDeclarationKind(node.kind);
 }
