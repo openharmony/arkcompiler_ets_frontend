@@ -13,55 +13,57 @@
  * limitations under the License.
  */
 
-type OptionsFlags<Type> = {
-  [Property in keyof Type]: boolean;
+type Flags<T> = {
+  [P in keyof T]: boolean;
 };
-type FeatureFlags = {
-  darkMode: () => void;
-  newUserProfile: () => void;
+type MyFlags = {
+  firstFlag: () => void;
+  secondFlag: () => void;
 };
-type FeatureOptions = OptionsFlags<FeatureFlags>;
+type MyOptions = Flags<MyFlags>;
 
 // Removes 'readonly' attributes from a type's properties
-type CreateMutable<Type> = {
-  -readonly [Property in keyof Type]: Type[Property];
+type RemoveReadonly<T> = {
+  -readonly [P in keyof T]: T[P];
 };
-type LockedAccount = {
+type MutableObject = {
   readonly id: string;
   readonly name: string;
 };
-type UnlockedAccount = CreateMutable<LockedAccount>;
+type ImmutableObject = RemoveReadonly<MutableObject>;
 
 // Removes 'optional' attributes from a type's properties
-type Concrete<Type> = {
-  [Property in keyof Type]-?: Type[Property];
+type RemoveOptional<T> = {
+  [P in keyof T]-?: T[P];
 };
-type MaybeUser = {
+type PartialObject = {
   id: string;
   name?: string;
   age?: number;
 };
-type User = Concrete<MaybeUser>;
+type CompleteObject = RemoveOptional<PartialObject>;
 
 // Creates new property names from prior ones:
-type Getters<Type> = {
-  [Property in keyof Type as `get${Capitalize<
-    string & Property
-  >}`]: () => Type[Property];
+type PropertiesToGetters<T> = {
+  [P in keyof T as `get${Capitalize<
+    string & P
+  >}`]: () => T[P];
 };
-interface Person {
-  name: string;
-  age: number;
-  location: string;
+interface User {
+  login: string;
+  email: string;
+  data: string;
 }
-type LazyPerson = Getters<Person>;
+type LazyUser = PropertiesToGetters<User>;
 
 // Combine with Conditional type:
-type ExtractPII<Type> = {
-  [Property in keyof Type]: Type[Property] extends { pii: true } ? true : false;
+type ExtractBar<T> = {
+  [Prop in keyof T]: T[Prop] extends { bar: true }
+    ? true
+    : false;
 };
-type DBFields = {
-  id: { format: 'incrementing' };
-  name: { type: string; pii: true };
+type Entity = {
+  identity: { name: 'Object' };
+  details: { foo: string; bar: true };
 };
-type ObjectsNeedingGDPRDeletion = ExtractPII<DBFields>;
+type ExtractedProps = ExtractBar<Entity>;
