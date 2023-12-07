@@ -4286,6 +4286,8 @@ ir::ThisExpression *ETSParser::ParseThisExpression()
         case lexer::TokenType::PUNCTUATOR_COLON:
         case lexer::TokenType::PUNCTUATOR_EQUAL:
         case lexer::TokenType::PUNCTUATOR_NOT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_STRICT_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL:
         case lexer::TokenType::PUNCTUATOR_COMMA:
         case lexer::TokenType::PUNCTUATOR_QUESTION_MARK:
         case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET:
