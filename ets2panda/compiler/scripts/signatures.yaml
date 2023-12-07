@@ -314,7 +314,7 @@ signatures:
     ref: BUILTIN_STRING_EQUALS
 
   - callee: BUILTIN_STRING
-    method_name: length
+    method_name: getLength
     params: []
     return_type: PRIMITIVE_INT
     ref: BUILTIN_STRING_LENGTH

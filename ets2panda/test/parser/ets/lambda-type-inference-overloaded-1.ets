@@ -23,10 +23,10 @@ function foo(callback: (x: double, y: String) => boolean): void {
 
 function main(): void {
     foo((x: int, y: String): boolean => {
-        return y.length() == x;
+        return y.length == x;
     });
     foo((x: double, y: String): boolean => {
-        return y.length() == x;
+        return y.length == x;
     });
     // Should report an error
     foo((x, y) => {

@@ -34,16 +34,16 @@ function main(): void {
     });
 
     callbackNoArgInt((): int => {
-        new String("hello").length();
+        new String("hello").length as int;
     });
     callbackNoArgInt(() => {
-        new String("hello").length();
+        new String("hello").length as int;
     });
 
     callbackIntStringBool((x: int, y: String): boolean => {
-        return y.length() == x;
+        return y.length == x;
     });
     callbackIntStringBool((x, y) => {
-        return y.length() == x;
+        return y.length == x;
     });
 }

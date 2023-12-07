@@ -29,6 +29,6 @@ function main(): void {
         console.println("hello");
     });
     foo((x, y) => {
-        return y.length() == x;
+        return y.length == x;
     });
 }

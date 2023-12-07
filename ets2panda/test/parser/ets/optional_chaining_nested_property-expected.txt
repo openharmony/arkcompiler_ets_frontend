@@ -562,43 +562,13 @@
                           }
                         },
                         "right": {
-                          "type": "CallExpression",
-                          "callee": {
+                          "type": "MemberExpression",
+                          "object": {
                             "type": "MemberExpression",
                             "object": {
-                              "type": "MemberExpression",
-                              "object": {
-                                "type": "Identifier",
-                                "name": "car",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 27,
-                                    "column": 21
-                                  },
-                                  "end": {
-                                    "line": 27,
-                                    "column": 24
-                                  }
-                                }
-                              },
-                              "property": {
-                                "type": "Identifier",
-                                "name": "company",
-                                "decorators": [],
-                                "loc": {
-                                  "start": {
-                                    "line": 27,
-                                    "column": 26
-                                  },
-                                  "end": {
-                                    "line": 27,
-                                    "column": 33
-                                  }
-                                }
-                              },
-                              "computed": false,
-                              "optional": true,
+                              "type": "Identifier",
+                              "name": "car",
+                              "decorators": [],
                               "loc": {
                                 "start": {
                                   "line": 27,
@@ -606,22 +576,22 @@
                                 },
                                 "end": {
                                   "line": 27,
-                                  "column": 33
+                                  "column": 24
                                 }
                               }
                             },
                             "property": {
                               "type": "Identifier",
-                              "name": "length",
+                              "name": "company",
                               "decorators": [],
                               "loc": {
                                 "start": {
                                   "line": 27,
-                                  "column": 35
+                                  "column": 26
                                 },
                                 "end": {
                                   "line": 27,
-                                  "column": 41
+                                  "column": 33
                                 }
                               }
                             },
@@ -634,12 +604,27 @@
                               },
                               "end": {
                                 "line": 27,
+                                "column": 33
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "name": "length",
+                            "decorators": [],
+                            "loc": {
+                              "start": {
+                                "line": 27,
+                                "column": 35
+                              },
+                              "end": {
+                                "line": 27,
                                 "column": 41
                               }
                             }
                           },
-                          "arguments": [],
-                          "optional": false,
+                          "computed": false,
+                          "optional": true,
                           "loc": {
                             "start": {
                               "line": 27,
@@ -647,7 +632,7 @@
                             },
                             "end": {
                               "line": 27,
-                              "column": 43
+                              "column": 41
                             }
                           }
                         },
@@ -658,7 +643,7 @@
                           },
                           "end": {
                             "line": 27,
-                            "column": 43
+                            "column": 41
                           }
                         }
                       },
@@ -669,7 +654,7 @@
                         },
                         "end": {
                           "line": 27,
-                          "column": 44
+                          "column": 42
                         }
                       }
                     }
@@ -815,43 +800,13 @@
               }
             },
             "value": {
-              "type": "CallExpression",
-              "callee": {
+              "type": "MemberExpression",
+              "object": {
                 "type": "MemberExpression",
                 "object": {
-                  "type": "MemberExpression",
-                  "object": {
-                    "type": "Identifier",
-                    "name": "car",
-                    "decorators": [],
-                    "loc": {
-                      "start": {
-                        "line": 27,
-                        "column": 21
-                      },
-                      "end": {
-                        "line": 27,
-                        "column": 24
-                      }
-                    }
-                  },
-                  "property": {
-                    "type": "Identifier",
-                    "name": "company",
-                    "decorators": [],
-                    "loc": {
-                      "start": {
-                        "line": 27,
-                        "column": 26
-                      },
-                      "end": {
-                        "line": 27,
-                        "column": 33
-                      }
-                    }
-                  },
-                  "computed": false,
-                  "optional": true,
+                  "type": "Identifier",
+                  "name": "car",
+                  "decorators": [],
                   "loc": {
                     "start": {
                       "line": 27,
@@ -859,22 +814,22 @@
                     },
                     "end": {
                       "line": 27,
-                      "column": 33
+                      "column": 24
                     }
                   }
                 },
                 "property": {
                   "type": "Identifier",
-                  "name": "length",
+                  "name": "company",
                   "decorators": [],
                   "loc": {
                     "start": {
                       "line": 27,
-                      "column": 35
+                      "column": 26
                     },
                     "end": {
                       "line": 27,
-                      "column": 41
+                      "column": 33
                     }
                   }
                 },
@@ -887,12 +842,27 @@
                   },
                   "end": {
                     "line": 27,
+                    "column": 33
+                  }
+                }
+              },
+              "property": {
+                "type": "Identifier",
+                "name": "length",
+                "decorators": [],
+                "loc": {
+                  "start": {
+                    "line": 27,
+                    "column": 35
+                  },
+                  "end": {
+                    "line": 27,
                     "column": 41
                   }
                 }
               },
-              "arguments": [],
-              "optional": false,
+              "computed": false,
+              "optional": true,
               "loc": {
                 "start": {
                   "line": 27,
@@ -900,7 +870,7 @@
                 },
                 "end": {
                   "line": 27,
-                  "column": 43
+                  "column": 41
                 }
               }
             },
@@ -919,7 +889,7 @@
               },
               "end": {
                 "line": 27,
-                "column": 43
+                "column": 41
               }
             }
           }
