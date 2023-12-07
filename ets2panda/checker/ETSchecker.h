@@ -279,6 +279,10 @@ public:
     void EnhanceSubstitutionForType(const ArenaVector<Type *> &type_params, Type *param_type, Type *argument_type,
                                     Substitution *substitution,
                                     ArenaUnorderedSet<ETSObjectType *> *instantiated_type_params);
+    Signature *ValidateParameterlessConstructor(Signature *signature, const lexer::SourcePosition &pos,
+                                                TypeRelationFlag flags);
+    Signature *CollectParameterlessConstructor(ArenaVector<Signature *> &signatures, const lexer::SourcePosition &pos,
+                                               TypeRelationFlag resolve_flags = TypeRelationFlag::NONE);
     Signature *ValidateSignature(Signature *signature, const ir::TSTypeParameterInstantiation *type_arguments,
                                  const ArenaVector<ir::Expression *> &arguments, const lexer::SourcePosition &pos,
                                  TypeRelationFlag initial_flags, const std::vector<bool> &arg_type_inference_required);
@@ -649,7 +653,6 @@ private:
         ArenaVector<Signature *> &signatures, const ir::TSTypeParameterInstantiation *type_arguments,
         const ArenaVector<ir::Expression *> &arguments, std::vector<bool> &arg_type_inference_required,
         const lexer::SourcePosition &pos, TypeRelationFlag resolve_flags);
-
     // Trailing lambda
     void MoveTrailingBlockToEnclosingBlockStatement(ir::CallExpression *call_expr);
     void TransformTraillingLambda(ir::CallExpression *call_expr);

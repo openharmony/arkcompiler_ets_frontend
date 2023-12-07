@@ -79,7 +79,8 @@ ETSNewArrayInstanceExpression *ETSNewArrayInstanceExpression::Clone(ArenaAllocat
     auto *const type_ref = type_reference_ != nullptr ? type_reference_->Clone(allocator) : nullptr;
     auto *const dimension = dimension_ != nullptr ? dimension_->Clone(allocator)->AsExpression() : nullptr;
 
-    if (auto *const clone = allocator->New<ETSNewArrayInstanceExpression>(type_ref, dimension); clone != nullptr) {
+    if (auto *const clone = allocator->New<ETSNewArrayInstanceExpression>(allocator, type_ref, dimension);
+        clone != nullptr) {
         if (type_ref != nullptr) {
             type_ref->SetParent(clone);
         }

@@ -161,6 +161,20 @@ static constexpr char const INVALID_CALL_ARGUMENT_1[] = "Call argument at index 
 static constexpr char const INVALID_CALL_ARGUMENT_2[] = " is not compatible with the signature's type at that index.";
 static constexpr char const INVALID_CALL_ARGUMENT_3[] = " is not compatible with the signature's rest parameter type.";
 // NOLINTEND(modernize-avoid-c-arrays)
+Signature *ETSChecker::ValidateParameterlessConstructor(Signature *signature, const lexer::SourcePosition &pos,
+                                                        TypeRelationFlag flags)
+{
+    std::size_t const parameter_count = signature->MinArgCount();
+    auto const throw_error = (flags & TypeRelationFlag::NO_THROW) == 0;
+
+    if (parameter_count != 0) {
+        if (throw_error) {
+            ThrowTypeError({"No Matching Parameterless Constructor, parameter count ", parameter_count}, pos);
+        }
+        return nullptr;
+    }
+    return signature;
+}
 
 Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeParameterInstantiation *type_arguments,
                                          const ArenaVector<ir::Expression *> &arguments,
@@ -302,6 +316,38 @@ bool ETSChecker::ValidateProxySignature(Signature *const signature,
                              TypeRelationFlag::CHECK_PROXY | TypeRelationFlag::NO_THROW |
                                  TypeRelationFlag::NO_UNBOXING | TypeRelationFlag::NO_BOXING,
                              arg_type_inference_required) != nullptr;
+}
+
+Signature *ETSChecker::CollectParameterlessConstructor(ArenaVector<Signature *> &signatures,
+                                                       const lexer::SourcePosition &pos, TypeRelationFlag resolve_flags)
+{
+    Signature *compatible_signature = nullptr;
+
+    auto collect_signatures = [&](TypeRelationFlag relation_flags) {
+        for (auto *sig : signatures) {
+            if (auto *concrete_sig = ValidateParameterlessConstructor(sig, pos, relation_flags);
+                concrete_sig != nullptr) {
+                compatible_signature = concrete_sig;
+                break;
+            }
+        }
+    };
+
+    // We are able to provide more specific error messages.
+    if (signatures.size() == 1) {
+        collect_signatures(resolve_flags);
+    } else {
+        collect_signatures(resolve_flags | TypeRelationFlag::NO_THROW);
+    }
+
+    if (compatible_signature == nullptr) {
+        if ((resolve_flags & TypeRelationFlag::NO_THROW) == 0) {
+            ThrowTypeError({"No matching parameterless constructor"}, pos);
+        } else {
+            return nullptr;
+        }
+    }
+    return compatible_signature;
 }
 
 std::pair<ArenaVector<Signature *>, ArenaVector<Signature *>> ETSChecker::CollectSignatures(

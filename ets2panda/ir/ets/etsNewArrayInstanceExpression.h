@@ -20,6 +20,7 @@
 
 namespace panda::es2panda::checker {
 class ETSAnalyzer;
+class Signature;
 }  // namespace panda::es2panda::checker
 
 namespace panda::es2panda::compiler {
@@ -36,10 +37,12 @@ public:
     NO_COPY_SEMANTIC(ETSNewArrayInstanceExpression);
     NO_MOVE_SEMANTIC(ETSNewArrayInstanceExpression);
 
-    explicit ETSNewArrayInstanceExpression(ir::TypeNode *const type_reference, ir::Expression *const dimension)
+    explicit ETSNewArrayInstanceExpression(ArenaAllocator *allocator, ir::TypeNode *const type_reference,
+                                           ir::Expression *const dimension)
         : Expression(AstNodeType::ETS_NEW_ARRAY_INSTANCE_EXPRESSION),
           type_reference_(type_reference),
-          dimension_(dimension)
+          dimension_(dimension),
+          allocator_(allocator)
     {
     }
     // NOTE (csabahurton): these friend relationships can be removed once there are getters for private fields
@@ -91,6 +94,8 @@ public:
 private:
     ir::TypeNode *type_reference_;
     ir::Expression *dimension_;
+    checker::Signature *default_constructor_signature_ {};
+    ArenaAllocator *allocator_;
 };
 }  // namespace panda::es2panda::ir
 
