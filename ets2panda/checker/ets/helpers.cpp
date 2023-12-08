@@ -49,6 +49,7 @@
 #include "ir/ets/etsFunctionType.h"
 #include "ir/ets/etsNewClassInstanceExpression.h"
 #include "ir/ets/etsParameterExpression.h"
+#include "ir/ts/tsAsExpression.h"
 #include "ir/ts/tsTypeAliasDeclaration.h"
 #include "ir/ts/tsEnumMember.h"
 #include "ir/ts/tsTypeParameter.h"
@@ -859,6 +860,80 @@ Type *ETSChecker::HandleBooleanLogicalOperators(Type *left_type, Type *right_typ
     return nullptr;
 }
 
+void ETSChecker::ResolveReturnStatement(checker::Type *func_return_type, checker::Type *argument_type,
+                                        ir::ScriptFunction *containing_func, ir::ReturnStatement *st)
+{
+    if (func_return_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT) ||
+        argument_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+        // function return type should be of reference (object) type
+        Relation()->SetFlags(checker::TypeRelationFlag::NONE);
+
+        if (!argument_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+            argument_type = PrimitiveTypeAsETSBuiltinType(argument_type);
+            if (argument_type == nullptr) {
+                ThrowTypeError("Invalid return statement expression", st->Argument()->Start());
+            }
+            st->Argument()->AddBoxingUnboxingFlag(GetBoxingFlag(argument_type));
+        }
+
+        if (!func_return_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+            func_return_type = PrimitiveTypeAsETSBuiltinType(func_return_type);
+            if (func_return_type == nullptr) {
+                ThrowTypeError("Invalid return function expression", st->Start());
+            }
+        }
+
+        func_return_type = FindLeastUpperBound(func_return_type, argument_type);
+        containing_func->Signature()->SetReturnType(func_return_type);
+        containing_func->Signature()->AddSignatureFlag(checker::SignatureFlags::INFERRED_RETURN_TYPE);
+    } else if (func_return_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE_RETURN) &&
+               argument_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE_RETURN)) {
+        // function return type is of primitive type (including enums):
+        Relation()->SetFlags(checker::TypeRelationFlag::DIRECT_RETURN |
+                             checker::TypeRelationFlag::IN_ASSIGNMENT_CONTEXT |
+                             checker::TypeRelationFlag::ASSIGNMENT_CONTEXT);
+        if (Relation()->IsAssignableTo(func_return_type, argument_type)) {
+            func_return_type = argument_type;
+            containing_func->Signature()->SetReturnType(func_return_type);
+            containing_func->Signature()->AddSignatureFlag(checker::SignatureFlags::INFERRED_RETURN_TYPE);
+        } else if (!Relation()->IsAssignableTo(argument_type, func_return_type)) {
+            ThrowTypeError(
+                "Return statement type is not compatible with previous method's return statement "
+                "type(s).",
+                st->Argument()->Start());
+        }
+    } else {
+        ThrowTypeError("Invalid return statement type(s).", st->Start());
+    }
+}
+
+checker::Type *ETSChecker::CheckArrayElements(ir::Identifier *ident, ir::ArrayExpression *init)
+{
+    ArenaVector<ir::Expression *> elements = init->AsArrayExpression()->Elements();
+    checker::Type *annotation_type = nullptr;
+    if (elements.empty()) {
+        annotation_type = Allocator()->New<ETSArrayType>(GlobalETSObjectType());
+    } else {
+        auto type = elements[0]->Check(this);
+        auto const prim_type = ETSBuiltinTypeAsPrimitiveType(type);
+        for (auto element : elements) {
+            auto const e_type = element->Check(this);
+            auto const prim_e_type = ETSBuiltinTypeAsPrimitiveType(e_type);
+            if (prim_e_type != nullptr && prim_type != nullptr && prim_e_type->HasTypeFlag(TypeFlag::ETS_NUMERIC) &&
+                prim_type->HasTypeFlag(TypeFlag::ETS_NUMERIC)) {
+                type = GlobalDoubleType();
+            } else if (IsTypeIdenticalTo(type, e_type)) {
+                continue;
+            } else {
+                // NOTE: Create union type when implemented here
+                ThrowTypeError({"Union type is not implemented yet!"}, ident->Start());
+            }
+        }
+        annotation_type = Allocator()->New<ETSArrayType>(type);
+    }
+    return annotation_type;
+}
+
 checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *type_annotation,
                                                     ir::Expression *init, ir::ModifierFlags flags)
 {
@@ -879,36 +954,8 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
     }
 
     if (type_annotation == nullptr) {
-        if (init->IsArrowFunctionExpression()) {
-            ThrowTypeError(
-                {"Cannot infer type for ", ident->Name(), " because lambda expression needs an explicit target type"},
-                ident->Start());
-        }
-
         if (init->IsArrayExpression()) {
-            auto elements = init->AsArrayExpression()->Elements();
-
-            if (elements.empty()) {
-                annotation_type = Allocator()->New<ETSArrayType>(GlobalETSObjectType());
-            } else {
-                auto type = elements[0]->Check(this);
-                auto const prim_type = ETSBuiltinTypeAsPrimitiveType(type);
-                for (auto element : elements) {
-                    auto const e_type = element->Check(this);
-                    auto const prim_e_type = ETSBuiltinTypeAsPrimitiveType(e_type);
-                    if (prim_e_type != nullptr && prim_type != nullptr &&
-                        prim_e_type->HasTypeFlag(TypeFlag::ETS_NUMERIC) &&
-                        prim_type->HasTypeFlag(TypeFlag::ETS_NUMERIC)) {
-                        type = GlobalDoubleType();
-                    } else if (IsTypeIdenticalTo(type, e_type)) {
-                        continue;
-                    } else {
-                        // NOTE: Create union type when implemented here
-                        ThrowTypeError({"Union type is not implemented yet!"}, ident->Start());
-                    }
-                }
-                annotation_type = Allocator()->New<ETSArrayType>(type);
-            }
+            annotation_type = CheckArrayElements(ident, init->AsArrayExpression());
             binding_var->SetTsType(annotation_type);
         }
 
@@ -944,6 +991,20 @@ checker::Type *ETSChecker::CheckVariableDeclaration(ir::Identifier *ident, ir::T
 
     if (init_type == nullptr) {
         ThrowTypeError("Cannot get the expression type", init->Start());
+    }
+
+    if (type_annotation == nullptr &&
+        (init->IsArrowFunctionExpression() ||
+         (init->IsTSAsExpression() && init->AsTSAsExpression()->Expr()->IsArrowFunctionExpression()))) {
+        if (init->IsArrowFunctionExpression()) {
+            type_annotation = init->AsArrowFunctionExpression()->CreateTypeAnnotation(this);
+        } else {
+            type_annotation = init->AsTSAsExpression()->TypeAnnotation();
+        }
+        ident->SetTsTypeAnnotation(type_annotation);
+        type_annotation->SetParent(ident);
+        annotation_type = GetTypeFromTypeAnnotation(type_annotation);
+        binding_var->SetTsType(annotation_type);
     }
 
     if (annotation_type != nullptr) {
@@ -1123,9 +1184,7 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *module_obj
 
     for (auto [_, var] : res->second.front()->GlobalClassScope()->InstanceDeclScope()->Bindings()) {
         (void)_;
-        if (var->AsLocalVariable()->Declaration()->Node()->IsExported() ||
-            (var->AsLocalVariable()->Declaration()->Node()->IsClassDefinition() &&
-             var->AsLocalVariable()->Declaration()->Node()->Parent()->IsExported())) {
+        if (var->AsLocalVariable()->Declaration()->Node()->IsExported()) {
             module_obj_type->AddProperty<checker::PropertyType::STATIC_DECL>(var->AsLocalVariable());
         }
     }

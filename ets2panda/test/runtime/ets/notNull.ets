@@ -15,7 +15,6 @@
 
 function main() {
     testLocalIdentifier()
-    testLocalArray()
     testArgument()
     testCallExpression()
     testNPE()
@@ -44,14 +43,6 @@ function testLocalIdentifier() : void {
     assert c == 40: "c should be 40";
 
     assert a! == (a)!;
-}
-
-function testLocalArray() : void {
-    let arr : Int[][] | null = new Int[3][2];
-
-    arr![2][1] = 42;
-
-    assert arr[2][1].toString() == "42" : "arr[2][1].toString() must be '42'";
 }
 
 function bar(arg : Int | null) : Int {

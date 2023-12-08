@@ -24,8 +24,8 @@ class StringLiteral;
 
 class ImportDeclaration : public Statement {
 public:
-    explicit ImportDeclaration(StringLiteral *source, ArenaVector<AstNode *> &&specifiers)
-        : Statement(AstNodeType::IMPORT_DECLARATION), source_(source), specifiers_(std::move(specifiers))
+    explicit ImportDeclaration(StringLiteral *source, ArenaVector<AstNode *> const &specifiers)
+        : Statement(AstNodeType::IMPORT_DECLARATION), source_(source), specifiers_(specifiers)
     {
     }
 

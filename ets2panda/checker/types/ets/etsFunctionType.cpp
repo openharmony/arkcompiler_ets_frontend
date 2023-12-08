@@ -16,6 +16,7 @@
 #include "etsFunctionType.h"
 #include "checker/types/typeRelation.h"
 #include "checker/ETSchecker.h"
+#include "checker/ets/conversion.h"
 #include "ir/base/scriptFunction.h"
 #include "ir/expressions/identifier.h"
 
@@ -201,4 +202,43 @@ ETSFunctionType *ETSFunctionType::Substitute(TypeRelation *relation, const Subst
     return any_change ? copied_type : this;
 }
 
+checker::RelationResult ETSFunctionType::CastFunctionParams(TypeRelation *relation, Type *target)
+{
+    auto *target_type = target->AsETSObjectType();
+    auto *body = target_type->GetDeclNode()->AsTSInterfaceDeclaration()->Body();
+    auto target_params = body->AsTSInterfaceBody()->Body()[0]->AsMethodDefinition()->Function()->Params();
+    for (size_t i = 0; i < target_type->TypeArguments().size(); i++) {
+        relation->Result(RelationResult::FALSE);
+        call_signatures_[0]->Function()->Params()[i]->TsType()->Cast(
+            relation, target_params[i]->AsETSParameterExpression()->Check(relation->GetChecker()->AsETSChecker()));
+        if (relation->IsTrue()) {
+            continue;
+        }
+        return RelationResult::FALSE;
+    }
+    return RelationResult::TRUE;
+}
+
+void ETSFunctionType::Cast(TypeRelation *relation, Type *target)
+{
+    ASSERT(relation->GetNode()->IsArrowFunctionExpression());
+    if (target->HasTypeFlag(TypeFlag::ETS_OBJECT)) {
+        auto *target_type = target->AsETSObjectType();
+        auto *body = target_type->GetDeclNode()->AsTSInterfaceDeclaration()->Body()->AsTSInterfaceBody();
+        auto target_params = body->AsTSInterfaceBody()->Body()[0]->AsMethodDefinition()->Function()->Params();
+        if (target_type->HasObjectFlag(ETSObjectFlags::FUNCTIONAL_INTERFACE) &&
+            target_params.size() == call_signatures_[0]->Function()->Params().size()) {
+            relation->Result(CastFunctionParams(relation, target));
+        }
+        relation->Result(RelationResult::FALSE);
+        auto target_return_type = body->Body()[0]->AsMethodDefinition()->Function()->ReturnTypeAnnotation();
+        call_signatures_[0]->ReturnType()->Cast(relation, target_return_type->TsType());
+        if (relation->IsTrue()) {
+            relation->GetChecker()->AsETSChecker()->CreateLambdaObjectForLambdaReference(
+                relation->GetNode()->AsArrowFunctionExpression(), target_type->AsETSObjectType());
+            return;
+        }
+    }
+    conversion::Forbidden(relation);
+}
 }  // namespace panda::es2panda::checker

@@ -481,13 +481,42 @@ bool ETSBinder::AddImportNamespaceSpecifiersToTopBindings(ir::AstNode *const spe
         }
     }
 
+    std::unordered_set<std::string> exported_names;
+    for (auto item : ReExportImports()) {
+        if (import->ResolvedSource()->Str().Is(
+                item->GetProgramPath().Mutf8().substr(0, item->GetProgramPath().Mutf8().find_last_of('.')))) {
+            ir::StringLiteral dir_name(util::UString(util::StringView(item->GetProgramPath().Mutf8().substr(
+                                                         0, item->GetProgramPath().Mutf8().find_last_of('/'))),
+                                                     Allocator())
+                                           .View());
+            dir_name.SetStart(item->GetETSImportDeclarations()->Source()->Start());
+
+            for (auto it : item->GetETSImportDeclarations()->Specifiers()) {
+                if (it->IsImportNamespaceSpecifier() &&
+                    !specifier->AsImportNamespaceSpecifier()->Local()->Name().Empty()) {
+                    std::cerr << "Warning: import with alias cannot be used with re-export\n";
+                    continue;
+                }
+
+                AddSpecifiersToTopBindings(it, item->GetETSImportDeclarations(),
+                                           dir_name.Str().Is(".") ? item->GetETSImportDeclarations()->Source()
+                                                                  : &dir_name);
+                if (it->IsImportSpecifier() &&
+                    !exported_names.insert(it->AsImportSpecifier()->Local()->Name().Mutf8()).second) {
+                    ThrowError(import->Start(), "Ambiguous import \"" +
+                                                    it->AsImportSpecifier()->Local()->Name().Mutf8() +
+                                                    "\" has multiple matching exports");
+                }
+            }
+        }
+    }
+
     return true;
 }
 
 Variable *ETSBinder::FindImportSpecifiersVariable(const util::StringView &imported,
                                                   const varbinder::Scope::VariableMap &global_bindings,
-                                                  const ArenaVector<parser::Program *> &record_res,
-                                                  const ir::StringLiteral *const import_path)
+                                                  const ArenaVector<parser::Program *> &record_res)
 {
     auto found_var = global_bindings.find(imported);
     if (found_var == global_bindings.end()) {
@@ -507,7 +536,7 @@ Variable *ETSBinder::FindImportSpecifiersVariable(const util::StringView &import
             }
         }
         if (!found) {
-            ThrowError(import_path->Start(), "Cannot find imported element " + imported.Mutf8());
+            return nullptr;
         }
     }
 
@@ -517,7 +546,8 @@ Variable *ETSBinder::FindImportSpecifiersVariable(const util::StringView &import
 bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
                                                  const varbinder::Scope::VariableMap &global_bindings,
                                                  const ir::ETSImportDeclaration *const import,
-                                                 const ArenaVector<parser::Program *> &record_res)
+                                                 const ArenaVector<parser::Program *> &record_res,
+                                                 std::vector<ir::ETSImportDeclaration *> viewed_re_export)
 {
     if (!specifier->IsImportSpecifier()) {
         return false;
@@ -539,7 +569,7 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
 
     const auto &imported = import_specifier->Imported()->AsIdentifier()->Name();
 
-    auto *const var = FindImportSpecifiersVariable(imported, global_bindings, record_res, import_path);
+    auto *const var = FindImportSpecifiersVariable(imported, global_bindings, record_res);
 
     const auto &local_name = [this, import_specifier, &imported, &import_path]() {
         if (import_specifier->Local() != nullptr) {
@@ -557,6 +587,26 @@ bool ETSBinder::AddImportSpecifiersToTopBindings(ir::AstNode *const specifier,
 
         return imported;
     }();
+
+    if (var == nullptr) {
+        for (auto item : ReExportImports()) {
+            if (import->ResolvedSource()->Str().Is(
+                    item->GetProgramPath().Mutf8().substr(0, item->GetProgramPath().Mutf8().find_last_of('.')))) {
+                ir::StringLiteral dir_name(util::UString(util::StringView(item->GetProgramPath().Mutf8().substr(
+                                                             0, item->GetProgramPath().Mutf8().find_last_of('/'))),
+                                                         Allocator())
+                                               .View());
+                dir_name.SetStart(item->GetETSImportDeclarations()->Source()->Start());
+
+                viewed_re_export.push_back(item->GetETSImportDeclarations());
+                AddSpecifiersToTopBindings(
+                    specifier, item->GetETSImportDeclarations(),
+                    dir_name.Str().Is(".") ? item->GetETSImportDeclarations()->Source() : &dir_name, viewed_re_export);
+                return true;
+            }
+        }
+        ThrowError(import_path->Start(), "Cannot find imported element " + imported.Mutf8());
+    }
 
     if (var->Declaration()->Node()->IsDefaultExported()) {
         ThrowError(import_path->Start(), "Use the default import syntax to import a default exported element");
@@ -599,16 +649,18 @@ ArenaVector<parser::Program *> ETSBinder::GetExternalProgram(const util::StringV
     return record_res->second;
 }
 
-void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import)
+void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const ir::ETSImportDeclaration *const import,
+                                           ir::StringLiteral *path,
+                                           std::vector<ir::ETSImportDeclaration *> viewed_re_export)
 {
-    const ir::StringLiteral *const import_path = import->Source();
+    const ir::StringLiteral *const import_path = path;
 
     if (import->IsPureDynamic()) {
         AddDynamicSpecifiersToTopBindings(specifier, import);
         return;
     }
 
-    const util::StringView source_name = [import, import_path, this]() {
+    const util::StringView source_name = [import, import_path, this, &path]() {
         if (import->Module() == nullptr) {
             return import_path->Str();
         }
@@ -617,7 +669,20 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
         if (str_import_path.find(path_delimiter) == (str_import_path.size() - 1)) {
             return util::UString(str_import_path + import->Module()->Str().Mutf8(), Allocator()).View();
         }
-        return util::UString(str_import_path + path_delimiter + import->Module()->Str().Mutf8(), Allocator()).View();
+
+        std::string import_file_path;
+        if (!import->Source()->Str().Is(path->Str().Mutf8()) && !import->Source()->Str().Empty() &&
+            import->Source()->Str().Mutf8().substr(0, 1) == ".") {
+            import_file_path =
+                import->Source()->Str().Mutf8().substr(import->Source()->Str().Mutf8().find_first_not_of('.'));
+            if (import_file_path.size() == 1) {
+                import_file_path = "";
+            }
+        }
+
+        return util::UString(str_import_path + import_file_path + path_delimiter + import->Module()->Str().Mutf8(),
+                             Allocator())
+            .View();
     }();
 
     auto record = GetExternalProgram(source_name, import_path);
@@ -632,12 +697,13 @@ void ETSBinder::AddSpecifiersToTopBindings(ir::AstNode *const specifier, const i
 
         TopScope()->InsertForeignBinding(name, var);
     };
+
     if (AddImportNamespaceSpecifiersToTopBindings(specifier, global_bindings, import_program, import_global_scope,
                                                   import)) {
         return;
     }
 
-    if (AddImportSpecifiersToTopBindings(specifier, global_bindings, import, record)) {
+    if (AddImportSpecifiersToTopBindings(specifier, global_bindings, import, record, std::move(viewed_re_export))) {
         return;
     }
 
@@ -944,8 +1010,8 @@ void ETSBinder::BuildImportDeclaration(ir::ETSImportDeclaration *decl)
 
     auto specifiers = decl->Specifiers();
 
-    for (auto &specifier : specifiers) {
-        AddSpecifiersToTopBindings(specifier, decl);
+    for (auto specifier : specifiers) {
+        AddSpecifiersToTopBindings(specifier, decl, decl->Source());
     }
 }
 

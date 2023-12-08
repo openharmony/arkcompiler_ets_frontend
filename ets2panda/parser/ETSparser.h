@@ -41,10 +41,7 @@ inline constexpr char const DEFAULT_SOURCE_FILE[] = "<auxiliary_tmp>.ets";
 class ETSParser final : public TypedParser {
 public:
     ETSParser(Program *program, const CompilerOptions &options, ParserStatus status = ParserStatus::NO_OPTS)
-        : TypedParser(program, options, status),
-          global_program_(GetProgram()),
-          parsed_sources_({}),
-          resolved_parsed_sources_({})
+        : TypedParser(program, options, status), global_program_(GetProgram())
     {
     }
 
@@ -119,7 +116,7 @@ private:
     std::tuple<std::string, bool> GetSourceRegularPath(const std::string &path, const std::string &resolved_path);
     void ParseSources(const std::vector<std::string> &paths, bool is_external = true);
     std::tuple<ir::ImportSource *, std::vector<std::string>> ParseFromClause(bool require_from);
-    void ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifiers);
+    void ParseNamedSpecifiers(ArenaVector<ir::AstNode *> *specifiers, bool is_re_export = false);
     void ParseUserSources(std::vector<std::string> user_parths);
     std::vector<std::string> ParseImportDeclarations(ArenaVector<ir::Statement *> &statements);
     void ParseDefaultSources();
@@ -196,6 +193,7 @@ private:
                                         VariableParsingFlags flags) override;
     ir::Statement *ParseTryStatement() override;
     ir::DebuggerStatement *ParseDebuggerStatement() override;
+    void ParseReExport(lexer::SourcePosition start_loc);
     ir::Statement *ParseImportDeclaration(StatementParsingFlags flags) override;
     ir::Statement *ParseExportDeclaration(StatementParsingFlags flags) override;
     ir::AnnotatedExpression *ParseVariableDeclaratorKey(VariableParsingFlags flags) override;
@@ -204,7 +202,7 @@ private:
     ir::VariableDeclarator *ParseVariableDeclaratorInitializer(ir::Expression *init, VariableParsingFlags flags,
                                                                const lexer::SourcePosition &start_loc) override;
     ir::AstNode *ParseTypeLiteralOrInterfaceMember() override;
-    void ParseNameSpaceImport(ArenaVector<ir::AstNode *> *specifiers);
+    void ParseNameSpaceSpecifier(ArenaVector<ir::AstNode *> *specifiers, bool is_re_export = false);
     bool CheckModuleAsModifier();
     ir::Expression *ParseFunctionParameter() override;
     ir::AnnotatedExpression *GetAnnotatedExpressionFromParam();
@@ -277,6 +275,8 @@ private:
                                            const lexer::SourcePosition &start_loc,
                                            bool ignore_call_expression) override;
     bool ParsePotentialNonNullExpression(ir::Expression **expression, lexer::SourcePosition start_loc) override;
+    void MarkNodeAsExported(ir::AstNode *node, lexer::SourcePosition start_pos, bool default_export,
+                            std::size_t num_of_elements = 1);
     varbinder::Decl *BindClassName([[maybe_unused]] ir::Identifier *ident_node) override
     {
         return nullptr;

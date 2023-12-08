@@ -17,14 +17,16 @@
 
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
+#include "checker/ETSchecker.h"
+#include "checker/ets/typeRelationContext.h"
 #include "checker/TSchecker.h"
 #include "ir/astDump.h"
 #include "ir/base/scriptFunction.h"
+#include "ir/ets/etsTypeReference.h"
+#include "ir/ets/etsTypeReferencePart.h"
 #include "ir/expressions/identifier.h"
 #include "ir/expressions/thisExpression.h"
 #include "ir/statements/variableDeclarator.h"
-#include "checker/ETSchecker.h"
-#include "checker/ets/typeRelationContext.h"
 
 namespace panda::es2panda::ir {
 void ArrowFunctionExpression::TransformChildren(const NodeTransformer &cb)
@@ -89,5 +91,53 @@ ArrowFunctionExpression *ArrowFunctionExpression::Clone(ArenaAllocator *const al
     }
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
+ir::TypeNode *ArrowFunctionExpression::CreateReturnNodeFromType(checker::ETSChecker *checker,
+                                                                checker::Type *return_type)
+{
+    /*
+    Construct a synthetic Node with the correct ts_type_.
+    */
+    ASSERT(return_type != nullptr);
+    ir::TypeNode *return_node = nullptr;
+    auto *ident = checker->Allocator()->New<ir::Identifier>(util::StringView(""), checker->Allocator());
+    ir::ETSTypeReferencePart *part = checker->Allocator()->New<ir::ETSTypeReferencePart>(ident);
+    return_node = checker->Allocator()->New<ir::ETSTypeReference>(part);
+    part->SetParent(return_node);
+    return_node->SetTsType(return_type);
+    return return_node;
+}
+
+ir::TypeNode *ArrowFunctionExpression::CreateTypeAnnotation(checker::ETSChecker *checker)
+{
+    ir::TypeNode *return_node = nullptr;
+    /*
+    There are two scenarios for lambda type inference: defined or undefined return type.
+    example code:
+    ```
+    enum Color { Red, Blue}
+    // has Return Type Color
+    let x  = () : Color => {return Color.Red}
+    // No Return Type Color
+    let y  = () => {return Color.Red}
+    ```
+    */
+    if (Function()->ReturnTypeAnnotation() == nullptr) {
+        /*
+        When lambda expression does not declare a return type, we need to construct the
+        declaration node of lambda according to the Function()->Signature()->ReturnType().
+        */
+        return_node = CreateReturnNodeFromType(checker, Function()->Signature()->ReturnType());
+    } else {
+        return_node = Function()->ReturnTypeAnnotation();
+    }
+
+    auto orig_params = Function()->Params();
+    auto *param_scope = checker->Scope()->AsFunctionScope()->ParamScope();
+    auto *func_type = checker->Allocator()->New<ir::ETSFunctionType>(param_scope, std::move(orig_params), nullptr,
+                                                                     return_node, ir::ScriptFunctionFlags::NONE);
+    return_node->SetParent(func_type);
+    return func_type;
 }
 }  // namespace panda::es2panda::ir

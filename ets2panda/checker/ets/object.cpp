@@ -1331,10 +1331,24 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *class_type, ir::ClassDefin
     const auto &all_props = class_type->GetAllProperties();
 
     for (auto *it : all_props) {
-        auto *found = class_type->SuperType()->GetProperty(
-            it->Name(), PropertySearchFlags::SEARCH_ALL | PropertySearchFlags::SEARCH_IN_BASE |
-                            PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION);
+        const auto search_flag = PropertySearchFlags::SEARCH_ALL | PropertySearchFlags::SEARCH_IN_BASE |
+                                 PropertySearchFlags::SEARCH_IN_INTERFACES |
+                                 PropertySearchFlags::DISALLOW_SYNTHETIC_METHOD_CREATION;
+        auto *found = class_type->SuperType()->GetProperty(it->Name(), search_flag);
 
+        ETSObjectType *interface_found = nullptr;
+        if (found == nullptr) {
+            auto interface_list = GetInterfacesOfClass(class_type);
+            for (auto *interface : interface_list) {
+                auto *property_found = interface->GetProperty(it->Name(), search_flag);
+                if (property_found == nullptr) {
+                    continue;
+                }
+                found = property_found;
+                interface_found = interface;
+                break;
+            }
+        }
         if (found == nullptr) {
             continue;
         }
@@ -1354,6 +1368,11 @@ void ETSChecker::CheckValidInheritance(ETSObjectType *class_type, ir::ClassDefin
                 target_type = "enum";
             }
 
+            if (interface_found != nullptr) {
+                ThrowTypeError({"Cannot inherit from interface ", interface_found->Name(), " because ", target_type,
+                                " ", it->Name(), " is inherited with a different declaration type"},
+                               interface_found->GetDeclNode()->Start());
+            }
             ThrowTypeError({"Cannot inherit from class ", class_type->SuperType()->Name(), ", because ", target_type,
                             " ", it->Name(), " is inherited with a different declaration type"},
                            class_def->Super()->Start());

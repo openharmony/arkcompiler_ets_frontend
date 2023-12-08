@@ -443,4 +443,3 @@
     }
   }
 }
-SyntaxError: Cannot find default imported element in the target [check_exported_default_struct.ets:16:33]
