@@ -224,6 +224,11 @@ checker::Type *TSAnalyzer::Check(ir::TSSignatureDeclaration *node) const
     return placeholder_obj;
 }
 // from ets folder
+checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSScript *expr) const
+{
+    UNREACHABLE();
+}
+
 checker::Type *TSAnalyzer::Check([[maybe_unused]] ir::ETSClassLiteral *expr) const
 {
     UNREACHABLE();

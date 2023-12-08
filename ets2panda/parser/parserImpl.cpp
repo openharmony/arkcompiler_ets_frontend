@@ -1206,6 +1206,11 @@ void ParserImpl::ThrowSyntaxError(std::string_view error_message, const lexer::S
     throw Error {ErrorType::SYNTAX, program_->SourceFile().Utf8(), error_message, loc.line, loc.col};
 }
 
+void ParserImpl::ThrowAllocationError(std::string_view message) const
+{
+    throw Error(ErrorType::GENERIC, program_->SourceFile().Utf8(), message);
+}
+
 ScriptExtension ParserImpl::Extension() const
 {
     return program_->Extension();

@@ -33,6 +33,27 @@ compiler/ets/override3.ets
 compiler/ets/override4.ets
 compiler/ets/override5.ets
 
+# panda#14517
+compiler/ets/dynamic_call.ets
+compiler/ets/dynamic-equality.ets
+compiler/ets/dynamic-equality-error.ets
+compiler/ets/dynamic_instanceof.ets
+compiler/ets/dynamic_instanceof_error.ets
+compiler/ets/dynamicJsImport.ets
+compiler/ets/dynamicLambda.ets
+compiler/ets/dynamicLambda_error.ets
+compiler/ets/dynamicLambdaJSValue.ets
+compiler/ets/dynamicLambdaJSValueCast.ets
+compiler/ets/dynamicObjectLiteral.ets
+parser/ets/dynamic_import_tests/dynamic_class_ctor_decl_import_bad.ets
+parser/ets/dynamic_import_tests/dynamic_class_field_decl_import_bad_1.ets
+parser/ets/dynamic_import_tests/dynamic_class_field_decl_import_bad_2.ets
+parser/ets/dynamic_import_tests/dynamic_class_method_decl_import_bad_1.ets
+parser/ets/dynamic_import_tests/dynamic_class_method_decl_import_bad_2.ets
+parser/ets/dynamic_import_tests/dynamic_decl_import.ets
+parser/ets/dynamic_import_tests/dynamic_func_decl_import_bad.ets
+parser/ets/dynamic_import_tests/dynamic_iface_decl_bad.ets
+
 # Disabled temporarily #11468
 parser/ets/null-coalesc-negative.ets
 
