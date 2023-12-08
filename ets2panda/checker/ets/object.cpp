@@ -656,11 +656,6 @@ void ETSChecker::ValidateOverriding(ETSObjectType *class_type, const lexer::Sour
                     continue;
                 }
 
-                if (!implemented->Function()->IsOverride() && (implemented->Owner() == class_type)) {
-                    ThrowTypeError("Method overriding is only allowed with 'override' modifier",
-                                   implemented->Function()->Start());
-                }
-
                 if ((*it)->CallSignatures().size() > 1) {
                     abstract_signature = (*it)->CallSignatures().erase(abstract_signature);
                     found_signature = true;
