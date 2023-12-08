@@ -1143,16 +1143,26 @@ void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, Signature
     }
 }
 
-void ETSChecker::CheckCapturedVariable(ir::AstNode *node, varbinder::Variable *var)
+void ETSChecker::CheckCapturedVariable(ir::AstNode *const node, varbinder::Variable *const var)
 {
     if (node->IsIdentifier()) {
-        auto *parent = node->Parent();
+        const auto *const parent = node->Parent();
+
         if (parent->IsUpdateExpression() ||
             (parent->IsAssignmentExpression() && parent->AsAssignmentExpression()->Left() == node)) {
-            auto *ident_node = node->AsIdentifier();
-            ResolveIdentifier(ident_node);
+            const auto *const ident_node = node->AsIdentifier();
 
-            if (ident_node->Variable() == var) {
+            const auto *resolved = ident_node->Variable();
+
+            if (resolved == nullptr) {
+                resolved = FindVariableInFunctionScope(ident_node->Name());
+            }
+
+            if (resolved == nullptr) {
+                resolved = FindVariableInGlobal(ident_node);
+            }
+
+            if (resolved == var) {
                 var->AddFlag(varbinder::VariableFlags::BOXED);
             }
         }
