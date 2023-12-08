@@ -1,0 +1,1 @@
+SyntaxError: Unexpected reserved word [test-toplevel-await2.ts:19:10]

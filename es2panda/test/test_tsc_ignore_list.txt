@@ -41,3 +41,11 @@ es2panda/test/TypeScript/tests/cases/conformance/interfaces/interfaceDeclaration
 es2panda/test/TypeScript/tests/cases/conformance/parser/ecmascript5/RegressionTests/parser579071.ts
 es2panda/test/TypeScript/tests/cases/conformance/scanner/ecmascript3/scannerES3NumericLiteral2.ts
 es2panda/test/TypeScript/tests/cases/conformance/types/members/objectTypeWithStringNamedNumericProperty.ts
+es2panda/test/Typescript/tests/cases/conformance/externalModules/topLevelAwait.2.ts
+es2panda/test/Typescript/tests/cases/conformance/externalModules/topLevelAwaitErrors.1.ts
+es2panda/test/Typescript/tests/cases/conformance/externalModules/topLevelAwaitErrors.2.ts
+es2panda/test/Typescript/tests/cases/conformance/externalModules/topLevelAwaitErrors.3.ts
+es2panda/test/Typescript/tests/cases/conformance/externalModules/topLevelAwaitErrors.4.ts
+es2panda/test/Typescript/tests/cases/conformance/externalModules/topLevelAwaitErrors.5.ts
+es2panda/test/Typescript/tests/cases/conformance/externalModules/topLevelAwaitErrors.6.ts
+es2panda/test/Typescript/tests/cases/conformance/externalModules/topLevelAwaitErrors.12.ts

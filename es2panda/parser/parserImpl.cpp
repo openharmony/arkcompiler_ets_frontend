@@ -2985,12 +2985,7 @@ bool ParserImpl::IsMethodDefinitionsAreSame(const ir::MethodDefinition *property
 
 ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition(bool isDeclare, binder::ConstDecl **decl)
 {
-    lexer::TokenType keywType = lexer_->GetToken().KeywordType();
     CheckStrictReservedWord();
-
-    if (keywType == lexer::TokenType::KEYW_AWAIT && context_.IsModule()) {
-        ThrowSyntaxError("Unexpected reserved word");
-    }
 
     const util::StringView &identStr = lexer_->GetToken().Ident();
 
@@ -4188,6 +4183,11 @@ void ParserImpl::CheckStrictReservedWord() const
         if (lexer_->GetToken().KeywordType() >= lexer::TokenType::KEYW_ARGUMENTS) {
             ThrowSyntaxError("Unexpected reserved word in strict mode.");
         }
+    }
+
+    if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_AWAIT &&
+        context_.IsModule() && !context_.IsTsModule()) {
+        ThrowSyntaxError("Unexpected reserved word");
     }
 }
 
