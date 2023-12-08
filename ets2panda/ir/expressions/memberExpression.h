@@ -155,6 +155,11 @@ public:
         ignore_box_ = true;
     }
 
+    [[nodiscard]] checker::Type *UncheckedType() const noexcept
+    {
+        return unchecked_type_;
+    }
+
     checker::Type *GetTupleConvertedType() const noexcept
     {
         return tuple_converted_type_;
@@ -203,7 +208,7 @@ private:
                                                                              checker::Type *type) const;
     std::pair<checker::Type *, varbinder::LocalVariable *> ResolveObjectMember(checker::ETSChecker *checker) const;
 
-    checker::Type *AdjustOptional(checker::ETSChecker *checker, checker::Type *type);
+    checker::Type *AdjustType(checker::ETSChecker *checker, checker::Type *type);
     checker::Type *CheckComputed(checker::ETSChecker *checker, checker::Type *base_type);
     checker::Type *CheckUnionMember(checker::ETSChecker *checker, checker::Type *base_type);
 
@@ -212,13 +217,13 @@ private:
     checker::Type *CheckTupleAccessMethod(checker::ETSChecker *checker, checker::Type *base_type);
 
     void LoadRhs(compiler::PandaGen *pg) const;
-    bool IsGenericField() const;
 
     Expression *object_ = nullptr;
     Expression *property_ = nullptr;
     MemberExpressionKind kind_;
     bool computed_;
     bool ignore_box_ {false};
+    checker::Type *unchecked_type_ {};
     varbinder::LocalVariable *prop_var_ {};
     checker::ETSObjectType *obj_type_ {};
     checker::Type *tuple_converted_type_ {};

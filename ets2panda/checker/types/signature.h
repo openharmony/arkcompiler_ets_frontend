@@ -92,8 +92,8 @@ DEFINE_BITOPS(SignatureFlags)
 
 class Signature {
 public:
-    Signature(SignatureInfo *signature_info, Type *return_type, Signature *base_sig = nullptr)
-        : signature_info_(signature_info), return_type_(return_type), base_sig_(base_sig)
+    Signature(SignatureInfo *signature_info, Type *return_type)
+        : signature_info_(signature_info), return_type_(return_type)
     {
     }
 
@@ -224,8 +224,6 @@ public:
         return (flags_ & flag) != 0U;
     }
 
-    bool IsBaseReturnDiff() const;
-
     bool IsFinal() const noexcept
     {
         return HasSignatureFlag(SignatureFlags::FINAL);
@@ -263,7 +261,6 @@ private:
     util::StringView internal_name_ {};
     ETSObjectType *owner_obj_ {};
     varbinder::Variable *owner_var_ {};
-    const Signature *base_sig_ = nullptr;
 };
 }  // namespace panda::es2panda::checker
 

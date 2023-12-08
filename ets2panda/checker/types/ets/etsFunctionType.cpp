@@ -87,15 +87,19 @@ static Signature *ProcessSignatures(TypeRelation *relation, Signature *target, E
         if (!it->GetSignatureInfo()->type_params.empty()) {
             auto *substitution = relation->GetChecker()->AsETSChecker()->NewSubstitution();
             auto *instantiated_type_params = relation->GetChecker()->AsETSChecker()->NewInstantiatedTypeParamsSet();
+            bool res = true;
             for (size_t ix = 0; ix < target->MinArgCount(); ix++) {
-                relation->GetChecker()->AsETSChecker()->EnhanceSubstitutionForType(
+                res &= relation->GetChecker()->AsETSChecker()->EnhanceSubstitutionForType(
                     it->GetSignatureInfo()->type_params, it->GetSignatureInfo()->params[ix]->TsType(),
                     target->GetSignatureInfo()->params[ix]->TsType(), substitution, instantiated_type_params);
             }
             if (target->RestVar() != nullptr) {
-                relation->GetChecker()->AsETSChecker()->EnhanceSubstitutionForType(
+                res &= relation->GetChecker()->AsETSChecker()->EnhanceSubstitutionForType(
                     it->GetSignatureInfo()->type_params, it->RestVar()->TsType(), target->RestVar()->TsType(),
                     substitution, instantiated_type_params);
+            }
+            if (!res) {
+                continue;
             }
             it = it->Substitute(relation, substitution);
         }

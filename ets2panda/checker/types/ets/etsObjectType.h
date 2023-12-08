@@ -45,9 +45,8 @@ enum class ETSObjectFlags : uint32_t {
     INNER = 1U << 15U,
     DYNAMIC = 1U << 16U,
     ASYNC_FUNC_RETURN_TYPE = 1U << 17U,
-    TYPE_PARAMETER = 1U << 18U,
-    CHECKED_INVOKE_LEGITIMACY = 1U << 19U,
-    UNDEFINED_TYPE = 1U << 20U,
+    CHECKED_INVOKE_LEGITIMACY = 1U << 18U,
+    UNDEFINED_TYPE = 1U << 19U,
 
     BUILTIN_STRING = 1U << 23U,
     BUILTIN_BOOLEAN = 1U << 24U,
@@ -492,14 +491,11 @@ public:
         ss << assembler_name_;
     }
 
+    static void DebugInfoTypeFromName(std::stringstream &ss, util::StringView asm_name);
+
     void ToDebugInfoType(std::stringstream &ss) const override
     {
-        ss << compiler::Signatures::CLASS_REF_BEGIN;
-        auto name = assembler_name_.Mutf8();
-        std::replace(name.begin(), name.end(), *compiler::Signatures::METHOD_SEPARATOR.begin(),
-                     *compiler::Signatures::NAMESPACE_SEPARATOR.begin());
-        ss << name;
-        ss << compiler::Signatures::MANGLE_SEPARATOR;
+        DebugInfoTypeFromName(ss, assembler_name_);
     }
 
     void ToDebugInfoSignatureType(std::stringstream &ss) const

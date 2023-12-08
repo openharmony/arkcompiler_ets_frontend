@@ -121,6 +121,16 @@ public:
         type_params_ = type_params;
     }
 
+    [[nodiscard]] checker::Type *UncheckedType() const noexcept
+    {
+        return unchecked_type_;
+    }
+
+    void SetUncheckedType(checker::Type *type) noexcept
+    {
+        unchecked_type_ = type;
+    }
+
     void SetTrailingBlock(ir::BlockStatement *const block) noexcept
     {
         trailing_block_ = block;
@@ -169,6 +179,7 @@ protected:
     // for trailing lambda feature in ets
     ir::BlockStatement *trailing_block_ {};
     bool is_trailing_block_in_new_line_ {false};
+    checker::Type *unchecked_type_ {};
     // NOLINTEND(misc-non-private-member-variables-in-classes)
 
 private:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,19 +13,19 @@
  * limitations under the License.
  */
 
-class cls extends Object {
-    override toString() : String {
-        return "cls";
-    }
-}
+class X { }
+function id<T extends string | number | X>(x: T) { return x }
 
-function foo<T extends Object>(item : T) : String {
-    let str = item.toString();
-    return str;
-}
+function id_s(x: string) { return id(x) }
+function id_sx(x: string | X) { return id(x) }
 
-function main() : void {
-    foo<Int>(10);
-    foo<Int>(new Int(20));
-    foo<cls>(new cls());
+function main() {
+    let x = new X();
+
+    assert(id(1.1) == 1.1);
+    assert(id("a") == "a");
+    assert(id(x) == x);
+
+    assert(id_s("a") == "a");
+    assert(id_sx(x) == x);
 }

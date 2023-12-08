@@ -10900,67 +10900,121 @@
                               "callee": {
                                 "type": "MemberExpression",
                                 "object": {
-                                  "type": "MemberExpression",
-                                  "object": {
+                                  "type": "TSAsExpression",
+                                  "expression": {
                                     "type": "MemberExpression",
                                     "object": {
-                                      "type": "ThisExpression",
+                                      "type": "MemberExpression",
+                                      "object": {
+                                        "type": "ThisExpression",
+                                        "loc": {
+                                          "start": {
+                                            "line": 132,
+                                            "column": 18
+                                          },
+                                          "end": {
+                                            "line": 132,
+                                            "column": 22
+                                          }
+                                        }
+                                      },
+                                      "property": {
+                                        "type": "Identifier",
+                                        "name": "data",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 132,
+                                            "column": 23
+                                          },
+                                          "end": {
+                                            "line": 132,
+                                            "column": 27
+                                          }
+                                        }
+                                      },
+                                      "computed": false,
+                                      "optional": false,
                                       "loc": {
                                         "start": {
                                           "line": 132,
-                                          "column": 17
+                                          "column": 18
                                         },
                                         "end": {
                                           "line": 132,
-                                          "column": 21
+                                          "column": 27
                                         }
                                       }
                                     },
                                     "property": {
                                       "type": "Identifier",
-                                      "name": "data",
+                                      "name": "i",
                                       "decorators": [],
                                       "loc": {
                                         "start": {
                                           "line": 132,
-                                          "column": 22
+                                          "column": 28
                                         },
                                         "end": {
                                           "line": 132,
-                                          "column": 26
+                                          "column": 29
                                         }
                                       }
                                     },
-                                    "computed": false,
+                                    "computed": true,
                                     "optional": false,
                                     "loc": {
                                       "start": {
                                         "line": 132,
-                                        "column": 17
+                                        "column": 18
                                       },
                                       "end": {
                                         "line": 132,
-                                        "column": 26
+                                        "column": 30
                                       }
                                     }
                                   },
-                                  "property": {
-                                    "type": "Identifier",
-                                    "name": "i",
-                                    "decorators": [],
+                                  "typeAnnotation": {
+                                    "type": "ETSTypeReference",
+                                    "part": {
+                                      "type": "ETSTypeReferencePart",
+                                      "name": {
+                                        "type": "Identifier",
+                                        "name": "Object",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 132,
+                                            "column": 34
+                                          },
+                                          "end": {
+                                            "line": 132,
+                                            "column": 40
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 132,
+                                          "column": 34
+                                        },
+                                        "end": {
+                                          "line": 132,
+                                          "column": 41
+                                        }
+                                      }
+                                    },
                                     "loc": {
                                       "start": {
                                         "line": 132,
-                                        "column": 27
+                                        "column": 34
                                       },
                                       "end": {
                                         "line": 132,
-                                        "column": 28
+                                        "column": 41
                                       }
                                     }
                                   },
-                                  "computed": true,
-                                  "optional": false,
                                   "loc": {
                                     "start": {
                                       "line": 132,
@@ -10968,7 +11022,7 @@
                                     },
                                     "end": {
                                       "line": 132,
-                                      "column": 29
+                                      "column": 41
                                     }
                                   }
                                 },
@@ -10979,11 +11033,11 @@
                                   "loc": {
                                     "start": {
                                       "line": 132,
-                                      "column": 30
+                                      "column": 42
                                     },
                                     "end": {
                                       "line": 132,
-                                      "column": 36
+                                      "column": 48
                                     }
                                   }
                                 },
@@ -10996,23 +11050,77 @@
                                   },
                                   "end": {
                                     "line": 132,
-                                    "column": 36
+                                    "column": 48
                                   }
                                 }
                               },
                               "arguments": [
                                 {
-                                  "type": "Identifier",
-                                  "name": "e",
-                                  "decorators": [],
+                                  "type": "TSAsExpression",
+                                  "expression": {
+                                    "type": "Identifier",
+                                    "name": "e",
+                                    "decorators": [],
+                                    "loc": {
+                                      "start": {
+                                        "line": 132,
+                                        "column": 49
+                                      },
+                                      "end": {
+                                        "line": 132,
+                                        "column": 50
+                                      }
+                                    }
+                                  },
+                                  "typeAnnotation": {
+                                    "type": "ETSTypeReference",
+                                    "part": {
+                                      "type": "ETSTypeReferencePart",
+                                      "name": {
+                                        "type": "Identifier",
+                                        "name": "Object",
+                                        "decorators": [],
+                                        "loc": {
+                                          "start": {
+                                            "line": 132,
+                                            "column": 54
+                                          },
+                                          "end": {
+                                            "line": 132,
+                                            "column": 60
+                                          }
+                                        }
+                                      },
+                                      "loc": {
+                                        "start": {
+                                          "line": 132,
+                                          "column": 54
+                                        },
+                                        "end": {
+                                          "line": 132,
+                                          "column": 61
+                                        }
+                                      }
+                                    },
+                                    "loc": {
+                                      "start": {
+                                        "line": 132,
+                                        "column": 54
+                                      },
+                                      "end": {
+                                        "line": 132,
+                                        "column": 61
+                                      }
+                                    }
+                                  },
                                   "loc": {
                                     "start": {
                                       "line": 132,
-                                      "column": 37
+                                      "column": 49
                                     },
                                     "end": {
                                       "line": 132,
-                                      "column": 38
+                                      "column": 50
                                     }
                                   }
                                 }
@@ -11025,7 +11133,7 @@
                                 },
                                 "end": {
                                   "line": 132,
-                                  "column": 39
+                                  "column": 61
                                 }
                               }
                             },
@@ -11063,7 +11171,7 @@
                               "loc": {
                                 "start": {
                                   "line": 132,
-                                  "column": 41
+                                  "column": 63
                                 },
                                 "end": {
                                   "line": 134,

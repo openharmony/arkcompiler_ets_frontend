@@ -117,6 +117,12 @@ void ETSArrayType::Cast(TypeRelation *const relation, Type *const target)
             return;
         }
 
+        if (ElementType()->IsETSTypeParameter()) {
+            // unchecked cast!
+            relation->Result(true);
+            return;
+        }
+
         conversion::Forbidden(relation);
         return;
     }
@@ -141,8 +147,7 @@ void ETSArrayType::IsSupertypeOf(TypeRelation *const relation, Type *source)
     if (source->IsETSArrayType()) {
         auto *const source_elem_type = this->AsETSArrayType()->ElementType();
         auto *const target_elem_type = source->AsETSArrayType()->ElementType();
-        if (source_elem_type->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT) &&
-            target_elem_type->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+        if (ETSChecker::IsReferenceType(target_elem_type) && ETSChecker::IsReferenceType(source_elem_type)) {
             source_elem_type->IsSupertypeOf(relation, target_elem_type);
         }
     }
@@ -159,9 +164,7 @@ Type *ETSArrayType::Substitute(TypeRelation *relation, const Substitution *subst
     if (substitution == nullptr || substitution->empty()) {
         return this;
     }
-    if (auto found = substitution->find(this); found != substitution->end()) {
-        return found->second;
-    }
+
     auto *result_elt = element_->Substitute(relation, substitution);
     return result_elt == element_ ? this : relation->GetChecker()->AsETSChecker()->CreateETSArrayType(result_elt);
 }

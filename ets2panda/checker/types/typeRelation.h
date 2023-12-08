@@ -268,9 +268,10 @@ public:
     void RaiseError(const std::string &err_msg, const lexer::SourcePosition &loc) const;
     void RaiseError(std::initializer_list<TypeErrorMessageElement> list, const lexer::SourcePosition &loc) const;
 
-    void Result(bool res)
+    bool Result(bool res)
     {
         result_ = res ? RelationResult::TRUE : RelationResult::FALSE;
+        return res;
     }
 
     void Result(RelationResult res)

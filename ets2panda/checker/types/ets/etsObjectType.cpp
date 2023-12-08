@@ -286,7 +286,7 @@ void ETSObjectType::ToString(std::stringstream &ss) const
 {
     ss << name_;
 
-    if (IsGeneric()) {
+    if (!type_arguments_.empty()) {
         auto const type_arguments_size = type_arguments_.size();
         ss << compiler::Signatures::GENERIC_BEGIN;
         type_arguments_[0]->ToString(ss);
@@ -318,10 +318,6 @@ void ETSObjectType::IdenticalUptoNullability(TypeRelation *relation, Type *other
     auto *this_base = GetOriginalBaseType();
     auto *other_base = other->AsETSObjectType()->GetOriginalBaseType();
     if (this_base->Variable() != other_base->Variable()) {
-        return;
-    }
-
-    if (this_base->HasObjectFlag(ETSObjectFlags::TYPE_PARAMETER) && this_base != other_base) {
         return;
     }
 
@@ -631,6 +627,11 @@ void ETSObjectType::IsSupertypeOf(TypeRelation *relation, Type *source)
         return;
     }
 
+    if (source->IsETSTypeParameter()) {
+        source->AsETSTypeParameter()->ConstraintIsSubtypeOf(relation, this);
+        return;
+    }
+
     if (!source->IsETSObjectType() ||
         !source->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::CLASS | ETSObjectFlags::INTERFACE |
                                                   ETSObjectFlags::NULL_TYPE)) {
@@ -831,31 +832,8 @@ Type *ETSObjectType::Substitute(TypeRelation *relation, const Substitution *subs
         return this;
     }
 
-    if (const auto &this_type_in_sub = substitution->find(this); this_type_in_sub != substitution->end()) {
-        return this_type_in_sub->second;
-    }
-
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *base = GetOriginalBaseType();
-    if (auto repl = substitution->find(base); repl != substitution->end()) {
-        auto *repl_type = repl->second;
-
-        /* Any other flags we need to copy? */
-
-        /* The check this != base is a kludge to distinguish bare type parameter T
-           with a nullish constraint (like the default Object?) from explicitly nullish T?
-        */
-        if (this != base && ((ContainsNull() && !repl_type->ContainsNull()) ||
-                             (ContainsUndefined() && !repl_type->ContainsUndefined()))) {
-            // this type is explicitly marked as nullish
-            ASSERT(repl_type->IsETSObjectType() || repl_type->IsETSArrayType() || repl_type->IsETSFunctionType());
-            auto nullish_flags = TypeFlag(TypeFlags() & TypeFlag::NULLISH);
-            auto *new_repl_type = checker->CreateNullishType(repl_type, nullish_flags, checker->Allocator(), relation,
-                                                             checker->GetGlobalTypesHolder());
-            repl_type = new_repl_type;
-        }
-        return repl_type;
-    }
 
     ArenaVector<Type *> new_type_args {checker->Allocator()->Adapter()};
     const bool any_change = SubstituteTypeArgs(relation, new_type_args, substitution);
@@ -942,6 +920,16 @@ void ETSObjectType::InstantiateProperties() const
         auto *copied_prop = CopyPropertyWithTypeArguments(prop, relation_, substitution_);
         properties_[static_cast<size_t>(PropertyType::STATIC_DECL)].emplace(prop->Name(), copied_prop);
     }
+}
+
+void ETSObjectType::DebugInfoTypeFromName(std::stringstream &ss, util::StringView asm_name)
+{
+    ss << compiler::Signatures::CLASS_REF_BEGIN;
+    auto copied = asm_name.Mutf8();
+    std::replace(copied.begin(), copied.end(), *compiler::Signatures::METHOD_SEPARATOR.begin(),
+                 *compiler::Signatures::NAMESPACE_SEPARATOR.begin());
+    ss << copied;
+    ss << compiler::Signatures::MANGLE_SEPARATOR;
 }
 
 }  // namespace panda::es2panda::checker

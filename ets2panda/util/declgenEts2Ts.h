@@ -50,6 +50,7 @@ private:
     void GenTypeNonNullish(const checker::Type *checker_type);
     void GenFunctionType(const checker::ETSFunctionType *function_type,
                          const ir::MethodDefinition *method_def = nullptr);
+    void GenTypeParameterType(const checker::ETSTypeParameter *type_param);
     void GenObjectType(const checker::ETSObjectType *object_type);
     void GenEnumType(const checker::ETSEnumType *enum_type);
 

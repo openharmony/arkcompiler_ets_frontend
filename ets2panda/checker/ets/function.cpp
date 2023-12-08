@@ -67,93 +67,111 @@
 
 namespace panda::es2panda::checker {
 
-bool ETSChecker::IsCompatibleTypeArgument(Type *type_param, Type *type_argument, const Substitution *substitution)
+bool ETSChecker::IsCompatibleTypeArgument(ETSTypeParameter *type_param, Type *type_argument,
+                                          const Substitution *substitution)
 {
-    ASSERT(type_param->IsETSObjectType() &&
-           type_param->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::TYPE_PARAMETER));
     if (type_argument->IsWildcardType()) {
         return true;
     }
-    if (!type_argument->IsETSObjectType() && !type_argument->IsETSArrayType() && !type_argument->IsETSFunctionType()) {
+    if (!type_argument->IsETSTypeParameter() && !IsReferenceType(type_argument)) {
         return false;
     }
-    auto *type_param_obj = type_param->AsETSObjectType();
-    auto *type_param_obj_supertype = type_param_obj->SuperType();
-    if (type_param_obj_supertype != nullptr) {
-        if (!type_param_obj_supertype->TypeArguments().empty()) {
-            type_param_obj_supertype =
-                type_param_obj_supertype->Substitute(this->Relation(), substitution)->AsETSObjectType();
-        }
-        type_param_obj_supertype->IsSupertypeOf(Relation(), type_argument);
-        if (!Relation()->IsTrue()) {
-            return false;
-        }
-    }
-    for (auto *itf : type_param_obj->Interfaces()) {
-        if (!itf->TypeArguments().empty()) {
-            itf = itf->Substitute(this->Relation(), substitution)->AsETSObjectType();
-        }
-        itf->IsSupertypeOf(Relation(), type_argument);
-        if (!Relation()->IsTrue()) {
-            return false;
-        }
+    if (type_argument->IsETSUnionType()) {
+        auto const &constitutent = type_argument->AsETSUnionType()->ConstituentTypes();
+        return std::all_of(constitutent.begin(), constitutent.end(), [this, type_param, substitution](Type *type_arg) {
+            return IsCompatibleTypeArgument(type_param->AsETSTypeParameter(), type_arg, substitution);
+        });
     }
 
+    if (auto *constraint = type_param->GetConstraintType(); constraint != nullptr) {
+        constraint = constraint->Substitute(Relation(), substitution);
+        constraint->IsSupertypeOf(Relation(), type_argument);
+        if (!Relation()->IsTrue()) {
+            return false;
+        }
+    }
     return true;
 }
 
 /* A very rough and imprecise partial type inference */
-void ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &type_params, Type *param_type,
+bool ETSChecker::EnhanceSubstitutionForType(const ArenaVector<Type *> &type_params, Type *param_type,
                                             Type *argument_type, Substitution *substitution,
-                                            ArenaUnorderedSet<ETSObjectType *> *instantiated_type_params)
+                                            ArenaUnorderedSet<ETSTypeParameter *> *instantiated_type_params)
 {
-    if (!param_type->IsETSObjectType()) {
-        return;
+    if (param_type->IsETSTypeParameter()) {
+        auto *const tparam = param_type->AsETSTypeParameter();
+        auto *const original_tparam = tparam->GetOriginal();
+        if (instantiated_type_params->find(tparam) != instantiated_type_params->end() &&
+            substitution->at(original_tparam) != argument_type) {
+            ThrowTypeError({"Type parameter already instantiated with another type "}, tparam->GetDeclNode()->Start());
+        }
+        if (std::find(type_params.begin(), type_params.end(), original_tparam) != type_params.end() &&
+            substitution->count(original_tparam) == 0) {
+            if (!IsCompatibleTypeArgument(tparam, argument_type, substitution)) {
+                return false;
+            }
+            ETSChecker::EmplaceSubstituted(substitution, original_tparam, argument_type);
+            instantiated_type_params->insert(tparam);
+            return true;
+        }
     }
+
+    if (param_type->IsETSUnionType()) {
+        auto const &constitutent = param_type->AsETSUnionType()->ConstituentTypes();
+        return std::all_of(constitutent.begin(), constitutent.end(),
+                           [this, type_params, argument_type, substitution, instantiated_type_params](Type *member) {
+                               return EnhanceSubstitutionForType(type_params, member, argument_type, substitution,
+                                                                 instantiated_type_params);
+                           });
+    }
+
+    if (param_type->IsETSObjectType()) {
+        return EnhanceSubstitutionForObject(type_params, param_type->AsETSObjectType(), argument_type, substitution,
+                                            instantiated_type_params);
+    }
+    return true;
+}
+
+bool ETSChecker::EnhanceSubstitutionForObject(const ArenaVector<Type *> &type_params, ETSObjectType *param_type,
+                                              Type *argument_type, Substitution *substitution,
+                                              ArenaUnorderedSet<ETSTypeParameter *> *instantiated_type_params)
+{
     auto *param_obj_type = param_type->AsETSObjectType();
-    if (param_obj_type->HasObjectFlag(ETSObjectFlags::TYPE_PARAMETER)) {
-        auto *param_base = GetOriginalBaseType(param_obj_type);
-        if (instantiated_type_params->find(param_obj_type) != instantiated_type_params->end() &&
-            substitution->at(param_base) != argument_type) {
-            ThrowTypeError({"Type parameter already instantiated with another type "},
-                           param_obj_type->GetDeclNode()->Start());
-        }
-        if (std::find(type_params.begin(), type_params.end(), param_base) != type_params.end() &&
-            substitution->count(param_base) == 0) {
-            substitution->emplace(param_base, argument_type);
-            instantiated_type_params->insert(param_obj_type);
-            return;
-        }
-    }
+
+    auto const enhance = [this, type_params, substitution, instantiated_type_params](Type *ptype, Type *atype) {
+        return EnhanceSubstitutionForType(type_params, ptype, atype, substitution, instantiated_type_params);
+    };
+
     if (argument_type->IsETSObjectType()) {
         auto *arg_obj_type = argument_type->AsETSObjectType();
         if (GetOriginalBaseType(arg_obj_type) != GetOriginalBaseType(param_obj_type)) {
-            return;  // don't attempt anything fancy for now
+            return true;  // don't attempt anything fancy for now
         }
-        ASSERT(arg_obj_type->TypeArguments().size() == param_obj_type->TypeArguments().size());
+        bool res = true;
         for (size_t ix = 0; ix < arg_obj_type->TypeArguments().size(); ix++) {
-            EnhanceSubstitutionForType(type_params, param_obj_type->TypeArguments()[ix],
-                                       arg_obj_type->TypeArguments()[ix], substitution, instantiated_type_params);
+            res &= enhance(param_obj_type->TypeArguments()[ix], arg_obj_type->TypeArguments()[ix]);
         }
-    } else if (argument_type->IsETSFunctionType() &&
-               param_obj_type->HasObjectFlag(ETSObjectFlags::FUNCTIONAL_INTERFACE)) {
-        auto parameter_signatures = param_obj_type->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke")
-                                        ->TsType()
-                                        ->AsETSFunctionType()
-                                        ->CallSignatures();
-        auto argument_signatures = argument_type->AsETSFunctionType()->CallSignatures();
+        return res;
+    }
+
+    if (argument_type->IsETSFunctionType() && param_obj_type->HasObjectFlag(ETSObjectFlags::FUNCTIONAL_INTERFACE)) {
+        auto &parameter_signatures = param_obj_type->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke")
+                                         ->TsType()
+                                         ->AsETSFunctionType()
+                                         ->CallSignatures();
+        auto &argument_signatures = argument_type->AsETSFunctionType()->CallSignatures();
         ASSERT(argument_signatures.size() == 1);
         ASSERT(parameter_signatures.size() == 1);
+        bool res = true;
         for (size_t idx = 0; idx < argument_signatures[0]->GetSignatureInfo()->params.size(); idx++) {
-            EnhanceSubstitutionForType(type_params, parameter_signatures[0]->GetSignatureInfo()->params[idx]->TsType(),
-                                       argument_signatures[0]->GetSignatureInfo()->params[idx]->TsType(), substitution,
-                                       instantiated_type_params);
+            res &= enhance(parameter_signatures[0]->GetSignatureInfo()->params[idx]->TsType(),
+                           argument_signatures[0]->GetSignatureInfo()->params[idx]->TsType());
         }
-        EnhanceSubstitutionForType(type_params, parameter_signatures[0]->ReturnType(),
-                                   argument_signatures[0]->ReturnType(), substitution, instantiated_type_params);
-    } else {
-        return;
+        res &= enhance(parameter_signatures[0]->ReturnType(), argument_signatures[0]->ReturnType());
+        return res;
     }
+
+    return true;
 }
 
 // NOLINTBEGIN(modernize-avoid-c-arrays)
@@ -202,11 +220,6 @@ Signature *ETSChecker::ValidateSignature(Signature *signature, const ir::TSTypeP
             }
             return nullptr;
         }
-    }
-
-    if (substituted_sig->IsBaseReturnDiff() && substituted_sig->ReturnType()->IsETSArrayType()) {
-        CreateBuiltinArraySignature(substituted_sig->ReturnType()->AsETSArrayType(),
-                                    substituted_sig->ReturnType()->AsETSArrayType()->Rank());
     }
 
     // Check all required formal parameter(s) first
@@ -367,12 +380,13 @@ std::pair<ArenaVector<Signature *>, ArenaVector<Signature *>> ETSChecker::Collec
 
     auto collect_signatures = [&](TypeRelationFlag relation_flags) {
         for (auto *sig : signatures) {
-            if (!sig->Function()->IsDefaultParamProxy()) {
-                if (auto *concrete_sig = ValidateSignature(sig, type_arguments, arguments, pos, relation_flags,
-                                                           arg_type_inference_required);
-                    concrete_sig != nullptr) {
-                    compatible_signatures.push_back(concrete_sig);
-                }
+            if (sig->Function()->IsDefaultParamProxy()) {
+                continue;
+            }
+            auto *concrete_sig =
+                ValidateSignature(sig, type_arguments, arguments, pos, relation_flags, arg_type_inference_required);
+            if (concrete_sig != nullptr) {
+                compatible_signatures.push_back(concrete_sig);
             }
         }
     };
@@ -1140,7 +1154,11 @@ Signature *ETSChecker::AdjustForTypeParameters(Signature *source, Signature *tar
     }
     auto *substitution = NewSubstitution();
     for (size_t ix = 0; ix < source_type_params.size(); ix++) {
-        substitution->emplace(target_type_params[ix], source_type_params[ix]);
+        if (!target_type_params[ix]->IsETSTypeParameter()) {
+            continue;
+        }
+        ETSChecker::EmplaceSubstituted(substitution, target_type_params[ix]->AsETSTypeParameter(),
+                                       source_type_params[ix]);
     }
     return target->Substitute(Relation(), substitution);
 }
@@ -2592,7 +2610,7 @@ bool ETSChecker::IsReturnTypeSubstitutable(Signature *const s1, Signature *const
 
     // - If R1 is a reference type then R1, adapted to the type parameters of d2 (link to generic methods), is a
     // subtype of R2.
-    ASSERT(r1->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT));
+    ASSERT(r1->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT) || r1->IsETSTypeParameter());
     r2->IsSupertypeOf(Relation(), r1);
     return Relation()->IsTrue();
 }

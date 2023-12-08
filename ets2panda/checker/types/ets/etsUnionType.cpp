@@ -42,6 +42,13 @@ void ETSUnionType::ToDebugInfoType(std::stringstream &ss) const
     lub_type_->ToDebugInfoType(ss);
 }
 
+ETSUnionType::ETSUnionType(ETSChecker *checker, ArenaVector<Type *> &&constituent_types)
+    : Type(TypeFlag::ETS_UNION), constituent_types_(std::move(constituent_types))
+{
+    ASSERT(constituent_types_.size() > 1);
+    lub_type_ = ComputeLUB(checker);
+}
+
 bool ETSUnionType::EachTypeRelatedToSomeType(TypeRelation *relation, ETSUnionType *source, ETSUnionType *target)
 {
     return std::all_of(source->constituent_types_.begin(), source->constituent_types_.end(),
@@ -54,23 +61,19 @@ bool ETSUnionType::TypeRelatedToSomeType(TypeRelation *relation, Type *source, E
                        [relation, source](auto *t) { return relation->IsIdenticalTo(source, t); });
 }
 
-void ETSUnionType::SetLeastUpperBoundType(ETSChecker *checker)
+Type *ETSUnionType::ComputeLUB(ETSChecker *checker) const
 {
-    ASSERT(constituent_types_.size() > 1);
-    if (lub_type_ == nullptr) {
-        lub_type_ = constituent_types_.front();
-        for (auto *t : constituent_types_) {
-            if (!t->HasTypeFlag(TypeFlag::ETS_ARRAY_OR_OBJECT)) {
-                lub_type_ = checker->GetGlobalTypesHolder()->GlobalETSObjectType();
-                return;
-            }
-            if (t->IsETSObjectType() && t->AsETSObjectType()->SuperType() == nullptr) {
-                lub_type_ = checker->GetGlobalTypesHolder()->GlobalETSObjectType();
-                return;
-            }
-            lub_type_ = checker->FindLeastUpperBound(lub_type_, t);
+    auto lub = constituent_types_.front();
+    for (auto *t : constituent_types_) {
+        if (!checker->IsReferenceType(t)) {
+            return checker->GetGlobalTypesHolder()->GlobalETSObjectType();
         }
+        if (t->IsETSObjectType() && t->AsETSObjectType()->SuperType() == nullptr) {
+            return checker->GetGlobalTypesHolder()->GlobalETSObjectType();
+        }
+        lub = checker->FindLeastUpperBound(lub, t);
     }
+    return lub;
 }
 
 void ETSUnionType::Identical(TypeRelation *relation, Type *other)
@@ -94,8 +97,7 @@ bool ETSUnionType::AssignmentSource(TypeRelation *relation, Type *target)
         }
     }
 
-    relation->Result(true);
-    return true;
+    return relation->Result(true);
 }
 
 void ETSUnionType::AssignmentTarget(TypeRelation *relation, Type *source)
@@ -213,17 +215,6 @@ void ETSUnionType::NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &c
     }
 }
 
-Type *ETSUnionType::HandleUnionType([[maybe_unused]] TypeRelation *relation, ETSUnionType *union_type)
-{
-    NormalizeTypes(relation, union_type->constituent_types_);
-
-    if (union_type->ConstituentTypes().size() == 1) {
-        return union_type->ConstituentTypes()[0];
-    }
-
-    return union_type;
-}
-
 Type *ETSUnionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *global_types)
 {
     ArenaVector<Type *> copied_constituents(allocator->Adapter());
@@ -234,14 +225,12 @@ Type *ETSUnionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relatio
                                           : it->Instantiate(allocator, relation, global_types));
     }
 
+    ETSUnionType::NormalizeTypes(relation, copied_constituents);
     if (copied_constituents.size() == 1) {
         return copied_constituents[0];
     }
 
-    auto *new_union_type = allocator->New<ETSUnionType>(std::move(copied_constituents));
-
-    new_union_type->SetLeastUpperBoundType(relation->GetChecker()->AsETSChecker());
-    return HandleUnionType(relation, new_union_type);
+    return allocator->New<ETSUnionType>(relation->GetChecker()->AsETSChecker(), std::move(copied_constituents));
 }
 
 Type *ETSUnionType::Substitute(TypeRelation *relation, const Substitution *substitution)
@@ -259,21 +248,21 @@ void ETSUnionType::Cast(TypeRelation *relation, Type *target)
     auto *const checker = relation->GetChecker()->AsETSChecker();
     auto *const ref_target =
         target->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) ? checker->PrimitiveTypeAsETSBuiltinType(target) : target;
-    auto exact_type = std::find_if(constituent_types_.begin(), constituent_types_.end(),
-                                   [this, checker, relation, ref_target](Type *src) {
-                                       if (src == ref_target && relation->IsCastableTo(src, ref_target)) {
-                                           GetLeastUpperBoundType(checker)->Cast(relation, ref_target);
-                                           ASSERT(relation->IsTrue());
-                                           return true;
-                                       }
-                                       return false;
-                                   });
+    auto exact_type =
+        std::find_if(constituent_types_.begin(), constituent_types_.end(), [this, relation, ref_target](Type *src) {
+            if (src == ref_target && relation->IsCastableTo(src, ref_target)) {
+                GetLeastUpperBoundType()->Cast(relation, ref_target);
+                ASSERT(relation->IsTrue());
+                return true;
+            }
+            return false;
+        });
     if (exact_type != constituent_types_.end()) {
         return;
     }
     for (auto *source : constituent_types_) {
         if (relation->IsCastableTo(source, ref_target)) {
-            GetLeastUpperBoundType(checker)->Cast(relation, ref_target);
+            GetLeastUpperBoundType()->Cast(relation, ref_target);
             ASSERT(relation->IsTrue());
             if (ref_target != target) {
                 source->Cast(relation, target);
@@ -292,6 +281,31 @@ void ETSUnionType::Cast(TypeRelation *relation, Type *target)
     }
 
     conversion::Forbidden(relation);
+}
+
+void ETSUnionType::IsSupertypeOf(TypeRelation *relation, Type *source)
+{
+    relation->Result(false);
+
+    if (source->IsETSUnionType()) {
+        for (auto const &source_ctype : source->AsETSUnionType()->ConstituentTypes()) {
+            if (IsSupertypeOf(relation, source_ctype), !relation->IsTrue()) {
+                return;
+            }
+        }
+        return;
+    }
+
+    for (auto const &ctype : ConstituentTypes()) {
+        if (ctype->IsSupertypeOf(relation, source), relation->IsTrue()) {
+            return;
+        }
+    }
+
+    if (source->IsETSTypeParameter()) {
+        source->AsETSTypeParameter()->ConstraintIsSubtypeOf(relation, this);
+        return;
+    }
 }
 
 void ETSUnionType::CastTarget(TypeRelation *relation, Type *source)

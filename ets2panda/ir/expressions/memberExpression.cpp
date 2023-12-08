@@ -201,22 +201,26 @@ checker::Type *MemberExpression::CheckUnionMember(checker::ETSChecker *checker, 
         common_prop_type = member_type;
     };
     for (auto *const type : union_type->ConstituentTypes()) {
-        if (type->IsETSObjectType()) {
-            SetObjectType(type->AsETSObjectType());
+        auto *const apparent = checker->GetApparentType(type);
+        if (apparent->IsETSObjectType()) {
+            SetObjectType(apparent->AsETSObjectType());
             add_prop_type(ResolveObjectMember(checker).first);
-        } else if (type->IsETSEnumType() || base_type->IsETSStringEnumType()) {
-            add_prop_type(ResolveEnumMember(checker, type).first);
+        } else if (apparent->IsETSEnumType() || base_type->IsETSStringEnumType()) {
+            add_prop_type(ResolveEnumMember(checker, apparent).first);
         } else {
             UNREACHABLE();
         }
     }
-    SetObjectType(union_type->GetLeastUpperBoundType(checker)->AsETSObjectType());
+    SetObjectType(union_type->GetLeastUpperBoundType()->AsETSObjectType());
     return common_prop_type;
 }
 
-checker::Type *MemberExpression::AdjustOptional(checker::ETSChecker *checker, checker::Type *type)
+checker::Type *MemberExpression::AdjustType(checker::ETSChecker *checker, checker::Type *type)
 {
     SetOptionalType(type);
+    if (PropVar() != nullptr) {
+        unchecked_type_ = checker->GuaranteedTypeForUncheckedPropertyAccess(PropVar());
+    }
     if (IsOptional() && Object()->TsType()->IsNullishOrNullLike()) {
         checker->Relation()->SetNode(this);
         type = checker->CreateOptionalResultType(type);
@@ -356,12 +360,6 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
             CheckArrayIndexValue(checker);
         }
 
-        if (property_->IsIdentifier()) {
-            SetPropVar(property_->AsIdentifier()->Variable()->AsLocalVariable());
-        } else if (auto var = property_->Variable(); (var != nullptr) && var->IsLocalVariable()) {
-            SetPropVar(var->AsLocalVariable());
-        }
-
         // NOTE: apply capture conversion on this type
         if (base_type->IsETSArrayType()) {
             if (base_type->IsETSTupleType()) {
@@ -417,21 +415,4 @@ MemberExpression *MemberExpression::Clone(ArenaAllocator *const allocator, AstNo
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
 }
 
-bool MemberExpression::IsGenericField() const
-{
-    const auto obj_t = object_->TsType();
-    if (!obj_t->IsETSObjectType()) {
-        return false;
-    }
-    auto base_class_t = obj_t->AsETSObjectType()->GetBaseType();
-    if (base_class_t == nullptr) {
-        return false;
-    }
-    const auto &prop_name = property_->AsIdentifier()->Name();
-    auto base_prop = base_class_t->GetProperty(prop_name, checker::PropertySearchFlags::SEARCH_FIELD);
-    if (base_prop == nullptr || base_prop->TsType() == nullptr) {
-        return false;
-    }
-    return TsType()->ToAssemblerName().str() != base_prop->TsType()->ToAssemblerName().str();
-}
 }  // namespace panda::es2panda::ir

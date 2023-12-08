@@ -236,6 +236,11 @@ ETSObjectType *ETSChecker::GlobalETSObjectType() const
     return AsETSObjectType(&GlobalTypesHolder::GlobalETSObjectType);
 }
 
+ETSObjectType *ETSChecker::GlobalETSNullishObjectType() const
+{
+    return AsETSObjectType(&GlobalTypesHolder::GlobalETSNullishObjectType);
+}
+
 ETSObjectType *ETSChecker::GlobalBuiltinETSStringType() const
 {
     return AsETSObjectType(&GlobalTypesHolder::GlobalETSStringBuiltinType);

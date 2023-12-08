@@ -36,6 +36,7 @@ class ETSDynamicType;
 class ETSAsyncFuncReturnType;
 class ETSChecker;
 class ETSDynamicFunctionType;
+class ETSTypeParameter;
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define DECLARE_TYPENAMES(typeFlag, typeName) class typeName;
@@ -43,7 +44,7 @@ TYPE_MAPPING(DECLARE_TYPENAMES)
 #undef DECLARE_TYPENAMES
 class ETSStringType;
 
-using Substitution = ArenaMap<Type *, Type *>;
+using Substitution = ArenaMap<ETSTypeParameter *, Type *>;
 
 class Type {
 public:

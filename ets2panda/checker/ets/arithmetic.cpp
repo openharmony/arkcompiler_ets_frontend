@@ -381,11 +381,9 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorEqualDynamic(ir::Expre
         // NOTE: vpukhov. boxing flags are not set in dynamic values
         return {GlobalETSBooleanType(), other_exp->TsType()};
     }
-    if (other_exp->TsType()->IsETSObjectType()) {
+    if (IsReferenceType(other_exp->TsType())) {
         // have to prevent casting dyn_exp via ApplyCast without nullish flag
-        auto *nullish_obj = CreateNullishType(GlobalETSObjectType(), checker::TypeFlag::NULLISH, Allocator(),
-                                              Relation(), GetGlobalTypesHolder());
-        return {GlobalETSBooleanType(), nullish_obj};
+        return {GlobalETSBooleanType(), GlobalETSNullishObjectType()};
     }
     ThrowTypeError("Unimplemented case in dynamic type comparison.", pos);
 }
@@ -436,8 +434,7 @@ std::tuple<Type *, Type *> ETSChecker::CheckBinaryOperatorInstanceOf(lexer::Sour
                                                                      checker::Type *const right_type)
 {
     checker::Type *ts_type {};
-    if (!left_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | checker::TypeFlag::ETS_UNION) ||
-        !right_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT | checker::TypeFlag::ETS_UNION)) {
+    if (!IsReferenceType(left_type) || !IsReferenceType(right_type)) {
         ThrowTypeError("Bad operand type, the types of the operands must be same type.", pos);
     }
 

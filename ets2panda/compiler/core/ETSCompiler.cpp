@@ -457,7 +457,7 @@ static void CompileNullishCoalescing(compiler::ETSGen *etsg, ir::BinaryExpressio
 
     compile_operand(node->Left());
 
-    if (!node->Left()->TsType()->IsNullishOrNullLike()) {
+    if (!etsg->Checker()->MayHaveNulllikeValue(node->Left()->TsType())) {
         // fallthrough
     } else if (node->Left()->TsType()->IsETSNullLike()) {
         compile_operand(node->Right());
@@ -708,7 +708,8 @@ void ETSCompiler::EmitCall(const ir::CallExpression *expr, compiler::VReg &calle
     } else {
         etsg->CallThisVirtual(expr, callee_reg, expr->Signature(), expr->Arguments());
     }
-    etsg->SetAccumulatorType(expr->TsType());
+
+    etsg->GuardUncheckedType(expr, expr->UncheckedType(), expr->OptionalType());
 }
 
 void ETSCompiler::Compile(const ir::CallExpression *expr) const
@@ -848,7 +849,7 @@ static bool CompileComputed(compiler::ETSGen *etsg, const ir::MemberExpression *
             }
 
             if (expr->Object()->TsType()->IsETSTupleType() && (expr->GetTupleConvertedType() != nullptr)) {
-                etsg->EmitCheckedNarrowingReferenceConversion(expr, expr->GetTupleConvertedType());
+                etsg->InternalCheckCast(expr, expr->GetTupleConvertedType());
             }
 
             etsg->ApplyConversion(expr);
@@ -872,7 +873,8 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
 
     compiler::RegScope rs(etsg);
 
-    auto *const object_type = etsg->Checker()->GetNonNullishType(expr->Object()->TsType());
+    auto *const object_type =
+        checker::ETSChecker::GetApparentType(etsg->Checker()->GetNonNullishType(expr->Object()->TsType()));
 
     if (CompileComputed(etsg, expr)) {
         return;
@@ -939,15 +941,15 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
         if (expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
             checker::Signature *sig = expr->PropVar()->TsType()->AsETSFunctionType()->FindGetter();
             etsg->CallThisVirtual0(expr, obj_reg, sig->InternalName());
-            etsg->SetAccumulatorType(expr->TsType());
         } else if (object_type->IsETSDynamicType()) {
             etsg->LoadPropertyDynamic(expr, expr->OptionalType(), obj_reg, prop_name);
         } else if (object_type->IsETSUnionType()) {
-            etsg->LoadUnionProperty(expr, expr->OptionalType(), expr->IsGenericField(), obj_reg, prop_name);
+            etsg->LoadUnionProperty(expr, expr->OptionalType(), obj_reg, prop_name);
         } else {
             const auto full_name = etsg->FormClassPropReference(object_type->AsETSObjectType(), prop_name);
-            etsg->LoadProperty(expr, expr->OptionalType(), expr->IsGenericField(), obj_reg, full_name);
+            etsg->LoadProperty(expr, expr->OptionalType(), obj_reg, full_name);
         }
+        etsg->GuardUncheckedType(expr, expr->UncheckedType(), expr->OptionalType());
     };
 
     etsg->EmitMaybeOptional(expr, load_property, expr->IsOptional());
@@ -1797,7 +1799,8 @@ void ETSCompiler::Compile(const ir::TSAsExpression *expr) const
             break;
         }
         case checker::TypeFlag::ETS_ARRAY:
-        case checker::TypeFlag::ETS_OBJECT: {
+        case checker::TypeFlag::ETS_OBJECT:
+        case checker::TypeFlag::ETS_TYPE_PARAMETER: {
             etsg->CastToArrayOrObject(expr, target_type, expr->is_unchecked_cast_);
             break;
         }
@@ -1945,7 +1948,7 @@ void ETSCompiler::Compile(const ir::TSNonNullExpression *expr) const
 
     expr->Expr()->Compile(etsg);
 
-    if (!etsg->GetAccumulatorType()->IsNullishOrNullLike()) {
+    if (!etsg->Checker()->MayHaveNulllikeValue(etsg->GetAccumulatorType())) {
         return;
     }
 

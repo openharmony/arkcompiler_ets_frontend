@@ -66,3 +66,6 @@ parser/ets/null-coalesc-negative.ets
 
 # Lambda tests, disabled because crash during compiler
 parser/ets/trailing_lambda_tests/trailing_lambda_define_lambda_in_body_capture_variable.ets
+
+# Bad test shadows Object with type parameter name #14913
+compiler/ets/override13.ets

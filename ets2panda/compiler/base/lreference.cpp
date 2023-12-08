@@ -362,10 +362,6 @@ void ETSLReference::SetValue() const
 
     const auto *type = etsg_->Checker()->MaybeBoxedType(member_expr->PropVar(), etsg_->Allocator());
 
-    if (type->IsETSUnionType()) {
-        type = type->AsETSUnionType()->GetLeastUpperBoundType();
-    }
-
     etsg_->StoreProperty(Node(), type, base_reg_, prop_name);
 }
 

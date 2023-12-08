@@ -165,12 +165,6 @@ ArenaVector<ETSObjectType *> ETSChecker::GetInterfaces(ETSObjectType *type)
     return type->Interfaces();
 }
 
-void ETSChecker::SetTypeParameterType(ir::TSTypeParameter *type_param, Type *type_param_type)
-{
-    auto *var = type_param->Name()->Variable();
-    var->SetTsType(type_param_type);
-}
-
 ArenaVector<Type *> ETSChecker::CreateTypeForTypeParameters(ir::TSTypeParameterDeclaration *type_params)
 {
     ArenaVector<Type *> result {Allocator()->Adapter()};
@@ -187,7 +181,7 @@ ArenaVector<Type *> ETSChecker::CreateTypeForTypeParameters(ir::TSTypeParameterD
     }
 
     for (auto *const type_param : type_params->Params()) {
-        result.emplace_back(CreateTypeParameterType(type_param));
+        result.emplace_back(SetUpParameterType(type_param));
     }
 
     // The type parameter might be used in the constraint, like 'K extend Comparable<K>',
@@ -227,74 +221,50 @@ void ETSChecker::CheckTypeParameterConstraint(ir::TSTypeParameter *param, Type2T
     extends.emplace(type_param_name, constraint_name);
 }
 
-Type *ETSChecker::CreateTypeParameterType(ir::TSTypeParameter *const param)
-{
-    auto const instantiate_supertype = [this](TypeFlag nullish_flags) {
-        return CreateNullishType(GlobalETSObjectType(), nullish_flags, Allocator(), Relation(), GetGlobalTypesHolder())
-            ->AsETSObjectType();
-    };
-
-    ETSObjectType *param_type = SetUpParameterType(param);
-    if (param->Constraint() == nullptr) {
-        // No constraint, so it's Object|null
-        param_type->SetSuperType(instantiate_supertype(TypeFlag::NULLISH));
-    }
-
-    return param_type;
-}
-
 void ETSChecker::SetUpTypeParameterConstraint(ir::TSTypeParameter *const param)
 {
-    auto const instantiate_supertype = [this](TypeFlag nullish_flags) {
-        return CreateNullishType(GlobalETSObjectType(), nullish_flags, Allocator(), Relation(), GetGlobalTypesHolder())
-            ->AsETSObjectType();
-    };
+    ETSTypeParameter *const param_type = [this, param]() {
+        auto *const type = param->Name()->Variable()->TsType();
+        return type != nullptr ? type->AsETSTypeParameter() : SetUpParameterType(param);
+    }();
 
-    ETSObjectType *param_type = nullptr;
-    if (param->Name()->Variable()->TsType() == nullptr) {
-        param_type = SetUpParameterType(param);
-    } else {
-        param_type = param->Name()->Variable()->TsType()->AsETSObjectType();
-    }
-    if (param->Constraint() != nullptr) {
-        if (param->Constraint()->IsETSTypeReference()) {
-            const auto constraint_name =
-                param->Constraint()->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name();
-            const auto *const type_param_scope = param->Parent()->AsTSTypeParameterDeclaration()->Scope();
-            if (auto *const found_param =
-                    type_param_scope->FindLocal(constraint_name, varbinder::ResolveBindingOptions::BINDINGS);
-                found_param != nullptr) {
-                SetUpTypeParameterConstraint(found_param->Declaration()->Node()->AsTSTypeParameter());
+    auto const traverse_referenced =
+        [this, scope = param->Parent()->AsTSTypeParameterDeclaration()->Scope()](ir::TypeNode *type_node) {
+            if (!type_node->IsETSTypeReference()) {
+                return;
             }
-        }
+            const auto type_name = type_node->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Name();
+            auto *const found = scope->FindLocal(type_name, varbinder::ResolveBindingOptions::BINDINGS);
+            if (found != nullptr) {
+                SetUpTypeParameterConstraint(found->Declaration()->Node()->AsTSTypeParameter());
+            }
+        };
 
-        auto *constraint_type = param->Constraint()->GetType(this);
-        if (!constraint_type->IsETSObjectType()) {
+    if (param->Constraint() != nullptr) {
+        traverse_referenced(param->Constraint());
+        auto *const constraint = param->Constraint()->GetType(this);
+        if (!constraint->IsETSObjectType() && !constraint->IsETSTypeParameter() && !constraint->IsETSUnionType()) {
             ThrowTypeError("Extends constraint must be an object", param->Constraint()->Start());
         }
-        auto *constraint_obj_type = constraint_type->AsETSObjectType();
-        param_type->SetAssemblerName(constraint_obj_type->AssemblerName());
-        if (constraint_type->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::INTERFACE)) {
-            param_type->AddInterface(constraint_obj_type);
-            param_type->SetSuperType(instantiate_supertype(TypeFlag(TypeFlag::NULLISH & constraint_type->TypeFlags())));
-        } else {
-            param_type->SetSuperType(constraint_obj_type);
-        }
-    } else {
-        // No constraint, so it's Object|null|undefined
-        param_type->SetSuperType(instantiate_supertype(TypeFlag::NULLISH));
+        param_type->SetConstraintType(constraint);
+    }
+    if (param->DefaultType() != nullptr) {
+        traverse_referenced(param->DefaultType());
+        auto *const dflt = param->DefaultType()->GetType(this);
+        // NOTE: #14993 ensure default matches constraint
+        param_type->SetDefaultType(dflt);
     }
 }
 
-ETSObjectType *ETSChecker::SetUpParameterType(ir::TSTypeParameter *const param)
+ETSTypeParameter *ETSChecker::SetUpParameterType(ir::TSTypeParameter *const param)
 {
-    ETSObjectType *param_type =
-        CreateNewETSObjectType(param->Name()->Name(), param, GlobalETSObjectType()->ObjectFlags());
-    param_type->SetAssemblerName(GlobalETSObjectType()->AssemblerName());
+    auto *const param_type = CreateTypeParameter();
+
     param_type->AddTypeFlag(TypeFlag::GENERIC);
-    param_type->AddObjectFlag(ETSObjectFlags::TYPE_PARAMETER);
+    param_type->SetDeclNode(param);
     param_type->SetVariable(param->Variable());
-    SetTypeParameterType(param, param_type);
+
+    param->Name()->Variable()->SetTsType(param_type);
     return param_type;
 }
 
@@ -1484,6 +1454,24 @@ Type *ETSChecker::FindLeastUpperBound(Type *source, Type *target)
 
     // GetTypeargumentedLUB(LUB(GenA, GenB)<A>, LUB(GenA, GenB)<B>) => LUB(GenA, GenB)<LUB(A, B)>
     return GetTypeargumentedLUB(relevant_source_type, relevant_target_type);
+}
+
+Type *ETSChecker::GetApparentType(Type *type)
+{
+    if (type->IsETSTypeParameter()) {
+        auto *const param = type->AsETSTypeParameter();
+        return param->HasConstraint() ? param->GetConstraintType() : param;
+    }
+    return type;
+}
+
+Type const *ETSChecker::GetApparentType(Type const *type)
+{
+    if (type->IsETSTypeParameter()) {
+        auto *const param = type->AsETSTypeParameter();
+        return param->HasConstraint() ? param->GetConstraintType() : param;
+    }
+    return type;
 }
 
 Type *ETSChecker::GetCommonClass(Type *source, Type *target)

@@ -88,7 +88,7 @@ static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *che
     Substitution *substitution = checker->NewSubstitution();
     auto *instantiated_type_params = checker->NewInstantiatedTypeParamsSet();
     auto *sig_info = signature->GetSignatureInfo();
-    ArenaVector<Type *> &type_params = sig_info->type_params;
+    auto &type_params = sig_info->type_params;
     for (size_t ix = 0; ix < arguments.size(); ix++) {
         auto *arg = arguments[ix];
         if (arg->IsObjectExpression()) {
@@ -101,7 +101,10 @@ static const Substitution *BuildImplicitSubstitutionForArguments(ETSChecker *che
         if (param_type == nullptr) {
             continue;
         }
-        checker->EnhanceSubstitutionForType(type_params, param_type, arg_type, substitution, instantiated_type_params);
+        if (!checker->EnhanceSubstitutionForType(type_params, param_type, arg_type, substitution,
+                                                 instantiated_type_params)) {
+            return nullptr;
+        }
     }
     return substitution;
 }
@@ -111,30 +114,38 @@ static const Substitution *BuildExplicitSubstitutionForArguments(ETSChecker *che
                                                                  const lexer::SourcePosition &pos,
                                                                  TypeRelationFlag flags)
 {
+    auto &sig_params = signature->GetSignatureInfo()->type_params;
     auto *substitution = checker->NewSubstitution();
-    auto *constraints_substitution = checker->NewSubstitution();
-    ArenaVector<Type *> &type_params = signature->GetSignatureInfo()->type_params;
-    ArenaVector<Type *> type_arg_types {checker->Allocator()->Adapter()};
+    ArenaVector<Type *> inst_args {checker->Allocator()->Adapter()};
+
     for (auto *ta_expr : params) {
-        auto *type_arg = ta_expr->GetType(checker);
-        type_arg = MaybeBoxedType(checker, type_arg, ta_expr);
-        type_arg_types.push_back(type_arg);
+        inst_args.push_back(MaybeBoxedType(checker, ta_expr->GetType(checker), ta_expr));
     }
-    if (type_params.size() != type_arg_types.size()) {
-        if ((flags & TypeRelationFlag::NO_THROW) == 0) {
-            checker->ThrowTypeError(
-                {"Expected ", type_params.size(), " type arguments, got ", type_arg_types.size(), " ."}, pos);
+    for (size_t ix = inst_args.size(); ix < sig_params.size(); ++ix) {
+        auto *dflt = sig_params[ix]->AsETSTypeParameter()->GetDefaultType();
+        if (dflt == nullptr) {
+            break;
         }
-        return nullptr;
+        inst_args.push_back(dflt);
     }
-    for (size_t ix = 0; ix < type_params.size(); ix++) {
-        constraints_substitution->emplace(type_params[ix], type_arg_types[ix]);
-    }
-    for (size_t ix = 0; ix < type_arg_types.size(); ix++) {
-        if (!checker->IsCompatibleTypeArgument(type_params[ix], type_arg_types[ix], constraints_substitution)) {
+    if (sig_params.size() != inst_args.size()) {
+        if ((flags & TypeRelationFlag::NO_THROW) != 0) {
             return nullptr;
         }
-        substitution->emplace(type_params[ix], type_arg_types[ix]);
+        checker->ThrowTypeError({"Expected ", sig_params.size(), " type arguments, got ", inst_args.size(), " ."}, pos);
+    }
+
+    auto *constraints_substitution = checker->NewSubstitution();
+
+    for (size_t ix = 0; ix < sig_params.size(); ix++) {
+        ETSChecker::EmplaceSubstituted(constraints_substitution, sig_params[ix]->AsETSTypeParameter(), inst_args[ix]);
+    }
+    for (size_t ix = 0; ix < sig_params.size(); ix++) {
+        if (!checker->IsCompatibleTypeArgument(sig_params[ix]->AsETSTypeParameter(), inst_args[ix],
+                                               constraints_substitution)) {
+            return nullptr;
+        }
+        ETSChecker::EmplaceSubstituted(substitution, sig_params[ix]->AsETSTypeParameter(), inst_args[ix]);
     }
     return substitution;
 }
@@ -148,23 +159,10 @@ static Signature *MaybeSubstituteTypeParameters(ETSChecker *checker, Signature *
         return signature;
     }
 
-    ArenaVector<ir::TypeNode *> params = ArenaVector<ir::TypeNode *>(checker->Allocator()->Adapter());
-
-    if (type_arguments == nullptr && !signature->Function()->TypeParams()->Params().empty()) {
-        for (auto param : signature->Function()->TypeParams()->Params()) {
-            if (param->DefaultType() != nullptr) {
-                params.push_back(param->DefaultType()->AsTypeNode());
-            } else {
-                break;
-            }
-        }
-    } else if (type_arguments != nullptr) {
-        params = type_arguments->Params();
-    }
-
     const Substitution *substitution =
-        (!params.empty()) ? BuildExplicitSubstitutionForArguments(checker, signature, params, pos, flags)
-                          : BuildImplicitSubstitutionForArguments(checker, signature, arguments);
+        (type_arguments != nullptr)
+            ? BuildExplicitSubstitutionForArguments(checker, signature, type_arguments->Params(), pos, flags)
+            : BuildImplicitSubstitutionForArguments(checker, signature, arguments);
     return (substitution == nullptr) ? nullptr : signature->Substitute(checker->Relation(), substitution);
 }
 

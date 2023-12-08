@@ -1082,4 +1082,4 @@
     }
   }
 }
-TypeError: Type parameter already instantiated with another type  [generics_implicit_lambda2.ets:16:17]
+TypeError: No matching call signature [generics_implicit_lambda2.ets:19:5]
