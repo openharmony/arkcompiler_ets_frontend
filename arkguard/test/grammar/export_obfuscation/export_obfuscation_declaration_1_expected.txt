@@ -16,9 +16,9 @@ export declare class c {
     p: string | undefined;
     q: number;
     t: string;
-    constructor(v?: u);
+    constructor(x?: u);
 }
-export declare function a(w: number, x: number): number;
+export declare function a(v: number, w: number): number;
 declare class u {
     u: string;
     v: number;

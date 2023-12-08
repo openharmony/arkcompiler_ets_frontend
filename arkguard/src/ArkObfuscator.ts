@@ -100,6 +100,7 @@ export class ArkObfuscator {
    */
   public init(config?: IOptions): boolean {
     if (!this.mConfigPath && !config) {
+      console.error('obfuscation config file is not found and no given config.');
       return false;
     }
 
@@ -139,10 +140,10 @@ export class ArkObfuscator {
     if (!path.isAbsolute(this.mCustomProfiles.mOutputDir)) {
       this.mCustomProfiles.mOutputDir = path.join(path.dirname(this.mConfigPath), this.mCustomProfiles.mOutputDir);
     }
-
     if (this.mCustomProfiles.mOutputDir && !fs.existsSync(this.mCustomProfiles.mOutputDir)) {
       fs.mkdirSync(this.mCustomProfiles.mOutputDir);
     }
+
     readProjectProperties(this.mSourceFiles, this.mCustomProfiles);
     this.readPropertyCache(this.mCustomProfiles.mOutputDir);
 
@@ -197,7 +198,7 @@ export class ArkObfuscator {
   }
 
   private readNameCache(sourceFile: string, outputDir: string): void {
-    if (!this.mCustomProfiles.mNameObfuscation.mEnable || !this.mCustomProfiles.mEnableNameCache) {
+    if (!this.mCustomProfiles.mNameObfuscation?.mEnable || !this.mCustomProfiles.mEnableNameCache) {
       return;
     }
 
@@ -208,7 +209,7 @@ export class ArkObfuscator {
   }
 
   private readPropertyCache(outputDir: string): void {
-    if (!this.mCustomProfiles.mNameObfuscation.mRenameProperties || !this.mCustomProfiles.mEnableNameCache) {
+    if (!this.mCustomProfiles.mNameObfuscation?.mRenameProperties || !this.mCustomProfiles.mEnableNameCache) {
       return;
     }
 
@@ -227,7 +228,9 @@ export class ArkObfuscator {
   }
 
   private producePropertyCache(outputDir: string): void {
-    if (this.mCustomProfiles.mNameObfuscation.mRenameProperties && this.mCustomProfiles.mEnableNameCache) {
+    if (this.mCustomProfiles.mNameObfuscation &&
+      this.mCustomProfiles.mNameObfuscation.mRenameProperties &&
+      this.mCustomProfiles.mEnableNameCache) {
       const propertyCachePath: string = path.join(outputDir, PROPERTY_CACHE_FILE);
       writeCache(renamePropertyModule.globalMangledTable, propertyCachePath);
     }
@@ -418,7 +421,10 @@ export class ArkObfuscator {
     if (renameIdentifierModule.nameCache) {
       renameIdentifierModule.nameCache.clear();
     }
+
+    renameIdentifierModule.historyNameCache = undefined;
     return result;
   }
 }
+
 export {ApiExtractor};
