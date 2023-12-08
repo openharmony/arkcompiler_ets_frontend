@@ -4462,7 +4462,7 @@ void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
         Lexer()->NextToken(lexer::NextTokenFlags::KEYWORD_TO_IDENT);  // eat ','
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
-            ThrowSyntaxError("Trailing comma is not allowed in enum constant list");
+            break;
         }
 
         parse_member();
