@@ -213,8 +213,7 @@ bool PandaGen::IsAsyncFunction() const
 void PandaGen::FunctionEnter()
 {
     if (rootNode_->IsProgram() && context_->Binder()->Program()->HasTLA()) {
-        ir::ScriptFunction *nptr;
-        builder_->Prepare(nptr);
+        builder_->Prepare(nullptr);
         return;
     }
     builder_->Prepare(rootNode_->AsScriptFunction());
@@ -223,8 +222,7 @@ void PandaGen::FunctionEnter()
 void PandaGen::FunctionExit()
 {
     if (rootNode_->IsProgram() && context_->Binder()->Program()->HasTLA()) {
-        ir::ScriptFunction *nptr;
-        builder_->CleanUp(nptr);
+        builder_->CleanUp(nullptr);
         return;
     }
     builder_->CleanUp(rootNode_->AsScriptFunction());
