@@ -779,31 +779,7 @@ checker::Type *ETSAnalyzer::Check(ir::ArrowFunctionExpression *expr) const
     checker->AddStatus(checker::CheckerStatus::IN_LAMBDA);
     checker->Context().SetContainingSignature(func_type->CallSignatures()[0]);
 
-    auto *body_type = expr->Function()->Body()->Check(checker);
-    if (expr->Function()->Body()->IsExpression()) {
-        /*
-        when function body is ArrowFunctionExpression, need infer type for this function body
-        example code:
-        ```
-        let x = () => () => {}
-        ```
-        */
-        if (expr->Function()->ReturnTypeAnnotation() == nullptr) {
-            if (expr->Function()->Body()->IsArrowFunctionExpression()) {
-                auto *arrow_func = expr->Function()->Body()->AsArrowFunctionExpression();
-                auto *type_annotation = arrow_func->CreateTypeAnnotation(checker);
-                func_type->CallSignatures()[0]->SetReturnType(type_annotation->GetType(checker));
-            } else {
-                func_type->CallSignatures()[0]->SetReturnType(body_type);
-            }
-        }
-
-        checker::AssignmentContext(
-            checker->Relation(), expr->Function()->Body()->AsExpression(), body_type,
-            func_type->CallSignatures()[0]->ReturnType(), expr->Function()->Start(),
-            {"Return statements return type is not compatible with the containing functions return type"},
-            checker::TypeRelationFlag::DIRECT_RETURN);
-    }
+    expr->Function()->Body()->Check(checker);
 
     checker->Context().SetContainingSignature(nullptr);
     checker->CheckCapturedVariables();

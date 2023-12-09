@@ -133,11 +133,10 @@ ir::TypeNode *ArrowFunctionExpression::CreateTypeAnnotation(checker::ETSChecker 
         return_node = Function()->ReturnTypeAnnotation();
     }
 
-    auto *param_scope = checker->Scope()->AsFunctionScope()->ParamScope();
-    auto signature = ir::FunctionSignature(nullptr, std::move(Function()->Params()), return_node);
+    auto orig_params = Function()->Params();
+    auto signature = ir::FunctionSignature(nullptr, std::move(orig_params), return_node);
     auto *func_type =
         checker->Allocator()->New<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE);
-    func_type->SetScope(param_scope);
     return_node->SetParent(func_type);
     return func_type;
 }
