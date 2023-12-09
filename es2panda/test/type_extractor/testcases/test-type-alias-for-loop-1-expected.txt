@@ -139,8 +139,3 @@ slot _3
     tag: 2
     val: 0
 },
-{
-  index: 6
-    tag: 2
-    val: 0
-},

@@ -98,8 +98,3 @@ slot _1
     tag: 9
     val: 1
 },
-{
-  index: 13
-    tag: 2
-    val: 0
-},

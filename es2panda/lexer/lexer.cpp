@@ -1182,20 +1182,15 @@ void Lexer::CheckAwaitKeyword()
     }
     // support top level await for module
     if (!parserContext_->IsAsync()) {
-        if (parserContext_->IsModule()) {
-            if (parserContext_->GetProgram()->IsDtsFile()) {
+        if (!parserContext_->IsModule() || parserContext_->GetProgram()->IsDtsFile()) {
+            GetToken().type_ = TokenType::LITERAL_IDENT;
+            return;
+        }
+        if (parserContext_->GetProgram()->Extension() == ScriptExtension::TS) {
+            if (parserContext_->IsTsModule()) {
                 GetToken().type_ = TokenType::LITERAL_IDENT;
                 return;
             }
-            if (parserContext_->GetProgram()->Extension() == ScriptExtension::TS) {
-                if (parserContext_->IsTsModule()) {
-                    GetToken().type_ = TokenType::LITERAL_IDENT;
-                    return;
-                }
-            }
-        } else {
-            GetToken().type_ = TokenType::LITERAL_IDENT;
-            return;
         }
     }
 

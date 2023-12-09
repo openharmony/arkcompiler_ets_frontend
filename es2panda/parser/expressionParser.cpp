@@ -2352,7 +2352,6 @@ ir::Expression *ParserImpl::ParseUnaryOrPrefixUpdateExpression(ExpressionParseFl
         returnExpr = AllocNode<ir::AwaitExpression>(argument);
         if (context_.IsModule() && !(context_.Status() & ParserStatus::FUNCTION)) {
             program_.SetHasTLA(true);
-            GetSourceTextModuleRecord()->SetHasTLA(true);
         }
     } else {
         returnExpr = AllocNode<ir::UnaryExpression>(argument, operatorType);

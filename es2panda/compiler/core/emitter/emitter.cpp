@@ -328,7 +328,6 @@ Emitter::Emitter(const CompilerContext *context)
     }
 
     GenESTypeAnnotationRecord();
-
     if (context->IsMergeAbc()) {
         auto recordName = context->Binder()->Program()->FormatedRecordName().Mutf8();
         rec_ = new panda::pandasm::Record(recordName.substr(0, recordName.find_last_of('.')), LANG_EXT);
@@ -339,6 +338,9 @@ Emitter::Emitter(const CompilerContext *context)
         if (context->Binder()->Program()->Kind() == parser::ScriptKind::COMMONJS) {
             GenCommonjsRecord();
         }
+    }
+    if (context->Binder()->Program()->Kind() == parser::ScriptKind::MODULE) {
+        AddHasTopLevelAwaitRecord(context->Binder()->Program()->HasTLA(), context);
     }
 }
 
@@ -449,6 +451,31 @@ void Emitter::AddSourceTextModuleRecord(ModuleRecordEmitter *module, CompilerCon
     auto &moduleLiteralsBuffer = module->Buffer();
     auto literalArrayInstance = panda::pandasm::LiteralArray(std::move(moduleLiteralsBuffer));
     prog_->literalarray_table.emplace(static_cast<std::string_view>(moduleLiteral), std::move(literalArrayInstance));
+}
+
+void Emitter::AddHasTopLevelAwaitRecord(bool hasTLA, const CompilerContext *context)
+{
+    if (context->IsMergeAbc()) {
+        auto hasTLAField = panda::pandasm::Field(LANG_EXT);
+        hasTLAField.name = "hasTopLevelAwait";
+        hasTLAField.type = panda::pandasm::Type("u8", 0);
+        hasTLAField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(hasTLA))
+        );
+        rec_->field_list.emplace_back(std::move(hasTLAField));
+    } else if (hasTLA) {
+        auto hasTLARecord = panda::pandasm::Record("_HasTopLevelAwait", LANG_EXT);
+        hasTLARecord.metadata->SetAccessFlags(panda::ACC_PUBLIC);
+        auto hasTLAField = panda::pandasm::Field(LANG_EXT);
+        hasTLAField.name = "hasTopLevelAwait";
+        hasTLAField.type = panda::pandasm::Type("u8", 0);
+        hasTLAField.metadata->SetValue(
+            panda::pandasm::ScalarValue::Create<panda::pandasm::Value::Type::U8>(static_cast<uint8_t>(true))
+        );
+        hasTLARecord.field_list.emplace_back(std::move(hasTLAField));
+
+        prog_->record_table.emplace(hasTLARecord.name, std::move(hasTLARecord));
+    }
 }
 
 void Emitter::FillTypeInfoRecord(CompilerContext *context, bool typeFlag, int64_t typeSummaryIndex,

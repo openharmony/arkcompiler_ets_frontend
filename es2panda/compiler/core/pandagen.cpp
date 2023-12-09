@@ -193,7 +193,7 @@ void PandaGen::FunctionInit(CatchTable *catchTable)
 bool PandaGen::FunctionHasFinalizer() const
 {
     if (rootNode_->IsProgram()) {
-	return context_->Binder()->Program()->HasTLA();
+        return context_->Binder()->Program()->HasTLA();
     }
 
     const ir::ScriptFunction *func = rootNode_->AsScriptFunction();
