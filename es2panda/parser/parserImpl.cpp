@@ -2985,12 +2985,7 @@ bool ParserImpl::IsMethodDefinitionsAreSame(const ir::MethodDefinition *property
 
 ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition(bool isDeclare, binder::ConstDecl **decl)
 {
-    lexer::TokenType keywType = lexer_->GetToken().KeywordType();
     CheckStrictReservedWord();
-
-    if (keywType == lexer::TokenType::KEYW_AWAIT && context_.IsModule()) {
-        ThrowSyntaxError("Unexpected reserved word");
-    }
 
     const util::StringView &identStr = lexer_->GetToken().Ident();
 
@@ -3016,7 +3011,8 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
 
     auto classCtx = binder::LexicalScope<binder::ClassScope>(Binder());
 
-    if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT && (Extension() != ScriptExtension::TS ||
+    if ((lexer_->GetToken().Type() == lexer::TokenType::LITERAL_IDENT ||
+        lexer_->GetToken().Type() == lexer::TokenType::KEYW_AWAIT) && (Extension() != ScriptExtension::TS ||
         lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_IMPLEMENTS)) {
         identNode = SetIdentNodeInClassDefinition(isDeclare, &decl);
     } else if (isDeclaration && idRequired) {
@@ -3810,7 +3806,7 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus newStatus,
         ThrowSyntaxError("Unexpected token, expected '('");
     }
 
-    if (newStatus & (ParserStatus::ASYNC_FUNCTION | ParserStatus::FUNCTION_DECLARATION)) {
+    if ((newStatus & (ParserStatus::ASYNC_FUNCTION | ParserStatus::FUNCTION_DECLARATION)) | context_.IsModule()) {
         context_.Status() |= ParserStatus::DISALLOW_AWAIT;
     }
 
@@ -4187,6 +4183,11 @@ void ParserImpl::CheckStrictReservedWord() const
         if (lexer_->GetToken().KeywordType() >= lexer::TokenType::KEYW_ARGUMENTS) {
             ThrowSyntaxError("Unexpected reserved word in strict mode.");
         }
+    }
+
+    if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_AWAIT &&
+        context_.IsModule() && !context_.IsTsModule()) {
+        ThrowSyntaxError("Unexpected reserved word");
     }
 }
 

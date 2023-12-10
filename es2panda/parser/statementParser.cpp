@@ -1922,7 +1922,7 @@ void ParserImpl::ValidateDeclaratorId()
 
     switch (lexer_->GetToken().KeywordType()) {
         case lexer::TokenType::KEYW_AWAIT: {
-            if (context_.IsModule()) {
+            if (context_.IsModule() && !program_.IsDtsFile() && !context_.IsTsModule()) {
                 ThrowSyntaxError("'await' is not permitted as an identifier in module code");
             }
             break;
@@ -2879,7 +2879,8 @@ void ParserImpl::ParseNamedImportSpecifiers(ArenaVector<ir::AstNode *> *specifie
             }
         }
 
-        if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+        if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT ||
+            (Extension() == ScriptExtension::TS && lexer_->GetToken().Ident().Is("await"))) {
             ThrowSyntaxError("Unexpected token");
         }
 

@@ -44,6 +44,7 @@ Program::Program(Program &&other)
       typeModuleRecord_(other.typeModuleRecord_),
       patchFixHelper_(other.patchFixHelper_),
       isDtsFile_(other.isDtsFile_),
+      hasTLA_(other.hasTLA_),
       isDebug_(other.isDebug_),
       targetApiVersion_(other.targetApiVersion_)
 {

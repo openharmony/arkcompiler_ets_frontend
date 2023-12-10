@@ -162,7 +162,11 @@ binder::Binder *PandaGen::Binder() const
 void PandaGen::FunctionInit(CatchTable *catchTable)
 {
     if (rootNode_->IsProgram()) {
-        builder_ = allocator_->New<FunctionBuilder>(this, catchTable);
+        if (context_->Binder()->Program()->HasTLA()) {
+            builder_ = allocator_->New<AsyncFunctionBuilder>(this, catchTable);
+        } else {
+            builder_ = allocator_->New<FunctionBuilder>(this, catchTable);
+        }
         return;
     }
 
@@ -189,7 +193,7 @@ void PandaGen::FunctionInit(CatchTable *catchTable)
 bool PandaGen::FunctionHasFinalizer() const
 {
     if (rootNode_->IsProgram()) {
-        return false;
+        return context_->Binder()->Program()->HasTLA();
     }
 
     const ir::ScriptFunction *func = rootNode_->AsScriptFunction();
@@ -199,17 +203,28 @@ bool PandaGen::FunctionHasFinalizer() const
 
 bool PandaGen::IsAsyncFunction() const
 {
+    if (rootNode_->IsProgram() && context_->Binder()->Program()->HasTLA()) {
+        return true;
+    }
     const ir::ScriptFunction *func = rootNode_->AsScriptFunction();
     return func->IsAsync() && !func->IsGenerator();
 }
 
 void PandaGen::FunctionEnter()
 {
+    if (rootNode_->IsProgram() && context_->Binder()->Program()->HasTLA()) {
+        builder_->Prepare(nullptr);
+        return;
+    }
     builder_->Prepare(rootNode_->AsScriptFunction());
 }
 
 void PandaGen::FunctionExit()
 {
+    if (rootNode_->IsProgram() && context_->Binder()->Program()->HasTLA()) {
+        builder_->CleanUp(nullptr);
+        return;
+    }
     builder_->CleanUp(rootNode_->AsScriptFunction());
 }
 
