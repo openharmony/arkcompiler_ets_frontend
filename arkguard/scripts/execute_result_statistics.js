@@ -117,8 +117,8 @@ if (failureCount > 0) {
   }
 }
 
-console.log(`Content fomparison success count: ${contentcomparationSuccessCount}`);
-console.log(`Content fomparison sailure count: ${contentcomparationFailureCount}`);
+console.log(`Content comparison Success count: ${contentcomparationSuccessCount}`);
+console.log(`Content comparison Failure count: ${contentcomparationFailureCount}`);
 if (contentcomparationFailureCount > 0) {
   console.log('Content comparision failed files:');
   for (const failedFile of contentComparisionFailureFiles) {

@@ -1,0 +1,37 @@
+{
+    "mCompact": false,
+    "mRemoveComments": false,
+    "mOutputDir": "../../local",
+    "mDisableHilog": false,
+    "mDisableConsole": false,
+    "mSimplify": false,
+    "mNameObfuscation": {
+        "mEnable": false,
+        "mNameGeneratorType": 1,
+        "mDictionaryList": [],
+        "mReservedNames": [],
+        "mRenameProperties": false,
+        "mReservedProperties": [],
+        "mKeepStringProperty": true
+    },
+    "mRemoveDeclarationComments": {
+        "mEnable": true,
+        "mReservedComments": [
+            "add",
+            "multiply",
+            "calculateArea",
+            "capitalizeFirstLetter",
+            "StringTypeChecker",
+            "assertTruthyString",
+            "concatenateStrings",
+            "isEven",
+            "add",
+            "greet",
+            "myFunction",
+            "myProperty"
+        ]
+    },
+    "mEnableSourceMap": false,
+    "mEnableNameCache": false,
+    "mTopLevel": false
+}

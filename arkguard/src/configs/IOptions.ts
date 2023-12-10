@@ -22,6 +22,12 @@ export interface IOptions {
   // Whether to remove comments;
   readonly mRemoveComments?: boolean;
 
+  // Whether to remove JSDoc comments;
+  readonly mRemoveDeclarationComments?: {
+    readonly mEnable: boolean,
+    mReservedComments: string[]
+  };
+
   // Whether to disable console output
   readonly mDisableConsole?: boolean;
 

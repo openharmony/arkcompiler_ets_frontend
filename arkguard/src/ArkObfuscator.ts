@@ -276,10 +276,11 @@ export class ArkObfuscator {
   public createObfsPrinter(isDeclarationFile: boolean): Printer {
     // set print options
     let printerOptions: PrinterOptions = {};
-    if (this.mCustomProfiles.mRemoveComments && !isDeclarationFile) {
-      printerOptions.removeComments = true;
+    if (this.mCustomProfiles.mRemoveComments || (this.mCustomProfiles.mRemoveDeclarationComments && 
+      (this.mCustomProfiles.mRemoveDeclarationComments.mEnable && !this.mCustomProfiles.mRemoveDeclarationComments.mReservedComments))) {
+      printerOptions.removeComments = false;
     }
-
+    printerOptions.removeComments = false;
     return createPrinter(printerOptions);
   }
 
@@ -368,6 +369,15 @@ export class ArkObfuscator {
 
     if (this.mCustomProfiles.mRenameFileName?.mEnable ) {
       orignalFilePathForSearching = originalFilePath ? originalFilePath : ast.fileName;
+    }
+
+    if (!this.mCustomProfiles.mRemoveDeclarationComments || !this.mCustomProfiles.mRemoveDeclarationComments.mEnable){
+      //@ts-ignore
+      ast.reservedComments = undefined;
+    } else {
+      //@ts-ignore
+      ast.reservedComments ??= this.mCustomProfiles.mRemoveDeclarationComments.mReservedComments ? 
+        this.mCustomProfiles.mRemoveDeclarationComments.mReservedComments : [];
     }
 
     let transformedResult: TransformationResult<Node> = transform(ast, this.mTransformers, this.mCompilerOptions);
