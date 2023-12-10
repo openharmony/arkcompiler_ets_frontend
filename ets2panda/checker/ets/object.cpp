@@ -921,12 +921,12 @@ void ETSChecker::CheckInnerClassMembers(const ETSObjectType *class_type)
     }
 }
 
-Type *ETSChecker::ValidateArrayIndex(ir::Expression *expr)
+void ETSChecker::ValidateArrayIndex(ir::Expression *const expr)
 {
-    auto expression_type = expr->Check(this);
-    auto unboxed_expression_type = ETSBuiltinTypeAsPrimitiveType(expression_type);
+    auto *const expression_type = expr->Check(this);
+    auto const *const unboxed_expression_type = ETSBuiltinTypeAsPrimitiveType(expression_type);
 
-    Type *index_type = ApplyUnaryOperatorPromotion(expression_type);
+    Type const *const index_type = ApplyUnaryOperatorPromotion(expression_type);
 
     if (expression_type->IsETSObjectType() && (unboxed_expression_type != nullptr)) {
         expr->AddBoxingUnboxingFlag(GetUnboxingFlag(unboxed_expression_type));
@@ -945,8 +945,6 @@ Type *ETSChecker::ValidateArrayIndex(ir::Expression *expr)
                 "' cannot be used as an index type. Only primitive or unboxable integral types can be used as index.",
             expr->Start());
     }
-
-    return index_type;
 }
 
 int32_t ETSChecker::GetTupleElementAccessValue(const Type *const type) const

@@ -121,6 +121,236 @@ checker::Type *MemberExpression::Check(checker::TSChecker *checker)
     return checker->GetAnalyzer()->Check(this);
 }
 
+std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::ResolveEnumMember(checker::ETSChecker *checker,
+                                                                                           checker::Type *type) const
+{
+    auto const *const enum_interface = [type]() -> checker::ETSEnumInterface const * {
+        if (type->IsETSEnumType()) {
+            return type->AsETSEnumType();
+        }
+        return type->AsETSStringEnumType();
+    }();
+
+    if (parent_->Type() == ir::AstNodeType::CALL_EXPRESSION && parent_->AsCallExpression()->Callee() == this) {
+        return {enum_interface->LookupMethod(checker, object_, property_->AsIdentifier()), nullptr};
+    }
+
+    auto *const literal_type = enum_interface->LookupConstant(checker, object_, property_->AsIdentifier());
+    return {literal_type, literal_type->GetMemberVar()};
+}
+
+std::pair<checker::Type *, varbinder::LocalVariable *> MemberExpression::ResolveObjectMember(
+    checker::ETSChecker *checker) const
+{
+    auto resolve_res = checker->ResolveMemberReference(this, obj_type_);
+    switch (resolve_res.size()) {
+        case 1U: {
+            if (resolve_res[0]->Kind() == checker::ResolvedKind::PROPERTY) {
+                auto var = resolve_res[0]->Variable()->AsLocalVariable();
+                checker->ValidatePropertyAccess(var, obj_type_, property_->Start());
+                return {checker->GetTypeOfVariable(var), var};
+            }
+            return {checker->GetTypeOfVariable(resolve_res[0]->Variable()), nullptr};
+        }
+        case 2U: {
+            // ETSExtensionFuncHelperType(class_method_type, extension_method_type)
+            auto *resolved_type = checker->CreateETSExtensionFuncHelperType(
+                checker->GetTypeOfVariable(resolve_res[1]->Variable())->AsETSFunctionType(),
+                checker->GetTypeOfVariable(resolve_res[0]->Variable())->AsETSFunctionType());
+            return {resolved_type, nullptr};
+        }
+        default: {
+            UNREACHABLE();
+        }
+    }
+}
+
+checker::Type *MemberExpression::CheckUnionMember(checker::ETSChecker *checker, checker::Type *base_type)
+{
+    auto *const union_type = base_type->AsETSUnionType();
+    checker::Type *common_prop_type = nullptr;
+    auto const add_prop_type = [this, checker, &common_prop_type](checker::Type *member_type) {
+        if (common_prop_type != nullptr && common_prop_type != member_type) {
+            checker->ThrowTypeError("Member type must be the same for all union objects.", Start());
+        }
+        common_prop_type = member_type;
+    };
+    for (auto *const type : union_type->ConstituentTypes()) {
+        if (type->IsETSObjectType()) {
+            SetObjectType(type->AsETSObjectType());
+            add_prop_type(ResolveObjectMember(checker).first);
+        } else if (type->IsETSEnumType() || base_type->IsETSStringEnumType()) {
+            add_prop_type(ResolveEnumMember(checker, type).first);
+        } else {
+            UNREACHABLE();
+        }
+    }
+    SetObjectType(union_type->GetLeastUpperBoundType(checker)->AsETSObjectType());
+    return common_prop_type;
+}
+
+checker::Type *MemberExpression::AdjustOptional(checker::ETSChecker *checker, checker::Type *type)
+{
+    SetOptionalType(type);
+    if (IsOptional() && Object()->TsType()->IsNullishOrNullLike()) {
+        checker->Relation()->SetNode(this);
+        type = checker->CreateOptionalResultType(type);
+        checker->Relation()->SetNode(nullptr);
+    }
+    SetTsType(type);
+    return TsType();
+}
+
+void MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
+{
+    std::size_t index;
+
+    if (auto const &number = property_->AsNumberLiteral()->Number(); number.IsInteger()) {
+        auto const value = number.GetLong();
+        if (value < 0) {
+            checker->ThrowTypeError("Index value cannot be less than zero.", property_->Start());
+        }
+        index = static_cast<std::size_t>(value);
+    } else if (number.IsReal()) {
+        double value = number.GetDouble();
+        double fraction = std::modf(value, &value);
+        if (value < 0.0 || fraction >= std::numeric_limits<double>::epsilon()) {
+            checker->ThrowTypeError("Index value cannot be less than zero or fractional.", property_->Start());
+        }
+        index = static_cast<std::size_t>(value);
+    } else {
+        UNREACHABLE();
+    }
+
+    if (object_->IsIdentifier() &&
+        object_->AsIdentifier()->Variable()->Declaration()->Node()->Parent()->IsVariableDeclarator()) {
+        auto const var_decl =
+            object_->AsIdentifier()->Variable()->Declaration()->Node()->Parent()->AsVariableDeclarator();
+        if (var_decl->Init() != nullptr && var_decl->Init()->IsArrayExpression() &&
+            var_decl->Init()->AsArrayExpression()->Elements().size() <= index) {
+            checker->ThrowTypeError("Index value cannot be greater than or equal to the array size.",
+                                    property_->Start());
+        }
+    }
+}
+
+checker::Type *MemberExpression::CheckIndexAccessMethod(checker::ETSChecker *checker)
+{
+    checker::PropertySearchFlags search_flag =
+        checker::PropertySearchFlags::SEARCH_METHOD | checker::PropertySearchFlags::IS_FUNCTIONAL;
+    search_flag |= checker::PropertySearchFlags::SEARCH_IN_BASE | checker::PropertySearchFlags::SEARCH_IN_INTERFACES;
+    // NOTE(DZ) maybe we need to exclude static methods: search_flag &= ~(checker::PropertySearchFlags::SEARCH_STATIC);
+
+    if (obj_type_->HasTypeFlag(checker::TypeFlag::GENERIC)) {
+        search_flag |= checker::PropertySearchFlags::SEARCH_ALL;
+    }
+
+    bool const is_setter = Parent()->IsAssignmentExpression() && Parent()->AsAssignmentExpression()->Left() == this;
+    std::string_view const method_name =
+        is_setter ? compiler::Signatures::SET_INDEX_METHOD : compiler::Signatures::GET_INDEX_METHOD;
+
+    auto *const method = obj_type_->GetProperty(method_name, search_flag);
+    if (method == nullptr || !method->HasFlag(varbinder::VariableFlags::METHOD)) {
+        checker->ThrowTypeError("Object type doesn't have proper index access method.", Start());
+    }
+
+    ArenaVector<Expression *> arguments {checker->Allocator()->Adapter()};
+    arguments.emplace_back(property_);
+    if (is_setter) {
+        arguments.emplace_back(Parent()->AsAssignmentExpression()->Right());
+    }
+
+    auto &signatures = checker->GetTypeOfVariable(method)->AsETSFunctionType()->CallSignatures();
+
+    checker::Signature *signature = checker->ValidateSignatures(signatures, nullptr, arguments, Start(), "indexing",
+                                                                checker::TypeRelationFlag::NO_THROW);
+    if (signature == nullptr) {
+        checker->ThrowTypeError("Cannot find index access method with the required signature.", Property()->Start());
+    }
+    checker->ValidateSignatureAccessibility(obj_type_, signature, Start(), "Index access method is not visible here.");
+
+    ASSERT(signature->Function() != nullptr);
+
+    if (signature->Function()->IsThrowing() || signature->Function()->IsRethrowing()) {
+        checker->CheckThrowingStatements(this);
+    }
+
+    return is_setter ? signature->Params()[1]->TsType() : signature->ReturnType();
+}
+
+checker::Type *MemberExpression::CheckTupleAccessMethod(checker::ETSChecker *checker, checker::Type *base_type)
+{
+    ASSERT(base_type->IsETSTupleType());
+
+    auto *const tuple_type_at_idx =
+        base_type->AsETSTupleType()->GetTypeAtIndex(checker->GetTupleElementAccessValue(Property()->TsType()));
+
+    if ((!Parent()->IsAssignmentExpression() || Parent()->AsAssignmentExpression()->Left() != this) &&
+        (!Parent()->IsUpdateExpression())) {
+        // Error never should be thrown by this call, because LUB of types can be converted to any type which
+        // LUB was calculated by casting
+        const checker::CastingContext cast(checker->Relation(), this, base_type->AsETSArrayType()->ElementType(),
+                                           tuple_type_at_idx, Start(), {"Tuple type couldn't be converted "});
+
+        // NOTE(mmartin): this can be replaced with the general type mapper, once implemented
+        if ((GetBoxingUnboxingFlags() & ir::BoxingUnboxingFlags::UNBOXING_FLAG) != 0U) {
+            auto *const saved_node = checker->Relation()->GetNode();
+            if (saved_node == nullptr) {
+                checker->Relation()->SetNode(this);
+            }
+
+            SetTupleConvertedType(checker->PrimitiveTypeAsETSBuiltinType(tuple_type_at_idx));
+
+            checker->Relation()->SetNode(saved_node);
+        }
+
+        if (tuple_type_at_idx->IsETSObjectType() && base_type->AsETSArrayType()->ElementType()->IsETSObjectType()) {
+            SetTupleConvertedType(tuple_type_at_idx);
+        }
+    }
+
+    return tuple_type_at_idx;
+}
+
+checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, checker::Type *base_type)
+{
+    if (base_type->IsETSArrayType() || base_type->IsETSDynamicType()) {
+        checker->ValidateArrayIndex(property_);
+
+        if (base_type->IsETSTupleType()) {
+            checker->ValidateTupleIndex(base_type->AsETSTupleType(), this);
+        } else if (base_type->IsETSArrayType() && property_->IsNumberLiteral()) {
+            // Check if the index value is inside array bounds if it is defined explicitly
+            CheckArrayIndexValue(checker);
+        }
+
+        if (property_->IsIdentifier()) {
+            SetPropVar(property_->AsIdentifier()->Variable()->AsLocalVariable());
+        } else if (auto var = property_->Variable(); (var != nullptr) && var->IsLocalVariable()) {
+            SetPropVar(var->AsLocalVariable());
+        }
+
+        // NOTE: apply capture conversion on this type
+        if (base_type->IsETSArrayType()) {
+            if (base_type->IsETSTupleType()) {
+                return CheckTupleAccessMethod(checker, base_type);
+            }
+
+            return base_type->AsETSArrayType()->ElementType();
+        }
+
+        // Dynamic
+        return checker->GlobalBuiltinDynamicType(base_type->AsETSDynamicType()->Language());
+    }
+
+    if (base_type->IsETSObjectType()) {
+        SetObjectType(base_type->AsETSObjectType());
+        return CheckIndexAccessMethod(checker);
+    }
+
+    checker->ThrowTypeError("Indexed access is not supported for such expression type.", Object()->Start());
+}
+
 checker::Type *MemberExpression::Check(checker::ETSChecker *checker)
 {
     return checker->GetAnalyzer()->Check(this);

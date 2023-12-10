@@ -16,10 +16,8 @@
 #ifndef ES2PANDA_IR_EXPRESSION_MEMBER_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_MEMBER_EXPRESSION_H
 
-#include "varbinder/variable.h"
 #include "checker/types/ets/etsObjectType.h"
 #include "ir/expression.h"
-#include "ir/irnode.h"
 
 namespace panda::es2panda::compiler {
 class JSCompiler;
@@ -28,9 +26,16 @@ class ETSCompiler;
 
 namespace panda::es2panda::checker {
 class ETSObjectType;
+class ETSAnalyzer;
 }  // namespace panda::es2panda::checker
 
 namespace panda::es2panda::ir {
+
+// NOLINTBEGIN(modernize-avoid-c-arrays)
+inline constexpr char const INDEX_ACCESS_ERROR_1[] = "The special index access method '";
+inline constexpr char const INDEX_ACCESS_ERROR_2[] = "' cannot be asynchronous.";
+// NOLINTEND(modernize-avoid-c-arrays)
+
 enum class MemberExpressionKind : uint32_t {
     NONE = 0,
     ELEMENT_ACCESS = 1U << 0U,
@@ -42,6 +47,8 @@ enum class MemberExpressionKind : uint32_t {
 DEFINE_BITOPS(MemberExpressionKind)
 
 class MemberExpression : public MaybeOptionalExpression {
+    friend class checker::ETSAnalyzer;
+
 private:
     struct Tag {};
 
@@ -186,6 +193,18 @@ protected:
     }
 
 private:
+    std::pair<checker::Type *, varbinder::LocalVariable *> ResolveEnumMember(checker::ETSChecker *checker,
+                                                                             checker::Type *type) const;
+    std::pair<checker::Type *, varbinder::LocalVariable *> ResolveObjectMember(checker::ETSChecker *checker) const;
+
+    checker::Type *AdjustOptional(checker::ETSChecker *checker, checker::Type *type);
+    checker::Type *CheckComputed(checker::ETSChecker *checker, checker::Type *base_type);
+    checker::Type *CheckUnionMember(checker::ETSChecker *checker, checker::Type *base_type);
+
+    void CheckArrayIndexValue(checker::ETSChecker *checker) const;
+    checker::Type *CheckIndexAccessMethod(checker::ETSChecker *checker);
+    checker::Type *CheckTupleAccessMethod(checker::ETSChecker *checker, checker::Type *base_type);
+
     void LoadRhs(compiler::PandaGen *pg) const;
     bool IsGenericField() const;
 

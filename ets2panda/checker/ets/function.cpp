@@ -1109,7 +1109,7 @@ Signature *ETSChecker::GetSignatureFromMethodDefinition(const ir::MethodDefiniti
 }
 
 void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, Signature *signature,
-                                                const lexer::SourcePosition &pos)
+                                                const lexer::SourcePosition &pos, char const *error_message)
 {
     if ((Context().Status() & CheckerStatus::IGNORE_VISIBILITY) != 0U) {
         return;
@@ -1135,7 +1135,11 @@ void ETSChecker::ValidateSignatureAccessibility(ETSObjectType *callee, Signature
             return;
         }
 
-        ThrowTypeError({"Signature ", signature->Function()->Id()->Name(), signature, " is not visible here."}, pos);
+        if (error_message == nullptr) {
+            ThrowTypeError({"Signature ", signature->Function()->Id()->Name(), signature, " is not visible here."},
+                           pos);
+        }
+        ThrowTypeError(error_message, pos);
     }
 }
 

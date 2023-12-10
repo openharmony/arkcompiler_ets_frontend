@@ -76,12 +76,12 @@ public:
     {
     }
 
-    static inline TypeFlag ETSType(const Type *type)
+    [[nodiscard]] static inline TypeFlag ETSType(const Type *const type) noexcept
     {
         return static_cast<TypeFlag>(type->TypeFlags() & TypeFlag::ETS_TYPE);
     }
 
-    static inline TypeFlag TypeKind(const Type *type)
+    [[nodiscard]] static inline TypeFlag TypeKind(const Type *const type) noexcept
     {
         return static_cast<checker::TypeFlag>(type->TypeFlags() & checker::TypeFlag::ETS_TYPE);
     }
@@ -141,7 +141,7 @@ public:
                                       const lexer::SourcePosition &pos);
     void ResolveDeclaredMembersOfObject(ETSObjectType *type);
     int32_t GetTupleElementAccessValue(const Type *type) const;
-    Type *ValidateArrayIndex(ir::Expression *expr);
+    void ValidateArrayIndex(ir::Expression *expr);
     void ValidateTupleIndex(const ETSTupleType *tuple, const ir::MemberExpression *expr);
     ETSObjectType *CheckThisOrSuperAccess(ir::Expression *node, ETSObjectType *class_type, std::string_view msg);
     void CreateTypeForClassOrInterfaceTypeParameters(ETSObjectType *type);
@@ -321,7 +321,8 @@ public:
     [[nodiscard]] bool IsReturnTypeSubstitutable(Signature *s1, Signature *s2);
     void CheckStaticHide(Signature *target, Signature *source);
     void CheckThrowMarkers(Signature *source, Signature *target);
-    void ValidateSignatureAccessibility(ETSObjectType *callee, Signature *signature, const lexer::SourcePosition &pos);
+    void ValidateSignatureAccessibility(ETSObjectType *callee, Signature *signature, const lexer::SourcePosition &pos,
+                                        char const *error_message = nullptr);
     void CreateLambdaObjectForLambdaReference(ir::ArrowFunctionExpression *lambda, ETSObjectType *functional_interface);
     ir::ClassProperty *CreateLambdaCapturedField(const varbinder::Variable *captured_var, varbinder::ClassScope *scope,
                                                  size_t &idx, const lexer::SourcePosition &pos);
@@ -447,7 +448,7 @@ public:
     Type *PrimitiveTypeAsETSBuiltinType(Type *object_type);
     void AddBoxingUnboxingFlagToNode(ir::AstNode *node, Type *boxing_unboxing_type);
     ir::BoxingUnboxingFlags GetBoxingFlag(Type *boxing_type);
-    ir::BoxingUnboxingFlags GetUnboxingFlag(Type *unboxing_type);
+    ir::BoxingUnboxingFlags GetUnboxingFlag(Type const *unboxing_type) const;
     Type *MaybeBoxedType(const varbinder::Variable *var, ArenaAllocator *allocator) const;
     Type *MaybeBoxedType(const varbinder::Variable *var)
     {

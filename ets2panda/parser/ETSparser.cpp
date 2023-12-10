@@ -21,7 +21,6 @@
 #include "util/helpers.h"
 #include "util/language.h"
 #include "varbinder/varbinder.h"
-#include "varbinder/privateBinding.h"
 #include "varbinder/scope.h"
 #include "varbinder/ETSBinder.h"
 #include "lexer/lexer.h"
@@ -50,14 +49,12 @@
 #include "ir/expressions/blockExpression.h"
 #include "ir/expressions/thisExpression.h"
 #include "ir/expressions/superExpression.h"
-#include "ir/expressions/newExpression.h"
 #include "ir/expressions/memberExpression.h"
 #include "ir/expressions/updateExpression.h"
 #include "ir/expressions/arrowFunctionExpression.h"
 #include "ir/expressions/unaryExpression.h"
 #include "ir/expressions/yieldExpression.h"
 #include "ir/expressions/awaitExpression.h"
-#include "ir/expressions/literals/bigIntLiteral.h"
 #include "ir/expressions/literals/booleanLiteral.h"
 #include "ir/expressions/literals/charLiteral.h"
 #include "ir/expressions/literals/nullLiteral.h"
@@ -100,6 +97,7 @@
 #include "ir/ets/etsImportSource.h"
 #include "ir/ets/etsImportDeclaration.h"
 #include "ir/ets/etsStructDeclaration.h"
+#include "ir/ets/etsParameterExpression.h"
 #include "ir/module/importNamespaceSpecifier.h"
 #include "ir/ts/tsAsExpression.h"
 #include "ir/ts/tsInterfaceDeclaration.h"
@@ -120,7 +118,6 @@
 #include "ir/ts/tsTypeParameterDeclaration.h"
 #include "ir/ts/tsNonNullExpression.h"
 #include "libpandabase/os/file.h"
-#include "libpandabase/utils/json_parser.h"
 #include "generated/signatures.h"
 
 #if defined PANDA_TARGET_MOBILE
@@ -4595,7 +4592,64 @@ bool ETSParser::CheckClassElement(ir::AstNode *property, [[maybe_unused]] ir::Me
         return CheckClassElementInterfaceBody(property, properties);
     }
 
-    return property->IsMethodDefinition() && property->AsMethodDefinition()->Function()->IsOverload();
+    if (!property->IsMethodDefinition()) {
+        return false;
+    }
+
+    auto const *const method = property->AsMethodDefinition();
+    auto const *const function = method->Function();
+
+    //  Check the special '$_get' and '$_set' methods using for object's index access
+    if (method->Kind() == ir::MethodDefinitionKind::METHOD) {
+        CheckIndexAccessMethod(function, property->Start());
+    }
+
+    return function->IsOverload();
+}
+
+void ETSParser::CheckIndexAccessMethod(ir::ScriptFunction const *function, const lexer::SourcePosition &position) const
+{
+    auto const name = function->Id()->Name();
+
+    if (name.Is(compiler::Signatures::GET_INDEX_METHOD)) {
+        if (function->IsAsyncFunc()) {
+            ThrowSyntaxError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
+                                 std::string {ir::INDEX_ACCESS_ERROR_2},
+                             position);
+        }
+
+        bool is_valid = function->Params().size() == 1U;
+        if (is_valid) {
+            auto const *const param = function->Params()[0]->AsETSParameterExpression();
+            is_valid = !param->IsDefault() && !param->IsRestParameter();
+        }
+
+        if (!is_valid) {
+            ThrowSyntaxError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
+                                 std::string {"' should have exactly one required parameter."},
+                             position);
+        }
+    } else if (name.Is(compiler::Signatures::SET_INDEX_METHOD)) {
+        if (function->IsAsyncFunc()) {
+            ThrowSyntaxError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
+                                 std::string {ir::INDEX_ACCESS_ERROR_2},
+                             position);
+        }
+
+        bool is_valid = function->Params().size() == 2U;
+        if (is_valid) {
+            auto const *const param1 = function->Params()[0]->AsETSParameterExpression();
+            auto const *const param2 = function->Params()[1]->AsETSParameterExpression();
+            is_valid = !param1->IsDefault() && !param1->IsRestParameter() && !param2->IsDefault() &&
+                       !param2->IsRestParameter();
+        }
+
+        if (!is_valid) {
+            ThrowSyntaxError(std::string {ir::INDEX_ACCESS_ERROR_1} + std::string {name.Utf8()} +
+                                 std::string {"' should have exactly two required parameters."},
+                             position);
+        }
+    }
 }
 
 void ETSParser::CreateImplicitConstructor([[maybe_unused]] ir::MethodDefinition *&ctor,
