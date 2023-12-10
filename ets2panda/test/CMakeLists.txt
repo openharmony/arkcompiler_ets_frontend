@@ -112,7 +112,7 @@ if(PANDA_WITH_ETS)
         SOURCES
             unit/public/ast_verifier_test.cpp
         LIBRARIES
-            es2panda-lib
+            es2panda-public es2panda-lib
         INCLUDE_DIRS
             ${ES2PANDA_PATH}
             ${ES2PANDA_BINARY_ROOT}

@@ -18,6 +18,8 @@
 #include "checker/types/typeFlag.h"
 #include "ir/astNode.h"
 #include "ir/base/classDefinition.h"
+#include "ir/base/classElement.h"
+#include "ir/statement.h"
 #include "ir/base/classStaticBlock.h"
 #include "ir/base/methodDefinition.h"
 #include "ir/base/scriptFunction.h"
@@ -27,6 +29,7 @@
 #include "ir/ets/etsTypeReference.h"
 #include "ir/ets/etsTypeReferencePart.h"
 #include "ir/ets/etsImportDeclaration.h"
+#include "ir/ets/etsScript.h"
 #include "ir/module/importSpecifier.h"
 #include "ir/module/importNamespaceSpecifier.h"
 #include "ir/module/importDefaultSpecifier.h"
@@ -120,23 +123,39 @@ bool IsContainedIn(const T *child, const T *parent)
 
     std::unordered_set<const T *> saved_nodes;
     while (child != nullptr && child != parent) {
+        saved_nodes.emplace(child);
+        child = child->Parent();
         if (saved_nodes.find(child) != saved_nodes.end()) {
             return false;
         }
-        child = child->Parent();
-        saved_nodes.emplace(child);
     }
     return child == parent;
 }
-
-bool ValidateVariableAccess(const varbinder::LocalVariable *prop_var, const ir::MemberExpression *ast)
+bool IsVisibleInternalNode(const ir::AstNode *ast, const ir::AstNode *obj_type_decl_node)
 {
-    const auto *decl = prop_var->Declaration();
-    if (decl == nullptr) {
+    auto *current_top_statement = (static_cast<const ir::ETSScript *>(ast->GetTopStatement()));
+    auto *current_program = current_top_statement->Program();
+    if (current_program == nullptr) {
         return false;
     }
-    const auto *node = decl->Node();
-    if (node == nullptr) {
+    util::StringView package_name_current = current_program->GetPackageName();
+    auto *object_top_statement = (static_cast<const ir::ETSScript *>(obj_type_decl_node->GetTopStatement()));
+    auto *object_program = object_top_statement->Program();
+    if (object_program == nullptr) {
+        return false;
+    }
+    util::StringView package_name_object = object_program->GetPackageName();
+    return current_top_statement == object_top_statement ||
+           (package_name_current == package_name_object && !package_name_current.Empty());
+}
+bool ValidateVariableAccess(const varbinder::LocalVariable *prop_var, const ir::MemberExpression *ast)
+{
+    const auto *prop_var_decl = prop_var->Declaration();
+    if (prop_var_decl == nullptr) {
+        return false;
+    }
+    const auto *prop_var_decl_node = prop_var_decl->Node();
+    if (prop_var_decl_node == nullptr) {
         return false;
     }
     auto *obj_type = ast->ObjType();
@@ -147,36 +166,43 @@ bool ValidateVariableAccess(const varbinder::LocalVariable *prop_var, const ir::
     if (obj_type_decl_node == nullptr) {
         return false;
     }
-    const auto *parent_node = node->Parent();
-    if (parent_node != nullptr && parent_node->IsClassDefinition() && obj_type_decl_node->IsClassDefinition()) {
-        if (IsContainedIn<const ir::AstNode>(ast, obj_type_decl_node->AsClassDefinition())) {
+    const auto *prop_var_decl_node_parent = prop_var_decl_node->Parent();
+    if (prop_var_decl_node_parent != nullptr && prop_var_decl_node_parent->IsClassDefinition() &&
+        obj_type_decl_node->IsClassDefinition()) {
+        // Check if the variable is used where it is declared
+        if (IsContainedIn<const ir::AstNode>(ast, prop_var_decl_node_parent->AsClassDefinition())) {
             return true;
         }
-        if (node->IsPrivate() && parent_node == obj_type_decl_node) {
-            return true;
+        if (prop_var_decl_node->IsPrivate()) {
+            return false;
         }
-        if (node->IsProtected()) {
+        if (prop_var_decl_node->IsProtected()) {
+            // Check if the variable is inherited and is used in class in which it is inherited
             auto ret = obj_type->IsPropertyInherited(prop_var);
-            return ret;
+            return ret && IsContainedIn<const ir::AstNode>(ast, obj_type_decl_node->AsClassDefinition());
         }
+        if (prop_var_decl_node->IsInternal()) {
+            return IsVisibleInternalNode(ast, obj_type_decl_node);
+        }
+        return true;
     }
     return false;
 }
 
 bool ValidateMethodAccess(const ir::MemberExpression *member_expression, const ir::CallExpression *ast)
 {
-    auto *obj_type = member_expression->ObjType();
-    if (obj_type == nullptr) {
+    auto *member_obj_type = member_expression->ObjType();
+    if (member_obj_type == nullptr) {
         return false;
     }
-
-    if (obj_type->HasObjectFlag(checker::ETSObjectFlags::RESOLVED_SUPER) && obj_type->SuperType() != nullptr &&
-        obj_type->SuperType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_TYPE |
-                                             checker::ETSObjectFlags::GLOBAL_CLASS)) {
+    if (member_obj_type->HasObjectFlag(checker::ETSObjectFlags::RESOLVED_SUPER) &&
+        member_obj_type->SuperType() != nullptr &&
+        member_obj_type->SuperType()->HasObjectFlag(checker::ETSObjectFlags::BUILTIN_TYPE |
+                                                    checker::ETSObjectFlags::GLOBAL)) {
         return true;
     }
-    const auto *decl_node = obj_type->GetDeclNode();
-    if (decl_node == nullptr) {
+    const auto *member_obj_type_decl_node = member_obj_type->GetDeclNode();
+    if (member_obj_type_decl_node == nullptr) {
         return false;
     }
     auto *signature = ast->Signature();
@@ -187,18 +213,25 @@ bool ValidateMethodAccess(const ir::MemberExpression *member_expression, const i
     if (owner_sign == nullptr) {
         return false;
     }
-    auto *decl_node_sign = owner_sign->GetDeclNode();
-    if (decl_node_sign != nullptr && decl_node_sign->IsClassDefinition() && decl_node->IsClassDefinition()) {
-        if (IsContainedIn<const ir::AstNode>(ast, decl_node->AsClassDefinition())) {
+    auto *owner_sign_decl_node = owner_sign->GetDeclNode();
+    if (owner_sign_decl_node != nullptr && owner_sign_decl_node->IsClassDefinition() &&
+        member_obj_type_decl_node->IsClassDefinition()) {
+        // Check if the method is used where it is declared
+        if (IsContainedIn<const ir::AstNode>(ast, owner_sign_decl_node->AsClassDefinition())) {
             return true;
         }
-        if (signature->HasSignatureFlag(checker::SignatureFlags::PRIVATE) && decl_node_sign == decl_node) {
-            return true;
+        if (signature->HasSignatureFlag(checker::SignatureFlags::PRIVATE)) {
+            return false;
         }
         if (signature->HasSignatureFlag(checker::SignatureFlags::PROTECTED)) {
-            auto ret = obj_type->IsSignatureInherited(signature);
-            return ret;
+            // Check if the method is inherited and is used in class in which it is inherited
+            auto ret = member_obj_type->IsSignatureInherited(signature);
+            return ret && IsContainedIn<const ir::AstNode>(ast, member_obj_type_decl_node->AsClassDefinition());
         }
+        if (signature->HasSignatureFlag(checker::SignatureFlags::INTERNAL)) {
+            return IsVisibleInternalNode(ast, member_obj_type_decl_node);
+        }
+        return true;
     }
     return false;
 }
@@ -689,8 +722,8 @@ bool ASTVerifier::VerifyModifierAccess(const ir::AstNode *ast)
     }
     if (ast->IsMemberExpression()) {
         const auto *prop_var = ast->AsMemberExpression()->PropVar();
-        if (prop_var != nullptr && prop_var->HasFlag(varbinder::VariableFlags::PROPERTY) &&
-            !ValidateVariableAccess(prop_var, ast->AsMemberExpression())) {
+        if (prop_var == nullptr || (prop_var->HasFlag(varbinder::VariableFlags::PROPERTY) &&
+                                    !ValidateVariableAccess(prop_var, ast->AsMemberExpression()))) {
             AddError("PROPERTY_NOT_VISIBLE_HERE: " + ToStringHelper(ast), ast->Start());
             return false;
         }
@@ -698,11 +731,14 @@ bool ASTVerifier::VerifyModifierAccess(const ir::AstNode *ast)
     if (ast->IsCallExpression()) {
         const auto *call_expr = ast->AsCallExpression();
         const auto *callee = call_expr->Callee();
-        if (callee != nullptr && callee->IsMemberExpression()) {
+        if (callee == nullptr) {
+            return false;
+        }
+        if (callee->IsMemberExpression()) {
             const auto *callee_member = callee->AsMemberExpression();
             const auto *prop_var_callee = callee_member->PropVar();
-            if (prop_var_callee != nullptr && prop_var_callee->HasFlag(varbinder::VariableFlags::METHOD) &&
-                !ValidateMethodAccess(callee_member, ast->AsCallExpression())) {
+            if (prop_var_callee == nullptr || (prop_var_callee->HasFlag(varbinder::VariableFlags::METHOD) &&
+                                               !ValidateMethodAccess(callee_member, ast->AsCallExpression()))) {
                 AddError("PROPERTY_NOT_VISIBLE_HERE: " + ToStringHelper(callee), callee->Start());
                 return false;
             }
