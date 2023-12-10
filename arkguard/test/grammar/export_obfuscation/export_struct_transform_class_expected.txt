@@ -12,22 +12,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export const enum Extension {
-  TS = '.ts',
-  DTS = '.d.ts',
-  JS = '.js',
-  JSON = '.json',
-  ETS = '.ets',
-  DETS = '.d.ets'
+class e1 {
 }
-
-export interface PathAndExtension {
-  path: string;
-  ext: string | undefined;
+export class f1 extends e1 {
+    constructor() {
+        super();
+    }
+    scroller1: string;
+    controller1: number;
+    callMethod1(): void { }
+    ;
 }
-
-export const supportedRunningExtension: readonly string[] = [Extension.TS, Extension.JS];
-export const supportedDeclarationExtension: readonly string[] = [Extension.DTS, Extension.DETS];
-
-export const fileExtensions: string[] = [Extension.DETS, Extension.ETS, Extension.DTS, Extension.TS, Extension.JS, Extension.JSON];
+class g1 extends e1 {
+    constructor() {
+        super();
+    }
+    scroller2: string;
+    controller2: number;
+    callMethod2(): void { }
+    ;
+}

@@ -49,4 +49,7 @@ export interface IOptions {
   readonly applyReservedNamePath?: string;
 
   readonly mRenameFileName?: IFileNameObfuscationOption;
+
+  // Whether to obfuscate the names or properties of the exported content
+  readonly mExportObfuscation?: boolean;
 }

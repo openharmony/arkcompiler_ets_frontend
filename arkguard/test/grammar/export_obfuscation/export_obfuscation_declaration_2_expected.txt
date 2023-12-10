@@ -12,22 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export const enum Extension {
-  TS = '.ts',
-  DTS = '.d.ts',
-  JS = '.js',
-  JSON = '.json',
-  ETS = '.ets',
-  DETS = '.d.ets'
+export declare struct y {
+    b1: string;
+    c1: string;
+    d1(): void;
 }
-
-export interface PathAndExtension {
-  path: string;
-  ext: string | undefined;
+export declare function a(c1, d1);
+export declare const z;
+export declare struct a1 {
+    e1: string;
+    f1: string;
+    g1(): void;
 }
-
-export const supportedRunningExtension: readonly string[] = [Extension.TS, Extension.JS];
-export const supportedDeclarationExtension: readonly string[] = [Extension.DTS, Extension.DETS];
-
-export const fileExtensions: string[] = [Extension.DETS, Extension.ETS, Extension.DTS, Extension.TS, Extension.JS, Extension.JSON];

@@ -18,6 +18,7 @@ import {
   getModifiers,
   isClassDeclaration,
   isConstructorDeclaration,
+  isExportSpecifier,
   isFunctionDeclaration,
   isFunctionLike,
   isIdentifier,
@@ -364,15 +365,24 @@ namespace secharmony {
         // with export identification, special handling.
         if (def.exportSymbol) {
           current.exportNames.add(def.name);
+          current.addDefinition(def.exportSymbol);
         }
 
         current.addDefinition(def);
       });
     }
 
+    function addExportSymbolInScope(node: Node): void {
+      let defSymbols: Symbol = node?.symbol;
+
+      if (!defSymbols) {
+        return;
+      }
+      current.addDefinition(defSymbols);
+    }
+
     /**
      * analyze chain of scopes
-     *
      * @param node
      */
     function analyzeScope(node: Node): void {
@@ -401,6 +411,7 @@ namespace secharmony {
         // class like
         case SyntaxKind.ClassExpression:
         case SyntaxKind.ClassDeclaration:
+        case SyntaxKind.StructDeclaration:
           analyzeClassLike(node as ClassLikeDeclaration);
           break;
 
@@ -522,6 +533,7 @@ namespace secharmony {
     function analyzeExportNames(node: ExportSpecifier): void {
       // get export names.
       current.exportNames.add(node.name.text);
+      addExportSymbolInScope(node);
       forEachChild(node, analyzeScope);
     }
 
@@ -724,13 +736,17 @@ namespace secharmony {
         addSymbolInScope(node);
         // Class members are seen as attribute names, and  the reference of external symbols can be renamed as the same
         node.members?.forEach((elm: ClassElement) => {
-          if (elm?.symbol) {
+          // @ts-ignore
+          if (elm?.symbol && !elm.virtual) {
             current.addDefinition(elm.symbol);
           }
         });
 
         node.members?.forEach((sub: Node) => {
-          analyzeScope(sub);
+          // @ts-ignore
+          if (!sub.virtual) {
+            analyzeScope(sub);
+          }
         });
       } catch (e) {
         console.error(e);

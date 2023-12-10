@@ -33,7 +33,8 @@
     "@types/node": "18.11.7",
     "chai": "^4.3.6",
     "mocha": "^10.0.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "diff": "5.0.0"
   },
   "dependencies": {
     "commander": "^9.3.0",

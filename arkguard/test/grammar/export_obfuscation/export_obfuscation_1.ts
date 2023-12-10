@@ -13,21 +13,19 @@
  * limitations under the License.
  */
 
-export const enum Extension {
-  TS = '.ts',
-  DTS = '.d.ts',
-  JS = '.js',
-  JSON = '.json',
-  ETS = '.ets',
-  DETS = '.d.ets'
+export class PersonClass01 {
+    name:string;
+    age:number;
 }
 
-export interface PathAndExtension {
-  path: string;
-  ext: string | undefined;
+export function foo01(para01: number, para02: number) {
+    const v1 = 1;
+    const v2 = 2;
+    return para01 + para02 + v1 + v2;
 }
 
-export const supportedRunningExtension: readonly string[] = [Extension.TS, Extension.JS];
-export const supportedDeclarationExtension: readonly string[] = [Extension.DTS, Extension.DETS];
-
-export const fileExtensions: string[] = [Extension.DETS, Extension.ETS, Extension.DTS, Extension.TS, Extension.JS, Extension.JSON];
+function foo02(para03: string, para04: number){
+    const v1 = 4;
+    const v2 = 5;
+    return para03 + para04.toString();
+}

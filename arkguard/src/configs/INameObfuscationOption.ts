@@ -23,7 +23,7 @@ export interface INameObfuscationOption {
 
   readonly mRenameProperties: boolean;
 
-  readonly mReservedNames: string[];
+  mReservedNames: string[];
 
   mReservedProperties: string[];
 

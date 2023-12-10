@@ -53,8 +53,9 @@ import {
   getObjectProperties,
   getTypeAliasProperties,
 } from '../utils/OhsUtil';
-import {scanProjectConfig} from './ApiReader';
-import {stringPropsSet} from '../utils/OhsUtil';
+import { scanProjectConfig } from './ApiReader';
+import { stringPropsSet } from '../utils/OhsUtil';
+import type { IOptions } from '../configs/IOptions';
 
 export namespace ApiExtractor {
   interface KeywordInfo {
@@ -71,6 +72,7 @@ export namespace ApiExtractor {
 
   let mCurrentExportNameSet: Set<string> = new Set<string>();
   export let mPropertySet: Set<string> = new Set<string>();
+  export let mLibExportNameSet: Set<string> = new Set<string>();
 
   /**
    * filter classes or interfaces with export, default, etc
@@ -437,12 +439,11 @@ export namespace ApiExtractor {
         break;
       case ApiType.PROJECT_DEPENDS:
       case ApiType.PROJECT:
+        mCurrentExportNameSet.clear();
         if (fileName.endsWith('.d.ts') || fileName.endsWith('.d.ets')) {
           forEachChild(sourceFile, visitChildNode);
-          break;
         }
 
-        mCurrentExportNameSet.clear();
         forEachChild(sourceFile, visitProjectExport);
         forEachChild(sourceFile, visitProjectNode);
         if (scanProjectConfig.mKeepStringProperty) {
@@ -450,6 +451,11 @@ export namespace ApiExtractor {
             mPropertySet.add(element);
           });
           stringPropsSet.clear();
+        }
+        if (scanProjectConfig.mExportObfuscation) {
+          mCurrentExportNameSet.forEach((element) => {
+            mLibExportNameSet.add(element);
+          });
         }
         mCurrentExportNameSet.clear();
         break;
@@ -539,7 +545,7 @@ export namespace ApiExtractor {
    * parse common project or file to extract exported api list
    * @return reserved api names
    */
-  export function parseCommonProject(projectPath): string[] {
+  export function parseCommonProject(projectPath: string, customProfiles: IOptions): string[] {
     mPropertySet.clear();
 
     if (fs.lstatSync(projectPath).isFile()) {
@@ -550,7 +556,8 @@ export namespace ApiExtractor {
       traverseApiFiles(projectPath, ApiType.PROJECT);
     }
 
-    const reservedProperties: string[] = [...mPropertySet];
+    const reservedProperties: string[] = customProfiles.mExportObfuscation ? [] : [...mPropertySet];
+
     mPropertySet.clear();
 
     return reservedProperties;
@@ -560,9 +567,9 @@ export namespace ApiExtractor {
    * parse api of third party libs like libs in node_modules
    * @param libPath
    */
-  export function parseThirdPartyLibs(libPath): string[] {
+  export function parseThirdPartyLibs(libPath: string): {reservedProperties: string[]; reservedLibExportNames: string[] | undefined} {
     mPropertySet.clear();
-
+    mLibExportNameSet.clear();
     if (fs.lstatSync(libPath).isFile()) {
       if (libPath.endsWith('.ets') || libPath.endsWith('.ts') || libPath.endsWith('.js')) {
         parseFile(libPath, ApiType.PROJECT_DEPENDS);
@@ -573,11 +580,15 @@ export namespace ApiExtractor {
         traverseApiFiles(path.join(libPath, subPath), ApiType.PROJECT_DEPENDS);
       }
     }
-
+    let reservedLibExportNames: string[] = undefined;
+    if (scanProjectConfig.mExportObfuscation) {
+      reservedLibExportNames = [...mLibExportNameSet];
+      mLibExportNameSet.clear();
+    }
     const reservedProperties: string[] = [...mPropertySet];
     mPropertySet.clear();
 
-    return reservedProperties;
+    return {reservedProperties: reservedProperties, reservedLibExportNames: reservedLibExportNames};
   }
 
   /**
