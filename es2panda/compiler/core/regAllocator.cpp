@@ -45,6 +45,11 @@ ArenaAllocator *RegAllocator::Allocator() const
     return pg_->Allocator();
 }
 
+bool RegAllocator::HasSpill() const
+{
+    return hasSpill_;
+}
+
 uint16_t RegAllocator::GetSpillRegsCount() const
 {
     return spillRegs_;

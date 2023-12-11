@@ -277,7 +277,16 @@ void FunctionEmitter::GenScopeVariableInfo(const binder::Scope *scope)
                 variableDebug.name = name.Mutf8();
                 variableDebug.signature = "any";
                 variableDebug.signature_type = "any";
-                variableDebug.reg = static_cast<int32_t>(variable->AsLocalVariable()->Vreg());
+                // Register spill causes an offset being applied to all registers in all instructions (refer to
+                // RegAllocator::AdjustInsRegWhenHasSpill for more details). Therefore, we also add this offset
+                // to the variable-to-register mapping before dumping it to the debug information of the abc file
+                // (the following code).
+                // We do not correct the original variable mapping in the scope object since it is not used after
+                // the register spill phase, while we do not know the number of spilled registers before that phase.
+                // If any future modifications require access to the variable mapping after the register spill,
+                // please correct the mapping first and remove the offset increment operation in the following code.
+                variableDebug.reg =
+                    static_cast<int32_t>(variable->AsLocalVariable()->Vreg()) + pg_->GetSpillRegsCount();
                 variableDebug.start = start;
                 variableDebug.length = static_cast<uint32_t>(varsLength);
             }
