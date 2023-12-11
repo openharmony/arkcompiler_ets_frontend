@@ -158,19 +158,21 @@ void DestructuringIterator::Step(Label *doneTarget) const
     Label *noClose = pg_->AllocLabel();
 
     pg_->SetLabel(node_, labelSet.TryBegin());
+    JumpIfDone(noClose);
     Next();
     Complete();
     pg_->StoreAccumulator(node_, done_);
     pg_->BranchIfFalse(node_, normalClose);
     pg_->StoreConst(node_, done_, Constant::JS_TRUE);
     pg_->LoadConst(node_, Constant::JS_UNDEFINED);
-    OnIterDone(doneTarget);
     pg_->Branch(node_, noClose);
 
     pg_->SetLabel(node_, normalClose);
     Value();
     pg_->StoreAccumulator(node_, result_);
+    pg_->Branch(node_, labelSet.CatchEnd());
     pg_->SetLabel(node_, noClose);
+    OnIterDone(doneTarget);
 
     pg_->SetLabel(node_, labelSet.TryEnd());
     pg_->Branch(node_, labelSet.CatchEnd());
@@ -191,6 +193,12 @@ void DestructuringIterator::OnIterDone([[maybe_unused]] Label *doneTarget) const
 void DestructuringRestIterator::OnIterDone([[maybe_unused]] Label *doneTarget) const
 {
     pg_->Branch(node_, doneTarget);
+}
+
+void DestructuringIterator::JumpIfDone(Label *noClose) const
+{
+    pg_->LoadAccumulator(node_, done_);
+    pg_->BranchIfTrue(node_, noClose);
 }
 
 }  // namespace panda::es2panda::compiler

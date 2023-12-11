@@ -20,6 +20,9 @@
 	sta v12
 LABEL_0: 
 LABEL_4: 
+	lda v11
+	istrue
+	jnez LABEL_9
 	lda v8
 	callthis0 0x5, v9
 	sta v10
@@ -32,13 +35,14 @@ LABEL_4:
 	ldtrue
 	sta v11
 	ldundefined
-	ldundefined
 	jmp LABEL_9
 LABEL_8: 
 	lda v10
 	ldobjbyname 0x9, value
 	sta v12
+	jmp LABEL_7
 LABEL_9: 
+	ldundefined
 LABEL_5: 
 	jmp LABEL_7
 LABEL_6: 
@@ -50,6 +54,9 @@ LABEL_6:
 LABEL_7: 
 	sttoglobalrecord 0xb, a
 LABEL_10: 
+	lda v11
+	istrue
+	jnez LABEL_15
 	lda v8
 	callthis0 0xc, v9
 	sta v10
@@ -62,13 +69,14 @@ LABEL_10:
 	ldtrue
 	sta v11
 	ldundefined
-	ldundefined
 	jmp LABEL_15
 LABEL_14: 
 	lda v10
 	ldobjbyname 0x10, value
 	sta v12
+	jmp LABEL_13
 LABEL_15: 
+	ldundefined
 LABEL_11: 
 	jmp LABEL_13
 LABEL_12: 
