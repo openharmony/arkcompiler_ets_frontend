@@ -120,27 +120,6 @@
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
         },
         {
-            "line": 93,
-            "column": 3,
-            "problem": "UnsupportedDecorators",
-            "suggest": "",
-            "rule": "No decorators except ArkUI decorators are currently allowed (arkts-no-decorators-except-arkui)"
-        },
-        {
-            "line": 97,
-            "column": 3,
-            "problem": "UnsupportedDecorators",
-            "suggest": "",
-            "rule": "No decorators except ArkUI decorators are currently allowed (arkts-no-decorators-except-arkui)"
-        },
-        {
-            "line": 101,
-            "column": 1,
-            "problem": "UnsupportedDecorators",
-            "suggest": "",
-            "rule": "No decorators except ArkUI decorators are currently allowed (arkts-no-decorators-except-arkui)"
-        },
-        {
             "line": 43,
             "column": 3,
             "problem": "StrictDiagnostic",

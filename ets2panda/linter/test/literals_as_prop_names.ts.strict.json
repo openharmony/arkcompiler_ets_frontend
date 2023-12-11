@@ -22,21 +22,7 @@
             "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
         },
         {
-            "line": 19,
-            "column": 3,
-            "problem": "LiteralAsPropertyName",
-            "suggest": "",
-            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
-        },
-        {
             "line": 24,
-            "column": 3,
-            "problem": "LiteralAsPropertyName",
-            "suggest": "",
-            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
-        },
-        {
-            "line": 25,
             "column": 3,
             "problem": "LiteralAsPropertyName",
             "suggest": "",
@@ -69,13 +55,6 @@
             "problem": "ObjectLiteralNoContextType",
             "suggest": "",
             "rule": "Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals)"
-        },
-        {
-            "line": 49,
-            "column": 10,
-            "problem": "LiteralAsPropertyName",
-            "suggest": "",
-            "rule": "Objects with property names that are not identifiers are not supported (arkts-identifiers-as-prop-names)"
         },
         {
             "line": 49,

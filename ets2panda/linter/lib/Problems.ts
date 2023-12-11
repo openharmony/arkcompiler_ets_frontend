@@ -95,7 +95,6 @@ export enum FaultID {
   LimitedStdLibApi,
   ErrorSuppression,
   StrictDiagnostic,
-  UnsupportedDecorators,
   ImportAfterStatement,
   EsObjectType,
   // this should always be last enum

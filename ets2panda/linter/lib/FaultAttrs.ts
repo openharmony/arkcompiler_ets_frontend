@@ -106,7 +106,6 @@ faultsAttrs[FaultID.ImportAssertion] = new FaultAttributes(143);
 faultsAttrs[FaultID.LimitedStdLibApi] = new FaultAttributes(144);
 faultsAttrs[FaultID.StrictDiagnostic] = new FaultAttributes(145);
 faultsAttrs[FaultID.ErrorSuppression] = new FaultAttributes(146);
-faultsAttrs[FaultID.UnsupportedDecorators] = new FaultAttributes(148, false, ProblemSeverity.WARNING);
 faultsAttrs[FaultID.ClassAsObject] = new FaultAttributes(149, false, ProblemSeverity.WARNING);
 faultsAttrs[FaultID.ImportAfterStatement] = new FaultAttributes(150);
 faultsAttrs[FaultID.EsObjectType] = new FaultAttributes(151, false, ProblemSeverity.WARNING);

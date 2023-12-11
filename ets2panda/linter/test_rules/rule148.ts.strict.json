@@ -13,12 +13,6 @@
             "problem": "AnyType",
             "suggest": "",
             "rule": "Use explicit types instead of \"any\", \"unknown\" (arkts-no-any-unknown)"
-        },
-        {
-            "line": 5,
-            "column": 1,
-            "problem": "UnsupportedDecorators",
-            "rule": "No decorators except ArkUI decorators are currently allowed (arkts-no-decorators-except-arkui)"
         }
     ]
 }

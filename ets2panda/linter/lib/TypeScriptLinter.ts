@@ -26,7 +26,6 @@ import * as Autofixer from './Autofixer';
 import type { ProblemInfo } from './ProblemInfo';
 import { ProblemSeverity } from './ProblemSeverity';
 import { Logger } from './Logger';
-import { ARKUI_DECORATORS } from './utils/consts/ArkUIDecorators';
 import {
   NON_INITIALIZABLE_PROPERTY_DECORATORS,
   NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS
@@ -150,11 +149,11 @@ export class TypeScriptLinter {
     [ts.SyntaxKind.ForOfStatement, this.handleForOfStatement],
     [ts.SyntaxKind.ImportDeclaration, this.handleImportDeclaration],
     [ts.SyntaxKind.PropertyAccessExpression, this.handlePropertyAccessExpression],
-    [ts.SyntaxKind.PropertyDeclaration, this.handlePropertyAssignmentOrDeclaration],
-    [ts.SyntaxKind.PropertyAssignment, this.handlePropertyAssignmentOrDeclaration],
+    [ts.SyntaxKind.PropertyDeclaration, this.handlePropertyDeclaration],
+    [ts.SyntaxKind.PropertyAssignment, this.handlePropertyAssignment],
+    [ts.SyntaxKind.PropertySignature, this.handlePropertySignature],
     [ts.SyntaxKind.FunctionExpression, this.handleFunctionExpression],
     [ts.SyntaxKind.ArrowFunction, this.handleArrowFunction],
-    [ts.SyntaxKind.ClassExpression, this.handleClassExpression],
     [ts.SyntaxKind.CatchClause, this.handleCatchClause],
     [ts.SyntaxKind.FunctionDeclaration, this.handleFunctionDeclaration],
     [ts.SyntaxKind.PrefixUnaryExpression, this.handlePrefixUnaryExpression],
@@ -546,7 +545,6 @@ export class TypeScriptLinter {
     ) {
       this.incrementCounters(node, FaultID.ParameterProperties);
     }
-    this.handleDecorators(ts.getDecorators(tsParam));
     this.handleDeclarationInferredType(tsParam);
   }
 
@@ -660,6 +658,7 @@ export class TypeScriptLinter {
         break;
       }
     }
+
     const expr1 = importDeclNode.moduleSpecifier;
     if (expr1.kind === ts.SyntaxKind.StringLiteral) {
       if (!importDeclNode.importClause) {
@@ -677,7 +676,6 @@ export class TypeScriptLinter {
     }
 
     const propertyAccessNode = node as ts.PropertyAccessExpression;
-
     const exprSym = this.tsUtils.trueSymbolAtLocation(propertyAccessNode);
     const baseExprSym = this.tsUtils.trueSymbolAtLocation(propertyAccessNode.expression);
     const baseExprType = this.tsTypeChecker.getTypeAtLocation(propertyAccessNode.expression);
@@ -685,62 +683,86 @@ export class TypeScriptLinter {
     if (this.isPrototypePropertyAccess(propertyAccessNode, exprSym, baseExprSym, baseExprType)) {
       this.incrementCounters(propertyAccessNode.name, FaultID.Prototype);
     }
+
     if (TypeScriptLinter.advancedClassChecks && this.tsUtils.isClassObjectExpression(propertyAccessNode.expression)) {
       // missing exact rule
       this.incrementCounters(propertyAccessNode.expression, FaultID.ClassAsObject);
     }
+
     if (!!baseExprSym && TsUtils.symbolHasEsObjectType(baseExprSym)) {
       this.incrementCounters(propertyAccessNode, FaultID.EsObjectType);
     }
   }
 
-  private handlePropertyAssignmentOrDeclaration(node: ts.Node): void {
-    const propName = (node as ts.PropertyAssignment | ts.PropertyDeclaration).name;
-    if (propName && (propName.kind === ts.SyntaxKind.NumericLiteral || propName.kind === ts.SyntaxKind.StringLiteral)) {
-      // We can use literals as property names only when creating Record or any interop instances.
-      let isRecordObjectInitializer = false;
-      let isLibraryType = false;
-      let isDynamic = false;
-      if (ts.isPropertyAssignment(node)) {
-        const objectLiteralType = this.tsTypeChecker.getContextualType(node.parent);
-        if (objectLiteralType) {
-          isRecordObjectInitializer = this.tsUtils.checkTypeSet(objectLiteralType, this.tsUtils.isStdRecordType);
-          isLibraryType = this.tsUtils.isLibraryType(objectLiteralType);
-        }
-        isDynamic = isLibraryType || this.tsUtils.isDynamicLiteralInitializer(node.parent);
+  private handlePropertyDeclaration(node: ts.PropertyDeclaration): void {
+    const propName = node.name;
+    if (!!propName && ts.isNumericLiteral(propName)) {
+      let autofix: Autofix[] | undefined = Autofixer.fixLiteralAsPropertyName(node);
+      const autofixable = autofix !== undefined;
+      if (!this.autofixesInfo.shouldAutofix(node, FaultID.LiteralAsPropertyName)) {
+        autofix = undefined;
       }
+      this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofixable, autofix);
+    }
 
-      if (!isRecordObjectInitializer && !isDynamic) {
-        let autofix: Autofix[] | undefined = Autofixer.fixLiteralAsPropertyName(node);
-        const autofixable = autofix !== undefined;
-        if (!this.autofixesInfo.shouldAutofix(node, FaultID.LiteralAsPropertyName)) {
-          autofix = undefined;
-        }
-        this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofixable, autofix);
+    const decorators = ts.getDecorators(node);
+    this.filterOutDecoratorsDiagnostics(
+      decorators,
+      NON_INITIALIZABLE_PROPERTY_DECORATORS,
+      { begin: propName.getStart(), end: propName.getStart() },
+      PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE
+    );
+    const classDecorators = ts.getDecorators(node.parent);
+    const propType = node.type?.getText();
+    this.filterOutDecoratorsDiagnostics(
+      classDecorators,
+      NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
+      { begin: propName.getStart(), end: propName.getStart() },
+      PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE,
+      propType
+    );
+    this.handleDeclarationInferredType(node);
+    this.handleDefiniteAssignmentAssertion(node);
+  }
+
+  private handlePropertyAssignment(node: ts.PropertyAssignment): void {
+    const propName = node.name;
+    if (!(!!propName && ts.isNumericLiteral(propName))) {
+      return;
+    }
+
+    /*
+     * We can use literals as property names only when creating Record or any interop instances.
+     * We can also initialize with constant string literals.
+     * Assignment with string enum values is handled in handleComputedPropertyName
+     */
+    let isRecordObjectInitializer = false;
+    let isLibraryType = false;
+    let isDynamic = false;
+    const objectLiteralType = this.tsTypeChecker.getContextualType(node.parent);
+    if (objectLiteralType) {
+      isRecordObjectInitializer = this.tsUtils.checkTypeSet(objectLiteralType, this.tsUtils.isStdRecordType);
+      isLibraryType = this.tsUtils.isLibraryType(objectLiteralType);
+    }
+
+    isDynamic = isLibraryType || this.tsUtils.isDynamicLiteralInitializer(node.parent);
+    if (!isRecordObjectInitializer && !isDynamic) {
+      let autofix: Autofix[] | undefined = Autofixer.fixLiteralAsPropertyName(node);
+      const autofixable = autofix !== undefined;
+      if (!this.autofixesInfo.shouldAutofix(node, FaultID.LiteralAsPropertyName)) {
+        autofix = undefined;
       }
+      this.incrementCounters(node, FaultID.LiteralAsPropertyName, autofixable, autofix);
     }
-    if (ts.isPropertyDeclaration(node)) {
-      const decorators = ts.getDecorators(node);
-      this.handleDecorators(decorators);
-      this.filterOutDecoratorsDiagnostics(
-        decorators,
-        NON_INITIALIZABLE_PROPERTY_DECORATORS,
-        { begin: propName.getStart(), end: propName.getStart() },
-        PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE
-      );
+  }
 
-      const classDecorators = ts.getDecorators(node.parent);
-      const propType = node.type?.getText();
-      this.filterOutDecoratorsDiagnostics(
-        classDecorators,
-        NON_INITIALIZABLE_PROPERTY_CLASS_DECORATORS,
-        { begin: propName.getStart(), end: propName.getStart() },
-        PROPERTY_HAS_NO_INITIALIZER_ERROR_CODE,
-        propType
-      );
-      this.handleDeclarationInferredType(node);
-      this.handleDefiniteAssignmentAssertion(node);
-    }
+  private handlePropertySignature(node: ts.PropertySignature): void {
+
+    /**
+     * Handler in case any further restrictions are put on properties of interfaces
+     */
+    void this;
+    void node;
   }
 
   private filterOutDecoratorsDiagnostics(
@@ -881,12 +903,6 @@ export class TypeScriptLinter {
     }
   }
 
-  private handleClassExpression(node: ts.Node): void {
-    const tsClassExpr = node as ts.ClassExpression;
-    this.incrementCounters(node, FaultID.ClassExpression);
-    this.handleDecorators(ts.getDecorators(tsClassExpr));
-  }
-
   private handleFunctionDeclaration(node: ts.Node): void {
     // early exit via exception if cancellation was requested
     this.cancellationToken?.throwIfCancellationRequested();
@@ -1003,21 +1019,31 @@ export class TypeScriptLinter {
     return hasLimitedTypeInference;
   }
 
+  private isValidTypeForUnaryArithmeticOperator(type: ts.Type): boolean {
+    const typeFlags = type.getFlags();
+    const numberLiteralFlags = ts.TypeFlags.BigIntLiteral | ts.TypeFlags.NumberLiteral;
+    const numberLikeFlags = ts.TypeFlags.BigIntLike | ts.TypeFlags.NumberLike;
+    const isNumberLike = !!(typeFlags & (numberLiteralFlags | numberLikeFlags));
+
+    const isAllowedNumericType = this.tsUtils.isStdBigIntType(type) || this.tsUtils.isStdNumberType(type);
+
+    return isNumberLike || isAllowedNumericType;
+  }
+
   private handlePrefixUnaryExpression(node: ts.Node): void {
     const tsUnaryArithm = node as ts.PrefixUnaryExpression;
     const tsUnaryOp = tsUnaryArithm.operator;
+    const tsUnaryOperand = tsUnaryArithm.operand;
     if (
       tsUnaryOp === ts.SyntaxKind.PlusToken ||
       tsUnaryOp === ts.SyntaxKind.MinusToken ||
       tsUnaryOp === ts.SyntaxKind.TildeToken
     ) {
-      const tsOperatndType = this.tsTypeChecker.getTypeAtLocation(tsUnaryArithm.operand);
-      if (
-        !(tsOperatndType.getFlags() & (ts.TypeFlags.NumberLike | ts.TypeFlags.BigIntLiteral)) ||
-        tsUnaryOp === ts.SyntaxKind.TildeToken &&
-          tsUnaryArithm.operand.kind === ts.SyntaxKind.NumericLiteral &&
-          !this.tsUtils.isIntegerConstantValue(tsUnaryArithm.operand as ts.NumericLiteral)
-      ) {
+      const tsOperatndType = this.tsTypeChecker.getTypeAtLocation(tsUnaryOperand);
+      const isTilde = tsUnaryOp === ts.SyntaxKind.TildeToken;
+      const isInvalidTilde =
+        isTilde && ts.isNumericLiteral(tsUnaryOperand) && !this.tsUtils.isIntegerConstantValue(tsUnaryOperand);
+      if (!this.isValidTypeForUnaryArithmeticOperator(tsOperatndType) || isInvalidTilde) {
         this.incrementCounters(node, FaultID.UnaryArithmNotNumber);
       }
     }
@@ -1227,7 +1253,6 @@ export class TypeScriptLinter {
         visitHClause(hClause);
       }
     }
-    this.handleDecorators(ts.getDecorators(tsClassDecl));
   }
 
   private handleModuleDeclaration(node: ts.Node): void {
@@ -1352,7 +1377,6 @@ export class TypeScriptLinter {
     if (tsMethodDecl.asteriskToken) {
       this.incrementCounters(node, FaultID.GeneratorFunction);
     }
-    this.handleDecorators(ts.getDecorators(tsMethodDecl));
     this.filterOutDecoratorsDiagnostics(
       ts.getDecorators(tsMethodDecl),
       NON_RETURN_FUNCTION_DECORATORS,
@@ -1813,8 +1837,8 @@ export class TypeScriptLinter {
     }
     // check for rule#65:   'number as Number' and 'boolean as Boolean' are disabled
     if (
-      TsUtils.isNumberType(exprType) && targetType.getSymbol()?.getName() === 'Number' ||
-      TsUtils.isBooleanType(exprType) && targetType.getSymbol()?.getName() === 'Boolean'
+      TsUtils.isNumberLikeType(exprType) && this.tsUtils.isStdNumberType(targetType) ||
+      TsUtils.isBooleanLikeType(exprType) && this.tsUtils.isStdBooleanType(targetType)
     ) {
       this.incrementCounters(node, FaultID.TypeAssertion);
     }
@@ -1908,29 +1932,22 @@ export class TypeScriptLinter {
     this.incrementCounters(node, FaultID.ComputedPropertyName);
   }
 
-  private handleDecorators(decorators: readonly ts.Decorator[] | undefined): void {
-    if (!decorators) {
-      return;
-    }
-    for (const decorator of decorators) {
-      let decoratorName = '';
-      if (ts.isIdentifier(decorator.expression)) {
-        decoratorName = decorator.expression.text;
-      } else if (ts.isCallExpression(decorator.expression) && ts.isIdentifier(decorator.expression.expression)) {
-        decoratorName = decorator.expression.expression.text;
-      }
-      if (!ARKUI_DECORATORS.includes(decoratorName)) {
-        this.incrementCounters(decorator, FaultID.UnsupportedDecorators);
-      }
-    }
-  }
-
   private handleGetAccessor(node: ts.Node): void {
-    this.handleDecorators(ts.getDecorators(node as ts.GetAccessorDeclaration));
+
+    /**
+     * Reserved if needed
+     */
+    void node;
+    void this;
   }
 
   private handleSetAccessor(node: ts.Node): void {
-    this.handleDecorators(ts.getDecorators(node as ts.SetAccessorDeclaration));
+
+    /**
+     * Reserved if needed
+     */
+    void node;
+    void this;
   }
 
   private handleDeclarationInferredType(

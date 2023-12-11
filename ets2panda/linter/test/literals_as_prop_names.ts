@@ -61,3 +61,9 @@ let x_fix = {name: 20, _2: 20};
 console.log("Fixed x object literal:");
 console.log(x_fix.name);
 console.log(x_fix._2);
+
+interface litAsPropNameIface {
+  one: string;
+  2: string;
+  'Two': number;
+}

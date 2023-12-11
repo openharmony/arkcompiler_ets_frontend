@@ -139,6 +139,7 @@ export class LinterConfig {
     [ts.SyntaxKind.JsxElement, FaultID.JsxElement],
     [ts.SyntaxKind.JsxSelfClosingElement, FaultID.JsxElement],
     [ts.SyntaxKind.ImportEqualsDeclaration, FaultID.ImportAssignment],
-    [ts.SyntaxKind.NamespaceExportDeclaration, FaultID.UMDModuleDefinition]
+    [ts.SyntaxKind.NamespaceExportDeclaration, FaultID.UMDModuleDefinition],
+    [ts.SyntaxKind.ClassExpression, FaultID.ClassExpression]
   ]);
 }

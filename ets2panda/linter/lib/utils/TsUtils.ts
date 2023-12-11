@@ -41,19 +41,11 @@ export class TsUtils {
     return this.entityNameToString(name.left) + this.entityNameToString(name.right);
   }
 
-  static isNumberType(tsType: ts.Type): boolean {
-    if (tsType.isUnion()) {
-      for (const tsCompType of tsType.types) {
-        if ((tsCompType.flags & ts.TypeFlags.NumberLike) === 0) {
-          return false;
-        }
-      }
-      return true;
-    }
+  static isNumberLikeType(tsType: ts.Type): boolean {
     return (tsType.getFlags() & ts.TypeFlags.NumberLike) !== 0;
   }
 
-  static isBooleanType(tsType: ts.Type): boolean {
+  static isBooleanLikeType(tsType: ts.Type): boolean {
     return (tsType.getFlags() & ts.TypeFlags.BooleanLike) !== 0;
   }
 
@@ -1378,5 +1370,20 @@ export class TsUtils {
   private isStdFunctionType(type: ts.Type): boolean {
     const sym = type.getSymbol();
     return !!sym && sym.getName() === 'Function' && this.isGlobalSymbol(sym);
+  }
+
+  isStdBigIntType(type: ts.Type): boolean {
+    const sym = type.symbol;
+    return !!sym && sym.getName() === 'BigInt' && this.isGlobalSymbol(sym);
+  }
+
+  isStdNumberType(type: ts.Type): boolean {
+    const sym = type.symbol;
+    return !!sym && sym.getName() === 'Number' && this.isGlobalSymbol(sym);
+  }
+
+  isStdBooleanType(type: ts.Type): boolean {
+    const sym = type.symbol;
+    return !!sym && sym.getName() === 'Boolean' && this.isGlobalSymbol(sym);
   }
 }
