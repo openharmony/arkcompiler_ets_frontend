@@ -17,7 +17,7 @@ class O{
     override toString(): String {
         return "";
     }
-    override hashCode(): int {
+    override $_hashCode(): int {
         return 4;
     }
 }
@@ -27,5 +27,5 @@ class OExt extends O{
 
 function main(): void {
     let o: OExt = new OExt()
-    assert o.hashCode() == 4
+    assert o.$_hashCode() == 4
 }

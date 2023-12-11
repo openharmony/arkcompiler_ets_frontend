@@ -17,7 +17,7 @@ interface J{
     toString(): String {
         return "";
     }
-    hashCode():int{
+    $_hashCode():int{
         return 4;
     }
 }
@@ -27,5 +27,5 @@ class JImpl implements J{
 
 function main(): void {
     let o: JImpl = new JImpl()
-    assert o.hashCode() == 4
+    assert o.$_hashCode() == 4
 }

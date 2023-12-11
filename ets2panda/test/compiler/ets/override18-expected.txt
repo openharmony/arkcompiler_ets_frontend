@@ -174,7 +174,7 @@
             "type": "MethodDefinition",
             "key": {
               "type": "Identifier",
-              "name": "hashCode",
+              "name": "$_hashCode",
               "decorators": [],
               "loc": {
                 "start": {
@@ -183,7 +183,7 @@
                 },
                 "end": {
                   "line": 20,
-                  "column": 13
+                  "column": 15
                 }
               }
             },
@@ -198,7 +198,7 @@
                 "type": "ScriptFunction",
                 "id": {
                   "type": "Identifier",
-                  "name": "hashCode",
+                  "name": "$_hashCode",
                   "decorators": [],
                   "loc": {
                     "start": {
@@ -207,7 +207,7 @@
                     },
                     "end": {
                       "line": 20,
-                      "column": 13
+                      "column": 15
                     }
                   }
                 },
@@ -220,11 +220,11 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 16
+                      "column": 18
                     },
                     "end": {
                       "line": 20,
-                      "column": 19
+                      "column": 21
                     }
                   }
                 },
@@ -263,7 +263,7 @@
                   "loc": {
                     "start": {
                       "line": 20,
-                      "column": 19
+                      "column": 21
                     },
                     "end": {
                       "line": 22,
@@ -274,7 +274,7 @@
                 "loc": {
                   "start": {
                     "line": 20,
-                    "column": 13
+                    "column": 15
                   },
                   "end": {
                     "line": 22,
@@ -285,7 +285,7 @@
               "loc": {
                 "start": {
                   "line": 20,
-                  "column": 13
+                  "column": 15
                 },
                 "end": {
                   "line": 22,
@@ -907,7 +907,7 @@
                             },
                             "property": {
                               "type": "Identifier",
-                              "name": "hashCode",
+                              "name": "$_hashCode",
                               "decorators": [],
                               "loc": {
                                 "start": {
@@ -916,7 +916,7 @@
                                 },
                                 "end": {
                                   "line": 30,
-                                  "column": 22
+                                  "column": 24
                                 }
                               }
                             },
@@ -929,7 +929,7 @@
                               },
                               "end": {
                                 "line": 30,
-                                "column": 22
+                                "column": 24
                               }
                             }
                           },
@@ -942,7 +942,7 @@
                             },
                             "end": {
                               "line": 30,
-                              "column": 24
+                              "column": 26
                             }
                           }
                         },
@@ -952,11 +952,11 @@
                           "loc": {
                             "start": {
                               "line": 30,
-                              "column": 28
+                              "column": 30
                             },
                             "end": {
                               "line": 30,
-                              "column": 29
+                              "column": 31
                             }
                           }
                         },
@@ -967,7 +967,7 @@
                           },
                           "end": {
                             "line": 30,
-                            "column": 29
+                            "column": 31
                           }
                         }
                       },
@@ -979,7 +979,7 @@
                         },
                         "end": {
                           "line": 30,
-                          "column": 29
+                          "column": 31
                         }
                       }
                     }

@@ -27,11 +27,11 @@ function main(): void {
   object.toString();
 
 //  TypeError: Cannot access property of non-object or non-enum type
-//  arr1.hashCode();
-//  arr2.hashCode();
-//  object_array.hashCode();
+//  arr1.$_hashCode();
+//  arr2.$_hashCode();
+//  object_array.$_hashCode();
 
-  object.hashCode();
+  object.$_hashCode();
 
   assert(arr1 == arr1);
   assert(arr1 == object_array);
