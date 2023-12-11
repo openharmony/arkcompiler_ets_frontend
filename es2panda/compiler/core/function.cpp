@@ -32,6 +32,18 @@
 
 namespace panda::es2panda::compiler {
 
+static void FindLastStatement(const ir::AstNode *&lastNode, const ir::AstNode *currentNode)
+{
+    if (currentNode->IsStatement()) {
+        if (currentNode->Range().start.index > lastNode->Range().start.index) {
+            lastNode = currentNode;
+        }
+        currentNode->Iterate([&lastNode](auto *childNode) {
+            FindLastStatement(lastNode, childNode);
+        });
+    }
+}
+
 static void CompileSourceBlock(PandaGen *pg, const ir::BlockStatement *block)
 {
     bool endReturn = false;
@@ -51,7 +63,11 @@ static void CompileSourceBlock(PandaGen *pg, const ir::BlockStatement *block)
         return;
     }
 
-    pg->ImplicitReturn(statements.empty() ? block : statements.back());
+    const ir::AstNode *associatedNode = block;
+    if (!statements.empty()) {
+        FindLastStatement(associatedNode, statements.back());
+    }
+    pg->ImplicitReturn(associatedNode);
 }
 
 static void CompileFunctionParameterDeclaration(PandaGen *pg, const ir::ScriptFunction *func)
