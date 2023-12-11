@@ -16,6 +16,7 @@
 #include "ETSparser.h"
 #include <utility>
 
+#include "macros.h"
 #include "parser/parserFlags.h"
 #include "util/arktsconfig.h"
 #include "util/helpers.h"
@@ -2241,20 +2242,42 @@ std::string ETSParser::PrimitiveTypeToName(ir::PrimitiveType type)
             UNREACHABLE();
     }
 }
-
-std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *type_annotation) const
+std::string ETSParser::GetNameForETSUnionType(const ir::TypeNode *type_annotation) const
 {
-    if ((type_annotation->IsNullAssignable() || type_annotation->IsUndefinedAssignable()) &&
-        type_annotation->IsETSUnionType()) {
-        type_annotation = type_annotation->AsETSUnionType()->Types().front();
+    ASSERT(type_annotation->IsETSUnionType());
+    std::string newstr;
+    for (size_t i = 0; i < type_annotation->AsETSUnionType()->Types().size(); i++) {
+        auto type = type_annotation->AsETSUnionType()->Types()[i];
+        if (type->IsNullAssignable() || type->IsUndefinedAssignable()) {
+            continue;
+        }
+        std::string str = GetNameForTypeNode(type, false);
+        newstr += str;
+        if (i != type_annotation->AsETSUnionType()->Types().size() - 1) {
+            newstr += "|";
+        }
+    }
+    if (type_annotation->IsNullAssignable()) {
+        newstr += "|null";
+    }
+    if (type_annotation->IsUndefinedAssignable()) {
+        newstr += "|undefined";
+    }
+    return newstr;
+}
+
+std::string ETSParser::GetNameForTypeNode(const ir::TypeNode *type_annotation, bool adjust) const
+{
+    if (type_annotation->IsETSUnionType()) {
+        return GetNameForETSUnionType(type_annotation);
     }
 
-    const auto adjust_nullish = [type_annotation](std::string const &s) {
+    const auto adjust_nullish = [type_annotation, adjust](std::string const &s) {
         std::string newstr = s;
-        if (type_annotation->IsNullAssignable()) {
+        if (type_annotation->IsNullAssignable() && adjust) {
             newstr += "|null";
         }
-        if (type_annotation->IsUndefinedAssignable()) {
+        if (type_annotation->IsUndefinedAssignable() && adjust) {
             newstr += "|undefined";
         }
         return newstr;

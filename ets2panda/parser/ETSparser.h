@@ -177,7 +177,8 @@ private:
     ir::MethodDefinition *CreateProxyConstructorDefinition(ir::MethodDefinition const *method);
     void AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *ident_node = nullptr);
     static std::string PrimitiveTypeToName(ir::PrimitiveType type);
-    std::string GetNameForTypeNode(const ir::TypeNode *type_annotation) const;
+    std::string GetNameForTypeNode(const ir::TypeNode *type_annotation, bool adjust = true) const;
+    std::string GetNameForETSUnionType(const ir::TypeNode *type_annotation) const;
     ir::TSInterfaceDeclaration *ParseInterfaceBody(ir::Identifier *name, bool is_static);
     bool IsArrowFunctionExpressionStart();
     ir::ArrowFunctionExpression *ParseArrowFunctionExpression();
