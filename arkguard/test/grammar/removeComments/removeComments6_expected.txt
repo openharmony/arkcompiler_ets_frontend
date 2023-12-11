@@ -34,5 +34,5 @@ declare class MyClass {
      * @param {number} value - The value to set.
      */
     set myProperty(value: number);
-    static {}
+    static { }
 }
