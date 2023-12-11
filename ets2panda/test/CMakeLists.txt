@@ -133,7 +133,19 @@ if(PANDA_WITH_ETS)
 
                     SANITIZERS
                     ${PANDA_SANITIZERS_LIST}
-           )
+            )
+            panda_add_gtest(
+                NAME es2panda_checker_tests
+                SOURCES
+                    unit/checker_test.cpp
+                LIBRARIES
+                    es2panda-public es2panda-lib
+                INCLUDE_DIRS
+                    ${ES2PANDA_ROOT}
+                SANITIZERS
+                    ${PANDA_SANITIZERS_LIST}
+            )
+
     endif()
 
     panda_add_gtest(
