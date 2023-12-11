@@ -1432,7 +1432,7 @@ util::StringView ETSChecker::GetContainingObjectNameFromSignature(Signature *sig
     return {""};
 }
 
-bool ETSChecker::IsTypeBuiltinType(Type *type)
+bool ETSChecker::IsTypeBuiltinType(const Type *type) const
 {
     if (!type->IsETSObjectType()) {
         return false;
