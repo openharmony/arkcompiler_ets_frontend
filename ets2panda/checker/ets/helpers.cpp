@@ -628,7 +628,7 @@ Type *ETSChecker::ResolveIdentifier(ir::Identifier *const ident)
     SaveCapturedVariable(resolved, ident->Start());
 
     ident->SetVariable(resolved);
-    return resolved->TsType();
+    return GetTypeOfVariable(resolved);
 }
 
 void ETSChecker::ValidateUnaryOperatorOperand(varbinder::Variable *variable)
