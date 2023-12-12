@@ -735,4 +735,3 @@
     }
   }
 }
-TypeError: Method overriding requires 'override' modifier [methodOverrideWithoutModifier.ets:23:15]

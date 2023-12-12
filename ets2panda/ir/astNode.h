@@ -306,6 +306,11 @@ public:
         return (flags_ & ModifierFlags::OVERRIDE) != 0;
     }
 
+    void SetOverride() noexcept
+    {
+        flags_ |= ModifierFlags::OVERRIDE;
+    }
+
     [[nodiscard]] bool IsAsync() const noexcept
     {
         return (flags_ & ModifierFlags::ASYNC) != 0;

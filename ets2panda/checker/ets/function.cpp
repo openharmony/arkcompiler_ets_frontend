@@ -987,9 +987,7 @@ bool ETSChecker::IsMethodOverridesOther(Signature *target, Signature *source)
                 return false;
             }
 
-            if (!source->Function()->IsOverride()) {
-                ThrowTypeError("Method overriding requires 'override' modifier", source->Function()->Start());
-            }
+            source->Function()->SetOverride();
             return true;
         }
     }
