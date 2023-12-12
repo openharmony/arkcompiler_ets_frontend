@@ -14,6 +14,8 @@
 
 # Huawei Technologies Co.,Ltd.
 
+set -e
+
 for ARGUMENT in "$@"
 do
 case "$ARGUMENT" in

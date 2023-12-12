@@ -571,10 +571,10 @@ def get_host_args(args, host_type):
 
     if args.product_name:
         product_name = args.product_name
-        ark_dir = f"{ARGS_PREFIX}{product_name}{ARK_DIR_SUFFIX}"
-        icui_dir = f"{ARGS_PREFIX}{product_name}{ICUI_DIR_SUFFIX}"
-        ark_js_runtime_dir = f"{ARGS_PREFIX}{product_name}{ARK_JS_RUNTIME_DIR_SUFFIX}"
-        zlib_dir = f"{ARGS_PREFIX}{product_name}{ZLIB_DIR_SUFFIX}"
+        ark_dir = f"{ARGS_PREFIX}{product_name}/{ARK_DIR_SUFFIX}"
+        icui_dir = f"{ARGS_PREFIX}{product_name}/{ICUI_DIR_SUFFIX}"
+        ark_js_runtime_dir = f"{ARGS_PREFIX}{product_name}/{ARK_JS_RUNTIME_DIR_SUFFIX}"
+        zlib_dir = f"{ARGS_PREFIX}{product_name}/{ZLIB_DIR_SUFFIX}"
 
         ark_tool = os.path.join(ark_js_runtime_dir, "ark_js_vm")
         libs_dir = f"{icui_dir}:{LLVM_DIR}:{ark_js_runtime_dir}:{zlib_dir}"
