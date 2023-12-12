@@ -14,6 +14,7 @@
  */
 
 #include "checker/ETSchecker.h"
+#include "checker/ets/boxingConverter.h"
 #include "checker/types/ets/byteType.h"
 #include "checker/types/ets/charType.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
@@ -132,16 +133,8 @@ Type *ETSChecker::CreateETSUnionType(ArenaVector<Type *> &&constituent_types)
     ArenaVector<Type *> new_constituent_types(Allocator()->Adapter());
 
     for (auto *it : constituent_types) {
-        if (it->IsETSUnionType()) {
-            for (auto *type : it->AsETSUnionType()->ConstituentTypes()) {
-                new_constituent_types.push_back(type);
-            }
-
-            continue;
-        }
-
         new_constituent_types.push_back(
-            it->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) ? PrimitiveTypeAsETSBuiltinType(it) : it);
+            it->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) ? BoxingConverter::ETSTypeFromSource(this, it) : it);
     }
 
     if (new_constituent_types.size() == 1) {
@@ -151,7 +144,7 @@ Type *ETSChecker::CreateETSUnionType(ArenaVector<Type *> &&constituent_types)
     auto *new_union_type = Allocator()->New<ETSUnionType>(std::move(new_constituent_types));
     new_union_type->SetLeastUpperBoundType(this);
 
-    return ETSUnionType::HandleUnionType(new_union_type);
+    return ETSUnionType::HandleUnionType(Relation(), new_union_type);
 }
 
 ETSFunctionType *ETSChecker::CreateETSFunctionType(ArenaVector<Signature *> &signatures)

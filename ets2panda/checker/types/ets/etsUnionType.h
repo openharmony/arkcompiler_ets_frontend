@@ -95,7 +95,9 @@ public:
 
     Type *FindExactOrBoxedType(ETSChecker *checker, Type *type) const;
 
-    static Type *HandleUnionType(ETSUnionType *union_type);
+    static void NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &constituent_types);
+
+    static Type *HandleUnionType(TypeRelation *relation, ETSUnionType *union_type);
 
     std::tuple<bool, bool> ResolveConditionExpr() const override
     {
@@ -110,6 +112,8 @@ public:
 private:
     static bool EachTypeRelatedToSomeType(TypeRelation *relation, ETSUnionType *source, ETSUnionType *target);
     static bool TypeRelatedToSomeType(TypeRelation *relation, Type *source, ETSUnionType *target);
+
+    static void LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &constituent_types);
 
     ArenaVector<Type *> constituent_types_;
     Type *lub_type_ {nullptr};

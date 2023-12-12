@@ -148,6 +148,19 @@ if(PANDA_WITH_ETS)
             ${PANDA_SANITIZERS_LIST}
     )
 
+    panda_add_gtest(
+        NAME es2panda_union_normalization_tests
+        SOURCES
+            unit/union_normalization_test.cpp
+        LIBRARIES
+            es2panda-public es2panda-lib arkassembler arkbytecodeopt
+        INCLUDE_DIRS
+            ${ES2PANDA_PATH}
+            ${ES2PANDA_BINARY_ROOT}
+        SANITIZERS
+            ${PANDA_SANITIZERS_LIST}
+    )
+
     add_subdirectory(tsconfig)
 endif()
 

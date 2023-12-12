@@ -115,13 +115,15 @@ void ETSUnionType::AssignmentTarget(TypeRelation *relation, Type *source)
     if (exact_type != constituent_types_.end()) {
         return;
     }
+    size_t assignable_count = 0;
     for (auto *it : constituent_types_) {
         if (relation->IsAssignableTo(ref_source, it)) {
             if (ref_source != source) {
                 relation->IsAssignableTo(source, it);
                 ASSERT(relation->IsTrue());
             }
-            return;
+            ++assignable_count;
+            continue;
         }
         bool assign_primitive = it->IsETSObjectType() &&
                                 it->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE) &&
@@ -133,13 +135,88 @@ void ETSUnionType::AssignmentTarget(TypeRelation *relation, Type *source)
                 source->Cast(relation, unboxed_it);
                 ASSERT(relation->IsTrue());
             }
-            return;
+            ++assignable_count;
         }
+    }
+    if (assignable_count > 1) {
+        checker->ThrowTypeError({"Ambiguous assignment: after union normalization several types are assignable."},
+                                relation->GetNode()->Start());
+    }
+    relation->Result(assignable_count != 0U);
+}
+
+void ETSUnionType::LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &constituent_types)
+{
+    auto *const checker = relation->GetChecker()->AsETSChecker();
+    // Firstly, make linearization
+    ArenaVector<Type *> copied_constituents(checker->Allocator()->Adapter());
+    for (auto *ct : constituent_types) {
+        if (ct->IsETSUnionType()) {
+            auto other_types = ct->AsETSUnionType()->ConstituentTypes();
+            copied_constituents.insert(copied_constituents.end(), other_types.begin(), other_types.end());
+        } else {
+            copied_constituents.push_back(ct);
+        }
+    }
+    constituent_types = copied_constituents;
+    // Secondly, remove identical types
+    auto cmp_it = constituent_types.begin();
+    while (cmp_it != constituent_types.end()) {
+        auto it = std::next(cmp_it);
+        while (it != constituent_types.end()) {
+            if (relation->IsIdenticalTo(*it, *cmp_it)) {
+                it = constituent_types.erase(it);
+            } else {
+                ++it;
+            }
+        }
+        ++cmp_it;
     }
 }
 
-Type *ETSUnionType::HandleUnionType(ETSUnionType *union_type)
+void ETSUnionType::NormalizeTypes(TypeRelation *relation, ArenaVector<Type *> &constituent_types)
 {
+    auto *const checker = relation->GetChecker()->AsETSChecker();
+    auto ets_object = std::find(constituent_types.begin(), constituent_types.end(),
+                                checker->GetGlobalTypesHolder()->GlobalETSObjectType());
+    if (ets_object != constituent_types.end()) {
+        constituent_types.clear();
+        constituent_types.push_back(checker->GetGlobalTypesHolder()->GlobalETSObjectType());
+        return;
+    }
+    LinearizeAndEraseIdentical(relation, constituent_types);
+    // Find number type to remove other numeric types
+    auto number_found =
+        std::find_if(constituent_types.begin(), constituent_types.end(), [](Type *const ct) {
+            return ct->IsETSObjectType() && ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE);
+        }) != constituent_types.end();
+    auto cmp_it = constituent_types.begin();
+    while (cmp_it != constituent_types.end()) {
+        auto new_end = std::remove_if(
+            constituent_types.begin(), constituent_types.end(), [relation, checker, cmp_it, number_found](Type *ct) {
+                relation->Result(false);
+                (*cmp_it)->IsSupertypeOf(relation, ct);
+                bool remove_subtype = ct != *cmp_it && relation->IsTrue();
+                bool remove_numeric = number_found && ct->IsETSObjectType() &&
+                                      ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::UNBOXABLE_TYPE) &&
+                                      !ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_DOUBLE) &&
+                                      !ct->AsETSObjectType()->HasObjectFlag(ETSObjectFlags::BUILTIN_BOOLEAN);
+                bool remove_never = ct == checker->GetGlobalTypesHolder()->GlobalBuiltinNeverType();
+                return remove_subtype || remove_numeric || remove_never;
+            });
+        if (new_end != constituent_types.end()) {
+            constituent_types.erase(new_end, constituent_types.end());
+            cmp_it = constituent_types.begin();
+            continue;
+        }
+        ++cmp_it;
+    }
+}
+
+Type *ETSUnionType::HandleUnionType([[maybe_unused]] TypeRelation *relation, ETSUnionType *union_type)
+{
+    NormalizeTypes(relation, union_type->constituent_types_);
+
     if (union_type->ConstituentTypes().size() == 1) {
         return union_type->ConstituentTypes()[0];
     }
@@ -164,7 +241,7 @@ Type *ETSUnionType::Instantiate(ArenaAllocator *allocator, TypeRelation *relatio
     auto *new_union_type = allocator->New<ETSUnionType>(std::move(copied_constituents));
 
     new_union_type->SetLeastUpperBoundType(relation->GetChecker()->AsETSChecker());
-    return HandleUnionType(new_union_type);
+    return HandleUnionType(relation, new_union_type);
 }
 
 Type *ETSUnionType::Substitute(TypeRelation *relation, const Substitution *substitution)

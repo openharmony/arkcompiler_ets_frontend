@@ -2707,6 +2707,10 @@ std::pair<ir::TypeNode *, bool> ETSParser::GetTypeAnnotationFromToken(TypeAnnota
             type_annotation = ParseTypeAnnotation(options);
             type_annotation->SetStart(start_loc);
 
+            if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BITWISE_OR) {
+                type_annotation = ParseUnionType(type_annotation);
+            }
+
             if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS) {
                 if (((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0) {
                     ThrowExpectedToken(lexer::TokenType::PUNCTUATOR_RIGHT_PARENTHESIS);
