@@ -1562,7 +1562,7 @@ bool ETSChecker::IsFunctionContainsSignature(ETSFunctionType *funcType, Signatur
 void ETSChecker::CheckFunctionContainsClashingSignature(const ETSFunctionType *funcType, Signature *signature)
 {
     for (auto *it : funcType->CallSignatures()) {
-        SavedTypeRelationFlagsContext strfCtx(Relation(), TypeRelationFlag::NO_RETURN_TYPE_CHECK);
+        SavedTypeRelationFlagsContext strfCtx(Relation(), TypeRelationFlag::NONE);
         Relation()->IsIdenticalTo(it, signature);
         if (Relation()->IsTrue() && it->Function()->Id()->Name() == signature->Function()->Id()->Name()) {
             std::stringstream ss;
