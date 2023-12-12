@@ -16,17 +16,17 @@ class o {
     constructor() {
         this.head = false;
     }
-    compare(p, q) {
+    compare(r, s) {
         if (!this.head) {
             throw new Error('List is empty');
         }
-        return p > q;
+        return r > s;
     }
-    o(p, q) {
-        const r = q;
-        q = p;
+    o(r, s) {
+        const t = s;
+        s = r;
     }
 }
-function n(s, t) {
-    return s + t;
+function n(p, q) {
+    return p + q;
 }

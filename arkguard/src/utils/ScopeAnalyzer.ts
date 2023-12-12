@@ -16,6 +16,7 @@
 import {
   forEachChild,
   getModifiers,
+  isCatchClause,
   isClassDeclaration,
   isConstructorDeclaration,
   isExportSpecifier,
@@ -42,7 +43,6 @@ import type {
   ImportSpecifier,
   InterfaceDeclaration,
   LabeledStatement,
-  Modifier,
   ModuleDeclaration,
   Node,
   ObjectBindingPattern,
@@ -107,7 +107,6 @@ namespace secharmony {
     return scope.kind === ScopeKind.OBJECT_LITERAL;
   }
 
-  export const mangledIdentifierNames: Set<string> = new Set();
   /**
    * Structure of a scope
    */
@@ -155,6 +154,10 @@ namespace secharmony {
     importNames?: Set<string>;
 
     exportNames?: Set<string>;
+
+    mangledNames?: Set<string>;
+
+    constructorReservedParams?: Set<string>;
 
     /**
      * add a sub scope to current scope
@@ -216,6 +219,8 @@ namespace secharmony {
 
     let mangledNames: Set<string> = new Set<string>();
 
+    let constructorReservedParams: Set<string> = new Set<string>();
+
     // location path
     let loc: string = parent?.loc ? parent.loc + '#' + scopeName : scopeName;
 
@@ -231,6 +236,8 @@ namespace secharmony {
       'loc': loc,
       'importNames': importNames,
       'exportNames': exportNames,
+      'mangledNames': mangledNames,
+      'constructorReservedParams': constructorReservedParams,
       addChild,
       addDefinition,
       addLabel,
@@ -306,6 +313,7 @@ namespace secharmony {
      * get reserved names like ViewPU component class name
      */
     getReservedNames(): Set<string>;
+
     /**
      * do scope analysis
      *
@@ -493,6 +501,11 @@ namespace secharmony {
       }
     }
 
+    /** example
+     * const { x1, y: customY, z = 0 }: { x: number; y?: number; z?: number } = { x: 1, y: 2 };
+     * bindingElement.name is x1 for the first element.
+     * bindingElement.name is customY for the second element.
+     */
     function analyzeObjectBindingPatternRequire(node: ObjectBindingPattern): void {
       if (!NodeUtils.isObjectBindingPatternAssignment(node)) {
         forEachChild(node, analyzeScope);
@@ -507,6 +520,8 @@ namespace secharmony {
         if (!bindingElement) {
           return;
         }
+
+        findNoSymbolIdentifiers(bindingElement);
 
         if (!bindingElement.name || !isIdentifier(bindingElement.name)) {
           return;
@@ -588,7 +603,7 @@ namespace secharmony {
         addSymbolInScope(node.block);
       }
 
-      forEachChild(node.block, analyzeScope);
+      forEachChild(node, analyzeScope);
       current = current.parent || current;
     }
 
@@ -622,9 +637,9 @@ namespace secharmony {
      * @param node
      */
     function analyzeModule(node: ModuleDeclaration): void {
-      /** 
-       * if it is an anonymous scope, generate the scope name with a number, 
-       * which is based on the order of its child scopes in the upper scope 
+      /**
+       * if it is an anonymous scope, generate the scope name with a number,
+       * which is based on the order of its child scopes in the upper scope
        */
       let scopeName: string = node.name.text ?? '$' + current.children.length;
       current = createScope(scopeName, node, ScopeKind.MODULE, true, current);
@@ -646,17 +661,24 @@ namespace secharmony {
 
       const visitParam = (param: ParameterDeclaration): void => {
         const modifiers = getModifiers(param);
-        if (modifiers && modifiers.length > 0) {
-          const hasParameterPropertyModifier: boolean = modifiers.find(modifier => isParameterPropertyModifier(modifier)) !== undefined;
-          if (isIdentifier(param.name) && hasParameterPropertyModifier) {
-            current.defs.forEach((def) => {
-              if (def.name === param.name.getText()) {
-                current.defs.delete(def);
-                mangledIdentifierNames.add(def.name);
-              }
-            });
-          }
+        if (!modifiers || modifiers.length <= 0) {
+          return;
         }
+
+        const findRet = modifiers.find(modifier => isParameterPropertyModifier(modifier));
+        if (!isIdentifier(param.name) || findRet === undefined) {
+          return;
+        }
+
+        current.defs.forEach((def) => {
+          if (def.name !== param.name.getText()) {
+            return;
+          }
+
+          current.defs.delete(def);
+          current.mangledNames.add(def.name);
+          root.constructorReservedParams.add(def.name);
+        });
       };
 
       node.parameters.forEach((param) => {
@@ -671,6 +693,11 @@ namespace secharmony {
      * @param node
      */
     function analyzeFunctionLike(node: FunctionLikeDeclaration): void {
+      // For example, the constructor of the StructDeclaration, inserted by arkui, will add a virtual attribute.
+      // @ts-ignore
+      if (node.virtual) {
+        return;
+      }
       let scopeName: string = (node?.name as Identifier)?.text ?? '$' + current.children.length;
       let loc: string = current?.loc ? current.loc + '#' + scopeName : scopeName;
       let overloading: boolean = false;
@@ -696,6 +723,7 @@ namespace secharmony {
         // function declaration requires skipping function names
         node.forEachChild((sub: Node) => {
           if (isIdentifier(sub)) {
+            tryAddNoSymbolIdentifiers(sub);
             return;
           }
 
@@ -742,12 +770,7 @@ namespace secharmony {
           }
         });
 
-        node.members?.forEach((sub: Node) => {
-          // @ts-ignore
-          if (!sub.virtual) {
-            analyzeScope(sub);
-          }
-        });
+        forEachChild(node, analyzeScope);
       } catch (e) {
         console.error(e);
       }
@@ -766,7 +789,7 @@ namespace secharmony {
 
     function analyzeBlock(node: Node): void {
       // when block is body of a function
-      if (isFunctionScope(current) && isFunctionLike(node.parent)) {
+      if ((isFunctionScope(current) && isFunctionLike(node.parent)) || isCatchClause(node.parent)) {
         // skip direct block scope in function scope
         forEachChild(node, analyzeScope);
         return;
@@ -810,19 +833,11 @@ namespace secharmony {
         }
       }
 
-      for (const subNode of node.members) {
-        forEachChild(subNode, analyzeScope);
-      }
-
+      forEachChild(node, analyzeScope);
       current = current.parent || current;
     }
 
     function analyzeSymbol(node: Identifier): void {
-      // ignore all identifiers that treat as property in property declaration
-      if (NodeUtils.isPropertyDeclarationNode(node)) {
-        return;
-      }
-
       // ignore all identifiers that treat as property in property access
       if (NodeUtils.isPropertyAccessNode(node)) {
         return;
@@ -838,6 +853,12 @@ namespace secharmony {
       }
 
       if (!symbol) {
+        current.mangledNames.add(node.escapedText.toString());
+        return;
+      }
+
+      // ignore all identifiers that treat as property in property declaration
+      if (NodeUtils.isPropertyDeclarationNode(node)) {
         return;
       }
 
@@ -893,6 +914,34 @@ namespace secharmony {
       }
 
       return undefined;
+    }
+
+    function tryAddNoSymbolIdentifiers(node: Identifier): void {
+      if (!isIdentifier(node)) {
+        return;
+      }
+
+      // skip property in property access expression
+      if (NodeUtils.isPropertyAccessNode(node)) {
+        return;
+      }
+
+      const sym: Symbol | undefined = checker.getSymbolAtLocation(node);
+      if (!sym) {
+        current.mangledNames.add((node as Identifier).escapedText.toString());
+      }
+    }
+
+    function findNoSymbolIdentifiers(node: Node): void {
+      const noSymbolVisit = (targetNode: Node): void => {
+        if (!isIdentifier(targetNode)) {
+          forEachChild(targetNode, noSymbolVisit);
+          return;
+        }
+        tryAddNoSymbolIdentifiers(targetNode);
+      };
+
+      noSymbolVisit(node);
     }
   }
 }
