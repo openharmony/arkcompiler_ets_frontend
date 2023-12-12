@@ -1404,6 +1404,12 @@ ir::Expression *ParserImpl::ParseOptionalChain(ir::Expression *leftSideExpr)
         returnExpression = ParseCallExpression(leftSideExpr, true);
     }
 
+    if (Extension() == ScriptExtension::TS && tokenType == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
+        ir::TSTypeParameterInstantiation *typeParams = ParseTsTypeParameterInstantiation(true);
+        returnExpression = ParseCallExpression(leftSideExpr, true);
+        returnExpression->AsCallExpression()->SetTypeParams(typeParams);
+    }
+
     // Static semantic
     if (tokenType == lexer::TokenType::PUNCTUATOR_BACK_TICK ||
         lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_BACK_TICK) {
@@ -1527,7 +1533,8 @@ bool ParserImpl::IsGenericInstantiation()
         case lexer::TokenType::PUNCTUATOR_COMMA:
         case lexer::TokenType::PUNCTUATOR_NULLISH_COALESCING:
         case lexer::TokenType::PUNCTUATOR_LOGICAL_AND_EQUAL:
-        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR_EQUAL: {
+        case lexer::TokenType::PUNCTUATOR_LOGICAL_OR_EQUAL:
+        case lexer::TokenType::PUNCTUATOR_QUESTION_DOT: {
             return true;
         }
         default: {
