@@ -102,6 +102,9 @@ public:
 protected:
     VReg done_;
     VReg result_;
+
+private:
+    void JumpIfDone(Label *noClose) const;
 };
 
 class DestructuringRestIterator : public DestructuringIterator {
