@@ -146,6 +146,12 @@ void ETSFunction::CompileSourceBlock(ETSGen *etsg, const ir::BlockStatement *blo
 
 void ETSFunction::CompileFunction(ETSGen *etsg)
 {
+    const auto *decl = etsg->RootNode()->AsScriptFunction();
+
+    if (decl->IsDeclare()) {
+        return;
+    }
+
     CompileSourceBlock(etsg, etsg->RootNode()->AsScriptFunction()->Body()->AsBlockStatement());
 }
 

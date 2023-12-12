@@ -296,6 +296,7 @@ keywords:
 
   - name: 'namespace'
     token: KEYW_NAMESPACE
+    keyword: [ets]
     keyword_like: [as, ts]
 
   - name: 'native'

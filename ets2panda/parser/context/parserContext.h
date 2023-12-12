@@ -26,7 +26,7 @@
 namespace panda::es2panda::parser {
 class Program;
 
-enum class ParserStatus : uint32_t {
+enum class ParserStatus : uint64_t {
     NO_OPTS = 0U,
     DIRECT_EVAL = 1U << 0U,
 
@@ -65,6 +65,7 @@ enum class ParserStatus : uint32_t {
     IN_DEFAULT_IMPORTS = 1U << 29U,
     IN_EXTENSION_FUNCTION = 1U << 30U,
     FUNCTION_HAS_RETURN_STATEMENT = 1U << 31U,
+    IN_NAMESPACE = 1ULL << 32ULL,
 };
 
 DEFINE_BITOPS(ParserStatus)
