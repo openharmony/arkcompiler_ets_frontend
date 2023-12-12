@@ -17,7 +17,7 @@ set -e
 SCRIPT_DIR="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 
 usage() {
-    echo "Usage: $0 /path/to/panda/build/bin/es2panda /path/to/tsproject [PANDA_RUN_PREFIX]"
+    echo "Usage: $0 path/to/panda/build/bin/es2panda path/to/tsproject [PANDA_RUN_PREFIX]"
 }
 
 ensure_exists() {
@@ -40,7 +40,7 @@ ensure_exists "$TSCONFIG"
 ensure_exists "$ES2PANDA"
 ensure_exists "$EXPECTED"
 
-rm -rf "$BUILD"
+rm -r -f "$BUILD"
 
 ACTUAL=$(mktemp /tmp/actual.XXXXXX)
 STDLIB="$PANDA_ROOT/plugins/ets/stdlib"

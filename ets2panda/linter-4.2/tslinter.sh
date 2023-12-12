@@ -16,7 +16,7 @@
 #
 
 # get absolute path to linter folder for possible use in future
-TSLINTER_HOME_PATH=`cd $(dirname $0) && pwd` 
+TSLINTER_HOME_PATH=$(cd $(dirname $0) && pwd)
 
 # use relative path due to node.js error under cygwin environment
 node $(dirname $0)/./dist/tslinter.js $@
