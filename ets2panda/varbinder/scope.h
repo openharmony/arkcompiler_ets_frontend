@@ -639,6 +639,11 @@ public:
         return instance_decl_scope_;
     }
 
+    const LocalScope *TypeAliasScope() const
+    {
+        return type_alias_scope_;
+    }
+
     uint32_t GetAndIncrementAnonymousClassIdx() const
     {
         return anonymous_class_idx_++;

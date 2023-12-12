@@ -1197,6 +1197,13 @@ void ETSChecker::SetPropertiesForModuleObject(checker::ETSObjectType *module_obj
             module_obj_type->AddProperty<checker::PropertyType::STATIC_DECL>(var->AsLocalVariable());
         }
     }
+
+    for (auto [_, var] : res->second.front()->GlobalClassScope()->TypeAliasScope()->Bindings()) {
+        (void)_;
+        if (var->AsLocalVariable()->Declaration()->Node()->IsExported()) {
+            module_obj_type->AddProperty<checker::PropertyType::STATIC_DECL>(var->AsLocalVariable());
+        }
+    }
 }
 
 void ETSChecker::SetrModuleObjectTsType(ir::Identifier *local, checker::ETSObjectType *module_obj_type)
