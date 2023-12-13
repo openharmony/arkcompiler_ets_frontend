@@ -17,7 +17,6 @@
 #define ES2PANDA_COMPILER_CHECKER_ETS_ARITHMETIC_H
 
 #include "checker/ETSchecker.h"
-#include "checker/types/ets/etsBooleanType.h"
 
 namespace panda::es2panda::checker {
 
@@ -137,7 +136,7 @@ Type *ETSChecker::PerformArithmeticOperationOnTypes(Type *left, Type *right, lex
             break;
         }
         default: {
-            result = HandleBitWiseArithmetic<UType>(leftValue, rightValue, operationType);
+            UNREACHABLE();
         }
     }
 
@@ -174,63 +173,69 @@ inline DoubleType::UType panda::es2panda::checker::ETSChecker::HandleModulo<Doub
     return std::fmod(leftValue, rightValue);
 }
 
-template <typename UType>
-UType ETSChecker::HandleBitWiseArithmetic(UType leftValue, UType rightValue, lexer::TokenType operationType)
+template <typename IntegerUType, typename FloatOrIntegerUType>
+inline IntegerUType CastIfFloat(FloatOrIntegerUType num)
 {
-    using UnsignedType = std::make_unsigned_t<UType>;
-    auto unsignedLeftValue = static_cast<UnsignedType>(leftValue);
-    auto unsignedRightValue = static_cast<UnsignedType>(rightValue);
-    size_t mask = std::numeric_limits<UnsignedType>::digits - 1U;
-    size_t shift = static_cast<UnsignedType>(unsignedRightValue) & mask;
+    if constexpr (std::is_floating_point_v<FloatOrIntegerUType>) {
+        return CastFloatToInt<FloatOrIntegerUType, IntegerUType>(num);
+    } else {
+        return num;
+    }
+}
+
+template <typename FloatOrIntegerType, typename IntegerType>
+Type *ETSChecker::HandleBitWiseArithmetic(Type *left, Type *right, lexer::TokenType operationType)
+{
+    using IntegerUType = typename IntegerType::UType;
+    using UnsignedUType = std::make_unsigned_t<IntegerUType>;
+
+    UnsignedUType result = 0;
+    UnsignedUType unsignedLeftValue = CastIfFloat<IntegerUType>(GetOperand<FloatOrIntegerType>(left));
+    UnsignedUType unsignedRightValue = CastIfFloat<IntegerUType>(GetOperand<FloatOrIntegerType>(right));
+
+    auto mask = std::numeric_limits<UnsignedUType>::digits - 1U;
+    auto shift = unsignedRightValue & mask;
 
     switch (operationType) {
         case lexer::TokenType::PUNCTUATOR_BITWISE_AND:
         case lexer::TokenType::PUNCTUATOR_BITWISE_AND_EQUAL: {
-            return unsignedLeftValue & unsignedRightValue;
+            result = unsignedLeftValue & unsignedRightValue;
+            break;
         }
         case lexer::TokenType::PUNCTUATOR_BITWISE_OR:
         case lexer::TokenType::PUNCTUATOR_BITWISE_OR_EQUAL: {
-            return unsignedLeftValue | unsignedRightValue;
+            result = unsignedLeftValue | unsignedRightValue;
+            break;
         }
         case lexer::TokenType::PUNCTUATOR_BITWISE_XOR:
         case lexer::TokenType::PUNCTUATOR_BITWISE_XOR_EQUAL: {
-            return unsignedLeftValue ^ unsignedRightValue;
+            result = unsignedLeftValue ^ unsignedRightValue;
+            break;
         }
         case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT:
         case lexer::TokenType::PUNCTUATOR_LEFT_SHIFT_EQUAL: {
-            static_assert(sizeof(UType) == 4 || sizeof(UType) == 8);
-            return unsignedLeftValue << shift;
+            static_assert(sizeof(UnsignedUType) == 4 || sizeof(UnsignedUType) == 8);
+            result = unsignedLeftValue << shift;
+            break;
         }
         case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT:
         case lexer::TokenType::PUNCTUATOR_RIGHT_SHIFT_EQUAL: {
-            static_assert(sizeof(UType) == 4 || sizeof(UType) == 8);
-            return leftValue >> shift;  // NOLINT(hicpp-signed-bitwise)
+            static_assert(sizeof(IntegerUType) == 4 || sizeof(IntegerUType) == 8);
+            result = static_cast<IntegerUType>(unsignedLeftValue) >> shift;  // NOLINT(hicpp-signed-bitwise)
+            break;
         }
         case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT:
         case lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT_EQUAL: {
-            static_assert(sizeof(UType) == 4 || sizeof(UType) == 8);
-            return unsignedLeftValue >> shift;
+            static_assert(sizeof(UnsignedUType) == 4 || sizeof(UnsignedUType) == 8);
+            result = unsignedLeftValue >> shift;
+            break;
         }
         default: {
             UNREACHABLE();
         }
     }
-}
 
-template <>
-inline FloatType::UType ETSChecker::HandleBitWiseArithmetic<FloatType::UType>(
-    [[maybe_unused]] FloatType::UType leftValue, [[maybe_unused]] FloatType::UType rightValue,
-    [[maybe_unused]] lexer::TokenType operationType)
-{
-    return 0.0;
-}
-
-template <>
-inline DoubleType::UType ETSChecker::HandleBitWiseArithmetic<DoubleType::UType>(
-    [[maybe_unused]] DoubleType::UType leftValue, [[maybe_unused]] DoubleType::UType rightValue,
-    [[maybe_unused]] lexer::TokenType operationType)
-{
-    return 0.0;
+    return Allocator()->New<IntegerType>(result);
 }
 }  // namespace panda::es2panda::checker
 

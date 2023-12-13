@@ -30,6 +30,7 @@
 #include "ir/ts/tsTypeParameterInstantiation.h"
 #include "util/enumbitops.h"
 #include "util/ustring.h"
+#include "utils/bit_utils.h"
 #include "checker/resolveResult.h"
 #include "macros.h"
 
@@ -38,6 +39,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
+#include <type_traits>
 
 namespace panda::es2panda::varbinder {
 class VarBinder;
@@ -223,7 +225,7 @@ public:
 
     // Arithmetic
     Type *NegateNumericType(Type *type, ir::Expression *node);
-    Type *BitwiseNegateIntegralType(Type *type, ir::Expression *node);
+    Type *BitwiseNegateNumericType(Type *type, ir::Expression *node);
     std::tuple<Type *, Type *> CheckBinaryOperator(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
                                                    lexer::TokenType operationType, lexer::SourcePosition pos,
                                                    bool forcePromotion = false);
@@ -261,6 +263,7 @@ public:
     checker::Type *CheckBinaryOperatorNullishCoalescing(ir::Expression *right, lexer::SourcePosition pos,
                                                         checker::Type *leftType, checker::Type *rightType);
     Type *HandleArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType);
+    Type *HandleBitwiseOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType);
     void FlagExpressionWithUnboxing(Type *type, Type *unboxedType, ir::Expression *typeExpression);
     template <typename ValueType>
     Type *PerformArithmeticOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType);
@@ -529,6 +532,7 @@ public:
     bool ExtensionETSFunctionType(checker::Type *type);
     void ValidateTupleMinElementSize(ir::ArrayExpression *arrayExpr, ETSTupleType *tuple);
     void ModifyPreferredType(ir::ArrayExpression *arrayExpr, Type *newPreferredType);
+    Type *SelectGlobalIntegerTypeForNumeric(Type *type);
 
     // Exception
     ETSObjectType *CheckExceptionOrErrorType(checker::Type *type, lexer::SourcePosition pos);
@@ -657,8 +661,8 @@ private:
     template <typename UType>
     UType HandleModulo(UType leftValue, UType rightValue);
 
-    template <typename UType>
-    UType HandleBitWiseArithmetic(UType leftValue, UType rightValue, lexer::TokenType operationType);
+    template <typename FloatOrIntegerType, typename IntegerType = FloatOrIntegerType>
+    Type *HandleBitWiseArithmetic(Type *leftValue, Type *rightValue, lexer::TokenType operationType);
 
     template <typename TargetType>
     typename TargetType::UType GetOperand(Type *type);

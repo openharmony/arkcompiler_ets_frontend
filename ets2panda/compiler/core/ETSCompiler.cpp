@@ -551,8 +551,7 @@ void ETSCompiler::Compile(const ir::BinaryExpression *expr) const
     etsg->ApplyConversionAndStoreAccumulator(expr->Left(), lhs, expr->OperationType());
     expr->Right()->Compile(etsg);
     etsg->ApplyConversion(expr->Right(), expr->OperationType());
-    if (expr->OperatorType() >= lexer::TokenType::PUNCTUATOR_LEFT_SHIFT &&
-        expr->OperatorType() <= lexer::TokenType::PUNCTUATOR_UNSIGNED_RIGHT_SHIFT) {
+    if (expr->OperationType()->IsIntType()) {
         etsg->ApplyCast(expr->Right(), expr->OperationType());
     }
 
@@ -1068,7 +1067,13 @@ void ETSCompiler::Compile(const ir::UnaryExpression *expr) const
     if (!etsg->TryLoadConstantExpression(expr->Argument())) {
         expr->Argument()->Compile(etsg);
     }
+
     etsg->ApplyConversion(expr->Argument(), nullptr);
+
+    if (expr->OperatorType() == lexer::TokenType::PUNCTUATOR_TILDE) {
+        etsg->ApplyCast(expr->Argument(), expr->TsType());
+    }
+
     etsg->Unary(expr, expr->OperatorType());
 }
 

@@ -68,7 +68,7 @@ Type *ETSChecker::NegateNumericType(Type *type, ir::Expression *node)
     return result;
 }
 
-Type *ETSChecker::BitwiseNegateIntegralType(Type *type, ir::Expression *node)
+Type *ETSChecker::BitwiseNegateNumericType(Type *type, ir::Expression *node)
 {
     ASSERT(type->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_INTEGRAL));
 
@@ -95,6 +95,16 @@ Type *ETSChecker::BitwiseNegateIntegralType(Type *type, ir::Expression *node)
         }
         case TypeFlag::LONG: {
             result = CreateLongType(static_cast<int64_t>(~static_cast<uint64_t>(type->AsLongType()->GetValue())));
+            break;
+        }
+        case TypeFlag::FLOAT: {
+            result = CreateIntType(
+                ~static_cast<uint32_t>(CastFloatToInt<FloatType::UType, int32_t>(type->AsFloatType()->GetValue())));
+            break;
+        }
+        case TypeFlag::DOUBLE: {
+            result = CreateLongType(
+                ~static_cast<uint64_t>(CastFloatToInt<DoubleType::UType, int64_t>(type->AsDoubleType()->GetValue())));
             break;
         }
         default: {
@@ -199,13 +209,13 @@ checker::Type *ETSChecker::CheckBinaryOperatorShift(ir::Expression *left, ir::Ex
     FlagExpressionWithUnboxing(leftType, unboxedL, left);
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
 
-    if (promotedLeftType == nullptr || !promotedLeftType->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL) ||
-        promotedRightType == nullptr || !promotedRightType->HasTypeFlag(checker::TypeFlag::ETS_INTEGRAL)) {
-        ThrowTypeError("Bad operand type, the types of the operands must be integral type.", pos);
+    if (promotedLeftType == nullptr || !promotedLeftType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC) ||
+        promotedRightType == nullptr || !promotedRightType->HasTypeFlag(checker::TypeFlag::ETS_NUMERIC)) {
+        ThrowTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
     }
 
     if (promotedLeftType->HasTypeFlag(TypeFlag::CONSTANT) && promotedRightType->HasTypeFlag(TypeFlag::CONSTANT)) {
-        return HandleArithmeticOperationOnTypes(promotedLeftType, promotedRightType, operationType);
+        return HandleBitwiseOperationOnTypes(promotedLeftType, promotedRightType, operationType);
     }
 
     switch (ETSType(promotedLeftType)) {
@@ -218,10 +228,12 @@ checker::Type *ETSChecker::CheckBinaryOperatorShift(ir::Expression *left, ir::Ex
         case TypeFlag::CHAR: {
             return GlobalCharType();
         }
-        case TypeFlag::INT: {
+        case TypeFlag::INT:
+        case TypeFlag::FLOAT: {
             return GlobalIntType();
         }
-        case TypeFlag::LONG: {
+        case TypeFlag::LONG:
+        case TypeFlag::DOUBLE: {
             return GlobalLongType();
         }
         default: {
@@ -248,20 +260,20 @@ checker::Type *ETSChecker::CheckBinaryOperatorBitwise(ir::Expression *left, ir::
     }
 
     auto [promotedType, bothConst] =
-        ApplyBinaryOperatorPromotion(unboxedL, unboxedR, TypeFlag::ETS_INTEGRAL, !isEqualOp);
+        ApplyBinaryOperatorPromotion(unboxedL, unboxedR, TypeFlag::ETS_NUMERIC, !isEqualOp);
 
     FlagExpressionWithUnboxing(leftType, unboxedL, left);
     FlagExpressionWithUnboxing(rightType, unboxedR, right);
 
     if (promotedType == nullptr && !bothConst) {
-        ThrowTypeError("Bad operand type, the types of the operands must be integral type.", pos);
+        ThrowTypeError("Bad operand type, the types of the operands must be numeric type.", pos);
     }
 
     if (bothConst) {
-        return HandleArithmeticOperationOnTypes(leftType, rightType, operationType);
+        return HandleBitwiseOperationOnTypes(leftType, rightType, operationType);
     }
 
-    return promotedType;
+    return SelectGlobalIntegerTypeForNumeric(promotedType);
 }
 
 checker::Type *ETSChecker::CheckBinaryOperatorLogical(ir::Expression *left, ir::Expression *right, ir::Expression *expr,
@@ -599,6 +611,26 @@ Type *ETSChecker::HandleArithmeticOperationOnTypes(Type *left, Type *right, lexe
     }
 
     return PerformArithmeticOperationOnTypes<IntType>(left, right, operationType);
+}
+
+Type *ETSChecker::HandleBitwiseOperationOnTypes(Type *left, Type *right, lexer::TokenType operationType)
+{
+    ASSERT(left->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_NUMERIC) &&
+           right->HasTypeFlag(TypeFlag::CONSTANT | TypeFlag::ETS_NUMERIC));
+
+    if (left->IsDoubleType() || right->IsDoubleType()) {
+        return HandleBitWiseArithmetic<DoubleType, LongType>(left, right, operationType);
+    }
+
+    if (left->IsFloatType() || right->IsFloatType()) {
+        return HandleBitWiseArithmetic<FloatType, IntType>(left, right, operationType);
+    }
+
+    if (left->IsLongType() || right->IsLongType()) {
+        return HandleBitWiseArithmetic<LongType>(left, right, operationType);
+    }
+
+    return HandleBitWiseArithmetic<IntType>(left, right, operationType);
 }
 
 void ETSChecker::FlagExpressionWithUnboxing(Type *type, Type *unboxedType, ir::Expression *typeExpression)

@@ -344,4 +344,19 @@ void ETSChecker::HandleUpdatedCallExpressionNode(ir::CallExpression *callExpr)
     VarBinder()->AsETSBinder()->HandleCustomNodes(callExpr);
 }
 
+Type *ETSChecker::SelectGlobalIntegerTypeForNumeric(Type *type)
+{
+    switch (ETSType(type)) {
+        case checker::TypeFlag::FLOAT: {
+            return GlobalIntType();
+        }
+        case checker::TypeFlag::DOUBLE: {
+            return GlobalLongType();
+        }
+        default: {
+            return type;
+        }
+    }
+}
+
 }  // namespace panda::es2panda::checker
