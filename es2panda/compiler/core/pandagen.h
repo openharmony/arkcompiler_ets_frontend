@@ -378,6 +378,7 @@ public:
     void SuperCall(const ir::AstNode *node, VReg startReg, size_t argCount);
     void SuperCallSpread(const ir::AstNode *node, VReg vs);
     void NotifyConcurrentResult(const ir::AstNode *node);
+    void CallInit(const ir::AstNode *node, VReg thisReg);
 
     void NewObject(const ir::AstNode *node, VReg startReg, size_t argCount);
     void DefineFunction(const ir::AstNode *node, const ir::ScriptFunction *realNode, const util::StringView &name);

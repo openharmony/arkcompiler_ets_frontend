@@ -215,7 +215,6 @@ static void CompileFunction(PandaGen *pg)
         const auto *classDef = util::Helpers::GetClassDefiniton(decl);
         if (classDef->Super() == nullptr && classDef->NeedInstanceInitializer()) {
             RegScope rs(pg);
-            auto callee = pg->AllocReg();
             auto thisReg = pg->AllocReg();
 
             pg->GetThis(decl);
@@ -223,9 +222,7 @@ static void CompileFunction(PandaGen *pg)
 
             auto [level, slot] = pg->Scope()->Find(classDef->InstanceInitializer()->Key());
             pg->LoadLexicalVar(decl, level, slot);
-            pg->StoreAccumulator(decl, callee);
-
-            pg->CallThis(decl, callee, 1);
+            pg->CallInit(decl, thisReg);
         }
     }
 

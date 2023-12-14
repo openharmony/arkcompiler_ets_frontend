@@ -475,7 +475,7 @@ void PandaGen::DefineClassField(const ir::AstNode *node, VReg obj, const Operand
 
 void PandaGen::DefineClassPrivateField(const ir::AstNode *node, uint32_t level, uint32_t slot, VReg obj)
 {
-    ra_.Emit<CallruntimeDefineprivateproperty>(node, level, slot, obj);
+    ra_.Emit<CallruntimeDefineprivateproperty>(node, 0, level, slot, obj);
 }
 
 void PandaGen::StoreOwnProperty(const ir::AstNode *node, VReg obj, const Operand &prop, bool nameSetting)
@@ -577,7 +577,7 @@ void PandaGen::StoreObjByName(const ir::AstNode *node, VReg obj, const util::Str
 
 void PandaGen::DefineFieldByName(const ir::AstNode *node, VReg obj, const util::StringView &prop)
 {
-    ra_.Emit<CallruntimeDefinefieldbyname>(node, prop, obj);
+    ra_.Emit<Definefieldbyname>(node, 0, prop, obj);
     strings_.insert(prop);
 }
 
@@ -614,12 +614,12 @@ void PandaGen::StoreObjByIndex(const ir::AstNode *node, VReg obj, int64_t index)
 
 void PandaGen::DefineFieldByValue(const ir::AstNode *node, VReg obj, VReg prop)
 {
-    ra_.Emit<CallruntimeDefinefieldbyvalue>(node, prop, obj);
+    ra_.Emit<CallruntimeDefinefieldbyvalue>(node, 0, prop, obj);
 }
 
 void PandaGen::DefineFieldByIndex(const ir::AstNode *node, VReg obj, int64_t index)
 {
-    ra_.Emit<CallruntimeDefinefieldbyindex>(node, index, obj);
+    ra_.Emit<CallruntimeDefinefieldbyindex>(node, 0, index, obj);
 }
 
 void PandaGen::StOwnByName(const ir::AstNode *node, VReg obj, const util::StringView &prop, bool nameSetting)
@@ -1355,6 +1355,12 @@ void PandaGen::NotifyConcurrentResult(const ir::AstNode *node)
     if (IsConcurrent()) {
         ra_.Emit<CallruntimeNotifyconcurrentresult>(node);
     }
+}
+
+void PandaGen::CallInit(const ir::AstNode *node, VReg thisReg)
+{
+    // callee is in acc
+    ra_.Emit<CallruntimeCallinit>(node, 0, thisReg);
 }
 
 void PandaGen::NewObject(const ir::AstNode *node, VReg startReg, size_t argCount)
