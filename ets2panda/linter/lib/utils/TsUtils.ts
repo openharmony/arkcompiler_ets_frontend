@@ -473,7 +473,7 @@ export class TsUtils {
     return tsConstValue !== undefined && typeof tsConstValue === 'string';
   }
 
-  // Returns true iff typeA is a subtype of typeB
+  // Returns true if typeA is a subtype of typeB
   relatedByInheritanceOrIdentical(typeA: ts.Type, typeB: ts.Type): boolean {
     typeA = TsUtils.reduceReference(typeA);
     typeB = TsUtils.reduceReference(typeB);
@@ -504,16 +504,54 @@ export class TsUtils {
     return TsUtils.isTypeReference(t) && t.target !== t ? t.target : t;
   }
 
-  private needToDeduceStructuralIdentityHandleUnions(
+  private needToDeduceStructuralIdentityHandleUnionsAsExpression(
+    lhsType: ts.Type,
+    rhsType: ts.Type
+  ): boolean {
+    void this;
+
+    /*
+     * For now we only support this scenario: A | B | C as B, i.e. identity conversion.
+     * This may change in the future.
+     */
+
+    lhsType = TsUtils.reduceReference(lhsType);
+    rhsType = TsUtils.reduceReference(rhsType);
+
+    // handle case of A | B | C as A | B
+    if (lhsType.isUnion()) {
+      for (const compType of lhsType.types) {
+        if (this.needToDeduceStructuralIdentityHandleUnionsAsExpression(compType, rhsType)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    if (rhsType.isUnion()) {
+      // LHS type needs to be compatible with at least one type of the RHS union.
+      for (const compType of rhsType.types) {
+        const compTypeBase = this.tsTypeChecker.getBaseTypeOfLiteralType(compType);
+        if (lhsType === compType || lhsType === compTypeBase) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // should be unreachable
+    return false;
+  }
+
+  private needToDeduceStructuralIdentityHandleUnionsAssignment(
     lhsType: ts.Type,
     rhsType: ts.Type,
-    rhsExpr: ts.Expression,
-    allowPromotion: boolean
+    rhsExpr: ts.Expression
   ): boolean {
     if (rhsType.isUnion()) {
       // Each Class/Interface of the RHS union type must be compatible with LHS type.
       for (const compType of rhsType.types) {
-        if (this.needToDeduceStructuralIdentity(lhsType, compType, rhsExpr, allowPromotion)) {
+        if (this.needToDeduceStructuralIdentity(lhsType, compType, rhsExpr)) {
           return true;
         }
       }
@@ -522,7 +560,7 @@ export class TsUtils {
     if (lhsType.isUnion()) {
       // RHS type needs to be compatible with at least one type of the LHS union.
       for (const compType of lhsType.types) {
-        if (!this.needToDeduceStructuralIdentity(compType, rhsType, rhsExpr, allowPromotion)) {
+        if (!this.needToDeduceStructuralIdentity(compType, rhsType, rhsExpr)) {
           return false;
         }
       }
@@ -532,12 +570,27 @@ export class TsUtils {
     return false;
   }
 
+
+  private needToDeduceStructuralIdentityHandleUnions(
+    lhsType: ts.Type,
+    rhsType: ts.Type,
+    rhsExpr: ts.Expression,
+    asExpression: boolean
+  ): boolean {
+
+    if (asExpression) {
+      return this.needToDeduceStructuralIdentityHandleUnionsAsExpression(lhsType, rhsType);
+    }
+
+    return this.needToDeduceStructuralIdentityHandleUnionsAssignment(lhsType, rhsType, rhsExpr);
+  }
+
   // return true if two class types are not related by inheritance and structural identity check is needed
   needToDeduceStructuralIdentity(
     lhsType: ts.Type,
     rhsType: ts.Type,
     rhsExpr: ts.Expression,
-    allowPromotion: boolean = false
+    asExpression: boolean = false
   ): boolean {
     lhsType = TsUtils.getNonNullableType(lhsType);
     rhsType = TsUtils.getNonNullableType(rhsType);
@@ -552,7 +605,7 @@ export class TsUtils {
       return false;
     }
     if (rhsType.isUnion() || lhsType.isUnion()) {
-      return this.needToDeduceStructuralIdentityHandleUnions(lhsType, rhsType, rhsExpr, allowPromotion);
+      return this.needToDeduceStructuralIdentityHandleUnions(lhsType, rhsType, rhsExpr, asExpression);
     }
     if (
       this.advancedClassChecks &&
@@ -567,7 +620,7 @@ export class TsUtils {
       lhsType.isClassOrInterface() &&
       rhsType.isClassOrInterface() &&
       !this.relatedByInheritanceOrIdentical(rhsType, lhsType);
-    if (allowPromotion) {
+    if (asExpression) {
       res &&= !this.relatedByInheritanceOrIdentical(lhsType, rhsType);
     }
     return res;

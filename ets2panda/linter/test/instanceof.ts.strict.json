@@ -47,6 +47,11 @@
         {
             "line": 35,
             "column": 15,
+            "problem": "StructuralIdentity"
+        },
+        {
+            "line": 35,
+            "column": 15,
             "problem": "TypeAssertion"
         },
         {
