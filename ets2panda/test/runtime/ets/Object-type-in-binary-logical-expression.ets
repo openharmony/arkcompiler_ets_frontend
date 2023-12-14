@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,21 +13,18 @@
  * limitations under the License.
  */
 
-function returnTrue(): Boolean {
-    return true;
-}
+function main() {
+    let apple: Object = new Object();
+    let banana: boolean = true;
+    let cherry: boolean = false;
 
-function returnRefBool(a: boolean): Boolean {
-    return a;
-}
+    assert(apple && banana);
+    assert(banana && apple);
+    assert(apple || cherry);
+    assert(cherry || apple);
 
-function main(): void {
-    let a: Boolean = false;
-
-    let b: Boolean = a && returnTrue();
-    assert b == true
-
-    let c: Boolean = returnRefBool(a || returnRefBool(returnRefBool(a)));
-    assert c == false
-
+    assert(apple && true);
+    assert(true && apple);
+    assert(apple || false);
+    assert(false || apple);
 }

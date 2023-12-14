@@ -791,7 +791,18 @@ Type *ETSChecker::HandleBooleanLogicalOperatorsExtended(Type *left_type, Type *r
     auto [resolve_right, right_value] =
         IsNullLikeOrVoidExpression(expr->Right()) ? std::make_tuple(true, false) : right_type->ResolveConditionExpr();
 
-    if (!resolve_left) {
+    if (!expr->Left()->TsType()->ContainsUndefined() && !expr->Left()->TsType()->ContainsNull() &&
+        !expr->Left()->TsType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        resolve_left = true;
+        left_value = true;
+    }
+    if (!expr->Right()->TsType()->ContainsUndefined() && !expr->Right()->TsType()->ContainsNull() &&
+        !expr->Right()->TsType()->HasTypeFlag(TypeFlag::ETS_PRIMITIVE)) {
+        resolve_right = true;
+        right_value = true;
+    }
+
+    if (!resolve_left && !resolve_right) {
         if (IsTypeIdenticalTo(left_type, right_type)) {
             return left_type;
         }
