@@ -17,6 +17,7 @@
 #define ES2PANDA_PARSER_INCLUDE_AST_TS_METHOD_SIGNATURE_H
 
 #include "ir/typeNode.h"
+#include "ir/base/scriptFunctionSignature.h"
 
 namespace panda::es2panda::checker {
 class TSAnalyzer;
@@ -34,15 +35,10 @@ public:
     NO_COPY_SEMANTIC(TSMethodSignature);
     NO_MOVE_SEMANTIC(TSMethodSignature);
 
-    explicit TSMethodSignature(varbinder::Scope *scope, Expression *key, TSTypeParameterDeclaration *type_params,
-                               ArenaVector<Expression *> &&params, TypeNode *return_type_annotation, bool computed,
-                               bool optional)
+    explicit TSMethodSignature(Expression *key, ir::FunctionSignature &&signature, bool computed, bool optional)
         : AstNode(AstNodeType::TS_METHOD_SIGNATURE),
-          scope_(scope),
           key_(key),
-          type_params_(type_params),
-          params_(std::move(params)),
-          return_type_annotation_(return_type_annotation),
+          signature_(std::move(signature)),
           computed_(computed),
           optional_(optional)
     {
@@ -61,6 +57,11 @@ public:
         return scope_;
     }
 
+    void SetScope(varbinder::Scope *scope)
+    {
+        scope_ = scope;
+    }
+
     [[nodiscard]] const Expression *Key() const noexcept
     {
         return key_;
@@ -73,17 +74,27 @@ public:
 
     [[nodiscard]] const TSTypeParameterDeclaration *TypeParams() const noexcept
     {
-        return type_params_;
+        return signature_.TypeParams();
+    }
+
+    [[nodiscard]] TSTypeParameterDeclaration *TypeParams()
+    {
+        return signature_.TypeParams();
     }
 
     [[nodiscard]] const ArenaVector<Expression *> &Params() const noexcept
     {
-        return params_;
+        return signature_.Params();
     }
 
     [[nodiscard]] const TypeNode *ReturnTypeAnnotation() const noexcept
     {
-        return return_type_annotation_;
+        return signature_.ReturnType();
+    }
+
+    TypeNode *ReturnTypeAnnotation()
+    {
+        return signature_.ReturnType();
     }
 
     [[nodiscard]] bool Computed() const noexcept
@@ -105,12 +116,15 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
-    varbinder::Scope *scope_;
+    varbinder::Scope *scope_ {nullptr};
     Expression *key_;
-    TSTypeParameterDeclaration *type_params_;
-    ArenaVector<Expression *> params_;
-    TypeNode *return_type_annotation_;
+    ir::FunctionSignature signature_;
     bool computed_;
     bool optional_;
 };

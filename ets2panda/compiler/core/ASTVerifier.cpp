@@ -801,8 +801,9 @@ bool ASTVerifier::HandleImportExportIdentifier(const ir::Identifier *ident, cons
     return true;
 }
 
-ASTVerifier::ASTVerifier(ArenaAllocator *allocator, util::StringView source_code)
-    : allocator_ {allocator},
+ASTVerifier::ASTVerifier(ArenaAllocator *allocator, bool save_errors, util::StringView source_code)
+    : save_errors_(save_errors),
+      allocator_ {allocator},
       named_errors_ {allocator_->Adapter()},
       encountered_errors_ {allocator_->Adapter()},
       checks_ {allocator_->Adapter()},

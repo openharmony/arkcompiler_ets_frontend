@@ -42,6 +42,11 @@ public:
         return name_;
     }
 
+    Identifier *Name()
+    {
+        return name_;
+    }
+
     TypeNode *Constraint()
     {
         return constraint_;
@@ -64,6 +69,11 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
 
 private:
     Identifier *name_;

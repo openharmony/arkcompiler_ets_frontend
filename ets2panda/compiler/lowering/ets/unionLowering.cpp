@@ -56,10 +56,10 @@ ir::ClassDefinition *GetUnionFieldClass(checker::ETSChecker *checker, varbinder:
     ident->SetVariable(var);
 
     auto class_ctx = varbinder::LexicalScope<varbinder::ClassScope>(varbinder);
-    auto *class_def = checker->AllocNode<ir::ClassDefinition>(checker->Allocator(), class_ctx.GetScope(), ident,
-                                                              ir::ClassDefinitionModifiers::GLOBAL,
-                                                              ir::ModifierFlags::NONE, Language(Language::Id::ETS));
-
+    auto *class_def =
+        checker->AllocNode<ir::ClassDefinition>(checker->Allocator(), ident, ir::ClassDefinitionModifiers::GLOBAL,
+                                                ir::ModifierFlags::NONE, Language(Language::Id::ETS));
+    class_def->SetScope(class_ctx.GetScope());
     auto *class_decl = checker->AllocNode<ir::ClassDeclaration>(class_def, checker->Allocator());
     class_def->Scope()->BindNode(class_decl);
     class_def->SetTsType(checker->GlobalETSObjectType());
@@ -208,7 +208,7 @@ ir::VariableDeclaration *GenVariableDeclForBinaryExpr(checker::ETSChecker *check
     var_id->SetVariable(var);
     var_id->SetTsType(var->TsType());
 
-    auto declarator = checker->AllocNode<ir::VariableDeclarator>(var_id);
+    auto declarator = checker->AllocNode<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, var_id);
     ArenaVector<ir::VariableDeclarator *> declarators(checker->Allocator()->Adapter());
     declarators.push_back(declarator);
 
@@ -235,8 +235,8 @@ ir::BlockStatement *GenBlockStmtForAssignmentBinary(checker::ETSChecker *checker
     ArenaVector<ir::Statement *> stmts(checker->Allocator()->Adapter());
     auto *stmt = GenExpressionStmtWithAssignment(checker, var_decl_id, expr);
     stmts.push_back(stmt);
-    auto *const local_block_stmt =
-        checker->AllocNode<ir::BlockStatement>(checker->Allocator(), local_ctx.GetScope(), std::move(stmts));
+    auto *const local_block_stmt = checker->AllocNode<ir::BlockStatement>(checker->Allocator(), std::move(stmts));
+    local_block_stmt->SetScope(local_ctx.GetScope());
     stmt->SetParent(local_block_stmt);
     local_block_stmt->SetRange(stmt->Range());
     local_ctx.GetScope()->BindNode(local_block_stmt);

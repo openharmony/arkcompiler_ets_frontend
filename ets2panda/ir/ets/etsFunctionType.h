@@ -17,6 +17,7 @@
 #define ES2PANDA_IR_ETS_FUNCTION_TYPE_H
 
 #include "ir/typeNode.h"
+#include "ir/base/scriptFunctionSignature.h"
 
 namespace panda::es2panda::checker {
 class ETSAnalyzer;
@@ -27,20 +28,10 @@ class TSTypeParameterDeclaration;
 
 class ETSFunctionType : public TypeNode {
 public:
-    explicit ETSFunctionType(varbinder::Scope *scope, ArenaVector<Expression *> &&params,
-                             TSTypeParameterDeclaration *type_params, TypeNode *return_type,
-                             ir::ScriptFunctionFlags func_flags)
-        : TypeNode(AstNodeType::ETS_FUNCTION_TYPE),
-          scope_(scope),
-          params_(std::move(params)),
-          type_params_(type_params),
-          return_type_(return_type),
-          func_flags_(func_flags)
+    explicit ETSFunctionType(FunctionSignature &&signature, ir::ScriptFunctionFlags func_flags)
+        : TypeNode(AstNodeType::ETS_FUNCTION_TYPE), signature_(std::move(signature)), func_flags_(func_flags)
     {
     }
-
-    // NOTE (csabahurton): friend relationship can be removed once there are getters for private fields
-    friend class checker::ETSAnalyzer;
 
     bool IsScopeBearer() const override
     {
@@ -52,24 +43,29 @@ public:
         return scope_;
     }
 
+    void SetScope(varbinder::Scope *scope)
+    {
+        scope_ = scope;
+    }
+
     const TSTypeParameterDeclaration *TypeParams() const
     {
-        return type_params_;
+        return signature_.TypeParams();
     }
 
     const ArenaVector<Expression *> &Params() const
     {
-        return params_;
+        return signature_.Params();
     }
 
     const TypeNode *ReturnType() const
     {
-        return return_type_;
+        return signature_.ReturnType();
     }
 
     TypeNode *ReturnType()
     {
-        return return_type_;
+        return signature_.ReturnType();
     }
 
     ir::TSInterfaceDeclaration *FunctionalInterface()
@@ -107,13 +103,15 @@ public:
     checker::Type *Check(checker::ETSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
-    varbinder::Scope *scope_;
-    ArenaVector<Expression *> params_;
-    TSTypeParameterDeclaration *type_params_;
-    TypeNode *return_type_;
+    varbinder::Scope *scope_ {};
+    FunctionSignature signature_;
     ir::TSInterfaceDeclaration *functional_interface_ {};
-    checker::Type *ts_type_ {};
     ir::ScriptFunctionFlags func_flags_;
 };
 }  // namespace panda::es2panda::ir

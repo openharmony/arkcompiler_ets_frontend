@@ -24,10 +24,8 @@ namespace panda::es2panda::ir {
 
 class TSTypeParameterDeclaration : public Expression {
 public:
-    explicit TSTypeParameterDeclaration(varbinder::LocalScope *scope, ArenaVector<TSTypeParameter *> &&params,
-                                        size_t required_params)
+    explicit TSTypeParameterDeclaration(ArenaVector<TSTypeParameter *> &&params, size_t required_params)
         : Expression(AstNodeType::TS_TYPE_PARAMETER_DECLARATION),
-          scope_(scope),
           params_(std::move(params)),
           required_params_(required_params)
     {
@@ -41,6 +39,11 @@ public:
     varbinder::LocalScope *Scope() const override
     {
         return scope_;
+    }
+
+    void SetScope(varbinder::LocalScope *scope)
+    {
+        scope_ = scope;
     }
 
     const ArenaVector<TSTypeParameter *> &Params() const
@@ -69,9 +72,14 @@ public:
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
-    varbinder::LocalScope *scope_;
     ArenaVector<TSTypeParameter *> params_;
+    varbinder::LocalScope *scope_ {nullptr};
     size_t required_params_;
 };
 }  // namespace panda::es2panda::ir

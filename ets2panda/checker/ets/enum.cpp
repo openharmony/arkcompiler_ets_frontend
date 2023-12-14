@@ -146,12 +146,13 @@ template <typename ElementMaker>
     function_scope->BindParamScope(param_scope);
     param_scope->BindFunctionScope(function_scope);
 
-    auto *const body_block =
-        checker->Allocator()->New<ir::BlockStatement>(checker->Allocator(), function_scope, std::move(body));
+    auto *const body_block = checker->Allocator()->New<ir::BlockStatement>(checker->Allocator(), std::move(body));
+    body_block->SetScope(function_scope);
 
     auto *const function = checker->Allocator()->New<ir::ScriptFunction>(
-        function_scope, std::move(params), nullptr, body_block, return_type_annotation, ir::ScriptFunctionFlags::METHOD,
-        ir::ModifierFlags::PUBLIC, false, Language(Language::Id::ETS));
+        ir::FunctionSignature(nullptr, std::move(params), return_type_annotation), body_block,
+        ir::ScriptFunctionFlags::METHOD, ir::ModifierFlags::PUBLIC, false, Language(Language::Id::ETS));
+    function->SetScope(function_scope);
 
     varbinder->AsETSBinder()->BuildInternalName(function);
     varbinder->AsETSBinder()->AddCompilableFunction(function);
@@ -487,7 +488,8 @@ ETSEnumType::Method ETSChecker::CreateEnumValueOfMethod(ir::Identifier *const na
     auto *const for_loop_init_var_decl = [this, for_loop_i_ident]() {
         auto *const init = Allocator()->New<ir::NumberLiteral>("0");
         init->SetTsType(GlobalIntType());
-        auto *const decl = Allocator()->New<ir::VariableDeclarator>(for_loop_i_ident, init);
+        auto *const decl =
+            Allocator()->New<ir::VariableDeclarator>(ir::VariableDeclaratorFlag::LET, for_loop_i_ident, init);
         decl->SetTsType(GlobalIntType());
         ArenaVector<ir::VariableDeclarator *> decls(Allocator()->Adapter());
         decls.push_back(decl);
@@ -531,9 +533,10 @@ ETSEnumType::Method ETSChecker::CreateEnumValueOfMethod(ir::Identifier *const na
     varbinder::LexicalScope<varbinder::LoopScope> loop_scope(VarBinder());
     loop_scope.GetScope()->BindDecls(loop_decl_scope.GetScope());
 
-    auto *const for_loop = Allocator()->New<ir::ForUpdateStatement>(loop_scope.GetScope(), for_loop_init_var_decl,
-                                                                    for_loop_test, for_loop_update, if_stmt);
+    auto *const for_loop =
+        Allocator()->New<ir::ForUpdateStatement>(for_loop_init_var_decl, for_loop_test, for_loop_update, if_stmt);
     loop_scope.GetScope()->BindNode(for_loop);
+    for_loop->SetScope(loop_scope.GetScope());
     loop_scope.GetScope()->DeclScope()->BindNode(for_loop);
 
     auto *const throw_stmt = [this, input_name_ident, enum_type]() {

@@ -16,7 +16,6 @@
 #include "parserImpl.h"
 
 #include "varbinder/privateBinding.h"
-#include "varbinder/scope.h"
 #include "varbinder/tsBinding.h"
 #include "ir/astDump.h"
 #include "ir/astNode.h"
@@ -76,10 +75,6 @@ void ParserImpl::ParseScript(const SourceFile &source_file, bool gen_std_lib)
     if (source_file.is_module) {
         context_.Status() |= (ParserStatus::MODULE);
         ParseProgram(ScriptKind::MODULE);
-
-        if (!VarBinder()->TopScope()->AsModuleScope()->ExportAnalysis()) {
-            ThrowSyntaxError("Invalid exported binding");
-        }
     } else if (gen_std_lib) {
         ParseProgram(ScriptKind::STDLIB);
     } else {
@@ -92,11 +87,11 @@ void ParserImpl::ParseProgram(ScriptKind kind)
     lexer::SourcePosition start_loc = lexer_->GetToken().Start();
     lexer_->NextToken();
     program_->SetKind(kind);
+    program_->VarBinder()->InitTopScope();
 
     auto statements = ParseStatementList(StatementParsingFlags::STMT_GLOBAL_LEXICAL);
 
-    auto *block_stmt = AllocNode<ir::BlockStatement>(Allocator(), VarBinder()->GetScope(), std::move(statements));
-    VarBinder()->GetScope()->BindNode(block_stmt);
+    auto *block_stmt = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     block_stmt->SetRange({start_loc, lexer_->GetToken().End()});
 
     program_->SetAst(block_stmt);
@@ -569,23 +564,13 @@ ir::ClassElement *ParserImpl::ParseClassStaticBlock()
 
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
-    auto func_param_ctx = varbinder::LexicalScope<varbinder::FunctionParamScope>(VarBinder());
-    auto *func_param_scope = func_param_ctx.GetScope();
-    auto func_ctx = varbinder::LexicalScope<varbinder::FunctionScope>(VarBinder());
-    auto *func_scope = func_ctx.GetScope();
-
-    func_scope->BindParamScope(func_param_scope);
-    func_param_scope->BindFunctionScope(func_scope);
-
     ArenaVector<ir::Statement *> statements = ParseStatementList();
 
-    auto *body = AllocNode<ir::BlockStatement>(Allocator(), func_scope, std::move(statements));
+    auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
     auto *func =
-        AllocNode<ir::ScriptFunction>(func_scope, std::move(params), nullptr, body, nullptr,
+        AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
                                       ir::ScriptFunctionFlags::EXPRESSION | ir::ScriptFunctionFlags::STATIC_BLOCK,
                                       ir::ModifierFlags::STATIC, false, context_.GetLanguge());
-    func_scope->BindNode(func);
-    func_param_scope->BindNode(func);
 
     auto *func_expr = AllocNode<ir::FunctionExpression>(func);
     auto *static_block = AllocNode<ir::ClassStaticBlock>(func_expr, Allocator());
@@ -654,16 +639,10 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
     ArenaVector<ir::Statement *> statements(Allocator()->Adapter());
 
-    auto *param_scope =
-        VarBinder()->Allocator()->New<varbinder::FunctionParamScope>(Allocator(), VarBinder()->GetScope());
-    auto *scope = VarBinder()->Allocator()->New<varbinder::FunctionScope>(Allocator(), param_scope);
-
     if ((modifiers & ir::ClassDefinitionModifiers::HAS_SUPER) != 0U) {
         util::StringView args_str = "args";
         params.push_back(AllocNode<ir::SpreadElement>(ir::AstNodeType::REST_ELEMENT, Allocator(),
                                                       AllocNode<ir::Identifier>(args_str, Allocator())));
-        param_scope->AddParamDecl(Allocator(), params.back());
-
         ArenaVector<ir::Expression *> call_args(Allocator()->Adapter());
         auto *super_expr = AllocNode<ir::SuperExpression>();
         call_args.push_back(AllocNode<ir::SpreadElement>(ir::AstNodeType::SPREAD_ELEMENT, Allocator(),
@@ -673,16 +652,11 @@ ir::MethodDefinition *ParserImpl::BuildImplicitConstructor(ir::ClassDefinitionMo
         statements.push_back(AllocNode<ir::ExpressionStatement>(call_expr));
     }
 
-    auto *body = AllocNode<ir::BlockStatement>(Allocator(), scope, std::move(statements));
-    auto *func = AllocNode<ir::ScriptFunction>(scope, std::move(params), nullptr, body, nullptr,
+    auto *body = AllocNode<ir::BlockStatement>(Allocator(), std::move(statements));
+    auto *func = AllocNode<ir::ScriptFunction>(ir::FunctionSignature(nullptr, std::move(params), nullptr), body,
                                                ir::ScriptFunctionFlags::CONSTRUCTOR |
                                                    ir::ScriptFunctionFlags::IMPLICIT_SUPER_CALL_NEEDED,
                                                false, context_.GetLanguge());
-
-    scope->BindNode(func);
-    param_scope->BindNode(func);
-    scope->BindParamScope(param_scope);
-    param_scope->BindFunctionScope(scope);
 
     auto *func_expr = AllocNode<ir::FunctionExpression>(func);
     auto *key = AllocNode<ir::Identifier>("constructor", Allocator());
@@ -762,32 +736,18 @@ std::tuple<ir::Expression *, ir::TSTypeParameterInstantiation *> ParserImpl::Par
     return {ParseSuperClassReference(), nullptr};
 }
 
-varbinder::Decl *ParserImpl::BindClassName(ir::Identifier *ident_node)
-{
-    if (ident_node == nullptr) {
-        return nullptr;
-    }
-
-    return VarBinder()->AddDecl<varbinder::ConstDecl>(lexer_->GetToken().Start(), ident_node->Name());
-}
-
 // NOLINTNEXTLINE(google-default-arguments)
 ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
 {
-    lexer::SourcePosition start_loc = lexer_->GetToken().Start();
     lexer_->NextToken();
 
-    auto class_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     ir::Identifier *ident_node = ParseClassIdent(modifiers);
 
     if (ident_node == nullptr && (modifiers & ir::ClassDefinitionModifiers::DECLARATION) != 0U) {
         ThrowSyntaxError("Unexpected token, expected an identifier.");
     }
 
-    varbinder::Decl *ident_decl = BindClassName(ident_node);
-
     varbinder::PrivateBinding private_binding(Allocator(), class_id_++);
-    VarBinder()->AddDecl<varbinder::ConstDecl>(start_loc, private_binding.View());
 
     // Parse SuperClass
     auto [superClass, superTypeParams] = ParseSuperClass();
@@ -801,17 +761,11 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(ir::ClassDefinitionModifie
     auto [ctor, properties, bodyRange] = ParseClassBody(modifiers, flags);
 
     ArenaVector<ir::TSClassImplements *> implements(Allocator()->Adapter());
-    auto *class_scope = class_ctx.GetScope();
     auto *class_definition = AllocNode<ir::ClassDefinition>(
-        class_scope, private_binding.View(), ident_node, nullptr, superTypeParams, std::move(implements), ctor,
-        superClass, std::move(properties), modifiers, flags, GetContext().GetLanguge());
+        private_binding.View(), ident_node, nullptr, superTypeParams, std::move(implements), ctor, superClass,
+        std::move(properties), modifiers, flags, GetContext().GetLanguge());
 
     class_definition->SetRange(bodyRange);
-    class_scope->BindNode(class_definition);
-
-    if (ident_decl != nullptr) {
-        ident_decl->BindNode(class_definition);
-    }
 
     return class_definition;
 }
@@ -898,28 +852,26 @@ ir::Expression *ParserImpl::CreateParameterThis([[maybe_unused]] util::StringVie
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParserImpl::ParseFunctionBody(
     [[maybe_unused]] const ArenaVector<ir::Expression *> &params, [[maybe_unused]] ParserStatus new_status,
-    [[maybe_unused]] ParserStatus context_status, varbinder::FunctionScope *func_scope)
+    [[maybe_unused]] ParserStatus context_status)
 {
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         ThrowSyntaxError("Unexpected token, expected '{'");
     }
 
-    ir::BlockStatement *body = ParseBlockStatement(func_scope);
+    ir::BlockStatement *body = ParseBlockStatement();
 
     return {true, body, body->End(), false};
 }
 
 FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::Identifier *class_name)
 {
-    auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
-
     ir::TSTypeParameterDeclaration *type_param_decl = ParseFunctionTypeParameters();
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS) {
         ThrowSyntaxError("Unexpected token, expected '('");
     }
 
-    FunctionParameterContext func_param_context(&context_, VarBinder());
+    FunctionParameterContext func_param_context(&context_);
 
     ir::Expression *parameter_this = nullptr;
     if (class_name != nullptr) {
@@ -938,8 +890,8 @@ FunctionSignature ParserImpl::ParseFunctionSignature(ParserStatus status, ir::Id
     ir::TypeNode *return_type_annotation = ParseFunctionReturnType(status);
     ir::ScriptFunctionFlags throw_marker = ParseFunctionThrowMarker(true);
 
-    return {type_param_decl, std::move(params), return_type_annotation, func_param_context.LexicalScope().GetScope(),
-            throw_marker};
+    auto res = ir::FunctionSignature(type_param_decl, std::move(params), return_type_annotation);
+    return {std::move(res), throw_marker};
 }
 
 ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus new_status)
@@ -950,29 +902,17 @@ ir::ScriptFunction *ParserImpl::ParseFunction(ParserStatus new_status)
 
     lexer::SourcePosition start_loc = lexer_->GetToken().Start();
 
-    auto [typeParamDecl, params, returnTypeAnnotation, funcParamScope, throw_marker] =
-        ParseFunctionSignature(new_status);
+    auto [signature, throw_marker] = ParseFunctionSignature(new_status);
 
-    auto param_ctx = varbinder::LexicalScope<varbinder::FunctionParamScope>::Enter(VarBinder(), funcParamScope, false);
-    auto function_ctx = varbinder::LexicalScope<varbinder::FunctionScope>(VarBinder());
-    auto *function_scope = function_ctx.GetScope();
-    function_scope->BindParamScope(funcParamScope);
-    funcParamScope->BindFunctionScope(function_scope);
-
-    auto [letDeclare, body, endLoc, isOverload] =
-        ParseFunctionBody(params, new_status, context_.Status(), function_scope);
+    auto [letDeclare, body, endLoc, isOverload] = ParseFunctionBody(signature.Params(), new_status, context_.Status());
 
     if (isOverload) {
         function_context.AddFlag(ir::ScriptFunctionFlags::OVERLOAD);
     }
 
     function_context.AddFlag(throw_marker);
-
-    auto *func_node =
-        AllocNode<ir::ScriptFunction>(function_scope, std::move(params), typeParamDecl, body, returnTypeAnnotation,
-                                      function_context.Flags(), is_declare && letDeclare, context_.GetLanguge());
-    function_scope->BindNode(func_node);
-    funcParamScope->BindNode(func_node);
+    auto *func_node = AllocNode<ir::ScriptFunction>(std::move(signature), body, function_context.Flags(),
+                                                    is_declare && letDeclare, context_.GetLanguge());
     func_node->SetRange({start_loc, endLoc});
 
     return func_node;
@@ -1039,10 +979,7 @@ ir::Expression *ParserImpl::ParseFunctionParameter()
         CheckRestrictedBinding();
     }
 
-    ir::Expression *function_parameter = ParsePatternElement(ExpressionParseFlags::NO_OPTS, true);
-    VarBinder()->AddParamDecl(function_parameter);
-
-    return function_parameter;
+    return ParsePatternElement(ExpressionParseFlags::NO_OPTS, true);
 }
 
 void ParserImpl::ValidateLvalueAssignmentTarget(ir::Expression *node)
@@ -1229,58 +1166,4 @@ bool ParserImpl::CheckModuleAsModifier()
     return true;
 }
 
-void ExportDeclarationContext::BindExportDecl(ir::AstNode *export_decl)
-{
-    if (VarBinder() == nullptr) {
-        return;
-    }
-
-    varbinder::ModuleScope::ExportDeclList decl_list(Allocator()->Adapter());
-
-    if (export_decl->IsExportDefaultDeclaration()) {
-        auto *decl = export_decl->AsExportDefaultDeclaration();
-        auto *rhs = decl->Decl();
-
-        if (VarBinder()->GetScope()->Bindings().size() == SavedBindings().size()) {
-            if (rhs->IsFunctionDeclaration()) {
-                VarBinder()->AddDecl<varbinder::FunctionDecl>(rhs->Start(), VarBinder()->Allocator(),
-                                                              util::StringView(DEFAULT_EXPORT),
-                                                              rhs->AsFunctionDeclaration()->Function());
-            } else {
-                VarBinder()->AddDecl<varbinder::ConstDecl>(rhs->Start(), util::StringView(DEFAULT_EXPORT));
-            }
-        }
-    }
-
-    for (const auto &[name, variable] : VarBinder()->GetScope()->Bindings()) {
-        if (SavedBindings().find(name) != SavedBindings().end()) {
-            continue;
-        }
-
-        util::StringView export_name(export_decl->IsExportDefaultDeclaration() ? "default" : name);
-
-        variable->AddFlag(varbinder::VariableFlags::LOCAL_EXPORT);
-        auto *decl =
-            VarBinder()->AddDecl<varbinder::ExportDecl>(variable->Declaration()->Node()->Start(), export_name, name);
-        decl_list.push_back(decl);
-    }
-
-    auto *module_scope = VarBinder()->GetScope()->AsModuleScope();
-    module_scope->AddExportDecl(export_decl, std::move(decl_list));
-}
-
-void ImportDeclarationContext::BindImportDecl(ir::ImportDeclaration *import_decl)
-{
-    varbinder::ModuleScope::ImportDeclList decl_list(Allocator()->Adapter());
-
-    for (const auto &[name, variable] : VarBinder()->GetScope()->Bindings()) {
-        if (SavedBindings().find(name) != SavedBindings().end()) {
-            continue;
-        }
-
-        decl_list.push_back(variable->Declaration()->AsImportDecl());
-    }
-
-    VarBinder()->GetScope()->AsModuleScope()->AddImportDecl(import_decl, std::move(decl_list));
-}
 }  // namespace panda::es2panda::parser

@@ -45,6 +45,11 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     bool const boolean_;
 };

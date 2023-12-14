@@ -44,6 +44,11 @@ public:
     checker::Type *Check(checker::ETSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     ir::ETSTypeReference *type_reference_ {};
 };

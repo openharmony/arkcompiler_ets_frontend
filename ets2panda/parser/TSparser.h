@@ -120,8 +120,7 @@ private:
     std::tuple<bool, bool, bool> ParseComputedClassFieldOrIndexSignature(ir::Expression **prop_name) override;
     ir::TypeNode *ParseFunctionReturnType(ParserStatus status) override;
     std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
-        const ArenaVector<ir::Expression *> &params, ParserStatus new_status, ParserStatus context_status,
-        varbinder::FunctionScope *func_scope) override;
+        const ArenaVector<ir::Expression *> &params, ParserStatus new_status, ParserStatus context_status) override;
     ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers) override;
     ir::Statement *ParseExportDeclaration(StatementParsingFlags flags) override;
     ir::Expression *ParseCoverParenthesizedExpressionAndArrowParameterList() override;
@@ -135,8 +134,6 @@ private:
     void ThrowIfBodyEmptyError(ir::Statement *consequent) override;
     void ThrowMultipleDefaultError() override;
     void ThrowIllegalNewLineErrorAfterThrow() override;
-    void CreateFunctionDeclaration(ir::Identifier *ident_node, util::StringView &name, ir::ScriptFunction *func,
-                                   const lexer::SourcePosition &start_loc) override;
     // NOLINTNEXTLINE(google-default-arguments)
     ir::ExportDefaultDeclaration *ParseExportDefaultDeclaration(const lexer::SourcePosition &start_loc,
                                                                 bool is_export_equals = false) override;

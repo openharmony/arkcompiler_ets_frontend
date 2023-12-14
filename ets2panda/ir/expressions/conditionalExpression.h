@@ -81,6 +81,11 @@ public:
     checker::Type *NumericConditionalCheck(checker::ETSChecker *checker, checker::Type *consequent_type,
                                            checker::Type *alternate_type);
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     Expression *test_;
     Expression *consequent_;

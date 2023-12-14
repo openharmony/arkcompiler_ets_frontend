@@ -27,8 +27,8 @@ class Expression;
 
 class ForInStatement : public LoopStatement {
 public:
-    explicit ForInStatement(varbinder::LoopScope *scope, AstNode *left, Expression *right, Statement *body)
-        : LoopStatement(AstNodeType::FOR_IN_STATEMENT, scope), left_(left), right_(right), body_(body)
+    explicit ForInStatement(AstNode *left, Expression *right, Statement *body)
+        : LoopStatement(AstNodeType::FOR_IN_STATEMENT), left_(left), right_(right), body_(body)
     {
     }
 
@@ -76,6 +76,11 @@ public:
     void Compile(compiler::ETSGen *etsg) const override;
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
+
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
 
 private:
     AstNode *left_;

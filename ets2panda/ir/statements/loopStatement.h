@@ -32,6 +32,11 @@ public:
         return scope_;
     }
 
+    void SetScope(varbinder::LoopScope *scope)
+    {
+        scope_ = scope;
+    }
+
     void TransformChildren([[maybe_unused]] const NodeTransformer &cb) override
     {
         UNREACHABLE();
@@ -64,10 +69,10 @@ public:
     }
 
 protected:
-    explicit LoopStatement(AstNodeType type, varbinder::LoopScope *scope) : Statement(type), scope_(scope) {}
+    explicit LoopStatement(AstNodeType type) : Statement(type) {}
 
 private:
-    varbinder::LoopScope *scope_;
+    varbinder::LoopScope *scope_ {nullptr};
 };
 }  // namespace panda::es2panda::ir
 

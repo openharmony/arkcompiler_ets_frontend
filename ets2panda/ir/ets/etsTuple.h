@@ -77,6 +77,11 @@ public:
     checker::Type *CalculateLUBForTuple(checker::ETSChecker *checker, ArenaVector<checker::Type *> &type_list,
                                         checker::Type *spread_type);
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     ArenaVector<TypeNode *> type_annotation_list_;
     TypeNode *spread_type_ {};

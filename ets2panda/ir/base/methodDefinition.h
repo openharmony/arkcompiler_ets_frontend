@@ -37,6 +37,8 @@ public:
     NO_COPY_SEMANTIC(MethodDefinition);
     NO_MOVE_SEMANTIC(MethodDefinition);
 
+    using OverloadsT = ArenaVector<MethodDefinition *>;
+
     explicit MethodDefinition(MethodDefinitionKind const kind, Expression *const key, Expression *const value,
                               ModifierFlags const modifiers, ArenaAllocator *const allocator, bool const is_computed)
         : ClassElement(AstNodeType::METHOD_DEFINITION, key, value, modifiers, allocator, is_computed),
@@ -73,14 +75,19 @@ public:
         return value_;
     }
 
-    [[nodiscard]] const ArenaVector<MethodDefinition *> &Overloads() const noexcept
+    [[nodiscard]] const OverloadsT &Overloads() const noexcept
     {
         return overloads_;
     }
 
-    void SetOverloads(ArenaVector<MethodDefinition *> &&overloads)
+    void SetOverloads(OverloadsT &&overloads)
     {
         overloads_ = std::move(overloads);
+    }
+
+    void ClearOverloads()
+    {
+        overloads_.clear();
     }
 
     void AddOverload(MethodDefinition *const overload)
@@ -109,9 +116,14 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     MethodDefinitionKind kind_;
-    ArenaVector<MethodDefinition *> overloads_;
+    OverloadsT overloads_;
 };
 }  // namespace panda::es2panda::ir
 

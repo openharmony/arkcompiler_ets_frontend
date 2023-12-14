@@ -96,6 +96,11 @@ public:
     ir::TypeNode *CreateTypeAnnotation(checker::ETSChecker *checker);
     ir::TypeNode *CreateReturnNodeFromType(checker::ETSChecker *checker, checker::Type *return_type);
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     ScriptFunction *func_;
     ArenaVector<varbinder::Variable *> captured_vars_;

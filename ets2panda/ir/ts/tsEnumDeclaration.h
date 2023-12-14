@@ -30,10 +30,9 @@ class TSEnumMember;
 
 class TSEnumDeclaration : public TypedStatement {
 public:
-    explicit TSEnumDeclaration(ArenaAllocator *allocator, varbinder::LocalScope *scope, Identifier *key,
-                               ArenaVector<AstNode *> &&members, bool is_const, bool is_static = false)
+    explicit TSEnumDeclaration(ArenaAllocator *allocator, Identifier *key, ArenaVector<AstNode *> &&members,
+                               bool is_const, bool is_static = false)
         : TypedStatement(AstNodeType::TS_ENUM_DECLARATION),
-          scope_(scope),
           decorators_(allocator->Adapter()),
           key_(key),
           members_(std::move(members)),
@@ -52,6 +51,11 @@ public:
     varbinder::LocalScope *Scope() const override
     {
         return scope_;
+    }
+
+    void SetScope(varbinder::LocalScope *scope)
+    {
+        scope_ = scope;
     }
 
     const Identifier *Key() const
@@ -114,8 +118,13 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
-    varbinder::LocalScope *scope_;
+    varbinder::LocalScope *scope_ {nullptr};
     ArenaVector<ir::Decorator *> decorators_;
     Identifier *key_;
     ArenaVector<AstNode *> members_;

@@ -61,6 +61,11 @@ public:
     checker::Type *GetType([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     TSTypeParameter *type_parameter_;
     TypeNode *type_annotation_;

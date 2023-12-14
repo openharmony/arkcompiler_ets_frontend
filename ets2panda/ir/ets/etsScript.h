@@ -26,9 +26,8 @@ namespace panda::es2panda::ir {
 
 class ETSScript : public BlockStatement {
 public:
-    explicit ETSScript(ArenaAllocator *allocator, varbinder::Scope *scope, ArenaVector<Statement *> &&statement_list,
-                       parser::Program *program)
-        : BlockStatement(allocator, scope, std::move(statement_list)), program_(program)
+    explicit ETSScript(ArenaAllocator *allocator, ArenaVector<Statement *> &&statement_list, parser::Program *program)
+        : BlockStatement(allocator, std::move(statement_list)), program_(program)
     {
     }
 

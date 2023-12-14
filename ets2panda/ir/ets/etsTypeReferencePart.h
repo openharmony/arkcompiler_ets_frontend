@@ -64,6 +64,11 @@ public:
     checker::Type *Check(checker::ETSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     ir::Expression *name_;
     ir::TSTypeParameterInstantiation *type_params_ {};

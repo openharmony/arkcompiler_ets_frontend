@@ -19,6 +19,7 @@
 #include "varbinder/varbinder.h"
 #include "es2panda.h"
 #include "ir/astNode.h"
+#include "ir/base/scriptFunctionSignature.h"
 #include "lexer/token/sourceLocation.h"
 #include "lexer/token/tokenType.h"
 #include "macros.h"
@@ -97,14 +98,14 @@ enum class ModifierFlags : uint32_t;
 enum class Primitives;
 enum class ClassDefinitionModifiers : uint32_t;
 enum class CatchClauseType;
+enum class VariableDeclaratorFlag;
 }  // namespace panda::es2panda::ir
 
 namespace panda::es2panda::parser {
 
 class ETSParser;
 
-using FunctionSignature = std::tuple<ir::TSTypeParameterDeclaration *, ArenaVector<ir::Expression *>, ir::TypeNode *,
-                                     varbinder::FunctionParamScope *, panda::es2panda::ir::ScriptFunctionFlags>;
+using FunctionSignature = std::tuple<ir::FunctionSignature, panda::es2panda::ir::ScriptFunctionFlags>;
 
 class ClassElementDescriptor {
 public:
@@ -134,15 +135,13 @@ public:
 
 class ArrowFunctionDescriptor {
 public:
-    explicit ArrowFunctionDescriptor(ArenaVector<ir::Expression *> &&p, varbinder::FunctionParamScope *ps,
-                                     lexer::SourcePosition sl, ParserStatus ns)
-        : params(p), param_scope(ps), start_loc(sl), new_status(ns)
+    explicit ArrowFunctionDescriptor(ArenaVector<ir::Expression *> &&p, lexer::SourcePosition sl, ParserStatus ns)
+        : params(p), start_loc(sl), new_status(ns)
     {
     }
 
     // NOLINTBEGIN(misc-non-private-member-variables-in-classes)
     ArenaVector<ir::Expression *> params;
-    varbinder::FunctionParamScope *param_scope;
     lexer::SourcePosition start_loc;
     ParserStatus new_status;
     // NOLINTEND(misc-non-private-member-variables-in-classes)
@@ -208,6 +207,8 @@ protected:
     void ThrowIfPrivateIdent(ClassElementDescriptor *desc, const char *msg);
     void ValidateClassKey(ClassElementDescriptor *desc);
     void ValidatePrivateIdentifier();
+
+    static ir::VariableDeclaratorFlag GetFlag(VariableParsingFlags flags);
     ir::MethodDefinition *CheckClassMethodOverload(ir::Statement *property, ir::MethodDefinition **ctor,
                                                    lexer::SourcePosition error_info,
                                                    ir::MethodDefinition *last_overload, bool impl_exists,
@@ -303,11 +304,6 @@ protected:
         return program_->Allocator();
     }
 
-    varbinder::VarBinder *VarBinder()
-    {
-        return program_->VarBinder();
-    }
-
     bool CheckModuleAsModifier();
 
     ir::Identifier *ExpectIdentifier(bool is_reference = false);
@@ -319,7 +315,6 @@ protected:
     ir::YieldExpression *ParseYieldExpression();
     virtual ir::Expression *ParsePotentialExpressionSequence(ir::Expression *expr, ExpressionParseFlags flags);
     ir::ArrowFunctionExpression *ParseArrowFunctionExpressionBody(ArrowFunctionContext *arrow_function_context,
-                                                                  varbinder::FunctionScope *function_scope,
                                                                   ArrowFunctionDescriptor *desc,
                                                                   ir::TSTypeParameterDeclaration *type_param_decl,
                                                                   ir::TypeNode *return_type_annotation);
@@ -357,7 +352,6 @@ protected:
     virtual ir::Statement *ParseAssertStatement();
     virtual void ValidateLabeledStatement(lexer::TokenType type);
     ir::BlockStatement *ParseBlockStatement();
-    ir::BlockStatement *ParseBlockStatement(varbinder::Scope *scope);
     ir::EmptyStatement *ParseEmptyStatement();
     ir::Statement *ParseForStatement();
     ir::IfStatement *ParseIfStatement();
@@ -419,8 +413,6 @@ protected:
     FunctionSignature ParseFunctionSignature(ParserStatus status, ir::Identifier *class_name = nullptr);
 
     [[nodiscard]] virtual std::unique_ptr<lexer::Lexer> InitLexer(const SourceFile &source_file);
-    virtual void AddVariableDeclarationBindings(ir::Expression *init, lexer::SourcePosition start_loc,
-                                                VariableParsingFlags flags);
     // NOLINTNEXTLINE(google-default-arguments)
     virtual ir::Statement *ParseStatement(StatementParsingFlags flags = StatementParsingFlags::NONE);
     // NOLINTNEXTLINE(google-default-arguments)
@@ -480,8 +472,6 @@ protected:
                                                             VariableParsingFlags flags);
     virtual ir::VariableDeclarator *ParseVariableDeclaratorInitializer(ir::Expression *init, VariableParsingFlags flags,
                                                                        const lexer::SourcePosition &start_loc);
-    virtual void CreateFunctionDeclaration(ir::Identifier *ident_node, util::StringView &name, ir::ScriptFunction *func,
-                                           const lexer::SourcePosition &start_loc);
     virtual bool IsModifierKind(const lexer::Token &token);
     virtual void ConsumeClassPrivateIdentifier(ClassElementDescriptor *desc, char32_t *next_cp);
     virtual void ThrowPossibleOutOfBoundaryJumpError(bool allow_break);
@@ -504,8 +494,7 @@ protected:
                                                        bool ignore_call_expression, bool *is_chain_expression);
     virtual ir::ClassElement *ParseClassStaticBlock();
     virtual ParserStatus ValidateArrowParameter(ir::Expression *expr, bool *seen_optional);
-    virtual ArrowFunctionDescriptor ConvertToArrowParameter(ir::Expression *expr, bool is_async,
-                                                            varbinder::FunctionParamScope *param_scope);
+    virtual ArrowFunctionDescriptor ConvertToArrowParameter(ir::Expression *expr, bool is_async);
     virtual ir::Expression *ParseNewExpression();
 
     virtual ir::TSTypeParameterDeclaration *ParseFunctionTypeParameters()
@@ -532,8 +521,7 @@ protected:
     }
 
     virtual std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ParseFunctionBody(
-        const ArenaVector<ir::Expression *> &params, ParserStatus new_status, ParserStatus context_status,
-        varbinder::FunctionScope *func_scope);
+        const ArenaVector<ir::Expression *> &params, ParserStatus new_status, ParserStatus context_status);
     virtual ir::AstNode *ParseImportDefaultSpecifier(ArenaVector<ir::AstNode *> *specifiers);
     virtual ir::Statement *ParseExportDeclaration(StatementParsingFlags flags);
 
@@ -569,8 +557,6 @@ protected:
     using ClassBody = std::tuple<ir::MethodDefinition *, ArenaVector<ir::AstNode *>, lexer::SourceRange>;
     ClassBody ParseClassBody(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags = ir::ModifierFlags::NONE,
                              ir::Identifier *ident_node = nullptr);
-
-    virtual varbinder::Decl *BindClassName(ir::Identifier *ident_node);
 
     Program *GetProgram() const
     {
@@ -619,9 +605,6 @@ private:
     uint32_t class_id_ {};
     lexer::Lexer *lexer_ {};
     const CompilerOptions &options_;
-
-    ir::ClassDefinition *GetAndBindClassDefinition(ir::ClassDefinitionModifiers modifiers,
-                                                   ir::ModifierFlags flags = ir::ModifierFlags::NONE);
 };
 
 template <ParserStatus STATUS>
@@ -658,45 +641,22 @@ public:
     ~SwitchContext() = default;
 };
 
-template <typename T>
 class IterationContext : public SavedStatusContext<ParserStatus::IN_ITERATION> {
 public:
-    explicit IterationContext(ParserContext *ctx, varbinder::VarBinder *varbinder)
-        : SavedStatusContext(ctx), lexical_scope_(varbinder)
-    {
-    }
+    explicit IterationContext(ParserContext *ctx) : SavedStatusContext(ctx) {}
 
     NO_COPY_SEMANTIC(IterationContext);
     NO_MOVE_SEMANTIC(IterationContext);
     ~IterationContext() = default;
-
-    const auto &LexicalScope() const
-    {
-        return lexical_scope_;
-    }
-
-private:
-    varbinder::LexicalScope<T> lexical_scope_;
 };
 
 class FunctionParameterContext : public SavedStatusContext<ParserStatus::FUNCTION_PARAM> {
 public:
-    explicit FunctionParameterContext(ParserContext *ctx, varbinder::VarBinder *varbinder)
-        : SavedStatusContext(ctx), lexical_scope_(varbinder)
-    {
-    }
-
-    const auto &LexicalScope() const
-    {
-        return lexical_scope_;
-    }
+    explicit FunctionParameterContext(ParserContext *ctx) : SavedStatusContext(ctx) {}
 
     NO_COPY_SEMANTIC(FunctionParameterContext);
     NO_MOVE_SEMANTIC(FunctionParameterContext);
     ~FunctionParameterContext() = default;
-
-private:
-    varbinder::LexicalScope<varbinder::FunctionParamScope> lexical_scope_;
 };
 
 class SavedParserContext {
@@ -713,12 +673,6 @@ public:
     ~SavedParserContext()
     {
         parser_->context_ = prev_;
-    }
-
-protected:
-    varbinder::VarBinder *VarBinder()
-    {
-        return parser_->VarBinder();
     }
 
 private:
@@ -804,64 +758,5 @@ private:
                static_cast<ParserStatus>(current_status & (ParserStatus::ALLOW_SUPER | ParserStatus::ALLOW_SUPER_CALL));
     }
 };
-
-class SavedBindingsContext {
-public:
-    explicit SavedBindingsContext(varbinder::VarBinder *varbinder)
-        : varbinder_(varbinder), saved_bindings_(varbinder_->GetScope()->Bindings())
-    {
-    }
-    NO_COPY_SEMANTIC(SavedBindingsContext);
-    NO_MOVE_SEMANTIC(SavedBindingsContext);
-    ~SavedBindingsContext() = default;
-
-protected:
-    ArenaAllocator *Allocator() const
-    {
-        return varbinder_->Allocator();
-    }
-
-    varbinder::VarBinder *VarBinder() const
-    {
-        return varbinder_;
-    }
-
-    const varbinder::Scope::VariableMap &SavedBindings() const
-    {
-        return saved_bindings_;
-    }
-
-private:
-    varbinder::VarBinder *varbinder_;
-    varbinder::Scope::VariableMap saved_bindings_;
-};
-
-class ExportDeclarationContext : public SavedBindingsContext {
-public:
-    explicit ExportDeclarationContext(varbinder::VarBinder *varbinder) : SavedBindingsContext(varbinder) {}
-    NO_COPY_SEMANTIC(ExportDeclarationContext);
-    NO_MOVE_SEMANTIC(ExportDeclarationContext);
-    ~ExportDeclarationContext() = default;
-
-    void BindExportDecl(ir::AstNode *export_decl);
-
-protected:
-    static constexpr std::string_view DEFAULT_EXPORT = "*default*";
-};
-
-class ImportDeclarationContext : public SavedBindingsContext {
-public:
-    explicit ImportDeclarationContext(varbinder::VarBinder *varbinder) : SavedBindingsContext(varbinder) {}
-
-    NO_COPY_SEMANTIC(ImportDeclarationContext);
-    NO_MOVE_SEMANTIC(ImportDeclarationContext);
-
-    ~ImportDeclarationContext() = default;
-
-    void BindImportDecl(ir::ImportDeclaration *import_decl);
-
-private:
-};
 }  // namespace panda::es2panda::parser
-
 #endif

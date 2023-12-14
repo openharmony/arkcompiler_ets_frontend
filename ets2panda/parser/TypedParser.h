@@ -137,13 +137,8 @@ protected:
     ir::VariableDeclarator *ParseVariableDeclarator(ir::Expression *init, lexer::SourcePosition start_loc,
                                                     VariableParsingFlags flags) override;
 
-    virtual util::StringView FormInterfaceOrEnumDeclarationIdBinding(ir::Identifier *id);
-
     using InterfaceId = std::tuple<ir::Identifier *, varbinder::InterfaceDecl *, bool>;
     InterfaceId ParseInterfaceDeclarationId();
-
-    void BindInterfaceDeclarationId(varbinder::InterfaceDecl *decl, bool already_exists,
-                                    ir::TSInterfaceDeclaration *interface_decl);
 
     virtual bool AllowInterfaceRedeclaration()
     {
@@ -151,8 +146,7 @@ protected:
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
-    virtual void CreateCCtor([[maybe_unused]] varbinder::LocalScope *class_scope,
-                             [[maybe_unused]] ArenaVector<ir::AstNode *> &properties,
+    virtual void CreateCCtor([[maybe_unused]] ArenaVector<ir::AstNode *> &properties,
                              [[maybe_unused]] const lexer::SourcePosition &loc,
                              [[maybe_unused]] bool in_global_class = false)
     {

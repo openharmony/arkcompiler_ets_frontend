@@ -23,14 +23,22 @@ class ScriptFunction;
 
 class FunctionDeclaration : public Statement {
 public:
-    explicit FunctionDeclaration(ArenaAllocator *allocator, ScriptFunction *func)
-        : Statement(AstNodeType::FUNCTION_DECLARATION), decorators_(allocator->Adapter()), func_(func)
+    explicit FunctionDeclaration(ArenaAllocator *allocator, ScriptFunction *func, bool is_anonymous = false)
+        : Statement(AstNodeType::FUNCTION_DECLARATION),
+          decorators_(allocator->Adapter()),
+          func_(func),
+          is_anonymous_(is_anonymous)
     {
     }
 
     ScriptFunction *Function()
     {
         return func_;
+    }
+
+    bool IsAnonymous() const
+    {
+        return is_anonymous_;
     }
 
     const ScriptFunction *Function() const
@@ -56,9 +64,15 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     ArenaVector<Decorator *> decorators_;
     ScriptFunction *func_;
+    const bool is_anonymous_;
 };
 }  // namespace panda::es2panda::ir
 

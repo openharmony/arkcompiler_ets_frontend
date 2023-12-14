@@ -17,6 +17,8 @@
 #define ES2PANDA_IR_TS_FUNCTION_TYPE_H
 
 #include "ir/typeNode.h"
+#include "ir/base/scriptFunctionSignature.h"
+
 namespace panda::es2panda::checker {
 class TSAnalyzer;
 }  // namespace panda::es2panda::checker
@@ -25,13 +27,8 @@ class TSTypeParameterDeclaration;
 
 class TSFunctionType : public TypeNode {
 public:
-    explicit TSFunctionType(varbinder::Scope *scope, ArenaVector<Expression *> &&params,
-                            TSTypeParameterDeclaration *type_params, TypeNode *return_type)
-        : TypeNode(AstNodeType::TS_FUNCTION_TYPE),
-          scope_(scope),
-          params_(std::move(params)),
-          type_params_(type_params),
-          return_type_(return_type)
+    explicit TSFunctionType(FunctionSignature &&signature)
+        : TypeNode(AstNodeType::TS_FUNCTION_TYPE), signature_(std::move(signature))
     {
     }
     // NOTE (vivienvoros): these friend relationships can be removed once there are getters for private fields
@@ -47,19 +44,33 @@ public:
         return scope_;
     }
 
+    void SetScope(varbinder::Scope *scope)
+    {
+        scope_ = scope;
+    }
+
     const TSTypeParameterDeclaration *TypeParams() const
     {
-        return type_params_;
+        return signature_.TypeParams();
+    }
+
+    TSTypeParameterDeclaration *TypeParams()
+    {
+        return signature_.TypeParams();
     }
 
     const ArenaVector<Expression *> &Params() const
     {
-        return params_;
+        return signature_.Params();
     }
 
     const TypeNode *ReturnType() const
     {
-        return return_type_;
+        return signature_.ReturnType();
+    }
+    TypeNode *ReturnType()
+    {
+        return signature_.ReturnType();
     }
 
     void SetNullable(bool nullable)
@@ -77,11 +88,14 @@ public:
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
     checker::Type *GetType([[maybe_unused]] checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
-    varbinder::Scope *scope_;
-    ArenaVector<Expression *> params_;
-    TSTypeParameterDeclaration *type_params_;
-    TypeNode *return_type_;
+    varbinder::Scope *scope_ {nullptr};
+    FunctionSignature signature_;
     bool nullable_ {};
 };
 }  // namespace panda::es2panda::ir

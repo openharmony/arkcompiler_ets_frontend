@@ -33,6 +33,11 @@ public:
     {
     }
 
+    FunctionExpression(ir::Identifier *named_expr, ScriptFunction *const func)
+        : Expression(AstNodeType::FUNCTION_EXPRESSION), func_(func), expr_name_(named_expr)
+    {
+    }
+
     [[nodiscard]] const ScriptFunction *Function() const noexcept
     {
         return func_;
@@ -41,6 +46,16 @@ public:
     [[nodiscard]] ScriptFunction *Function() noexcept
     {
         return func_;
+    }
+
+    bool IsAnonymous() const
+    {
+        return expr_name_ == nullptr;
+    }
+
+    ir::Identifier *Id()
+    {
+        return expr_name_;
     }
 
     // NOLINTNEXTLINE(google-default-arguments)
@@ -55,8 +70,14 @@ public:
     checker::Type *Check(checker::TSChecker *checker) override;
     checker::Type *Check(checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     ScriptFunction *func_;
+    ir::Identifier *expr_name_ {};
 };
 }  // namespace panda::es2panda::ir
 

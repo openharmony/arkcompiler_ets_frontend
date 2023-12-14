@@ -103,7 +103,7 @@ static void SetupPublicContext(public_lib::Context *context, const SourceFile *s
 }
 
 using EmitCb = std::function<pandasm::Program *(compiler::CompilerContext *)>;
-using PhaseListGetter = std::function<std::vector<compiler::Phase *>()>;
+using PhaseListGetter = std::function<std::vector<compiler::Phase *>(ScriptExtension)>;
 
 template <typename Parser, typename VarBinder, typename Checker, typename Analyzer, typename AstCompiler,
           typename CodeGen, typename RegSpiller, typename FunctionEmitter, typename Emitter>
@@ -138,7 +138,7 @@ static pandasm::Program *CreateCompiler(const CompilationUnit &unit, const Phase
         reinterpret_cast<varbinder::ETSBinder *>(varbinder)->FillResolvedImportPathes(parser.ResolvedParsedSourcesMap(),
                                                                                       &allocator);
     }
-    for (auto *phase : get_phases()) {
+    for (auto *phase : get_phases(unit.ext)) {
         if (!phase->Apply(&public_context, &program)) {
             return nullptr;
         }
@@ -155,26 +155,23 @@ pandasm::Program *CompilerImpl::Compile(const CompilationUnit &unit)
         case ScriptExtension::TS: {
             return CreateCompiler<parser::TSParser, varbinder::TSBinder, checker::TSChecker, checker::TSAnalyzer,
                                   compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
-                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetTrivialPhaseList,
-                                                                                    this);
+                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetPhaseList, this);
         }
         case ScriptExtension::AS: {
             return CreateCompiler<parser::ASParser, varbinder::ASBinder, checker::ASChecker, checker::TSAnalyzer,
                                   compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
-                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetTrivialPhaseList,
-                                                                                    this);
+                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetPhaseList, this);
         }
         case ScriptExtension::ETS: {
             return CreateCompiler<parser::ETSParser, varbinder::ETSBinder, checker::ETSChecker, checker::ETSAnalyzer,
                                   compiler::ETSCompiler, compiler::ETSGen, compiler::StaticRegSpiller,
-                                  compiler::ETSFunctionEmitter, compiler::ETSEmitter>(unit, compiler::GetETSPhaseList,
+                                  compiler::ETSFunctionEmitter, compiler::ETSEmitter>(unit, compiler::GetPhaseList,
                                                                                       this);
         }
         case ScriptExtension::JS: {
             return CreateCompiler<parser::JSParser, varbinder::JSBinder, checker::JSChecker, checker::TSAnalyzer,
                                   compiler::JSCompiler, compiler::PandaGen, compiler::DynamicRegSpiller,
-                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetTrivialPhaseList,
-                                                                                    this);
+                                  compiler::JSFunctionEmitter, compiler::JSEmitter>(unit, compiler::GetPhaseList, this);
         }
         default: {
             UNREACHABLE();

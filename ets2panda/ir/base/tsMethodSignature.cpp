@@ -24,35 +24,13 @@ namespace panda::es2panda::ir {
 void TSMethodSignature::TransformChildren(const NodeTransformer &cb)
 {
     key_ = cb(key_)->AsExpression();
-
-    if (type_params_ != nullptr) {
-        type_params_ = cb(type_params_)->AsTSTypeParameterDeclaration();
-    }
-
-    for (auto *&it : params_) {
-        it = cb(it)->AsExpression();
-    }
-
-    if (return_type_annotation_ != nullptr) {
-        return_type_annotation_ = static_cast<TypeNode *>(cb(return_type_annotation_));
-    }
+    signature_.TransformChildren(cb);
 }
 
 void TSMethodSignature::Iterate(const NodeTraverser &cb) const
 {
     cb(key_);
-
-    if (type_params_ != nullptr) {
-        cb(type_params_);
-    }
-
-    for (auto *it : params_) {
-        cb(it);
-    }
-
-    if (return_type_annotation_ != nullptr) {
-        cb(return_type_annotation_);
-    }
+    signature_.Iterate(cb);
 }
 
 void TSMethodSignature::Dump(ir::AstDumper *dumper) const
@@ -61,9 +39,9 @@ void TSMethodSignature::Dump(ir::AstDumper *dumper) const
                  {"computed", computed_},
                  {"optional", optional_},
                  {"key", key_},
-                 {"params", params_},
-                 {"typeParameters", AstDumper::Optional(type_params_)},
-                 {"typeAnnotation", AstDumper::Optional(return_type_annotation_)}});
+                 {"params", Params()},
+                 {"typeParameters", AstDumper::Optional(TypeParams())},
+                 {"typeAnnotation", AstDumper::Optional(ReturnTypeAnnotation())}});
 }
 
 void TSMethodSignature::Compile(compiler::PandaGen *pg) const

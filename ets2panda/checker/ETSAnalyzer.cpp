@@ -928,9 +928,10 @@ static checker::Type *InitAnonymousLambdaCallee(checker::ETSChecker *checker, ir
 {
     auto *const arrow_func = callee->AsArrowFunctionExpression()->Function();
     auto orig_params = arrow_func->Params();
-    auto *func_type = checker->Allocator()->New<ir::ETSFunctionType>(
-        arrow_func->Scope()->AsFunctionScope()->ParamScope(), std::move(orig_params), nullptr,
-        arrow_func->ReturnTypeAnnotation(), ir::ScriptFunctionFlags::NONE);
+    auto signature = ir::FunctionSignature(nullptr, std::move(orig_params), arrow_func->ReturnTypeAnnotation());
+    auto *func_type =
+        checker->Allocator()->New<ir::ETSFunctionType>(std::move(signature), ir::ScriptFunctionFlags::NONE);
+    func_type->SetScope(arrow_func->Scope()->AsFunctionScope()->ParamScope());
     auto *const func_iface = func_type->Check(checker);
     checker->Relation()->SetNode(callee);
     checker->Relation()->IsAssignableTo(callee_type, func_iface);

@@ -202,8 +202,6 @@ ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction()
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN);
     lexer::SourcePosition start_loc = Lexer()->GetToken().Start();
 
-    auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
-
     auto type_param_decl_options = TypeAnnotationParsingOptions::NO_OPTS;
     ir::TSTypeParameterDeclaration *type_param_decl = ParseTypeParameterDeclaration(&type_param_decl_options);
 
@@ -211,7 +209,7 @@ ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction()
         return nullptr;
     }
 
-    FunctionParameterContext func_param_context(&GetContext(), VarBinder());
+    FunctionParameterContext func_param_context(&GetContext());
     auto params = ParseFunctionParams();
 
     ParserStatus arrow_status = ParserStatus::NO_OPTS;
@@ -231,12 +229,9 @@ ir::ArrowFunctionExpression *TypedParser::ParseGenericArrowFunction()
         return nullptr;
     }
 
-    ArrowFunctionDescriptor desc(std::move(params), func_param_context.LexicalScope().GetScope(), start_loc,
-                                 arrow_status);
+    ArrowFunctionDescriptor desc(std::move(params), start_loc, arrow_status);
 
-    auto function_ctx = varbinder::LexicalScope<varbinder::FunctionScope>(VarBinder());
-    return ParseArrowFunctionExpressionBody(&arrow_function_context, function_ctx.GetScope(), &desc, type_param_decl,
-                                            return_type_annotation);
+    return ParseArrowFunctionExpressionBody(&arrow_function_context, &desc, type_param_decl, return_type_annotation);
 }
 
 ir::TSModuleDeclaration *TypedParser::ParseAmbientExternalModuleDeclaration(const lexer::SourcePosition &start_loc)
@@ -261,8 +256,6 @@ ir::TSModuleDeclaration *TypedParser::ParseAmbientExternalModuleDeclaration(cons
 
     Lexer()->NextToken();
 
-    auto local_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
-
     ir::Statement *body = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         body = ParseTsModuleBlock();
@@ -272,10 +265,9 @@ ir::TSModuleDeclaration *TypedParser::ParseAmbientExternalModuleDeclaration(cons
         ThrowSyntaxError("';' expected");
     }
 
-    auto *module_decl = AllocNode<ir::TSModuleDeclaration>(Allocator(), local_ctx.GetScope(), name, body,
-                                                           InAmbientContext(), is_global);
+    auto *module_decl =
+        AllocNode<ir::TSModuleDeclaration>(Allocator(), name, body, InAmbientContext(), is_global, true);
     module_decl->SetRange({start_loc, Lexer()->GetToken().End()});
-    local_ctx.GetScope()->BindNode(module_decl);
 
     return module_decl;
 }
@@ -286,15 +278,12 @@ ir::TSModuleDeclaration *TypedParser::ParseModuleOrNamespaceDeclaration(const le
         ThrowSyntaxError("Identifier expected");
     }
 
-    auto *decl = VarBinder()->AddDecl<varbinder::VarDecl>(Lexer()->GetToken().Start(), Lexer()->GetToken().Ident());
-
     auto *ident_node = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
     ident_node->SetRange(Lexer()->GetToken().Loc());
 
     Lexer()->NextToken();
 
     ir::Statement *body = nullptr;
-    auto local_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
         Lexer()->NextToken();
@@ -304,18 +293,15 @@ ir::TSModuleDeclaration *TypedParser::ParseModuleOrNamespaceDeclaration(const le
         body = ParseTsModuleBlock();
     }
 
-    auto *module_decl = AllocNode<ir::TSModuleDeclaration>(Allocator(), local_ctx.GetScope(), ident_node, body,
-                                                           InAmbientContext(), false);
+    auto *module_decl =
+        AllocNode<ir::TSModuleDeclaration>(Allocator(), ident_node, body, InAmbientContext(), false, false);
     module_decl->SetRange({start_loc, Lexer()->GetToken().End()});
-    local_ctx.GetScope()->BindNode(module_decl);
-    decl->BindNode(module_decl);
 
     return module_decl;
 }
 
 ir::TSModuleBlock *TypedParser::ParseTsModuleBlock()
 {
-    auto local_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         ThrowSyntaxError("'{' expected.");
     }
@@ -328,9 +314,8 @@ ir::TSModuleBlock *TypedParser::ParseTsModuleBlock()
         ThrowSyntaxError("Expected a '}'");
     }
 
-    auto *block_node = AllocNode<ir::TSModuleBlock>(local_ctx.GetScope(), std::move(statements));
+    auto *block_node = AllocNode<ir::TSModuleBlock>(std::move(statements));
     block_node->SetRange({start_loc, Lexer()->GetToken().End()});
-    local_ctx.GetScope()->BindNode(block_node);
 
     Lexer()->NextToken();
     return block_node;
@@ -450,48 +435,6 @@ ir::TSTypeParameterDeclaration *TypedParser::ParseFunctionTypeParameters()
     return nullptr;
 }
 
-util::StringView TypedParser::FormInterfaceOrEnumDeclarationIdBinding(ir::Identifier *id)
-{
-    varbinder::TSBinding ts_binding(Allocator(), id->Name());
-    return ts_binding.View();
-}
-
-TypedParser::InterfaceId TypedParser::ParseInterfaceDeclarationId()
-{
-    auto *id = ExpectIdentifier(true);
-
-    util::StringView ident = FormInterfaceOrEnumDeclarationIdBinding(id);
-
-    const auto &bindings = VarBinder()->GetScope()->Bindings();
-    auto res = bindings.find(ident);
-    varbinder::InterfaceDecl *decl {};
-    bool already_exists {};
-
-    if (res == bindings.end()) {
-        decl = VarBinder()->AddTsDecl<varbinder::InterfaceDecl>(Lexer()->GetToken().Start(), Allocator(), ident);
-    } else if (!AllowInterfaceRedeclaration()) {
-        ThrowSyntaxError("Interface redeclaration is not allowed");
-    } else if (!res->second->Declaration()->IsInterfaceDecl()) {
-        VarBinder()->ThrowRedeclaration(Lexer()->GetToken().Start(), id->Name());
-    } else {
-        decl = res->second->Declaration()->AsInterfaceDecl();
-        already_exists = true;
-    }
-
-    return {id, decl, already_exists};
-}
-
-void TypedParser::BindInterfaceDeclarationId(varbinder::InterfaceDecl *decl, bool already_exists,
-                                             ir::TSInterfaceDeclaration *interface_decl)
-{
-    if (!already_exists) {
-        decl->BindNode(interface_decl);
-        decl->AsInterfaceDecl()->Add(interface_decl);
-    } else {
-        decl->AsInterfaceDecl()->Add(interface_decl);
-    }
-}
-
 ir::Statement *TypedParser::ParseInterfaceDeclaration(bool is_static)
 {
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_INTERFACE);
@@ -499,9 +442,8 @@ ir::Statement *TypedParser::ParseInterfaceDeclaration(bool is_static)
     lexer::SourcePosition interface_start = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat interface keyword
 
-    auto [id, decl, alreadyExists] = ParseInterfaceDeclarationId();
+    auto id = ExpectIdentifier(true);
 
-    auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         auto options = TypeAnnotationParsingOptions::THROW_ERROR;
@@ -513,21 +455,16 @@ ir::Statement *TypedParser::ParseInterfaceDeclaration(bool is_static)
         extends = ParseInterfaceExtendsClause();
     }
 
-    auto local_scope = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
-    auto *ident_decl = VarBinder()->AddDecl<varbinder::ConstDecl>(id->Start(), id->Name());
     lexer::SourcePosition body_start = Lexer()->GetToken().Start();
     auto members = ParseTypeLiteralOrInterface();
 
     auto *body = AllocNode<ir::TSInterfaceBody>(std::move(members));
     body->SetRange({body_start, Lexer()->GetToken().End()});
 
-    auto *interface_decl =
-        AllocNode<ir::TSInterfaceDeclaration>(Allocator(), local_scope.GetScope(), id, type_param_decl, body,
-                                              std::move(extends), is_static, GetContext().GetLanguge());
+    const auto is_external = (GetContext().Status() & ParserStatus::IN_EXTERNAL);
+    auto *interface_decl = AllocNode<ir::TSInterfaceDeclaration>(
+        Allocator(), id, type_param_decl, body, std::move(extends), is_static, is_external, GetContext().GetLanguge());
     interface_decl->SetRange({interface_start, Lexer()->GetToken().End()});
-    ident_decl->BindNode(interface_decl);
-
-    BindInterfaceDeclarationId(decl, alreadyExists, interface_decl);
 
     Lexer()->NextToken();
     GetContext().Status() &= ~ParserStatus::ALLOW_THIS_TYPE;
@@ -656,16 +593,12 @@ ir::TSEnumDeclaration *TypedParser::ParseEnumMembers(ir::Identifier *key, const 
 
     while (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_RIGHT_BRACE) {
         ir::Expression *member_key = nullptr;
-        const auto key_start_loc = Lexer()->GetToken().Start();
-        varbinder::EnumDecl *decl {};
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_IDENT) {
             member_key = AllocNode<ir::Identifier>(Lexer()->GetToken().Ident(), Allocator());
-            decl = VarBinder()->AddDecl<varbinder::EnumDecl>(key_start_loc, Lexer()->GetToken().Ident());
             member_key->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
         } else if (Lexer()->GetToken().Type() == lexer::TokenType::LITERAL_STRING) {
-            decl = VarBinder()->AddDecl<varbinder::EnumDecl>(key_start_loc, Lexer()->GetToken().String());
             member_key = AllocNode<ir::StringLiteral>(Lexer()->GetToken().String());
             member_key->SetRange(Lexer()->GetToken().Loc());
             Lexer()->NextToken();
@@ -683,7 +616,6 @@ ir::TSEnumDeclaration *TypedParser::ParseEnumMembers(ir::Identifier *key, const 
         }
 
         auto *member = AllocNode<ir::TSEnumMember>(member_key, member_init);
-        decl->BindNode(member);
         member->SetRange({init_start, Lexer()->GetToken().End()});
         members.push_back(member);
 
@@ -692,10 +624,8 @@ ir::TSEnumDeclaration *TypedParser::ParseEnumMembers(ir::Identifier *key, const 
         }
     }
 
-    auto *enum_declaration = AllocNode<ir::TSEnumDeclaration>(Allocator(), VarBinder()->GetScope()->AsLocalScope(), key,
-                                                              std::move(members), is_const);
+    auto *enum_declaration = AllocNode<ir::TSEnumDeclaration>(Allocator(), key, std::move(members), is_const);
     enum_declaration->SetRange({enum_start, Lexer()->GetToken().End()});
-    VarBinder()->GetScope()->BindNode(enum_declaration);
     Lexer()->NextToken();  // eat '}'
 
     return enum_declaration;
@@ -707,33 +637,8 @@ ir::Statement *TypedParser::ParseEnumDeclaration(bool is_const, [[maybe_unused]]
     ASSERT(Lexer()->GetToken().Type() == lexer::TokenType::KEYW_ENUM);
     lexer::SourcePosition enum_start = Lexer()->GetToken().Start();
     Lexer()->NextToken();  // eat enum keyword
-
     auto *key = ExpectIdentifier(true);
-    util::StringView ident = FormInterfaceOrEnumDeclarationIdBinding(key);
-
-    const auto &bindings = VarBinder()->GetScope()->Bindings();
-    auto res = bindings.find(ident);
-    varbinder::EnumLiteralDecl *decl {};
-
-    if (res == bindings.end()) {
-        decl = VarBinder()->AddTsDecl<varbinder::EnumLiteralDecl>(Lexer()->GetToken().Start(), ident, is_const);
-        varbinder::LexicalScope enum_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
-        decl->BindScope(enum_ctx.GetScope());
-        auto *decl_node = ParseEnumMembers(key, enum_start, is_const, false);
-        decl->BindNode(decl_node);
-        return decl_node;
-    }
-
-    if (!res->second->Declaration()->IsEnumLiteralDecl() ||
-        (is_const ^ res->second->Declaration()->AsEnumLiteralDecl()->IsConst()) != 0) {
-        VarBinder()->ThrowRedeclaration(Lexer()->GetToken().Start(), key->Name());
-    }
-
-    decl = res->second->Declaration()->AsEnumLiteralDecl();
-
-    auto scope_ctx = varbinder::LexicalScope<varbinder::LocalScope>::Enter(VarBinder(), decl->Scope());
     auto *decl_node = ParseEnumMembers(key, enum_start, is_const, false);
-    decl->BindNode(decl_node);
     return decl_node;
 }
 
@@ -741,7 +646,6 @@ ir::TSTypeParameter *TypedParser::ParseTypeParameter(TypeAnnotationParsingOption
 {
     lexer::SourcePosition start_loc = Lexer()->GetToken().Start();
     bool throw_error = ((*options) & TypeAnnotationParsingOptions::THROW_ERROR) != 0;
-    bool add_binding = ((*options) & TypeAnnotationParsingOptions::ADD_TYPE_PARAMETER_BINDING) != 0;
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
         if (!throw_error) {
@@ -757,11 +661,6 @@ ir::TSTypeParameter *TypedParser::ParseTypeParameter(TypeAnnotationParsingOption
 
     const auto &ident = Lexer()->GetToken().Ident();
     auto *param_ident = AllocNode<ir::Identifier>(ident, Allocator());
-    varbinder::Decl *decl = nullptr;
-
-    if (add_binding) {
-        decl = VarBinder()->AddDecl<varbinder::TypeParameterDecl>(Lexer()->GetToken().Start(), param_ident->Name());
-    }
 
     param_ident->SetRange({Lexer()->GetToken().Start(), Lexer()->GetToken().End()});
 
@@ -786,10 +685,6 @@ ir::TSTypeParameter *TypedParser::ParseTypeParameter(TypeAnnotationParsingOption
     }
 
     auto *type_param = AllocNode<ir::TSTypeParameter>(param_ident, constraint, default_type);
-
-    if (decl != nullptr) {
-        decl->BindNode(type_param);
-    }
 
     type_param->SetRange({start_loc, Lexer()->GetToken().End()});
 
@@ -846,10 +741,8 @@ ir::TSTypeParameterDeclaration *TypedParser::ParseTypeParameterDeclaration(TypeA
     lexer::SourcePosition end_loc = Lexer()->GetToken().End();
     Lexer()->NextToken();  // eat '>'
 
-    auto *type_param_decl = AllocNode<ir::TSTypeParameterDeclaration>(VarBinder()->GetScope()->AsLocalScope(),
-                                                                      std::move(params), required_params);
+    auto *type_param_decl = AllocNode<ir::TSTypeParameterDeclaration>(std::move(params), required_params);
     type_param_decl->SetRange({start_loc, end_loc});
-    VarBinder()->GetScope()->BindNode(type_param_decl);
 
     return type_param_decl;
 }
@@ -951,23 +844,17 @@ bool TypedParser::CheckClassElement(ir::AstNode *property, ir::MethodDefinition 
 // NOLINTNEXTLINE(google-default-arguments)
 ir::ClassDefinition *TypedParser::ParseClassDefinition(ir::ClassDefinitionModifiers modifiers, ir::ModifierFlags flags)
 {
-    lexer::SourcePosition start_loc = Lexer()->GetToken().Start();
     Lexer()->NextToken();
 
     ir::Identifier *ident_node = ParseClassIdent(modifiers);
 
-    auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         auto options = TypeAnnotationParsingOptions::THROW_ERROR;
         type_param_decl = ParseTypeParameterDeclaration(&options);
     }
-    auto class_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
-
-    auto *ident_decl = BindClassName(ident_node);
 
     varbinder::PrivateBinding private_binding(Allocator(), ClassId()++);
-    VarBinder()->AddDecl<varbinder::ConstDecl>(start_loc, private_binding.View());
 
     // Parse SuperClass
     auto [superClass, superTypeParams] = ParseSuperClass();
@@ -992,19 +879,11 @@ ir::ClassDefinition *TypedParser::ParseClassDefinition(ir::ClassDefinitionModifi
         flags |= ir::ModifierFlags::DECLARE;
     }
 
-    CreateCCtor(class_ctx.GetScope(), properties, bodyRange.start);
-
-    auto *class_scope = class_ctx.GetScope();
     auto *class_definition = AllocNode<ir::ClassDefinition>(
-        class_scope, private_binding.View(), ident_node, type_param_decl, superTypeParams, std::move(implements), ctor,
-        superClass, std::move(properties), modifiers, flags, GetContext().GetLanguge());
+        private_binding.View(), ident_node, type_param_decl, superTypeParams, std::move(implements), ctor, superClass,
+        std::move(properties), modifiers, flags, GetContext().GetLanguge());
 
     class_definition->SetRange(bodyRange);
-    class_scope->BindNode(class_definition);
-
-    if (ident_decl != nullptr) {
-        ident_decl->BindNode(class_definition);
-    }
 
     return class_definition;
 }
@@ -1403,7 +1282,7 @@ ir::VariableDeclarator *TypedParser::ParseVariableDeclarator(ir::Expression *ini
     }
 
     lexer::SourcePosition end_loc = init->End();
-    auto declarator = AllocNode<ir::VariableDeclarator>(init);
+    auto declarator = AllocNode<ir::VariableDeclarator>(GetFlag(flags), init);
     declarator->SetRange({start_loc, end_loc});
 
     return declarator;

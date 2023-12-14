@@ -24,15 +24,15 @@ class Expression;
 
 class TSModuleDeclaration : public Statement {
 public:
-    explicit TSModuleDeclaration(ArenaAllocator *allocator, varbinder::LocalScope *scope, Expression *name,
-                                 Statement *body, bool declare, bool global)
+    explicit TSModuleDeclaration(ArenaAllocator *allocator, Expression *name, Statement *body, bool declare,
+                                 bool global, bool is_external_ambient)
         : Statement(AstNodeType::TS_MODULE_DECLARATION),
           decorators_(allocator->Adapter()),
-          scope_(scope),
           name_(name),
           body_(body),
           declare_(declare),
-          global_(global)
+          global_(global),
+          is_external_ambient_(is_external_ambient)
     {
     }
 
@@ -44,6 +44,11 @@ public:
     varbinder::LocalScope *Scope() const override
     {
         return scope_;
+    }
+
+    void SetScope(varbinder::LocalScope *scope)
+    {
+        scope_ = scope;
     }
 
     const Expression *Name() const
@@ -66,6 +71,11 @@ public:
         return global_;
     }
 
+    bool IsExternalOrAmbient() const
+    {
+        return is_external_ambient_;
+    }
+
     void AddDecorators([[maybe_unused]] ArenaVector<ir::Decorator *> &&decorators) override
     {
         decorators_ = std::move(decorators);
@@ -84,13 +94,19 @@ public:
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
 
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
+
 private:
     ArenaVector<Decorator *> decorators_;
-    varbinder::LocalScope *scope_;
+    varbinder::LocalScope *scope_ {nullptr};
     Expression *name_;
     Statement *body_;
     bool declare_;
     bool global_;
+    bool is_external_ambient_;
 };
 }  // namespace panda::es2panda::ir
 

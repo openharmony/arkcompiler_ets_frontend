@@ -27,8 +27,8 @@ class Expression;
 
 class WhileStatement : public LoopStatement {
 public:
-    explicit WhileStatement(varbinder::LoopScope *scope, Expression *test, Statement *body)
-        : LoopStatement(AstNodeType::WHILE_STATEMENT, scope), test_(test), body_(body)
+    explicit WhileStatement(Expression *test, Statement *body)
+        : LoopStatement(AstNodeType::WHILE_STATEMENT), test_(test), body_(body)
     {
     }
 
@@ -66,6 +66,11 @@ public:
     void Compile([[maybe_unused]] compiler::ETSGen *etsg) const override;
     checker::Type *Check([[maybe_unused]] checker::TSChecker *checker) override;
     checker::Type *Check([[maybe_unused]] checker::ETSChecker *checker) override;
+
+    void Accept(ASTVisitorT *v) override
+    {
+        v->Accept(this);
+    }
 
 private:
     Expression *test_;

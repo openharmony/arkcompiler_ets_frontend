@@ -121,14 +121,11 @@ ir::TSTypeAliasDeclaration *ASParser::ParseTypeAliasDeclaration()
     }
 
     const util::StringView &ident = Lexer()->GetToken().Ident();
-    varbinder::TSBinding ts_binding(Allocator(), ident);
-    auto *decl = VarBinder()->AddTsDecl<varbinder::TypeAliasDecl>(Lexer()->GetToken().Start(), ts_binding.View());
 
     auto *id = AllocNode<ir::Identifier>(ident, Allocator());
     id->SetRange(Lexer()->GetToken().Loc());
     Lexer()->NextToken();
 
-    auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
     ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
         auto options = TypeAnnotationParsingOptions::THROW_ERROR;
@@ -151,7 +148,6 @@ ir::TSTypeAliasDeclaration *ASParser::ParseTypeAliasDeclaration()
     auto *type_alias_decl =
         AllocNode<ir::TSTypeAliasDeclaration>(Allocator(), id, type_param_decl, type_annotation, InAmbientContext());
     type_alias_decl->SetRange({type_start, Lexer()->GetToken().End()});
-    decl->BindNode(type_alias_decl);
 
     return type_alias_decl;
 }
@@ -269,14 +265,13 @@ ParserStatus ASParser::ValidateArrowParameter(ir::Expression *expr, bool *seen_o
     return ParserStatus::NO_OPTS;
 }
 
-ArrowFunctionDescriptor ASParser::ConvertToArrowParameter(ir::Expression *expr, bool is_async,
-                                                          varbinder::FunctionParamScope *param_scope)
+ArrowFunctionDescriptor ASParser::ConvertToArrowParameter(ir::Expression *expr, bool is_async)
 {
     auto arrow_status = is_async ? ParserStatus::ASYNC_FUNCTION : ParserStatus::NO_OPTS;
     ArenaVector<ir::Expression *> params(Allocator()->Adapter());
 
     if (expr == nullptr) {
-        return ArrowFunctionDescriptor {std::move(params), param_scope, Lexer()->GetToken().Start(), arrow_status};
+        return ArrowFunctionDescriptor {std::move(params), Lexer()->GetToken().Start(), arrow_status};
     }
 
     bool seen_optional = false;
@@ -319,11 +314,7 @@ ArrowFunctionDescriptor ASParser::ConvertToArrowParameter(ir::Expression *expr, 
         }
     }
 
-    for (auto *param : params) {
-        VarBinder()->AddParamDecl(param);
-    }
-
-    return ArrowFunctionDescriptor {std::move(params), param_scope, expr->Start(), arrow_status};
+    return ArrowFunctionDescriptor {std::move(params), expr->Start(), arrow_status};
 }
 
 // NOLINTNEXTLINE(google-default-arguments)
@@ -491,8 +482,6 @@ bool ASParser::CurrentIsBasicType()
 
 ir::TypeNode *ASParser::ParseFunctionType(lexer::SourcePosition start_loc)
 {
-    FunctionParameterContext func_param_context(&GetContext(), VarBinder());
-    auto *func_param_scope = func_param_context.LexicalScope().GetScope();
     auto params = ParseFunctionParams();
 
     if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_ARROW) {
@@ -505,11 +494,10 @@ ir::TypeNode *ASParser::ParseFunctionType(lexer::SourcePosition start_loc)
         TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
     ir::TypeNode *return_type_annotation = ParseTypeAnnotation(&options);
 
-    auto func_type =
-        AllocNode<ir::TSFunctionType>(func_param_scope, std::move(params), nullptr, return_type_annotation);
+    auto signature = ir::FunctionSignature(nullptr, std::move(params), return_type_annotation);
+    auto func_type = AllocNode<ir::TSFunctionType>(std::move(signature));
 
     func_type->SetRange({start_loc, return_type_annotation->End()});
-    func_param_scope->BindNode(func_type);
 
     return func_type;
 }
@@ -1021,7 +1009,6 @@ ir::AstNode *ASParser::ParsePropertyOrMethodSignature(const lexer::SourcePositio
 
     if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_PARENTHESIS ||
         Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-        auto type_params_ctx = varbinder::LexicalScope<varbinder::LocalScope>(VarBinder());
         ir::TSTypeParameterDeclaration *type_param_decl = nullptr;
 
         if (Lexer()->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
@@ -1029,8 +1016,7 @@ ir::AstNode *ASParser::ParsePropertyOrMethodSignature(const lexer::SourcePositio
             type_param_decl = ParseTypeParameterDeclaration(&options);
         }
 
-        FunctionParameterContext func_param_context(&GetContext(), VarBinder());
-        auto *func_param_scope = func_param_context.LexicalScope().GetScope();
+        FunctionParameterContext func_param_context(&GetContext());
         auto params = ParseFunctionParams();
 
         if (Lexer()->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COLON) {
@@ -1042,9 +1028,8 @@ ir::AstNode *ASParser::ParsePropertyOrMethodSignature(const lexer::SourcePositio
             TypeAnnotationParsingOptions::THROW_ERROR | TypeAnnotationParsingOptions::CAN_BE_TS_TYPE_PREDICATE;
         ir::TypeNode *return_type = ParseTypeAnnotation(&options);
 
-        auto *method_signature = AllocNode<ir::TSMethodSignature>(func_param_scope, key, type_param_decl,
-                                                                  std::move(params), return_type, isComputed, false);
-        func_param_scope->BindNode(method_signature);
+        auto signature = ir::FunctionSignature(type_param_decl, std::move(params), return_type);
+        auto *method_signature = AllocNode<ir::TSMethodSignature>(key, std::move(signature), isComputed, false);
         method_signature->SetRange({start_loc, Lexer()->GetToken().End()});
         return method_signature;
     }
@@ -1327,7 +1312,7 @@ std::tuple<bool, bool, bool> ASParser::ParseComputedClassFieldOrIndexSignature(i
 
 std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ASParser::ParseFunctionBody(
     [[maybe_unused]] const ArenaVector<ir::Expression *> &params, [[maybe_unused]] ParserStatus new_status,
-    ParserStatus context_status, varbinder::FunctionScope *func_scope)
+    ParserStatus context_status)
 {
     bool is_declare = InAmbientContext();
     bool is_overload = false;
@@ -1346,7 +1331,7 @@ std::tuple<bool, ir::BlockStatement *, lexer::SourcePosition, bool> ASParser::Pa
     } else if (is_declare) {
         ThrowSyntaxError("An implementation cannot be declared in ambient contexts.");
     } else {
-        body = ParseBlockStatement(func_scope);
+        body = ParseBlockStatement();
         end_loc = body->End();
     }
 
@@ -1540,8 +1525,6 @@ ir::ExportDefaultDeclaration *ASParser::ParseExportDefaultDeclaration(const lexe
     ir::AstNode *decl_node = nullptr;
     bool eat_semicolon = false;
 
-    ExportDeclarationContext export_decl_ctx(VarBinder());
-
     switch (Lexer()->GetToken().Type()) {
         case lexer::TokenType::KEYW_FUNCTION: {
             decl_node = ParseFunctionDeclaration(true);
@@ -1606,8 +1589,6 @@ ir::ExportNamedDeclaration *ASParser::ParseNamedExportDeclaration(const lexer::S
         Lexer()->NextToken();  // eat 'abstract'
         flags |= ir::ModifierFlags::ABSTRACT;
     }
-
-    ExportDeclarationContext export_decl_ctx(VarBinder());
 
     switch (Lexer()->GetToken().KeywordType()) {
         case lexer::TokenType::KEYW_VAR: {
@@ -1690,8 +1671,6 @@ ir::AstNode *ASParser::ParseImportSpecifiers(ArenaVector<ir::AstNode *> *specifi
 
 ir::Statement *ASParser::ParseImportDeclaration([[maybe_unused]] StatementParsingFlags flags)
 {
-    ImportDeclarationContext import_ctx(VarBinder());
-
     char32_t next_char = Lexer()->Lookahead();
     if (next_char == lexer::LEX_CHAR_LEFT_PAREN || next_char == lexer::LEX_CHAR_DOT) {
         return ParseExpressionStatement();
