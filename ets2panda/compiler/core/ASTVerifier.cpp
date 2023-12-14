@@ -549,7 +549,7 @@ std::optional<varbinder::LocalVariable *> ASTVerifier::GetLocalScopeVariable(con
 bool ASTVerifier::VerifyChildNode(const ir::AstNode *ast)
 {
     ASSERT(ast);
-    bool is_ok;
+    bool is_ok = true;
     ast->Iterate([&](const auto node) {
         if (ast != node->Parent()) {
             AddError("INCORRECT_PARENT_REF: " + ToStringHelper(node), node->Start());
