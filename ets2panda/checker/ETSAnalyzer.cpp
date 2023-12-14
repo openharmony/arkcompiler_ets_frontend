@@ -21,6 +21,8 @@
 #include "checker/ets/typeRelationContext.h"
 #include "util/helpers.h"
 
+#include <memory>
+
 namespace panda::es2panda::checker {
 
 ETSChecker *ETSAnalyzer::GetETSChecker() const
@@ -968,9 +970,41 @@ checker::Type *ETSAnalyzer::Check(ir::BlockExpression *st) const
     UNREACHABLE();
 }
 
-ArenaVector<Signature *> &ChooseSignatures(checker::Type *calleeType, bool isConstructorCall,
-                                           bool isFunctionalInterface)
+ArenaVector<checker::Signature *> GetUnionTypeSignatures(ETSChecker *checker, checker::ETSUnionType *etsUnionType)
 {
+    ArenaVector<checker::Signature *> callSignatures(checker->Allocator()->Adapter());
+
+    for (auto *constituentType : etsUnionType->ConstituentTypes()) {
+        if (constituentType->IsETSObjectType()) {
+            ArenaVector<checker::Signature *> tmpCallSignatures(checker->Allocator()->Adapter());
+            tmpCallSignatures = constituentType->AsETSObjectType()
+                                      ->GetOwnProperty<checker::PropertyType::INSTANCE_METHOD>("invoke")
+                                      ->TsType()
+                                      ->AsETSFunctionType()
+                                      ->CallSignatures();
+            callSignatures.insert(callSignatures.end(), tmpCallSignatures.begin(), tmpCallSignatures.end());
+        }
+        if (constituentType->IsETSFunctionType()) {
+            ArenaVector<checker::Signature *> tmpCallSignatures(checker->Allocator()->Adapter());
+            tmpCallSignatures = constituentType->AsETSFunctionType()->CallSignatures();
+            callSignatures.insert(callSignatures.end(), tmpCallSignatures.begin(), tmpCallSignatures.end());
+        }
+        if (constituentType->IsETSUnionType()) {
+            ArenaVector<checker::Signature *> tmpCallSignatures(checker->Allocator()->Adapter());
+            tmpCallSignatures = GetUnionTypeSignatures(checker, constituentType->AsETSUnionType());
+            callSignatures.insert(callSignatures.end(), tmpCallSignatures.begin(), tmpCallSignatures.end());
+        }
+    }
+
+    return callSignatures;
+}
+
+ArenaVector<checker::Signature *> &ChooseSignatures(ETSChecker *checker, checker::Type *calleeType,
+                                                    bool isConstructorCall, bool isFunctionalInterface,
+                                                    bool isUnionTypeWithFunctionalInterface)
+{
+    static ArenaVector<checker::Signature *> unionSignatures(checker->Allocator()->Adapter());
+    unionSignatures.clear();
     if (isConstructorCall) {
         return calleeType->AsETSObjectType()->ConstructSignatures();
     }
@@ -980,6 +1014,10 @@ ArenaVector<Signature *> &ChooseSignatures(checker::Type *calleeType, bool isCon
             ->TsType()
             ->AsETSFunctionType()
             ->CallSignatures();
+    }
+    if (isUnionTypeWithFunctionalInterface) {
+        unionSignatures = GetUnionTypeSignatures(checker, calleeType->AsETSUnionType());
+        return unionSignatures;
     }
     return calleeType->AsETSFunctionType()->CallSignatures();
 }
@@ -998,7 +1036,8 @@ checker::ETSObjectType *ChooseCalleeObj(ETSChecker *checker, ir::CallExpression 
 }
 
 checker::Signature *ResolveSignature(ETSChecker *checker, ir::CallExpression *expr, checker::Type *calleeType,
-                                     bool isConstructorCall, bool isFunctionalInterface)
+                                     bool isConstructorCall, bool isFunctionalInterface,
+                                     bool isUnionTypeWithFunctionalInterface)
 {
     bool extensionFunctionType = expr->Callee()->IsMemberExpression() && checker->ExtensionETSFunctionType(calleeType);
 
@@ -1008,7 +1047,8 @@ checker::Signature *ResolveSignature(ETSChecker *checker, ir::CallExpression *ex
     if (extensionFunctionType) {
         return ResolveCallExtensionFunction(calleeType->AsETSFunctionType(), checker, expr);
     }
-    auto &signatures = ChooseSignatures(calleeType, isConstructorCall, isFunctionalInterface);
+    auto &signatures = ChooseSignatures(checker, calleeType, isConstructorCall, isFunctionalInterface,
+                                        isUnionTypeWithFunctionalInterface);
     checker::Signature *signature = checker->ResolveCallExpressionAndTrailingLambda(signatures, expr, expr->Start());
     if (signature->Function()->IsExtensionMethod()) {
         checker->ThrowTypeError({"No matching call signature"}, expr->Start());
@@ -1020,8 +1060,11 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
 {
     ETSChecker *checker = GetETSChecker();
     bool isConstructorCall = expr->IsETSConstructorCall();
+    bool isUnionTypeWithFunctionalInterface =
+        calleeType->IsETSUnionType() &&
+        calleeType->AsETSUnionType()->HasObjectType(checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
     bool isFunctionalInterface = calleeType->IsETSObjectType() && calleeType->AsETSObjectType()->HasObjectFlag(
-                                                                      checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
+                                                                         checker::ETSObjectFlags::FUNCTIONAL_INTERFACE);
     bool etsExtensionFuncHelperType = calleeType->IsETSExtensionFuncHelperType();
 
     if (expr->Callee()->IsArrowFunctionExpression()) {
@@ -1030,12 +1073,12 @@ checker::Type *ETSAnalyzer::GetReturnType(ir::CallExpression *expr, checker::Typ
     }
 
     if (!isFunctionalInterface && !calleeType->IsETSFunctionType() && !isConstructorCall &&
-        !etsExtensionFuncHelperType) {
+        !etsExtensionFuncHelperType && !isUnionTypeWithFunctionalInterface) {
         checker->ThrowTypeError("This expression is not callable.", expr->Start());
     }
 
-    checker::Signature *signature =
-        ResolveSignature(checker, expr, calleeType, isConstructorCall, isFunctionalInterface);
+    checker::Signature *signature = ResolveSignature(checker, expr, calleeType, isConstructorCall,
+                                                     isFunctionalInterface, isUnionTypeWithFunctionalInterface);
 
     checker->CheckObjectLiteralArguments(signature, expr->Arguments());
     checker->AddUndefinedParamsForDefaultParams(signature, expr->Arguments(), checker);

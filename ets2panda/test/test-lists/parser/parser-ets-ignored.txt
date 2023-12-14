@@ -1,0 +1,2 @@
+parser/ets/test-type-alias-call7.ets
+parser/ets/test-type-alias-call8.ets

@@ -180,6 +180,7 @@ public:
     Type *GetCommonClass(Type *source, Type *target);
     ETSObjectType *GetClosestCommonAncestor(ETSObjectType *source, ETSObjectType *target);
     ETSObjectType *GetTypeargumentedLUB(ETSObjectType *source, ETSObjectType *target);
+    bool HasETSFunctionType(ir::TypeNode *typeAnnotation);
 
     // Type creation
     ByteType *CreateByteType(int8_t value);

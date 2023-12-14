@@ -55,6 +55,7 @@
 #include "checker/types/ets/etsDynamicType.h"
 #include "checker/types/ets/types.h"
 #include "checker/ets/typeRelationContext.h"
+#include "ir/ets/etsUnionType.h"
 
 namespace panda::es2panda::checker {
 ETSObjectType *ETSChecker::GetSuperType(ETSObjectType *type)
@@ -405,6 +406,12 @@ void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
         if (classProp->TypeAnnotation() != nullptr && classProp->TypeAnnotation()->IsETSFunctionType()) {
             type->AddProperty<PropertyType::INSTANCE_METHOD>(it->AsLocalVariable());
             it->AddFlag(varbinder::VariableFlags::METHOD_REFERENCE);
+        } else if (classProp->TypeAnnotation() != nullptr && classProp->TypeAnnotation()->IsETSTypeReference()) {
+            bool hasFunctionType = HasETSFunctionType(classProp->TypeAnnotation());
+            if (hasFunctionType) {
+                type->AddProperty<PropertyType::INSTANCE_METHOD>(it->AsLocalVariable());
+                it->AddFlag(varbinder::VariableFlags::METHOD_REFERENCE);
+            }
         }
     }
 
@@ -418,6 +425,12 @@ void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
         if (classProp->TypeAnnotation() != nullptr && classProp->TypeAnnotation()->IsETSFunctionType()) {
             type->AddProperty<PropertyType::STATIC_METHOD>(it->AsLocalVariable());
             it->AddFlag(varbinder::VariableFlags::METHOD_REFERENCE);
+        } else if (classProp->TypeAnnotation() != nullptr && classProp->TypeAnnotation()->IsETSTypeReference()) {
+            bool hasFunctionType = HasETSFunctionType(classProp->TypeAnnotation());
+            if (hasFunctionType) {
+                type->AddProperty<PropertyType::STATIC_METHOD>(it->AsLocalVariable());
+                it->AddFlag(varbinder::VariableFlags::METHOD_REFERENCE);
+            }
         }
     }
 
@@ -471,6 +484,39 @@ void ETSChecker::ResolveDeclaredMembersOfObject(ETSObjectType *type)
     }
 
     type->AddObjectFlag(ETSObjectFlags::RESOLVED_MEMBERS);
+}
+
+bool ETSChecker::HasETSFunctionType(ir::TypeNode *typeAnnotation)
+{
+    if (typeAnnotation->IsETSFunctionType()) {
+        return true;
+    }
+    std::unordered_set<ir::TypeNode *> childrenSet;
+
+    if (typeAnnotation->IsETSTypeReference()) {
+        auto *typeDecl =
+            typeAnnotation->AsETSTypeReference()->Part()->Name()->AsIdentifier()->Variable()->Declaration();
+        if (typeDecl != nullptr && typeDecl->IsTypeAliasDecl()) {
+            typeAnnotation = typeDecl->Node()->AsTSTypeAliasDeclaration()->TypeAnnotation();
+            if (typeAnnotation->IsETSUnionType()) {
+                for (auto *type : typeAnnotation->AsETSUnionType()->Types()) {
+                    if (type->IsETSTypeReference()) {
+                        childrenSet.insert(type);
+                    }
+                }
+            } else {
+                childrenSet.insert(typeAnnotation);
+            }
+        }
+
+        for (auto *child : childrenSet) {
+            if (HasETSFunctionType(child)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 std::vector<Signature *> ETSChecker::CollectAbstractSignaturesFromObject(const ETSObjectType *objType)
