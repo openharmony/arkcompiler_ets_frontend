@@ -17,57 +17,72 @@
         {
             "line": 22,
             "column": 11,
-            "problem": "InstanceofUnsupported"
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
         },
         {
             "line": 23,
             "column": 11,
-            "problem": "InstanceofUnsupported"
-        },
-        {
-            "line": 35,
-            "column": 15,
-            "problem": "StructuralIdentity"
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
         },
         {
             "line": 50,
             "column": 12,
-            "problem": "InstanceofUnsupported"
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
         },
         {
             "line": 55,
             "column": 25,
-            "problem": "InstanceofUnsupported"
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
         },
         {
             "line": 58,
             "column": 29,
-            "problem": "InstanceofUnsupported"
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
         },
         {
             "line": 61,
             "column": 16,
-            "problem": "InstanceofUnsupported"
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
         },
         {
             "line": 65,
             "column": 13,
-            "problem": "InstanceofUnsupported"
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
         },
         {
             "line": 70,
             "column": 16,
-            "problem": "InstanceofUnsupported"
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
         },
         {
             "line": 76,
             "column": 18,
-            "problem": "InstanceofUnsupported"
+            "problem": "InstanceofUnsupported",
+            "suggest": "",
+            "rule": "\"instanceof\" operator is partially supported (arkts-instanceof-ref-types)"
         },
         {
             "line": 76,
             "column": 19,
-            "problem": "ClassAsObject"
+            "problem": "ClassAsObject",
+            "suggest": "",
+            "rule": "Classes cannot be used as objects (arkts-no-classes-as-obj)"
         }
     ]
 }

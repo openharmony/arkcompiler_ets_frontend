@@ -86,7 +86,6 @@ faultsAttrs[FaultID.EnumMemberNonConstInit] = new FaultAttributes(111);
 faultsAttrs[FaultID.EnumMerging] = new FaultAttributes(113);
 faultsAttrs[FaultID.NamespaceAsObject] = new FaultAttributes(114);
 faultsAttrs[FaultID.NonDeclarationInNamespace] = new FaultAttributes(116);
-faultsAttrs[FaultID.ImportFromPath] = new FaultAttributes(119);
 faultsAttrs[FaultID.DefaultImport] = new FaultAttributes(120, true);
 faultsAttrs[FaultID.ImportAssignment] = new FaultAttributes(121);
 faultsAttrs[FaultID.ExportAssignment] = new FaultAttributes(126);

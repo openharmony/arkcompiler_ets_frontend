@@ -143,7 +143,7 @@ cookBookTag[116] =
   'Non-declaration statements in namespaces are not supported (single semicolons are considered as empty non-declaration statements) (arkts-no-ns-statements)';
 cookBookTag[117] = '';
 cookBookTag[118] = '';
-cookBookTag[119] = 'Importing a module for side-effects only is not supported (arkts-no-side-effects-imports)';
+cookBookTag[119] = '';
 cookBookTag[120] = '"import default as ..." is not supported (arkts-no-import-default-as)';
 cookBookTag[121] = '"require" and "import" assignment are not supported (arkts-no-require)';
 cookBookTag[122] = '';

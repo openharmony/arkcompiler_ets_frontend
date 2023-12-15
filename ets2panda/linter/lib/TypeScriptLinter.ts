@@ -661,9 +661,6 @@ export class TypeScriptLinter {
 
     const expr1 = importDeclNode.moduleSpecifier;
     if (expr1.kind === ts.SyntaxKind.StringLiteral) {
-      if (!importDeclNode.importClause) {
-        this.incrementCounters(node, FaultID.ImportFromPath);
-      }
       if (importDeclNode.assertClause) {
         this.incrementCounters(importDeclNode.assertClause, FaultID.ImportAssertion);
       }
@@ -1832,9 +1829,6 @@ export class TypeScriptLinter {
     }
     const targetType = this.tsTypeChecker.getTypeAtLocation(tsAsExpr.type).getNonNullableType();
     const exprType = this.tsTypeChecker.getTypeAtLocation(tsAsExpr.expression).getNonNullableType();
-    if (this.tsUtils.needToDeduceStructuralIdentity(targetType, exprType, tsAsExpr.expression, true)) {
-      this.incrementCounters(tsAsExpr, FaultID.StructuralIdentity);
-    }
     // check for rule#65:   'number as Number' and 'boolean as Boolean' are disabled
     if (
       TsUtils.isNumberLikeType(exprType) && this.tsUtils.isStdNumberType(targetType) ||
@@ -1922,14 +1916,10 @@ export class TypeScriptLinter {
     if (!!symbol && this.tsUtils.isSymbolIterator(symbol)) {
       return;
     }
-    const isEnumMember = !!symbol && !!(symbol.flags & ts.SymbolFlags.EnumMember);
-    const type = this.tsTypeChecker.getTypeAtLocation(computedProperty.expression);
-    const isStringEnumLiteral = TsUtils.isEnumType(type) && !!(type.flags & ts.TypeFlags.StringLiteral);
-    // we allow computed property names if exporession is string Enum member
-    if (isEnumMember && isStringEnumLiteral) {
-      return;
+    // we allow computed property names if expression is string Enum member
+    if (!this.tsUtils.isEnumStringLiteral(computedProperty.expression)) {
+      this.incrementCounters(node, FaultID.ComputedPropertyName);
     }
-    this.incrementCounters(node, FaultID.ComputedPropertyName);
   }
 
   private handleGetAccessor(node: ts.Node): void {

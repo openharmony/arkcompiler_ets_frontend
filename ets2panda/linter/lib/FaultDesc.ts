@@ -37,7 +37,6 @@ faultDesc[FaultID.IndexedAccessType] = 'Indexed access type';
 faultDesc[FaultID.UnknownType] = '"unknown" type';
 faultDesc[FaultID.ForInStatement] = '"for-In" statements';
 faultDesc[FaultID.InOperator] = '"in" operations';
-faultDesc[FaultID.ImportFromPath] = 'imports from path';
 faultDesc[FaultID.FunctionExpression] = 'function expressions';
 faultDesc[FaultID.IntersectionType] = 'intersection types and type literals';
 faultDesc[FaultID.ObjectTypeLiteral] = 'Object type literals';

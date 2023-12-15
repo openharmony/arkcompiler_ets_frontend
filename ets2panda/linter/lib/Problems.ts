@@ -34,7 +34,6 @@ export enum FaultID {
   UnknownType,
   ForInStatement,
   InOperator,
-  ImportFromPath,
   FunctionExpression,
   IntersectionType,
   ObjectTypeLiteral,

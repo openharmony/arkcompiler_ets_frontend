@@ -504,40 +504,7 @@ export class TsUtils {
     return TsUtils.isTypeReference(t) && t.target !== t ? t.target : t;
   }
 
-  private needToDeduceStructuralIdentityHandleUnionsAsExpression(lhsType: ts.Type, rhsType: ts.Type): boolean {
-    void this;
-
-    /*
-     * For now we only support this scenario: A | B | C as B, i.e. identity conversion.
-     * This may change in the future.
-     */
-
-    // handle case of A | B | C as A | B
-    if (lhsType.isUnion()) {
-      for (const compType of lhsType.types) {
-        if (this.needToDeduceStructuralIdentityHandleUnionsAsExpression(compType, rhsType)) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    if (rhsType.isUnion()) {
-      // LHS type needs to be compatible with at least one type of the RHS union.
-      for (const compType of rhsType.types) {
-        const compTypeBase = this.tsTypeChecker.getBaseTypeOfLiteralType(compType);
-        if (lhsType === compType || lhsType === compTypeBase) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    // should be unreachable
-    return false;
-  }
-
-  private needToDeduceStructuralIdentityHandleUnionsAssignment(
+  private needToDeduceStructuralIdentityHandleUnions(
     lhsType: ts.Type,
     rhsType: ts.Type,
     rhsExpr: ts.Expression
@@ -564,25 +531,11 @@ export class TsUtils {
     return false;
   }
 
-  private needToDeduceStructuralIdentityHandleUnions(
-    lhsType: ts.Type,
-    rhsType: ts.Type,
-    rhsExpr: ts.Expression,
-    asExpression: boolean
-  ): boolean {
-    if (asExpression) {
-      return this.needToDeduceStructuralIdentityHandleUnionsAsExpression(lhsType, rhsType);
-    }
-
-    return this.needToDeduceStructuralIdentityHandleUnionsAssignment(lhsType, rhsType, rhsExpr);
-  }
-
   // return true if two class types are not related by inheritance and structural identity check is needed
   needToDeduceStructuralIdentity(
     lhsType: ts.Type,
     rhsType: ts.Type,
-    rhsExpr: ts.Expression,
-    asExpression: boolean = false
+    rhsExpr: ts.Expression
   ): boolean {
     lhsType = TsUtils.getNonNullableType(lhsType);
     rhsType = TsUtils.getNonNullableType(rhsType);
@@ -597,7 +550,7 @@ export class TsUtils {
       return false;
     }
     if (rhsType.isUnion() || lhsType.isUnion()) {
-      return this.needToDeduceStructuralIdentityHandleUnions(lhsType, rhsType, rhsExpr, asExpression);
+      return this.needToDeduceStructuralIdentityHandleUnions(lhsType, rhsType, rhsExpr);
     }
     if (
       this.advancedClassChecks &&
@@ -608,14 +561,8 @@ export class TsUtils {
       // missing exact rule
       return true;
     }
-    let res =
-      lhsType.isClassOrInterface() &&
-      rhsType.isClassOrInterface() &&
+    return lhsType.isClassOrInterface() && rhsType.isClassOrInterface() &&
       !this.relatedByInheritanceOrIdentical(rhsType, lhsType);
-    if (asExpression) {
-      res &&= !this.relatedByInheritanceOrIdentical(lhsType, rhsType);
-    }
-    return res;
   }
 
   private processParentTypes(
@@ -843,7 +790,7 @@ export class TsUtils {
      * must be either a string or number literal.
      */
     if (this.isStdRecordType(lhsType)) {
-      return TsUtils.validateRecordObjectKeys(rhsExpr);
+      return this.validateRecordObjectKeys(rhsExpr);
     }
     return (
       TsUtils.validateObjectLiteralType(lhsType) && !this.hasMethods(lhsType) && this.validateFields(lhsType, rhsExpr)
@@ -898,9 +845,14 @@ export class TsUtils {
     return true;
   }
 
-  static validateRecordObjectKeys(objectLiteral: ts.ObjectLiteralExpression): boolean {
+  validateRecordObjectKeys(objectLiteral: ts.ObjectLiteralExpression): boolean {
     for (const prop of objectLiteral.properties) {
-      if (!prop.name || !ts.isStringLiteral(prop.name) && !ts.isNumericLiteral(prop.name)) {
+      if (!prop.name) {
+        return false;
+      }
+      const isValidComputedProperty = ts.isComputedPropertyName(prop.name) &&
+        this.isEnumStringLiteral(prop.name.expression);
+      if (!ts.isStringLiteral(prop.name) && !ts.isNumericLiteral(prop.name) && !isValidComputedProperty) {
         return false;
       }
     }
@@ -1430,5 +1382,13 @@ export class TsUtils {
   isStdBooleanType(type: ts.Type): boolean {
     const sym = type.symbol;
     return !!sym && sym.getName() === 'Boolean' && this.isGlobalSymbol(sym);
+  }
+
+  isEnumStringLiteral(expr: ts.Expression): boolean {
+    const symbol = this.trueSymbolAtLocation(expr);
+    const isEnumMember = !!symbol && !!(symbol.flags & ts.SymbolFlags.EnumMember);
+    const type = this.tsTypeChecker.getTypeAtLocation(expr);
+    const isStringEnumLiteral = TsUtils.isEnumType(type) && !!(type.flags & ts.TypeFlags.StringLiteral);
+    return isEnumMember && isStringEnumLiteral;
   }
 }
