@@ -504,19 +504,13 @@ export class TsUtils {
     return TsUtils.isTypeReference(t) && t.target !== t ? t.target : t;
   }
 
-  private needToDeduceStructuralIdentityHandleUnionsAsExpression(
-    lhsType: ts.Type,
-    rhsType: ts.Type
-  ): boolean {
+  private needToDeduceStructuralIdentityHandleUnionsAsExpression(lhsType: ts.Type, rhsType: ts.Type): boolean {
     void this;
 
     /*
      * For now we only support this scenario: A | B | C as B, i.e. identity conversion.
      * This may change in the future.
      */
-
-    lhsType = TsUtils.reduceReference(lhsType);
-    rhsType = TsUtils.reduceReference(rhsType);
 
     // handle case of A | B | C as A | B
     if (lhsType.isUnion()) {
@@ -570,14 +564,12 @@ export class TsUtils {
     return false;
   }
 
-
   private needToDeduceStructuralIdentityHandleUnions(
     lhsType: ts.Type,
     rhsType: ts.Type,
     rhsExpr: ts.Expression,
     asExpression: boolean
   ): boolean {
-
     if (asExpression) {
       return this.needToDeduceStructuralIdentityHandleUnionsAsExpression(lhsType, rhsType);
     }

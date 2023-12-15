@@ -356,3 +356,120 @@ function union(x: X, xy: X | Y, xz: X | Z, xyz: X | Y | Z, w: W, xw: X | W, zw: 
   xz = zw; // OK
   zw = xz; // ERR, 'X | Z' assigned to 'Z | W'
 }
+
+class C0 {}
+class C1 {}
+class C2<T> {}
+
+type U1 = number | string | boolean;
+type U2 = number[] | string[] | boolean[];
+type U3 = C1 | C2<number> | C2<string>;
+type U4 = C1[] | C2<number>[] | C2<string>[];
+
+function testUnionStructuralIdentityNegative(u1: U1, u2: U2, u3: U3, u4: U4) {
+  // no CTE expected
+  u1 as number;
+  u1 as string;
+  u1 as boolean;
+
+  u1 as number | string;
+  u1 as number | boolean;
+  u1 as string | boolean;
+
+  u1 as number | string | boolean;
+  u1 as boolean | number | string;
+  u1 as U1;
+
+  // no CTE expected
+  u2 as number[];
+  u2 as string[];
+  u2 as boolean[];
+
+  u2 as number[] | string[];
+  u2 as number[] | boolean[];
+  u2 as string[] | boolean[];
+
+  u2 as number[] | string[] | boolean[];
+  u2 as boolean[] | number[] | string[];
+  u2 as U2;
+
+  // no CTE expected
+  u3 as C1;
+  u3 as C2<number>;
+  u3 as C2<string>;
+
+  u3 as C1 | C2<number>;
+  u3 as C1 | C2<string>;
+  u3 as C2<number> | C2<string>;
+
+  u3 as C1 | C2<number> | C2<string>;
+  u3 as C2<string> | C2<number> | C1;
+  u3 as U3;
+
+  // no CTE expected
+  u4 as C1[];
+  u4 as C2<number>[];
+  u4 as C2<string>[];
+
+  u4 as C1[] | C2<number>[];
+  u4 as C1[] | C2<string>[];
+  u4 as C2<number>[] | C2<string>[];
+
+  u4 as C1[] | C2<number>[] | C2<string>[];
+  u4 as C2<string>[] | C2<number>[] | C1[];
+  u4 as U4;
+}
+
+function testUnionStructuralIdentityPositive(u1: U1, u2: U2, u3: U3, u4: U4) {
+  // CTE expected, since no boxing rules are put in place right now
+  u1 as Number;
+  u1 as String;
+  u1 as Boolean;
+
+  u1 as Number | String;
+  u1 as Number | Boolean;
+  u1 as String | Boolean;
+
+  u1 as Number | String | Boolean;
+  u1 as Boolean | Number | String;
+  u1 as U1 | U2;
+
+  // CTE expected, since no boxing rules are put in place right now
+  u2 as Number[];
+  u2 as String[];
+  u2 as Boolean[];
+
+  u2 as Number[] | String[];
+  u2 as Number[] | Boolean[];
+  u2 as String[] | Boolean[];
+
+  u2 as Number[] | String[] | Boolean[];
+  u2 as Boolean[] | Number[] | String[];
+  u2 as U2 | U1;
+
+  // CTE expected
+  u3 as C1 | C0;
+  u3 as C2<boolean>;
+  u3 as C2<C1>;
+
+  u3 as C1 | C2<number> | C2<string> | C0;
+  u3 as C1 | C2<string> | number;
+  u3 as C2<number> | C2<string> | C2<boolean>;
+
+  u3 as C1 | C2<number> | C2<boolean>;
+  u3 as C2<string> | C2<number> | C0;
+  u3 as U3 | U4;
+
+  // CTE expected
+  u3 as C1[] | C0[];
+  u3 as C2<boolean>[];
+  u3 as C2<C1>[];
+
+  u3 as C1[] | C2<number>[] | C2<string>[] | C0[];
+  u3 as C1[] | C2<string>[] | undefined[];
+  u3 as C2<number>[] | C2<string>[] | C2<boolean>[];
+
+  u3 as C1[] | C2<number>[] | C2<string>[];
+  u3 as C2<string>[] | C2<number>[] | C0[];
+  u3 as U3 | U4;
+}
