@@ -718,6 +718,18 @@ bool Helpers::SetFuncFlagsForDirectives(const ir::StringLiteral *strLit, ir::Scr
         return true;
     }
 
+    if (strLit->Str().Is(USE_SENDABLE)) {
+        auto *classDef = const_cast<ir::ClassDefinition*>(GetClassDefiniton(func));
+        classDef->SetSendable();
+        func->AddFlag(ir::ScriptFunctionFlags::CONCURRENT);
+        for (auto *stmt : classDef->Body()) {
+            if (stmt->IsMethodDefinition()){
+                stmt->AsMethodDefinition()->Function()->AddFlag(ir::ScriptFunctionFlags::CONCURRENT);
+            }
+        }
+        return true;
+    }
+
     return false;
 }
 

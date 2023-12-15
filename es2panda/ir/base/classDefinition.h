@@ -206,6 +206,11 @@ public:
         return scope_->staticMethodValidation_ != 0;
     }
 
+    void SetSendable()
+    {
+        isSendable_ = true;
+    }
+
     const FunctionExpression *Ctor() const;
 
     util::StringView GetName() const;
@@ -247,6 +252,7 @@ private:
     bool needInstanceInitializer_ {false};
     bool hasComputedKey_ {false};
     bool hasPrivateElement_ {false};
+    bool isSendable_ {false};
 };
 
 }  // namespace panda::es2panda::ir

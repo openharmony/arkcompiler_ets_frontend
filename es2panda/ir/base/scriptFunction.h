@@ -210,7 +210,7 @@ public:
 
     bool CanBeConcurrent() const
     {
-        return !(IsGenerator() || IsArrow() || IsConstructor() || IsMethod());
+        return !(IsGenerator() || IsArrow());
     }
 
     void AddConcurrentModuleRequest(int moduleRequestId)
