@@ -193,9 +193,9 @@ private:
     ir::TypeNode *ParseFunctionType();
     ir::TypeNode *ParseETSTupleType(TypeAnnotationParsingOptions *options);
     std::pair<bool, std::size_t> CheckDefaultParameters(const ir::ScriptFunction *function) const;
-    ir::MethodDefinition *CreateProxyMethodDefinition(ir::MethodDefinition const *method,
-                                                      ir::Identifier const *identNode);
-    ir::MethodDefinition *CreateProxyConstructorDefinition(ir::MethodDefinition const *method);
+    ir::MethodDefinition *CreateProxyMethodDefinition(ir::MethodDefinition const *const method,
+                                                      ir::Identifier const *const identNode);
+    ir::MethodDefinition *CreateProxyConstructorDefinition(ir::MethodDefinition const *const method);
     void AddProxyOverloadToMethodWithDefaultParams(ir::MethodDefinition *method, ir::Identifier *identNode = nullptr);
     static std::string PrimitiveTypeToName(ir::PrimitiveType type);
     std::string GetNameForTypeNode(const ir::TypeNode *typeAnnotation, bool adjust = true) const;
@@ -330,7 +330,7 @@ private:
 
     ir::Expression *ParsePotentialExpressionSequence(ir::Expression *expr, ExpressionParseFlags flags) override;
 
-    ir::ModifierFlags ParseTypeVarianceModifier(TypeAnnotationParsingOptions *options);
+    ir::ModifierFlags ParseTypeVarianceModifier(TypeAnnotationParsingOptions *const options);
 
     ir::ScriptFunction *AddInitMethod(ArenaVector<ir::AstNode *> &globalProperties);
     ir::Statement *ParseTopLevelStatement(StatementParsingFlags flags = StatementParsingFlags::NONE);

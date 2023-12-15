@@ -80,9 +80,9 @@ public:
 
     [[nodiscard]] bool IsLiteralType() const noexcept;
 
-    [[nodiscard]] bool IsSameEnumType(const ETSEnumInterface *other) const noexcept;
+    [[nodiscard]] bool IsSameEnumType(const ETSEnumInterface *const other) const noexcept;
 
-    [[nodiscard]] bool IsSameEnumLiteralType(const ETSEnumInterface *other) const noexcept;
+    [[nodiscard]] bool IsSameEnumLiteralType(const ETSEnumInterface *const other) const noexcept;
 
     [[nodiscard]] bool IsEnumInstanceExpression(const ir::Expression *expression) const noexcept;
 

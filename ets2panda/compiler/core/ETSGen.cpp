@@ -644,10 +644,10 @@ void ETSGen::CreateLambdaObjectFromMemberReference(const ir::AstNode *node, ir::
 }
 
 // NOLINTBEGIN(cppcoreguidelines-macro-usage, readability-container-size-empty)
-#define CONV_LAMBDA_CTOR_ARG(idx)                              \
-    ASSERT(idx < arguments.size());                            \
-    auto *paramType##idx = signature->Params()[idx]->TsType(); \
-    auto ttctx##idx = TargetTypeContext(this, paramType##idx); \
+#define CONV_LAMBDA_CTOR_ARG(idx)                                \
+    ASSERT((idx) < arguments.size());                            \
+    auto *paramType##idx = signature->Params()[(idx)]->TsType(); \
+    auto ttctx##idx = TargetTypeContext(this, paramType##idx);   \
     ApplyConversion(node, paramType##idx)
 
 void ETSGen::InitLambdaObject(const ir::AstNode *node, checker::Signature *signature, std::vector<VReg> &arguments)

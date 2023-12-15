@@ -13,11 +13,11 @@
  * limitations under the License.
  */
 
+#ifndef ES2PANDA_UTIL_GENERATEBIN_H
+#define ES2PANDA_UTIL_GENERATEBIN_H
+
 #include "parser/program/program.h"
 #include "util/options.h"
-
-#ifndef ES2PANDA_UTIL_GENERATE_BIN_H
-#define ES2PANDA_UTIL_GENREATE_BIN_H
 
 namespace panda::es2panda::util {
 
@@ -27,4 +27,4 @@ int GenerateProgram(panda::pandasm::Program *prog, const util::Options *options,
 
 }  // namespace panda::es2panda::util
 
-#endif
+#endif  // ES2PANDA_UTIL_GENERATEBIN_H

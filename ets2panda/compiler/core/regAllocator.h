@@ -29,7 +29,7 @@ class CodeGen;
 
 class AllocatorBase {
 public:
-    explicit AllocatorBase(CodeGen *cg) noexcept;
+    explicit AllocatorBase(CodeGen *const cg) noexcept;
     NO_COPY_SEMANTIC(AllocatorBase);
     NO_MOVE_SEMANTIC(AllocatorBase);
     ~AllocatorBase() = default;
@@ -60,7 +60,7 @@ private:
 
 class SimpleAllocator final : public AllocatorBase {
 public:
-    explicit SimpleAllocator(CodeGen *cg) noexcept;
+    explicit SimpleAllocator(CodeGen *const cg) noexcept;
     NO_COPY_SEMANTIC(SimpleAllocator);
     NO_MOVE_SEMANTIC(SimpleAllocator);
     ~SimpleAllocator() = default;

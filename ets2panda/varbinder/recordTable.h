@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef ES2PANDA_recordTable_RECORD_TABLE_H
-#define ES2PANDA_recordTable_RECORD_TABLE_H
+#ifndef ES2PANDA_VARBINDER_RECORDTABLE_H
+#define ES2PANDA_VARBINDER_RECORDTABLE_H
 
 #include "macros.h"
 #include "utils/arena_containers.h"
@@ -186,4 +186,4 @@ private:
 
 }  // namespace panda::es2panda::varbinder
 
-#endif
+#endif  // ES2PANDA_VARBINDER_RECORDTABLE_H

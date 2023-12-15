@@ -48,7 +48,7 @@ public:
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define TO_STR(e, s, d) \
     if (id_ == Id::e) { \
-        return s;       \
+        return (s);     \
     }
         LANGUAGES(TO_STR)
 #undef TO_STR
@@ -59,7 +59,7 @@ public:
     {
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define FROM_STR(e, s, d)       \
-    if (str == s) {             \
+    if (str == (s)) {           \
         return Language(Id::e); \
     }
         LANGUAGES(FROM_STR)
@@ -77,7 +77,7 @@ public:
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define TO_DYN(e, s, d) \
     if (id_ == Id::e) { \
-        return d;       \
+        return (d);     \
     }
         LANGUAGES(TO_DYN)
 #undef TO_DYN

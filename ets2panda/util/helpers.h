@@ -142,7 +142,7 @@ public:
     static const uint32_t INVALID_INDEX = 4294967295L;
 
     static std::string CreateEscapedString(const std::string &str);
-    static std::string UTF16toUTF8(char16_t c);
+    static std::string UTF16toUTF8(const char16_t c);
 
     template <typename... Elements>
     static void LogDebug(Elements &&...elems);
