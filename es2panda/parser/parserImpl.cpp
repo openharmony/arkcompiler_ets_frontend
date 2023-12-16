@@ -2992,7 +2992,9 @@ bool ParserImpl::IsMethodDefinitionsAreSame(const ir::MethodDefinition *property
 
 ir::Identifier *ParserImpl::SetIdentNodeInClassDefinition(bool isDeclare, binder::ConstDecl **decl)
 {
-    CheckStrictReservedWord();
+    if (!isDeclare) {
+        CheckStrictReservedWord();
+    }
 
     const util::StringView &identStr = lexer_->GetToken().Ident();
 
@@ -3032,17 +3034,9 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
     }
 
     // Parse SuperClass
-    ir::Expression *superClass = nullptr;
     bool hasSuperClass = false;
     bool isExtendsFromNull = false;
-
-    if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_EXTENDS) {
-        lexer_->NextToken();
-        hasSuperClass = true;
-        superClass = ParseLeftHandSideExpression();
-        ASSERT(superClass != nullptr);
-        isExtendsFromNull = superClass->IsNullLiteral();
-    }
+    ir::Expression *superClass = ParseSuperClass(isDeclare, &hasSuperClass, &isExtendsFromNull);
 
     ir::TSTypeParameterInstantiation *superTypeParams = nullptr;
     if (Extension() == ScriptExtension::TS && (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN ||
@@ -3054,55 +3048,7 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
         superTypeParams = ParseTsTypeParameterInstantiation();
     }
 
-    ArenaVector<ir::TSClassImplements *> implements(Allocator()->Adapter());
-    if (Extension() == ScriptExtension::TS && lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_IMPLEMENTS) {
-        lexer_->NextToken();
-
-        while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-            lexer::SourcePosition implStart = lexer_->GetToken().Start();
-
-            if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-                ThrowSyntaxError("Identifier expected");
-            }
-
-            ir::Expression *expr = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
-            expr->SetRange(lexer_->GetToken().Loc());
-            expr->AsIdentifier()->SetReference();
-
-            lexer_->NextToken();
-
-            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
-                expr = ParseTsQualifiedReference(expr);
-            }
-
-            ir::TSTypeParameterInstantiation *implTypeParams = nullptr;
-            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SHIFT) {
-                lexer_->BackwardToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, 1);
-            }
-
-            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN ||
-                lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SHIFT) {
-                implTypeParams = ParseTsTypeParameterInstantiation();
-            }
-
-            auto *impl = AllocNode<ir::TSClassImplements>(expr, implTypeParams);
-            impl->SetRange({implStart, lexer_->GetToken().End()});
-            implements.push_back(impl);
-
-            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
-                lexer_->NextToken();
-                continue;
-            }
-
-            if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-                ThrowSyntaxError("',' expected");
-            }
-        }
-
-        if (implements.empty()) {
-            ThrowSyntaxError("Implements clause can not be empty");
-        }
-    }
+    ArenaVector<ir::TSClassImplements *> implements = ParseTSClassImplements(isDeclare);
 
     if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
         ThrowSyntaxError("Unexpected token, expected '{'");
@@ -3185,6 +3131,74 @@ ir::ClassDefinition *ParserImpl::ParseClassDefinition(bool isDeclaration, bool i
 
     classCtx.GetScope()->BindNode(classDefinition);
     return classDefinition;
+}
+
+ir::Expression *ParserImpl::ParseSuperClass(bool isDeclare, bool *hasSuperClass, bool *isExtendsFromNull)
+{
+    ir::Expression *superClass = nullptr;
+    if (lexer_->GetToken().Type() != lexer::TokenType::KEYW_EXTENDS) {
+        return nullptr;
+    }
+
+    lexer_->NextToken();
+    if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_AWAIT && isDeclare) {
+        lexer_->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
+    }
+
+    *hasSuperClass = true;
+    superClass = ParseLeftHandSideExpression();
+    ASSERT(superClass != nullptr);
+    *isExtendsFromNull = superClass->IsNullLiteral();
+
+    return superClass;
+}
+
+ArenaVector<ir::TSClassImplements *> ParserImpl::ParseTSClassImplements(bool isDeclare)
+{
+    ArenaVector<ir::TSClassImplements *> implements(Allocator()->Adapter());
+
+    if (Extension() != ScriptExtension::TS || lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_IMPLEMENTS) {
+        return implements;
+    }
+
+    lexer_->NextToken();
+    while (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+        lexer::SourcePosition implStart = lexer_->GetToken().Start();
+        if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT &&
+            !(lexer_->GetToken().Type() == lexer::TokenType::KEYW_AWAIT && isDeclare)) {
+            ThrowSyntaxError("Identifier expected");
+        }
+        ir::Expression *expr = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
+        expr->SetRange(lexer_->GetToken().Loc());
+        expr->AsIdentifier()->SetReference();
+        lexer_->NextToken();
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
+            expr = ParseTsQualifiedReference(expr);
+        }
+        ir::TSTypeParameterInstantiation *implTypeParams = nullptr;
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SHIFT) {
+            lexer_->BackwardToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, 1);
+        }
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN ||
+            lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_SHIFT) {
+            implTypeParams = ParseTsTypeParameterInstantiation();
+        }
+        auto *impl = AllocNode<ir::TSClassImplements>(expr, implTypeParams);
+        impl->SetRange({implStart, lexer_->GetToken().End()});
+        implements.push_back(impl);
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COMMA) {
+            lexer_->NextToken();
+            continue;
+        }
+        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+            ThrowSyntaxError("',' expected");
+        }
+    }
+    if (implements.empty()) {
+        ThrowSyntaxError("Implements clause can not be empty");
+    }
+
+    return implements;
 }
 
 void ParserImpl::ValidateClassConstructor(const ir::MethodDefinition *ctor,
@@ -3413,7 +3427,8 @@ ir::TSEnumDeclaration *ParserImpl::ParseEnumDeclaration(bool isExport, bool isDe
     lexer::SourcePosition enumStart = lexer_->GetToken().Start();
     lexer_->NextToken();  // eat enum keyword
 
-    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT &&
+        lexer_->GetToken().Type() != lexer::TokenType::KEYW_AWAIT) {
         ThrowSyntaxError("Identifier expected");
     }
 

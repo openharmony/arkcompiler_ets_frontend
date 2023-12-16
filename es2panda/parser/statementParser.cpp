@@ -159,6 +159,9 @@ bool ParserImpl::IsTsDeclarationStatement() const
 
     auto keywordType = lexer_->GetToken().KeywordType();
     lexer_->NextToken();
+    if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_AWAIT) {
+        lexer_->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
+    }
     switch (keywordType) {
         case lexer::TokenType::KEYW_MODULE:
         case lexer::TokenType::KEYW_NAMESPACE: {
@@ -318,9 +321,15 @@ ir::TSModuleDeclaration *ParserImpl::ParseTsModuleDeclaration(bool isDeclare, bo
 
     if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_NAMESPACE) {
         lexer_->NextToken();
+        if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_AWAIT) {
+            lexer_->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
+        }
     } else {
         ASSERT(lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_MODULE);
         lexer_->NextToken();
+        if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_AWAIT) {
+            lexer_->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
+        }
         if (lexer_->GetToken().Type() == lexer::TokenType::LITERAL_STRING) {
             return ParseTsAmbientExternalModuleDeclaration(startLoc, isDeclare);
         }
@@ -687,7 +696,8 @@ ir::TSTypeAliasDeclaration *ParserImpl::ParseTsTypeAliasDeclaration(bool isDecla
     lexer::SourcePosition typeStart = lexer_->GetToken().Start();
     lexer_->NextToken();  // eat type keyword
 
-    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT &&
+        !(lexer_->GetToken().Type() == lexer::TokenType::KEYW_AWAIT && isDeclare)) {
         ThrowSyntaxError("Identifier expected");
     }
 
@@ -735,16 +745,7 @@ ir::TSInterfaceDeclaration *ParserImpl::ParseTsInterfaceDeclaration(bool isDecla
     lexer::SourcePosition interfaceStart = lexer_->GetToken().Start();
     lexer_->NextToken();  // eat interface keyword
 
-    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-        ThrowSyntaxError("Identifier expected");
-    }
-
-    if (lexer_->GetToken().IsReservedTypeName()) {
-        std::string errMsg("Interface name cannot be '");
-        errMsg.append(TokenToString(lexer_->GetToken().KeywordType()));
-        errMsg.append("'");
-        ThrowSyntaxError(errMsg.c_str());
-    }
+    ValidateTsInterfaceName(isDeclare);
 
     const util::StringView &ident = lexer_->GetToken().Ident();
     binder::TSBinding tsBinding(Allocator(), ident);
@@ -774,53 +775,7 @@ ir::TSInterfaceDeclaration *ParserImpl::ParseTsInterfaceDeclaration(bool isDecla
         typeParamDecl = ParseTsTypeParameterDeclaration(true, true);
     }
 
-    ArenaVector<ir::TSInterfaceHeritage *> extends(Allocator()->Adapter());
-    if (lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_EXTENDS) {
-        lexer_->NextToken();  // eat extends keyword
-        while (true) {
-            if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
-                ThrowSyntaxError("Identifier expected");
-            }
-
-            const lexer::SourcePosition &heritageStart = lexer_->GetToken().Start();
-            lexer::SourcePosition heritageEnd = lexer_->GetToken().End();
-            ir::Expression *expr = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
-            expr->AsIdentifier()->SetReference();
-            expr->SetRange(lexer_->GetToken().Loc());
-
-            if (lexer_->Lookahead() == LEX_CHAR_LESS_THAN) {
-                lexer_->ForwardToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, 1);
-            } else {
-                lexer_->NextToken();
-            }
-
-            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
-                expr = ParseTsQualifiedReference(expr);
-            }
-
-            ir::TSTypeParameterInstantiation *typeParamInst = nullptr;
-            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
-                typeParamInst = ParseTsTypeParameterInstantiation();
-                heritageEnd = typeParamInst->End();
-            }
-
-            auto *typeReference = AllocNode<ir::TSTypeReference>(expr, typeParamInst);
-            typeReference->SetRange({heritageStart, heritageEnd});
-            auto *heritage = AllocNode<ir::TSInterfaceHeritage>(typeReference);
-            heritage->SetRange(typeReference->Range());
-            extends.push_back(heritage);
-
-            if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
-                break;
-            }
-
-            if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
-                ThrowSyntaxError("',' expected");
-            }
-
-            lexer_->NextToken();
-        }
-    }
+    ArenaVector<ir::TSInterfaceHeritage *> extends = ParseTsInterfaceExtends();
 
     lexer::SourcePosition bodyStart = lexer_->GetToken().Start();
     auto members = ParseTsTypeLiteralOrInterface();
@@ -843,6 +798,69 @@ ir::TSInterfaceDeclaration *ParserImpl::ParseTsInterfaceDeclaration(bool isDecla
     context_.Status() &= ~ParserStatus::ALLOW_THIS_TYPE;
 
     return interfaceDecl;
+}
+
+void ParserImpl::ValidateTsInterfaceName(bool isDeclare)
+{
+    if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT &&
+        !(lexer_->GetToken().Type() == lexer::TokenType::KEYW_AWAIT && isDeclare)) {
+        ThrowSyntaxError("Identifier expected");
+    }
+
+    if (lexer_->GetToken().IsReservedTypeName()) {
+        std::string errMsg("Interface name cannot be '");
+        errMsg.append(TokenToString(lexer_->GetToken().KeywordType()));
+        errMsg.append("'");
+        ThrowSyntaxError(errMsg.c_str());
+    }
+}
+
+ArenaVector<ir::TSInterfaceHeritage *> ParserImpl::ParseTsInterfaceExtends()
+{
+    ArenaVector<ir::TSInterfaceHeritage *> extends(Allocator()->Adapter());
+
+    if (lexer_->GetToken().KeywordType() != lexer::TokenType::KEYW_EXTENDS) {
+        return extends;
+    }
+
+    lexer_->NextToken();  // eat extends keyword
+    while (true) {
+        if (lexer_->GetToken().Type() != lexer::TokenType::LITERAL_IDENT) {
+            ThrowSyntaxError("Identifier expected");
+        }
+        const lexer::SourcePosition &heritageStart = lexer_->GetToken().Start();
+        lexer::SourcePosition heritageEnd = lexer_->GetToken().End();
+        ir::Expression *expr = AllocNode<ir::Identifier>(lexer_->GetToken().Ident());
+        expr->AsIdentifier()->SetReference();
+        expr->SetRange(lexer_->GetToken().Loc());
+        if (lexer_->Lookahead() == LEX_CHAR_LESS_THAN) {
+            lexer_->ForwardToken(lexer::TokenType::PUNCTUATOR_LESS_THAN, 1);
+        } else {
+            lexer_->NextToken();
+        }
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_PERIOD) {
+            expr = ParseTsQualifiedReference(expr);
+        }
+        ir::TSTypeParameterInstantiation *typeParamInst = nullptr;
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LESS_THAN) {
+            typeParamInst = ParseTsTypeParameterInstantiation();
+            heritageEnd = typeParamInst->End();
+        }
+        auto *typeReference = AllocNode<ir::TSTypeReference>(expr, typeParamInst);
+        typeReference->SetRange({heritageStart, heritageEnd});
+        auto *heritage = AllocNode<ir::TSInterfaceHeritage>(typeReference);
+        heritage->SetRange(typeReference->Range());
+        extends.push_back(heritage);
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_LEFT_BRACE) {
+            break;
+        }
+        if (lexer_->GetToken().Type() != lexer::TokenType::PUNCTUATOR_COMMA) {
+            ThrowSyntaxError("',' expected");
+        }
+        lexer_->NextToken();
+    }
+
+    return extends;
 }
 
 void ParserImpl::CheckFunctionDeclaration(StatementParsingFlags flags)
@@ -1914,7 +1932,7 @@ ir::TryStatement *ParserImpl::ParseTryStatement()
 }
 
 // TODO(frobert) : merge into lexer::LexerNextTokenFlags
-void ParserImpl::ValidateDeclaratorId()
+void ParserImpl::ValidateDeclaratorId(bool isDeclare)
 {
     if (context_.Status() & ParserStatus::IN_AMBIENT_CONTEXT) {
         return;
@@ -1922,7 +1940,7 @@ void ParserImpl::ValidateDeclaratorId()
 
     switch (lexer_->GetToken().KeywordType()) {
         case lexer::TokenType::KEYW_AWAIT: {
-            if (context_.IsModule() && !program_.IsDtsFile() && !context_.IsTsModule()) {
+            if (context_.IsModule() && !program_.IsDtsFile() && !context_.IsTsModule() && !isDeclare) {
                 ThrowSyntaxError("'await' is not permitted as an identifier in module code");
             }
             break;
@@ -1981,53 +1999,10 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclaratorInitializer(ir::Expre
 
 ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags flags, bool isDeclare)
 {
-    ir::Expression *init = nullptr;
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
-    switch (lexer_->GetToken().Type()) {
-        case lexer::TokenType::LITERAL_IDENT: {
-            ValidateDeclaratorId();
-
-            if (!(flags & VariableParsingFlags::VAR) &&
-                lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_LET) {
-                ThrowSyntaxError("let is disallowed as a lexically bound name");
-            }
-
-            const util::StringView &identStr = lexer_->GetToken().Ident();
-            init = AllocNode<ir::Identifier>(identStr);
-            init->SetRange(lexer_->GetToken().Loc());
-
-            if (Extension() == ScriptExtension::TS) {
-                init->AsIdentifier()->SetReference();
-            }
-
-            lexer_->NextToken();
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
-            init = ParseArrayExpression(ExpressionParseFlags::MUST_BE_PATTERN);
-            break;
-        }
-        case lexer::TokenType::PUNCTUATOR_LEFT_BRACE: {
-            init = ParseObjectExpression(ExpressionParseFlags::MUST_BE_PATTERN);
-            break;
-        }
-        default: {
-            ThrowSyntaxError("Unexpected token in variable declaration");
-        }
-    }
 
     bool isDefinite = false;
-    if (Extension() == ScriptExtension::TS) {
-        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
-            lexer_->NextToken();  // eat '!'
-            isDefinite = true;
-        }
-        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
-            lexer_->NextToken();  // eat ':'
-            TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
-            init->SetTsTypeAnnotation(ParseTsTypeAnnotation(&options));
-        }
-    }
+    ir::Expression *init = ParseVariableDeclaratorKey(flags, isDeclare, &isDefinite);
 
     ir::VariableDeclarator *declarator {};
 
@@ -2076,10 +2051,64 @@ ir::VariableDeclarator *ParserImpl::ParseVariableDeclarator(VariableParsingFlags
     return declarator;
 }
 
+ir::Expression *ParserImpl::ParseVariableDeclaratorKey(VariableParsingFlags flags, bool isDeclare, bool *isDefinite)
+{
+    if (lexer_->GetToken().Type() == lexer::TokenType::KEYW_AWAIT && isDeclare) {
+        lexer_->GetToken().SetTokenType(lexer::TokenType::LITERAL_IDENT);
+    }
+
+    ir::Expression *init = nullptr;
+    switch (lexer_->GetToken().Type()) {
+        case lexer::TokenType::LITERAL_IDENT: {
+            ValidateDeclaratorId(isDeclare);
+
+            if (!(flags & VariableParsingFlags::VAR) &&
+                lexer_->GetToken().KeywordType() == lexer::TokenType::KEYW_LET) {
+                ThrowSyntaxError("let is disallowed as a lexically bound name");
+            }
+
+            const util::StringView &identStr = lexer_->GetToken().Ident();
+            init = AllocNode<ir::Identifier>(identStr);
+            init->SetRange(lexer_->GetToken().Loc());
+
+            if (Extension() == ScriptExtension::TS) {
+                init->AsIdentifier()->SetReference();
+            }
+
+            lexer_->NextToken();
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_LEFT_SQUARE_BRACKET: {
+            init = ParseArrayExpression(ExpressionParseFlags::MUST_BE_PATTERN);
+            break;
+        }
+        case lexer::TokenType::PUNCTUATOR_LEFT_BRACE: {
+            init = ParseObjectExpression(ExpressionParseFlags::MUST_BE_PATTERN);
+            break;
+        }
+        default: {
+            ThrowSyntaxError("Unexpected token in variable declaration");
+        }
+    }
+
+    if (Extension() == ScriptExtension::TS) {
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_EXCLAMATION_MARK) {
+            lexer_->NextToken();  // eat '!'
+            *isDefinite = true;
+        }
+        if (lexer_->GetToken().Type() == lexer::TokenType::PUNCTUATOR_COLON) {
+            lexer_->NextToken();  // eat ':'
+            TypeAnnotationParsingOptions options = TypeAnnotationParsingOptions::THROW_ERROR;
+            init->SetTsTypeAnnotation(ParseTsTypeAnnotation(&options));
+        }
+    }
+
+    return init;
+}
+
 ir::Statement *ParserImpl::ParseVariableDeclaration(VariableParsingFlags flags, bool isDeclare, bool isExport)
 {
     lexer::SourcePosition startLoc = lexer_->GetToken().Start();
-
     if (!(flags & VariableParsingFlags::NO_SKIP_VAR_KIND)) {
         lexer_->NextToken();
     }
