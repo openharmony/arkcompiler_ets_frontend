@@ -2754,7 +2754,7 @@ void ETSChecker::ReplaceScope(ir::AstNode *root, ir::AstNode *old_node, varbinde
     root->Iterate([this, old_node, new_scope](ir::AstNode *child) {
         auto *scope = NodeScope(child);
         if (scope != nullptr) {
-            while (scope->Parent()->Node() != old_node) {
+            while (scope->Parent() != nullptr && scope->Parent()->Node() != old_node) {
                 scope = scope->Parent();
             }
             scope->SetParent(new_scope);
