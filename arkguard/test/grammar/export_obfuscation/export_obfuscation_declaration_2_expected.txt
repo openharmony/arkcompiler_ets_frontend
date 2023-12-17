@@ -12,15 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export declare struct y {
-    b1: string;
-    c1: string;
-    d1(): void;
+export declare struct q1 {
+    param1: string;
+    message1: string;
+    method1(): void;
 }
-export declare function a(c1, d1);
-export declare const z;
-export declare struct a1 {
-    e1: string;
-    f1: string;
-    g1(): void;
+export declare function h(v1, w1);
+export declare const s1;
+export declare struct t1 {
+    param2: string;
+    message2: string;
+    method2(): void;
 }

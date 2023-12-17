@@ -6,13 +6,13 @@
     "mDisableConsole": false,
     "mSimplify": false,
     "mNameObfuscation": {
-        "mEnable": true,
+        "mEnable": false,
         "mNameGeneratorType": 1,
         "mDictionaryList": [],
-        "mRenameProperties": true,
-        "mKeepStringProperty": false
+        "mRenameProperties": false,
+        "mKeepStringProperty": false,
+        "mTopLevel": false
     },
     "mEnableSourceMap": false,
-    "mEnableNameCache": false,
-    "mTopLevel": true
+    "mEnableNameCache": false
 }

@@ -12,9 +12,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { t, u } from './export_obfuscation_2';
-type h2 = t;
-let newValue = u + 1;
-export { c2, d2 } from './import_obfuscation_1';
-function publicFoo1(): void { }
-function publicFoo2(): void { }
+
+export function func11(para41: number, para42: number) {
+    return para41 + para42;
+}
+
+export class classDemo11 {
+    prop41: string;
+    prop42: number;
+    method23(para41: number) {
+    }
+    constructor(public param40: number) {
+    }
+}
+
+export class classDemo12 {
+    prop41: string;
+    prop42: number;
+    method33(para41: number) {
+    }
+    constructor(param40: number) {
+    }
+}
+
+export const valueTemp11: number = 1;
+
+const valueTemp12: number = 1;

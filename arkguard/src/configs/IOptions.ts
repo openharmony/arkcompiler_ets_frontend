@@ -44,8 +44,6 @@ export interface IOptions {
 
   readonly mOhSdkPath?: string;
 
-  readonly mTopLevel?: boolean;
-
   readonly mEnableSourceMap?: boolean;
 
   readonly mEnableNameCache?: boolean;

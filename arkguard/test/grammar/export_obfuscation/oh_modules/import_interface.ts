@@ -12,9 +12,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { t, u } from './export_obfuscation_2';
-type h2 = t;
-let newValue = u + 1;
-export { c2, d2 } from './import_obfuscation_1';
-function publicFoo1(): void { }
-function publicFoo2(): void { }
+
+import { publicFoo1 as publicFoo1Alias} from './export_interface';
+import { publicFoo2 } from './export_interface';
+import { publicFoo3Alias as publicFoo3 } from './export_interface';
+import { publicFoo4 } from './export_interface';
+import defaultValueExport from './export_interface';
+import { default as defaultExport} from './export_interface'
+
+publicFoo1Alias();
+publicFoo2();
+publicFoo3();
+publicFoo4();
+defaultValueExport;
+defaultExport;

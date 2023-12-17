@@ -21,19 +21,7 @@ import { Extension } from '../src/common/type';
 import { FileUtils } from '../src/utils/FileUtils';
 
 const testDirectory = path.resolve('./test/local');
-
-function compareWithExpected(filePath) {
-  const expectedFilePath = filePath.replace(/\.ts$/, '-expected.txt');
-
-  if (!fs.existsSync(expectedFilePath)) {
-    return true;
-  }
-
-  const actualContent = fs.readFileSync(filePath, 'utf-8').trim();
-  const expectedContent = fs.readFileSync(expectedFilePath, 'utf-8').trim();
-
-  return actualContent === expectedContent;
-}
+const NonExecutableFile = ['name_as_export_api_1.ts', 'name_as_import_api_1.ts'];
 
 function runTest(filePath) {
   try {
@@ -70,16 +58,22 @@ function runTestsInDirectory(directoryPath) {
       }
     } else if ((filePath.endsWith(Extension.TS) || filePath.endsWith(Extension.JS)) && !(filePath.endsWith(Extension.DETS) ||
       filePath.endsWith(Extension.DTS))) {
-      const isSuccess = runTest(filePath);
-      if (isSuccess) {
-        successCount++;
-      } else {
-        failureCount++;
-        failedFiles.push(filePath);
-      }
+      executeRunTest(file, filePath);
       compareContent(filePath);
     } else if (filePath.endsWith(Extension.DETS) || filePath.endsWith(Extension.DTS)) {
       compareContent(filePath);
+    }
+  }
+}
+
+function executeRunTest(fileName, filePath) {
+  if (!NonExecutableFile.includes(fileName)) {
+    const isSuccess = runTest(filePath);
+    if (isSuccess) {
+      successCount++;
+    } else {
+      failureCount++;
+      failedFiles.push(filePath);
     }
   }
 }

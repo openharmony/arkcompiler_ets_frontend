@@ -12,9 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { t, u } from './export_obfuscation_2';
-type h2 = t;
-let newValue = u + 1;
-export { c2, d2 } from './import_obfuscation_1';
-function publicFoo1(): void { }
-function publicFoo2(): void { }
+const assert = require('assert');
+const m5 = require('./xcommonjs-exports_1');
+assert.strictEqual(m5.v3, 1);
+assert.strictEqual(m5.w3, 2);
+assert.strictEqual(m5.x3(), 'Hello, world!');
+let n5 = new m5.n4();
+assert.strictEqual(n5.y3, '00001');
+assert.strictEqual(n5.g4.i4, 'jack3');
+assert.strictEqual(n5.g4.m4, 12);
+let o5 = new m5.o4();
+o5.r4 = 16;
+assert.strictEqual(o5.q4, 11);
+assert.strictEqual(o5.s4(), 16);

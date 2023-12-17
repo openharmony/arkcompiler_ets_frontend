@@ -12,9 +12,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { t, u } from './export_obfuscation_2';
-type h2 = t;
-let newValue = u + 1;
-export { c2, d2 } from './import_obfuscation_1';
-function publicFoo1(): void { }
-function publicFoo2(): void { }
+class l2 {
+    static readonly m1: number = 1;
+    private n1: string = 'hello';
+    o1() {
+        return 1;
+    }
+}
+export { l2 as s2 };
+class m2 {
+    static readonly m1: number = 1;
+    private n1: string = 'hello';
+    o1() {
+        return 1;
+    }
+}
+class n2 {
+}
+class o2 {
+}
+class q2 {
+}
+export { m2, n2, o2 as t2, q2 };
+export function i2() {
+    return 1 + 1;
+}
+export function j2() {
+    return 1 + 1;
+}
+export { u2, w2 as v2 };

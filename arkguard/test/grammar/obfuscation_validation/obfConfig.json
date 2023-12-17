@@ -1,6 +1,6 @@
 {
     "mCompact": false,
-    "mRemoveComments": false,
+    "mRemoveComments": true,
     "mOutputDir": "../../local",
     "mDisableHilog": false,
     "mDisableConsole": false,
@@ -22,9 +22,10 @@
             "strictEqual",
             "readFileSync"
         ],
-        "mKeepStringProperty": true
+        "mKeepStringProperty": true,
+        "mTopLevel": true
     },
     "mEnableSourceMap": false,
-    "mEnableNameCache": false,
-    "mTopLevel": true
+    "mEnableNameCache": false
+  
 }

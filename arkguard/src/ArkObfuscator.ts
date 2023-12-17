@@ -189,10 +189,6 @@ export class ArkObfuscator {
         continue;
       }
 
-      if (fileName === 'node_modules' || fileName === 'oh_modules') {
-        continue;
-      }
-
       await this.obfuscateDir(filePath, dirPrefix);
     }
   }

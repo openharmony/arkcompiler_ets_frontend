@@ -12,9 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { t, u } from './export_obfuscation_2';
-type h2 = t;
-let newValue = u + 1;
-export { c2, d2 } from './import_obfuscation_1';
-function publicFoo1(): void { }
-function publicFoo2(): void { }
+
+module.exports = {
+  myVariable2: 20,
+  myFunction2: function() {
+    return 'Hello, world2!';
+  },
+  obj2:{p2: 22}
+};

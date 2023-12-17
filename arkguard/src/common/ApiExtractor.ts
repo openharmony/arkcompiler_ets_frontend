@@ -16,6 +16,7 @@
 import type {
   ModifiersArray,
   Node,
+  ParameterDeclaration,
   SourceFile
 } from 'typescript';
 
@@ -42,16 +43,22 @@ import {
   isStringLiteral,
   ScriptTarget,
   SyntaxKind,
+  sys,
+  isConstructorDeclaration,
+  getModifiers
 } from 'typescript';
 
 import fs from 'fs';
 import path from 'path';
+import json5 from 'json5';
+
 import {
   getClassProperties,
   getElementAccessExpressionProperties,
   getEnumProperties, getInterfaceProperties,
   getObjectProperties,
   getTypeAliasProperties,
+  isParameterPropertyModifier,
 } from '../utils/OhsUtil';
 import { scanProjectConfig } from './ApiReader';
 import { stringPropsSet } from '../utils/OhsUtil';
@@ -67,13 +74,15 @@ export namespace ApiExtractor {
     API = 1,
     COMPONENT = 2,
     PROJECT_DEPENDS = 3,
-    PROJECT = 4
+    PROJECT = 4,
+    CONSTRUCTOR_PROPERTY = 5
   }
 
+  let mCurrentExportedPropertySet: Set<string> = new Set<string>();
   let mCurrentExportNameSet: Set<string> = new Set<string>();
   export let mPropertySet: Set<string> = new Set<string>();
   export let mLibExportNameSet: Set<string> = new Set<string>();
-
+  export let mConstructorPropertySet: Set<string> = undefined;
   /**
    * filter classes or interfaces with export, default, etc
    */
@@ -106,7 +115,7 @@ export namespace ApiExtractor {
     if (isExportAssignment(astNode)) {
       if (!mCurrentExportNameSet.has(astNode.expression.getText())) {
         mCurrentExportNameSet.add(astNode.expression.getText());
-        mPropertySet.add(astNode.expression.getText());
+        mCurrentExportedPropertySet.add(astNode.expression.getText());
       }
 
       return;
@@ -121,7 +130,7 @@ export namespace ApiExtractor {
     if (astNode.name) {
       if (!mCurrentExportNameSet.has(astNode.name.getText())) {
         mCurrentExportNameSet.add(astNode.name.getText());
-        mPropertySet.add(astNode.name.getText());
+        mCurrentExportedPropertySet.add(astNode.name.getText());
       }
 
       return;
@@ -132,7 +141,7 @@ export namespace ApiExtractor {
         const declarationName = declaration.name.getText();
         if (!mCurrentExportNameSet.has(declarationName)) {
           mCurrentExportNameSet.add(declarationName);
-          mPropertySet.add(declarationName);
+          mCurrentExportedPropertySet.add(declarationName);
         }
       });
     }
@@ -163,11 +172,11 @@ export namespace ApiExtractor {
       return;
     }
 
-    if (astNode.name !== undefined && !mPropertySet.has(astNode.name.getText())) {
+    if (astNode.name !== undefined && !mCurrentExportedPropertySet.has(astNode.name.getText())) {
       if (isStringLiteral(astNode.name)) {
-        mPropertySet.add(astNode.name.text);
+        mCurrentExportedPropertySet.add(astNode.name.text);
       } else {
-        mPropertySet.add(astNode.name.getText());
+        mCurrentExportedPropertySet.add(astNode.name.getText());
       }
     }
 
@@ -176,6 +185,35 @@ export namespace ApiExtractor {
     });
   };
 
+  // Collect constructor properties from all files.
+  const visitNodeForConstructorProperty = function (astNode): void {
+    if (!astNode) {
+      return;
+    }
+
+    if (isConstructorDeclaration) {
+      const visitParam = (param: ParameterDeclaration): void => {
+        const modifiers = getModifiers(param);
+        if (!modifiers || modifiers.length <= 0) {
+          return;
+        }
+
+        const findRet = modifiers.find(modifier => isParameterPropertyModifier(modifier));
+        if (!isIdentifier(param.name) || findRet === undefined) {
+          return;
+        }
+        mConstructorPropertySet?.add(param.name.getText());
+      };
+
+      astNode?.parameters?.forEach((param) => {
+        visitParam(param);
+      });
+    }
+
+    astNode.forEachChild((childNode) => {
+      visitNodeForConstructorProperty(childNode);
+    });
+  };
   /**
    * visit ast of a file and collect api list
    * used only in oh sdk api extract
@@ -224,13 +262,13 @@ export namespace ApiExtractor {
 
     if (isElementAccessExpression(left)) {
       if (isStringLiteral(left.argumentExpression)) {
-        mPropertySet.add(left.argumentExpression.text);
+        mCurrentExportedPropertySet.add(left.argumentExpression.text);
       }
     }
 
     if (isPropertyAccessExpression(left)) {
       if (isIdentifier(left.name)) {
-        mPropertySet.add(left.name.getText());
+        mCurrentExportedPropertySet.add(left.name.getText());
       }
     }
 
@@ -240,12 +278,12 @@ export namespace ApiExtractor {
     }
 
     if (isClassDeclaration(expression.right) || isClassExpression(expression.right)) {
-      getClassProperties(expression.right, mPropertySet);
+      getClassProperties(expression.right, mCurrentExportedPropertySet);
       return;
     }
 
     if (isObjectLiteralExpression(expression.right)) {
-      getObjectProperties(expression.right, mPropertySet);
+      getObjectProperties(expression.right, mCurrentExportedPropertySet);
     }
 
     return;
@@ -276,12 +314,12 @@ export namespace ApiExtractor {
       // let xxx; export default xxx = a;
       if (isBinaryExpression(astNode.expression)) {
         if (isObjectLiteralExpression(astNode.expression.right)) {
-          getObjectProperties(astNode.expression.right, mPropertySet);
+          getObjectProperties(astNode.expression.right, mCurrentExportedPropertySet);
           return;
         }
 
         if (isClassExpression(astNode.expression.right)) {
-          getClassProperties(astNode.expression.right, mPropertySet);
+          getClassProperties(astNode.expression.right, mCurrentExportedPropertySet);
         }
 
         return;
@@ -292,13 +330,13 @@ export namespace ApiExtractor {
       if (isIdentifier(astNode.expression)) {
         if (!mCurrentExportNameSet.has(astNode.expression.getText())) {
           mCurrentExportNameSet.add(astNode.expression.getText());
-          mPropertySet.add(astNode.expression.getText());
+          mCurrentExportedPropertySet.add(astNode.expression.getText());
         }
         return;
       }
 
       if (isObjectLiteralExpression(astNode.expression)) {
-        getObjectProperties(astNode.expression, mPropertySet);
+        getObjectProperties(astNode.expression, mCurrentExportedPropertySet);
       }
 
       return;
@@ -317,13 +355,13 @@ export namespace ApiExtractor {
             }
 
             let exportName = child.name.getText();
-            mPropertySet.add(exportName);
+            mCurrentExportedPropertySet.add(exportName);
             mCurrentExportNameSet.add(exportName);
           });
         }
 
         if (astNode.exportClause.kind === SyntaxKind.NamespaceExport) {
-          mPropertySet.add(astNode.exportClause.name.getText());
+          mCurrentExportedPropertySet.add(astNode.exportClause.name.getText());
           return;
         }
       }
@@ -340,7 +378,7 @@ export namespace ApiExtractor {
     if (astNode.name) {
       if (!mCurrentExportNameSet.has(astNode.name.getText())) {
         mCurrentExportNameSet.add(astNode.name.getText());
-        mPropertySet.add(astNode.name.getText());
+        mCurrentExportedPropertySet.add(astNode.name.getText());
       }
 
       forEachChild(astNode, visitProjectExport);
@@ -348,7 +386,7 @@ export namespace ApiExtractor {
     }
 
     if (isClassDeclaration(astNode)) {
-      getClassProperties(astNode, mPropertySet);
+      getClassProperties(astNode, mCurrentExportedPropertySet);
       return;
     }
 
@@ -356,7 +394,7 @@ export namespace ApiExtractor {
       astNode.declarationList.forEachChild((child) => {
         if (isVariableDeclaration(child) && !mCurrentExportNameSet.has(child.name.getText())) {
           mCurrentExportNameSet.add(child.name.getText());
-          mPropertySet.add(child.name.getText());
+          mCurrentExportedPropertySet.add(child.name.getText());
         }
       });
 
@@ -412,7 +450,7 @@ export namespace ApiExtractor {
 
   function addElement(currentPropsSet: Set<string>): void {
     currentPropsSet.forEach((element: string) => {
-      mPropertySet.add(element);
+      mCurrentExportedPropertySet.add(element);
     });
     currentPropsSet.clear();
   }
@@ -424,7 +462,7 @@ export namespace ApiExtractor {
    */
   const parseFile = function (fileName: string, apiType: ApiType): void {
     const sourceFile: SourceFile = createSourceFile(fileName, fs.readFileSync(fileName).toString(), ScriptTarget.ES2015, true);
-
+    mCurrentExportedPropertySet.clear();
     // get export name list
     switch (apiType) {
       case ApiType.COMPONENT:
@@ -446,26 +484,34 @@ export namespace ApiExtractor {
 
         forEachChild(sourceFile, visitProjectExport);
         forEachChild(sourceFile, visitProjectNode);
-        if (scanProjectConfig.mKeepStringProperty) {
-          stringPropsSet.forEach((element) => {
-            mPropertySet.add(element);
-          });
-          stringPropsSet.clear();
+
+        if (!isRemoteHar(fileName) && scanProjectConfig.mExportObfuscation) {
+          mCurrentExportedPropertySet.clear();
+          mCurrentExportNameSet.clear();
+          return;
         }
+
         if (scanProjectConfig.mExportObfuscation) {
           mCurrentExportNameSet.forEach((element) => {
             mLibExportNameSet.add(element);
           });
         }
-        mCurrentExportNameSet.clear();
+        break;
+      case ApiType.CONSTRUCTOR_PROPERTY:
+        forEachChild(sourceFile, visitNodeForConstructorProperty);
         break;
       default:
         break;
     }
+
+    mCurrentExportNameSet.clear();
+    mCurrentExportedPropertySet.forEach(item => mPropertySet.add(item));
+    mCurrentExportedPropertySet.clear();
   };
 
   const projectExtensions: string[] = ['.ets', '.ts', '.js'];
   const projectDependencyExtensions: string[] = ['.d.ets', '.d.ts', '.ets', '.ts', '.js'];
+  const resolvedModules = new Set();
   /**
    * traverse files of  api directory
    * @param apiPath api directory path
@@ -479,7 +525,17 @@ export namespace ApiExtractor {
       for (let fileName of fileNames) {
         let filePath: string = path.join(apiPath, fileName);
         if (fs.statSync(filePath).isDirectory()) {
+          const ohPackageJsonPath = path.join(filePath, 'oh-package.json5');
+          let packgeNameAndVersion = '';
+          if (fs.existsSync(ohPackageJsonPath)) {
+            const ohPackageContent = json5.parse(fs.readFileSync(ohPackageJsonPath, 'utf-8'));
+            packgeNameAndVersion = ohPackageContent.name + ohPackageContent.version;
+            if (resolvedModules.has(packgeNameAndVersion)) {
+              continue;
+            }
+          }
           traverseApiFiles(filePath, apiType);
+          packgeNameAndVersion.length > 0 && resolvedModules.add(packgeNameAndVersion);
           continue;
         }
         const suffix: string = path.extname(filePath);
@@ -545,21 +601,19 @@ export namespace ApiExtractor {
    * parse common project or file to extract exported api list
    * @return reserved api names
    */
-  export function parseCommonProject(projectPath: string, customProfiles: IOptions): string[] {
+  export function parseCommonProject(projectPath: string, customProfiles: IOptions, scanningApiType: ApiType): string[] {
     mPropertySet.clear();
-
+    stringPropsSet.clear();
     if (fs.lstatSync(projectPath).isFile()) {
       if (projectPath.endsWith('.ets') || projectPath.endsWith('.ts') || projectPath.endsWith('.js')) {
-        parseFile(projectPath, ApiType.PROJECT);
+        parseFile(projectPath, scanningApiType);
       }
     } else {
-      traverseApiFiles(projectPath, ApiType.PROJECT);
+      traverseApiFiles(projectPath, scanningApiType);
     }
 
-    const reservedProperties: string[] = customProfiles.mExportObfuscation ? [] : [...mPropertySet];
-
+    let reservedProperties: string[] = customProfiles.mExportObfuscation ? [] : [...mPropertySet];
     mPropertySet.clear();
-
     return reservedProperties;
   }
 
@@ -567,17 +621,18 @@ export namespace ApiExtractor {
    * parse api of third party libs like libs in node_modules
    * @param libPath
    */
-  export function parseThirdPartyLibs(libPath: string): {reservedProperties: string[]; reservedLibExportNames: string[] | undefined} {
+  export function parseThirdPartyLibs(libPath: string, scanningApiType: ApiType): {reservedProperties: string[]; reservedLibExportNames: string[] | undefined} {
     mPropertySet.clear();
     mLibExportNameSet.clear();
+    stringPropsSet.clear();
     if (fs.lstatSync(libPath).isFile()) {
       if (libPath.endsWith('.ets') || libPath.endsWith('.ts') || libPath.endsWith('.js')) {
-        parseFile(libPath, ApiType.PROJECT_DEPENDS);
+        parseFile(libPath, scanningApiType);
       }
     } else {
       const filesAndfolders = fs.readdirSync(libPath);
       for (let subPath of filesAndfolders) {
-        traverseApiFiles(path.join(libPath, subPath), ApiType.PROJECT_DEPENDS);
+        traverseApiFiles(path.join(libPath, subPath), scanningApiType);
       }
     }
     let reservedLibExportNames: string[] = undefined;
@@ -598,5 +653,14 @@ export namespace ApiExtractor {
   export function writeToFile(reservedProperties: string[], outputPath: string): void {
     let str: string = JSON.stringify(reservedProperties, null, '\t');
     fs.writeFileSync(outputPath, str);
+  }
+
+  export function isRemoteHar(filePath: string): boolean {
+    const realPath: string = sys.realpath(filePath);
+    return isInOhModuleFile(realPath);
+  }
+  
+  export function isInOhModuleFile(filePath: string): boolean {
+    return filePath.indexOf('/oh_modules/') !== -1 || filePath.indexOf('\\oh_modules\\') !== -1;
   }
 }

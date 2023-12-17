@@ -12,16 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export declare class c {
-    p: string | undefined;
-    q: number;
-    t: string;
-    constructor(x?: u);
+export declare class j {
+    e1: string | undefined;
+    f1: number;
+    g1: string;
+    constructor(o1?: l1);
 }
-export declare function a(v: number, w: number): number;
-declare class u {
-    u: string;
-    v: number;
-    a1: string;
+export declare function h(m1: number, n1: number): number;
+declare class l1 {
+    h1: string;
+    i1: number;
+    j1: string;
 }
 export {};

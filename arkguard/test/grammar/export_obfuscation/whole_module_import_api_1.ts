@@ -12,9 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { t, u } from './export_obfuscation_2';
-type h2 = t;
-let newValue = u + 1;
-export { c2, d2 } from './import_obfuscation_1';
-function publicFoo1(): void { }
-function publicFoo2(): void { }
+
+import { ns1 } from './whole_module_export_api_1';
+
+ns1.func01(3,4)
+let classdemo1Obj = new ns1.classDemo01(1);
+let classdemo2Obj = new ns1.classDemo02(2);
+const tmpValue = ns1.valueTemp1;

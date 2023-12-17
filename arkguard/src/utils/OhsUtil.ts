@@ -54,8 +54,15 @@ import type {
 } from 'typescript';
 
 import { OhPackType } from './TransformUtil';
+import { ApiExtractor } from '../common/ApiExtractor';
 
 export const stringPropsSet: Set<string> = new Set();
+/**
+ * The struct properties may be initialized in other files, but the properties in the struct definition are not obfuscated.
+ * So the whitelist of struct properties is collected during the project scanning process.
+ */
+export const structPropsSet: Set<string> = new Set();
+
 /**
  * find openHarmony module import statement
  * example:
@@ -265,6 +272,14 @@ export function getClassProperties(classNode: ClassDeclaration | ClassExpression
     return;
   }
 
+  if (isStructDeclaration(classNode)) {
+    getStructProperties(classNode, structPropsSet);
+  }
+  traverseMembersOfClass(classNode, propertySet);
+  return;
+}
+
+function traverseMembersOfClass(classNode: ClassDeclaration | ClassExpression | StructDeclaration, propertySet: Set<string>): void {
   classNode.members.forEach((member) => {
     if (!member) {
       return;
@@ -275,7 +290,6 @@ export function getClassProperties(classNode: ClassDeclaration | ClassExpression
       collectPropertyNamesAndStrings(memberName, propertySet);
     }
 
-
     if (isConstructorDeclaration(member) && member.parameters) {
       member.parameters.forEach((parameter) => {
         const modifiers = getModifiers(parameter);
@@ -284,6 +298,7 @@ export function getClassProperties(classNode: ClassDeclaration | ClassExpression
             let hasParameterPropertyModifier = modifiers.find(modifier => isParameterPropertyModifier(modifier)) !== undefined;
             if (hasParameterPropertyModifier) {
               propertySet.add(parameter.name.text);
+              ApiExtractor.mConstructorPropertySet?.add(parameter.name.text);
             }
           }
           processMemberInitializer(parameter.initializer, propertySet);
@@ -305,7 +320,6 @@ export function getClassProperties(classNode: ClassDeclaration | ClassExpression
     }
     processMemberInitializer(member.initializer, propertySet);
   });
-
   return;
 }
 
@@ -383,4 +397,14 @@ export function getObjectProperties(objNode: ObjectLiteralExpression, propertySe
   });
 
   return;
+}
+
+export function getStructProperties(structNode: StructDeclaration, propertySet: Set<string>): void {
+  structNode?.members?.forEach((member) => {
+    const memberName: PropertyName = member?.name;
+    if (!memberName) {
+      return;
+    }
+    collectPropertyNamesAndStrings(memberName, propertySet);
+  });
 }

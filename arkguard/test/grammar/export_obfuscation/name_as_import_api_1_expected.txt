@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { j2 as b3, n2 as c3, t2 } from './name_as_export_api_1';
+import { n2, s2 as l2 } from './name_as_export_api_1';
+export { s2 as l3 } from './name_as_export_api_1';
+export { m2 } from './name_as_export_api_1';
+import { i2 } from './name_as_export_api_1';
+import { z3 as d3 } from './json5';
+import { a4 as e3 } from 'json5';
+import { f3 } from './json5';
+import { g3 } from 'json5';
+i2();
+b3();
+let h3 = new c3();
+let i3 = new d3();
+let j3 = new e3();
+function publicFoo1() {
+    const y3 = 1;
+}
+function publicFoo2() {
+    const x3 = 1;
+}
+function z2() {
+    const w3 = 1;
+}
+function publicFoo4() {
+    const v3 = 1;
+}
+function a3() {
+    const m3 = d3;
+    const n3 = d3.u1;
+    const o3 = e3;
+    const p3 = e3.v1;
+    const q3 = f3;
+    const r3 = f3.w1;
+    const s3 = g3;
+    const t3 = g3.m1;
+    const u3 = 1;
+}

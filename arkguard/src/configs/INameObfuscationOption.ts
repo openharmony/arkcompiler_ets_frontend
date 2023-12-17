@@ -30,6 +30,10 @@ export interface INameObfuscationOption {
   readonly mDictionaryList?: string[];
 
   readonly mKeepStringProperty?: boolean;
+
+  readonly mTopLevel?: boolean;
+
+  mReservedToplevelNames: string[];
 }
 
 export interface IFileNameObfuscationOption {

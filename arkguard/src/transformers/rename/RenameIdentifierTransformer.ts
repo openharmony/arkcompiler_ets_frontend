@@ -18,7 +18,9 @@ import {
   forEachChild,
   isBreakOrContinueStatement,
   isConstructorDeclaration,
+  isExportSpecifier,
   isIdentifier,
+  isImportSpecifier,
   isLabeledStatement,
   isSourceFile,
   isStructDeclaration,
@@ -46,6 +48,7 @@ import {
   isEnumScope,
   isInterfaceScope,
   isObjectLiteralScope,
+  noSymbolIdentifier,
 } from '../../utils/ScopeAnalyzer';
 
 import type {
@@ -63,6 +66,8 @@ import {getNameGenerator, NameGeneratorType} from '../../generator/NameFactory';
 import {TypeUtils} from '../../utils/TypeUtils';
 import {collectIdentifiersAndStructs} from '../../utils/TransformUtil';
 import {NodeUtils} from '../../utils/NodeUtils';
+import {ApiExtractor} from '../../common/ApiExtractor';
+import { globalMangledTable, historyMangledTable, reservedProperties } from './RenamePropertiesTransformer';
 
 namespace secharmony {
   /**
@@ -90,14 +95,16 @@ namespace secharmony {
     }
     let generator: INameGenerator = getNameGenerator(profile.mNameGeneratorType, options);
 
-    const openTopLevel: boolean = option?.mTopLevel;
+    const openTopLevel: boolean = option?.mNameObfuscation?.mTopLevel;
     const exportObfuscation: boolean = option?.mExportObfuscation;
     return renameIdentifierFactory;
 
     function renameIdentifierFactory(context: TransformationContext): Transformer<Node> {
       let reservedNames: string[] = [...(profile?.mReservedNames ?? []), 'this', '__global'];
+      profile?.mReservedToplevelNames?.forEach(item => reservedProperties.add(item));
       let mangledSymbolNames: Map<Symbol, string> = new Map<Symbol, string>();
       let mangledLabelNames: Map<Label, string> = new Map<Label, string>();
+      noSymbolIdentifier.clear();
 
       let historyMangledNames: Set<string> = undefined;
       if (historyNameCache && historyNameCache.size > 0) {
@@ -125,7 +132,7 @@ namespace secharmony {
 
         const shadowSourceAst: SourceFile = TypeUtils.createNewSourceFile(node);
         checker = TypeUtils.createChecker(shadowSourceAst);
-        manager.analyze(shadowSourceAst, checker);
+        manager.analyze(shadowSourceAst, checker, exportObfuscation);
 
         // the reservedNames of manager contain the struct name.
         if (!exportObfuscation) {
@@ -196,11 +203,10 @@ namespace secharmony {
           const original: string = def.name;
           let mangled: string = original;
           // No allow to rename reserved names.
-          if (reservedNames.includes(original) ||
+          if ((!Reflect.has(def, 'obfuscateAsProperty') && reservedNames.includes(original)) ||
             (!exportObfuscation && scope.exportNames.has(def.name)) ||
             isSkippedGlobal(openTopLevel, scope)) {
             scope.mangledNames.add(mangled);
-            mangledSymbolNames.set(def, mangled);
             return;
           }
 
@@ -210,21 +216,66 @@ namespace secharmony {
 
           const path: string = scope.loc + '#' + original;
           const historyName: string = historyNameCache?.get(path);
-          let specifyName: string = historyName ? historyName : nameCache.get(path);
-          specifyName = specifyName ? specifyName : globalNameCache.get(original);
 
-          if (specifyName) {
-            mangled = specifyName;
+          if (historyName) {
+            mangled = historyName;
+          } else if (Reflect.has(def, 'obfuscateAsProperty')) {
+            mangled = getPropertyMangledName(original);
           } else {
             mangled = getMangled(scope, generator);
           }
 
           // add new names to name cache
           nameCache.set(path, mangled);
-          globalNameCache.set(original, mangled);
           scope.mangledNames.add(mangled);
           mangledSymbolNames.set(def, mangled);
         });
+      }
+
+      function getPropertyMangledName(original: string): string {
+        if (reservedProperties.has(original)) {
+          return original;
+        }
+
+        const historyName: string = historyMangledTable?.get(original);
+        let mangledName: string = historyName ? historyName : globalMangledTable.get(original);
+
+        while (!mangledName) {
+          let tmpName = generator.getName();
+          if (reservedProperties.has(tmpName) || tmpName === original) {
+            continue;
+          }
+
+          let isInGlobalMangledTable = false;
+          for (const value of globalMangledTable.values()) {
+            if (value === tmpName) {
+              isInGlobalMangledTable = true;
+              break;
+            }
+          }
+
+          if (isInGlobalMangledTable) {
+            continue;
+          }
+
+          let isInHistoryMangledTable = false;
+          if (historyMangledTable) {
+            for (const value of historyMangledTable.values()) {
+              if (value === tmpName) {
+                isInHistoryMangledTable = true;
+                break;
+              }
+            }
+          }
+
+          if (!isInHistoryMangledTable) {
+            mangledName = tmpName;
+            break;
+          }
+        }
+
+        globalMangledTable.set(original, mangledName);
+        return mangledName;
       }
 
       function isExcludeScope(scope: Scope): boolean {
@@ -278,7 +329,13 @@ namespace secharmony {
             continue;
           }
 
-          if (searchMangledInParent(scope, mangled) || manager.getRootScope().constructorReservedParams.has(mangled)) {
+          if (searchMangledInParent(scope, mangled)) {
+            mangled = '';
+            continue;
+          }
+
+          if ((profile.mRenameProperties && manager.getRootScope().constructorReservedParams.has(mangled)) ||
+            ApiExtractor.mConstructorPropertySet?.has(mangled)) {
             mangled = '';
           }
         } while (mangled === '');
@@ -376,13 +433,22 @@ namespace secharmony {
           return node;
         }
 
-        const sym: Symbol | undefined = checker.getSymbolAtLocation(shadowNode);
-        if (!sym || sym.name === 'default') {
-          return node;
+        let sym: Symbol | undefined = checker.getSymbolAtLocation(shadowNode);
+        let mangledPropertyNameOfNoSymbolImportExport = '';
+        if ((!sym || sym.name === 'default')) {
+          if (exportObfuscation && noSymbolIdentifier.has(shadowNode.escapedText as string) && trySearchImportExportSpecifier(shadowNode)) {
+            mangledPropertyNameOfNoSymbolImportExport = mangleNoSymbolImportExportPropertyName(shadowNode.escapedText as string);
+          } else {
+            return node;
+          }
         }
 
-        const mangledName: string = mangledSymbolNames.get(sym);
-        if (!mangledName || mangledName === sym.name) {
+        let mangledName: string = mangledSymbolNames.get(sym);
+        if (!mangledName && mangledPropertyNameOfNoSymbolImportExport !== '') {
+          mangledName = mangledPropertyNameOfNoSymbolImportExport;
+        }
+
+        if (!mangledName || mangledName === sym?.name) {
           return node;
         }
 
@@ -401,6 +467,30 @@ namespace secharmony {
         });
 
         return label ? factory.createIdentifier(labelName) : node;
+      }
+
+      /**
+       * import {A as B} from 'modulename';
+       * import {C as D} from 'modulename';
+       * export {E as F};
+       * above A、C、F have no symbol, so deal with them specially.
+       */
+      function mangleNoSymbolImportExportPropertyName(original: string): string {
+        const path: string = '#' + original;
+        const historyName: string = historyNameCache?.get(path);
+        let mangled = historyName ?? getPropertyMangledName(original);
+        nameCache.set(path, mangled);
+        return mangled;
+      }
+
+      function trySearchImportExportSpecifier(node: Node): boolean {
+        while (node.parent) {
+          node = node.parent;
+          if ((isImportSpecifier(node) || isExportSpecifier(node)) && node.propertyName && isIdentifier(node.propertyName)) {
+            return true;
+          }
+        }
+        return false;
       }
     }
   };

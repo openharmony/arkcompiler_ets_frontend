@@ -12,13 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { c, a } from './export_obfuscation_1';
-let j1 = new c();
-const k1: string = j1.name;
-a(1, 2);
-export function h1(): void {
+import { j, h } from './export_obfuscation_1';
+let e2 = new j();
+const f2: string = e2.name;
+const g2: number = e2.g;
+h(1, 2);
+export function c2(): void {
     return;
 }
-export function i1(): void {
+export function d2(): void {
     return;
 }
