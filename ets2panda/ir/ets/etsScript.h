@@ -29,6 +29,7 @@ public:
     explicit ETSScript(ArenaAllocator *allocator, ArenaVector<Statement *> &&statementList, parser::Program *program)
         : BlockStatement(allocator, std::move(statementList)), program_(program)
     {
+        type_ = AstNodeType::ETS_SCRIPT;
     }
 
     parser::Program *Program()

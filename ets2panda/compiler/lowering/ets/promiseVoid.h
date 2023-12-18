@@ -20,9 +20,9 @@
 
 namespace panda::es2panda::compiler {
 
-class PromiseVoidLowering : public Phase {
+class PromiseVoidInferencePhase : public Phase {
 public:
-    std::string_view Name() override;
+    DECLARE_PHASE_NAME(PromiseVoidInferencePhase)
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
     bool Postcondition(public_lib::Context *ctx, const parser::Program *program) override;
 

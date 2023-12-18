@@ -22,10 +22,7 @@ namespace panda::es2panda::compiler {
 
 class ExpandBracketsPhase : public Phase {
 public:
-    std::string_view Name() override
-    {
-        return "expand-brackets";
-    }
+    DECLARE_PHASE_NAME(ExpandBracketsPhase)
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
 };
 

@@ -15,6 +15,7 @@
 
 #include "checkerPhase.h"
 #include "checker/checker.h"
+#include "compiler/core/ASTVerifier.h"
 #include "compiler/core/compilerContext.h"
 
 namespace panda::es2panda::compiler {

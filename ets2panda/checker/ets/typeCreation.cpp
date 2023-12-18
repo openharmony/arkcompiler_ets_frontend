@@ -484,8 +484,9 @@ ETSObjectType *ETSChecker::CreateNewETSObjectType(util::StringView name, ir::Ast
 
     if (containingObjType != nullptr) {
         prefix = containingObjType->AssemblerName();
-    } else if (declNode->GetTopStatement()->Type() !=
-               ir::AstNodeType::BLOCK_STATEMENT) {  // NOTE: should not occur, fix for TS_INTERFACE_DECLARATION
+    } else if (const auto *topStatement = declNode->GetTopStatement();
+               topStatement->Type() !=
+               ir::AstNodeType::ETS_SCRIPT) {  // NOTE: should not occur, fix for TS_INTERFACE_DECLARATION
         ASSERT(declNode->IsTSInterfaceDeclaration());
         assemblerName = declNode->AsTSInterfaceDeclaration()->InternalName();
     } else {

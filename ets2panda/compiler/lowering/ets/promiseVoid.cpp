@@ -16,6 +16,7 @@
 #include "promiseVoid.h"
 #include "checker/ETSchecker.h"
 #include "checker/checker.h"
+#include "compiler/core/ASTVerifier.h"
 #include "compiler/core/compilerContext.h"
 #include "generated/signatures.h"
 #include "ir/base/scriptFunction.h"
@@ -31,13 +32,6 @@
 #include "util/ustring.h"
 
 namespace panda::es2panda::compiler {
-
-std::string_view PromiseVoidLowering::Name()
-{
-    static std::string const NAME = "promise-void";
-    return NAME;
-}
-
 static ir::BlockStatement *HandleAsyncScriptFunctionBody(checker::ETSChecker *checker, ir::BlockStatement *body)
 {
     (void)checker;
@@ -128,7 +122,16 @@ static bool CheckForPromiseVoid(const ir::TypeNode *type)
     return isTypePromise && isParamVoid;
 }
 
-bool PromiseVoidLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+/*
+ * Transformation is basically syntactical: it adds relevant return type and return statements to methods and function
+ * NOTE: but not for lambdas, at least for now
+ * So, the code
+ * async function f() {}
+ * transforms to
+ * async function f(): Promise<void> { return Void; }
+ * */
+
+bool PromiseVoidInferencePhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     auto *checker = ctx->checker->AsETSChecker();
 
@@ -181,7 +184,7 @@ bool PromiseVoidLowering::Perform(public_lib::Context *ctx, parser::Program *pro
     return true;
 }
 
-bool PromiseVoidLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
+bool PromiseVoidInferencePhase::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
     (void)ctx;
 

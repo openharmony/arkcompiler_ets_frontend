@@ -18,6 +18,7 @@
 #include "checker/ETSchecker.h"
 #include "checker/checker.h"
 #include "checker/types/type.h"
+#include "compiler/core/ASTVerifier.h"
 #include "compiler/core/compilerContext.h"
 #include "compiler/lowering/util.h"
 #include "ir/astNode.h"
@@ -32,12 +33,6 @@
 #include "ir/ts/tsAsExpression.h"
 
 namespace panda::es2panda::compiler {
-
-std::string_view TupleLowering::Name()
-{
-    return "tuple-lowering";
-}
-
 static ir::Expression *ConvertTupleUpdate(checker::ETSChecker *const checker, ir::UpdateExpression *const update)
 {
     // Converts `tuple[n]++` to

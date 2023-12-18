@@ -15,16 +15,11 @@
 
 #include "lambdaLowering.h"
 #include "checker/checker.h"
+#include "compiler/core/ASTVerifier.h"
 #include "compiler/core/compilerContext.h"
 #include "util/declgenEts2Ts.h"
 
 namespace panda::es2panda::compiler {
-
-std::string_view LambdaLowering::Name()
-{
-    return "lambda-lowering";
-}
-
 static ir::AstNode *ConvertExpression(checker::ETSChecker *const checker, ir::ArrowFunctionExpression *const arrow)
 {
     auto *const function = arrow->Function();
@@ -43,7 +38,7 @@ static ir::AstNode *ConvertExpression(checker::ETSChecker *const checker, ir::Ar
     return arrow;
 }
 
-bool LambdaLowering::Perform(public_lib::Context *ctx, parser::Program *program)
+bool LambdaConstructionPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     for (auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;
@@ -66,7 +61,7 @@ bool LambdaLowering::Perform(public_lib::Context *ctx, parser::Program *program)
     return true;
 }
 
-bool LambdaLowering::Postcondition(public_lib::Context *ctx, const parser::Program *program)
+bool LambdaConstructionPhase::Postcondition(public_lib::Context *ctx, const parser::Program *program)
 {
     for (auto &[_, ext_programs] : program->ExternalSources()) {
         (void)_;

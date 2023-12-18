@@ -14,6 +14,7 @@
  */
 
 #include "unionLowering.h"
+#include "compiler/core/ASTVerifier.h"
 #include "varbinder/variableFlags.h"
 #include "varbinder/ETSBinder.h"
 #include "checker/ETSchecker.h"
@@ -38,12 +39,6 @@
 #include "type_helper.h"
 
 namespace panda::es2panda::compiler {
-
-std::string_view UnionLowering::Name()
-{
-    return "union-property-access";
-}
-
 ir::ClassDefinition *GetUnionFieldClass(checker::ETSChecker *checker, varbinder::VarBinder *varbinder)
 {
     // Create the name for the synthetic class node

@@ -22,7 +22,7 @@ namespace panda::es2panda::compiler {
 
 class StructLowering : public Phase {
 public:
-    std::string_view Name() override;
+    DECLARE_PHASE_NAME(StructLowering)
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
 };
 

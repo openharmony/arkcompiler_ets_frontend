@@ -32,6 +32,7 @@
 #include "compiler/lowering/ets/structLowering.h"
 #include "public/es2panda_lib.h"
 #include "compiler/lowering/ets/promiseVoid.h"
+#include "utils/json_builder.h"
 
 namespace panda::es2panda::compiler {
 
@@ -46,29 +47,31 @@ std::vector<Phase *> GetTrivialPhaseList()
 
 static InterfacePropertyDeclarationsPhase g_interfacePropDeclPhase;
 static GenerateTsDeclarationsPhase g_generateTsDeclarationsPhase;
-static LambdaLowering g_lambdaLowering;
+static LambdaConstructionPhase g_lambdaConstructionPhase;
 static OpAssignmentLowering g_opAssignmentLowering;
 static ObjectIndexLowering g_objectIndexLowering;
 static TupleLowering g_tupleLowering;  // Can be only applied after checking phase, and OP_ASSIGNMENT_LOWERING phase
 static UnionLowering g_unionLowering;
 static ExpandBracketsPhase g_expandBracketsPhase;
-static PromiseVoidLowering g_promiseVoidLowering;
+static PromiseVoidInferencePhase g_promiseVoidInferencePhase;
 static StructLowering g_structLowering;
 static PluginPhase g_pluginsAfterParse {"plugins-after-parse", ES2PANDA_STATE_PARSED, &util::Plugin::AfterParse};
 static PluginPhase g_pluginsAfterCheck {"plugins-after-check", ES2PANDA_STATE_CHECKED, &util::Plugin::AfterCheck};
 static PluginPhase g_pluginsAfterLowerings {"plugins-after-lowering", ES2PANDA_STATE_LOWERED,
                                             &util::Plugin::AfterLowerings};
+static InitScopesPhaseETS g_initScopesPhaseEts;
+static InitScopesPhaseAS g_initScopesPhaseAs;
+static InitScopesPhaseTs g_initScopesPhaseTs;
+static InitScopesPhaseJs g_initScopesPhaseJs;
 
-// clang-format off
 std::vector<Phase *> GetETSPhaseList()
 {
-    static ScopesInitPhaseETS scopesPhaseEts;
     return {
-        &scopesPhaseEts,
         &g_pluginsAfterParse,
-        &g_promiseVoidLowering,
+        &g_initScopesPhaseEts,
+        &g_promiseVoidInferencePhase,
         &g_structLowering,
-        &g_lambdaLowering,
+        &g_lambdaConstructionPhase,
         &g_interfacePropDeclPhase,
         &g_checkerPhase,
         &g_pluginsAfterCheck,
@@ -81,31 +84,27 @@ std::vector<Phase *> GetETSPhaseList()
         &g_pluginsAfterLowerings,
     };
 }
-// clang-format on
 
 std::vector<Phase *> GetASPhaseList()
 {
-    static ScopesInitPhaseAS scopesPhaseAs;
     return {
-        &scopesPhaseAs,
+        &g_initScopesPhaseAs,
         &g_checkerPhase,
     };
 }
 
 std::vector<Phase *> GetTSPhaseList()
 {
-    static ScopesInitPhaseTs scopesPhaseTs;
     return {
-        &scopesPhaseTs,
+        &g_initScopesPhaseTs,
         &g_checkerPhase,
     };
 }
 
 std::vector<Phase *> GetJSPhaseList()
 {
-    static ScopesInitPhaseJs scopesPhaseJs;
     return {
-        &scopesPhaseJs,
+        &g_initScopesPhaseJs,
         &g_checkerPhase,
     };
 }
@@ -128,25 +127,6 @@ std::vector<Phase *> GetPhaseList(ScriptExtension ext)
 
 bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 {
-#ifndef NDEBUG
-    const auto checkProgram = [](const parser::Program *p) {
-        ASTVerifier verifier {p->Allocator(), false, p->SourceCode()};
-        ArenaVector<const ir::BlockStatement *> toCheck {p->Allocator()->Adapter()};
-        toCheck.push_back(p->Ast());
-        for (const auto &externalSource : p->ExternalSources()) {
-            for (const auto external : externalSource.second) {
-                toCheck.push_back(external->Ast());
-            }
-        }
-        for (const auto *ast : toCheck) {
-            if (!verifier.VerifyFull(ast)) {
-                return false;
-            }
-        }
-        return true;
-    };
-#endif
-
     const auto *options = ctx->compilerContext->Options();
     const auto name = std::string {Name()};
     if (options->skipPhases.count(name) > 0) {
@@ -169,8 +149,6 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
     CheckOptionsAfterPhase(options, program, name);
 
 #ifndef NDEBUG
-    checkProgram(program);
-
     if (!Postcondition(ctx, program)) {
         ctx->checker->ThrowTypeError({"Postcondition check failed for ", util::StringView {Name()}},
                                      lexer::SourcePosition {});

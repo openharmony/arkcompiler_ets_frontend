@@ -24,16 +24,10 @@
 #include "objectIndexAccess.h"
 
 #include "checker/ETSchecker.h"
+#include "compiler/core/ASTVerifier.h"
 #include "parser/ETSparser.h"
 
 namespace panda::es2panda::compiler {
-
-std::string_view ObjectIndexLowering::Name()
-{
-    static std::string const NAME = "object-index-access";
-    return NAME;
-}
-
 ir::Expression *ObjectIndexLowering::ProcessIndexSetAccess(parser::ETSParser *parser, checker::ETSChecker *checker,
                                                            ir::AssignmentExpression *assignmentExpression) const
 {

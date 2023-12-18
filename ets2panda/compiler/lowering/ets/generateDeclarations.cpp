@@ -15,10 +15,12 @@
 
 #include "generateDeclarations.h"
 #include "checker/checker.h"
+#include "compiler/core/ASTVerifier.h"
 #include "compiler/core/compilerContext.h"
 #include "util/declgenEts2Ts.h"
 
 namespace panda::es2panda::compiler {
+
 bool GenerateTsDeclarationsPhase::Perform(public_lib::Context *ctx, parser::Program *program)
 {
     auto *checker = ctx->checker;

@@ -17,6 +17,7 @@
 
 #include "checker/ETSchecker.h"
 #include "checker/types/type.h"
+#include "compiler/core/ASTVerifier.h"
 #include "compiler/core/compilerContext.h"
 #include "compiler/lowering/util.h"
 #include "ir/astNode.h"
@@ -28,12 +29,6 @@
 #include "ir/base/classProperty.h"
 
 namespace panda::es2panda::compiler {
-
-std::string_view InterfacePropertyDeclarationsPhase::Name()
-{
-    return "interface-prop-decl";
-}
-
 static ir::MethodDefinition *GenerateGetterOrSetter(checker::ETSChecker *const checker, ir::ClassProperty *const field,
                                                     bool isSetter)
 {

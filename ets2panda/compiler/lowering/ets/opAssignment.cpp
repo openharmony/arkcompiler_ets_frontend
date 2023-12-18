@@ -38,11 +38,6 @@
 
 namespace panda::es2panda::compiler {
 
-std::string_view OpAssignmentLowering::Name()
-{
-    return "op-assignment";
-}
-
 struct Conversion {
     lexer::TokenType from;
     lexer::TokenType to;
@@ -176,7 +171,7 @@ ir::Expression *HandleOpAssignment(public_lib::Context *ctx, checker::ETSChecker
         ident1->Clone(allocator), ident2 != nullptr ? ident2->Clone(allocator) : nullptr, ident1->Clone(allocator),
         ident2 != nullptr ? ident2->Clone(allocator) : nullptr, right, exprType);
     loweringResult->SetParent(assignment->Parent());
-    ScopesInitPhaseETS::RunExternalNode(loweringResult, ctx->compilerContext->VarBinder());
+    InitScopesPhaseETS::RunExternalNode(loweringResult, ctx->compilerContext->VarBinder());
 
     checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(loweringResult, scope);
     loweringResult->Check(checker);

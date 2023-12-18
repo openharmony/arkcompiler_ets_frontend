@@ -346,7 +346,7 @@ static Context *InitScopes(Context *ctx)
     ASSERT(ctx->state == ES2PANDA_STATE_PARSED);
 
     try {
-        compiler::ScopesInitPhaseETS scopesInit;
+        compiler::InitScopesPhaseETS scopesInit;
         scopesInit.Perform(ctx, ctx->parserProgram);
         do {
             if (ctx->currentPhase >= ctx->phases.size()) {

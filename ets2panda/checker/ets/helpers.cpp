@@ -2684,7 +2684,7 @@ bool ETSChecker::TryTransformingToStaticInvoke(ir::Identifier *const ident, cons
         es2panda::CompilerOptions options;
         auto parser = parser::ETSParser(&program, options, parser::ParserStatus::NO_OPTS);
         auto *argExpr = parser.CreateExpression(implicitInstantiateArgument);
-        compiler::ScopesInitPhaseETS::RunExternalNode(argExpr, &program);
+        compiler::InitScopesPhaseETS::RunExternalNode(argExpr, &program);
 
         argExpr->SetParent(callExpr);
         argExpr->SetRange(ident->Range());

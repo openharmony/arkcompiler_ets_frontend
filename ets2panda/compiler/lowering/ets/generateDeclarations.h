@@ -22,10 +22,7 @@ namespace panda::es2panda::compiler {
 
 class GenerateTsDeclarationsPhase : public Phase {
 public:
-    std::string_view Name() override
-    {
-        return "generate-ts-declarations";
-    }
+    DECLARE_PHASE_NAME(GenerateTsDeclarationsPhase)
     bool Perform(public_lib::Context *ctx, parser::Program *program) override;
 };
 

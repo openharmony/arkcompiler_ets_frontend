@@ -16,11 +16,11 @@
 #ifndef ES2PANDA_COMPILER_CORE_SCOPES_INIT_PHASE_H
 #define ES2PANDA_COMPILER_CORE_SCOPES_INIT_PHASE_H
 
+#include "compiler/lowering/phase.h"
 #include "util/helpers.h"
 #include "parser/parserFlags.h"
 #include "varbinder/tsBinding.h"
 #include "varbinder/ETSBinder.h"
-#include "compiler/lowering/phase.h"
 #include "compiler/lowering/scopesInit/savedBindingsCtx.h"
 #include "checker/checker.h"
 #include "compiler/core/compilerContext.h"
@@ -40,10 +40,7 @@ class ScopesInitPhase : public Phase, public ir::visitor::IterateAstVisitor {
 public:
     using PhaseContext = public_lib::Context;
 
-    std::string_view Name() override
-    {
-        return "scopes";
-    }
+    DECLARE_PHASE_NAME(ScopesInitPhase)
 
     bool Perform(PhaseContext *ctx, parser::Program *program) override;
 
@@ -220,16 +217,16 @@ public:
     void VisitClassDefinition(ir::ClassDefinition *classDef) override;
 };
 
-class ScopesInitPhaseJs : public ScopesInitPhase {
+class InitScopesPhaseJs : public ScopesInitPhase {
 public:
-    ScopesInitPhaseJs() = default;
-    NO_COPY_SEMANTIC(ScopesInitPhaseJs);
-    NO_MOVE_SEMANTIC(ScopesInitPhaseJs);
+    InitScopesPhaseJs() = default;
+    NO_COPY_SEMANTIC(InitScopesPhaseJs);
+    NO_MOVE_SEMANTIC(InitScopesPhaseJs);
 
-    ~ScopesInitPhaseJs() override = default;
+    ~InitScopesPhaseJs() override = default;
 };
 
-class ScopesInitPhaseTs : public ScopeInitTyped {
+class InitScopesPhaseTs : public ScopeInitTyped {
 protected:
     bool AllowInterfaceRedeclaration() override
     {
@@ -250,11 +247,11 @@ protected:
     void CreateFuncDecl(ir::ScriptFunction *func) override;
 };
 
-class ScopesInitPhaseETS : public ScopeInitTyped {
+class InitScopesPhaseETS : public ScopeInitTyped {
 public:
-    ScopesInitPhaseETS() = default;
-    NO_COPY_SEMANTIC(ScopesInitPhaseETS);
-    NO_MOVE_SEMANTIC(ScopesInitPhaseETS);
+    InitScopesPhaseETS() = default;
+    NO_COPY_SEMANTIC(InitScopesPhaseETS);
+    NO_MOVE_SEMANTIC(InitScopesPhaseETS);
 
     /**
      * Set scopes for ast-subtree
@@ -307,7 +304,7 @@ public:
      */
     bool Perform(PhaseContext *ctx, parser::Program *program) override;
 
-    ~ScopesInitPhaseETS() override = default;
+    ~InitScopesPhaseETS() override = default;
 
 private:
     void HandleProgram(parser::Program *program);
@@ -361,12 +358,12 @@ private:
     void FilterOverloads(ArenaVector<ir::AstNode *> &props);
 };
 
-class ScopesInitPhaseAS : public ScopesInitPhase {
+class InitScopesPhaseAS : public ScopesInitPhase {
 public:
-    NO_COPY_SEMANTIC(ScopesInitPhaseAS);
-    NO_MOVE_SEMANTIC(ScopesInitPhaseAS);
-    ScopesInitPhaseAS() = default;
-    ~ScopesInitPhaseAS() override = default;
+    NO_COPY_SEMANTIC(InitScopesPhaseAS);
+    NO_MOVE_SEMANTIC(InitScopesPhaseAS);
+    InitScopesPhaseAS() = default;
+    ~InitScopesPhaseAS() override = default;
 
 private:
     void VisitArrowFunctionExpression(ir::ArrowFunctionExpression *arrowExpr) override;

@@ -30,12 +30,6 @@ namespace panda::es2panda::compiler {
 
 const char *const STRUCT_CLASS_NAME = "CommonStruct0";
 
-std::string_view StructLowering::Name()
-{
-    static std::string const NAME = "struct-class-extention";
-    return NAME;
-}
-
 ir::ETSTypeReference *CreateStructTypeReference(checker::ETSChecker *checker,
                                                 ir::ETSStructDeclaration *etsStrucDeclaration)
 {

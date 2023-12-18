@@ -63,7 +63,7 @@ bool ExpandBracketsPhase::Perform(public_lib::Context *ctx, parser::Program *pro
             "(@@E5);",
             parser::DEFAULT_SOURCE_FILE, ident, dimension, exprType, ident->Clone(allocator), newExpression);
         sequenceExpr->SetParent(newExpression->Parent());
-        ScopesInitPhaseETS::RunExternalNode(sequenceExpr, ctx->compilerContext->VarBinder());
+        InitScopesPhaseETS::RunExternalNode(sequenceExpr, ctx->compilerContext->VarBinder());
         checker->VarBinder()->AsETSBinder()->ResolveReferencesForScope(sequenceExpr, scope);
         sequenceExpr->Check(checker);
 
