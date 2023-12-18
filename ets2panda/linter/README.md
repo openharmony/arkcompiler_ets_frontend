@@ -33,7 +33,7 @@ node dist/tslinter.js [options] [input files]
 
 Note: Before linting a project, it is highly recommended to install all project dependencies (with `npm install` or any other methods -- depends on the concrete project).
 
-You can also use command files `tslinter.sh` or `tslinter.cmd` with same arguments as for direct launch.
+You can also use command files `tslinter.sh` or `tslinter.bat` with same arguments as for direct launch.
 
 Possible command options:
 

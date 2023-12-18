@@ -49,6 +49,22 @@ static void Warning(const std::string &msg)
 
 void TSDeclGen::Generate()
 {
+    std::stringstream license;
+    license << "/*\n";
+    license << " * Copyright (c) 2023 Huawei Device Co., Ltd.\n";
+    license << " * Licensed under the Apache License, Version 2.0 (the \"License\");\n";
+    license << " * you may not use this file except in compliance with the License.\n";
+    license << " * You may obtain a copy of the License at\n";
+    license << " *\n";
+    license << " *     http://www.apache.org/licenses/LICENSE-2.0\n";
+    license << " *\n";
+    license << " * Unless required by applicable law or agreed to in writing, software\n";
+    license << " * distributed under the License is distributed on an \"AS IS\" BASIS,\n";
+    license << " * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n";
+    license << " * See the License for the specific language governing permissions and\n";
+    license << " * limitations under the License.\n";
+    license << " */\n\n";
+    Out(license.str());
     Out("declare const exports: any;");
     OutEndl(2);
 
