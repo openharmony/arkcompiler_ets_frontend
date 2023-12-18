@@ -1247,7 +1247,7 @@ checker::Type *ETSAnalyzer::Check(ir::MemberExpression *expr) const
     if (base_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
         checker->Relation()->SetNode(expr);
         expr->SetObjectType(checker->PrimitiveTypeAsETSBuiltinType(base_type)->AsETSObjectType());
-        checker->AddBoxingUnboxingFlagToNode(expr, expr->ObjType());
+        checker->AddBoxingUnboxingFlagsToNode(expr, expr->ObjType());
         auto [res_type, res_var] = expr->ResolveObjectMember(checker);
         expr->SetPropVar(res_var);
         return expr->AdjustOptional(checker, res_type);
@@ -1540,7 +1540,7 @@ checker::Type *ETSAnalyzer::Check(ir::UnaryExpression *expr) const
 
     if (arg_type->IsETSObjectType() && (unboxed_operand_type != nullptr) &&
         unboxed_operand_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
-        expr->Argument()->AddBoxingUnboxingFlag(checker->GetUnboxingFlag(unboxed_operand_type));
+        expr->Argument()->AddBoxingUnboxingFlags(checker->GetUnboxingFlag(unboxed_operand_type));
     }
 
     return expr->TsType();
@@ -1575,8 +1575,8 @@ checker::Type *ETSAnalyzer::Check(ir::UpdateExpression *expr) const
     }
 
     if (operand_type->IsETSObjectType()) {
-        expr->Argument()->AddBoxingUnboxingFlag(checker->GetUnboxingFlag(unboxed_type) |
-                                                checker->GetBoxingFlag(unboxed_type));
+        expr->Argument()->AddBoxingUnboxingFlags(checker->GetUnboxingFlag(unboxed_type) |
+                                                 checker->GetBoxingFlag(unboxed_type));
     }
 
     expr->SetTsType(operand_type);
@@ -2374,6 +2374,14 @@ checker::Type *ETSAnalyzer::Check(ir::TSAsExpression *expr) const
     }
 
     auto *const source_type = expr->Expr()->Check(checker);
+
+    if (target_type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE) &&
+        source_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
+        auto *const boxed_target_type = checker->PrimitiveTypeAsETSBuiltinType(target_type);
+        if (!checker->Relation()->IsIdenticalTo(source_type, boxed_target_type)) {
+            expr->Expr()->AddAstNodeFlags(ir::AstNodeFlags::CHECKCAST);
+        }
+    }
 
     const checker::CastingContext ctx(checker->Relation(), expr->Expr(), source_type, target_type,
                                       expr->Expr()->Start(),

@@ -473,7 +473,7 @@ Type *ETSChecker::CheckBinaryOperatorNullishCoalescing(ir::Expression *right, le
         if (boxed_right_type == nullptr) {
             ThrowTypeError("Invalid right-hand side expression", pos);
         }
-        right->AddBoxingUnboxingFlag(GetBoxingFlag(boxed_right_type));
+        right->AddBoxingUnboxingFlags(GetBoxingFlag(boxed_right_type));
         return FindLeastUpperBound(non_nullish_left_type, boxed_right_type);
     }
 
@@ -609,7 +609,7 @@ Type *ETSChecker::HandleArithmeticOperationOnTypes(Type *left, Type *right, lexe
 void ETSChecker::FlagExpressionWithUnboxing(Type *type, Type *unboxed_type, ir::Expression *type_expression)
 {
     if (type->IsETSObjectType() && (unboxed_type != nullptr)) {
-        type_expression->AddBoxingUnboxingFlag(GetUnboxingFlag(unboxed_type));
+        type_expression->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxed_type));
     }
 }
 

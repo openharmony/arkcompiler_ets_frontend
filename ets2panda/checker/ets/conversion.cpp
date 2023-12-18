@@ -255,7 +255,7 @@ ETSObjectType *Boxing(TypeRelation *const relation, Type *const source)
         return nullptr;
     }
     auto *const boxed_type = boxed.Result()->AsETSObjectType();
-    relation->GetNode()->AddBoxingUnboxingFlag(ets_checker->GetBoxingFlag(boxed_type));
+    relation->GetNode()->AddBoxingUnboxingFlags(ets_checker->GetBoxingFlag(boxed_type));
     return boxed_type;
 }
 
@@ -267,7 +267,7 @@ Type *Unboxing(TypeRelation *const relation, ETSObjectType *const source)
         return nullptr;
     }
     auto *const unboxed_type = unboxed.Result();
-    relation->GetNode()->AddBoxingUnboxingFlag(ets_checker->GetUnboxingFlag(unboxed_type));
+    relation->GetNode()->AddBoxingUnboxingFlags(ets_checker->GetUnboxingFlag(unboxed_type));
     return unboxed_type;
 }
 

@@ -992,50 +992,60 @@ void ETSGen::ApplyCast(const ir::AstNode *node, const checker::Type *target_type
 
 void ETSGen::EmitUnboxingConversion(const ir::AstNode *node)
 {
-    auto unboxing_flag =
+    const auto unboxing_flag =
         static_cast<ir::BoxingUnboxingFlags>(ir::BoxingUnboxingFlags::UNBOXING_FLAG & node->GetBoxingUnboxingFlags());
 
     RegScope rs(this);
 
+    auto emit_unboxed_call = [this, &node](std::string_view signature_flag, const checker::Type *const target_type,
+                                           const checker::Type *const boxed_type) {
+        if (node->HasAstNodeFlags(ir::AstNodeFlags::CHECKCAST)) {
+            EmitCheckedNarrowingReferenceConversion(node, boxed_type);
+        }
+
+        Ra().Emit<CallVirtAccShort, 0>(node, signature_flag, dummy_reg_, 0);
+        SetAccumulatorType(target_type);
+    };
+
     switch (unboxing_flag) {
         case ir::BoxingUnboxingFlags::UNBOX_TO_BOOLEAN: {
-            Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_BOOLEAN_UNBOXED, dummy_reg_, 0);
-            SetAccumulatorType(Checker()->GlobalETSBooleanType());
+            emit_unboxed_call(Signatures::BUILTIN_BOOLEAN_UNBOXED, Checker()->GlobalETSBooleanType(),
+                              Checker()->GetGlobalTypesHolder()->GlobalETSBooleanBuiltinType());
             break;
         }
         case ir::BoxingUnboxingFlags::UNBOX_TO_BYTE: {
-            Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_BYTE_UNBOXED, dummy_reg_, 0);
-            SetAccumulatorType(Checker()->GlobalByteType());
+            emit_unboxed_call(Signatures::BUILTIN_BYTE_UNBOXED, Checker()->GlobalByteType(),
+                              Checker()->GetGlobalTypesHolder()->GlobalByteBuiltinType());
             break;
         }
         case ir::BoxingUnboxingFlags::UNBOX_TO_CHAR: {
-            Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_CHAR_UNBOXED, dummy_reg_, 0);
-            SetAccumulatorType(Checker()->GlobalCharType());
+            emit_unboxed_call(Signatures::BUILTIN_CHAR_UNBOXED, Checker()->GlobalCharType(),
+                              Checker()->GetGlobalTypesHolder()->GlobalCharBuiltinType());
             break;
         }
         case ir::BoxingUnboxingFlags::UNBOX_TO_SHORT: {
-            Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_SHORT_UNBOXED, dummy_reg_, 0);
-            SetAccumulatorType(Checker()->GlobalShortType());
+            emit_unboxed_call(Signatures::BUILTIN_SHORT_UNBOXED, Checker()->GlobalShortType(),
+                              Checker()->GetGlobalTypesHolder()->GlobalShortBuiltinType());
             break;
         }
         case ir::BoxingUnboxingFlags::UNBOX_TO_INT: {
-            Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_INT_UNBOXED, dummy_reg_, 0);
-            SetAccumulatorType(Checker()->GlobalIntType());
+            emit_unboxed_call(Signatures::BUILTIN_INT_UNBOXED, Checker()->GlobalIntType(),
+                              Checker()->GetGlobalTypesHolder()->GlobalIntegerBuiltinType());
             break;
         }
         case ir::BoxingUnboxingFlags::UNBOX_TO_LONG: {
-            Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_LONG_UNBOXED, dummy_reg_, 0);
-            SetAccumulatorType(Checker()->GlobalLongType());
+            emit_unboxed_call(Signatures::BUILTIN_LONG_UNBOXED, Checker()->GlobalLongType(),
+                              Checker()->GetGlobalTypesHolder()->GlobalLongBuiltinType());
             break;
         }
         case ir::BoxingUnboxingFlags::UNBOX_TO_FLOAT: {
-            Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_FLOAT_UNBOXED, dummy_reg_, 0);
-            SetAccumulatorType(Checker()->GlobalFloatType());
+            emit_unboxed_call(Signatures::BUILTIN_FLOAT_UNBOXED, Checker()->GlobalFloatType(),
+                              Checker()->GetGlobalTypesHolder()->GlobalFloatBuiltinType());
             break;
         }
         case ir::BoxingUnboxingFlags::UNBOX_TO_DOUBLE: {
-            Ra().Emit<CallVirtAccShort, 0>(node, Signatures::BUILTIN_DOUBLE_UNBOXED, dummy_reg_, 0);
-            SetAccumulatorType(Checker()->GlobalDoubleType());
+            emit_unboxed_call(Signatures::BUILTIN_DOUBLE_UNBOXED, Checker()->GlobalDoubleType(),
+                              Checker()->GetGlobalTypesHolder()->GlobalDoubleBuiltinType());
             break;
         }
         default:

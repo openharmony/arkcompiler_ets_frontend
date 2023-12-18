@@ -941,7 +941,7 @@ void ETSChecker::ValidateArrayIndex(ir::Expression *const expr, bool relaxed)
     Type const *const index_type = ApplyUnaryOperatorPromotion(expression_type);
 
     if (expression_type->IsETSObjectType() && (unboxed_expression_type != nullptr)) {
-        expr->AddBoxingUnboxingFlag(GetUnboxingFlag(unboxed_expression_type));
+        expr->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxed_expression_type));
     }
 
     if (relaxed && index_type != nullptr && index_type->HasTypeFlag(TypeFlag::ETS_FLOATING_POINT)) {

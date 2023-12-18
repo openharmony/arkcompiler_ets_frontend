@@ -451,7 +451,7 @@ public:
     Type *ETSBuiltinTypeAsPrimitiveType(Type *object_type);
     Type *ETSBuiltinTypeAsConditionalType(Type *object_type);
     Type *PrimitiveTypeAsETSBuiltinType(Type *object_type);
-    void AddBoxingUnboxingFlagToNode(ir::AstNode *node, Type *boxing_unboxing_type);
+    void AddBoxingUnboxingFlagsToNode(ir::AstNode *node, Type *boxing_unboxing_type);
     ir::BoxingUnboxingFlags GetBoxingFlag(Type *boxing_type);
     ir::BoxingUnboxingFlags GetUnboxingFlag(Type const *unboxing_type) const;
     Type *MaybeBoxedType(const varbinder::Variable *var, ArenaAllocator *allocator) const;

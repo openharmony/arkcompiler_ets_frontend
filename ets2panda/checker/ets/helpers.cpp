@@ -153,7 +153,7 @@ Type *ETSChecker::CreateOptionalResultType(Type *type)
     if (type->HasTypeFlag(checker::TypeFlag::ETS_PRIMITIVE)) {
         type = PrimitiveTypeAsETSBuiltinType(type);
         ASSERT(type->IsETSObjectType());
-        Relation()->GetNode()->AddBoxingUnboxingFlag(GetBoxingFlag(type));
+        Relation()->GetNode()->AddBoxingUnboxingFlags(GetBoxingFlag(type));
     }
 
     return CreateNullishType(type, checker::TypeFlag::UNDEFINED, Allocator(), Relation(), GetGlobalTypesHolder());
@@ -874,7 +874,7 @@ void ETSChecker::ResolveReturnStatement(checker::Type *func_return_type, checker
             if (argument_type == nullptr) {
                 ThrowTypeError("Invalid return statement expression", st->Argument()->Start());
             }
-            st->Argument()->AddBoxingUnboxingFlag(GetBoxingFlag(argument_type));
+            st->Argument()->AddBoxingUnboxingFlags(GetBoxingFlag(argument_type));
         }
 
         if (!func_return_type->HasTypeFlag(checker::TypeFlag::ETS_ARRAY_OR_OBJECT)) {
@@ -1596,12 +1596,12 @@ Type *ETSChecker::PrimitiveTypeAsETSBuiltinType(Type *object_type)
     return converter.Result();
 }
 
-void ETSChecker::AddBoxingUnboxingFlagToNode(ir::AstNode *node, Type *boxing_unboxing_type)
+void ETSChecker::AddBoxingUnboxingFlagsToNode(ir::AstNode *node, Type *boxing_unboxing_type)
 {
     if (boxing_unboxing_type->IsETSObjectType()) {
-        node->AddBoxingUnboxingFlag(GetBoxingFlag(boxing_unboxing_type));
+        node->AddBoxingUnboxingFlags(GetBoxingFlag(boxing_unboxing_type));
     } else {
-        node->AddBoxingUnboxingFlag(GetUnboxingFlag(boxing_unboxing_type));
+        node->AddBoxingUnboxingFlags(GetUnboxingFlag(boxing_unboxing_type));
     }
 }
 
@@ -1851,7 +1851,7 @@ void ETSChecker::AddBoxingFlagToPrimitiveType(TypeRelation *relation, Type *targ
 {
     auto boxing_result = PrimitiveTypeAsETSBuiltinType(target);
     if (boxing_result != nullptr) {
-        relation->GetNode()->AddBoxingUnboxingFlag(GetBoxingFlag(boxing_result));
+        relation->GetNode()->AddBoxingUnboxingFlags(GetBoxingFlag(boxing_result));
         relation->Result(true);
     }
 }
@@ -1860,7 +1860,7 @@ void ETSChecker::AddUnboxingFlagToPrimitiveType(TypeRelation *relation, Type *so
 {
     auto unboxing_result = UnboxingConverter(this, relation, source, self).Result();
     if ((unboxing_result != nullptr) && relation->IsTrue()) {
-        relation->GetNode()->AddBoxingUnboxingFlag(GetUnboxingFlag(unboxing_result));
+        relation->GetNode()->AddBoxingUnboxingFlags(GetUnboxingFlag(unboxing_result));
     }
 }
 
@@ -1889,7 +1889,7 @@ void ETSChecker::CheckUnboxedTypesAssignable(TypeRelation *relation, Type *sourc
     }
     relation->IsAssignableTo(unboxed_source_type, unboxed_target_type);
     if (relation->IsTrue()) {
-        relation->GetNode()->AddBoxingUnboxingFlag(
+        relation->GetNode()->AddBoxingUnboxingFlags(
             relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(unboxed_source_type));
     }
 }
@@ -1933,7 +1933,7 @@ void ETSChecker::CheckUnboxedSourceTypeWithWideningAssignable(TypeRelation *rela
         relation->GetChecker()->AsETSChecker()->CheckUnboxedTypeWidenable(relation, target, unboxed_source_type);
     }
     if (!relation->OnlyCheckBoxingUnboxing()) {
-        relation->GetNode()->AddBoxingUnboxingFlag(
+        relation->GetNode()->AddBoxingUnboxingFlags(
             relation->GetChecker()->AsETSChecker()->GetUnboxingFlag(unboxed_source_type));
     }
 }
