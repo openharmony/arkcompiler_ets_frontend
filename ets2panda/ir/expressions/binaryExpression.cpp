@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,8 +18,10 @@
 #include "compiler/core/pandagen.h"
 #include "compiler/core/ETSGen.h"
 #include "checker/TSchecker.h"
-#include "ir/astDump.h"
+#include "ir/astNode.h"
+#include "ir/expression.h"
 #include "ir/srcDump.h"
+#include "ir/visitor/AstVisitor.h"
 
 namespace ark::es2panda::ir {
 void BinaryExpression::TransformChildren(const NodeTransformer &cb)
@@ -102,5 +104,61 @@ BinaryExpression *BinaryExpression::Clone(ArenaAllocator *const allocator, AstNo
     }
 
     throw Error(ErrorType::GENERIC, "", CLONE_ALLOCATION_ERROR);
+}
+
+//  Extracted just to avoid large length and depth of method 'CheckSmartCastCondition()'.
+void BinaryExpression::CheckSmartCastEqualityCondition(checker::ETSChecker *checker)
+{
+    varbinder::Variable const *variable = nullptr;
+    checker::Type *testedType = nullptr;
+    bool strict = operator_ == lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL ||
+                  operator_ == lexer::TokenType::PUNCTUATOR_STRICT_EQUAL;
+
+    // extracted just to avoid extra nested level
+    auto const getTestedType = [&variable, &testedType, &strict](ir::Identifier const *const identifier,
+                                                                 ir::Expression *const expression) -> void {
+        ASSERT(identifier != nullptr && expression != nullptr);
+        variable = identifier->Variable();
+        if (expression->IsLiteral()) {
+            testedType = expression->TsType();
+            if (!expression->IsNullLiteral() && !expression->IsUndefinedLiteral()) {
+                strict = false;
+            }
+        }
+    };
+
+    if (left_->IsIdentifier()) {
+        getTestedType(left_->AsIdentifier(), right_);
+    }
+
+    if (testedType == nullptr && right_->IsIdentifier()) {
+        getTestedType(right_->AsIdentifier(), left_);
+    }
+
+    if (testedType != nullptr) {
+        bool const negate = operator_ == lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL ||
+                            operator_ == lexer::TokenType::PUNCTUATOR_NOT_EQUAL;
+
+        if (testedType->DefinitelyETSNullish()) {
+            smartCastCondition_ = {variable, testedType, negate, strict};
+        } else if (!negate || !strict) {
+            // NOTE: we cannot say anything about variable from the expressions like 'x !== "str"'
+            testedType = checker->ResolveSmartType(testedType, variable->TsType());
+            smartCastCondition_ = {variable, testedType, negate, strict};
+        }
+    }
+}
+
+void BinaryExpression::CheckSmartCastCondition(checker::ETSChecker *checker)
+{
+    if (operator_ == lexer::TokenType::KEYW_INSTANCEOF) {
+        if (left_->IsIdentifier()) {
+            smartCastCondition_ = {left_->AsIdentifier()->Variable(), right_->TsType()};
+        }
+    } else if (operator_ == lexer::TokenType::PUNCTUATOR_STRICT_EQUAL ||
+               operator_ == lexer::TokenType::PUNCTUATOR_NOT_STRICT_EQUAL ||
+               operator_ == lexer::TokenType::PUNCTUATOR_EQUAL || operator_ == lexer::TokenType::PUNCTUATOR_NOT_EQUAL) {
+        CheckSmartCastEqualityCondition(checker);
+    }
 }
 }  // namespace ark::es2panda::ir

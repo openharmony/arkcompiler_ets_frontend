@@ -21,10 +21,6 @@
 #include "checker/types/typeRelation.h"
 #include "checker/types/typeFacts.h"
 
-#include "macros.h"
-#include <sstream>
-#include <variant>
-
 namespace ark::es2panda::varbinder {
 class Variable;
 }  // namespace ark::es2panda::varbinder
@@ -229,8 +225,9 @@ public:
     bool IsLambdaObject() const;
     virtual void ToString(std::stringstream &ss, bool precise) const = 0;
     void ToString(std::stringstream &ss) const;
-    std::string ToString() const;
-    std::string ToStringPrecise() const;
+    [[nodiscard]] std::string ToString() const;
+    [[nodiscard]] std::string ToStringPrecise() const;
+
     virtual void ToStringAsSrc(std::stringstream &ss) const;
     std::string ToStringAsSrc() const;
 
@@ -262,7 +259,10 @@ public:
     virtual void IsSubtypeOf(TypeRelation *relation, Type *target);
     virtual Type *AsSuper(Checker *checker, varbinder::Variable *sourceVar);
 
+    [[nodiscard]] static std::uint32_t GetPrecedence(Type const *type) noexcept;
+
     virtual Type *Instantiate(ArenaAllocator *allocator, TypeRelation *relation, GlobalTypesHolder *globalTypes);
+    [[nodiscard]] virtual Type *Clone(Checker *checker);
     virtual Type *Substitute(TypeRelation *relation, const Substitution *substitution);
 
 protected:

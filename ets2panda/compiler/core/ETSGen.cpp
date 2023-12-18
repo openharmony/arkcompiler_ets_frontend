@@ -44,6 +44,7 @@
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "checker/types/ets/types.h"
 #include "parser/program/program.h"
+#include "checker/types/globalTypesHolder.h"
 
 namespace ark::es2panda::compiler {
 
@@ -1199,6 +1200,15 @@ void ETSGen::EmitUnboxedCall(const ir::AstNode *node, std::string_view signature
         CheckedReferenceNarrowing(node, boxedType);
     }
 
+    // to cast to primitive types we probably have to cast to corresponding boxed built-in types first.
+    auto *const checker = Checker()->AsETSChecker();
+    auto const *accumulatorType = GetAccumulatorType();
+    if (accumulatorType->IsETSObjectType() &&  //! accumulatorType->DefinitelyNotETSNullish() &&
+        !checker->Relation()->IsIdenticalTo(const_cast<checker::Type *>(accumulatorType),
+                                            const_cast<checker::Type *>(boxedType))) {
+        CastToReftype(node, boxedType, false);
+    }
+
     Ra().Emit<CallVirtAccShort, 0>(node, signatureFlag, dummyReg_, 0);
     SetAccumulatorType(targetType);
 }
@@ -2143,7 +2153,8 @@ void ETSGen::Binary(const ir::AstNode *node, lexer::TokenType op, VReg lhs)
         }
     }
     ASSERT(node->IsAssignmentExpression() || node->IsBinaryExpression());
-    ASSERT(GetAccumulatorType() == node->AsExpression()->TsType());
+    ASSERT(Checker()->Relation()->IsIdenticalTo(const_cast<checker::Type *>(GetAccumulatorType()),
+                                                const_cast<checker::Type *>(node->AsExpression()->TsType())));
 }
 
 void ETSGen::Condition(const ir::AstNode *node, lexer::TokenType op, VReg lhs, Label *ifFalse)

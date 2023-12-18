@@ -32,6 +32,7 @@
 #include "util/generateBin.h"
 #include "varbinder/ETSBinder.h"
 #include "test/utils/panda_executable_path_getter.h"
+#include "checker/types/globalTypesHolder.h"
 
 namespace ark::es2panda {
 

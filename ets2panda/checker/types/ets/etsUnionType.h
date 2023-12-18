@@ -27,7 +27,7 @@ public:
     // constituentTypes must be normalized
     explicit ETSUnionType(ETSChecker *checker, ArenaVector<Type *> &&constituentTypes);
 
-    const ArenaVector<Type *> &ConstituentTypes() const
+    [[nodiscard]] const ArenaVector<Type *> &ConstituentTypes() const noexcept
     {
         return constituentTypes_;
     }
@@ -69,6 +69,10 @@ public:
         return std::all_of(constituentTypes_.cbegin(), constituentTypes_.cend(), p);
     }
 
+    [[nodiscard]] checker::Type *GetAssignableType(ETSChecker *checker, checker::Type *sourceType) const noexcept;
+    [[nodiscard]] std::pair<checker::Type *, checker::Type *> GetComplimentaryType(ETSChecker *checker,
+                                                                                   checker::Type *sourceType);
+
 private:
     static bool EachTypeRelatedToSomeType(TypeRelation *relation, ETSUnionType *source, ETSUnionType *target);
     static bool TypeRelatedToSomeType(TypeRelation *relation, Type *source, ETSUnionType *target);
@@ -79,10 +83,16 @@ private:
     void RelationTarget(TypeRelation *relation, Type *source, RelFN const &relFn);
 
     static void LinearizeAndEraseIdentical(TypeRelation *relation, ArenaVector<Type *> &types);
+    [[nodiscard]] bool ExtractType(ETSChecker *checker, checker::ETSObjectType *sourceType) noexcept;
+    [[nodiscard]] bool ExtractType(ETSChecker *checker, checker::ETSArrayType *sourceType) noexcept;
+
+    [[nodiscard]] checker::Type *GetAssignableBuiltinType(
+        checker::ETSChecker *checker, checker::ETSObjectType *sourceType, bool isBool, bool isChar,
+        std::map<std::uint32_t, checker::Type *> &numericTypes) const noexcept;
 
     static Type *ComputeAssemblerLUB(ETSChecker *checker, ETSUnionType *un);
 
-    ArenaVector<Type *> const constituentTypes_;
+    ArenaVector<Type *> constituentTypes_;
     Type *assemblerLub_ {nullptr};
 };
 }  // namespace ark::es2panda::checker

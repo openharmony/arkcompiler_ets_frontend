@@ -16,19 +16,10 @@
 #ifndef ES2PANDA_CHECKER_ETS_CHECKER_H
 #define ES2PANDA_CHECKER_ETS_CHECKER_H
 
-#include "checker/checkerContext.h"
-#include "varbinder/scope.h"
 #include "checker/checker.h"
-#include "checker/ets/primitiveWrappers.h"
-#include "checker/ets/typeConverter.h"
-#include "checker/types/ets/etsObjectType.h"
-#include "checker/types/ets/etsTupleType.h"
+
 #include "checker/types/ets/types.h"
-#include "checker/types/globalTypesHolder.h"
-#include "ir/ts/tsTypeParameter.h"
-#include "ir/ts/tsTypeParameterInstantiation.h"
-#include "lexer/token/tokenType.h"
-#include "util/ustring.h"
+#include "checker/ets/primitiveWrappers.h"
 #include "checker/resolveResult.h"
 
 namespace ark::es2panda::varbinder {
@@ -75,6 +66,11 @@ public:
           dynamicCallNames_ {{DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}}
     {
     }
+
+    ~ETSChecker() override = default;
+
+    NO_COPY_SEMANTIC(ETSChecker);
+    NO_MOVE_SEMANTIC(ETSChecker);
 
     [[nodiscard]] static inline TypeFlag ETSType(const Type *const type) noexcept
     {
@@ -133,7 +129,8 @@ public:
     Type *GuaranteedTypeForUncheckedCast(Type *base, Type *substituted);
     Type *GuaranteedTypeForUncheckedCallReturn(Signature *sig);
     Type *GuaranteedTypeForUncheckedPropertyAccess(varbinder::Variable *prop);
-    bool IsETSChecker() override
+
+    [[nodiscard]] bool IsETSChecker() const noexcept override
     {
         return true;
     }
@@ -477,8 +474,12 @@ public:
     checker::Type *CheckVariableDeclaration(ir::Identifier *ident, ir::TypeNode *typeAnnotation, ir::Expression *init,
                                             ir::ModifierFlags flags);
     void CheckTruthinessOfType(ir::Expression *expr);
+
     void CheckNonNullish(ir::Expression const *expr);
     Type *GetNonNullishType(Type *type);
+    Type *RemoveNullType(Type *type);
+    Type *RemoveUndefinedType(Type *type);
+
     void ConcatConstantString(util::UString &target, Type *type);
     Type *HandleStringConcatenation(Type *leftType, Type *rightType);
     Type *ResolveIdentifier(ir::Identifier *ident);
@@ -571,6 +572,16 @@ public:
                                                              ir::ClassProperty *field, varbinder::ClassScope *scope,
                                                              bool isSetter, ETSChecker *checker);
     void GenerateGetterSetterPropertyAndMethod(ir::ClassProperty *originalProp, ETSObjectType *classType);
+
+    // Smart cast support
+    [[nodiscard]] checker::Type *ResolveSmartType(checker::Type *sourceType, checker::Type *targetType);
+    [[nodiscard]] SmartCastTypes CheckTestSmartCastConditions(ir::Expression const *testExpression);
+    [[nodiscard]] std::pair<Type *, Type *> CheckTestNullishCondition(Type *testedType, Type *actualType, bool strict);
+    [[nodiscard]] std::pair<Type *, Type *> CheckTestObjectCondition(ETSObjectType *testedType, Type *actualType,
+                                                                     bool strict);
+    [[nodiscard]] std::pair<Type *, Type *> CheckTestObjectCondition(ETSArrayType *testedType, Type *actualType);
+
+    void ApplySmartCast(varbinder::Variable const *variable, checker::Type *smartType) noexcept;
 
     bool IsInLocalClass(const ir::AstNode *node) const;
     // Exception

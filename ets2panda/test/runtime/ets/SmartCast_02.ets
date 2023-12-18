@@ -13,14 +13,38 @@
  * limitations under the License.
  */
 
-function dummy(): String[] | null {
-    return null;
+class A {
+  bar(): string {
+    return "Class A";
+  }
+}
+
+class B extends A {}
+
+class C extends B {
+  bar(): string {
+    return "Class C";
+  }
+}
+
+function foo(c: Int|String|A|null|undefined): void {
+  if (c instanceof String)  {
+    assert(c.length == 11);
+  } else if (c instanceof C) {
+    assert(c.bar() == "Class C");
+  } else if (c instanceof Int) {
+    assert(c * c = 49);
+  } else if (c === undefined) {
+     assert(c == undefined);
+  } else {
+     assert(c == null);
+  }
 }
 
 function main(): void {
-    let a: String[] | null = dummy();
-    let b = a?.[1];
-    let d: String = "foo";
-    let c: String = b ?? d;
-    assert(c == "foo");
+  foo("Test string");
+  foo(new Int(7));
+  foo(new C());
+  foo(null);
+  foo(undefined);
 }

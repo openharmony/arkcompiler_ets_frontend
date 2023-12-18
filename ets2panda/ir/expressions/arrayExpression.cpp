@@ -17,7 +17,7 @@
 
 #include "checker/ETSchecker.h"
 #include "checker/TSchecker.h"
-#include "checker/ets/castingContext.h"
+#include "checker/types/ets/etsTupleType.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/ts/destructuringContext.h"
 #include "compiler/core/ETSGen.h"

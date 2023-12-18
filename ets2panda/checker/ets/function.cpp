@@ -13,22 +13,13 @@
  * limitations under the License.
  */
 
-#include "varbinder/varbinder.h"
-#include "varbinder/declaration.h"
 #include "varbinder/ETSBinder.h"
-#include "varbinder/scope.h"
-#include "varbinder/variable.h"
-#include "varbinder/variableFlags.h"
 #include "checker/ETSchecker.h"
 #include "checker/ets/castingContext.h"
 #include "checker/ets/function_helpers.h"
 #include "checker/ets/typeRelationContext.h"
 #include "checker/types/ets/etsAsyncFuncReturnType.h"
 #include "checker/types/ets/etsObjectType.h"
-#include "checker/types/type.h"
-#include "checker/types/typeFlag.h"
-#include "ir/astNode.h"
-#include "ir/typeNode.h"
 #include "ir/base/catchClause.h"
 #include "ir/base/classDefinition.h"
 #include "ir/base/classProperty.h"
@@ -290,12 +281,15 @@ bool ETSChecker::ValidateSignatureRequiredParams(Signature *substitutedSig,
                 this, substitutedSig->Function()->Params()[index], flags);
         }
 
-        auto *const argumentType = argument->Check(this);
-        const Type *targetType = TryGettingFunctionTypeFromInvokeFunction(substitutedSig->Params()[index]->TsType());
+        auto *argumentType = GetApparentType(argument->Check(this));
+        auto *targetType = GetApparentType(substitutedSig->Params()[index]->TsType());
 
         auto const invocationCtx = checker::InvocationContext(
-            Relation(), argument, argumentType, substitutedSig->Params()[index]->TsType(), argument->Start(),
-            {"Type '", argumentType, "' is not compatible with type '", targetType, "' at index ", index + 1}, flags);
+            Relation(), argument, argumentType, targetType, argument->Start(),
+            {"Type '", TryGettingFunctionTypeFromInvokeFunction(argumentType), "' is not compatible with type '",
+             TryGettingFunctionTypeFromInvokeFunction(targetType), "' at index ", index + 1},
+            flags);
+
         if (!invocationCtx.IsInvocable()) {
             if (CheckOptionalLambdaFunction(argument, substitutedSig, index)) {
                 continue;
@@ -1323,6 +1317,8 @@ void ETSChecker::CheckCapturedVariable(ir::AstNode *const node, varbinder::Varia
 
             if (resolved == var) {
                 var->AddFlag(varbinder::VariableFlags::BOXED);
+                // For mutable captured variable [possible] smart-cast is senseless (or even erroneous)
+                Context().RemoveSmartCast(var);
             }
         }
     }

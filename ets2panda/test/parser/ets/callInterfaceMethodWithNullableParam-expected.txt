@@ -1133,4 +1133,3 @@
     }
   }
 }
-TypeError: Type 'I|null' is not compatible with type 'I' at index 1 [n_callInterfaceMethodWithNullableParam.ets:27:17]

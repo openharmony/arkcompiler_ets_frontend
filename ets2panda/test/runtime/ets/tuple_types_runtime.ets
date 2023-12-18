@@ -88,9 +88,9 @@ function main(): void {
     prim_num_arr = tup_4;
 
     let test_arr_2: number[] = [11, 2];
-    for(let idx = 0; idx < prim_num_arr.length; idx++){
-        assert(prim_num_arr[idx] == test_arr_2[idx]);
-    }
+    assert(prim_num_arr[0] == test_arr_2[0]);
+    assert(prim_num_arr[1] == test_arr_2[1]);
+
 
     let tup_8: [number, string][];
     tup_8 = [[1, "E"], [2, "F"], [3, "G"]];

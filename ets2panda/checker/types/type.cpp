@@ -18,6 +18,7 @@
 #include "checker/types/typeFlag.h"
 #include "checker/types/typeRelation.h"
 #include "checker/types/ets/etsObjectType.h"
+#include "checker/checker.h"
 
 namespace ark::es2panda::checker {
 
@@ -60,7 +61,7 @@ void Type::ToStringAsSrc(std::stringstream &ss) const
 
 std::string Type::ToString() const
 {
-    std::stringstream ss;
+    std::stringstream ss {};
     ToString(ss);
     return ss.str();
 }
@@ -127,8 +128,43 @@ Type *Type::Instantiate([[maybe_unused]] ArenaAllocator *allocator, [[maybe_unus
     return nullptr;
 }
 
+Type *Type::Clone(Checker *const checker)
+{
+    return Instantiate(checker->Allocator(), checker->Relation(), checker->GetGlobalTypesHolder());
+}
+
 Type *Type::Substitute([[maybe_unused]] TypeRelation *relation, [[maybe_unused]] const Substitution *substitution)
 {
     return this;
+}
+
+std::uint32_t Type::GetPrecedence(Type const *type) noexcept
+{
+    ASSERT(type != nullptr);
+    if (type->HasTypeFlag(TypeFlag::BYTE)) {
+        return 1U;
+    }
+    if (type->HasTypeFlag(TypeFlag::CHAR)) {
+        return 2U;
+    }
+    if (type->HasTypeFlag(TypeFlag::SHORT)) {
+        return 3U;
+    }
+    if (type->HasTypeFlag(TypeFlag::INT)) {
+        return 4U;
+    }
+    if (type->HasTypeFlag(TypeFlag::LONG)) {
+        return 5U;
+    }
+    if (type->HasTypeFlag(TypeFlag::FLOAT)) {
+        return 6U;
+    }
+    if (type->HasTypeFlag(TypeFlag::DOUBLE)) {
+        return 7U;
+    }
+    if (type->HasTypeFlag(TypeFlag::BIGINT)) {
+        return 8U;
+    }
+    return 0U;
 }
 }  // namespace ark::es2panda::checker

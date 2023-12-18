@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_IR_EXPRESSION_IDENTIFIER_H
 #define ES2PANDA_IR_EXPRESSION_IDENTIFIER_H
 
+#include "checker/checkerContext.h"
 #include "ir/expression.h"
-#include "util/ustring.h"
 #include "ir/validationInfo.h"
 
 namespace ark::es2panda::varbinder {
@@ -177,6 +177,12 @@ public:
 
     [[nodiscard]] Identifier *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
+    void CheckSmartCastCondition(checker::ETSChecker *checker);
+    [[nodiscard]] std::optional<checker::SmartCastCondition> const &GetSmartCastCondition() const noexcept
+    {
+        return smartCastCondition_;
+    }
+
     bool CanHaveDecorator([[maybe_unused]] bool inTs) const override
     {
         return true;
@@ -202,6 +208,7 @@ private:
     util::StringView name_;
     IdentifierFlags flags_ {IdentifierFlags::NONE};
     ArenaVector<Decorator *> decorators_;
+    std::optional<checker::SmartCastCondition> smartCastCondition_ = std::nullopt;
 };
 }  // namespace ark::es2panda::ir
 

@@ -21,8 +21,12 @@ class Person {
     residence: Residence = new Residence();
 }
 
+function dummy(): Person | null {
+    return null;
+}
+
 function main(): void {
-    let john: Person | null = null;
+    let john: Person | null = dummy();
     let test = john?.residence?.numberOfRooms;
     assert (test == null);
     let nullsafety_test = john?.residence?.numberOfRooms ?? "unknown";

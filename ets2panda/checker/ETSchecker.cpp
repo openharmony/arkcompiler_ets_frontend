@@ -24,7 +24,7 @@
 #include "varbinder/ETSBinder.h"
 #include "parser/program/program.h"
 #include "checker/ets/aliveAnalyzer.h"
-
+#include "checker/types/globalTypesHolder.h"
 #include "ir/base/scriptFunction.h"
 #include "util/helpers.h"
 

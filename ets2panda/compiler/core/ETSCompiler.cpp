@@ -19,7 +19,6 @@
 #include "checker/ets/dynamic/dynamicCall.h"
 #include "compiler/base/condition.h"
 #include "compiler/base/lreference.h"
-#include "compiler/core/ETSGen.h"
 #include "compiler/core/switchBuilder.h"
 #include "compiler/function/functionBuilder.h"
 #include "checker/types/ets/etsDynamicFunctionType.h"
@@ -1005,13 +1004,25 @@ void ETSCompiler::Compile(const ir::Identifier *expr) const
         return;
     }
 
-    auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
+    auto *const smartType = expr->TsType();
+    auto ttctx = compiler::TargetTypeContext(etsg, smartType);
 
     ASSERT(expr->Variable() != nullptr);
     if (!expr->Variable()->HasFlag(varbinder::VariableFlags::TYPE_ALIAS)) {
         etsg->LoadVar(expr, expr->Variable());
     } else {
-        etsg->SetAccumulatorType(expr->TsType());
+        etsg->SetAccumulatorType(smartType);
+    }
+
+    //  In case when smart cast type of identifier differs from common variable type
+    //  set the accumulator type to the correct actual value and perform cast if required
+    if (!etsg->Checker()->AsETSChecker()->Relation()->IsIdenticalTo(const_cast<checker::Type *>(smartType),
+                                                                    expr->Variable()->TsType())) {
+        etsg->SetAccumulatorType(smartType);
+        if (smartType->IsETSReferenceType() &&  //! smartType->DefinitelyNotETSNullish() &&
+            (expr->Parent() == nullptr || !expr->Parent()->IsTSAsExpression())) {
+            etsg->CastToReftype(expr, smartType, false);
+        }
     }
 }
 
@@ -1095,11 +1106,12 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
         return;
     }
 
-    if (etsg->Checker()->IsVariableStatic(expr->PropVar())) {
+    auto const *const variable = expr->PropVar();
+    if (etsg->Checker()->IsVariableStatic(variable)) {
         auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
 
         if (expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
-            checker::Signature *sig = expr->PropVar()->TsType()->AsETSFunctionType()->FindGetter();
+            checker::Signature *sig = variable->TsType()->AsETSFunctionType()->FindGetter();
             etsg->CallStatic0(expr, sig->InternalName());
             etsg->SetAccumulatorType(expr->TsType());
             return;
@@ -1119,8 +1131,9 @@ void ETSCompiler::Compile(const ir::MemberExpression *expr) const
 
     auto ttctx = compiler::TargetTypeContext(etsg, expr->TsType());
 
-    if (expr->PropVar()->TsType()->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
-        checker::Signature *sig = expr->PropVar()->TsType()->AsETSFunctionType()->FindGetter();
+    if (auto const *const variableType = variable->TsType();
+        variableType->HasTypeFlag(checker::TypeFlag::GETTER_SETTER)) {
+        checker::Signature *sig = variableType->AsETSFunctionType()->FindGetter();
         etsg->CallThisVirtual0(expr, objReg, sig->InternalName());
     } else if (objectType->IsETSDynamicType()) {
         etsg->LoadPropertyDynamic(expr, expr->TsType(), objReg, propName);

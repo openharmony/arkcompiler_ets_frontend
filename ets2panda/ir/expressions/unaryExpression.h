@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,8 +16,8 @@
 #ifndef ES2PANDA_IR_EXPRESSION_UNARY_EXPRESSION_H
 #define ES2PANDA_IR_EXPRESSION_UNARY_EXPRESSION_H
 
+#include "checker/checkerContext.h"
 #include "ir/expression.h"
-#include "lexer/token/tokenType.h"
 
 namespace ark::es2panda::compiler {
 class PandaGen;
@@ -60,6 +60,12 @@ public:
 
     [[nodiscard]] UnaryExpression *Clone(ArenaAllocator *allocator, AstNode *parent) override;
 
+    void CheckSmartCastCondition() noexcept;
+    std::optional<checker::SmartCastCondition> const &GetSmartCastCondition() const noexcept
+    {
+        return smartCastCondition_;
+    }
+
     void TransformChildren(const NodeTransformer &cb) override;
     void Iterate(const NodeTraverser &cb) const override;
     void Dump(ir::AstDumper *dumper) const override;
@@ -77,6 +83,7 @@ public:
 private:
     Expression *argument_;
     lexer::TokenType operator_;
+    std::optional<checker::SmartCastCondition> smartCastCondition_ = std::nullopt;
 };
 }  // namespace ark::es2panda::ir
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -89,7 +89,7 @@ class bar {
         if(b == undefined){
             return -1;
         }
-        return a! + b!;
+        return a! + b;
     }
 
     foo10(a? : Int, b? : Int, c? : Int) : Int {
@@ -101,14 +101,14 @@ class bar {
             return -1;
         }
 
-        return a! + b! + c!;
+        return a! + b! + c;
     }
 
     foo11(a : Int = 5, b? : Int) : Int {
         if(b == undefined){
             return 0;
         }
-        return a + b!;
+        return a + b;
     }
 
     foo12(a? : Int, b : Int = 5, c? : Int) : Int {

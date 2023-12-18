@@ -17,10 +17,14 @@ type funcType = () => String;
 
 function getMelon(): String { return "melon" }
 
+function dummy(): funcType | null {
+  return (() => { return "peach"; }) as funcType; // #15577
+}
+
 function foo(a: funcType | null) {
     let fruit: String = a?.() ?? "apple";
 
-    let getPeach: funcType | null = (() => { return "peach"; }) as funcType // #15577;
+    let getPeach: funcType | null = dummy();
     fruit = getPeach?.() ?? "banana";
     assert(fruit == "peach");
 
@@ -38,10 +42,10 @@ function foo(a: funcType | null) {
 }
 
 function main(): void {
-    let getFruit: funcType | null = null;
+    let getFruit = null;
     foo(getFruit);
 
-    let getPeach: funcType | null = (() => { return "peach" }) as funcType // #15577;
+    let getPeach: funcType | null = dummy();
     let b = getPeach?.();
     assert(b == "peach");
 }

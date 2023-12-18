@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 - 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,16 +26,9 @@
 #include "compiler/debugger/debuginfoDumper.h"
 #include "compiler/base/catchTable.h"
 #include "es2panda.h"
-#include "ir/statements/blockStatement.h"
 #include "parser/program/program.h"
 #include "checker/types/type.h"
 #include "generated/isa.h"
-#include "macros.h"
-
-#include <string>
-#include <string_view>
-#include <tuple>
-#include <utility>
 
 namespace ark::es2panda::compiler {
 using LiteralPair = std::pair<pandasm::LiteralArray::Literal, pandasm::LiteralArray::Literal>;
