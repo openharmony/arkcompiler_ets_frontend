@@ -65,10 +65,18 @@ std::vector<Phase *> GetPhaseList(ScriptExtension ext)
     switch (ext) {
         case ScriptExtension::ETS:
             return {
-                &scopes_phase_ets,               &PLUGINS_AFTER_PARSE,    &PROMISE_VOID_LOWERING,
-                &LAMBDA_LOWERING,                &CHECKER_PHASE,          &PLUGINS_AFTER_CHECK,
-                &GENERATE_TS_DECLARATIONS_PHASE, &OP_ASSIGNMENT_LOWERING, &OBJECT_INDEX_LOWERING,
-                &TUPLE_LOWERING,                 &UNION_LOWERING,         &EXPAND_BRACKETS_PHASE,
+                &scopes_phase_ets,
+                &PLUGINS_AFTER_PARSE,
+                &PROMISE_VOID_LOWERING,
+                &LAMBDA_LOWERING,
+                &CHECKER_PHASE,
+                &PLUGINS_AFTER_CHECK,
+                &GENERATE_TS_DECLARATIONS_PHASE,
+                &OP_ASSIGNMENT_LOWERING,
+                &OBJECT_INDEX_LOWERING,
+                &TUPLE_LOWERING,
+                &UNION_LOWERING,
+                &EXPAND_BRACKETS_PHASE,
                 &PLUGINS_AFTER_LOWERINGS,
             };
         case ScriptExtension::AS:

@@ -4158,10 +4158,6 @@ void ETSParser::ParseNumberEnum(ArenaVector<ir::AstNode *> &members)
     // Lambda to parse enum member (maybe with initializer)
     auto const parse_member = [this, &members, &current_value]() {
         auto *const ident = ExpectIdentifier(false, true);
-        auto [decl, var] = VarBinder()->NewVarDecl<varbinder::LetDecl>(ident->Start(), ident->Name());
-        var->SetScope(VarBinder()->GetScope());
-        var->AddFlag(varbinder::VariableFlags::STATIC);
-        ident->SetVariable(var);
 
         ir::NumberLiteral *ordinal;
         lexer::SourcePosition end_loc;
