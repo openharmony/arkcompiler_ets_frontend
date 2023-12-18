@@ -230,7 +230,9 @@ void MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
 {
     std::size_t index;
 
-    if (auto const &number = property_->AsNumberLiteral()->Number(); number.IsInteger()) {
+    auto const &number = property_->AsNumberLiteral()->Number();
+
+    if (number.IsInteger()) {
         auto const value = number.GetLong();
         if (value < 0) {
             checker->ThrowTypeError("Index value cannot be less than zero.", property_->Start());
@@ -245,6 +247,10 @@ void MemberExpression::CheckArrayIndexValue(checker::ETSChecker *checker) const
         index = static_cast<std::size_t>(value);
     } else {
         UNREACHABLE();
+    }
+
+    if (object_->IsArrayExpression() && object_->AsArrayExpression()->Elements().size() <= index) {
+        checker->ThrowTypeError("Index value cannot be greater than or equal to the array size.", property_->Start());
     }
 
     if (object_->IsIdentifier() &&
@@ -360,6 +366,11 @@ checker::Type *MemberExpression::CheckComputed(checker::ETSChecker *checker, che
         if (base_type->IsETSArrayType()) {
             if (base_type->IsETSTupleType()) {
                 return CheckTupleAccessMethod(checker, base_type);
+            }
+
+            if (object_->IsArrayExpression() && property_->IsNumberLiteral()) {
+                auto const number = property_->AsNumberLiteral()->Number().GetLong();
+                return object_->AsArrayExpression()->Elements()[number]->Check(checker);
             }
 
             return base_type->AsETSArrayType()->ElementType();
