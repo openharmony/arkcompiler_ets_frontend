@@ -67,6 +67,7 @@ ir::Expression *ObjectIndexLowering::ProcessIndexGetAccess(parser::ETSParser *pa
     lowering_result->SetParent(member_expression->Parent());
 
     lowering_result->Check(checker);
+    lowering_result->SetBoxingUnboxingFlags(member_expression->GetBoxingUnboxingFlags());
     return lowering_result;
 }
 
