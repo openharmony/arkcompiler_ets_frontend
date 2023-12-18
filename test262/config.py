@@ -48,10 +48,10 @@ RK3568_PRODUCT_NAME = "rk3568"
 DEFAULT_PRODUCT_NAME = HISPARK_TAURUS_PRODUCT_NAME
 
 ARGS_PREFIX = f"{CODE_ROOT}/out/"
-ARK_DIR_SUFFIX = "/clang_x64/arkcompiler/ets_frontend"
-ICUI_DIR_SUFFIX = "/clang_x64/thirdparty/icu"
-ARK_JS_RUNTIME_DIR_SUFFIX = "/clang_x64/arkcompiler/ets_runtime"
-ZLIB_DIR_SUFFIX = "/clang_x64/thirdparty/zlib"
+ARK_DIR_SUFFIX = "clang_x64/arkcompiler/ets_frontend"
+ICUI_DIR_SUFFIX = "clang_x64/thirdparty/icu"
+ARK_JS_RUNTIME_DIR_SUFFIX = "clang_x64/arkcompiler/ets_runtime"
+ZLIB_DIR_SUFFIX = "clang_x64/thirdparty/zlib"
 
 DEFAULT_ARK_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/arkcompiler/ets_frontend"
 DEFAULT_ICUI_DIR = f"{CODE_ROOT}/out/hispark_taurus/clang_x64/thirdparty/icu"
