@@ -31,10 +31,10 @@ class VariableDeclaration;
 }  // namespace ark::es2panda::ir
 
 namespace ark::es2panda::checker {
-class AliveAnalyzer : public BaseAnalyzer {
+class AliveAnalyzer : public BaseAnalyzer<PendingExit> {
 public:
     // NOLINTNEXTLINE(readability-redundant-member-init)
-    AliveAnalyzer(const ir::AstNode *node, ETSChecker *checker) : BaseAnalyzer(), checker_(checker)
+    AliveAnalyzer(const ir::AstNode *node, ETSChecker *checker) : BaseAnalyzer<PendingExit>(), checker_(checker)
     {
         AnalyzeNodes(node);
     }

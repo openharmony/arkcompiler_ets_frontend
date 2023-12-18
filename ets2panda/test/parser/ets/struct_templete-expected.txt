@@ -1317,3 +1317,5 @@
     }
   }
 }
+Warning: Variable 'd' is used before being assigned. [struct_templete.ets:30:5]
+TypeError: There were errors during assign analysis (1) [struct_templete.ets:1:1]

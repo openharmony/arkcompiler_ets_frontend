@@ -24,6 +24,7 @@
 #include "varbinder/ETSBinder.h"
 #include "parser/program/program.h"
 #include "checker/ets/aliveAnalyzer.h"
+#include "checker/ets/assignAnalyzer.h"
 #include "checker/ets/etsWarningAnalyzer.h"
 #include "checker/types/globalTypesHolder.h"
 #include "ir/base/scriptFunction.h"
@@ -221,7 +222,8 @@ void ETSChecker::CheckProgram(parser::Program *program, bool runAnalysis)
     Program()->Ast()->Check(this);
 
     if (runAnalysis) {
-        AliveAnalyzer(Program()->Ast(), this);
+        AliveAnalyzer aliveAnalyzer(Program()->Ast(), this);
+        AssignAnalyzer(this).Analyze(Program()->Ast());
     }
 
     ASSERT(VarBinder()->AsETSBinder()->GetExternalRecordTable().find(program)->second);

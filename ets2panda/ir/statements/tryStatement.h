@@ -82,6 +82,16 @@ public:
         return catchClauses_;
     }
 
+    bool FinallyCanCompleteNormally() const
+    {
+        return finallyCanCompleteNormally_;
+    }
+
+    void SetFinallyCanCompleteNormally(bool finallyCanCompleteNormally)
+    {
+        finallyCanCompleteNormally_ = finallyCanCompleteNormally;
+    }
+
     void TransformChildren(const NodeTransformer &cb, std::string_view transformationName) override;
 
     void Iterate(const NodeTraverser &cb) const override;
@@ -102,6 +112,7 @@ private:
     ArenaVector<CatchClause *> catchClauses_;
     BlockStatement *finalizer_;
     ArenaVector<std::pair<compiler::LabelPair, const Statement *>> finalizerInsertions_;
+    bool finallyCanCompleteNormally_ {};
 };
 }  // namespace ark::es2panda::ir
 

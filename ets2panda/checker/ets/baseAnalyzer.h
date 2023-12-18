@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 - 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,12 +40,12 @@ public:
         : node_(node), jumpResolver_(std::move(jumpResolver))
     {
     }
-    ~PendingExit() = default;
+    virtual ~PendingExit() = default;
 
     DEFAULT_COPY_SEMANTIC(PendingExit);
     DEFAULT_NOEXCEPT_MOVE_SEMANTIC(PendingExit);
 
-    void ResolveJump() const
+    virtual void ResolveJump()
     {
         jumpResolver_();
     }
@@ -60,15 +60,16 @@ private:
     JumpResolver jumpResolver_;
 };
 
-using PendingExitsVector = std::vector<PendingExit>;
-
+template <typename T>
 class BaseAnalyzer {
 public:
+    using PendingExitsVector = std::vector<T>;
+
     explicit BaseAnalyzer() = default;
 
     virtual void MarkDead() = 0;
 
-    void RecordExit(const PendingExit &pe)
+    void RecordExit(const T &pe)
     {
         pendingExits_.push_back(pe);
         MarkDead();

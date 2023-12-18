@@ -423,8 +423,11 @@ void AliveAnalyzer::AnalyzeTry(const ir::TryStatement *tryStmt)
     if (tryStmt->FinallyBlock() != nullptr) {
         status_ = LivenessStatus::ALIVE;
         AnalyzeStats(tryStmt->FinallyBlock()->Statements());
+        const_cast<ir::TryStatement *>(tryStmt)->SetFinallyCanCompleteNormally(status_ == LivenessStatus::ALIVE);
         if (status_ == LivenessStatus::DEAD) {
             isAlive = false;
+            // NOTE(user) Add lint categories and option to enable/disable compiler warnings
+            checker_->Warning("Finally clause cannot complete normally", tryStmt->FinallyBlock()->Start());
         }
     }
 

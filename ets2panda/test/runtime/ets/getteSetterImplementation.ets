@@ -21,7 +21,7 @@ interface A {
 class AA implements A {
   prop = new Object();
   proper = 1;
-  readonly property: Double;
+  readonly property: Double = new Double();
 }
 
 function main() {
