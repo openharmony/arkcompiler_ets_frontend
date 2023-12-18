@@ -264,8 +264,7 @@ keywords:
 
   - name: 'is'
     token: KEYW_IS
-    keyword: [ets]
-    keyword_like: [ts]
+    keyword_like: [ets, ts]
 
   - name: 'isize'
     token: KEYW_ISIZE
