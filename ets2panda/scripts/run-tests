@@ -1,0 +1,167 @@
+#!/bin/bash
+# Copyright (c) 2023 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+#
+#
+# This is a script for running a minimal reasonable set of tests
+# during front-end development. Can be used for a quick self-check.
+# Definitely not a substitute / equivalent of the full CI run.
+# Can be dropped to your favorite location in $PATH to be invoked
+# as a CLI tool. Try --help if not sure how to proceed.
+#
+
+ROOT_DIR=
+BUILD_DIR=
+BRANCH_NAME=
+BUILD_TYPE=Debug
+DO_CONFIGURE=no
+DO_CLEAN=no
+BUILD_TARGETS=
+RUN_FUNC_SUITE=no
+RUN_CTS=no
+
+function print_help
+{
+    HELP_MESSAGE="
+    Options:
+
+    --root-dir=REQUIRED
+    --build-dir=REQUIRED
+
+    [--branch=BRANCH_NAME]
+    [--build-type=CMAKE_BUILD_TYPE]
+    [--build-clean]
+    [--configure]
+    [--build=TARGET1 --build=TARGET2 ...]
+    [--run-func-suite]
+    [--run-cts]
+
+    Notes:
+    * --build-type should correspond to the main project's build
+      types, i.e.: Debug, FastVerify, Release.
+    * --build can be repeated to build several targets (correspond
+      to the main project's build targets).
+    "
+    echo "$HELP_MESSAGE"
+}
+
+for opt in "$@"
+do
+    case $opt in
+    -h|--help)
+        print_help
+        exit 0
+        ;;
+    --root-dir=*)
+        ROOT_DIR=${opt//[-a-zA-Z0-9]*=/}
+        ;;
+    --build-dir=*)
+        BUILD_DIR=${opt//[-a-zA-Z0-9]*=/}
+        ;;
+    --build-type=*)
+        BUILD_TYPE=${opt//[-a-zA-Z0-9]*=/}
+        ;;
+    --branch=*)
+        BRANCH_NAME=${opt//[-a-zA-Z0-9]*=/}
+        ;;
+    --configure)
+        DO_CONFIGURE=yes
+        ;;
+    --build-clean)
+        DO_CLEAN=yes
+        ;;
+    --build=*)
+        build_target=${opt//[-a-zA-Z0-9]*=/}
+        BUILD_TARGETS="${BUILD_TARGETS} ${build_target}"
+        ;;
+    --run-func-suite)
+        RUN_FUNC_SUITE=yes
+        ;;
+    --run-cts)
+        RUN_CTS=yes
+        ;;
+    *)
+        echo "Error: Unsupported flag $opt" >&2
+        exit 1
+        ;;
+    esac
+done
+
+set -e
+
+if [[ ! -d "${ROOT_DIR}" ]]; then
+    echo 'Fatal: --root-dir is missing or invalid'
+    exit 1
+fi
+
+if [[ "${BUILD_DIR}" == '' ]]; then
+    echo 'Fatal: --build-dir is missing'
+    exit 1
+fi
+
+mkdir -p "$BUILD_DIR"
+if [[ "$DO_CLEAN" == 'yes' ]]; then
+    pushd "$BUILD_DIR"
+        rm -rf *
+    popd
+fi
+
+if [[ "${BRANCH_NAME}" != '' ]]; then
+    pushd ${ROOT_DIR}/runtime_core
+        git checkout "${BRANCH_NAME}"
+    popd
+    pushd ${ROOT_DIR}/ets_frontend
+        git checkout "${BRANCH_NAME}"
+    popd
+fi
+
+STATIC_CORE_DIR=${ROOT_DIR}/runtime_core/static_core
+TEST_RUNNER=${STATIC_CORE_DIR}/tests/tests-u-runner/runner.sh
+
+if [[ "${DO_CONFIGURE}" == 'yes' ]]; then
+    pushd ${BUILD_DIR}
+        cmake -GNinja \
+            -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
+            -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain/host_clang_14.cmake \
+            -DPANDA_ETS_INTEROP_JS=ON \
+            -DPANDA_WITH_ECMASCRIPT=OFF \
+            -DPANDA_WITH_ETS=ON \
+            "$STATIC_CORE_DIR"
+    popd
+fi
+
+if [[ "$BUILD_TARGETS" != '' ]]; then
+    pushd "$BUILD_DIR"
+        ninja ${BUILD_TARGETS}
+    popd
+fi
+
+if [[ "$RUN_FUNC_SUITE" == 'yes' ]]; then
+    # Func tests INT:
+    ${TEST_RUNNER} "$STATIC_CORE_DIR" --build-dir "$BUILD_DIR" \
+        --processes=all --force-generate \
+        --ets-func-tests
+
+    # Func tests JIT:
+    ${TEST_RUNNER} "$STATIC_CORE_DIR" --build-dir "$BUILD_DIR" \
+        --processes=all --force-generate \
+        --ets-func-tests --jit --ark-args='--compiler-ignore-failures=false'
+fi
+
+if [[ "$RUN_CTS" == 'yes' ]]; then
+    # ArkTS CTS:
+    ${TEST_RUNNER} "$STATIC_CORE_DIR" --build-dir "$BUILD_DIR" \
+        --processes=all --force-generate \
+        --ets-cts
+fi
