@@ -88,6 +88,8 @@ defines:
     comment: Ets record
   - name: ets/coroutine/Async
     ref: ETS_COROUTINE_ASYNC
+  - name: ets/annotation/DynamicCall
+    ref: ETS_ANNOTATION_DYNAMIC_CALL
   - name: 'L'
     ref: CLASS_REF_BEGIN
   - name: '<'

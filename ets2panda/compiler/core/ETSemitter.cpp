@@ -72,9 +72,9 @@ static uint32_t TranslateModifierFlags(ir::ModifierFlags modifierFlags)
     if ((modifierFlags & ir::ModifierFlags::STATIC) != 0) {
         accessFlags |= ACC_STATIC;
     }
-
+    // NOTE: should be ModifierFlags::READONLY
     if ((modifierFlags & ir::ModifierFlags::CONST) != 0) {
-        accessFlags |= ACC_FINAL;
+        accessFlags |= ACC_READONLY;
     }
 
     if ((modifierFlags & ir::ModifierFlags::ABSTRACT) != 0) {
@@ -509,6 +509,12 @@ void ETSEmitter::GenClassRecord(const ir::ClassDefinition *classDef, bool extern
         }
         parent = parent->Parent();
     }
+    auto classIdent = classDef->Ident()->Name().Mutf8();
+    bool isConstruct = classIdent == Signatures::JSNEW_CLASS;
+    if (isConstruct || classIdent == Signatures::JSCALL_CLASS) {
+        auto *callNames = Context()->Checker()->AsETSChecker()->DynamicCallNames(isConstruct);
+        annotations.push_back(GenAnnotationDynamicCall(*callNames));
+    }
 
     if (!annotations.empty()) {
         classRecord.metadata->SetAnnotations(std::move(annotations));
@@ -660,6 +666,24 @@ pandasm::AnnotationData ETSEmitter::GenAnnotationAsync(ir::ScriptFunction *scrip
             impl->Function()->Scope()->InternalName().Mutf8())));
     ann.AddElement(std::move(value));
     return ann;
+}
+
+pandasm::AnnotationData ETSEmitter::GenAnnotationDynamicCall(DynamicCallNamesMap &callNames)
+{
+    GenAnnotationRecord(Signatures::ETS_ANNOTATION_DYNAMIC_CALL);
+    pandasm::AnnotationData dynamicCallSig(Signatures::ETS_ANNOTATION_DYNAMIC_CALL);
+    std::vector<pandasm::ScalarValue> allParts {};
+    for (auto &[parts, startIdx] : callNames) {
+        startIdx = allParts.size();
+        for (const auto &str : parts) {
+            allParts.emplace_back(pandasm::ScalarValue::Create<pandasm::Value::Type::STRING>(str.Utf8()));
+        }
+    }
+    pandasm::AnnotationElement value(
+        Signatures::ANNOTATION_KEY_VALUE,
+        std::make_unique<pandasm::ArrayValue>(pandasm::Value::Type::STRING, std::move(allParts)));
+    dynamicCallSig.AddElement(std::move(value));
+    return dynamicCallSig;
 }
 
 void ETSEmitter::GenAnnotationRecord(std::string_view recordNameView, bool isRuntime, bool isType)

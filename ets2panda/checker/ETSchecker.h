@@ -54,6 +54,7 @@ using DynamicCallIntrinsicsMap = ArenaUnorderedMap<Language, ArenaUnorderedMap<u
 using DynamicLambdaObjectSignatureMap = ArenaUnorderedMap<std::string, Signature *>;
 using FunctionalInterfaceMap = ArenaUnorderedMap<util::StringView, ETSObjectType *>;
 using TypeMapping = ArenaUnorderedMap<Type const *, Type *>;
+using DynamicCallNamesMap = ArenaMap<ArenaVector<util::StringView>, uint32_t>;
 
 class ETSChecker final : public Checker {
 public:
@@ -68,7 +69,8 @@ public:
           dynamicNewIntrinsics_(Allocator()->Adapter()),
           dynamicLambdaSignatureCache_(Allocator()->Adapter()),
           functionalInterfaceCache_(Allocator()->Adapter()),
-          apparentTypes_(Allocator()->Adapter())
+          apparentTypes_(Allocator()->Adapter()),
+          dynamicCallNames_ {{DynamicCallNamesMap(Allocator()->Adapter()), DynamicCallNamesMap(Allocator()->Adapter())}}
     {
     }
 
@@ -575,8 +577,8 @@ public:
     template <typename T>
     Signature *ResolveDynamicCallExpression(ir::Expression *callee, const ArenaVector<T *> &arguments, Language lang,
                                             bool isConstruct);
+    ir::ClassProperty *CreateStaticReadonlyField(varbinder::ClassScope *scope, const char *name);
     void BuildDynamicCallClass(bool isConstruct);
-    void BuildDynamicNewClass(bool isConstruct);
     void BuildDynamicImportClass();
     void BuildLambdaObjectClass(ETSObjectType *functionalInterface, ir::TypeNode *retTypeAnnotation);
     // Trailing lambda
@@ -590,6 +592,16 @@ public:
     checker::Type *CheckArrayElements(ir::Identifier *ident, ir::ArrayExpression *init);
     void ResolveReturnStatement(checker::Type *funcReturnType, checker::Type *argumentType,
                                 ir::ScriptFunction *containingFunc, ir::ReturnStatement *st);
+
+    auto *DynamicCallNames(bool isConstruct)
+    {
+        return &dynamicCallNames_[static_cast<uint32_t>(isConstruct)];
+    }
+
+    const auto *DynamicCallNames(bool isConstruct) const
+    {
+        return &dynamicCallNames_[static_cast<uint32_t>(isConstruct)];
+    }
 
     std::recursive_mutex *Mutex()
     {
@@ -653,6 +665,7 @@ private:
     template <typename T>
     ir::ScriptFunction *CreateDynamicCallIntrinsic(ir::Expression *callee, const ArenaVector<T *> &arguments,
                                                    Language lang);
+    void CreateDynamicCallQualifiedName(ir::Expression *callee, bool isConstruct);
     ir::ClassStaticBlock *CreateDynamicCallClassInitializer(varbinder::ClassScope *classScope, Language lang,
                                                             bool isConstruct);
     ir::ClassStaticBlock *CreateDynamicModuleClassInitializer(varbinder::ClassScope *classScope,
@@ -719,6 +732,7 @@ private:
     DynamicLambdaObjectSignatureMap dynamicLambdaSignatureCache_;
     FunctionalInterfaceMap functionalInterfaceCache_;
     TypeMapping apparentTypes_;
+    std::array<DynamicCallNamesMap, 2U> dynamicCallNames_;
     std::recursive_mutex mtx_;
 };
 

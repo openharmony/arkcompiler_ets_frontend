@@ -178,13 +178,13 @@ bool Phase::Apply(public_lib::Context *ctx, parser::Program *program)
 void Phase::CheckOptionsBeforePhase(const CompilerOptions *options, const parser::Program *program,
                                     const std::string &name) const
 {
-    if (options->dumpAfterPhases.count(name) > 0) {
-        std::cout << "After phase " << name << ":" << std::endl;
+    if (options->dumpBeforePhases.count(name) > 0) {
+        std::cout << "Before phase " << name << ":" << std::endl;
         std::cout << program->Dump() << std::endl;
     }
 
-    if (options->dumpEtsSrcAfterPhases.count(name) > 0) {
-        std::cout << "After phase " << name << " ets source"
+    if (options->dumpEtsSrcBeforePhases.count(name) > 0) {
+        std::cout << "Before phase " << name << " ets source"
                   << ":" << std::endl;
         std::cout << program->Ast()->DumpEtsSrc() << std::endl;
     }

@@ -562,6 +562,12 @@ public:
         CallDynamicImpl<CallShort, Call, CallRange>(node, obj, param2, signature, arguments);
     }
 
+    void CallDynamic(const ir::AstNode *node, VReg &obj, VReg &param2, VReg &param3, checker::Signature *signature,
+                     const ArenaVector<ir::Expression *> &arguments)
+    {
+        CallDynamicImpl<CallShort, Call, CallRange>(node, obj, param2, param3, signature, arguments);
+    }
+
 #ifdef PANDA_WITH_ETS
     // The functions below use ETS specific instructions.
     // Compilation of es2panda fails if ETS plugin is disabled
@@ -1033,14 +1039,15 @@ private:
     }
 #undef COMPILE_ARG
 
-#define COMPILE_ARG(idx)                                                                                       \
-    ASSERT((idx) < arguments.size());                                                                          \
-    ASSERT((idx) + 2U < signature->Params().size() || signature->RestVar() != nullptr);                        \
-    auto *paramType##idx = (idx) + 2U < signature->Params().size() ? signature->Params()[(idx) + 2U]->TsType() \
-                                                                   : signature->RestVar()->TsType();           \
-    auto ttctx##idx = TargetTypeContext(this, paramType##idx);                                                 \
-    VReg arg##idx = AllocReg();                                                                                \
-    arguments[idx]->Compile(this);                                                                             \
+#define COMPILE_ARG(idx, shift)                                                              \
+    ASSERT((idx) < arguments.size());                                                        \
+    ASSERT((idx) + (shift) < signature->Params().size() || signature->RestVar() != nullptr); \
+    auto *paramType##idx = (idx) + (shift) < signature->Params().size()                      \
+                               ? signature->Params()[(idx) + (shift)]->TsType()              \
+                               : signature->RestVar()->TsType();                             \
+    auto ttctx##idx = TargetTypeContext(this, paramType##idx);                               \
+    VReg arg##idx = AllocReg();                                                              \
+    arguments[idx]->Compile(this);                                                           \
     ApplyConversionAndStoreAccumulator(arguments[idx], arg##idx, paramType##idx)
 
     template <typename Short, typename General, typename Range>
@@ -1056,13 +1063,13 @@ private:
                 break;
             }
             case 1U: {
-                COMPILE_ARG(0);
+                COMPILE_ARG(0, 2U);
                 Ra().Emit<General, 3U>(node, name, obj, param2, arg0, dummyReg_);
                 break;
             }
             case 2U: {
-                COMPILE_ARG(0);
-                COMPILE_ARG(1);
+                COMPILE_ARG(0, 2U);
+                COMPILE_ARG(1, 2U);
                 Ra().Emit<General>(node, name, obj, param2, arg0, arg1);
                 break;
             }
@@ -1081,6 +1088,42 @@ private:
                 }
 
                 Rra().Emit<Range>(node, obj, arguments.size() + 2U, name, obj);
+                break;
+            }
+        }
+    }
+
+    template <typename Short, typename General, typename Range>
+    void CallDynamicImpl(const ir::AstNode *node, VReg &obj, VReg &param2, VReg &param3, checker::Signature *signature,
+                         const ArenaVector<ir::Expression *> &arguments)
+    {
+        RegScope rs(this);
+        const auto name = signature->InternalName();
+
+        switch (arguments.size()) {
+            case 0U: {
+                Ra().Emit<General, 3U>(node, name, obj, param2, param3, dummyReg_);
+                break;
+            }
+            case 1U: {
+                COMPILE_ARG(0, 3U);
+                Ra().Emit<General>(node, name, obj, param2, param3, arg0);
+                break;
+            }
+            default: {
+                size_t index = 0;
+                for (const auto *arg : arguments) {
+                    auto ttctx = TargetTypeContext(this, arg->TsType());
+                    VReg argReg = AllocReg();
+                    arg->Compile(this);
+                    // + 3U since we need to skip first 3 args in signature; first arg is obj,
+                    // second arg is param2, third is param3
+                    auto *argType = signature->Params()[index + 3U]->TsType();
+                    ApplyConversionAndStoreAccumulator(node, argReg, argType);
+                    index++;
+                }
+
+                Rra().Emit<Range>(node, obj, arguments.size() + 3U, name, obj);
                 break;
             }
         }
