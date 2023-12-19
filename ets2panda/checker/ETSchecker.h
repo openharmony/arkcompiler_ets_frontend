@@ -120,6 +120,7 @@ public:
     const GlobalArraySignatureMap &GlobalArrayTypes() const;
 
     void InitializeBuiltins(varbinder::ETSBinder *varbinder);
+    void InitializeBuiltin(varbinder::Variable *var, const util::StringView &name);
     bool StartChecker([[maybe_unused]] varbinder::VarBinder *varbinder, const CompilerOptions &options) override;
     Type *CheckTypeCached(ir::Expression *expr) override;
     void ResolveStructuredTypeMembers([[maybe_unused]] Type *type) override {}

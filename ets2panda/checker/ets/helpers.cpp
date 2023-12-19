@@ -1698,6 +1698,10 @@ Type *ETSChecker::PrimitiveTypeAsETSBuiltinType(Type *object_type)
     auto saved_result = Relation()->IsTrue();
     Relation()->Result(false);
 
+    if (Checker::GetGlobalTypesHolder()->GlobalIntegerBuiltinType() == nullptr) {
+        InitializeBuiltin(VarBinder()->TopScope()->Bindings().find("Int")->second, "Int");
+    }
+
     BoxingConverter converter = BoxingConverter(AsETSChecker(), Relation(), object_type,
                                                 Checker::GetGlobalTypesHolder()->GlobalIntegerBuiltinType());
     Relation()->Result(saved_result);
